@@ -38,9 +38,9 @@ using namespace std;
 using namespace Herwig;
 
 VVHardGenerator::VVHardGenerator() 
-  : realMESpinCorrelations_(false),
+  : realMESpinCorrelations_(true),
     power_(2.0),
-    preqqbar_(2.2),preqg_(16.0),pregqbar_(7.0),
+    preqqbar_(2.2),preqg_(16.0),pregqbar_(11.0),
     b0_((11.-2./3.*5.)/4./Constants::pi),
     LambdaQCD_(91.118*GeV*exp(-1./2./((11.-2./3.*5.)/4./Constants::pi)/0.118)),
     min_pT_(2.*GeV),
@@ -217,11 +217,10 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
       if(outgoing[ix]->parents()[0]&&
 	 (abs(outgoing[ix]->parents()[0]->id())==24||
 	  abs(outgoing[ix]->parents()[0]->id())==23)) {
-	if(abs(outgoing[ix]->id())<=16&&abs(outgoing[ix]->id())>=11) {
+	if(outgoing[ix]->id()!=21)
 	  children_.push_back(outgoing[ix]);
-	} else if(outgoing[ix]->id()==21) {
+	else
 	  photons_.push_back(outgoing[ix]);
-	}
       };
     assert(children_.size()==4);
     if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
@@ -236,11 +235,6 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     if(children_[2]->id()<0) swap(children_[2],children_[3]);
     assert(children_[0]->parents()[0]==children_[1]->parents()[0]);
     assert(children_[2]->parents()[0]==children_[3]->parents()[0]);
-//     // Set parent child relations between VV and their children:
-//     V1_->original()->addChild(children_[0]);
-//     V1_->original()->addChild(children_[1]);
-//     V2_->original()->addChild(children_[2]);
-//     V2_->original()->addChild(children_[3]);
   }
 
   // Now we want to construct a bornVVKinematics object. The
@@ -445,16 +439,10 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     R_.k2r(theRealMomenta[3]);
     R_.kr (theRealMomenta[4]);
     if(channel_==0) t_u_M_R_qqb_hel_amp(R_,true);
-    else if(channel_==1) t_u_M_R_qg_hel_amp(R_,true);
+    else if(channel_==1) t_u_M_R_qg_hel_amp (R_,true);
     else if(channel_==2) t_u_M_R_gqb_hel_amp(R_,true);
-    spacelikeSon_=spacelikeSon;
-    emitted_=k;
     recalculateVertex();
   }
-
-// cout << "\n\nVVHardGenerator lab momenta are..." << endl;
-// for(unsigned int ix=0;ix<theRealMomenta.size();ix++)
-//   cout << "theRealMomenta[" << ix << "] = " << theRealMomenta[ix]/GeV << endl;
 
   // Construct the HardTree object needed to perform the showers
   HardTreePtr nasonTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
@@ -513,6 +501,9 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
 //  evolver()->showerModel()->partnerFinder()->
 //     setInitialEvolutionScales(particles,true,true);
 
+  // The following 7 lines are needed so that the wonderful
+  // inverse reconstruction followed by reconstruction does
+  // not spaghettify the (good) VV momenta generated above:
   // Do the initial-state reconstruction
   Boost toRest,fromRest;
   toRest   = -(mother->momentum()+spectator ->momentum()).boostVector();
@@ -804,9 +795,9 @@ void VVHardGenerator::setTheScales(Energy pT) {
 Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix) const {
   using namespace ThePEG::Helicity;
 
-  qqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1,
-					      PDT::Spin1));
+  ProductionMatrixElement qqb_hel_amps(PDT::Spin1Half,PDT::Spin1Half,
+				       PDT::Spin1    ,PDT::Spin1    ,
+				       PDT::Spin1);
 
   double sum_hel_amps_sqr(0.);
 
@@ -871,15 +862,15 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
 	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	    // If helicity is exactly conserved (massless quarks) skip if p1hel=p2hel
 	    // but if the production ME is required first fill it with (0.,0.).
-	    if((p1hel==p2hel)&&helicityConservation_) {
+ 	    if((p1hel==p2hel)&&helicityConservation_) {
 	      if(getMatrix) {
 		if(khel==0)
-		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
+		  qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
 		else
-		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
+		  qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
 	      }
-	      continue;
-	    }
+ 	      continue;
+ 	    }
 	    vector<Complex> diagrams;
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_t;
@@ -943,9 +934,9 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
 	    // If we need to fill the production ME we do it here:
  	    if(getMatrix) {
 	      if(khel==0)
-		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
+		qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
 	      else
-		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
+		qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
 	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
@@ -961,7 +952,31 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
       for(unsigned int p2hel=0;p2hel<2;++p2hel) {
 	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
+	    qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		for(unsigned int khel=0;khel<3;khel+=2) {
+		  theElement += qqb_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(qqb_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
 	  }
 	}
       }
@@ -984,9 +999,9 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
 Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) const {
   using namespace ThePEG::Helicity;
 
-  qg_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1,PDT::Spin1,
-					     PDT::Spin1Half));
+  ProductionMatrixElement qg_hel_amps(PDT::Spin1Half,PDT::Spin1,
+				      PDT::Spin1,PDT::Spin1,
+				      PDT::Spin1Half);
   
   double sum_hel_amps_sqr(0.);
 
@@ -1054,9 +1069,9 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
 	    if((p1hel!=khel)&&helicityConservation_) {
 	      if(getMatrix) {
 		if(p2hel==0)
-		  qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
+		  qg_hel_amps(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
 		else
-		  qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
+		  qg_hel_amps(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
 	      }
 	      continue;
 	    }
@@ -1119,9 +1134,9 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
 	    // If we need to fill the production ME we do it here:
  	    if(getMatrix) {
 	      if(p2hel==0)
-		qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = hel_amp;
+		qg_hel_amps(p1hel,0,k1hel,k2hel,khel) = hel_amp;
 	      else
-		qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = hel_amp;
+		qg_hel_amps(p1hel,2,k1hel,k2hel,khel) = hel_amp;
 	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
@@ -1137,7 +1152,31 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
-	    qg_hel_amps_(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+	    qg_hel_amps(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<3;p2hel+=2) {
+		for(unsigned int khel=0;khel<2;++khel) {
+		  theElement += qg_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(qg_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
 	  }
 	}
       }
@@ -1160,9 +1199,9 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
 Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix) const {
   using namespace ThePEG::Helicity;
 
-  gqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1,
-					      PDT::Spin1Half));
+  ProductionMatrixElement gqb_hel_amps(PDT::Spin1,PDT::Spin1Half,
+				       PDT::Spin1,PDT::Spin1,
+				       PDT::Spin1Half);
   
   double sum_hel_amps_sqr(0.);
 
@@ -1230,9 +1269,9 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
 	    if((p2hel!=khel)&&helicityConservation_) {
 	      if(getMatrix) {
 		if(p1hel==0)
-		  gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+		  gqb_hel_amps(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
 		else
-		  gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+		  gqb_hel_amps(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
 	      }
 	      continue;
 	    }
@@ -1296,9 +1335,9 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
 	    // If we need to fill the production ME we do it here:
  	    if(getMatrix) {
 	      if(p1hel==0)
-		gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = hel_amp;
+		gqb_hel_amps(0,p2hel,k1hel,k2hel,khel) = hel_amp;
 	      else
-		gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = hel_amp;
+		gqb_hel_amps(2,p2hel,k1hel,k2hel,khel) = hel_amp;
 	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
@@ -1314,7 +1353,31 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
-	    gqb_hel_amps_(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	    gqb_hel_amps(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<3;p1hel+=2) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		for(unsigned int khel=0;khel<2;++khel) {
+		  theElement += gqb_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(gqb_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
 	  }
 	}
       }
@@ -1336,8 +1399,8 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
 double VVHardGenerator::lo_me(bool getMatrix) const {
   using namespace ThePEG::Helicity;
 
-  lo_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin1,PDT::Spin1));
+  ProductionMatrixElement lo_hel_amps(PDT::Spin1Half,PDT::Spin1Half,
+				      PDT::Spin1    ,PDT::Spin1);
 
   double sum_hel_amps_sqr(0.);
 
@@ -1409,7 +1472,7 @@ double VVHardGenerator::lo_me(bool getMatrix) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  if((p1hel==p2hel)&&helicityConservation_) {
-	    lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = Complex(0.,0.);
+	    lo_hel_amps(p1hel,p2hel,k1hel,k2hel) = Complex(0.,0.);
 	    continue;
 	  }
 	  vector<Complex> diagrams;
@@ -1458,8 +1521,31 @@ double VVHardGenerator::lo_me(bool getMatrix) const {
 	  Complex hel_amp(0.);
 	  for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
 	  // If we need to fill the production ME we do it here:
-	  if(getMatrix) lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = hel_amp;
+	  if(getMatrix) lo_hel_amps(p1hel,p2hel,k1hel,k2hel) = hel_amp;
 	  sum_hel_amps_sqr += norm(hel_amp);
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over the fermion spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		if((p1hel==p2hel)&&helicityConservation_) continue;
+		theElement += lo_hel_amps(p1hel,p2hel,k1hel  ,k2hel  )
+		        *conj(lo_hel_amps(p1hel,p2hel,k1helpr,k2helpr));
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
+	  }
 	}
       }
     }
@@ -1474,310 +1560,224 @@ double VVHardGenerator::lo_me(bool getMatrix) const {
   return sum_hel_amps_sqr;
 }
 
+/***************************************************************************/
+// This member selects a [2-body] decay mode and assigns children to the
+// vector bosons with momenta which are isotropic in their rest frames.
+bool VVHardGenerator::isotropicDecayer() {
+  using namespace ThePEG::Helicity;
+
+  // Generate the children's momenta isotropically in
+  // the rest frames of V1 and V2:
+  double cth,phi;
+  // First V1's children:
+  cth = UseRandom::rnd()*2.-1.;
+  phi = UseRandom::rnd()*2.*Constants::pi;
+  Energy m1(V1_->momentum().m());
+  Energy m3(children_[0]->data().constituentMass());
+  Energy m4(children_[1]->data().constituentMass());
+  Energy p34(triangleFn(sqr(m1),sqr(m3),sqr(m4))
+	     /2./m1);
+  if(isnan(p34/GeV)||cth>1.||cth<-1.) return false;
+  Energy pT34(p34*sqrt(1.-cth)*sqrt(1.+cth));
+  Lorentz5Momentum k3(pT34*sin(phi),pT34*cos(phi),p34 *cth,
+		      sqrt(p34*p34+sqr(m3)),m3);
+  Lorentz5Momentum k4(-k3);
+  k4.setE(sqrt(p34*p34+sqr(m4)));
+  k4.setTau(m4);
+  Boost boostToV1RF(R_.k1r().boostVector());
+  k3.boost(boostToV1RF);
+  k3.rescaleRho();
+  k4.boost(boostToV1RF);
+  k4.rescaleRho();
+
+  // Second V2's children:
+  cth = UseRandom::rnd()*2.-1.;
+  phi = UseRandom::rnd()*2.*Constants::pi;
+  Energy m2(V2_->momentum().m());
+  Energy m5(children_[2]->data().constituentMass());
+  Energy m6(children_[3]->data().constituentMass());
+  Energy p56(triangleFn(sqr(m2),sqr(m5),sqr(m6))
+	     /2./m2);
+  if(isnan(p56/GeV)||cth>1.||cth<-1.) return false;
+  Energy pT56(p56*sqrt(1.-cth)*sqrt(1.+cth));
+  Lorentz5Momentum k5(pT56*sin(phi),pT56*cos(phi),p56*cth,
+		      sqrt(p56*p56+sqr(m5)),m5);
+  Lorentz5Momentum k6(-k5);
+  k6.setE(sqrt(p56*p56+sqr(m6)));
+  k6.setTau(m6);
+  Boost boostToV2RF(R_.k2r().boostVector());
+  k5.boost(boostToV2RF);
+  k5.rescaleRho();
+  k6.boost(boostToV2RF);
+  k6.rescaleRho();
+
+  // Assign the momenta to the children:
+  children_[0]->set5Momentum(k3);
+  children_[1]->set5Momentum(k4);
+  children_[2]->set5Momentum(k5);
+  children_[3]->set5Momentum(k6);
+
+  return true;
+
+}
+
 // Override 2->2 production matrix here:
 void VVHardGenerator::recalculateVertex() {
 
-  // Extract the particles in the hard process:
-  ParticleVector hard;
-  tSubProPtr sub = generator()->currentEvent()->primarySubProcess();
-  hard.push_back(sub->incoming().first);
-  hard.push_back(sub->incoming().second);
-  hard.push_back(sub->outgoing()[0]);
-  hard.push_back(sub->outgoing()[1]);
+  // Zero the squared amplitude; this equals sum_hel_amps_sqr if all
+  // is working as it should:
+  Complex productionMatrix2(0.,0.);
+  for(unsigned int k1hel=0;k1hel<3;++k1hel)
+    for(unsigned int k2hel=0;k2hel<3;++k2hel)
+      productionMatrix2 += productionMatrix_[k1hel][k1hel][k2hel][k2hel];
 
-  unsigned int order[4]={0,1,2,3};
-
-  // May need to swap the incoming pair around to order q qbar:
-  if(hard[0]->id()<0) swap(order[0],order[1]);
-
-  // May need to swap the outgoing pair to one of W+ W-, W+ Z, W-Z ,Z Z:
-  if(hard[2]->id()== 23&&abs(hard[3]->id())==24) swap(order[2],order[3]);
-  if(hard[2]->id()==-24&&    hard[3]->id() ==24) swap(order[2],order[3]);
-
-  // A temporary alarm system to make sure particles in hard[] are
-  // q qbar W+ W- or  q qbar W+ Z or q qbar W- Z or q qbar Z Z:
-  bool alarm(false);
-  if(hard[order[0]]->id()>=6||hard[order[0]]->id()<  0) alarm = true;
-  if(hard[order[1]]->id()> 0||hard[order[1]]->id()<=-6) alarm = true;
-  if(abs(hard[order[2]]->id())!=23&&abs(hard[order[2]]->id())!=24) alarm = true;
-  if(abs(hard[order[3]]->id())!=23&&abs(hard[order[3]]->id())!=24) alarm = true;
-  if(abs(hard[order[2]]->id())==24&&hard[order[3]]->id()==24) alarm = true;
-  if(hard[order[2]]->id()==23&&hard[order[3]]->id()!=23) alarm = true;
-  if(alarm) {
-    cout << "\n\n\n" << endl;
-    cout << "hard[order[0]] is " << hard[order[0]]->PDGName() << endl;
-    cout << "hard[order[1]] is " << hard[order[1]]->PDGName() << endl;
-    cout << "hard[order[2]] is " << hard[order[2]]->PDGName() << endl;
-    cout << "hard[order[3]] is " << hard[order[3]]->PDGName() << endl;
+  // Get the vector wavefunctions:
+  VectorWaveFunction v1Polarization;
+  VectorWaveFunction v2Polarization;
+  v1Polarization=VectorWaveFunction(R_.k1r(),V1_->dataPtr(),outgoing);
+  v2Polarization=VectorWaveFunction(R_.k2r(),V2_->dataPtr(),outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
   }
 
-  // Make a new hardvertex pointer:
-  HardVertexPtr hardvertex=new_ptr(HardVertex());
+  AbstractFFVVertexPtr ffv1 = V1_->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = V2_->id()==23 ? FFZvertex_ : FFWvertex_;
 
-  // Get the spin info objects for each of the hard[ix] particles:
-  tFermionSpinPtr qSpin =dynamic_ptr_cast<tFermionSpinPtr>(hard[order[0]]->spinInfo());
-  tFermionSpinPtr qbSpin=dynamic_ptr_cast<tFermionSpinPtr>(hard[order[1]]->spinInfo());
-  tVectorSpinPtr  V1Spin=dynamic_ptr_cast<tVectorSpinPtr>(hard[order[2]]->spinInfo());
-  tVectorSpinPtr  V2Spin=dynamic_ptr_cast<tVectorSpinPtr>(hard[order[3]]->spinInfo());
+  bool vetoed(true);
+  while(vetoed) {
+    // Decay the bosons isotropically in their rest frames:
+    isotropicDecayer();
 
-  bool debug_basis_states(false);
-  if(debug_basis_states) {
-    // Debug basis states:
-    cout << "\n\nVVHardGenerator, initial states:" << endl;
-    cout << "q : p.vtx " << qSpin ->getProductionVertex() << "  ";
-    cout << " hel -: ";
-    for(unsigned int ix=0;ix<4;ix++) 
-      cout << qSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-    cout << " hel +: ";
-    for(unsigned int ix=0;ix<4;ix++) 
-      cout << qSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-    cout << endl;
-    cout << "qb: p.vtx " << qbSpin->getProductionVertex() << "  ";
-    cout << " hel -: ";
-    for(unsigned int ix=0;ix<4;ix++) 
-      cout << qbSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-    cout << " hel +: ";
-    for(unsigned int ix=0;ix<4;ix++) 
-      cout << qbSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-    cout << endl;
-    cout << "V1: p.vtx " << V1Spin->getProductionVertex() << "  ";
-    cout << " hel -: ";
-    cout << V1Spin->getProductionBasisState(0).t() << " "
-	 << V1Spin->getProductionBasisState(0).x() << " "	   
-	 << V1Spin->getProductionBasisState(0).y() << " "	   
-	 << V1Spin->getProductionBasisState(0).z() << " ";
-    cout << " hel +: ";
-    cout << V1Spin->getProductionBasisState(2).t() << ", "
-	 << V1Spin->getProductionBasisState(2).x() << ", "	   
-	 << V1Spin->getProductionBasisState(2).y() << ", "	   
-	 << V1Spin->getProductionBasisState(2).z() << endl;
-    cout << "V2: p.vtx " << V2Spin->getProductionVertex() << "  ";
-    cout << " hel -: ";
-    cout << V2Spin->getProductionBasisState(0).t() << " "
-	 << V2Spin->getProductionBasisState(0).x() << " "	   
-	 << V2Spin->getProductionBasisState(0).y() << " "	   
-	 << V2Spin->getProductionBasisState(0).z() << " ";
-    cout << " hel +: ";
-    cout << V2Spin->getProductionBasisState(2).t() << ", "
-	 << V2Spin->getProductionBasisState(2).x() << ", "	   
-	 << V2Spin->getProductionBasisState(2).y() << ", "	   
-	 << V2Spin->getProductionBasisState(2).z() << endl;
-  }
-
-  // If you just return here the spin correlations are still the 2->2 ones.
-
-  // Reproduces LO using this method and LO *lab* momenta:
-  //***************************************************************//
-  // Rule #1 : Always make sure all momenta are in the lab frame   //
-  //           when it comes to spin and the production stage,     //
-  //           in the spinInfo's and in evaluating the production  //
-  //           matrix element.                                     //
-  //***************************************************************//
-  // For instance if the boost from the partonic centre of mass 
-  // to the lab (boostFromYisZero) to the momenta in the following    
-  // spinInfo's is not done, the leading order spin correlations are
-  // not reproduced, even if the production matrix is evaluated with
-  // the partonic CMS momenta, and even if you also setProductionMomenta.
-  // Also, if you use the partonic CMS momenta in evaluating the 
-  // production ME but you use the lab momenta in the spinInfo's,
-  // as below, you get the wrong answer; this proves that whatever
-  // changes are made to the production matrix element, hard vertex
-  // and spinInfo's here, survive through to the DecayHandler.
-  // WARNING: If you don't use consistently the lab momenta here
-  // and in evaluating the production matrix element above, the 
-  // lepton angle distributions look slightly decorrelated, which
-  // is the same effect that genuine NLO corrections should have!
-  // Note: Using setProductionMomentum here as well as setCurrentMomentum
-  // does not seem to make any difference: the LO angular correlations
-  // still come out.
-
-  /*******************************************/
-  // TEMPORARY ----->
-  // Attempting q + qb -> V1 + V2 + g first.
-  if(channel_!=0) return;
-  // <----- TEMPORARY
-  /*******************************************/
-
-  if(channel_==0) {
-    hardvertex->ME(qqb_hel_amps_);
-  } else if(channel_==1) {
-    hardvertex->ME(qg_hel_amps_);
-  } else if(channel_==2) {
-    hardvertex->ME(gqb_hel_amps_);
-  } else {
-    throw Exception() << "VVHardGenerator::recalculateVertex()" 
-		      << "Invalid channel: channel_ = " << channel_
-		      <<  Exception::runerror;    
-  }
-
-  // Now if the channel selected was q + qb -> V1 + V2 + g
-  if(channel_==0) {
-    // Make quark and antiquark wave functions:
-    SpinorWaveFunction qSpinor;
-    SpinorBarWaveFunction qbSpinor;
-    qSpinor=SpinorWaveFunction(R_.p1r(),quark_->dataPtr(),incoming);
-    qbSpinor=SpinorBarWaveFunction(R_.p2r(),antiquark_->dataPtr(),incoming);
-    vector<SpinorWaveFunction> q;
-    vector<SpinorBarWaveFunction> qb;
+    // Get the spinor wavefunctions:
+    SpinorWaveFunction k3Spinor(children_[0]->momentum(),children_[0]->dataPtr(),outgoing);
+    SpinorBarWaveFunction k4Spinor(children_[1]->momentum(),children_[1]->dataPtr(),outgoing);
+    SpinorWaveFunction k5Spinor(children_[2]->momentum(),children_[2]->dataPtr(),outgoing);
+    SpinorBarWaveFunction k6Spinor(children_[3]->momentum(),children_[3]->dataPtr(),outgoing);
+    vector<SpinorWaveFunction> k3,k5;
+    vector<SpinorBarWaveFunction> k4,k6;
     for(unsigned int ix=0;ix<2;ix++) {
-      qSpinor.reset(ix);
-      qbSpinor.reset(ix);
-      q.push_back(qSpinor);
-      qb.push_back(qbSpinor);
+      k3Spinor.reset(ix);
+      k4Spinor.reset(ix);
+      k3.push_back(k3Spinor);
+      k4.push_back(k4Spinor);
+      k5Spinor.reset(ix);
+      k6Spinor.reset(ix);
+      k5.push_back(k5Spinor);
+      k6.push_back(k6Spinor);
     }
 
-    // Make vector wavefunctions for v1 and v2:
-    VectorWaveFunction v1Polarization;
-    VectorWaveFunction v2Polarization;
-    v1Polarization=VectorWaveFunction(R_.k1r(),V1_->dataPtr(),outgoing);
-    v2Polarization=VectorWaveFunction(R_.k2r(),V2_->dataPtr(),outgoing);
-    vector<VectorWaveFunction> v1;
-    vector<VectorWaveFunction> v2;
-    for(unsigned int ix=0;ix<3;ix++) {
-      v1Polarization.reset(ix);
-      v2Polarization.reset(ix);
-      v1.push_back(v1Polarization);
-      v2.push_back(v2Polarization);
-    }
+    DecayMatrixElement decayAmps(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
 
-    // Make gluon wave functions:
-    tcPDPtr kdata(getParticleData(ParticleID::g)); // N.B. kdata->stable()=1.
-    VectorWaveFunction gPolarization(R_.kr(),kdata,outgoing);
-    vector<VectorWaveFunction> g;
-    for(unsigned int ix=0;ix<3;ix+=2) {
-      gPolarization.reset(ix);
-      g.push_back(gPolarization);
-    }
-
-    // Try to reset all particles' spin information like this:
-    // SpinorWaveFunction::constructSpinInfo(q,hard[order[0]],incoming,false);
-    // or, what should be equivalent, like this: 
-    FermionSpinPtr spacelikeSonSpin = 
-      new_ptr(FermionSpinInfo(spacelikeSon_->momentum(),false));
-    spacelikeSon_->spinInfo(spacelikeSonSpin);
-    if(fermionNumberOfMother_<0) {
-      for(unsigned int ix=0;ix<2;++ix) {
-	qSpin ->setDecayState(ix,q[ix].dimensionedWave() );
-	spacelikeSonSpin->setDecayState(ix,qb[ix].dimensionedWave().bar() );
-      }
-    } else {
-      for(unsigned int ix=0;ix<2;++ix) {
-	spacelikeSonSpin ->setDecayState(ix,q[ix].dimensionedWave() );
-	qbSpin->setDecayState(ix,qb[ix].dimensionedWave().bar());
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k3hel=0;k3hel<2;++k3hel) {
+	for(unsigned int k4hel=0;k4hel<2;++k4hel) {
+	  decayAmps(k1hel,k3hel,k4hel) = 
+	    ffv1->evaluate(EWScale_,k3[k3hel],k4[k4hel],v1[k1hel]);
+	}
       }
     }
-    for(unsigned int ix=0;ix<3;++ix) V1Spin->setBasisState(ix,v1[ix].wave());
-    for(unsigned int ix=0;ix<3;++ix) V2Spin->setBasisState(ix,v2[ix].wave());
-    VectorSpinPtr gluonSpin = new_ptr(VectorSpinInfo(emitted_->momentum(),true));
-    emitted_->spinInfo(gluonSpin);
-    gluonSpin->setBasisState(0,g[0].wave());
-    gluonSpin->setBasisState(2,g[1].wave());
-
-//     Reassign spinInfo to the quark and antiquark? 
-//     Has been done by the above already, no?
-//     hardvertex->resetIncoming(qSpin,order[0]);
-//     hardvertex->resetIncoming(qbSpin,order[1]);
-
-//     RhoDMatrix gluonRhoDMatrix=RhoDMatrix(PDT::Spin1);
-//     for(unsigned int ix=0;ix<3;++ix) 
-//       for(unsigned int jx=0;jx<3;++jx)
-//     	gluonRhoDMatrix(ix,jx)=Complex(0.,0.);
-//     gluonRhoDMatrix(0,0)=Complex(0.5,0.);
-//     gluonRhoDMatrix(2,2)=Complex(0.5,0.);
-//     gluonSpin->DMatrix()=gluonRhoDMatrix;
-
-//     cout << "gluonSpin->DMatrix():  \n" << gluonSpin->DMatrix()   << endl;
-//     cout << "gluonSpin->rhoMatrix():\n" << gluonSpin->rhoMatrix() << endl;
-//     gluonSpin->setDeveloped(true);
-//     gluonSpin->decayed(true);
-
-    // Tie up the spinInfo's to the hardvertex
-    if(fermionNumberOfMother_<0) {
-      qSpin->setProductionVertex(hardvertex);
-      spacelikeSonSpin ->setProductionVertex(hardvertex);
-    } else {
-      spacelikeSonSpin->setProductionVertex(hardvertex);
-      qbSpin ->setProductionVertex(hardvertex);
-    }
-    V1Spin->setProductionVertex(hardvertex);
-    V2Spin->setProductionVertex(hardvertex);
-    gluonSpin->setProductionVertex(hardvertex);
-
-    if(debug_basis_states) {
-      cout << "VVHardGenerator, reset states:" << endl;
-      cout << "q  = " << R_.p1r()/GeV << "  qb = " << R_.p2r()/GeV 
-	   << "  V1 = " << R_.k1r()/GeV << "  V2 = " << R_.k2r()/GeV
-	   << "  g  = " << R_.kr() /GeV << endl;
-      // Debug these NEW basis states:
-      if(fermionNumberOfMother_>0) {
-	cout << "sp: p.vtx " << spacelikeSonSpin->getProductionVertex() << "  ";
-	cout << " hel -: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << spacelikeSonSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-	cout << " hel +: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << spacelikeSonSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-	cout << endl;
-	cout << "qb: p.vtx " << qbSpin->getProductionVertex() << "  ";
-	cout << " hel -: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << qbSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-	cout << " hel +: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << qbSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-	cout << endl;
-      } else {
-	cout << "q : p.vtx " << qSpin ->getProductionVertex() << "  ";
-	cout << " hel -: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << qSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-	cout << " hel +: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << qSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-	cout << endl;
-	cout << "sp: p.vtx " << spacelikeSonSpin->getProductionVertex() << "  ";
-	cout << " hel -: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << spacelikeSonSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
-	cout << " hel +: ";
-	for(unsigned int ix=0;ix<4;ix++) 
-	  cout << spacelikeSonSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
-	cout << endl;
+    Complex V1decayMatrix[3][3];
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	Complex theElement(0.,0.);
+	for(unsigned int k3hel=0;k3hel<2;++k3hel) {
+	  for(unsigned int k4hel=0;k4hel<2;++k4hel) {
+	    theElement += decayAmps(k1hel,k3hel,k4hel)
+	            *conj(decayAmps(k1helpr,k3hel,k4hel));
+	  }
+	}
+	V1decayMatrix[k1hel][k1helpr] = theElement;
       }
-      cout << "V1: p.vtx " << V1Spin->getProductionVertex() << "  ";
-      cout << " hel -: ";
-      cout << V1Spin->getProductionBasisState(0).t() << " "
-	   << V1Spin->getProductionBasisState(0).x() << " "	   
-	   << V1Spin->getProductionBasisState(0).y() << " "	   
-	   << V1Spin->getProductionBasisState(0).z() << " ";
-      cout << " hel +: ";
-      cout << V1Spin->getProductionBasisState(2).t() << ", "
-	   << V1Spin->getProductionBasisState(2).x() << ", "	   
-	   << V1Spin->getProductionBasisState(2).y() << ", "	   
-	   << V1Spin->getProductionBasisState(2).z() << endl;
-      cout << "V2: p.vtx " << V2Spin->getProductionVertex() << "  ";
-      cout << " hel -: ";
-      cout << V2Spin->getProductionBasisState(0).t() << " "
-	   << V2Spin->getProductionBasisState(0).x() << " "	   
-	   << V2Spin->getProductionBasisState(0).y() << " "	   
-	   << V2Spin->getProductionBasisState(0).z() << " ";
-      cout << " hel +: ";
-      cout << V2Spin->getProductionBasisState(2).t() << ", "
-	   << V2Spin->getProductionBasisState(2).x() << ", "	   
-	   << V2Spin->getProductionBasisState(2).y() << ", "	   
-	   << V2Spin->getProductionBasisState(2).z() << endl;
-      cout << "gl: p.vtx " << gluonSpin->getProductionVertex() << "  ";
-      cout << " hel -: ";
-      cout << gluonSpin->getProductionBasisState(0).t() << " "
-	   << gluonSpin->getProductionBasisState(0).x() << " "	   
-	   << gluonSpin->getProductionBasisState(0).y() << " "	   
-	   << gluonSpin->getProductionBasisState(0).z() << " ";
-      cout << " hel +: ";
-      cout << gluonSpin->getProductionBasisState(2).t() << ", "
-	   << gluonSpin->getProductionBasisState(2).x() << ", "	   
-	   << gluonSpin->getProductionBasisState(2).y() << ", "	   
-	   << gluonSpin->getProductionBasisState(2).z() << endl;
+    }
+    Complex V1decayMatrix2(0.,0.);
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) V1decayMatrix2 += V1decayMatrix[k1hel][k1hel];
+
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+      for(unsigned int k5hel=0;k5hel<2;++k5hel) {
+	for(unsigned int k6hel=0;k6hel<2;++k6hel) {
+	  decayAmps(k2hel,k5hel,k6hel) = 
+	    ffv2->evaluate(EWScale_,k5[k5hel],k6[k6hel],v2[k2hel]);
+	}
+      }
+    }
+    Complex V2decayMatrix[3][3];
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+      for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	Complex theElement(0.,0.);
+	for(unsigned int k5hel=0;k5hel<2;++k5hel) {
+	  for(unsigned int k6hel=0;k6hel<2;++k6hel) {
+	    theElement += decayAmps(k2hel,k5hel,k6hel)
+	            *conj(decayAmps(k2helpr,k5hel,k6hel));
+	  }
+	}
+	V2decayMatrix[k2hel][k2helpr] = theElement;
+      }
+    }
+    Complex V2decayMatrix2(0.,0.);
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) V2decayMatrix2 += V2decayMatrix[k2hel][k2hel];
+
+    // Contract the production matrix and the decay matrices:
+    Complex meTimesV1V2denominators(0.,0.);
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    meTimesV1V2denominators += 
+	      productionMatrix_[k1hel][k1helpr][k2hel][k2helpr]
+	      *V1decayMatrix[k1hel][k1helpr]
+	      *V2decayMatrix[k2hel][k2helpr];
+	  }
+	}
+      }
+    }
+
+    if(imag(meTimesV1V2denominators)/real(meTimesV1V2denominators)>1.e-7) 
+      cout << "VVHardGenerator warning\n" 
+	   << "the matrix element's imaginary part is large " 
+	   << meTimesV1V2denominators << endl;  
+    if(imag(productionMatrix2)/real(productionMatrix2)>1.e-7) 
+      cout << "VVHardGenerator warning\n" 
+	   << "the production matrix element's imaginary part is large " 
+	   << productionMatrix2 << endl;  
+    if(imag(V1decayMatrix2)/real(V1decayMatrix2)>1.e-7) 
+      cout << "VVHardGenerator warning\n" 
+	   << "the V1 decay matrix element's imaginary part is large " 
+	   << V1decayMatrix2 << endl;  
+    if(imag(V2decayMatrix2)/real(V2decayMatrix2)>1.e-7) 
+      cout << "VVHardGenerator warning\n" 
+	   << "the V2 decay matrix element's imaginary part is large " 
+	   << V2decayMatrix2 << endl;  
+
+    // Need branching ratio at least in here I would think --->
+    double decayWeight( real(meTimesV1V2denominators)
+		      / real(productionMatrix2*V1decayMatrix2*V2decayMatrix2));
+    if(decayWeight>1.)
+      cout << "VVHardGenerator::recalculateVertex decayWeight > 1., decayWeight = "
+	   << decayWeight << endl;
+    if(decayWeight<0.)
+      cout << "VVHardGenerator::recalculateVertex decayWeight < 0., decayWeight = "
+	   << decayWeight << endl;
+    if(UseRandom::rnd()<decayWeight) vetoed = false;
+    else vetoed = true;
   }
 
+  return;
+
+}
+
+Energy2 VVHardGenerator::triangleFn(Energy2 m12,Energy2 m22, Energy2 m32) {
+  Energy4 lambda2(m12*m12+m22*m22+m32*m32-2.*m12*m22-2.*m12*m32-2.*m22*m32);
+  if(lambda2>=ZERO) {
+    return sqrt(lambda2);
+  } else {
+    generator()->log() 
+      << "VVHardGenerator::triangleFn "
+      << "kinematic instability, imaginary triangle function\n";
+    return -999999.*GeV2;
   }
 }

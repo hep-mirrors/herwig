@@ -557,22 +557,81 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
     // find parent tree and particle
     ShowerTreePtr ptree=ShowerTreePtr(this);
     ShowerParticlePtr newparent=_parent->_treelinks[ptree].second;
+
+    // If the original momenta are different to the progenitor
+    // or copy values we choose to orient the decay products
+    // such that they have that of original().
+    vector<ShowerProgenitorPtr> treeProgenitors;
+    Lorentz5Momentum outgoingOriginal;
+    for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	  cht=_outgoingLines.begin();cht!=_outgoingLines.end();++cht) {
+      treeProgenitors.push_back(cht->first);
+      outgoingOriginal += cht->first->original()->momentum();
+    }
+    outgoingOriginal.rescaleMass();
+    double epsilon(0.01);
+    bool different(false);
+    for(unsigned int ix=0;ix<treeProgenitors.size();ix++) {
+      Lorentz5Momentum original(treeProgenitors[ix]->original()->momentum());
+      Lorentz5Momentum progenitor(treeProgenitors[ix]->progenitor()->momentum());
+      if(abs(original.angle(progenitor))>epsilon||
+	 abs((original-progenitor).e())/original.e()>epsilon)
+	different = true;
+    }
+    double originalTheta0,originalPhi0,originalPhi1;
+    if(different) {
+      // Work out the orientation of the (first) decay product(S) in the
+      // rest frame of the original().
+      LorentzRotation boostToORF(outgoingOriginal.findBoostToCM(),
+				 outgoingOriginal.e()/outgoingOriginal.mass());
+      originalTheta0=(boostToORF*treeProgenitors[0]->original()->momentum()).theta();
+      originalPhi0=(boostToORF*treeProgenitors[0]->original()->momentum()).phi();
+      boostToORF.rotateZ(-originalPhi0);
+      boostToORF.rotateY(-originalTheta0);
+      originalPhi1=(boostToORF*treeProgenitors[1]->original()->momentum()).phi();
+    }
+
     // workout the lorentz boost
     Lorentz5Momentum ptemp(_incomingLines.begin()->first->progenitor()->momentum());
     LorentzRotation boost(ptemp.findBoostToCM(),ptemp.e()/ptemp.mass());
+    LorentzRotation boost2 = boost;
+    if(different) {
+      boost.rotateZ(-(boost*treeProgenitors[0]->progenitor()->momentum()).phi());
+      boost.rotateY(-(boost*treeProgenitors[0]->progenitor()->momentum()).theta());
+      boost.rotateZ(-(boost*treeProgenitors[1]->progenitor()->momentum()).phi());
+      boost.rotateZ( originalPhi1);
+      boost.rotateY( originalTheta0);
+      boost.rotateZ( originalPhi0);
+    }
+    // So whether the progenitor and original momenta are in
+    // agreement or not, the orientation of the decay products 
+    // in the rest frame of newparent should always be the same
+    // as the original()'s in their rest frame. 
     boost.boost(newparent->momentum().boostVector(),
 		newparent->momentum().e()/newparent->mass());
     // now boost all the particles
     map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
     for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
       cit->first->progenitor()->deepTransform(boost);
+      if(!different) {
       cit->first->original()->deepTransform(boost);
+      } else {
+	Lorentz5Momentum holder(cit->first->original()->momentum());
+	cit->first->original()->deepTransform(boost);
+	cit->first->original()->setMomentum(holder);
+      }
       cit->first->copy()->deepTransform(boost);
     }
     map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
     for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
       cjt->first->progenitor()->deepTransform(boost);
+      if(!different) {
       cjt->first->original()->deepTransform(boost);
+      } else {
+	Lorentz5Momentum holder(cjt->first->original()->momentum());
+	cjt->first->original()->deepTransform(boost);
+	cjt->first->original()->setMomentum(holder);
+      }
       cjt->first->copy()->deepTransform(boost);
     }
   }

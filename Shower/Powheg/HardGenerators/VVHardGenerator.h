@@ -326,8 +326,8 @@ private:
    *  Pointers to the Shower particle objects for the partons
    */
   PPtr gluon_;
-  PPtr V1_;
-  PPtr V2_;
+  ShowerParticlePtr V1_;
+  ShowerParticlePtr V2_;
   PPtr emitted_;
   PPtr spacelikeSon_;
   vector<PPtr> children_;
@@ -401,9 +401,25 @@ private:
   mutable ProductionMatrixElement gqb_hel_amps_;
 
   /**
-   * A matrix element to hold information on the q + qbar -> V1 + V2 process
+   * A matrix to hold the home-grown production matrix element
    */
-  mutable ProductionMatrixElement lo_hel_amps_;
+  mutable Complex productionMatrix_[3][3][3][3];
+
+  /**
+   * The maximum weight for performing the reorientation of V1 and V2 decays
+   */
+  double maxWeight_;
+
+  /**
+   * Member which selects a two body decay mode for each vector
+   * boson and distributes decay products isotropically
+   */
+  bool isotropicDecayer();
+
+  /**
+   * The triangle function lambda(x,y,z)=sqrt(x^2+y^2+z^2-2*x*y-2*y*z-2*x*z)
+   */
+  Energy2 triangleFn(Energy2,Energy2,Energy2);
 
 };
 

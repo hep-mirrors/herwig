@@ -141,6 +141,10 @@ private:
   Histogram _ptJet1;
   Histogram _ptJet2;
   Histogram _ptJet3;
+  Histogram _ptJet0_Cut;
+  Histogram _ptJet1_Cut;
+  Histogram _ptJet2_Cut;
+  Histogram _ptJet3_Cut;
 
   /**
    *   (Pseudo)rapidity of jets 0, 1, 2  & 3
@@ -149,6 +153,10 @@ private:
   Histogram _etaJet1;
   Histogram _etaJet2;
   Histogram _etaJet3;
+  Histogram _etaJet0_Cut;
+  Histogram _etaJet1_Cut;
+  Histogram _etaJet2_Cut;
+  Histogram _etaJet3_Cut;
 
   /**
    *   Delta R between jets 0 & 1, 1 & 2, 2 & 3
@@ -156,16 +164,21 @@ private:
   Histogram _delta01;
   Histogram _delta12;
   Histogram _delta23;
+  Histogram _delta01_Cut;
+  Histogram _delta12_Cut;
+  Histogram _delta23_Cut;
 
   /**
    *   Scale pT sum of all jets
    */
   Histogram _htJets;
+  Histogram _htJets_Cut;
 
   /**
    *   Scalar pT sum of all jets and the Higgs
    */
   Histogram _htJetsPlusHiggs;
+  Histogram _htJetsPlusHiggs_Cut;
 
   /**
    *   Jet rates.
@@ -174,6 +187,11 @@ private:
   Histogram _y12;
   Histogram _y23;
   Histogram _y34;
+
+  /**
+   *   Plot for Carlo.
+   */
+  Histogram _nJets_carlo;
 
 public:
     

@@ -18,23 +18,34 @@
 using namespace Herwig;
 
 InclHiggsAnalysis::InclHiggsAnalysis() :
-  _nJets_gt_20(-0.5,5.5,6),
+  _nJets_gt_20(-0.5,10.5,11),
 
-  _ptHiggsHigh(0.,250.,25), _ptHiggsLow(0., 50.,25),
+  _ptHiggsHigh(0.,400.,40), _ptHiggsLow(0., 50.,25),
 
   _YHiggs(-5.25,5.25,21) ,
 
-  _ptJet0(0.,250.,25)  , _ptJet1(0.,150.,15),
-  _ptJet2(0.,100.,10)  , _ptJet3(0.,100.,10),
+  _ptJet0(0.,250.,25)  , _ptJet1(0.,250.,25),
+  _ptJet2(0.,250.,25)  , _ptJet3(0.,250.,25),
+  _ptJet0_Cut(0.,250.,25)  , _ptJet1_Cut(0.,250.,25),
+  _ptJet2_Cut(0.,250.,25)  , _ptJet3_Cut(0.,250.,25),
 
-  _etaJet0(-5.25,5.25,21), _etaJet1(-5.25,5.25,20),
-  _etaJet2(-5.25,5.25,21), _etaJet3(-5.25,5.25,20),
+  _etaJet0(-5.25,5.25,21), _etaJet1(-5.25,5.25,21),
+  _etaJet2(-5.25,5.25,21), _etaJet3(-5.25,5.25,21),
+  _etaJet0_Cut(-5.25,5.25,21), _etaJet1_Cut(-5.25,5.25,21),
+  _etaJet2_Cut(-5.25,5.25,21), _etaJet3_Cut(-5.25,5.25,21),
 
-  _delta01(0.,10.,50)   , _delta12(0.,10.,50), _delta23(0.,10.,50),
+  _delta01(0.,10.,50)   , _delta12(0.,10.,50)    , _delta23(0.,10.,50)    ,
+  _delta01_Cut(0.,10.,50) , _delta12_Cut(0.,10.,50), _delta23_Cut(0.,10.,50),
 
-  _htJets(0.,500.,50)  , _htJetsPlusHiggs(0.,500.,50),
+  _htJets(0.,500.,50)  ,
+  _htJets_Cut(0.,500.,50),
+  _htJetsPlusHiggs(0.,500.,50),
+  _htJetsPlusHiggs_Cut(0.,500.,50),
+
+  _nJets_carlo(-0.5,10.5,11),
 
   _y01(-6.,6.,50), _y12(-6.,6.,50), _y23(-6.,6.,50), _y34(-6.,6.,50)
+
 {}
 
 void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -93,18 +104,29 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
   // How many jets were found?
   unsigned int nJets(inclusiveJets.size());
 
-  // Jet multiplicity for jets with pT > 20 GeV:
+  // Boolean vector to indicate if all jets where within pT>20 and |eta|<4.5
+  vector<fastjet::PseudoJet> inclusiveJetsPassed;
+
+  // Jet multiplicity for jets with pT > 20 GeV |eta|<4.5:
   unsigned int nJets_gt_20(0);
   for(unsigned int ix=0;ix<nJets;ix++) 
-    if(inclusiveJets[ix].perp()>20.&&fabs(inclusiveJets[ix].eta())<4.5) nJets_gt_20++;
-  _nJets_gt_20.addWeighted(nJets_gt_20+0.5,1.);
+    if(inclusiveJets[ix].perp()>20.&&fabs(inclusiveJets[ix].eta())<4.5) {
+      nJets_gt_20++; 
+      inclusiveJetsPassed.push_back(inclusiveJets[ix]);
+    }
+  _nJets_gt_20.addWeighted(nJets_gt_20+0.001,1.);
+
+  // Jet multiplicity for carlo:
+  unsigned int nJets_carlo(0);
+  for(unsigned int ix=0;ix<nJets;ix++) if(inclusiveJets[ix].perp()>20.) nJets_carlo++; 
+  _nJets_carlo.addWeighted(nJets_carlo+0.5,1.);
 
   // Higgs pT spectrum in the high and low pT ranges:
   Energy ptHiggs(theHiggs->momentum().perp());
   _ptHiggsHigh.addWeighted(ptHiggs/GeV,1.);
   _ptHiggsLow.addWeighted(ptHiggs/GeV,1.);
 
-  // Higgs pseudorapidity:
+  // Higgs rapidity:
   double YHiggs(theHiggs->momentum().rapidity());
   _YHiggs.addWeighted(YHiggs,1.);
 
@@ -115,6 +137,12 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
     double etaJet0(inclusiveJets[0].eta());
     _etaJet0.addWeighted(etaJet0,1.);
   }
+  if(nJets_gt_20>0) {
+    double ptJet0(inclusiveJetsPassed[0].perp());
+    _ptJet0_Cut.addWeighted(ptJet0,1.);
+    double etaJet0(inclusiveJetsPassed[0].eta());
+    _etaJet0_Cut.addWeighted(etaJet0,1.);
+  }
 
   // 2nd hardest jet pT and pseudorapidity, 
   // also DeltaR between 1st and 2nd hardest jets. 
@@ -123,9 +151,22 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
     _ptJet1.addWeighted(ptJet1,1.);
     double etaJet1(inclusiveJets[1].eta());
     _etaJet1.addWeighted(etaJet1,1.);
+    double deltaphi01(abs(inclusiveJets[0].phi()-inclusiveJets[1].phi()));
+    if(deltaphi01 > Constants::pi) deltaphi01 = 2.*Constants::pi - deltaphi01;
     double delta01 = sqrt( sqr(inclusiveJets[0].eta()-inclusiveJets[1].eta())
-			  +sqr(inclusiveJets[0].phi()-inclusiveJets[1].phi()) );
+			  +sqr(deltaphi01) );
     _delta01.addWeighted(delta01,1.);
+  }
+  if(nJets_gt_20>1) {
+    double ptJet1(inclusiveJetsPassed[1].perp());
+    _ptJet1_Cut.addWeighted(ptJet1,1.);
+    double etaJet1(inclusiveJetsPassed[1].eta());
+    _etaJet1_Cut.addWeighted(etaJet1,1.);
+    double deltaphi01(abs(inclusiveJetsPassed[0].phi()-inclusiveJetsPassed[1].phi()));
+    if(deltaphi01 > Constants::pi) deltaphi01 = 2.*Constants::pi - deltaphi01;
+    double delta01 = sqrt( sqr(inclusiveJetsPassed[0].eta()-inclusiveJetsPassed[1].eta())
+			  +sqr(deltaphi01) );
+    _delta01_Cut.addWeighted(delta01,1.);
   }
 
   // 3rd hardest jet pT and pseudorapidity, 
@@ -135,9 +176,22 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
     _ptJet2.addWeighted(ptJet2,1.);
     double etaJet2(inclusiveJets[2].eta());
     _etaJet2.addWeighted(etaJet2,1.);
+    double deltaphi12(abs(inclusiveJets[1].phi()-inclusiveJets[2].phi()));
+    if(deltaphi12 > Constants::pi) deltaphi12 = 2*Constants::pi - deltaphi12;
     double delta12 = sqrt( sqr(inclusiveJets[1].eta()-inclusiveJets[2].eta())
-			  +sqr(inclusiveJets[1].phi()-inclusiveJets[2].phi()) );
+			  +sqr(deltaphi12) );
     _delta12.addWeighted(delta12,1.);
+  }
+  if(nJets_gt_20>2) {
+    double ptJet2(inclusiveJetsPassed[2].perp());
+    _ptJet2_Cut.addWeighted(ptJet2,1.);
+    double etaJet2(inclusiveJetsPassed[2].eta());
+    _etaJet2_Cut.addWeighted(etaJet2,1.);
+    double deltaphi12(abs(inclusiveJetsPassed[1].phi()-inclusiveJetsPassed[2].phi()));
+    if(deltaphi12 > Constants::pi) deltaphi12 = 2*Constants::pi - deltaphi12;
+    double delta12 = sqrt( sqr(inclusiveJetsPassed[1].eta()-inclusiveJetsPassed[2].eta())
+			  +sqr(deltaphi12) );
+    _delta12_Cut.addWeighted(delta12,1.);
   }
 
   // 4th hardest jet pT and pseudorapidity, 
@@ -147,9 +201,22 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
     _ptJet3.addWeighted(ptJet3,1.);
     double etaJet3(inclusiveJets[3].eta());
     _etaJet3.addWeighted(etaJet3,1.);
+    double deltaphi23(abs(inclusiveJets[2].phi()-inclusiveJets[3].phi()));
+    if(deltaphi23 > Constants::pi) deltaphi23 = 2*Constants::pi - deltaphi23;
     double delta23 = sqrt( sqr(inclusiveJets[2].eta()-inclusiveJets[3].eta())
-			  +sqr(inclusiveJets[2].phi()-inclusiveJets[3].phi()) );
+			  +sqr(deltaphi23) );
     _delta23.addWeighted(delta23,1.);
+  }
+  if(nJets_gt_20>3) {
+    double ptJet3(inclusiveJetsPassed[3].perp());
+    _ptJet3_Cut.addWeighted(ptJet3,1.);
+    double etaJet3(inclusiveJetsPassed[3].eta());
+    _etaJet3_Cut.addWeighted(etaJet3,1.);
+    double deltaphi23(abs(inclusiveJetsPassed[2].phi()-inclusiveJetsPassed[3].phi()));
+    if(deltaphi23 > Constants::pi) deltaphi23 = 2*Constants::pi - deltaphi23;
+    double delta23 = sqrt( sqr(inclusiveJetsPassed[2].eta()-inclusiveJetsPassed[3].eta())
+			  +sqr(deltaphi23) );
+    _delta23_Cut.addWeighted(delta23,1.);
   }
 
   // Scalar pT sum of all jets:
@@ -157,8 +224,13 @@ void InclHiggsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
   for(unsigned int ix=0;ix<nJets;ix++) htJets += inclusiveJets[ix].perp();
   _htJets.addWeighted(htJets,1.);
 
+  double htJetsPassed(0.);
+  for(unsigned int ix=0;ix<nJets_gt_20;ix++) htJetsPassed += inclusiveJetsPassed[ix].perp();
+  _htJets_Cut.addWeighted(htJetsPassed,1.);
+
   // Scalar pT sum of all jets plus the pT of the Higgs:
   _htJetsPlusHiggs.addWeighted(htJets+ptHiggs/GeV,1.);
+  _htJetsPlusHiggs_Cut.addWeighted(htJetsPassed+ptHiggs/GeV,1.);
 
 //   _y01.addWeighted(,1.);
 //   _y12.addWeighted(,1.);
@@ -195,8 +267,13 @@ void InclHiggsAnalysis::dofinish() {
 
   ofstream topdrawFile;
   string topdrawFilename 
-    = generator()->filename()+string("_")+name()+string("_mcatnlo.top");
+    = generator()->filename()+string("_")+name()+string(".top");
   topdrawFile.open(topdrawFilename.c_str());
+
+  ofstream topdrawFile_Cut;
+  string topdrawFilename_Cut 
+    = generator()->filename()+string("_")+name()+string("_Cut.top");
+  topdrawFile_Cut.open(topdrawFilename_Cut.c_str());
 
   _nJets_gt_20.topdrawOutput(topdrawFile,Frame,"RED","No.Jets pT>20 |eta|<4.5");
   _ptHiggsHigh.topdrawOutput(topdrawFile,Frame,"RED","pT Higgs");
@@ -285,5 +362,86 @@ void InclHiggsAnalysis::dofinish() {
 //   _y34.topdrawOutput(topdrawFile,Frame,"RED","y34 (fb)");
 
   topdrawFile.close();
+
+  _nJets_gt_20.topdrawOutput(topdrawFile_Cut,Frame,"RED","No.Jets pT>20 |eta|<4.5");
+  _ptHiggsHigh.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT Higgs");
+  _ptHiggsLow.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT Higgs");
+  _YHiggs.topdrawOutput(topdrawFile_Cut,Frame,"RED","Y Higgs");
+  _ptJet0.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 1st Jet");
+  _ptJet1.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 2nd Jet");
+  _ptJet2.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 3rd Jet");
+  _ptJet3.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 4th Jet");
+  _etaJet0.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 1st Jet");
+  _etaJet1.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 2nd Jet");
+  _etaJet2.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 3rd Jet");
+  _etaJet3.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 4th Jet");
+  _delta01.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 01");
+  _delta12.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 12");
+  _delta23.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 23");
+  _htJets.topdrawOutput(topdrawFile_Cut,Frame,"RED","HT Jets");
+  _htJetsPlusHiggs.topdrawOutput(topdrawFile_Cut,Frame,"RED","HT Jets plus Higgs");
+  _nJets_carlo.topdrawOutput(topdrawFile_Cut,Frame,"RED","No.Jets pT>20");
+//   _y01.topdrawOutput(topdrawFile_Cut,Frame,"RED","y01");
+//   _y12.topdrawOutput(topdrawFile_Cut,Frame,"RED","y12");
+//   _y23.topdrawOutput(topdrawFile_Cut,Frame,"RED","y23");
+//   _y34.topdrawOutput(topdrawFile_Cut,Frame,"RED","y34");
+
+  _nJets_gt_20.normaliseToCrossSection();
+  _nJets_gt_20.prefactor(_nJets_gt_20.prefactor()*1.e6);
+  _nJets_gt_20.topdrawOutput(topdrawFile_Cut,Frame,"RED","No.Jets pT>20 |eta|<4.5 (fb)");
+  _ptHiggsHigh.normaliseToCrossSection();
+  _ptHiggsHigh.prefactor(_ptHiggsHigh.prefactor()*1.e6);
+  _ptHiggsHigh.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT Higgs (fb)");
+  _ptHiggsLow.normaliseToCrossSection();
+  _ptHiggsLow.prefactor(_ptHiggsLow.prefactor()*1.e6);
+  _ptHiggsLow.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT Higgs (fb)");
+  _YHiggs.normaliseToCrossSection();
+  _YHiggs.prefactor(_YHiggs.prefactor()*1.e6);
+  _YHiggs.topdrawOutput(topdrawFile_Cut,Frame,"RED","Y Higgs (fb)");
+  _ptJet0_Cut.normaliseToCrossSection();
+  _ptJet0_Cut.prefactor(_ptJet0.prefactor()*1.e6);
+  _ptJet0_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 1st Jet (fb)");
+  _ptJet1_Cut.normaliseToCrossSection();
+  _ptJet1_Cut.prefactor(_ptJet1.prefactor()*1.e6);
+  _ptJet1_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 2nd Jet (fb)");
+  _ptJet2_Cut.normaliseToCrossSection();
+  _ptJet2_Cut.prefactor(_ptJet2.prefactor()*1.e6);
+  _ptJet2_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 3rd Jet (fb)");
+  _ptJet3_Cut.normaliseToCrossSection();
+  _ptJet3_Cut.prefactor(_ptJet3.prefactor()*1.e6);
+  _ptJet3_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","pT 4th Jet (fb)");
+  _etaJet0_Cut.normaliseToCrossSection();
+  _etaJet0_Cut.prefactor(_etaJet0.prefactor()*1.e6);
+  _etaJet0_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 1st Jet (fb)");
+  _etaJet1_Cut.normaliseToCrossSection();
+  _etaJet1_Cut.prefactor(_etaJet1.prefactor()*1.e6);
+  _etaJet1_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 2nd Jet (fb)");
+  _etaJet2_Cut.normaliseToCrossSection();
+  _etaJet2_Cut.prefactor(_etaJet2.prefactor()*1.e6);
+  _etaJet2_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 3rd Jet (fb)");
+  _etaJet3_Cut.normaliseToCrossSection();
+  _etaJet3_Cut.prefactor(_etaJet3.prefactor()*1.e6);
+  _etaJet3_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","eta 4th Jet (fb)");
+  _delta01_Cut.normaliseToCrossSection();
+  _delta01_Cut.prefactor(_delta01.prefactor()*1.e6);
+  _delta01_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 01 (fb)");
+  _delta12_Cut.normaliseToCrossSection();
+  _delta12_Cut.prefactor(_delta12.prefactor()*1.e6);
+  _delta12_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 12 (fb)");
+  _delta23_Cut.normaliseToCrossSection();
+  _delta23_Cut.prefactor(_delta23.prefactor()*1.e6);
+  _delta23_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","Delta 23 (fb)");
+  _htJets_Cut.normaliseToCrossSection();
+  _htJets_Cut.prefactor(_htJets.prefactor()*1.e6);
+  _htJets_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","HT Jets (fb)");
+  _htJetsPlusHiggs_Cut.normaliseToCrossSection();
+  _htJetsPlusHiggs_Cut.prefactor(_htJetsPlusHiggs.prefactor()*1.e6);
+  _htJetsPlusHiggs_Cut.topdrawOutput(topdrawFile_Cut,Frame,"RED","HT Jets plus Higgs (fb)");
+  _nJets_carlo.normaliseToCrossSection();
+  _nJets_carlo.prefactor(_nJets_carlo.prefactor()*1.e6);
+  _nJets_carlo.topdrawOutput(topdrawFile_Cut,Frame,"RED","No.Jets pT>20");
+
+  topdrawFile_Cut.close();
+
 }
 

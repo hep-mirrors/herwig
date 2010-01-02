@@ -92,9 +92,10 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
 
 HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
 			     tHardBranchingPtr parent,Status status) 
-  : _particle(particle), _p(particle->momentum()),
-    _shower(particle->momentum()),
-    _status(status), _parent(parent), _sudakov(sudakov)
+  : _particle(particle), _original(), _p(particle->momentum()), _n(), _qt(),
+    _shower(particle->momentum()), _pt(ZERO), _x_frac(0.),
+    _status(status), _scale(ZERO), _z(0.),_phi(0.), _parent(parent),
+    _sudakov(sudakov)
 {}
 
 void HardBranching::fixColours() {

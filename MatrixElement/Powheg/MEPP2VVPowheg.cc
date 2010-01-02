@@ -311,40 +311,13 @@ void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
   // bornVVKinematics object and all of the realVVKinematics
   // objects needed for the NLO weight.
 
-  // First a few sanity checks which can be removed when the code is done.
-  // Already confirmed mePartonData()[0] is a quark, and mePartonData()[1] 
-  // is an antiquark.
-  bool alarm(false);
+  // Check if the W- is first in W+W- production. Already confirmed 
+  // mePartonData()[0] is a quark, and mePartonData()[1] is an antiquark.
+  // We assume mePartonData[2] and mePartonData[3] are, respectively,
+  // W+/- Z, W+/- W-/+, or Z Z.
   bool wminus_first(false);
-  switch(MEPP2VV::process()) {
-  case 1: // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
-    if(abs(mePartonData()[2]->id())!=24||abs(mePartonData()[3]->id())!=24) 
-      alarm=true;
-    if(mePartonData()[2]->id()<0) wminus_first=true;
-    break;
-  case 2: // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) 
-    // (MCFM: 72+77 [nproc])
-    if(abs(mePartonData()[2]->id())!=24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 3: // Z(mu-,mu+) Z(e-,e+) (MCFM: 86 [nproc])
-    if(mePartonData()[2]->id()!= 23||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 4: // W+(mu+,nu_mu) Z(nu_e,nu_ebar) (MCFM: 72 [nproc])
-    if(mePartonData()[2]->id()!= 24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 5: // W-(mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 77 [nproc])
-    if(mePartonData()[2]->id()!=-24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  }
-  if(alarm) { 
-    cout << "Error in get_born_variables: unexpected final state labelling.\n";
-    cout << "mePartonData()[2] = " << mePartonData()[2]->PDGName() << endl; 
-    cout << "mePartonData()[3] = " << mePartonData()[3]->PDGName() << endl; 
-  }
+  if((mePartonData()[2]->id()==-24)&&(mePartonData()[3]->id()==24)) 
+    wminus_first=true;
 
   // Now get all data on the LO process needed for the NLO computation:
 
@@ -405,7 +378,7 @@ void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
   if(MEPP2VV::process()==1&&wminus_first) swap(meMomenta()[2],meMomenta()[3]);
 
   // Check the Born kinematics objects is internally consistent:
-  B_.sanityCheck();
+  //  B_.sanityCheck();
 
   // If we are going beyond leading order then lets calculate all of 
   // the necessary real emission kinematics.
@@ -435,12 +408,12 @@ void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
     k2r_perp2_lab_ = (boostFromYisZero*boostFrompTisZero*yzRotation*(H_.k2r())).perp2();
 
     // Check all the real kinematics objects are internally consistent:
-    S_.sanityCheck();
-    SCp_.sanityCheck();
-    SCm_.sanityCheck();
-    Cp_.sanityCheck();
-    Cm_.sanityCheck();
-    H_.sanityCheck();
+    //    S_.sanityCheck();
+    //    SCp_.sanityCheck();
+    //    SCm_.sanityCheck();
+    //    Cp_.sanityCheck();
+    //    Cm_.sanityCheck();
+    //    H_.sanityCheck();
   }
 
   return;
@@ -544,62 +517,10 @@ double MEPP2VVPowheg::NLOweight() const {
 
   // Get the leading order matrix element (this is necessary!)
   M_Born_      = M_Born_WZ(B_);
-  // Get the regular part of the virtual correction (only needed for sanityCheck()!)
-  M_V_regular_ = M_V_regular(S_);
-  // Get the q + qbar real emission matrix element (only needed for sanityCheck()!)
-  t_u_M_R_qqb_ = t_u_M_R_qqb(H_);
-//   Energy2 t_u_M_R_qqb_WW_val = t_u_M_R_qqb_WW(H_);
-//   Energy2 t_u_M_R_qqb_ZZ_val = t_u_M_R_qqb_ZZ(H_);
-//   t_u_M_R_qqb_hel_amp_       = t_u_M_R_qqb_hel_amp(H_);
-//   // Get the q + g real emission matrix element (only for checking the helicity amps!)
-//   t_u_M_R_qg_                = t_u_M_R_qg(H_);
-//   t_u_M_R_qg_hel_amp_        = t_u_M_R_qg_hel_amp(H_);
-//   // Get the q + g real emission matrix element (only for checking the helicity amps!)
-//   t_u_M_R_gqb_               = t_u_M_R_gqb(H_);
-//   t_u_M_R_gqb_hel_amp_       = t_u_M_R_gqb_hel_amp(H_);
-
-//   cout << "\n\n\n";
-//     cout << ab_->PDGName() << ", " 
-// 	 << bb_->PDGName() << ", " 
-//          << mePartonData()[2]->PDGName() << ", " 
-// 	 << mePartonData()[3]->PDGName() << endl; 
-//     cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
-//     cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
-//     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
-//     cout << "sb+tb+ub = " 
-// 	 << B_.sb()/GeV2 << " + " 
-// 	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
-//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
-//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
-//   cout << "WZ qqb = " << t_u_M_R_qqb_*UnitRemoval::InvE2 << endl;
-//   cout << "WZ qg  = " << t_u_M_R_qg_ *UnitRemoval::InvE2 << endl;
-//   cout << "WZ gqb = " << t_u_M_R_gqb_*UnitRemoval::InvE2 << endl;
-//   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
-//     cout << "WZ - WW (%)               = " 
-// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_WW_val)/t_u_M_R_qqb_ *100. 
-// 	 << endl;
-//     cout << "lo_me2_ - M_Born_WW   (%) = " 
-// 	 <<  lo_me2_-M_Born_WW(B_)                  << "  (" 
-// 	 << (lo_me2_-M_Born_WW(B_))/M_Born_WW(B_)*100.  << ")\n";
-//   }
-//   if(abs(mePartonData()[2]->id())==23&&abs(mePartonData()[3]->id())==23) {
-//     cout << "WZ - ZZ (%)              = " 
-// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_ZZ_val)/t_u_M_R_qqb_ *100. 
-// 	 << endl;
-//     cout << "lo_me2_ - M_Born_ZZ   (%) = " 
-// 	 <<  lo_me2_-M_Born_ZZ(B_)                      << "  (" 
-// 	 << (lo_me2_-M_Born_ZZ(B_))/M_Born_ZZ(B_)*100.  << ")\n";
-//   }
-//   cout << "WZ qqb  - hel_amp qqb (%) = " 
-//        << (t_u_M_R_qqb_ - t_u_M_R_qqb_hel_amp_)/t_u_M_R_qqb_ *100. 
-//        << endl;
-//   cout << "WZ qg   - hel_amp qg  (%) = " 
-//        << (t_u_M_R_qg_  - t_u_M_R_qg_hel_amp_ )/t_u_M_R_qg_  *100. 
-//        << endl;
-//   cout << "WZ gqb  - hel_amp gqb (%) = " 
-//        << (t_u_M_R_gqb_ - t_u_M_R_gqb_hel_amp_)/t_u_M_R_gqb_ *100. 
-//        << endl;
+  //  // Get the regular part of the virtual correction (only needed for sanityCheck()!)
+  //  M_V_regular_ = M_V_regular(S_);
+  //  // Get the q + qbar real emission matrix element (only needed for sanityCheck()!)
+  //  t_u_M_R_qqb_ = t_u_M_R_qqb(H_);
 
   // Calculate the integrand
   double wgt(0.);
@@ -636,40 +557,6 @@ double MEPP2VVPowheg::NLOweight() const {
   wgt = 1.+(wqqb+wgqb+wqg);
   // If restricting to qg, gqb channels then subtract the LO contribution:
   if(channels_==2) wgt -= 1.;
-
-  // Debugging output:
-//   if(sanityCheck()) {
-//     //  sanityCheck();
-//     cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
-//     cout << ab_->PDGName() << ", " 
-// 	 << bb_->PDGName() << ", " 
-// 	 << mePartonData()[2]->PDGName() << ", " 
-// 	 << mePartonData()[3]->PDGName() << endl; 
-//     cout << "lo_me2_ - M_Born_ (%) = " 
-// 	 <<  lo_me2_-M_Born_                << "  (" 
-// 	 << (lo_me2_-M_Born_)/M_Born_*100.  << ")\n";
-//     cout << "lo_me2_, M_Born_, M_Born_WW    " << lo_me2_ << ", " << M_Born_   << ", " << M_Born_WW(B_) << endl;
-//     cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
-//     cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
-//     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
-//     cout << "sb+tb+ub = " 
-// 	 << B_.sb()/GeV2 << " + " 
-// 	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
-//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
-//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
-//     cout << "wqqbvirt   " << wqqbvirt   << endl;
-//     cout << "wqqbcollin " << wqqbcollin << endl;
-//     cout << "wqqbreal   " << wqqbreal   << endl;
-//     cout << "wqqb       " << wqqb       << endl;
-//     cout << "wqgcollin  " << wqgcollin  << endl;
-//     cout << "wqgreal    " << wqgreal    << endl;
-//     cout << "wqg        " << wqg        << endl;
-//     cout << "wgqbcollin " << wgqbcollin << endl;
-//     cout << "wgqbreal   " << wgqbreal   << endl;
-//     cout << "wgqb       " << wgqb       << endl;
-//     cout << "wgt        " << wgt        << endl;
-//   }
 
   if(isnan(wgt)||isinf(wgt)) {
     cout << "MEPP2VVPowheg:: NLO weight " 

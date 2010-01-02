@@ -229,6 +229,13 @@ public:
    */
   const set<tShowerParticlePtr> & forwardParticles() const { return _forward; }
 
+  /**
+   *  Map of particles in this Tree which are the initial particles in other
+   *  trees
+   */
+  const map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> > &
+  treelinks()  const {return _treelinks;}
+
 protected:
 
   /**
