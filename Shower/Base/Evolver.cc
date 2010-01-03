@@ -741,6 +741,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 
 void Evolver::showerDecay(ShowerTreePtr decay) {
   _decayme = HwDecayerBasePtr();
+  _hardme  = HwMEBasePtr();
   // find the decayer
   // try the normal way if possible
   tDMPtr dm = decay->incomingLines().begin()->first->original()   ->decayMode();
