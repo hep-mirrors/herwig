@@ -582,11 +582,6 @@ private:
   unsigned int _maxtry;
 
   /**
-   *  Option for the type of ME corrections to apply
-   */
-  unsigned int _hardType;
-
-  /**
    * Matrix element correction switch
    */
   unsigned int _meCorrMode; 

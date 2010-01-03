@@ -912,14 +912,14 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 
 vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
-  if(_hardType==1) hardestEmission();
+  if(_hardEmissionMode==1) hardestEmission();
   // set the initial colour partners
   setEvolutionPartners(hard,ShowerInteraction::QCD);
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   // generate hard me if needed
-  if(_hardType==0) hardMatrixElementCorrection(hard);
+  if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
   // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
@@ -933,7 +933,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
       cjt!=currentTree()->outgoingLines().end();++cjt)
     particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
-  if(_hardType==0 && _currenttree->hardMatrixElementCorrection()) {
+  if(_hardEmissionMode==0 && _currenttree->hardMatrixElementCorrection()) {
     setEvolutionPartners(hard,ShowerInteraction::QCD);
     _currenttree->resetShowerProducts();
   }
