@@ -8,7 +8,7 @@ plotLocation="http://projects.hepforge.org/herwig/private/images/peter/compariso
 wiki = open("wiki.info",'w') 
 wiki.write("= Comparision of Heriwg++ results =\n")
 # lepton-lepton processes
-wiki.write("= Lepton-Lepton =\n")
+wiki.write("=== Lepton-Lepton ===\n")
 wiki.write("|| Process || Cross Section/nb || Error/nb || Cross Section/nb || Error/nb || Fractional Difference sigma || Average Fractional Difference Distribution  || Topdraw || Postscript ||\n")
 # quarks
 compare.compareLEPQuarks(directory1,directory2,wiki,plotLocation)
@@ -20,12 +20,14 @@ compare.compareLEPVH(directory1,directory2,wiki,plotLocation)
 compare.compareLEPVV(directory1,directory2,wiki,plotLocation)
 # VBF
 compare.compareLEPVBF(directory1,directory2,wiki,plotLocation)
+# top decay
+compare.compareTopDecay(directory1,directory2,wiki,plotLocation)
 # charm event shapes
 compare.compareCharmShapes(directory1,directory2,wiki,plotLocation) 
 # LEP event shapes
 compare.compareLEPShapes(directory1,directory2,wiki,plotLocation) 
 # hadron-hadron processes at the LHC
-wiki.write("= LHC =\n")
+wiki.write("=== LHC ===\n")
 wiki.write("|| Process || Cross Section/nb || Error/nb || Cross Section/nb || Error/nb || Fractional Difference sigma || Average Fractional Difference Distribution  || Topdraw || Postscript ||\n")
 # compare W production
 compare.compareW(directory1,directory2,wiki,plotLocation)
@@ -94,14 +96,14 @@ compare.compareWHJetPowheg(directory1,directory2,wiki,plotLocation)
 # compare shower in ZH
 compare.compareZHJetPowheg(directory1,directory2,wiki,plotLocation)
 # DIS processes at HERA
-wiki.write("= DIS =\n")
+wiki.write("=== DIS ===\n")
 wiki.write("|| Process || Cross Section/nb || Error/nb || Cross Section/nb || Error/nb || Fractional Difference sigma || Average Fractional Difference Distribution  || Topdraw || Postscript ||\n")
 # neutral current
 compare.compareNeutralCurrent(directory1,directory2,wiki,plotLocation)
 # charged current
 compare.compareChargedCurrent(directory1,directory2,wiki,plotLocation)
 # photon initiated
-wiki.write("= Photon Initiated =\n")
+wiki.write("=== Photon Initiated ===\n")
 wiki.write("|| Process || Cross Section/nb || Error/nb || Cross Section/nb || Error/nb || Fractional Difference sigma || Average Fractional Difference Distribution  || Topdraw || Postscript ||\n")
 # fermion production
 compare.compareGammaFF(directory1,directory2,wiki,plotLocation)

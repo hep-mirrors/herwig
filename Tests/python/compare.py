@@ -300,7 +300,7 @@ def compareLEPShapes(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + oname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| Charm || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| LEP || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +oname 
     os.system(tdstring)
@@ -868,7 +868,7 @@ def compareGammaJet(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| Gamma Gamma || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| Gamma Jet || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1605,6 +1605,40 @@ def compareGammaP(directory1,directory2,wiki,plotLocation) :
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
     ws = "|| gamma hadron -> jets || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    wiki.write(ws)
+    tdstring = td_command + " " +fname 
+    os.system(tdstring)
+def compareTopDecay(directory1,directory2,wiki,plotLocation) :
+    # first compare the section sections
+    fname="LEP-TopDecay.out"
+    fname1=directory1 + fname
+    fname2=directory2 + fname
+    output = compareCrossSections(fname1,fname2)
+    # now compare the distributions
+    fname="LEP-TopDecay-TopDecay.top"
+    fname1=directory1 + fname
+    fname2=directory2 + fname
+    f1 = open(fname1)
+    f2 = open(fname2)
+    fo = open(fname,'w')
+    totalDegree = 0
+    totalChi = 0.
+    for i in range(1,2) :
+        h1 = histogram.readHistogram(f1,False)
+        h2 = histogram.readHistogram(f2,False)
+        logPlot = i==2 or i==4
+        h1.write(fo,True,"BLACK",True,False,False,logPlot)
+        h2.write(fo,False,"RED",True,False,False,logPlot)
+        out  = h1.writeDifference(h2,fo,True,"RED")
+        totalDegree += out[0]
+        totalChi += out[1]
+    fo.close()
+    f1.close()
+    f2.close()
+    op1 = plotLocation + "/" + fname
+    op2 = op1.replace(".top",".ps")
+    totalChi /= float(totalDegree)
+    ws = "|| t tbar || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)

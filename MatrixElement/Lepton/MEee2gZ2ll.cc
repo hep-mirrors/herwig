@@ -175,7 +175,7 @@ ProductionMatrixElement MEee2gZ2ll::HelicityME(vector<SpinorWaveFunction>    & f
   Complex diag1,diag2;
   // sum over helicities to get the matrix element
   unsigned int inhel1,inhel2,outhel1,outhel2;
-  double total[3]={0.,0.};
+  double total[3]={0.,0.,0.};
   for(inhel1=0;inhel1<2;++inhel1) {
     for(inhel2=0;inhel2<2;++inhel2) {
       // intermediate Z
