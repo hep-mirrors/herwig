@@ -161,8 +161,10 @@ set PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
 # neutral current
 create Herwig::MENeutralCurrentDIS MEDISNC
+set MEDISNC:Coupling /Herwig/Shower/AlphaQCD
 # charged current
 create Herwig::MEChargedCurrentDIS MEDISCC
+set MEDISCC:Coupling /Herwig/Shower/AlphaQCD
 
 ##########################################################
 # Gamma-Gamma matrix elements

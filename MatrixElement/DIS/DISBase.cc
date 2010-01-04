@@ -19,18 +19,24 @@
 #include <numeric>
 
 using namespace Herwig;
-
-DISBase::DISBase()  : _initial(6.), _final(3.),
-		      _procprob(0.35),
-		      _comptonint(0.), _bgfint(0.)
+ 
+DISBase::DISBase()  : initial_(6.), final_(3.),
+		      procProb_(0.35),
+		      comptonInt_(0.), bgfInt_(0.),
+		      comptonWeight_(50.), BGFWeight_(150.), 
+		      pTmin_(0.1*GeV) 
 {}
 
+DISBase::~DISBase() {}
+
 void DISBase::persistentOutput(PersistentOStream & os) const {
-  os << _comptonint << _bgfint << _procprob << _initial << _final;
+  os << comptonInt_ << bgfInt_ << procProb_ << initial_ << final_ << alpha_
+     << ounit(pTmin_,GeV) << comptonWeight_ << BGFWeight_ << gluon_;
 }
 
 void DISBase::persistentInput(PersistentIStream & is, int) {
-  is >> _comptonint >> _bgfint >> _procprob  >> _initial >> _final;
+  is >> comptonInt_ >> bgfInt_ >> procProb_  >> initial_ >> final_ >> alpha_
+     >> iunit(pTmin_,GeV) >> comptonWeight_ >> BGFWeight_ >> gluon_;
 }
 
 AbstractClassDescription<DISBase> DISBase::initDISBase;
@@ -47,29 +53,81 @@ void DISBase::Init() {
   static Parameter<DISBase,double> interfaceProcessProbability
     ("ProcessProbability",
      "The probabilty of the QCD compton process for the process selection",
-     &DISBase::_procprob, 0.3, 0.0, 1.,
+     &DISBase::procProb_, 0.3, 0.0, 1.,
      false, false, Interface::limited);
 
   static Reference<DISBase,ShowerAlpha> interfaceCoupling
     ("Coupling",
      "Pointer to the object to calculate the coupling for the correction",
-     &DISBase::_alpha, false, false, true, false, false);
+     &DISBase::alpha_, false, false, true, false, false);
   
+  static Parameter<DISBase,Energy> interfacepTMin
+    ("pTMin",
+     "The minimum pT",
+     &DISBase::pTmin_, GeV, 1.*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DISBase,double> interfaceComptonWeight
+    ("ComptonWeight",
+     "Weight for the overestimate ofthe compton channel",
+     &DISBase::comptonWeight_, 50.0, 0.0, 100.0,
+     false, false, Interface::limited);
+
+  static Parameter<DISBase,double> interfaceBGFWeight
+    ("BGFWeight",
+     "Weight for the overestimate of the BGF channel",
+     &DISBase::BGFWeight_, 100.0, 0.0, 1000.0,
+     false, false, Interface::limited);
 }
 
 void DISBase::doinit() {
   HwMEBase::doinit();
   // integrals of me over phase space
   double r5=sqrt(5.),darg((r5-1.)/(r5+1.)),ath(0.5*log((1.+1./r5)/(1.-1./r5)));
-  _comptonint = 2.*(-21./20.-6./(5.*r5)*ath+sqr(Constants::pi)/3.
+  comptonInt_ = 2.*(-21./20.-6./(5.*r5)*ath+sqr(Constants::pi)/3.
 		    -2.*Math::ReLi2(1.-darg)-2.*Math::ReLi2(1.-1./darg));
-  _bgfint = 121./9.-56./r5*ath;
+  bgfInt_ = 121./9.-56./r5*ath;
+  // extract the gluon ParticleData objects
+  gluon_ = getParticleData(ParticleID::g);
 }
 
-void DISBase::initializeMECorrection(ShowerTreePtr, double & initial,
+void DISBase::initializeMECorrection(ShowerTreePtr tree, double & initial,
 				     double & final) {
-  initial = _initial;
-  final   = _final;
+  initial = initial_;
+  final   = final_;
+  // incoming particles
+  tcPDPtr leptons[2];
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+    if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
+      partons_[0] = cit->first->progenitor()->dataPtr();
+      pq_[0] = cit->first->progenitor()->momentum();
+    }
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
+      leptons[0] = cit->first->progenitor()->dataPtr();
+      pl_[0] = cit->first->progenitor()->momentum();
+    }
+  }
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
+      partons_[1] = cit->first->progenitor()->dataPtr();
+      pq_[1] = cit->first->progenitor()->momentum();
+    }
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
+      leptons[1] = cit->first->progenitor()->dataPtr();
+      pl_[1] = cit->first->progenitor()->momentum();
+    }
+  }
+  // extract the born variables
+  q_ =pl_[0]-pl_[1];
+  q2_ = -q_.m2();
+  double  yB = (q_*pq_[0])/(pl_[0]*pq_[0]); 
+  l_ = 2./yB-1.;
+  // calculate the A coefficient for the correlations
+  acoeff_ = A(leptons[0],leptons[1],
+	      partons_[0],partons_[1],q2_);
 }
 
 void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
@@ -77,21 +135,20 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // find the incoming and outgoing quarks and leptons
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
-  tcBeamPtr beam;
   // incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
       hadron = cit->first->original()->parents()[0];
       quark [0] = cit->first->progenitor();
-      beam = cit->first->beam();
+      beam_ = cit->first->beam();
     }
     else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
       lepton[0] = cit->first->progenitor();
     }
   }
-  tcPDFPtr pdf=beam->pdf();
-  assert(beam&&pdf&&quark[0]&&lepton[0]);
+  pdf_ = beam_->pdf();
+  assert(beam_&&pdf_&&quark[0]&&lepton[0]);
   // outgoing particles
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
@@ -101,20 +158,10 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       lepton[1] = cit->first->progenitor();
   }
   assert(quark[1]&&lepton[1]);
-  // extract the born variables
-  Lorentz5Momentum q =lepton[0]->momentum()-lepton[1]->momentum();
-  _q2 = -q.m2();
-  double  xB = quark[0]->x();
-  double  yB = 
-    (                    q*quark[0]->momentum())/
-    (lepton[0]->momentum()*quark[0]->momentum()); 
-  _l = 2./yB-1.;
-  // calculate the A coefficient for the correlations
-  _acoeff = A(lepton[0]->dataPtr(),lepton[1]->dataPtr(),
-	      quark [0]->dataPtr(),quark [1]->dataPtr(),_q2);
+  xB_ = quark[0]->x();
   vector<double> azicoeff;
   // select the type of process
-  bool BGF = UseRandom::rnd()>_procprob;
+  bool BGF = UseRandom::rnd()>procProb_;
   double xp,zp,wgt,x1,x2,x3,xperp;
   tcPDPtr gluon = getParticleData(ParticleID::g);
   // generate a QCD compton process
@@ -122,36 +169,36 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     wgt = generateComptonPoint(xp,zp);
     if(xp<eps) return;
     // common pieces
-    Energy2 scale = _q2*((1.-xp)*(1-zp)*zp/xp+1.);
-    wgt *= 2./3./Constants::pi*_alpha->value(scale)/_procprob;
+    Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
+    wgt *= 2./3./Constants::pi*alpha_->value(scale)/procProb_;
     // PDF piece
-    wgt *= pdf->xfx(beam,quark[0]->dataPtr(),scale,xB/xp)/
-           pdf->xfx(beam,quark[0]->dataPtr(),_q2  ,xB);
+    wgt *= pdf_->xfx(beam_,quark[0]->dataPtr(),scale,xB_/xp)/
+           pdf_->xfx(beam_,quark[0]->dataPtr(),q2_  ,xB_);
     // other bits
     xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     x1 = -1./xp;
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = ComptonME(xp,x2,xperp,_acoeff,_l,true);
+    azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,true);
   }
   // generate a BGF process
   else {
     wgt = generateBGFPoint(xp,zp);
     if(xp<eps) return;
     // common pieces 
-    Energy2 scale = _q2*((1.-xp)*(1-zp)*zp/xp+1);
-    wgt *= 0.25/Constants::pi*_alpha->value(scale)/(1.-_procprob);
+    Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1);
+    wgt *= 0.25/Constants::pi*alpha_->value(scale)/(1.-procProb_);
     // PDF piece
-    wgt *= pdf->xfx(beam,gluon              ,scale,xB/xp)/
-           pdf->xfx(beam,quark[0]->dataPtr(),_q2  ,xB);
+    wgt *= pdf_->xfx(beam_,gluon              ,scale,xB_/xp)/
+           pdf_->xfx(beam_,quark[0]->dataPtr(),q2_  ,xB_);
     // other bits
     xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     x1 = -1./xp;
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = BGFME(xp,x2,x3,xperp,_acoeff,_l,true);
+    azicoeff = BGFME(xp,x2,x3,xperp,acoeff_,l_,true);
   }
   // compute the azimuthal average of the weight
   wgt *= (azicoeff[0]+0.5*azicoeff[2]);
@@ -172,7 +219,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
 				  << "::applyHardMatrixElementCorrection() to"
 				  << " generate phi" << Exception::eventerror;
   // compute the new incoming and outgoing momenta
-  Energy Q(sqrt(_q2));
+  Energy Q(sqrt(q2_));
   Lorentz5Momentum p1 = Lorentz5Momentum( 0.5*Q*xperp*cos(phi), 0.5*Q*xperp*sin(phi),
 					  -0.5*Q*x2,0.*GeV,0.*GeV);
   p1.rescaleEnergy();
@@ -184,14 +231,14 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   Lorentz5Momentum phadron =  hadron->momentum();
   phadron.setMass(0.*GeV);
   phadron.rescaleEnergy();
-  Lorentz5Momentum pcmf = phadron+0.5/xB*q;
+  Lorentz5Momentum pcmf = phadron+0.5/xB_*q_;
   pcmf.rescaleMass();
   LorentzRotation rot(-pcmf.boostVector());
   Lorentz5Momentum pbeam = rot*phadron;
   Axis axis(pbeam.vect().unit());
   double sinth(sqrt(1.-sqr(axis.z())));
   rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-  Lorentz5Momentum pl    = rot*lepton[0]->momentum();
+  Lorentz5Momentum pl    = rot*pl_[0];
   rot.rotateZ(-atan2(pl.y(),pl.x()));
   // we need the Lorentz transform back to the lab
   rot.invert();
@@ -246,7 +293,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1,false)));
       cit->first->progenitor(sp);
       tree->incomingLines()[cit->first]=sp;
-      sp->x(xB/xp);
+      sp->x(xB_/xp);
       cit->first->perturbative(xp>zp);
       if(xp<=zp) orig=cit->first->original();
     }
@@ -294,7 +341,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1,false)));
       cit->first->progenitor(sp);
       tree->incomingLines()[cit->first]=sp;
-      sp->x(xB/xp);
+      sp->x(xB_/xp);
       cit->first->perturbative(false);
       orig=cit->first->original();
     }
@@ -323,7 +370,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
 
 bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 				    ShowerParticlePtr parent, Branching br) {
-  bool veto = !UseRandom::rndbool(parent->isFinalState() ? 1./_final : 1./_initial);
+  bool veto = !UseRandom::rndbool(parent->isFinalState() ? 1./final_ : 1./initial_);
   // check if me correction should be applied
   long id[2]={initial->id(),parent->id()};
   if(id[0]!=id[1]||id[1]==ParticleID::g) return veto;
@@ -331,7 +378,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
   Energy pT=br.kinematics->pT();
   // check if hardest so far
   if(pT<initial->highestpT()) return veto;
-  double kappa(sqr(br.kinematics->scale())/_q2),z(br.kinematics->z());
+  double kappa(sqr(br.kinematics->scale())/q2_),z(br.kinematics->z());
   double zk((1.-z)*kappa);
   // final-state
   double wgt(0.);
@@ -339,8 +386,8 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double zp=z,xp=1./(1.+z*zk);
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x2 = 1.-(1.-zp)/xp;
-    vector<double> azicoeff = ComptonME(xp,x2,xperp,_acoeff,_l,false);
-    wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.+sqr(z))/_final;
+    vector<double> azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,false);
+    wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.+sqr(z))/final_;
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
       wstring << "Soft ME correction weight too large or "
@@ -359,16 +406,16 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
     // compton
     if(br.ids[0]!=ParticleID::g) {
-      vector<double> azicoeff = ComptonME(xp,x2,xperp,_acoeff,_l,false);
+      vector<double> azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,false);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp*(1.-z)/(1.-xp)/(1.+sqr(z))/
 	(1.-zp+xp-2.*xp*(1.-zp));
     }
     // BGF
     else {
-      vector<double> azicoeff = BGFME(xp,x2,x3,xperp,_acoeff,_l,true);
+      vector<double> azicoeff = BGFME(xp,x2,x3,xperp,acoeff_,l_,true);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.-zp+xp-2.*xp*(1.-zp))/(sqr(z)+sqr(1.-z));
     }
-    wgt /=_initial;
+    wgt /=initial_;
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
       wstring << "Soft ME correction weight too large or "
@@ -407,7 +454,7 @@ double DISBase::generateComptonPoint(double &xp, double & zp) {
 					 Exception::warning) );
   }
   while(wgt<UseRandom::rnd()*maxwgt);
-  return _comptonint;
+  return comptonInt_;
 }
 
 double DISBase::generateBGFPoint(double &xp, double & zp) {
@@ -429,7 +476,7 @@ double DISBase::generateBGFPoint(double &xp, double & zp) {
 					 Exception::warning) );
   }
   while(wgt<UseRandom::rnd()*maxwgt);
-  return _bgfint;
+  return bgfInt_;
 //   static const double maxwgt = 2.,npow=0.34,ac=1.0;
 //   double wgt;
 //   do {
@@ -467,7 +514,7 @@ vector<double> DISBase::ComptonME(double xp, double x2, double xperp,
   double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
   double root = sqrt(sqr(l)-1.);
   output[0] = sqr(cos2)-A*cos2*l+sqr(l);
-  output[1] = A*cos2*root*sin2-2.*l*root*sin2;
+  output[1] = -A*cos2*root*sin2-2.*l*root*sin2;
   output[2] = sqr(root)*sqr(sin2);
   double lo(1+A*l+sqr(l));
   double denom = norm ? 1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)) : 1.;
@@ -488,14 +535,455 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
   double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
   double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
   double root = sqrt(sqr(l)-1.);
-  output[0] = fact3*(sqr(cos3)-A*cos3*l+sqr(l))+
-    fact2*(sqr(cos2)-A*cos2*l+sqr(l));
-  output[1] =-fact3*(A*cos3*root*sin3-2.*l*root*sin3)+
-    fact2*(A*cos2*root*sin2-2.*l*root*sin2);
-  output[2] = fact3*(sqr(root)*sqr(sin3))+
-    fact2*(sqr(root)*sqr(sin2));
+  output[0] = fact2*(sqr(cos2)+A*cos2*l+sqr(l)) +
+              fact3*(sqr(cos3)-A*cos3*l+sqr(l));
+  output[1] = - fact2*(A*cos2*root*sin2+2.*l*root*sin2)
+              - fact3*(A*cos3*root*sin3-2.*l*root*sin3);
+  output[2] = fact3*(sqr(root)*sqr(sin3)) +
+              fact2*(sqr(root)*sqr(sin2));
   double lo(1+A*l+sqr(l));
   double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*lo : lo;
   for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;
   return output;
+}
+
+HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
+  ShowerParticlePtr quark[2],lepton[2];
+  PPtr hadron;
+  // incoming particles
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+    if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
+      hadron = cit->first->original()->parents()[0];
+      quark [0] = cit->first->progenitor();
+      beam_ = cit->first->beam();
+    }
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
+      lepton[0] = cit->first->progenitor();
+    }
+  }
+  pdf_=beam_->pdf();
+  assert(beam_&&pdf_&&quark[0]&&lepton[0]);
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    if(QuarkMatcher::Check(cit->first->progenitor()->data()))
+      quark [1] = cit->first->progenitor();
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data()))
+      lepton[1] = cit->first->progenitor();
+  }
+  assert(quark[1]&&lepton[1]);
+  // Particle data objects
+  for(unsigned int ix=0;ix<2;++ix) partons_[ix] = quark[ix]->dataPtr();
+  // extract the born variables
+  q_ =lepton[0]->momentum()-lepton[1]->momentum();
+  q2_ = -q_.m2();
+  xB_ = quark[0]->x();
+  double  yB = 
+    (                   q_*quark[0]->momentum())/
+    (lepton[0]->momentum()*quark[0]->momentum()); 
+  l_ = 2./yB-1.;
+  // construct lorentz transform from lab to breit frame
+  Lorentz5Momentum phadron =  hadron->momentum();
+  phadron.setMass(0.*GeV);
+  phadron.rescaleRho();
+  Lorentz5Momentum pb     = quark[0]->momentum();
+  Lorentz5Momentum pbasis = phadron;
+  Axis axis(q_.vect().unit());
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+  LorentzRotation rot_ = LorentzRotation();
+  if(axis.perp2()>1e-20) {
+    rot_.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot_.rotateX(Constants::pi);
+  }
+  if(abs(1.-q_.e()/q_.vect().mag())>1e-6) rot_.boostZ( q_.e()/q_.vect().mag());
+  pb *= rot_;
+  if(pb.perp2()/GeV2>1e-20) {
+    Boost trans = -1./pb.e()*pb.vect();
+    trans.setZ(0.);
+    rot_.boost(trans);
+  }
+  Lorentz5Momentum pl    = rot_*lepton[0]->momentum();
+  rot_.rotateZ(-atan2(pl.y(),pl.x()));
+  // momenta of the particles
+  pl_[0]=rot_*lepton[0]->momentum();
+  pl_[1]=rot_*lepton[1]->momentum();
+  pq_[0]=rot_* quark[0]->momentum();
+  pq_[1]=rot_* quark[1]->momentum();
+  q_ *= rot_;
+  // coefficient for the matrix elements
+  acoeff_ = A(lepton[0]->dataPtr(),lepton[1]->dataPtr(),
+	      quark [0]->dataPtr(),quark [1]->dataPtr(),q2_);
+  // generate a compton point
+  generateCompton();
+  generateBGF();
+  // no valid emission, return
+  if(pTCompton_<ZERO&&pTBGF_<ZERO) return HardTreePtr();
+  // type of emission, pick highest pT
+  bool isCompton=pTCompton_>pTBGF_;
+//   // find the sudakov for the branching
+//   SudakovPtr sudakov;
+//   // ISR
+//   if(ComptonISFS_||!isCompton) {
+//     BranchingList branchings=evolver()->splittingGenerator()->initialStateBranchings();
+//     long index = abs(partons_[0]->id());
+//     IdList br(3);
+//     if(isCompton) {
+//       br[0] = index;
+//       br[1] = index;
+//       br[2] = ParticleID::g;
+//     }
+//     else {
+//       br[0] = ParticleID::g;
+//       br[1] =  abs(partons_[0]->id());
+//       br[2] = -abs(partons_[0]->id());
+//     }
+//     for(BranchingList::const_iterator cit = branchings.lower_bound(index); 
+// 	cit != branchings.upper_bound(index); ++cit ) {
+//       IdList ids = cit->second.second;
+//       if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
+// 	sudakov=cit->second.first;
+// 	break;
+//       }
+//     }
+//   }
+//   // FSR
+//   else {
+//     BranchingList branchings = 
+//       evolver()->splittingGenerator()->finalStateBranchings();
+//     long index=abs(partons_[1]->id());
+//     for(BranchingList::const_iterator cit = branchings.lower_bound(index);
+// 	cit != branchings.upper_bound(index); ++cit ) {
+//       IdList ids = cit->second.second;
+//       if(ids[0]==index&&ids[1]==index&&ids[2]==ParticleID::g) {
+// 	sudakov = cit->second.first;
+// 	break; 	    
+//       }
+//     }
+//   }
+//   if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+// 				 << "DISBase::generateHardest()" 
+// 				 << Exception::runerror;
+  // add the leptons
+  vector<HardBranchingPtr> spaceBranchings,allBranchings;
+  spaceBranchings.push_back(new_ptr(HardBranching(lepton[0],SudakovPtr(),
+						  HardBranchingPtr(),
+						  HardBranching::Incoming)));
+  allBranchings.push_back(spaceBranchings.back());
+  allBranchings.push_back(new_ptr(HardBranching(lepton[1],SudakovPtr(),
+						HardBranchingPtr(),
+						HardBranching::Outgoing)));
+  // compton hardest
+  if(isCompton) {
+    rot_.invert();
+    for(unsigned int ix=0;ix<ComptonMomenta_.size();++ix) {
+      ComptonMomenta_[ix].transform(rot_);
+    }
+    ShowerParticlePtr newqout (new_ptr(ShowerParticle(partons_[1],true)));
+    newqout->set5Momentum(ComptonMomenta_[1]);
+    ShowerParticlePtr newg(new_ptr(ShowerParticle(gluon_,true)));
+    newg->set5Momentum(ComptonMomenta_[2]);
+    ShowerParticlePtr newqin   (new_ptr(ShowerParticle(partons_[0],false )));
+    newqin->set5Momentum(ComptonMomenta_[0]);
+    if(ComptonISFS_) {
+      ShowerParticlePtr newspace(new_ptr(ShowerParticle(partons_[0],false)));
+      newspace->set5Momentum(ComptonMomenta_[0]-ComptonMomenta_[2]);
+      HardBranchingPtr spaceBranch(new_ptr(HardBranching(newqin,SudakovPtr(),
+							 HardBranchingPtr(),
+							 HardBranching::Incoming)));
+      HardBranchingPtr offBranch(new_ptr(HardBranching(newspace,SudakovPtr(),
+						       spaceBranch,
+						       HardBranching::Incoming)));
+      spaceBranch->addChild(offBranch);
+      HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),spaceBranch,
+					       HardBranching::Outgoing)));
+      spaceBranch->addChild(g);
+      HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),
+						       HardBranchingPtr(),
+						       HardBranching::Outgoing)));
+      spaceBranchings.push_back(spaceBranch);
+      allBranchings.push_back(offBranch);
+      allBranchings.push_back(outBranch);
+      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+      newin->addColoured(newqin,partons_[0]->id()<0);
+      newin->addColoured(newg  ,partons_[0]->id()<0);
+      newout->addColoured(newspace,partons_[0]->id()<0);
+      newout->addColoured(newqout,partons_[1]->id()<0);
+      newout->addColoured(newg  ,partons_[1]->id()>0);
+      ColinePtr newline(new_ptr(ColourLine())); 
+      newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+      newline->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+    }
+    else {
+      ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[1],true)));
+      newtime->set5Momentum(ComptonMomenta_[1]+ComptonMomenta_[2]);
+      HardBranchingPtr spaceBranch(new_ptr(HardBranching(newqin,SudakovPtr(),
+							 HardBranchingPtr(),
+							 HardBranching::Incoming)));
+      HardBranchingPtr offBranch(new_ptr(HardBranching(newtime,SudakovPtr(),
+						       HardBranchingPtr(),
+						       HardBranching::Outgoing)));
+      HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),offBranch,
+					       HardBranching::Outgoing)));
+      HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),offBranch,
+						       HardBranching::Outgoing)));
+      offBranch->addChild(outBranch);
+      offBranch->addChild(g);
+      spaceBranchings.push_back(spaceBranch);
+      allBranchings.push_back(spaceBranch);
+      allBranchings.push_back(offBranch);	 
+      ColinePtr newline(new_ptr(ColourLine())); 
+      newline->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3); 
+      newline->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3); 
+    }
+  }
+  // BGF hardest
+  else {
+    rot_.invert();
+    for(unsigned int ix=0;ix<BGFMomenta_.size();++ix) {
+      BGFMomenta_[ix].transform(rot_);
+    }
+    ShowerParticlePtr newq   (new_ptr(ShowerParticle(partons_[1],true)));
+    newq->set5Momentum(BGFMomenta_[1]);
+    ShowerParticlePtr newqbar(new_ptr(ShowerParticle(partons_[0]->CC(),true)));
+    newqbar->set5Momentum(BGFMomenta_[2]);
+    ShowerParticlePtr newg   (new_ptr(ShowerParticle(gluon_,false)));
+    newg->set5Momentum(BGFMomenta_[0]);
+    ShowerParticlePtr newspace(new_ptr(ShowerParticle(partons_[0],false)));
+    newspace->set5Momentum(BGFMomenta_[0]-BGFMomenta_[2]);
+    HardBranchingPtr spaceBranch(new_ptr(HardBranching(newg,SudakovPtr(),HardBranchingPtr(),
+						       HardBranching::Incoming)));
+    HardBranchingPtr offBranch(new_ptr(HardBranching(newspace,SudakovPtr(),spaceBranch,
+						     HardBranching::Incoming)));
+    HardBranchingPtr qbar(new_ptr(HardBranching(newqbar,SudakovPtr(),spaceBranch,
+						HardBranching::Outgoing)));
+    spaceBranch->addChild(offBranch);
+    spaceBranch->addChild(qbar);
+    HardBranchingPtr outBranch(new_ptr(HardBranching(newq,SudakovPtr(),
+						     HardBranchingPtr(),
+						     HardBranching::Outgoing)));
+    spaceBranchings.push_back(spaceBranch);
+    allBranchings.push_back(offBranch);
+    allBranchings.push_back(outBranch); 	
+    ColinePtr newline(new_ptr(ColourLine())); 
+    newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+    newline->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+  }
+  HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
+				       ShowerInteraction::QCD)));
+  // Set the maximum pt for all other emissions and connect hard and shower tree
+  Energy pT = isCompton ? pTCompton_ : pTBGF_;
+  // incoming particles
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+    // set maximum pT
+    if(QuarkMatcher::Check(cit->first->progenitor()->data()))
+      cit->first->maximumpT(pT);
+    for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
+	cjt!=newTree->branchings().end();++cjt) {
+      if(!(*cjt)->branchingParticle()->isFinalState()&&
+	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
+	newTree->connect(cit->first->progenitor(),*cjt);
+	tPPtr beam =cit->first->original();
+	if(!beam->parents().empty()) beam=beam->parents()[0];
+	(*cjt)->beam(beam);
+	HardBranchingPtr parent=(*cjt)->parent();
+	while(parent) {
+	  parent->beam(beam);
+	  parent=parent->parent();
+	};
+      }
+    }
+  }
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    // set maximum pT
+    if(QuarkMatcher::Check(cit->first->progenitor()->data()))
+      cit->first->maximumpT(pT);
+    for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
+	cjt!=newTree->branchings().end();++cjt) {
+      if((*cjt)->branchingParticle()->isFinalState()&&
+	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
+	newTree->connect(cit->first->progenitor(),*cjt);
+      }
+    }
+  }
+  // set the evolution partners and scales
+  ShowerParticleVector particles;
+  for(set<HardBranchingPtr>::iterator cit=newTree->branchings().begin();
+      cit!=newTree->branchings().end();++cit) {
+    particles.push_back((*cit)->branchingParticle());
+  }
+//   evolver()->showerModel()->partnerFinder()->
+//     setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
+//   // Calculate the shower variables:
+//   evolver()->showerModel()->kinematicsReconstructor()->
+//     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
+//   for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin(); 
+//       cjt!=newTree->branchings().end();++cjt) { 
+//     if(cjt==newTree->branchings().begin()) { 
+//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
+//       ++cjt; 
+//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
+//       ++cjt;
+//     } 
+//     // incoming 
+//     if((**cjt).status()==HardBranching::Incoming) { 
+//       quark[0]->set5Momentum((**cjt).showerMomentum()); 
+//     } 
+//     // outgoing 
+//     else { 
+//       quark[1]->set5Momentum((**cjt).showerMomentum()); 
+//     } 
+//   } 
+  return newTree;
+}
+
+void DISBase::generateCompton() {
+  // maximum value of the xT
+  double xT = sqrt((1.-xB_)/xB_);
+  double xTMin = 2.*pTmin_/sqrt(q2_);
+  double zp;
+  // prefactor
+  double a = alpha_->overestimateValue()*comptonWeight_/Constants::twopi;
+  // loop to generate kinematics
+  double wgt(0.),xp(0.),phi(0.);
+  do {
+    wgt = 0.;
+    // intergration variables dxT/xT^3
+    xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+    // zp
+    zp = UseRandom::rnd();
+    xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
+    // check allowed
+    if(xp<xB_||xp>1.) continue;
+    // other phase-space variables
+    phi=UseRandom::rnd()*Constants::twopi;
+    // phase-space piece of the weight
+    wgt = 8.*(1.-xp)*zp/comptonWeight_;
+    // PDF piece of the weight
+    Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
+    wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
+           pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
+    // me piece of the weight
+    wgt *= comptonME(xT,xp,zp,phi);
+    if(wgt>1.||wgt<0.) 
+      generator()->logWarning( Exception("DISBase::generateCompton() "
+					 "Weight greater than one or less than zero", 
+					 Exception::warning) );
+  }
+  while(xT>xTMin&&UseRandom::rnd()>wgt);
+  if(xT<=xTMin) {
+    pTCompton_=-GeV;
+    return;
+  }
+  // momenta for the configuration
+  Energy Q(sqrt(q2_));
+  double x1 = -1./xp;
+  double x2 = 1.-(1.-zp)/xp;
+  double x3 = 2.+x1-x2;
+  Lorentz5Momentum p1( 0.5*Q*xT*cos(phi),  0.5*Q*xT*sin(phi),
+		       -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+  Lorentz5Momentum p2(-0.5*Q*xT*cos(phi), -0.5*Q*xT*sin(phi),
+		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+  Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
+  pTCompton_ = 0.5*Q*xT;
+  ComptonMomenta_.resize(3);
+  ComptonMomenta_[0] = p0;
+  ComptonMomenta_[1] = p1;
+  ComptonMomenta_[2] = p2;
+  ComptonISFS_ = zp>xp;
+}
+
+void DISBase::generateBGF() {
+  // maximum value of the xT
+  double xT = (1.-xB_)/xB_;
+  double xTMin = 2.*max(pTmin_,pTCompton_)/sqrt(q2_);
+  double zp;
+  // prefactor
+  double a = alpha_->overestimateValue()*BGFWeight_/Constants::twopi;
+  // loop to generate kinematics
+  double wgt(0.),xp(0.),phi(0.);
+  do {
+    wgt = 0.;
+    // intergration variables dxT/xT^3
+    xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+    // zp
+    zp = UseRandom::rnd();
+    xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
+    // check allowed
+    if(xp<xB_||xp>1.) continue;
+    // other phase-space variables
+    phi=UseRandom::rnd()*Constants::twopi;
+    // phase-space piece of the weight
+    wgt = 8.*sqr(1.-xp)*zp/BGFWeight_;
+    // PDF piece of the weight
+    Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
+    wgt *= pdf_->xfx(beam_,gluon_     ,scale,xB_/xp)/
+           pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
+    // me piece of the weight
+    wgt *= BGFME(xT,xp,zp,phi);
+    generator()->logWarning( Exception("DISBase::generateBGF() "
+				       "Weight greater than one or less than zero", 
+				       Exception::warning) );
+    if(wgt>1.||wgt<0.) generator()->log() << "BGF weight problem " << wgt << "\n";
+  }
+  while(xT>xTMin&&UseRandom::rnd()>wgt);
+  if(xT<=xTMin) {
+    pTBGF_=-GeV;
+    return;
+  }
+  // momenta for the configuration
+  Energy Q(sqrt(q2_));
+  double x1 = -1./xp;
+  double x2 = 1.-(1.-zp)/xp;
+  double x3 = 2.+x1-x2;
+  Lorentz5Momentum p1( 0.5*Q*xT*cos(phi),  0.5*Q*xT*sin(phi),
+		       -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+  Lorentz5Momentum p2(-0.5*Q*xT*cos(phi), -0.5*Q*xT*sin(phi),
+		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+  Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
+  pTBGF_=0.5*Q*xT;
+  BGFMomenta_.resize(3);
+  BGFMomenta_[0]=p0;
+  BGFMomenta_[1]=p1;
+  BGFMomenta_[2]=p2;
+}
+
+double DISBase::comptonME(double xT, double xp, double zp,
+			  double phi) {
+  // kinematical variables
+  double x2 = 1.-(1.-zp)/xp;
+  // matrix element
+  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
+  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
+  double root = sqrt(sqr(l_)-1.);
+  double cphi = cos(phi);
+  // compute the r2 term
+  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
+    (1+acoeff_*l_+sqr(l_));
+  return 4./3.*alpha_->ratio(0.25*q2_*sqr(xT))*(1.+R2*sqr(xp)*(sqr(x2)+sqr(xT)));
+}
+
+double DISBase::BGFME(double xT, double xp, double zp,
+		      double phi) {
+  // kinematical variables
+  double x1 = -1./xp;
+  double x2 = 1.-(1.-zp)/xp;
+  double x3 = 2.+x1-x2;
+  // matrix element
+  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
+  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
+  double cos3 = x3/sqrt(sqr(x3)+sqr(xT));
+  double sin3 = xT/sqrt(sqr(x3)+sqr(xT));
+  double root = sqrt(sqr(l_)-1.);
+  double cphi = cos(phi);
+  // compute the r2 term
+  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
+    (1+acoeff_*l_+sqr(l_));
+  double R3= (sqr(cos3)-acoeff_*cos3*(l_+root*sin3*cphi)+sqr(l_+root*sin3*cphi))/
+    (1+acoeff_*l_+sqr(l_));
+  return 0.5*alpha_->ratio(0.25*q2_*sqr(xT))*sqr(xp)*
+    (R2*(sqr(x2)+sqr(xT))+R3*(sqr(x3)+sqr(xT)));
 }

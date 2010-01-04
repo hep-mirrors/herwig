@@ -29,6 +29,11 @@ public:
   DISBase();
 
   /**
+   * The default constructor.
+   */
+  virtual ~DISBase();
+
+  /**
    *  Members for the old-fashioned matrix element correction
    */
   //@{
@@ -58,6 +63,21 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching);
+  //@}
+
+  /**
+   *  Members for the POWHEG stype correction
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
 public:
@@ -121,6 +141,10 @@ protected:
 		   Energy2 scale) =0;
 
   /**
+   *  Members for the matrix element correction
+   */
+  //@{
+  /**
    *  Generate the values of \f$x_p\f$ and \f$z_p\f$
    * @param xp The value of xp, output
    * @param zp The value of zp, output
@@ -164,48 +188,84 @@ protected:
    */
   vector<double> BGFME(double xp, double x2, double x3, double xperp,
 		       double A, double l, bool norm);
+  //@}
+
+  /**
+   *  Members for the POWHEG correction
+   */
+  //@{
+  /**
+   *  Generate a Compton process
+   */
+  void generateCompton();
+
+  /**
+   *  Matrix element piece for the Compton process
+   */
+  double comptonME(double xT,double xp, double zp, double phi);
+
+  /**
+   *  Generate a BGF process
+   */
+  void generateBGF();
+
+  /**
+   *  Matrix element piece for the Compton process
+   */
+  double BGFME(double xT,double xp, double zp, double phi);
+  //@}
 
 private:
 
   /**
-   *  Radiation enhancement factors
+   *  Parameters for the matrix element correction
    */
   //@{
   /**
    *  Enchancement factor for ISR
    */
-  double _initial;
+  double initial_;
 
   /**
    *  Enchancement factor for FSR
    */
-  double _final;
-  //@}
+  double final_;
 
-  /**
-   *   Parameters for the phase-space sampling
-   */
-  //@{
   /**
    *   Relative fraction of compton and BGF processes to generate
    */
-  double _procprob;
+  double procProb_;
 
   /**
    *  Integral for compton process
    */
-  double _comptonint;
+  double comptonInt_;
 
   /**
    *  Integral for BGF process
    */
-  double _bgfint;
+  double bgfInt_;
   //@}
 
   /**
-   *  The coefficient for the correlations
+   *  Parameters for the POWHEG correction
    */
-  double _acoeff;
+  //@{
+  /**
+   *  Weight for the compton channel
+   */
+  double comptonWeight_;
+
+  /**
+   *  Weight for the BGF channel
+   */
+  double BGFWeight_;
+
+  /**
+   *  Minimum value of \f$p_T\f$
+   */
+  Energy pTmin_;
+  //@}
 
   /**
    *  Parameters for the point being generated
@@ -214,18 +274,80 @@ private:
   /**
    *   \f$Q^2\f$
    */
-  Energy2 _q2;
+  Energy2 q2_;
 
   /**
    *  
    */
-  double _l;
+  double l_;
+
+  /**
+   *  Borm momentum fraction
+   */
+  double xB_;
+
+  /**
+   *  Beam particle
+   */
+  tcBeamPtr beam_;
+
+  /**
+   *  Partons
+   */
+  tcPDPtr partons_[2];
+
+  /**
+   *  PDF object
+   */
+  tcPDFPtr pdf_;
+  /**
+   *  Rotation to the Breit frame
+   */
+  LorentzRotation rot_;
+
+  /**
+   *  Lepton momenta
+   */
+  Lorentz5Momentum pl_[2];
+
+  /**
+   *  Quark momenta
+   */
+  Lorentz5Momentum pq_[2];
+
+  /**
+   *  q
+   */
+  Lorentz5Momentum q_;
+
+  /**
+   *  Compton parameters
+   */
+  Energy pTCompton_;
+  bool ComptonISFS_;
+  vector<Lorentz5Momentum> ComptonMomenta_;
+
+  /**
+   *  BGF parameters
+   */
+  Energy pTBGF_;
+  vector<Lorentz5Momentum> BGFMomenta_;
   //@}
+
+  /**
+   *  The coefficient for the correlations
+   */
+  double acoeff_;
 
   /**
    *  Coupling
    */
-  ShowerAlphaPtr _alpha;
+  ShowerAlphaPtr alpha_;
+
+  /**
+   *  Gluon particle data object
+   */
+  PDPtr gluon_;
 
 };
 
