@@ -35,7 +35,10 @@ public:
   /**
    * The default constructor.
    */
-  inline MEQCD2to2Fast();
+  MEQCD2to2Fast() :_maxflavour(5),_process(0) {
+    massOption(true ,0);
+    massOption(false,0);
+  }
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -127,44 +130,148 @@ protected:
   /**
    * Matrix element for \f$gg\to gg\f$.
    */
-  inline double gg2ggME() const;
+  double gg2ggME() const {
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    double output = 9./4.*(3.-t*u/s/s-s*u/t/t-s*t/u/u);
+    double flow[3]={(1.-u*t/s/s-s*t/u/u+t*t/s/u),
+		    (1.-t*u/s/s-s*u/t/t+u*u/s/t),
+		    (1.-t*s/u/u-u*s/t/t+s*s/u/t)};
+    _flow = 1+UseRandom::rnd3(flow[0],flow[1],flow[2]);
+    double diag[3]={(sqr(u)+sqr(t))/sqr(s),
+		    (sqr(s)+sqr(u))/sqr(t),
+		    (sqr(s)+sqr(t))/sqr(u)};
+    if(_flow==1)      diag[1]=0;
+    else if(_flow==2) diag[2]=0;
+    else if(_flow==3) diag[0]=0;
+    _diagram=1+UseRandom::rnd3(diag[0],diag[1],diag[2]);
+    return output;
+  }
 
   /**
    * Matrix element for \f$gg\to q\bar{q}\f$
    */
-  inline double gg2qqbarME() const;
+  double gg2qqbarME() const {
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    Energy4 u2(sqr(u)),t2(sqr(t)),s2(sqr(s));
+    double output =(1./6./u/t-3./8./s2)*(t2+u2);
+    double flow[2]={u2/(u2+t2),t2/(u2+t2)};
+    _flow = 1+UseRandom::rnd2(flow[0],flow[1]);
+    _diagram=3+_flow;
+    return output;
+  }
 
   /**
    * Matrix element for \f$q\bar{q}\to gg\f$
    */
-  inline double qqbar2ggME() const;
+  double qqbar2ggME() const {
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    Energy4 s2(sqr(s)),u2(sqr(u)),t2(sqr(t));
+    double output = 0.5*(32./27./u/t-8./3./s2)*(t2+u2);
+    double flow[2] = {u2/(u2+t2),t2/(t2+u2)};
+    _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    _diagram=6+_flow;
+    return output;
+  }
 
   /**
    * Matrix element for \f$qg\to qg\f$
    */
-  inline double qg2qgME() const;
-
+  double qg2qgME() const {
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    Energy4 s2(sqr(s)),u2(sqr(u)),t2(sqr(t));
+    double output = (-4./9./s/u+1./t2)*(s2+u2);
+    double flow[2]={u2/(s2+u2),s2/(s2+u2)};
+    _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    _diagram=9+_flow;
+    return output;
+  }
+  
   /**
    * Matrix elements for \f$\bar{q}g\to \bar{q}g\f$.
    */
-  inline double qbarg2qbargME() const;
-
+  double qbarg2qbargME() const {
+    // scale
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    Energy4 u2(sqr(u)),s2(sqr(s)); // t2(sqr(t))
+    double flow[2]={u2/(s2+u2),s2/(s2+u2)};
+    _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    _diagram=12+_flow;
+    return (-4./9./s/u+1./t/t)*(s*s+u*u);
+  }
+  
   /**
    * Matrix element for \f$qq\to qq\f$
    */
-  inline double qq2qqME() const;
+  double qq2qqME() const {
+    Energy2 u(uHat()),t(tHat());
+    Energy4 s2(sqr(sHat())),u2(sqr(u)),t2(sqr(t));
+    double output;
+    if(mePartonData()[0]->id()==mePartonData()[1]->id()) {
+      output = 0.5*(4./9.*((s2+u2)/t2+(s2+t2)/u2)
+		    -8./27.*s2/u/t);
+      double flow[2]={(s2+u2)/t2,(s2+t2)/u2}; 
+      _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    }
+    else {
+      output = 4./9.*(s2+u2)/t2;
+      _flow=2;
+    }
+    _diagram = 15+_flow;
+    return output;
+  }
 
   /**
    * Matrix element for \f$\bar{q}\bar{q}\to \bar{q}\bar{q}\f$
    */
-  inline double qbarqbar2qbarqbarME() const;
-
+  double qbarqbar2qbarqbarME() const {
+    Energy2 u(uHat()),t(tHat());
+    Energy4 u2(sqr(u)),t2(sqr(t)),s2(sqr(sHat()));
+    double output;
+    if(mePartonData()[0]->id()==mePartonData()[1]->id()) {
+      output = 0.5*(4./9.*((s2+u2)/t2+(s2+t2)/u2)
+		    -8./27.*s2/u/t);
+      double flow[2]={(s2+u2)/t2,(s2+t2)/u2};
+      _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    }
+    else {
+      output = 4./9.*(s2+u2)/t2;
+      _flow = 2;
+    }
+    _diagram = 17+_flow;
+    // final part of colour and spin factors
+    return output;
+  }
+  
   /**
    * Matrix element for \f$q\bar{q}\to q\bar{q}\f$
    */
-  inline double qqbar2qqbarME() const;
+  double qqbar2qqbarME() const {
+    // type of process
+    bool diagon[2]={mePartonData()[0]->id()== -mePartonData()[1]->id(),
+		    mePartonData()[0]->id()==  mePartonData()[2]->id()};
+    // scale
+    Energy2 u(uHat()),t(tHat()),s(sHat());
+    Energy4 s2(sqr(s)),t2(sqr(t)),u2(sqr(u));
+    double output;
+    if(diagon[0]&&diagon[1]) {
+      output= (4./9.*((s2+u2)/t2+(u2+t2)/s2)
+	       -8./27.*u2/s/t);
+      double flow[2]={(t2+u2)/s2,(s2+u2)/t2};
+      _flow=1+UseRandom::rnd2(flow[0],flow[1]);
+    }
+    else if(diagon[0]) {
+      output = (4./9.*(t2+u2)/s2);
+      _flow=1;
+    }
+    else {
+      output = (4./9.*(s2+u2)/t2);
+      _flow=2;
+    }
+    _diagram=19+_flow;
+    return output;
+  }
   //@}
-
+  
 protected:
 
   /** @name Clone Methods. */
@@ -173,13 +280,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -255,7 +362,5 @@ struct ClassTraits<Herwig::MEQCD2to2Fast>
 /** @endcond */
 
 }
-
-#include "MEQCD2to2Fast.icc"
 
 #endif /* HERWIG_MEQCD2to2Fast_H */

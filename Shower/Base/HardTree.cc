@@ -22,6 +22,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   if(setMomentum) _original=R*_particle->momentum();
   // compute the shower variables
   Energy2 dot = _n*_p;
+  if(dot==ZERO) return;
   double alpha = (_original*_n)/dot;
   _z=alpha/aparent;
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;

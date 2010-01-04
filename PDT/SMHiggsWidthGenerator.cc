@@ -199,8 +199,11 @@ Energy SMHiggsWidthGenerator::partialWidth(Energy Mh,unsigned int imode) const {
     _gam0 = -8.;
     double gam1 = -404./3.+40.*nflavour/9.;
     double SClog = log(sqr(Mh/_lambdaQCD));
-    _cd = 1.+(k1/k0-2.*_gam0+_gam0*beta1/sqr(_beta0)*log(SClog)+
-	      (_gam0*beta1-gam1*_beta0)/sqr(_beta0))/(_beta0*SClog);
+    if(SClog<=0.)
+      _cd = 1.;
+    else
+      _cd = 1.+(k1/k0-2.*_gam0+_gam0*beta1/sqr(_beta0)*log(SClog)+
+		(_gam0*beta1-gam1*_beta0)/sqr(_beta0))/(_beta0*SClog);
     _gfermiinv = 8.*_sw2*sqr(_mw)/_alphaEM;
   }
   // output value

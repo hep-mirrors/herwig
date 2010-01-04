@@ -218,6 +218,16 @@ public:
    *  Add an initial-state splitting
    */
   string addInitialSplitting(string arg) { return addSplitting(arg,false); }
+
+  /**
+   *  Add a final-state splitting
+   */
+  string deleteFinalSplitting(string arg) { return deleteSplitting(arg,true); }
+
+  /**
+   *  Add an initial-state splitting
+   */
+  string deleteInitialSplitting(string arg) { return deleteSplitting(arg,false); }
   //@}
 
   /**
@@ -313,6 +323,14 @@ private:
   void addToMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
 
   /**
+   * Remove a branching to the map
+   * @param ids PDG coeds of the particles in the branching
+   * @param sudakov The SudakovFormFactor for the branching
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  void deleteFromMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
+
+  /**
    * Obtain the reference vectors for a final-state particle
    * @param particle The particle
    * @param p The p reference vector
@@ -327,6 +345,13 @@ private:
    * @param final Whether this is an initial- or final-state branching 
    */
   string addSplitting(string in ,bool final);
+
+  /**
+   * Delete a splitting
+   * @param in string to be parsed
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  string deleteSplitting(string in ,bool final);
 
 private:
 
