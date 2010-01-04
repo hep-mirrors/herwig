@@ -49,7 +49,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEff2ff() : theScaV(0), theVecV(0), theTenV(0) {}
+  MEff2ff() : theScaV(0), theVecV(0), theTenV(0) {}
 
 public:
 
@@ -205,13 +205,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:

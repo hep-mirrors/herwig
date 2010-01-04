@@ -26,6 +26,14 @@
 
 using namespace Herwig;
 
+IBPtr MEPP2GammaGamma::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEPP2GammaGamma::fullclone() const {
+  return new_ptr(*this);
+}
+
 unsigned int MEPP2GammaGamma::orderInAlphaS() const {
   return 0;
 }

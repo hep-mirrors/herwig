@@ -39,7 +39,7 @@ public:
   /**
    * Default constructor.
    */
-  inline HwME2to2Base();
+  HwME2to2Base() : _massopt1(1), _massopt2(1), _rescaleOption(1) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -96,14 +96,19 @@ public:
    * @param first is the first outgoing particle
    * @param iopt The option for the treatment of the mass
    */
-  inline void massOption(bool first, unsigned int iopt);
+  void massOption(bool first, unsigned int iopt) {
+    if(first) _massopt1 = iopt;
+    else      _massopt2 = iopt;
+  }
 
   /**
    * Set the treatment of the rescaling of the momenta for 
    * the matrix element calculation
    * @param iopt The rescaling option
    */
-  inline void rescalingOption(unsigned int iopt);
+  void rescalingOption(unsigned int iopt) {
+    _rescaleOption=iopt;
+  }
 
   /**
    *  rescale the momenta for the computation of the helicity matrix element
@@ -114,7 +119,9 @@ public:
   /**
    *  Access to the rescaled momenta
    */
-  inline const vector<Lorentz5Momentum> & rescaledMomenta() const;
+  const vector<Lorentz5Momentum> & rescaledMomenta() const {
+    return _rescaledMomenta;
+  }
 
 private:
 
@@ -182,7 +189,5 @@ struct ClassTraits<Herwig::HwME2to2Base>
 /** @endcond */
 
 }
-
-#include "HwME2to2Base.icc"
 
 #endif /* HERWIG_HwME2to2Base_H */

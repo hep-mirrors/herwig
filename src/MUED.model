@@ -302,18 +302,18 @@ insert ShowerHandler:DecayInShower 24 5100024
 insert ShowerHandler:DecayInShower 25 5100025
 insert ShowerHandler:DecayInShower 26 5100036
 insert ShowerHandler:DecayInShower 27 5100037
-set SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_c_L->KK1_c_L,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_b_1->KK1_b_1,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_t_1->KK1_t_1,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_u_R->KK1_u_R,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_d_R->KK1_d_R,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_c_L->KK1_c_L,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_b_1->KK1_b_1,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_t_1->KK1_t_1,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_u_R->KK1_u_R,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_d_R->KK1_d_R,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
 ###################################################
 # Set up the model framework
 ###################################################

@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libHwGeneralME.la
 libHwGeneralME_la_SOURCES = \
-GeneralHardME.cc GeneralHardME.h GeneralHardME.icc GeneralHardME.fh \
+GeneralHardME.cc GeneralHardME.h GeneralHardME.fh \
 MEvv2ff.cc MEvv2ff.h \
 MEvv2ss.cc MEvv2ss.h \
 MEfv2fs.cc MEfv2fs.h \

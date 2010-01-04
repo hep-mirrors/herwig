@@ -419,6 +419,11 @@ protected:
   void addSplitting(const IdList &);
 
   /**
+   *  Delete the particles in the splittings
+   */
+  void removeSplitting(const IdList &);
+
+  /**
    *  Access the potential branchings
    */
   vector<IdList> particles() const { return particles_; }
