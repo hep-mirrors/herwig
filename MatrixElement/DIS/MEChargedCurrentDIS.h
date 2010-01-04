@@ -5,7 +5,7 @@
 // This is the declaration of the MEChargedCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * @see \ref MEChargedCurrentDISInterfaces "The interfaces"
  * defined for MEChargedCurrentDIS.
  */
-class MEChargedCurrentDIS: public HwMEBase {
+class MEChargedCurrentDIS: public DISBase {
 
 public:
 
@@ -140,6 +140,13 @@ protected:
 		    bool lorder, bool qorder,
 		    bool me) const;
 
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout,
+		   Energy2 scale);
+
 protected:
 
   /** @name Clone Methods. */
@@ -234,7 +241,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
   /** Typedef of the first base class of MEChargedCurrentDIS. */
-  typedef Herwig::HwMEBase NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -1,56 +1,47 @@
 // -*- C++ -*-
-#ifndef HERWIG_DISMECorrection_H
-#define HERWIG_DISMECorrection_H
+#ifndef HERWIG_DISBase_H
+#define HERWIG_DISBase_H
 //
-// This is the declaration of the DISMECorrection class.
+// This is the declaration of the DISBase class.
 //
 
-#include "QTildeMECorrection.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/Repository/EventGenerator.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The DISMECorrection class implements the matrix element correction for DIS events.
+ * The DISBase class is the base class for the implementation
+ * of DIS type processes including corrections in both the old
+ * fashioned matrix element and POWHEG approaches
  *
- * @see \ref DISMECorrectionInterfaces "The interfaces"
- * defined for DISMECorrection.
+ * @see \ref DISBaseInterfaces "The interfaces"
+ * defined for DISBase.
  */
-class DISMECorrection: public QTildeMECorrection {
-
-/**
- *  Typedef for BeamParticleData pointers
- */
-typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+class DISBase: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  DISMECorrection() : _meopt(true), _initial(6.), _final(3.),
-		      _procprob(0.35),
-		      _comptonint(0.), _bgfint(0.),
-		      _sinW(0.), _cosW(0.), _mz2(0.*GeV2) 
-  {}
+  DISBase();
 
   /**
-   *  Members to override those in the base class and implemented 
-   *  the matrix element correction
+   *  Members for the old-fashioned matrix element correction
    */
   //@{
   /**
-   *  Can the matrix element correction handle a given hard process or decay
-   * @param tree The shower tree currently being showered
-   * @param initial The initial-state radiation enhancement factor
-   * @param final   The final-state radiation enhancement factor
-   * @param evolver Pointer to the Evolver.
+   *  Has an old fashioned ME correction
    */
-  virtual bool canHandle(ShowerTreePtr tree,double & initial,
-			 double & final,EvolverPtr evolver);
+  virtual bool hasMECorrection() {return true;}
+
+  /**
+   *  Initialize the ME correction
+   */
+  virtual void initializeMECorrection(ShowerTreePtr, double &,
+				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
@@ -65,8 +56,8 @@ public:
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,Branching br);
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
+				     ShowerParticlePtr,Branching);
   //@}
 
 public:
@@ -107,24 +98,27 @@ protected:
   virtual void doinit();
   //@}
 
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is an abstract class with persistent data.
+   */
+  static AbstractClassDescription<DISBase> initDISBase;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  DISBase & operator=(const DISBase &);
+
 protected:
 
-  /** @name Clone Methods. */
-  //@{
   /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
+   *  Calculate the coefficient A for the correlations
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
-private:
+  virtual double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout,
+		   Energy2 scale) =0;
 
   /**
    *  Generate the values of \f$x_p\f$ and \f$z_p\f$
@@ -139,11 +133,6 @@ private:
    * @param zp The value of zp, output
    */
   double generateBGFPoint(double &xp, double & zp);
-
-  /**
-   *  Calculate the coefficient A for the correlations
-   */
-  double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout);
 
   /**
    *  Return the coefficients for the matrix element piece for
@@ -176,27 +165,7 @@ private:
   vector<double> BGFME(double xp, double x2, double x3, double xperp,
 		       double A, double l, bool norm);
 
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<DISMECorrection> initDISMECorrection;
-
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  DISMECorrection & operator=(const DISMECorrection &);
-
-private:
-
-  /**
-   *   Parameter to control matrix element used
-   */
-  bool _meopt;
 
   /**
    *  Radiation enhancement factors
@@ -234,29 +203,9 @@ private:
   //@}
 
   /**
-   *  Electroweak parameters
-   */
-  //@{
-  /**
-   *  \f$\sin\theta_W\f$
-   */
-  double _sinW;
-
-  /**
-   *  \f$\cos\theta_W\f$
-   */
-  double _cosW;
-
-  /**
-   *  The square of the Z mass
-   */
-  Energy2 _mz2;
-
-  /**
    *  The coefficient for the correlations
    */
   double _acoeff;
-  //@}
 
   /**
    *  Parameters for the point being generated
@@ -273,6 +222,11 @@ private:
   double _l;
   //@}
 
+  /**
+   *  Coupling
+   */
+  ShowerAlphaPtr _alpha;
+
 };
 
 }
@@ -284,32 +238,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of DISMECorrection. */
+ *  base classes of DISBase. */
 template <>
-struct BaseClassTrait<Herwig::DISMECorrection,1> {
-  /** Typedef of the first base class of DISMECorrection. */
-  typedef Herwig::QTildeMECorrection NthBase;
+struct BaseClassTrait<Herwig::DISBase,1> {
+  /** Typedef of the first base class of DISBase. */
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the DISMECorrection class and the shared object where it is defined. */
+ *  the DISBase class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::DISMECorrection>
-  : public ClassTraitsBase<Herwig::DISMECorrection> {
+struct ClassTraits<Herwig::DISBase>
+  : public ClassTraitsBase<Herwig::DISBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::DISMECorrection"; }
+  static string className() { return "Herwig::DISBase"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * DISMECorrection is implemented. It may also include several, space-separated,
-   * libraries if the class DISMECorrection depends on other classes (base classes
+   * MENeutralCurrentDIS is implemented. It may also include several, space-separated,
+   * libraries if the class MENeutralCurrentDIS depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwMEDIS.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_DISMECorrection_H */
+#endif /* HERWIG_DISBase_H */

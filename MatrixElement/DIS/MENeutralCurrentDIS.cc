@@ -29,7 +29,7 @@ MENeutralCurrentDIS::MENeutralCurrentDIS()
 }
 
 void MENeutralCurrentDIS::doinit() {
-  HwMEBase::doinit();
+  DISBase::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0);
   _gamma = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
@@ -301,5 +301,32 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   }
 }
 
-
-
+double MENeutralCurrentDIS::A(tcPDPtr qin, tcPDPtr,
+			      tcPDPtr lin, tcPDPtr, Energy2 q2) {
+  double sinW = generator()->standardModel()->sin2ThetaW();
+  double cosW = sqrt(1.-sinW);
+  sinW = sqrt(sinW);
+  Energy2 mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
+  double fact = 0.25*q2/(q2+mz2)/sinW/cosW;
+  double cvl,cal,cvq,caq;
+  if(abs(lin->id())%2==0) {
+    cvl = generator()->standardModel()->vnu()*fact+generator()->standardModel()->enu();
+    cal = generator()->standardModel()->anu()*fact;
+  }
+  else {
+    cvl = generator()->standardModel()->ve()*fact+generator()->standardModel()->ee();
+    cal = generator()->standardModel()->ae()*fact;
+  }
+  if(abs(qin->id())%2==0) {
+    cvq = generator()->standardModel()->vu()*fact+generator()->standardModel()->eu();
+    caq = generator()->standardModel()->au()*fact;
+  }
+  else {
+    cvq = generator()->standardModel()->vd()*fact+generator()->standardModel()->ed();
+    caq = generator()->standardModel()->ad()*fact;
+  }
+  double output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
+  if(qin->id()<0) output *= -1.;
+  if(lin->id()<0) output *= -1;
+  return output;
+}

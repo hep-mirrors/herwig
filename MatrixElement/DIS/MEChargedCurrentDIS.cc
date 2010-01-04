@@ -29,7 +29,7 @@ MEChargedCurrentDIS::MEChargedCurrentDIS()
 }
 
 void MEChargedCurrentDIS::doinit() {
-  HwMEBase::doinit();
+  DISBase::doinit();
   _wp = getParticleData(ThePEG::ParticleID::Wplus );
   _wm = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -285,4 +285,12 @@ void MEChargedCurrentDIS::constructVertex(tSubProPtr sub) {
   for(unsigned int ix=0;ix<4;++ix) {
     spin[ix]->setProductionVertex(hardvertex);
   }
+}
+
+double MEChargedCurrentDIS::A(tcPDPtr qin, tcPDPtr,
+			      tcPDPtr lin, tcPDPtr, Energy2) {
+  double output = 2.;
+  if(qin->id()<0) output *= -1.;
+  if(lin->id()<0) output *= -1;
+  return output;
 }

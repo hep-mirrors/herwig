@@ -5,7 +5,7 @@
 // This is the declaration of the MENeutralCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -24,7 +24,7 @@ using namespace ThePEG;
  * @see \ref MENeutralCurrentDISInterfaces "The interfaces"
  * defined for MENeutralCurrentDIS.
  */
-class MENeutralCurrentDIS: public HwMEBase {
+class MENeutralCurrentDIS: public DISBase {
 
 public:
 
@@ -143,6 +143,13 @@ protected:
    */
   inline unsigned int gammaZOption() const {return _gammaZ;}
 
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout,
+		   Energy2 scale);
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -258,7 +265,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MENeutralCurrentDIS,1> {
   /** Typedef of the first base class of MENeutralCurrentDIS. */
-  typedef Herwig::HwMEBase NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

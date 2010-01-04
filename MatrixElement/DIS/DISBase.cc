@@ -1,108 +1,79 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the DISMECorrection class.
+// functions of the DISBase class.
 //
 
-#include "DISMECorrection.h"
-#include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Interface/ParVector.h"
+#include "DISBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include <numeric>
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/StandardMatchers.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include <numeric>
 
 using namespace Herwig;
 
-void DISMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _meopt << _comptonint << _bgfint << _procprob << _sinW << _cosW 
-     << ounit(_mz2,GeV2) << _initial << _final;
+DISBase::DISBase()  : _initial(6.), _final(3.),
+		      _procprob(0.35),
+		      _comptonint(0.), _bgfint(0.)
+{}
+
+void DISBase::persistentOutput(PersistentOStream & os) const {
+  os << _comptonint << _bgfint << _procprob << _initial << _final;
 }
 
-void DISMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _meopt >> _comptonint >> _bgfint >> _procprob >> _sinW >> _cosW 
-     >> iunit(_mz2,GeV2) >> _initial >> _final;
+void DISBase::persistentInput(PersistentIStream & is, int) {
+  is >> _comptonint >> _bgfint >> _procprob  >> _initial >> _final;
 }
 
-ClassDescription<DISMECorrection> DISMECorrection::initDISMECorrection;
+AbstractClassDescription<DISBase> DISBase::initDISBase;
 // Definition of the static class description member.
 
-void DISMECorrection::Init() {
+void DISBase::Init() {
+  
+  static ClassDocumentation<DISBase> documentation
+    ("The DISBase class provides the base class for the "
+     "implementation of DIS type processes including the "
+     "hard corrections in either the old-fashioned matrix "
+     "element correction of POWHEG approaches");
 
-  static ClassDocumentation<DISMECorrection> documentation
-    ("The DISMECorrection class implements the matrix element correction for DIS");
-
-  static Parameter<DISMECorrection,double> interfaceProcessProbability
+  static Parameter<DISBase,double> interfaceProcessProbability
     ("ProcessProbability",
      "The probabilty of the QCD compton process for the process selection",
-     &DISMECorrection::_procprob, 0.3, 0.0, 1.,
+     &DISBase::_procprob, 0.3, 0.0, 1.,
      false, false, Interface::limited);
 
-  static Switch<DISMECorrection,bool> interfaceMEOption
-    ("MEOption",
-     "Option for the treatment of the matrix element",
-     &DISMECorrection::_meopt, false, false);
-  static SwitchOption interfaceMEOptionFull
-    (interfaceMEOption,
-     "Full",
-     "Use the full matrix element",
-     true);
-  static SwitchOption interfaceMEOptionProcessIndependent
-    (interfaceMEOption,
-     "ProcessIndependent",
-     "Only use the process independent part, as in FORTRAN HERWIG",
-     false);
-
+  static Reference<DISBase,ShowerAlpha> interfaceCoupling
+    ("Coupling",
+     "Pointer to the object to calculate the coupling for the correction",
+     &DISBase::_alpha, false, false, true, false, false);
+  
 }
 
-void DISMECorrection::doinit() {
-  QTildeMECorrection::doinit();
-  // electroweak parameters
-  _sinW = generator()->standardModel()->sin2ThetaW();
-  _cosW = sqrt(1.-_sinW);
-  _sinW = sqrt(_sinW);
-  _mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
+void DISBase::doinit() {
+  HwMEBase::doinit();
   // integrals of me over phase space
   double r5=sqrt(5.),darg((r5-1.)/(r5+1.)),ath(0.5*log((1.+1./r5)/(1.-1./r5)));
-  _comptonint = 2.*(-21./20.-6.*r5/25.*ath+sqr(Constants::pi)/3.
+  _comptonint = 2.*(-21./20.-6./(5.*r5)*ath+sqr(Constants::pi)/3.
 		    -2.*Math::ReLi2(1.-darg)-2.*Math::ReLi2(1.-1./darg));
-  _bgfint = 121./9.-56./5.*r5*ath;
+  _bgfint = 121./9.-56./r5*ath;
 }
 
-bool DISMECorrection::canHandle(ShowerTreePtr tree,double & initial,
-				double & final,EvolverPtr) {
-  // two incoming particles
-  if(tree->incomingLines().size()!=2) return false;
-  // two outgoing particles
-  if(tree->outgoingLines().size()!=2) return false;
-  // check incoming quark and lepton
-  bool quark(false),lepton(false);
-  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
-	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-    quark  |=  QuarkMatcher::Check(cit->first->progenitor()->data());
-    lepton |= LeptonMatcher::Check(cit->first->progenitor()->data());
-  }
-  if(!quark||!lepton) return false;
-  // check outgoing quark and lepton
-  quark = false;
-  lepton = false;
-  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
-    quark  |=  QuarkMatcher::Check(cjt->first->progenitor()->data());
-    lepton |= LeptonMatcher::Check(cjt->first->progenitor()->data());
-  }
-  if(!quark||!lepton) return false;
-  // can handle it
+void DISBase::initializeMECorrection(ShowerTreePtr, double & initial,
+				     double & final) {
   initial = _initial;
   final   = _final;
-  return true;
 }
 
-void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
+void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
+  static const double eps=1e-6;
   // find the incoming and outgoing quarks and leptons
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
@@ -140,34 +111,19 @@ void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   _l = 2./yB-1.;
   // calculate the A coefficient for the correlations
   _acoeff = A(lepton[0]->dataPtr(),lepton[1]->dataPtr(),
-	      quark [0]->dataPtr(),quark [1]->dataPtr());
+	      quark [0]->dataPtr(),quark [1]->dataPtr(),_q2);
   vector<double> azicoeff;
-  double xp,zp,wgt,x1,x2,x3,xperp;
-  tcPDPtr gluon = getParticleData(ParticleID::g);
-  if(abs(quark[0]->id())>2) {
-    _procprob = 0.34;
-  }
-  else if(abs(quark[0]->id())==1) {
-    _procprob = 0.36;
-  }
-  else if(abs(quark[0]->id())==2) {
-    if(quark[0]->id()*hadron->id()>0) {
-      _procprob = 0.40;
-    }
-    else {
-      _procprob = 0.35;
-    }
-  }
   // select the type of process
   bool BGF = UseRandom::rnd()>_procprob;
-  //bool BGF=true;
+  double xp,zp,wgt,x1,x2,x3,xperp;
+  tcPDPtr gluon = getParticleData(ParticleID::g);
   // generate a QCD compton process
   if(!BGF) {
     wgt = generateComptonPoint(xp,zp);
-    if(xp<1e-6) return;
+    if(xp<eps) return;
     // common pieces
-    Energy2 scale = _q2*((1.-xp)*(1-zp)*zp/xp+1);
-    wgt *= 2./3./Constants::pi*coupling()->value(scale)/_procprob;
+    Energy2 scale = _q2*((1.-xp)*(1-zp)*zp/xp+1.);
+    wgt *= 2./3./Constants::pi*_alpha->value(scale)/_procprob;
     // PDF piece
     wgt *= pdf->xfx(beam,quark[0]->dataPtr(),scale,xB/xp)/
            pdf->xfx(beam,quark[0]->dataPtr(),_q2  ,xB);
@@ -182,10 +138,10 @@ void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // generate a BGF process
   else {
     wgt = generateBGFPoint(xp,zp);
-    if(xp<1e-6) return;
+    if(xp<eps) return;
     // common pieces 
     Energy2 scale = _q2*((1.-xp)*(1-zp)*zp/xp+1);
-    wgt *= 0.25/Constants::pi*coupling()->value(scale)/(1.-_procprob);
+    wgt *= 0.25/Constants::pi*_alpha->value(scale)/(1.-_procprob);
     // PDF piece
     wgt *= pdf->xfx(beam,gluon              ,scale,xB/xp)/
            pdf->xfx(beam,quark[0]->dataPtr(),_q2  ,xB);
@@ -365,8 +321,8 @@ void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   }
 }
 
-bool DISMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
-					    ShowerParticlePtr parent,Branching br) {
+bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
+				    ShowerParticlePtr parent, Branching br) {
   bool veto = !UseRandom::rndbool(parent->isFinalState() ? 1./_final : 1./_initial);
   // check if me correction should be applied
   long id[2]={initial->id(),parent->id()};
@@ -385,40 +341,44 @@ bool DISMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double x2 = 1.-(1.-zp)/xp;
     vector<double> azicoeff = ComptonME(xp,x2,xperp,_acoeff,_l,false);
     wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.+sqr(z))/_final;
-    if(wgt<.0||wgt>1.) 
-      generator()->log() << "Soft ME correction weight too large or "
-			 << "negative for FSR in DISMECorrection::"
-			 << "softMatrixElementVeto() soft weight " 
-			 << " xp = " << xp
-			 << " zp = " << zp
-			 << " weight = " << wgt << "\n";
+    if(wgt<.0||wgt>1.) {
+      ostringstream wstring;
+      wstring << "Soft ME correction weight too large or "
+	      << "negative for FSR in DISMECorrection::"
+	      << "softMatrixElementVeto() soft weight " 
+	      << " xp = " << xp << " zp = " << zp
+	      << " weight = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(), 
+					 Exception::warning) );
+    }
   }
   else {
     double xp = 2.*z/(1.+zk+sqrt(sqr(1.+zk)-4.*z*zk));
     double zp = 0.5* (1.-zk+sqrt(sqr(1.+zk)-4.*z*zk));
+    double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
+    double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
     // compton
     if(br.ids[0]!=ParticleID::g) {
-      double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
-      double x2 = 1.-(1.-zp)/xp;
       vector<double> azicoeff = ComptonME(xp,x2,xperp,_acoeff,_l,false);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp*(1.-z)/(1.-xp)/(1.+sqr(z))/
 	(1.-zp+xp-2.*xp*(1.-zp));
     }
     // BGF
     else {
-      double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
-      double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;    
       vector<double> azicoeff = BGFME(xp,x2,x3,xperp,_acoeff,_l,true);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.-zp+xp-2.*xp*(1.-zp))/(sqr(z)+sqr(1.-z));
     }
     wgt /=_initial;
-    if(wgt<.0||wgt>1.) 
-      generator()->log() << "Soft ME correction weight too large or "
-			 << "negative for ISR in DISMECorrection::"
-			 << "softMatrixElementVeto() soft weight " 
-			 << " xp = " << xp
-			 << " zp = " << zp
-			 << " weight = " << wgt << "\n";
+    if(wgt<.0||wgt>1.) {
+      ostringstream wstring;
+      wstring << "Soft ME correction weight too large or "
+	      << "negative for ISR in DISMECorrection::"
+	      << "softMatrixElementVeto() soft weight " 
+	      << " xp = " << xp << " zp = " << zp
+	      << " weight = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(), 
+					 Exception::warning) );
+    }
   }
   // if not vetoed
   if(UseRandom::rndbool(wgt)) {
@@ -430,8 +390,8 @@ bool DISMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   return true;
 }
 
-double DISMECorrection::generateComptonPoint(double &xp, double & zp) {
-  static const double maxwgt = 50.;
+double DISBase::generateComptonPoint(double &xp, double & zp) {
+  static const double maxwgt = 1.;
   double wgt;
   do {
     xp  = UseRandom::rnd();
@@ -441,29 +401,20 @@ double DISMECorrection::generateComptonPoint(double &xp, double & zp) {
     if(UseRandom::rndbool()) swap(xp,zp);
     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp,x2=1.-(1.-zp)/xp;
     wgt *= 2.*(1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp);
-    if(wgt>maxwgt) cerr << "testing violates compton max " << wgt << "\n";
+    if(wgt>maxwgt) 
+      generator()->logWarning( Exception("DISBase::generateComptonPoint "
+					 "Weight greater than maximum", 
+					 Exception::warning) );
   }
   while(wgt<UseRandom::rnd()*maxwgt);
   return _comptonint;
 }
 
-double DISMECorrection::generateBGFPoint(double &xp, double & zp) {
-  static const double maxwgt = 2.,npow=0.34,ac=1.0;
+double DISBase::generateBGFPoint(double &xp, double & zp) {
+  static const double maxwgt = 25.;
   double wgt;
   do {
-    double rho = UseRandom::rnd();
-    xp = 1.-pow(rho,1./(1.-npow));
-    wgt = (sqr(xp)+ac+sqr(1.-xp));
-    if(wgt>1.+ac) cerr << "testing violates BGF maxA " << wgt << "\n";
-  }
-  while(wgt<UseRandom::rnd()*(1.+ac));
-  double xpwgt = -((6.-5.*npow+sqr(npow))*ac-3.*npow+sqr(npow)+4) 
-    /(sqr(npow)*(npow-6.)+11.*npow-6.);
-  xpwgt *= pow(1.-xp,npow)/wgt;
-  double xp2(sqr(xp)),lxp(log(xp)),xp4(sqr(xp2)),lxp1(log(1.-xp));
-  double zpwgt = (2.*xp4*(lxp+lxp1-3.)+4.*xp*xp2*(3.-lxp-lxp1)
-		  +xp2*(-13.+lxp+lxp1)+xp*(+7.+lxp+lxp1)-lxp-lxp1-1.)/(1.+xp-xp2);
-  do {
+    xp = UseRandom::rnd();
     double zpmax = 1./(1.+xp*(1.-xp)), zpmin = 1.-zpmax;
     zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
     wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
@@ -472,74 +423,63 @@ double DISMECorrection::generateBGFPoint(double &xp, double & zp) {
     double x3 = 2.+x1-x2;
     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
     wgt *= sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
-    if(wgt>maxwgt*zpwgt) cerr << "testing violates BGF maxB " << wgt/xpwgt << "\n";
+    if(wgt>maxwgt) 
+      generator()->logWarning( Exception("DISBase::generateBGFPoint "
+					 "Weight greater than maximum", 
+					 Exception::warning) );
   }
   while(wgt<UseRandom::rnd()*maxwgt);
-  return zpwgt*xpwgt;
-}
-  
-double DISMECorrection::A(tcPDPtr qin, tcPDPtr,
-			  tcPDPtr lin, tcPDPtr lout) {
-  double output;
-  // charged current
-  if(lin->id()!=lout->id()) {
-    output = 2;
-  }
-  // neutral current
-  else {
-    double fact = 0.25*_q2/(_q2+_mz2)/_sinW/_cosW;
-    double cvl,cal,cvq,caq;
-    if(abs(lin->id())%2==0) {
-      cvl = generator()->standardModel()->vnu()*fact+generator()->standardModel()->enu();
-      cal = generator()->standardModel()->anu()*fact;
-    }
-    else {
-      cvl = generator()->standardModel()->ve()*fact+generator()->standardModel()->ee();
-      cal = generator()->standardModel()->ae()*fact;
-    }
-    if(abs(qin->id())%2==0) {
-      cvq = generator()->standardModel()->vu()*fact+generator()->standardModel()->eu();
-      caq = generator()->standardModel()->au()*fact;
-    }
-    else {
-      cvq = generator()->standardModel()->vd()*fact+generator()->standardModel()->ed();
-      caq = generator()->standardModel()->ad()*fact;
-    }
-    output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
-  }
-  if(qin->id()<0) output *= -1.;
-  if(lin->id()<0) output *= -1;
-  return output;
+  return _bgfint;
+//   static const double maxwgt = 2.,npow=0.34,ac=1.0;
+//   double wgt;
+//   do {
+//     double rho = UseRandom::rnd();
+//     xp = 1.-pow(rho,1./(1.-npow));
+//     wgt = (sqr(xp)+ac+sqr(1.-xp));
+//     if(wgt>1.+ac) cerr << "testing violates BGF maxA " << wgt << "\n";
+//   }
+//   while(wgt<UseRandom::rnd()*(1.+ac));
+//   double xpwgt = -((6.-5.*npow+sqr(npow))*ac-3.*npow+sqr(npow)+4) 
+//     /(sqr(npow)*(npow-6.)+11.*npow-6.);
+//   xpwgt *= pow(1.-xp,npow)/wgt;
+//   double xp2(sqr(xp)),lxp(log(xp)),xp4(sqr(xp2)),lxp1(log(1.-xp));
+//   double zpwgt = (2.*xp4*(lxp+lxp1-3.)+4.*xp*xp2*(3.-lxp-lxp1)
+// 		  +xp2*(-13.+lxp+lxp1)+xp*(+7.+lxp+lxp1)-lxp-lxp1-1.)/(1.+xp-xp2);
+//   do {
+//     double zpmax = 1./(1.+xp*(1.-xp)), zpmin = 1.-zpmax;
+//     zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
+//     wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
+//     double x1 = -1./xp;
+//     double x2 = 1.-(1.-zp)/xp;
+//     double x3 = 2.+x1-x2;
+//     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
+//     wgt *= sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
+//     if(wgt>maxwgt*zpwgt) cerr << "testing violates BGF maxB " << wgt/xpwgt << "\n";
+//   }
+//   while(wgt<UseRandom::rnd()*maxwgt);
+//   return zpwgt*xpwgt;
 }
 
-vector<double> DISMECorrection::ComptonME(double xp, double x2, double xperp,
-					  double A, double l, bool norm) {
+vector<double> DISBase::ComptonME(double xp, double x2, double xperp,
+				  double A, double l, bool norm) {
   vector<double> output(3,0.);
   double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
-  if(_meopt) {
-    double root = sqrt(sqr(l)-1.);
-    output[0] = sqr(cos2)-A*cos2*l+sqr(l);
-    output[1] = A*cos2*root*sin2-2.*l*root*sin2;
-    output[2] = sqr(root)*sqr(sin2);
-    double lo(1+A*l+sqr(l));
-    for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= lo;
-  }
-  else {
-    output[0] = 1.;
-    output[1] = -2.*sin2;
-    output[2] = sqr(sin2);
-  }
+  double root = sqrt(sqr(l)-1.);
+  output[0] = sqr(cos2)-A*cos2*l+sqr(l);
+  output[1] = A*cos2*root*sin2-2.*l*root*sin2;
+  output[2] = sqr(root)*sqr(sin2);
+  double lo(1+A*l+sqr(l));
   double denom = norm ? 1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)) : 1.;
-  double fact  = sqr(xp)*(sqr(x2)+sqr(xperp));
+  double fact  = sqr(xp)*(sqr(x2)+sqr(xperp))/lo;
   for(unsigned int ix=0;ix<output.size();++ix) 
     output[ix] = ((ix==0 ? 1. : 0.) +fact*output[ix])/denom;
   return output;
 }
 
-vector<double> DISMECorrection::BGFME(double xp, double x2, double x3, 
-				      double xperp, double A, double l,
-				      bool norm) {
+vector<double> DISBase::BGFME(double xp, double x2, double x3, 
+			      double xperp, double A, double l,
+			      bool norm) {
   vector<double> output(3,0.);
   double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
@@ -547,23 +487,15 @@ vector<double> DISMECorrection::BGFME(double xp, double x2, double x3,
   double cos3  =   x3 /sqrt(sqr(x3)+sqr(xperp));
   double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
   double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
-  if(_meopt) {
-    double root = sqrt(sqr(l)-1.);
-    output[0] = fact3*(sqr(cos3)-A*cos3*l+sqr(l))+
-                fact2*(sqr(cos2)-A*cos2*l+sqr(l));
-    output[1] =-fact3*(A*cos3*root*sin3-2.*l*root*sin3)+
-                fact2*(A*cos2*root*sin2-2.*l*root*sin2);
-    output[2] = fact3*(sqr(root)*sqr(sin3))+
-                fact2*(sqr(root)*sqr(sin2));
-    double lo(1+A*l+sqr(l));
-    for(unsigned int ix=0;ix<output.size();++ix) output[ix] /=lo;
-  }
-  else {
-    output[0] = fact3+fact2;
-    output[1] = -2.*sin2*fact2+2.*sin3*fact3;
-    output[2] = sqr(sin2)*fact2+sqr(sin3)*fact3;
-  }
-  double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp)) : 1.;
-  for(unsigned int ix=0;ix<output.size();++ix) output[ix] /=denom;
+  double root = sqrt(sqr(l)-1.);
+  output[0] = fact3*(sqr(cos3)-A*cos3*l+sqr(l))+
+    fact2*(sqr(cos2)-A*cos2*l+sqr(l));
+  output[1] =-fact3*(A*cos3*root*sin3-2.*l*root*sin3)+
+    fact2*(A*cos2*root*sin2-2.*l*root*sin2);
+  output[2] = fact3*(sqr(root)*sqr(sin3))+
+    fact2*(sqr(root)*sqr(sin2));
+  double lo(1+A*l+sqr(l));
+  double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*lo : lo;
+  for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;
   return output;
 }
