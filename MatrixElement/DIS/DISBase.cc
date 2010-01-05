@@ -448,10 +448,14 @@ double DISBase::generateComptonPoint(double &xp, double & zp) {
     if(UseRandom::rndbool()) swap(xp,zp);
     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp,x2=1.-(1.-zp)/xp;
     wgt *= 2.*(1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp);
-    if(wgt>maxwgt) 
-      generator()->logWarning( Exception("DISBase::generateComptonPoint "
-					 "Weight greater than maximum", 
+    if(wgt>maxwgt) {
+      ostringstream wstring;
+      wstring << "DISBase::generateComptonPoint "
+	      << "Weight greater than maximum "
+	      << "wgt = " << wgt << " maxwgt = 1\n";
+      generator()->logWarning( Exception(wstring.str(),
 					 Exception::warning) );
+    }
   }
   while(wgt<UseRandom::rnd()*maxwgt);
   return comptonInt_;
@@ -470,10 +474,14 @@ double DISBase::generateBGFPoint(double &xp, double & zp) {
     double x3 = 2.+x1-x2;
     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
     wgt *= sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
-    if(wgt>maxwgt) 
-      generator()->logWarning( Exception("DISBase::generateBGFPoint "
-					 "Weight greater than maximum", 
+    if(wgt>maxwgt) {
+      ostringstream wstring;
+      wstring << "DISBase::generateBGFPoint "
+	      << "Weight greater than maximum "
+	      << "wgt = " << wgt << " maxwgt = 1\n";
+      generator()->logWarning( Exception(wstring.str(),
 					 Exception::warning) );
+    }
   }
   while(wgt<UseRandom::rnd()*maxwgt);
   return bgfInt_;
@@ -868,10 +876,14 @@ void DISBase::generateCompton() {
            pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
     // me piece of the weight
     wgt *= comptonME(xT,xp,zp,phi);
-    if(wgt>1.||wgt<0.) 
-      generator()->logWarning( Exception("DISBase::generateCompton() "
-					 "Weight greater than one or less than zero", 
+    if(wgt>1.||wgt<0.) {
+      ostringstream wstring;
+      wstring << "DISBase::generateCompton() "
+	      << "Weight greater than one or less than zero"
+	      << "wgt = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(),
 					 Exception::warning) );
+    }
   }
   while(xT>xTMin&&UseRandom::rnd()>wgt);
   if(xT<=xTMin) {
@@ -924,10 +936,14 @@ void DISBase::generateBGF() {
            pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
     // me piece of the weight
     wgt *= BGFME(xT,xp,zp,phi);
-    generator()->logWarning( Exception("DISBase::generateBGF() "
-				       "Weight greater than one or less than zero", 
-				       Exception::warning) );
-    if(wgt>1.||wgt<0.) generator()->log() << "BGF weight problem " << wgt << "\n";
+      ostringstream wstring;
+      if(wgt>1.||wgt<0.) {
+	wstring << "DISBase::generateBGF() "
+		<< "Weight greater than one or less than zero"
+		<< "wgt = " << wgt << "\n";
+	generator()->logWarning( Exception(wstring.str(),
+					   Exception::warning) );
+      }
   }
   while(xT>xTMin&&UseRandom::rnd()>wgt);
   if(xT<=xTMin) {
