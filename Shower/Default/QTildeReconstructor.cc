@@ -1534,7 +1534,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
       particles.push_back((**cjt).branchingParticle());
     }
     evolver->showerModel()->partnerFinder()
-      ->setInitialEvolutionScales(particles,true,type,false);
+      ->setInitialEvolutionScales(particles,false,type,false);
     // calculate the reference vectors
     unsigned int iloc(0);
     set<HardBranchingPtr>::iterator clt;
@@ -1931,7 +1931,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     particles.push_back((**cjt).branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true,type,false);
+    ->setInitialEvolutionScales(particles,false,type,false);
   unsigned int iloc(0);
   for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
     // reset the momentum

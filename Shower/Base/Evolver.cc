@@ -912,7 +912,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 
 vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
-  if(_hardEmissionMode==1) hardestEmission();
+  if(_hardEmissionMode==1) hardestEmission(hard);
   // set the initial colour partners
   setEvolutionPartners(hard,ShowerInteraction::QCD);
   // get the particles to be showered
@@ -1149,7 +1149,7 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
   return false;
 }
 
-void Evolver::hardestEmission() {
+void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme)
@@ -1225,7 +1225,8 @@ void Evolver::hardestEmission() {
       particles.push_back((*cit)->branchingParticle());
     }
     ShowerHandler::currentHandler()->evolver()->showerModel()->
-      partnerFinder()->setInitialEvolutionScales(particles,true,_nasontree->interaction(),true);
+      partnerFinder()->setInitialEvolutionScales(particles,!hard,
+						 _nasontree->interaction(),true);
     // inverse reconstruction
     ShowerHandler::currentHandler()->evolver()->showerModel()->
       kinematicsReconstructor()->

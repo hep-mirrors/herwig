@@ -160,7 +160,7 @@ protected:
   /**
    *  Generate the hardest emission
    */
-  virtual void hardestEmission();
+  virtual void hardestEmission(bool hard);
 
   /**
    * Extract the particles to be showered, set the evolution scales
