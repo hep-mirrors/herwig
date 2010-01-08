@@ -547,8 +547,8 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
               fact3*(sqr(cos3)-A*cos3*l+sqr(l));
   output[1] = - fact2*(A*cos2*root*sin2+2.*l*root*sin2)
               - fact3*(A*cos3*root*sin3-2.*l*root*sin3);
-  output[2] = fact3*(sqr(root)*sqr(sin3)) +
-              fact2*(sqr(root)*sqr(sin2));
+  output[2] = fact2*(sqr(root)*sqr(sin2)) +
+              fact3*(sqr(root)*sqr(sin3));
   double lo(1+A*l+sqr(l));
   double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*lo : lo;
   for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;

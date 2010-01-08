@@ -4,7 +4,6 @@ libHwPowhegHard_la_SOURCES = \
 VectorBosonQQbarHardGenerator.h  \
 VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc\
 VVHardGenerator.h VVHardGenerator.cc \
-VBFHardGenerator.h VBFHardGenerator.cc\
 VGammaHardGenerator.h VGammaHardGenerator.cc\
 GammaGammaHardGenerator.h GammaGammaHardGenerator.cc\
 GammaGammaNewHardGenerator.h GammaGammaNewHardGenerator.cc\
