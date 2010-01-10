@@ -137,8 +137,8 @@ protected:
   /**
    *  Calculate the coefficient A for the correlations
    */
-  virtual double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout,
-		   Energy2 scale) =0;
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const =0;
 
   /**
    *  Members for the matrix element correction
@@ -166,12 +166,10 @@ protected:
    * @param xp \f$x_p\f$
    * @param x2 \f$x_2\f$
    * @param xperp \f$x_\perp\f$
-   * @param A \f$\mathcal{A}\f$
-   * @param l \f$l=2/y_B-1\f$
    * @param norm Normalise to the large $l$ value of the ME
    */
   vector<double> ComptonME(double xp, double x2, double xperp,
-			   double A, double l, bool norm);
+			   bool norm);
   
   /**
    *  Return the coefficients for the matrix element piece for
@@ -182,12 +180,10 @@ protected:
    * @param x2 \f$x_3\f$
    * @param x3 \f$x_2\f$
    * @param xperp \f$x_\perp\f$
-   * @param A \f$\mathcal{A}\f$
-   * @param l \f$l=2/y_B-1\f$
    * @param norm Normalise to the large $l$ value of the ME
    */
   vector<double> BGFME(double xp, double x2, double x3, double xperp,
-		       double A, double l, bool norm);
+		       bool norm);
   //@}
 
   /**
@@ -200,19 +196,9 @@ protected:
   void generateCompton();
 
   /**
-   *  Matrix element piece for the Compton process
-   */
-  double comptonME(double xT,double xp, double zp, double phi);
-
-  /**
    *  Generate a BGF process
    */
   void generateBGF();
-
-  /**
-   *  Matrix element piece for the Compton process
-   */
-  double BGFME(double xT,double xp, double zp, double phi);
   //@}
 
 private:
@@ -295,6 +281,11 @@ private:
    *  Partons
    */
   tcPDPtr partons_[2];
+
+  /**
+   *  Leptons
+   */
+  tcPDPtr leptons_[2];
 
   /**
    *  PDF object

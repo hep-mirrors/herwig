@@ -22,7 +22,8 @@
 using namespace Herwig;
 
 MENeutralCurrentDIS::MENeutralCurrentDIS() 
-  : _minflavour(1), _maxflavour(5), _gammaZ(0) {
+  : _minflavour(1), _maxflavour(5), _gammaZ(0),
+    _sinW(0.), _cosW(0.), _mz2(ZERO) {
   vector<unsigned int> mopt(2,0);
   mopt[0] = 1;
   massOption(mopt);
@@ -40,6 +41,11 @@ void MENeutralCurrentDIS::doinit() {
   // vertices
   _theFFZVertex = hwsm->vertexFFZ();
   _theFFPVertex = hwsm->vertexFFP();
+  // electroweak parameters
+  _sinW = generator()->standardModel()->sin2ThetaW();
+  _cosW = sqrt(1.-_sinW);
+  _sinW = sqrt(_sinW);
+  _mz2 = sqr(_z0->mass());
 }
 
 void MENeutralCurrentDIS::getDiagrams() const {
@@ -95,12 +101,12 @@ MENeutralCurrentDIS::colourGeometries(tcDiagPtr diag) const {
 
 void MENeutralCurrentDIS::persistentOutput(PersistentOStream & os) const {
   os << _minflavour << _maxflavour << _gammaZ << _theFFZVertex << _theFFPVertex 
-     << _gamma << _z0;
+     << _gamma << _z0 << _sinW << _cosW << ounit(_mz2,GeV2);
 }
 
 void MENeutralCurrentDIS::persistentInput(PersistentIStream & is, int) {
   is >> _minflavour >> _maxflavour >> _gammaZ >> _theFFZVertex >> _theFFPVertex 
-     >> _gamma >> _z0;
+     >> _gamma >> _z0 >> _sinW >> _cosW >> iunit(_mz2,GeV2) ;
 }
 
 ClassDescription<MENeutralCurrentDIS> MENeutralCurrentDIS::initMENeutralCurrentDIS;
@@ -301,32 +307,37 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   }
 }
 
-double MENeutralCurrentDIS::A(tcPDPtr qin, tcPDPtr,
-			      tcPDPtr lin, tcPDPtr, Energy2 q2) {
-  double sinW = generator()->standardModel()->sin2ThetaW();
-  double cosW = sqrt(1.-sinW);
-  sinW = sqrt(sinW);
-  Energy2 mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-  double fact = 0.25*q2/(q2+mz2)/sinW/cosW;
-  double cvl,cal,cvq,caq;
+double MENeutralCurrentDIS::A(tcPDPtr lin, tcPDPtr,
+			      tcPDPtr qin, tcPDPtr, Energy2 q2) const {
+  // photon only 
+  if(_gammaZ==1) return 0.;
+  // everything else
+  double r = _gammaZ==0 || _gammaZ==2 ? double(q2/(q2+_mz2)) : 0.;
+  double eL,eQ,cvL,caL,cvQ,caQ;;
   if(abs(lin->id())%2==0) {
-    cvl = generator()->standardModel()->vnu()*fact+generator()->standardModel()->enu();
-    cal = generator()->standardModel()->anu()*fact;
+    eL = _gammaZ==0 ? generator()->standardModel()->enu() : 0.;
+    cvL = 0.25*generator()->standardModel()->vnu();
+    caL = 0.25*generator()->standardModel()->anu();
   }
   else {
-    cvl = generator()->standardModel()->ve()*fact+generator()->standardModel()->ee();
-    cal = generator()->standardModel()->ae()*fact;
+    eL = _gammaZ==0 ? generator()->standardModel()->ee()  : 0.;
+    cvL = 0.25*generator()->standardModel()->ve();
+    caL = 0.25*generator()->standardModel()->ae();
   }
   if(abs(qin->id())%2==0) {
-    cvq = generator()->standardModel()->vu()*fact+generator()->standardModel()->eu();
-    caq = generator()->standardModel()->au()*fact;
+    eQ = _gammaZ==0 ? generator()->standardModel()->eu() : 0.;
+    cvQ = 0.25*generator()->standardModel()->vu();
+    caQ = 0.25*generator()->standardModel()->au();
   }
   else {
-    cvq = generator()->standardModel()->vd()*fact+generator()->standardModel()->ed();
-    caq = generator()->standardModel()->ad()*fact;
+    eQ = _gammaZ==0 ? generator()->standardModel()->ed() : 0.;
+    cvQ = 0.25*generator()->standardModel()->vd();
+    caQ = 0.25*generator()->standardModel()->ad();
   }
-  double output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
+  double output = 4.*r*caL*caQ*(eL*eQ+2.*r*cvL*cvQ/sqr(_sinW*_cosW))
+    /sqr(_sinW*_cosW)/(sqr(eL*eQ)+2.*eL*eQ*r/sqr(_cosW*_sinW)*cvL*cvQ
+      +sqr(r/sqr(_cosW*_sinW))*(sqr(cvL)+sqr(caL))*(sqr(cvQ)+sqr(caQ)));
   if(qin->id()<0) output *= -1.;
-  if(lin->id()<0) output *= -1;
+  if(lin->id()<0) output *= -1.;
   return output;
 }

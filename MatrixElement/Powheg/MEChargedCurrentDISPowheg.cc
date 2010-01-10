@@ -167,7 +167,9 @@ double MEChargedCurrentDISPowheg::NLOWeight() const {
     CFfact/_xp*qPDF*(1-_xp-2./(1.-_xp)*log(_xp)-(1.+_xp)*log((1.-_xp)/_xp*_q2/mu2))+
     CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
   // calculate the A coefficient for the real pieces
-  double a(2.);
+  // calculate the A coefficient for the real pieces
+  double a(A(mePartonData()[0],mePartonData()[2],
+	     mePartonData()[1],mePartonData()[3],_q2));
   // cacluate lepton kinematic variables
   Lorentz5Momentum q = meMomenta()[0]-meMomenta()[2];
   double  yB = (q*meMomenta()[1])/(meMomenta()[0]*meMomenta()[1]);

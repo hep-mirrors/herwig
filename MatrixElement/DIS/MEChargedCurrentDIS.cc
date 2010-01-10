@@ -287,8 +287,8 @@ void MEChargedCurrentDIS::constructVertex(tSubProPtr sub) {
   }
 }
 
-double MEChargedCurrentDIS::A(tcPDPtr qin, tcPDPtr,
-			      tcPDPtr lin, tcPDPtr, Energy2) {
+double MEChargedCurrentDIS::A(tcPDPtr lin, tcPDPtr,
+			      tcPDPtr qin, tcPDPtr, Energy2) const {
   double output = 2.;
   if(qin->id()<0) output *= -1.;
   if(lin->id()<0) output *= -1;

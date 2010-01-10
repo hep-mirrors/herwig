@@ -16,9 +16,207 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include <numeric>
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
+
+namespace {
+using namespace Herwig;
+using namespace ThePEG::Helicity;
+
+void debuggingMatrixElement(bool BGF,const Lorentz5Momentum & pin,
+			    const Lorentz5Momentum & p1,
+			    const Lorentz5Momentum & p2,
+			    tcPDPtr gluon,
+			    const Lorentz5Momentum & pl1,
+			    const Lorentz5Momentum & pl2,
+			    const Lorentz5Momentum & pq1,
+			    const Lorentz5Momentum & pq2,
+			    tcPDPtr lepton1,tcPDPtr lepton2,
+			    tcPDPtr quark1 ,tcPDPtr quark2,
+			    Energy2 Q2,double phi, double x2, double x3, 
+			    double xperp, double zp, double xp,
+			    const vector<double> & azicoeff, 
+			    bool normalize) {
+  tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
+    (CurrentGenerator::current().standardModel());
+  assert(hwsm);
+  vector<AbstractFFVVertexPtr> weakVertex;
+  vector<PDPtr> bosons;
+  AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
+  if(lepton1->id()==lepton2->id()) {
+    weakVertex.push_back(hwsm->vertexFFZ());
+    bosons.push_back(hwsm->getParticleData(ParticleID::Z0));
+    weakVertex.push_back(hwsm->vertexFFP());
+    bosons.push_back(hwsm->getParticleData(ParticleID::gamma));
+  }
+  else {
+    weakVertex.push_back(hwsm->vertexFFW());
+    bosons.push_back(hwsm->getParticleData(ParticleID::Wplus));
+  }
+  if(!BGF) {
+    SpinorWaveFunction    l1,q1,qp1;
+    SpinorBarWaveFunction l2,q2,qp2;
+    VectorWaveFunction    gl(p2,gluon,outgoing);
+    if(lepton1->id()>0) {
+      l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
+      l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
+    }
+    else {
+      l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
+      l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
+    }
+    if(quark1->id()>0) {
+      q1  = SpinorWaveFunction   (pq1,quark1,incoming);
+      q2  = SpinorBarWaveFunction(pq2,quark2,outgoing);
+      qp1 = SpinorWaveFunction   (pin,quark1,incoming);
+      qp2 = SpinorBarWaveFunction(p1 ,quark2,outgoing);
+    }
+    else {
+      q1  = SpinorWaveFunction   (pq2,quark2,outgoing);
+      q2  = SpinorBarWaveFunction(pq1,quark1,incoming);
+      qp1 = SpinorWaveFunction   (p1 ,quark2,outgoing);
+      qp2 = SpinorBarWaveFunction(pin,quark1,incoming);
+    }
+    double lome(0.),realme(0.);
+    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+      l1.reset(lhel1);
+      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+	l2.reset(lhel2);
+	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+	  q1.reset(qhel1);
+	  qp1.reset(qhel1);
+	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+	    q2.reset(qhel2);
+	    qp2.reset(qhel2);
+	    // leading order matrix element 
+	    Complex diagLO(0.);
+	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+	      VectorWaveFunction inter = 
+		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
+	    }
+	    lome   += norm(diagLO);
+	    // real emission matrix element
+	    for(unsigned int ghel=0;ghel<2;++ghel) {
+ 	      gl.reset(2*ghel);
+	      Complex diagReal(0.);
+	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+		VectorWaveFunction inter = 
+		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+		SpinorWaveFunction off1 = 
+		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
+		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
+		SpinorBarWaveFunction off2 = 
+		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
+		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
+		diagReal += diag1+diag2;
+	      }
+	      realme += norm(diagReal);
+	    }
+	  }
+	}
+      }
+    }
+    double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
+    double cphi(cos(phi));
+    double test2;
+    if(normalize) {
+      test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
+	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
+	(1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)));
+    }
+    else {
+      test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
+	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
+    }
+    cerr << "testing RATIO A  " << test1/test2 << "\n";
+  }
+  else {
+    SpinorWaveFunction    l1,q1,qp1;
+    SpinorBarWaveFunction l2,q2,qp2;
+    VectorWaveFunction    gl(pin,gluon,incoming);
+    if(lepton1->id()>0) {
+      l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
+      l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
+    }
+    else {
+      l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
+      l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
+    }
+    if(quark1->id()>0) {
+      q1  = SpinorWaveFunction   (pq1,quark1      ,incoming);
+      q2  = SpinorBarWaveFunction(pq2,quark2      ,outgoing);
+      qp2 = SpinorBarWaveFunction(p1    ,quark2      ,outgoing);
+      qp1 = SpinorWaveFunction   (p2    ,quark1->CC(),outgoing);
+    }
+    else {
+      q1  = SpinorWaveFunction   (pq2,quark2      ,outgoing);
+      q2  = SpinorBarWaveFunction(pq1,quark1      ,incoming);
+      qp2 = SpinorBarWaveFunction(p2    ,quark1->CC(),outgoing);
+      qp1 = SpinorWaveFunction   (p1    ,quark2      ,outgoing);
+    }
+    double lome(0.),realme(0.);
+    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+      l1.reset(lhel1);
+      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+	l2.reset(lhel2);
+	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+	  q1.reset(qhel1);
+	  qp1.reset(qhel1);
+	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+	    q2.reset(qhel2);
+	    qp2.reset(qhel2);
+	    // leading order matrix element 
+	    Complex diagLO(0.);
+	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+	      VectorWaveFunction inter = 
+		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
+	    }
+	    lome   += norm(diagLO);
+	    // real emission matrix element
+	    for(unsigned int ghel=0;ghel<2;++ghel) {
+  	      gl.reset(2*ghel);
+	      Complex diagReal(0.);
+	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+		VectorWaveFunction inter = 
+		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+		SpinorWaveFunction off1 = 
+		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
+		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
+		SpinorBarWaveFunction off2 = 
+		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
+		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
+		diagReal += diag1+diag2;
+	      }
+	      realme += norm(diagReal);
+	    }
+	  }
+	}
+      }
+    }
+    double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
+    double cphi(cos(phi));
+    double test2;
+    if(normalize) {
+      test2 = 8.*Constants::pi/zp/(1.-zp)*
+	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
+	sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp));
+    }
+    else {
+      test2 = 8.*Constants::pi/zp/(1.-zp)*
+	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
+    }
+    cerr << "testing RATIO B " << test1/test2 << "\n";
+  }
+}
+
+}
  
 DISBase::DISBase()  : initial_(6.), final_(3.),
 		      procProb_(0.35),
@@ -96,7 +294,6 @@ void DISBase::initializeMECorrection(ShowerTreePtr tree, double & initial,
   initial = initial_;
   final   = final_;
   // incoming particles
-  tcPDPtr leptons[2];
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
@@ -104,7 +301,7 @@ void DISBase::initializeMECorrection(ShowerTreePtr tree, double & initial,
       pq_[0] = cit->first->progenitor()->momentum();
     }
     else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
-      leptons[0] = cit->first->progenitor()->dataPtr();
+      leptons_[0] = cit->first->progenitor()->dataPtr();
       pl_[0] = cit->first->progenitor()->momentum();
     }
   }
@@ -116,7 +313,7 @@ void DISBase::initializeMECorrection(ShowerTreePtr tree, double & initial,
       pq_[1] = cit->first->progenitor()->momentum();
     }
     else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
-      leptons[1] = cit->first->progenitor()->dataPtr();
+      leptons_[1] = cit->first->progenitor()->dataPtr();
       pl_[1] = cit->first->progenitor()->momentum();
     }
   }
@@ -126,7 +323,7 @@ void DISBase::initializeMECorrection(ShowerTreePtr tree, double & initial,
   double  yB = (q_*pq_[0])/(pl_[0]*pq_[0]); 
   l_ = 2./yB-1.;
   // calculate the A coefficient for the correlations
-  acoeff_ = A(leptons[0],leptons[1],
+  acoeff_ = A(leptons_[0],leptons_[1],
 	      partons_[0],partons_[1],q2_);
 }
 
@@ -154,16 +351,18 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
       quark [1] = cit->first->progenitor();
-    else if(LeptonMatcher::Check(cit->first->progenitor()->data()))
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
       lepton[1] = cit->first->progenitor();
+    }
   }
+  // momentum fraction
   assert(quark[1]&&lepton[1]);
   xB_ = quark[0]->x();
+  // calculate the matrix element
   vector<double> azicoeff;
   // select the type of process
   bool BGF = UseRandom::rnd()>procProb_;
   double xp,zp,wgt,x1,x2,x3,xperp;
-  tcPDPtr gluon = getParticleData(ParticleID::g);
   // generate a QCD compton process
   if(!BGF) {
     wgt = generateComptonPoint(xp,zp);
@@ -180,7 +379,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,true);
+    azicoeff = ComptonME(xp,x2,xperp,true);
   }
   // generate a BGF process
   else {
@@ -190,7 +389,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1);
     wgt *= 0.25/Constants::pi*alpha_->value(scale)/(1.-procProb_);
     // PDF piece
-    wgt *= pdf_->xfx(beam_,gluon              ,scale,xB_/xp)/
+    wgt *= pdf_->xfx(beam_,gluon_              ,scale,xB_/xp)/
            pdf_->xfx(beam_,quark[0]->dataPtr(),q2_  ,xB_);
     // other bits
     xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
@@ -198,7 +397,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = BGFME(xp,x2,x3,xperp,acoeff_,l_,true);
+    azicoeff = BGFME(xp,x2,x3,xperp,true);
   }
   // compute the azimuthal average of the weight
   wgt *= (azicoeff[0]+0.5*azicoeff[2]);
@@ -218,15 +417,6 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   if(itry==200) throw Exception() << "Too many tries in DISMECorrection"
 				  << "::applyHardMatrixElementCorrection() to"
 				  << " generate phi" << Exception::eventerror;
-  // compute the new incoming and outgoing momenta
-  Energy Q(sqrt(q2_));
-  Lorentz5Momentum p1 = Lorentz5Momentum( 0.5*Q*xperp*cos(phi), 0.5*Q*xperp*sin(phi),
-					  -0.5*Q*x2,0.*GeV,0.*GeV);
-  p1.rescaleEnergy();
-  Lorentz5Momentum p2 = Lorentz5Momentum(-0.5*Q*xperp*cos(phi),-0.5*Q*xperp*sin(phi),
-					 -0.5*Q*x3,0.*GeV,0.*GeV);
-  p2.rescaleEnergy();
-  Lorentz5Momentum pin(0.*GeV,0.*GeV,-0.5*x1*Q,-0.5*x1*Q,0.*GeV);
   // construct lorentz transform from lab to breit frame
   Lorentz5Momentum phadron =  hadron->momentum();
   phadron.setMass(0.*GeV);
@@ -240,6 +430,23 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   Lorentz5Momentum pl    = rot*pl_[0];
   rot.rotateZ(-atan2(pl.y(),pl.x()));
+  pl_[0] *= rot;
+  pl_[1] *= rot;
+  pq_[0] *= rot;
+  pq_[1] *= rot;
+  // compute the new incoming and outgoing momenta
+  Energy Q(sqrt(q2_));
+  Lorentz5Momentum p1 = Lorentz5Momentum( 0.5*Q*xperp*cos(phi), 0.5*Q*xperp*sin(phi),
+					  -0.5*Q*x2,0.*GeV,0.*GeV);
+  p1.rescaleEnergy();
+  Lorentz5Momentum p2 = Lorentz5Momentum(-0.5*Q*xperp*cos(phi),-0.5*Q*xperp*sin(phi),
+					 -0.5*Q*x3,0.*GeV,0.*GeV);
+  p2.rescaleEnergy();
+  Lorentz5Momentum pin(0.*GeV,0.*GeV,-0.5*x1*Q,-0.5*x1*Q,0.*GeV);
+//   debuggingMatrixElement(BGF,pin,p1,p2,gluon_,pl_[0],pl_[1],pq_[0],pq_[1],
+// 			 lepton[0]->dataPtr(),lepton[1]->dataPtr(),
+// 			 quark [0]->dataPtr(),quark [1]->dataPtr(),
+// 			 q2_,phi,x2,x3,xperp,zp,xp,azicoeff,true);
   // we need the Lorentz transform back to the lab
   rot.invert();
   // transform the momenta to lab frame
@@ -249,7 +456,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // test to ensure outgoing particles can be put on-shell
   if(!BGF) {
     if(p1.e()<quark[1]->dataPtr()->constituentMass()) return;
-    if(p2.e()<gluon              ->constituentMass()) return;
+    if(p2.e()<gluon_              ->constituentMass()) return;
   }
   else {
     if(p1.e()<quark[1]->dataPtr()      ->constituentMass()) return;
@@ -260,7 +467,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   if(!BGF) {
     PPtr newin  = new_ptr(Particle(*quark[0]));
     newin->set5Momentum(pin);
-    PPtr newg   = gluon              ->produceParticle(p2 );
+    PPtr newg   = gluon_              ->produceParticle(p2 );
     PPtr newout = quark[1]->dataPtr()->produceParticle(p1 ); 
     ColinePtr col=isquark ? 
       quark[0]->colourLine() : quark[0]->antiColourLine();
@@ -320,7 +527,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     tree->hardMatrixElementCorrection(true);
   }
   else {
-    PPtr newin   = gluon                    ->produceParticle(pin);
+    PPtr newin   = gluon_                   ->produceParticle(pin);
     PPtr newqbar = quark[0]->dataPtr()->CC()->produceParticle(p2 );
     PPtr newout  = quark[1]->dataPtr()      ->produceParticle(p1 );
     ColinePtr col=isquark ? quark[0]->colourLine() : quark[0]->antiColourLine();
@@ -386,7 +593,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double zp=z,xp=1./(1.+z*zk);
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x2 = 1.-(1.-zp)/xp;
-    vector<double> azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,false);
+    vector<double> azicoeff = ComptonME(xp,x2,xperp,false);
     wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.+sqr(z))/final_;
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
@@ -406,13 +613,13 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
     // compton
     if(br.ids[0]!=ParticleID::g) {
-      vector<double> azicoeff = ComptonME(xp,x2,xperp,acoeff_,l_,false);
+      vector<double> azicoeff = ComptonME(xp,x2,xperp,false);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp*(1.-z)/(1.-xp)/(1.+sqr(z))/
 	(1.-zp+xp-2.*xp*(1.-zp));
     }
     // BGF
     else {
-      vector<double> azicoeff = BGFME(xp,x2,x3,xperp,acoeff_,l_,true);
+      vector<double> azicoeff = BGFME(xp,x2,x3,xperp,true);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp/(1.-zp+xp-2.*xp*(1.-zp))/(sqr(z)+sqr(1.-z));
     }
     wgt /=initial_;
@@ -516,15 +723,15 @@ double DISBase::generateBGFPoint(double &xp, double & zp) {
 }
 
 vector<double> DISBase::ComptonME(double xp, double x2, double xperp,
-				  double A, double l, bool norm) {
+				  bool norm) {
   vector<double> output(3,0.);
   double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
-  double root = sqrt(sqr(l)-1.);
-  output[0] = sqr(cos2)-A*cos2*l+sqr(l);
-  output[1] = -A*cos2*root*sin2-2.*l*root*sin2;
+  double root = sqrt(sqr(l_)-1.);
+  output[0] = sqr(cos2)+acoeff_*cos2*l_+sqr(l_);
+  output[1] = -acoeff_*cos2*root*sin2-2.*l_*root*sin2;
   output[2] = sqr(root)*sqr(sin2);
-  double lo(1+A*l+sqr(l));
+  double lo(1+acoeff_*l_+sqr(l_));
   double denom = norm ? 1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)) : 1.;
   double fact  = sqr(xp)*(sqr(x2)+sqr(xperp))/lo;
   for(unsigned int ix=0;ix<output.size();++ix) 
@@ -533,8 +740,7 @@ vector<double> DISBase::ComptonME(double xp, double x2, double xperp,
 }
 
 vector<double> DISBase::BGFME(double xp, double x2, double x3, 
-			      double xperp, double A, double l,
-			      bool norm) {
+			      double xperp, bool norm) {
   vector<double> output(3,0.);
   double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
@@ -542,14 +748,14 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
   double cos3  =   x3 /sqrt(sqr(x3)+sqr(xperp));
   double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
   double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
-  double root = sqrt(sqr(l)-1.);
-  output[0] = fact2*(sqr(cos2)+A*cos2*l+sqr(l)) +
-              fact3*(sqr(cos3)-A*cos3*l+sqr(l));
-  output[1] = - fact2*(A*cos2*root*sin2+2.*l*root*sin2)
-              - fact3*(A*cos3*root*sin3-2.*l*root*sin3);
+  double root = sqrt(sqr(l_)-1.);
+  output[0] = fact2*(sqr(cos2)+acoeff_*cos2*l_+sqr(l_)) +
+              fact3*(sqr(cos3)-acoeff_*cos3*l_+sqr(l_));
+  output[1] = - fact2*(acoeff_*cos2*root*sin2+2.*l_*root*sin2)
+              - fact3*(acoeff_*cos3*root*sin3-2.*l_*root*sin3);
   output[2] = fact2*(sqr(root)*sqr(sin2)) +
               fact3*(sqr(root)*sqr(sin3));
-  double lo(1+A*l+sqr(l));
+  double lo(1+acoeff_*l_+sqr(l_));
   double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*lo : lo;
   for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;
   return output;
@@ -568,6 +774,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
     }
     else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
       lepton[0] = cit->first->progenitor();
+      leptons_[0] = lepton[0]->dataPtr();
     }
   }
   pdf_=beam_->pdf();
@@ -577,8 +784,10 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
       quark [1] = cit->first->progenitor();
-    else if(LeptonMatcher::Check(cit->first->progenitor()->data()))
+    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
       lepton[1] = cit->first->progenitor();
+      leptons_[1] = lepton[1]->dataPtr();
+    }
   }
   assert(quark[1]&&lepton[1]);
   // Particle data objects
@@ -856,7 +1065,8 @@ void DISBase::generateCompton() {
   // prefactor
   double a = alpha_->overestimateValue()*comptonWeight_/Constants::twopi;
   // loop to generate kinematics
-  double wgt(0.),xp(0.),phi(0.);
+  double wgt(0.),xp(0.);
+  vector<double> azicoeff;
   do {
     wgt = 0.;
     // intergration variables dxT/xT^3
@@ -866,8 +1076,6 @@ void DISBase::generateCompton() {
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
     // check allowed
     if(xp<xB_||xp>1.) continue;
-    // other phase-space variables
-    phi=UseRandom::rnd()*Constants::twopi;
     // phase-space piece of the weight
     wgt = 8.*(1.-xp)*zp/comptonWeight_;
     // PDF piece of the weight
@@ -875,7 +1083,9 @@ void DISBase::generateCompton() {
     wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
            pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
     // me piece of the weight
-    wgt *= comptonME(xT,xp,zp,phi);
+    double x2 = 1.-(1.-zp)/xp;
+    azicoeff = ComptonME(xp,x2,xT,false);
+    wgt *= 4./3.*alpha_->ratio(0.25*q2_*sqr(xT))*(azicoeff[0]+0.5*azicoeff[2]);
     if(wgt>1.||wgt<0.) {
       ostringstream wstring;
       wstring << "DISBase::generateCompton() "
@@ -890,6 +1100,20 @@ void DISBase::generateCompton() {
     pTCompton_=-GeV;
     return;
   }
+  // generate phi
+  unsigned int itry(0);
+  double phimax = std::accumulate(azicoeff.begin(),azicoeff.end(),0.);
+  double phiwgt,phi;
+  do {
+    phi = UseRandom::rnd()*Constants::twopi;
+    double cphi(cos(phi));
+    phiwgt = azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi);
+    ++itry;
+  }
+  while (phimax*UseRandom::rnd() > phiwgt && itry<200);
+  if(itry==200) throw Exception() << "Too many tries in DISMECorrection"
+				  << "::generateCompton() to"
+				  << " generate phi" << Exception::eventerror;
   // momenta for the configuration
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
@@ -906,6 +1130,10 @@ void DISBase::generateCompton() {
   ComptonMomenta_[1] = p1;
   ComptonMomenta_[2] = p2;
   ComptonISFS_ = zp>xp;
+//   debuggingMatrixElement(false,p0,p1,p2,gluon_,pl_[0],pl_[1],pq_[0],pq_[1],
+// 			 leptons_[0],leptons_[1],
+// 			 partons_[0],partons_[1],
+// 			 q2_,phi,x2,x3,xT,zp,xp,azicoeff,false);
 }
 
 void DISBase::generateBGF() {
@@ -916,7 +1144,8 @@ void DISBase::generateBGF() {
   // prefactor
   double a = alpha_->overestimateValue()*BGFWeight_/Constants::twopi;
   // loop to generate kinematics
-  double wgt(0.),xp(0.),phi(0.);
+  double wgt(0.),xp(0.);
+  vector<double> azicoeff;
   do {
     wgt = 0.;
     // intergration variables dxT/xT^3
@@ -926,8 +1155,6 @@ void DISBase::generateBGF() {
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
     // check allowed
     if(xp<xB_||xp>1.) continue;
-    // other phase-space variables
-    phi=UseRandom::rnd()*Constants::twopi;
     // phase-space piece of the weight
     wgt = 8.*sqr(1.-xp)*zp/BGFWeight_;
     // PDF piece of the weight
@@ -935,21 +1162,40 @@ void DISBase::generateBGF() {
     wgt *= pdf_->xfx(beam_,gluon_     ,scale,xB_/xp)/
            pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
     // me piece of the weight
-    wgt *= BGFME(xT,xp,zp,phi);
+    double x1 = -1./xp;
+    double x2 = 1.-(1.-zp)/xp;
+    double x3 = 2.+x1-x2;
+    azicoeff = BGFME(xp,x2,x3,xT,false);
+    wgt *= 0.5*alpha_->ratio(0.25*q2_*sqr(xT))*
+      (azicoeff[0]+0.5*azicoeff[2]);
+    if(wgt>1.||wgt<0.) {
       ostringstream wstring;
-      if(wgt>1.||wgt<0.) {
-	wstring << "DISBase::generateBGF() "
-		<< "Weight greater than one or less than zero"
-		<< "wgt = " << wgt << "\n";
-	generator()->logWarning( Exception(wstring.str(),
-					   Exception::warning) );
-      }
+      wstring << "DISBase::generateBGF() "
+	      << "Weight greater than one or less than zero"
+	      << "wgt = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(),
+					 Exception::warning) );
+    }
   }
   while(xT>xTMin&&UseRandom::rnd()>wgt);
   if(xT<=xTMin) {
     pTBGF_=-GeV;
     return;
   }
+  // generate phi
+  unsigned int itry(0);
+  double phimax = std::accumulate(azicoeff.begin(),azicoeff.end(),0.);
+  double phiwgt,phi;
+  do {
+    phi = UseRandom::rnd()*Constants::twopi;
+    double cphi(cos(phi));
+    phiwgt = azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi);
+    ++itry;
+  }
+  while (phimax*UseRandom::rnd() > phiwgt && itry<200);
+  if(itry==200) throw Exception() << "Too many tries in DISMECorrection"
+				  << "::generateBGF() to"
+				  << " generate phi" << Exception::eventerror;
   // momenta for the configuration
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
@@ -965,41 +1211,8 @@ void DISBase::generateBGF() {
   BGFMomenta_[0]=p0;
   BGFMomenta_[1]=p1;
   BGFMomenta_[2]=p2;
-}
-
-double DISBase::comptonME(double xT, double xp, double zp,
-			  double phi) {
-  // kinematical variables
-  double x2 = 1.-(1.-zp)/xp;
-  // matrix element
-  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
-  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
-  double root = sqrt(sqr(l_)-1.);
-  double cphi = cos(phi);
-  // compute the r2 term
-  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  return 4./3.*alpha_->ratio(0.25*q2_*sqr(xT))*(1.+R2*sqr(xp)*(sqr(x2)+sqr(xT)));
-}
-
-double DISBase::BGFME(double xT, double xp, double zp,
-		      double phi) {
-  // kinematical variables
-  double x1 = -1./xp;
-  double x2 = 1.-(1.-zp)/xp;
-  double x3 = 2.+x1-x2;
-  // matrix element
-  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
-  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
-  double cos3 = x3/sqrt(sqr(x3)+sqr(xT));
-  double sin3 = xT/sqrt(sqr(x3)+sqr(xT));
-  double root = sqrt(sqr(l_)-1.);
-  double cphi = cos(phi);
-  // compute the r2 term
-  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  double R3= (sqr(cos3)-acoeff_*cos3*(l_+root*sin3*cphi)+sqr(l_+root*sin3*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  return 0.5*alpha_->ratio(0.25*q2_*sqr(xT))*sqr(xp)*
-    (R2*(sqr(x2)+sqr(xT))+R3*(sqr(x3)+sqr(xT)));
+//   debuggingMatrixElement(true,p0,p1,p2,gluon_,pl_[0],pl_[1],pq_[0],pq_[1],
+// 			 leptons_[0],leptons_[1],
+// 			 partons_[0],partons_[1],
+// 			 q2_,phi,x2,x3,xT,zp,xp,azicoeff,false);
 }

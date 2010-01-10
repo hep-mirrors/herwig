@@ -58,13 +58,11 @@ IBPtr MENeutralCurrentDISPowheg::fullclone() const {
 }
 
 void MENeutralCurrentDISPowheg::persistentOutput(PersistentOStream & os) const {
-  os << ounit(muF_,GeV) << scaleFact_ << scaleOpt_ << contrib_
-     << _sinW << _cosW << ounit(_mz2,GeV2) << power_;
+  os << ounit(muF_,GeV) << scaleFact_ << scaleOpt_ << contrib_<< power_;
 }
 
 void MENeutralCurrentDISPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(muF_,GeV) >> scaleFact_ >> scaleOpt_ >> contrib_
-     >> _sinW >> _cosW >> iunit(_mz2,GeV2) >> power_;
+  is >> iunit(muF_,GeV) >> scaleFact_ >> scaleOpt_ >> contrib_ >> power_;
 }
 
 ClassDescription<MENeutralCurrentDISPowheg> 
@@ -169,7 +167,8 @@ double MENeutralCurrentDISPowheg::NLOWeight() const {
     CFfact/_xp*qPDF*(1-_xp-2./(1.-_xp)*log(_xp)-(1.+_xp)*log((1.-_xp)/_xp*_q2/mu2))+
     CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
   // calculate the A coefficient for the real pieces
-  double a(A());
+  double a(A(mePartonData()[0],mePartonData()[2],
+	     mePartonData()[1],mePartonData()[3],_q2));
   // cacluate lepton kinematic variables
   Lorentz5Momentum q = meMomenta()[0]-meMomenta()[2];
   double  yB = (q*meMomenta()[1])/(meMomenta()[0]*meMomenta()[1]);
@@ -193,46 +192,4 @@ double MENeutralCurrentDISPowheg::NLOWeight() const {
   //     +(qPDF-_xp*loPDF)*CFfact/_xp*(2.*log(1.-_xp)/(1.-_xp)-1.5/(1.-_xp));
   //   double wgt = (f2g+f2q)/loPDF;
   return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
-}
-
-void MENeutralCurrentDISPowheg::doinit() {
-  MENeutralCurrentDIS::doinit();
-  // electroweak parameters
-  _sinW = generator()->standardModel()->sin2ThetaW();
-  _cosW = sqrt(1.-_sinW);
-  _sinW = sqrt(_sinW);
-  _mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-}
-
-double MENeutralCurrentDISPowheg::A() const {
-  double output;
-  double factZ = (gammaZOption()==0||gammaZOption()==2) ? 
-    0.25*double(_q2/(_q2+_mz2))/_sinW/_cosW : 0;
-  double factG = (gammaZOption()==0||gammaZOption()==1) ? 
-    1 : 0;
-  double cvl,cal,cvq,caq;
-  if(abs(mePartonData()[0]->id())%2==0) {
-    cvl = generator()->standardModel()->vnu()*factZ+
-          generator()->standardModel()->enu()*factG;
-    cal = generator()->standardModel()->anu()*factZ;
-  }
-  else {
-    cvl = generator()->standardModel()->ve()*factZ+
-          generator()->standardModel()->ee()*factG;
-    cal = generator()->standardModel()->ae()*factZ;
-  }
-  if(abs(mePartonData()[1]->id())%2==0) {
-    cvq = generator()->standardModel()->vu()*factZ+
-          generator()->standardModel()->eu()*factG;
-    caq = generator()->standardModel()->au()*factZ;
-  }
-  else {
-    cvq = generator()->standardModel()->vd()*factZ+
-          generator()->standardModel()->ed()*factG;
-    caq = generator()->standardModel()->ad()*factZ;
-  }
-  output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
-  if(mePartonData()[1]->id()<0) output *= -1.;
-  if(mePartonData()[0]->id()<0) output *= -1;
-  return output;
 }

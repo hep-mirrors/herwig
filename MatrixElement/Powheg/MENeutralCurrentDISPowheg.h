@@ -94,23 +94,6 @@ protected:
    */
   double NLOWeight() const;
 
-  /**
-   *  The A coefficient for the real emission pieces
-   */
-  double A() const;
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 protected:
 
   /** @name Clone Methods. */
@@ -167,26 +150,6 @@ private:
    *  The \f$x_p\f$ or \f$z\f$ real integration variable
    */
   double _xp;
-  //@}
-
-  /**
-   *  Electroweak parameters
-   */
-  //@{
-  /**
-   *  \f$\sin\theta_W\f$
-   */
-  double _sinW;
-
-  /**
-   *  \f$\cos\theta_W\f$
-   */
-  double _cosW;
-
-  /**
-   *  The square of the Z mass
-   */
-  Energy2 _mz2;
   //@}
 
   /**

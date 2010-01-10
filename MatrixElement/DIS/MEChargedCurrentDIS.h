@@ -144,8 +144,8 @@ protected:
    *  Calculate the coefficient A for the correlations in the hard
    *  radiation
    */
-  virtual double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout,
-		   Energy2 scale);
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const;
 
 protected:
 
