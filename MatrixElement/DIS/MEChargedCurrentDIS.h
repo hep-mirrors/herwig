@@ -59,11 +59,6 @@ public:
   virtual double me2() const;
 
   /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;

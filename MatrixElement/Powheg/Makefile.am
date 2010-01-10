@@ -12,9 +12,3 @@ MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
 MEPP2GammaGammaPowhegNEW.cc  MEPP2GammaGammaPowhegNEW.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
 VVKinematics.cc VVKinematics.h
-
-pkglib_LTLIBRARIES += HwPowhegMEDIS.la
-HwPowhegMEDIS_la_LDFLAGS = -module -version-info 3:0:0
-HwPowhegMEDIS_la_SOURCES = \
-MENeutralCurrentDISPowheg.h MENeutralCurrentDISPowheg.cc \
-MEChargedCurrentDISPowheg.h MEChargedCurrentDISPowheg.cc

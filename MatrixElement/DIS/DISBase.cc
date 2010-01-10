@@ -6,6 +6,7 @@
 
 #include "DISBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -18,6 +19,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "Herwig++/PDT/StandardMatchers.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include <numeric>
 
@@ -222,19 +224,23 @@ DISBase::DISBase()  : initial_(6.), final_(3.),
 		      procProb_(0.35),
 		      comptonInt_(0.), bgfInt_(0.),
 		      comptonWeight_(50.), BGFWeight_(150.), 
-		      pTmin_(0.1*GeV) 
+		      pTmin_(0.1*GeV), 
+		      scaleOpt_(1),  muF_(100.*GeV), scaleFact_(1.),
+		      contrib_(0), power_(0.1)
 {}
 
 DISBase::~DISBase() {}
 
 void DISBase::persistentOutput(PersistentOStream & os) const {
   os << comptonInt_ << bgfInt_ << procProb_ << initial_ << final_ << alpha_
-     << ounit(pTmin_,GeV) << comptonWeight_ << BGFWeight_ << gluon_;
+     << ounit(pTmin_,GeV) << comptonWeight_ << BGFWeight_ << gluon_
+     << ounit(muF_,GeV) << scaleFact_ << scaleOpt_ << contrib_<< power_;
 }
 
 void DISBase::persistentInput(PersistentIStream & is, int) {
   is >> comptonInt_ >> bgfInt_ >> procProb_  >> initial_ >> final_ >> alpha_
-     >> iunit(pTmin_,GeV) >> comptonWeight_ >> BGFWeight_ >> gluon_;
+     >> iunit(pTmin_,GeV) >> comptonWeight_ >> BGFWeight_ >> gluon_
+     >> iunit(muF_,GeV) >> scaleFact_ >> scaleOpt_ >> contrib_ >> power_;
 }
 
 AbstractClassDescription<DISBase> DISBase::initDISBase;
@@ -275,6 +281,59 @@ void DISBase::Init() {
     ("BGFWeight",
      "Weight for the overestimate of the BGF channel",
      &DISBase::BGFWeight_, 100.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Switch<DISBase,unsigned int> interfaceContribution
+    ("Contribution",
+     "Which contributions to the cross section to include",
+     &DISBase::contrib_, 0, false, false);
+  static SwitchOption interfaceContributionLeadingOrder
+    (interfaceContribution,
+     "LeadingOrder",
+     "Just generate the leading order cross section",
+     0);
+  static SwitchOption interfaceContributionPositiveNLO
+    (interfaceContribution,
+     "PositiveNLO",
+     "Generate the positive contribution to the full NLO cross section",
+     1);
+  static SwitchOption interfaceContributionNegativeNLO
+    (interfaceContribution,
+     "NegativeNLO",
+     "Generate the negative contribution to the full NLO cross section",
+     2);
+
+  static Switch<DISBase,unsigned int> interfaceScaleOption
+    ("ScaleOption",
+     "Option for the choice of factorization (and renormalization) scale",
+     &DISBase::scaleOpt_, 1, false, false);
+  static SwitchOption interfaceDynamic
+    (interfaceScaleOption,
+     "Dynamic",
+     "Dynamic factorization scale equal to the current sqrt(sHat())",
+     1);
+  static SwitchOption interfaceFixed
+    (interfaceScaleOption,
+     "Fixed",
+     "Use a fixed factorization scale set with FactorizationScaleValue",
+     2);
+
+  static Parameter<DISBase,Energy> interfaceFactorizationScale
+    ("FactorizationScale",
+     "Value to use in the event of a fixed factorization scale",
+     &DISBase::muF_, GeV, 100.0*GeV, 1.0*GeV, 500.0*GeV,
+     true, false, Interface::limited);
+
+  static Parameter<DISBase,double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The factor used before Q2 if using a running scale",
+     &DISBase::scaleFact_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DISBase,double> interfaceSamplingPower
+    ("SamplingPower",
+     "Power for the sampling of xp",
+     &DISBase::power_, 0.6, 0.0, 1.,
      false, false, Interface::limited);
 }
 
@@ -1215,4 +1274,98 @@ void DISBase::generateBGF() {
 // 			 leptons_[0],leptons_[1],
 // 			 partons_[0],partons_[1],
 // 			 q2_,phi,x2,x3,xT,zp,xp,azicoeff,false);
+}
+
+int DISBase::nDim() const {
+  return HwMEBase::nDim() + (contrib_>0 ? 1 : 0 );
+}
+
+bool DISBase::generateKinematics(const double * r) {
+  // Born kinematics
+  if(!HwMEBase::generateKinematics(r)) return false;
+  if(contrib_!=0) {
+    // hadron and momentum fraction
+    if(HadronMatcher::Check(*lastParticles().first->dataPtr())) {
+      hadron_ = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
+      xB_ = lastX1();
+    }
+    else {
+      hadron_ = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
+      xB_ = lastX2();
+    }
+    // Q2
+    q2_ = -(meMomenta()[0]-meMomenta()[2]).m2();
+    // xp
+    int ndim=nDim();
+    double rhomin = pow(1.-xB_,1.-power_); 
+    double rho = r[ndim-1]*rhomin;
+    xp_ = 1.-pow(rho,1./(1.-power_));
+    jac_ = rhomin/(1.-power_)*pow(1.-xp_,power_);
+    jacobian(jacobian()*jac_);
+  }
+  return true; 
+}
+
+Energy2 DISBase::scale() const {
+  return scaleOpt_ == 1 ? 
+    -sqr(scaleFact_)*tHat() : sqr(scaleFact_*muF_);
+}
+
+CrossSection DISBase::dSigHatDR() const {
+  return NLOWeight()*HwMEBase::dSigHatDR();
+}
+
+double DISBase::NLOWeight() const {
+  // If only leading order is required return 1:
+  if(contrib_==0) return 1.;
+  // scale and prefactors
+  Energy2 mu2(scale());
+  double aS = SM().alphaS(mu2);
+  double CFfact = 4./3.*aS/Constants::twopi;
+  double TRfact = 1./2.*aS/Constants::twopi;
+  // LO + dipole subtracted virtual + collinear quark bit with LO pdf
+  double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+1.5*log(q2_/mu2/(1.-xB_))
+			   +2.*log(1.-xB_)*log(q2_/mu2)+sqr(log(1.-xB_)));
+  virt /= jac_;
+  // PDF from leading-order
+  double loPDF = hadron_->pdf()->xfx(hadron_,mePartonData()[1],mu2,xB_)/xB_;
+  // NLO gluon PDF
+  tcPDPtr gluon = getParticleData(ParticleID::g);
+  double gPDF   = hadron_->pdf()->xfx(hadron_,gluon,mu2,xB_/xp_)*xp_/xB_;
+  // NLO quark PDF
+  double qPDF   = hadron_->pdf()->xfx(hadron_,mePartonData()[1],mu2,xB_/xp_)*xp_/xB_;
+  // collinear counterterms
+  // gluon
+  double collg = 
+    TRfact/xp_*gPDF*(2.*xp_*(1.-xp_)+(sqr(xp_)+sqr(1.-xp_))*log((1.-xp_)*q2_/xp_/mu2));
+  // quark
+  double collq = 
+    CFfact/xp_*qPDF*(1-xp_-2./(1.-xp_)*log(xp_)-(1.+xp_)*log((1.-xp_)/xp_*q2_/mu2))+
+    CFfact/xp_*(qPDF-xp_*loPDF)*(2./(1.-xp_)*log(q2_*(1.-xp_)/mu2)-1.5/(1.-xp_));
+  // calculate the A coefficient for the real pieces
+  double a(A(mePartonData()[0],mePartonData()[2],
+	     mePartonData()[1],mePartonData()[3],q2_));
+  // cacluate lepton kinematic variables
+  Lorentz5Momentum q = meMomenta()[0]-meMomenta()[2];
+  double  yB = (q*meMomenta()[1])/(meMomenta()[0]*meMomenta()[1]);
+  double l = 2./yB-1.;
+  // q -> qg term
+  double realq = CFfact/xp_/(1.+a*l+sqr(l))*qPDF/loPDF*
+    (2.+2.*sqr(l)-xp_+3.*xp_*sqr(l)+a*l*(2.*xp_+1.));
+  // g -> q qbar term
+  double realg =-TRfact/xp_/(1.+a*l+sqr(l))*gPDF/loPDF*
+    ((1.+sqr(l)+2.*(1.-3.*sqr(l))*xp_*(1.-xp_))
+     +2.*a*l*(1.-2.*xp_*(1.-xp_)));
+  // return the full result
+  double wgt = virt+((collq+collg)/loPDF+realq+realg); 
+  //   double f2g = gPDF/xp_*TRfact*((sqr(1-xp_)+sqr(xp_))*log((1-xp_)/xp_)+
+  // 				8*xp_*(1.-xp_)-1.);
+  //   double f2q = 
+  //     loPDF/jac_*(1.+CFfact*(-1.5*log(1.-xB_)+sqr(log(1.-xB_))
+  // 			   -sqr(Constants::pi)/3.-4.5))
+  //     +qPDF            *CFfact/xp_*(3.+2.*xp_-(1.+xp_)*log(1.-xp_)
+  // 				  -(1.+sqr(xp_))/(1.-xp_)*log(xp_))
+  //     +(qPDF-xp_*loPDF)*CFfact/xp_*(2.*log(1.-xp_)/(1.-xp_)-1.5/(1.-xp_));
+  //   double wgt = (f2g+f2q)/loPDF;
+  return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
 }

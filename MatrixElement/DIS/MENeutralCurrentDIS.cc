@@ -75,10 +75,6 @@ void MENeutralCurrentDIS::getDiagrams() const {
   }
 }
 
-Energy2 MENeutralCurrentDIS::scale() const {
-  return -tHat();
-}
-
 unsigned int MENeutralCurrentDIS::orderInAlphaS() const {
   return 0;
 }

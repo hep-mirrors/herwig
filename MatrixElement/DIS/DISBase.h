@@ -82,6 +82,39 @@ public:
 
 public:
 
+  /** @name Virtual functions required by the MEBase class. */
+  //@{
+  /**
+   * Return the scale associated with the last set phase space point.
+   */
+  virtual Energy2 scale() const;
+
+  /**
+   * The number of internal degrees of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const;
+
+  /**
+   * Generate internal degrees of freedom given nDim() uniform
+   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
+   * generator, the dSigHatDR should be a smooth function of these
+   * numbers, although this is not strictly necessary.
+   * @param r a pointer to the first of nDim() consecutive random numbers.
+   * @return true if the generation succeeded, otherwise false.
+   */
+  virtual bool generateKinematics(const double * r);
+
+  /**
+   * Return the matrix element squared differential in the variables
+   * given by the last call to generateKinematics().
+   */
+  virtual CrossSection dSigHatDR() const;
+  //@}
+
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -133,6 +166,11 @@ private:
   DISBase & operator=(const DISBase &);
 
 protected:
+
+  /**
+   *  The NLO weight
+   */
+  double NLOWeight() const;
 
   /**
    *  Calculate the coefficient A for the correlations
@@ -339,6 +377,53 @@ private:
    *  Gluon particle data object
    */
   PDPtr gluon_;
+
+private:
+
+  /**
+   *  The radiative variables
+   */
+  //@{
+  /**
+   *  The \f$x_p\f$ or \f$z\f$ real integration variable
+   */
+  double xp_;
+  //@}
+
+  /**
+   *  The hadron
+   */
+  tcBeamPtr hadron_;
+
+  /**
+   * Selects a dynamic or fixed factorization scale
+   */
+  unsigned int scaleOpt_;
+
+  /**
+   * The factorization scale 
+   */
+  Energy muF_;
+
+  /**
+   *  Prefactor if variable scale used
+   */
+  double scaleFact_;
+
+  /**
+   *  Whether to generate the positive, negative or leading order contribution
+   */
+  unsigned int contrib_;
+
+  /**
+   *  Power for sampling \f$x_p\f$
+   */
+  double power_;
+
+  /**
+   *  Jacobian for \f$x_p\f$ integral
+   */
+  double jac_;
 
 };
 

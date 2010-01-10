@@ -93,10 +93,6 @@ void MEChargedCurrentDIS::getDiagrams() const {
   }
 }
 
-Energy2 MEChargedCurrentDIS::scale() const {
-  return -tHat();
-}
-
 unsigned int MEChargedCurrentDIS::orderInAlphaS() const {
   return 0;
 }
