@@ -117,6 +117,7 @@ set MEPP2WH:Coupling /Herwig/Shower/AlphaQCD
 
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
+set MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
 
 # PP -> t tbar Higgs
 create Herwig::MEPP2QQHiggs MEPP2ttbarH
