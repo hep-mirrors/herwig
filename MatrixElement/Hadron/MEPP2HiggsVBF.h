@@ -415,7 +415,7 @@ private:
   /**
    *  Higgs boson
    */
-  PPtr higgs_;
+  ShowerParticlePtr higgs_;
   //@}
 
   /**

@@ -15,8 +15,181 @@
 #include "ThePEG/PDT/StandardMatchers.h"
 #include <numeric>
 #include "Herwig++/Utilities/Maths.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
+
+namespace {
+using namespace Herwig;
+using namespace ThePEG;
+using namespace ThePEG::Helicity;
+
+void debuggingMatrixElement(bool BGF,
+			    tcPDPtr partons1, tcPDPtr partons2,
+			    tcPDPtr partons3, tcPDPtr partons4,
+			    const Lorentz5Momentum & psystem0,
+			    const Lorentz5Momentum & psystem1,
+			    const Lorentz5Momentum & pother0,
+			    const Lorentz5Momentum & pother1,
+			    const Lorentz5Momentum & p0,
+			    const Lorentz5Momentum & p1,
+			    const Lorentz5Momentum & p2,
+			    const Lorentz5Momentum & phiggs,
+			    Energy2 Q12, Energy2 Q22, Energy2 scale,
+			    Energy4 loME, double old) {
+  // get the vertex and the boson
+  tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
+    (CurrentGenerator::current().standardModel());
+  assert(hwsm);
+  tcPDPtr boson;
+  AbstractFFVVertexPtr weakVertex;
+  AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
+  AbstractVVSVertexPtr higgsVertex  = hwsm->vertexWWH();
+  if(partons1->id()==partons2->id()) {
+    weakVertex = hwsm->vertexFFZ();
+    boson = hwsm->getParticleData(ParticleID::Z0);
+  }
+  else {
+    weakVertex = hwsm->vertexFFW();
+    boson = hwsm->getParticleData(ParticleID::Wplus);
+  }
+  tcPDPtr hdata = hwsm->getParticleData(ParticleID::h0);
+  tcPDPtr gluon = hwsm->getParticleData(ParticleID::g);
+  SpinorWaveFunction q1,q2;
+  SpinorBarWaveFunction qbar1,qbar2;
+  if(partons1->id()>0) {
+    q1     = SpinorWaveFunction   (psystem0,partons1,incoming);
+    qbar1  = SpinorBarWaveFunction(psystem1,partons2,outgoing);
+  }
+  else {
+    q1     = SpinorWaveFunction   (psystem1,partons2,outgoing);
+    qbar1  = SpinorBarWaveFunction(psystem0,partons1,incoming);
+  }
+  if(partons3->id()>0) {
+    q2    = SpinorWaveFunction   (pother0,partons3,incoming);
+    qbar2 = SpinorBarWaveFunction(pother1,partons4,outgoing);
+  }
+  else {
+    q2    = SpinorWaveFunction   (pother1,partons4,outgoing);
+    qbar2 = SpinorBarWaveFunction(pother0,partons3,incoming);
+  }
+  ScalarWaveFunction higgs(phiggs,hdata,outgoing);
+  Energy2 prefactor(ZERO);
+  Energy2 mw2 = sqr(hwsm->getParticleData(ParticleID::Wplus)->mass());
+  Energy2 mb2 = sqr(boson->mass());
+  double e = sqrt(4.*Constants::pi*hwsm->alphaEM(scale));
+  if(boson->id()==ParticleID::Z0) {
+    double g = sqrt(1./hwsm->sin2ThetaW()/(1.-hwsm->sin2ThetaW()));
+    prefactor = 4.*pow(e,6)*pow(g,6)*mw2/(1.-hwsm->sin2ThetaW());
+  }
+  else {
+    double g = sqrt(1./hwsm->sin2ThetaW());
+    prefactor = 4.*pow(e,6)*pow(g,6)*mw2;
+  }
+  InvEnergy2 newLO = prefactor * sqr(1./(Q12+mb2)) * sqr(1./(Q22+mb2))*loME;
+  if(!BGF) {
+    SpinorWaveFunction q1p;
+    SpinorBarWaveFunction qbar1p;
+    if(partons1->id()>0) {
+      q1p    = SpinorWaveFunction   (p0         ,partons1,incoming);
+      qbar1p = SpinorBarWaveFunction(p1         ,partons2,outgoing);
+    }
+    else {
+      q1p    = SpinorWaveFunction   (p1         ,partons2,outgoing);
+      qbar1p = SpinorBarWaveFunction(p0         ,partons1,incoming);
+    }
+    VectorWaveFunction    gl(p2,gluon,outgoing);
+    double lome(0.),realme(0.);
+    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+      q2.reset(lhel1);
+      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+	qbar2.reset(lhel2);
+	VectorWaveFunction off1 
+	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
+	VectorWaveFunction off2
+	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
+	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+	  q1.reset(qhel1);
+	  q1p.reset(qhel1);
+	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+	    qbar1.reset(qhel2);
+	    qbar1p.reset(qhel2);
+	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
+	    lome += norm(diag);
+	    for(unsigned int ghel=0;ghel<2;++ghel) {
+	      gl.reset(2*ghel);
+	      SpinorWaveFunction inter1 = 
+		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
+	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
+	      SpinorBarWaveFunction inter2 = 
+		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
+	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
+	      realme += norm(diag1+diag2);
+	    }
+	  }
+	}
+      }
+    }
+    cerr << "testing leading order " 
+	 << 0.25*lome/(newLO*MeV2)   << " " << 0.25*lome << " " << newLO*MeV2 << "\n";
+    double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
+    cerr << "testing ratio A " << old/test1 << "\n";
+  }
+  else {
+    SpinorWaveFunction q1p;
+    SpinorBarWaveFunction qbar1p;
+    if(partons1->id()>0) {
+      q1p    = SpinorWaveFunction   (p2,partons1->CC(),outgoing);
+      qbar1p = SpinorBarWaveFunction(p1,partons2      ,outgoing);
+    }
+    else {
+      q1p    = SpinorWaveFunction   (p1,partons2      ,outgoing);
+      qbar1p = SpinorBarWaveFunction(p2,partons1->CC(),outgoing);
+    }
+    VectorWaveFunction    gl(p0,gluon,incoming);
+    double lome(0.),realme(0.);
+    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+      q2.reset(lhel1);
+      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+	qbar2.reset(lhel2);
+	VectorWaveFunction off1 
+	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
+	VectorWaveFunction off2
+	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
+	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+	  q1.reset(qhel1);
+	  q1p.reset(qhel1);
+	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+	    qbar1.reset(qhel2);
+	    qbar1p.reset(qhel2);
+	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
+	    lome += norm(diag);
+	    for(unsigned int ghel=0;ghel<2;++ghel) {
+	      gl.reset(2*ghel);
+	      SpinorWaveFunction inter1 = 
+		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
+	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
+	      SpinorBarWaveFunction inter2 = 
+		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
+	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
+	      realme += norm(diag1+diag2);
+	    }
+	  }
+	}
+      }
+    }
+    Energy2 prefactor(ZERO);
+    cerr << "testing leading order " 
+	 << 0.25*lome/(newLO*MeV2)   << " " << 0.25*lome << " " << newLO*MeV2 << "\n";
+    double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
+    cerr << "testing ratio B " << old/test1 << "\n";
+  }
+}
+}
+
+
+
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
 				 comptonWeight_(50.), BGFWeight_(150.), 
@@ -209,7 +382,6 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
   pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
   pair<tcBeamPtr,tcBeamPtr> beams;
   pair<tPPtr,tPPtr> hadrons;
-  tShowerParticlePtr higgs;
   // get the incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
@@ -228,7 +400,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
  	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
     if(cjt->first->progenitor()->id()==ParticleID::h0) {
-      higgs = cjt->first->progenitor();
+      higgs_ = cjt->first->progenitor();
     }
     else {
       if(abs(cjt->first->progenitor()->id())>5) continue;
@@ -255,13 +427,17 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
     }
   }
   // loop over the two possible emitting systems
+  q_ [0] = first .second->momentum()-first .first->momentum();
+  q2_[0] = -q_[0].m2();
+  q_ [1] = second.second->momentum()-second.first->momentum();
+  q2_[1] = -q_[1].m2();
   for(unsigned int ix=0;ix<2;++ix) {
     if(ix==1) {
       swap(first,second);
       swap(beams.first,beams.second);
     }
     // check beam, all particles
-    assert(beams.first  && higgs &&
+    assert(beams.first  && higgs_ &&
 	   first .first &&  first.second && 
 	   second.first && second.second);
     // beam and pdf
@@ -274,8 +450,6 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
     partons_[ix][2] = second. first->dataPtr();
     partons_[ix][3] = second.second->dataPtr();
     // extract the born variables
-    q_ [ix] = first.second->momentum()-first.first->momentum();
-    q2_[ix] = -q_[ix].m2();
     xB_[ix] = first.first->x();
     Lorentz5Momentum pb     = first.first->momentum();
     Lorentz5Momentum pbasis = hadrons.first->momentum();
@@ -297,7 +471,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
       rot_[ix].boost(trans);
     }
     // momenta of the particles
-    phiggs_ [ix]    = rot_[ix]*higgs->momentum();
+    phiggs_ [ix]    = rot_[ix]*higgs_->momentum();
     pother_ [ix][0] = rot_[ix]*second. first->momentum();
     pother_ [ix][1] = rot_[ix]*second.second->momentum();
     psystem_[ix][0] = rot_[ix]* first. first->momentum();
@@ -353,7 +527,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
   allBranchings.push_back(new_ptr(HardBranching(second.second,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
-  allBranchings.push_back(new_ptr(HardBranching(higgs,SudakovPtr(),
+  allBranchings.push_back(new_ptr(HardBranching(higgs_,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
   rot_[system].invert();
@@ -656,43 +830,51 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
   Energy4 term1,term2,term3,loME;
   if(partons_[system][0]->id()>0) {
-    if(partons_[system][1]->id()>0) {
-      term1 = loMatrixElement(r1     ,pother_[system][0],qnlo+r1,
-			      pother_[system][1],G1,G2);
-      term2 = loMatrixElement(r2-qnlo,pother_[system][0],r2     ,
-			      pother_[system][1],G1,G2);
-      loME  = loMatrixElement(p1     ,pother_[system][0],p2     ,
-			      pother_[system][1],G1,G2);
+    if(partons_[system][2]->id()>0) {
+      term1 = loMatrixElement(r1                 ,pother_[system][0],
+			      qnlo+r1            ,pother_[system][1],G1,G2);
+      term2 = loMatrixElement(r2-qnlo            ,pother_[system][0],
+			      r2                 ,pother_[system][1],G1,G2);
+      loME  = loMatrixElement(psystem_[system][0],pother_[system][0],
+			      psystem_[system][1],pother_[system][1],G1,G2);
     }
     else {
-      term1 = loMatrixElement(r1     ,pother_[system][1],qnlo+r1,
-			      pother_[system][0],G1,G2);
-      term2 = loMatrixElement(r2-qnlo,pother_[system][1],r2     ,
-			      pother_[system][0],G1,G2);
-      loME  = loMatrixElement(p1     ,pother_[system][1],p2     ,
-			      pother_[system][0],G1,G2);
+      term1 = loMatrixElement(r1                 ,pother_[system][1],
+			      qnlo+r1            ,pother_[system][0],G1,G2);
+      term2 = loMatrixElement(r2-qnlo            ,pother_[system][1],
+			      r2                 ,pother_[system][0],G1,G2);
+      loME  = loMatrixElement(psystem_[system][0],pother_[system][1],
+			      psystem_[system][1],pother_[system][0],G1,G2);
     }
   }
   else {
-    if(partons_[system][1]->id()>0) {
-      term1 = loMatrixElement(qnlo+r1,pother_[system][0],r1     ,
-			      pother_[system][1],G1,G2);
-      term2 = loMatrixElement(r2     ,pother_[system][0],r2-qnlo,
-			      pother_[system][1],G1,G2);
-      loME  = loMatrixElement(p2     ,pother_[system][0],p1     ,
-			      pother_[system][1],G1,G2);
+    if(partons_[system][2]->id()>0) {
+      term1 = loMatrixElement(qnlo+r1            ,pother_[system][0],
+			      r1                 ,pother_[system][1],G1,G2);
+      term2 = loMatrixElement(r2                 ,pother_[system][0],
+			      r2-qnlo            ,pother_[system][1],G1,G2);
+      loME  = loMatrixElement(psystem_[system][1],pother_[system][0],
+			      psystem_[system][0],pother_[system][1],G1,G2);
     }
     else {
       term1 = loMatrixElement(qnlo+r1,pother_[system][1],r1     ,
 			      pother_[system][0],G1,G2);
       term2 = loMatrixElement(r2     ,pother_[system][1],r2-qnlo,
 			      pother_[system][0],G1,G2);
-      loME  = loMatrixElement(p2     ,pother_[system][1],p1     ,
-			      pother_[system][0],G1,G2);
+      loME  = loMatrixElement(psystem_[system][1],pother_[system][1],
+			      psystem_[system][0],pother_[system][0],G1,G2);
     }
   }
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
+//   debuggingMatrixElement(false,
+// 			 partons_[system][0],partons_[system][1],
+// 			 partons_[system][2],partons_[system][3],
+// 			 psystem_[system][0],psystem_[system][1],
+// 			 pother_ [system][0],pother_ [system][1],
+// 			 p0,p1,p2,phiggs_[system],q2_[system],
+// 			 (system==0 ? q2_[1] : q2_[0]),scale(),loME,
+// 			 8.*Constants::pi/(1.-xp)/(1.-zp)*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2));
   return CFfact*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2);   
 }
 
@@ -833,43 +1015,52 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
   Energy4 term1,term2,term3,loME;
   if(partons_[system][0]->id()>0) {
-    if(partons_[system][1]->id()>0) {
-      term2 = loMatrixElement(r2-qnlo,pother_[system][0],r2     ,
-			      pother_[system][1],G1,G2);
-      term3 = loMatrixElement(r3     ,pother_[system][0],qnlo+r3,
-			      pother_[system][1],G1,G2);
-      loME  = loMatrixElement(p1     ,pother_[system][0],p2     ,
-			      pother_[system][1],G1,G2);
+    if(partons_[system][2]->id()>0) {
+      term2 = loMatrixElement(r2-qnlo,pother_[system][0],
+			      r2     ,pother_[system][1],G1,G2);
+      term3 = loMatrixElement(r3     ,pother_[system][0],
+			      qnlo+r3,pother_[system][1],G1,G2);
+      loME  = loMatrixElement(psystem_[system][0],pother_[system][0],
+			      psystem_[system][1],pother_[system][1],G1,G2);
     }
     else {
-      term2 = loMatrixElement(r2-qnlo,pother_[system][1],r2     ,
-			      pother_[system][0],G1,G2);
-      term3 = loMatrixElement(r3     ,pother_[system][1],qnlo+r3,
-			      pother_[system][0],G1,G2);
-      loME  = loMatrixElement(p1     ,pother_[system][1],p2     ,
-			      pother_[system][0],G1,G2);
+      term2 = loMatrixElement(r2-qnlo,pother_[system][1],
+			      r2     ,pother_[system][0],G1,G2);
+      term3 = loMatrixElement(r3     ,pother_[system][1],
+			      qnlo+r3,pother_[system][0],G1,G2);
+      loME  = loMatrixElement(psystem_[system][0],pother_[system][1],
+			      psystem_[system][1],pother_[system][0],G1,G2);
     }
   }
   else {
-    if(partons_[system][1]->id()>0) {
-      term2 = loMatrixElement(r2     ,pother_[system][0],r2-qnlo,
-			      pother_[system][1],G1,G2);
-      term3 = loMatrixElement(qnlo+r3,pother_[system][0],r3     ,
-			      pother_[system][1],G1,G2);
-      loME  = loMatrixElement(p2     ,pother_[system][0],p1     ,
-			      pother_[system][1],G1,G2);
+    if(partons_[system][2]->id()>0) {
+      term2 = loMatrixElement(r2     ,pother_[system][0],
+			      r2-qnlo,pother_[system][1],G1,G2);
+      term3 = loMatrixElement(qnlo+r3,pother_[system][0],
+			      r3     ,pother_[system][1],G1,G2);
+      loME  = loMatrixElement(psystem_[system][1],pother_[system][0],
+			      psystem_[system][0],pother_[system][1],G1,G2);
     }
     else {
-      term2 = loMatrixElement(r2     ,pother_[system][1],r2-qnlo,
-			      pother_[system][0],G1,G2);
-      term3 = loMatrixElement(qnlo+r3,pother_[system][1],r3     ,
-			      pother_[system][0],G1,G2);
-      loME  = loMatrixElement(p2     ,pother_[system][1],p1     ,
-			      pother_[system][0],G1,G2);
+      term2 = loMatrixElement(r2     ,pother_[system][1],
+			      r2-qnlo,pother_[system][0],G1,G2);
+      term3 = loMatrixElement(qnlo+r3,pother_[system][1],
+			      r3     ,pother_[system][0],G1,G2);
+      loME  = loMatrixElement(psystem_[system][1],pother_[system][1],
+			      psystem_[system][0],pother_[system][0],G1,G2);
     }
   }
   double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
+//   debuggingMatrixElement(true,
+// 			 partons_[system][0],partons_[system][1],
+// 			 partons_[system][2],partons_[system][3],
+// 			 psystem_[system][0],psystem_[system][1],
+// 			 pother_ [system][0],pother_ [system][1],
+// 			 p0,p1,p2,phiggs_[system],q2_[system],
+// 			 (system==0 ? q2_[1] : q2_[0]),scale(),loME,
+// 			 8.*Constants::pi/zp/(1.-zp)*(sqr(xp)*(sqr(x3)+sqr(xT))*R3+
+// 						      sqr(xp)*(sqr(x2)+sqr(xT))*R2));
   return TRfact*
          (sqr(xp)*(sqr(x3)+sqr(xT))*R3+
           sqr(xp)*(sqr(x2)+sqr(xT))*R2);
@@ -1227,6 +1418,7 @@ double MEPP2HiggsVBF::generateComptonPoint(double &xp, double & zp) {
   while(wgt<UseRandom::rnd()*maxwgt);
   return comptonInt_/((1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp));
 }
+
 double MEPP2HiggsVBF::generateBGFPoint(double &xp, double & zp) {
   static const double maxwgt = 25.;
   double wgt;
