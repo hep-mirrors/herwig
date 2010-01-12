@@ -36,8 +36,8 @@ void debuggingMatrixElement(bool BGF,
 			    const Lorentz5Momentum & p1,
 			    const Lorentz5Momentum & p2,
 			    const Lorentz5Momentum & phiggs,
-			    Energy2 Q12, Energy2 Q22, Energy2 scale,
-			    Energy4 loME, double old) {
+			    Energy2 Q12, Energy2 scale,
+			    double old) {
   // get the vertex and the boson
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
     (CurrentGenerator::current().standardModel());
@@ -75,19 +75,6 @@ void debuggingMatrixElement(bool BGF,
     qbar2 = SpinorBarWaveFunction(pother0,partons3,incoming);
   }
   ScalarWaveFunction higgs(phiggs,hdata,outgoing);
-  Energy2 prefactor(ZERO);
-  Energy2 mw2 = sqr(hwsm->getParticleData(ParticleID::Wplus)->mass());
-  Energy2 mb2 = sqr(boson->mass());
-  double e = sqrt(4.*Constants::pi*hwsm->alphaEM(scale));
-  if(boson->id()==ParticleID::Z0) {
-    double g = sqrt(1./hwsm->sin2ThetaW()/(1.-hwsm->sin2ThetaW()));
-    prefactor = 4.*pow(e,6)*pow(g,6)*mw2/(1.-hwsm->sin2ThetaW());
-  }
-  else {
-    double g = sqrt(1./hwsm->sin2ThetaW());
-    prefactor = 4.*pow(e,6)*pow(g,6)*mw2;
-  }
-  InvEnergy2 newLO = prefactor * sqr(1./(Q12+mb2)) * sqr(1./(Q22+mb2))*loME;
   if(!BGF) {
     SpinorWaveFunction q1p;
     SpinorBarWaveFunction qbar1p;
@@ -131,8 +118,6 @@ void debuggingMatrixElement(bool BGF,
 	}
       }
     }
-    cerr << "testing leading order " 
-	 << 0.25*lome/(newLO*MeV2)   << " " << 0.25*lome << " " << newLO*MeV2 << "\n";
     double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
     cerr << "testing ratio A " << old/test1 << "\n";
   }
@@ -179,17 +164,11 @@ void debuggingMatrixElement(bool BGF,
 	}
       }
     }
-    Energy2 prefactor(ZERO);
-    cerr << "testing leading order " 
-	 << 0.25*lome/(newLO*MeV2)   << " " << 0.25*lome << " " << newLO*MeV2 << "\n";
     double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
     cerr << "testing ratio B " << old/test1 << "\n";
   }
 }
 }
-
-
-
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
 				 comptonWeight_(50.), BGFWeight_(150.), 
@@ -773,8 +752,8 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
   // electroweak parameters
-  Energy2 mz2 = sqr(getParticleData(ParticleID::Z0   )->mass());
-  Energy2 mw2 = sqr(getParticleData(ParticleID::Wplus)->mass());
+  Energy2 mz2 = sqr(Z0()->mass());
+  Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
   Energy2 mb2;
   // W
@@ -873,7 +852,6 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
 // 			 psystem_[system][0],psystem_[system][1],
 // 			 pother_ [system][0],pother_ [system][1],
 // 			 p0,p1,p2,phiggs_[system],q2_[system],
-// 			 (system==0 ? q2_[1] : q2_[0]),scale(),loME,
 // 			 8.*Constants::pi/(1.-xp)/(1.-zp)*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2));
   return CFfact*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2);   
 }
@@ -958,8 +936,8 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   Lorentz5Momentum r2 =  p1/x2;
   Lorentz5Momentum r3 = -p2/x3;
   // electroweak parameters
-  Energy2 mz2 = sqr(getParticleData(ParticleID::Z0   )->mass());
-  Energy2 mw2 = sqr(getParticleData(ParticleID::Wplus)->mass());
+  Energy2 mz2 = sqr(Z0()->mass());
+  Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
   Energy2 mb2;
   // W
@@ -1058,7 +1036,6 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
 // 			 psystem_[system][0],psystem_[system][1],
 // 			 pother_ [system][0],pother_ [system][1],
 // 			 p0,p1,p2,phiggs_[system],q2_[system],
-// 			 (system==0 ? q2_[1] : q2_[0]),scale(),loME,
 // 			 8.*Constants::pi/zp/(1.-zp)*(sqr(xp)*(sqr(x3)+sqr(xT))*R3+
 // 						      sqr(xp)*(sqr(x2)+sqr(xT))*R2));
   return TRfact*
@@ -1151,8 +1128,8 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // select the type of process
   bool BGF = UseRandom::rnd()>procProb_;
   double wgt,xp,zp,x1,x2,x3,xperp;
-  LorentzVector<double> l(2.*(rot*systems_[1].incoming->momentum())/Q);
-  LorentzVector<double> m(2.*(rot*systems_[1].outgoing->momentum())/Q);
+  LorentzVector<double>  l = 2.*(rot*systems_[1].incoming->momentum())/Q;
+  LorentzVector<double>  m = 2.*(rot*systems_[1].outgoing->momentum())/Q;
   // compton process
   if(!BGF) {
     wgt = generateComptonPoint(xp,zp);
@@ -1197,7 +1174,7 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     azicoeff = BGFME(xp,x2,x3,xperp,acoeff,l,m);
   }
   // compute the azimuthal average of the weight
-  wgt *= azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4];
+  wgt *= azicoeff[0]+0.5*(azicoeff[2]+azicoeff[4]);
   // finally factor as picked one line
   wgt *= 2.;
   // decide whether or not to accept the weight
@@ -1226,6 +1203,28 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
 					 -0.5*Q*x3,0.*GeV,0.*GeV);
   p2.rescaleEnergy();
   Lorentz5Momentum pin(0.*GeV,0.*GeV,-0.5*x1*Q,-0.5*x1*Q,0.*GeV);
+  // debugging code to test vs helicity amplitude expression for matrix elements
+//   double cphi(cos(phi)),sphi(sin(phi));
+//   double old = (azicoeff[0]+azicoeff[5]*sphi*cphi
+// 		+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi)
+// 		+azicoeff[3]*sphi+azicoeff[4]*sqr(sphi));
+//   if(!BGF) {
+//     old *= 8.*Constants::pi/(1.-xp)/(1.-zp);
+//   }
+//   else {
+//     old *= 8.*Constants::pi/zp/(1.-zp);
+//   }
+//   debuggingMatrixElement(BGF,
+// 			 systems_[0].incoming->dataPtr(),
+// 			 systems_[0].outgoing->dataPtr(),
+// 			 systems_[1].incoming->dataPtr(),
+// 			 systems_[1].outgoing->dataPtr(),
+// 			 rot*systems_[0].incoming->momentum(),
+// 			 rot*systems_[0].outgoing->momentum(),
+// 			 rot*systems_[1].incoming->momentum(),
+// 			 rot*systems_[1].outgoing->momentum(),
+// 			 pin,p1,p2,rot*higgs_->momentum(),
+// 			 q2_[0],scale(),old);
   // we need inverse of the rotation, i.e back to lab from breit
   rot.invert();
   // transform the momenta to lab frame
@@ -1488,17 +1487,19 @@ vector<double> MEPP2HiggsVBF::ComptonME(double xp, double x2, double xperp,
   double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
   // no phi dependence
-  output[0] = l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.z()*m.t()-l.t()*m.z());
+  output[0] = l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.t()*m.z()-l.z()*m.t());
   // cos(phi)
-  output[1] = -sin2*(l.x()*m.t()+l.t()*m.x())+sin2*(l.x()*m.z()-l.z()*m.x());
+  output[1] = sin2*(-l.x()*m.t()-l.t()*m.x() 
+		    + 0.5*A*cos2*(l.z()*m.x()-m.z()*l.x()));
   // cos(phi)^2
   output[2] = +sqr(sin2)*l.x()*m.x();
   // sin(phi)
-  output[3] = -l.t()*sin2*m.y()-0.5*A*cos2*sin2*l.z()*m.y();
+  output[3] = sin2*(-l.t()*m.y()-l.y()*m.t()
+		    + 0.5*A*cos2*(l.z()*m.y()-m.z()*l.y()));
   // sin(phi)^2
-  output[4] = 0.;
+  output[4] = +sqr(sin2)*l.y()*m.y();
   // sin(phi)cos(phi)
-  output[5] = +sqr(sin2)*m.y()*l.x();
+  output[5] = +sqr(sin2)*(m.y()*l.x()+m.x()*l.y());
   // additional factors
   double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
   double fact = sqr(xp)*(sqr(x2)+sqr(xperp))/denom;
@@ -1512,31 +1513,37 @@ vector<double> MEPP2HiggsVBF::BGFME(double xp, double x2, double x3,
 				    LorentzVector<double> l,
 				    LorentzVector<double> m) {
   vector<double> output(6,0.);
+  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
   double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
-  double fact2 = sqr(xp)*(sqr(x2)+sqr(xperp));
+  double fact2 = sqr(xp)*(sqr(x2)+sqr(xperp))/denom;
   double cos3  =   x3 /sqrt(sqr(x3)+sqr(xperp));
   double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
-  double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
+  double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp))/denom;
   // no phi dependence
-  output[0] = fact3*(+l.t()*m.t()-l.z()*m.z()*sqr(cos3)+0.5*A*cos3*(l.z()*m.t()-l.t()*m.z()))
-             +fact2*(+l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.z()*m.t()-l.t()*m.z()));
+  output[0] = 
+    fact2*(l.t()*m.t()-l.z()*m.z()*sqr(cos2)
+	   + 0.5*A*cos2*(l.t()*m.z()-l.z()*m.t())) + 
+    fact3*(l.t()*m.t()-l.z()*m.z()*sqr(cos3)
+	   - 0.5*A*cos3*(l.t()*m.z()-l.z()*m.t()));
   // cos(phi)
-  output[1] = fact3*(+sin3*(l.x()*m.t()+l.t()*m.x())-0.5*A*cos3*sin3*(l.x()*m.z()-l.z()*m.x()))
-             +fact2*(-sin2*(l.x()*m.t()+l.t()*m.x())+0.5*A*cos2*sin2*(l.x()*m.z()-l.z()*m.x()));
+  output[1] = 
+    fact2*sin2*( - l.x()*m.t()-l.t()*m.x() 
+		 + 0.5*A*cos2*(l.z()*m.x()-m.z()*l.x())) -
+    fact3*sin3*( - l.x()*m.t()-l.t()*m.x() 
+		 - 0.5*A*cos3*(l.z()*m.x()-m.z()*l.x())) ;
   // cos(phi)^2
-  output[2] = fact3*(+sqr(sin3)*l.x()*m.x())
-             +fact2*(+sqr(sin2)*l.x()*m.x());
+  output[2] = (fact2*sqr(sin2)+fact3*sqr(sin3))*l.x()*m.x();
   // sin(phi)
-  output[3] = fact3*(+l.t()*sin3*m.y()+0.5*A*cos3*sin3*l.z()*m.y())
-             +fact2*(-l.t()*sin2*m.y()-0.5*A*cos2*sin2*l.z()*m.y());
+  output[3] = 
+    fact2*sin2*( - l.t()*m.y()-l.y()*m.t()
+		 + 0.5*A*cos2*(l.z()*m.y()-m.z()*l.y())) -
+    fact3*sin3*( - l.t()*m.y()-l.y()*m.t()
+		 - 0.5*A*cos3*(l.z()*m.y()-m.z()*l.y()));
   // sin(phi)^2
-  output[4] = 0.;
+  output[4] = (fact2*sqr(sin2)+fact3*sqr(sin3))*l.y()*m.y();
   // sin(phi)cos(phi)
-  output[5] = fact3*(+sqr(sin3)*m.y()*l.x())
-             +fact2*(+sqr(sin2)*m.y()*l.x());
-  // additional factors
-  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
-  for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;
+  output[5] = (fact2*sqr(sin2)+fact3*sqr(sin3))*(m.y()*l.x()+m.x()*l.y());
+  // return the answer
   return output;
 }
