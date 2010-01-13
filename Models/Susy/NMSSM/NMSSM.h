@@ -25,7 +25,8 @@ public:
    * The default constructor.
    */
   NMSSM() : _lambda(0.), _kappa(0.), _theAlambda(0.*MeV), 
-	    _theAkappa(0.*MeV), _lambdaVEV(0.*MeV) 
+	    _theAkappa(0.*MeV), _lambdaVEV(0.*MeV),
+		_MQ3(0.*MeV), _MU2(0.*MeV) 
   {}
 
 public:
@@ -82,6 +83,19 @@ public:
    */
   Energy trilinearKappa() const {
     return _theAkappa;
+  }
+      /**
+   *  left 3rd generation scalar quark mass
+   */
+  Energy MQ3() const {
+    return _MQ3;
+  }
+
+  /**
+   * right scalar top mass
+   */
+  Energy MU2() const {
+    return _MU2;
   }
   //@}
 
@@ -199,6 +213,15 @@ private:
    * by \f$ lambda\f$
    */
   Energy _lambdaVEV;
+      /**
+   * left 3rd generation scalar quark mass
+   */
+  Energy _MQ3;
+
+  /**
+   *  right scalar top mass
+   */
+  Energy _MU2;
   //@}
 };
 

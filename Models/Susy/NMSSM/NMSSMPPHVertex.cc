@@ -15,8 +15,8 @@ using namespace Herwig;
 
 NMSSMPPHVertex::NMSSMPPHVertex() 
   : _sw(0.), _cw(0.), _mw(0.*MeV),
-    _mz(0.*MeV),_lambdaVEV(0.*MeV), _lambda(0.), _v1(0.*MeV),
-    _v2(0.*MeV), _triTp(0.*MeV), _triBt(0.*MeV),
+    _mz(0.*MeV),_lambdaVEV(0.*MeV), _lambda(0.),
+    _triTp(0.*MeV), _triBt(0.*MeV),
     _sb(0.), _cb(0.), 
     _kappa(0.),_vu(ZERO),_vd(ZERO),_s(ZERO),_theAl(ZERO),
     _masslast(make_pair(0.*MeV,0.*MeV)),_q2last(0.*MeV2),
@@ -54,10 +54,7 @@ void NMSSMPPHVertex::doinit()  {
   double beta = atan(nmssm->tanBeta());
   _sb = sin(beta);
   _cb = cos(beta);
-  
-  _v1 = sqrt(2.)*_mw*_cb;
-  _v2 = sqrt(2.)*_mw*_sb;
- 
+
   _lambda = nmssm->lambda();
   _lambdaVEV = nmssm->lambdaVEV();
   
@@ -106,7 +103,7 @@ void NMSSMPPHVertex::doinit()  {
 
 void NMSSMPPHVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _sw << _cw << ounit(_mw, GeV) << ounit(_mz, GeV)
-     << ounit(_lambdaVEV,GeV) << _lambda << ounit(_v1,GeV) << ounit(_v2,GeV)
+     << ounit(_lambdaVEV,GeV) << _lambda
      << ounit(_triTp,GeV) << ounit(_triBt,GeV) << ounit(_triTa,GeV)
      << _top << _bt << _tau << _mixS << _mixP << _mixU << _mixV
      << _mixQt << _mixQb << _mixLt << _sb << _cb <<  _kappa
@@ -115,7 +112,7 @@ void NMSSMPPHVertex::persistentOutput(PersistentOStream & os) const {
 
 void NMSSMPPHVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _sw >> _cw >> iunit(_mw, GeV) >> iunit(_mz, GeV)
-     >> iunit(_lambdaVEV,GeV) >> _lambda >> iunit(_v1,GeV) >> iunit(_v2,GeV)
+     >> iunit(_lambdaVEV,GeV) >> _lambda
      >> iunit(_triTp,GeV) >> iunit(_triBt,GeV) >> iunit(_triTa,GeV)
      >> _top >> _bt >> _tau >> _mixS >> _mixP >> _mixU >> _mixV
      >> _mixQt >> _mixQb >> _mixLt >> _sb >> _cb >> _kappa 
@@ -176,8 +173,8 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 	c = -_lambda/_coup*rt*(*_mixS)(iloc,2)*(*_mixU)(ic,1)*(*_mixV)(ic,1)
 	  -rt*((*_mixS)(iloc,0)*(*_mixU)(ic,1)*(*_mixV)(ic,0) +
 	       (*_mixS)(iloc,1)*(*_mixU)(ic,0)*(*_mixV)(ic,1));
-	couplings[3+ic] = make_pair(c,c);
-      }
+		 couplings[3+ic] = make_pair(c,c);
+}
       // W boson
       c = UnitRemoval::InvE*_mw*
 	(_cb*(*_mixS)(iloc,0)+_sb*(*_mixS)(iloc,1));
@@ -209,7 +206,7 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 		    + 2.*sqr(_sw)*(*_mixQb)(ix, 1)*(*_mixQb)(ix, 1)/3.)
 	  - f1*mb*(*_mixS)(iloc,0)
 	  *((*_mixQb)(ix, 0)*(*_mixQb)(ix, 0) + (*_mixQb)(ix, 1)*(*_mixQb)(ix, 1)) 
-	  - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_v2*(*_mixS)(iloc,2)/_coup 
+	  - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_vu*(*_mixS)(iloc,2)/_coup 
 		    +  _triBt*(*_mixS)(iloc,0))*((*_mixQb)(ix, 1)*(*_mixQb)(ix, 0)
 						 + (*_mixQb)(ix, 0)*(*_mixQb)(ix, 1));
 	cpl *= 3.*sqr(_theSM->ed());
@@ -223,22 +220,20 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 	  - f1*mt*(*_mixS)(iloc,1)
 	  *((*_mixQt)(ix, 0)*(*_mixQt)(ix, 0)
 	    + (*_mixQt)(ix, 1)*(*_mixQt)(ix, 1))  
-	  -  0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,0) - _lambda*_v1*(*_mixS)(iloc,2)/_coup
+	  -  0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,0) - _lambda*_vd*(*_mixS)(iloc,2)/_coup
 		     + _triTp*(*_mixS)(iloc,1))*((*_mixQt)(ix, 1)*(*_mixQt)(ix, 0)
 						 + (*_mixQt)(ix, 0)*(*_mixQt)(ix, 1));
 	cpl *= 3.*sqr(_theSM->eu());
 	couplings[9+ix] = make_pair(cpl*UnitRemoval::InvE,cpl*UnitRemoval::InvE);
       } // sbottoms
       f1 = mtau/_mw/_cb;
-      f2 = 0.5*_mz/_cw*
-	( - _cb*(*_mixS)(iloc,0) + _sb*(*_mixS)(iloc,1));
       for(unsigned int ix=0;ix<2;++ix) {
 	cpl = -f2*( (1. - 2.*sqr(_sw))*(*_mixLt)(ix, 0)*(*_mixLt)(ix, 0)
 		    + 2.*sqr(_sw)*(*_mixLt)(ix, 1)*(*_mixLt)(ix, 1))
 	  - f1*mtau*(*_mixS)(iloc,0)
 	  *((*_mixLt)(ix, 0)*(*_mixLt)(ix, 0) + (*_mixLt)(ix, 1)*(*_mixLt)(ix, 1)) 
-	  - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_v2*(*_mixS)(iloc,2)/_coup 
-		    +  _triBt*(*_mixS)(iloc,0))*((*_mixLt)(ix, 1)*(*_mixLt)(ix, 0)
+	  - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_vu*(*_mixS)(iloc,2)/_coup 
+		    +  _triTa*(*_mixS)(iloc,0))*((*_mixLt)(ix, 1)*(*_mixLt)(ix, 0)
 						 + (*_mixLt)(ix, 0)*(*_mixLt)(ix, 1));
 	cpl *= sqr(_theSM->ee());
 	couplings[11+ix] = make_pair(cpl*UnitRemoval::InvE,cpl*UnitRemoval::InvE); 
@@ -266,10 +261,11 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
       // charginos
       for(unsigned int ic=0;ic<2;++ic) {
 	c = Complex(0,-1.0)*
-	  (_lambda/_coup*rt*conj((*_mixP)(iloc,2)*(*_mixU)(ic,1)*(*_mixV)(ic,1))
-	   -rt*conj(((*_mixP)(iloc,0)*(*_mixU)(ic,1)*(*_mixV)(ic,0)
-		     + (*_mixP)(iloc,1)*(*_mixU)(ic,0)*(*_mixV)(ic,1))));
-	couplings[3+ic] = make_pair(-c,c);
+	  (_lambda/_coup*rt*(*_mixP)(iloc,2)*(*_mixU)(ic,1)*(*_mixV)(ic,1)
+	   -rt*((*_mixP)(iloc,0)*(*_mixU)(ic,1)*(*_mixV)(ic,0)
+		     + (*_mixP)(iloc,1)*(*_mixU)(ic,0)*(*_mixV)(ic,1)));
+			  couplings[3+ic] = make_pair(-c,c); 
+
       }
     }
   }

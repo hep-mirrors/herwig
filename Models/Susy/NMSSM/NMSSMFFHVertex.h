@@ -104,7 +104,22 @@ private:
    * In fact, it should not even be implemented.
    */
   NMSSMFFHVertex & operator=(const NMSSMFFHVertex &);
+  
+private:
 
+  /**
+   * Return the SP function for radiative correction calulations
+   */
+  double SPfunction(Complex X);
+    /**
+   * Other functions for radiative correction calulations
+   */
+  Complex CLI2function( Complex Y);
+
+  double BIJ(double X, double Y);
+
+  int factorial(int num);
+  
 private:
 
   /**
@@ -166,6 +181,66 @@ private:
    *  The last value of the coupling
    */
   double _couplast;
+      /**
+   * Value of pi
+   */
+  double _pi;
+    /**
+   *  Pole mass of fermions
+   */
+  Energy _mpole;
+    /**
+   *  Mass of the \f$h\f$ bosons
+   */
+  Energy _mh;
+    /**
+   *  Mass of the top (pole_
+   */
+  Energy _mtp;
+    /**
+   * ratio fermion to higgs mass
+   */
+  double ratio;
+    /**
+   *  Value of beta
+   */
+  double beta;
+    /**
+   *  strong coupling
+   */
+  double _alphas;
+    /**
+   * ration higgs mass and top pole mass
+   */
+  double higtop;
+    /**
+   *  ratio of masses
+   */
+  double rat;
+    /**
+   *  reduced coupling of up fermion to higgs
+   */
+  Complex _cu;
+      /**
+   *  reduced coupling of down fermion to higgs
+   */
+  Complex _cd;
+      /**
+   * ratio of reduced coupling of up fermion to higgs
+   */
+  Complex ratcoup;
+      /**
+   *  radiative corrections
+   */
+  Complex QCDH;
+      /**
+   *  radiative correction
+   */
+  Complex QCD0;
+      /**
+   *  radiative corrections
+   */
+  Complex TQCDH;
 
 };
 }

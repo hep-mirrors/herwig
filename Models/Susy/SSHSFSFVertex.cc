@@ -320,10 +320,12 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
   if( higgs == ParticleID::h0) {
     theCoupLast = facta*theSinAB*fbrac - mfactb*theCosA*sbrac
       - mfacta*(theTriC[smID - 1]*theCosA + theMu*theSinA)*tbrac/theSinB;
+
   }
   else if( higgs == ParticleID::H0 ) {
     theCoupLast = -facta*theCosAB*fbrac - mfactb*theSinA*sbrac 
       - mfacta*(theTriC[smID - 1]*theSinA - theMu*theCosA )*tbrac/theSinB;
+
   }
   else
     assert(false);

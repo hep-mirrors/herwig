@@ -277,6 +277,22 @@ private:
    * The V mixing matrix
    */
   tMixingMatrixPtr theV;
+  
+//    /**
+//   * The stop mixing matrix
+//   */
+//    MixingMatrix stop;
+//	
+//	  /**
+//   * The sbot mixing matrix
+//   */
+//  MixingMatrix sbot ;
+//  
+//    /**
+//   * The stau mixing matrix
+//   */
+//  MixingMatrix stau;
+  
 
   /**
    * Last value of the coupling calculated

@@ -234,7 +234,7 @@ void ModelGenerator::doinit() {
   // write out decays with spin correlations
   ostream & os = CurrentGenerator::current().misc();
   ofstream ofs;
-  if ( decayOutput_ == 2 ) {
+  if ( decayOutput_ !=0 ) {
     string filename 
       = CurrentGenerator::current().filename() + "-BR.spc";
     ofs.open(filename.c_str());
@@ -295,7 +295,6 @@ void ModelGenerator::doinit() {
     _theRPConstructor->init();
     _theRPConstructor->constructResonances();
   }
-
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
@@ -356,14 +355,15 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
        << parent->width()/GeV << endl;
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
-       << "BR\n"; 
+       << "BR" << endl; 
+	   
     Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
     Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
     for(; dit != dend; ++dit)
       os << std::left << std::setw(40) << (*dit).second->tag() 
 	 << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
 	 << (*dit).second->brat() << '\n';
-    os << "#\n#";
+    os << endl;
   }
   else if(decayOutput_==2) {
     os << "#    \t PDG \t Width\n";

@@ -8,9 +8,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "NMSSM.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _cw(0.), _lambda(0.), _kappa(0.) ,
@@ -18,7 +20,8 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _theAk(0.*MeV), _sb(0.), _cb(0.),
 				   _s2b(0.), _c2b(0.), _vu(0.*MeV),
 				   _vd(0.*MeV), _s(0.*MeV), _q2last(0.*MeV2),
-				   _glast(0.) {
+				   _glast(0.), _MQ3(0.*MeV), _MU2(0.*MeV),
+				    _masslast(make_pair(0.*MeV,0*MeV)) {
   // PDG codes for the particles in vertex _vd
   //CP-even Higgs
   addToList(25, 35, 45);
@@ -37,8 +40,8 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 }
 
 void NMSSMHHHVertex::doinit() {
-  generator()->standardModel() = generator()->standardModel();
-  tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
   if( !nmssm ) 
     throw InitException() << "NMSSMHHHVertex::doinit - The model object is"
 			  << "not the NMSSM object."
@@ -60,6 +63,8 @@ void NMSSMHHHVertex::doinit() {
   _lambdaVEV = nmssm->lambdaVEV();
   _theAl = nmssm->trilinearLambda();
   _theAk = nmssm->trilinearKappa();
+      _MQ3 = nmssm->MQ3();  
+    _MU2 = nmssm->MU2(); 
   double beta = atan(nmssm->tanBeta());
   _sb = sin(beta);
   _cb = cos(beta);
@@ -73,17 +78,21 @@ void NMSSMHHHVertex::doinit() {
 }
 
 void NMSSMHHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_mw, GeV) << ounit(_mz,GeV) << _sw2 << _cw <<  _lambda 
+  os << ounit(_mw, GeV) << ounit(_mz,GeV) << ounit(_mb, GeV) << ounit(_mt,GeV)
+     << _sw2 << _cw <<  _lambda 
      << _kappa <<  ounit(_lambdaVEV,GeV) <<  ounit(_theAl, GeV) 
      << ounit(_theAk,GeV) <<  _sb <<  _cb << _s2b <<  _c2b
-     << ounit(_vu,GeV) << ounit(_vu,GeV) << ounit(_s,GeV) << _mixS << _mixP;
+     << ounit(_vu,GeV) << ounit(_vu,GeV) << ounit(_s,GeV) << _mixS << _mixP
+	  << ounit(_MQ3,GeV) << ounit(_MU2,GeV) << _theSM;
 }
 
 void NMSSMHHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_mw, GeV) >> iunit(_mz,GeV) >> _sw2 >> _cw >>  _lambda 
+  is >> iunit(_mw, GeV) >> iunit(_mz,GeV)>> iunit(_mb, GeV) >> iunit(_mt,GeV)
+	 >> _sw2 >> _cw >>  _lambda 
      >> _kappa >>  iunit(_lambdaVEV,GeV) >>  iunit(_theAl, GeV) 
      >> iunit(_theAk,GeV) >>  _sb >>  _cb >> _s2b >>  _c2b
-     >> iunit(_vu,GeV) >> iunit(_vd,GeV) >> iunit(_s,GeV)>> _mixS >> _mixP;
+     >> iunit(_vu,GeV) >> iunit(_vd,GeV) >> iunit(_s,GeV)>> _mixS >> _mixP
+	 >> iunit(_MQ3,GeV) >> iunit(_MU2,GeV)  >> _theSM;
 }
 
 ClassDescription<NMSSMHHHVertex> NMSSMHHHVertex::initNMSSMHHHVertex;
@@ -109,14 +118,25 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
     else if( abs(higgs[i]) ==  37 )
       ++nc;
   }
+
+
   //check three Higgs in vertex
   assert( ns + np + nc == 3 );
   if( q2 != _q2last ) {
     _q2last = q2;
     _glast = weakCoupling(q2);
+	 _masslast.first = _theSM->mass(q2,getParticleData(5));
+	_masslast.second = _theSM->mass(q2,getParticleData(6));
   }
   //define VEV's
   double rt = sqrt(0.5);
+_mb= _masslast.first;
+_mt= _masslast.second;
+Energy _mtpole = getParticleData(6)->mass();
+double pi= Constants::pi;
+Energy2 Qstsb = _MQ3*_MU2;
+double temp = Qstsb/sqr(_mtpole);
+double radlog = log(temp);
   complex<Energy> coupling;
   
   //CP even Higgs
@@ -137,6 +157,17 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
 					   usMix(a,b,c,1,0,0))/_glast -
 				      _vd*(usMix(a,b,c,0,1,1) -
 					   usMix(a,b,c,0,0,0))/_glast);
+					   
+					   
+complex <Energy> radtop = usMix(a,b,c,1,1,1)*3.0*sqrt(2.0)*radlog
+                         *sqr(_mt)*sqr(_mt)*sqr(_glast)*_glast/
+							(16.0*sqr(pi)*_vu*_vu*_vu);
+ 
+complex <Energy> radbot= usMix(a,b,c,0,0,0)*3.0*sqrt(2.0)*radlog
+                         *sqr(_mb)*sqr(_mb)*sqr(_glast)*_glast
+						/(16.0*sqr(pi)*_vd*_vd*_vd);
+						
+coupling += radbot + radtop;						
   }
   //CP even, CP odd Vertex
   else if(ns == 1 && np == 2) {
@@ -174,6 +205,16 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
 					   - upMix(a,b,c,1,0,0))/_glast - 
 				      _vd*(upMix(a,b,c,0,1,1)
 					   - upMix(a,b,c,0,0,0))/_glast);
+					   
+complex <Energy> radtop = upMix(a,b,c,1,1,1)*3.0*sqrt(2.0)*radlog*
+                          sqr(_mt)*sqr(_mt)*sqr(_glast)*_glast/
+							(16.0*sqr(pi)*_vu*_vu*_vu);
+ 
+complex <Energy> radbot= upMix(a,b,c,0,0,0)*3.0*sqrt(2.0)*radlog*
+                         sqr(_mb)*sqr(_mb)*sqr(_glast)*_glast
+						/(16.0*sqr(pi)*_vd*_vd*_vd);
+						
+coupling += radbot + radtop;											   					   
   }
   //Charged Higgs
   else {
@@ -199,6 +240,23 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
 			    + _vd*((*_mixS)(a,0)*sqr(_cb) + 
 				   (*_mixS)(a,0)*sqr(_sb) 
 				   + 2.*(*_mixS)(a,1)*_sb*_cb)/_glast);
+				   
+				   complex <Energy> radtop =(*_mixS)(a,1)*sqr(_sb)*6.0*sqrt(2.0)*radlog*
+                           sqr(_mt)*sqr(_mt)*sqr(_glast)*_glast/
+							(16.0*sqr(pi)*_vu*_vu*_vu);
+ 
+complex <Energy> radbot=(*_mixS)(a,0)*sqr(_cb)*6.0*sqrt(2.0)*radlog*
+                         sqr(_mb)*sqr(_mb)*sqr(_glast)*_glast
+						/(16.0*sqr(pi)*_vd*_vd*_vd);
+complex <Energy> temp2 = _vu*((*_mixS)(a,1)*sqr(_cb) + 
+                        (*_mixS)(a,0)*_sb*_cb)/_glast+ 
+						_vd*((*_mixS)(a,1)*_sb*_cb + 
+						(*_mixS)(a,0)*sqr(_sb))/_glast;				
+					   
+complex <Energy> radtopbot= temp2*6.0*sqrt(2.0)*radlog*
+                            sqr(_mt)*sqr(_mb)*sqr(_glast)*sqr(_glast)
+						/(16.0*sqr(pi)*sqr(_vu)*sqr(_vd));
+	coupling += radbot + radtop + radtopbot;					
   }
   norm(-coupling * UnitRemoval::InvE);
 }

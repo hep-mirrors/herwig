@@ -55,8 +55,7 @@ void NMSSMGGHVertex::doinit()  {
  
   _lambda = nmssm->lambda();
   _lambdaVEV = nmssm->lambdaVEV();
-  
- 
+
   _triTp = nmssm->topTrilinear();
   _triBt = nmssm->bottomTrilinear();
 
@@ -135,10 +134,12 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
       Complex c(0.);
       // couplings for the top quark loop
       c = -0.25*mt*(*_mixS)(iloc, 1)/_sb/_mw;
+	
       couplings[0] = make_pair(c,c);
       masses[0] = mt;
       // couplings for the bottom quark loop
       c = -0.25*mb*(*_mixS)(iloc, 0)/_cb/_mw;
+	
       couplings[1] = make_pair(c,c);	
       masses[1] = mb;
       // sbottoms
@@ -154,6 +155,7 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 	  - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_v2*(*_mixS)(iloc,2)/_coup 
 		    +  _triBt*(*_mixS)(iloc,0))*((*_mixQb)(ix, 1)*(*_mixQb)(ix, 0)
 						 + (*_mixQb)(ix, 0)*(*_mixQb)(ix, 1));
+
 	couplings[2+ix] = make_pair(0.5*cpl*UnitRemoval::InvE,0.5*cpl*UnitRemoval::InvE); 
       }
       // stop
@@ -167,6 +169,7 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 	  -  0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,0) - _lambda*_v1*(*_mixS)(iloc,2)/_coup
 		     + _triTp*(*_mixS)(iloc,1))*((*_mixQt)(ix, 1)*(*_mixQt)(ix, 0)
 						 + (*_mixQt)(ix, 0)*(*_mixQt)(ix, 1));
+
 	couplings[4+ix] = make_pair(0.5*cpl*UnitRemoval::InvE,0.5*cpl*UnitRemoval::InvE);
       }
     }
@@ -181,12 +184,14 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
       Energy mb = _theSM->mass(q2,  _bt);
       Complex c(0.);
       // top quark couplings
-      c = Complex(0., 1.)*0.25*mt*(*_mixP)(iloc, 1)/_sb/_mw;
-      couplings[0] = make_pair(c,-c);
+      c = Complex(0.,-1.)*0.25*mt*(*_mixP)(iloc, 1)/_sb/_mw;
+	  	  
+      couplings[0] = make_pair(-c,c);
       masses[0] = mt;
       // bottom quark couplings
-      c = Complex(0., 1.)*0.25*mb*(*_mixP)(iloc, 0)/_cb/_mw;
-      couplings[1] = make_pair(c,-c);	
+      c = Complex(0., -1.)*0.25*mb*(*_mixP)(iloc, 0)/_cb/_mw;
+	  
+      couplings[1] = make_pair(-c,c);	
       masses[1] = mb;
     }
   }

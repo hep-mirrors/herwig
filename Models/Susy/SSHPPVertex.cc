@@ -111,36 +111,55 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       complex<Energy> brac4 = theZfact*theMSSM->eu()*sqr(theSw);
       complex<Energy> brac5 = theZfact*(0.5 + theMSSM->ee()*sqr(theSw));
       complex<Energy> brac6 = theZfact*theMSSM->ee()*sqr(theSw);
+	  	 Energy Trib=theMSSM->bottomTrilinear().real();
+     Energy Trit=theMSSM->topTrilinear().real();
+	      Energy Trita=theMSSM->tauTrilinear().real();
+	 Energy theMu = theMSSM->muParameter();
+	    MixingMatrix stop = *theMSSM->stopMix();
+   MixingMatrix sbot = *theMSSM->sbottomMix();
+    MixingMatrix stau = *theMSSM->stauMix();
       if( higgs == ParticleID::h0 ) {
 	// lightest sbottom
 	Complex coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb11*(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
-	   theQb12*(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3));
+	   theQb12*(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3)+
+	   	    0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)*(sbot(0,1)*sbot(0,0) 
+		+ sbot(0,1)*sbot(0,0))/theCosB);
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt11*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt12*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4));
+	   theQt12*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4)-
+	   	    0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)*(stop(0,1)*stop(0,0) 
+		+ stop(0,1)*stop(0,0))/theSinB);
 	couplings[1] = make_pair(coup, coup);
 	// lightest stau
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt11*(   sqr(mtau)*theSinA/theMw/theCosB - theSinApB*brac5) +
-	   theLt12*(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6));
+	   theLt12*(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6)+
+	   	   	    0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)*(stau(0,1)*stau(0,0) 
+		+ stau(0,1)*stau(0,0))/theCosB);
 	couplings[2] = make_pair(coup, coup);
 	// heavier sbottom
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb21*(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
-	   theQb22*(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3));
+	   theQb22*(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3)+
+	   	    0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)*(sbot(1,1)*sbot(1,0) 
+		+ sbot(1,0)*sbot(1,1))/theCosB);
 	couplings[3] = make_pair(coup, coup);
 	// heavier stop
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt21*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt22*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4));
+	   theQt22*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4)-
+	   	    0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)*(stop(1,1)*stop(1,0) 
+		+ stop(1,0)*stop(1,1))/theSinB);
 	couplings[4] = make_pair(coup, coup);
 	// heavier stau
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt21*(   sqr(mtau)*theSinA/theMw/theCosB - theSinApB*brac5) +
-	   theLt22*(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6));
+	   theLt22*(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6)+
+	   	   	    0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)*(stau(1,1)*stau(1,0) 
+		+ stau(1,0)*stau(1,1))/theCosB);
 	couplings[5] = make_pair(coup, coup);
 	// top
 	coup = - 3.*mt*sqr(theMSSM->eu())*theCosA/2./theMw/theSinB;
@@ -170,32 +189,44 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	// lightest sbottom
 	Complex coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb11*( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb12*( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3));
+	   theQb12*( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+
+	   	   0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)*(sbot(0,1)*sbot(0,0) 
+		+ sbot(0,1)*sbot(0,0))/theCosB);
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt11*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt12*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4));
+	   theQt12*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)-
+	   	   0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)*(stop(0,1)*stop(0,0) 
+		+ stop(0,1)*stop(0,0))/theSinB);
 	couplings[1] = make_pair(coup, coup);
 	// lightest stau
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt11*( - sqr(mtau)*theCosA/theMw/theCosB + theCosApB*brac5) +
-	   theLt12*( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6));
+	   theLt12*( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+
+	   	   	   0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)*(stau(0,1)*stau(0,0) 
+		+ stau(0,1)*stau(0,0))/theCosB);
 	couplings[2] = make_pair(coup, coup);
 	// heavier sbottom
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb21*( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb22*( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)); 
+	   theQb22*( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+
+	   	   0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)*(sbot(1,1)*sbot(1,0) 
+		+ sbot(1,0)*sbot(1,1))/theCosB); 
 	couplings[3] = make_pair(coup, coup);
 	// heavier stop
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt21*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt22*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4));
+	   theQt22*( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)-
+	   	   0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)*(stop(1,1)*stop(1,0) 
+		+ stop(1,0)*stop(1,1))/theSinB);
 	couplings[4] = make_pair(coup, coup);
 	// heavier stau
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt21*( - sqr(mtau)*theCosA/theMw/theCosB + theCosApB*brac5) +
-	   theLt22*( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6));
+	   theLt22*( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+
+	   	   	   0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)*(stau(1,1)*stau(1,0) 
+		+ stau(1,0)*stau(1,1))/theCosB);
 	couplings[5] = make_pair(coup, coup);
 	// top
 	coup = -3.*mt*sqr(theMSSM->eu())*theSinA/2./theMw/theSinB;
@@ -324,9 +355,9 @@ void SSHPPVertex::doinit() {
   theSinBmA =-theSinA*theCosB + theCosA*theSinB;
   theCosBmA = theCosA*theCosB + theSinA*theSinB;
   
-  MixingMatrix stop = *theMSSM->stopMix();
-  MixingMatrix sbot = *theMSSM->sbottomMix();
-  MixingMatrix stau = *theMSSM->stauMix();
+   MixingMatrix stop = *theMSSM->stopMix();
+   MixingMatrix sbot = *theMSSM->sbottomMix();
+   MixingMatrix stau = *theMSSM->stauMix();
   theQt11 = stop(0,0)*stop(0,0);
   theQt12 = stop(0,1)*stop(0,1);
   theQt21 = stop(1,0)*stop(1,0);

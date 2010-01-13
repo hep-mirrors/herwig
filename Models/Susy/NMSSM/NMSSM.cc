@@ -14,12 +14,14 @@ using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
   os << theHiggsAMix << theNMNMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
-     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV);
+     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV)
+	 << ounit(_MQ3, GeV) << ounit(_MU2, GeV);
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
   is >> theHiggsAMix >> theNMNMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
-     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV);
+     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV)
+	  >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -76,6 +78,10 @@ void NMSSM::extractParameters(bool checkmodel) {
     if(it != pit->second.end()) _theAkappa = it->second*GeV;
     it = pit->second.find(65);
     if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
+		it = pit->second.find(43);
+    if(it != pit->second.end()) _MQ3 = it->second*GeV;
+    it = pit->second.find(46);
+    if(it != pit->second.end()) _MU2 = it->second*GeV;
   }
   else {
     throw Exception() << "NMSSM::extractParameters - There was no EXTPAR block "

@@ -304,7 +304,7 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     // up type squarks and sneutrinos
     else {
       double ef = (smid < 7) ? 2./3. : 0.;
-      fact =  f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
+      fact =  +f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
 	- f1*_masslast.first*(*_mixS)(iloc,1)*(m1a*m2a + m1b*m2b)  
 	-  0.5*f1*(( - _lambdaVEV*(*_mixS)(iloc,0) 
 		     - _lambda*_v1*(*_mixS)(iloc,2)/_couplast

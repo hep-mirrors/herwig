@@ -250,6 +250,16 @@ private:
    *  ID of the higgs
    */
   long theLastID;
+  
+  /**
+   * \f$\tilde{t}\f$ mixing matrix  
+   */
+  MixingMatrixPtr stop;
+  
+  /**
+   * \f$\tilde{b}\f$ mixing matrix  
+   */
+  MixingMatrixPtr sbot;
 };
 
 }

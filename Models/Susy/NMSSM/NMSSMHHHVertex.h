@@ -6,6 +6,7 @@
 //
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
@@ -23,6 +24,8 @@ class NMSSMHHHVertex: public SSSVertex {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
@@ -148,7 +151,7 @@ private:
   /**
    * A pointer to the object containing the SM parameters 
    */
-  tcSMPtr _theSM;
+  tcHwSMPtr _theSM;
 
   /**
    * The \f$W\f$ mass 
@@ -159,6 +162,15 @@ private:
    * The \f$Z\f$ mass 
    */
   Energy _mz;
+     /**
+   * The \f$b\f$ mass 
+   */
+  Energy _mb;
+  
+  /**
+   * The \f$t\f$ mass 
+   */
+  Energy _mt;
   
   /**
    * \f$\sin^2\theta_W\f$
@@ -251,6 +263,19 @@ private:
    * The value of the EW coupling when it was last evaluated
    */
   double _glast;
+        /**
+   * left 3rd generation scalar quark mass
+   */
+  Energy _MQ3;
+
+  /**
+   *  right scalar top mass
+   */
+  Energy _MU2;
+    /**
+   * The mass of the last fermion for which the coupling was evaluated.
+   */
+  pair<Energy,Energy> _masslast;
 
 };
 

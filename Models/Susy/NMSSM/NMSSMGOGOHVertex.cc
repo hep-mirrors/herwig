@@ -33,6 +33,7 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
     for(unsigned int iy=0;iy<2;++iy) {
       for(unsigned int iz=0;iz<2;++iz) {
 	addToList(-ichar[ix], ichar[iy], iodd [iz]);
+
       }
     }
   }
@@ -185,11 +186,11 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 	 Complex coupL(0.), coupR(0.);
 
        coupL = -_lambda*rt*conj((*_mixS)(iloc,2)*(*_mixU)(ic1,1)*(*_mixV)(ic2,1))
-				  +_couplast*rt*(conj((*_mixS)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)
+				  -_couplast*rt*(conj((*_mixS)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)
 				  + (*_mixS)(iloc,1)*(*_mixU)(ic1,0)*(*_mixV)(ic2,1)));
 				  
 		 coupR = -_lambda*rt*(*_mixS)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
-				  +_couplast*rt*((*_mixS)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)
+				  -_couplast*rt*((*_mixS)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)
 				  + (*_mixS)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1));		  
 				  
 				  
@@ -269,34 +270,32 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
       int in2 = (ig2 < 1000024) ? (ig2 - 1000022) : (ig2 - 1000005)/10;
 	  
 
-      Complex up1 = (*_mixP)(iloc, 1); 
-      Complex up2 = (*_mixP)(iloc, 0);
+	  Complex up1 = (*_mixP)(iloc, 0); 
+      Complex up2 = (*_mixP)(iloc, 1);
       Complex up3 = (*_mixP)(iloc, 2);
       Complex ni1 = (*_mixN)(in1,0);
       Complex nj1 = (*_mixN)(in2,0);	  
       Complex ni2 = (*_mixN)(in1,1);
       Complex nj2 = (*_mixN)(in2,1); 
-      Complex ni3 = (*_mixN)(in1,3);
-      Complex nj3 = (*_mixN)(in2,3); 
-      Complex ni4 = (*_mixN)(in1,2);
-      Complex nj4 = (*_mixN)(in2,2); 
+      Complex ni3 = (*_mixN)(in1,2);
+      Complex nj3 = (*_mixN)(in2,2); 
+      Complex ni4 = (*_mixN)(in1,3);
+      Complex nj4 = (*_mixN)(in2,3); 
       Complex ni5 = (*_mixN)(in1,4);
       Complex nj5 = (*_mixN)(in2,4);
-
-
-					  
-      Complex AL = _lambda*rt*(up1*(ni4*nj5 + ni5*nj4) +
-		                      up2*(ni3*nj5 + ni5*nj3) + 
-		                      up3*(ni3*nj4 + ni4*nj3))
-	              - sqrt(2.)*_kappa*up3*ni5*nj5
-	              - _couplast*0.5*(up1*(ni2*nj3 + ni3*nj2) - 
-			         up2*(ni2*nj4 + ni3*nj4))
-				  + _couplast*0.5*_sw*(up1*(ni1*nj3 + ni3*nj1) - 
-			          up2*(ni1*nj4 + ni4*nj1))/_cw;
+      Complex AL = 
+	_lambda*rt*(up2*(ni3*nj5 + ni5*nj3) +
+		    up1*(ni4*nj5 + ni5*nj4) + 
+		    up3*(ni3*nj4 + ni4*nj3))
+	- sqrt(2.)*_kappa*up3*ni5*nj5
+	- _couplast*0.5*(up2*(ni2*nj4 + ni4*nj2) - 
+			 up1*(ni2*nj3 + ni3*nj2))
+	+ _couplast*0.5*_sw*(up2*(ni1*nj4 + ni4*nj1) - 
+			     up1*(ni1*nj3 + ni3*nj1))/_cw;
 	  
       AL *= Complex(0.0, -1.0);
       left(conj(AL));
-      right(-AL);
+      right(AL);
       norm(1.);
 
     }
