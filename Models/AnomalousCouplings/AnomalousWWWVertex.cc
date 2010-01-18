@@ -42,11 +42,11 @@ IBPtr AnomalousWWWVertex::fullclone() const {
 }
 
 void AnomalousWWWVertex::persistentOutput(PersistentOStream & os) const {
-  os << gZ_ << gGamma_ << kappaZ_ << kappaGamma_ << lambda_;
+  os << gZ_ << gGamma_ << kappaZ_ << kappaGamma_ << lambda_ << _zfact;
 }
 
 void AnomalousWWWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> gZ_ >> gGamma_ >> kappaZ_ >> kappaGamma_ >> lambda_;
+  is >> gZ_ >> gGamma_ >> kappaZ_ >> kappaGamma_ >> lambda_ >> _zfact;
 }
 
 ClassDescription<AnomalousWWWVertex> AnomalousWWWVertex::initAnomalousWWWVertex;
@@ -153,8 +153,8 @@ Complex AnomalousWWWVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
      (g+kappa+lambda_*p2[1]/mw2)*dotp12*dot31+
      lambda_/mw2*dotp31*dotp32*(dotp23-dotp13)-
      dot12*(g+0.5*lambda_*p2[2]/mw2)*(dotp23-dotp13));
-  Complex diff=output-test;
-  if(abs(diff)>1e-10) cerr << "testing " << diff << "\n";
+  //Complex diff=output-test;
+  //if(abs(diff)>1e-10) cerr << "testing " << diff << "\n";
   return output;
 }
   
