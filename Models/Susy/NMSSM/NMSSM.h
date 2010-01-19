@@ -136,12 +136,6 @@ protected:
    *  Create the mixing matrices for the model
    */
   virtual void createMixingMatrices();
-  
-    /**
-   * Adjust row of Mixing Matrix if a negative mass occurs in LHA file
-   * @param id The PDG code of the particle with a negative mass
-   */
-  virtual void adjustMixingMatrix(long id);
 
 protected:
 

@@ -63,8 +63,8 @@ void NMSSMHHHVertex::doinit() {
   _lambdaVEV = nmssm->lambdaVEV();
   _theAl = nmssm->trilinearLambda();
   _theAk = nmssm->trilinearKappa();
-      _MQ3 = nmssm->MQ3();  
-    _MU2 = nmssm->MU2(); 
+  _MQ3 = nmssm->MQ3();  
+  _MU2 = nmssm->MU2(); 
   double beta = atan(nmssm->tanBeta());
   _sb = sin(beta);
   _cb = cos(beta);
@@ -83,16 +83,16 @@ void NMSSMHHHVertex::persistentOutput(PersistentOStream & os) const {
      << _kappa <<  ounit(_lambdaVEV,GeV) <<  ounit(_theAl, GeV) 
      << ounit(_theAk,GeV) <<  _sb <<  _cb << _s2b <<  _c2b
      << ounit(_vu,GeV) << ounit(_vu,GeV) << ounit(_s,GeV) << _mixS << _mixP
-	  << ounit(_MQ3,GeV) << ounit(_MU2,GeV) << _theSM;
+     << ounit(_MQ3,GeV) << ounit(_MU2,GeV) << _theSM;
 }
 
 void NMSSMHHHVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_mw, GeV) >> iunit(_mz,GeV)>> iunit(_mb, GeV) >> iunit(_mt,GeV)
-	 >> _sw2 >> _cw >>  _lambda 
+     >> _sw2 >> _cw >>  _lambda 
      >> _kappa >>  iunit(_lambdaVEV,GeV) >>  iunit(_theAl, GeV) 
      >> iunit(_theAk,GeV) >>  _sb >>  _cb >> _s2b >>  _c2b
      >> iunit(_vu,GeV) >> iunit(_vd,GeV) >> iunit(_s,GeV)>> _mixS >> _mixP
-	 >> iunit(_MQ3,GeV) >> iunit(_MU2,GeV)  >> _theSM;
+     >> iunit(_MQ3,GeV) >> iunit(_MU2,GeV)  >> _theSM;
 }
 
 ClassDescription<NMSSMHHHVertex> NMSSMHHHVertex::initNMSSMHHHVertex;
@@ -130,13 +130,14 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
   }
   //define VEV's
   double rt = sqrt(0.5);
-_mb= _masslast.first;
-_mt= _masslast.second;
-Energy _mtpole = getParticleData(6)->mass();
-double pi= Constants::pi;
-Energy2 Qstsb = _MQ3*_MU2;
-double temp = Qstsb/sqr(_mtpole);
-double radlog = log(temp);
+  _mb= _masslast.first;
+  _mt= _masslast.second;
+  Energy _mtpole = getParticleData(6)->mass();
+  double pi= Constants::pi;
+  Energy2 Qstsb = _MQ3*_MU2;
+  double temp = Qstsb/sqr(_mtpole);
+  assert(temp!=0.);
+  double radlog = log(temp);
   complex<Energy> coupling;
   
   //CP even Higgs

@@ -52,8 +52,8 @@ void SusyBase::doinit() {
   addVertex(theGGSQSQVertex);
   addVertex(theGSGSGVertex);
   addVertex(theNNZVertex);
-  addVertex(theNNPVertex);
-  addVertex(theGNGVertex);
+  if(theNNPVertex) addVertex(theNNPVertex);
+  if(theGNGVertex) addVertex(theGNGVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
   addVertex(vertexGOGOH());
@@ -174,12 +174,12 @@ void SusyBase::Init() {
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNP
     ("Vertex/NNP",
      "Reference to photon-~chi_i0-~chi_i0 vertex",
-     &SusyBase::theNNPVertex, false, false, true, false);
+     &SusyBase::theNNPVertex, false, false, true, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGNG
     ("Vertex/GNG",
      "Reference to gluon-~chi_i0-gluino vertex",
-     &SusyBase::theGNGVertex, false, false, true, false);
+     &SusyBase::theGNGVertex, false, false, true, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",

@@ -78,7 +78,7 @@ void NMSSM::extractParameters(bool checkmodel) {
     if(it != pit->second.end()) _theAkappa = it->second*GeV;
     it = pit->second.find(65);
     if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
-		it = pit->second.find(43);
+    it = pit->second.find(43);
     if(it != pit->second.end()) _MQ3 = it->second*GeV;
     it = pit->second.find(46);
     if(it != pit->second.end()) _MU2 = it->second*GeV;
@@ -87,6 +87,18 @@ void NMSSM::extractParameters(bool checkmodel) {
     throw Exception() << "NMSSM::extractParameters - There was no EXTPAR block "
 		      << "in the extracted parameters list. The model cannot "
 		      << "be used without these." << Exception::runerror;
+  }
+  pit=parameters().find("msoft");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it;
+    if(_MQ3==ZERO) {
+      it = pit->second.find(43);
+      if(it != pit->second.end()) _MQ3 = it->second*GeV;
+    }
+    if(_MU2==ZERO) {
+      it = pit->second.find(46);
+      if(it != pit->second.end()) _MU2 = it->second*GeV;
+    }
   }
 }
 
@@ -105,15 +117,3 @@ void NMSSM::createMixingMatrices() {
     // base class for neutralinos and charginos
   MSSM::createMixingMatrices();
 }
-
-void NMSSM::adjustMixingMatrix(long id) {
-  assert ( id == 1000022 || id == 1000023 || id == 1000025 || 
-	   id == 1000035 || id == 1000045 ); 
-  if( theNMNMix)
-    theNMNMix->adjustPhase(id);
-  else 
-    throw SetupException() << "SusyBase::adjustMixingMatrix - "
-			   << "The neutralino mixing matrix pointer "
-			   << "is null!" << Exception::runerror;
-}
-
