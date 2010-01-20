@@ -65,19 +65,19 @@ void AnomalousWWWVertex::Init() {
      false, false, Interface::limited);
 
   static Parameter<AnomalousWWWVertex,double> interfacekappaZ
-    ("KappaZ",
+    ("kappaZ",
      "The anomalous kappa coupling for the Z boson",
      &AnomalousWWWVertex::kappaZ_, 1.0, -10., 10.,
      false, false, Interface::limited);
 
   static Parameter<AnomalousWWWVertex,double> interfacelambda
-    ("Lambda",
+    ("lambda",
      "The anomalous lambda coupling",
      &AnomalousWWWVertex::lambda_, 0.0, -10., 10.,
      false, false, Interface::limited);
 
   static Parameter<AnomalousWWWVertex,double> interfacekappaGamma
-    ("KappaGamma",
+    ("kappaGamma",
      "The anomalous kappa coupling for the gamma",
      &AnomalousWWWVertex::kappaGamma_, 1.0, -10., 10.,
      false, false, Interface::limited);
