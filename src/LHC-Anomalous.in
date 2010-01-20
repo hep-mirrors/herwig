@@ -4,16 +4,26 @@
 ##################################################
 create Herwig::AnomalousWWWVertex /Herwig/Vertices/AnomalousWWWVertex HwAnomalousCouplings.so
 set /Herwig/Model:Vertex/WWW /Herwig/Vertices/AnomalousWWWVertex
+#set /Herwig/Vertices/AnomalousWWWVertex:gZ 1
+#set /Herwig/Vertices/AnomalousWWWVertex:kappaZ 1
+#set /Herwig/Vertices/AnomalousWWWVertex:lambda 0
+#set /Herwig/Vertices/AnomalousWWWVertex:gGamma 1
+#set /Herwig/Vertices/AnomalousWWWVertex:kappaGamma 1
 
 ##################################################
 # Technical parameters for this run
 ##################################################
+
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
+#set LHCGenerator:EventHandler:StatLevel Full
+#set LHCGenerator:EventHandler:CascadeHandler NULL
+#set LHCGenerator:EventHandler:DecayHandler NULL
+#set LHCGenerator:EventHandler:HadronizationHandler NULL
 
 ##################################################
 # LHC physics parameters (override defaults here) 
@@ -30,12 +40,12 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
 
 # WW/WZ/ZZ
-#insert SimpleQCD:MatrixElements[0] MEPP2VV
-#set MEPP2VV:Process WZ
+insert SimpleQCD:MatrixElements[0] MEPP2VV
+set MEPP2VV:Process WZ
 #
 # Wgamma/Zgamma
-insert SimpleQCD:MatrixElements[0] MEPP2VGamma
-set MEPP2VGamma:Process WGamma
+#insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+#set MEPP2VGamma:Process WGamma
 
 cd /Herwig/Generators
 
