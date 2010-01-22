@@ -277,6 +277,11 @@ private:
    */
   pair<Energy,Energy> _masslast;
 
+  /**
+   *  Whether or onto to include the radiative terms
+   */
+  bool _includeRadiative;
+
 };
 
 }
