@@ -173,8 +173,8 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 	c = -_lambda/_coup*rt*(*_mixS)(iloc,2)*(*_mixU)(ic,1)*(*_mixV)(ic,1)
 	  -rt*((*_mixS)(iloc,0)*(*_mixU)(ic,1)*(*_mixV)(ic,0) +
 	       (*_mixS)(iloc,1)*(*_mixU)(ic,0)*(*_mixV)(ic,1));
-		 couplings[3+ic] = make_pair(c,c);
-}
+	couplings[3+ic] = make_pair(c,c);
+      }
       // W boson
       c = UnitRemoval::InvE*_mw*
 	(_cb*(*_mixS)(iloc,0)+_sb*(*_mixS)(iloc,1));

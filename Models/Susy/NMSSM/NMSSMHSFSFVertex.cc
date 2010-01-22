@@ -329,7 +329,6 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	  - _lambda*_v1*(*_mixP)(iloc,2)/_couplast
 	  - af*(*_mixP)(iloc,1)));
     }
-   
   }
   norm(_couplast*fact*UnitRemoval::InvE);
 }
