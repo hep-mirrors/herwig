@@ -295,7 +295,7 @@ void SusyBase::readSetup(istream & is) {
 	 _mixings[name] = make_pair(make_pair(row,col),vals);
        }
        else if( name.find("info") == string::npos)
-	 readBlock(file,name);
+	 readBlock(file,name,line);
      }
      // decays
      else if( line.find("decay") == 0 )
@@ -312,13 +312,15 @@ void SusyBase::readSetup(istream & is) {
    _readFile=true;
 }
 
-void SusyBase::readBlock(ifstream & ifs,string name) {
+void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
   if(!ifs)
     throw SetupException() 
       << "SusyBase::readBlock() - The input stream is in a bad state"
       << Exception::runerror;
   string line;
   ParamMap store;
+  bool set = true;
+  string test = StringUtils::car(linein, "#");
   // special for the alpha block
   if(name.find("alpha") == 0 ) {
     double alpha;
@@ -328,6 +330,21 @@ void SusyBase::readBlock(ifstream & ifs,string name) {
     store.insert(make_pair(1,alpha));
   }
   else {
+    // extract the scale from the block if present
+    if(test.find("q=")!= string::npos) { 
+      while(test.find("=")!=string::npos)
+	test= StringUtils::cdr(test,"=");
+      istringstream is(test);
+      double scale;
+      is >> scale;
+      // only store the lowest scale block
+      if(_parameters.find(name)!=_parameters.end()) {
+	set = scale < _parameters[name][-1];
+      }
+      else {
+	store.insert(make_pair(-1,scale));
+      }
+    }
     while(getline(ifs, line)) {
       if(line[0] == '#') {
 	if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -344,7 +361,7 @@ void SusyBase::readBlock(ifstream & ifs,string name) {
 	 ifs.peek() == '#') break;
     }
   }
-  _parameters[name]=store;
+  if(set) _parameters[name]=store;
 }
 
 void SusyBase::readDecay(ifstream & ifs, 

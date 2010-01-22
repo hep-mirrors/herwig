@@ -181,7 +181,7 @@ private:
    * @param ifs input stream containg data
    * @param name The name of the block
    */
-  void readBlock(ifstream & ifs,string name);
+  void readBlock(ifstream & ifs,string name,string line);
 
   /**
    * Function to read mixing matrix from LHA file
