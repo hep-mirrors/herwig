@@ -13,15 +13,15 @@
 using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
-  os << theHiggsAMix << theNMNMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
+  os << theHiggsAMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
      << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV)
-	 << ounit(_MQ3, GeV) << ounit(_MU2, GeV);
+     << ounit(_MQ3, GeV) << ounit(_MU2, GeV);
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
-  is >> theHiggsAMix >> theNMNMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
+  is >> theHiggsAMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
      >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV)
-	  >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
+     >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -66,28 +66,53 @@ void NMSSM::extractParameters(bool checkmodel) {
   }
   // get the NMSSM parameters
   map<string,ParamMap>::const_iterator pit;
-  pit=parameters().find("extpar");
+  pit=parameters().find("msoft");
   if( pit != parameters().end() ) {
-    ParamMap::const_iterator it = pit->second.find(61);
-    if(it != pit->second.end()) _lambda = it->second;
-    it = pit->second.find(62);
-    if(it != pit->second.end()) _kappa = it->second;
-    it = pit->second.find(63);
-    if(it != pit->second.end()) _theAlambda = it->second*GeV;
-    it = pit->second.find(64);
-    if(it != pit->second.end()) _theAkappa = it->second*GeV;
-    it = pit->second.find(65);
-    if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
+    ParamMap::const_iterator it;
     it = pit->second.find(43);
     if(it != pit->second.end()) _MQ3 = it->second*GeV;
     it = pit->second.find(46);
     if(it != pit->second.end()) _MU2 = it->second*GeV;
+  }
+  pit=parameters().find("nmssmrun");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it = pit->second.find(1);
+    if(it != pit->second.end()) _lambda = it->second;
+    it = pit->second.find(2);
+    if(it != pit->second.end()) _kappa = it->second;
+    it = pit->second.find(3);
+    if(it != pit->second.end()) _theAlambda = it->second*GeV;
+    it = pit->second.find(4);
+    if(it != pit->second.end()) _theAkappa = it->second*GeV;
+    it = pit->second.find(5);
+    if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
+  }
+  pit=parameters().find("extpar");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it = pit->second.find(61);
+    if(_lambda==ZERO     && it != pit->second.end()) _lambda = it->second;
+    it = pit->second.find(62);
+    if(_kappa==ZERO      && it != pit->second.end()) _kappa = it->second;
+    it = pit->second.find(63);
+    if(_theAlambda==ZERO && it != pit->second.end()) _theAlambda = it->second*GeV;
+    it = pit->second.find(64);
+    if(_theAkappa==ZERO  && it != pit->second.end()) _theAkappa = it->second*GeV;
+    it = pit->second.find(65);
+    if(_lambdaVEV==ZERO  && it != pit->second.end()) _lambdaVEV = it->second*GeV;
+    it = pit->second.find(43);
+    if(_MQ3==ZERO        && it != pit->second.end()) _MQ3 = it->second*GeV;
+    it = pit->second.find(46);
+    if(_MU2==ZERO        && it != pit->second.end()) _MU2 = it->second*GeV;
   }
   else {
     throw Exception() << "NMSSM::extractParameters - There was no EXTPAR block "
 		      << "in the extracted parameters list. The model cannot "
 		      << "be used without these." << Exception::runerror;
   }
+
+
+
+
   pit=parameters().find("msoft");
   if( pit != parameters().end() ) {
     ParamMap::const_iterator it;
@@ -110,10 +135,7 @@ void NMSSM::createMixingMatrices() {
     if (name == "nmamix") {
       createMixingMatrix(theHiggsAMix,name,it->second.second,it->second.first);
     }
-	    if( name == "nmnmix" ){
-      createMixingMatrix(theNMNMix,name,it->second.second,it->second.first);
-    }
   }
-    // base class for neutralinos and charginos
+  // base class for neutralinos and charginos
   MSSM::createMixingMatrices();
 }

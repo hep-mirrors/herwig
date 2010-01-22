@@ -37,13 +37,6 @@ public:
   const MixingMatrixPtr & CPoddHiggsMix() const {
     return theHiggsAMix;
   }
-  
-    /**
-   * Mixing matrix for the neutralinos 
-   */
-  const MixingMatrixPtr & NMneutralinoMix() const {
-    return theNMNMix;
-  }
 
   /**
    *  The NMSSM couplings
@@ -174,10 +167,7 @@ private:
    *  Higgs mixing matrix
    */
   MixingMatrixPtr theHiggsAMix;
-  /**
-   * nenutralino mixing matrix
-   */
-  MixingMatrixPtr theNMNMix;
+
   /**
    *  The NMSSM couplings
    */
