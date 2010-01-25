@@ -236,6 +236,11 @@ public:
   const map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> > &
   treelinks()  const {return _treelinks;}
 
+  /**
+   *  Transform the tree
+   */
+  void transform(const LorentzRotation & rot);
+
 protected:
 
   /**

@@ -461,178 +461,94 @@ void ShowerTree::addInitialStateShower(PPtr p, PPtr hadron,
 void ShowerTree::decay(ShowerDecayMap & decay) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
-  // if not already decayed decay it
-  if(_outgoingLines.empty()) {
-    // now we need to replace the particle with a new copy after the shower
-    // find particle after the shower
-    ShowerParticlePtr newparent=_parent->_treelinks[this].second;
-    // now make the new progenitor
-    vector<PPtr> original,copy;
-    original.push_back(newparent);
-    copy.push_back(new_ptr(Particle(*newparent)));
-    // reisolate the colour
-    colourIsolate(original,copy);
-    // make the new progenitor
-    ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0],2,false));
-    fixColour(stemp);
-    ShowerProgenitorPtr newprog=new_ptr(ShowerProgenitor(original[0],copy[0],stemp));
-    _incomingLines.clear();
-    _incomingLines.insert(make_pair(newprog,stemp));
-    // now we need to decay the copy
-    PPtr parent=copy[0];
-    unsigned int ntry = 0;
-    while (true) {
-      // exit if fails
-      if (++ntry>=200)
-	throw Exception() << "Failed to perform decay in ShowerTree::decay()"
-			  << " after " << 200
-			  << " attempts for " << parent->PDGName() 
-			  << Exception::eventerror;
-      // select decay mode
-      tDMPtr dm(parent->data().selectMode(*parent));
-      if(!dm) 
-	throw Exception() << "Failed to select decay  mode in ShowerTree::decay()"
-			  << "for " << newparent->PDGName()
-			  << Exception::eventerror;
-      if(!dm->decayer()) 
-	throw Exception() << "No Decayer for selected decay mode "
-			  << " in ShowerTree::decay()"
-			  << Exception::runerror;
-      // start of try block
-      try {
-	ParticleVector children = dm->decayer()->decay(*dm, *parent);
-	// if no children have another go
-	if(children.empty()) continue;
-	// set up parent
-	parent->decayMode(dm);
-	// add children
-	for (unsigned int i = 0, N = children.size(); i < N; ++i ) {
-	  children[i]->setLabVertex(parent->labDecayVertex());
-	  parent->addChild(children[i]);
-	  parent->scale(ZERO);
-	}
-	// if succeeded break out of loop
-	break;
+  // if already decayed return
+  if(!_outgoingLines.empty()) return;
+  // otherwise decay it
+  // now we need to replace the particle with a new copy after the shower
+  // find particle after the shower
+  ShowerParticlePtr newparent=_parent->_treelinks[this].second;
+  // now make the new progenitor
+  vector<PPtr> original,copy;
+  original.push_back(newparent);
+  copy.push_back(new_ptr(Particle(*newparent)));
+  // reisolate the colour
+  colourIsolate(original,copy);
+  // make the new progenitor
+  ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0],2,false));
+  fixColour(stemp);
+  ShowerProgenitorPtr newprog=new_ptr(ShowerProgenitor(original[0],copy[0],stemp));
+  _incomingLines.clear();
+  _incomingLines.insert(make_pair(newprog,stemp));
+  // now we need to decay the copy
+  PPtr parent=copy[0];
+  unsigned int ntry = 0;
+  while (true) {
+    // exit if fails
+    if (++ntry>=200)
+      throw Exception() << "Failed to perform decay in ShowerTree::decay()"
+			<< " after " << 200
+			<< " attempts for " << parent->PDGName() 
+			<< Exception::eventerror;
+    // select decay mode
+    tDMPtr dm(parent->data().selectMode(*parent));
+    if(!dm) 
+      throw Exception() << "Failed to select decay  mode in ShowerTree::decay()"
+			<< "for " << newparent->PDGName()
+			<< Exception::eventerror;
+    if(!dm->decayer()) 
+      throw Exception() << "No Decayer for selected decay mode "
+			<< " in ShowerTree::decay()"
+			<< Exception::runerror;
+    // start of try block
+    try {
+      ParticleVector children = dm->decayer()->decay(*dm, *parent);
+      // if no children have another go
+      if(children.empty()) continue;
+      // set up parent
+      parent->decayMode(dm);
+      // add children
+      for (unsigned int i = 0, N = children.size(); i < N; ++i ) {
+	children[i]->setLabVertex(parent->labDecayVertex());
+	parent->addChild(children[i]);
+	parent->scale(ZERO);
       }
-      catch(KinematicsReconstructionVeto) {}
+      // if succeeded break out of loop
+      break;
     }
-    // insert the trees from the children
-    ParticleVector children=parent->children();
-    map<PPtr,ShowerTreePtr> trees;
-    for(unsigned int ix=0;ix<children.size();++ix) {
-      PPtr orig=children[ix];
-      parent->abandonChild(orig);
-      // if particle has children or decays in shower
-      if(!orig->children().empty()||
-	 (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
-	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
-	trees.insert(make_pair(orig,newtree));
-	Energy width=orig->dataPtr()->generateWidth(orig->mass());
-	decay.insert(make_pair(width,newtree));
-      }
-      // now create the shower progenitors
-      PPtr ncopy=new_ptr(Particle(*orig));
-      //copy[0]->addChild(ncopy);
-      ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2,true));
-      fixColour(nshow);
-      ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
-							ncopy,nshow));
-      _outgoingLines.insert(make_pair(prog,nshow));
-    }
-    // set up the map of daughter trees
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-    for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit) {
-      map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
-      if(tit!=trees.end()) {
-	_treelinks.insert(make_pair(tit->second,
-				    make_pair(mit->first,
-					      mit->first->progenitor())));
-	tit->second->_parent=this;
-      }
-    }
+    catch(KinematicsReconstructionVeto) {}
   }
-  // all ready decayed
-  else {
-    // need to boost the system to conserve momentum
-    // find parent tree and particle
-    ShowerTreePtr ptree=ShowerTreePtr(this);
-    ShowerParticlePtr newparent=_parent->_treelinks[ptree].second;
-
-    // If the original momenta are different to the progenitor
-    // or copy values we choose to orient the decay products
-    // such that they have that of original().
-    vector<ShowerProgenitorPtr> treeProgenitors;
-    Lorentz5Momentum outgoingOriginal;
-    for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
-	  cht=_outgoingLines.begin();cht!=_outgoingLines.end();++cht) {
-      treeProgenitors.push_back(cht->first);
-      outgoingOriginal += cht->first->original()->momentum();
+  // insert the trees from the children
+  ParticleVector children=parent->children();
+  map<PPtr,ShowerTreePtr> trees;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    PPtr orig=children[ix];
+    parent->abandonChild(orig);
+    // if particle has children or decays in shower
+    if(!orig->children().empty()||
+       (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
+      trees.insert(make_pair(orig,newtree));
+      Energy width=orig->dataPtr()->generateWidth(orig->mass());
+      decay.insert(make_pair(width,newtree));
     }
-    outgoingOriginal.rescaleMass();
-    double epsilon(0.01);
-    bool different(false);
-    for(unsigned int ix=0;ix<treeProgenitors.size();ix++) {
-      Lorentz5Momentum original(treeProgenitors[ix]->original()->momentum());
-      Lorentz5Momentum progenitor(treeProgenitors[ix]->progenitor()->momentum());
-      if(abs(original.angle(progenitor))>epsilon||
-	 abs((original-progenitor).e())/original.e()>epsilon)
-	different = true;
-    }
-    double originalTheta0,originalPhi0,originalPhi1;
-    if(different) {
-      // Work out the orientation of the (first) decay product(S) in the
-      // rest frame of the original().
-      LorentzRotation boostToORF(outgoingOriginal.findBoostToCM(),
-				 outgoingOriginal.e()/outgoingOriginal.mass());
-      originalTheta0=(boostToORF*treeProgenitors[0]->original()->momentum()).theta();
-      originalPhi0=(boostToORF*treeProgenitors[0]->original()->momentum()).phi();
-      boostToORF.rotateZ(-originalPhi0);
-      boostToORF.rotateY(-originalTheta0);
-      originalPhi1=(boostToORF*treeProgenitors[1]->original()->momentum()).phi();
-    }
-
-    // workout the lorentz boost
-    Lorentz5Momentum ptemp(_incomingLines.begin()->first->progenitor()->momentum());
-    LorentzRotation boost(ptemp.findBoostToCM(),ptemp.e()/ptemp.mass());
-    LorentzRotation boost2 = boost;
-    if(different) {
-      boost.rotateZ(-(boost*treeProgenitors[0]->progenitor()->momentum()).phi());
-      boost.rotateY(-(boost*treeProgenitors[0]->progenitor()->momentum()).theta());
-      boost.rotateZ(-(boost*treeProgenitors[1]->progenitor()->momentum()).phi());
-      boost.rotateZ( originalPhi1);
-      boost.rotateY( originalTheta0);
-      boost.rotateZ( originalPhi0);
-    }
-    // So whether the progenitor and original momenta are in
-    // agreement or not, the orientation of the decay products 
-    // in the rest frame of newparent should always be the same
-    // as the original()'s in their rest frame. 
-    boost.boost(newparent->momentum().boostVector(),
-		newparent->momentum().e()/newparent->mass());
-    // now boost all the particles
-    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-    for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
-      cit->first->progenitor()->deepTransform(boost);
-      if(!different) {
-      cit->first->original()->deepTransform(boost);
-      } else {
-	Lorentz5Momentum holder(cit->first->original()->momentum());
-	cit->first->original()->deepTransform(boost);
-	cit->first->original()->setMomentum(holder);
-      }
-      cit->first->copy()->deepTransform(boost);
-    }
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-    for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
-      cjt->first->progenitor()->deepTransform(boost);
-      if(!different) {
-      cjt->first->original()->deepTransform(boost);
-      } else {
-	Lorentz5Momentum holder(cjt->first->original()->momentum());
-	cjt->first->original()->deepTransform(boost);
-	cjt->first->original()->setMomentum(holder);
-      }
-      cjt->first->copy()->deepTransform(boost);
+    // now create the shower progenitors
+    PPtr ncopy=new_ptr(Particle(*orig));
+    //copy[0]->addChild(ncopy);
+    ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2,true));
+    fixColour(nshow);
+    ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
+						      ncopy,nshow));
+    _outgoingLines.insert(make_pair(prog,nshow));
+  }
+  // set up the map of daughter trees
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+  for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit) {
+    map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
+    if(tit!=trees.end()) {
+      _treelinks.insert(make_pair(tit->second,
+				  make_pair(mit->first,
+					    mit->first->progenitor())));
+      tit->second->_parent=this;
     }
   }
 }
@@ -890,4 +806,26 @@ vector<ShowerProgenitorPtr> ShowerTree::extractProgenitors() {
   for(mjt=outgoingLines().begin();mjt!=outgoingLines().end();++mjt)
     ShowerHardJets.push_back((*mjt).first);
   return ShowerHardJets;
+}
+
+void ShowerTree::transform(const LorentzRotation & boost) {
+  // now boost all the particles
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  // incoming
+  for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
+    cit->first->progenitor()->deepTransform(boost);
+    cit->first->original()->deepTransform(boost);
+    cit->first->copy()->deepTransform(boost);
+  }
+  // outgoing
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+  for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
+    cjt->first->progenitor()->deepTransform(boost);
+    cjt->first->original()->deepTransform(boost);
+    cjt->first->copy()->deepTransform(boost);
+  }
+  // child trees
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
+    tit->first->transform(boost);
 }

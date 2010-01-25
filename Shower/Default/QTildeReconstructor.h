@@ -408,6 +408,8 @@ protected:
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
 
+  void deepTransform(PPtr particle,const LorentzRotation & r) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -461,6 +463,11 @@ private:
    * Storage of the intrinsic \f$p_T\f$
    */
   mutable map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
+
+  /**
+   *  Current ShowerTree
+   */
+  mutable tShowerTreePtr _currentTree;
 };
 
 }

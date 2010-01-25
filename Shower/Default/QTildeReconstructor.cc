@@ -174,6 +174,7 @@ bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic) const {
+  _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
@@ -311,6 +312,7 @@ reconstructHardJets(ShowerTreePtr hard,
   catch(KinematicsReconstructionVeto) {
     _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
+    _currentTree = tShowerTreePtr();
     return false;
   }
   _progenitor=tShowerParticlePtr();
@@ -331,9 +333,11 @@ reconstructHardJets(ShowerTreePtr hard,
     }
     if( ! (hadron->id() == parent->id() && hadron->children().size() <= 1)
        && parent->momentum().rho() > hadron->momentum().rho()) {
+      _currentTree = tShowerTreePtr();
       return false;
     }
   }
+  _currentTree = tShowerTreePtr();
   return true;
 }
 
@@ -444,6 +448,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq,
 
 bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay) const {
+  _currentTree = decay;
   try {
     // extract the particles from the ShowerTree
     vector<ShowerProgenitorPtr> ShowerHardJets=decay->extractProgenitors();
@@ -527,7 +532,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
-      if(gottaBoost) tempJetKin.parent->deepTransform(restboost);
+      if(gottaBoost) deepTransform(tempJetKin.parent,restboost);
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
       jetKinematics.push_back(tempJetKin);
     }
@@ -536,7 +541,10 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     double k1,k2;
     Lorentz5Momentum qt;
     if(!solveDecayKFactor(initial->progenitor()->mass(),nvect,pjet,
-			  jetKinematics,partner,ppartner,k1,k2,qt)) return false;
+			  jetKinematics,partner,ppartner,k1,k2,qt)) {
+      _currentTree = tShowerTreePtr();
+      return false;
+    }
     // apply boosts and rescalings to final-state jets
     for(JetKinVect::iterator it = jetKinematics.begin(); 
 	it != jetKinematics.end(); ++it) {
@@ -556,7 +564,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	}
 	Lorentz5Momentum ptest=Trafo*it->q;
 	if(gottaBoost)  Trafo.boost(-boosttorest,gammarest);
-	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
+	if(atLeastOnce || gottaBoost) deepTransform(it->parent,Trafo);
       }
       else {
 	Lorentz5Momentum pnew=ppartner[0];
@@ -566,13 +574,15 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	pnew.rescaleEnergy();
 	LorentzRotation Trafo=solveBoost(1.,ppartner[1],pnew);
 	if(gottaBoost) Trafo.boost(-boosttorest,gammarest);
-	partner->deepTransform(Trafo);
+	deepTransform(partner,Trafo);
       }
     }
   }
   catch(KinematicsReconstructionVeto) {
+    _currentTree = tShowerTreePtr();
     return false;
   }
+  _currentTree = tShowerTreePtr();
   return true;
 }
 
@@ -918,7 +928,6 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
     lambda = sqrt(lambda);
   }
   else {
-    generator()->log() << "testing did B\n";
     unsigned int ntry=0;
     // compute magnitudes once for speed
     vector<Energy2> pmag;
@@ -1196,7 +1205,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   LorentzRotation transc=rotinv*solveBoost(pnew[1],qcp)*rot;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     if(jets[ix]->progenitor()->isFinalState())
-      jets[ix]->progenitor()->deepTransform(transc);
+      deepTransform(jets[ix]->progenitor(),transc);
     else {
       tPPtr parent;
       boostChain(jets[ix]->progenitor(),transb,parent);
@@ -1313,8 +1322,9 @@ reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest,
 			    vector<ShowerProgenitorPtr> jets) const {
   // special for case of individual particle
   if(jets.size()==1) {
-    jets[0]->progenitor()->deepBoost(toRest);
-    jets[0]->progenitor()->deepBoost(fromRest);
+    LorentzRotation trans(toRest);
+    trans.boost(fromRest);
+    deepTransform(jets[0]->progenitor(),trans);
     return;
   }
   bool radiated(false);
@@ -1353,11 +1363,11 @@ reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest,
     LorentzRotation Trafo = LorentzRotation(); 
     if(radiated) Trafo = solveBoost(k, it->q, it->p);
     if(gottaBoost) Trafo.boost(-beta_cm);
-    if(radiated || gottaBoost) it->parent->deepTransform(Trafo);
     if(applyBoost) {
-      it->parent->deepBoost(toRest);
-      it->parent->deepBoost(fromRest);
+      Trafo.boost(toRest);
+      Trafo.boost(fromRest);
     }
+    if(radiated || gottaBoost || applyBoost) deepTransform(it->parent,Trafo);
   }
 }
 
@@ -1369,7 +1379,6 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   // check whether particles radiated and calculate total momentum
   for( unsigned int ix = 0; ix < jets.size(); ++ix ) {
     radiated |= jets[ix]->hasEmitted();
-//     pcm += jets[ix]->progenitor()->getThePEGBase()->momentum();
     pcm += jets[ix]->progenitor()->momentum();
   }
   // check if intrinsic pt to be added
@@ -1381,7 +1390,6 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   vector<Lorentz5Momentum> p, pq, p_in;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // at momentum to vector
-//     p_in.push_back(jets[ix]->progenitor()->getThePEGBase()->momentum());
     p_in.push_back(jets[ix]->progenitor()->momentum());
     // reconstruct the jet
     radiated |= reconstructSpaceLikeJet(jets[ix]->progenitor());
@@ -1734,7 +1742,7 @@ void QTildeReconstructor::boostChain(tPPtr p, const LorentzRotation &bv,
   p->transform(bv);
   if(p->children().size()==2) {
     if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
-      p->children()[1]->deepTransform(bv);
+      deepTransform(p->children()[1],bv);
   }
 }
 
@@ -2016,4 +2024,19 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     }
   }
   incoming->setMomenta(transb,1.,Lorentz5Momentum());
+}
+
+void QTildeReconstructor::deepTransform(PPtr particle, const LorentzRotation & r) const {
+  particle->transform(r);
+  for ( int i = 0, N = particle->children().size(); i < N; ++i )
+    deepTransform(particle->children()[i],r);
+  if ( particle->next() ) deepTransform(particle->next(),r);
+  // check if there's a daughter tree which also needs boosting
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
+  for(tit  = _currentTree->treelinks().begin();
+      tit != _currentTree->treelinks().end();++tit) {
+    // if there is, boost it
+    if(tit->second.first && tit->second.second==particle)
+      tit->first->transform(r);
+  }
 }
