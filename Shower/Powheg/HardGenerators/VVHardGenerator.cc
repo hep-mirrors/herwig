@@ -516,11 +516,8 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
       }
     }
   }
-  Boost toRest,fromRest;
-  toRest   = -(mother->momentum()+spectator ->momentum()).boostVector();
-  fromRest =  (quark_->momentum()+antiquark_->momentum()).boostVector();
-  LorentzRotation R(toRest);
-  R.boost(fromRest);
+  LorentzRotation R(-(mother->momentum()+spectator ->momentum()).boostVector());
+  R.boost((quark_->momentum()+antiquark_->momentum()).boostVector());
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit  = tree->treelinks().begin();
       tit != tree->treelinks().end();++tit) {
@@ -535,63 +532,47 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     cit->first->copy()      ->set5Momentum(newMomentum);
     map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
     // reset the momenta of the decay products, 
-    // just use the booosted ones if no QED radiation
-    if(decayTree->outgoingLines().size()==2) {
-      for(cjt=decayTree->outgoingLines().begin();
-	  cjt!=decayTree->outgoingLines().end();++cjt) {
-	for(unsigned int ix=0;ix<children_.size();++ix) {
-	  if(cjt->first->original()!=children_[ix]) continue;
-	  Lorentz5Momentum newChild = R*children_[ix]->momentum();
-	  cjt->first->progenitor()->set5Momentum(newChild);
-	  cjt->first->original()  ->set5Momentum(newChild);
-	  cjt->first->copy()      ->set5Momentum(newChild);
-	}
-      }
-    }
-    // otherwise retain the direction or one of the fermions
-    // at random in the boson rest frame
+    LorentzRotation boostToORF(newMomentum.findBoostToCM(),
+			       newMomentum.e()/newMomentum.mass());
+    tPPtr children[2];
+    if(children_[0]->parents()[0]==cit->first->original()) {
+      children[0] = children_[0];
+      children[1] = children_[1];
+    } 
     else {
-      LorentzRotation boostToORF(newMomentum.findBoostToCM(),
-				 newMomentum.e()/oldMomentum.mass());
-      tPPtr children[2];
-      if(children_[0]->parents()[0]==cit->first->original()) {
-	children[0] = children_[0];
-	children[1] = children_[1];
-      } 
-      else {
-	children[0] = children_[2];
-	children[1] = children_[3];
-      }
-      if(UseRandom::rndbool()) swap(children[0],children[1]);
-      double originalTheta0 = (boostToORF*children[0]->momentum()).theta();
-      double originalPhi0   = (boostToORF*children[0]->momentum()).phi();
-      boostToORF.rotateZ(-originalPhi0);
-      boostToORF.rotateY(-originalTheta0);
-      double originalPhi1   = (boostToORF*children[1]->momentum()).phi();
-      LorentzRotation boost(oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
-      tPPtr newChildren[2];
-      for(cjt=decayTree->outgoingLines().begin();
-	  cjt!=decayTree->outgoingLines().end();++cjt) {
-	if(cjt->first->progenitor()->id()==children[0]->id())
-	  newChildren[0] = cjt->first->progenitor();
-	else if(cjt->first->progenitor()->id()==children[1]->id())
-	  newChildren[1] = cjt->first->progenitor();
-      }
-      boost.rotateZ(-(boost*newChildren[0]->momentum()).phi());
-      boost.rotateY(-(boost*newChildren[0]->momentum()).theta());
-      boost.rotateZ(-(boost*newChildren[1]->momentum()).phi());
-      boost.rotateZ( originalPhi1);
-      boost.rotateY( originalTheta0);
-      boost.rotateZ( originalPhi0);
-      boost.boost(-newMomentum.findBoostToCM(),
- 		  newMomentum.e()/oldMomentum.mass());
-      for(cjt=decayTree->outgoingLines().begin();
-	  cjt!=decayTree->outgoingLines().end();++cjt) {
-	Lorentz5Momentum ptemp = boost*cjt->first->progenitor()->momentum();
-	cjt->first->progenitor()->set5Momentum(ptemp);
-	cjt->first->original()  ->set5Momentum(ptemp);
-	cjt->first->copy()      ->set5Momentum(ptemp);
-      }
+      children[0] = children_[2];
+      children[1] = children_[3];
+    }
+    if(UseRandom::rndbool()) swap(children[0],children[1]);
+    double originalTheta0 = (boostToORF*R*children[0]->momentum()).theta();
+    double originalPhi0   = (boostToORF*R*children[0]->momentum()).phi();
+    boostToORF.rotateZ(-originalPhi0);
+    boostToORF.rotateY(-originalTheta0);
+    double originalPhi1   = (boostToORF*children[1]->momentum()).phi();
+    LorentzRotation boost(oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
+    tPPtr newChildren[2];
+    for(cjt=decayTree->outgoingLines().begin();
+	cjt!=decayTree->outgoingLines().end();++cjt) {
+      if(cjt->first->progenitor()->id()==children[0]->id())
+	newChildren[0] = cjt->first->progenitor();
+      else if(cjt->first->progenitor()->id()==children[1]->id())
+	newChildren[1] = cjt->first->progenitor();
+    }
+    boost.rotateZ(-(boost*newChildren[0]->momentum()).phi());
+    boost.rotateY(-(boost*newChildren[0]->momentum()).theta());
+    boost.rotateZ(-(boost*newChildren[1]->momentum()).phi());
+    boost.rotateZ( originalPhi1);
+    boost.rotateY( originalTheta0);
+    boost.rotateZ( originalPhi0);
+    boost.boost(-newMomentum.findBoostToCM(),
+		newMomentum.e()/newMomentum.mass());
+    for(cjt=decayTree->outgoingLines().begin();
+	cjt!=decayTree->outgoingLines().end();++cjt) {
+      Lorentz5Momentum ptemp = boost*cjt->first->progenitor()->momentum();
+      cjt->first->original()  ->set5Momentum(cjt->first->progenitor()->momentum());
+      cjt->first->progenitor()->deepTransform(boost);
+      cjt->first->original()  ->deepTransform(boost);
+      cjt->first->copy()      ->deepTransform(boost);
     }
   }
   return nasonTree;
