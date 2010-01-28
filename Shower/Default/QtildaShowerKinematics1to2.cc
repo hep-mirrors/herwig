@@ -88,7 +88,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     Axis axis(n_bb.vect().unit());
     if(axis.perp2()>0.) {
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       dq.transform(rot);
     }
