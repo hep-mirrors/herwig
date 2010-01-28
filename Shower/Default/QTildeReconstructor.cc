@@ -552,7 +552,15 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(it->parent!=partner) {
 	// boost for rescaling
 	if(atLeastOnce) {
-	  if(it->parent->children().empty()&&!it->parent->spinInfo()) {
+	  map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+	    tShowerParticlePtr> >::const_iterator tit;
+	  for(tit  = _currentTree->treelinks().begin();
+	      tit != _currentTree->treelinks().end();++tit) {
+	    if(tit->second.first && tit->second.second==it->parent)
+	      break;
+	  }
+	  if(it->parent->children().empty()&&!it->parent->spinInfo() &&
+	     tit==_currentTree->treelinks().end()) {
 	    Lorentz5Momentum pnew(k2*it->p.vect(),
 				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
 				  it->q.mass());
@@ -1171,7 +1179,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-  double sinth(sqr(axis.x())+sqr(axis.y()));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());
@@ -1345,7 +1353,16 @@ reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest,
   for(cit = jets.begin(); cit != jets.end(); cit++) {
     JetKinStruct tempJetKin;      
     tempJetKin.parent = (*cit)->progenitor(); 
-    if(gottaBoost) tempJetKin.parent->boost(beta_cm); 
+    if(gottaBoost) {
+      tempJetKin.parent->boost(beta_cm);
+      map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+	tShowerParticlePtr> >::const_iterator tit;
+      for(tit  = _currentTree->treelinks().begin();
+	  tit != _currentTree->treelinks().end();++tit) {
+	if(tit->second.first && tit->second.second==tempJetKin.parent)
+	  tit->first->transform(LorentzRotation(beta_cm));
+      }
+    }
     tempJetKin.p = (*cit)->progenitor()->momentum();
     _progenitor=tempJetKin.parent;
     radiated |= reconstructTimeLikeJet((*cit)->progenitor(),0);
@@ -1875,7 +1892,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   Lorentz5Momentum pa = pout[0]-pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-  double sinth(sqr(axis.x())+sqr(axis.y()));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   if(axis.perp2()>0.) {
     rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     rot.rotateX(Constants::pi);
@@ -1989,7 +2006,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqr(axis.x())+sqr(axis.y()));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       if(axis.perp2()>1e-20) {
 	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
 	rot.rotateX(Constants::pi);
@@ -2026,17 +2043,34 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   incoming->setMomenta(transb,1.,Lorentz5Momentum());
 }
 
-void QTildeReconstructor::deepTransform(PPtr particle, const LorentzRotation & r) const {
+void QTildeReconstructor::deepTransform(PPtr particle,
+					const LorentzRotation & r,
+					bool match,
+					PPtr original) const {
+  Lorentz5Momentum porig = particle->momentum();
+  if(!original) original = particle;
+  for ( int i = 0, N = particle->children().size(); i < N; ++i ) {
+    deepTransform(particle->children()[i],r,
+		  particle->children()[i]->id()==original->id()&&match,original);
+  }
   particle->transform(r);
-  for ( int i = 0, N = particle->children().size(); i < N; ++i )
-    deepTransform(particle->children()[i],r);
-  if ( particle->next() ) deepTransform(particle->next(),r);
+  if ( particle->next() ) deepTransform(particle->next(),r,match,original);
+  if(!match) return;
+  if(!particle->children().empty()) return;
   // check if there's a daughter tree which also needs boosting
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit  = _currentTree->treelinks().begin();
       tit != _currentTree->treelinks().end();++tit) {
     // if there is, boost it
-    if(tit->second.first && tit->second.second==particle)
-      tit->first->transform(r);
+    if(tit->second.first && tit->second.second==original) {
+      Lorentz5Momentum pnew = tit->first->incomingLines().begin()
+	->first->progenitor()->momentum();
+      Lorentz5Momentum pdiff = porig-pnew;
+      Energy2 test = sqr(pdiff.x()) + sqr(pdiff.y()) + 
+   	             sqr(pdiff.z()) + sqr(pdiff.t());
+      LorentzRotation rot;
+      if(test>1e-6*GeV2) rot = solveBoost(porig,pnew);
+      tit->first->transform(r*rot);
+    }
   }
 }

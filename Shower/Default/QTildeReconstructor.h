@@ -408,7 +408,8 @@ protected:
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
 
-  void deepTransform(PPtr particle,const LorentzRotation & r) const;
+  void deepTransform(PPtr particle,const LorentzRotation & r,
+		     bool match=true,PPtr original=PPtr()) const;
 
 protected:
 

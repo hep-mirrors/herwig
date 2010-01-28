@@ -814,14 +814,12 @@ void ShowerTree::transform(const LorentzRotation & boost) {
   // incoming
   for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
     cit->first->progenitor()->deepTransform(boost);
-    cit->first->original()->deepTransform(boost);
     cit->first->copy()->deepTransform(boost);
   }
   // outgoing
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
     cjt->first->progenitor()->deepTransform(boost);
-    cjt->first->original()->deepTransform(boost);
     cjt->first->copy()->deepTransform(boost);
   }
   // child trees

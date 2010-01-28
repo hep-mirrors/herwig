@@ -589,7 +589,16 @@ void SMTopDecayer::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     else {
       cit->first->copy(newa);
       ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2,true)));
+      map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+	tShowerParticlePtr> >::const_iterator tit;
+      for(tit  = tree->treelinks().begin();
+	  tit != tree->treelinks().end();++tit) {
+	if(tit->second.first && tit->second.second==cit->first->progenitor())
+	  break;
+      }
       cit->first->progenitor(sp);
+      if(tit!=tree->treelinks().end())
+	tree->updateLink(tit->first,make_pair(cit->first,sp));
       tree->outgoingLines()[cit->first]=sp;
       cit->first->perturbative(true);
     }

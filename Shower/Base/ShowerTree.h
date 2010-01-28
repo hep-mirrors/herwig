@@ -237,6 +237,14 @@ public:
   treelinks()  const {return _treelinks;}
 
   /**
+   *  Update the link between shower particle and tree
+   */
+  void updateLink(tShowerTreePtr tree,
+		  pair<tShowerProgenitorPtr,tShowerParticlePtr> in) {
+    _treelinks[tree] = in;
+  }
+
+  /**
    *  Transform the tree
    */
   void transform(const LorentzRotation & rot);
