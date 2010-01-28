@@ -228,8 +228,9 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   if(contrib_==0) return 1.;
   // Boost
   Axis axis(_pa.vect().unit());
+  cerr << "testing axis " << axis << "\n";
   LorentzRotation rot;
-  double sinth(sqr(axis.x())+sqr(axis.y()));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot = LorentzRotation();
   if(axis.perp2()>1e-20) {
     rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));

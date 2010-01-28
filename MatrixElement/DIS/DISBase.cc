@@ -485,7 +485,7 @@ void DISBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   LorentzRotation rot(-pcmf.boostVector());
   Lorentz5Momentum pbeam = rot*phadron;
   Axis axis(pbeam.vect().unit());
-  double sinth(sqrt(1.-sqr(axis.z())));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   Lorentz5Momentum pl    = rot*pl_[0];
   rot.rotateZ(-atan2(pl.y(),pl.x()));

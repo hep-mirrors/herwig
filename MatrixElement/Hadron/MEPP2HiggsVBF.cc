@@ -435,7 +435,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
     pbasis.setMass(0.*GeV);
     pbasis.rescaleRho();
     Axis axis(q_[ix].vect().unit());
-    double sinth(sqr(axis.x())+sqr(axis.y()));
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
     rot_[ix] = LorentzRotation();
     if(axis.perp2()>1e-20) {
       rot_[ix].setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
@@ -1117,7 +1117,7 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   LorentzRotation rot(-pcmf.boostVector());
   Lorentz5Momentum pbeam = rot*phadron;
   Axis axis(pbeam.vect().unit());
-  double sinth(sqrt(1.-sqr(axis.z())));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   Lorentz5Momentum pout = rot*(systems_[1].outgoing->momentum()+higgs_->momentum());
   rot.rotateZ(-atan2(pout.y(),pout.x()));
