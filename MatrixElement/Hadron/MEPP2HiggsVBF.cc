@@ -173,7 +173,7 @@ void debuggingMatrixElement(bool BGF,
 MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
 				 comptonWeight_(50.), BGFWeight_(150.), 
 				 pTmin_(1.*GeV),initial_(1.),final_(1.),
-				 procProb_(0.5),
+				 procProb_(0.5), comptonInt_(0.), bgfInt_(0.),
 				 nover_(0),maxwgt_(make_pair(0.,0.))
 {}
 
