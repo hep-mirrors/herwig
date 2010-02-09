@@ -136,7 +136,7 @@ for run in runlist:
     q.put(run)
 
 
-for i in range(4):
+for i in range(2):
     t = Thread(target=worker)
     t.setDaemon(True)
     t.start()
