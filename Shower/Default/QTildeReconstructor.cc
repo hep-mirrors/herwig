@@ -1918,7 +1918,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   Lorentz5Momentum qperp = qbp-a[0]*n1-b[0]*n2;
   // before reshuffling
   Energy Q = abs(pa.z());
-  double c = mc/Q;
+  double c = sqr(mc/Q);
   Lorentz5Momentum pb(ZERO,ZERO,0.5*Q*(1.+c),0.5*Q*(1.+c));
   Lorentz5Momentum pc(ZERO,ZERO,0.5*Q*(c-1.),0.5*Q*(1.+c));
   double anew[2],bnew[2];
