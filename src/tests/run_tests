@@ -5,22 +5,26 @@ import subprocess
 
 chisq_pattern = re.compile('^Chi Square = ([\d.]*) for (\d*) degrees')
 
+instr_pattern = re.compile('^==.*== Collected : (\d*)')
+
 
 def untimed_call(command, outfile=file('/dev/null')):
-    retval = subprocess.call(command, shell=True, stdout=outfile)
+    retval = subprocess.call(command, shell=True, 
+                             stdout=outfile, stderr=outfile)
     if retval != 0:
         raise Exception
 
 def timed_call(command, outfile=file('/dev/null')):
     t0 = time.time()   
-    retval = subprocess.call(command, shell=True, stdout=outfile)
+    retval = subprocess.call(command, shell=True, 
+                             stdout=outfile, stderr=outfile)
     dt = time.time() - t0
     if retval != 0:
         raise Exception
     return dt
 
 def write_data_file(filename,value):
-    text = 'YVALUE = ' + str(value) + '\n'
+    text = 'YVALUE = %s\n' % value
     f = open(filename,'w')
     f.write(text)
     f.close()
@@ -28,23 +32,42 @@ def write_data_file(filename,value):
 
 class Run:
     def readcmd(self):
-        return herwig + ' read ' + self.name + '.in -r ' + rpopath
+        return '%s read %s.in -r %s' % (herwig,self.name,rpopath)
 
     def runcmd(self):
-        return herwig + ' run ' + self.name + '.run -N' + str(self.num_events)
+        return '%s run %s.run -N%s' % (herwig,self.name,self.num_events)
+
+    def valgrindcmd(self):
+        return 'valgrind --tool=callgrind ' + self.runcmd()
 
     def __init__(self,name,N):
         self.name = name
         self.num_events = N
         self.runtime = None
         self.chisq = None
+ 
+    def run(self,valgrind=False):
         print self.readcmd()
         untimed_call(self.readcmd())
-
-    def run(self):
-        if self.runtime is None:
+        if self.runtime is not None:
+            return self.runtime
+        if valgrind:
+            print self.valgrindcmd()
+            filename = self.name + '.tmp'
+            out = open(filename,'w')
+            untimed_call(self.valgrindcmd(), out)
+            out.close()
+            f = open(filename)
+            for line in f:
+                m = instr_pattern.match(line)
+                if m:
+                    self.runtime = float(m.group(1))/1.0e9
+                    break
+            f.close()
+        else:
             print self.runcmd()
-            self.runtime = timed_call(self.runcmd())
+            untimed_call(self.runcmd())
+            self.runtime = None
         return self.runtime
 
     def write_data(self):
@@ -75,18 +98,49 @@ if len(sys.argv) != 3:
 herwig = sys.argv[1]
 rpopath = sys.argv[2]
 
-N = 10000
+N = 10
 
-runlist = [ Run('CHISQ',10*N), 
-            Run('LHC',N/2), 
-            Run('DIS',20*N), 
-            Run('ILC',5*N),
-            Run('TVT',2*N) ]
+runlist = [ Run('CHISQ',10000*N), 
+            Run('DIS',100*N), 
+            Run('ILC',100*N),
+            Run('LEP',100*N),
+            Run('TVT',N),
+            Run('LHC',N)
+            ]
 
-for r in runlist:
-    r.run()
 
-    if r.name is 'CHISQ':
-        r.calc_chisq()
 
-    r.write_data()
+import Queue as qu
+from threading import Thread
+
+q = qu.Queue()
+
+
+def worker():
+    while True:
+        r = q.get()
+        print 'Starting',r.name
+        if r.name is 'CHISQ':
+            r.run(valgrind=False)
+            r.calc_chisq()
+        else:
+            r.run(valgrind=True)
+
+        r.write_data()
+        print 'Finished',r.name
+        q.task_done()
+
+
+
+for run in runlist:
+    q.put(run)
+
+
+for i in range(2):
+    t = Thread(target=worker)
+    t.setDaemon(True)
+    t.start()
+
+
+q.join()
+
