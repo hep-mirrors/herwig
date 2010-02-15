@@ -331,7 +331,7 @@ void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
   }
   else {
     // extract the scale from the block if present
-    if(test.find("q=")!= string::npos) { 
+    if(test.find("=")!= string::npos) { 
       while(test.find("=")!=string::npos)
 	test= StringUtils::cdr(test,"=");
       istringstream is(test);
