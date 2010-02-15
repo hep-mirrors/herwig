@@ -657,7 +657,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
       wstring << "Soft ME correction weight too large or "
-	      << "negative for FSR in DISMECorrection::"
+	      << "negative for FSR in DISBase::"
 	      << "softMatrixElementVeto() soft weight " 
 	      << " xp = " << xp << " zp = " << zp
 	      << " weight = " << wgt << "\n";
@@ -685,7 +685,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
       wstring << "Soft ME correction weight too large or "
-	      << "negative for ISR in DISMECorrection::"
+	      << "negative for ISR in DISBase::"
 	      << "softMatrixElementVeto() soft weight " 
 	      << " xp = " << xp << " zp = " << zp
 	      << " weight = " << wgt << "\n";
