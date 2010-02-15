@@ -172,7 +172,7 @@ void debuggingMatrixElement(bool BGF,
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
 				 comptonWeight_(50.), BGFWeight_(150.), 
-				 pTmin_(1.*GeV),initial_(1.),final_(1.),
+				 pTmin_(1.*GeV),initial_(10.),final_(8.),
 				 procProb_(0.5), comptonInt_(0.), bgfInt_(0.),
 				 nover_(0),maxwgt_(make_pair(0.,0.))
 {}
@@ -644,11 +644,6 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
       cit!=newTree->branchings().end();++cit) {
     particles.push_back((*cit)->branchingParticle());
   }
-//   evolver()->showerModel()->partnerFinder()->
-//     setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
-//   // Calculate the shower variables:
-//   evolver()->showerModel()->kinematicsReconstructor()->
-//     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
   for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
       cjt!=newTree->branchings().end();++cjt) {
     if(cjt==newTree->branchings().begin()) {
@@ -659,15 +654,8 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
       ++cjt;
     }
-//     // incoming
-//     if((**cjt).status()==HardBranching::Incoming) {
-//       first. first->set5Momentum((**cjt).showerMomentum());
-//     }
-//     // outgoing
-//     else {
-//       first.second->set5Momentum((**cjt).showerMomentum());
-//     }
   }
+  generator()->log() << *newTree << "\n";
   return newTree;
 }
 
@@ -1122,14 +1110,14 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   Lorentz5Momentum pout = rot*(systems_[1].outgoing->momentum()+higgs_->momentum());
   rot.rotateZ(-atan2(pout.y(),pout.x()));
   // calculate the A coefficient for the correlations
-  double acoeff = A(systems_[0].incoming->dataPtr(),systems_[0].outgoing->dataPtr(),
-		    systems_[1].incoming->dataPtr(),systems_[1].outgoing->dataPtr());
+  acoeff_   = A(systems_[0].incoming->dataPtr(),systems_[0].outgoing->dataPtr(),
+		systems_[1].incoming->dataPtr(),systems_[1].outgoing->dataPtr());
   vector<double> azicoeff;
   // select the type of process
   bool BGF = UseRandom::rnd()>procProb_;
   double wgt,xp,zp,x1,x2,x3,xperp;
-  LorentzVector<double>  l = 2.*(rot*systems_[1].incoming->momentum())/Q;
-  LorentzVector<double>  m = 2.*(rot*systems_[1].outgoing->momentum())/Q;
+  l_ = 2.*(rot*systems_[1].incoming->momentum())/Q;
+  m_ = 2.*(rot*systems_[1].outgoing->momentum())/Q;
   // compton process
   if(!BGF) {
     wgt = generateComptonPoint(xp,zp);
@@ -1150,7 +1138,7 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = ComptonME(xp,x2,xperp,acoeff,l,m);
+    azicoeff = ComptonME(xp,x2,xperp,l_,m_);
   }
   else {
     wgt = generateBGFPoint(xp,zp);
@@ -1171,7 +1159,7 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     x2 = 1.-(1.-zp)/xp;
     x3 = 2.+x1-x2;
     // matrix element pieces
-    azicoeff = BGFME(xp,x2,x3,xperp,acoeff,l,m);
+    azicoeff = BGFME(xp,x2,x3,xperp,l_,m_);
   }
   // compute the azimuthal average of the weight
   wgt *= azicoeff[0]+0.5*(azicoeff[2]+azicoeff[4]);
@@ -1443,65 +1431,106 @@ double MEPP2HiggsVBF::generateBGFPoint(double &xp, double & zp) {
   }
   while(wgt<UseRandom::rnd()*maxwgt);
   return bgfInt_/sqr(xp)*(1.-zp)/(sqr(x3)+sqr(x2)+3.*xperp2);
-//   static const double maxwgt = 2.,npow=0.4,ac=1.0;
-//   double wgt;
-//   do {
-//     double rho = UseRandom::rnd();
-//     xp = 1.-pow(rho,1./(1.-npow));
-//     wgt = (sqr(xp)+ac+sqr(1.-xp));
-//     if(wgt>1.+ac) cerr << "testing violates BGF maxA " << wgt << "\n";
-//   }
-//   while(wgt<UseRandom::rnd()*(1.+ac));
-//   double xpwgt = -((6.-5.*npow+sqr(npow))*ac-3.*npow+sqr(npow)+4) 
-//     /(sqr(npow)*(npow-6.)+11.*npow-6.);
-//   xpwgt *= pow(1.-xp,npow)/wgt;
-//   double xp2(sqr(xp)),lxp(log(xp)),xp4(sqr(xp2)),lxp1(log(1.-xp));
-//   double zpwgt = (2.*xp4*(lxp+lxp1-3.)+4.*xp*xp2*(3.-lxp-lxp1)
-// 		  +xp2*(-13.+lxp+lxp1)+xp*(+7.+lxp+lxp1)-lxp-lxp1-1.)/(1.+xp-xp2);
-//   double wgt2;
-//   do {
-//     double zpmax = 1./(1.+xp*(1.-xp)), zpmin = 1.-zpmax;
-//     zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
-//     wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
-//     double x1 = -1./xp;
-//     double x2 = 1.-(1.-zp)/xp;
-//     double x3 = 2.+x1-x2;
-//     double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
-//     wgt2 = sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
-//     wgt *= wgt2;
-//     if(wgt>maxwgt*zpwgt) cerr << "testing violates BGF maxB " << wgt/xpwgt << "\n";
-//   }
-//   while(wgt<UseRandom::rnd()*maxwgt);
-//   return zpwgt*xpwgt/wgt2;
 }
 
 bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					  ShowerParticlePtr parent,Branching br) {
-  return false;
+  bool veto = !UseRandom::rndbool(parent->isFinalState() ? 1./final_ : 1./initial_);
+  // check if me correction should be applied
+  long id[2]={initial->id(),parent->id()};
+  if(id[0]!=id[1]||id[1]==ParticleID::g) return veto;
+  // if not from the right side
+  if(initial->progenitor()!=systems_[0].incoming &&
+     initial->progenitor()!=systems_[0].outgoing) return veto;
+  // get the pT
+  Energy pT=br.kinematics->pT();
+  // check if hardest so far
+  if(pT<initial->highestpT()) return veto;
+  double kappa(sqr(br.kinematics->scale())/q2_[0]),z(br.kinematics->z());
+  double zk((1.-z)*kappa);
+  // final-state
+  double wgt(0.);
+  if(parent->isFinalState()) {
+    double zp=z,xp=1./(1.+z*zk);
+    double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
+    double x2 = 1.-(1.-zp)/xp;
+    vector<double> azicoeff = ComptonME(xp,x2,xperp,l_,m_);
+    wgt = (1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)))*
+      (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*xp/(1.+sqr(z))/final_;
+    if(wgt<.0||wgt>1.) {
+      ostringstream wstring;
+      wstring << "Soft ME correction weight too large or "
+	      << "negative for FSR in MEPP2HiggsVBF::"
+	      << "softMatrixElementVeto() soft weight " 
+	      << " xp = " << xp << " zp = " << zp
+	      << " weight = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(), 
+					 Exception::warning) );
+    }
+  }
+  else {
+    double xp = 2.*z/(1.+zk+sqrt(sqr(1.+zk)-4.*z*zk));
+    double zp = 0.5* (1.-zk+sqrt(sqr(1.+zk)-4.*z*zk));
+    double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
+    double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
+    // compton
+    if(br.ids[0]!=ParticleID::g) {
+      vector<double> azicoeff = ComptonME(xp,x2,xperp,l_,m_);
+      wgt = (1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)))*
+	(azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
+	xp*(1.-z)/(1.-xp)/(1.+sqr(z))/(1.-zp+xp-2.*xp*(1.-zp));
+    }
+    // BGF
+    else {
+      vector<double> azicoeff = BGFME(xp,x2,x3,xperp,l_,m_);
+      wgt = sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*
+	(azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
+	xp/(1.-zp+xp-2.*xp*(1.-zp))/(sqr(z)+sqr(1.-z));
+    }
+    wgt /=initial_;
+    if(wgt<.0||wgt>1.) {
+      ostringstream wstring;
+      wstring << "Soft ME correction weight too large or "
+	      << "negative for ISR in MEPP2HiggsVBF::"
+	      << "softMatrixElementVeto() soft weight " 
+	      << " xp = " << xp << " zp = " << zp
+	      << " weight = " << wgt << "\n";
+      generator()->logWarning( Exception(wstring.str(), 
+					 Exception::warning) );
+    }
+  }
+  // if not vetoed
+  if(UseRandom::rndbool(wgt)) {
+    initial->highestpT(pT);
+    return false;
+  }
+  // otherwise
+  parent->setEvolutionScale(br.kinematics->scale());
+  return true;
 }
 
 vector<double> MEPP2HiggsVBF::ComptonME(double xp, double x2, double xperp,
-					double A, LorentzVector<double> l,
+					LorentzVector<double> l,
 					LorentzVector<double> m) {
   vector<double> output(6,0.);
   double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
   // no phi dependence
-  output[0] = l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.t()*m.z()-l.z()*m.t());
+  output[0] = l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*acoeff_*cos2*(l.t()*m.z()-l.z()*m.t());
   // cos(phi)
   output[1] = sin2*(-l.x()*m.t()-l.t()*m.x() 
-		    + 0.5*A*cos2*(l.z()*m.x()-m.z()*l.x()));
+		    + 0.5*acoeff_*cos2*(l.z()*m.x()-m.z()*l.x()));
   // cos(phi)^2
   output[2] = +sqr(sin2)*l.x()*m.x();
   // sin(phi)
   output[3] = sin2*(-l.t()*m.y()-l.y()*m.t()
-		    + 0.5*A*cos2*(l.z()*m.y()-m.z()*l.y()));
+		    + 0.5*acoeff_*cos2*(l.z()*m.y()-m.z()*l.y()));
   // sin(phi)^2
   output[4] = +sqr(sin2)*l.y()*m.y();
   // sin(phi)cos(phi)
   output[5] = +sqr(sin2)*(m.y()*l.x()+m.x()*l.y());
   // additional factors
-  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
+  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*acoeff_*(l.t()*m.z()-l.z()*m.t());
   double fact = sqr(xp)*(sqr(x2)+sqr(xperp))/denom;
   for(unsigned int ix=0;ix<output.size();++ix) output[ix] *=fact;
   output[0] += 1.;
@@ -1509,11 +1538,11 @@ vector<double> MEPP2HiggsVBF::ComptonME(double xp, double x2, double xperp,
 }
 
 vector<double> MEPP2HiggsVBF::BGFME(double xp, double x2, double x3,
-				    double xperp, double A,  
+				    double xperp, 
 				    LorentzVector<double> l,
 				    LorentzVector<double> m) {
   vector<double> output(6,0.);
-  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
+  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*acoeff_*(l.t()*m.z()-l.z()*m.t());
   double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
   double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
   double fact2 = sqr(xp)*(sqr(x2)+sqr(xperp))/denom;
@@ -1523,23 +1552,23 @@ vector<double> MEPP2HiggsVBF::BGFME(double xp, double x2, double x3,
   // no phi dependence
   output[0] = 
     fact2*(l.t()*m.t()-l.z()*m.z()*sqr(cos2)
-	   + 0.5*A*cos2*(l.t()*m.z()-l.z()*m.t())) + 
+	   + 0.5*acoeff_*cos2*(l.t()*m.z()-l.z()*m.t())) + 
     fact3*(l.t()*m.t()-l.z()*m.z()*sqr(cos3)
-	   - 0.5*A*cos3*(l.t()*m.z()-l.z()*m.t()));
+	   - 0.5*acoeff_*cos3*(l.t()*m.z()-l.z()*m.t()));
   // cos(phi)
   output[1] = 
     fact2*sin2*( - l.x()*m.t()-l.t()*m.x() 
-		 + 0.5*A*cos2*(l.z()*m.x()-m.z()*l.x())) -
+		 + 0.5*acoeff_*cos2*(l.z()*m.x()-m.z()*l.x())) -
     fact3*sin3*( - l.x()*m.t()-l.t()*m.x() 
-		 - 0.5*A*cos3*(l.z()*m.x()-m.z()*l.x())) ;
+		 - 0.5*acoeff_*cos3*(l.z()*m.x()-m.z()*l.x())) ;
   // cos(phi)^2
   output[2] = (fact2*sqr(sin2)+fact3*sqr(sin3))*l.x()*m.x();
   // sin(phi)
   output[3] = 
     fact2*sin2*( - l.t()*m.y()-l.y()*m.t()
-		 + 0.5*A*cos2*(l.z()*m.y()-m.z()*l.y())) -
+		 + 0.5*acoeff_*cos2*(l.z()*m.y()-m.z()*l.y())) -
     fact3*sin3*( - l.t()*m.y()-l.y()*m.t()
-		 - 0.5*A*cos3*(l.z()*m.y()-m.z()*l.y()));
+		 - 0.5*acoeff_*cos3*(l.z()*m.y()-m.z()*l.y()));
   // sin(phi)^2
   output[4] = (fact2*sqr(sin2)+fact3*sqr(sin3))*l.y()*m.y();
   // sin(phi)cos(phi)

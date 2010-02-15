@@ -201,13 +201,12 @@ protected:
    * @param xp \f$x_p\f$
    * @param x2 \f$x_2\f$
    * @param xperp \f$x_\perp\f$
-   * @param A \f$\mathcal{A}\f$
    * @param l Scaled momentum of incoming spectator
    * @param m Scaled momentum of outgoing spectator
    *
    */
   vector<double> ComptonME(double xp, double x2, double xperp,
-			   double A, LorentzVector<double> l,
+			   LorentzVector<double> l,
 			   LorentzVector<double> m);
 
   /**
@@ -219,13 +218,12 @@ protected:
    * @param x2 \f$x_3\f$
    * @param x3 \f$x_2\f$
    * @param xperp \f$x_\perp\f$
-   * @param A \f$\mathcal{A}\f$
    * @param l Scaled momentum of incoming spectator
    * @param m Scaled momentum of outgoing spectator
    *
    */
   vector<double> BGFME(double xp, double x2, double x3, double xperp,
-		       double A,  LorentzVector<double> l,
+		       LorentzVector<double> l,
 		       LorentzVector<double> m);
   
   /**
@@ -356,6 +354,21 @@ private:
    *  \f$Q^2\f$
    */
   Energy2 q2_[2];
+
+  /**
+   *  Coupling factor
+   */
+  double acoeff_;
+
+  /**
+   *  Lorentz vectors for the matrix element
+   */
+  LorentzVector<double> l_;
+
+  /**
+   *  Lorentz vectors for the matrix element
+   */
+  LorentzVector<double> m_;
 
   /**
    *  Born momentum fraction
