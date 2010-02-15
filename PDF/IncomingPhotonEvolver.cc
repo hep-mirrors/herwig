@@ -7,6 +7,7 @@
 #include "IncomingPhotonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/EventHandler.h"
@@ -21,7 +22,8 @@
 using namespace Herwig;
 
 IncomingPhotonEvolver::IncomingPhotonEvolver() 
-  : PDFMax_(50.), PDFPower_(1.0), minpT_(2.*GeV)
+  : PDFMax_(80.), PDFPower_(1.0), minpT_(2.*GeV), minVirtuality_(1e-3*GeV),
+    vetoTries_(10000), virtualityTries_(10)
 {}
 
 void IncomingPhotonEvolver::
@@ -49,7 +51,7 @@ handle(EventHandler & eh, const tPVector & ,
     swap(x[0],x[1]);
   }
   // calculate CMF momentum get the pt scale for the process
-  Energy pt(generator()->maximumCMEnergy());
+  Energy ptmax(generator()->maximumCMEnergy());
   Lorentz5Momentum pcmf;
   for(ParticleVector::const_iterator 
 	cit=eh.currentEvent()->primarySubProcess()->outgoing().begin(),
@@ -57,9 +59,9 @@ handle(EventHandler & eh, const tPVector & ,
       cit!=end;++cit) {
     pcmf += (**cit).momentum();
     Energy pttest = (**cit).momentum().perp();
-    if(pttest<pt&&pt>minpT_) pt=pttest;
+    if(pttest<ptmax&&ptmax>minpT_) ptmax=pttest;
   }
-  if(pt==generator()->maximumCMEnergy()) pt=minpT_;
+  if(ptmax==generator()->maximumCMEnergy()) ptmax=minpT_;
   // limits for the z integrand
   double lower = 1./PDFPower_;
   double upper = lower/pow(x[0],PDFPower_);
@@ -69,77 +71,91 @@ handle(EventHandler & eh, const tPVector & ,
     (incomingHadrons.first->dataPtr());
   assert(beam);
   // get the PDF 
-  tcPDFPtr pdf = beam->pdf();
+  tcPDFPtr pdf;
+  if ( PDF_ ) pdf = PDF_;
+  else        pdf = beam->pdf();
   assert(pdf);
-  // generate the values of pt and z for the branching
+  // power for the sampling
   double wgt = PDFMax_*SM().alphaEM()/Constants::pi/PDFPower_*
     (1./pow(x[0],PDFPower_)-1.);
-  double z,pdftotal,rwgt;
-  unsigned int ncount(0);
-  Energy scale;
-  do {
-    scale = max(pt,minpT_);
-    // new value of pT
-    pt *= pow(UseRandom::rnd(),0.5/wgt);
-    // new value of z
-    z = lower+UseRandom::rnd()*(upper-lower);
-    z = pow(1./z/PDFPower_,1./PDFPower_);
-    // the weight
-    rwgt = 0.5*(1.+sqr(1.-z));
-    // denominator of the pdf bit
-    rwgt /= pdf->xfx(beam,photon_,sqr(scale),x[0]);
-    // numerator of the pdf bit
-    pdftotal = 0.;
-    for(unsigned int ix=0;ix<partons_.size();++ix) { 
-      double pdfval =  pdf->xfx(beam,partons_[ix],sqr(scale),x[0]/z);
-      if(pdfval>0.) pdftotal += pdfval*sqr(double(partons_[ix]->iCharge())/3.);
-    }
-    rwgt *= pdftotal;
-    // finally divide by the overestimate of the PDF bit
-    rwgt /= PDFMax_/pow(z,PDFPower_);
-    if(rwgt>1.) cerr << "testing weight problem " << rwgt << " " << PDFMax_ << "\n";
-    if(UseRandom::rnd()>rwgt) {
-      ++ncount;
-      continue;
-    }
-    break;
-  }
-  while(true&&ncount<5000);
-  if(ncount==5000) {
-    throw Exception() << "Too many attempts to generate backward "
-		      << "photon evolution in IncomingPhotonEvolver::handle()"
-		      << Exception::eventerror; 
-  }
-  // now select the flavour of the emitted parton
-  pdftotal *= UseRandom::rnd();
-  tcPDPtr quark;
-  for(unsigned int ix=0;ix<partons_.size();++ix) {
-    double pdfval =  pdf->xfx(beam,partons_[ix],sqr(scale),x[0]/z);
-    if(pdfval<=0.) continue;
-    pdfval *= sqr(double(partons_[ix]->iCharge())/3.);
-    if(pdftotal<pdfval) {
-      quark = partons_[ix];
-      break;
-    }
-    pdftotal -= pdfval;
-  }
-  assert(quark);
-  // construct the kinematics
+  unsigned int virtualityAttempts(0);
+  Lorentz5Momentum pin,pout,pgamma;
   // p and n vectors
   Energy mag = incomingHadrons.first->momentum().t();
   Lorentz5Momentum p(ZERO,ZERO, mag,mag);
   Lorentz5Momentum n(ZERO,ZERO,-mag,mag);
   if(incomingHadrons.first->momentum().z()<ZERO) swap(p,n);
   Energy2 pdotn = p*n;
-  // calculate the momenta of the partons involved in the branching
-  double betaq = 0.5*z*sqr(pt)/(x[0]*(1.-z)*pdotn);
-  double phi = Constants::twopi*UseRandom::rnd();
-  Lorentz5Momentum pin    = x[0]/z*p;
-  Lorentz5Momentum pout   = (1.-z)*x[0]/z*p+betaq*n+
-    Lorentz5Momentum(pt*cos(phi),pt*sin(phi),ZERO,ZERO);
-  Lorentz5Momentum pgamma = pin-pout;
-  pout  .rescaleMass();
-  pgamma.rescaleMass();
+  tcPDPtr quark;
+  // generate the momenta 
+  do {
+    ++virtualityAttempts;
+    Energy pt(ptmax);
+    quark = tcPDPtr();
+    // generate the values of pt and z for the branching
+    double z,pdftotal,rwgt;
+    unsigned int vetoAttempts(0);
+    Energy scale;
+    do {
+      scale = max(pt,minpT_);
+      // new value of pT
+      pt *= pow(UseRandom::rnd(),0.5/wgt);
+      // new value of z
+      z = lower+UseRandom::rnd()*(upper-lower);
+      z = pow(1./z/PDFPower_,1./PDFPower_);
+      // the weight
+      rwgt = 0.5*(1.+sqr(1.-z));
+      // denominator of the pdf bit
+      rwgt /= pdf->xfx(beam,photon_,sqr(scale),x[0]);
+      // numerator of the pdf bit
+      pdftotal = 0.;
+      for(unsigned int ix=0;ix<partons_.size();++ix) { 
+	double pdfval =  pdf->xfx(beam,partons_[ix],sqr(scale),x[0]/z);
+	if(pdfval>0.) pdftotal += pdfval*sqr(double(partons_[ix]->iCharge())/3.);
+      }
+      rwgt *= pdftotal;
+      // finally divide by the overestimate of the PDF bit
+      rwgt /= PDFMax_/pow(z,PDFPower_);
+      if(rwgt>1.) generator()->logWarning( Exception("IncomingPhotonEvolver::handle() "
+						     "Veto algorithm weight greater than one.", 
+						     Exception::warning) );
+      if(UseRandom::rnd()<=rwgt) break;
+      ++vetoAttempts;
+    }
+    while (vetoAttempts<vetoTries_);
+    if(vetoAttempts==vetoTries_) 
+      throw Exception() << "Too many attempts to generate scale in backward "
+			<< "photon evolution in IncomingPhotonEvolver::handle()"
+			<< Exception::eventerror;
+    // now select the flavour of the emitted parton
+    pdftotal *= UseRandom::rnd();
+    // construct the kinematics
+    // calculate the momenta of the partons involved in the branching
+    double betaq = 0.5*z*sqr(pt)/(x[0]*(1.-z)*pdotn);
+    double phi = Constants::twopi*UseRandom::rnd();
+    pin    = x[0]/z*p;
+    pout   = (1.-z)*x[0]/z*p+betaq*n+
+      Lorentz5Momentum(pt*cos(phi),pt*sin(phi),0.*GeV,0.*GeV);
+    pgamma = pin-pout;
+    pout  .rescaleMass();
+    pgamma.rescaleMass();
+    for(unsigned int ix=0;ix<partons_.size();++ix) {
+      double pdfval =  pdf->xfx(beam,partons_[ix],sqr(scale),x[0]/z);
+      if(pdfval<=0.) continue;
+      pdfval *= sqr(double(partons_[ix]->iCharge())/3.);
+      if(pdftotal<pdfval) {
+	quark = partons_[ix];
+	break;
+      }
+      pdftotal -= pdfval;
+    }
+    assert(quark);
+  }
+  while(-pgamma.mass()<=minVirtuality_&&virtualityAttempts<virtualityTries_);
+  if(virtualityAttempts==virtualityTries_) 
+    throw Exception() << "Too many attempts to generate virtuality in backward "
+		      << "photon evolution in IncomingPhotonEvolver::handle()"
+		      << Exception::eventerror;
   // compute the boosts for momentum conservation
   Energy2 shat = (incomingPartons.first ->momentum()+
 		  incomingPartons.second->momentum()).m2();
@@ -287,11 +303,13 @@ IBPtr IncomingPhotonEvolver::fullclone() const {
 }
 
 void IncomingPhotonEvolver::persistentOutput(PersistentOStream & os) const {
-  os << PDFMax_ << PDFPower_ << ounit(minpT_,GeV) << photon_ << partons_;
+  os << PDFMax_ << PDFPower_ << ounit(minpT_,GeV) << ounit(minVirtuality_,GeV)
+     << vetoTries_ << virtualityTries_ << photon_ << partons_;
 }
 
 void IncomingPhotonEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> PDFMax_ >> PDFPower_ >> iunit(minpT_,GeV) >> photon_ >> partons_;
+  is >> PDFMax_ >> PDFPower_ >> iunit(minpT_,GeV) >> iunit(minVirtuality_,GeV)
+     >> vetoTries_ >> virtualityTries_ >> photon_ >> partons_;
 }
 
 ClassDescription<IncomingPhotonEvolver> IncomingPhotonEvolver::initIncomingPhotonEvolver;
@@ -310,6 +328,11 @@ void IncomingPhotonEvolver::Init() {
      &IncomingPhotonEvolver::minpT_, GeV, 2.0*GeV, 10.0*GeV, 0.5*GeV,
      false, false, Interface::limited);
 
+  static Reference<IncomingPhotonEvolver,PDFBase> interfacePDF
+    ("PDF",
+     "PDF set to use. Overrides the one that is associated with the beam particle.",
+     &IncomingPhotonEvolver::PDF_, false, false, true, true, false);
+
   static Parameter<IncomingPhotonEvolver,double> interfacePDFMax
     ("PDFMax",
      "The maximum value for the overestimate of the branching probability",
@@ -320,6 +343,25 @@ void IncomingPhotonEvolver::Init() {
     ("PDFPower",
      "The power for the overestimate of the branching probability",
      &IncomingPhotonEvolver::PDFPower_, 1.0, 0.01, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<IncomingPhotonEvolver,Energy> interfaceMinimumVirtuality
+    ("MinimumVirtuality",
+     "The minimum virtuality of the photon",
+     &IncomingPhotonEvolver::minVirtuality_, GeV, 1.0e-5*GeV,
+     1.e-6*GeV, 1.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<IncomingPhotonEvolver,unsigned int> interfaceVetoTries
+    ("VetoTries",
+     "Maximum number of attempts in the veto alogrithm loop",
+     &IncomingPhotonEvolver::vetoTries_, 5000, 1, 100000,
+     false, false, Interface::limited);
+
+  static Parameter<IncomingPhotonEvolver,unsigned int> interfaceVirtualityTries
+    ("VirtualityTries",
+     "Maximum number of attempts to generate the virtuality",
+     &IncomingPhotonEvolver::virtualityTries_, 5, 1, 100,
      false, false, Interface::limited);
 
 }

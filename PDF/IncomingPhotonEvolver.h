@@ -134,9 +134,13 @@ private:
   IncomingPhotonEvolver & operator=(const IncomingPhotonEvolver &);
 
 private:
+  /**
+   * PDF set to use. Overrides the one that is associated with the beam particle.
+   */
+  PDFPtr PDF_;
 
   /**
-   *   The maximum value of the PDF for the sample
+   *  The maximum value of the PDF for the sample
    */
   double PDFMax_;
 
@@ -149,6 +153,22 @@ private:
    *  The minimum starting scale for the evolution
    */
   Energy minpT_;
+
+  /**
+   *  The minimum space-like virtuality of the photon
+   */
+  Energy minVirtuality_;
+
+  /**
+   *  Maximum number of attempts to generate the scale of the
+   *  branching
+   */
+  unsigned int vetoTries_;
+
+  /**
+   *  Maximum number of attempts to regenerate the virtuality
+   */
+  unsigned int virtualityTries_;
 
   /**
    *   Photon ParticleData object

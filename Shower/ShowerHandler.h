@@ -295,6 +295,16 @@ private:
   HwRemDecPtr remDec_;
 
   /**
+   * The PDF for beam particle A. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFA_;
+
+  /**
+   * The PDF for beam particle B. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFB_;
+
+  /**
    * The PDF freezing scale
    */
   Energy pdfFreezingScale_;

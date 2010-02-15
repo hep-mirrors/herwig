@@ -232,18 +232,19 @@ AC_ARG_WITH(pdf,
         [],
         [with_pdf=${prefix}]
         )
-HERWIG_PDF_DEFAULT=${with_pdf}/share/Herwig++PDF/mrst/2001/lo2002.dat
-HERWIG_PDF_NLO=${with_pdf}/share/Herwig++PDF/mrst/2002/mrst2002nlo.dat
+HERWIG_PDF_PREFIX=${with_pdf}/share/Herwig++PDF/mrst
 
-if test -f "${HERWIG_PDF_DEFAULT}"; then
+if test -f "${HERWIG_PDF_PREFIX}/2008/mrstMCal.dat"; then
 	AC_MSG_RESULT([$with_pdf])
 	localPDFneeded=false
 else
 	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_DEFAULT=PDF/mrst/2001/lo2002.dat
-	HERWIG_PDF_NLO=PDF/mrst/2002/mrst2002nlo.dat
+	HERWIG_PDF_PREFIX=PDF/mrst
 	localPDFneeded=true
 fi
+HERWIG_PDF_DEFAULT=${HERWIG_PDF_PREFIX}/2008/mrstMCal.dat
+HERWIG_PDF_NLO=${HERWIG_PDF_PREFIX}/2002/mrst2002nlo.dat
+
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
 AC_SUBST(HERWIG_PDF_DEFAULT)
 AC_SUBST(HERWIG_PDF_NLO)

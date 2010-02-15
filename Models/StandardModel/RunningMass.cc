@@ -66,7 +66,7 @@ void RunningMass::Init() {
     (interfaceLightQuarkMass,
      "Pole",
      "Use the pole mass",
-       1);
+     1);
 
   static Switch<RunningMass,unsigned int> interfaceBottomCharmMass
     ("TopBottomCharmMass",
