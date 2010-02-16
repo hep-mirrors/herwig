@@ -38,9 +38,17 @@ class EventShapes: public Interfaced {
 public:
 
   /**
+   * The default constructor.
+   */
+  EventShapes() : _thrustDone(false), _spherDone(false), _linTenDone(false),
+		  _hemDone(false), _useCmBoost(false), 
+		  _mPlus(), _mMinus(), _bPlus(), _bMinus() 
+  {}
+
+  /**
    *  Member to reset the particles to be considered
    */
-  inline void reset(const tPVector &part) {
+  void reset(const tPVector &part) {
     _pv.resize(part.size());
     for(unsigned int ix=0;ix<part.size();++ix) _pv[ix]=part[ix]->momentum();
     _thrustDone = false;
@@ -60,7 +68,7 @@ public:
   /**
    *  The thrust
    */
-  inline double thrust() {
+  double thrust() {
     checkThrust(); 
     return _thrust[0];
   }
@@ -68,7 +76,7 @@ public:
   /**
    *  The major
    */ 
-  inline double thrustMajor() {
+  double thrustMajor() {
     checkThrust(); 
     return _thrust[1];
   }
@@ -76,7 +84,7 @@ public:
   /**
    *  The minor
    */ 
-  inline double thrustMinor() {
+  double thrustMinor() {
     checkThrust(); 
     return _thrust[2];
   }
@@ -84,7 +92,7 @@ public:
   /**
    *  The oblateness
    */ 
-  inline double oblateness() {
+  double oblateness() {
     checkThrust(); 
     return _thrust[1]-_thrust[2];
   }
@@ -92,7 +100,7 @@ public:
   /**
    *  The thrust axis
    */
-  inline Axis thrustAxis() {
+  Axis thrustAxis() {
     checkThrust(); 
     return _thrustAxis[0];
   }
@@ -100,7 +108,7 @@ public:
   /**
    *  The major axis
    */ 
-  inline Axis majorAxis() {
+  Axis majorAxis() {
     checkThrust(); 
     return _thrustAxis[1];
   }
@@ -108,7 +116,7 @@ public:
   /**
    *  The minor axis
    */
-  inline Axis minorAxis() {
+  Axis minorAxis() {
     checkThrust(); 
     return _thrustAxis[2];
   }
@@ -121,7 +129,7 @@ public:
   /**
    *  The C parameter
    */
-  inline double CParameter() {
+  double CParameter() {
     checkLinTen(); 
     return 3.*(_linTen[0]*_linTen[1]+_linTen[1]*_linTen[2]
 	       +_linTen[2]*_linTen[0]); 
@@ -130,7 +138,7 @@ public:
   /**
    *  The D parameter
    */
-  inline double DParameter() {
+  double DParameter() {
     checkLinTen(); 
     return 27.*(_linTen[0]*_linTen[1]*_linTen[2]); 
   }
@@ -138,7 +146,7 @@ public:
   /**
    *  The eigenvalues in descending order
    */
-  inline vector<double> linTenEigenValues() {
+  vector<double> linTenEigenValues() {
     checkLinTen(); 
     return _linTen; 
   }
@@ -147,7 +155,7 @@ public:
   /**
    *  The eigenvectors in order of descending eigenvalue
    */
-  inline vector<Axis> linTenEigenVectors() {
+  vector<Axis> linTenEigenVectors() {
     checkLinTen(); 
     return _linTenAxis; 
   }
@@ -161,7 +169,7 @@ public:
   /**
    *  The sphericity
    */
-  inline double sphericity() {
+  double sphericity() {
     checkSphericity(); 
     return 3./2.*(_spher[1]+_spher[2]); 
   }
@@ -169,7 +177,7 @@ public:
   /**
    *  The aplanarity
    */
-  inline double aplanarity() {
+  double aplanarity() {
     checkSphericity(); 
     return 3./2.*_spher[2];
   }
@@ -178,7 +186,7 @@ public:
   /**
    *  The planarity
    */
-  inline double planarity() {
+  double planarity() {
     checkSphericity(); 
     return _spher[1]-_spher[2]; 
   }
@@ -186,7 +194,7 @@ public:
   /**
    *  The sphericity axis
    */
-  inline Axis sphericityAxis() {
+  Axis sphericityAxis() {
     checkSphericity(); 
     return _spherAxis[0]; 
   }
@@ -195,7 +203,7 @@ public:
   /**
    *  The sphericity eigenvalues
    */
-  inline vector<double> sphericityEigenValues() {
+  vector<double> sphericityEigenValues() {
     checkSphericity(); 
     return _spher; 
   }
@@ -203,7 +211,7 @@ public:
   /**
    *  The sphericity eigenvectors
    */
-  inline vector<Axis> sphericityEigenVectors() {
+  vector<Axis> sphericityEigenVectors() {
     checkSphericity(); 
     return _spherAxis; 
   }  //@}
@@ -216,7 +224,7 @@ public:
    *  The high hemishpere mass squared divided by the visible energy
    *  squared
    */
-  inline double Mhigh2() {
+  double Mhigh2() {
     checkHemispheres();
     return _mPlus; 
   } 
@@ -225,7 +233,7 @@ public:
    *  The low hemishpere mass squared divided by the visible energy
    *  squared
    */
-  inline double Mlow2() {
+  double Mlow2() {
     checkHemispheres();
     return _mMinus; 
   } 
@@ -234,7 +242,7 @@ public:
    *  The difference between the 
    * hemishpere masses squared divided by the visible energy squared
    */
-  inline double Mdiff2() {
+  double Mdiff2() {
     checkHemispheres();
     return _mPlus-_mMinus; 
   } 
@@ -248,7 +256,7 @@ public:
   /**
    *  The wide jet broadening
    */
-  inline double Bmax() {
+  double Bmax() {
     checkHemispheres(); 
     return _bPlus;
   }
@@ -256,7 +264,7 @@ public:
   /**
    *  The narrow jet broadening
    */
-  inline double Bmin() {
+  double Bmin() {
     checkHemispheres(); 
     return _bMinus;
   }
@@ -264,7 +272,7 @@ public:
   /**
    *  The sum of the jet broadenings
    */
-  inline double Bsum() {
+  double Bsum() {
     checkHemispheres(); 
     return _bPlus+_bMinus;
   }
@@ -273,7 +281,7 @@ public:
   /**
    *  The difference of the jet broadenings
    */
-  inline double Bdiff() {
+  double Bdiff() {
     checkHemispheres(); 
     return _bPlus-_bMinus;
   }
@@ -287,7 +295,7 @@ public:
   /**
    *  The scaled momentum \f$\xi=-\log\left( p/E_{\rm beam}\right)\f$.
    */
-  inline double getXi(const Lorentz5Momentum & p, 
+  double getXi(const Lorentz5Momentum & p, 
 				   const Energy & Ebeam) {
     return((Ebeam > 0*MeV && p.vect().mag() > 0*MeV) ? 
 	   log(Ebeam/p.vect().mag()) : -1.); 
@@ -296,14 +304,14 @@ public:
   /**
    *  Transverse momentum with respect to the beam
    */
-  inline Energy getPt(const Lorentz5Momentum & p) {
+  Energy getPt(const Lorentz5Momentum & p) {
     return p.perp(); 
   }
 
   /**
    *  Rapidity with respect to the beam direction
    */
-  inline double getRapidity(const Lorentz5Momentum & p) {
+  double getRapidity(const Lorentz5Momentum & p) {
     return (p.t() > p.z() ? p.rapidity() : 1e99); 
   }
   //@}
@@ -315,7 +323,7 @@ public:
   /**
    *  Transverse momentum with respect to the thrust axis in the event plane
    */
-  inline Energy ptInT(const Lorentz5Momentum & p) {
+  Energy ptInT(const Lorentz5Momentum & p) {
     checkThrust(); 
     return p.vect()*_thrustAxis[1]; 
   }
@@ -324,7 +332,7 @@ public:
    *  Transverse momentum with respect to the thrust axis out of the
    *  event plane
    */
-  inline Energy ptOutT(const Lorentz5Momentum & p) {
+  Energy ptOutT(const Lorentz5Momentum & p) {
     checkThrust(); 
     return p.vect()*_thrustAxis[2]; 
   }
@@ -332,7 +340,7 @@ public:
   /**
    *  Rapidity with respect to the thrust axis
    */
-  inline double yT(const Lorentz5Momentum & p) {
+  double yT(const Lorentz5Momentum & p) {
     checkThrust(); 
     return (p.t() > p.vect()*_thrustAxis[0] ? 
 	    p.rapidity(_thrustAxis[0]) : 1e99);
@@ -342,7 +350,7 @@ public:
    *  Transverse momentum with respect to the sphericity axis in the
    *  event plane
    */
-  inline Energy ptInS(const Lorentz5Momentum & p) { 
+  Energy ptInS(const Lorentz5Momentum & p) { 
     checkSphericity(); 
     return p.vect()*_spherAxis[1]; 
   }
@@ -351,7 +359,7 @@ public:
    *  Transverse momentum with respect to the sphericity axis out of the
    *  event plane
    */
-  inline Energy ptOutS(const Lorentz5Momentum & p) {
+  Energy ptOutS(const Lorentz5Momentum & p) {
     checkSphericity(); 
     return p.vect()*_spherAxis[2]; 
   }
@@ -359,7 +367,7 @@ public:
   /**
    *  Rapidity with respect to the sphericity axis
    */
-  inline double yS(const Lorentz5Momentum & p) {
+  double yS(const Lorentz5Momentum & p) {
     checkSphericity(); 
     return (p.t() > p.vect()*_spherAxis[0] ? 
 	    p.rapidity(_spherAxis[0]) : 1e99);
@@ -381,7 +389,7 @@ public:
    * Before writing the histogram it has to be normalized according to
    * the number of events.
    */
-  inline void normalizeEEC(vector<double> & hi, long evts) {
+  void normalizeEEC(vector<double> & hi, long evts) {
     for (unsigned int bin = 0; bin < hi.size(); bin++) bin /= (hi.size()*evts);
   }
   
@@ -389,7 +397,7 @@ public:
    * The asymmetry of EEC is calculated from a given \f$\cos\chi\f$ and
    * EEC histogram, which is a vector<double> as described above.
    */
-  inline double AEEC(vector<double> & hi, double& coschi) {
+  double AEEC(vector<double> & hi, double& coschi) {
     if (coschi > 0. && coschi <= 1.) {
       int i = static_cast<int>( floor((-coschi+1.)/2.*hi.size()) ); 
       int j = static_cast<int>( floor(( coschi+1.)/2.*hi.size()) ); 
@@ -417,12 +425,12 @@ protected:
    * Make a simple clone of this object.  @return a pointer to the new
    * object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.  @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -436,7 +444,7 @@ private:
    *  Check if thrust related variables have been calculated and if not
    *  do so
    */
-  inline void checkThrust() {
+  void checkThrust() {
     if (!_thrustDone) {
       _thrustDone = true;
       calculateThrust(); 
@@ -447,7 +455,7 @@ private:
    *  Check if the linear tensor related variables have been calculated
    *  and if not do so
    */
-  inline void checkLinTen() {
+  void checkLinTen() {
     if (!_linTenDone) {
       _linTenDone = true;
       diagonalizeTensors(true, _useCmBoost); 
@@ -458,7 +466,7 @@ private:
    *  Check if the quadratic tensor related variables have been
    *  calculated and if not do so
    */
-  inline void checkSphericity() {
+  void checkSphericity() {
     if (!_spherDone) {
       _spherDone = true;
       diagonalizeTensors(false, _useCmBoost); 
@@ -469,7 +477,7 @@ private:
    *  Check if the hemisphere mass variables and jet broadenings have
    *  been calculated and if not do so
    */
-  inline void checkHemispheres() {
+  void checkHemispheres() {
     if (!_hemDone) {
       _hemDone = true;
       calcHemisphereMasses(); 
@@ -691,9 +699,5 @@ struct ClassTraits<Herwig::EventShapes>
 /** @endcond */
 
 }
-
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EventShapes.tcc"
-#endif
 
 #endif /* HERWIG_EventShapes_H */

@@ -67,7 +67,7 @@ public:
    * Default constructor.
    */
   DecayPhaseSpaceMode() :  _maxweight(0.),_niter(10), _npoint(10000), _ntry(500),
-			   _partial(-1), _testOnShell(false) {}
+			   _partial(-1), _testOnShell(false), _ichannel(999) {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseIntegrator</code> and a vector
@@ -80,7 +80,7 @@ public:
   DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin,bool onShell=false) 
     :  _integrator(intin), _maxweight(0.),
        _niter(10), _npoint(10000), _ntry(500),
-       _extpart(in),  _partial(-1), _testOnShell(onShell) {}
+       _extpart(in),  _partial(-1), _testOnShell(onShell), _ichannel(999) {}
   //@}
 
   /**

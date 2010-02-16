@@ -344,8 +344,9 @@ void UEDBase::fermionMasses(const unsigned int n) {
 
   for(long i = 1; i < 17; ) {
     if(i == 6) i += 5;
-    Energy2 new_m2, smMass2(sqr(getParticleData(i)->mass()));
+    Energy2 smMass2(sqr(getParticleData(i)->mass()));
     if(i < 6) {
+      Energy2 new_m2;
       if( i % 2 == 0)
 	new_m2 = smMass2 + shiftU;
       else 

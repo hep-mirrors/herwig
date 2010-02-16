@@ -237,12 +237,11 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
     ostringstream cut;
     cut << _masscut/GeV;
     for(unsigned int ix=0;ix<_part1.size();++ix) {
-      GeneralCurrentDecayerPtr decayer;
       ostringstream fullname2;
       fullname2 << fullname.str() << "_" << ix;
       if(_theExistingDecayers[ivert][icol].find(_current[ix])==
 	 _theExistingDecayers[ivert][icol].end()) {
-	decayer = dynamic_ptr_cast<GeneralCurrentDecayerPtr>
+	GeneralCurrentDecayerPtr decayer = dynamic_ptr_cast<GeneralCurrentDecayerPtr>
 	  (generator()->preinitCreate(classname,fullname2.str()));
 	string msg = generator()->preinitInterface(decayer, "DecayVertex", 
 						   "set", vert->fullName());

@@ -36,7 +36,7 @@ BtoSGammaKagan::BtoSGammaKagan()
     _ckm(0.976),_delta(0.),_spectmax(0.00025/GeV),_maxtry(100),
     _fermilambda(ZERO),_fermia(0.),_ferminorm(1./GeV),
     _fermilambda1(-0.3*GeV2),_ycut(0.9999999999),
-    _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100) {
+    _y(0.),_deltacut(0.9),_nsfunct(100),_nspect(100),_iopt(9999) {
   Energy mHin[100]={0*GeV,0.0505907*GeV,0.101181*GeV,0.151772*GeV,0.202363*GeV,
 		    0.252953*GeV,0.303544*GeV,0.354135*GeV,0.404726*GeV,0.455316*GeV,
 		    0.505907*GeV,0.556498*GeV,0.607088*GeV,0.657679*GeV,0.70827*GeV,

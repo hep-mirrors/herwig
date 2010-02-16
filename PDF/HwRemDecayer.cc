@@ -101,7 +101,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   bool anti;
   Lorentz5Momentum lastp(parton->momentum());
   int lastID(parton->id());
-  ColinePtr cl;
   Energy oldQ(_forcedSplitScale);
   _pdf = pdf;
   //do nothing if already valence quark
@@ -132,7 +131,7 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   PPtr newSea;
   if( lastID != ParticleID::g ) {
     newSea = forceSplit(rem, -lastID, oldQ, currentx, lastp, used,content);
-    cl = new_ptr(ColourLine());
+    ColinePtr cl = new_ptr(ColourLine());
     if(newSea->id() > 0) cl->addColoured(newSea);
     else cl->addAntiColoured(newSea);
     // if a secondard scatter finished so return
