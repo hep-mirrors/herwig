@@ -171,7 +171,7 @@ void debuggingMatrixElement(bool BGF,
 }
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
-				 comptonWeight_(50.), BGFWeight_(150.), 
+				 comptonWeight_(8.), BGFWeight_(30.), 
 				 pTmin_(1.*GeV),initial_(10.),final_(8.),
 				 procProb_(0.5), comptonInt_(0.), bgfInt_(0.),
 				 nover_(0),maxwgt_(make_pair(0.,0.))
@@ -655,11 +655,13 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
       ++cjt;
     }
   }
-  generator()->log() << *newTree << "\n";
   return newTree;
 }
 
 void MEPP2HiggsVBF::generateCompton(unsigned int system) {
+  // calculate the A coefficient for the correlations
+  acoeff_   = A(partons_[system][0],partons_[system][1],
+		partons_[system][2],partons_[system][3]);
   // maximum value of the xT
   double xT = sqrt((1.-xB_[system])/xB_[system]);
   double xTMin = 2.*pTmin_/sqrt(q2_[system]);
@@ -667,7 +669,10 @@ void MEPP2HiggsVBF::generateCompton(unsigned int system) {
   // prefactor
   double a = alpha_->overestimateValue()*comptonWeight_/Constants::twopi;
   // loop to generate kinematics
-  double wgt(0.),xp(0.),phi(0.);
+  double wgt(0.),xp(0.);
+  l_ = 2.*pother_[system][0]/sqrt(q2_[system]);
+  m_ = 2.*pother_[system][1]/sqrt(q2_[system]);
+  vector<double> azicoeff;
   do {
     wgt = 0.;
     // intergration variables dxT/xT^3
@@ -677,18 +682,22 @@ void MEPP2HiggsVBF::generateCompton(unsigned int system) {
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
     // check allowed
     if(xp<xB_[system]||xp>1.) continue;
-    // other phase-space variables
-    phi=UseRandom::rnd()*Constants::twopi;
     // phase-space piece of the weight
     wgt = 8.*(1.-xp)*zp/comptonWeight_;
     // PDF piece of the weight
-    Energy2 scale = q2_[system]*((1.-xp)*(1-zp)*zp/xp+1.);
-    wgt *= pdf_[system]->xfx(beam_[system],partons_[system][0],
-			     scale        ,xB_[system]/xp)/
-           pdf_[system]->xfx(beam_[system],partons_[system][0],
-			     q2_[system]  ,xB_[system]   );
+    Energy2 mu2 = q2_[system]*((1.-xp)*(1-zp)*zp/xp+1.);
+    double pdf =  pdf_[system]->xfx(beam_[system],partons_[system][0],
+				    mu2    ,xB_[system]/xp)/
+                  pdf_[system]->xfx(beam_[system],partons_[system][0],
+				    scale(),xB_[system]   );
+    wgt *= max(pdf,0.);
     // me piece of the weight
-    wgt *= comptonME(system,xT,xp,zp,phi);
+    // double me = comptonME(system,xT,xp,zp,phi);
+    double x2 = 1.-(1.-zp)/xp;
+    azicoeff = ComptonME(xp,x2,xT,l_,m_);
+    double me = 4./3.*alpha_->ratio(0.25*q2_[system]*sqr(xT))*
+      (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4]);
+    wgt *= me;
     if(wgt>1.||wgt<0.) {
       ostringstream wstring;
       wstring << "MEPP2HiggsVBF::generateCompton() "
@@ -703,6 +712,22 @@ void MEPP2HiggsVBF::generateCompton(unsigned int system) {
     pTCompton_[system]=-GeV;
     return;
   }
+  // generate phi
+  unsigned int itry(0);
+  double phimax = std::accumulate(azicoeff.begin(),azicoeff.end(),0.);
+  double phiwgt,phi;
+  do {
+    phi = UseRandom::rnd()*Constants::twopi;
+    double cphi(cos(phi)),sphi(sin(phi));
+    phiwgt =  azicoeff[0]+azicoeff[5]*sphi*cphi
+      +azicoeff[1]*cphi+azicoeff[2]*sqr(cphi)
+      +azicoeff[3]*sphi+azicoeff[4]*sqr(sphi);
+    ++itry;
+  }
+  while (phimax*UseRandom::rnd() > phiwgt && itry<200);
+  if(itry==200) throw Exception() << "Too many tries in MEPP2HiggsVBF"
+				  << "::generateCompton() to"
+				  << " generate phi" << Exception::eventerror;
   // momenta for the configuration
   Energy Q(sqrt(q2_[system]));
   double x1 = -1./xp;
@@ -839,8 +864,9 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
 // 			 partons_[system][2],partons_[system][3],
 // 			 psystem_[system][0],psystem_[system][1],
 // 			 pother_ [system][0],pother_ [system][1],
-// 			 p0,p1,p2,phiggs_[system],q2_[system],
+// 			 p0,p1,p2,phiggs_[system],q2_[system],scale(),
 // 			 8.*Constants::pi/(1.-xp)/(1.-zp)*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2));
+//   cerr << "testing pieces A " << R1 << " " << sqr(xp)*(sqr(x2)+sqr(xT)) << " " << R2 << "\n";
   return CFfact*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2);   
 }
 
@@ -852,7 +878,10 @@ void MEPP2HiggsVBF::generateBGF(unsigned int system) {
   // prefactor
   double a = alpha_->overestimateValue()*BGFWeight_/Constants::twopi;
   // loop to generate kinematics
-  double wgt(0.),xp(0.),phi(0.);
+  double wgt(0.),xp(0.);
+  l_ = 2.*pother_[system][0]/sqrt(q2_[system]);
+  m_ = 2.*pother_[system][1]/sqrt(q2_[system]);
+  vector<double> azicoeff;
   do {
     wgt = 0.;
     // intergration variables dxT/xT^3
@@ -862,18 +891,23 @@ void MEPP2HiggsVBF::generateBGF(unsigned int system) {
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
     // check allowed
     if(xp<xB_[system]||xp>1.) continue;
-    // other phase-space variables
-    phi=UseRandom::rnd()*Constants::twopi;
     // phase-space piece of the weight
     wgt = 8.*sqr(1.-xp)*zp/BGFWeight_;
     // PDF piece of the weight
-    Energy2 scale = q2_[system]*((1.-xp)*(1-zp)*zp/xp+1.);
+    Energy2 mu2 = q2_[system]*((1.-xp)*(1-zp)*zp/xp+1.);
     wgt *= pdf_[system]->xfx(beam_[system],gluon_             ,
-			     scale      ,xB_[system]/xp)/
+			     mu2    ,xB_[system]/xp)/
            pdf_[system]->xfx(beam_[system],partons_[system][0],
-			     q2_[system],xB_[system]);
+			     scale(),xB_[system]);
     // me piece of the weight
-    wgt *= BGFME(system,xT,xp,zp,phi);
+    //double me = BGFME(system,xT,xp,zp,phi);
+    double x1 = -1./xp;
+    double x2 = 1.-(1.-zp)/xp;
+    double x3 = 2.+x1-x2;
+    azicoeff = BGFME(xp,x2,x3,xT,l_,m_);
+    double me = 0.5*alpha_->ratio(0.25*q2_[system]*sqr(xT))*
+      (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4]);
+    wgt *= me;
     if(wgt>1.||wgt<0.) {
       ostringstream wstring;
       wstring << "MEPP2HiggsVBF::generateBGF() "
@@ -888,6 +922,22 @@ void MEPP2HiggsVBF::generateBGF(unsigned int system) {
     pTBGF_[system] = -GeV;
     return;
   }
+  // generate phi
+  unsigned int itry(0);
+  double phimax = std::accumulate(azicoeff.begin(),azicoeff.end(),0.);
+  double phiwgt,phi;
+  do {
+    phi = UseRandom::rnd()*Constants::twopi;
+    double cphi(cos(phi)),sphi(sin(phi));
+    phiwgt =  azicoeff[0]+azicoeff[5]*sphi*cphi
+      +azicoeff[1]*cphi+azicoeff[2]*sqr(cphi)
+      +azicoeff[3]*sphi+azicoeff[4]*sqr(sphi);
+    ++itry;
+  }
+  while (phimax*UseRandom::rnd() > phiwgt && itry<200);
+  if(itry==200) throw Exception() << "Too many tries in MEPP2HiggsVBF"
+				  << "::generateBGF() to"
+				  << " generate phi" << Exception::eventerror;
   // momenta for the configuration
   Energy Q(sqrt(q2_[system]));
   double x1 = -1./xp;
@@ -1123,13 +1173,13 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     wgt = generateComptonPoint(xp,zp);
     if(xp<eps) return;
     // common pieces
-    Energy2 scale = q2_[0]*((1.-xp)*(1-zp)*zp/xp+1);
-    wgt *= 2./3./Constants::pi*alpha_->value(scale)/procProb_;
+    Energy2 mu2 = q2_[0]*((1.-xp)*(1-zp)*zp/xp+1);
+    wgt *= 2./3./Constants::pi*alpha_->value(mu2)/procProb_;
     // PDF piece
     wgt *= systems_[0].pdf->xfx(systems_[0].beam,
-				systems_[0].incoming->dataPtr(),scale ,xB_[0]/xp)/
+				systems_[0].incoming->dataPtr(),mu2    ,xB_[0]/xp)/
            systems_[0].pdf->xfx(systems_[0].beam,
-				systems_[0].incoming->dataPtr(),q2_[0],xB_[0]   );
+				systems_[0].incoming->dataPtr(),scale(),xB_[0]   );
     // numerator factors
     wgt /= (1.-xp)*(1.-zp);
     // other bits
@@ -1144,13 +1194,13 @@ void MEPP2HiggsVBF::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     wgt = generateBGFPoint(xp,zp);
     if(xp<1e-6) return;
     // common pieces 
-    Energy2 scale = q2_[0]*((1.-xp)*(1-zp)*zp/xp+1);
-    wgt *= 0.25/Constants::pi*alpha_->value(scale)/(1.-procProb_);
+    Energy2 mu2 = q2_[0]*((1.-xp)*(1-zp)*zp/xp+1);
+    wgt *= 0.25/Constants::pi*alpha_->value(mu2)/(1.-procProb_);
     // PDF piece
     wgt *= systems_[0].pdf->xfx(systems_[0].beam,
-				gluon_                         ,scale ,xB_[0]/xp)/
+				gluon_                         ,mu2    ,xB_[0]/xp)/
            systems_[0].pdf->xfx(systems_[0].beam,
-				systems_[0].incoming->dataPtr(),q2_[0],xB_[0]   );
+				systems_[0].incoming->dataPtr(),scale(),xB_[0]   );
     // numerator factors
     wgt /= (1.-zp);
     // other bits
@@ -1455,8 +1505,8 @@ bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x2 = 1.-(1.-zp)/xp;
     vector<double> azicoeff = ComptonME(xp,x2,xperp,l_,m_);
-    wgt = (1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)))*
-      (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*xp/(1.+sqr(z))/final_;
+    wgt = (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
+      xp/(1.+sqr(z))/final_;
     if(wgt<.0||wgt>1.) {
       ostringstream wstring;
       wstring << "Soft ME correction weight too large or "
@@ -1476,15 +1526,13 @@ bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
     // compton
     if(br.ids[0]!=ParticleID::g) {
       vector<double> azicoeff = ComptonME(xp,x2,xperp,l_,m_);
-      wgt = (1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)))*
-	(azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
+      wgt = (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
 	xp*(1.-z)/(1.-xp)/(1.+sqr(z))/(1.-zp+xp-2.*xp*(1.-zp));
     }
     // BGF
     else {
       vector<double> azicoeff = BGFME(xp,x2,x3,xperp,l_,m_);
-      wgt = sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp))*
-	(azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
+      wgt = (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
 	xp/(1.-zp+xp-2.*xp*(1.-zp))/(sqr(z)+sqr(1.-z));
     }
     wgt /=initial_;
