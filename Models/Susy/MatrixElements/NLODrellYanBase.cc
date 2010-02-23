@@ -22,7 +22,9 @@ using namespace Herwig;
  */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
-NLODrellYanBase::NLODrellYanBase() : contrib_(1), power_(0.1)
+NLODrellYanBase::NLODrellYanBase() : contrib_(1), power_(0.1),
+				     alphaS_(0.), fixedAlphaS_(false)
+				     
 {}
 
 Energy2 NLODrellYanBase::scale() const {
@@ -68,11 +70,11 @@ double NLODrellYanBase::me2() const {
 }
 
 void NLODrellYanBase::persistentOutput(PersistentOStream & os) const {
-  os << contrib_ << power_ << gluon_;
+  os << contrib_ << power_ << gluon_ << fixedAlphaS_ << alphaS_;
 }
 
 void NLODrellYanBase::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_ >> power_ >> gluon_;
+  is >> contrib_ >> power_ >> gluon_ >> fixedAlphaS_ >> alphaS_;
 }
 
 void NLODrellYanBase::doinit() {
@@ -120,6 +122,28 @@ void NLODrellYanBase::Init() {
      "Power for the sampling of xp",
      &NLODrellYanBase::power_, 0.6, 0.0, 1.,
      false, false, Interface::limited);
+
+  static Switch<NLODrellYanBase,bool> interfaceFixedAlphaS
+    ("FixedAlphaS",
+     "Use a fixed value of alpha_S",
+     &NLODrellYanBase::fixedAlphaS_, false, false, false);
+  static SwitchOption interfaceFixedAlphaSYes
+    (interfaceFixedAlphaS,
+     "Yes",
+     "Use fixed alpha_S",
+     true);
+  static SwitchOption interfaceFixedAlphaSNo
+    (interfaceFixedAlphaS,
+     "No",
+     "Use running alpha_S",
+     false);
+
+  static Parameter<NLODrellYanBase,double> interfaceAlphaS
+    ("AlphaS",
+     "The fixed value of alpha_S to use",
+     &NLODrellYanBase::alphaS_, 0., 0., 1.,
+     false, false, Interface::limited);
+
 }
 
 double NLODrellYanBase::subtractedVirtual() const {
@@ -138,7 +162,7 @@ double NLODrellYanBase::NLOWeight() const {
   if(contrib_==0) return 1.;
   // strong coupling
   Energy2 mu2(scale());
-  alphaS_ = SM().alphaS(mu2);
+  if(!fixedAlphaS_) alphaS_ = SM().alphaS(mu2);
   // prefactors
   CFfact_ = 4./3.*alphaS_/Constants::twopi;
   TRfact_ = 1./2.*alphaS_/Constants::twopi;
@@ -320,8 +344,6 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   cPDVector particles(mePartonData());
   particles.push_back(gluon_);
   double me = 0.75*realME(particles,p);
-  // divide out prefactor
-  me /= (8.*Constants::pi*alphaS_);
   // compute the two dipole terms
   double x = (p[0]*p[1]-p[4]*p[1]-p[4]*p[0])/(p[0]*p[1]);
   Lorentz5Momentum Kt = p[0]+p[1]-p[4];
@@ -375,8 +397,6 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
     particles[1] = gluon_;
   }
   double me = 2.*realME(particles,p);
-  // divide out prefactor
-  me /= (8.*Constants::pi*alphaS_);
   // compute the two dipole terms
   double x = 1.-(p[4]*p[1]+p[4]*p[0])/(p[0]*p[1]);
   Lorentz5Momentum Kt = p[0]+p[1]-p[4];

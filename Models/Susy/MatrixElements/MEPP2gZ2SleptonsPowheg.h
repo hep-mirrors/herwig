@@ -151,7 +151,7 @@ protected:
 		      bool first=false) const;
 
   /**
-   * The real matrix element, to be implemented in the
+   * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
    * inheriting classes. 
    * @param particles The ParticleData objects of the particles
    * @param momenta The momenta of the particles

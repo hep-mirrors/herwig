@@ -353,7 +353,8 @@ double MEPP2gZ2SleptonsPowheg::realME(const cPDVector & particles,
   else  {
     output *= 1./24.;
   }
-  return output;
+  // divided by 2 g_S^2
+  return 0.5*output/norm(FFGVertex_->norm());
 }
 
 void MEPP2gZ2SleptonsPowheg::constructVertex(tSubProPtr sub) {
