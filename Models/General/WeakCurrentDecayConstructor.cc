@@ -146,7 +146,8 @@ void WeakCurrentDecayConstructor::Init() {
 
 }
 
-void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
+void WeakCurrentDecayConstructor::DecayList(const set<PDPtr> & part) {
+  if( part.empty() ) return;
   _theModel->init();
   unsigned int nv(_theModel->numberOfVertices());
   // make sure vertices are initialized
@@ -156,14 +157,13 @@ void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
     resize(nv,vector<map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> >
 	   (3,map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr>()));
   tPDVector decays;
-  unsigned int np = part.size();
-  for(unsigned int ipart = 0; ipart < np; ++ipart) {
+  for(set<PDPtr>::const_iterator ip=part.begin();ip!=part.end();++ip) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       for(unsigned int ilist = 0; ilist < 3; ++ilist) { 
-	decays = createModes(part[ipart], _theModel->vertex(iv),
+	decays = createModes(*ip, _theModel->vertex(iv),
 			     ilist, iv);
 	if(decays.size() > 0){
-	  tPDPtr incpart = part[ipart]->CC() ? part[ipart]->CC() : tPDPtr(part[ipart]);
+	  tPDPtr incpart = (**ip).CC() ? (**ip).CC() : tPDPtr(*ip);
 	  createDecayMode(incpart, decays, _theExistingDecayers[iv][ilist]);
 	}
       }

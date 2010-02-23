@@ -46,7 +46,7 @@ public:
    * in derived class.
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part);
+  virtual void DecayList(const set<PDPtr> & part);
 
   /**
    * Number of outgoing lines. Required for correct ordering.

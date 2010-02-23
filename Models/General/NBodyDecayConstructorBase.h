@@ -70,7 +70,7 @@ public:
    * @param particles vector of ParticleData pointers containing 
    * particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & particles) = 0;
+  virtual void DecayList(const set<PDPtr> & particles) = 0;
 
   /**
    * Number of outgoing lines. Required for correct ordering.
