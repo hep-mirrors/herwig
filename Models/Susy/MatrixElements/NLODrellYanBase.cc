@@ -47,8 +47,10 @@ bool NLODrellYanBase::generateKinematics(const double * r) {
 
 CrossSection NLODrellYanBase::dSigHatDR() const {
   // old technique
-  CrossSection LO = HwME2to2Base::dSigHatDR();
-  if(contrib_<3) return NLOWeight()*LO;
+  CrossSection preFactor = 
+    jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
+  loME_ = me2();
+  if(contrib_<3) return NLOWeight()*preFactor;
   // folding technique to ensure positive
   double wgt(0.);
   unsigned int ntry(0);
@@ -62,7 +64,7 @@ CrossSection NLODrellYanBase::dSigHatDR() const {
   }
   while (wgt<0.&&ntry<100);
   if(wgt<0.) return ZERO;
-  return wgt*LO/double(ntry);
+  return wgt*preFactor/double(ntry);
 }
 
 double NLODrellYanBase::me2() const {
@@ -167,7 +169,7 @@ double NLODrellYanBase::NLOWeight() const {
   CFfact_ = 4./3.*alphaS_/Constants::twopi;
   TRfact_ = 1./2.*alphaS_/Constants::twopi;
   // virtual pieces
-  double virt = CFfact_*subtractedVirtual();
+  double virt = loME_*CFfact_*subtractedVirtual();
   // extract the partons and stuff for the real emission
   //  and collinear counter terms
   // hadrons
@@ -227,14 +229,14 @@ double NLODrellYanBase::NLOWeight() const {
   double collQbarQbar = collinearQuark(x.second,mu2,zJac.second,z.second,
 				       oldqPDF.second,newqPDF.second);
   // collinear remnants 
-  double coll = collQQ+collQbarQbar+collGQ+collGQbar;
+  double coll = loME_*(collQQ+collQbarQbar+collGQ+collGQbar);
   double real = 
     subtractedReal(x,z. first,zJac. first,
 		   oldqPDF. first,newqPDF. first,newgPDF. first, true)+
     subtractedReal(x,z.second,zJac.second, 
 		   oldqPDF.second,newqPDF.second,newgPDF.second,false);
   // add up all the terms and return the answer
-  double wgt = 1.+virt+coll+real;
+  double wgt = loME_+virt+coll+real;
   if(isnan(wgt)||isinf(wgt)) {
     cerr << "testing bad weight "
 	 << collQQ << " " << collQbarQbar << " "
@@ -376,10 +378,12 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   InvEnergy2 D2 = 0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x));
   // results
   if(order) {
-    me = sHat()*(abs(D1)/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D1);
+    me = lo1>0.&&lo2>0. ?
+      sHat()*(abs(D1)*lo1/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D1) : ZERO;
   }
   else {
-    me = sHat()*(abs(D2)/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D2);
+    me = lo1>0.&&lo2>0. ?
+      sHat()*(abs(D2)*lo2/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D2) : ZERO;
   }
   return me;
 }
@@ -416,8 +420,6 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   Energy2 Ksum2 = Ksum.m2();
   for(unsigned int ix=2;ix<4;++ix)
     pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
-  // first LO matrix element
-  double lo1 = loME(mePartonData(),pa,false);
   // dipole
   InvEnergy2 D1;
   if(order) {
@@ -426,5 +428,5 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   else {
     D1 =  0.5/(p[1]*p[4])/x*(1.-2.*x*(1.-x));
   }
-  return sHat()*(UnitRemoval::InvE2*me/lo1-D1);
+  return sHat()*(UnitRemoval::InvE2*me-D1);
 }

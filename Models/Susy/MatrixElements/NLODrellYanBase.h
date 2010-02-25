@@ -313,6 +313,11 @@ private:
    *  Use a fixed value of \f$\alpha_S\f$
    */
   bool fixedAlphaS_;
+
+  /**
+   *  Leading-order matrix element
+   */
+  mutable double loME_;
 };
 
 }
