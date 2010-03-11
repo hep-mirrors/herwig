@@ -51,6 +51,7 @@ void ShowerHandler::doinit() {
   // set used in the simulation
   particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
 				 inputparticlesDecayInShower_.end());
+  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 
 IBPtr ShowerHandler::clone() const {
@@ -78,6 +79,7 @@ void ShowerHandler::doinitrun(){
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
+  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 
 void ShowerHandler::dofinish(){
@@ -228,7 +230,7 @@ void ShowerHandler::cascade() {
   useMe();
   try {
     SubProPtr sub = eventHandler()->currentCollision()->primarySubProcess();
-    incomingPartons = cascade(sub);
+    incomingPartons = cascade(sub,lastXCombPtr());
   } 
   catch(ShowerTriesVeto &veto){
     throw Exception() << "Failed to generate the shower after "
@@ -299,7 +301,7 @@ void ShowerHandler::cascade() {
 			  << Exception::eventerror;
       // Generate the shower. If not possible veto the event
       try {
-	incomingPartons = cascade(sub);
+	incomingPartons = cascade(sub,lastXC);
       } 
       catch(ShowerTriesVeto &veto){
 	throw Exception() << "Failed to generate the shower of " 
@@ -357,7 +359,7 @@ void ShowerHandler::cascade() {
     newStep()->addSubProcess(sub);
     // Run the Shower. If not possible veto the scattering
     try {
-      incomingPartons = cascade(sub);
+      incomingPartons = cascade(sub,lastXC);
     } 
     // discard this extra scattering, but try the next one
     catch(ShowerTriesVeto) {
@@ -465,11 +467,12 @@ void ShowerHandler::findShoweringParticles() {
 		      << Exception::runerror;
   // create the hard process ShowerTree
   ParticleVector out(hardParticles.begin(),hardParticles.end());
-  hard_=new_ptr(ShowerTree(out, decay_));
+  hard_=new_ptr(ShowerTree(currentSubProcess()->incoming(),out, decay_));
   hard_->setParents();
 }
 
-tPPair ShowerHandler::cascade(tSubProPtr sub) {
+tPPair ShowerHandler::cascade(tSubProPtr sub,
+			      XCPtr xcomb) {
   // get the current step
   current_ = currentStep();
   // get the current subprocess
@@ -485,7 +488,7 @@ tPPair ShowerHandler::cascade(tSubProPtr sub) {
 				    << "is not implemented" 
 				    << Exception::runerror;
       // perform the shower for the hard process
-      evolver_->showerHardProcess(hard_);
+      evolver_->showerHardProcess(hard_,xcomb);
       done_.push_back(hard_);
       hard_->updateAfterShower(decay_);
       // if no decaying particles to shower break out of the loop
@@ -628,10 +631,6 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
   if(particle->momentum().m2()<=ZERO||
      particle == currentSubProcess()->incoming().first||
      particle == currentSubProcess()->incoming().second) return false;
-  // if non-coloured this is enough
-  if(!particle->dataPtr()->coloured()) return true;
-  // if coloured must be unstable
-  if(particle->dataPtr()->stable()) return false;
   // must not be the s-channel intermediate
   if(find(currentSubProcess()->incoming().first->children().begin(),
 	  currentSubProcess()->incoming().first->children().end(),particle)!=
@@ -642,6 +641,10 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
      currentSubProcess()->incoming().first ->children().size()==1&&
      currentSubProcess()->incoming().second->children().size()==1)
     return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
   // must not have same particle type as a child
   int id = particle->id();
   for(unsigned int ix=0;ix<particle->children().size();++ix)

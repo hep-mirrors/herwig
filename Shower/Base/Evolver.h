@@ -21,7 +21,12 @@
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
+#include "HardTree.h"
+#include "ThePEG/Handlers/XComb.h"
 #include "Evolver.fh"
+#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig++/Decay/HwDecayerBase.h"
+#include "HardestEmissionGenerator.h"
 
 namespace Herwig {
 
@@ -48,6 +53,13 @@ friend class ShowerHandler;
 friend class MECorrectionBase;
 
 public:
+  
+  /**
+   *  Pointer to an XComb object
+   */
+  typedef Ptr<XComb>::pointer XCPtr;
+
+public:
 
   /**
    *  Default Constructor
@@ -55,7 +67,9 @@ public:
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
-	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.) {}
+	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
+	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0)
+  {}
 
   /**
    *  Member to perform the shower
@@ -64,7 +78,7 @@ public:
   /**
    * Perform the shower of the hard process
    */
-  virtual void showerHardProcess(ShowerTreePtr);
+  virtual void showerHardProcess(ShowerTreePtr,XCPtr);
 
   /**
    * Perform the shower of a decay
@@ -133,7 +147,12 @@ protected:
   /**
    *  Generate the hard matrix element correction
    */
-  virtual void hardMatrixElementCorrection();
+  virtual void hardMatrixElementCorrection(bool);
+
+  /**
+   *  Generate the hardest emission
+   */
+  virtual void hardestEmission();
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -185,6 +204,18 @@ protected:
   virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
 				    Energy maxscale,
 				    Energy minimumMass);
+
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
+				       HardBranchingPtr branch);
+ 
+  /**
+   * Truncated shower from a space-like particle
+   */
+  virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+					HardBranchingPtr branch);
   //@}
 
   /**
@@ -194,18 +225,29 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn() const { return _meCorrMode > 0; }
+  bool MECOn() const {
+    return _meCorrMode > 0 && _hardEmissionMode==0;
+  }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC() const { return _meCorrMode == 1 || _meCorrMode == 2; }
+  bool hardMEC() const {
+    return (_meCorrMode == 1 || _meCorrMode == 2) && _hardEmissionMode==0;
+  }
 
   /**
    * Any soft ME correction? 
    */
-  bool softMEC() const { return _meCorrMode == 1 || _meCorrMode > 2; }
+  bool softMEC() const {
+    return (_meCorrMode == 1 || _meCorrMode > 2) && _hardEmissionMode==0;
+  }
   //@}
+
+  /**
+   * Is the truncated shower on?
+   */
+  bool isTruncatedShowerON() const {return _trunc_Mode;}
 
   /**
    *  Switch for intrinsic pT
@@ -397,16 +439,15 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
+  //@} 
 
 protected:
-
+  
   /** @name Standard Interfaced functions. */
   //@{
   /**
    * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
+   * a run begins.   */
   virtual void doinitrun();
   //@}
 
@@ -492,9 +533,24 @@ private:
   MECorrectionPtr _currentme;
 
   /**
+   *  Matrix element
+   */
+  HwMEBasePtr _hardme;
+
+  /**
+   *  Decayer
+   */
+  HwDecayerBasePtr _decayme;
+
+  /**
    * The ShowerTree currently being showered
    */
   ShowerTreePtr _currenttree;
+
+  /**
+   *  The HardTree currently being showered
+   */
+  HardTreePtr _nasontree;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm
@@ -536,6 +592,32 @@ private:
    *  Number of FS emissions
    */
   unsigned int _nfs;
+
+  /**
+   *  Vector of objects responisble for generating the hardest emission
+   */
+  vector<HardestEmissionGeneratorPtr> _hardgenerator;
+
+  /**
+   *  Only generate the emission from the hardest emission
+   *  generate for testing only
+   */
+  bool _hardonly;
+
+ /**
+   *  Truncated shower switch
+   */
+  bool _trunc_Mode;
+  
+  /**
+   *  Count of the number of truncated emissions
+   */
+  unsigned int _truncEmissions;
+
+  /**
+   *  Mode for the hard emissions
+   */
+  unsigned int _hardEmissionMode;
 
 };
 

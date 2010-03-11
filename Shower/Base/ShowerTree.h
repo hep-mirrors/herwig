@@ -10,7 +10,7 @@
 #define HERWIG_ShowerTree_H
 
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/ShowerHandler.fh"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ShowerProgenitor.h"
@@ -36,6 +36,11 @@ using namespace ThePEG;
  */
 class ShowerTree : public Base {
 
+  /**
+   *  ShowerHandler is a friend
+   */
+  friend class ShowerHandler;
+
 public:
 
   /**
@@ -47,7 +52,7 @@ public:
    * @param out The outgoing particles
    * @param decay Map into which the trees for any unstable particles are inserted
    */
-  ShowerTree(const ParticleVector & out,
+  ShowerTree(const PPair incoming, const ParticleVector & out,
 	     ShowerDecayMap & decay);
   
   /**
@@ -287,6 +292,11 @@ protected:
   void fixColour(tShowerParticlePtr part);
  
 private:
+
+  /**
+   * Incoming partons for the hard process
+   */
+  PPair _incoming;
   
   /**
    *  The incoming ShowerParticles connected to the interaction
@@ -339,14 +349,22 @@ private:
   tShowerTreePtr _parent;
 
   /**
-   *  Pointer to the shower variables
-   */
-  tcShowerHandlerPtr _showerHandler;
-
-  /**
    *  Has this tree showered
    */
   bool _hasShowered;
+
+private:
+
+  /**
+   *  Copy of decay in shower from ShowerHandler
+   */
+  static set<long> _decayInShower;
+
+  static bool decaysInShower(long id) {
+    return ( _decayInShower.find( abs(id) ) != 
+	     _decayInShower.end() ); 
+  }
+
 };
 }
 

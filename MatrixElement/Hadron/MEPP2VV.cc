@@ -110,10 +110,9 @@ IBPtr MEPP2VV::fullclone() const {
 }
 
 void MEPP2VV::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // mass option
-  massOption(true ,massOption_);
-  massOption(false,massOption_);
+  massOption(vector<unsigned int>(2,massOption_));
   rescalingOption(2);
   // get the vertices we need
   // get a pointer to the standard model object in the run
@@ -167,8 +166,17 @@ MEPP2VV::colourGeometries(tcDiagPtr diag) const {
   static ColourLines cs("1 -2");
   static ColourLines ct("1 2 -3");
   Selector<const ColourLines *> sel; 
-  if(diag->id()<-3) sel.insert(1.0, &cs);
-  else              sel.insert(1.0, &ct);
+  if(abs(diag->partons()[2]->id())==24&&abs(diag->partons()[3]->id())==24) {
+    if(diag->id()<=-4) sel.insert(1.0, &cs);
+    else               sel.insert(1.0, &ct);
+  }
+  else if(abs(diag->partons()[2]->id())==24&&diag->partons()[3]->id()==23) {
+    if(diag->id()==-3) sel.insert(1.0, &cs);
+    else               sel.insert(1.0, &ct);
+  }
+  else {
+    sel.insert(1.0, &ct);
+  }
   return sel;
 }
 
@@ -274,7 +282,7 @@ Selector<MEBase::DiagramIndex>
 MEPP2VV::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    sel.insert(meInfo()[abs(diags[i]->id())], i);
+    sel.insert(meInfo()[abs(diags[i]->id())-1], i);
   return sel;
 }
 
@@ -341,8 +349,8 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       if(sChannel) {
-	interP = FFPvertex_->evaluate(scale(),1,gamma,f1[ihel1],a1[ihel2]);
-	interZ = FFZvertex_->evaluate(scale(),1,z0   ,f1[ihel1],a1[ihel2]);
+	interP = FFPvertex_->evaluate(scale(),3,gamma,f1[ihel1],a1[ihel2]);
+	interZ = FFZvertex_->evaluate(scale(),3,z0   ,f1[ihel1],a1[ihel2]);
       }
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
@@ -392,15 +400,15 @@ double MEPP2VV::WZME(vector<SpinorWaveFunction>    & f1,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       VectorWaveFunction interW =
-	FFWvertex_->evaluate(scale(),1,v1[0].particle(),
+	FFWvertex_->evaluate(scale(),3,v1[0].particle(),
 			     f1[ihel1],a1[ihel2]);
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
 	  // t-channel diagrams
-	  inter   = FFWvertex_->evaluate(scale(),1,a1[ihel1].particle(),
+	  inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
+	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // s-channel diagram
@@ -439,10 +447,10 @@ double MEPP2VV::ZZME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
+	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
+	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // individual diagrams

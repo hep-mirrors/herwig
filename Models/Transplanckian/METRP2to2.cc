@@ -32,22 +32,21 @@ using namespace Herwig;
 
 METRP2to2::METRP2to2()
   : _maxflavour(2), _ndim(6), _planckmass(1500.0*GeV), _process(0) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 void METRP2to2::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   setup_interpolator();
 }
 
 void METRP2to2::rebind(const TranslationMap & trans) {
   _interpol = trans.translate(_interpol);
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
 }
 
 IVector METRP2to2::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_interpol);
   return ret;
 }

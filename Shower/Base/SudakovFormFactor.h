@@ -354,8 +354,8 @@ protected:
    * @return true if vetoed
    */
   bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > Math::powi(alpha_->ratio(pt2),
-					splittingFn_->interactionOrder());}
+  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+						splittingFn_->interactionOrder());}
   //@}
 
   /**
@@ -477,6 +477,14 @@ public:
    */
   Energy2 pT2min() const { return pT2min_; }
   //@}
+
+  /**
+   *   Set the PDF
+   */
+  void setPDF(tcPDFPtr pdf, Energy scale) {
+    pdf_ = pdf;
+    freeze_ = scale;
+  }
 
 private:
 
@@ -610,6 +618,21 @@ private:
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zlimits_;
+
+  /**
+   *  Stuff for the PDFs
+   */
+  //@{
+  /**
+   *  PDf
+   */
+  tcPDFPtr pdf_;
+
+  /**
+   *  Freezing scale
+   */
+  Energy freeze_;
+  //@}
 };
 
 }

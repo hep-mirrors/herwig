@@ -5,7 +5,7 @@
 // This is the declaration of the MEee2VV class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -21,7 +21,7 @@ using namespace ThePEG;
  * @see \ref MEee2VVInterfaces "The interfaces"
  * defined for MEee2VV.
  */
-class MEee2VV: public HwME2to2Base {
+class MEee2VV: public HwMEBase {
 
 public:
 
@@ -251,7 +251,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2VV,1> {
   /** Typedef of the first base class of MEee2VV. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -139,6 +139,11 @@ public:
   }
   //@}
 
+  /**
+   *  Access to the Evolver
+   */
+  tEvolverPtr evolver() const {return evolver_;}
+
 protected:
 
   /** @name Clone Methods. */
@@ -161,7 +166,7 @@ protected:
   /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub);
+  tPPair cascade(tSubProPtr sub,XCPtr xcomb);
 
   /**
    * At the end of the Showering, transform ShowerParticle objects
@@ -216,11 +221,6 @@ protected:
    *  Test for decay products
    */
   bool decayProduct(tPPtr) const;
-
-  /**
-   *  Access to the Evolver
-   */
-  tEvolverPtr evolver() const {return evolver_;}
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs

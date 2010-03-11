@@ -21,6 +21,7 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -276,7 +277,8 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
 Branching SplittingGenerator::
 chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			double enhance,
-			Ptr<BeamParticleData>::transient_const_pointer beam) const {
+			Ptr<BeamParticleData>::transient_const_pointer beam,
+			tcPDFPtr pdf, Energy freeze) const {
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   SudakovPtr sudakov;
@@ -289,6 +291,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
+    cit->second.first->setPDF(pdf,freeze);
     ShoKinPtr newKin=cit->second.first->
       generateNextSpaceBranching(particle.evolutionScale(),
 				 cit->second.second, particle.x(),

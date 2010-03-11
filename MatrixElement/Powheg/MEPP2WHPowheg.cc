@@ -19,10 +19,10 @@
 using namespace Herwig;
 
 MEPP2WHPowheg::MEPP2WHPowheg() 
- :   _gluon(), _TR(0.5), _CF(4./3.),
-     _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-     _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
-     _fixedScale(100.*GeV), _scaleFact(1.)
+  : _gluon(), TR_(0.5), CF_(4./3.),
+    _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+    _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
+    _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
 ClassDescription<MEPP2WHPowheg> MEPP2WHPowheg::initMEPP2WHPowheg;
@@ -276,7 +276,7 @@ double MEPP2WHPowheg::Ltilde_gq(double x, double v) const {
 }
 
 double MEPP2WHPowheg::Vtilde_qq() const {
-  return _alphaS2Pi*_CF*(-3.*log(_mu2/_mll2)+(2.*sqr(Constants::pi)/3.)-8.);
+  return _alphaS2Pi*CF_*(-3.*log(_mu2/_mll2)+(2.*sqr(Constants::pi)/3.)-8.);
 }
 
 double MEPP2WHPowheg::Ccalbar_qg(double x) const {
@@ -284,11 +284,11 @@ double MEPP2WHPowheg::Ccalbar_qg(double x) const {
 }
 
 double MEPP2WHPowheg::Ctilde_qg(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_qg(x,v);
+  return  _alphaS2Pi*TR_ * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_qg(x,v);
 }
 
 double MEPP2WHPowheg::Ctilde_gq(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_gq(x,v);
+  return  _alphaS2Pi*TR_ * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_gq(x,v);
 }
 
 double MEPP2WHPowheg::Ctilde_qq(double x, double v) const {
@@ -298,7 +298,7 @@ double MEPP2WHPowheg::Ctilde_qq(double x, double v) const {
     +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
     + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
     *log(_mll2/_mu2);
-  return _alphaS2Pi*_CF*(1.-xbar(v))*wgt;    
+  return _alphaS2Pi*CF_*(1.-xbar(v))*wgt;    
 }
 
 double MEPP2WHPowheg::Fcal_qq(double x, double v) const {
@@ -316,12 +316,12 @@ double MEPP2WHPowheg::Fcal_gq(double x, double v) const {
 }
 
 double MEPP2WHPowheg::Ftilde_qg(double xt, double v) const {
-  return _alphaS2Pi*_TR*
+  return _alphaS2Pi*TR_*
     ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.) )/v;
 }
 
 double MEPP2WHPowheg::Ftilde_gq(double xt, double v) const {
-  return _alphaS2Pi*_TR*
+  return _alphaS2Pi*TR_*
     ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.) )/(1.-v);
 }
 
@@ -330,7 +330,7 @@ double MEPP2WHPowheg::Ftilde_qq(double xt, double v) const {
   // is emission into regular or singular region?
   if(xt>=0. && xt<1.-eps && v>eps && v<1.-eps) { 
     // x<1, v>0, v<1 (regular emission, neither soft or collinear):
-    return _alphaS2Pi*_CF*
+    return _alphaS2Pi*CF_*
       (( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)+
 	 ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v )/(1.-xt)
        + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
@@ -350,17 +350,17 @@ double MEPP2WHPowheg::Ftilde_qq(double xt, double v) const {
       // x=1:
       if(v<=eps) {
 	// x==1, v=0 (soft and collinear with particle b):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
 	      );
       } else if(v>=1.-eps) {
 	// x==1, v=1 (soft and collinear with particle a):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
 	      );
       } else {
 	// x==1, 0<v<1 (soft wide angle emission):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
 	      + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
 	      );
@@ -369,14 +369,14 @@ double MEPP2WHPowheg::Ftilde_qq(double xt, double v) const {
       // x<1:
       if(v<=eps) {
 	// x<1 but v=0 (collinear with particle b, but not soft):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
 	      )/(1.-xt)
 	    + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v) 
 	    );
       } else if(v>=1.-eps) {
 	// x<1 but v=1 (collinear with particle a, but not soft):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v 
 	      )/(1.-xt)
 	    + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v 

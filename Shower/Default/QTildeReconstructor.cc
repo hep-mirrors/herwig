@@ -749,16 +749,22 @@ bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
 
 double QTildeReconstructor::
 inverseRescalingFactor(vector<Lorentz5Momentum> pout,
-			vector<Energy> mon, Energy roots) const {
+		       vector<Energy> mon, Energy roots) const {
   double lambda=1.;
   if(pout.size()==2) { 
     double mu_q1(pout[0].m()/roots), mu_q2(pout[1].m()/roots);
     double mu_p1(mon[0]/roots)     , mu_p2(mon[1]/roots);
     lambda = 
-      sqrt(((1.+mu_q1+mu_q2)*(1.-mu_q1-mu_q2)*(mu_q1-1.-mu_q2)*(mu_q2-1.-mu_q1))/
-	   ((1.+mu_p1+mu_p2)*(1.-mu_p1-mu_p2)*(mu_p1-1.-mu_p2)*(mu_p2-1.-mu_p1)));
+      ((1.+mu_q1+mu_q2)*(1.-mu_q1-mu_q2)*(mu_q1-1.-mu_q2)*(mu_q2-1.-mu_q1))/
+      ((1.+mu_p1+mu_p2)*(1.-mu_p1-mu_p2)*(mu_p1-1.-mu_p2)*(mu_p2-1.-mu_p1));
+    if(lambda<0.)
+      throw Exception() << "Rescaling factor is imaginary in  QTildeReconstructor::"
+			<< "inverseRescalingFactor lambda^2= " << lambda
+			<< Exception::eventerror;
+    lambda = sqrt(lambda);
   }
   else {
+    generator()->log() << "testing did B\n";
     unsigned int ntry=0;
     // compute magnitudes once for speed
     vector<Energy2> pmag;
@@ -1261,7 +1267,13 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
   vector<Energy> mon;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
-    mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
+    if(!(*cit)->branchingParticle()->dataPtr()->coloured() &&
+       !(*cit)->branchingParticle()->dataPtr()->stable()) {
+      mon.push_back(pout.back().mass());
+    }
+    else {
+      mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
+    }
   }
   // boost all the momenta to the rest frame of the decaying particle
   Lorentz5Momentum pin;
@@ -1269,6 +1281,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
     pout[ix].boost(toRest);
     pin += pout[ix];
   }
+  pin.rescaleMass();
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
   // now calculate the p reference vectors 
@@ -1361,11 +1374,17 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
   // now compute the new momenta 
   for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
     if(!(*cjt)->branchingParticle()->isFinalState()) continue;
-    Energy2 dot=(*cjt)->pVector()*(*cjt)->nVector();
-    double beta = 0.5*((*cjt)->branchingParticle()->momentum().m2()
-		       -sqr((*cjt)->pVector().mass()))/dot;
-    Lorentz5Momentum qnew=(*cjt)->pVector()+beta*(*cjt)->nVector();
-    qnew.rescaleMass();
+    Lorentz5Momentum qnew;
+    if((*cjt)->branchingParticle()->partner()) {
+      Energy2 dot=(*cjt)->pVector()*(*cjt)->nVector();
+      double beta = 0.5*((*cjt)->branchingParticle()->momentum().m2()
+			 -sqr((*cjt)->pVector().mass()))/dot;
+      qnew=(*cjt)->pVector()+beta*(*cjt)->nVector();
+      qnew.rescaleMass();
+    }
+    else {
+      qnew = (*cjt)->pVector();
+    }
     // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
     // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost

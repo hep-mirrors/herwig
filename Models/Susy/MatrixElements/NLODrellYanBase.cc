@@ -32,7 +32,7 @@ Energy2 NLODrellYanBase::scale() const {
 }
 
 int NLODrellYanBase::nDim() const {
-  return HwME2to2Base::nDim() + ( contrib_==1 || contrib_==2 ? 3 : 0 );
+  return HwMEBase::nDim() + ( contrib_==1 || contrib_==2 ? 3 : 0 );
 }
 
 bool NLODrellYanBase::generateKinematics(const double * r) {
@@ -42,7 +42,7 @@ bool NLODrellYanBase::generateKinematics(const double * r) {
     phi_    = Constants::twopi*r[nDim()-3];
   }
   jacobian(1.0);
-  return HwME2to2Base::generateKinematics(r);
+  return HwMEBase::generateKinematics(r);
 }
 
 CrossSection NLODrellYanBase::dSigHatDR() const {
@@ -80,7 +80,7 @@ void NLODrellYanBase::persistentInput(PersistentIStream & is, int) {
 }
 
 void NLODrellYanBase::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   gluon_ = getParticleData(ParticleID::g);
 }
 

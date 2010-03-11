@@ -20,9 +20,8 @@ using namespace Herwig;
 MEee2VV::MEee2VV() : process_(0), massOption_(2)  {}
 
 void MEee2VV::doinit() {
-  HwME2to2Base::doinit();
-  massOption(true ,massOption_);
-  massOption(false,massOption_);
+  HwMEBase::doinit();
+  massOption(vector<unsigned int>(2,massOption_));
   rescalingOption(2);
   // get the vertices we need
   // get a pointer to the standard model object in the run

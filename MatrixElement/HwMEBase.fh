@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwMEBase class.
+//
+#ifndef HERWIG_HwMEBase_FH
+#define HERWIG_HwMEBase_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class HwMEBase;
+ThePEG_DECLARE_POINTERS(HwMEBase,HwMEBasePtr);
+
+}
+
+#endif

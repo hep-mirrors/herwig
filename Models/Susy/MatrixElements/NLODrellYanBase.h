@@ -5,7 +5,7 @@
 // This is the declaration of the NLODrellYanBase class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 
 namespace Herwig {
 
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref NLODrellYanBaseInterfaces "The interfaces"
  * defined for NLODrellYanBase.
  */
-class NLODrellYanBase: public HwME2to2Base {
+class NLODrellYanBase: public HwMEBase {
 
 protected:
 
@@ -333,7 +333,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::NLODrellYanBase,1> {
   /** Typedef of the first base class of NLODrellYanBase. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

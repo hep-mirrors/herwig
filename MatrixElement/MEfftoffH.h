@@ -5,7 +5,7 @@
 // This is the declaration of the MEfftoffH class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -22,7 +22,7 @@ using namespace ThePEG;
  * @see \ref MEfftoffHInterfaces "The interfaces"
  * defined for MEfftoffH.
  */
-class MEfftoffH: public MEBase {
+class MEfftoffH: public HwMEBase {
 
 public:
 
@@ -304,7 +304,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEfftoffH,1> {
   /** Typedef of the first base class of MEfftoffH. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

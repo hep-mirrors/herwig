@@ -19,7 +19,6 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -159,26 +158,15 @@ bool SudakovFormFactor::
 PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  tcPDFPtr pdf;
-  //using the pdf's associated with the ShowerHandler assures, that
-  //modified pdf's are used for the secondary interactions via 
-  //CascadeHandler::resetPDFs(...)
-  if(ShowerHandler::currentHandler()->firstPDF().particle() == beam)
-    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
-  if(ShowerHandler::currentHandler()->secondPDF().particle() == beam)
-    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
-
-  assert(pdf);
+  assert(pdf_);
 
   Energy2 theScale = t;
-
-  if (theScale < sqr(ShowerHandler::currentHandler()->pdfFreezingScale()))
-    theScale = sqr(ShowerHandler::currentHandler()->pdfFreezingScale());
+  if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);
   //different treatment of MPI ISR is done via CascadeHandler::resetPDFs()
-  newpdf=pdf->xfx(beam,parton0,theScale,x/z());
-  oldpdf=pdf->xfx(beam,parton1,theScale,x);
+  newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
+  oldpdf=pdf_->xfx(beam,parton1,theScale,x);
 
   
   if(newpdf<=0.) return true;

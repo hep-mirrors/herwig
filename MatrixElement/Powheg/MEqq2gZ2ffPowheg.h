@@ -269,12 +269,12 @@ private:
   /**
    * The \f$T_R\f$ colour factor
    */
-  const double _TR;
+  const double TR_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  const double _CF;
+  const double CF_;
 
   /**
    *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation

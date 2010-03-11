@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2QQHiggs class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see \ref MEPP2QQHiggsInterfaces "The interfaces"
  * defined for MEPP2QQHiggs.
  */
-class MEPP2QQHiggs: public MEBase {
+class MEPP2QQHiggs: public HwMEBase {
 
 public:
 
@@ -369,7 +369,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2QQHiggs,1> {
   /** Typedef of the first base class of MEPP2QQHiggs. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

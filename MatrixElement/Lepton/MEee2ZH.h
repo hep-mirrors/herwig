@@ -29,6 +29,16 @@ public:
    */
   virtual void getDiagrams() const;
 
+  /**
+   *  Has not got a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return false;}
+
+  /**
+   *  Has not got an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return false;}
+
 public:
 
   /**

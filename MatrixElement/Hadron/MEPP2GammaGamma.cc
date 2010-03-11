@@ -53,7 +53,7 @@ void MEPP2GammaGamma::doinit() {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 void MEPP2GammaGamma::getDiagrams() const {

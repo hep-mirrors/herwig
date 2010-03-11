@@ -37,20 +37,8 @@ set Model:QCD/RunningAlphaS O2AlphaS
 cd /Herwig/Shower
 # use the general recon for now
 set KinematicsReconstructor:ReconstructionOption General
-# create the Powheg evolver and use it instead of the default one
-create Herwig::PowhegEvolver PowhegEvolver HwPowhegShower.so
-set ShowerHandler:Evolver PowhegEvolver
-set PowhegEvolver:ShowerModel ShowerModel
-set PowhegEvolver:SplittingGenerator SplittingGenerator
-set PowhegEvolver:MECorrMode 0
-# create and use the Drell-yan hard emission generator
-create Herwig::DrellYanHardGenerator DrellYanHardGenerator
-set DrellYanHardGenerator:ShowerAlpha AlphaQCD
-insert PowhegEvolver:HardGenerator 0 DrellYanHardGenerator
-# create and use the gg->H hard emission generator
-create Herwig::GGtoHHardGenerator GGtoHHardGenerator
-set GGtoHHardGenerator:ShowerAlpha AlphaQCD
-insert PowhegEvolver:HardGenerator 0 GGtoHHardGenerator
+# switch treatment of hardest emission
+set Evolver:HardEmissionMode POWHEG
 
 ##################################################
 # Tevatron physics parameters (override defaults) 

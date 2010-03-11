@@ -29,20 +29,19 @@
 using namespace Herwig;
 
 MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 void MEPP2GammaJet::rebind(const TranslationMap & trans)
   {
   // dummy = trans.translate(dummy);
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
   _gluonvertex =trans.translate(_gluonvertex );
   _photonvertex=trans.translate(_photonvertex);
 }
 
 IVector MEPP2GammaJet::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_gluonvertex);
   ret.push_back(_photonvertex);
   return ret;
@@ -61,7 +60,7 @@ void MEPP2GammaJet::doinit() {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 void MEPP2GammaJet::getDiagrams() const {
