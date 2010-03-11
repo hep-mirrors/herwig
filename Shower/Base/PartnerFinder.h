@@ -77,6 +77,7 @@ public:
    */
   virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
+					 ShowerInteraction::Type,
 					 const bool setPartners=true);
   //@}
 
@@ -107,6 +108,19 @@ public:
   static void Init();
 
 protected:
+
+  /**
+   *  Members to set the scales for different interactions
+   */
+  //@{
+  /**
+   *  Set initial scales for a QCD interaction
+   */
+  virtual bool setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
+					    const bool isDecayCase,
+					    const bool setPartners=true);
+
+  //@}
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,

@@ -1,18 +1,19 @@
 // -*- C++ -*-
 //
-// PTVeto.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// CKKWVeto.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig++ is licence under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_PTVeto_H
-#define HERWIG_PTVeto_H
+#ifndef HERWIG_CKKWVeto_H
+#define HERWIG_CKKWVeto_H
 //
-// This is the declaration of the PTVeto class.
+// This is the declaration of the CKKWVeto class.
 //
 
 #include "ShowerVeto.h"
+#include "Herwig++/Shower/ShowerHandler.fh"
 
 namespace Herwig {
 
@@ -26,19 +27,25 @@ using namespace ThePEG;
  * Emissions may be vetoed, if the pt is above and/or
  * below given values.
  *
- * @see \ref PTVetoInterfaces "The interfaces"
- * defined for PTVeto.
+ * @see \ref CKKWVetoInterfaces "The interfaces"
+ * defined for CKKWVeto.
  */
-class PTVeto: public ShowerVeto {
+class CKKWVeto: public ShowerVeto {
+
+  /**
+   *  The ShowerHandler is a friend to set some parameters at initialisation
+   */
+  friend class ShowerHandler;
 
 public:
-
+  
   /** @name Standard constructors and destructors. */
   //@{
   /**
    * The default constructor.
    */
-  inline PTVeto() : ShowerVeto(ShowerVeto::Emission) {}
+  inline CKKWVeto() : ShowerVeto(ShowerVeto::Emission), _ptVetoDefinition(1), _reversePtVeto(false), 
+		      _Ptveto(ZERO), _highestMult(false), _dynamicSuds(false) {}
   //@}
 
 public:
@@ -74,22 +81,61 @@ public:
    * particle and progenitor is vetoed.
    */
   virtual bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
-			     const Branching&b ) {
-    return _vetoTimelike && b.kinematics->pT() > _maxPT &&
-      b.kinematics->pT() < _minPT;
-  }
+			     const Branching&);
 
   /**
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
   virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
-			      const Branching & b) {
-    return _vetoSpacelike && b.kinematics->pT() > _maxPT &&
-      b.kinematics->pT() < _minPT;
+			      const Branching&);
+
+  /**
+   *  Set whether showering highest multiplicity configuration
+   */ 
+  void setHighest( bool isHighest ){
+    _highestMult = isHighest;
   }
 
+  /**
+   * Access to the veto scale for CKKW merging
+   */
+  Energy getVeto(){
+    return _Ptveto;
+  }
 
+  /**
+   * Set dynamic sudakovs on or off
+   */
+  void setDynamicSuds( bool dynamicSuds ){
+    _dynamicSuds = dynamicSuds;
+  }
+
+private:
+  /**
+   * The transverse momentum definition to be used
+   */
+  unsigned int _ptVetoDefinition;
+  
+  /**
+   * Whether to reverse the veto
+   */
+  bool _reversePtVeto; 
+
+  /**
+   * The scale at which the veto should be applied
+   */
+  Energy _Ptveto;
+
+  /**
+   * Whether we are showering highest multiplicity channe;
+   */
+  bool _highestMult;
+  
+  /**
+   * Whether to generate the Sudakov weights dynamically by event vetoes
+   */
+  bool _dynamicSuds;
 
 protected:
 
@@ -114,25 +160,15 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<PTVeto> initPTVeto;
+  static ClassDescription<CKKWVeto> initCKKWVeto;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PTVeto & operator=(const PTVeto &);
+  CKKWVeto & operator=(const CKKWVeto &);
 
 private:
-
-  /**
-   * The pT above which emissions are to be vetoed
-   */
-  Energy _maxPT;
-
-  /**
-   * The pT below which emissions are to be vetoed
-   */
-  Energy _minPT;
 
   /**
    * Apply the veto to timelike showering
@@ -143,7 +179,6 @@ private:
    * Apply the veto to spacelike showering
    */
   bool _vetoSpacelike;
-
 };
 
 }
@@ -155,24 +190,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of PTVeto. */
+ *  base classes of CKKWVeto. */
 template <>
-struct BaseClassTrait<Herwig::PTVeto,1> {
-  /** Typedef of the first base class of PTVeto. */
+struct BaseClassTrait<Herwig::CKKWVeto,1> {
+  /** Typedef of the first base class of CKKWVeto. */
   typedef Herwig::ShowerVeto NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the PTVeto class and the shared object where it is defined. */
+ *  the CKKWVeto class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::PTVeto>
-  : public ClassTraitsBase<Herwig::PTVeto> {
+struct ClassTraits<Herwig::CKKWVeto>
+  : public ClassTraitsBase<Herwig::CKKWVeto> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::PTVeto"; }
+  static string className() { return "Herwig::CKKWVeto"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * PTVeto is implemented. It may also include several, space-separated,
-   * libraries if the class PTVeto depends on other classes (base classes
+   * CKKWVeto is implemented. It may also include several, space-separated,
+   * libraries if the class CKKWVeto depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -183,4 +218,4 @@ struct ClassTraits<Herwig::PTVeto>
 
 }
 
-#endif /* HERWIG_PTVeto_H */
+#endif /* HERWIG_CKKWVeto_H */

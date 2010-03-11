@@ -133,8 +133,7 @@ void PhitoPhiGSplitFn::colourConnection(tShowerParticlePtr parent,
   }
 }
 
-bool PhitoPhiGSplitFn::accept(const IdList &ids) const
-{
+bool PhitoPhiGSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[0]!=ids[1]||ids[2]!=ParticleID::g) return false;
   tcPDPtr q=getParticleData(ids[0]);

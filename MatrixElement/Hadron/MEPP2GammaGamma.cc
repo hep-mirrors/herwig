@@ -240,9 +240,8 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
   }
   // check versus analytic result
 //   Energy2 s(sHat()),u(uHat()),t(tHat());
-//   double test = 2./3.*sqr(4.*pi*SM().alphaEM(0.))*(t/u+u/t)*
-//     sqr(mePartonData()[0]->charge())*
-//     sqr(mePartonData()[0]->charge());
+//   double test = 2./3.*sqr(4.*Constants::pi*SM().alphaEM(ZERO))*(t/u+u/t)*
+//     pow(double(mePartonData()[0]->iCharge())/3.,4);
 //   cerr << "testing me " << 12./me*test << endl;
   // return the answer (including colour and spin factor)
   if(calc) _me.reset(newme);

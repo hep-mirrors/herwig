@@ -1,4 +1,5 @@
-SUBDIRS = SplittingFunctions Couplings Default Base .
+SUBDIRS = SplittingFunctions Couplings Powheg \
+          Default Base .
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = -module -version-info 11:1:0
 HwShower_la_LIBADD = Couplings/libHwCouplings.la \

@@ -196,11 +196,39 @@ public:
 		     ) const;
 
   /**
+   *  Output as a topdrawer file. A bin by bin average is taken.
+   * @param out The output stream
+   * @param frame output on a new graph
+   * @param errorbars output data points with error bars
+   * @param xlog  log scale on x axis
+   * @param ylog  log scale on y axis
+   * @param colour The colour for the line
+   * @param title  The title for the top of the plot
+   * @param titlecase topdraw format for the title
+   * @param left   Left axis lable
+   * @param leftcase topdraw format for left axis label
+   * @param bottom  Bottom axis lable
+   * @param bottomcase Bottom axis lable ofr topdraw
+   */
+  void topdrawOutputAverage(ostream & out,
+			    bool frame,
+			    bool errorbars,
+			    bool xlog, bool ylog,
+			    string colour=string("BLACK"),
+			    string title=string(),
+			    string titlecase =string(),
+			    string left=string(),
+			    string leftcase =string(),
+			    string bottom=string(),
+			    string bottomcase =string()) const;
+
+  /**
    * get the number of visible entries (all entries without those in the
    * under- and overflow bins) in the histogram.  This assumes integer
    * entries, ie it gives wrong results for weighted histograms.
    */
   unsigned int visibleEntries() const;
+
   /**
    * Compute the normalisation of the data. 
    */
@@ -283,7 +311,7 @@ private:
      *  Default constructor
      */
     Bin() : contents(0.0), contentsSq(0.0), 
-	    limit(0.0), data(0.0), dataerror(0.0) {}
+	    limit(0.0), data(0.0), dataerror(0.0), points(0) {}
     /**
      *  Contents of the bin
      */
@@ -308,6 +336,11 @@ private:
      *  The error on the experimental value for the bin
      */
     double dataerror;
+
+    /**
+     *  The number of points in the bin
+     */
+    long points;
   };
 
   /**

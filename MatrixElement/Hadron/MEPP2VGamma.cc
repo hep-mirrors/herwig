@@ -324,13 +324,20 @@ double MEPP2VGamma::WGammaME(vector<SpinorWaveFunction>    & f1,
   meInfo(save);
   // spin and colour factors
   output *= 0.25/3.;
-  // testing code (no CKM factors included)
+  // testing code
+//   int iu = abs(mePartonData()[0]->id());
+//   int id = abs(mePartonData()[1]->id());
+//   if(iu%2!=0) swap(iu,id);
+//   iu = (iu-2)/2;
+//   id = (id-1)/2;
+//   double ckm = SM().CKM(iu,id);
 //   InvEnergy4 dsigdt =  Constants::pi*sqr(SM().alphaEM(scale()))
 //     /6./sqr(sHat())/SM().sin2ThetaW()*sqr(1./(1.+tHat()/uHat())-1./3.)*
 //     (sqr(tHat())+sqr(uHat())+2.*sqr(getParticleData(ParticleID::Wplus)->mass())*sHat())/
 //     tHat()/uHat();
-//   double test = 16.*Constants::pi*sqr(sHat())*dsigdt;
-//   cerr << "testing W gamma " << (test-output)/(test+output) << "\n";
+//   double test = 16.*ckm*Constants::pi*sqr(sHat())*dsigdt;
+//   cerr << "testing W gamma " << test << " " << output << " " 
+//        << (test-output)/(test+output) << "\n";
   return output;
 }
 

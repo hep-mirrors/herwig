@@ -19,6 +19,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ShowerKinematics.h"
 
 using namespace Herwig;
 
@@ -87,6 +88,7 @@ void SudakovFormFactor::Init() {
      "OverZOneMinusZ",
      "Include an additional factor of 1/z/(1-z)",
      3);
+
 
   static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
     ("CutOffOption",

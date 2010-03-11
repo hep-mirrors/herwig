@@ -72,7 +72,7 @@ public:
   {}
 
   /**
-   *  Member to perform the shower
+   *  Members to perform the shower
    */
   //@{
   /**
@@ -152,7 +152,7 @@ protected:
   /**
    *  Generate the hardest emission
    */
-  virtual void hardestEmission();
+  virtual void hardestEmission(bool hard);
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -165,7 +165,7 @@ protected:
   /**
    *  set the colour partners
    */
-  virtual void setColourPartners(bool hard);
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
@@ -180,7 +180,7 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type); 
 
   /**
    * It does the backward evolution of the space-like input particle 
@@ -190,7 +190,8 @@ protected:
    * @param particle The particle to be showered
    * @param beam The beam particle
    */
-  virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam); 
+  virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+			       ShowerInteraction::Type); 
 
   /**
    * If does the forward evolution of the input on-shell particle
@@ -203,19 +204,30 @@ protected:
    */
   virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
 				    Energy maxscale,
-				    Energy minimumMass);
+				    Energy minimumMass,
+				    ShowerInteraction::Type);
 
   /**
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
-				       HardBranchingPtr branch);
+				       HardBranchingPtr branch,
+				       ShowerInteraction::Type type);
  
   /**
    * Truncated shower from a space-like particle
    */
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					HardBranchingPtr branch);
+					HardBranchingPtr branch,
+					ShowerInteraction::Type type);
+
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
+					     Energy maxscale, Energy minimumMass,
+					     HardBranchingPtr branch,
+					     ShowerInteraction::Type type);
   //@}
 
   /**
@@ -328,7 +340,21 @@ protected:
    *  Set the enhancement factor for final-state radiation
    */
   void finalStateRadiationEnhancementFactor(double in) { _finalenhance=in; }
+  //@}
 
+  /**
+   *  Access to set/get the HardTree currently beinging showered
+   */
+  //@{
+  /**
+   *  The HardTree currently being showered
+   */
+  tHardTreePtr hardTree() {return _nasontree;}
+
+  /**
+   *  The HardTree currently being showered
+   */
+  void hardTree(tHardTreePtr in) {_nasontree = in;}
   //@}
 
   /**
@@ -402,12 +428,18 @@ protected:
   /**
    *  Start the shower of a timelike particle
    */
-  virtual bool startTimeLikeShower();
+  virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeShower(PPtr);
+  virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
+
+  /**
+   *  Start the shower of a spacelike particle
+   */
+  virtual bool startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
+					 ShowerInteraction::Type);
 
   /**
    *  Vetos for the timelike shower
@@ -424,6 +456,10 @@ protected:
    */
   virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
+  vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
+  {return _hardgenerator;}
+
+  bool hardOnly() const {return _hardonly;}
 protected:
 
   /** @name Clone Methods. */
@@ -447,7 +483,8 @@ protected:
   //@{
   /**
    * Initialize this object. Called in the run phase just before
-   * a run begins.   */
+   * a run begins.   
+   */
   virtual void doinitrun();
   //@}
 
@@ -464,7 +501,17 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
+
+  /**
+   * Recursive function to find FS end point of shower line
+   */
+  bool findShowerEnd( PPtr parton );
   
+  /**
+   * Recursive function to find FS end point of hardBranching line
+   */
+  bool findHardTreeEnd( HardBranchingPtr parton );
+
 private:
 
   /**
@@ -521,7 +568,7 @@ private:
    *  Limit the number of emissions for testing
    */
   unsigned int _limitEmissions;
-
+  
   /**
    *  The progenitor of the current shower
    */
@@ -619,6 +666,12 @@ private:
    */
   unsigned int _hardEmissionMode;
 
+  /**
+   * Storage of the end points from shower and hard tree for 
+   * momentum reconstruction checks
+   */
+  multimap< long, PPtr > _showerEndPoints;
+  vector< PPtr > _hardTreeEndPoints;
 };
 
 }

@@ -39,8 +39,7 @@ void HardestEmissionGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _evolver;
 }
 
-void HardestEmissionGenerator::rebind(const TranslationMap & trans)
-  {
+void HardestEmissionGenerator::rebind(const TranslationMap & trans) {
   _evolver = trans.translate(_evolver);
   Interfaced::rebind(trans);
 }

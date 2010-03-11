@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-
+ 
 /**
  * The MEPP2HiggsPowheg class implements the matrix element for the process
  * pp->Higgs with different Higgs shape prescriptions (see details in hep-ph/9505211)
@@ -450,7 +450,7 @@ struct ClassTraits<Herwig::MEPP2HiggsPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */

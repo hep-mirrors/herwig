@@ -35,9 +35,6 @@ set Model:QCD/RunningAlphaS O2AlphaS
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-# use the general recon for now
-set KinematicsReconstructor:ReconstructionOption General
-# switch treatment of hardest emission
 set Evolver:HardEmissionMode POWHEG
 
 ##################################################

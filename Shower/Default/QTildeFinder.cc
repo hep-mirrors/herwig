@@ -26,11 +26,13 @@ ClassDescription<QTildeFinder> QTildeFinder::initQTildeFinder;
 // Definition of the static class description member.
 
 void QTildeFinder::persistentOutput(PersistentOStream & os) const {
-  os << _finalFinalConditions << _initialFinalDecayConditions;
+  os << _finalFinalConditions << _initialFinalDecayConditions
+     << _initialInitialConditions;
 }
 
 void QTildeFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _finalFinalConditions >> _initialFinalDecayConditions;
+  is >> _finalFinalConditions >> _initialFinalDecayConditions
+     >>_initialInitialConditions;
 }
 
 void QTildeFinder::Init() {
@@ -84,6 +86,27 @@ void QTildeFinder::Init() {
     (interfaceInitialFinalDecayConditions,
      "Smooth",
      "Smooth matching in the soft limit",
+     2);
+
+  static Switch<QTildeFinder,unsigned int> interfaceInitialInitialConditions
+    ("InitialInitialConditions",
+     "The initial conditions for the shower of an initial-initial"
+     " colour connection.",
+     &QTildeFinder::_initialInitialConditions, 0, false, false);
+  static SwitchOption interfaceInitialInitialConditionsSymmetric
+    (interfaceInitialInitialConditions,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceInitialInitialConditionsMaximiseB
+    (interfaceInitialInitialConditions,
+     "MaximiseB",
+     "Maximal radiation from parton b",
+     1);
+  static SwitchOption interfaceInitialInitialConditionsMaximiseC
+    (interfaceInitialInitialConditions,
+     "MaximiseC",
+     "Maximal radiation from parton c",
      2);
 }
 
@@ -157,11 +180,18 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
   Lorentz5Momentum p(ppair.first->momentum()+ppair.second->momentum());
   p.boost(p.findBoostToCM());
   Energy Q = sqrt(p.m2());
-  return pair<Energy,Energy>(Q,Q);
+  if(_initialInitialConditions==1) {
+    return pair<Energy,Energy>(sqrt(2.0)*Q,sqrt(0.5)*Q);
+  } else if(_initialInitialConditions==2) {
+    return pair<Energy,Energy>(sqrt(0.5)*Q,sqrt(2.0)*Q);
+  } else {
+    return pair<Energy,Energy>(Q,Q);
+  }
 }
 
 pair<Energy,Energy> QTildeFinder::
 calculateFinalFinalScales(const ShowerPPair &particlePair) {
+  static const double eps=1e-8;
   // Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
   // ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
   // find momenta in rest frame of system
@@ -176,7 +206,25 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   Energy Q   = sqrt(Q2);
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
-  double lam=2.*p1.vect().mag()/Q;
+  if(b<0.) {
+    if(b<-eps) throw Exception() << "Negative Mass sqaured b = " << b
+				 << "in QTildeFinder::calculateFinalFinalScales()"
+				 << Exception::eventerror;
+    b = 0.;
+  }
+  if(c<0.) {
+    if(c<-eps) throw Exception() << "Negative Mass sqaured c = " << c
+				 << "in QTildeFinder::calculateFinalFinalScales()"
+				 << Exception::eventerror;
+    c = 0.;
+  }
+  // KMH & PR - 16 May 2008 - swapped lambda calculation from 
+  // double lam=2.*p1.vect().mag()/Q; to sqrt(kallen(1,b,c)), 
+  // which should be identical for p1 & p2 onshell in their COM
+  // but in the inverse construction for the Nason method, this
+  // was not the case, leading to misuse. 
+  double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
+                 *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
   // symmetric case
   unsigned int iopt=finalFinalConditions();
   Energy firstQ,secondQ;

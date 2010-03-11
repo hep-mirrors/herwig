@@ -137,6 +137,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Default/MECorrections/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
+		Shower/Powheg/Makefile
+		Shower/Powheg/Matching/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

@@ -740,16 +740,16 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   vector<HardBranchingPtr> nasonin,nasonhard;
   // create the branchings for the incoming particles
   nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					  HardBranchingPtr(),true)));
+					  HardBranchingPtr(),HardBranching::Incoming)));
   nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					  HardBranchingPtr(),true)));
-  // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						 nasonin[iemit],false)));
+					  HardBranchingPtr(),HardBranching::Incoming)));
   // intermediate IS particle
   nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					    nasonin[iemit],true)));
+					    nasonin[iemit],HardBranching::Incoming)));
   nasonin[iemit]->addChild(nasonhard.back());
+  // create the branching for the emitted jet
+  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						 nasonin[iemit],HardBranching::Outgoing)));
   // set the colour partners
   nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
   nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());
@@ -758,10 +758,10 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   // outgoing particles
   for(unsigned int ix=4;ix<newparticles.size();++ix) {
     nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
-					      HardBranchingPtr(),false)));
+					      HardBranchingPtr(),HardBranching::Outgoing)));
   }
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=nasontree->branchings();
@@ -771,9 +771,12 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
-	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->incoming()) {
+	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
+	    (**mit).status()==HardBranching::Outgoing)||
+	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
+	   (**mit).status()==HardBranching::Incoming))) {
 	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
-	if((*mit)->incoming()) {
+	if((**mit).status()==HardBranching::Incoming) {
 	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
 	HardBranchingPtr parent=(*mit)->parent();

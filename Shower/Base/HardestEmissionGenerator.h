@@ -26,7 +26,7 @@ using namespace ThePEG;
 class HardestEmissionGenerator: public Interfaced {
 
 /**
- * TheEvolver is a friend to set the pointer to the Evolver
+ * The Evolver is a friend to set the pointer to the Evolver
  */
 friend class Evolver;
 
@@ -110,7 +110,7 @@ protected:
   virtual IVector getReferences();
   //@}
 
-protected:
+public:
 
   /**
    *  Method to set the Evolver
@@ -169,7 +169,7 @@ struct ClassTraits<Herwig::HardestEmissionGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwPowhegShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

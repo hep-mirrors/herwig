@@ -63,7 +63,6 @@ public:
    */
   inline SplittingFunction(ShowerInteraction::Type a, unsigned int b)
     : Interfaced(), _interactionType(a), _interactionorder(b) {}
-
   //@}
 
 public:

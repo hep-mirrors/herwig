@@ -31,7 +31,8 @@ using namespace Herwig;
 const complex<Energy2> 
 MEPP2Higgs::epsi_ = complex<Energy2>(ZERO,-1.e-10*GeV2);
 
-MEPP2Higgs::MEPP2Higgs() : shapeOption_(2), processOption_(1),
+MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
+			   shapeOption_(2), processOption_(1),
 			   minFlavour_(4), maxFlavour_(5),
 			   mh_(ZERO), wh_(ZERO),
 			   minLoop_(6),maxLoop_(6),massOption_(0),  
@@ -80,6 +81,27 @@ void MEPP2Higgs::Init() {
      "  JHEP {\\bf 0904}, 116 (2009)\n"
      "  [arXiv:0903.4345 [hep-ph]].\n"
      "  %%CITATION = JHEPA,0904,116;%%\n");
+
+  static Switch<MEPP2Higgs,unsigned int> interfaceFactorizationScaleOption
+    ("FactorizationScaleOption",
+     "Option for the choice of factorization scale",
+     &MEPP2Higgs::scaleopt_, 1, false, false);
+  static SwitchOption interfaceDynamic
+    (interfaceFactorizationScaleOption,
+     "Dynamic",
+     "Dynamic factorization scale equal to the current sqrt(sHat())",
+     1);
+  static SwitchOption interfaceFixed
+    (interfaceFactorizationScaleOption,
+     "Fixed",
+     "Use a fixed factorization scale set with FactorizationScaleValue",
+     2);
+
+  static Parameter<MEPP2Higgs,Energy> interfaceFactorizationScaleValue
+    ("FactorizationScaleValue",
+     "Value to use in the event of a fixed factorization scale",
+     &MEPP2Higgs::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     true, false, Interface::limited);
 
   static Reference<MEPP2Higgs,ShowerAlpha> interfaceCoupling
     ("Coupling",
@@ -285,7 +307,7 @@ unsigned int MEPP2Higgs::orderInAlphaEW() const {
 }
 
 Energy2 MEPP2Higgs::scale() const {
-  return sHat();
+  return scaleopt_ == 1 ? sHat() : sqr(mu_F_);
 }
 
 int MEPP2Higgs::nDim() const {
@@ -327,8 +349,7 @@ CrossSection MEPP2Higgs::dSigHatDR() const {
   if(shapeOption_==1) {
     bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
       (sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
-  }
-  else {
+  } else {
     bwfact = hmass_->BreitWignerWeight(sqrt(sHat()),0);
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
@@ -887,18 +908,17 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit],false)));
   newparticles.back()->set5Momentum(poff);
-  vector<HardBranchingPtr> nasonin,nasonhard;
-  // create the branchings for the incoming particles
+  vector<HardBranchingPtr> nasonin,nasonhard; // create the branchings for the incoming particles
   nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					  HardBranchingPtr(),true)));
+					  HardBranchingPtr(),HardBranching::Incoming)));
   nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					  HardBranchingPtr(),true)));
+					  HardBranchingPtr(),HardBranching::Incoming)));
   // create the branching for the emitted jet
   nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-						 nasonin[iemit],false)));
+						 nasonin[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
   nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					    nasonin[iemit],true)));
+					    nasonin[iemit],HardBranching::Incoming)));
   nasonin[iemit]->addChild(nasonhard.back());
   // set the colour partners
   nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
@@ -907,9 +927,9 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
   // outgoing Higgs boson
   nasonhard.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-					    HardBranchingPtr(),false)));
+					    HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=nasontree->branchings();
@@ -919,11 +939,14 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
  	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
- 	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->incoming()) {
+ 	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
+	    (**mit).status()==HardBranching::Outgoing)||
+	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
+	   (**mit).status()==HardBranching::Incoming))) {
 	if(particlesToShower[ix]->progenitor()->momentum().z()/
 	   (*mit)->branchingParticle()->momentum().z()<0.) continue;
  	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
- 	if((*mit)->incoming()) {
+ 	if((**mit).status()==HardBranching::Incoming) {
  	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
  	HardBranchingPtr parent=(*mit)->parent();

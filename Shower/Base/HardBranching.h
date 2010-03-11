@@ -9,12 +9,13 @@
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
-#include "HardTree.fh"
 #include "HardBranching.fh"
+#include "HardTree.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
 /**
  * The HardBranching class is designed to contain the information needed for
  * an individual branching in the POWHEG approach
@@ -29,6 +30,13 @@ class HardBranching : public Base {
 public:
 
   /**
+   *  Enum for the status
+   */
+  enum Status {Outgoing=0,Incoming,Decay};
+
+public:
+
+  /**
    * The default constructor
    * @param particle The particle which is branching
    * @param sudakov  The Sudakov form factor for the branching
@@ -36,13 +44,38 @@ public:
    * @param incoming Whether the particle is incoming or outgoing
    */
   HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
-		tHardBranchingPtr parent,bool incoming);
+		tHardBranchingPtr parent,Status status);
+
+  /**
+   * Destructor
+   */
+  ~HardBranching();
 
   /**
    * Add a child of the branching
    * @param child The child of the branching
    */
-  void addChild(HardBranchingPtr child) {_children.push_back(child);}
+  void addChild(HardBranchingPtr child) {_children.push_back(child);} 
+
+  /**
+   *  Clear the children
+   */
+  void clearChildren() { _children.clear(); }
+
+  /**
+   *  Add a backward child
+   */
+  void addBackChild(HardBranchingPtr child) {
+    _back_children.push_back(child);
+  }
+
+  /**
+   *  Clear the backward children
+   */
+  void clearBackChildren() { 
+    _back_children.clear(); 
+    _backSudakov = SudakovPtr();
+  }
 
   /**
    *  Set the momenta of the particles
@@ -115,7 +148,7 @@ public:
   const Lorentz5Momentum & showerMomentum() const {return _shower;}
 
   /**
-   *  Get the momentum the particle should have as the start of a shower
+   *  Set the momentum the particle should have as the start of a shower
    */
   void showerMomentum(const Lorentz5Momentum & in ) {_shower=in;}
 
@@ -130,14 +163,24 @@ public:
   void pT(Energy in) { _pt=in;}
 
   /**
-   *  Get whether the branching is incoming or outgoing
+   *  Get the fraction of beam momentum x
    */
-  bool incoming() const {return _incoming;}
+  double x_frac() const {return _x_frac;}
 
   /**
-   *  Set whether the branching is incoming or outgoing
+   *  Set the fraction of beam momentum x
    */
-  void incoming(bool in) {_incoming=in;}
+  void x_frac( double x ) { _x_frac = x; }
+
+  /**
+   *  Get whether the branching is incoming, outgoing or decay
+   */
+  Status status() const {return _status;}
+
+  /**
+   *  Set whether the branching is incoming, outgoing or decay
+   */
+  void status(Status in) {_status=in;}
 
   /**
    *  The parent of the branching
@@ -145,7 +188,7 @@ public:
   tHardBranchingPtr parent() const {return _parent;}
 
   /**
-   *  The parent of the branching
+   *  Set the parent of the branching
    */
   void parent(tHardBranchingPtr in) {_parent=in;}
 
@@ -158,6 +201,16 @@ public:
    *  The Sudakov form-factor
    */
   void sudakov(SudakovPtr in) {_sudakov=in;}
+
+  /**
+   *  set the Sudakov for backward branching
+   */
+  void backSudakov(SudakovPtr in) {_backSudakov=in;}
+
+  /**
+   *  The Sudakov for backwards branching
+   */
+  SudakovPtr backSudakov() const {return _backSudakov;}
 
   /**
    *  Get the beam particle
@@ -173,6 +226,13 @@ public:
    * The children
    */
   vector<HardBranchingPtr> & children() {return _children;}
+
+  /**
+   *  The children for backward evolution
+   */
+  vector<HardBranchingPtr> & backChildren() {
+    return _back_children;
+  }
   //@}
 
   /**
@@ -261,12 +321,17 @@ private:
   /**
    *  The transverse momentum
    */
-  Energy _pt;
+  Energy _pt; 
 
   /**
-   *  Whether the branching is incoming or outgoing
+   *  The beam momentum fraction carried by an incoming parton x
    */
-  bool _incoming;
+  double _x_frac;
+
+  /**
+   *  Whether the branching is incoming, outgoing or a decay
+   */
+  Status _status;
 
   /**
    *  Information on the Shower variables for the branching
@@ -299,9 +364,19 @@ private:
   SudakovPtr _sudakov;
 
   /**
+   *  The Sudakov form-factor for backward branching
+   */
+  SudakovPtr _backSudakov;
+
+  /**
    * The children
    */
   vector<HardBranchingPtr> _children;
+
+  /**
+   * The backward shower children
+   */
+  vector<HardBranchingPtr> _back_children;
 
   /**
    *  The beam particle

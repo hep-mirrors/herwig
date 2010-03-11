@@ -43,15 +43,18 @@ public:
    * Define types of ShowerVetoes
    */
   enum ShowerVetoType {
+
     /**
      * Throw away emission, if veto encountered. Set the scale to
      * the scale of vetoed emission.
      */
     Emission = 1,
+
     /**
      * Throw away showering
      */
     Shower,
+
     /**
      * Throw away event
      */
