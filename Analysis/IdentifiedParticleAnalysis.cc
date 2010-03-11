@@ -24,7 +24,7 @@ using namespace Herwig;
 
 int IdentifiedParticleAnalysis::getFlavour(const tPVector &pv) {
   tPVector::const_iterator it;
-  for(it = pv.begin(); it!=pv.end(); it++) 
+  for(it = pv.begin(); it!=pv.end(); ++it) 
     if (abs((*it)->id()) < 7) break; 
   return abs((*it)->id());
 }

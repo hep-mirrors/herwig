@@ -71,8 +71,9 @@ protected:
    */
   int getFlavour(const tPVector &);
 
-  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam)
-  {return(Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.);}
+  double getX(const Lorentz5Momentum & p, const Energy & Ebeam) {
+    return Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.;
+  }
 
 protected:
 
@@ -82,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:

@@ -79,7 +79,7 @@ public:
    * Default constructor.
    */
   DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
-		      _generateinter(false),
+		      _generateinter(false), _imode(-1),
 		      _realME(false), _virtualME(false) {}
   
   /**

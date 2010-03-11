@@ -134,10 +134,10 @@ void BaryonFactorizedDecayer::doinit() {
     {
       while(true)
 	{
-	  if(particles[ix].size()==0){break;}
+	  if ( particles[ix].empty() ) {break;}
 	  findModes(ix,particles,modeloc,modecc);
 	  // if more than three particles only allow one diagram
-	  if(particles[ix].size()>3&&modeloc.size()!=0){break;}
+	  if ( particles[ix].size() > 3 && !modeloc.empty() ) {break;}
 	  // create the mode and set the particles as for the first instance
 	  mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
 	  channel = new_ptr(DecayPhaseSpaceChannel(mode));
