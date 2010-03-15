@@ -1,0 +1,241 @@
+// -*- C++ -*-
+//
+// FR${classname}Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the FR${classname}Vertex class.
+//
+
+#include "ThePEG/Helicity/Vertex/Vector/${BaseSpinTag}Vertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+
+  //##################################################
+
+/** \ingroup Helicity
+ *
+ *  This is the implementation of the Standard Model 
+ *  fermion-antifermion Z vertex.
+ *
+ *  @see ${BaseSpinTag}Vertex
+ *  @see VertexBase
+ */
+class FR${classname}Vertex: public ${BaseSpinTag}Vertex {
+
+public:
+  
+  /**
+   * Default constructor.
+   */
+  FR${classname}Vertex();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$$q^2\f$$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+  
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+protected:
+  
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const {return new_ptr(*this);}
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
+protected:
+  
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  
+private:
+  
+  /**
+   * Describe a concrete class with persistent data.
+   */
+  static ClassDescription<FR${classname}Vertex> initFR${classname}Vertex;
+  
+  /**
+   * Private and non-existent assignment operator.
+   */
+  FR${classname}Vertex & operator=(const FR${classname}Vertex &);
+
+private:
+
+  /**
+   * Storage of the couplings.
+   */
+  //@{
+  /**
+   *  The left couplings of the Standard Model fermions.
+   */
+  double _gl;
+
+  /**
+   *  The right couplings of the Standard Model fermions.
+   */
+  double _gr;
+
+  /**
+   *  The last value of the electroweak coupling calculated.
+   */
+  Complex _couplast;
+
+  /**
+   *  The scale \f$$q^2\f$$ at which the coupling was last evaluated.
+   */
+  Energy2 _q2last;
+  //@}
+};
+}
+    
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of FR${classname}Vertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::FR${classname}Vertex,1> {
+  /** Typedef of the base class of FR${classname}Vertex. */
+  typedef ThePEG::Helicity::${BaseSpinTag}Vertex NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::FR${classname}Vertex>
+  : public ClassTraitsBase<Herwig::FR${classname}Vertex> {
+  
+  /**
+   * Return the class name.
+   */
+  static string className() { return "Herwig::FR${classname}Vertex"; }
+  /**
+   * The name of a file containing the dynamic library.
+   */
+  static string library() { return "FeynrulesModel.so"; }
+  
+};
+
+/** @endcond */
+  
+}
+
+
+//##################################################
+
+
+namespace Herwig {
+using namespace ThePEG;
+
+
+void FR${classname}Vertex::persistentOutput(PersistentOStream & os) const {
+  os << _gl << _gr;
+}
+
+void FR${classname}Vertex::persistentInput(PersistentIStream & is, int) {
+  is >> _gl >> _gr;
+}
+
+ClassDescription<FR${classname}Vertex> 
+FR${classname}Vertex::initFR${classname}Vertex;
+// Definition of the static class description member.
+
+void FR${classname}Vertex::Init() {
+  static ClassDocumentation<FR${classname}Vertex> documentation
+    ("The FR${classname}Vertex class is the implementation of"
+     "the coupling of the Z boson to the Standard Model fermions");
+}
+
+void FR${classname}Vertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
+  // first the overall normalisation
+  if(q2!=_q2last||_couplast==0.) {
+    _couplast = -electroMagneticCoupling(q2);
+    _q2last=q2;
+  }
+  norm(_couplast);
+  // the left and right couplings
+  int iferm=abs(aa->id());
+  if(iferm==666666){
+    left(_gl);
+    right(_gr);
+  }
+  else
+    throw HelicityConsistencyError() << "FR${classname}Vertex::setCoupling "
+				     << "Unknown particle in Z vertex" 
+				     << Exception::runerror;
+}
+
+FR${classname}Vertex::FR${classname}Vertex() : _gl(0.0), _gr(0.0),
+			     _couplast(0.0), _q2last(ZERO) {
+  addToList(-666666, 666666, 23);
+}
+
+void FR${classname}Vertex::doinit() {
+  tcSMPtr sm = generator()->standardModel();
+  double sw2 = sin2ThetaW();
+  double fact = 0.25/sqrt(sw2*(1.-sw2));
+  _gl = fact*(sm->ve()  + sm->ae() );
+  _gr = fact*(sm->vu()  - sm->au() );
+  orderInGem(1);
+  orderInGs(0);
+  cerr << "HERE IS ${classname}\n";
+  ${BaseSpinTag}Vertex::doinit();
+}
+
+}

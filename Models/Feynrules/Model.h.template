@@ -1,0 +1,159 @@
+// -*- C++ -*-
+//
+// FeynRulesModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef HERWIG_FeynRulesModel_H
+#define HERWIG_FeynRulesModel_H
+//
+// This is the declaration of the FeynRulesModel class.
+
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
+#include "Herwig++/Models/General/ModelGenerator.fh"
+
+namespace Herwig {
+using namespace ThePEG;
+using namespace ThePEG::Helicity;
+
+/** \ingroup Models
+ *  
+ *  This is the Herwig++ FeynRulesModel class which inherits from ThePEG 
+ *  FeynRules Model class and implements additional FeynRules Model couplings, 
+ *  access to vertices for helicity amplitude calculations etc.
+ *
+ *  @see StandardModel
+ */
+class FeynRulesModel: public StandardModel {
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+  
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+public:
+
+  /**
+   * Pointers to the objects handling the vertices.
+   */
+  //@{
+
+  $getters
+
+  //@}  
+  
+protected:
+  
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+  
+protected:
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+private:
+  
+  /**
+   * Describe a concrete class with persistent data.
+   */
+  static ClassDescription<FeynRulesModel> initFeynRulesModel;
+  
+  /** 
+   * Private and non-existent assignment operator.
+   */
+  FeynRulesModel & operator=(const FeynRulesModel &);
+  
+private:
+
+  /**
+   * Pointers to the vertices for FeynRules Model helicity amplitude
+   * calculations.
+   */
+  //@{
+
+  $decls
+};
+
+}
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of FeynRulesModel.
+ */
+template <>
+struct BaseClassTrait<Herwig::FeynRulesModel,1> {
+    /** Typedef of the base class of FeynRulesModel. */
+  typedef Herwig::StandardModel NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::FeynRulesModel>
+  : public ClassTraitsBase<Herwig::FeynRulesModel> {
+
+  /**
+   * Return the class name.
+   */
+  static string className() { return "Herwig::FeynRulesModel"; }
+  /**
+   * The name of a file containing the dynamic library.
+   */
+  static string library() { return "FeynrulesModel.so"; }
+};
+
+/** @endcond */
+
+}
+
+
+#endif /* HERWIG_FeynRulesModel_H */
