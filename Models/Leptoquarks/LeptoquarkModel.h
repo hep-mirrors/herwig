@@ -6,10 +6,13 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "LeptoquarkModel.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
  * Here is the documentation of the LeptoquarkModel class.
@@ -27,6 +30,20 @@ public:
    * The default constructor.
    */
   LeptoquarkModel();
+
+  /**
+   * Return the Scalar leptoquark mass
+   */
+  Energy M_SLQ() const {return _theM_SLQ;}
+
+  /** @name Vertices */
+  //@{
+  /**
+   * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
+   */
+  tAbstractVSSVertexPtr   vertexSLQSLQG() const {return _theSLQSLQGVertex;}
+
+
 
   /**
    * The destructor.
@@ -59,6 +76,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 protected:
 
@@ -96,6 +125,19 @@ private:
    */
   LeptoquarkModel & operator=(const LeptoquarkModel &);
 
+  /**
+   * Mass of the Scalar leptoquark
+   */
+  Energy _theM_SLQ;
+
+  
+  /**
+   * Pointer to the object handling the G to SLQ SLQ vertex.
+   */
+  AbstractVSSVertexPtr  _theSLQSLQGVertex;
+
+  
+
 };
 
 }
@@ -128,7 +170,7 @@ struct ClassTraits<Herwig::LeptoquarkModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "LeptoquarkModel.so"; }
+  static string library() { return "HwLeptoquarkModel.so"; }
 };
 
 /** @endcond */
