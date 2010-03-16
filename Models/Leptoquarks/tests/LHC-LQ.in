@@ -1,0 +1,72 @@
+##################################################
+# Example generator for the Leptoquark model
+# in hadron collisions
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read Leptoquark.model
+
+cd /Herwig/EventHandlers
+#set LHCHandler:CascadeHandler NULL                                         
+set LHCHandler:HadronizationHandler NULL               
+set LHCHandler:DecayHandler NULL 
+
+cd /Herwig/NewPhysics
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# Example hard process: Incoming proton, outgoing leptoquarks
+
+#insert ResConstructor:Incoming 0 /Herwig/Particles/g
+#insert ResConstructor:Incoming 1 /Herwig/Particles/g
+
+insert ResConstructor:Incoming 0 /Herwig/Particles/u
+insert ResConstructor:Incoming 1 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 2 /Herwig/Particles/d
+insert ResConstructor:Incoming 3 /Herwig/Particles/dbar
+
+insert ResConstructor:Intermediates 0 /Herwig/Particles/g
+#insert ResConstructor:Intermediates 0 /Herwig/Particles/S0
+#insert ResConstructor:Intermediates 1 /Herwig/Particles/S0bar
+
+#insert ResConstructor:Outgoing 0 /Herwig/Particles/u
+#insert ResConstructor:Outgoing 1 /Herwig/Particles/ubar
+
+insert ResConstructor:Outgoing 0 /Herwig/Particles/S0
+insert ResConstructor:Outgoing 1 /Herwig/Particles/S0bar
+
+#insert NewModel:DecayParticles 0 /Herwig/Particles/S0
+#insert NewModel:DecayParticles 1 /Herwig/Particles/S0bar
+
+
+
+# Scalar Leptoquark mass
+set Leptoquark/Model:M_SLQ 200*GeV
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+cd /Herwig/Analysis
+#create Herwig::rootanalysis2 RAnalysis rootanalysis2.so
+set Basics:CheckQuark false
+
+# Other parameters for run
+cd /Herwig/Generators
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
+
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-LQ LHCGenerator

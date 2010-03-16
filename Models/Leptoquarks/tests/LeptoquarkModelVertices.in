@@ -1,0 +1,10 @@
+#################################################
+# Setup of Leptoquark model vertices.
+#
+# End users won't find anything interesting here.
+#################################################
+
+create Herwig::LeptoquarkModelSLQSLQGVertex SLQSLQGVertex
+set /Defaults/Model:Vertex/SLQSLQG SLQSLQGVertex
+set SLQSLQGVertex:Model /Defaults/Model
+
