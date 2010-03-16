@@ -21,21 +21,21 @@ using namespace Herwig;
 using namespace ThePEG;
 
 LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() {
-  addToList(9911561,-9911561,21);
+  addToList(21,9911561,-9911561);
 }
 
 void LeptoquarkModelSLQSLQGVertex::doinit() {
   VSSVertex::doinit();
-  _theModel = generator()->standardModel();
-  tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
+  //  _theModel = generator()->standardModel();
+  // tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
 }
 
 void LeptoquarkModelSLQSLQGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel;
+  // os << _theModel;
 }
 
 void LeptoquarkModelSLQSLQGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel;
+  // is >> _theModel;
 }
 
 ClassDescription<LeptoquarkModelSLQSLQGVertex> LeptoquarkModelSLQSLQGVertex::initLeptoquarkModelSLQSLQGVertex;

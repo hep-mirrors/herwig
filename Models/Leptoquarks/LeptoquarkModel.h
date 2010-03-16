@@ -7,6 +7,7 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "LeptoquarkModel.fh"
 
 namespace Herwig {
@@ -30,18 +31,20 @@ public:
    * The default constructor.
    */
   LeptoquarkModel();
-
-  /**
-   * Return the Scalar leptoquark mass
-   */
-  Energy M_SLQ() const {return _theM_SLQ;}
-
+ 
   /** @name Vertices */
   //@{
   /**
-   * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
+   * Pointer to the object handling S0S0barg vertex.
    */
   tAbstractVSSVertexPtr   vertexSLQSLQG() const {return _theSLQSLQGVertex;}
+  
+  /**
+   * Pointer to the object handling the S0S0bargg vertex.
+   */
+  tAbstractVVSSVertexPtr   vertexSLQSLQGG() const {return _theSLQSLQGGVertex;}
+
+
 
 
 
@@ -125,18 +128,17 @@ private:
    */
   LeptoquarkModel & operator=(const LeptoquarkModel &);
 
-  /**
-   * Mass of the Scalar leptoquark
-   */
-  Energy _theM_SLQ;
-
   
   /**
    * Pointer to the object handling the G to SLQ SLQ vertex.
    */
   AbstractVSSVertexPtr  _theSLQSLQGVertex;
 
-  
+  /**
+   * Pointer to the object handling the GG to SLQ SLQ vertex.
+   */
+  AbstractVVSSVertexPtr  _theSLQSLQGGVertex;
+
 
 };
 

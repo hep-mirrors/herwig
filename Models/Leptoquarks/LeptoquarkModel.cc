@@ -17,11 +17,11 @@ using namespace ThePEG::Helicity;
 
 void LeptoquarkModel::doinit() {
   addVertex(_theSLQSLQGVertex);
+  addVertex(_theSLQSLQGGVertex);
   StandardModel::doinit();
 }
 
-
-LeptoquarkModel::LeptoquarkModel() : _theM_SLQ(700*GeV) {}
+LeptoquarkModel::LeptoquarkModel()  {}
 
 LeptoquarkModel::~LeptoquarkModel() {}
 
@@ -39,14 +39,14 @@ IBPtr LeptoquarkModel::fullclone() const {
 
 void LeptoquarkModel::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-  os << ounit(_theM_SLQ,GeV)
+  os <<  _theSLQSLQGGVertex
      << _theSLQSLQGVertex;
 
 }
 
 void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-  is >> iunit(_theM_SLQ,GeV)
+  is >> _theSLQSLQGGVertex
      >> _theSLQSLQGVertex;
 }
 
@@ -60,11 +60,12 @@ void LeptoquarkModel::Init() {
    "Reference to the scalar leptoquark-scalar leptoquark-gluon vertex",
    &LeptoquarkModel::_theSLQSLQGVertex, false, false, true, false, false);
 
-  static Parameter<LeptoquarkModel,Energy> interfaceM_SLQ
-  ("M_SLQ",
-   "The mass of the Scalar Leptoquark",
-   &LeptoquarkModel::_theM_SLQ, GeV, 700*GeV, 1*GeV, 1.0e12*GeV,
-   false, false, false);
+  static Reference<LeptoquarkModel,ThePEG::Helicity::AbstractVVSSVertex> interfaceVertexSLQSLQGG
+  ("Vertex/SLQSLQGG",
+   "Reference to the scalar leptoquark-scalar leptoquark-gluon-gluon vertex",
+   &LeptoquarkModel::_theSLQSLQGGVertex, false, false, true, false, false);
+
+
 
 
   static ClassDocumentation<LeptoquarkModel> documentation
