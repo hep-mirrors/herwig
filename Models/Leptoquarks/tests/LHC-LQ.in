@@ -26,31 +26,23 @@ cd /Herwig/NewPhysics
 ##################################################
 # Example hard process: Incoming proton, outgoing leptoquarks
 
-#insert ResConstructor:Incoming 0 /Herwig/Particles/g
-#insert ResConstructor:Incoming 1 /Herwig/Particles/g
 
-insert ResConstructor:Incoming 0 /Herwig/Particles/u
-insert ResConstructor:Incoming 1 /Herwig/Particles/ubar
-insert ResConstructor:Incoming 2 /Herwig/Particles/d
-insert ResConstructor:Incoming 3 /Herwig/Particles/dbar
+#insert HPConstructor:Incoming 0 /Herwig/Particles/g
 
-insert ResConstructor:Intermediates 0 /Herwig/Particles/g
-#insert ResConstructor:Intermediates 0 /Herwig/Particles/S0
-#insert ResConstructor:Intermediates 1 /Herwig/Particles/S0bar
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 2 /Herwig/Particles/d
+insert HPConstructor:Incoming 3 /Herwig/Particles/dbar
+insert HPConstructor:Incoming 4 /Herwig/Particles/s
+insert HPConstructor:Incoming 5 /Herwig/Particles/sbar
+insert HPConstructor:Incoming 6 /Herwig/Particles/c
+insert HPConstructor:Incoming 7 /Herwig/Particles/cbar
+insert HPConstructor:Incoming 8 /Herwig/Particles/b
+insert HPConstructor:Incoming 9 /Herwig/Particles/bbar
 
-#insert ResConstructor:Outgoing 0 /Herwig/Particles/u
-#insert ResConstructor:Outgoing 1 /Herwig/Particles/ubar
+insert HPConstructor:Outgoing 0 /Herwig/Particles/S0
+insert HPConstructor:Outgoing 1 /Herwig/Particles/S0bar
 
-insert ResConstructor:Outgoing 0 /Herwig/Particles/S0
-insert ResConstructor:Outgoing 1 /Herwig/Particles/S0bar
-
-#insert NewModel:DecayParticles 0 /Herwig/Particles/S0
-#insert NewModel:DecayParticles 1 /Herwig/Particles/S0bar
-
-
-
-# Scalar Leptoquark mass
-set Leptoquark/Model:M_SLQ 200*GeV
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
@@ -59,14 +51,21 @@ cd /Herwig/Analysis
 #create Herwig::rootanalysis2 RAnalysis rootanalysis2.so
 set Basics:CheckQuark false
 
+cd /Herwig/Shower
+set SplittingGenerator:ISR No
+set SplittingGenerator:FSR No
+                               
+
 # Other parameters for run
 cd /Herwig/Generators
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
 
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
-set LHCGenerator:PrintEvent 10
+set LHCGenerator:PrintEvent 1000
 set LHCGenerator:MaxErrors 10000
 
 saverun LHC-LQ LHCGenerator
