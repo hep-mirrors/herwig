@@ -331,11 +331,6 @@ private:
    *  Storage of the scale to avoid the need to recalculate
    */
   Energy2 _scale;
-  
-  /**
-   *  Storage of the off-shell Z mass to avoid the need to recalculate
-   */
-  Energy2 _mz2;
 };
 
 }

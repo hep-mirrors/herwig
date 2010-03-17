@@ -14,7 +14,6 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
@@ -386,17 +385,18 @@ bool MEPP2gZ2SleptonsJet::generateKinematics(const double * r) {
   Energy2 M2(sqr(M)),MG(M*Gamma);
   double rhomin = atan((minMass2-M2)/MG);
   double rhomax = atan((maxMass2-M2)/MG);
+  Energy2 mz2;
   if(r[1]<_pprob) {
     double rand=r[1]/_pprob;
-    _mz2=minMass2*maxMass2/(minMass2+rand*(maxMass2-minMass2));
+    mz2 = minMass2*maxMass2/(minMass2+rand*(maxMass2-minMass2));
   }
   else {
     double rand=(r[1]-_pprob)/(1.-_pprob);
-    _mz2=M2+MG*tan(rhomin+rand*(rhomax-rhomin));
+    mz2 = M2+MG*tan(rhomin+rand*(rhomax-rhomin));
   }
-  Energy mz=sqrt(_mz2);
-  InvEnergy2 emjac1 = _pprob*minMass2*maxMass2/(maxMass2-minMass2)/sqr(_mz2);
-  InvEnergy2 emjac2 = (1.-_pprob)*MG/(rhomax-rhomin)/(sqr(_mz2-M2)+sqr(MG));
+  Energy mz=sqrt(mz2);
+  InvEnergy2 emjac1 = _pprob*minMass2*maxMass2/(maxMass2-minMass2)/sqr(mz2);
+  InvEnergy2 emjac2 = (1.-_pprob)*MG/(rhomax-rhomin)/(sqr(mz2-M2)+sqr(MG));
   // jacobian
   jacobian(jacobian()/sHat()/(emjac1+emjac2));
   // set the masses of the outgoing particles to 2-2 scattering
@@ -427,13 +427,14 @@ bool MEPP2gZ2SleptonsJet::generateKinematics(const double * r) {
   meMomenta()[2].rescaleEnergy();
   pz.rescaleEnergy();
   // set the scale
-  _scale = _mz2+sqr(pt);
+  //_scale = mz2+sqr(pt);
+  _scale = sqr(0.5*(mePartonData()[3]->mass()+mePartonData()[4]->mass()));
   // generate the momenta of the Z decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
   Energy q2 = ZERO;
   try {
-    q2 = SimplePhaseSpace::getMagnitude(_mz2, meMomenta()[3].mass(),
+    q2 = SimplePhaseSpace::getMagnitude(mz2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
   } catch ( ImpossibleKinematics ) {
     return false;
@@ -559,9 +560,9 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qqbarME(vector<SpinorWaveFunction> & fin,
   // compute the leptonic photon and Z currents for speed
   VectorWaveFunction bcurr[2];
   // photon current
-  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_mz2,1,_gamma,lp,lm);
+  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_scale,1,_gamma,lp,lm);
   // Z current
-  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_mz2,_widthopt,_z0,lp,lm);
+  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_scale,_widthopt,_z0,lp,lm);
   // compute the matrix elements
   double me[5]={0.,0.,0.,0.,0.};
   Complex diag[4];
@@ -576,13 +577,13 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qqbarME(vector<SpinorWaveFunction> & fin,
 	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[1],
 				       ain[ihel2],gout[ohel1]);
 	diag[0] = gamma ? 
-	  _theFFPVertex->evaluate(_mz2,fin[ihel1],interb,bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,fin[ihel1],interb,bcurr[0]) : 0.;
 	diag[1]= Z0 ? 
-	  _theFFZVertex->evaluate(_mz2,fin[ihel1],interb,bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,fin[ihel1],interb,bcurr[1]) : 0.;
 	diag[2]= gamma ? 
-	  _theFFPVertex->evaluate(_mz2,inters,ain[ihel2],bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,inters,ain[ihel2],bcurr[0]) : 0.;
 	diag[3]= Z0 ? 
-	  _theFFZVertex->evaluate(_mz2,inters,ain[ihel2],bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,inters,ain[ihel2],bcurr[1]) : 0.;
 	// diagram contributions
 	me[1] += norm(diag[0]);
 	me[2] += norm(diag[1]);
@@ -627,15 +628,14 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qgME(vector<SpinorWaveFunction> & fin,
   // compute the leptonic photon and Z currents for speed
   VectorWaveFunction bcurr[2];
   // photon current
-  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_mz2,1,_gamma,lp,lm);
+  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_scale,1,_gamma,lp,lm);
   // Z current
-  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_mz2,_widthopt,_z0,lp,lm);
+  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_scale,_widthopt,_z0,lp,lm);
   // compute the matrix elements
   double me[5]={0.,0.,0.,0.,0.};
   Complex diag[4];
   SpinorWaveFunction inters;
   SpinorBarWaveFunction interb;
-  Energy2 _scale=scale();
   for(ihel1=0;ihel1<2;++ihel1) {
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
@@ -645,13 +645,13 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qgME(vector<SpinorWaveFunction> & fin,
 	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
 	diag[0]=gamma ?
-	  _theFFPVertex->evaluate(_mz2,fin[ihel1],interb,bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,fin[ihel1],interb,bcurr[0]) : 0.;
 	diag[1]=Z0    ?
-	  _theFFZVertex->evaluate(_mz2,fin[ihel1],interb,bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,fin[ihel1],interb,bcurr[1]) : 0.;
 	diag[2]=gamma ?
-	  _theFFPVertex->evaluate(_mz2,inters,fout[ohel1],bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,inters,fout[ohel1],bcurr[0]) : 0.;
 	diag[3]=Z0    ?
-	  _theFFZVertex->evaluate(_mz2,inters,fout[ohel1],bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,inters,fout[ohel1],bcurr[1]) : 0.;
 	// diagram contributions
 	me[1] += norm(diag[0]);
 	me[2] += norm(diag[1]);
@@ -696,15 +696,14 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   // compute the leptonic photon and Z currents for speed
   VectorWaveFunction bcurr[2];
   // photon current
-  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_mz2,1,_gamma,lp,lm);
+  if(gamma) bcurr[0]= _theVSSVertex->evaluate(_scale,1,_gamma,lp,lm);
   // Z current
-  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_mz2,_widthopt,_z0,lp,lm);
+  if(Z0)    bcurr[1]= _theVSSVertex->evaluate(_scale,_widthopt,_z0,lp,lm);
   // compute the matrix elements
   double me[5]={0.,0.,0.,0.,0.};
   Complex diag[4];
   SpinorWaveFunction inters;
   SpinorBarWaveFunction interb;
-  Energy2 _scale=scale();
   for(ihel1=0;ihel1<2;++ihel1) {
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
@@ -714,13 +713,13 @@ InvEnergy2 MEPP2gZ2SleptonsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
 	diag[0]= gamma ?
-	  _theFFPVertex->evaluate(_mz2,inters,fin[ihel1],bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,inters,fin[ihel1],bcurr[0]) : 0.;
 	diag[1]= Z0    ?
-	  _theFFZVertex->evaluate(_mz2,inters,fin[ihel1],bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,inters,fin[ihel1],bcurr[1]) : 0.;
 	diag[2]= gamma ?
-	  _theFFPVertex->evaluate(_mz2,fout[ohel1],interb,bcurr[0]) : 0.;
+	  _theFFPVertex->evaluate(_scale,fout[ohel1],interb,bcurr[0]) : 0.;
 	diag[3]= Z0    ?
-	  _theFFZVertex->evaluate(_mz2,fout[ohel1],interb,bcurr[1]) : 0.;
+	  _theFFZVertex->evaluate(_scale,fout[ohel1],interb,bcurr[1]) : 0.;
 	// diagram contributions
 	me[1] += norm(diag[0]);
 	me[2] += norm(diag[1]);
