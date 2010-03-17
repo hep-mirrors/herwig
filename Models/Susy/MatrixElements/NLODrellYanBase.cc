@@ -14,6 +14,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/PDF/BeamParticleData.h"
+#include <numeric>
 
 using namespace Herwig;
 
@@ -23,20 +24,22 @@ using namespace Herwig;
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 NLODrellYanBase::NLODrellYanBase() : contrib_(1), power_(0.1),
-				     alphaS_(0.), fixedAlphaS_(false)
-				     
+				     alphaS_(0.), fixedAlphaS_(false),
+				     supressionFunction_(0), 
+				     lambda2_(10000.*GeV2)
 {}
 
 Energy2 NLODrellYanBase::scale() const {
-  return sHat();
+  //return sHat();
+  return sqr(0.5*(mePartonData()[2]->mass()+mePartonData()[3]->mass()));
 }
 
 int NLODrellYanBase::nDim() const {
-  return HwMEBase::nDim() + ( contrib_==1 || contrib_==2 ? 3 : 0 );
+  return HwMEBase::nDim() + ( contrib_>=1 && contrib_<=3 ? 3 : 0 );
 }
 
 bool NLODrellYanBase::generateKinematics(const double * r) {
-  if(contrib_==1||contrib_==2) {
+  if(contrib_>=1&&contrib_<=3) {
     zTilde_ = r[nDim()-1];
     vTilde_ = r[nDim()-2];
     phi_    = Constants::twopi*r[nDim()-3];
@@ -50,7 +53,7 @@ CrossSection NLODrellYanBase::dSigHatDR() const {
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
   loME_ = me2();
-  if(contrib_<3) return NLOWeight()*preFactor;
+  if(contrib_<4) return NLOWeight()*preFactor;
   // folding technique to ensure positive
   double wgt(0.);
   unsigned int ntry(0);
@@ -72,11 +75,13 @@ double NLODrellYanBase::me2() const {
 }
 
 void NLODrellYanBase::persistentOutput(PersistentOStream & os) const {
-  os << contrib_ << power_ << gluon_ << fixedAlphaS_ << alphaS_;
+  os << contrib_ << power_ << gluon_ << fixedAlphaS_ << alphaS_
+     << supressionFunction_ << ounit(lambda2_,GeV2);
 }
 
 void NLODrellYanBase::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_ >> power_ >> gluon_ >> fixedAlphaS_ >> alphaS_;
+  is >> contrib_ >> power_ >> gluon_ >> fixedAlphaS_ >> alphaS_
+     >> supressionFunction_ >> iunit(lambda2_,GeV2);
 }
 
 void NLODrellYanBase::doinit() {
@@ -113,11 +118,16 @@ void NLODrellYanBase::Init() {
      "NegativeNLO",
      "Generate the negative contribution to the full NLO cross section",
      2);
+  static SwitchOption interfaceContributionReal
+    (interfaceContribution,
+     "Real",
+     "Generate the high pT real emission only",
+     3);
   static SwitchOption interfaceContributionTotalNLO
     (interfaceContribution,
      "TotalNLO",
      "Generate the full NLO cross section using folding",
-     3);
+     4);
 
   static Parameter<NLODrellYanBase,double> interfaceSamplingPower
     ("SamplingPower",
@@ -145,6 +155,33 @@ void NLODrellYanBase::Init() {
      "The fixed value of alpha_S to use",
      &NLODrellYanBase::alphaS_, 0., 0., 1.,
      false, false, Interface::limited);
+
+
+  static Switch<NLODrellYanBase,unsigned int> interfaceSupressionFunction
+    ("SupressionFunction",
+     "Choice of the supression function",
+     &NLODrellYanBase::supressionFunction_, 0, false, false);
+  static SwitchOption interfaceSupressionFunctionNone
+    (interfaceSupressionFunction,
+     "None",
+     "Default POWHEG approach",
+     0);
+  static SwitchOption interfaceSupressionFunctionThetaFunction
+    (interfaceSupressionFunction,
+     "ThetaFunction",
+     "Use theta functions at scale Lambda",
+     1);
+  static SwitchOption interfaceSupressionFunctionSmooth
+    (interfaceSupressionFunction,
+     "Smooth",
+     "Supress high pT by pt^2/(pt^2+lambda^2)",
+     2);
+
+  static Parameter<NLODrellYanBase,Energy2> interfaceSupressionScale
+    ("SupressionScale",
+     "The square of the scale for the supression function",
+     &NLODrellYanBase::lambda2_, GeV2, 10000.0*GeV2, 0.0*GeV2, 0*GeV2,
+     false, false, Interface::lowerlim);
 
 }
 
@@ -230,24 +267,39 @@ double NLODrellYanBase::NLOWeight() const {
 				       oldqPDF.second,newqPDF.second);
   // collinear remnants 
   double coll = collQQ+collQbarQbar+collGQ+collGQbar;
-  double real = 
+  vector<double> real1 = 
     subtractedReal(x,z. first,zJac. first,
-		   oldqPDF. first,newqPDF. first,newgPDF. first, true)+
+		   oldqPDF. first,newqPDF. first,newgPDF. first, true);
+  vector<double> real2 = 
     subtractedReal(x,z.second,zJac.second, 
 		   oldqPDF.second,newqPDF.second,newgPDF.second,false);
   // add up all the terms and return the answer
-  double wgt = loME_*( 1. + virt + coll ) + real;
+  double wgt = loME_*( 1. + virt + coll ) +real1[0] + real1[2] +real2[0] +real2[2];
   if(isnan(wgt)||isinf(wgt)) {
-    cerr << "testing bad weight "
+    generator()->log() << "testing bad weight "
 	 << collQQ << " " << collQbarQbar << " "
 	 << collGQ << " " << collGQbar << " "
-	 << virt << " " << coll << " " << real << "\n";
-    cerr << "testing z " << z.first << " " << z.second << "\n";
-    cerr << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
+	 << virt << " " << coll << " "
+	 << real1[0] << " " << real1[2] << " "
+	 << real2[0] << " " << real2[2] << "\n";
+    generator()->log() << "testing z " << z.first << " " << z.second << "\n";
+    generator()->log() << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
     assert(false);
   }
-  if(contrib_<3)
-    return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+  weights_.resize(5,0.);
+  weights_[1] = real1[1];
+  weights_[2] = real1[3];
+  weights_[3] = real2[1];
+  weights_[4] = real2[3];
+  if( contrib_ < 3 ) {
+    weights_[0] = wgt;
+    wgt += real1[1]+real1[3]+real2[1]+real2[3];
+    return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
+  }
+  else if(contrib_==3) {
+    weights_[0] = 0.;
+    return real1[1]+real1[3]+real2[1]+real2[3];
+  }
   else 
     return wgt;
 }
@@ -278,10 +330,10 @@ double NLODrellYanBase::collinearGluon(Energy2 mu2,
      +2.*z*(1.-z));
 }
 
-double NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
-				       double zJac,
-				       double oldqPDF,double newqPDF,
-				       double newgPDF, bool order) const {
+vector<double> NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
+					       double zJac,
+					       double oldqPDF,double newqPDF,
+					       double newgPDF, bool order) const {
   double vt   = vTilde_*(1.-z);
   double vJac = 1.-z;
   Energy pT   = sqrt(sHat()*vt*(1.-vt-z)/z);
@@ -329,19 +381,35 @@ double NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
       +2*K*(Kt*pnew [ix])/K2;
   }
   // phase-space prefactors
-  double phase = zJac*vJac/sqr(z);
+  // double phase = zJac*vJac/sqr(z);
+  double phase = zJac*vJac/z;
   // real emission q qbar
-  double realQQ = zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 ? 0. :
-    CFfact_*phase*subtractedMEqqbar(pnew,order)*newqPDF/oldqPDF;
-  // real emission g qbar 
-  double realGQ = zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 ? 0. :
-    TRfact_*phase*subtractedMEgqbar(pnew,order)*newgPDF/oldqPDF;
+  vector<double> output(4,0.);
+  if(order) {
+    realEmissionGluon1_ = pnew;
+    realEmissionQuark1_ = pnew;
+  }
+  else {
+    realEmissionGluon2_ = pnew;
+    realEmissionQuark2_ = pnew;
+  }
+  if(!(zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 )) {
+    pair<double,double> realQQ = subtractedMEqqbar(pnew,order);
+    double fact1 = CFfact_*phase*newqPDF/oldqPDF;
+    pair<double,double> realGQ = subtractedMEgqbar(pnew,order);
+    double fact2 = TRfact_*phase*newgPDF/oldqPDF;
+    output[0] = realQQ.first *fact1;
+    output[1] = realQQ.second*fact1;
+    output[2] = realGQ.first *fact2;
+    output[3] = realGQ.second*fact2;
+  }
   // return the answer
-  return realQQ + realGQ;
+  return output;
 }
 
-double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
-					  bool order) const {
+pair<double,double> 
+NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
+				   bool order) const {
   // use the inheriting class to calculate the matrix element
   cPDVector particles(mePartonData());
   particles.push_back(gluon_);
@@ -377,19 +445,26 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   // second dipole
   InvEnergy2 D2 = 0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x));
   // results
-  if(order) {
-    me = lo1>0.&&lo2>0. ?
-      sHat()*(abs(D1)*lo1/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D1*lo1) : ZERO;
+  pair<double,double> supressionFactor = supressionFunction(sqr(p[4].x())+sqr(p[4].y()));
+  pair<double,double> output = make_pair(0.,0.);
+  if(lo1>0.&&lo2>0.) {
+    if(order) {
+      me *= abs(D1)*lo1/(abs(D1)*lo1+abs(D2)*lo2);
+      output.first  = sHat()*(UnitRemoval::InvE2*me*supressionFactor.first -D1*lo1);
+      output.second = sHat()*(UnitRemoval::InvE2*me*supressionFactor.second);
+    }
+    else {
+      me *= abs(D2)*lo2/(abs(D1)*lo1+abs(D2)*lo2);
+      output.first  = sHat()*(UnitRemoval::InvE2*me*supressionFactor.first -D2*lo2);
+      output.second = sHat()*(UnitRemoval::InvE2*me*supressionFactor.second);
+    }
   }
-  else {
-    me = lo1>0.&&lo2>0. ?
-      sHat()*(abs(D2)*lo2/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D2*lo2) : ZERO;
-  }
-  return me;
+  return output;
 }
 
-double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
-					  bool order) const {
+pair<double,double>
+NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
+				   bool order) const {
   // use the inheriting class to calculate the matrix element
   cPDVector particles(mePartonData());
   if(order) {
@@ -430,5 +505,191 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   else {
     D1 =  0.5/(p[1]*p[4])/x*(1.-2.*x*(1.-x));
   }
-  return sHat()*(UnitRemoval::InvE2*me-D1*lo1);
+  pair<double,double> supressionFactor = 
+    supressionFunction(sqr(p[4].x())+sqr(p[4].y()));
+  return make_pair(sHat()*(UnitRemoval::InvE2*me*supressionFactor.first -D1*lo1),
+		   sHat()*(UnitRemoval::InvE2*me*supressionFactor.second));
+}
+
+HardTreePtr NLODrellYanBase::generateHardest(ShowerTreePtr tree) {
+  // get the particles to be showered
+  _beams.clear();
+  _partons.clear();
+  // find the incoming particles
+  ShowerParticleVector incoming;
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  _quarkplus = true;
+  vector<ShowerProgenitorPtr> particlesToShower;
+  //progenitor particles are produced in z direction.
+  for( cit = tree->incomingLines().begin(); cit != tree->incomingLines().end(); ++cit ) {
+    incoming.push_back( cit->first->progenitor() );
+    _beams.push_back( cit->first->beam() );
+    _partons.push_back( cit->first->progenitor()->dataPtr() );
+    // check that quark is along +ve z direction
+    if(cit->first->progenitor()->id() > 0 &&
+       cit->first->progenitor()->momentum().z() < ZERO ) 
+      _quarkplus = false;
+    particlesToShower.push_back( cit->first );
+  } 
+  // we are assuming quark first, swap order to ensure this
+  // if antiquark first
+  if(_partons[0]->id()<_partons[1]->id()) {
+    swap(_partons[0],_partons[1]);
+    swap(_beams[0],_beams[1]);
+  }
+  double wgtb = std::accumulate(++weights_.begin(),weights_.end(),0.);
+  int emission_type(-1);
+  if(wgtb>UseRandom::rnd()*(weights_[0]+wgtb)) {
+    wgtb *= UseRandom::rnd();
+    unsigned int itype=1;
+    for(;itype<weights_.size();++itype) {
+      if(weights_[itype]>=wgtb) break;
+      wgtb-=weights_[itype];
+    }
+    emission_type = itype;
+  }
+  else {
+//   vector<Lorentz5Momentum> pnew;
+//   
+//   // generate the hard emission and return if no emission
+//   if(!getEvent(pnew,emission_type)) {
+//     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+//       particlesToShower[ix]->maximumpT(_min_pt);
+//     return HardTreePtr();
+//   }
+    exit(0);
+  }
+
+
+
+  // construct the HardTree object needed to perform the showers
+  ShowerParticleVector newparticles;
+  // make the particles for the HardTree
+  tcPDPtr gluon=getParticleData(ParticleID::g);
+  // create the partons
+  // q qbar -> g X
+  vector<Lorentz5Momentum> pnew;
+  if(emission_type==1||emission_type==3) {
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
+    if(emission_type ==1) pnew = realEmissionGluon1_;
+    else                  pnew = realEmissionGluon2_;
+  }
+  // q g    -> q X
+  else if(emission_type==4) {
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]->CC(), true)));
+    pnew = realEmissionQuark2_;
+  }
+  // g qbar -> qbar X
+  else if(emission_type==2) {
+    newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]->CC(), true)));
+    pnew = realEmissionQuark1_;
+  }
+  else
+    assert(false);
+  // transform to get directions right
+  LorentzRotation R;
+  if(!_quarkplus) {
+    PPair partons = make_pair(particlesToShower[0]->progenitor(),
+			      particlesToShower[1]->progenitor());
+    if(partons.first->id()<0) swap(partons.first,partons.second);
+    Boost bv = (partons.first->momentum()+
+		partons.second->momentum()).boostVector();
+    R = LorentzRotation(-bv);
+    R.rotateY(-partons.first->momentum().theta());
+    R.boost(bv);
+    for(unsigned int ix=0;ix<pnew.size();++ix)
+      pnew[ix].transform(R);
+  }
+  // set the momenta
+  for(unsigned int ix=0;ix<2;++ix) newparticles[ix]->set5Momentum(pnew[ix]);
+  newparticles[2]->set5Momentum(pnew[4]);
+  // create the off-shell particle
+  Lorentz5Momentum poff=pnew[emission_type>2]-pnew[4];
+  poff.rescaleMass();
+  newparticles.push_back(new_ptr(ShowerParticle(_partons[emission_type>2],false)));
+  newparticles.back()->set5Momentum(poff);
+//   // compute the boost 
+//   LorentzRotation boost(pboson.findBoostToCM());
+//   boost.boost(pnew[3].boostVector());
+  for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	 cjt= tree->outgoingLines().begin();
+       cjt != tree->outgoingLines().end();++cjt ) {
+    newparticles.push_back(new_ptr(ShowerParticle(cjt->first->original()->dataPtr(),
+						  true)));
+  }
+  if(newparticles[4]->id()==mePartonData()[2]->id()) {
+    newparticles[4]->set5Momentum(pnew[2]);
+    newparticles[5]->set5Momentum(pnew[3]);
+  }
+  else {
+    newparticles[4]->set5Momentum(pnew[3]);
+    newparticles[5]->set5Momentum(pnew[2]);
+  }
+  vector<HardBranchingPtr> nasonin,nasonhard;
+  // create the branchings for the incoming particles
+  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  // intermediate IS particle
+  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					    nasonin[emission_type>2],HardBranching::Incoming)));
+  nasonin[emission_type>2]->addChild(nasonhard.back());
+  // create the branching for the emitted jet
+  nasonin[emission_type>2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+							   nasonin[emission_type>2],
+							   HardBranching::Outgoing)));
+  // set the colour partners
+  nasonhard.back()->colourPartner(nasonin[emission_type<=2]);
+  nasonin[emission_type<=2]->colourPartner(nasonhard.back());
+  // add other particle
+  nasonhard.push_back(nasonin[emission_type<=2]);
+  // outgoing particles
+  for(unsigned int ix=4;ix<newparticles.size();++ix) {
+    nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+					      HardBranchingPtr(),HardBranching::Outgoing)));
+  }
+  // make the tree
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  // connect the ShowerParticles with the branchings
+  // and set the maximum pt for the radiation
+  Energy pt = pnew[5].perp();
+  set<HardBranchingPtr> hard=nasontree->branchings();
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    particlesToShower[ix]->maximumpT(pt);
+    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
+	mit!=hard.end();++mit) {
+      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
+	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
+	    (**mit).status()==HardBranching::Outgoing)||
+	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
+	   (**mit).status()==HardBranching::Incoming))) {
+	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	if((**mit).status()==HardBranching::Incoming) {
+	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
+	}
+	HardBranchingPtr parent=(*mit)->parent();
+	while(parent) {
+	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
+	  parent=parent->parent();
+	};
+      }
+    }
+  }
+  ColinePtr newline=new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+      newline->addColoured((**cit).branchingParticle());
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+      newline->addAntiColoured((**cit).branchingParticle());
+  }
+  // return the tree
+  return nasontree;
 }

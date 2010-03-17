@@ -53,6 +53,23 @@ public:
   NLODrellYanBase();
   //@}
 
+
+  /**
+   *  Virtual members to be overridden by inheriting classes
+   *  which implement hard corrections 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+  
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
+
 public:
 
   /** @name Virtual functions required by the MEBase class. */
@@ -175,10 +192,11 @@ protected:
   /**
    *  Subtracted real contribution
    */
-  virtual double subtractedReal(pair<double,double> x, double z,
-				double zJac,
-				double oldqPDF, double newqPDF, double newgPDF,
-				bool order) const;
+  virtual vector<double> 
+  subtractedReal(pair<double,double> x, double z,
+		 double zJac,
+		 double oldqPDF, double newqPDF, double newgPDF,
+		 bool order) const;
 
   /**
    *  Kinematic variables for the real radiation
@@ -224,12 +242,31 @@ protected:
   /**
    *  \f$q\bar q\f$
    */
-  double subtractedMEqqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
+  pair<double,double> 
+  subtractedMEqqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
 
   /**
    *  \f$g\bar q\f$
    */
-  double subtractedMEgqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
+  pair<double,double> 
+  subtractedMEgqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
+
+  /**
+   *  The supression function
+   */
+  pair<double,double> supressionFunction(Energy2 pt2) const {
+    switch( supressionFunction_ ) {
+    case 0:
+      return make_pair(1.,0.);
+    case 1:
+      if(pt2 <  lambda2_ ) return make_pair(1.,0.);
+      else                 return make_pair(0.,1.);
+    case 2:
+      return make_pair(lambda2_/(pt2+lambda2_),pt2/(pt2+lambda2_));
+    default:
+      assert(false);
+    }
+  }
 
 protected:
 
@@ -318,9 +355,68 @@ private:
    *  Leading-order matrix element
    */
   mutable double loME_;
-};
 
+  /**
+   *  Choice of the supression function
+   */
+  unsigned int supressionFunction_;
+
+  /**
+   *  Scalar for the supression function
+   */
+  Energy2 lambda2_;
+
+  /**
+   *  Storage of the weights of the different processes for gthe hard emission
+   * generation
+   */
+  mutable vector<double> weights_;
+
+private:
+
+  /**
+   *  Momenta of the particles for gluon emmision from first the particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionGluon1_;
+
+  /**
+   *  Momenta of the particles for anti quark emission from the first particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQuark1_;
+
+  /**
+   *  Momenta of the particle for gluon emission from the second particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionGluon2_;
+
+  /**
+   *  Momenta of the particles for quark emission from the second particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQuark2_;
+
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  vector<tcBeamPtr> _beams;
+  
+  /**
+   *  Pointers to the ParticleDataObjects for the partons
+   */
+  vector<tcPDPtr> _partons;
+  //@}
+
+  /**
+   *  Whether the quark is in the + or - z direction
+   */
+  bool _quarkplus;
+
+};
 }
+
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
