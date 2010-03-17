@@ -253,7 +253,12 @@ private:
   /**
    *  Process
    */
-  unsigned int process_;
+  int process_;
+
+  /**
+   *  Maximum flavour of the incoming quarks
+   */
+  int maxFlavour_;
 };
 
 }
