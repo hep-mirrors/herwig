@@ -16,26 +16,25 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-
 using namespace Herwig;
 using namespace ThePEG;
 
-LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() {
+LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() :  _couplast(0.),_q2last(ZERO) {
   addToList(21,9911561,-9911561);
 }
 
 void LeptoquarkModelSLQSLQGVertex::doinit() {
+  orderInGs(1);
+  orderInGem(0);
   VSSVertex::doinit();
-  //  _theModel = generator()->standardModel();
-  // tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
 }
 
 void LeptoquarkModelSLQSLQGVertex::persistentOutput(PersistentOStream & os) const {
-  // os << _theModel;
+  os << _theModel;
 }
 
 void LeptoquarkModelSLQSLQGVertex::persistentInput(PersistentIStream & is, int) {
-  // is >> _theModel;
+   is >> _theModel;
 }
 
 ClassDescription<LeptoquarkModelSLQSLQGVertex> LeptoquarkModelSLQSLQGVertex::initLeptoquarkModelSLQSLQGVertex;
@@ -48,8 +47,11 @@ void LeptoquarkModelSLQSLQGVertex::Init() {
   
 }
 
-void LeptoquarkModelSLQSLQGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr ,tcPDPtr ) {
-  //  norm(sqrt(4.* Constants::pi*strongCoupling(q2)));
-  norm(strongCoupling(q2));
+void LeptoquarkModelSLQSLQGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr ,tcPDPtr ) { 
+   if(q2 != _q2last || _couplast == 0.) {
+     _couplast = strongCoupling(q2);
+     _q2last = q2;
+   }
+  norm(_couplast);
 }
 

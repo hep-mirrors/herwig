@@ -62,6 +62,8 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
+   * @param part4 The ParticleData pointer for the third  particle.
+
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3, tcPDPtr part4);
 
@@ -103,6 +105,20 @@ private:
    */
   LeptoquarkModelSLQSLQGGVertex & operator=(const LeptoquarkModelSLQSLQGGVertex &);
   
+  /**
+   * Pointer to the model.
+   */
+  tcSMPtr _theModel;
+  
+  /**
+   * The energy at which the coupling was last evaluated
+   */
+  Energy2 _q2last;
+
+  /**
+   * The coupling when it was last evaluated
+   */
+  Complex _couplast;
 
 };
 

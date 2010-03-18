@@ -108,10 +108,17 @@ private:
    */
   tcSMPtr _theModel;
 
+  
   /**
-   * Coupling.
+   * The energy at which the coupling was last evaluated
    */
-  Energy _theM_SLQ;
+  Energy2 _q2last;
+
+  /**
+   * The coupling when it was last evaluated
+   */
+  Complex _couplast;
+
 };
 
 }

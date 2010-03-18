@@ -20,22 +20,24 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() {
+LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() :  _couplast(0.),_q2last(ZERO) {
   addToList(21,21,9911561,-9911561);
 }
 
 void LeptoquarkModelSLQSLQGGVertex::doinit() {
+  orderInGs(2);
+  orderInGem(0);
   VVSSVertex::doinit();
   //  _theModel = generator()->standardModel();
   // tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
 }
 
 void LeptoquarkModelSLQSLQGGVertex::persistentOutput(PersistentOStream & os) const {
-  // os << _theModel;
+   os << _theModel;
 }
 
 void LeptoquarkModelSLQSLQGGVertex::persistentInput(PersistentIStream & is, int) {
-  // is >> _theModel;
+   is >> _theModel;
 }
 
 ClassDescription<LeptoquarkModelSLQSLQGGVertex> LeptoquarkModelSLQSLQGGVertex::initLeptoquarkModelSLQSLQGGVertex;
@@ -44,12 +46,15 @@ ClassDescription<LeptoquarkModelSLQSLQGGVertex> LeptoquarkModelSLQSLQGGVertex::i
 void LeptoquarkModelSLQSLQGGVertex::Init() {
   static ClassDocumentation<LeptoquarkModelSLQSLQGGVertex> documentation
     ("The LeptoquarkModelSLQSLQGGVertex class is the implementation of"
-     " the LeptoquarkModel scalar LQ-scalar LQ-gluon vertex");
+     " the LeptoquarkModel scalar LQ-scalar LQ-gluon-gluon vertex");
   
 }
 
 void LeptoquarkModelSLQSLQGGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr ,tcPDPtr, tcPDPtr ) {
-  //  norm(sqrt(4.* Constants::pi*strongCoupling(q2)));
-  norm(pow(strongCoupling(q2),2));
+  if(q2 != _q2last || _couplast == 0.) {
+    _couplast = sqr(strongCoupling(q2));  
+    _q2last = q2;
+  }
+  norm(_couplast);
 }
 
