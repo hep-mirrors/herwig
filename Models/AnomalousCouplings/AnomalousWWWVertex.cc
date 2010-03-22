@@ -163,29 +163,31 @@ VectorWaveFunction AnomalousWWWVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out
 						const VectorWaveFunction & vec1,
 						const VectorWaveFunction & vec2,
 						Energy mass, Energy width) {
-  assert(false);
-  //   // output momenta
-//   Lorentz5Momentum pout =vec1.momentum()+vec2.momentum();
-//   // calculate the coupling
-//   setCoupling(q2,out,vec1.particle(),vec2.particle());
-//   // prefactor
-//   Energy2 p2    = pout.m2();
-//   Complex fact  = norm()*propagator(iopt,p2,out,mass,width);
-//   if(mass < ZERO) mass   = out->mass();
-//   Energy2 mass2 = sqr(mass);
-//   // dot products we need
-//   Complex dot12 = vec1.wave().dot(vec2.wave());
-//   complex<Energy> dota = vec1.wave().dot(pout+vec2.momentum());
-//   complex<Energy> dotb = vec2.wave().dot(pout+vec1.momentum());
-//   // compute the polarization vector
-//   LorentzPolarizationVector vect = UnitRemoval::InvE*fact*
-//     (dot12*(vec1.momentum()-vec2.momentum())-dotb*vec1.wave()+dota*vec2.wave());
-//   // scalar piece for massive case
-//   if(mass!=ZERO) {
-//     complex<InvEnergy> dot = vect.dot(pout)/mass2;
-//     vect -= dot*pout;       
-//   }
-//   return VectorWaveFunction(pout,out,vect);
+  //assert(false);
+   // output momenta
+    Lorentz5Momentum pout =vec1.momentum()+vec2.momentum();
+   // calculate the coupling
+   double g,kappa;
+   unsigned int order;
+   setCoupling(q2,out,vec1.particle(),vec2.particle(),g,kappa,order);
+   // prefactor
+   Energy2 p2    = pout.m2();
+   Complex fact  = norm()*propagator(iopt,p2,out,mass,width);
+   if(mass < ZERO) mass   = out->mass();
+   Energy2 mass2 = sqr(mass);
+   // dot products we need
+   Complex dot12 = vec1.wave().dot(vec2.wave());
+  complex<Energy> dota = vec1.wave().dot(pout+vec2.momentum());
+  complex<Energy> dotb = vec2.wave().dot(pout+vec1.momentum());
+   // compute the polarization vector
+   LorentzPolarizationVector vect = UnitRemoval::InvE*fact*
+     (dot12*(vec1.momentum()-vec2.momentum())-dotb*vec1.wave()+dota*vec2.wave());
+   // scalar piece for massive case
+   if(mass!=ZERO) {
+     complex<InvEnergy> dot = vect.dot(pout)/mass2;
+    vect -= dot*pout;       
+   }
+   return VectorWaveFunction(pout,out,vect);
 }
 
 void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
