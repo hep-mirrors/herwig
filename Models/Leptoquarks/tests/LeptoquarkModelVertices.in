@@ -12,3 +12,7 @@ create Herwig::LeptoquarkModelSLQSLQGGVertex SLQSLQGGVertex
 set /Defaults/Model:Vertex/SLQSLQGG SLQSLQGGVertex
 set SLQSLQGGVertex:Model /Defaults/Model
 
+create Herwig::LeptoquarkModelSLQFFVertex SLQFFVertex
+set /Defaults/Model:Vertex/SLQFF SLQFFVertex
+set SLQFFVertex:Model /Defaults/Model
+

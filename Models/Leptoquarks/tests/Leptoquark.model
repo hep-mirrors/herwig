@@ -13,11 +13,37 @@
 #
 ###################################################
 cd /Herwig/Particles
-create /ThePEG/ParticleData S0bar
-setup S0bar 9911561 S0bar 250.0 0.0 0.0 0.0 -1 3 1 0
 create /ThePEG/ParticleData S0
-setup S0 -9911561 S0 250.0 0.0 0.0 0.0 1 -3 1 0
-makeanti S0bar S0 
+setup S0 9911561 S0 500.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData S0bar
+setup S0bar -9911561 S0bar 500.0 0.0 0.0 0.0 1 -3 1 0
+makeanti S0 S0bar
+
+create /ThePEG/ParticleData ~S0
+setup ~S0 9911551 ~S0 500.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData ~S0bar
+setup ~S0bar -9911551 ~S0bar 500.0 0.0 0.0 0.0 4 -3 1 0
+makeanti ~S0 ~S0bar
+
+create /ThePEG/ParticleData S1p
+setup S1p 9921551 S1p 500.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData S1pbar
+setup S1pbar -9921551 S1pbar 500.0 0.0 0.0 0.0 4 -3 1 0
+makeanti S1p S1pbar
+
+create /ThePEG/ParticleData S1m
+setup S1m 9921661 S1m 500.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData S1mbar
+setup S1mbar -9921661 S1mbar 500.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti S1m S1mbar
+
+create /ThePEG/ParticleData S1z
+setup S1z 9921561 S1z 500.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData S1zbar
+setup S1zbar -9921561 S1zbar 500.0 0.0 0.0 0.0 1 -3 1 0
+makeanti S1z S1zbar
+
+
 
 ###################################################
 #
@@ -32,6 +58,11 @@ set Model:QCD/RunningAlphaS /Herwig/AlphaS
 set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
+set Model:LQCoupling 0.312
+set Model:g_S0_L 1.0
+set Model:g_S0_R 1.0
+
+
 ###################################################
 #
 #  Vertices
@@ -43,6 +74,8 @@ cd /Herwig/Vertices/Leptoquark
 library HwLeptoquarkModel.so
 create Herwig::LeptoquarkModelSLQSLQGVertex Leptoquark_SLQSLQGVertex
 create Herwig::LeptoquarkModelSLQSLQGGVertex Leptoquark_SLQSLQGGVertex
+create Herwig::LeptoquarkModelSLQFFVertex Leptoquark_SLQFFVertex
+
 
 cd /Herwig/NewPhysics/Leptoquark
 # SM vertices
@@ -61,7 +94,7 @@ set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # Leptoquark model vertices
 set Model:Vertex/SLQSLQG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGVertex
 set Model:Vertex/SLQSLQGG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGGVertex
-
+set Model:Vertex/SLQFF  /Herwig/Vertices/Leptoquark/Leptoquark_SLQFFVertex
 
 ###################################################
 #
@@ -70,9 +103,19 @@ set Model:Vertex/SLQSLQGG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGGVertex
 ###################################################
 cd /Herwig/NewPhysics
 
-set TwoBodyDC:CreateDecayModes No
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
 
-#insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
+insert NewModel:DecayParticles 0 /Herwig/Particles/S0
+insert NewModel:DecayParticles 1 /Herwig/Particles/~S0
+insert NewModel:DecayParticles 2 /Herwig/Particles/S1p
+insert NewModel:DecayParticles 3 /Herwig/Particles/S1m
+insert NewModel:DecayParticles 4 /Herwig/Particles/S1z
+
+
+#insert NewModel:DecayParticles 1 /Herwig/Particles/S0bar
+
+
 ###################################################
 # Set up the model framework
 ###################################################
@@ -85,3 +128,5 @@ set Leptoquark/Model:ModelGenerator NewModel
 cd /Herwig/Generators
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
+
+#insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9911561 
