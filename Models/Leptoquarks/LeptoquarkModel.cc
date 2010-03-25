@@ -15,13 +15,15 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
-void LeptoquarkModel::doinit() {
+void LeptoquarkModel::doinit()  {
   addVertex(_theSLQSLQGVertex);
   addVertex(_theSLQSLQGGVertex);
+  addVertex(_theSLQFFVertex);
+  
   StandardModel::doinit();
 }
 
-LeptoquarkModel::LeptoquarkModel()  {}
+LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0)  {}
 
 LeptoquarkModel::~LeptoquarkModel() {}
 
@@ -40,14 +42,24 @@ IBPtr LeptoquarkModel::fullclone() const {
 void LeptoquarkModel::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os <<  _theSLQSLQGGVertex
-     << _theSLQSLQGVertex;
-
+     << _theSLQSLQGVertex
+     << _theSLQFFVertex
+     << _CouplFF
+     << _leftcoup
+     << _rightcoup;
+    
+  
 }
 
 void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> _theSLQSLQGGVertex
-     >> _theSLQSLQGVertex;
+     >> _theSLQSLQGVertex
+     >> _theSLQFFVertex
+     >> _CouplFF
+     >> _leftcoup
+     >> _rightcoup;
+
 }
 
 ClassDescription<LeptoquarkModel> LeptoquarkModel::initLeptoquarkModel;
@@ -65,6 +77,29 @@ void LeptoquarkModel::Init() {
    "Reference to the scalar leptoquark-scalar leptoquark-gluon-gluon vertex",
    &LeptoquarkModel::_theSLQSLQGGVertex, false, false, true, false, false);
 
+  static Reference<LeptoquarkModel,ThePEG::Helicity::AbstractFFSVertex> interfaceVertexSLQFF
+  ("Vertex/SLQFF",
+   "Reference to the scalar leptoquark-scalar-quark-lepton",
+   &LeptoquarkModel::_theSLQFFVertex, false, false, true, false, false);
+
+
+  static Parameter<LeptoquarkModel, double> interfaceLQCoupling
+    ("LQCoupling",
+     "The overall Leptoquark Coupling",
+     &LeptoquarkModel::_CouplFF, 0.312, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<LeptoquarkModel, double> interfacegLQ_L
+    ("g_S0_L",
+     "The leptoquark S0 coupling LQ-lepton_left-quark_right",
+     &LeptoquarkModel::_leftcoup, 1.0, 0., 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<LeptoquarkModel, double> interfacegLQ_R
+    ("g_S0_R",
+     "The leptoquark S0 coupling LQ-lepton_right-quark_left",
+     &LeptoquarkModel::_rightcoup, 1.0, 0., 1.0,
+     false, false, Interface::limited);
 
 
 

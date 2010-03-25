@@ -44,6 +44,10 @@ public:
    */
   tAbstractVVSSVertexPtr   vertexSLQSLQGG() const {return _theSLQSLQGGVertex;}
 
+  /**
+   * Pointer to the object handling the S0ql vertex.
+   */
+  tAbstractFFSVertexPtr   vertexSLQFF() const {return _theSLQFFVertex;}
 
 
 
@@ -80,6 +84,22 @@ public:
    */
   static void Init();
 
+ /**
+   * Return the overall fermion coupling
+   */
+  double _cfermion() const {return _CouplFF;}
+
+  /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks
+   */
+
+  double _cleft() const {return _leftcoup;}
+ /**
+   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks
+   */
+  double _cright() const {return _rightcoup;}
+
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -107,6 +127,10 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+
+  
+    
+  
   //@}
 
 
@@ -138,6 +162,30 @@ private:
    * Pointer to the object handling the GG to SLQ SLQ vertex.
    */
   AbstractVVSSVertexPtr  _theSLQSLQGGVertex;
+
+
+  /**
+   * Pointer to the object handling the SLQ to FF vertex.
+   */
+  AbstractFFSVertexPtr  _theSLQFFVertex;
+
+
+  /**
+   *  Overall coupling to fermions
+   */
+  double _CouplFF;
+
+
+  /**
+   *  Overall coupling to left-handed leptons
+   */
+  double _leftcoup;
+
+  /**
+   *  Overall coupling to right-handed leptons
+   */
+  double _rightcoup;
+
 
 
 };
