@@ -117,34 +117,44 @@ private:
    * Storage of the couplings.
    */
   //@{
-  /**
-   *  Last evaluation of the coupling
-   */
-  Complex _couplast;
-
-  /**
-   *  The last \f$q^2\f$ the coupling was evaluated at.
-   */
-  Energy2 _q2last;
-
 
   /**
    *  Overall coupling to fermions
    */
   double _CFF;
-
-
+  
+  
   /**
-   *  Overall coupling to left-handed leptons
+   *  Overall coupling to left-handed leptons 
    */
   double _cL;
 
   /**
-   *  Overall coupling to right-handed leptons
+   *  Overall coupling to right-handed leptons 
    */
   double _cR;
 
 
+  /**
+   *  Overall coupling to left-handed leptons for S0
+   */
+  double _cL0;
+
+  /**
+   *  Overall coupling to right-handed leptons for S0
+   */
+  double _cR0;
+
+
+  /**
+   *  Overall coupling to right-handed leptons for ~S0
+   */
+  double _cR0t;
+
+  /**
+   *  Overall coupling to left-handed leptons for ~S1 triplet
+   */
+  double _cL1;
 
   //@}
 };  

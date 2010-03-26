@@ -48,16 +48,8 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   addToList(-16,-5,9921561);
   addToList(16,5,-9921561);
   //S1m
-  addToList(-16,-6,99216611);
+  addToList(-16,-6,9921661);
   addToList(16,6,-9921661);
-  
-  
-  /*addToList(-11,-2,9911561);
-  addToList(11,2,-9911561);
-  addToList(-12,-1,9911561);
-  addToList(12,1,-9911561);
-  */
-  _q2last=ZERO;
 }
 
 void LeptoquarkModelSLQFFVertex::doinit() {
@@ -66,21 +58,21 @@ void LeptoquarkModelSLQFFVertex::doinit() {
   _theModel = generator()->standardModel();
   tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
   if(hwLeptoquark){
-
     _CFF=hwLeptoquark->_cfermion();
-    _cL =hwLeptoquark->_cleft();
-    _cR =hwLeptoquark->_cright();
-    
+    _cL0 =hwLeptoquark->_cleft();
+    _cR0 =hwLeptoquark->_cright();
+    _cR0t = hwLeptoquark->_crighttilde();
+    _cL1 =hwLeptoquark->_cleft1(); 
   }
   FFSVertex::doinit();
 }
 
 void LeptoquarkModelSLQFFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _CFF << _cL << _cR;
+  os << _CFF << _cL0 << _cR0 << _cR0t << _cL1;
 }
 
 void LeptoquarkModelSLQFFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _CFF >> _cL >> _cR;
+  is >> _CFF >> _cL0 >> _cR0 >> _cR0t >> _cL1;
 }
 
 ClassDescription<LeptoquarkModelSLQFFVertex> 
@@ -97,31 +89,61 @@ void LeptoquarkModelSLQFFVertex::Init() {
 }
 
 
-void LeptoquarkModelSLQFFVertex::setCoupling(Energy2 q2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc) {
+void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc) {
   
   long isc(cc->id()), ism(aa->id()), 
     ichg(bb->id());
   
- 
-  for(int nl = 0; nl < 3; nl++) {
-    if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
-      left(0.0); right(_cR);
-    }
-    
-    
-    if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
-      left(_cL); right(0.0);
-    }
-    if( fabs(isc) != (12+2*nl) &&  fabs(ism) != (12+2*nl) && fabs(ichg) != (12+2*nl) ) {
-      if( isc == (11+2*nl) || ichg == (11+2*nl) || ism == (11+2*nl)) {
-	left(_cL);
-	right(_cR);
-      }
-      if( isc == -(11+2*nl) || ichg == -(11+2*nl) || ism == -(11+2*nl)) {
-	left(_cR);
-	right(_cL);
-      }
-    }
+  //set the couplings to left and right 
+  //S0
+  if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) {
+    _cL = _cL0; _cR = _cR0;
   }
+  //~S0
+  if( fabs(isc) == 9911551 || fabs(isc) == 9911551 || fabs(isc) == 9911551 ) {
+    _cL = 0; _cR = _cR0t;
+  }
+  
+  //S1 triplet
+  //Q = + 4/3
+  if( fabs(isc) == 9921551 || fabs(isc) == 9921551 || fabs(isc) == 9921551 ) {
+    _cL = - sqrt(2.)* _cL1; _cR = 0;
+  }
+  //Q = + 1/3
+  if( fabs(isc) == 9921561 || fabs(isc) == 9921561 || fabs(isc) == 9921561 ) {
+    _cL = - _cL1; _cR = 0;
+  }
+  //Q = - 2/3
+   if( fabs(isc) == 9921661 || fabs(isc) == 9921661 || fabs(isc) == 9921661 ) {
+     _cL = sqrt(2.) * _cL1; _cR = 0;
+  }
+
+   //loop over generations (currently only third)
+   for(int nl = 0; nl < 3; nl++) {
+      
+     //no right-handed neutrino (or left-handed anti-neutrino)
+     //neutrino
+     if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
+       if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
+       left(_cL); right(0.0);
+     }
+
+     //anti-neutrino
+     if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
+       if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
+       left(0.0); right(_cL);
+     }
+     //swap left-right couplings if necessary
+     if( isc == (11+2*nl) || ism == (11+2*nl) || ichg == (11+2*nl) ) {   
+       left(_cL);
+       right(_cR);
+     }
+     if( isc == -(11+2*nl) || ism == -(11+2*nl) || ichg == -(11+2*nl) ) {   
+       left(_cR);
+       right(_cL);
+     }
+    
+   }
+  
   norm(_CFF);
 }
