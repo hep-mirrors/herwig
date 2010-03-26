@@ -90,14 +90,24 @@ public:
   double _cfermion() const {return _CouplFF;}
 
   /**
-   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S0)
    */
 
   double _cleft() const {return _leftcoup;}
  /**
-   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks
+   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (S0)
    */
   double _cright() const {return _rightcoup;}
+
+  /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1 triplet)
+   */
+
+  double _cleft1() const {return _leftcoup1;}
+
+   /* Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (~S0)
+   */
+  double _crighttilde() const {return _rightcouptilde;}
 
 
 protected:
@@ -177,16 +187,25 @@ private:
 
 
   /**
-   *  Overall coupling to left-handed leptons
+   *  Overall coupling to left-handed leptons (S0)
    */
   double _leftcoup;
 
   /**
-   *  Overall coupling to right-handed leptons
+   *  Overall coupling to right-handed leptons (S0)
    */
   double _rightcoup;
 
-
+  /**
+   *  Overall coupling to left-handed leptons (~S0)
+   */
+  double _rightcouptilde;
+  
+  /**
+   *  Overall coupling to left-handed leptons (S1 tripletx)
+   */
+  double _leftcoup1;
+  
 
 };
 

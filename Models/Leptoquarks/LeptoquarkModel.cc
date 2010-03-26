@@ -23,7 +23,7 @@ void LeptoquarkModel::doinit()  {
   StandardModel::doinit();
 }
 
-LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0)  {}
+LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0), _rightcouptilde(1.0), _leftcoup1(1.0)  {}
 
 LeptoquarkModel::~LeptoquarkModel() {}
 
@@ -40,26 +40,28 @@ IBPtr LeptoquarkModel::fullclone() const {
 
 
 void LeptoquarkModel::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os <<  _theSLQSLQGGVertex
      << _theSLQSLQGVertex
      << _theSLQFFVertex
      << _CouplFF
      << _leftcoup
-     << _rightcoup;
+     << _rightcoup
+     << _leftcoup1
+     << _rightcouptilde;
+
     
   
 }
 
 void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> _theSLQSLQGGVertex
      >> _theSLQSLQGVertex
      >> _theSLQFFVertex
      >> _CouplFF
      >> _leftcoup
-     >> _rightcoup;
-
+     >> _rightcoup
+     >> _leftcoup1
+     >> _rightcouptilde;
 }
 
 ClassDescription<LeptoquarkModel> LeptoquarkModel::initLeptoquarkModel;
@@ -101,8 +103,18 @@ void LeptoquarkModel::Init() {
      &LeptoquarkModel::_rightcoup, 1.0, 0., 1.0,
      false, false, Interface::limited);
 
+  static Parameter<LeptoquarkModel, double> interfacegLQ_Rt
+    ("g_S0t_R",
+     "The leptoquark ~S0 coupling LQ-lepton_right-quark_left",
+     &LeptoquarkModel::_rightcouptilde, 1.0, 0., 1.0,
+     false, false, Interface::limited);
 
-
+  static Parameter<LeptoquarkModel, double> interfacegLQ_L1
+    ("g_S1_L",
+     "The leptoquark S1 coupling LQ-lepton_left-quark_right",
+     &LeptoquarkModel::_leftcoup1, 1.0, 0., 1.0,
+     false, false, Interface::limited);
+  
   static ClassDocumentation<LeptoquarkModel> documentation
     ("There is no documentation for the LeptoquarkModel class");
 
