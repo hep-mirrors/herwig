@@ -9,6 +9,7 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -33,6 +34,19 @@ public:
    * The default constructor.
    */
   MEPP2VGammaNewPowheg();
+ 
+  /** @name Member functions for the generation of hard QCD radiation */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
 
 public:
 
@@ -256,6 +270,10 @@ protected:
   double realME(const cPDVector & particles,
 		const vector<Lorentz5Momentum> & momenta) const;
 
+  HardTreePtr hardQCDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+
+  HardTreePtr hardQEDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+
   /**
    *  The supression function
    */
@@ -460,6 +478,76 @@ private:
    */
   Energy lambda_;
   //@}
+
+  /**
+   *  Hard emission stuff
+   */
+  //@{
+  /**
+   *  Whether the quark is in the + or - z direction
+   */
+  bool quarkplus_;
+  //@}
+
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  vector<tcBeamPtr> beams_;
+  
+  /**
+   *  Pointers to the ParticleDataObjects for the partons
+   */
+  vector<tcPDPtr> partons_;
+  //@}
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preqqbarq_;
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preqqbarqbar_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double preqg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double pregqbar_;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> prefactor_;
+  //@}
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy minpT_;
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alphaQCD_;
+
+  /**
+   *  Pointer to the object calculating the EM
+   */
+  ShowerAlphaPtr alphaQED_;
 };
 
 }

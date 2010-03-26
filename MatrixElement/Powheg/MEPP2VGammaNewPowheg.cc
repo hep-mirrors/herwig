@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -218,7 +219,7 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
 				pT*sinh(rapidity),
 				pT*cosh(rapidity), ZERO);
     Lorentz5Momentum K  = pnew [0]+pnew [1]-pnew [4]; 
-   Lorentz5Momentum Kt = pcmf;
+    Lorentz5Momentum Kt = pcmf;
     Lorentz5Momentum Ksum = K+Kt;
     Energy2 K2 = K.m2();
     Energy2 Ksum2 = Ksum.m2();
@@ -351,6 +352,11 @@ void MEPP2VGammaNewPowheg::doinit() {
   FFWvertex_ = dynamic_ptr_cast<FFVVertexPtr>(hwsm->vertexFFW());
   FFGvertex_ = hwsm->vertexFFG();
   gluon_ = getParticleData(ParticleID::g);
+  // sampling factors
+  prefactor_.push_back(preqqbarq_);
+  prefactor_.push_back(preqqbarqbar_);
+  prefactor_.push_back(preqg_);
+  prefactor_.push_back(pregqbar_);
 }
 
 int MEPP2VGammaNewPowheg::nDim() const {
@@ -689,22 +695,26 @@ loVgME(const cPDVector & particles,
 
 void MEPP2VGammaNewPowheg::persistentOutput(PersistentOStream & os) const {
   os << FFPvertex_ << FFWvertex_ << FFGvertex_ << FFZvertex_ << WWWvertex_ 
-     << contrib_ << power_ << boson_ << gluon_
+     << contrib_ << power_ << boson_ << gluon_ << prefactor_
      << process_ << maxflavour_ << alphaS_ << fixedAlphaS_
-     << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV);
+     << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV)
+     << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV);
 }
 
 void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
   is >> FFPvertex_ >> FFWvertex_ >> FFGvertex_ >> FFZvertex_ >> WWWvertex_ 
-     >> contrib_ >> power_ >> boson_ >> gluon_
+     >> contrib_ >> power_ >> boson_ >> gluon_ >> prefactor_
      >> process_ >> maxflavour_ >> alphaS_ >> fixedAlphaS_
-     >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV);
+     >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV)
+     >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV);
 }
 
 MEPP2VGammaNewPowheg::MEPP2VGammaNewPowheg() 
   : contrib_(1), power_(0.1), boson_(0), process_(0), maxflavour_(5), 
     alphaS_(0.), fixedAlphaS_(false),
-    supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV)
+    supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV),
+    preqqbarq_(2.), preqqbarqbar_(0.5), preqg_(50.), pregqbar_(50.),
+    minpT_(2.*GeV)
 {}
 
 void MEPP2VGammaNewPowheg::getDiagrams() const {
@@ -1110,6 +1120,16 @@ void MEPP2VGammaNewPowheg::Init() {
      "Variable",
      "Use the pT of the hard process as the scale",
      1);
+
+  static Reference<MEPP2VGammaNewPowheg,ShowerAlpha> interfaceShowerAlphaQCD
+    ("ShowerAlphaQCD",
+     "Reference to the object calculating the QCD coupling for the shower",
+     &MEPP2VGammaNewPowheg::alphaQCD_, false, false, true, false, false);
+
+  static Reference<MEPP2VGammaNewPowheg,ShowerAlpha> interfaceShowerAlphaQED
+    ("ShowerAlphaQED",
+     "Reference to the object calculating the QED coupling for the shower",
+     &MEPP2VGammaNewPowheg::alphaQED_, false, false, true, false, false);
 
 }
 
@@ -1716,3 +1736,252 @@ double MEPP2VGammaNewPowheg::subtractedReal(pair<double,double> x, double z,
   // return the answer
   return realQQ+realGQ;
 }
+
+HardTreePtr MEPP2VGammaNewPowheg::
+generateHardest(ShowerTreePtr tree) {
+  beams_.clear();
+  partons_.clear();
+  // find the incoming particles
+  ShowerParticleVector incoming;
+  // get the particles to be showered
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  vector<ShowerProgenitorPtr> particlesToShower;
+  //progenitor particles are produced in z direction.
+  for( cit = tree->incomingLines().begin();
+       cit != tree->incomingLines().end(); ++cit ) {
+    incoming.push_back( cit->first->progenitor() );
+    beams_.push_back( cit->first->beam() );
+    partons_.push_back( cit->first->progenitor()->dataPtr() );
+    particlesToShower.push_back( cit->first );
+  }
+  // find the parton which should be first
+  if( ( particlesToShower[1]->progenitor()->id() > 0 &&
+        particlesToShower[0]->progenitor()->id() < 0 ) || 
+      ( particlesToShower[1]->progenitor()->id() == ParticleID::g &&
+	particlesToShower[0]->progenitor()->id() < 6 ) )
+    swap(particlesToShower[0],particlesToShower[1]);
+  // check that quark is along +ve z direction
+  quarkplus_ = particlesToShower[0]->progenitor()->momentum().z() > ZERO;
+  if( partons_[0]->id() < 0 || 
+      (partons_[0]->id()==ParticleID::g && partons_[1]->id()>0)) {
+    swap(partons_[0],partons_[1]);
+    swap(beams_  [0],beams_  [1]);
+  }
+  // outgoing partons
+  for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	 cjt= tree->outgoingLines().begin();
+       cjt != tree->outgoingLines().end();++cjt ) {
+    particlesToShower.push_back( cjt->first );
+  }
+  if(particlesToShower[3]->id()==ParticleID::Z0 ||
+     abs(particlesToShower[3]->id())==ParticleID::Wplus)
+    swap(particlesToShower[2],particlesToShower[3]);
+  if(particlesToShower[3]->progenitor()->id()==ParticleID::gamma)
+    return hardQCDEmission(particlesToShower,tree);
+  else
+    return hardQEDEmission(particlesToShower,tree);
+}
+
+HardTreePtr MEPP2VGammaNewPowheg::
+hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
+		ShowerTreePtr tree) {
+  Energy rootS = sqrt(lastS());
+  // limits on the rapidity of the jet
+  double minyj = -8.0,maxyj = 8.0;
+  // generate the hard emission
+  pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
+				    particlesToShower[1]->progenitor()->x());
+  vector<Energy> pT;
+  double lo = loME_/(2.*Constants::twopi*alphaEM_);
+  Energy pTmax(-GeV);
+  cPDVector selectedParticles;
+  vector<Lorentz5Momentum> selectedMomenta;
+  int iemit(-1);
+  for(unsigned int ix=0;ix<4;++ix) {
+    pT.push_back(0.5*generator()->maximumCMEnergy());
+    double a = alphaQCD_->overestimateValue()*prefactor_[ix]*(maxyj-minyj);
+    cPDVector particles;
+    for(unsigned int iy=0;iy<particlesToShower.size();++iy) 
+      particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
+    if(ix<2) particles.push_back(gluon_);
+    else if(ix==2) {
+      particles.push_back(particles[0]->CC());
+      particles[0] = gluon_;
+    }
+    else {
+      particles.push_back(particles[1]->CC());
+      particles[1] = gluon_;
+    }
+    vector<Lorentz5Momentum> momenta(5);
+    do {
+      pT[ix] *= pow(UseRandom::rnd(),1./a);
+      double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
+      double vt,z;
+      if(ix%2==0) {
+	vt = pT[ix]*exp(-y)/rootS/x.second;
+	z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
+	if(z>1.||z<x.first) continue;
+      }
+      else {
+	vt = pT[ix]*exp( y)/rootS/x.first ;
+	z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
+	if(z>1.||z<x.second) continue;
+      }
+      if(vt>1.-z || vt<0.) continue;
+      if(ix%2==0) {
+	momenta[0] = particlesToShower[0]->progenitor()->momentum()/z;
+	momenta[1] = particlesToShower[1]->progenitor()->momentum();
+      }
+      else {
+	momenta[0] = particlesToShower[0]->progenitor()->momentum();
+	momenta[1] = particlesToShower[1]->progenitor()->momentum()/z;
+      }
+      double phi = Constants::twopi*UseRandom::rnd();
+      momenta[2] = particlesToShower[2]->progenitor()->momentum();
+      momenta[3] = particlesToShower[3]->progenitor()->momentum();
+      if(!quarkplus_) y *= -1.;
+      momenta[4] = Lorentz5Momentum(pT[ix]*cos(phi),pT[ix]*sin(phi),
+				    pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
+      Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
+      Lorentz5Momentum Kt = momenta[2]+momenta[3];
+      Lorentz5Momentum Ksum = K+Kt;
+      Energy2 K2 = K.m2(), Ksum2 = Ksum.m2();
+      for(unsigned int iy=2;iy<4;++iy) {
+	momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
+	  +2*K*(Kt*momenta [iy])/K2;
+      }
+      // matrix element piece
+      double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactor_[ix]/lo;
+      if(ix==0)
+	wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQCD1,Shower,false);
+      else if(ix==1)
+	wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQCD2,Shower,false);
+      else if(ix==2)
+	wgt *= sqr(pT[ix])*realVGammaqbarME(particles,momenta,IIQCD1,Shower,false);
+      else if(ix==3)
+	wgt *= sqr(pT[ix])*realVGammaqME(particles,momenta,IIQCD2,Shower,false);
+      wgt *= 16.*sqr(Constants::pi)/alphaS_;
+      // pdf piece
+      double pdf[2];
+      if(ix%2==0) {
+	pdf[0] = beams_[0]->pdf()->xfx(beams_[0],partons_ [0],
+				       scale(),            x.first   )  /x.first;
+	pdf[1] = beams_[0]->pdf()->xfx(beams_[0],particles[0],
+				       scale()+sqr(pT[ix]),x.first /z)*z/x.first;
+      }
+      else {
+	pdf[0] = beams_[1]->pdf()->xfx(beams_[1],partons_ [1],
+				       scale()            ,x.second  )  /x.second;
+	pdf[1] = beams_[1]->pdf()->xfx(beams_[1],particles[1],
+				       scale()+sqr(pT[ix]),x.second/z)*z/x.second;
+      }
+      if(pdf[0]<=0.||pdf[1]<=0.) continue;
+      wgt *= pdf[1]/pdf[0];
+      if(wgt>1.) generator()->log() << "testing weight problem " << ix << " " << wgt << "\n";
+      if(UseRandom::rnd()<wgt) break;
+    }
+    while(pT[ix]>minpT_);
+    if(pT[ix]>minpT_ && pT[ix]>pTmax) {
+      pTmax = pT[ix];
+      selectedParticles = particles;
+      selectedMomenta = momenta;
+      iemit=ix;
+    }
+  }
+  // if no emission
+  if(pTmax<ZERO) {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+      particlesToShower[ix]->maximumpT(minpT_);
+    return HardTreePtr();
+  }
+  // construct the HardTree object needed to perform the showers
+  // create the partons
+  ShowerParticleVector newparticles;
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[0],false)));
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[1],false)));
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[4], true)));
+  // set the momenta
+  for(unsigned int ix=0;ix<2;++ix) 
+    newparticles[ix]->set5Momentum(selectedMomenta[ix]);
+  newparticles[2]->set5Momentum(selectedMomenta[4]);
+  // create the off-shell particle
+  Lorentz5Momentum poff = selectedMomenta[iemit%2] - selectedMomenta[4];
+  poff.rescaleMass();
+  newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit%2],false)));
+  newparticles.back()->set5Momentum(poff);
+  for(unsigned int ix=2;ix<particlesToShower.size();++ix) {
+    newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[ix]->
+						  progenitor()->dataPtr(),true)));
+    newparticles.back()->set5Momentum(selectedMomenta[ix]);
+  }
+  vector<HardBranchingPtr> nasonin,nasonhard;
+  // create the branchings for the incoming particles
+  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  // create the branching for the emitted jet
+  nasonin[iemit%2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						   nasonin[iemit%2],
+						   HardBranching::Outgoing)));
+  // intermediate IS particle
+  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					    nasonin[iemit%2],HardBranching::Incoming)));
+  nasonin[iemit%2]->addChild(nasonhard.back());
+  // set the colour partners
+  nasonhard.back()->colourPartner(nasonin[iemit%2==0 ? 1 : 0]);
+  nasonin[iemit%2==0 ? 1 : 0]->colourPartner(nasonhard.back());
+  // add other particle
+  nasonhard.push_back(nasonin[iemit%2==0 ? 1 : 0]);
+  // outgoing particles
+  for(unsigned int ix=4;ix<newparticles.size();++ix) {
+    nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+					      HardBranchingPtr(),
+					      HardBranching::Outgoing)));
+  }
+  // make the tree
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  // connect the ShowerParticles with the branchings
+  // and set the maximum pt for the radiation
+  set<HardBranchingPtr> hard=nasontree->branchings();
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    particlesToShower[ix]->maximumpT(pTmax);
+    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
+	mit!=hard.end();++mit) {
+      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
+	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
+	    (**mit).status()==HardBranching::Outgoing)||
+	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
+	   (**mit).status()==HardBranching::Incoming))) {
+	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	if((**mit).status()==HardBranching::Incoming) {
+	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
+	}
+	HardBranchingPtr parent=(*mit)->parent();
+	while(parent) {
+	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
+	  parent=parent->parent();
+	};
+      }
+    }
+  }
+  ColinePtr newline=new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+      newline->addColoured((**cit).branchingParticle());
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+      newline->addAntiColoured((**cit).branchingParticle());
+  }
+  // return the tree
+  return nasontree;
+}
+
+HardTreePtr MEPP2VGammaNewPowheg::
+hardQEDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr) {
+  assert(false);
+}
+
+
+
+
