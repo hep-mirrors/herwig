@@ -218,6 +218,7 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
     pnew [4] = Lorentz5Momentum(pT*cos(phi_),pT*sin(phi_),
 				pT*sinh(rapidity),
 				pT*cosh(rapidity), ZERO);
+    pnew[4].rescaleEnergy();
     Lorentz5Momentum K  = pnew [0]+pnew [1]-pnew [4]; 
     Lorentz5Momentum Kt = pcmf;
     Lorentz5Momentum Ksum = K+Kt;
@@ -227,6 +228,7 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
       pnew [ix].boost(blab);
       pnew [ix] = pnew [ix] - 2.*Ksum*(Ksum*pnew [ix])/Ksum2
 	+2*K*(Kt*pnew [ix])/K2;
+      pnew[ix].rescaleEnergy();
     }
     pcmf = Lorentz5Momentum(ZERO,ZERO,
 			    0.5*rs*(x.first-x.second),
@@ -308,7 +310,8 @@ CrossSection MEPP2VGammaNewPowheg::dSigHatDR() const {
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
   loME_ = me2();
-  if( contrib_==0 || mePartonData().size()==5 ) 
+  if( contrib_== 0 || mePartonData().size()==5 || 
+      (mePartonData().size()==4&& mePartonData()[3]->coloured())) 
     return loME_*preFactor;
   else
     return NLOWeight()*preFactor;
@@ -353,10 +356,14 @@ void MEPP2VGammaNewPowheg::doinit() {
   FFGvertex_ = hwsm->vertexFFG();
   gluon_ = getParticleData(ParticleID::g);
   // sampling factors
-  prefactor_.push_back(preqqbarq_);
-  prefactor_.push_back(preqqbarqbar_);
-  prefactor_.push_back(preqg_);
-  prefactor_.push_back(pregqbar_);
+  prefactor_.push_back(preQCDqqbarq_);
+  prefactor_.push_back(preQCDqqbarqbar_);
+  prefactor_.push_back(preQCDqg_);
+  prefactor_.push_back(preQCDgqbar_);
+  prefactor_.push_back(preQEDqqbarq_);
+  prefactor_.push_back(preQEDqqbarqbar_);
+  prefactor_.push_back(preQEDqgq_);
+  prefactor_.push_back(preQEDgqbarqbar_);
 }
 
 int MEPP2VGammaNewPowheg::nDim() const {
@@ -698,7 +705,9 @@ void MEPP2VGammaNewPowheg::persistentOutput(PersistentOStream & os) const {
      << contrib_ << power_ << boson_ << gluon_ << prefactor_
      << process_ << maxflavour_ << alphaS_ << fixedAlphaS_
      << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV)
-     << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV);
+     << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV)
+     << preQCDqqbarq_ << preQCDqqbarqbar_ << preQCDqg_ << preQCDgqbar_
+     << preQEDqqbarq_ << preQEDqqbarqbar_ << preQEDqgq_ << preQEDgqbarqbar_;
 }
 
 void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
@@ -706,14 +715,17 @@ void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
      >> contrib_ >> power_ >> boson_ >> gluon_ >> prefactor_
      >> process_ >> maxflavour_ >> alphaS_ >> fixedAlphaS_
      >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV)
-     >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV);
+     >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV)
+     >> preQCDqqbarq_ >> preQCDqqbarqbar_ >> preQCDqg_ >> preQCDgqbar_
+     >> preQEDqqbarq_ >> preQEDqqbarqbar_ >> preQEDqgq_ >> preQEDgqbarqbar_;
 }
 
 MEPP2VGammaNewPowheg::MEPP2VGammaNewPowheg() 
   : contrib_(1), power_(0.1), boson_(0), process_(0), maxflavour_(5), 
     alphaS_(0.), fixedAlphaS_(false),
     supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV),
-    preqqbarq_(2.), preqqbarqbar_(0.5), preqg_(50.), pregqbar_(50.),
+    preQCDqqbarq_(5.), preQCDqqbarqbar_(0.5), preQCDqg_(50.), preQCDgqbar_(50.),
+    preQEDqqbarq_(40.), preQEDqqbarqbar_(0.5), preQEDqgq_(1.), preQEDgqbarqbar_(1.),
     minpT_(2.*GeV)
 {}
 
@@ -834,18 +846,18 @@ void MEPP2VGammaNewPowheg::getDiagrams() const {
       // Z + jet + gamma
       if((process_==0 && contrib_==1) || process_ == 3) {
 	// Z + g + gamma
-// 	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
-// 		     2, gamma, 3, g, -10)));
-// 	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
-// 		     3, gamma, 2, g, -11)));
-// 	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
-// 		     2, gamma, 1, g, -12)));
-// 	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
-// 		     1, gamma, 2, g, -13)));
+	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
+		     2, gamma, 3, g, -10)));
+	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
+		     3, gamma, 2, g, -11)));
+	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
+		     2, gamma, 1, g, -12)));
+	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
+		     1, gamma, 2, g, -13)));
 	// Z + q + gamma
-// 	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,1,z0,2,gamma,3,qk, -20)));
-// 	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,2,z0,1,gamma,3,qk, -21)));
-// 	add(new_ptr((Tree2toNDiagram(3),qk,qk,g,1,z0,2,qk,5,gamma,5,qk,-22)));
+	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,1,z0,2,gamma,3,qk, -20)));
+	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,2,z0,1,gamma,3,qk, -21)));
+	add(new_ptr((Tree2toNDiagram(3),qk,qk,g,1,z0,2,qk,5,gamma,5,qk,-22)));
 	// Z + qbar + gamma
 	add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,3,z0,2,gamma,1,qb     ,-30)));
 	add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,2,z0,3,gamma,1,qb     ,-31)));
@@ -1131,6 +1143,26 @@ void MEPP2VGammaNewPowheg::Init() {
      "Reference to the object calculating the QED coupling for the shower",
      &MEPP2VGammaNewPowheg::alphaQED_, false, false, true, false, false);
 
+  static Parameter<MEPP2VGammaNewPowheg,double> interfacepreQCDqqbarq
+    ("preQCDqqbarq",
+     "The constant for the Sudakov overestimate for the "
+     "q qbar -> V Gamma +g with emission from the q",
+     &MEPP2VGammaNewPowheg::preQCDqqbarq_, 23.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2VGammaNewPowheg,double> interfacepreQCDqqbarqbar
+    ("preQCDqqbarqbar",
+     "The constant for the Sudakov overestimate for the "
+     "q qbar -> V Gamma +g with emission from the qbar",
+     &MEPP2VGammaNewPowheg::preQCDqqbarqbar_, 23.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+//   prefactor_.push_back(preQCDqg_);
+//   prefactor_.push_back(preQCDgqbar_);
+//   prefactor_.push_back(preQEDqqbarq_);
+//   prefactor_.push_back(preQEDqqbarqbar_);
+//   prefactor_.push_back(preQEDqgq_);
+//   prefactor_.push_back(preQEDgqbarqbar_);
 }
 
 double MEPP2VGammaNewPowheg::NLOWeight() const {
@@ -1722,6 +1754,7 @@ double MEPP2VGammaNewPowheg::subtractedReal(pair<double,double> x, double z,
     realQQ = sHat()*phase*newqPDF/oldqPDF*
       realVGammagME(particles,pnew,order ? IIQCD1 : IIQCD2,Subtraction,false);
     if(order) {
+      particles[0] = gluon_;
       particles[4] = mePartonData()[0]->CC();
       realGQ = sHat()*phase*newgPDF/oldqPDF*
 	realVGammaqbarME(particles,pnew,IIQCD2,Subtraction,false);
@@ -1757,8 +1790,9 @@ generateHardest(ShowerTreePtr tree) {
   // find the parton which should be first
   if( ( particlesToShower[1]->progenitor()->id() > 0 &&
         particlesToShower[0]->progenitor()->id() < 0 ) || 
-      ( particlesToShower[1]->progenitor()->id() == ParticleID::g &&
-	particlesToShower[0]->progenitor()->id() < 6 ) )
+      ( particlesToShower[0]->progenitor()->id() == ParticleID::g &&
+	particlesToShower[1]->progenitor()->id() < 6 && 
+	particlesToShower[1]->progenitor()->id() > 0 ) )
     swap(particlesToShower[0],particlesToShower[1]);
   // check that quark is along +ve z direction
   quarkplus_ = particlesToShower[0]->progenitor()->momentum().z() > ZERO;
@@ -1773,6 +1807,7 @@ generateHardest(ShowerTreePtr tree) {
        cjt != tree->outgoingLines().end();++cjt ) {
     particlesToShower.push_back( cjt->first );
   }
+  if(particlesToShower.size()!=4) return HardTreePtr();
   if(particlesToShower[3]->id()==ParticleID::Z0 ||
      abs(particlesToShower[3]->id())==ParticleID::Wplus)
     swap(particlesToShower[2],particlesToShower[3]);
@@ -1799,7 +1834,8 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   int iemit(-1);
   for(unsigned int ix=0;ix<4;++ix) {
     pT.push_back(0.5*generator()->maximumCMEnergy());
-    double a = alphaQCD_->overestimateValue()*prefactor_[ix]*(maxyj-minyj);
+    double a = alphaQCD_->overestimateValue()/Constants::twopi*
+      prefactor_[ix]*(maxyj-minyj);
     cPDVector particles;
     for(unsigned int iy=0;iy<particlesToShower.size();++iy) 
       particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
@@ -1877,7 +1913,10 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
       }
       if(pdf[0]<=0.||pdf[1]<=0.) continue;
       wgt *= pdf[1]/pdf[0];
-      if(wgt>1.) generator()->log() << "testing weight problem " << ix << " " << wgt << "\n";
+      if(wgt>1.) generator()->log() << "Weight greater than one in "
+				    << "MEPP2VGammaNewPowheg::hardQCDEmission() "
+				    << "for channel " << ix 
+				    << " Weight = " << wgt << "\n";
       if(UseRandom::rnd()<wgt) break;
     }
     while(pT[ix]>minpT_);
@@ -1978,8 +2017,400 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 }
 
 HardTreePtr MEPP2VGammaNewPowheg::
-hardQEDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr) {
-  assert(false);
+hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
+		ShowerTreePtr tree) {
+  Energy rootS = sqrt(lastS());
+  // limits on the rapidity of the jet
+  double minyj = -8.0,maxyj = 8.0;
+  // generate the hard emission
+  pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
+				    particlesToShower[1]->progenitor()->x());
+  vector<Energy> pT;
+  double lo = loME_/(2.*Constants::twopi*alphaS_);
+  Energy pTmax(-GeV);
+  cPDVector selectedParticles;
+  vector<Lorentz5Momentum> selectedMomenta;
+  int iemit(-1);
+  pair<double,double> mewgt(make_pair(0.,0.));
+  if(particlesToShower[0]->progenitor()->id()==ParticleID::g ||
+     particlesToShower[1]->progenitor()->id()==ParticleID::g ) {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      selectedParticles.push_back(particlesToShower[ix]->progenitor()->dataPtr());
+      selectedMomenta.push_back(particlesToShower[ix]->progenitor()->momentum());
+    }
+    selectedParticles.push_back(getParticleData(ParticleID::gamma));
+    swap(selectedParticles[3],selectedParticles[4]);
+    selectedMomenta.push_back(Lorentz5Momentum());
+    swap(selectedMomenta[3],selectedMomenta[4]);
+    Lorentz5Momentum pin,pout;
+    double xB;
+    unsigned int iloc;
+    if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
+      pin = particlesToShower[0]->progenitor()->momentum();
+      xB = x.first;
+      iloc = 6;
+    }
+    else {
+      pin = particlesToShower[1]->progenitor()->momentum();
+      xB = x.second;
+      iloc = 7;
+    }
+    pout = particlesToShower[3]->progenitor()->momentum();
+    Lorentz5Momentum q = pout-pin;
+    Axis axis(q.vect().unit());
+    LorentzRotation rot;
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot = LorentzRotation();
+    if(axis.perp2()>1e-20) {
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+    }
+    if(abs(1.-q.e()/q.vect().mag())>1e-6) 
+      rot.boostZ(q.e()/q.vect().mag());
+    Lorentz5Momentum ptemp = rot*pin;
+    if(ptemp.perp2()/GeV2>1e-20) {
+      Boost trans = -1./ptemp.e()*ptemp.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+    }
+    rot.invert();
+    Energy Q = sqrt(-q.m2());
+    double xT = sqrt((1.-xB)/xB);
+    double xTMin = 2.*minpT_/Q;
+    double wgt(0.);
+    double a = alphaQED_->overestimateValue()*prefactor_[iloc]/Constants::twopi;
+    Lorentz5Momentum p1,p2,p3;
+    do {
+      wgt = 0.;
+      // intergration variables dxT/xT^3
+      xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+      // dz
+      double zp = UseRandom::rnd();
+      double xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
+      if(xT<xTMin) break;
+      // check allowed
+      if(xp<xB||xp>1.) continue;
+      // phase-space piece of the weight
+      wgt = 4.*sqr(1.-xp)*(1.-zp)*zp/prefactor_[iloc];
+      // coupling
+      Energy2 pT2 = 0.25*sqr(Q*xT);
+      wgt *= alphaQED_->ratio(pT2);
+      // matrix element
+      wgt *= 16.*sqr(Constants::pi)/alphaEM_;
+      // PDF
+      double pdf[2];
+      if(iloc==6) {
+	pdf[0] = beams_[0]->pdf()->
+	  xfx(beams_[0],partons_[0],scale()    ,x.first    );
+	pdf[1] = beams_[0]->pdf()->
+	  xfx(beams_[0],partons_[0],scale()+pT2,x.first /xp);
+      }
+      else {
+	pdf[0] = beams_[1]->pdf()->
+	  xfx(beams_[1],partons_[1],scale()    ,x.second   );
+	pdf[1] = beams_[1]->pdf()->
+	  xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
+      }
+      if(pdf[0]<=0.||pdf[1]<=0.) continue;
+      wgt *= pdf[1]/pdf[0];
+      // matrix element piece
+      double phi = Constants::twopi*UseRandom::rnd();
+      double x2 = 1.-(1.-zp)/xp;
+      double x3 = 2.-1./xp-x2;
+      p1=Lorentz5Momentum(ZERO,ZERO,0.5*Q/xp,0.5*Q/xp,ZERO);
+      p2=Lorentz5Momentum( 0.5*Q*xT*cos(phi), 0.5*Q*xT*sin(phi),
+			   -0.5*Q*x2,0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+      p3=Lorentz5Momentum(-0.5*Q*xT*cos(phi),-0.5*Q*xT*sin(phi),
+			  -0.5*Q*x3,0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+      selectedMomenta[iloc-6] = rot*p1;
+      selectedMomenta[3] = rot*p3;
+      selectedMomenta[4] = rot*p2;
+      if(iloc==6) {
+	mewgt.first  = 
+	  sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,IFQED1,Shower,false);
+	mewgt.second = 
+	  sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,FIQED1,Shower,false);
+	wgt *= mewgt.first+mewgt.second;
+      }
+      else {
+	mewgt.first  = 
+	  sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,IFQED2,Shower,false);
+	mewgt.second = 
+	  sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,FIQED2,Shower,false); 
+	wgt *= mewgt.first+mewgt.second;
+      }
+      if(wgt>1.) generator()->log() << "Weight greater than one in "
+				    << "MEPP2VGammaNewPowheg::hardQEDEmission() "
+				    << "for IF channel "
+				    << " Weight = " << wgt << "\n";
+    }
+    while(xT>xTMin&&UseRandom::rnd()>wgt);
+    // if no emission
+    if(xT<xTMin) {
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+	particlesToShower[ix]->maximumpT(minpT_);
+      return HardTreePtr();
+    }
+    pTmax = 0.5*xT*Q;
+    iemit = mewgt.first>mewgt.second ? 2 : 3;
+  }
+  else {
+    for(unsigned int ix=0;ix<2;++ix) {
+      pT.push_back(0.5*generator()->maximumCMEnergy());
+      cPDVector particles;
+      for(unsigned int iy=0;iy<particlesToShower.size();++iy) 
+	particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
+      particles.push_back(particles[3]);
+      particles[3] = getParticleData(ParticleID::gamma);
+      vector<Lorentz5Momentum> momenta(5);
+      double a = alphaQED_->overestimateValue()*prefactor_[ix+4]*(maxyj-minyj)*
+	sqr(particles[0]->iCharge()/3.)/Constants::twopi;
+      do {
+	pT[ix] *= pow(UseRandom::rnd(),1./a);
+	if(pT[ix]<minpT_) break;
+	double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
+	double vt,z;
+	if(ix==0) {
+	  vt = pT[ix]*exp(-y)/rootS/x.second;
+	  z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
+	  if(z>1.||z<x.first) continue;
+	}
+	else {
+	  vt = pT[ix]*exp( y)/rootS/x.first ;
+	  z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
+	  if(z>1.||z<x.second) continue;
+	}
+	if(vt>1.-z || vt<0.) continue;
+	if(ix==0) {
+	  momenta[0] = particlesToShower[0]->progenitor()->momentum()/z;
+	  momenta[1] = particlesToShower[1]->progenitor()->momentum();
+	}
+	else {
+	  momenta[0] = particlesToShower[0]->progenitor()->momentum();
+	  momenta[1] = particlesToShower[1]->progenitor()->momentum()/z;
+	}
+	double phi = Constants::twopi*UseRandom::rnd();
+	momenta[2] = particlesToShower[2]->progenitor()->momentum();
+	momenta[3] = particlesToShower[3]->progenitor()->momentum();
+	if(!quarkplus_) y *= -1.;
+	momenta[4] = Lorentz5Momentum(pT[ix]*cos(phi),pT[ix]*sin(phi),
+				      pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
+	Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
+	Lorentz5Momentum Kt = momenta[2]+momenta[3];
+	Lorentz5Momentum Ksum = K+Kt;
+	Energy2 K2 = K.m2(), Ksum2 = Ksum.m2();
+	for(unsigned int iy=2;iy<4;++iy) {
+	  momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
+	    +2*K*(Kt*momenta [iy])/K2;
+	}
+	swap(momenta[3],momenta[4]);
+	double wgt = alphaQED_->ratio(sqr(pT[ix]))*z/(1.-vt)
+	  /prefactor_[ix+4]/lo/sqr(particles[0]->iCharge()/3.);
+	if(ix==0)
+	  wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQED1,Shower,false);
+	else
+	  wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQED2,Shower,false);
+	wgt *= 16.*sqr(Constants::pi)/alphaEM_;
+	// pdf piece
+	double pdf[2];
+	if(ix%2==0) {
+	  pdf[0] = beams_[0]->pdf()->xfx(beams_[0],partons_ [0],
+					 scale(),            x.first   )  /x.first;
+	  pdf[1] = beams_[0]->pdf()->xfx(beams_[0],particles[0],
+					 scale()+sqr(pT[ix]),x.first /z)*z/x.first;
+	}
+	else {
+	  pdf[0] = beams_[1]->pdf()->xfx(beams_[1],partons_ [1],
+					 scale()            ,x.second  )  /x.second;
+	  pdf[1] = beams_[1]->pdf()->xfx(beams_[1],particles[1],
+					 scale()+sqr(pT[ix]),x.second/z)*z/x.second;
+	}
+	if(pdf[0]<=0.||pdf[1]<=0.) continue;
+	wgt *= pdf[1]/pdf[0];
+	if(wgt>1.) {
+	  if(wgt>1.) generator()->log() << "Weight greater than one in "
+					<< "MEPP2VGammaNewPowheg::hardQEDEmission() "
+					<< "for II channel " << ix 
+					<< " Weight = " << wgt << "\n";
+	}
+	if(UseRandom::rnd()<wgt) break;
+      }
+      while(pT[ix]>minpT_);
+      if(pT[ix]>minpT_ && pT[ix]>pTmax) {
+	pTmax = pT[ix];
+	selectedParticles = particles;
+	selectedMomenta = momenta;
+	iemit=ix;
+      }
+    }
+    // if no emission
+    if(pTmax<ZERO) {
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+	particlesToShower[ix]->maximumpT(minpT_);
+      return HardTreePtr();
+    }
+  }
+  // construct the HardTree object needed to perform the showers
+  // create the partons
+  ShowerParticleVector newparticles;
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[0],false)));
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[1],false)));
+  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[3], true)));
+  // set the momenta
+  for(unsigned int ix=0;ix<2;++ix) 
+    newparticles[ix]->set5Momentum(selectedMomenta[ix]);
+  newparticles[2]->set5Momentum(selectedMomenta[3]);
+  // create the off-shell particle
+  if(iemit<2) {
+    Lorentz5Momentum poff = selectedMomenta[iemit] - selectedMomenta[3];
+    poff.rescaleMass();
+    newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit],false)));
+    newparticles.back()->set5Momentum(poff);
+  }
+  else {
+    if(iemit==2) {
+      if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
+	Lorentz5Momentum poff = selectedMomenta[0] - selectedMomenta[3];
+	poff.rescaleMass();
+	newparticles.push_back(new_ptr(ShowerParticle(partons_[0],false)));
+	newparticles.back()->set5Momentum(poff);
+      }
+      else {
+	Lorentz5Momentum poff = selectedMomenta[1] - selectedMomenta[3];
+	poff.rescaleMass();
+	newparticles.push_back(new_ptr(ShowerParticle(partons_[1],false)));
+	newparticles.back()->set5Momentum(poff);
+      }
+    }
+    else {
+      Lorentz5Momentum poff = selectedMomenta[3]+selectedMomenta[4];
+      poff.rescaleMass();
+      newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[3]
+						    ->progenitor()->dataPtr(),true)));
+      newparticles.back()->set5Momentum(poff);
+    }
+  }
+  for(unsigned int ix=2;ix<particlesToShower.size();++ix) {
+    newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[ix]->
+						  progenitor()->dataPtr(),true)));
+    newparticles.back()->set5Momentum(selectedMomenta[ix==2 ? 2 : 4 ]);
+  }
+  vector<HardBranchingPtr> nasonin,nasonhard;
+  // create the branchings for the incoming particles
+  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+					  HardBranchingPtr(),HardBranching::Incoming)));
+  if(iemit<3) {
+    int icharged = iemit;
+    if(icharged==2) icharged = particlesToShower[0]->progenitor()->
+		      dataPtr()->charged() ? 0 : 1;
+    // create the branching for the emitted jet
+    nasonin[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						      nasonin[icharged],
+						      HardBranching::Outgoing)));
+    // intermediate IS particle
+    nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					      nasonin[icharged],HardBranching::Incoming)));
+    nasonin[icharged]->addChild(nasonhard.back());
+    // set the colour partners
+    if(iemit<2) {
+      nasonhard.back()->colourPartner(nasonin[icharged==0 ? 1 : 0]);
+      nasonin[icharged==0 ? 1 : 0]->colourPartner(nasonhard.back());
+    }
+    // add other particle
+    nasonhard.push_back(nasonin[icharged == 0 ? 1 : 0]);
+    // outgoing particles
+    for(unsigned int ix=4;ix<newparticles.size();++ix) {
+      nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+						HardBranchingPtr(),
+						HardBranching::Outgoing)));
+    }
+    if(iemit==2) {
+      nasonhard.back()->colourPartner(nasonhard[0]);
+      nasonhard[0]->colourPartner(nasonhard.back());
+    }
+  }
+  else {
+    for(unsigned int ix=0;ix<2;++ix)
+      nasonhard.push_back(nasonin[ix]);
+    for(unsigned int ix=0;ix<newparticles.size();++ix)
+    nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
+					      HardBranchingPtr(),
+					      HardBranching::Outgoing)));
+    nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					      HardBranchingPtr(),
+					      HardBranching::Outgoing)));
+    nasonhard.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
+						     HardBranchingPtr(),
+						     HardBranching::Outgoing)));
+    nasonhard.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						     HardBranchingPtr(),
+						     HardBranching::Outgoing)));
+    if(nasonhard[0]->branchingParticle()->dataPtr()->charged()) {
+      nasonhard.back()->colourPartner(nasonhard[0]);
+      nasonhard[0]->colourPartner(nasonhard.back());
+    }
+    else {
+      nasonhard.back()->colourPartner(nasonhard[1]);
+      nasonhard[1]->colourPartner(nasonhard.back());
+    }
+  }
+  // make the tree
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QED));
+  // connect the ShowerParticles with the branchings
+  // and set the maximum pt for the radiation
+  set<HardBranchingPtr> hard=nasontree->branchings();
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    particlesToShower[ix]->maximumpT(pTmax);
+    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
+ 	mit!=hard.end();++mit) {
+      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
+	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
+	    (**mit).status()==HardBranching::Outgoing)||
+	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
+	   (**mit).status()==HardBranching::Incoming))) {
+	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	if((**mit).status()==HardBranching::Incoming) {
+	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
+	}
+	HardBranchingPtr parent=(*mit)->parent();
+	while(parent) {
+	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
+	  parent=parent->parent();
+	};
+      }
+    }
+  }
+  ColinePtr newline1 = new_ptr(ColourLine());
+  ColinePtr newline2 = new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
+      if((**cit).status()==HardBranching::Incoming) {
+	newline1->addColoured    ((**cit).branchingParticle());
+	newline2->addAntiColoured((**cit).branchingParticle());
+      }
+      else {
+	newline2->addColoured    ((**cit).branchingParticle());
+	newline1->addAntiColoured((**cit).branchingParticle());
+      }
+    }
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+      if((**cit).status()==HardBranching::Incoming) 
+	newline2->addColoured((**cit).branchingParticle());
+      else 
+	newline1->addColoured((**cit).branchingParticle());
+    }
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar) {
+      if((**cit).status()==HardBranching::Incoming) 
+	newline1->addAntiColoured((**cit).branchingParticle());
+      else 
+	newline2->addAntiColoured((**cit).branchingParticle());
+    }
+  }
+  // return the tree
+  return nasontree;
 }
 
 

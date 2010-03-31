@@ -512,21 +512,26 @@ private:
   /**
    *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
    */
-  double preqqbarq_;
+  double preQCDqqbarq_;
   /**
    *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
    */
-  double preqqbarqbar_;
+  double preQCDqqbarqbar_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
    */
-  double preqg_;
+  double preQCDqg_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
    */
-  double pregqbar_;
+  double preQCDgqbar_;
+
+  double preQEDqqbarq_;
+  double preQEDqqbarqbar_;
+  double preQEDqgq_;
+  double preQEDgqbarqbar_;
 
   /**
    *  The prefactors as a vector for easy use
