@@ -458,6 +458,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   currentTree(hard);
   // number of attempts if more than one interaction switched on
   unsigned int interactionTry=0;
+  bool showerOrder(true);
   do {
     try {
       // zero number of emissions
@@ -471,6 +472,12 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
       // loop over possible interactions
       vector<set<ShowerParticlePtr> > 
 	finalStates(interactions_.size(),set<ShowerParticlePtr>());
+      if(hardTree()) {
+	if(hardTree()->interaction()!=interactions_[0]) {
+	  showerOrder = false;
+	  swap(interactions_[0],interactions_[1]);
+	}
+      }
       for(unsigned int inter=0;inter<interactions_.size();++inter) {
  	// zero pt so only added first time round
  	if(inter!=0) intrinsicpT().clear();
@@ -530,6 +537,8 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
       }
       // the tree has now showered
       _currenttree->hasShowered(true);
+      if(!showerOrder) swap(interactions_[0],interactions_[1]);
+      hardTree(HardTreePtr());
       return;
     }
     catch (InteractionVeto) {
@@ -832,12 +841,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
  	      progenitor()->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
  								 interactions_[inter])); 
  	    }
-	    
-
 	  }
-
-
-
 	}
 	while(!showerModel()->kinematicsReconstructor()->reconstructDecayJets(decay)&&
 	      maximumTries()>++ntry);
@@ -914,7 +918,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
   if(_hardEmissionMode==1) hardestEmission(hard);
   // set the initial colour partners
-  setEvolutionPartners(hard,ShowerInteraction::QCD);
+  setEvolutionPartners(hard,_nasontree ? 
+		       _nasontree->interaction() : interactions_[0]);
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -934,7 +939,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
     particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
   if(_hardEmissionMode==0 && _currenttree->hardMatrixElementCorrection()) {
-    setEvolutionPartners(hard,ShowerInteraction::QCD);
+    setEvolutionPartners(hard,interactions_[0]);
     _currenttree->resetShowerProducts();
   }
   // return the answer
@@ -977,7 +982,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
   }
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_nasontree);
+    setInitialEvolutionScales(particles,!hard,type,!_nasontree);
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {

@@ -300,7 +300,7 @@ reconstructHardJets(ShowerTreePtr hard,
       // final-state systems except for general recon
       if(!general) {
 	for(unsigned int ix=0;ix<systems.size();++ix) {
-	  if(systems[ix].type==F) 
+	  if(systems[ix].type==F)
 	    reconstructFinalStateSystem(applyBoost,toRest,fromRest,systems[ix].jets);
 	}
       }
@@ -1099,14 +1099,14 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     // final-state systems except for general recon
     if(!general) {
       for(unsigned int ix=0;ix<systems.size();++ix) {
-	if(systems[ix].type==F) 
+	if(systems[ix].type==F)
 	  deconstructFinalStateSystem(toRest,fromRest,tree,
 				      systems[ix].jets,evolver,type);
-	}
       }
-      else {
-	return deconstructGeneralSystem(tree,evolver,type);
-      }
+    }
+    else {
+      return deconstructGeneralSystem(tree,evolver,type);
+    }
     return true;
   }
 
@@ -1501,6 +1501,7 @@ deconstructInitialInitialSystem(bool & applyBoost,Boost & toRest,
   // hadron level cmf
   Energy2 s  = (pq[0] +pq[1] ).m2();
   // calculate the x values 
+  assert(pcm.mass2()>ZERO);
   double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
   if(pq[0].z()<ZERO) swap(x[0],x[1]);
   double k1=alpha[0]/x[0],k2=beta[1]/x[1];
@@ -1640,7 +1641,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
     particles.push_back((**cjt).branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true,type,false);
+    ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
   set<HardBranchingPtr>::iterator clt;

@@ -236,15 +236,11 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 	if(!(*cjt)->data().charged()||cit==cjt) continue;
 	double charge = double((*cit)->data().iCharge()*(*cjt)->data().iCharge());
  	if( FS(*cit) != FS(*cjt) ) charge *=-1.;
-
-	if((abs((**cit).id())==5&&abs((**cjt).id())==24)||
-	   (abs((**cjt).id())==5&&abs((**cit).id())==24)) charge *=1000.;
-
 	if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
       }
       if(partners.empty()) {
 	throw Exception() << "Failed to partner in " 
-			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << "PartnerFinder::setQEDInitialEvolutionScales"
 			  << (**cit) << Exception::eventerror;
       }
       double prob(0.);
@@ -260,7 +256,7 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       }
       if(!partner) 
 	throw Exception() << "Failed to partner in " 
-			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << "PartnerFinder::setQEDInitialEvolutionScales"
 			  << (**cit) << Exception::eventerror;
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
