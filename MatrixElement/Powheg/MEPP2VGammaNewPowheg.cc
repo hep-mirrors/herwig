@@ -287,7 +287,13 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
     meMomenta()[3] = rot*Lorentz5Momentum(-0.5*Q*xT*cos(phi_),-0.5*Q*xT*sin(phi_),
 					  -0.5*Q*x3,0.5*Q*sqrt(sqr(x3)+sqr(xT)));
 
-    double ratio = 2.*((meMomenta()[3]+meMomenta()[4])*meMomenta()[0])/sHat();
+    double ratio;
+    if(dipole_<=6) {
+      ratio =  2.*((meMomenta()[3]+meMomenta()[4])*meMomenta()[0])/sHat();
+    }
+    else {
+      ratio =  2.*((meMomenta()[3]+meMomenta()[4])*meMomenta()[1])/sHat();
+    }
     jacobian(jacobian()*ratio);
   }
   else {
@@ -374,336 +380,435 @@ double MEPP2VGammaNewPowheg::
 loVGammaME(const cPDVector & particles,
 	   const vector<Lorentz5Momentum> & momenta,
 	   bool first) const {
-  // wavefunctions for the incoming fermions
-  SpinorWaveFunction    em_in( momenta[0],particles[0],incoming);
-  SpinorBarWaveFunction ep_in( momenta[1],particles[1],incoming);
-  // wavefunctions for the outgoing bosons
-  VectorWaveFunction v1_out(momenta[2],particles[2],outgoing);
-  VectorWaveFunction v2_out(momenta[3],particles[3],outgoing);
-  vector<SpinorWaveFunction> f1;
-  vector<SpinorBarWaveFunction> a1;
-  vector<VectorWaveFunction> v1,v2;
-  // calculate the wavefunctions
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix<2) {
-      em_in.reset(ix);
-      f1.push_back(em_in);
-      ep_in.reset(ix);
-      a1.push_back(ep_in);
-    }
-    v1_out.reset(ix);
-    v1.push_back(v1_out);
-    if(ix!=1) {
-      v2_out.reset(ix);
-      v2.push_back(v2_out);
-    }
-  }
   double output(0.);
-  vector<double> me(3,0.0);
-  if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1));
-  if(particles[2]->id()==ParticleID::Z0) {
-    vector<Complex> diag(2,0.0);
-    SpinorWaveFunction inter;
-    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-	for(unsigned int ohel1=0;ohel1<3;++ohel1) {
-	  for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	    inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
-					   f1[ihel1],v1[ohel1]);
-	    diag[0] = FFPvertex_->evaluate(ZERO,inter,a1[ihel2],v2[ohel2]);
-	    inter   = FFPvertex_->evaluate(ZERO,5,f1[ihel1].particle(),
-					   f1[ihel1] ,v2[ohel2]);
-	    diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
-	    // individual diagrams
-	    for (size_t ii=0; ii<2; ++ii) me[ii] += std::norm(diag[ii]);
-	    // full matrix element
-	    diag[0] += diag[1];
-	    output += std::norm(diag[0]);
-	    // storage of the matrix element for spin correlations
-	    if(first) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
-	  }
-	}
-      }
+  // analytic formula for speed
+  if(!first) {
+    Energy2 sh  = (momenta[0]+momenta[1]).m2();
+    Energy2 th  = (momenta[0]-momenta[2]).m2();
+    Energy2 uh  = (momenta[0]-momenta[3]).m2();
+    Energy2 mv2 = momenta[2].mass2();
+    Complex gl,gr;
+    if(particles[2]->id()==ParticleID::Z0) {
+      FFZvertex_->setCoupling(scale(),particles[0],particles[1],particles[2]);
+      gl = FFZvertex_->norm()*FFZvertex_->left();
+      gr = FFZvertex_->norm()*FFZvertex_->right();
     }
+    else {
+      FFWvertex_->setCoupling(scale(),particles[0],particles[1],particles[2]);
+      gl = FFWvertex_->norm()*FFWvertex_->left();
+      gr = FFWvertex_->norm()*FFWvertex_->right();
+    }
+    double Q1 = double(particles[0]->iCharge())/3.;
+    double Q2 =-double(particles[1]->iCharge())/3.;
+    output = 2./3.*(norm(gl)+norm(gr))*sqr(Q1*th+Q2*uh)/sqr(th+uh)/th/uh
+      *(sh*mv2-uh*th+0.5*sqr(uh+th));
   }
+  // helicity amplitudes for correlations
   else {
-    vector<Complex> diag(3,0.0);
-    SpinorWaveFunction inter;
-    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-	VectorWaveFunction interW =
-	  FFWvertex_->evaluate(scale(),3,v1[0].particle(),
-			       f1[ihel1],a1[ihel2]);
-	for(unsigned int ohel1=0;ohel1<3;++ohel1) {
-	  for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	    // t-channel diagrams
-	    inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].particle(),
-					   f1[ihel1],v1[ohel1]);
-	    diag[0] = FFPvertex_->evaluate(ZERO,inter,a1[ihel2],v2[ohel2]);
-	    inter   = FFPvertex_->evaluate(ZERO,5,f1[ihel1].particle(),
-					   f1[ihel1] ,v2[ohel2]);
-	    diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
-	    // s-channel diagram
-	    diag[2] = WWWvertex_->evaluate(scale(),interW,v1[ohel1],v2[ohel2]);
-	    // individual diagrams
-	    for (size_t ii=0; ii<3; ++ii) me[ii] += std::norm(diag[ii]);
-	    // full matrix element
-	    diag[0] += diag[1]+diag[2];
-	    output += std::norm(diag[0]);
-	    // storage of the matrix element for spin correlations
-	    if(first) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
+    // wavefunctions for the incoming fermions
+    SpinorWaveFunction    em_in( momenta[0],particles[0],incoming);
+    SpinorBarWaveFunction ep_in( momenta[1],particles[1],incoming);
+    // wavefunctions for the outgoing bosons
+    VectorWaveFunction v1_out(momenta[2],particles[2],outgoing);
+    VectorWaveFunction v2_out(momenta[3],particles[3],outgoing);
+    vector<SpinorWaveFunction> f1;
+    vector<SpinorBarWaveFunction> a1;
+    vector<VectorWaveFunction> v1,v2;
+    // calculate the wavefunctions
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<2) {
+	em_in.reset(ix);
+	f1.push_back(em_in);
+	ep_in.reset(ix);
+	a1.push_back(ep_in);
+      }
+      v1_out.reset(ix);
+      v1.push_back(v1_out);
+      if(ix!=1) {
+	v2_out.reset(ix);
+	v2.push_back(v2_out);
+      }
+    }
+    vector<double> me(3,0.0);
+    if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+						PDT::Spin1,PDT::Spin1));
+    if(particles[2]->id()==ParticleID::Z0) {
+      vector<Complex> diag(2,0.0);
+      SpinorWaveFunction inter;
+      for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+	for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	  for(unsigned int ohel1=0;ohel1<3;++ohel1) {
+	    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	      inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
+					     f1[ihel1],v1[ohel1]);
+	      diag[0] = FFPvertex_->evaluate(ZERO,inter,a1[ihel2],v2[ohel2]);
+	      inter   = FFPvertex_->evaluate(ZERO,5,f1[ihel1].particle(),
+					     f1[ihel1] ,v2[ohel2]);
+	      diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
+	      // individual diagrams
+	      for (size_t ii=0; ii<2; ++ii) me[ii] += std::norm(diag[ii]);
+	      // full matrix element
+	      diag[0] += diag[1];
+	      output += std::norm(diag[0]);
+	      // storage of the matrix element for spin correlations
+	      if(first) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
+	    }
 	  }
 	}
       }
     }
+    else {
+      vector<Complex> diag(3,0.0);
+      SpinorWaveFunction inter;
+      for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+	for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	  VectorWaveFunction interW =
+	    FFWvertex_->evaluate(scale(),3,v1[0].particle(),
+				 f1[ihel1],a1[ihel2]);
+	  for(unsigned int ohel1=0;ohel1<3;++ohel1) {
+	    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	      // t-channel diagrams
+	      inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].particle(),
+					     f1[ihel1],v1[ohel1]);
+	      diag[0] = FFPvertex_->evaluate(ZERO,inter,a1[ihel2],v2[ohel2]);
+	      inter   = FFPvertex_->evaluate(ZERO,5,f1[ihel1].particle(),
+					     f1[ihel1] ,v2[ohel2]);
+	      diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
+	      // s-channel diagram
+	      diag[2] = WWWvertex_->evaluate(scale(),interW,v1[ohel1],v2[ohel2]);
+	      // individual diagrams
+	      for (size_t ii=0; ii<3; ++ii) me[ii] += std::norm(diag[ii]);
+	      // full matrix element
+	      diag[0] += diag[1]+diag[2];
+	      output += std::norm(diag[0]);
+	      // storage of the matrix element for spin correlations
+	      if(first) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
+	    }
+	  }
+	}
+      }
+    }
+    // store diagram info, etc.
+    DVector save(3);
+    for (size_t i = 0; i < 3; ++i) save[i] = 0.25 * me[i];
+    meInfo(save);
+    // spin and colour factors
+    output *= 0.25/3./norm(FFPvertex_->norm());
   }
-  // store diagram info, etc.
-  DVector save(3);
-  for (size_t i = 0; i < 3; ++i) save[i] = 0.25 * me[i];
-  meInfo(save);
-  // spin and colour factors
-  output *= 0.25/3.;
-  return output/norm(FFPvertex_->norm());
+  return output;
 }
 
 double MEPP2VGammaNewPowheg::
 loVqME(const cPDVector & particles,
        const vector<Lorentz5Momentum> & momenta,
        bool first) const {
-  vector<SpinorWaveFunction> fin;
-  vector<VectorWaveFunction> gin;
-  vector<SpinorBarWaveFunction> fout;
-  vector<VectorWaveFunction> vout;
-  SpinorWaveFunction    qin (momenta[0],particles[0],incoming);
-  VectorWaveFunction    glin(momenta[1],particles[1],incoming);
-  VectorWaveFunction    wout(momenta[2],particles[2],outgoing);
-  SpinorBarWaveFunction qout(momenta[3],particles[3],outgoing);
-  // polarization states for the particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix<2) {
-      qin.reset(ix) ;
-      fin.push_back(qin);
-      qout.reset(ix);
-      fout.push_back(qout);
+  double output(0.);
+  // analytic form
+  if(!first) {
+    Energy2 sh  = (momenta[0]+momenta[1]).m2();
+    Energy2 th  = (momenta[0]-momenta[2]).m2();
+    Energy2 uh  = (momenta[0]-momenta[3]).m2();
+    Energy2 mv2 = momenta[2].mass2();
+    Complex gl,gr;
+    if(particles[2]->id()==ParticleID::Z0) {
+      FFZvertex_->setCoupling(scale(),particles[0],particles[3]->CC(),particles[2]);
+      gl = FFZvertex_->norm()*FFZvertex_->left();
+      gr = FFZvertex_->norm()*FFZvertex_->right();
     }
-    if(ix!=1) {
-      glin.reset(ix);
-      gin.push_back(glin);
+    else {
+      FFWvertex_->setCoupling(scale(),particles[0],particles[3]->CC(),particles[2]);
+      gl = FFWvertex_->norm()*FFWvertex_->left();
+      gr = FFWvertex_->norm()*FFWvertex_->right();
     }
-    wout.reset(ix);
-    vout.push_back(wout);
+    output = -1./6.*(norm(gl)+norm(gr))/sh/th
+      *(sqr(sh-mv2)+sqr(th-mv2));
   }
-  if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					      PDT::Spin1,PDT::Spin1Half));
-  // compute the matrix elements
-  double me[3]={0.,0.,0.};
-  Complex diag[2];
-  SpinorWaveFunction inters;
-  SpinorBarWaveFunction interb;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-	// intermediates for the diagrams
-	interb= FFGvertex_->evaluate(scale(),5,particles[3],
-				     fout[ohel1],gin[ihel2]);
-	inters= FFGvertex_->evaluate(scale(),5,particles[0],
-				     fin[ihel1],gin[ihel2]);
-	for(unsigned int vhel=0;vhel<3;++vhel) {
-	  if(particles[2]->id()==ParticleID::Z0) {
-	    diag[0] = FFZvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
-	    diag[1] = FFZvertex_->evaluate(scale(),inters,fout[ohel1],vout[vhel]);
+  // helicity amplitudes
+  else {
+    vector<SpinorWaveFunction> fin;
+    vector<VectorWaveFunction> gin;
+    vector<SpinorBarWaveFunction> fout;
+    vector<VectorWaveFunction> vout;
+    SpinorWaveFunction    qin (momenta[0],particles[0],incoming);
+    VectorWaveFunction    glin(momenta[1],particles[1],incoming);
+    VectorWaveFunction    wout(momenta[2],particles[2],outgoing);
+    SpinorBarWaveFunction qout(momenta[3],particles[3],outgoing);
+    // polarization states for the particles
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<2) {
+	qin.reset(ix) ;
+	fin.push_back(qin);
+	qout.reset(ix);
+	fout.push_back(qout);
+      }
+      if(ix!=1) {
+	glin.reset(ix);
+	gin.push_back(glin);
+      }
+      wout.reset(ix);
+      vout.push_back(wout);
+    }
+    if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+						PDT::Spin1,PDT::Spin1Half));
+    // compute the matrix elements
+    double me[3]={0.,0.,0.};
+    Complex diag[2];
+    SpinorWaveFunction inters;
+    SpinorBarWaveFunction interb;
+    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+	  // intermediates for the diagrams
+	  interb= FFGvertex_->evaluate(scale(),5,particles[3],
+				       fout[ohel1],gin[ihel2]);
+	  inters= FFGvertex_->evaluate(scale(),5,particles[0],
+				       fin[ihel1],gin[ihel2]);
+	  for(unsigned int vhel=0;vhel<3;++vhel) {
+	    if(particles[2]->id()==ParticleID::Z0) {
+	      diag[0] = FFZvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
+	      diag[1] = FFZvertex_->evaluate(scale(),inters,fout[ohel1],vout[vhel]);
+	    }
+	    else {
+	      diag[0] = FFWvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
+	      diag[1] = FFWvertex_->evaluate(scale(),inters,fout[ohel1],vout[vhel]);
+	    }
+	    // diagram contributions
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
+	    // total
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(first) me_(ihel1,2*ihel2,vhel,ohel1) = diag[0];
 	  }
-	  else {
-	    diag[0] = FFWvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
-	    diag[1] = FFWvertex_->evaluate(scale(),inters,fout[ohel1],vout[vhel]);
-	  }
-	  // diagram contributions
-	  me[1] += norm(diag[0]);
-	  me[2] += norm(diag[1]);
-	  // total
-	  diag[0] += diag[1];
-	  me[0]   += norm(diag[0]);
-	  if(first) me_(ihel1,2*ihel2,vhel,ohel1) = diag[0];
 	}
       }
     }
+    // results
+    // initial state spin and colour average
+    double colspin = 1./24./4.;
+    // and C_F N_c from matrix element
+    colspin *= 4.;
+    DVector save;
+    for(unsigned int ix=0;ix<3;++ix) {
+      me[ix] *= colspin;
+      if(ix>0) save.push_back(me[ix]);
+    }
+    meInfo(save);
+    output = me[0]/norm(FFGvertex_->norm());
   }
-  // results
-  // initial state spin and colour average
-  double colspin = 1./24./4.;
-  // and C_F N_c from matrix element
-  colspin *= 4.;
-  DVector save;
-  for(unsigned int ix=0;ix<3;++ix) {
-    me[ix] *= colspin;
-    if(ix>0) save.push_back(me[ix]);
-  }
-  meInfo(save);
-  return me[0]/norm(FFGvertex_->norm());
+  return output;
 }
 
 double MEPP2VGammaNewPowheg::
 loVqbarME(const cPDVector & particles,
 	  const vector<Lorentz5Momentum> & momenta,
 	  bool first) const {
-  vector<SpinorBarWaveFunction>  ain;
-  vector<VectorWaveFunction> gin;
-  vector<SpinorWaveFunction> aout;
-  vector<VectorWaveFunction> vout;
-  VectorWaveFunction    glin (momenta[0],particles[0],incoming);
-  SpinorBarWaveFunction qbin (momenta[1],particles[1],incoming);
-  VectorWaveFunction    wout (momenta[2],particles[2],outgoing);
-  SpinorWaveFunction    qbout(momenta[3],particles[3],outgoing);
-  // polarization states for the particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix<2) {
-      qbin .reset(ix  );
-      ain .push_back(qbin );
-      qbout.reset(ix  );
-      aout.push_back(qbout);
+  double output(0.);
+  // analytic form
+  if(!first) {
+    Energy2 sh  = (momenta[0]+momenta[1]).m2();
+    Energy2 th  = (momenta[0]-momenta[2]).m2();
+    Energy2 uh  = (momenta[0]-momenta[3]).m2();
+    Energy2 mv2 = momenta[2].mass2();
+    Complex gl,gr;
+    if(particles[2]->id()==ParticleID::Z0) {
+      FFZvertex_->setCoupling(scale(),particles[3]->CC(),particles[1],particles[2]);
+      gl = FFZvertex_->norm()*FFZvertex_->left();
+      gr = FFZvertex_->norm()*FFZvertex_->right();
     }
-    if(ix!=1) {
-      glin.reset(ix);
-      gin.push_back(glin);
+    else {
+      FFWvertex_->setCoupling(scale(),particles[3]->CC(),particles[1],particles[2]);
+      gl = FFWvertex_->norm()*FFWvertex_->left();
+      gr = FFWvertex_->norm()*FFWvertex_->right();
     }
-    wout.reset(ix);
-    vout.push_back(wout);
+    output = -1./6.*(norm(gl)+norm(gr))/sh/uh
+      *(sqr(sh-mv2)+sqr(uh-mv2));
   }
-  // if calculation spin corrections construct the me
-  if(first) me_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1Half));
-  // compute the matrix elements
-  double me[3]={0.,0.,0.};
-  Complex diag[2];
-  SpinorWaveFunction inters;
-  SpinorBarWaveFunction interb;
-  Energy2 _scale=scale();
-  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-	// intermediates for the diagrams
-	inters= FFGvertex_->evaluate(scale(),5,particles[3],
-				     aout[ohel1],gin[ihel1]);
-	interb= FFGvertex_->evaluate(scale(),5,particles[1],
-				     ain[ihel2],gin[ihel1]);
-	for(unsigned int vhel=0;vhel<3;++vhel) {
-	  if(particles[2]->id()==ParticleID::Z0) {
-	    diag[0]= FFZvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
-	    diag[1]= FFZvertex_->evaluate(scale(),aout[ohel1],interb,vout[vhel]);
+  else {
+    vector<SpinorBarWaveFunction>  ain;
+    vector<VectorWaveFunction> gin;
+    vector<SpinorWaveFunction> aout;
+    vector<VectorWaveFunction> vout;
+    VectorWaveFunction    glin (momenta[0],particles[0],incoming);
+    SpinorBarWaveFunction qbin (momenta[1],particles[1],incoming);
+    VectorWaveFunction    wout (momenta[2],particles[2],outgoing);
+    SpinorWaveFunction    qbout(momenta[3],particles[3],outgoing);
+    // polarization states for the particles
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<2) {
+	qbin .reset(ix  );
+	ain .push_back(qbin );
+	qbout.reset(ix  );
+	aout.push_back(qbout);
+      }
+      if(ix!=1) {
+	glin.reset(ix);
+	gin.push_back(glin);
+      }
+      wout.reset(ix);
+      vout.push_back(wout);
+    }
+    // if calculation spin corrections construct the me
+    if(first) me_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
+						PDT::Spin1,PDT::Spin1Half));
+    // compute the matrix elements
+    double me[3]={0.,0.,0.};
+    Complex diag[2];
+    SpinorWaveFunction inters;
+    SpinorBarWaveFunction interb;
+    Energy2 _scale=scale();
+    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+	  // intermediates for the diagrams
+	  inters= FFGvertex_->evaluate(scale(),5,particles[3],
+				       aout[ohel1],gin[ihel1]);
+	  interb= FFGvertex_->evaluate(scale(),5,particles[1],
+				       ain[ihel2],gin[ihel1]);
+	  for(unsigned int vhel=0;vhel<3;++vhel) {
+	    if(particles[2]->id()==ParticleID::Z0) {
+	      diag[0]= FFZvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
+	      diag[1]= FFZvertex_->evaluate(scale(),aout[ohel1],interb,vout[vhel]);
+	    }
+	    else {
+	      diag[0]= FFWvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
+	      diag[1]= FFWvertex_->evaluate(scale(),aout[ohel1],interb,vout[vhel]);
+	    }
+	    // diagram contributions
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
+	    // total
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(first) me_(2*ihel1,ihel2,vhel,ohel1) = diag[0];
 	  }
-	  else {
-	    diag[0]= FFWvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
-	    diag[1]= FFWvertex_->evaluate(scale(),aout[ohel1],interb,vout[vhel]);
-	  }
-	  // diagram contributions
-	  me[1] += norm(diag[0]);
-	  me[2] += norm(diag[1]);
-	  // total
-	  diag[0] += diag[1];
-	  me[0]   += norm(diag[0]);
-	  if(first) me_(2*ihel1,ihel2,vhel,ohel1) = diag[0];
 	}
       }
     }
+    // results
+    // initial state spin and colour average
+    double colspin = 1./24./4.;
+    // and C_F N_c from matrix element
+    colspin *= 4.;
+    DVector save;
+    for(unsigned int ix=0;ix<3;++ix) {
+      me[ix] *= colspin;
+      if(ix>0) save.push_back(me[ix]);
+    }
+    meInfo(save);
+    output = me[0]/norm(FFGvertex_->norm());
   }
-  // results
-  // initial state spin and colour average
-  double colspin = 1./24./4.;
-  // and C_F N_c from matrix element
-  colspin *= 4.;
-  DVector save;
-  for(unsigned int ix=0;ix<3;++ix) {
-    me[ix] *= colspin;
-    if(ix>0) save.push_back(me[ix]);
-  }
-  meInfo(save);
-  return me[0]/norm(FFGvertex_->norm());
+  return output;
 }
 
 double MEPP2VGammaNewPowheg::
 loVgME(const cPDVector & particles,
        const vector<Lorentz5Momentum> & momenta,
        bool first) const {
-  vector<SpinorWaveFunction>     fin;
-  vector<SpinorBarWaveFunction>  ain;
-  vector<VectorWaveFunction> gout;
-  vector<VectorWaveFunction> vout;
-  SpinorWaveFunction    qin (momenta[0],particles[0],incoming);
-  SpinorBarWaveFunction qbin(momenta[1],particles[1],incoming);
-  VectorWaveFunction    wout(momenta[2],particles[2],outgoing);
-  VectorWaveFunction   glout(momenta[3],particles[3],outgoing);
-  for(unsigned int ix=0;ix<2;++ix) {
-  }
-  // polarization states for the particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix<2) {
-      qin.reset(ix)  ;
-      fin.push_back(qin);
-      qbin.reset(ix) ;
-      ain.push_back(qbin);
+  double output(0.);
+  // analytic for speed
+  if(!first) {
+    Energy2 sh  = (momenta[0]+momenta[1]).m2();
+    Energy2 th  = (momenta[0]-momenta[2]).m2();
+    Energy2 uh  = (momenta[0]-momenta[3]).m2();
+    Energy2 mv2 = momenta[2].mass2();
+    Complex gl,gr;
+    if(particles[2]->id()==ParticleID::Z0) {
+      FFZvertex_->setCoupling(scale(),particles[0],particles[1],particles[2]);
+      gl = FFZvertex_->norm()*FFZvertex_->left();
+      gr = FFZvertex_->norm()*FFZvertex_->right();
     }
-    if(ix!=1) {
-      glout.reset(ix);
-      gout.push_back(glout);
+    else {
+      FFWvertex_->setCoupling(scale(),particles[0],particles[1],particles[2]);
+      gl = FFWvertex_->norm()*FFWvertex_->left();
+      gr = FFWvertex_->norm()*FFWvertex_->right();
     }
-    wout.reset(ix);
-    vout.push_back(wout);
+    output = 4./9.*(norm(gl)+norm(gr))/th/uh
+      *(sqr(th-mv2)+sqr(uh-mv2));
   }
-  // if calculation spin corrections construct the me
-  if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1));
-  // compute the matrix elements
-  double me[3]={0.,0.,0.};
-  Complex diag[2];
-  SpinorWaveFunction inters;
-  SpinorBarWaveFunction interb;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-	// intermediates for the diagrams
- 	inters= FFGvertex_->evaluate(scale(),5,particles[0],
-				     fin[ihel1],gout[ohel1]);
-	interb= FFGvertex_->evaluate(scale(),5,particles[1],
-				     ain[ihel2],gout[ohel1]);
-	for(unsigned int vhel=0;vhel<3;++vhel) {
-	  if(particles[2]->id()==ParticleID::Z0) {
-	    diag[0]= FFZvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
-	    diag[1]= FFZvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
+  // helicity amplitudes for correlations
+  else {
+    vector<SpinorWaveFunction>     fin;
+    vector<SpinorBarWaveFunction>  ain;
+    vector<VectorWaveFunction> gout;
+    vector<VectorWaveFunction> vout;
+    SpinorWaveFunction    qin (momenta[0],particles[0],incoming);
+    SpinorBarWaveFunction qbin(momenta[1],particles[1],incoming);
+    VectorWaveFunction    wout(momenta[2],particles[2],outgoing);
+    VectorWaveFunction   glout(momenta[3],particles[3],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+    }
+    // polarization states for the particles
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<2) {
+	qin.reset(ix)  ;
+	fin.push_back(qin);
+	qbin.reset(ix) ;
+	ain.push_back(qbin);
+      }
+      if(ix!=1) {
+	glout.reset(ix);
+	gout.push_back(glout);
+      }
+      wout.reset(ix);
+      vout.push_back(wout);
+    }
+    // if calculation spin corrections construct the me
+    if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+						PDT::Spin1,PDT::Spin1));
+    // compute the matrix elements
+    double me[3]={0.,0.,0.};
+    Complex diag[2];
+    SpinorWaveFunction inters;
+    SpinorBarWaveFunction interb;
+    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+	  // intermediates for the diagrams
+	  inters= FFGvertex_->evaluate(scale(),5,particles[0],
+				       fin[ihel1],gout[ohel1]);
+	  interb= FFGvertex_->evaluate(scale(),5,particles[1],
+				       ain[ihel2],gout[ohel1]);
+	  for(unsigned int vhel=0;vhel<3;++vhel) {
+	    if(particles[2]->id()==ParticleID::Z0) {
+	      diag[0]= FFZvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
+	      diag[1]= FFZvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
+	    }
+	    else {
+	      diag[0]= FFWvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
+	      diag[1]= FFWvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
+	    }
+	    // diagram contributions
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
+	    // total
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(first) me_(ihel1,ihel2,vhel,2*ohel1) = diag[0];
 	  }
-	  else {
-	    diag[0]= FFWvertex_->evaluate(scale(),fin[ihel1],interb,vout[vhel]);
-	    diag[1]= FFWvertex_->evaluate(scale(),inters,ain[ihel2],vout[vhel]);
-	  }
-	  // diagram contributions
-	  me[1] += norm(diag[0]);
-	  me[2] += norm(diag[1]);
-	  // total
-	  diag[0] += diag[1];
-	  me[0]   += norm(diag[0]);
-	  if(first) me_(ihel1,ihel2,vhel,2*ohel1) = diag[0];
 	}
       }
     }
+    // results
+    // initial state spin and colour average
+    double colspin = 1./9./4.;
+    // and C_F N_c from matrix element
+    colspin *= 4.;
+    DVector save;
+    for(unsigned int ix=0;ix<3;++ix) {
+      me[ix] *= colspin;
+      if(ix>0) save.push_back(me[ix]);
+    }
+    meInfo(save);
+    output = me[0]/norm(FFGvertex_->norm());
   }
-  // results
-  // initial state spin and colour average
-  double colspin = 1./9./4.;
-  // and C_F N_c from matrix element
-  colspin *= 4.;
-  DVector save;
-  for(unsigned int ix=0;ix<3;++ix) {
-    me[ix] *= colspin;
-    if(ix>0) save.push_back(me[ix]);
-  }
-  meInfo(save);
-  return me[0]/norm(FFGvertex_->norm());
+  return output;
 }
 
 void MEPP2VGammaNewPowheg::persistentOutput(PersistentOStream & os) const {
   os << FFPvertex_ << FFWvertex_ << FFGvertex_ << FFZvertex_ << WWWvertex_ 
      << contrib_ << power_ << boson_ << gluon_ << prefactor_
-     << process_ << maxflavour_ << alphaS_ << fixedAlphaS_
+     << process_ << threeBodyProcess_<< maxflavour_ << alphaS_ << fixedAlphaS_
      << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV)
      << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV)
      << preQCDqqbarq_ << preQCDqqbarqbar_ << preQCDqg_ << preQCDgqbar_
@@ -713,7 +818,7 @@ void MEPP2VGammaNewPowheg::persistentOutput(PersistentOStream & os) const {
 void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
   is >> FFPvertex_ >> FFWvertex_ >> FFGvertex_ >> FFZvertex_ >> WWWvertex_ 
      >> contrib_ >> power_ >> boson_ >> gluon_ >> prefactor_
-     >> process_ >> maxflavour_ >> alphaS_ >> fixedAlphaS_
+     >> process_ >> threeBodyProcess_ >> maxflavour_ >> alphaS_ >> fixedAlphaS_
      >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV)
      >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV)
      >> preQCDqqbarq_ >> preQCDqqbarqbar_ >> preQCDqg_ >> preQCDgqbar_
@@ -721,8 +826,8 @@ void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
 }
 
 MEPP2VGammaNewPowheg::MEPP2VGammaNewPowheg() 
-  : contrib_(1), power_(0.1), boson_(0), process_(0), maxflavour_(5), 
-    alphaS_(0.), fixedAlphaS_(false),
+  : contrib_(1), power_(0.1), boson_(0), process_(0), threeBodyProcess_(0),
+    maxflavour_(5), alphaS_(0.), fixedAlphaS_(false),
     supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV),
     preQCDqqbarq_(5.), preQCDqqbarqbar_(0.5), preQCDqg_(50.), preQCDgqbar_(50.),
     preQEDqqbarq_(40.), preQEDqqbarqbar_(0.5), preQEDqgq_(1.), preQEDgqbarqbar_(1.),
@@ -846,22 +951,28 @@ void MEPP2VGammaNewPowheg::getDiagrams() const {
       // Z + jet + gamma
       if((process_==0 && contrib_==1) || process_ == 3) {
 	// Z + g + gamma
-	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
-		     2, gamma, 3, g, -10)));
-	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
-		     3, gamma, 2, g, -11)));
-	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
-		     2, gamma, 1, g, -12)));
-	add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
+	if(threeBodyProcess_==0 || threeBodyProcess_==1) {
+	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
+		       2, gamma, 3, g, -10)));
+	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
+		       3, gamma, 2, g, -11)));
+	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
+		       2, gamma, 1, g, -12)));
+	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
 		     1, gamma, 2, g, -13)));
+	}
 	// Z + q + gamma
-	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,1,z0,2,gamma,3,qk, -20)));
-	add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,2,z0,1,gamma,3,qk, -21)));
-	add(new_ptr((Tree2toNDiagram(3),qk,qk,g,1,z0,2,qk,5,gamma,5,qk,-22)));
+	if(threeBodyProcess_==0 || threeBodyProcess_==2) {
+	  add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,1,z0,2,gamma,3,qk, -20)));
+	  add(new_ptr((Tree2toNDiagram(4),qk,qk,qk,g,2,z0,1,gamma,3,qk, -21)));
+	  add(new_ptr((Tree2toNDiagram(3),qk,qk,g,1,z0,2,qk,5,gamma,5,qk,-22)));
+	}
 	// Z + qbar + gamma
-	add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,3,z0,2,gamma,1,qb     ,-30)));
-	add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,2,z0,3,gamma,1,qb     ,-31)));
-	add(new_ptr((Tree2toNDiagram(3),g,qb,qb   ,2,z0,1,qb,5,gamma,5,qb,-32)));
+	if(threeBodyProcess_==0 || threeBodyProcess_==3) {
+	  add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,3,z0,2,gamma,1,qb     ,-30)));
+	  add(new_ptr((Tree2toNDiagram(4),g,qb,qb,qb,2,z0,3,gamma,1,qb     ,-31)));
+	  add(new_ptr((Tree2toNDiagram(3),g,qb,qb   ,2,z0,1,qb,5,gamma,5,qb,-32)));
+	}
       }
     }
   }
@@ -1065,6 +1176,31 @@ void MEPP2VGammaNewPowheg::Init() {
      "Only include hard radiation contributions",
      3);
 
+  static Switch<MEPP2VGammaNewPowheg,unsigned int> interfaceThreeBodyProcess
+    ("ThreeBodyProcess",
+     "The possible three body processes to include",
+     &MEPP2VGammaNewPowheg::threeBodyProcess_, 0, false, false);
+  static SwitchOption interfaceThreeBodyProcessAll
+    (interfaceThreeBodyProcess,
+     "All",
+     "Include all processes",
+     0);
+  static SwitchOption interfaceThreeBodyProcessqqbar
+    (interfaceThreeBodyProcess,
+     "qqbar",
+     "Only include q qbar -> V gamma g processes",
+     1);
+  static SwitchOption interfaceThreeBodyProcessqg
+    (interfaceThreeBodyProcess,
+     "qg",
+     "Only include q g -> V gamma q processes",
+     2);
+  static SwitchOption interfaceThreeBodyProcessgqbar
+    (interfaceThreeBodyProcess,
+     "gqbar",
+     "Only include g qbar -> V gamma qbar processes",
+     3);
+
    static Switch<MEPP2VGammaNewPowheg,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
@@ -1091,6 +1227,26 @@ void MEPP2VGammaNewPowheg::Init() {
      &MEPP2VGammaNewPowheg::maxflavour_, 5, 1, 5,
      false, false, Interface::limited);
 
+  static Parameter<MEPP2VGammaNewPowheg,double> interfaceAlphaS
+    ("AlphaS",
+     "The value of alphaS to use if using a fixed alphaS",
+     &MEPP2VGammaNewPowheg::alphaS_, 0.118, 0.0, 0.2,
+     false, false, Interface::limited);
+
+  static Switch<MEPP2VGammaNewPowheg,bool> interfaceFixedAlphaS
+    ("FixedAlphaS",
+     "Use a fixed value of alphaS",
+     &MEPP2VGammaNewPowheg::fixedAlphaS_, false, false, false);
+  static SwitchOption interfaceFixedAlphaSYes
+    (interfaceFixedAlphaS,
+     "Yes",
+     "Use a fixed alphaS",
+     true);
+  static SwitchOption interfaceFixedAlphaSNo
+    (interfaceFixedAlphaS,
+     "No",
+     "Use a running alphaS",
+     false);
 
   static Switch<MEPP2VGammaNewPowheg,unsigned int> interfaceSupressionFunction
     ("SupressionFunction",
@@ -1300,7 +1456,7 @@ realVGammagME(const cPDVector & particles,
     double lo2 = inter==0 ? loVGammaME(part,pb) : loVgME    (part,pb);
     // second dipole
     dipoles[inter][1] = 1./(momenta[1]*momenta[iemit])/x*(2./(1.-x)-(1.+x))*lo2;
-    supress[inter][0] = supressionFunction(momenta[iemit].perp(),pb[3].perp());
+    supress[inter][1] = supressionFunction(momenta[iemit].perp(),pb[3].perp());
     for(unsigned int ix=0;ix<2;++ix) {
       if(inter==0) dipoles[inter][ix] *= 4./3.;
       else         dipoles[inter][ix] *= sqr(double(particles[ix]->iCharge())/3.);  
@@ -1367,11 +1523,9 @@ realVGammaqME(const cPDVector & particles,
   Energy pT = sqrt(-(pb[0]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
   InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
   InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
+  DI *= sqr(double(particles[0]->iCharge())/3.);  
+  DF *= sqr(double(particles[0]->iCharge())/3.);
   InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
-  for(unsigned int ix=0;ix<2;++ix) {
-    DI *= sqr(double(particles[0]->iCharge())/3.);  
-    DF *= sqr(double(particles[0]->iCharge())/3.);  
-  }
   pair<double,double> supress;
   InvEnergy2 term;
   if     ( dipole == IFQED1 ) {
@@ -1386,7 +1540,7 @@ realVGammaqME(const cPDVector & particles,
     term  = D1;
     supress = supressionFunction(momenta[4].perp(),pa[3].perp()); 
   }
-  if( denom==ZERO || dipole==ZERO ) return ZERO;
+  if( denom==ZERO || term == ZERO ) return ZERO;
   sum *= abs(term)/denom;
   // final coupling factors
   InvEnergy2 output;
@@ -1399,6 +1553,7 @@ realVGammaqME(const cPDVector & particles,
     if(rad==Hard)        output *= supress.second;
     else if(rad==Shower) output *= supress.first ;
   }
+  output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
   // final coupling factors
   return output;
 }
@@ -1444,12 +1599,10 @@ realVGammaqbarME(const cPDVector & particles,
   Energy pT = sqrt(-(pb[1]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
   InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
   InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
-  InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
   InvEnergy2 term;
-  for(unsigned int ix=0;ix<2;++ix) {
-    DI *= sqr(double(particles[0]->iCharge())/3.);  
-    DF *= sqr(double(particles[0]->iCharge())/3.);  
-  }
+  DI *= sqr(double(particles[1]->iCharge())/3.);
+  DF *= sqr(double(particles[1]->iCharge())/3.);
+  InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
   pair<double,double> supress;
   if     ( dipole == IFQED2 ) {
     term  = DI;

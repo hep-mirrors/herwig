@@ -415,6 +415,11 @@ private:
   unsigned int process_;
 
   /**
+   *  Processes
+   */
+  unsigned int threeBodyProcess_;
+
+  /**
    *  Allowed flavours of the incoming quarks
    */
   int maxflavour_;
