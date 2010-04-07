@@ -347,6 +347,12 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
 AC_MSG_CHECKING([for BSM models to include])
 
+LOAD_BSM_ANALYSIS=""
+LOAD_RS=""
+LOAD_SUSY=""
+LOAD_TRP=""
+LOAD_UED=""
+
 AC_ARG_ENABLE(models,
         AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm ued rs trp) or --disable-models to turn them all off.]),
         [],
@@ -369,7 +375,29 @@ fi
 AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
 if test "$mssm" -a "$ued"; then
    CREATE_BSM_ANALYSIS="create"
+   LOAD_BSM_ANALYSIS="library HwBSMAnalysis.so"
 fi
+AC_SUBST(LOAD_BSM_ANALYSIS)
+
+if test "$rs" -o "$all" ; then
+   LOAD_RS="library HwRSModel.so"
+fi
+AC_SUBST(LOAD_RS)
+
+if test "$mssm" -o "$all"; then
+   LOAD_SUSY="library HwSusy.so"
+fi
+AC_SUBST(LOAD_SUSY)
+
+if test "$trp" -o "$all"; then
+   LOAD_TRP="library HwTransplanck.so"
+fi
+AC_SUBST(LOAD_TRP)
+
+if test "$ued" -o "$all"; then
+   LOAD_UED="library HwUED.so"
+fi
+AC_SUBST(LOAD_UED)
 
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
