@@ -81,7 +81,7 @@ void MEPP2gZ2SleptonsPowheg::getDiagrams() const {
 	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, rm, 3, rp, -2)));
       }
       // production of left-right for stau only
-      if(ix==16 && (process_==0 || process_==10)) {
+      if(ix==15 && (process_==0 || process_==10)) {
 	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, lp, -1)));
 	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, rp, -1)));
       }
