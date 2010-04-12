@@ -22,7 +22,7 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
 
-MEPP2gZ2SleptonsPowheg::MEPP2gZ2SleptonsPowheg() : process_(0) {
+MEPP2gZ2SleptonsPowheg::MEPP2gZ2SleptonsPowheg() : process_(0), maxFlavour_(4) {
   vector<unsigned int> mopt(2,1);
   massOption(mopt);
 }

@@ -7,6 +7,7 @@
 #include "MEPP2W2SleptonsPowheg.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -23,7 +24,7 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
 
-MEPP2W2SleptonsPowheg::MEPP2W2SleptonsPowheg() : process_(0) {
+MEPP2W2SleptonsPowheg::MEPP2W2SleptonsPowheg() : process_(0), maxFlavour_(4) {
   vector<unsigned int> mopt(2,1);
   massOption(mopt);
 }
@@ -57,10 +58,10 @@ MEPP2W2SleptonsPowheg::colourGeometries(tcDiagPtr) const {
 
 void MEPP2W2SleptonsPowheg::getDiagrams() const {
   // loop over the Wplus processes we need
-  for(int i = 2; i <= 5; i+=2 ) {
+  for(int i = 2; i <= maxFlavour_; i+=2 ) {
     tcPDPtr qi  = getParticleData(i);
     tcPDPtr qib = qi->CC();
-    for(int j = 1; j <= 5; j+=2 ) {
+    for(int j = 1; j <= maxFlavour_; j+=2 ) {
       tcPDPtr qj  = getParticleData(j);
       tcPDPtr qjb = qj->CC();
       
@@ -132,12 +133,12 @@ IBPtr MEPP2W2SleptonsPowheg::fullclone() const {
 
 void MEPP2W2SleptonsPowheg::persistentOutput(PersistentOStream & os) const {
   os << FFWVertex_ << WSSVertex_ << FFGVertex_ 
-     << Wplus_ << Wminus_ << process_;
+     << Wplus_ << Wminus_ << process_ << maxFlavour_;
 }
 
 void MEPP2W2SleptonsPowheg::persistentInput(PersistentIStream & is, int) {
   is >> FFWVertex_ >> WSSVertex_ >> FFGVertex_ 
-     >> Wplus_ >> Wminus_ >> process_;
+     >> Wplus_ >> Wminus_ >> process_ >> maxFlavour_;
 }
 
 ClassDescription<MEPP2W2SleptonsPowheg> 
@@ -151,7 +152,7 @@ void MEPP2W2SleptonsPowheg::Init() {
      " of the fermion-antifermion to sfermion-sfermion hard process.");
 
 
-  static Switch<MEPP2W2SleptonsPowheg,unsigned int> interfaceProcess
+  static Switch<MEPP2W2SleptonsPowheg,int> interfaceProcess
     ("Process",
      "Which processes to generate",
      &MEPP2W2SleptonsPowheg::process_, 0, false, false);
@@ -200,6 +201,12 @@ void MEPP2W2SleptonsPowheg::Init() {
      "tau_2plus",
      "Produce tau_2-",
      8);
+
+  static Parameter<MEPP2W2SleptonsPowheg,int> interfaceMaxFlavour
+    ("MaxFlavour",
+     "The maximum flavour of the incoming quarks",
+     &MEPP2W2SleptonsPowheg::maxFlavour_, 5, 1, 5,
+     false, false, Interface::limited);
 }
 
 Selector<MEBase::DiagramIndex>
