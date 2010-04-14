@@ -157,57 +157,6 @@ protected:
 		       vector<SpinorBarWaveFunction>    & q3,
 		       vector<SpinorWaveFunction>    & q4,
 		       unsigned int flow) const;
-
-  /**
-   * Matrix element for \f$qq\to qq\f$
-   * @param q1 The wavefunction  for the first  incoming quark
-   * @param q2 The wavefunction  for the second incoming quark
-   * @param q3 The wavefunction  for the first  outgoing quark
-   * @param q4 The wavefunction  for the second outgoing quark
-   * @param flow The colour flow
-   */
-  double qq2qqME(vector<SpinorWaveFunction> & q1, vector<SpinorWaveFunction> & q2,
-		 vector<SpinorBarWaveFunction> & q3, vector<SpinorBarWaveFunction> & q4,
-		 unsigned int flow) const;
-
-  /**
-   * Matrix element for \f$\bar{q}\bar{q}\to \bar{q}\bar{q}\f$
-   * @param q1 The wavefunction  for the first  incoming antiquark
-   * @param q2 The wavefunction  for the second incoming antiquark
-   * @param q3 The wavefunction  for the first  outgoing antiquark
-   * @param q4 The wavefunction  for the second outgoing antiquark
-   * @param flow The colour flow
-   */
-  double qbarqbar2qbarqbarME(vector<SpinorBarWaveFunction> & q1,
-			     vector<SpinorBarWaveFunction> & q2,
-			     vector<SpinorWaveFunction>    & q3,
-			     vector<SpinorWaveFunction>    & q4,
-			     unsigned int flow) const;
-
-  /**
-   * Matrix element for \f$qg\to qg\f$
-   * @param qin  The wavefunction for the incoming quark
-   * @param g2   The wavefunction for the incoming gluon
-   * @param qout The wavefunction for the outgoing quark
-   * @param g4   The wavefunction for the outgoing gluon
-   * @param flow The colour flow
-   */
-  double qg2qgME(vector<SpinorWaveFunction> & qin,vector<VectorWaveFunction> &g2,
-		 vector<SpinorBarWaveFunction> & qout,vector<VectorWaveFunction> &g4,
-		 unsigned int flow) const;
-
-  /**
-   * Matrix elements for \f$\bar{q}g\to \bar{q}g\f$.
-   * @param qin  The wavefunction for the incoming antiquark
-   * @param g2   The wavefunction for the incoming gluon
-   * @param qout The wavefunction for the outgoing antiquark
-   * @param g4   The wavefunction for the outgoing gluon
-   * @param flow The colour flow
-   */
-  double qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
-		       vector<VectorWaveFunction> &g2,
-		       vector<SpinorWaveFunction> & qout,vector<VectorWaveFunction> &g4,
-		       unsigned int flow) const;
   //@}
 
 protected:
@@ -309,11 +258,6 @@ private:
    *  Option for the treatment of top quark masses
    */
   unsigned int _topopt;
-
-  /**
-   *  Maximum numbere of quark flavours to include
-   */
-  unsigned int _maxflavour;
 
   /**
    *  Colour flow
