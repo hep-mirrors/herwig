@@ -26,7 +26,6 @@
 #include <ThePEG/PDT/PDT.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Utilities/Throw.h>
-#include <ThePEG/PDT/RemnantDecayer.h>
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
 #include "Cluster.h"  
