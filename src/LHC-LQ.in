@@ -30,9 +30,7 @@ insert HPConstructor:Incoming 4 /Herwig/Particles/s
 insert HPConstructor:Incoming 5 /Herwig/Particles/sbar
 insert HPConstructor:Incoming 6 /Herwig/Particles/c
 insert HPConstructor:Incoming 7 /Herwig/Particles/cbar
-insert HPConstructor:Incoming 8 /Herwig/Particles/b
-insert HPConstructor:Incoming 9 /Herwig/Particles/bbar
-insert HPConstructor:Incoming 10 /Herwig/Particles/g
+insert HPConstructor:Incoming 8 /Herwig/Particles/g
 
 insert HPConstructor:Outgoing 0 /Herwig/Particles/S0
 insert HPConstructor:Outgoing 1 /Herwig/Particles/S0bar
