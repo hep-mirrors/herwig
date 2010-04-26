@@ -50,6 +50,21 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   //S1m
   addToList(-16,-6,9921661);
   addToList(16,6,-9921661);
+
+  //S1/2 doublet
+  addToList(15,-6,9941561);
+  addToList(-15,6,-9941561);
+  
+  addToList(-15,5,-9941551);
+  addToList(15,-5,9941551);
+
+  //S1/2 tilde doublet
+  addToList(16,-5,9951651);
+  addToList(15,-5,9951551);
+
+  addToList(-16,5,-9951651);
+  addToList(-15,5,-9951551);
+
 }
 
 void LeptoquarkModelSLQFFVertex::doinit() {
@@ -63,16 +78,20 @@ void LeptoquarkModelSLQFFVertex::doinit() {
     _cR0 =hwLeptoquark->_cright();
     _cR0t = hwLeptoquark->_crighttilde();
     _cL1 =hwLeptoquark->_cleft1(); 
+    _cL12 =hwLeptoquark->_cleft12(); 
+    _cR12 =hwLeptoquark->_cright12(); 
+    _cL12t =hwLeptoquark->_cleft12tilde(); 
+    
   }
   FFSVertex::doinit();
 }
 
 void LeptoquarkModelSLQFFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _CFF << _cL0 << _cR0 << _cR0t << _cL1;
+  os << _CFF << _cL0 << _cR0 << _cR0t << _cL1 << _cL12 << _cR12 << _cL12t;
 }
 
 void LeptoquarkModelSLQFFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _CFF >> _cL0 >> _cR0 >> _cR0t >> _cL1;
+  is >> _CFF >> _cL0 >> _cR0 >> _cR0t >> _cL1 >> _cL12 >> _cR12 >> _cL12t;
 }
 
 ClassDescription<LeptoquarkModelSLQFFVertex> 
@@ -114,36 +133,63 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     _cL = - _cL1; _cR = 0;
   }
   //Q = - 2/3
-   if( fabs(isc) == 9921661 || fabs(isc) == 9921661 || fabs(isc) == 9921661 ) {
-     _cL = sqrt(2.) * _cL1; _cR = 0;
+  if( fabs(isc) == 9921661 || fabs(isc) == 9921661 || fabs(isc) == 9921661 ) {
+    _cL = sqrt(2.) * _cL1; _cR = 0;
+  }
+  
+  //S1/2 doublet
+
+  //Q = + 5/3 
+  if( fabs(isc) == 9941561 || fabs(isc) == 9941561 || fabs(isc) == 9941561 ) {
+    _cL = _cL12; _cR = _cR12;
+  }
+  
+  
+  //Q = + 2/3 
+  if( fabs(isc) == 9941551 || fabs(isc) == 9941551 || fabs(isc) == 9941551 ) {
+    _cL = _cL12; _cR = -1. * _cR12;
   }
 
-   //loop over generations (currently only third)
-   for(int nl = 0; nl < 3; nl++) {
-      
-     //no right-handed neutrino (or left-handed anti-neutrino)
-     //neutrino
-     if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
-       if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
-       left(_cL); right(0.0);
-     }
+  //S1/2 tilde doublet
 
-     //anti-neutrino
-     if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
-       if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
-       left(0.0); right(_cL);
-     }
-     //swap left-right couplings if necessary
-     if( isc == (11+2*nl) || ism == (11+2*nl) || ichg == (11+2*nl) ) {   
-       left(_cL);
-       right(_cR);
-     }
-     if( isc == -(11+2*nl) || ism == -(11+2*nl) || ichg == -(11+2*nl) ) {   
-       left(_cR);
-       right(_cL);
-     }
+  //Q = + 2/3 
+  if( fabs(isc) == 9951551 || fabs(isc) == 9951551 || fabs(isc) == 9951551 ) {
+    _cL = _cL12t; _cR = 0.;
+  }
+  
+  
+  //Q = - 1/3 
+  if( fabs(isc) == 9951651 || fabs(isc) == 9951651 || fabs(isc) == 9951651 ) {
+    _cL = _cL12t; _cR = 0.;
+  }
+  
+  
+  //loop over generations (currently only third)
+  for(int nl = 0; nl < 3; nl++) {
+      
+    //no right-handed neutrino (or left-handed anti-neutrino)
+    //neutrino
+    if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
+      if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
+      left(_cL); right(0.0);
+    }
     
-   }
+    //anti-neutrino
+    if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
+      if( fabs(isc) == 9911561 || fabs(isc) == 9911561 || fabs(isc) == 9911561 ) { _cL *= -1; }
+       left(0.0); right(_cL);
+    }
+    //swap left-right couplings if necessary
+    if( isc == (11+2*nl) || ism == (11+2*nl) || ichg == (11+2*nl) ) {   
+      left(_cL);
+      right(_cR);
+    }
+    if( isc == -(11+2*nl) || ism == -(11+2*nl) || ichg == -(11+2*nl) ) {   
+      left(_cR);
+      right(_cL);
+    }
+    
+  }
   
   norm(_CFF);
 }

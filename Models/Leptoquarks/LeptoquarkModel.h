@@ -109,6 +109,22 @@ public:
    */
   double _crighttilde() const {return _rightcouptilde;}
 
+ /**
+  * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1/2)
+   */
+  
+  double _cleft12() const {return _leftcoup12;}
+  /**
+   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (S1/2)
+   */
+  double _cright12() const {return _rightcoup12;}
+
+  /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1/2)
+   */
+  
+  double _cleft12tilde() const {return _leftcoup12t;}
+
 
 protected:
 
@@ -205,6 +221,22 @@ private:
    *  Overall coupling to left-handed leptons (S1 tripletx)
    */
   double _leftcoup1;
+
+  /**
+   *  Overall coupling to left-handed leptons (S1/2)
+   */
+  double _leftcoup12;
+
+  /**
+   *  Overall coupling to right-handed leptons (S1/2)
+   */
+  double _rightcoup12;
+
+  /**
+   *  Overall coupling to left-handed leptons (~S1/2)
+   */
+  double _leftcoup12t;
+
   
 
 };

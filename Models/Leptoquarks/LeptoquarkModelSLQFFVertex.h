@@ -156,6 +156,24 @@ private:
    */
   double _cL1;
 
+  /**
+   *  Overall coupling to left-handed leptons for S1/2 triplet
+   */
+  double _cL12;
+
+
+  /**
+   *  Overall coupling to right-handed leptons for S1/2 triplet
+   */
+  double _cR12;
+
+  /**
+   *  Overall coupling to left-handed leptons for ~S1/2 triplet
+   */
+  double _cL12t;
+
+
+
   //@}
 };  
 

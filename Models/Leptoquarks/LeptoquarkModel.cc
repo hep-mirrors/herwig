@@ -23,7 +23,7 @@ void LeptoquarkModel::doinit()  {
   StandardModel::doinit();
 }
 
-LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0), _rightcouptilde(1.0), _leftcoup1(1.0)  {}
+LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0), _rightcouptilde(1.0), _leftcoup1(1.0) , _leftcoup12(1.0), _rightcoup12(1.0), _leftcoup12t(1.0) {}
 
 LeptoquarkModel::~LeptoquarkModel() {}
 
@@ -47,7 +47,10 @@ void LeptoquarkModel::persistentOutput(PersistentOStream & os) const {
      << _leftcoup
      << _rightcoup
      << _leftcoup1
-     << _rightcouptilde;
+     << _rightcouptilde
+     << _leftcoup12
+     << _rightcoup12
+     << _leftcoup12t;
 
     
   
@@ -61,7 +64,11 @@ void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
      >> _leftcoup
      >> _rightcoup
      >> _leftcoup1
-     >> _rightcouptilde;
+     >> _rightcouptilde
+     >> _leftcoup12
+     >> _rightcoup12
+     >> _leftcoup12t;
+
 }
 
 ClassDescription<LeptoquarkModel> LeptoquarkModel::initLeptoquarkModel;
@@ -115,6 +122,25 @@ void LeptoquarkModel::Init() {
      &LeptoquarkModel::_leftcoup1, 1.0, 0., 1.0,
      false, false, Interface::limited);
   
+    static Parameter<LeptoquarkModel, double> interfacegLQ12_L
+    ("g_S12_L",
+     "The leptoquark S1/2 coupling LQ-lepton_left-quark_right",
+     &LeptoquarkModel::_leftcoup12, 1.0, 0., 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<LeptoquarkModel, double> interfacegLQ12_R
+    ("g_S12_R",
+     "The leptoquark S1/2 coupling LQ-lepton_right-quark_left",
+     &LeptoquarkModel::_rightcoup12, 1.0, 0., 1.0,
+     false, false, Interface::limited);
+  
+  static Parameter<LeptoquarkModel, double> interfacegLQ12t_L
+    ("g_S12t_L",
+     "The leptoquark ~S1/2 coupling LQ-lepton_left-quark_right",
+     &LeptoquarkModel::_leftcoup12t, 1.0, 0., 1.0,
+     false, false, Interface::limited);
+
+
   static ClassDocumentation<LeptoquarkModel> documentation
     ("There is no documentation for the LeptoquarkModel class");
 
