@@ -56,7 +56,8 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   addToList(-15,6,-9941561);
   
   addToList(-15,5,-9941551);
-  addToList(15,-5,9941551);
+  addToList(-16,6,-9941551);
+
 
   //S1/2 tilde doublet
   addToList(16,-5,9951651);
