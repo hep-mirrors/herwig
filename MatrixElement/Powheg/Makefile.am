@@ -10,6 +10,5 @@ MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
 MEPP2VGammaPowheg.cc  MEPP2VGammaPowheg.h \
 MEPP2VGammaNewPowheg.cc  MEPP2VGammaNewPowheg.h \
 MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
-MEPP2GammaGammaPowhegNEW.cc  MEPP2GammaGammaPowhegNEW.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
 VVKinematics.cc VVKinematics.h

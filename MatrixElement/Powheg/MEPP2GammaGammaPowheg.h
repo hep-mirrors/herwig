@@ -5,7 +5,10 @@
 // This is the declaration of the MEPP2GammaGammaPowheg class.
 //
 
-#include "Herwig++/MatrixElement/Hadron/MEPP2GammaGamma.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -17,16 +20,51 @@ using namespace ThePEG;
  * @see \ref MEPP2GammaGammaPowhegInterfaces "The interfaces"
  * defined for MEPP2GammaGammaPowheg.
  */
-class MEPP2GammaGammaPowheg: public Herwig::MEPP2GammaGamma {
+class MEPP2GammaGammaPowheg: public HwMEBase {
+
+  enum DipoleType { IIQED1=1, IIQCD1=2, IIQED2=3, IIQCD2=4, 
+		    IFQED1=5, FIQED1=6, IFQED2=7, FIQED2=8 };
+
+  enum RadiationType {Subtraction,Hard,Shower};
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
   MEPP2GammaGammaPowheg();
+  //@}
+ 
+  /** @name Member functions for the generation of hard QCD radiation */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
 
 public:
+
+  /** @name Virtual functions required by the MEBase class. */
+  //@{
+  /**
+   * Return the order in \f$\alpha_S\f$ in which this matrix
+   * element is given.
+   */
+  virtual unsigned int orderInAlphaS() const;
+
+  /**
+   * Return the order in \f$\alpha_{EW}\f$ in which this matrix
+   * element is given.
+   */
+  virtual unsigned int orderInAlphaEW() const;
 
   /**
    * The matrix element for the kinematical configuration
@@ -90,7 +128,6 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -119,15 +156,130 @@ public:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
+  /**
+   *  Calculate of the full next-to-leading order weight
+   */
+  virtual double NLOWeight() const;
+
+  /**
+   *  Leading-order matrix element for \f$q\bar q\to \gamma\gamma\f$
+   */
+  double loGammaGammaME(const cPDVector & particles,
+			const vector<Lorentz5Momentum> & momenta,
+			bool first=false) const;
+
+  /**
+   *  Leading-order matrix element for \f$qg\to \gamma q\f$
+   */
+  double loGammaqME(const cPDVector & particles,
+		const vector<Lorentz5Momentum> & momenta,
+		bool first=false) const;
+
+  /**
+   *  Leading-order matrix element for \f$g\bar q\to \gamma \bar q\f$
+   */
+  double loGammaqbarME(const cPDVector & particles,
+		       const vector<Lorentz5Momentum> & momenta,
+		       bool first=false) const;
+  
+  /**
+   *  Leading-order matrix element for \f$q\bar q\to \gamma g\f$
+   */
+  double loGammagME(const cPDVector & particles,
+		    const vector<Lorentz5Momentum> & momenta,
+		    bool first=false) const;
+
+  /**
+   *  Real emission matrix element for \f$q\bar q\to \gamma \gamma g\f$
+   */
+  InvEnergy2 realGammaGammagME(const cPDVector & particles,
+			       const vector<Lorentz5Momentum> & momenta,
+			       DipoleType dipole, RadiationType rad,
+			       bool first=false) const;
+  
+  /**
+   *  Real emission matrix element for \f$qg\to \gamma \gamma q\f$
+   */
+  InvEnergy2 realGammaGammaqME(const cPDVector & particles,
+			       const vector<Lorentz5Momentum> & momenta,
+			       DipoleType dipole, RadiationType rad,
+			       bool first=false) const;
+  
+  /**
+   *  Real emission matrix element for \f$g\bar q\to \gamma \gamma \bar q\f$
+   */
+  InvEnergy2 realGammaGammaqbarME(const cPDVector & particles,
+				  const vector<Lorentz5Momentum> & momenta,
+				  DipoleType dipole, RadiationType rad,
+				  bool first=false) const;
+  
+  /**
+   *  The dipole subtractedvirtual contribution
+   */
+  double subtractedVirtual() const;
+
+  /**
+   *  Subtracted real contribution
+   */
+  double subtractedReal(pair<double,double> x, double z,
+			double zJac, double oldqPDF, double newqPDF,
+			double newgPDF,bool order) const;
+
+  /**
+   *  Calculate of the collinear counterterms
+   */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
+   *  Quark collinear counter term
    */
-  virtual void doinit();
+  double collinearQuark(double x, Energy2 mu2, double jac, double z,
+			double oldPDF, double newPDF) const;
+
+  /**
+   *  Gluon collinear counter term
+   */
+  double collinearGluon(Energy2 mu2, double jac, double z,
+			double oldPDF, double newPDF) const;
   //@}
+
+  /**
+   * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
+   * inheriting classes. 
+   * @param particles The ParticleData objects of the particles
+   * @param momenta The momenta of the particles
+   */
+  double realME(const cPDVector & particles,
+		const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Generate hard QCD emission
+   */
+  HardTreePtr hardQCDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+
+  /**
+   *  Generate hard QED emission 
+   */
+  HardTreePtr hardQEDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+
+  /**
+   *  The supression function
+   */
+  pair<double,double> supressionFunction(Energy pT,Energy scale) const {
+    if(supressionScale_==0) scale = lambda_;
+    Energy2 scale2 = sqr(scale), pT2 = sqr(pT);
+    switch( supressionFunction_ ) {
+    case 0:
+      return make_pair(1.,0.);
+    case 1:
+      if(pT < scale ) return make_pair(1.,0.);
+      else            return make_pair(0.,1.);
+    case 2:
+      return make_pair(scale2/(pT2+scale2),pT2/(pT2+scale2));
+    default:
+      assert(false);
+    }
+  }
+
 
 protected:
 
@@ -145,6 +297,17 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 private:
 
@@ -160,90 +323,52 @@ private:
    */
   MEPP2GammaGammaPowheg & operator=(const MEPP2GammaGammaPowheg &);
 
-protected:
-
-  /**
-   * Calculate the correction weight with which leading-order
-   * configurations are re-weighted.
-   */
-  double NLOweight() const;
-
-  /**
-   *  Dipole subtracted real matrix element for \f$q\bar q \to \gamma\gamma g\f$
-   */
-  double MEqqbarg(const vector<Lorentz5Momentum> &, bool) const;
-
-  /**
-   *  Dipole subtracted real matrix element for \f$q g \to \gamma\gamma q\f$
-   */
-  double MEqgq(const vector<Lorentz5Momentum> &) const;
-
-  /**
-   *  Dipole subtracted real matrix element for \f$g\bar q \to \gamma\gamma \bar q\f$
-   */
-  double MEqbargqbar(const vector<Lorentz5Momentum> &) const;
-
 private:
 
   /**
-   *  Parameters for the NLO weight
+   *  Vertices
    */
   //@{
+  /**
+   *   FFPVertex
+   */
+  AbstractFFVVertexPtr FFPvertex_;
+
+  /**
+   *   FFGVertex
+   */
+  AbstractFFVVertexPtr FFGvertex_;
+  //@}
+
+  /**
+   *  Kinematic variables for the real radiation
+   */
+  //@{
+  /**
+   *  First  variable
+   */
+  mutable double zTilde_;
+
+  /**
+   *  Second variable
+   */
+  mutable double vTilde_;
+
+  /**
+   *  Azimuthal angle
+   */
+  mutable double phi_;
+  //@}
+
   /**
    *  Whether to generate the positive, negative or leading order contribution
    */
   unsigned int contrib_;
-  //@}
-
-  /**
-   *  Choice of the scale
-   */
-  //@{
-  /**
-   *  Type of scale
-   */
-  unsigned int scaleopt_;
-
-  /**
-   *  Fixed scale if used
-   */
-  Energy fixedScale_;
-
-  /**
-   *  Prefactor if variable scale used
-   */
-  double scaleFact_;
-  //@}
 
   /**
    *  Power for sampling \f$x_p\f$
    */
   double power_;
-
-//   /**
-//    *  Jacobian for \f$x_p\f$ integral
-//    */
-//   pair<double,double> jac_;
-
-  /**
-   *  Radiative variables
-   */
-  //@{
-  /**
-   *  \f$\tilde{z}\f$
-   */
-  double ztilde_;
-
-  /**
-   *   \f$\tilde{v}\f$
-   */
-  double vtilde_;
-
-  /**
-   *  \f$\phi\f$
-   */
-  double phi_;
-  //@}
 
   /**
    *  Pointer to the gluon ParticleData object
@@ -251,24 +376,156 @@ private:
   tcPDPtr gluon_;
 
   /**
-   *  Pointers to the vertices
+   *  Processes
    */
-  //@{
-  /**
-   *  The photon vertex
-   */
-  AbstractFFVVertexPtr QEDVertex_;
+  unsigned int process_;
 
   /**
-   *  The gluon vertex
+   *  Processes
    */
-  AbstractFFVVertexPtr QCDVertex_;
-  //@}
+  unsigned int threeBodyProcess_;
+
+  /**
+   *  Allowed flavours of the incoming quarks
+   */
+  int maxflavour_;
+
+  /**
+   *  Factor for \f$C_F\f$ dependent pieces
+   */
+  mutable double CFfact_;
+
+  /**
+   *  Factor for \f$T_R\f$ dependent pieces
+   */
+  mutable double TRfact_;
 
   /**
    *  Strong coupling
    */
   mutable double alphaS_;
+
+  /**
+   *  Use a fixed value of \f$\alpha_S\f$
+   */
+  bool fixedAlphaS_;
+
+  /**
+   *  Electromagnetic coupling
+   */
+  mutable double alphaEM_;
+
+  /**
+   *  Leading-order matrix element
+   */
+  mutable double loME_;
+
+  /**
+   *  The matrix element
+   */
+  mutable ProductionMatrixElement me_;
+
+  /**
+   *  the selected dipole
+   */
+  mutable DipoleType dipole_;
+
+  /**
+   *  Supression Function
+   */
+  //@{
+  /**
+   *  Choice of the supression function
+   */
+  unsigned int supressionFunction_;
+
+  /**
+   *  Choice for the scale in the supression function
+   */
+  unsigned int supressionScale_;
+
+  /**
+   *  Scalar for the supression function
+   */
+  Energy lambda_;
+  //@}
+
+
+  /**
+   *  Hard emission stuff
+   */
+  //@{
+  /**
+   *  Whether the quark is in the + or - z direction
+   */
+  bool quarkplus_;
+  //@}
+
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  vector<tcBeamPtr> beams_;
+  
+  /**
+   *  Pointers to the ParticleDataObjects for the partons
+   */
+  vector<tcPDPtr> partons_;
+  //@}
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preQCDqqbarq_;
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preQCDqqbarqbar_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double preQCDqg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double preQCDgqbar_;
+
+  double preQEDqqbarq_;
+  double preQEDqqbarqbar_;
+  double preQEDqgq_;
+  double preQEDgqbarqbar_;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> prefactor_;
+  //@}
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy minpT_;
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alphaQCD_;
+
+  /**
+   *  Pointer to the object calculating the EM
+   */
+  ShowerAlphaPtr alphaQED_;
+
 };
 
 }
@@ -284,7 +541,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaGammaPowheg,1> {
   /** Typedef of the first base class of MEPP2GammaGammaPowheg. */
-  typedef Herwig::MEPP2GammaGamma NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -301,7 +558,7 @@ struct ClassTraits<Herwig::MEPP2GammaGammaPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
+  static string library() { return "MEPP2GammaGammaPowheg.so"; }
 };
 
 /** @endcond */
