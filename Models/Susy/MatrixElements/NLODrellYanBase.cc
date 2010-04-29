@@ -718,6 +718,12 @@ HardTreePtr NLODrellYanBase::generateHardest(ShowerTreePtr tree) {
 	}
 	if(pdf[0]<=0.||pdf[1]<=0.) continue;
 	wgt *= pdf[1]/pdf[0];
+	// check weight less than one
+	if(wgt>1.) {
+	  generator()->log() << "Weight greater than one for emission type " << ix
+			     << "in NLODrellYanBase::generateHardest()"
+			     << " weight = " << wgt << "\n";
+	}
 	// break if select emission
 	if(UseRandom::rnd()<wgt) break;
       }
