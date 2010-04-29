@@ -145,16 +145,16 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
 
   //Q = + 5/3 
   if( fabs(isc) == 9941561 || fabs(ism) == 9941561 || fabs(ichg) == 9941561 ) {
-    _cL = _cR12; _cR = _cL12;
+    _cL = _cL12; _cR = _cR12;
   }
   
   
   //Q = + 2/3 
   if( fabs(isc) == 9941551 || fabs(ism) == 9941551 || fabs(ichg) == 9941551 ) {
-    if(isc == 5 || ism == 5 || ichg == 5) { 
+    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
       _cL = - _cR12; _cR = 0.;
     }
-    if(isc == 6 || ism == 6 || ichg == 6) { 
+    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
       _cL = 0.; _cR = _cL12;
     }
   }
@@ -163,13 +163,13 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
 
   //Q = + 2/3 
   if( fabs(isc) == 9951551 || fabs(ism) == 9951551 || fabs(ichg) == 9951551 ) {
-    _cL = 0.; _cR = _cL12t;
+    _cL = _cL12t; _cR = 0.;
   }
   
   
   //Q = - 1/3 
   if( fabs(isc) == 9951651 || fabs(ism) == 9951651 || fabs(ichg) == 9951651 ) {
-    _cL = 0; _cR = _cL12t;
+    _cL = _cL12t; _cR = 0.;
   }
   
   left(_cL); right(_cR);
