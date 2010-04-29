@@ -243,13 +243,15 @@ protected:
    *  \f$q\bar q\f$
    */
   pair<double,double> 
-  subtractedMEqqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
+  subtractedMEqqbar(const vector<Lorentz5Momentum> & pnew, bool order,
+		    bool subtract) const;
 
   /**
    *  \f$g\bar q\f$
    */
   pair<double,double> 
-  subtractedMEgqbar(const vector<Lorentz5Momentum> & pnew, bool order) const;
+  subtractedMEgqbar(const vector<Lorentz5Momentum> & pnew, bool order,
+		    bool subtract) const;
 
   /**
    *  The supression function
@@ -367,7 +369,7 @@ private:
   Energy2 lambda2_;
 
   /**
-   *  Storage of the weights of the different processes for gthe hard emission
+   *  Storage of the weights of the different processes for the hard emission
    * generation
    */
   mutable vector<double> weights_;
@@ -413,6 +415,45 @@ private:
    *  Whether the quark is in the + or - z direction
    */
   bool _quarkplus;
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preqqbarq_;
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preqqbarqbar_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double preqg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double pregqbar_;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> prefactor_;
+  //@}
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy minpT_;
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alphaQCD_;
 
 };
 }
