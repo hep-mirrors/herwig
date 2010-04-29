@@ -5,7 +5,5 @@ VectorBosonQQbarHardGenerator.h  \
 VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc\
 VVHardGenerator.h VVHardGenerator.cc \
 VGammaHardGenerator.h VGammaHardGenerator.cc\
-GammaGammaHardGenerator.h GammaGammaHardGenerator.cc\
-GammaGammaNewHardGenerator.h GammaGammaNewHardGenerator.cc\
 VJetGammaHardGenerator.h VJetGammaHardGenerator.cc\
 TopDecayHardGenerator.h TopDecayHardGenerator.cc
