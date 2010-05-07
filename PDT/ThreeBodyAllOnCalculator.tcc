@@ -10,43 +10,49 @@
 // This is the implementation of the non-inlined templated member
 // functions of the ThreeBodyAllOnCalculator class.
 //
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 // shift the variables for the outer integrand and give limits for the inner one
 template <class T>
 void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low,
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
-  if(_channelmass[_thechannel] > ZERO) {
-    if(_channelwidth[_thechannel] > 1e-8*MeV) {
-      _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
-					   _channelwidth[_thechannel]*tan(x));
-    }
-    else {
-      _souter = sqr(_channelmass[_thechannel])*(1.+1./x);
-    }
+  if(_mapping==0) {
+    _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
+					 _channelwidth[_thechannel]*tan(x));
+  }
+  else if(_mapping==1) {
+    _souter = sqr(_channelmass[_thechannel])*(1.+1./x);
   }
   else {
     _souter = UnitRemoval::E2 * pow(x,1./(_channelpower[_thechannel]+1.));
   }
   // now the limits of the inner integral
-  Energy ea(ZERO),eb(ZERO),eam(ZERO),ebm(ZERO);
+  Energy ea(ZERO),eb(ZERO);
   Energy rs=sqrt(_souter);
+  Energy2 eam2,ebm2;
   switch(_channeltype[_thechannel]) {
   case 1:
-    ea = 0.5*(_souter-_m2[1]+_m2[2])/rs; eam=sqrt(ea*ea-_m2[2]);
-    eb = 0.5*(_m2[0]-_souter-_m2[3])/rs; ebm=sqrt(eb*eb-_m2[3]);
+    ea   = 0.5*(_souter-_m2[1]+_m2[2])/rs; 
+    eam2 = sqr(ea)-_m2[2];
+    eb   = 0.5*(_m2[0]-_souter-_m2[3])/rs; 
+    ebm2 = sqr(eb)-_m2[3];
     break;
   case 2:
-    ea = 0.5*(_souter-_m2[1]+_m2[3])/rs; eam=sqrt(ea*ea-_m2[3]);
-    eb = 0.5*(_m2[0]-_souter-_m2[2])/rs; ebm=sqrt(eb*eb-_m2[2]);
+    ea   = 0.5*(_souter-_m2[1]+_m2[3])/rs; 
+    eam2 = sqr(ea)-_m2[3];
+    eb   = 0.5*(_m2[0]-_souter-_m2[2])/rs; 
+    ebm2 = sqr(eb)-_m2[2];
     break;
   case 3:
-    ea = 0.5*(_souter-_m2[2]+_m2[3])/rs; eam=sqrt(ea*ea-_m2[3]);
-    eb = 0.5*(_m2[0]-_souter-_m2[1])/rs; ebm=sqrt(eb*eb-_m2[1]);
+    ea   = 0.5*(_souter-_m2[2]+_m2[3])/rs; 
+    eam2 = sqr(ea)-_m2[3];
+    eb   = 0.5*(_m2[0]-_souter-_m2[1])/rs; 
+    ebm2 = sqr(eb)-_m2[1];
     break;
   }
+  Energy eam = sqrt(max(ZERO,eam2));
+  Energy ebm = sqrt(max(ZERO,ebm2));
   Energy2 sum = sqr(ea+eb);
   // calculate the limits
   low = sum - sqr(eam+ebm);
@@ -95,16 +101,14 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
     }
     assert(!isnan(sjac/MeV2));
     InvEnergy2 term; 
-    if(_channelmass[ix] > ZERO) {
-      if(_channelwidth[ix] > 1e-8*MeV) {
-	rm2 = sqr(_channelmass[ix]);
-	rw2 = sqr(_channelwidth[ix]);
-	Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
-	term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
-      }
-      else {
-	term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
-      }
+    if(_mapping==0) {
+      rm2 = sqr(_channelmass[ix]);
+      rw2 = sqr(_channelwidth[ix]);
+      Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
+      term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
+    }
+    else if(_mapping==1) {
+      term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
     }
     else {
       term = UnitRemoval::InvE2 * _channelweights[ix]*(_channelpower[ix]+1.)*
@@ -128,6 +132,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
   // perform the integrals for all the different channels
   Energy4 sum(ZERO);
   for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
+    cerr << "testing in the channel loop " << ix << "\n";
     Energy2 upp(ZERO),low(ZERO);
     // work out the kinematic limits
     switch(_channeltype[ix]) {
@@ -154,14 +159,23 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
 		    _channelmass[ix]/_channelwidth[ix]);
 	rlow =  atan((low-_channelmass[ix]*_channelmass[ix])/
 		     _channelmass[ix]/_channelwidth[ix]);
+	_mapping = 0;
+	if(rupp/rlow>0.&&_channelwidth[ix]/_channelmass[ix]<1e-6) {
+	  _mapping = 1;
+	  Energy2 m2=sqr(_channelmass[ix]);
+	  rupp = m2/(low-m2);
+	  rlow = m2/(upp-m2);
+	}
       }
       else {
+	_mapping = 1;
 	Energy2 m2=sqr(_channelmass[ix]);
 	rupp = m2/(low-m2);
 	rlow = m2/(upp-m2);
       }
     }
     else {
+      _mapping = 2;
       rupp = pow(upp*UnitRemoval::InvE2, _channelpower[ix]+1.);
       rlow = pow(low*UnitRemoval::InvE2, _channelpower[ix]+1.);
     }
@@ -174,7 +188,3 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
   Energy3 fact = pow<3,1>(Constants::twopi * _m[0]);
   return sum/fact/32.;
 }
-
-}
-
-  

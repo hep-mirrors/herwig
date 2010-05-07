@@ -211,6 +211,11 @@ private:
   mutable int _thechannel;
 
   /**
+   *  The mapping currently in used
+   */
+  mutable int _mapping;
+
+  /**
    * the value of s for the outer integral
    */
   mutable Energy2 _souter;
