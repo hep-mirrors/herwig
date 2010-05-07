@@ -595,15 +595,67 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
 			       << Exception::runerror;
       }
     }
+    else if(trip.size()==1&&oct.size()==1&&sng.size()==1) {
+      ncf = 1;
+      output.first   = vector<DVector>(1,DVector(1,4./3.));
+      output.second  = vector<DVector>(1,DVector(1,4./3.));
+    }
     else throw Exception() << "Unknown colour flow structure for "
 		      << name << Exception::runerror;
   }
-  // colour antitriplet decayign particle
+  // colour antitriplet decaying particle
   else if( incoming->iColour() == PDT::Colour3bar) {
     if(sng.size()==2&&atrip.size()==1) {
       ncf = 1;
       output.first   = vector<DVector>(1,DVector(1,1.));
       output.second  = vector<DVector>(1,DVector(1,1.));
+    }
+    else if(atrip.size()==2&&trip.size()==1) {
+      ncf = 2;
+      output.first.resize(2,DVector(2,0.));
+      output.first[0][0] = 3.; output.first[0][1] = 1.;
+      output.first[1][0] = 1.; output.first[1][1] = 3.;
+      output.second.resize(2,DVector(2,0.));
+      output.second[0][0] = 3.; output.second[1][1] = 3.;
+      // sort out the contribution of the different diagrams to the colour
+      // flows
+      for(unsigned int ix=0;ix<diagrams.size();++ix) {
+	// colour singlet intermediate
+	if(diagrams[ix].intermediate->iColour()==PDT::Colour0) {
+	  if(diagrams[ix].channelType==atrip[0]) {
+	    diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	    diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
+	  }
+	  else {
+	    diagrams[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
+	    diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
+	  }
+	}
+	// colour octet intermediate
+	else if(diagrams[ix].intermediate->iColour()==PDT::Colour8) {
+	  if(diagrams[ix].channelType==atrip[0]) {
+	    vector<CFPair> flow(1,make_pair(2, 0.5  ));
+	    diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(1,-1./6.));
+	    diagrams[ix].colourFlow=flow;
+	  }
+	  else {
+	    vector<CFPair> flow(1,make_pair(1, 0.5  ));
+	    diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(2,-1./6.));
+	    diagrams[ix].colourFlow=flow;
+	  }
+	}
+	else throw Exception() << "Unknown colour for the intermediate in "
+			       << "antitriplet -> antitriplet antitriplet triplet in "
+			       << "ThreeBodyDecayConstructor::getColourFactors()"
+			       << Exception::runerror;
+      }
+    }
+    else if(atrip.size()==1&&oct.size()==1&&sng.size()==1) {
+      ncf = 1;
+      output.first   = vector<DVector>(1,DVector(1,4./3.));
+      output.second  = vector<DVector>(1,DVector(1,4./3.));
     }
     else throw Exception() << "Unknown colour flow structure for "
 			   << name << Exception::runerror;
