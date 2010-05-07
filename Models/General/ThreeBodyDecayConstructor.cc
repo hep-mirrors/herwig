@@ -30,12 +30,12 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
-     << _includeTopOnShell;
+     << _includeTopOnShell << _maxBoson << _maxList;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
-     >> _includeTopOnShell;
+     >> _includeTopOnShell >> _maxBoson >> _maxList;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -129,6 +129,59 @@ void ThreeBodyDecayConstructor::Init() {
      "fraction of the parent mass.",
      &ThreeBodyDecayConstructor::_minReleaseFraction, 1e-3, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceMaximumGaugeBosons
+    ("MaximumGaugeBosons",
+     "Maximum number of electroweak gauge bosons"
+     " to be produced as decay products",
+     &ThreeBodyDecayConstructor::_maxBoson, 1, false, false);
+  static SwitchOption interfaceMaximumGaugeBosonsNone
+    (interfaceMaximumGaugeBosons,
+     "None",
+     "Produce no W/Zs",
+     0);
+  static SwitchOption interfaceMaximumGaugeBosonsSingle
+    (interfaceMaximumGaugeBosons,
+     "Single",
+     "Produce at most one W/Zs",
+     1);
+  static SwitchOption interfaceMaximumGaugeBosonsDouble
+    (interfaceMaximumGaugeBosons,
+     "Double",
+     "Produce at most two W/Zs",
+     2);
+  static SwitchOption interfaceMaximumGaugeBosonsTriple
+    (interfaceMaximumGaugeBosons,
+     "Triple",
+     "Produce at most three W/Zs",
+     3);
+
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceMaximumNewParticles
+    ("MaximumNewParticles",
+     "Maximum number of particles from the list of "
+     "decaying particles to be allowed as decay products",
+     &ThreeBodyDecayConstructor::_maxList, 1, false, false);
+  static SwitchOption interfaceMaximumNewParticlesNone
+    (interfaceMaximumNewParticles,
+     "None",
+     "No particles from the list",
+     0);
+  static SwitchOption interfaceMaximumNewParticlesSingle
+    (interfaceMaximumNewParticles,
+     "Single",
+     "A single particle from the list",
+     1);
+  static SwitchOption interfaceMaximumNewParticlesDouble
+    (interfaceMaximumNewParticles,
+     "Double",
+     "Two particles from the list",
+     2);
+  static SwitchOption interfaceMaximumNewParticlesTriple
+    (interfaceMaximumNewParticles,
+     "Triple",
+     "Three particles from the list",
+     3);
+
 }
 
 void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
@@ -182,10 +235,12 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     bool possibleOnShell(false);
     for(vector<TBDiagram>::const_iterator dit = diagrams.begin();
 	dit != diagrams.end(); ++dit) {
+      tPDPtr outgoing[3]={getParticleData(dit->outgoing),
+			  getParticleData(dit->outgoingPair.first),
+			  getParticleData(dit->outgoingPair.second)};
       Energy mout[3] = 
-	{getParticleData(dit->outgoing)->constituentMass(),
-	 getParticleData(dit->outgoingPair.first)->constituentMass(),
-	 getParticleData(dit->outgoingPair.second)->constituentMass()};
+	{outgoing[0]->constituentMass(),outgoing[1]->constituentMass(),
+	 outgoing[2]->constituentMass()};
       // remove processes which aren't kinematically allowed within
       if( min - mout[0] - mout[1] - mout[2] < _minReleaseFraction * min )
 	continue;
@@ -193,17 +248,21 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       // radiation from intermediate
       if((dit->outgoingPair.first ==dit->intermediate->id() &&
 	  (dit->outgoingPair.second==ParticleID::g ||
-	   dit->outgoingPair.second==ParticleID::gamma ))||
+	   dit->outgoingPair.second==ParticleID::gamma ||
+	   dit->outgoingPair.second==ParticleID::Z0 ))||
 	 (dit->outgoingPair.second==dit->intermediate->id() &&
 	  (dit->outgoingPair.first ==ParticleID::g ||
-	   dit->outgoingPair.first ==ParticleID::gamma ))) continue;
+	   dit->outgoingPair.first ==ParticleID::gamma ||
+	   dit->outgoingPair.first ==ParticleID::Z0 ))) continue;
       // radiation from the parent
       if((dit->outgoing ==dit->incoming&&
 	  (dit->intermediate->id()==ParticleID::g ||
-	   dit->intermediate->id()==ParticleID::gamma ))||
+	   dit->intermediate->id()==ParticleID::gamma ||
+	   dit->intermediate->id()==ParticleID::Z0 ))||
 	 (dit->intermediate->id()==dit->incoming &&
 	  (dit->outgoing ==ParticleID::g ||
-	   dit->outgoing ==ParticleID::gamma ))) continue;
+	   dit->outgoing ==ParticleID::gamma ||
+	   dit->outgoing ==ParticleID::Z0 ))) continue;
       // remove weak decays of quarks other than top
       if(StandardQCDPartonMatcher::Check(dit->intermediate->id()) &&
 	 ((StandardQCDPartonMatcher::Check(dit->outgoingPair.first)&&
@@ -215,6 +274,15 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       if(abs(parent->id()) == abs(dit->outgoing           ) ||
 	 abs(parent->id()) == abs(dit->outgoingPair.first ) ||
 	 abs(parent->id()) == abs(dit->outgoingPair.second) ) continue;
+      // check the number of new particles and gauge bosons
+      unsigned int nbos(0),nnew(0);
+      for(unsigned int ix=0;ix<3;++ix) {
+	if(outgoing[ix]->id()==ParticleID::gamma || 
+	   outgoing[ix]->id()==ParticleID::Z0 ||
+	   abs(outgoing[ix]->id())==ParticleID::Wplus) ++nbos;
+	if(particles.find(outgoing[ix])!=particles.end()) ++nnew;
+      }
+      if(nbos>_maxBoson || nnew>_maxList) continue;
       // if needed remove intermediate diagrams where intermediate can be
       // on shell
       Energy mint = dit->intermediate->mass();
@@ -234,9 +302,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	    Throw<InitException>() 
 	      << "Trying to include on-shell diagram for "
 	      << getParticleData(dit->incoming)->PDGName() << " -> "
-	      << getParticleData(dit->outgoing)->PDGName() << " "
-	      << getParticleData(dit->outgoingPair.first )->PDGName() << " "
-	      << getParticleData(dit->outgoingPair.second)->PDGName()
+	      << outgoing[0]->PDGName() << " "
+	      << outgoing[1]->PDGName() << " " << outgoing[2]->PDGName()
 	      << " with intermediate " << dit->intermediate->PDGName()
 	      << " with zero width.\n"
 	      << "You should make sure that the width for the intermediate is either"

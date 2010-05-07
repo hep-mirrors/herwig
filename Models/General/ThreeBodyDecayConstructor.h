@@ -60,9 +60,9 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor() : 
+  ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3) {}
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -231,6 +231,16 @@ private:
    * fraction of the parent mass
    */
   double _minReleaseFraction;
+
+  /**
+   *  Maximum number of EW gauge bosons
+   */
+  unsigned int _maxBoson;
+
+  /**
+   *  Maximum number of particles from the decaying particle list
+   */
+  unsigned int _maxList;
 };
 
 }
