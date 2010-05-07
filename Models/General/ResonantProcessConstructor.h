@@ -53,7 +53,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ResonantProcessConstructor() :
+  ResonantProcessConstructor() :
     theIncoming(0), theIntermediates(0), theOutgoing(0), theDiagrams(0),
     theDebug(false) {}
 

@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  inline BSMWidthGenerator() : theModes(0) {}
+  BSMWidthGenerator() : theModes(0) {}
   //@}
 
 public:

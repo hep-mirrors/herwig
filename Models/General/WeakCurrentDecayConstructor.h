@@ -37,10 +37,10 @@ public:
   /**
    * The default constructor.
    */
-  inline WeakCurrentDecayConstructor() :
+  WeakCurrentDecayConstructor() :
     _theExistingDecayers(0),_init(true),_iteration(5),_points(10000),
     _masscut(5.*GeV) {}
-
+  
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
