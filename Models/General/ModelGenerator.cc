@@ -371,12 +371,14 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
     Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
     Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
     for(; dit != dend; ++dit) {
-      os << "\t" << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
+      os << "\t" << std::left << std::setw(10) 
+	 << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
 	 << "\t";
       for(unsigned int ix=0;ix<(*dit).second->orderedProducts().size();++ix)
-	os << (*dit).second->orderedProducts()[ix]->id() << "\t";
+	os << std::right << std::setw(10)
+	   << (*dit).second->orderedProducts()[ix]->id() ;
       for(unsigned int ix=(*dit).second->orderedProducts().size();ix<4;++ix)
-	os << "\t";
+	os << "          ";
       os << "# " << (*dit).second->tag() << "\n";
     }
   }
