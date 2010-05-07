@@ -132,7 +132,6 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
   // perform the integrals for all the different channels
   Energy4 sum(ZERO);
   for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
-    cerr << "testing in the channel loop " << ix << "\n";
     Energy2 upp(ZERO),low(ZERO);
     // work out the kinematic limits
     switch(_channeltype[ix]) {
