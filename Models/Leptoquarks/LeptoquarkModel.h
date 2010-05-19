@@ -52,6 +52,7 @@ public:
 
 
 
+
   /**
    * The destructor.
    */
@@ -194,6 +195,7 @@ private:
    * Pointer to the object handling the SLQ to FF vertex.
    */
   AbstractFFSVertexPtr  _theSLQFFVertex;
+
 
 
   /**

@@ -35,21 +35,21 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   addToList(16,5,-9911561);
 
   //~S0
-  addToList(-15,-5,9911551);
-  addToList(15,5,-9911551);
+  addToList(-15,-5,9921551);
+  addToList(15,5,-9921551);
 
   //S1 triplet
   //S1p
-  addToList(-15,-5,9921551);
-  addToList(15,5,-9921551);
+  addToList(-15,-5,9931551);
+  addToList(15,5,-9931551);
   //S1z
-  addToList(-15,-6,9921561);
-  addToList(15,6,-9921561);
-  addToList(-16,-5,9921561);
-  addToList(16,5,-9921561);
+  addToList(-15,-6,9931561);
+  addToList(15,6,-9931561);
+  addToList(-16,-5,9931561);
+  addToList(16,5,-9931561);
   //S1m
-  addToList(-16,-6,9921661);
-  addToList(16,6,-9921661);
+  addToList(-16,-6,9931661);
+  addToList(16,6,-9931661);
 
   //S1/2 doublet
   addToList(15,-6,9941561);
@@ -123,21 +123,21 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     _cL = _cL0; _cR = _cR0;
   }
   //~S0
-  if( fabs(isc) == 9911551 || fabs(ism) == 9911551 || fabs(ichg) == 9911551 ) {
+  if( fabs(isc) == 9921551 || fabs(ism) == 9921551 || fabs(ichg) == 9921551 ) {
     _cL = 0; _cR = _cR0t;
   }
   
   //S1 triplet
   //Q = + 4/3
-  if( fabs(isc) == 9921551 || fabs(ism) == 9921551 || fabs(ichg) == 9921551 ) {
+  if( fabs(isc) == 9931551 || fabs(ism) == 9931551 || fabs(ichg) == 9931551 ) {
     _cL = - sqrt(2.)* _cL1; _cR = 0;
   }
   //Q = + 1/3
-  if( fabs(isc) == 9921561 || fabs(ism) == 9921561 || fabs(ichg) == 9921561 ) {
+  if( fabs(isc) == 9931561 || fabs(ism) == 9931561 || fabs(ichg) == 9931561 ) {
     _cL = - _cL1; _cR = 0;
   }
   //Q = - 2/3
-  if( fabs(isc) == 9921661 || fabs(ism) == 9921661 || fabs(ichg) == 9921661 ) {
+  if( fabs(isc) == 9931661 || fabs(ism) == 9931661 || fabs(ichg) == 9931661 ) {
     _cL = sqrt(2.) * _cL1; _cR = 0;
   }
   
@@ -171,30 +171,37 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   if( fabs(isc) == 9951651 || fabs(ism) == 9951651 || fabs(ichg) == 9951651 ) {
     _cL = _cL12t; _cR = 0.;
   }
-  
+  //this coupling selection is for the case of anti-LQ's (as dicated by the Lagrangian couplings to the quarks and leptons)
   left(_cL); right(_cR);
-	 
-  if( fabs(isc) != 9951551 && fabs(ism) != 9951551 && fabs(ichg) != 9951551 ) {
+  int nl = 3; //generation of leptons and fermions under consideration
+  if( fabs(isc) < 9940000 && fabs(ism) < 9940000 && fabs(ichg) < 9940000 ) {
     //loop over generations (currently only third)
-    for(int nl = 0; nl < 3; nl++) {
-      //no right-handed neutrino (or left-handed anti-neutrino)
-      //neutrino
-      if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
-	left(_cL); right(0.0);
-      }
-      //anti-neutrino      
-      if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
-	left(0.0); right(_cL);
+    //no right-handed neutrino (or left-handed anti-neutrino)
+    //neutrino
+    if( isc == (12+2*nl) || ism == (12+2*nl) || ichg == (12+2*nl) ) { 
+      left(_cL); right(0.0);
+    }
+    //anti-neutrino      
+    if( isc == -(12+2*nl) || ism == -(12+2*nl) || ichg == -(12+2*nl) ) { 
+      left(0.0); right(_cL);
+    }
+    
+    
+    //swap couplings in the case of S0, ~S0, S1 triplet. These have anti-LQ's with positive ids.
+    if( fabs(isc) > 9900000 || fabs(ism) > 9900000 || fabs(ichg) > 9900000 ) {
+      if( isc < 0 || ism < 0 || ichg < 0 ) {
+	left(_cR); right(_cL);
       }
     }
   }
-  //swap couplings
-  if( fabs(isc) > 9900000 || fabs(ism) > 9900000 || fabs(ichg) > 9900000 ) {
-    if( isc < 0 || ism < 0 || ichg < 0 ) {
+
+
+  //swap couplings in the case of S1/2 and ~S1/2 have anti-LQ's with negative ids.
+  if( fabs(isc) > 9940000 || fabs(ism) > 9940000 || fabs(ichg) > 9940000 ) {
+    if( isc > 0 || ism > 0 || ichg > 0 ) {
       left(_cR); right(_cL);
     }
   }
-  
   
   norm(_CFF);
 }

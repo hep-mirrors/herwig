@@ -23,13 +23,23 @@ using namespace ThePEG;
 LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() :  _couplast(0.),_q2last(ZERO) {
   addToList(21,21,9941551,-9941551);
   addToList(21,21,9911561,-9911561);
-  addToList(21,21,9911551,-9911551);
-  addToList(21,21,9921561,-9921561);
   addToList(21,21,9921551,-9921551);
-  addToList(21,21,9921661,-9921661);
+  addToList(21,21,9931561,-9931561);
+  addToList(21,21,9931551,-9931551);
+  addToList(21,21,9931661,-9931661);
   addToList(21,21,9941561,-9941561);
   addToList(21,21,9951551,-9951551);
   addToList(21,21,9951651,-9951651);
+  addToList(21,21,9961651,-9961651);
+  addToList(21,21,9971561,-9971561);
+  addToList(21,21,9981561,-9981561);
+  addToList(21,21,9981551,-9981551);
+  addToList(21,21,9981651,-9981651);
+
+  addToList(21,21,9991551,-9991551);
+  addToList(21,21,9991561,-9991561);
+  addToList(21,21,9901561,-9901561);
+  addToList(21,21,9901661,-9901661);
 
 }
 

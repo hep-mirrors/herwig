@@ -91,7 +91,6 @@ void LeptoquarkModel::Init() {
    "Reference to the scalar leptoquark-scalar-quark-lepton",
    &LeptoquarkModel::_theSLQFFVertex, false, false, true, false, false);
 
-
   static Parameter<LeptoquarkModel, double> interfaceLQCoupling
     ("LQCoupling",
      "The overall Leptoquark Coupling",
