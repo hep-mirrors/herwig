@@ -68,6 +68,59 @@ create /ThePEG/ParticleData S12tmbar
 setup S12tmbar -9951651 S12tmbar 400.0 0.0 0.0 0.0 1 -3 1 0
 makeanti S12tm S12tmbar
 
+create /ThePEG/ParticleData dS0
+setup dS0 9961651 dS0 1000.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData dS0bar
+setup dS0bar -9961651 dS0bar 1000.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti dS0 dS0bar
+
+create /ThePEG/ParticleData ~dS0
+setup ~dS0 9971561 ~dS0 1000.0 0.0 0.0 0.0 5 3 1 0
+create /ThePEG/ParticleData ~dS0bar
+setup ~dS0bar -9971561 ~dS0bar 1000.0 0.0 0.0 0.0 -5 -3 1 0
+makeanti ~dS0 ~dS0bar
+
+create /ThePEG/ParticleData dS1p
+setup dS1p 9981561 dS1p 1000.0 0.0 0.0 0.0 5 3 1 0
+create /ThePEG/ParticleData dS1pbar
+setup dS1pbar -9981561 dS1pbar 1000.0 0.0 0.0 0.0 -5 -3 1 0
+makeanti dS1p dS1pbar
+
+create /ThePEG/ParticleData dS1m
+setup dS1m 9981551 dS1m 1000.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS1mbar
+setup dS1mbar -9981551 dS1mbar 1000.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS1m dS1mbar
+
+create /ThePEG/ParticleData dS1z
+setup dS1z 9981651 dS1z 1000.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData dS1zbar
+setup dS1zbar -9981651 dS1zbar 1000.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti dS1z dS1zbar
+
+create /ThePEG/ParticleData dS12pbar
+setup dS12pbar 9991551 dS12pbar 1000.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData dS12p
+setup dS12p -9991551 dS12p 1000.0 0.0 0.0 0.0 4 -3 1 0
+makeanti dS12pbar dS12p
+
+create /ThePEG/ParticleData dS12mbar
+setup dS12mbar 9991561 dS12mbar 1000.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS12m
+setup dS12m -9991561 dS12m 1000.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS12mbar dS12m
+
+create /ThePEG/ParticleData dS12tpbar
+setup dS12tpbar 9901561 dS12tpbar 1000.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData dS12tp
+setup dS12tp -9901561 dS12tp 1000.0 0.0 0.0 0.0 4 -3 1 0
+makeanti dS12tpbar dS12tp
+
+create /ThePEG/ParticleData dS12tmbar
+setup dS12tmbar 9901661 dS12tmbar 1000.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS12tm
+setup dS12tm -9901661 dS12tm 1000.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS12tmbar dS12tm
 
 ###################################################
 #
