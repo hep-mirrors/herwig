@@ -125,6 +125,50 @@ public:
    */
   
   double _cleft12tilde() const {return _leftcoup12t;}
+ /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S0)
+   */
+
+  double _dcleft() const {return _dleftcoup;}
+ /**
+   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (dS0)
+   */
+  double _dcright() const {return _drightcoup;}
+
+  /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1 triplet)
+   */
+
+  double _dcleft1() const {return _dleftcoup1;}
+
+   /* Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (~dS0)
+   */
+  double _dcrighttilde() const {return _drightcouptilde;}
+
+ /**
+  * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1/2)
+   */
+  
+  double _dcleft12() const {return _dleftcoup12;}
+  /**
+   * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (dS1/2)
+   */
+  double _dcright12() const {return _drightcoup12;}
+
+  /**
+   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1/2)
+   */
+  
+  double _dcleft12tilde() const {return _dleftcoup12t;}
+
+  /**
+   * Suppression scale for derivatively coupled scalar leptoquarks
+   */
+  
+  double _fscale() const {return _derivscalef;}
+
+
+
 
 
 protected:
@@ -220,7 +264,7 @@ private:
   double _rightcouptilde;
   
   /**
-   *  Overall coupling to left-handed leptons (S1 tripletx)
+   *  Overall coupling to left-handed leptons (S1 triplet)
    */
   double _leftcoup1;
 
@@ -238,6 +282,46 @@ private:
    *  Overall coupling to left-handed leptons (~S1/2)
    */
   double _leftcoup12t;
+
+   /**
+   *  Overall coupling to left-handed leptons (dS0)
+   */
+  double _dleftcoup;
+
+  /**
+   *  Overall coupling to right-handed leptons (dS0)
+   */
+  double _drightcoup;
+
+  /**
+   *  Overall coupling to left-handed leptons (~dS0)
+   */
+  double _drightcouptilde;
+  
+  /**
+   *  Overall coupling to left-handed leptons (dS1 triplet)
+   */
+  double _dleftcoup1;
+
+  /**
+   *  Overall coupling to left-handed leptons (dS1/2)
+   */
+  double _dleftcoup12;
+
+  /**
+   *  Overall coupling to right-handed leptons (dS1/2)
+   */
+  double _drightcoup12;
+
+  /**
+   *  Overall coupling to left-handed leptons (~dS1/2)
+   */
+  double _dleftcoup12t;
+
+  /**
+   *  Suppression scale for derivatively coupled scalar leptoquarks, f
+   */
+  double _derivscalef;
 
   
 
