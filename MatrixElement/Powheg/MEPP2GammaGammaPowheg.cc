@@ -877,7 +877,7 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
 	  diag[0] += diag[1];
 	  output += std::norm(diag[0]);
 	  // storage of the matrix element for spin correlations
-	  if(first) me_(2*ihel1,2*ihel2,ohel1,ohel2) = diag[0];
+	  if(first) me_(ihel1,ihel2,2*ohel1,2*ohel2) = diag[0];
 	}
       }
     }
