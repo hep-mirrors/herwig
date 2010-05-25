@@ -41,7 +41,7 @@ makeanti S1mbar S1m
 create /ThePEG/ParticleData S1zbar
 setup S1zbar 9931561 S1zbar 1000.0 0.0 0.0 0.0 -1 3 1 0
 create /ThePEG/ParticleData S1z
-setup S1z -9921561 S1z 1000.0 0.0 0.0 0.0 1 -3 1 0
+setup S1z -9931561 S1z 1000.0 0.0 0.0 0.0 1 -3 1 0
 makeanti S1zbar S1z
 
 create /ThePEG/ParticleData S12p
