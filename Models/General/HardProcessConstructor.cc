@@ -900,7 +900,7 @@ string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
 
 bool HardProcessConstructor::sameQuarkFlavour(long id1, long id2) const {
   //if ids are not quarks or quark partners return false
-  if( getParticleData(abs(id1))->iColour() != PDT::Colour3 && 
+  if( getParticleData(abs(id1))->iColour() != PDT::Colour3 || 
       getParticleData(abs(id2))->iColour() != PDT::Colour3 ) return false;
   long diff = abs(abs(id2) - abs(id1));
   if(diff == 0 || diff % 10 == 0) return true;
