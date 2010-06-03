@@ -443,19 +443,23 @@ CrossSection MEPP2GammaGammaPowheg::dSigHatDR() const {
     return NLOWeight()*preFactor;
 }
 
+// Luca qui ->
 Selector<MEBase::DiagramIndex>
 MEPP2GammaGammaPowheg::diagrams(const DiagramVector & diags) const {
   if(mePartonData().size()==4) {
     if(mePartonData()[3]->id()==ParticleID::gamma) {
+ 
       Selector<DiagramIndex> sel;
-      for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
+      for ( DiagramIndex i = 0; i < diags.size(); ++i ){
 	sel.insert(meInfo()[abs(diags[i]->id())], i);
+      }
       return sel;
     }
     else {
       Selector<DiagramIndex> sel;
-      for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
+      for ( DiagramIndex i = 0; i < diags.size(); ++i ){ 
 	sel.insert(meInfo()[abs(diags[i]->id())%2], i);
+      }
       return sel;
     }
   }
@@ -471,7 +475,7 @@ MEPP2GammaGammaPowheg::diagrams(const DiagramVector & diags) const {
       else if(abs(diags[i]->id()) == 13 && dipole_ == IIQED1 ) 
 	sel.insert(1., i);
       else if(abs(diags[i]->id()) == 20 && dipole_ == IIQCD2 ) 
-	sel.insert(1., i);
+      sel.insert(1., i);
       else if(abs(diags[i]->id()) == 21 && dipole_ == IFQED1 ) 
 	sel.insert(1., i);
       else if(abs(diags[i]->id()) == 22 && dipole_ == FIQED1 ) 
@@ -856,7 +860,11 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
     v2_out.reset(2*ix);
     v2.push_back(v2_out);
   }
-  vector<double> me(2,0.0);
+
+  //luca changed
+  //vector<double> me(2,0.0);
+  vector<double> me(4,0.0);
+
   if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 					      PDT::Spin1,PDT::Spin1));
   vector<Complex> diag(2,0.0);
@@ -885,6 +893,7 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
   // store diagram info, etc.
   DVector save(3);
   for (size_t i = 0; i < 3; ++i) save[i] = 0.25 * me[i];
+
   meInfo(save);
   // spin and colour factors
   output *= 0.125/3./norm(FFPvertex_->norm());
@@ -1420,8 +1429,51 @@ realME(const cPDVector & particles,
 }
 
 double MEPP2GammaGammaPowheg::subtractedVirtual() const {
-  // need to implement this //
-  return 0.;
+  Lorentz5Momentum p1, p2, P1, P2;
+  double x1, x2, W, V, v, w;
+  ThePEG::Energy2 U, T, S, u, t, s;
+
+  if(lastPartons().first ->dataPtr()==mePartonData()[0]) {
+    x1=lastX1();
+    p1=meMomenta()[0];
+    x2=lastX2();
+    p2=meMomenta()[1];
+  } else {
+    x2=lastX1();
+    p2=meMomenta()[0];
+    x1=lastX2();
+    p1=meMomenta()[1];
+  }
+
+  P1 = p1/x1;
+  P2 = p2/x2;
+
+  S = (P1 + P2).m2();
+  s = (p1 + p2).m2();
+  T = (P1-meMomenta()[2]).m2();
+  t = (p1-meMomenta()[2]).m2();
+  U = (P2-meMomenta()[2]).m2();
+  u = (p2-meMomenta()[2]).m2();
+
+  W = -U/(S+T);
+  w = -u/(s+t);
+  V = 1+T/S;
+  v = 1+t/s;
+
+  double eq = lastPartons().first ->dataPtr()->charge()/eplus;
+
+  Energy2 mu2 = scale();
+  double F = 2.*Constants::twopi*sqr(SM().alphaEM(mu2))*sqr(sqr(eq));
+
+  double finite_term = ((1-v)/v+v/(1-v))*
+    (2./3.*sqr(Constants::pi)-3.+sqr(log(v))+sqr(log(1-v))+3.*log(1-v))+
+    2.+2.*log(v)+2.*log(1-v)+3.*(1-v)/v*(log(v)-log(1-v))+
+    (2.+v/(1-v))*sqr(log(v))+(2.+(1-v)/v)*sqr(log(1-v));
+  
+  double virt = 1./3.*F*((-4.+10.-sqr(Constants::pi))*
+			 ((1-v)/v+v/(1-v)-2.+finite_term));
+
+  return virt;
 }
 
 double MEPP2GammaGammaPowheg::subtractedReal(pair<double,double> x, double z,
