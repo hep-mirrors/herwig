@@ -101,7 +101,10 @@ void MEPP2GammaGammaPowheg::getDiagrams() const {
 }
 
 Energy2 MEPP2GammaGammaPowheg::scale() const {
-  return sHat();
+  Energy2 s(sHat()),u(uHat()),t(tHat());
+
+  //  return sHat();
+  return 2.*s*t*u/(s*s+t*t+u*u);
 }
 
 int MEPP2GammaGammaPowheg::nDim() const {
@@ -443,7 +446,7 @@ CrossSection MEPP2GammaGammaPowheg::dSigHatDR() const {
     return NLOWeight()*preFactor;
 }
 
-// Luca qui ->
+
 Selector<MEBase::DiagramIndex>
 MEPP2GammaGammaPowheg::diagrams(const DiagramVector & diags) const {
   if(mePartonData().size()==4) {
@@ -897,7 +900,10 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
   meInfo(save);
   // spin and colour factors
   output *= 0.125/3./norm(FFPvertex_->norm());
-  return output;
+
+  //luca changed
+  //return output;
+  return 2.*output;
 }
 
 double MEPP2GammaGammaPowheg::loGammaqME(const cPDVector & particles,
