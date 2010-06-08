@@ -54,6 +54,11 @@ void MEfftoVH::Init() {
      "MassGenerator",
      "Use the mass generator to give the shape",
      2);
+  static SwitchOption interfaceStandardShapeOnShell
+    (interfaceShapeOption,
+     "OnShell",
+     "Produce an on-shell Higgs boson",
+     0);
 
 }
 
@@ -70,7 +75,7 @@ Energy2 MEfftoVH::scale() const {
 }
 
 int MEfftoVH::nDim() const {
-  return 5;
+  return 4 + int(_shapeopt>0);
 }
 
 void MEfftoVH::setKinematics() {
@@ -244,17 +249,20 @@ bool MEfftoVH::generateKinematics(const double * r) {
     ? _wplus : _z0;
   // order determined randomly
   Energy e = sqrt(sHat())/2.0;
-  Energy mh,mv;
+  Energy mh(_mh),mv;
   double jac(1.);
   if(UseRandom::rndbool()) {
+    double rhomax,rhomin;
     // generate the mass of the Higgs
-    Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
-    Energy mhmin = max(ZERO             ,mePartonData()[2]->massMin());
-    if(mhmax<=mhmin) return false;
-    double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-    mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
-    jac *= rhomax-rhomin;
+    if(_shapeopt!=0) {
+      Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
+      Energy mhmin = max(ZERO             ,mePartonData()[2]->massMin());
+      if(mhmax<=mhmin) return false;
+      double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
+      double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+      mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
+      jac *= rhomax-rhomin;
+    }
     // generate the mass of the vector boson
     Energy2 mvmax2 = sqr(min(2.*e-mh,vec->massMax()));
     Energy2 mvmin2 = sqr(vec->massMin());
@@ -276,14 +284,17 @@ bool MEfftoVH::generateKinematics(const double * r) {
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
     // generate the mass of the Higgs
-    Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
-    Energy mhmin = max(ZERO ,mePartonData()[2]->massMin());
-    if(mhmax<=mhmin) return false;
-    rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-    mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
-    jac *= rhomax-rhomin;
+    if(_shapeopt!=0) {
+      Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
+      Energy mhmin = max(ZERO ,mePartonData()[2]->massMin());
+      if(mhmax<=mhmin) return false;
+      rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
+      rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+      mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
+      jac *= rhomax-rhomin;
+    }
   }
+  if(mh+mv>2.*e) return false;
   // assign masses
   meMomenta()[2].setMass(mh);
   for(unsigned int ix=3;ix<5;++ix) 
@@ -386,7 +397,8 @@ CrossSection MEfftoVH::dSigHatDR() const {
   else {
     bwfact = _hmass->BreitWignerWeight(moff,0);
   }
-  double jac1 = bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh);
+  double jac1 = _shapeopt!=0 ? 
+    double(bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;
   // answer
   return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
 }
