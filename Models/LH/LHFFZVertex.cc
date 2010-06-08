@@ -56,12 +56,13 @@ void LHFFZVertex::doinit() {
   if(!model) throw InitException() << "Must be using the LHModel "
 				   << " in LHFFZVertex::doinit()"
 				   << Exception::runerror;
-  double sw2(model->sin2ThetaW());
+  double sw2(sin2ThetaW());
   double sw(sqrt(sw2)),cw(sqrt(1.-sw2));
   double pre =-0.5/sw/cw;
   double s (model->sinTheta()     ),c (model->cosTheta()     );
   double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double sp2(sqr(sp)),cp2(sqr(cp));
+  // from Eqn A35
   double xW(-0.5/cw*s*c*(sqr(c)-sqr(s)));
   double xB(-2.5/sw*sp*cp*(cp2-sp2));
   double yu  = -0.4, ye  =  0.6;
@@ -79,11 +80,11 @@ void LHFFZVertex::doinit() {
   double ad  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s-sw*xB/sp/cp*(0.2-0.5*cp2)));
   double ae  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s-sw*xB/sp/cp*(0.2-0.5*cp2)));
   double av  = pre*(-0.5-sqr(vf)*(-0.5*cw*xW*c/s+sw*xB/sp/cp*(0.2-0.5*cp2)));
-  double vtl  = pre*( 0.5-4./3.*sw2-sqr(vf)*(-0.5*sqr(xL)+0.5*cw*xW*c/s
-					     +sw*xB/sp/cp*(2.*yu+9./5.-1.5*cp2
-							   +(7./15.-2.*cp2/3.)*xL)));
-  double atl  = pre*(-0.5-sqr(vf)*(+0.5*sqr(xL)-0.5*cw*xW*c/s
-				   +sw*xB/sp/cp*(+0.2-0.5*cp2-0.2*xL)));
+  double vtl = pre*( 0.5-4./3.*sw2-sqr(vf)*(-0.5*sqr(xL)+0.5*cw*xW*c/s
+					    +sw*xB/sp/cp*(2.*yu+9./5.-1.5*cp2
+							  +(7./15.-2.*cp2/3.)*xL)));
+  double atl = pre*(-0.5          -sqr(vf)*(+0.5*sqr(xL)-0.5*cw*xW*c/s
+					    +sw*xB/sp/cp*(+0.2-0.5*cp2-0.2*xL)));
   double vth = 2./3.*sw/cw;
   double ath = 0.;
   double vtm = 0.25*xL*vf/cw/sw;
@@ -100,23 +101,24 @@ void LHFFZVertex::doinit() {
     _gr[2*ix+9 ] = ve + ae;
     _gr[2*ix+10] = vv + av;
   }
-  _gl[6] = vtl + atl;
-  _gr[6] = vtl - atl;
-  _gl[7] = vtm + atm;
-  _gr[7] = vtm - atm;
-  _gl[8] = vth + ath;
-  _gr[8] = vth - ath;
+  _gl[6] = vtl - atl;
+  _gr[6] = vtl + atl;
+  _gl[7] = vtm - atm;
+  _gr[7] = vtm + atm;
+  _gl[8] = vth - ath;
+  _gr[8] = vth + ath;
   // heavy Z
-  vu  =  0.25*c/s/sw;
-  vd  = -0.25*c/s/sw;
-  ve  = -0.25*c/s/sw;
-  vv  =  0.25*c/s/sw;
-  au  = -0.25*c/s/sw;
-  ad  =  0.25*c/s/sw;
-  ae  =  0.25*c/s/sw;
-  av  = -0.25*c/s/sw;
-  vtl =  0.25*c/s/sw;
-  atl = -0.25*c/s/sw;
+  double fact = 0.25*c/s/sw;
+  vu  =  fact;
+  vd  = -fact;
+  ve  = -fact;
+  vv  =  fact;
+  au  = -fact;
+  ad  =  fact;
+  ae  =  fact;
+  av  = -fact;
+  vtl =  fact;
+  atl = -fact;
   vth =  0.;
   ath =  0.;
   vtm =  -0.25*xL*vf*c/s/sw;
@@ -133,12 +135,12 @@ void LHFFZVertex::doinit() {
     _grH[2*ix+9 ] = ve + ae;
     _grH[2*ix+10] = vv + av;
   }
-  _glH[6] = vtl + atl;
-  _grH[6] = vtl - atl;
-  _glH[7] = vtm + atm;
-  _grH[7] = vtm - atm;
-  _glH[8] = vth + ath;
-  _grH[8] = vth - ath;
+  _glH[6] = vtl - atl;
+  _grH[6] = vtl + atl;
+  _glH[7] = vtm - atm;
+  _grH[7] = vtm + atm;
+  _glH[8] = vth - ath;
+  _grH[8] = vth + ath;
   // set order in the couplings
   orderInGem(1);
   orderInGs(0);
@@ -154,33 +156,26 @@ void LHFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   // the left and right couplings
   int iferm = abs(a->id());
   int ianti = abs(b->id());
-  if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)|| iferm == 8) {
-    // Z0
-    if(c->id()==ParticleID::Z0) {
-      if(ianti==iferm) {
-	left(_gl[iferm]);
-	right(_gr[iferm]);
-      }
-      else {
-	left (_gl[7]);
-	right(_gr[7]);
-      }
+  assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)|| iferm == 8);
+  // Z0
+  if(c->id()==ParticleID::Z0) {
+    if(ianti==iferm) {
+      left (_gl[iferm]);
+      right(_gr[iferm]);
     }
     else {
-      if(ianti==iferm) {
-	left (_glH[iferm]);
-	right(_grH[iferm]);
-      }
-      else {
-	left (_glH[7]);
-	right(_grH[7]);
-      }
+      left (_gl[7]);
+      right(_gr[7]);
     }
   }
-  else
-    throw HelicityConsistencyError() << "LHFFZVertex::setCoupling "
-				     << "Unknown particle in Z vertex"
-				     << a->PDGName() << " " << b->PDGName()
-				     << " " << c->PDGName()
-				     << Exception::runerror;
+  else {
+    if(ianti==iferm) {
+      left (_glH[iferm]);
+      right(_grH[iferm]);
+    }
+    else {
+      left (_glH[7]);
+      right(_grH[7]);
+    }
+  }
 }

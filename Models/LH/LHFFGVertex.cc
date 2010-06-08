@@ -26,22 +26,17 @@ void LHFFGVertex::Init() {
 
 // coupling for FFG vertex
 void LHFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+  // check allowed
+  int iferm=abs(a->id());
+  assert((iferm>=1 && iferm<=6) || iferm==8);
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = -strongCoupling(q2);
     _q2last=q2;
   }
   norm(_couplast);
-  // the left and right couplings
-  int iferm=abs(a->id());
-  if((iferm>=1 && iferm<=6) || iferm==8) {
-    left(1.);
-    right(1.);
-  }
-  else
-    throw HelicityConsistencyError() << "LHFFGVertex::setCoupling" 
-				     << "Unknown particle in gluon vertex" 
-				     << Exception::runerror;
+  left(1.);
+  right(1.);
 }
 
 LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {

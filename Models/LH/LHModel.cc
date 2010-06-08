@@ -9,22 +9,34 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
+LHModel::LHModel() 
+  : _cott(1.), _tantp(1.),
+    _v(246.*GeV), _lamratio(1.), _mH(120.*GeV), _vacratio(0.05),
+    _f(3.*TeV), _lambda1(0.), _lambda2(0.),
+    _s(0.), _c(0.), _sp(0.), _cp(0.)
+{}
+
 void LHModel::persistentOutput(PersistentOStream & os) const {
-  os << _g << _gp << _cott << _tantp << ounit(_v,GeV) << _lamratio
-     << ounit(_mH,GeV) << _vacratio << ounit(_f,GeV) << _s0 << _c0
-     << _lambda1 << _lambda2 << _s << _c << _sp << _cp;
+  os << _cott << _tantp << ounit(_v,GeV) << _lamratio
+     << ounit(_mH,GeV) << _vacratio << ounit(_f,GeV) 
+     << _s0 << _c0 << _sP << _cP << _sPlus << _cPlus
+     << _lambda1 << _lambda2 << _s << _c << _sp << _cp
+     << WHHVertex_ << WWHHVertex_;
 }
 
 void LHModel::persistentInput(PersistentIStream & is, int) {
-  is >> _g >> _gp >> _cott >> _tantp >> iunit(_v,GeV)  >> _lamratio
-     >> iunit(_mH,GeV) >> _vacratio >> iunit(_f,GeV)  >> _s0 >> _c0
-     >> _lambda1 >> _lambda2 >> _s >> _c >> _sp >> _cp;
+  is >> _cott >> _tantp >> iunit(_v,GeV)  >> _lamratio
+     >> iunit(_mH,GeV) >> _vacratio >> iunit(_f,GeV)  
+     >> _s0 >> _c0 >> _sP >> _cP >> _sPlus >> _cPlus
+     >> _lambda1 >> _lambda2 >> _s >> _c >> _sp >> _cp
+     >> WHHVertex_ >> WWHHVertex_;
 }
 
 ClassDescription<LHModel> LHModel::initLHModel;
@@ -34,18 +46,6 @@ void LHModel::Init() {
 
   static ClassDocumentation<LHModel> documentation
     ("The LHModel class");
-
-  static Parameter<LHModel,double> interfacegCoupling
-    ("gCoupling",
-     "The g coupling",
-     &LHModel::_g,  sqrt(0.43), 0.0, 1.,
-     false, false, Interface::limited);
-
-  static Parameter<LHModel,double> interfacegPrimeCoupling
-    ("gPrimeCoupling",
-     "The g' coupling",
-     &LHModel::_gp, sqrt(0.12), 0.0, 1.,
-     false, false, Interface::limited);
 
   static Parameter<LHModel,double> interfaceCotTheta
     ("CotTheta",
@@ -67,7 +67,7 @@ void LHModel::Init() {
 
   static Parameter<LHModel,double> interfaceLambdaRatio
     ("LambdaRatio",
-     "The ratio lambda_2/lambda_1 of the top Yukawa couplings.",
+     "The ratio lambda_1/lambda_2 of the top Yukawa couplings.",
      &LHModel::_lamratio, 1.0, 0.01, 100.,
      false, false, Interface::limited);
 
@@ -83,15 +83,32 @@ void LHModel::Init() {
      &LHModel::_mH, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
      false, false, Interface::limited);
 
+  static Reference<LHModel,AbstractVSSVertex> interfaceVertexWHH
+    ("Vertex/WHH",
+     "Pointer to the WHH vertex",
+     &LHModel::WHHVertex_, false, false, true, false, false);
+
+  static Reference<LHModel,AbstractVVSSVertex> interfaceVertexWWHH
+    ("Vertex/WWHH",
+     "Pointer to the WHH vertex",
+     &LHModel::WWHHVertex_, false, false, true, false, false);
+
 }
 
 void LHModel::doinit() {
+  // stuff from the base class
+  StandardModel::doinit();
   // compute the parameters of the model
   // W and Z masses
-  Energy mw(getParticleData(ParticleID::Wplus)->mass()),
-    mz(getParticleData(ParticleID::Z0)->mass());
+  Energy mw(getParticleData(ParticleID::Wplus)->mass());
+  Energy mz(getParticleData(ParticleID::Z0)   ->mass());
+  // SM couplings
+  double e  = sqrt(4.*Constants::pi*alphaEM(sqr(mz)));
+  double sw2(sin2ThetaW()),cw2(1.-sin2ThetaW());
+  double g  = e/sqrt(sw2);
+  double gp = e/sqrt(cw2);
   // vev
-  _v = 2.*mw/_g;
+  _v = 2.*mw/g;
   // cos and sin of mixing angles
   double theta (atan(1./_cott));
   _c = cos(theta );
@@ -99,29 +116,32 @@ void LHModel::doinit() {
   double thetap(atan(_tantp  ));
   _cp = cos(thetap);
   _sp = sin(thetap);
-  double sw2(sin2ThetaW()),cw2(1.-sin2ThetaW());
-  // masses of the neutral gauge bosons
-  double xH(2.5*_g*_gp*_s*_c*_sp*_cp*(sqr(_c*_sp)+sqr(_s*_cp))/
-	    (5.*sqr(_g*_sp*_cp)-sqr(_gp*_s*_c)));
+  // xH (Eqn A35)
+  double xH = 2.5*g*gp*_s*_c*_sp*_cp*(sqr(_c*_sp)+sqr(_s*_cp))/
+    (5.*sqr(g*_sp*_cp)-sqr(gp*_s*_c));
   double vf(sqr(_v/_f));
-  Energy2 MZL2 = sqr(mz)*(1.-vf*(1./6.+0.25*sqr(sqr(_c)-sqr(_s))
-				 +1.25*sqr(sqr(_cp)-sqr(_sp)))+8.*sqr(_vacratio));
+  // masses of the neutral gauge bosons (Eqn A37)
   Energy2 MAH2 = sqr(mz)*sw2*(0.2/sqr(_sp*_cp)/vf-1.+0.25*xH*cw2/sqr(_s*_c)/sw2);
   Energy2 MZH2 = sqr(mw)*(1./sqr(_s*_c)/vf-1.-xH*sw2/sqr(_sp*_cp)/cw2);
-  // mass of the charged gauge bosons
-  Energy2 MWL2 = sqr(mw)*(1.-vf*(1./6.+0.25*sqr(sqr(_c)-sqr(_s))));
+  // mass of the heavy charged gauge boson (Eqn. A33) 
   Energy2 MWH2 = sqr(mw)*(1./sqr(_s*_c)/vf-1.);
-  // top and heavy top yukawas
+  // top and heavy top yukawas (from Eqns 26,27)
   Energy mt = getParticleData(ParticleID::t)->mass();
   Energy MT = _f/_v*(1.+sqr(_lamratio))/_lamratio*mt;
-  _lambda1 = MT/sqrt(1.+sqr(_lamratio))/_f;
-  _lambda2 = _lamratio*_lambda1;
-  // masses of the Higgs bosons
+  _lambda2 = MT/sqrt(1.+sqr(_lamratio))/_f;
+  _lambda1 = _lamratio*_lambda2;
+  // masses of the Higgs bosons (Eqns 12 and 13)
   double r = 8.*_f/_v*_vacratio;
   double lamh = 2.*sqr(_mH/_v)/(1./r-0.25*r)/r;
   Energy2 MPhi2 = lamh*sqr(_f);
+  // from Eqn A28
   _s0 = 2.*sqrt(2.)*_vacratio;
   _c0 = 1.-4.*sqr(_vacratio);
+  // from Eqn A27
+  _sP    = 2.*sqrt(2.)*_vacratio;
+  _cP    = 1.-4.*sqr(_vacratio);
+  _sPlus = 2.*_vacratio;
+  _cPlus = 1.-2.*sqr(_vacratio);
   // set the masses of the new particles
   resetMass( 32,sqrt(MAH2));
   resetMass( 33,sqrt(MZH2));
@@ -135,8 +155,6 @@ void LHModel::doinit() {
   resetMass(-37,sqrt(MPhi2));
   resetMass( 38,sqrt(MPhi2));
   resetMass(-38,sqrt(MPhi2));
-  // stuff from the base class
-  StandardModel::doinit();
 }
 
 void LHModel::resetMass(long id, Energy mass) {

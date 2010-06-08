@@ -81,17 +81,17 @@ void LHWWWVertex::doinit() {
   _corr[ 4] = -1.;
   // W_H W_H A_H
   _corr[ 5] = vf/sw*(xH*(sqr(c)-sqr(s))/s/c+cw*xB);
-  // W_L W_L A_L
+  // W_L W_L Z_L
   _corr[ 6] = -cw/sw;
-  // W_L W_L A_H
+  // W_L W_L Z_H
   _corr[ 7] = vf/sw*(cw*xW+s*c*(sqr(c)-sqr(s)));
-  // W_L W_H A_L
+  // W_L W_H Z_L
   _corr[ 8] = -vf/sw*xW;
-  // W_L W_H A_H
+  // W_L W_H Z_H
   _corr[ 9] = -1./sw;
-  // W_H W_H A_L
+  // W_H W_H Z_L
   _corr[10] = -cw/sw;
-  // W_H W_H A_H
+  // W_H W_H Z_H
   _corr[11] = (sqr(c)-sqr(s))/s/c/sw;
   orderInGem(1);
   orderInGs(0);

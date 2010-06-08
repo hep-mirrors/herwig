@@ -90,12 +90,13 @@ void LHFFWVertex::doinit() {
   double s2(sqr(model->sinTheta())),c2(sqr(model->cosTheta()));
   double vf(model->vev()/model->f());
   double xL = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
+  // from Table VIII with -sign to agree with our SM conventions
   _corrL   =  1.-0.5*sqr(vf)*c2*(c2-s2);
   _corrH   = -model->cosTheta()/model->sinTheta();
   _tcorrL  =  1.-0.5*sqr(vf)*(c2*(c2-s2)+sqr(xL));
   _tcorrH  = -model->cosTheta()/model->sinTheta();
-  _tHcorrL =  vf*xL;
-  _tHcorrH = -vf*xL*model->cosTheta()/model->sinTheta();
+  _tHcorrL = -vf*xL;
+  _tHcorrH =  vf*xL*model->cosTheta()/model->sinTheta();
   // order of vertex in couplings
   orderInGem(1);
   orderInGs(0);
@@ -135,10 +136,7 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
       iu = ianti/2;
       id = (iferm+1)/2;
     }
-    if( iu<1 || iu>3 || id<1 || id>3)
-      throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
-				       << "Unknown particle in W vertex" 
-				       << Exception::runerror;
+    assert( iu>=1 && iu<=3 && id>=1 && id<=3);
     left(_ckm[iu-1][id-1]);
     right(0.);
   }
@@ -146,10 +144,7 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
   else if(iferm>=11 && iferm <=16) {
     left(1.);
   }
-  else
-    throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
-				     << "Unknown particle in W vertex" 
-				     << Exception::runerror;
+  else assert(false);
   // correction factors
   // light W
   if(abs(c->id())==ParticleID::Wplus) {

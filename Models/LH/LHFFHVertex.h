@@ -7,7 +7,6 @@
 
 #include "LHModel.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "LHFFHVertex.fh"
 
 namespace Herwig {
 
@@ -27,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LHFFHVertex();
+  LHFFHVertex();
   
   /**
    * Calculate the couplings. 
@@ -73,13 +72,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -110,7 +109,7 @@ private:
   /**
    * Pointer to the SM object.
    */
-  tcHwSMPtr _theSM;
+  tcLHModelPtr _model;
 
   /**
    * Storage of the couplings.
@@ -119,7 +118,7 @@ private:
   /**
    *  The PDG code of the last fermion the coupling was evaluated for.
    */
-  int _idlast;
+  int _idlast[2];
 
   /**
    *  The last \f$q^2\f$ the coupling was evaluated at.
@@ -134,7 +133,7 @@ private:
   /**
    *  The factors for the individual interactions
    */
-  vector<InvEnergy> _coup;
+  vector<complex<InvEnergy> > _coup;
   //@}
 };
 
@@ -174,7 +173,5 @@ struct ClassTraits<Herwig::LHFFHVertex>
 /** @endcond */
 
 }
-
-#include "LHFFHVertex.icc"
 
 #endif /* HERWIG_LHFFHVertex_H */

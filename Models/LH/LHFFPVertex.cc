@@ -66,13 +66,14 @@ void LHFFPVertex::doinit() {
     _charge[2*ix+10] = model->enu();
   }
   _charge[8] =  model->eu();
-  // couplings for the heavy photon
-  double cw  = sqrt(1.-model->sin2ThetaW());
-  double pre = 0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
+  // couplings for the heavy photon taken from table IX
+  double cw  = sqrt(sin2ThetaW());
   double xL  = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
   double cp2 = sqr(model->cosThetaPrime());
   double yu  = -0.4;
   double ye  =  0.6;
+  // prefactor after removal of -e
+  double pre = -0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
   // down type quarks
   double gvd   = pre*(2.*yu+11./15.+1./6.*cp2);
   double gad   = pre*(-0.2+0.5*cp2);
@@ -123,6 +124,8 @@ void LHFFPVertex::doinit() {
 
 // coupling for FFP vertex
 void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+  int iferm=abs(a->id());
+  assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8);
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = -electroMagneticCoupling(q2);
@@ -130,28 +133,21 @@ void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   }
   norm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
-  if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8) {
-    // photon
-    if(c->id()==ParticleID::gamma) {
-      left (_charge[iferm]);
-      right(_charge[iferm]);
+  // photon
+  if(c->id()==ParticleID::gamma) {
+    left (_charge[iferm]);
+    right(_charge[iferm]);
+  }
+  // heavy photon
+  else {
+    int ianti = abs(b->id());
+    if(ianti==iferm) {
+      left (-_gl[iferm]);
+      right(-_gr[iferm]);
     }
-    // heavy photon
     else {
-      int ianti = abs(b->id());
-      if(ianti==iferm) {
-	right(-_gr[iferm]);
-	left (-_gl[iferm]);
-      }
-      else {
-	right(_gr[7]);
-	left (_gl[7]);
-      }
+      left (_gl[7]);
+      right(_gr[7]);
     }
   }
-  else
-    throw HelicityConsistencyError() << "SMGFFPVertex::setCoupling "
-				     << "Unknown particle in photon vertex" 
-				     << Exception::runerror;
 }

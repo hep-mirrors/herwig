@@ -1,42 +1,31 @@
 // -*- C++ -*-
-#ifndef HERWIG_LHFFWVertex_H
-#define HERWIG_LHFFWVertex_H
+#ifndef HERWIG_LHWWWWVertex_H
+#define HERWIG_LHWWWWVertex_H
 //
-// This is the declaration of the LHFFWVertex class.
+// This is the declaration of the LHWWWWVertex class.
 //
 
-#include "LHModel.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
+  using namespace ThePEG::Helicity;
 
 /**
- * The LHFFWVertex class implements the couplings of the fermions, both of 
- * the Standard Model and the additional heavy top, to the \f$W^\pm\f$ and
- * \f$W_H^\pm\f$ bosons in the Little Higgs model.
+ * Here is the documentation of the LHWWWWVertex class.
  *
- * @see \ref LHFFWVertexInterfaces "The interfaces"
- * defined for LHFFWVertex.
+ * @see \ref LHWWWWVertexInterfaces "The interfaces"
+ * defined for LHWWWWVertex.
  */
-class LHFFWVertex: public ThePEG::Helicity::FFVVertex {
+class LHWWWWVertex: public VVVVVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  LHFFWVertex();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+  LHWWWWVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -61,6 +50,17 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   * @param part4 The ParticleData pointer for the fourth particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
+			   tcPDPtr part4);
 
 protected:
 
@@ -70,21 +70,21 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
-
+  
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
+   * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
@@ -97,13 +97,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LHFFWVertex> initLHFFWVertex;
+  static ClassDescription<LHWWWWVertex> initLHWWWWVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHFFWVertex & operator=(const LHFFWVertex &);
+  LHWWWWVertex & operator=(const LHWWWWVertex &);
 
 private:
 
@@ -111,11 +111,6 @@ private:
    * Storage of the couplings.
    */
   //@{
-  /**
-   *  The elements of the CKM matrix.
-   */
-  vector<vector<Complex> > _ckm;
-
   /**
    *  The last value of the electroweak coupling calculated.
    */
@@ -127,34 +122,9 @@ private:
   Energy2 _q2last;
 
   /**
-   *  The correction factor for the Standard Model pieces
+   *  Couplings for the different bosons
    */
-  double _corrL;
-
-  /**
-   *  The correction factor for the heavy W
-   */
-  double _corrH;
-
-  /**
-   *  The correction factor for the top quark pieces for the SM W
-   */
-  double _tcorrL;
-
-  /**
-   *  The correction factor for the top quark pieces for the heavy W
-   */
-  double _tcorrH;
-
-  /**
-   *  The correction factor for the coupling of the heavy top and SM W
-   */
-  double _tHcorrL;
-
-  /**
-   *  The correction factor for the coupling of the heavy top and the heavy W
-   */
-  double _tHcorrH;
+  vector<double> _coup;
   //@}
 
 };
@@ -168,24 +138,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LHFFWVertex. */
+ *  base classes of LHWWWWVertex. */
 template <>
-struct BaseClassTrait<Herwig::LHFFWVertex,1> {
-  /** Typedef of the first base class of LHFFWVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
+struct BaseClassTrait<Herwig::LHWWWWVertex,1> {
+  /** Typedef of the first base class of LHWWWWVertex. */
+  typedef Helicity::VVVVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LHFFWVertex class and the shared object where it is defined. */
+ *  the LHWWWWVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LHFFWVertex>
-  : public ClassTraitsBase<Herwig::LHFFWVertex> {
+struct ClassTraits<Herwig::LHWWWWVertex>
+  : public ClassTraitsBase<Herwig::LHWWWWVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHFFWVertex"; }
+  static string className() { return "Herwig::LHWWWWVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * LHFFWVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHFFWVertex depends on other classes (base classes
+   * LHWWWWVertex is implemented. It may also include several, space-separated,
+   * libraries if the class LHWWWWVertex depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -196,4 +166,4 @@ struct ClassTraits<Herwig::LHFFWVertex>
 
 }
 
-#endif /* HERWIG_LHFFWVertex_H */
+#endif /* HERWIG_LHWWWWVertex_H */
