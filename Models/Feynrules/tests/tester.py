@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import string
-
+import particletester as pt
 
 def getTemplate(basename):
     f = open('../%s.template' % basename, 'r')
@@ -14,26 +14,6 @@ def writeFile(filename, text):
     f.write(text)
     f.close()
 
-particles = [ { 'name' : 'bla',
-                'pdg' : 666666,
-                'mass' : 123.45,
-                'spin' : 2,
-                'q'   : -3 },
-              { 'name' : 'blabar',
-                'pdg' : -666666,
-                'mass' : 123.45,
-                'spin' : 2,
-                'q'   : 3 } ]
-
-particleT = string.Template("""create /ThePEG/ParticleData $name
-setup $name $pdg $name $mass 0 0 0 $q 0 $spin 1
-""")
-
-
-plist = ""
-
-for p in particles:
-    plist += particleT.substitute(p)
 
 
 subs = [ { 'classname'   : 'blablaZ',
@@ -101,15 +81,8 @@ modelT_cc = getTemplate( 'Model.cc' )
 writeFile( 'Model.cc' , modelT_cc.substitute(msubs()) )
 
 modelT_in = getTemplate( 'FR.model' )
-writeFile( 'FR.model' , modelT_in.substitute(msubs(),plist=plist) )
-
-
-
-
-
-
-
-
+writeFile( 'FR.model' , modelT_in.substitute(msubs(),
+                                             plist=pt.get_table()) )
 
 
 #print ccT.substitute(subs)

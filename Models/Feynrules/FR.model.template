@@ -19,7 +19,8 @@ cd /Herwig/Feynrules
 
 library FeynrulesModel.so
 
-create Herwig::FeynRulesModel FRModel
+#### create Herwig::FeynRulesModel FRModel
+cp /Herwig/Model FRModel
 
 # SM couplings
 set FRModel:QCD/RunningAlphaS /Herwig/AlphaS

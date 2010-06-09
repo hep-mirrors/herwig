@@ -13,11 +13,6 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
-#include "Herwig++/Models/General/ModelGenerator.fh"
 
 namespace Herwig {
 using namespace ThePEG;
