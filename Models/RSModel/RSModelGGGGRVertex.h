@@ -1,44 +1,39 @@
 // -*- C++ -*-
 //
-// RSModelVVVGRVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// RSModelGGGGRVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_RSModelVVVGRVertex_H
-#define HERWIG_RSModelVVVGRVertex_H
+#ifndef HERWIG_RSModelGGGGRVertex_H
+#define HERWIG_RSModelGGGGRVertex_H
 //
-// This is the declaration of the RSModelVVVGRVertex class.
+// This is the declaration of the RSModelGGGGRVertex class.
 
 #include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "RSModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
     
 /** \ingroup Helicity
  *
- *  The RSModelVVVGRVertex class is the implementation of the 
+ *  The RSModelGGGGRVertex class is the implementation of the 
  *  triple vector graviton couling in the RS model. 
  *  It inherits from VVVTVertex and implements the setCoupling member.
  *
  *  @see VVVTVertex
  *  @see VertexBase
  */
-class RSModelVVVGRVertex: public VVVTVertex {
+class RSModelGGGGRVertex: public VVVTVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  RSModelVVVGRVertex();
-  //@}
-  
-public:
+  RSModelGGGGRVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -103,12 +98,12 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<RSModelVVVGRVertex> initRSModelVVVGRVertex;
+  static ClassDescription<RSModelGGGGRVertex> initRSModelGGGGRVertex;
   
   /**
    * Private and non-existent assignment operator.
    */
-  RSModelVVVGRVertex & operator=(const RSModelVVVGRVertex &);
+  RSModelGGGGRVertex & operator=(const RSModelGGGGRVertex &);
 
 private:
 
@@ -119,22 +114,17 @@ private:
   /**
    * The graviton coupling.
    */
-  InvEnergy _theKappa;
+  InvEnergy kappa_;
 
   /**
    *  The last value of the coupling/
    */
-  vector<Complex> _couplast;
+  Complex _couplast;
 
   /**
    *  The last value of the scale, \f$q^2\f$.
    */
-  vector<Energy2> _q2last;
-
-  /**
-   *  The prefactor for the \f$Z\f$ vertex.
-   */
-  double _zfact;
+  Energy2 _q2last;
   //@}
 };
 }
@@ -145,11 +135,11 @@ namespace ThePEG {
 
 /**
  * The following template specialization informs ThePEG about the
- * base class of RSModelVVVGRVertex. 
+ * base class of RSModelGGGGRVertex. 
  */
 template <>
-struct BaseClassTrait<Herwig::RSModelVVVGRVertex,1> {
-    /** Typedef of the base class of RSModelVVVGRVertex. */
+struct BaseClassTrait<Herwig::RSModelGGGGRVertex,1> {
+    /** Typedef of the base class of RSModelGGGGRVertex. */
   typedef ThePEG::Helicity::VVVTVertex NthBase;
 };
 
@@ -158,13 +148,13 @@ struct BaseClassTrait<Herwig::RSModelVVVGRVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::RSModelVVVGRVertex>
-  : public ClassTraitsBase<Herwig::RSModelVVVGRVertex> {
+struct ClassTraits<Herwig::RSModelGGGGRVertex>
+  : public ClassTraitsBase<Herwig::RSModelGGGGRVertex> {
 
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig::RSModelVVVGRVertex"; }
+  static string className() { return "Herwig::RSModelGGGGRVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get
@@ -180,4 +170,4 @@ struct ClassTraits<Herwig::RSModelVVVGRVertex>
 }
 
 
-#endif /* HERWIG_RSModelVVVGRVertex_H */
+#endif /* HERWIG_RSModelGGGGRVertex_H */

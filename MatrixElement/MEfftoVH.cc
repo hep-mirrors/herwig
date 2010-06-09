@@ -17,6 +17,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -130,11 +131,11 @@ void MEfftoVH::doinit() {
   _mh = h0->mass();
   _wh = h0->width();
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(h0->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEfftoVH::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << "the mass generator must be an instance of the GenericMassGenerator class"
     << Exception::runerror;
 }
 
@@ -191,13 +192,21 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
 	  diag = vertex->evaluate(sqr(inter[1].particle()->mass()),
 				  aout[ohel2],fout[ohel1],inter[1]);
 	  me += norm(diag);
-	  if(calc) menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
+	  menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
 	}
       }
     }
   }
   // spin factor
   me *=0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me = menew.average(rho[0],rho[1]);
+  }
   // incoming colour factor
   if(mePartonData()[0]->coloured()) me /= 3.;
   // outgoing colour factor
@@ -238,6 +247,11 @@ void MEfftoVH::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix) {
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      spin[ix]->rhoMatrix() = beam->rhoMatrix();
+    }
     spin[ix]->setProductionVertex(hardvertex);
   }
 }
@@ -258,8 +272,8 @@ bool MEfftoVH::generateKinematics(const double * r) {
       Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
       Energy mhmin = max(ZERO             ,mePartonData()[2]->massMin());
       if(mhmax<=mhmin) return false;
-      double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-      double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+      rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
+      rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
       mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
       jac *= rhomax-rhomin;
     }
@@ -395,7 +409,7 @@ CrossSection MEfftoVH::dSigHatDR() const {
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
   else {
-    bwfact = _hmass->BreitWignerWeight(moff,0);
+    bwfact = _hmass->BreitWignerWeight(moff);
   }
   double jac1 = _shapeopt!=0 ? 
     double(bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;

@@ -13,7 +13,6 @@
 
 #include "SMFFWVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/StandardModel/CKMBase.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -73,9 +72,9 @@ void SMFFWVertex::doinit() {
     }
   }
   else {
-    throw InitException() << "Must have access to the Herwig::StandardCKM object"
-			  << "for the CKM matrix in SMFFWVertex::doinit()"
-			  << Exception::runerror;
+    throw Exception() << "Must have access to the Herwig::StandardCKM object"
+		      << "for the CKM matrix in SMFFWVertex::doinit()"
+		      << Exception::runerror;
   }
   orderInGem(1);
   orderInGs(0);
@@ -116,10 +115,7 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr aa, tcPDPtr bb, tcPDPtr) {
       iu = ianti/2;
       id = (iferm+1)/2;
     }
-    if( iu<1 || iu>3 || id<1 || id>3)
-      throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
-				       << "Unknown particle in W vertex" 
-				       << Exception::runerror;
+    assert( iu>=1 && iu<=3 && id>=1 && id<=3);
     left(_ckm[iu-1][id-1]);
     right(0.);
   }
@@ -128,9 +124,8 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr aa, tcPDPtr bb, tcPDPtr) {
     left(1.);
     right(0.);
   }
-  else throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
-					<< "Unknown particle in W vertex" 
-					<< Exception::runerror;
+  else 
+    assert(false);
 }
 
 

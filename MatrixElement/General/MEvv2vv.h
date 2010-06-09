@@ -53,16 +53,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -88,7 +78,7 @@ private:
   ProductionMatrixElement 
   vv2vvHeME(VBVector & vin1, VBVector & vin2, 
 	    VBVector & vout1, bool mc, VBVector & vout2, bool md,
-	    double & me2) const;
+	    double & me2, bool first ) const;
 
 protected:
   
@@ -152,6 +142,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -173,22 +169,22 @@ private:
   /**
    * Store the dynamically casted VVSVertex pointers
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractVVSVertexPtr> > theScaV;
+  vector<pair<AbstractVVSVertexPtr, AbstractVVSVertexPtr> > scalar_;
 
   /**
    * Store the dynamically casted VVVVertex pointers
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractVVVVertexPtr> > theVecV;
+  vector<pair<AbstractVVVVertexPtr, AbstractVVVVertexPtr> > vector_;
 
   /**
    * Store the dynamically casted VVTVertex pointers
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractVVTVertexPtr> > theTenV;
+  vector<pair<AbstractVVTVertexPtr, AbstractVVTVertexPtr> > tensor_;
 
   /**
    * Store the dynamically casted VVVVVertex pointer
    */
-  AbstractVVVVVertexPtr theFPVertex;
+  AbstractVVVVVertexPtr fourPointVertex_;
   
 };
 

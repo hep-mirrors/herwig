@@ -43,11 +43,17 @@ public:
    * @param m2 The mass of the second particle.
    * @param m3 The mass of the third  particle.
    */
-  inline ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
-					   double inpow,
-					   T indGamma,int mode,
-					   Energy m1,Energy m2,Energy m3);
-
+  ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
+				    double inpow, T indGamma,int mode,
+				    Energy m1,Energy m2,Energy m3)
+    : _variabletype(intype),_intmass(inmass),_intwidth(inwidth),
+      _intpower(inpow),_mode(mode), _theDgamma(indGamma) {
+    _m .resize(4);
+    _m2.resize(4);
+    _m[1]=m1;_m[2]=m2;_m[3]=m3;
+    for(int ix=1;ix<4;++ix)_m2[ix]=sqr(_m[ix]);
+  }
+  
   /**
    * calculate the width for a given mass
    * @param q2 The mass squared of the decaying particle.
@@ -62,7 +68,11 @@ public:
    * @param mass The new value.
    * @return The mass required.
    */
-  inline void resetMass(int imass,Energy mass);
+  void resetMass(int imass,Energy mass) {
+    assert(imass<4);
+    _m[imass]=mass;
+    _m2[imass]=mass*mass;
+  }
 
   /**
    * Get the mass of one of the decay products.  This must be 
@@ -70,7 +80,10 @@ public:
    * @param imass The mass required.
    * @return The mass required.
    */
-  inline Energy getMass(const int imass) const;
+  Energy getMass(const int imass) const {
+    assert(imass<4);
+    return _m[imass]; 
+  }
 
   /**
    * Get the masses of all bar the one specified. Used to get the limits
@@ -78,7 +91,12 @@ public:
    * @param imass The particle not needed
    * @return The sum of the other masses.
    */
-  inline Energy otherMass(const int imass) const;
+  Energy otherMass(const int imass) const {
+    assert(imass>0&&imass<4);
+    if(imass==1)      return _m[2]+_m[3];
+    else if(imass==2) return _m[1]+_m[3];
+    else              return _m[1]+_m[2];
+  }
 
   /**
    * The integrand for the inner integrand.
@@ -150,7 +168,6 @@ private:
 };
 }
 
-#include "ThreeBodyAllOn1IntegralCalculator.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
  #include "ThreeBodyAllOn1IntegralCalculator.tcc"
 #endif

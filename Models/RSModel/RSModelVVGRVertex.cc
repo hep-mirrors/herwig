@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void RSModelVVGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << ounit(_theKappa,InvGeV);
+  os << ounit(kappa_,InvGeV);
 }
 
 void RSModelVVGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> iunit(_theKappa,InvGeV);
+  is >> iunit(kappa_,InvGeV);
 }
 
 ClassDescription<RSModelVVGRVertex> RSModelVVGRVertex::initRSModelVVGRVertex;
@@ -38,21 +38,23 @@ void RSModelVVGRVertex::Init() {
 }
   
 void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-  norm(Complex(UnitRemoval::E * _theKappa));
+  norm(Complex(UnitRemoval::E * kappa_));
 }
 
-RSModelVVGRVertex::RSModelVVGRVertex() {
+RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO) {
   addToList(23,23,39);
   addToList(22,22,39);
   addToList(24,-24,39);
   addToList(21,21,39);
-    _theKappa=InvEnergy();
 }
 
 void RSModelVVGRVertex::doinit() {
   VVTVertex::doinit();
-  _theModel = generator()->standardModel();
-  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
-  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
-  else{throw InitException();}
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  if(!hwRS)
+    throw Exception() << "Must be RSModel in RSModelVVGRVertex::doinit()"
+		      << Exception::runerror;
+  kappa_=2./hwRS->lambda_pi();
+  orderInGem(1);
+  orderInGs (0);
 }

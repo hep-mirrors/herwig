@@ -9,7 +9,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/SMHiggsMassGenerator.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -277,7 +277,7 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  GenericMassGeneratorPtr _hmass;
 
 
   /**

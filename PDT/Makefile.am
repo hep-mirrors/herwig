@@ -3,30 +3,30 @@
 noinst_LTLIBRARIES = libHwPDT.la libHwBaryonWidth.la
 libHwPDT_la_SOURCES = \
 GenericMassGenerator.cc GenericMassGenerator.fh \
-GenericMassGenerator.h GenericMassGenerator.icc \
+GenericMassGenerator.h \
 GenericWidthGenerator.cc GenericWidthGenerator.fh \
-GenericWidthGenerator.h GenericWidthGenerator.icc \
+GenericWidthGenerator.h \
 OneOffShellCalculator.cc OneOffShellCalculator.fh \
-OneOffShellCalculator.h OneOffShellCalculator.icc \
+OneOffShellCalculator.h \
 ScalarMassGenerator.cc ScalarMassGenerator.fh \
-ScalarMassGenerator.h ScalarMassGenerator.icc \
+ScalarMassGenerator.h \
 ThreeBodyAllOn1IntegralCalculator.tcc \
-ThreeBodyAllOn1IntegralCalculator.h ThreeBodyAllOn1IntegralCalculator.icc \
+ThreeBodyAllOn1IntegralCalculator.h \
 ThreeBodyAllOnCalculator.tcc \
-ThreeBodyAllOnCalculator.h ThreeBodyAllOnCalculator.icc \
+ThreeBodyAllOnCalculator.h \
 TwoBodyAllOnCalculator.cc TwoBodyAllOnCalculator.fh \
-TwoBodyAllOnCalculator.h TwoBodyAllOnCalculator.icc \
+TwoBodyAllOnCalculator.h \
 TwoOffShellCalculator.cc TwoOffShellCalculator.fh \
-TwoOffShellCalculator.h TwoOffShellCalculator.icc \
+TwoOffShellCalculator.h \
 WidthCalculatorBase.cc WidthCalculatorBase.fh \
-WidthCalculatorBase.h WidthCalculatorBase.icc \
+WidthCalculatorBase.h \
 StandardMatchers.h StandardMatchers.cc \
 SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.fh \
-SMHiggsWidthGenerator.h SMHiggsWidthGenerator.icc \
+SMHiggsWidthGenerator.h \
 SMHiggsMassGenerator.cc SMHiggsMassGenerator.fh \
-SMHiggsMassGenerator.h SMHiggsMassGenerator.icc
+SMHiggsMassGenerator.h 
 
 
 libHwBaryonWidth_la_SOURCES = \
 BaryonWidthGenerator.cc BaryonWidthGenerator.fh \
-BaryonWidthGenerator.h BaryonWidthGenerator.icc
+BaryonWidthGenerator.h

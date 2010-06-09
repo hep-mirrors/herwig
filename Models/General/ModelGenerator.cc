@@ -36,15 +36,15 @@ IBPtr ModelGenerator::fullclone() const {
 }
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _theHPConstructor << _theDecayConstructor << _theParticles 
-     << _theRPConstructor << _theOffshell << _theOffsel << _theBRnorm
-     << _theNpoints << _theIorder << _theBWshape << brMin_ << decayOutput_;
+  os << hardProcessConstructors_ << _theDecayConstructor << particles_ 
+     << offshell_ << Offsel_ << BRnorm_
+     << Npoints_ << Iorder_ << BWshape_ << brMin_ << decayOutput_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _theHPConstructor >> _theDecayConstructor >> _theParticles
-     >> _theRPConstructor >> _theOffshell >> _theOffsel >> _theBRnorm
-     >> _theNpoints >> _theIorder >> _theBWshape >> brMin_ >> decayOutput_;
+  is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
+     >> offshell_ >> Offsel_ >> BRnorm_
+     >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
 bool ModelGenerator::preInitialize() const {
@@ -71,11 +71,12 @@ void ModelGenerator::Init() {
      "  %%CITATION = ARXIV:0805.3037;%%\n"
      );
  
-  static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
-    interfaceHardProcessConstructor
-    ("HardProcessConstructor",
-     "Pointer to the object that constructs the hard process",
-     &ModelGenerator::_theHPConstructor, false, false, true, true);
+  static RefVector<ModelGenerator,HardProcessConstructor> 
+    interfaceHardProcessConstructors
+    ("HardProcessConstructors",
+     "The objects to construct hard processes",
+     &ModelGenerator::hardProcessConstructors_, -1, 
+     false, false, true, false, false);
 
   static Reference<ModelGenerator,Herwig::DecayConstructor> 
      interfaceDecayConstructor
@@ -87,24 +88,18 @@ void ModelGenerator::Init() {
     ("DecayParticles",
      "ParticleData pointers to the particles requiring spin correlation "
      "decayers. If decay modes do not exist they will also be created.",
-     &ModelGenerator::_theParticles, -1, false, false, true, false);
-
-  static Reference<ModelGenerator,Herwig::ResonantProcessConstructor> 
-    interfaceResonantProcessConstructor
-    ("ResonantProcessConstructor",
-     "Pointer to the object that constructs the resonant process(es)",
-     &ModelGenerator::_theRPConstructor, false, false, true, true);
+     &ModelGenerator::particles_, -1, false, false, true, false);
     
   static RefVector<ModelGenerator,ParticleData> interfaceOffshell
     ("Offshell",
      "The particles to treat as off-shell",
-     &ModelGenerator::_theOffshell, -1, false, false, true, false);
+     &ModelGenerator::offshell_, -1, false, false, true, false);
 
   static Switch<ModelGenerator,int> interfaceWhichOffshell
     ("WhichOffshell",
      "A switch to determine which particles to create mass and width "
      "generators for.",
-     &ModelGenerator::_theOffsel, 0, false, false);
+     &ModelGenerator::Offsel_, 0, false, false);
   static SwitchOption interfaceWhichOffshellSelected
     (interfaceWhichOffshell,
      "Selected",
@@ -121,7 +116,7 @@ void ModelGenerator::Init() {
     ("BRNormalize",
      "Whether to normalize the partial widths to BR*total width for an "
      "on-shell particle",
-     &ModelGenerator::_theBRnorm, true, false, false);
+     &ModelGenerator::BRnorm_, true, false, false);
   static SwitchOption interfaceBRNormalizeNormalize
     (interfaceBRNormalize,
      "Yes",
@@ -136,19 +131,19 @@ void ModelGenerator::Init() {
   static Parameter<ModelGenerator,int> interfacePoints
     ("InterpolationPoints",
      "Number of points to use for interpolation tables when needed",
-     &ModelGenerator::_theNpoints, 50, 5, 1000,
+     &ModelGenerator::Npoints_, 50, 5, 1000,
      false, false, true);
   
   static Parameter<ModelGenerator,unsigned int> 
     interfaceInterpolationOrder
     ("InterpolationOrder", "The interpolation order for the tables",
-     &ModelGenerator::_theIorder, 1, 1, 5,
+     &ModelGenerator::Iorder_, 1, 1, 5,
      false, false, Interface::limited);
 
   static Switch<ModelGenerator,int> interfaceBreitWignerShape
     ("BreitWignerShape",
      "Controls the shape of the mass distribution generated",
-     &ModelGenerator::_theBWshape, 0, false, false);
+     &ModelGenerator::BWshape_, 0, false, false);
   static SwitchOption interfaceBreitWignerShapeDefault
     (interfaceBreitWignerShape,
      "Default",
@@ -209,18 +204,17 @@ void ModelGenerator::doinit() {
   useMe();
   Interfaced::doinit();
   // sort DecayParticles list by mass
-  sort(_theParticles.begin(),_theParticles.end(),
+  sort(particles_.begin(),particles_.end(),
        massIsLess);
-
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
-  if( _theOffsel == 0 ) {
-    pit = _theOffshell.begin();
-    pend = _theOffshell.end();
+  if( Offsel_ == 0 ) {
+    pit = offshell_.begin();
+    pend = offshell_.end();
   }
   else {
-    pit = _theParticles.begin();
-    pend = _theParticles.end();
+    pit = particles_.begin();
+    pend = particles_.end();
   }
   for(; pit != pend; ++pit)
     createWidthGenerator(*pit);
@@ -228,7 +222,7 @@ void ModelGenerator::doinit() {
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
-    _theDecayConstructor->createDecayers(_theParticles);
+    _theDecayConstructor->createDecayers(particles_);
   }
 
   // write out decays with spin correlations and set particles
@@ -255,8 +249,8 @@ void ModelGenerator::doinit() {
 	  << "     # Version number\n";
     }
   }
-  pit = _theParticles.begin();
-  pend = _theParticles.end();
+  pit = particles_.begin();
+  pend = particles_.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
     // cerr << "Checking width and decay length " << parent->width()/MeV
@@ -291,13 +285,9 @@ void ModelGenerator::doinit() {
   }
   //Now construct hard processes given that we know which
   //objects have running widths
-  if(_theHPConstructor) {
-    _theHPConstructor->init();
-    _theHPConstructor->constructDiagrams();
-  }
-  if(_theRPConstructor) {
-    _theRPConstructor->init();
-    _theRPConstructor->constructResonances();
+  for(unsigned int ix=0;ix<hardProcessConstructors_.size();++ix) {
+    hardProcessConstructors_[ix]->init();
+    hardProcessConstructors_[ix]->constructDiagrams();
   }
 
 }
@@ -409,18 +399,18 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   generator()->preinitInterface(mgen, "Initialize", "set", "Yes");
   generator()->preinitInterface(wgen, "Initialize", "set", "Yes");
 
-  string norm = _theBRnorm ? "Yes" : "No";
+  string norm = BRnorm_ ? "Yes" : "No";
   generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
   ostringstream os;
-  os << _theNpoints;
+  os << Npoints_;
   generator()->preinitInterface(wgen, "InterpolationPoints", "set", 
 				  os.str());
   os.str("");
-  os << _theIorder;
+  os << Iorder_;
   generator()->preinitInterface(wgen, "InterpolationOrder", "set",
 				  os.str());
   os.str("");
-  os << _theBWshape;
+  os << BWshape_;
   generator()->preinitInterface(mgen, "BreitWignerShape", "set", 
 				  os.str());
 }

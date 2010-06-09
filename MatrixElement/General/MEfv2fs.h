@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  MEfv2fs() : theScaV(0), theFermV(0) {}
+  MEfv2fs() : scalar_(0), fermion_(0) {}
 
 public:
 
@@ -69,16 +69,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -103,7 +93,7 @@ private:
 				     const VecWFVector & vecIn,
 				     const SpinorBarVector & spbOut,
 				     const ScalarWaveFunction & scaOut,
-				     double & full_me) const;
+				     double & full_me, bool first) const;
   
   /**
    * Calculate me2 and the production matrix element for the cc mode.
@@ -117,7 +107,7 @@ private:
 				     const VecWFVector & vecIn,
 				     const SpinorVector & spOut,
 				     const ScalarWaveFunction & scaOut,
-				     double & full_me) const;
+				     double & full_me, bool first) const;
   //@}
 
 protected:
@@ -165,6 +155,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -203,12 +199,12 @@ private:
   /**
    * Store a pair of  FFSVertex and VSSVertex pointers  
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theScaV;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > scalar_;
 
   /**
    * Store a pair of  FFSVertex and FFVVertex pointers  
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > theFermV;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
   
 };
 

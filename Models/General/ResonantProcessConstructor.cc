@@ -17,7 +17,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/MatrixElement/General/GeneralHardME.h"
 
 using namespace Herwig;
 
@@ -29,40 +28,12 @@ IBPtr ResonantProcessConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-void ResonantProcessConstructor::doinit() {
-  Interfaced::doinit();
-  EGPtr eg = generator();
-  theModel = dynamic_ptr_cast<HwSMPtr>(eg->standardModel());
-  if(!theModel)
-    throw InitException() << "ResonantProcessConstructor:: doinit() - "
-			  << "The model pointer is null!"
-			  << Exception::abortnow;
-  if(eg->eventHandler()) {
-    string subProcessName = 
-      eg->preinitInterface(eg->eventHandler(), "SubProcessHandlers", "get","");
-   theSubProcess = eg->getObject<SubProcessHandler>(subProcessName);
-   if(!theSubProcess)
-     throw InitException() << "ResonantProcessConstructor:: doinit() - "
-			   << "There was an error getting the SubProcessHandler "
-			   << "from the current event handler. "
-			   << Exception::abortnow;
-  }
-  else
-    throw
-      InitException() << "ResonantProcessConstructor:: doinit() - "
-		      << "The eventHandler pointer was null therefore "
-		      << "could not get SubProcessHandler pointer " 
-		      << Exception::abortnow;
-}
-
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << theIncoming << theIntermediates << theOutgoing << theModel 
-     << theSubProcess;
+  os << theIncoming << theIntermediates << theOutgoing;
 }
 
 void ResonantProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> theIncoming >> theIntermediates >> theOutgoing >> theModel 
-     >> theSubProcess;
+  is >> theIncoming >> theIntermediates >> theOutgoing;
 }
 
 ClassDescription<ResonantProcessConstructor> 
@@ -92,71 +63,80 @@ void ResonantProcessConstructor::Init() {
      "A vector of outgoin particles for resonant diagrams",
      &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
      false);
-
-  static Switch<ResonantProcessConstructor,bool> interfaceDebugME
-    ("DebugME",
-     "Print comparison with analytical ME",
-     &ResonantProcessConstructor::theDebug, false, false, false);
-  static SwitchOption interfaceDebugMEYes
-    (interfaceDebugME,
-     "Yes",
-     "Print the debug information",
-     true);
-  static SwitchOption interfaceDebugMENo
-    (interfaceDebugME,
-     "No",
-     "Do not print the debug information",
-     false);
 }
 
-void ResonantProcessConstructor::constructResonances() {
+namespace {
+  // Helper functor for find_if in duplicate function.
+  class SameIncomingAs {
+  public:
+    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
+    bool operator()(tPDPair ppair) const {
+      long id1(ppair.first->id()), id2(ppair.second->id());
+      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
+    }
+  private:
+    long a, b;
+  };
+
+  bool duplicateIncoming(tPDPair ppair,const vector<tPDPair> &incPairs) {
+    vector<tPDPair>::const_iterator it = 
+      find_if( incPairs.begin(), incPairs.end(), SameIncomingAs(ppair) );
+    return it != incPairs.end(); 
+  }
+}
+
+void ResonantProcessConstructor::constructDiagrams() {
   size_t ninc = theIncoming.size() , ninter = theIntermediates.size();
   if(ninc == 0 || ninter == 0 || theOutgoing.size() == 0) return;
+  // find the incoming particle pairs
+  vector<tPDPair> incPairs;
+  for(PDVector::size_type i = 0; i < ninc; ++i) {
+    for(PDVector::size_type j = 0; j < ninc; ++j) {
+      tPDPair inc = make_pair(theIncoming[i], theIncoming[j]);
+      if( (inc.first->iSpin() > inc.second->iSpin()) ||
+	  (inc.first->iSpin() == inc.second->iSpin() &&
+	   inc.first->id() < inc.second->id()) )
+	swap(inc.first, inc.second);
+      if( !duplicateIncoming(inc,incPairs) ) {
+	incPairs.push_back(inc);
+      }
+    }
+  }
   //Remove matrix elements already present
   EGPtr eg = generator();
-  int nme = theSubProcess->MEs().size();
+  int nme = subProcess()->MEs().size();
   for(int ix = nme - 1; ix >= 0; --ix)
-    eg->preinitInterface(theSubProcess, "MatrixElements", ix, "erase", "");
-    // Get a pointer to the model in use
-  theModel->init();
-  size_t nvertices = theModel->numberOfVertices(); 
+    eg->preinitInterface(subProcess(), "MatrixElements", ix, "erase", "");
+  // Get a pointer to the model in use
+  model()->init();
+  size_t nvertices = model()->numberOfVertices(); 
   //init the vertices
   for(size_t iv = 0; iv < nvertices; ++iv)
-    theModel->vertex(iv)->init();
+    model()->vertex(iv)->init();
   //To construct resonant diagrams loop over the incoming particles, intermediates
   //and vertices to find allowed diagrams. Need to exclude the diagrams that have 
   //the intermediate as an external particle aswell
-  for(vector<PDPtr>::size_type ii = 0; ii < ninc; ++ii) {
-    tcPDPtr parta = theIncoming[ii];
-    for(vector<PDPtr>::size_type ij = ii; ij < ninc; ++ij) {
-      tcPDPtr partb = theIncoming[ij];
-      for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
-	long ipart = theIntermediates[ik]->id();
-	for(size_t iv = 0; iv < nvertices; ++iv) {
-	  VBPtr vertex = theModel->vertex(iv);
-	  if(vertex->getNpoint() > 3) continue;
-	  long part1 = parta->CC() ? -parta->id() : parta->id();
-	  long part2 = partb->CC() ? -partb->id() : partb->id();
-	  if(vertex->allowed(part1, part2, ipart) || 
-	     vertex->allowed(part1, ipart, part2) ||
-	     vertex->allowed(part2, part1, ipart) ||
-	     vertex->allowed(part2, ipart, part1) ||
-	     vertex->allowed(ipart, part1, part2) ||
-	     vertex->allowed(ipart, part2, part1) ) {
-	    constructVertex2(make_pair(parta->id(), partb->id()), vertex, 
-			     theIntermediates[ik]);
-	  }
+  for(vector<tcPDPair>::size_type is = 0; is < incPairs.size(); ++is) {
+    tPDPair ppi = incPairs[is]; 
+    for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
+      long ipart = theIntermediates[ik]->id();
+      for(size_t iv = 0; iv < nvertices; ++iv) {
+	VBPtr vertex = model()->vertex(iv);
+	if(vertex->getNpoint() > 3) continue;
+	long part1 = ppi.first->CC() ? -ppi.first->id() : ppi.first->id();
+	long part2 = ppi.second->CC() ? -ppi.second->id() : ppi.second->id();
+	if(vertex->allowed(part1, part2, ipart) || 
+	   vertex->allowed(part1, ipart, part2) ||
+	   vertex->allowed(part2, part1, ipart) ||
+	   vertex->allowed(part2, ipart, part1) ||
+	   vertex->allowed(ipart, part1, part2) ||
+	   vertex->allowed(ipart, part2, part1) ) {
+	  constructVertex2(make_pair(ppi.first->id(), ppi.second->id()), vertex, 
+			   theIntermediates[ik]);
 	}
       }
     }
   }
-//   cout << "Created " << theDiagrams.size() << " resonant processes\n";
-//   for(HPDVector::size_type ix = 0; ix < theDiagrams.size(); ++ix)
-//     cout << getParticleData(theDiagrams[ix].incoming.first)->PDGName() << ","
-// 	 << getParticleData(theDiagrams[ix].incoming.second)->PDGName()  << "->"
-// 	 << theDiagrams[ix].intermediate->PDGName() << "->" 
-// 	 << getParticleData(theDiagrams[ix].outgoing.first)->PDGName() << ","
-// 	 << getParticleData(theDiagrams[ix].outgoing.second)->PDGName()  << "\n";
   //Create matrix element for each process
   const HPDVector::size_type ndiags = theDiagrams.size();
   for(HPDVector::size_type ix = 0; ix < ndiags; ++ix)
@@ -168,11 +148,11 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
 		 PDPtr partc) {
   //We have the left hand part of the diagram, just need all the possibilities
   //for the RHS
-  size_t nvertices = theModel->numberOfVertices(); 
+  size_t nvertices = model()->numberOfVertices(); 
   for(size_t io = 0; io < theOutgoing.size(); ++io) {
     tcPDPtr outa = theOutgoing[io];
     for(size_t iv = 0; iv < nvertices; ++iv) {
-      VBPtr vertex2 = theModel->vertex(iv);
+      VBPtr vertex2 = model()->vertex(iv);
       if(vertex2->getNpoint() > 3) continue;
       tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
 			  outgoing);
@@ -192,8 +172,10 @@ makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const tPDSet & out,
     newdiag.intermediate = offshell;
     newdiag.vertices = vertpair;
     newdiag.channelType = HPDiagram::sChannel;
-    newdiag.colourFlow = vector<CFPair>(1, make_pair(1, 1.));
-    theDiagrams.push_back(newdiag);
+    fixFSOrder(newdiag);
+    assignToCF(newdiag);
+    if(!duplicate(newdiag,theDiagrams))
+      theDiagrams.push_back(newdiag);
   }
 }
 	
@@ -267,7 +249,8 @@ createMatrixElement(const HPDiagram & diag) const {
     (generator()->preinitCreate(classname, objectname));
   if( !matrixElement ) {
     throw RPConstructorError() 
-      << "createMatrixElement - No matrix element object could be created for "
+      << "ResonantProcessConstructor::createMatrixElement "
+      << "- No matrix element object could be created for "
       << "the process " 
       << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
       << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
@@ -278,9 +261,9 @@ createMatrixElement(const HPDiagram & diag) const {
     return;
   }
   matrixElement->setProcessInfo(HPDVector(1, diag),
-				colourFactor(extpart), 1, theDebug,1);
-  generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				theSubProcess->MEs().size(),
+				colourFlow(extpart), debug(),1);
+  generator()->preinitInterface(subProcess(), "MatrixElements", 
+				subProcess()->MEs().size(),
 				"insert", matrixElement->fullName()); 
 }
 
@@ -302,42 +285,4 @@ string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
   objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2" 
     + extpart[2]->PDGName() + extpart[3]->PDGName();
   return classname;  
-}
-
-vector<DVector> ResonantProcessConstructor::
-colourFactor(const tcPDVector & extpart) const {
-  vector<DVector > cfactor(1, DVector(1, 0.));
-
-  if(extpart[0]->iColour() == PDT::Colour3 ||
-     extpart[1]->iColour() == PDT::Colour3) {
-    if(extpart[2]->iColour() == PDT::Colour3 || 
-       extpart[3]->iColour() == PDT::Colour3)
-      cfactor[0][0] = 9.;
-    else if(extpart[2]->iColour() == PDT::Colour8 || 
-	    extpart[3]->iColour() == PDT::Colour8)
-      cfactor[0][0] = 24.;
-    else
-      cfactor[0][0] = 3.;
-  }
-  else if(extpart[0]->iColour() == PDT::Colour8) {
-    if(extpart[2]->iColour() == PDT::Colour3 || 
-       extpart[3]->iColour() == PDT::Colour3)
-      cfactor[0][0] = 24.;
-    else if(extpart[2]->iColour() == PDT::Colour8 || 
-	    extpart[3]->iColour() == PDT::Colour8)
-      cfactor[0][0] = 64.;
-    else 
-      cfactor[0][0] = 8.;
-  }
-  else if(extpart[0]->iColour() == PDT::Colour0) {
-    if(extpart[2]->iColour() == PDT::Colour3 || 
-       extpart[3]->iColour() == PDT::Colour3)
-      cfactor[0][0] = 3.;
-    else if(extpart[2]->iColour() == PDT::Colour8 || 
-	    extpart[3]->iColour() == PDT::Colour8)
-      cfactor[0][0] = 8.;
-    else
-      cfactor[0][0] = 1.;
-  }
-  return cfactor;
 }

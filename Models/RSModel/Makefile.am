@@ -3,8 +3,10 @@ pkglib_LTLIBRARIES = HwRSModel.la
 endif
 HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  \
 RSModelFFGRVertex.cc  RSModelFFGRVertex.h  \
-RSModelFFVGRVertex.cc RSModelFFVGRVertex.h \
+RSModelFFGGRVertex.cc RSModelFFGGRVertex.h \
+RSModelFFWGRVertex.cc RSModelFFWGRVertex.h \
 RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
 RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
-RSModelVVVGRVertex.cc RSModelVVVGRVertex.h 
+RSModelWWWGRVertex.cc RSModelWWWGRVertex.h\
+RSModelGGGGRVertex.cc RSModelGGGGRVertex.h 
 HwRSModel_la_LDFLAGS = -module -version-info 6:0:0

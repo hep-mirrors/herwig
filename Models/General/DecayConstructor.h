@@ -38,8 +38,8 @@ public:
   /**
    * The default constructor.
    */
-  inline DecayConstructor() : _theNBodyDecayConstructors(0), 
-			      _disableDMTags(0) {}
+  DecayConstructor() : _theNBodyDecayConstructors(0), 
+		       _disableDMTags(0) {}
 
 public:
 

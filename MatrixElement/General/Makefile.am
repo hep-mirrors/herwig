@@ -8,7 +8,10 @@ MEff2ss.cc MEff2ss.h \
 MEff2ff.cc MEff2ff.h \
 MEff2vv.cc MEff2vv.h \
 MEfv2vf.cc MEfv2vf.h \
-MEff2vs.h MEff2vs.cc \
-MEff2sv.h MEff2sv.cc \
-MEvv2vv.cc MEvv2vv.h 
+MEff2vs.cc MEff2vs.h \
+MEff2sv.cc MEff2sv.h \
+MEvv2vv.cc MEvv2vv.h \
+MEff2tv.cc MEff2tv.h \
+MEvv2tv.cc MEvv2tv.h \
+MEfv2tf.cc MEfv2tf.h 
 

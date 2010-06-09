@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "DecayConstructor.h"
 #include "HardProcessConstructor.h"
-#include "ResonantProcessConstructor.h"
 #include "ModelGenerator.fh"
 
 namespace Herwig {
@@ -36,11 +35,11 @@ public:
   /**
    * The default constructor.
    */
-  inline ModelGenerator() : _theParticles(0), _theOffshell(0),
-			    _theOffsel(0), _theBRnorm(true),
-			    _theNpoints(50), _theIorder(1),
-			    _theBWshape(0), brMin_(1e-6),
-			    decayOutput_(1) {}
+  ModelGenerator() : particles_(0), offshell_(0),
+		     Offsel_(0), BRnorm_(true),
+		     Npoints_(50), Iorder_(1),
+		     BWshape_(0), brMin_(1e-6),
+		     decayOutput_(1) {}
 
 public:
 
@@ -141,9 +140,9 @@ private:
 private:
   
   /**
-   * Pointer to the HardProcessConstructor
+   * Pointer to the TwoToTwoProcessConstructor
    */
-  HPConstructorPtr _theHPConstructor;
+  vector<HPConstructorPtr> hardProcessConstructors_;
   
   /**
    * Pointer to DecayConstructor
@@ -153,47 +152,42 @@ private:
   /**
    * Vector of ParticleData pointer
    */
-  PDVector _theParticles;
-
-  /**
-   * Pointer to the ResonantProcessConstructor
-   */
-  RPConstructorPtr _theRPConstructor;
+  PDVector particles_;
 
   /** @name Width and Mass Generator variables. */
   //@{
   /**
    * The particles to create MassGenerator and WidthGenerators  
    */
-  PDVector _theOffshell;
+  PDVector offshell_;
   
   /**
    * Which particles to treat as off-shell. 1 treats all particles in
-   * _theParticles vector as off-shell, 0 allows selection via
-   * _theOffshell vector.
+   * particles_ vector as off-shell, 0 allows selection via
+   * offshell_ vector.
    */
-  int _theOffsel;
+  int Offsel_;
   
   /**
    * Whether to normalise the partial widths to BR*Total width for 
    * an on-shell particle
    */
-  bool _theBRnorm;
+  bool BRnorm_;
 
   /**
    * The number of points to include in the interpolation table
    */
-  int _theNpoints;
+  int Npoints_;
   
   /**
    * The order for the interpolation
    */
-  unsigned int _theIorder;
+  unsigned int Iorder_;
 
   /**
    * The shape of the Breit-Wigner used in the mass generation
    */
-  int _theBWshape;
+  int BWshape_;
 
   /**
    * The minimum branching ratio to use 

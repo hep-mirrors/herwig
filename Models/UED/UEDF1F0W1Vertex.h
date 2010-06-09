@@ -96,7 +96,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
 
 private:

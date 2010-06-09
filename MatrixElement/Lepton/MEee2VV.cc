@@ -14,6 +14,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -172,11 +173,11 @@ double MEee2VV::me2() const {
 
   // e+e- > Z Z 
   if(v1[0].particle()->id()==ParticleID::Z0) {
-    return ZZME(f1,a1,v1,v2,false);
+    return ZZME(f1,a1,v1,v2);
   }
   // e+e- > W+W-
   else {
-    return WWME(f1,a1,v1,v2,false);
+    return WWME(f1,a1,v1,v2);
   }
   
 }
@@ -184,12 +185,17 @@ double MEee2VV::me2() const {
 double MEee2VV::WWME(vector<SpinorWaveFunction>    & f1,
 		     vector<SpinorBarWaveFunction> & a1,
 		     vector<VectorWaveFunction>    & v1,
-		     vector<VectorWaveFunction>    & v2,
-		     bool calc) const {
+		     vector<VectorWaveFunction>    & v2) const {
   double output(0.);
   vector<double> me(3,0.0);
   me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 				    PDT::Spin1,PDT::Spin1));
+  ProductionMatrixElement hme[3]={ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							  PDT::Spin1,PDT::Spin1),
+				  ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							  PDT::Spin1,PDT::Spin1),
+				  ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							  PDT::Spin1,PDT::Spin1)};
   // particle data for the t-channel intermediate
   tcPDPtr nu_e  = getParticleData(ParticleID::nu_e);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
@@ -212,22 +218,33 @@ double MEee2VV::WWME(vector<SpinorWaveFunction>    & f1,
 	  diag[2] = 
 	    FFWvertex_->evaluate(scale(),inter_nu_e,a1[ihel2],v2[ohel2]);
 	  // individual diagrams
-	  for (size_t ii=0; ii<3; ++ii) me[ii] += std::norm(diag[ii]);
+	  for (size_t ii=0; ii<3; ++ii) {
+	    me[ii] += std::norm(diag[ii]);
+	    hme[ii](ihel1,ihel2,ohel1,ohel2) = diag[ii];
+	  }
 	  // full matrix element
 	  diag[0] += diag[1]+diag[2];
 	  output += std::norm(diag[0]);
 	  // storage of the matrix element for spin correlations
-	  if(calc) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
+	  me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
 	}
       }
     }
   }
   DVector save(3);
-  for (size_t i = 0; i < 3; ++i) {
-    save[i] = 0.25 * me[i];
+  for (size_t i = 0; i < 3; ++i) save[i] = 0.25 * me[i];
+  output *= 0.25;
+  // polarization stuff
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    for(unsigned int i=0;i<3;++i) me[i] = hme[i].average(rho[0],rho[1]);
+    output = me_.average(rho[0],rho[1]);
   }
   meInfo(save);
-  output *= 0.25;
   // testing code
 //   double xW = SM().sin2ThetaW();
 //   double Q=-1.;
@@ -259,12 +276,15 @@ double MEee2VV::WWME(vector<SpinorWaveFunction>    & f1,
 double MEee2VV::ZZME(vector<SpinorWaveFunction>    & f1,
 		     vector<SpinorBarWaveFunction> & a1,
 		     vector<VectorWaveFunction>    & v1,
-		     vector<VectorWaveFunction>    & v2,
-		     bool calc) const {
+		     vector<VectorWaveFunction>    & v2) const {
   double output(0.);
   vector<double> me(3,0.0);
   me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 				    PDT::Spin1,PDT::Spin1));
+  ProductionMatrixElement hme[2]={ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							  PDT::Spin1,PDT::Spin1),
+				  ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							  PDT::Spin1,PDT::Spin1)};
   tcPDPtr em  = getParticleData(ParticleID::eminus);
   vector<Complex> diag(2,0.0);
   SpinorWaveFunction inter;
@@ -277,25 +297,36 @@ double MEee2VV::ZZME(vector<SpinorWaveFunction>    & f1,
 	  inter   = FFZvertex_->evaluate(scale(),1,em,f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // individual diagrams
-	  for (size_t ii=0; ii<2; ++ii) me[ii] += std::norm(diag[ii]);
+	  for (size_t ii=0; ii<2; ++ii) {
+	    me[ii] += std::norm(diag[ii]);
+	    hme[ii](ihel1,ihel2,ohel1,ohel2) = diag[ii];
+	  }
 	  // full matrix element
 	  diag[0] += diag[1];
 	  output += std::norm(diag[0]);
 	  // storage of the matrix element for spin correlations
-	  if(calc) me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
+	  me_(ihel1,ihel2,ohel1,ohel2) = diag[0];
 	}
       }
     }
   }
-  // identical particle factor
-  output /= 2.;
   DVector save(3);
-  for (size_t i = 0; i < 3; ++i) {
-    save[i] = 0.25 * me[i];
-  }
+  for (size_t i = 0; i < 3; ++i) save[i] = 0.25 * me[i];
   meInfo(save);
   // spin average
-  output *=0.25;
+  output *= 0.25;
+  // polarization stuff
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    for(unsigned int i=0;i<2;++i) me[i] = hme[i].average(rho[0],rho[1]);
+    output = me_.average(rho[0],rho[1]);
+  }
+  // identical particle factor
+  output /= 2.;
   // testing code
 //   double xW = SM().sin2ThetaW();
 //   double Q=-1.;
@@ -378,10 +409,10 @@ void MEee2VV::constructVertex(tSubProPtr sub) {
   VectorWaveFunction   (w1,hard[order[2]],outgoing,true ,false);
   VectorWaveFunction   (w2,hard[order[3]],outgoing,true ,false);
   if(hard[order[2]]->id()==ParticleID::Z0) {
-    ZZME(f,fbar,w1,w2,true);
+    ZZME(f,fbar,w1,w2);
   }
   else {
-    WWME(f,fbar,w1,w2,true);
+    WWME(f,fbar,w1,w2);
   }  
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
@@ -391,6 +422,12 @@ void MEee2VV::constructVertex(tSubProPtr sub) {
   // set the matrix element for the vertex
   hardvertex->ME(me_);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix)
+  for(unsigned int ix=0;ix<4;++ix) {
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin[ix]->rhoMatrix() = beam->rhoMatrix();
+    }
     spin[ix]->setProductionVertex(hardvertex);
+  }
 }

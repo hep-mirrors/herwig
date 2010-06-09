@@ -80,7 +80,7 @@ public:
   /**
    * The default constructor.
    */
-  inline TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
+  TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
 
   /**
    * Function used to determine allowed decaymodes

@@ -60,7 +60,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor() : 
+  ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
     _minReleaseFraction(1e-3) {}
 

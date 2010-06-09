@@ -15,6 +15,7 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -162,11 +163,11 @@ void MEfftoffH::doinit() {
   _mh = h0->mass();
   _wh = h0->width();
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(h0->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEfftoffH::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << "the mass generator must be an instance of the GenericMassGenerator class"
     << Exception::runerror;
 }
 
@@ -272,18 +273,24 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 	  diag = _vertexWWH->evaluate(mb2,inter[0],inter[1],higgs);
 	  me += norm(diag);
 	  // store matrix element if needed
-	  if(calc) {
-	    unsigned int ihel[5]={i1,i3,i2,i4,0};
-	    if(swap1) swap(ihel[0],ihel[2]);
-	    if(swap2) swap(ihel[1],ihel[3]);
-	    menew(ihel[0],ihel[1],ihel[2],ihel[3],ihel[4]) = diag;
-	  }
+	  unsigned int ihel[5]={i1,i3,i2,i4,0};
+	  if(swap1) swap(ihel[0],ihel[2]);
+	  if(swap2) swap(ihel[1],ihel[3]);
+	  menew(ihel[0],ihel[1],ihel[2],ihel[3],ihel[4]) = diag;
 	}
       }
     }
   }
   // spin factor
   me *=0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me = menew.average(rho[0],rho[1]);
+  }
   // test of the matrix element for e+e- > nu nubar H
 //   Energy2 mw2 = sqr(WPlus()->mass());
 //   Energy2 t1 = (meMomenta()[0]-meMomenta()[2]).m2()-mw2;
@@ -416,7 +423,7 @@ CrossSection MEfftoffH::dSigHatDR() const {
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
   else if(_shapeopt==2) {
-    bwfact = _hmass->BreitWignerWeight(moff,0);
+    bwfact = _hmass->BreitWignerWeight(moff);
   }
   double jac1 = _shapeopt!=0 ? 
     double( bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;
