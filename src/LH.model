@@ -67,31 +67,34 @@ create Herwig::LHFFZVertex FFZVertex
 create Herwig::LHFFPVertex FFPVertex
 create Herwig::LHFFGVertex FFGVertex
 create Herwig::LHFFWVertex FFWVertex
+create Herwig::LHFFHVertex FFHVertex
+create Herwig::LHWWWVertex WWWVertex
+create Herwig::LHWWHVertex WWHVertex
+create Herwig::LHWWWWVertex WWWWVertex
+create Herwig::LHWHHVertex WHHVertex
+create Herwig::LHWWHHVertex WWHHVertex
 
-#create Herwig::LHWWWVertex WWWVertex 
-#create Herwig::LHWWHVertex WWHVertex 
+#  LHWHHVertex.h LHWWHH
+
+
 
 cd /Herwig/NewPhysics/LH
 # SM vertices
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
 # LH vertices
-set Model:Vertex/FFZ /Herwig/Vertices/LH/FFZVertex
-set Model:Vertex/FFP /Herwig/Vertices/LH/FFPVertex
-set Model:Vertex/FFG /Herwig/Vertices/LH/FFGVertex
-set Model:Vertex/FFW /Herwig/Vertices/LH/FFWVertex
-
-
-
-
-
-
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
-set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/LH/FFZVertex
+set Model:Vertex/FFP  /Herwig/Vertices/LH/FFPVertex
+set Model:Vertex/FFG  /Herwig/Vertices/LH/FFGVertex
+set Model:Vertex/FFW  /Herwig/Vertices/LH/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/LH/FFHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/LH/WWWVertex
+set Model:Vertex/WWH  /Herwig/Vertices/LH/WWHVertex
+set Model:Vertex/WWWW /Herwig/Vertices/LH/WWWWVertex
+set Model:Vertex/WHH  /Herwig/Vertices/LH/WHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/LH/WWHHVertex
 
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
