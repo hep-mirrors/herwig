@@ -253,8 +253,6 @@ void ModelGenerator::doinit() {
   pend = particles_.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
-    // cerr << "Checking width and decay length " << parent->width()/MeV
-    // 	 << " MeV   " << parent->cTau()/mm << " mm\n";
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
     checkDecays(parent);
