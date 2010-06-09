@@ -5,6 +5,8 @@ DecayConstructor.cc DecayConstructor.h DecayConstructor.fh  \
 NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \
 NBodyDecayConstructorBase.fh \
 TwoBodyDecayConstructor.cc TwoBodyDecayConstructor.h \
+TwoToTwoProcessConstructor.h TwoToTwoProcessConstructor.fh \
+TwoToTwoProcessConstructor.cc \
 HardProcessConstructor.h HardProcessConstructor.fh \
 HardProcessConstructor.cc \
 HPDiagram.h \

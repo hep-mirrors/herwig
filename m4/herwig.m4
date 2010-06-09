@@ -347,8 +347,14 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
 AC_MSG_CHECKING([for BSM models to include])
 
+LOAD_RS=""
+LOAD_SUSY=""
+LOAD_TRP=""
+LOAD_UED=""
+LOAD_ADD=""
+
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs lh lhtp rpv trp anomalous leptoquarks) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs add lh lhtp rpv trp anomalous leptoquarks) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -374,10 +380,30 @@ if test "$rpv"; then
    mssm=yes
 fi
 
-AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
-if test "$mssm" -a "$ued"; then
-   CREATE_BSM_ANALYSIS="create"
+if test "$rs" -o "$all" ; then
+   LOAD_RS="library HwRSModel.so"
 fi
+AC_SUBST(LOAD_RS)
+
+if test "$mssm" -o "$all"; then
+   LOAD_SUSY="library HwSusy.so"
+fi
+AC_SUBST(LOAD_SUSY)
+
+if test "$trp" -o "$all"; then
+   LOAD_TRP="library HwTransplanck.so"
+fi
+AC_SUBST(LOAD_TRP)
+
+if test "$ued" -o "$all"; then
+   LOAD_UED="library HwUED.so"
+fi
+AC_SUBST(LOAD_UED)
+
+if test "$add" -o "$all"; then
+   LOAD_ADD="library HwADD.so"
+fi
+AC_SUBST(LOAD_ADD)
 
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
@@ -389,6 +415,7 @@ AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
 AM_CONDITIONAL(WANT_Anomalous,[test "$anomalous" -o "$all"])
 AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
+AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],

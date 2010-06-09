@@ -56,16 +56,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -88,7 +78,7 @@ private:
   ProductionMatrixElement vv2ssME(const VBVector & v1, const VBVector & v2,
 				  const ScalarWaveFunction & sca1, 
 				  const ScalarWaveFunction & sca2, 
-				  double & me2) const;
+				  double & me2, bool first) const;
 protected:
   
   /**
@@ -135,6 +125,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 
@@ -176,22 +172,22 @@ private:
   /**
    * Intermediate t-channel scalar
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > theSca;
+  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar_;
 
   /**
    * Intermediate s-channel vector
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > vector_;
 
   /**
    * Intermediate s-channel tensor
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractSSTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractSSTVertexPtr> > tensor_;
   
   /**
    * The contact vertex 
    */
-  AbstractVVSSVertexPtr theContact;
+  AbstractVVSSVertexPtr contact_;
   //@}
   
   

@@ -47,7 +47,6 @@ StandardModel::StandardModel(const StandardModel & x)
   ,_theRunningMass(x._theRunningMass),_theModelGenerator(x._theModelGenerator) {}
 
 void StandardModel::doinit() {
-  StandardModelBase::doinit();
   if(_theRunningMass) {
     _theRunningMass->init();
   }
@@ -64,6 +63,7 @@ void StandardModel::doinit() {
   addVertex(_theWWWWVertex);
   addVertex(vertexHGG());
   addVertex(_theHPPVertex);
+  StandardModelBase::doinit();
 }
 
 void StandardModel::persistentOutput(PersistentOStream & os) const {

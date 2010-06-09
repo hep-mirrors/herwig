@@ -12,7 +12,7 @@
 // This is the declaration of the RSModelVVGRVertex class.
 
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "RSModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -103,14 +103,9 @@ private:
   RSModelVVGRVertex & operator=(const RSModelVVGRVertex &);
 
   /**
-   * Pointer to the model object.
-   */
-  tcSMPtr _theModel;
-
-  /**
    * The coupling.
    */
-  InvEnergy _theKappa;
+  InvEnergy kappa_;
   
 };
 }

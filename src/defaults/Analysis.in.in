@@ -35,8 +35,6 @@ create Herwig::GammaJetAnalysis  GammaJet
 create Herwig::GammaGammaAnalysis GammaGamma
 # simple analysis of higgs+jet events
 create Herwig::HiggsJetAnalysis  HiggsJet
-# BSM analysis of cascade decays
-@CREATE_BSM_ANALYSIS@ Herwig::CascadeAnalysis Cascade HwSusy.so HwUED.so HwBSMAnalysis.so
 
 #
 #  Analysis Handlers for LEP 91.2 GeV collisions

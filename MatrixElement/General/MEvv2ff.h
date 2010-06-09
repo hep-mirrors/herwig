@@ -63,16 +63,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -88,7 +78,8 @@ private:
    */
   ProductionMatrixElement vv2ffME(const VBVector & v1, const VBVector & v2,
 				  const SpinorBarVector & sbar,
-				  const SpinorVector & sp, double & me2) const;
+				  const SpinorVector & sp, 
+				  double & me2, bool first) const;
   
 protected:
 
@@ -136,6 +127,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 
@@ -177,17 +174,17 @@ private:
   /**
    * Intermediate fermion 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * Intermediate vector
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vector_;
   
   /**
    * Intermediate tensor
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
   //@}
 };
 

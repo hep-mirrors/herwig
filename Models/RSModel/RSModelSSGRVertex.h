@@ -12,7 +12,7 @@
 // This is the declaration of the RSModelSSGRVertex class.
 
 #include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "RSModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -102,16 +102,11 @@ private:
    * Private and non-existent assignment operator.
    */
   RSModelSSGRVertex & operator=(const RSModelSSGRVertex &);
-  
-  /**
-   * Pointer to the model.
-   */
-  tcSMPtr _theModel;
 
   /**
    * Coupling.
    */
-  InvEnergy _theKappa;
+  InvEnergy kappa_;
 };
 
 }

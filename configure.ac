@@ -112,6 +112,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Feynrules/Makefile
 		Models/Feynrules/Makefile-FR
+		Models/ADD/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile

@@ -19,25 +19,27 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-RSModelSSGRVertex::RSModelSSGRVertex() {
+RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) {
   addToList(25,25,39);
-  _theKappa=InvEnergy();
 }
 
 void RSModelSSGRVertex::doinit() {
   SSTVertex::doinit();
-  _theModel = generator()->standardModel();
-  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
-  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
-  else{throw InitException();}
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  if(!hwRS) 
+    throw Exception() << "Must have RSModel in RSModelSSGRVertex::doinit()"
+		      << Exception::runerror;
+  kappa_=2./hwRS->lambda_pi();
+  orderInGem(1);
+  orderInGs (0);
 }
 
 void RSModelSSGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << ounit(_theKappa,InvGeV);
+  os << ounit(kappa_,InvGeV);
 }
 
 void RSModelSSGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> iunit(_theKappa,InvGeV);
+  is >> iunit(kappa_,InvGeV);
 }
 
 ClassDescription<RSModelSSGRVertex> RSModelSSGRVertex::initRSModelSSGRVertex;
@@ -51,5 +53,5 @@ void RSModelSSGRVertex::Init() {
 }
 
 void RSModelSSGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-    norm(Complex(_theKappa * UnitRemoval::E));
+    norm(Complex(kappa_ * UnitRemoval::E));
 }

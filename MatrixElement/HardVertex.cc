@@ -44,8 +44,9 @@ RhoDMatrix HardVertex::getRhoMatrix(int i,bool) const {
   }
   // calculate the spin density matrix
   return _matrixelement.
-    calculateRhoMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->DMatrix(),
-		       dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->DMatrix(),rhoout);
+    calculateRhoMatrix(i,
+		       dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->rhoMatrix(),
+		       dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->rhoMatrix(),rhoout);
 }
 
 // method to get the D matrix for an incoming particle
@@ -56,7 +57,5 @@ RhoDMatrix HardVertex::getDMatrix(int i) const {
     rhoout[ix] = dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
   // calculate the decay matrix
   return _matrixelement.
-    calculateDMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->DMatrix(),rhoout);
+    calculateDMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->rhoMatrix(),rhoout);
 }
-
-

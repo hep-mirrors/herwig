@@ -57,7 +57,10 @@ public:
   /**
    * Default constructor
    */
-  inline GenericWidthGenerator();
+  GenericWidthGenerator()
+    : _mass(),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
+      _BRminimum(0.01), _intorder(1)
+  {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -87,7 +90,11 @@ public:
    * @param part The particle data pointer of the particle.
    * @return True if this class can handle the particle and false otherwise
    */
-  inline virtual bool accept(const ParticleData & part) const;
+  virtual bool accept(const ParticleData & part) const {
+    if(!_theParticle) return false;
+    return part.id() == _theParticle->id() ||
+      ( part.CC() && part.CC()->id() == _theParticle->id() );
+  }
 
   /** @name Members to calculate the width and decay modes. */
   //@{
@@ -104,7 +111,9 @@ public:
    * @param part The particle data pointer of the particle.
    * @return The decay map
    */
-  inline virtual DecayMap rate(const ParticleData & part) const;
+  virtual DecayMap rate(const ParticleData & part) const {
+    return part.decaySelector();
+  }
 
   /**
    * Return a decay map for a given particle instance. This allows us to
@@ -140,11 +149,13 @@ protected:
 
   /**
    * The \f$1\to2\f$ width for on-shell particles
-   * @param m The mass, or scale, for the calculation
+   * @param q The mass, or scale, for the calculation
    * @param iloc The location of the mode in the list.
    * @return The partial width.
    */
-  inline Energy partial2BodyWidth(int iloc,Energy m) const;
+  Energy partial2BodyWidth(int iloc,Energy q) const {
+    return partial2BodyWidth(iloc,q,_MEmass1[iloc],_MEmass2[iloc]);
+  }
 
   /**
    * The \f$1\to2\f$ width for outgoing particles which can be off-shell.
@@ -167,7 +178,7 @@ protected:
   /**
    *  Access to the particle dat for inheriting classes
    */
-  inline tPDPtr particle() const;
+  tPDPtr particle() const {return _theParticle;}
 
 protected:
 
@@ -177,13 +188,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -238,24 +249,24 @@ protected:
    *  Matrix element code for a given mode 
    * @param imode The mode.
    */
-  inline int MEcode(int imode) const;
+  int MEcode(int imode) const {return _MEcode[imode];}
 
   /**
    *  Coupling for a given mode
    * @param imode The mode.
    */
-  inline double MEcoupling(int imode) const;
+  double MEcoupling(int imode) const {return _MEcoupling[imode];}
 
 
   /**
    *  The on-shell mass of the particle
    */
-  inline Energy mass() const;
+  Energy mass() const {return _mass;}
 
   /**
    * Initialization option for use by the inheriting classes
    */
-  inline bool initialize() const;
+  bool initialize() const {return _initialize;}
 
 private:
   /**
@@ -420,7 +431,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "GenericWidthGenerator.icc"
 
 #endif /* HERWIG_GenericWidthGenerator_H */

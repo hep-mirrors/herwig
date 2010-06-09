@@ -67,7 +67,7 @@ public:
   /**
    * The default constructor.
    */
-  MEff2sv() : theSca(0), theVec(0), theFerm(0) {}
+  MEff2sv() : scalar_(0), vector_(0), fermion_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -79,16 +79,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -133,6 +123,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -183,7 +179,7 @@ private:
   ProductionMatrixElement
   ffb2svHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	     ScalarWaveFunction & sca, VBVector & vec, 
-	     double & me2) const;
+	     double & me2,bool first) const;
   //@}
 
 
@@ -193,19 +189,19 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * scalar
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theSca;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > scalar_;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > vector_;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
 };
 
 }

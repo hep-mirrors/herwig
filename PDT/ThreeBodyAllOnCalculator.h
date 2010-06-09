@@ -51,12 +51,18 @@ struct Outer {
   /**
    * Constructor with a pointer to the ThreeBodyAllOnCalculator
    */
-  inline Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer); 
+  Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer in)
+    : _integrand(in)
+  {}
   
   /**
    * Retreive function value
    */
-  inline Energy4 operator ()(double argument) const;
+  Energy4 operator ()(double x) const {
+    Energy2 low, upp;
+    _integrand->outerVariables(x,low,upp);
+    return _integrator.value(*_integrand,low,upp);
+  }
   /** Argument type for the GSLIntegrator */
   typedef double ArgType;
   /** Return type for the GSLIntegrator */
@@ -96,13 +102,23 @@ public:
    * @param m2 The mass of the second particle.
    * @param m3 The mass of the third  particle.
    */
-  inline ThreeBodyAllOnCalculator(vector<double> inweights,
-				  vector<int> intype,
-				  vector<Energy> inmass,
-				  vector<Energy> inwidth,
-				  vector<double> inpow,
-				  T inme, int mode,
-				  Energy m1,Energy m2,Energy m3);
+  ThreeBodyAllOnCalculator(vector<double> inweights,
+			   vector<int> intype,
+			   vector<Energy> inmass,
+			   vector<Energy> inwidth,
+			   vector<double> inpow,
+			   T inme, int mode,
+			   Energy m1,Energy m2,Energy m3)
+    : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
+      _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
+      _thechannel(0),_souter(ZERO) {
+    _m.resize(4);
+    _m[1]=m1;_m[2]=m2;_m[3]=m3;
+    _m2.resize(4);
+    for(int ix=1;ix<4;++ix) {
+      _m2[ix]=sqr(_m[ix]);
+    }
+  }
 
   /**
    * calculate the width for a given mass
@@ -118,7 +134,11 @@ public:
    * @param mass The new value.
    * @return The mass required.
    */
-  inline void resetMass(int imass,Energy mass);
+  void resetMass(int imass,Energy mass) {
+    assert(imass<4);
+    _m[imass]=mass;
+    _m2[imass]=mass*mass;
+  }
 
   /**
    * Get the mass of one of the decay products.  This must be 
@@ -126,7 +146,10 @@ public:
    * @param imass The mass required.
    * @return The mass required.
    */
-  inline Energy getMass(const int imass) const;
+  Energy getMass(const int imass) const {
+    assert(imass>=0&&imass<4);
+    return _m[imass];
+  }
 
   /**
    * Get the masses of all bar the one specified. Used to get the limits
@@ -134,7 +157,12 @@ public:
    * @param imass The particle not needed
    * @return The sum of the other masses.
    */
-  inline Energy otherMass(const int imass) const;
+  Energy otherMass(const int imass) const {
+    assert(imass>0&&imass<4);
+    if(imass==1)      return _m[2]+_m[3];
+    else if(imass==2) return _m[1]+_m[3];
+    else              return _m[1]+_m[2];
+  }
 
   /**
    * The integrand for the inner integrand.
@@ -237,7 +265,6 @@ private:
 };
 }
 
-#include "ThreeBodyAllOnCalculator.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
 #include "ThreeBodyAllOnCalculator.tcc"
 #endif

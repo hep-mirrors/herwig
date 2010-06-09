@@ -1,51 +1,38 @@
 // -*- C++ -*-
 //
-// RSModelFFVGRVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ADDModelVVGRVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_RSModelFFVGRVertex_H
-#define HERWIG_RSModelFFVGRVertex_H
+#ifndef HERWIG_ADDModelVVGRVertex_H
+#define HERWIG_ADDModelVVGRVertex_H
 //
-// This is the declaration of the RSModelFFVGRVertex class.
+// This is the declaration of the ADDModelVVGRVertex class.
 
-#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ADDModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Helicity
- *
- *  This is the implementation of the fermion-antifermion-vector-graviton
- *  vertex for the Randell-Sundrum model
- *
- *  @see FFVTVertex
+ * 
+ *  This is the implementation of the vector-vector-graviton vertex for
+ *  the ADD model
+ * 
+ *  @see VVTVertex
  *  @see VertexBase
  */
-class RSModelFFVGRVertex: public FFVTVertex {
+class ADDModelVVGRVertex: public VVTVertex {
   
 public:
   
   /**
    * Default constructor.
    */
-  RSModelFFVGRVertex();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   * @param part4 The ParticleData pointer for the foruth particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   tcPDPtr part4);
-  
-public:
+  ADDModelVVGRVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -67,6 +54,15 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 protected:
   
@@ -92,46 +88,41 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
+
+  /**
+   * Calculate the propagator for a diagram.
+   * @param iopt The option for the Breit-Wigner shape
+   * @param q2 The scale
+   * @param part The ParticleData pointer for the off-shell particle.
+   * @param mass The mass if not to be taken from the ParticleData object
+   * @param width The width if not to be taken from the ParticleData object
+   */
+  virtual Complex propagator(int iopt, Energy2 q2,tcPDPtr part,
+			     Energy mass=-GeV, Energy width=-GeV);
     
 private:
   
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<RSModelFFVGRVertex> initRSModelFFVGRVertex;
+  static ClassDescription<ADDModelVVGRVertex> initADDModelVVGRVertex;
   
   /**
    * Private and non-existent assignment operator.
    */
-  RSModelFFVGRVertex & operator=(const RSModelFFVGRVertex &);
-
-private:
+  ADDModelVVGRVertex & operator=(const ADDModelVVGRVertex &);
 
   /**
-   * Storage of the couplings.
+   * The coupling.
    */
-  //@{
-  /**
-   *  The charges of the Standard Model fermions.
-   */
-  vector<double> _charge;
+  InvEnergy kappa_;
 
   /**
-   *  The last value of the coupling/
+   *  Mass ratio for the propagator
    */
-  vector<Complex> _couplast;
-
-  /**
-   *  The last value of the scale, \f$q^2\f$.
-   */
-  vector<Energy2> _q2last;
-
-  /**
-   * The graviton coupling.
-   */
-  InvEnergy _theKappa;
-  //@}
+  Energy r_;
+  
 };
 }
 
@@ -141,12 +132,12 @@ namespace ThePEG {
 
 /**
  * The following template specialization informs ThePEG about the
- * base class of RSModelFFVGRVertex.
+ * base class of ADDModelVVGRVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::RSModelFFVGRVertex,1> {
-    /** Typedef of the base class of RSModelFFVGRVertex. */
-  typedef ThePEG::Helicity::FFVTVertex NthBase;
+struct BaseClassTrait<Herwig::ADDModelVVGRVertex,1> {
+    /** Typedef of the base class of ADDModelVVGRVertex. */
+  typedef ThePEG::Helicity::VVTVertex NthBase;
 };
 
 /**
@@ -154,20 +145,20 @@ struct BaseClassTrait<Herwig::RSModelFFVGRVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::RSModelFFVGRVertex>
-  : public ClassTraitsBase<Herwig::RSModelFFVGRVertex> {
+struct ClassTraits<Herwig::ADDModelVVGRVertex>
+  : public ClassTraitsBase<Herwig::ADDModelVVGRVertex> {
 
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig::RSModelFFVGRVertex"; }
+  static string className() { return "Herwig::ADDModelVVGRVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwRSModel.so"; }
+  static string library() { return "HwADDModel.so"; }
 
 };
 
@@ -176,4 +167,4 @@ struct ClassTraits<Herwig::RSModelFFVGRVertex>
 }
 
 
-#endif /* HERWIG_RSModelFFVGRVertex_H */
+#endif /* HERWIG_ADDModelVVGRVertex_H */

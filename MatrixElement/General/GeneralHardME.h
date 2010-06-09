@@ -17,6 +17,10 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/General/HPDiagram.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/Helicity/SpinInfo.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "GeneralHardME.fh"
 
 namespace Herwig {
@@ -41,6 +45,20 @@ public:
    * Convenient typedef for size_type of HPDiagram vector 
    */
   typedef vector<HPDiagram>::size_type HPCount;
+
+  /**
+   *  Enum for the possible colour structures
+   */
+  enum ColourStructure {Colour11to11,Colour11to33bar,Colour11to88,
+			Colour33to33,Colour33barto11,Colour33barto33bar,
+			Colour33barto18,Colour33barto81,Colour33barto88,
+			Colour38to13,Colour38to31,
+			Colour38to83,Colour38to38,
+			Colour3bar3barto3bar3bar,
+			Colour3bar8to13bar,Colour3bar8to3bar1,
+			Colour3bar8to83bar,Colour3bar8to3bar8,
+			Colour88to11,Colour88to33bar,Colour88to88,
+			Colour88to18,Colour88to81};
 
 public:
 
@@ -114,7 +132,7 @@ public:
    * relative probabilities.
    */
   virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const = 0;
+  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -122,16 +140,15 @@ public:
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
    * @param factors
-   * @param ncf Number of colour flows
+   * @param colour The colour structure for the process
    * @param debug Whether to compare the numerical answer to an analytical
    * formula (This is only stored for certain processes. It is intended
    * for quick checks of the matrix elements).
    * @param scaleOption The option of what scale to use
    */
   void setProcessInfo(const vector<HPDiagram> & process,
-		      const vector<DVector> & factors,
-		      const unsigned int ncf,
-		      bool debug, unsigned int scaleOption);
+		      ColourStructure colour, bool debug, 
+		      unsigned int scaleOption);
 
 public:
 
@@ -166,7 +183,7 @@ protected:
    * analytic function. This is to be overidden in an inheriting class.
    * @param x The value of \f$ |\mathcal{M} |^2 \f$
    */
-  virtual void debug(double x) const;  
+  virtual void debug(double ) const {}  
 
 protected:
 
@@ -175,7 +192,7 @@ protected:
    * to create the diagrams
    */
   const vector<HPDiagram> & getProcessInfo() const {
-    return theDiagrams;
+    return diagrams_;
   }
 
   /**
@@ -183,7 +200,7 @@ protected:
    * @return Pair of particle ids for the incoming particles
    */
   pair<long, long> getIncoming() const {
-    return theIncoming;
+    return incoming_;
   }
   
   /**
@@ -191,35 +208,137 @@ protected:
    * @return Pair of particle ids for the outgoing particles
    */
   pair<long, long> getOutgoing() const {
-    return theOutgoing;
+    return outgoing_;
   }
   
   /**
    * Return the matrix of colour factors 
    */
   const vector<DVector> & getColourFactors() const {
-    return theColour;
+    return colour_;
   }
 
   /**
    * Get the number of diagrams in this process
    */
   HPCount numberOfDiags() const {
-    return theNDiags;
+    return numberOfDiagrams_;
   } 
   
   /**
    * Access number of colour flows
    */
   size_t numberOfFlows() const {
-    return theNcf;
+    return numberOfFlows_;
   }
 
   /**
    * Whether to print the debug information 
    */
   bool debugME() const {
-    return theDebug;
+    return debug_;
+  }
+
+
+  /**
+   *  Set/Get Info on the selected diagram and colour flow
+   */
+  //@{
+  /**
+   * Colour flow
+   */
+  unsigned int colourFlow() const {return flow_;}
+
+  /**
+   * Colour flow
+   */
+  void colourFlow(unsigned int flow) const {flow_=flow;}
+
+  /**
+   * Diagram
+   */
+  unsigned int diagram() const {return diagram_;}
+
+  /**
+   * Diagram
+   */
+  void diagram(unsigned int diag) const {diagram_=diag;}
+  //@}
+
+  /**
+   *  Calculate weight and select colour flow
+   */
+  double selectColourFlow(vector<double> & flow,
+			  vector<double> & me,double average) const;
+
+  /**
+   *  Access to the colour flow matrix element
+   */
+  vector<ProductionMatrixElement> & flowME() const {
+    return flowME_;
+  }
+
+  /**
+   *  Access to the diagram matrix element
+   */
+  vector<ProductionMatrixElement> & diagramME() const {
+    return diagramME_;
+  }
+
+  /**
+   *  Access to the colour structure
+   */
+  ColourStructure colour() const {return colourStructure_;}
+
+  /**
+   *  Extract the paricles from the subprocess
+   */
+  ParticleVector hardParticles(tSubProPtr subp) {
+    ParticleVector output(4);
+    output[0] = subp->incoming().first; 
+    output[1] = subp->incoming().second;
+    output[2] = subp->outgoing()[0]; 
+    output[3] = subp->outgoing()[1];    
+    //ensure particle ordering is the same as it was when
+    //the diagrams were created
+    if( output[0]->id() != getIncoming().first )
+      swap(output[0], output[1]);
+    if( output[2]->id() != getOutgoing().first )
+      swap(output[2], output[3]);
+    // return answer
+    return output;
+  }
+
+  /**
+   *  Set the rescaled momenta
+   */
+  void setRescaledMomenta(const ParticleVector & external) {
+    cPDVector data(4);
+    vector<Lorentz5Momentum> momenta(4);
+    for( size_t i = 0; i < 4; ++i ) {
+      data[i] = external[i]->dataPtr();
+      momenta[i] = external[i]->momentum();
+    }
+    rescaleMomenta(momenta, data);
+  }
+
+  /**
+   *  Create the vertes
+   */
+  void createVertex(ProductionMatrixElement & me,
+		    ParticleVector & external) {
+    HardVertexPtr hardvertex = new_ptr(HardVertex());
+    hardvertex->ME(me);
+    for(ParticleVector::size_type i = 0; i < 4; ++i) {
+      Helicity::tSpinfoPtr spin = 
+	dynamic_ptr_cast<Helicity::tSpinfoPtr>(external[i]->spinInfo());
+      if(i<2) {
+	tcPolarizedBeamPDPtr beam = 
+	  dynamic_ptr_cast<tcPolarizedBeamPDPtr>(external[i]->dataPtr());
+	if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+      }
+      spin->setProductionVertex(hardvertex);
+    }
   }
 
 private:
@@ -239,50 +358,100 @@ private:
 private:
   
   /**
+   *  External particles
+   */
+  //@{
+  /**
    * Store incoming particles
    */
-  pair<long, long> theIncoming;
+  pair<long, long> incoming_;
   
   /**
    * Store the outgoing particles
    */
-  pair<long, long> theOutgoing;
+  pair<long, long> outgoing_;
+  //@}
 
+  /**
+   *  Diagrams
+   */
+  //@{
   /**
    * Store all diagrams as a vector of structures
    */
-  vector<HPDiagram> theDiagrams;
+  vector<HPDiagram> diagrams_;
 
   /**
    * Store the number of diagrams for fast retrieval
    */
-  HPCount theNDiags;
+  HPCount numberOfDiagrams_;
+  //@}
+
+  /**
+   *  Colour information
+   */
+  //@{
+  /**
+   *  The colour structure
+   */
+  ColourStructure colourStructure_;
 
   /**
    * Store colour factors for ME calc.
    */
-  vector<DVector> theColour;
+  vector<DVector> colour_;
 
   /**
    * The number of colourflows.
    */
-  unsigned int theNcf;
+  unsigned int numberOfFlows_;
+  //@}
 
   /**
    * Whether to test the value of me2 against the analytical function
    */
-  bool theDebug;
+  bool debug_;
 
   /**
    * The scale chocie
    */
   unsigned int scaleChoice_;
 
+  /**
+   *  Info on the selected diagram and colour flow
+   */
+  //@{
+  /**
+   * Colour flow
+   */
+  mutable unsigned int flow_;
+
+  /**
+   * Diagram
+   */
+  mutable unsigned int diagram_;
+  //@}
+
+  /**
+   *  Storage of the matrix elements
+   */
+  //@{
+  /**
+   *  Matrix elements for the different colour flows
+   */
+  mutable vector<ProductionMatrixElement> flowME_;
+
+  /**
+   *  Matrix elements for the different Feynman diagrams
+   */
+  mutable vector<ProductionMatrixElement> diagramME_;
+  //@}
+
 };
 
-  /** Exception class to indicate a problem has occurred with setting
-   up to matrix element.*/
-  class MEException : public Exception {};
+/** Exception class to indicate a problem has occurred with setting
+    up to matrix element.*/
+class MEException : public Exception {};
   
 }
 
