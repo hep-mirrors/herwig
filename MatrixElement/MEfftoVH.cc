@@ -270,11 +270,11 @@ bool MEfftoVH::generateKinematics(const double * r) {
     // generate the mass of the Higgs
     if(_shapeopt!=0) {
       Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
-      Energy mhmin = max(ZERO             ,mePartonData()[2]->massMin());
+      Energy mhmin = max(ZERO               ,mePartonData()[2]->massMin());
       if(mhmax<=mhmin) return false;
       rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
       rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-      mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
+      mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
       jac *= rhomax-rhomin;
     }
     // generate the mass of the vector boson
@@ -283,7 +283,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
     if(mvmax2<=mvmin2) return false; 
     rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
     rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
-    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[2]*(rhomax-rhomin))
+    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
   }
@@ -294,7 +294,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
     if(mvmax2<=mvmin2) return false; 
     double rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
     double rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
-    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[2]*(rhomax-rhomin))
+    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
     // generate the mass of the Higgs
@@ -304,7 +304,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
       if(mhmax<=mhmin) return false;
       rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
       rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-      mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
+      mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
       jac *= rhomax-rhomin;
     }
   }
@@ -370,7 +370,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   // decay of the vector boson
   bool test=Kinematics::twoBodyDecay(pvec,meMomenta()[3].mass(),
 				     meMomenta()[4].mass(),
-				     -1.+2*r[3],r[4]*2.*pi,
+				     -1.+2*r[2],r[3]*2.*pi,
 				     meMomenta()[3],meMomenta()[4]);
   if(!test) return false;
   // check cuts
