@@ -250,7 +250,7 @@ void MEfftoVH::constructVertex(tSubProPtr sub) {
     if(ix<2) {
       tcPolarizedBeamPDPtr beam = 
 	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
-      spin[ix]->rhoMatrix() = beam->rhoMatrix();
+      if(beam) spin[ix]->rhoMatrix() = beam->rhoMatrix();
     }
     spin[ix]->setProductionVertex(hardvertex);
   }
