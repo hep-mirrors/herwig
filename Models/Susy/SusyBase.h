@@ -143,13 +143,6 @@ public:
   }
 
   /**
-   * Pointer to the triple higgs vertex
-   */
-  virtual tAbstractSSSVertexPtr vertexHHH() const {
-    return theHHHVertex;
-  }
-
-  /**
    * Pointer to higgs-sfermion-sfermion vertex 
    */
   virtual tAbstractSSSVertexPtr vertexHSS() const {
@@ -477,11 +470,6 @@ private:
    * Pointer to the vertex for a gauge boson and higgs
    */
   AbstractVSSVertexPtr theWHHVertex;
-
-  /**
-   * Pointer to triple higgs vertex
-   */
-  AbstractSSSVertexPtr theHHHVertex;
   //@}
 };
 

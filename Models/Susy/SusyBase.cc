@@ -58,7 +58,6 @@ void SusyBase::doinit() {
   addVertex(theCNWVertex);
   addVertex(vertexGOGOH());
   addVertex(vertexWHH());
-  addVertex(vertexHHH());
   StandardModel::doinit();
 }
 
@@ -69,7 +68,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
      << theGOGOHVertex << theWHHVertex 
-     << theGNGVertex << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
+     << theGNGVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
      << _tolerance;
 }
@@ -81,7 +80,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
      >> theGOGOHVertex >> theWHHVertex
-     >> theGNGVertex >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
+     >> theGNGVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
      >> _tolerance;
 }
@@ -200,11 +199,6 @@ void SusyBase::Init() {
     ("Vertex/SSWHH",
      "Reference to Susy WHHVertex",
      &SusyBase::theWHHVertex, false, false, true, false);
-
-   static Reference<SusyBase,Helicity::AbstractSSSVertex> interfaceVertexHHH
-    ("Vertex/HHH",
-     "Triple higgs coupling",
-     &SusyBase::theHHHVertex, false, false, true, false);
 
   static Parameter<SusyBase,double> interfaceBRTolerance
     ("BRTolerance",

@@ -209,14 +209,16 @@ create Herwig::SSHGGVertex MSSM_HGG
 create Herwig::SSHPPVertex MSSM_HPP
 cd /Herwig/NewPhysics/MSSM
 # SM vertices
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
-set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+set Model:Vertex/HHHH /Herwig/Vertices/HHHHVertex
 # MSSM feynman rules
 set Model:Vertex/WSFSF /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF /Herwig/Vertices/MSSM/MSSM_NFS

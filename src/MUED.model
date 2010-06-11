@@ -178,18 +178,21 @@ create Herwig::UEDZ0A1h1Vertex UED_Z0A1h1
 create Herwig::UEDW0W1W1Vertex UED_W0W1W1
 # SM vertices
 cd /Herwig/NewPhysics/MUED
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
-set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWH  /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
+set Model:Vertex/HHH  /Herwig/Vertices/HHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+set Model:Vertex/HHHH /Herwig/Vertices/HHHHVertex
 # MUED Feynman rules
 set Model:Vertex/F1F1Z /Herwig/Vertices/MUED/UED_F1F1Z
 set Model:Vertex/F1F1P /Herwig/Vertices/MUED/UED_F1F1P
