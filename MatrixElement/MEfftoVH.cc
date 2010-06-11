@@ -408,7 +408,7 @@ CrossSection MEfftoVH::dSigHatDR() const {
     bwfact = h0->generateWidth(moff)*moff/pi/
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
-  else {
+  else if(_shapeopt==2) {
     bwfact = _hmass->BreitWignerWeight(moff);
   }
   double jac1 = _shapeopt!=0 ? 
