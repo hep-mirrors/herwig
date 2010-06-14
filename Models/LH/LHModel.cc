@@ -28,7 +28,7 @@ void LHModel::persistentOutput(PersistentOStream & os) const {
      << ounit(_mH,GeV) << _vacratio << ounit(_f,GeV) 
      << _s0 << _c0 << _sP << _cP << _sPlus << _cPlus
      << _lambda1 << _lambda2 << _s << _c << _sp << _cp
-     << WHHVertex_ << WWHHVertex_;
+     << WHHVertex_;
 }
 
 void LHModel::persistentInput(PersistentIStream & is, int) {
@@ -36,7 +36,7 @@ void LHModel::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mH,GeV) >> _vacratio >> iunit(_f,GeV)  
      >> _s0 >> _c0 >> _sP >> _cP >> _sPlus >> _cPlus
      >> _lambda1 >> _lambda2 >> _s >> _c >> _sp >> _cp
-     >> WHHVertex_ >> WWHHVertex_;
+     >> WHHVertex_;
 }
 
 ClassDescription<LHModel> LHModel::initLHModel;
@@ -87,11 +87,6 @@ void LHModel::Init() {
     ("Vertex/WHH",
      "Pointer to the WHH vertex",
      &LHModel::WHHVertex_, false, false, true, false, false);
-
-  static Reference<LHModel,AbstractVVSSVertex> interfaceVertexWWHH
-    ("Vertex/WWHH",
-     "Pointer to the WHH vertex",
-     &LHModel::WWHHVertex_, false, false, true, false, false);
 
 }
 

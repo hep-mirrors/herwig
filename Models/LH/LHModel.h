@@ -292,11 +292,6 @@ private:
    *  WHH Vertex
    */
   AbstractVSSVertexPtr WHHVertex_;
-
-  /**
-   *  WWHH Vertex
-   */
-  AbstractVVSSVertexPtr WWHHVertex_;
   //@}
 };
 
