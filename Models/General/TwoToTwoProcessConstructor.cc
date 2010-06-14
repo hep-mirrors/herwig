@@ -574,10 +574,10 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   unsigned int scale;
   if(scaleChoice_==0) {
     // check coloured initial and final state
-    bool inColour  = !( extpart[0]->coloured() ||
-			extpart[1]->coloured());
-    bool outColour = !( extpart[2]->coloured() ||
-			extpart[3]->coloured());
+    bool inColour  = ( extpart[0]->coloured() ||
+		       extpart[1]->coloured());
+    bool outColour = ( extpart[2]->coloured() ||
+		       extpart[3]->coloured());
     if(inColour&&outColour) {
       bool coloured = false;
       for(unsigned int ix=0;ix<process.size();++ix) {
