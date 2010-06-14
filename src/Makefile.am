@@ -14,9 +14,10 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
-HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model NMSSM.model RS.model ADD.model
+HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model NMSSM.model RS.model ADD.model LH.model
 
-INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in \
+INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
+             LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in LHC-LH.in\
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
 	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-Anomalous.in 
 
@@ -36,13 +37,19 @@ HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/An
 
 check_BSM=
 if WANT_MSSM
-check_BSM += check-LHC-MSSM check-LHC-NMSSM
+check_BSM += check-LHC-MSSM 
+endif
+if WANT_NMSSM
+check_BSM += check-LHC-NMSSM
 endif
 if WANT_UED
 check_BSM += check-LHC-MUED-no3body
 endif
 if WANT_RS
 check_BSM += check-LHC-RS
+endif
+if WANT_LH
+check_BSM += check-LHC-LH
 endif
 
 check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg
