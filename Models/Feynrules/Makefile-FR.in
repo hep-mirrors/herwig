@@ -17,7 +17,7 @@
 
 CXX = @CXX@
 
-CXXFLAGS = -g -W -Wall @CXXFLAGS@
+CXXFLAGS = -g -W -Wall -ansi -pedantic @CXXFLAGS@
 
 # add additional package header directories here
 CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@
@@ -36,5 +36,5 @@ ALLOBJFILES=$(ALLCCFILES:.cc=.o)
 	$(CXX) -fPIC $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) 
-	rm -f *.{run,log,out,log,tex,dot,svg}
+	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
+	rm -f *.{run,log,out,tex,dot,svg,model,spc}

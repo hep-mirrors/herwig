@@ -1,30 +1,28 @@
 // -*- C++ -*-
 //
-// FR${classname}Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FR${classname}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 
-#include "ThePEG/Helicity/Vertex/Vector/${lorentztag}Vertex.h"
+#include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+// #include "ThePEG/Persistency/PersistentOStream.h"
+// #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig 
 {
   using namespace ThePEG;
+  using namespace ThePEG::Helicity;
 
-  class FR${classname}Vertex: public ${lorentztag}Vertex {
+  class FR${classname}: public ${lorentztag}Vertex {
   public:
-    FR${classname}Vertex();
-    virtual void setCoupling(Energy2 q2,
-			     tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+    FR${classname}();
+    virtual void setCoupling(Energy2${couplingptrs});
 
   public:
-    void persistentOutput(PersistentOStream & os) const;
-    void persistentInput(PersistentIStream & is, int version);
     static void Init();
 
   protected:
@@ -33,66 +31,52 @@ namespace Herwig
     virtual void doinit();
   
   private:
-    static ClassDescription<FR${classname}Vertex> initFR${classname}Vertex;
-    FR${classname}Vertex & operator=(const FR${classname}Vertex &);
+    static NoPIOClassDescription<FR${classname}> initFR${classname};
+    FR${classname} & operator=(const FR${classname} &);
 
-  private:
-    ${couplings}
-    Complex _couplast;
-    Energy2 _q2last;
   };
 }
-    
+
 namespace ThePEG 
 {
   template <>
-  struct BaseClassTrait<Herwig::FR${classname}Vertex,1> {
+  struct BaseClassTrait<Herwig::FR${classname},1> {
     typedef ThePEG::Helicity::${lorentztag}Vertex NthBase;
   };
   template <>
-  struct ClassTraits<Herwig::FR${classname}Vertex>
-    : public ClassTraitsBase<Herwig::FR${classname}Vertex> {
-      static string className() { return "Herwig::FR${classname}Vertex"; }
+  struct ClassTraits<Herwig::FR${classname}>
+    : public ClassTraitsBase<Herwig::FR${classname}> {
+      static string className() { return "Herwig::FR${classname}"; }
       static string library() { return "FeynrulesModel.so"; }
     };
 }
 
 namespace Herwig {
 using namespace ThePEG;
-void FR${classname}Vertex::persistentOutput(PersistentOStream & os) const {
-  os ${outputCouplings};
-}
-void FR${classname}Vertex::persistentInput(PersistentIStream & is, int) {
-  is ${inputCouplings};
-}
 
-ClassDescription<FR${classname}Vertex> 
-FR${classname}Vertex::initFR${classname}Vertex;
+NoPIOClassDescription<FR${classname}> 
+FR${classname}::initFR${classname};
 
-void FR${classname}Vertex::Init() {
-  static ClassDocumentation<FR${classname}Vertex> documentation
-    ("The FR${classname}Vertex class is the implementation of"
+void FR${classname}::Init() {
+  static ClassDocumentation<FR${classname}> documentation
+    ("The FR${classname} class is the implementation of"
      "the coupling of the Z boson to the Standard Model fermions");
 }
 
-void FR${classname}Vertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,tcPDPtr) {
+  void FR${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
   // first the overall normalisation
-  if(q2!=_q2last||_couplast==0.) {
-    _couplast = -electroMagneticCoupling(q2);
-    _q2last=q2;
-  }
-  norm(_couplast);
+  norm(${norm});
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  left(${left});
-  right(${right});
+  ${left}
+  ${right}
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
-FR${classname}Vertex::FR${classname}Vertex() : _couplast(0.0), _q2last(ZERO) {
+FR${classname}::FR${classname}() {
   ${addToPlist}
 }
 
-void FR${classname}Vertex::doinit() {
+void FR${classname}::doinit() {
   ${parameters}
   ${setCouplings}
   orderInGem(${qedorder});

@@ -12,11 +12,9 @@
 // This is the declaration of the FeynRulesModel class.
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *  
@@ -27,6 +25,10 @@ using namespace ThePEG::Helicity;
  *  @see StandardModel
  */
 class FeynRulesModel: public StandardModel {
+
+public:
+  /// Default constructor
+  FeynRulesModel();
 
 public:
 
@@ -58,7 +60,8 @@ public:
    */
   //@{
 
-  $getters
+${getters}
+${parmgetters}
 
   //@}  
   
@@ -109,7 +112,8 @@ private:
    */
   //@{
 
-  $decls
+${decls}
+${parmdecls}
 };
 
 }
