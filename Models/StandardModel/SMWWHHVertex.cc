@@ -11,7 +11,10 @@
 
 using namespace Herwig;
 
-SMWWHHVertex::SMWWHHVertex() : couplast_(0.), q2last_(ZERO) {}
+SMWWHHVertex::SMWWHHVertex() : couplast_(0.), q2last_(ZERO) {
+  addToList( 23, 23, 25, 25);
+  addToList( 24,-24, 25, 25);
+}
 
 IBPtr SMWWHHVertex::clone() const {
   return new_ptr(*this);
