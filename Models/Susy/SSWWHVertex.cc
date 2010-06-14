@@ -36,8 +36,8 @@ SSWWHVertex::~SSWWHVertex() {}
 
 void SSWWHVertex::doinit() {
   VVSVertex::doinit();
-  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
-  if( !theMSSM )
+  tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  if( !model )
     throw InitException() 
       << "SSWWHVertex::doinit() - The pointer to the MSSM object is null!"
       << Exception::abortnow;
@@ -45,9 +45,9 @@ void SSWWHVertex::doinit() {
   Energy mw = getParticleData(ParticleID::Wplus)->mass();
   Energy mz = getParticleData(ParticleID::Z0)->mass();
   double sw = sqrt(sin2ThetaW());
-  double sinalp = sin(theMSSM->higgsMixingAngle());
+  double sinalp = sin(model->higgsMixingAngle());
   double cosalp = sqrt(1. - sqr(sinalp));
-  double tanbeta = theMSSM->tanBeta();
+  double tanbeta = model->tanBeta();
   double sinbeta = tanbeta/sqrt(1. + sqr(tanbeta));
   double cosbeta = sqrt( 1. - sqr(sinbeta) );
   double sinbma = sinbeta*cosalp - cosbeta*sinalp;

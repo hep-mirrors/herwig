@@ -19,6 +19,7 @@ SSCNWVertex.cc    SSCNWVertex.h    \
 SSFFHVertex.cc    SSFFHVertex.h    \
 SSGOGOHVertex.cc  SSGOGOHVertex.h  \
 SSWWHVertex.cc    SSWWHVertex.h    \
+SSWWHHVertex.cc   SSWWHHVertex.h   \
 SSWHHVertex.cc    SSWHHVertex.h    \
 SSHHHVertex.cc    SSHHHVertex.h    \
 SSHGGVertex.cc    SSHGGVertex.h    \

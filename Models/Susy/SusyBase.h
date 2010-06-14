@@ -155,6 +155,13 @@ public:
   virtual tAbstractVSSVertexPtr vertexWSFSF() const {
     return theWSFSFVertex;
   }
+
+  /**
+   *  Pointer to the neutralino-neutralino-Z vertex
+   */
+  virtual tAbstractFFVVertexPtr vertexNNZ() const {
+    return theNNZVertex;
+  }
   //@}
 
 protected:
