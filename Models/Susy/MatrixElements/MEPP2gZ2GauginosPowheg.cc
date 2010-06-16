@@ -23,7 +23,7 @@ using ThePEG::Helicity::outgoing;
 
 
 MEPP2gZ2GauginosPowheg::MEPP2gZ2GauginosPowheg() 
-  : process_(0), maxFlavour_(4) {
+  : process_(0), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
   massOption(mopt);
 }
@@ -42,6 +42,7 @@ void MEPP2gZ2GauginosPowheg::doinit() {
   FFZVertex_ = hwsm->vertexFFZ();
   FFGVertex_ = hwsm->vertexFFG();
   NNZVertex_ = hwsm->vertexNNZ();
+  NFSVertex_ = hwsm->vertexNFSF();
 }
 
 Selector<const ColourLines *>
@@ -217,6 +218,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	vector<SpinorBarWaveFunction> & sbar ,
 	vector<SpinorWaveFunction>    & spout ,
 	vector<SpinorBarWaveFunction> & sbarout ,
+	//ScalarWaveFunction & interqL,ScalarWaveFunction & interqR,
 	bool first) const {
   // scale for the process
   const Energy2 q2(scale());
@@ -230,12 +232,39 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
-      VectorWaveFunction interV = FFZVertex_->evaluate(q2, 1, Z0_, sp[if1], 
-						       sbar[if2]);
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
+
+	  //SpinorWaveFunction sbaroutconj = sbar.conjugate();
+	  //SpinorBarWaveFunction spoutconj = spout.conjugate();
+
+	  VectorWaveFunction interV = FFZVertex_->evaluate(q2, 1, Z0_, sp[if1], 
+						       sbar[if2]);
 	  // s-channel Z exchange
 	  diag[0] = NNZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interV);
+
+	  // t-channel squark exchanges
+	  for(int ix = 0; ix < maxFlavour_; ++ix){
+	    tcPDPtr qL = getParticleData(1000000+ix);
+	    tcPDPtr qR = getParticleData(2000000+ix);
+
+	    ScalarWaveFunction interqL = NFSVertex_->evaluate(q2, 3, qL,
+							      sp[if1], sbarout[of2]);
+	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], interqL);
+
+	    //interqL = NFSVertex_->evaluate(q2, 3, qL, sp[if1], sbarout[of2].conjugate());
+	    //diag[2] = -NFSVertex_->evaluate(q2, spout[of1].conjugate(), sbar[if2], interqL);
+
+	    ScalarWaveFunction interqR = NFSVertex_->evaluate(q2, 3, qR,
+							      sp[if1], sbarout[of2]);
+	    diag[3] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], interqR);
+       
+	    //interqR = NFSVertex_->evaluate(q2, 3, qR, sp[if1], sbarout[of2].conjugate());
+	    //diag[4] = -NFSVertex_->evaluate(q2, spout[of1].conjugate(), sbar[if2], interqR);
+
+	  }
+
+
 	  // individual diagrams
 	  for(unsigned int id=0;id<5;++id)
 	    me[id] += norm(diag[id]);
@@ -269,7 +298,7 @@ double MEPP2gZ2GauginosPowheg::loME(const cPDVector & particles,
     sbar[i] = SpinorBarWaveFunction(momenta[1], particles[1], i,
 				    incoming);
   }
-  // outgoing chargino wavefunctions
+  // outgoing neutralino wavefunctions
   vector<SpinorWaveFunction> spout(2);
   vector<SpinorBarWaveFunction> sbarout(2);
   for( unsigned int i = 0; i < 2; ++i ) {

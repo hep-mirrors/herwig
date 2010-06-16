@@ -7,6 +7,7 @@
 
 #include "NLODrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -119,7 +120,6 @@ public:
 		 vector<SpinorBarWaveFunction> & ain ,
 		 vector<SpinorWaveFunction>    & fout ,
 		 vector<SpinorBarWaveFunction> & aout ,
-		 //ScalarWaveFunction & s1,ScalarWaveFunction &s2,
 		 bool me) const;
 
 protected:
@@ -227,6 +227,11 @@ private:
    *  Pointer to the neutralino Z vertex
    */
   AbstractFFVVertexPtr NNZVertex_;
+
+  /**
+   *  Pointer to the fermion-sfermion-neutralino vertex
+   */
+  AbstractFFSVertexPtr NFSVertex_;
   //@}
 
   /**
