@@ -4,7 +4,6 @@ endif
 HwSusyNLO_la_SOURCES =  \
 NLODrellYanBase.cc  NLODrellYanBase.h \
 MEPP2gZ2SleptonsPowheg.cc  MEPP2gZ2SleptonsPowheg.h \
-MEPP2gZ2GauginosPowheg.cc  MEPP2gZ2GauginosPowheg.h \
 MEPP2gZ2SleptonsJet.cc  MEPP2gZ2SleptonsJet.h \
 MEPP2W2SleptonsPowheg.cc MEPP2W2SleptonsPowheg.h \
 MEPP2gZ2GauginosPowheg.cc MEPP2gZ2GauginosPowheg.h \
