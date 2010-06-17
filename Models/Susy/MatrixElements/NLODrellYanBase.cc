@@ -1,5 +1,9 @@
 // -*- C++ -*-
 //
+  /**
+   * 
+   */
+  
 // This is the implementation of the non-inlined, non-templated member
 // functions of the NLODrellYanBase class.
 //
@@ -29,8 +33,8 @@ NLODrellYanBase::NLODrellYanBase()
     alphaS_(0.), fixedAlphaS_(false),
     supressionFunction_(0), 
     lambda2_(10000.*GeV2),
-    preqqbarq_(1.), preqqbarqbar_(1.),
-    preqg_(1.),pregqbar_(1.),minpT_(2.*GeV)
+    preqqbarq_(10.), preqqbarqbar_(10.),
+    preqg_(10.),pregqbar_(10.),minpT_(2.*GeV)
 {}
 
 Energy2 NLODrellYanBase::scale() const {
@@ -198,25 +202,25 @@ void NLODrellYanBase::Init() {
   static Parameter<NLODrellYanBase,double> interfaceQQbarQPreFactor
     ("QQbarQPreFactor",
      "Prefactor for the sampling on qqbar -> X g with radiation from q",
-     &NLODrellYanBase::preqqbarq_, 1.0, 0.0, 1000.0,
+     &NLODrellYanBase::preqqbarq_, 20.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<NLODrellYanBase,double> interfaceQQbarQbarPreFactor
     ("QQbarQbarPreFactor",
      "Prefactor for the sampling on qqbar -> X g with radiation from qbar",
-     &NLODrellYanBase::preqqbarqbar_, 1.0, 0.0, 1000.0,
+     &NLODrellYanBase::preqqbarqbar_, 20.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<NLODrellYanBase,double> interfaceQGPreFactor
     ("QGPreFactor",
      "The prefactor for the qg->Xq channel",
-     &NLODrellYanBase::preqg_, 1.0, 0.0, 1000.0,
+     &NLODrellYanBase::preqg_, 20.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<NLODrellYanBase,double> interfaceQbarGPreFactor
     ("QbarGPreFactor",
      "The prefactor for the qbarg->Xqbar channel",
-     &NLODrellYanBase::pregqbar_, 1.0, 0.0, 1000.0,
+     &NLODrellYanBase::pregqbar_, 20.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<NLODrellYanBase,Energy> interfaceMinimumpT
@@ -353,6 +357,10 @@ double NLODrellYanBase::NLOWeight() const {
   else 
     return wgt;
 }
+
+// collinearQuark and collinearGluon compute the integral of the finite,
+// initial state collinear counterterm K. That is,
+// \int_{x}^1 dz/z \alpha_S/(2\pi) C_F K f_q(x/z,\mu^2)
 
 double NLODrellYanBase::collinearQuark(double x, Energy2 mu2, 
 				       double jac, double z,
