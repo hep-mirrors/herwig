@@ -162,6 +162,13 @@ public:
   virtual tAbstractFFVVertexPtr vertexNNZ() const {
     return theNNZVertex;
   }
+
+  /**
+   *  Pointer to the fermion-sfermion-neutralino vertex
+   */
+  virtual tAbstractFFSVertexPtr vertexNFSF() const {
+    return theNFSFVertex;
+  }
   //@}
 
 protected:
