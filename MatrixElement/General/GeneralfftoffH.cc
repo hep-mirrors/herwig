@@ -42,9 +42,7 @@ void GeneralfftoffH::Init() {
 }
 
 void GeneralfftoffH::getDiagrams() const {
-  cerr << "testing in get diag\n";
   if(_proc==Lepton) {
-    cerr << "testing lepton\n";
     for(long ix=11;ix<=13;ix+=1) {
       tcPDPtr em(getParticleData(ix));
       tcPDPtr ep(em->CC());
@@ -63,7 +61,6 @@ void GeneralfftoffH::getDiagrams() const {
     }
   }
   else {
-    cerr << "testing hadron " << fullName() << "\n";
     // WW processes
     if(process()==0||process()==1) {
       std::vector<pair<tcPDPtr,tcPDPtr> > parentpair;
@@ -169,7 +166,6 @@ void GeneralfftoffH::setProcessInfo(Process proc, PDPtr hin,
   higgs(hin);
   _proc = proc;
   setWWHVertex(vertex);
-  cerr << "testing the shape " << shapeOpt << "\n";
   lineShape(shapeOpt);
   process(iproc);
 }

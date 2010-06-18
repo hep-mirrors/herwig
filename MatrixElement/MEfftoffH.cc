@@ -175,8 +175,6 @@ void MEfftoffH::doinit() {
   _z0     = getParticleData(ParticleID::Z0);
   _mh = _higgs->mass();
   _wh = _higgs->width();
-  cerr << "testing mass and width " << _mh/GeV << " " 
-       << _wh/GeV << "\n";
   if(_higgs->massGenerator()) {
     _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(_higgs->massGenerator());
   }
@@ -302,7 +300,6 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
     {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
      dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
   if( beam[0] || beam[1] ) {
-    cerr << "testing in pol ? \n";
     RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
 			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
     me = menew.average(rho[0],rho[1]);
