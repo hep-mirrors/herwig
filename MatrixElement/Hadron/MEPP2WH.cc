@@ -13,21 +13,22 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
-MEPP2WH::MEPP2WH() :_maxflavour(5), _plusminus(0)
+MEPP2WH::MEPP2WH() : _plusminus(0)
 {}
 
 ClassDescription<MEPP2WH> MEPP2WH::initMEPP2WH;
 // Definition of the static class description member.
 
 void MEPP2WH::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _plusminus;
+  os << _plusminus;
 }
 
 void MEPP2WH::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _plusminus;
+  is >> _plusminus;
 }
 
 void MEPP2WH::Init() {
@@ -35,12 +36,6 @@ void MEPP2WH::Init() {
   static ClassDocumentation<MEPP2WH> documentation
     ("The MEPP2WH class implements the matrix element for the  Bjorken"
      " process q qbar -> WH");
-
-  static Parameter<MEPP2WH,unsigned int> interfaceMaxFlavour
-    ( "MaxFlavour",
-      "The heaviest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2WH::_maxflavour, 5, 1, 5, false, false, true);
 
   static Switch<MEPP2WH,unsigned int> interfacePlusMinus
     ("Wcharge",
@@ -75,7 +70,7 @@ void MEPP2WH::getDiagrams() const {
   vector<PDPair> parentpair;
   parentpair.reserve(6);
   // don't even think of putting 'break' in here!
-  switch(_maxflavour) {
+  switch(maxFlavour()) {
   case 5:
     parentpair.push_back(make_pair(getParticleData(ParticleID::b), 
 				   getParticleData(ParticleID::cbar)));
@@ -140,4 +135,18 @@ void MEPP2WH::getDiagrams() const {
       }
     }  
   }
+}
+
+void MEPP2WH::doinit() {
+  // get the vedrtex pointers from the SM object
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  if(!hwsm)
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEPP2WH::doinit() the Herwig++"
+			  << " version must be used" 
+			  << Exception::runerror;
+  // set the vertex
+  setWWHVertex(hwsm->vertexWWH());
+  higgs(getParticleData(ParticleID::h0));
+  MEfftoVH::doinit();
 }

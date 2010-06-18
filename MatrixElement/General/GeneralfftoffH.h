@@ -1,41 +1,54 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEPP2HiggsVBF_H
-#define HERWIG_MEPP2HiggsVBF_H
+#ifndef HERWIG_GeneralfftoffH_H
+#define HERWIG_GeneralfftoffH_H
 //
-// This is the declaration of the MEPP2HiggsVBF class.
+// This is the declaration of the GeneralfftoffH class.
 //
 
 #include "Herwig++/MatrixElement/MEfftoffH.h"
+#include "GeneralfftoffH.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEPP2HiggsVBF class provides the matrix elements for the
- * production of the Higgs boson via the vector boson fusion mechanism
- * in hadron collisions
+ * Here is the documentation of the GeneralfftoffH class.
  *
- * @see \ref MEPP2HiggsVBFInterfaces "The interfaces"
- * defined for MEPP2HiggsVBF.
+ * @see \ref GeneralfftoffHInterfaces "The interfaces"
+ * defined for GeneralfftoffH.
  */
-class MEPP2HiggsVBF: public MEfftoffH {
+class GeneralfftoffH: public MEfftoffH {
+
+public:
+
+  /**
+   *  Type of process
+   */
+  enum Process {Lepton,Hadron};
 
 public:
 
   /**
    * The default constructor.
    */
-  MEPP2HiggsVBF();
+  GeneralfftoffH();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
-
   /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
   //@}
+
+  /**
+   *  Set up the matrix element
+   */
+  void setProcessInfo(Process proc, PDPtr higgs,
+		      AbstractVVSVertexPtr vertex,
+		      unsigned int shapeOpt,
+		      unsigned int process);
 
 public:
 
@@ -65,31 +78,19 @@ public:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -98,13 +99,20 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEPP2HiggsVBF> initMEPP2HiggsVBF;
+  static ClassDescription<GeneralfftoffH> initGeneralfftoffH;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &);
+  GeneralfftoffH & operator=(const GeneralfftoffH &);
+
+private:
+
+  /**
+   *  The type of process
+   */
+  Process _proc;
 
 };
 
@@ -117,32 +125,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEPP2HiggsVBF. */
+ *  base classes of GeneralfftoffH. */
 template <>
-struct BaseClassTrait<Herwig::MEPP2HiggsVBF,1> {
-  /** Typedef of the first base class of MEPP2HiggsVBF. */
+struct BaseClassTrait<Herwig::GeneralfftoffH,1> {
+  /** Typedef of the first base class of GeneralfftoffH. */
   typedef Herwig::MEfftoffH NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEPP2HiggsVBF class and the shared object where it is defined. */
+ *  the GeneralfftoffH class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEPP2HiggsVBF>
-  : public ClassTraitsBase<Herwig::MEPP2HiggsVBF> {
+struct ClassTraits<Herwig::GeneralfftoffH>
+  : public ClassTraitsBase<Herwig::GeneralfftoffH> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2HiggsVBF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2HiggsVBF is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2HiggsVBF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so"; }
+  static string className() { return "Herwig::GeneralfftoffH"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEPP2HiggsVBF_H */
+#endif /* HERWIG_GeneralfftoffH_H */

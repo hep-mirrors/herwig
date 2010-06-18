@@ -12,14 +12,14 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
-MEPP2ZH::MEPP2ZH() : _maxflavour(5)
+MEPP2ZH::MEPP2ZH() 
 {}
 
 void MEPP2ZH::getDiagrams() const {
-  tPDPtr higgs = getParticleData(ParticleID::h0);
   // find possible Z decays
   typedef Selector<tDMPtr> DecaySelector;
   DecaySelector Zdec = Z0()->decaySelector();
@@ -34,23 +34,21 @@ void MEPP2ZH::getDiagrams() const {
 				  cit->second->orderedProducts()[0]));
   }
   // create the diagrams
-  for ( int ix=1; ix<=_maxflavour; ++ix ) {
+  for ( int ix=1; ix<=int(maxFlavour()); ++ix ) {
     tcPDPtr q    = getParticleData(ix);
     tcPDPtr qbar = q->CC();
     for(unsigned int iz=0;iz<Zdecays.size();++iz) {
       add(new_ptr((Tree2toNDiagram(2), q, qbar,  
-		   1, Z0(), 3, higgs, 3, Z0(), 
+		   1, Z0(), 3, higgs(), 3, Z0(), 
 		   5, Zdecays[iz].first,5, Zdecays[iz].second,-1)));
     }
   }
 }
 
-void MEPP2ZH::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour;
+void MEPP2ZH::persistentOutput(PersistentOStream & ) const {
 }
 
-void MEPP2ZH::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour;
+void MEPP2ZH::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<MEPP2ZH> MEPP2ZH::initMEPP2ZH;
@@ -61,10 +59,18 @@ void MEPP2ZH::Init() {
   static ClassDocumentation<MEPP2ZH> documentation
     ("The MEPP2ZH class implements the matrix element for q qbar -> Z H");
 
-  static Parameter<MEPP2ZH,int> interfaceMaxFlavour
-    ( "MaxFlavour",
-      "The heaviest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2ZH::_maxflavour, 5, 1, 5, false, false, true);
 }
 
+void MEPP2ZH::doinit() {
+  // get the vedrtex pointers from the SM object
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  if(!hwsm)
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEeeto2ZH::doinit() the Herwig++"
+			  << " version must be used" 
+			  << Exception::runerror;
+  // set the vertex
+  setWWHVertex(hwsm->vertexWWH());
+  higgs(getParticleData(ParticleID::h0));
+  MEfftoVH::doinit();
+}

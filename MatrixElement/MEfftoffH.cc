@@ -6,6 +6,7 @@
 
 #include "MEfftoffH.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -21,14 +22,16 @@ using namespace Herwig;
 
 void MEfftoffH::persistentOutput(PersistentOStream & os) const {
   os << _shapeopt << _process << _wplus << _wminus << _z0 
-     << _vertexFFW << _vertexFFZ << _vertexWWH
-     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
+     << _vertexFFW << _vertexFFZ << _vertexWWH << _higgs
+     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass
+     << _maxflavour << _minflavour;
 }
 
 void MEfftoffH::persistentInput(PersistentIStream & is, int) {
   is >> _shapeopt >> _process >> _wplus >> _wminus >> _z0 
-     >> _vertexFFW >> _vertexFFZ >> _vertexWWH
-     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
+     >> _vertexFFW >> _vertexFFZ >> _vertexWWH >> _higgs
+     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass
+     >> _maxflavour >> _minflavour;
 }
 
 AbstractClassDescription<MEfftoffH> MEfftoffH::initMEfftoffH;
@@ -78,6 +81,18 @@ void MEfftoffH::Init() {
      "ZZ",
      "Only include ZZ processes",
      2);
+
+  static Parameter<MEfftoffH,unsigned int> interfaceMaxFlavour
+    ( "MaxFlavour",
+      "The heaviest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEfftoffH::_maxflavour, 5, 0, 5, false, false, true);
+
+  static Parameter<MEfftoffH,unsigned int> interfaceMinFlavour
+    ( "MinFlavour",
+      "The lightest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEfftoffH::_minflavour, 1, 1, 5, false, false, true);
 
 }
 
@@ -149,7 +164,6 @@ void MEfftoffH::doinit() {
   if(hwsm) {
     _vertexFFW = hwsm->vertexFFW();
     _vertexFFZ = hwsm->vertexFFZ();
-    _vertexWWH = hwsm->vertexWWH();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
 			     << "MEfftoffH::doinit() the Herwig++"
@@ -159,11 +173,12 @@ void MEfftoffH::doinit() {
   _wplus  = getParticleData(ParticleID::Wplus );
   _wminus = getParticleData(ParticleID::Wminus);
   _z0     = getParticleData(ParticleID::Z0);
-  tcPDPtr h0=getParticleData(ParticleID::h0);
-  _mh = h0->mass();
-  _wh = h0->width();
-  if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(h0->massGenerator());
+  _mh = _higgs->mass();
+  _wh = _higgs->width();
+  cerr << "testing mass and width " << _mh/GeV << " " 
+       << _wh/GeV << "\n";
+  if(_higgs->massGenerator()) {
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(_higgs->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEfftoffH::doinit()"
@@ -287,6 +302,7 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
     {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
      dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
   if( beam[0] || beam[1] ) {
+    cerr << "testing in pol ? \n";
     RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
 			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
     me = menew.average(rho[0],rho[1]);

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralfftoffH class.
+//
+#ifndef HERWIG_GeneralfftoffH_FH
+#define HERWIG_GeneralfftoffH_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class GeneralfftoffH;
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralfftoffH,GeneralfftoffHPtr);
+
+}
+
+#endif

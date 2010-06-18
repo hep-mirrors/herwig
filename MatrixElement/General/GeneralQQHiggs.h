@@ -1,35 +1,58 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEfftoVH_H
-#define HERWIG_MEfftoVH_H
+#ifndef HERWIG_GeneralQQHiggs_H
+#define HERWIG_GeneralQQHiggs_H
 //
-// This is the declaration of the MEfftoVH class.
+// This is the declaration of the GeneralQQHiggs class.
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "GeneralQQHiggs.fh"
 
 namespace Herwig {
+
 using namespace ThePEG;
 
 /**
- * The MEfftoVH class is the base class for \f$f\bar{f}\to VH\f$ processes. 
- * This base class handles the phase-space integration while
- * the inheriting classes implement the matrix element
+ * The GeneralQQHiggs class implements the matrix elements for
+ * \f$gg\to Q \bar Q h^0$ and \f$q\bar q\to Q \bar Q h^0\f$.
  *
- * @see \ref MEfftoVHInterfaces "The interfaces"
- * defined for MEfftoVH.
+ * @see \ref GeneralQQHiggsInterfaces "The interfaces"
+ * defined for GeneralQQHiggs.
  */
-class MEfftoVH: public MEBase {
+class GeneralQQHiggs: public MEBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  MEfftoVH() : _shapeopt(2), _maxflavour(5), _mh(), _wh() {}
+  GeneralQQHiggs();
+  //@}
+
+  /**
+   *  Initialisation if used in a general model
+   */
+
+  /**
+   *  Set up the matrix element
+   */
+  void setProcessInfo(unsigned int quark, PDPtr higgs,
+		      AbstractFFSVertexPtr vertex,
+		      unsigned int shapeOpt,
+		      unsigned int proc);
+
+public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -91,6 +114,11 @@ public:
   virtual CrossSection dSigHatDR() const;
 
   /**
+   * Add all possible diagrams with the add() function.
+   */
+  virtual void getDiagrams() const;
+
+  /**
    * Get diagram selector. With the information previously supplied with the
    * setKinematics method, a derived class may optionally
    * override this method to weight the given diagrams with their
@@ -116,6 +144,47 @@ public:
   virtual void constructVertex(tSubProPtr);
   //@}
 
+protected:
+
+  /**
+   *  Members to calculate the matrix elements
+   */
+  //@{
+  /**
+   * Matrix element for \f$gg\to Q\bar{Q}h^0\f$
+   * @param g1   The wavefunctions for the first  incoming gluon
+   * @param g2   The wavefunctions for the second incoming gluon
+   * @param q    The wavefunction  for the outgoing quark
+   * @param qbar The wavefunction  for the outgoing antiquark
+   * @param h    The wavefunction for the outgoing Higgs boson
+   * @param flow The colour flow
+   */
+  double ggME(vector<VectorWaveFunction> &g1,vector<VectorWaveFunction> &g2,
+	      vector<SpinorBarWaveFunction> & q,vector<SpinorWaveFunction> & qbar,
+	      ScalarWaveFunction & h,
+	      unsigned int flow) const;
+
+  /**
+   * Matrix element for \f$q\bar{q}\to Q\bar{Q}h^0\f$
+   * @param q1 The wavefunction  for the incoming quark
+   * @param q2 The wavefunction  for the incoming antiquark
+   * @param q3 The wavefunction  for the outgoing quark
+   * @param q4 The wavefunction  for the outgoing antiquark
+   * @param h    The wavefunction for the outgoing Higgs boson
+   * @param flow The colour flow
+   */
+  double qqME(vector<SpinorWaveFunction> & q1,
+	      vector<SpinorBarWaveFunction> & q2,
+	      vector<SpinorBarWaveFunction>    & q3,
+	      vector<SpinorWaveFunction>    & q4,
+	      ScalarWaveFunction & h,
+	      unsigned int flow) const;
+  //@} 
+
+  /**
+   *  Generate the polar angle
+   */
+  double getCosTheta(double ctmin, double ctmax, double r);
 
 public:
 
@@ -145,72 +214,20 @@ public:
 
 protected:
 
-  /**
-   * Matrix element for \f$f\bar{f}\to V h^0\to f'\bar{f'} h^0\f$.
-   * @param fin  Spinors for incoming fermion
-   * @param ain  Spinors for incoming antifermion
-   * @param fout Spinors for incoming fermion
-   * @param aout Spinors for incoming antifermion
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double helicityME(vector<SpinorWaveFunction> & fin ,
-		 vector<SpinorBarWaveFunction> & ain ,
-		 vector<SpinorBarWaveFunction> & fout,
-		 vector<SpinorWaveFunction>    & aout,
-		 bool me) const;
-
-  /**
-   * Used internally by generateKinematics, after calculating the
-   * limits on cos(theta).
-   */
-  virtual double getCosTheta(double cthmin, double cthmax, double r);
-
-  /**
-   *  Access to the vector ParticleData objects
-   */
+  /** @name Clone Methods. */
   //@{
   /**
-   *  Access to the \f$W^+\f$ data
-   */ 
-  PDPtr WPlus() const { return _wplus; }
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
 
-  /**
-   *  Access to the \f$W^-\f$ data
-   */ 
-  PDPtr WMinus() const { return _wminus; }
-
-  /**
-   *  Access to the \f$Z^0\f$ data
-   */ 
-  PDPtr Z0() const { return _z0; }
-
-  /**
-   *  Access to the higgs data
-   */ 
-  PDPtr higgs() const { return _higgs; }
-
-  /**
-   *  Set the higgs data
-   */ 
-  void higgs(PDPtr in) {_higgs =in;}
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
   //@}
-
-  /**
-   *  Set the pointer to the vector-vector-Higgs vertex
-   */
-  void setWWHVertex(AbstractVVSVertexPtr in) {
-    _vertexWWH = in;
-  }
-
-  /**
-   *  Set the line shape treatment
-   */
-  void lineShape(unsigned int in) {_shapeopt=in;}
-
-  /**
-   *  Maximum flavour of the incoming partons
-   */
-  unsigned int maxFlavour() const {return _maxflavour;}
 
 protected:
 
@@ -228,92 +245,128 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static AbstractClassDescription<MEfftoVH> initMEfftoVH;
+  static ClassDescription<GeneralQQHiggs> initGeneralQQHiggs;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEfftoVH & operator=(const MEfftoVH &);
+  GeneralQQHiggs & operator=(const GeneralQQHiggs &);
 
 private:
+  
+  /**
+   *  Switches to control the subprocess
+   */
+  //@{
+  /**
+   *  Quark Flavour
+   */
+  unsigned int quarkFlavour_;
+  
+  /**
+   *  Processes to include
+   */
+  unsigned int process_;
+  //@}
 
+  /**
+   *  Switches etc for the Higgs mass generation
+   */
+  //@{
   /**
    * Defines the Higgs resonance shape
    */
-  unsigned int _shapeopt;
-
-  /**
-   *  The allowed flavours of the incoming quarks
-   */
-  unsigned int _maxflavour;
-
-  /**
-   *  The intermediate vector bosons
-   */
-  //@{
-  /**
-   *  \f$W^+\f$
-   */
-  PDPtr _wplus;
-
-  /**
-   *  \f$W^-\f$
-   */
-  PDPtr _wminus;
-
-  /**
-   *  \f$Z^0\f$
-   */
-  PDPtr _z0;
-
-  /**
-   *  The higgs bosom
-   */
-  PDPtr _higgs;
-  //@}
-
-  /**
-   *  The vertices for the calculation of the matrix element
-   */
-  //@{
-  /**
-   *  Vertex for fermion-fermion-W
-   */
-  AbstractFFVVertexPtr _vertexFFW;
-
-  /**
-   *  Vertex for fermion-fermion-Z
-   */
-  AbstractFFVVertexPtr _vertexFFZ;
-
-  /**
-   *  Vertex for vector-vector-Higgs
-   */
-  AbstractVVSVertexPtr _vertexWWH;
-  //@}
+  unsigned int shapeOpt_;
 
   /**
    *  On-shell mass for the higgs
    */
-  Energy _mh;
+  Energy mh_;
 
   /**
    *  On-shell width for the higgs
    */
-  Energy _wh;
+  Energy wh_;
 
   /**
    *  The mass generator for the Higgs
    */
-  GenericMassGeneratorPtr _hmass;
+  GenericMassGeneratorPtr hmass_;
+  //@}
+  
+  /**
+   *  Vertices needed to compute the diagrams
+   */
+  //@{
+  /**
+   *  \f$ggg\f$ vertex
+   */
+  AbstractVVVVertexPtr GGGVertex_;
+  
+  /**
+   *  \f$q\bar{q}g\f$ vertex
+   */
+  AbstractFFVVertexPtr QQGVertex_;
 
   /**
-   * Matrix element for spin correlations
+   *  \f$q\bar q h^0\f$ vertex
    */
-  ProductionMatrixElement _me;
+  AbstractFFSVertexPtr QQHVertex_;
+  //@}
+  
+
+  /**
+   *  ParticleData objects of the particles
+   */  
+  //@{
+  /**
+   *  The gluon
+   */
+  PDPtr gluon_;
+
+  /**
+   * The Higgs boson
+   */
+  PDPtr higgs_;
+  
+  /**
+   *  the quarks
+   */
+  vector<PDPtr> quark_;
+
+  /**
+   *  the antiquarks
+   */
+  vector<PDPtr> antiquark_;
+  //@}
+
+  /**
+   *  Parameters for the phase-space generation
+   */
+  //@{
+  /**
+   *  Power for the phase-space mapping
+   */
+  double alpha_;
+  //@}
+
+  /**
+   *  Colour flow
+   */
+  mutable unsigned int flow_;
+
+  /**
+   *  Diagram
+   */
+  mutable unsigned int diagram_;
+
+  /**
+   *  Matrix element
+   */
+  mutable ProductionMatrixElement me_;
 };
 
 }
@@ -325,24 +378,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEfftoVH. */
+ *  base classes of GeneralQQHiggs. */
 template <>
-struct BaseClassTrait<Herwig::MEfftoVH,1> {
-  /** Typedef of the first base class of MEfftoVH. */
+struct BaseClassTrait<Herwig::GeneralQQHiggs,1> {
+  /** Typedef of the first base class of GeneralQQHiggs. */
   typedef MEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEfftoVH class and the shared object where it is defined. */
+ *  the GeneralQQHiggs class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEfftoVH>
-  : public ClassTraitsBase<Herwig::MEfftoVH> {
+struct ClassTraits<Herwig::GeneralQQHiggs>
+  : public ClassTraitsBase<Herwig::GeneralQQHiggs> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEfftoVH"; }
+  static string className() { return "Herwig::GeneralQQHiggs"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEfftoVH_H */
+#endif /* HERWIG_GeneralQQHiggs_H */
