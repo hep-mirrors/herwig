@@ -101,12 +101,12 @@ IBPtr MEPP2gZ2GauginosPowheg::fullclone() const {
 }
 
 void MEPP2gZ2GauginosPowheg::persistentOutput(PersistentOStream & os) const {
-  os << FFZVertex_ << FFGVertex_ << NNZVertex_ 
+  os << FFZVertex_ << FFGVertex_ << NNZVertex_ << NFSVertex_
      << Z0_ << process_ << maxFlavour_;
 }
 
 void MEPP2gZ2GauginosPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> FFZVertex_ >> FFGVertex_ >> NNZVertex_ 
+  is >> FFZVertex_ >> FFGVertex_ >> NNZVertex_ >> NFSVertex_
      >> Z0_ >> process_ >> maxFlavour_;
 }
 
@@ -222,6 +222,22 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	bool first) const {
   // scale for the process
   const Energy2 q2(scale());
+  // squarks for the t-channel
+  tcPDPtr squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())),
+		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
+  // conjugate spinors for t-channel exchange diagram
+  vector<SpinorWaveFunction> sbaroutconj;
+  vector<SpinorBarWaveFunction> spoutconj;
+  for(unsigned int of1=0;of1<2;++of1) {
+    sbaroutconj.push_back(SpinorWaveFunction (-sbarout[of1].momentum(),
+					      sbarout[of1].particle(),
+					      sbarout[of1].wave().bar().conjugate(),
+					      sbarout[of1].direction()));
+    spoutconj.push_back(SpinorBarWaveFunction(-spout[of1].momentum(),
+					      spout[of1].particle(),
+					      spout[of1].wave().bar().conjugate(),
+					      spout[of1].direction()));
+  }
   // storage of the matrix elements for specific diagrams
   vector<double> me(5, 0.);
   double me2(0.);
@@ -232,39 +248,26 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
+      VectorWaveFunction interV = FFZVertex_->
+	evaluate(q2, 1, Z0_, sp[if1],sbar[if2]);
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
-
-	  //SpinorWaveFunction sbaroutconj = sbar.conjugate();
-	  //SpinorBarWaveFunction spoutconj = spout.conjugate();
-
-	  VectorWaveFunction interV = FFZVertex_->evaluate(q2, 1, Z0_, sp[if1], 
-						       sbar[if2]);
 	  // s-channel Z exchange
 	  diag[0] = NNZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interV);
-
-	  // t-channel squark exchanges
-	  for(int ix = 0; ix < maxFlavour_; ++ix){
-	    tcPDPtr qL = getParticleData(1000000+ix);
-	    tcPDPtr qR = getParticleData(2000000+ix);
-
-	    ScalarWaveFunction interqL = NFSVertex_->evaluate(q2, 3, qL,
-							      sp[if1], sbarout[of2]);
-	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], interqL);
-
-	    //interqL = NFSVertex_->evaluate(q2, 3, qL, sp[if1], sbarout[of2].conjugate());
-	    //diag[2] = -NFSVertex_->evaluate(q2, spout[of1].conjugate(), sbar[if2], interqL);
-
-	    ScalarWaveFunction interqR = NFSVertex_->evaluate(q2, 3, qR,
-							      sp[if1], sbarout[of2]);
-	    diag[3] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], interqR);
-       
-	    //interqR = NFSVertex_->evaluate(q2, 3, qR, sp[if1], sbarout[of2].conjugate());
-	    //diag[4] = -NFSVertex_->evaluate(q2, spout[of1].conjugate(), sbar[if2], interqR);
-
+	  // t-channel squark exchanges	  
+	  for(unsigned int iq=0;iq<2;++iq) {
+	    // 1st t-channel
+	    ScalarWaveFunction intersq = NFSVertex_->
+	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+	    // swapped t-channel
+	    intersq = NFSVertex_->
+	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+	    diag[2] = Complex(-1.,0.)*
+	      NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+	    //cerr << iq << " " << if1 << " " << if2 << " " << of1 << " " << of2 << endl;
+	    //cerr << diag[0] << " " << diag[1] << " " << diag[2] << endl;
 	  }
-
-
 	  // individual diagrams
 	  for(unsigned int id=0;id<5;++id)
 	    me[id] += norm(diag[id]);
