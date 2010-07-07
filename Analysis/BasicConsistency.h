@@ -157,6 +157,16 @@ private:
    */
   bool _checkBR;
 
+  /**
+   *  Maximum absolute momentum deviation before warning
+   */
+  Energy _absolutemomentumtolerance;
+
+  /**
+   *  Maximum momentum deviation relative to beam energy before warning
+   */
+  double _relativemomentumtolerance;
+
 };
 
 }

@@ -12,6 +12,7 @@
 //
 
 #include "BasicConsistency.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -26,7 +27,8 @@ using namespace ThePEG;
 
 BasicConsistency::BasicConsistency() 
   : _epsmom(ZERO),_checkquark(true), _checkcharge(true),
-    _checkcluster(true), _checkBR(true)
+    _checkcluster(true), _checkBR(true),
+    _absolutemomentumtolerance(1*MeV), _relativemomentumtolerance(1e-5)
 {}
 
 IBPtr BasicConsistency::clone() const {
@@ -133,9 +135,10 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << *event;
   }
 
-  const Energy epsilonmax = 1.0e-5 * beamenergy;
+  const Energy epsilonmax = max( _absolutemomentumtolerance,
+				 _relativemomentumtolerance * beamenergy );
 
-  if (mag > epsilonmax || abs(ee) > epsilonmax) {
+  if (abs(mag) > epsilonmax || abs(ee) > epsilonmax) {
     cerr << "\nMomentum imbalance by " << ptotal/MeV 
 	 << " MeV in event " << event->number() << '\n';
     generator()->log() <<"\nMomentum imbalance by " << ptotal/MeV 
@@ -143,8 +146,8 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << *event;
   }
 
-  if (mag > _epsmom)
-    _epsmom = mag;
+  if (abs(mag) > _epsmom)
+    _epsmom = abs(mag);
 
   if (abs(ee) > _epsmom)
     _epsmom = abs(ee);
@@ -200,11 +203,13 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 }
 
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {
-  os << _checkquark << _checkcharge << _checkcluster << _checkBR;
+  os << _checkquark << _checkcharge << _checkcluster << _checkBR
+     << ounit(_absolutemomentumtolerance,MeV) << _relativemomentumtolerance;
 }
 
 void BasicConsistency::persistentInput(PersistentIStream & is, int) {
-  is >> _checkquark >> _checkcharge >> _checkcluster >> _checkBR;
+  is >> _checkquark >> _checkcharge >> _checkcluster >> _checkBR
+     >> iunit(_absolutemomentumtolerance,MeV) >> _relativemomentumtolerance;
 }
 
 ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
@@ -275,6 +280,19 @@ void BasicConsistency::Init() {
      "No",
      "Don't perform the check",
      false);
+
+  static Parameter<BasicConsistency,Energy> interfaceAbsoluteMomentumTolerance
+    ("AbsoluteMomentumTolerance",
+     "The value of the momentum imbalance above which warnings are issued/MeV.",
+     &BasicConsistency::_absolutemomentumtolerance, MeV, 1*MeV, ZERO, 1e10*GeV,
+     false, false, true);
+
+  static Parameter<BasicConsistency,double> interfaceRelativeMomentumTolerance
+    ("RelativeMomentumTolerance",
+     "The value of the momentum imbalance as a fraction of the beam energy"
+     " above which warnings are issued.",
+     &BasicConsistency::_relativemomentumtolerance, 1e-5, 0.0, 1.0,
+     false, false, true);
 
 }
 
