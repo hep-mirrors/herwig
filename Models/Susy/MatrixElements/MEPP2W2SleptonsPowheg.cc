@@ -238,7 +238,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   tcPDPtr boson = icharge > 0 ? Wplus_ : Wminus_;
   // storage of the answer
   double me2(0.);
-  // storgage of the individual diagrams
+  // storage of the individual diagrams
   Complex diag(0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin0, PDT::Spin0);
