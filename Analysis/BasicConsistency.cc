@@ -283,14 +283,18 @@ void BasicConsistency::Init() {
 
   static Parameter<BasicConsistency,Energy> interfaceAbsoluteMomentumTolerance
     ("AbsoluteMomentumTolerance",
-     "The value of the momentum imbalance above which warnings are issued/MeV.",
+     "The value of the momentum imbalance above which warnings are issued/MeV.\n"
+     "Final tolerance is the larger of AbsoluteMomentumTolerance and\n"
+     "RelativeMomentumTolerance*beam energy.",
      &BasicConsistency::_absolutemomentumtolerance, MeV, 1*MeV, ZERO, 1e10*GeV,
      false, false, true);
 
   static Parameter<BasicConsistency,double> interfaceRelativeMomentumTolerance
     ("RelativeMomentumTolerance",
-     "The value of the momentum imbalance as a fraction of the beam energy"
-     " above which warnings are issued.",
+     "The value of the momentum imbalance as a fraction of the beam energy\n"
+     "above which warnings are issued.\n"
+     "Final tolerance is the larger of AbsoluteMomentumTolerance and\n"
+     "RelativeMomentumTolerance*beam energy.",
      &BasicConsistency::_relativemomentumtolerance, 1e-5, 0.0, 1.0,
      false, false, true);
 
