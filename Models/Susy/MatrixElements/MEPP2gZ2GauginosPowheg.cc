@@ -78,6 +78,9 @@ void MEPP2gZ2GauginosPowheg::getDiagrams() const {
 		       3, chi[c1], 1, chi[c2], -4)));
 	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
 		       3, chi[c1], 1, chi[c2], -5)));
+
+	  //cout << c1 << " " << c2 << " " << 4*c2+c1+1 << endl;
+
 	}
       }
     }
@@ -192,6 +195,7 @@ void MEPP2gZ2GauginosPowheg::Init() {
 
 }
 
+
 Selector<MEBase::DiagramIndex>
 MEPP2gZ2GauginosPowheg::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
@@ -213,6 +217,14 @@ NLODrellYanBase::Singular MEPP2gZ2GauginosPowheg::virtualME() const {
   return output;
 }
 
+// ofstream myfile ("Our_MSSM_scale.txt");
+// if (myfile.is_open())
+//   {
+//     myfile << "Our scale " << scale() << endl;
+//     myfile.close();
+//   }
+// else cout << "Unable to open file";
+
 double MEPP2gZ2GauginosPowheg::
 qqbarME(vector<SpinorWaveFunction>    & sp ,
 	vector<SpinorBarWaveFunction> & sbar ,
@@ -221,7 +233,9 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	//ScalarWaveFunction & interqL,ScalarWaveFunction & interqR,
 	bool first) const {
   // scale for the process
-  const Energy2 q2(scale());
+  //  const Energy2 q2(scale());
+  const Energy2 q2(sHat());
+
   // squarks for the t-channel
   tcPDPtr squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())),
 		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
@@ -245,6 +259,10 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   vector<Complex> diag(5, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
+
+  //cout << mePartonData()[2]->id() << " " << mePartonData()[3]->id() << endl;
+
+
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
@@ -255,25 +273,29 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  // s-channel Z exchange
 	  diag[0] = NNZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interV);
 	  // t-channel squark exchanges	  
-	  for(unsigned int iq=0;iq<2;++iq) {
-	    // 1st t-channel
-	    ScalarWaveFunction intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
-	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
-	    // swapped t-channel
-	    intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-	    diag[2] = Complex(-1.,0.)*
-	      NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-	    //cerr << iq << " " << if1 << " " << if2 << " " << of1 << " " << of2 << endl;
-	    //cerr << diag[0] << " " << diag[1] << " " << diag[2] << endl;
-	  }
+// 	  for(unsigned int iq=0;iq<2;++iq) {
+// 	    // 1st t-channel
+// 	    ScalarWaveFunction intersq = NFSVertex_->
+// 	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+// 	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+// 	    // swapped t-channel
+// 	    intersq = NFSVertex_->
+// 	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+// 	    diag[2] = Complex(-1.,0.)*
+// 	      NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+// 	    //cerr << iq << " " << if1 << " " << if2 << " " << of1 << " " << of2 << endl;
+// 	    //cerr << diag[0] << " " << diag[1] << " " << diag[2] << endl;
+// 	  }
+
 	  // individual diagrams
-	  for(unsigned int id=0;id<5;++id)
-	    me[id] += norm(diag[id]);
+	  for(unsigned int id=0;id<5;++id){
+	      me[id] += norm(diag[id]);
+	  }
 	  // sum up the matrix elements
 	  Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
-	  me2 += norm(total);
+	  if(mePartonData()[2]->id() == mePartonData()[3]->id())
+	    me2 += 0.5 * norm(total);
+	  else me2 += norm(total);
 	  pme(if1, if2, of1, of2) = total;
 	}
       }
