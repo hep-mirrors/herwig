@@ -1,0 +1,38 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEGammaGamma
+
+# photon cuts
+set /Herwig/Cuts/PhotonKtCut:MinKT 5.
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# CDF Run II diphotons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2005_S6080774
+# D0 Run II diphotons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8570965
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Run-II-DiPhoton LHCGenerator
