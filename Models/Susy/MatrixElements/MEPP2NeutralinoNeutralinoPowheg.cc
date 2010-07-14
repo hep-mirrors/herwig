@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEPP2gZ2GauginosPowheg class.
+// functions of the MEPP2NeutralinoNeutralinoPowheg class.
 //
 
-#include "MEPP2gZ2GauginosPowheg.h"
+#include "MEPP2NeutralinoNeutralinoPowheg.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -22,13 +22,13 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
 
-MEPP2gZ2GauginosPowheg::MEPP2gZ2GauginosPowheg() 
+MEPP2NeutralinoNeutralinoPowheg::MEPP2NeutralinoNeutralinoPowheg() 
   : process_(0), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
   massOption(mopt);
 }
 
-void MEPP2gZ2GauginosPowheg::doinit() {
+void MEPP2NeutralinoNeutralinoPowheg::doinit() {
   NLODrellYanBase::doinit();
   // get the photon and Z ParticleData objects
   Z0_    = getParticleData(ThePEG::ParticleID::Z0);
@@ -36,7 +36,7 @@ void MEPP2gZ2GauginosPowheg::doinit() {
   tcSusyBasePtr hwsm=ThePEG::dynamic_ptr_cast<tcSusyBasePtr>(standardModel());
   if(!hwsm)
     throw InitException() << "Must be the Herwig++ SusyBase class in "
-			  << "MEPP2gZ2GauginosPowheg::doinit" 
+			  << "MEPP2NeutralinoNeutralinoPowheg::doinit" 
 			  << Exception::abortnow;
   // do the initialisation (see Herwig::SusyBase Class)
   FFZVertex_ = hwsm->vertexFFZ();
@@ -46,7 +46,7 @@ void MEPP2gZ2GauginosPowheg::doinit() {
 }
 
 Selector<const ColourLines *>
-MEPP2gZ2GauginosPowheg::colourGeometries(tcDiagPtr diag) const {
+MEPP2NeutralinoNeutralinoPowheg::colourGeometries(tcDiagPtr diag) const {
   static const ColourLines c1("1 -2"), c2("1 2 -3");
   Selector<const ColourLines *> sel;
   if(abs(diag->id())==1)
@@ -56,7 +56,7 @@ MEPP2gZ2GauginosPowheg::colourGeometries(tcDiagPtr diag) const {
   return sel;
 }
 
-void MEPP2gZ2GauginosPowheg::getDiagrams() const {
+void MEPP2NeutralinoNeutralinoPowheg::getDiagrams() const {
   // loop over the processes we need
   tcPDPtr chi[4] = {getParticleData(1000022),getParticleData(1000023),
 		    getParticleData(1000025),getParticleData(1000035)};
@@ -87,48 +87,48 @@ void MEPP2gZ2GauginosPowheg::getDiagrams() const {
   }
 }
 
-unsigned int MEPP2gZ2GauginosPowheg::orderInAlphaS() const {
+unsigned int MEPP2NeutralinoNeutralinoPowheg::orderInAlphaS() const {
   return 0;
 }
 
-unsigned int MEPP2gZ2GauginosPowheg::orderInAlphaEW() const {
+unsigned int MEPP2NeutralinoNeutralinoPowheg::orderInAlphaEW() const {
   return 2;
 }
 
-IBPtr MEPP2gZ2GauginosPowheg::clone() const {
+IBPtr MEPP2NeutralinoNeutralinoPowheg::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MEPP2gZ2GauginosPowheg::fullclone() const {
+IBPtr MEPP2NeutralinoNeutralinoPowheg::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEPP2gZ2GauginosPowheg::persistentOutput(PersistentOStream & os) const {
+void MEPP2NeutralinoNeutralinoPowheg::persistentOutput(PersistentOStream & os) const {
   os << FFZVertex_ << FFGVertex_ << NNZVertex_ << NFSVertex_
      << Z0_ << process_ << maxFlavour_;
 }
 
-void MEPP2gZ2GauginosPowheg::persistentInput(PersistentIStream & is, int) {
+void MEPP2NeutralinoNeutralinoPowheg::persistentInput(PersistentIStream & is, int) {
   is >> FFZVertex_ >> FFGVertex_ >> NNZVertex_ >> NFSVertex_
      >> Z0_ >> process_ >> maxFlavour_;
 }
 
-ClassDescription<MEPP2gZ2GauginosPowheg> 
-MEPP2gZ2GauginosPowheg::initMEPP2gZ2GauginosPowheg;
+ClassDescription<MEPP2NeutralinoNeutralinoPowheg> 
+MEPP2NeutralinoNeutralinoPowheg::initMEPP2NeutralinoNeutralinoPowheg;
 // Definition of the static class description member.
 
-void MEPP2gZ2GauginosPowheg::Init() {
+void MEPP2NeutralinoNeutralinoPowheg::Init() {
 
-  static ClassDocumentation<MEPP2gZ2GauginosPowheg> documentation
-    ("MEPP2gZ2GauginosPowheg implements the ME calculation"
+  static ClassDocumentation<MEPP2NeutralinoNeutralinoPowheg> documentation
+    ("MEPP2NeutralinoNeutralinoPowheg implements the ME calculation"
      " of the fermion-antifermion to chargino-chargino or"
      " neutralino-neutralino hard process.");
 
 
-  static Switch<MEPP2gZ2GauginosPowheg,int> interfaceProcess
+  static Switch<MEPP2NeutralinoNeutralinoPowheg,int> interfaceProcess
     ("Process",
      "Which processes to generate",
-     &MEPP2gZ2GauginosPowheg::process_, 0, false, false);
+     &MEPP2NeutralinoNeutralinoPowheg::process_, 0, false, false);
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -187,17 +187,17 @@ void MEPP2gZ2GauginosPowheg::Init() {
      "Only produce chi04, chi04 pairs.",
      16);
 
-  static Parameter<MEPP2gZ2GauginosPowheg,int> interfaceMaxFlavour
+  static Parameter<MEPP2NeutralinoNeutralinoPowheg,int> interfaceMaxFlavour
     ("MaxFlavour",
      "The maximum flavour of the incoming quarks",
-     &MEPP2gZ2GauginosPowheg::maxFlavour_, 5, 1, 5,
+     &MEPP2NeutralinoNeutralinoPowheg::maxFlavour_, 5, 1, 5,
      false, false, Interface::limited);
 
 }
 
 
 Selector<MEBase::DiagramIndex>
-MEPP2gZ2GauginosPowheg::diagrams(const DiagramVector & diags) const {
+MEPP2NeutralinoNeutralinoPowheg::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     if ( diags[i]->id() == -1 )      sel.insert(meInfo()[0], i);
@@ -209,7 +209,7 @@ MEPP2gZ2GauginosPowheg::diagrams(const DiagramVector & diags) const {
   return sel;
 }
 
-NLODrellYanBase::Singular MEPP2gZ2GauginosPowheg::virtualME() const {
+NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   Singular output;
   output.eps2 = -2;
   output.eps1 = -3;
@@ -225,7 +225,7 @@ NLODrellYanBase::Singular MEPP2gZ2GauginosPowheg::virtualME() const {
 //   }
 // else cout << "Unable to open file";
 
-double MEPP2gZ2GauginosPowheg::
+double MEPP2NeutralinoNeutralinoPowheg::
 qqbarME(vector<SpinorWaveFunction>    & sp ,
 	vector<SpinorBarWaveFunction> & sbar ,
 	vector<SpinorWaveFunction>    & spout ,
@@ -302,7 +302,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   return me2/12.;
 }
 
-double MEPP2gZ2GauginosPowheg::loME(const cPDVector & particles,
+double MEPP2NeutralinoNeutralinoPowheg::loME(const cPDVector & particles,
 				    const vector<Lorentz5Momentum> & momenta,
 				    bool first) const {
   // wavefunctions for the incoming fermions
@@ -327,7 +327,7 @@ double MEPP2gZ2GauginosPowheg::loME(const cPDVector & particles,
 }
 
 
-double MEPP2gZ2GauginosPowheg::realME(const cPDVector & particles,
+double MEPP2NeutralinoNeutralinoPowheg::realME(const cPDVector & particles,
  				      const vector<Lorentz5Momentum> & momenta) const {
 //   vector<SpinorWaveFunction> sp(2);
 //   vector<SpinorBarWaveFunction> sbar(2);
@@ -423,7 +423,7 @@ double MEPP2gZ2GauginosPowheg::realME(const cPDVector & particles,
 				      return 1;
 }
 
-void MEPP2gZ2GauginosPowheg::constructVertex(tSubProPtr sub) {
+void MEPP2NeutralinoNeutralinoPowheg::constructVertex(tSubProPtr sub) {
 //   //get particles
 //   ParticleVector ext(4);
 //   ext[0] = sub->incoming().first;

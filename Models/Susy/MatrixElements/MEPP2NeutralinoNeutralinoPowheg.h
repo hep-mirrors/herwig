@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEPP2gZ2GauginosPowheg_H
-#define HERWIG_MEPP2gZ2GauginosPowheg_H
+#ifndef HERWIG_MEPP2NeutralinoNeutralinoPowheg_H
+#define HERWIG_MEPP2NeutralinoNeutralinoPowheg_H
 //
-// This is the declaration of the MEPP2gZ2GauginosPowheg class.
+// This is the declaration of the MEPP2NeutralinoNeutralinoPowheg class.
 //
 
 #include "NLODrellYanBase.h"
@@ -15,14 +15,14 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEPP2gZ2GauginosPowheg class implements the matrix elements
+ * The MEPP2NeutralinoNeutralinoPowheg class implements the matrix elements
  * together with the next-to-leading order corrections for
  * \f$q\bar q\to \gamma Z^0\to \tilde{\ell}\tilde{\ell}^*\f$.
  *
- * @see \ref MEPP2gZ2GauginosPowhegInterfaces "The interfaces"
- * defined for MEPP2gZ2GauginosPowheg.
+ * @see \ref MEPP2NeutralinoNeutralinoPowhegInterfaces "The interfaces"
+ * defined for MEPP2NeutralinoNeutralinoPowheg.
  */
-class MEPP2gZ2GauginosPowheg: public NLODrellYanBase {
+class MEPP2NeutralinoNeutralinoPowheg: public NLODrellYanBase {
 
 public:
 
@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  MEPP2gZ2GauginosPowheg();
+  MEPP2NeutralinoNeutralinoPowheg();
   //@}
 
 public:
@@ -199,13 +199,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEPP2gZ2GauginosPowheg> initMEPP2gZ2GauginosPowheg;
+  static ClassDescription<MEPP2NeutralinoNeutralinoPowheg> initMEPP2NeutralinoNeutralinoPowheg;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2gZ2GauginosPowheg & operator=(const MEPP2gZ2GauginosPowheg &);
+  MEPP2NeutralinoNeutralinoPowheg & operator=(const MEPP2NeutralinoNeutralinoPowheg &);
 
 private:
 
@@ -269,24 +269,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEPP2gZ2GauginosPowheg. */
+ *  base classes of MEPP2NeutralinoNeutralinoPowheg. */
 template <>
-struct BaseClassTrait<Herwig::MEPP2gZ2GauginosPowheg,1> {
-  /** Typedef of the first base class of MEPP2gZ2GauginosPowheg. */
+struct BaseClassTrait<Herwig::MEPP2NeutralinoNeutralinoPowheg,1> {
+  /** Typedef of the first base class of MEPP2NeutralinoNeutralinoPowheg. */
   typedef Herwig::NLODrellYanBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEPP2gZ2GauginosPowheg class and the shared object where it is defined. */
+ *  the MEPP2NeutralinoNeutralinoPowheg class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEPP2gZ2GauginosPowheg>
-  : public ClassTraitsBase<Herwig::MEPP2gZ2GauginosPowheg> {
+struct ClassTraits<Herwig::MEPP2NeutralinoNeutralinoPowheg>
+  : public ClassTraitsBase<Herwig::MEPP2NeutralinoNeutralinoPowheg> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2gZ2GauginosPowheg"; }
+  static string className() { return "Herwig::MEPP2NeutralinoNeutralinoPowheg"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEPP2gZ2GauginosPowheg is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2gZ2GauginosPowheg depends on other classes (base classes
+   * MEPP2NeutralinoNeutralinoPowheg is implemented. It may also include several, space-separated,
+   * libraries if the class MEPP2NeutralinoNeutralinoPowheg depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -297,4 +297,4 @@ struct ClassTraits<Herwig::MEPP2gZ2GauginosPowheg>
 
 }
 
-#endif /* HERWIG_MEPP2gZ2GauginosPowheg_H */
+#endif /* HERWIG_MEPP2NeutralinoNeutralinoPowheg_H */
