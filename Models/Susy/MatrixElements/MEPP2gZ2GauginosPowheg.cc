@@ -233,9 +233,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	//ScalarWaveFunction & interqL,ScalarWaveFunction & interqR,
 	bool first) const {
   // scale for the process
-  //  const Energy2 q2(scale());
-  const Energy2 q2(sHat());
-
+  const Energy2 q2(scale());
   // squarks for the t-channel
   tcPDPtr squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())),
 		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
@@ -246,7 +244,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
     sbaroutconj.push_back(SpinorWaveFunction (-sbarout[of1].momentum(),
 					      sbarout[of1].particle(),
 					      sbarout[of1].wave().bar().conjugate(),
-					      sbarout[of1].direction()));
+				 	      sbarout[of1].direction()));
     spoutconj.push_back(SpinorBarWaveFunction(-spout[of1].momentum(),
 					      spout[of1].particle(),
 					      spout[of1].wave().bar().conjugate(),
@@ -259,10 +257,6 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   vector<Complex> diag(5, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
-
-  //cout << mePartonData()[2]->id() << " " << mePartonData()[3]->id() << endl;
-
-
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
@@ -273,29 +267,25 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  // s-channel Z exchange
 	  diag[0] = NNZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interV);
 	  // t-channel squark exchanges	  
-// 	  for(unsigned int iq=0;iq<2;++iq) {
-// 	    // 1st t-channel
-// 	    ScalarWaveFunction intersq = NFSVertex_->
-// 	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
-// 	    diag[1] = NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
-// 	    // swapped t-channel
-// 	    intersq = NFSVertex_->
-// 	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-// 	    diag[2] = Complex(-1.,0.)*
-// 	      NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-// 	    //cerr << iq << " " << if1 << " " << if2 << " " << of1 << " " << of2 << endl;
-// 	    //cerr << diag[0] << " " << diag[1] << " " << diag[2] << endl;
-// 	  }
-
+	  for(unsigned int iq=0;iq<2;++iq) {
+	    // 1st t-channel
+	    ScalarWaveFunction intersq = NFSVertex_->
+	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+	    diag[2*iq+1] = 
+	      NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+	    // swapped t-channel
+	    intersq = NFSVertex_->
+	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+	    diag[2*iq+2] = 
+	      -NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+	  }
 	  // individual diagrams
 	  for(unsigned int id=0;id<5;++id){
-	      me[id] += norm(diag[id]);
+	    me[id] += norm(diag[id]);
 	  }
 	  // sum up the matrix elements
 	  Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
-	  if(mePartonData()[2]->id() == mePartonData()[3]->id())
-	    me2 += 0.5 * norm(total);
-	  else me2 += norm(total);
+	  me2 += norm(total);
 	  pme(if1, if2, of1, of2) = total;
 	}
       }
@@ -308,6 +298,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
     meInfo(save);
     me_.reset(pme);
   }
+  if(mePartonData()[2]->id() == mePartonData()[3]->id()) me2 *= 0.5;
   return me2/12.;
 }
 
@@ -318,8 +309,8 @@ double MEPP2gZ2GauginosPowheg::loME(const cPDVector & particles,
   vector<SpinorWaveFunction> sp(2);
   vector<SpinorBarWaveFunction> sbar(2);
   for( unsigned int i = 0; i < 2; ++i ) {
-    sp[i] = SpinorWaveFunction(momenta[0], particles[0], i,
-			       incoming);
+    sp[i]   = SpinorWaveFunction   (momenta[0], particles[0], i,
+				    incoming);
     sbar[i] = SpinorBarWaveFunction(momenta[1], particles[1], i,
 				    incoming);
   }
@@ -328,9 +319,9 @@ double MEPP2gZ2GauginosPowheg::loME(const cPDVector & particles,
   vector<SpinorBarWaveFunction> sbarout(2);
   for( unsigned int i = 0; i < 2; ++i ) {
     spout[i] = SpinorWaveFunction(momenta[2], particles[2], i,
-			       incoming);
+				  outgoing);
     sbarout[i] = SpinorBarWaveFunction(momenta[3], particles[3], i,
-				    incoming);
+				       outgoing);
   }
   return qqbarME(sp,sbar,spout,sbarout,first);
 }
