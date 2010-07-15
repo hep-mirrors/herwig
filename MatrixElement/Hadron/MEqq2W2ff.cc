@@ -138,7 +138,6 @@ double MEqq2W2ff::me2() const {
   SpinorWaveFunction    q   (meMomenta()[0],mePartonData()[0],incoming);
   SpinorBarWaveFunction qbar(meMomenta()[1],mePartonData()[1],incoming);
   SpinorBarWaveFunction f   (meMomenta()[2],mePartonData()[2],outgoing);
-  assert(mePartonData()[2]->id()>0&&mePartonData()[3]->id()<0);
   SpinorWaveFunction    fbar(meMomenta()[3],mePartonData()[3],outgoing);
   for(unsigned int ix=0;ix<2;++ix) {
     q.reset(ix)   ; fin.push_back(q);
