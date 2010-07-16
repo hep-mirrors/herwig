@@ -169,6 +169,13 @@ public:
   virtual tAbstractFFSVertexPtr vertexNFSF() const {
     return theNFSFVertex;
   }
+
+  /**
+   *  Pointer to the gluon squark-squark vertex
+   */
+  virtual tAbstractVSSVertexPtr vertexGSFSF() const {
+    return theGSFSFVertex;
+  }
   //@}
 
 protected:
