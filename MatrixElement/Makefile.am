@@ -3,7 +3,7 @@ SUBDIRS = General Lepton Hadron DIS Powheg Gamma
 noinst_LTLIBRARIES = libHwME.la 
 
 libHwME_la_SOURCES =  \
-HwMEBase.h HwMEBase.cc \
+HwMEBase.h HwMEBase.fh HwMEBase.cc \
 MEfftoVH.h MEfftoVH.cc \
 MEfftoffH.h MEfftoffH.cc \
 HardVertex.fh HardVertex.h HardVertex.cc \

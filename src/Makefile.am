@@ -27,7 +27,7 @@ pkgdata_DATA = Makefile-UserModules
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
-  multi.test *.output probs.test chisq.value
+  multi.test *.output probs.test chisq.value momDiffHists.top
 
 ## checking targets ##
 
