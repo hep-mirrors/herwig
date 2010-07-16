@@ -19,7 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "Herwig++/PDT/SMHiggsMassGenerator.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
@@ -273,7 +273,7 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  GenericMassGeneratorPtr _hmass;
 
   /**
    *  On-shell mass for the higgs

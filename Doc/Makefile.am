@@ -21,7 +21,7 @@ AllInterfaces.h: HerwigDefaults.in
 	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
 
 refman-html: refman.conf refman.h AllInterfaces.h tagfileThePEG.tag
-	$(srcdir)/fixinterfaces.pl AllInterfaces.h
+	$(top_builddir)/Doc/fixinterfaces.pl AllInterfaces.h
 	doxygen $<
 
 tagfileThePEG.tag:

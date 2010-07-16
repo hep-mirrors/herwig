@@ -513,7 +513,7 @@ void MRST::readSetup(istream &is) {
 void MRST::initialize(bool reread) {
   useMe();
   //  int i,n,m,k,l,j; // counters
-  double dx,dq,dtemp;
+  double dx,dq;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		  { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
 		  {-3, 0, 0, 3, 0, 0, 0, 0,-2, 0, 0,-1, 0, 0, 0, 0},
@@ -569,7 +569,7 @@ void MRST::initialize(bool reread) {
 	 data[n][nx][mm]=0.0;
        }
      }
-  
+     double dtemp;
      datafile >> dtemp;
      if(!datafile.eof()) throw Exception() << "Error reading end of " << _file 
 					   << " too many data points in file" 

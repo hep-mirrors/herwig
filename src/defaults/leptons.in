@@ -1,14 +1,14 @@
 #
 # file containing the particle data for the leptons
 #
-create ThePEG::BeamParticleData e-
+create ThePEG::PolarizedBeamParticleData e-
 setup e- 11 e- 0.00051099892 0.  0 0 -3 0 2 1 
 create ThePEG::ParticleData mu-
 setup mu- 13 mu- 0.105658369 2.9959121177432E-19 0 658654 -3 0 2 1 
 create ThePEG::ParticleData mu+
 setup mu+ -13 mu+ 0.105658369 2.9959121177432E-19 0 658654 3 0 2 1 
 makeanti mu+ mu-
-create ThePEG::BeamParticleData e+
+create ThePEG::PolarizedBeamParticleData e+
 setup e+ -11 e+ 0.00051099892 0.  0 0 3 0 2 1 
 makeanti e+ e-
 create ThePEG::ParticleData tau+

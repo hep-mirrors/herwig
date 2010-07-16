@@ -65,6 +65,18 @@ public:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -93,18 +105,6 @@ private:
    * In fact, it should not even be implemented.
    */
   MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &);
-
-private:
-
-  /**
-   *  Maximum flavour of the quarks involved 
-   */
-  unsigned int _maxflavour;
-
-  /**
-   *  Minimum flavour of the quarks involved 
-   */
-  unsigned int _minflavour;
 
 };
 

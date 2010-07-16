@@ -12,7 +12,7 @@
 // This is the declaration of the RSModelFFGRVertex class.
 
 #include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "RSModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -34,7 +34,7 @@ public:
   /**
    * Default constructor.
    */
-  inline RSModelFFGRVertex();
+  RSModelFFGRVertex();
   //@}
   
 public:
@@ -93,7 +93,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
     
 private:
   
@@ -106,16 +106,11 @@ private:
    * Private and non-existent assignment operator.
    */
   RSModelFFGRVertex & operator=(const RSModelFFGRVertex &);
-  
-  /**
-   * Pointer to the model object.
-   */
-  tcSMPtr _theModel;
 
   /**
    * The coupling.
    */
-  InvEnergy _theKappa;
+  InvEnergy kappa_;
 
 };
 }

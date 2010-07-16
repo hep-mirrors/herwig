@@ -1,0 +1,98 @@
+##################################################
+# Common setup for Randall-Sundrum models
+#
+# See LHC-ADD.in or ILC-ADD.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-ADD.in
+###################################################
+# library
+library HwADDModel.so
+###################################################
+#
+#  Particle Data object for the Graviton
+#
+###################################################
+cd /Herwig/Particles
+create /ThePEG/ParticleData Graviton
+setup Graviton 39 Graviton 0.0 0.0 0.0 0.0 0 0 5 0
+create Herwig::GravitonMassGenerator /Herwig/Masses/GravitonMassGenerator
+set /Herwig/Masses/GravitonMassGenerator:Particle Graviton
+set Graviton:Mass_generator /Herwig/Masses/GravitonMassGenerator
+set Graviton:WidthLoCut 0.
+set Graviton:WidthUpCut 1e10
+# ensure mass isn't messed with by the shower
+insert /Herwig/Shower/KinematicsReconstructor:NoRescale 0 /Herwig/Particles/Graviton
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/ADD
+cd /Herwig/NewPhysics/ADD
+create Herwig::ADDModel Model
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create ADD model vertices
+mkdir /Herwig/Vertices/ADD
+cd /Herwig/Vertices/ADD
+library HwADDModel.so
+create Herwig::ADDModelFFGRVertex ADD_FFGRVertex
+create Herwig::ADDModelFFGGRVertex ADD_FFGGRVertex
+create Herwig::ADDModelFFWGRVertex ADD_FFWGRVertex
+create Herwig::ADDModelSSGRVertex ADD_SSGRVertex
+create Herwig::ADDModelVVGRVertex ADD_VVGRVertex
+create Herwig::ADDModelGGGGRVertex ADD_WWWGRVertex
+create Herwig::ADDModelGGGGRVertex ADD_GGGGRVertex
+cd /Herwig/NewPhysics/ADD
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# ADD model vertices
+set Model:Vertex/FFGR  /Herwig/Vertices/ADD/ADD_FFGRVertex
+set Model:Vertex/FFGGR /Herwig/Vertices/ADD/ADD_FFGGRVertex
+set Model:Vertex/FFWGR /Herwig/Vertices/ADD/ADD_FFWGRVertex
+set Model:Vertex/SSGR  /Herwig/Vertices/ADD/ADD_SSGRVertex
+set Model:Vertex/VVGR  /Herwig/Vertices/ADD/ADD_VVGRVertex
+set Model:Vertex/WWWGR /Herwig/Vertices/ADD/ADD_WWWGRVertex
+set Model:Vertex/GGGGR /Herwig/Vertices/ADD/ADD_GGGGRVertex
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+
+###################################################
+# Set up the model framework
+###################################################
+set ADD/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose ADD over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/ADD/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/ADD/Model

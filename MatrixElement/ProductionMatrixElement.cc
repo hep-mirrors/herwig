@@ -16,18 +16,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
-
-NoPIOClassDescription<ProductionMatrixElement> 
-ProductionMatrixElement::initProductionMatrixElement;
-// Definition of the static class description member.
-    
-void ProductionMatrixElement::Init() {
-  
-  static ClassDocumentation<ProductionMatrixElement> documentation
-    ("The ProductionMatrixElement class is designed to store the "
-     "matrix element for a hard interaction.");
-  
-}
   
 // calculate a decay matrix for one of the incoming particles
 RhoDMatrix ProductionMatrixElement::
@@ -114,5 +102,56 @@ calculateRhoMatrix(int id,const RhoDMatrix & rhoin0,
   // normalise the matrix so it has unit trace
   output.normalize();
   // return the answer
+  return output;
+}
+
+double ProductionMatrixElement::average() const {
+  double output(0.);
+  for(unsigned int ix=0;ix<_matrixelement.size();++ix) {
+    output += norm(_matrixelement[ix]);
+  }
+  return output;
+}
+ 
+double ProductionMatrixElement::average(const RhoDMatrix & in1, 
+					const RhoDMatrix & in2) const {
+  Complex output(0.);
+  for( int ihel1=0;ihel1<int(_inspin[0]);++ihel1) {
+    for( int ihel2=0;ihel2<int(_inspin[1]);++ihel2) {
+      int loc1 = ihel1*_constants[1] + ihel2*_constants[2];
+      for( int jhel1=0;jhel1<int(_inspin[0]);++jhel1) {
+	for( int jhel2=0;jhel2<int(_inspin[1]);++jhel2) {
+	  int loc2 = jhel1*_constants[1] + jhel2*_constants[2];
+	  Complex fact = in1(ihel1,jhel1)*in2(ihel2,jhel2);
+	  for(int ohel=0;ohel<_constants[2];++ohel) {
+	    output += fact
+	      *_matrixelement[loc1+ohel]*conj(_matrixelement[loc2+ohel]);
+	  }
+	}
+      }
+    }
+  }
+  return real(output);
+}
+
+Complex ProductionMatrixElement::average(const ProductionMatrixElement & me2,
+					 const RhoDMatrix & in1, 
+					 const RhoDMatrix & in2) const {
+  Complex output(0.);
+  for( int ihel1=0;ihel1<int(_inspin[0]);++ihel1) {
+    for( int ihel2=0;ihel2<int(_inspin[1]);++ihel2) {
+      int loc1 = ihel1*_constants[1] + ihel2*_constants[2];
+      for( int jhel1=0;jhel1<int(_inspin[0]);++jhel1) {
+	for( int jhel2=0;jhel2<int(_inspin[1]);++jhel2) {
+	  int loc2 = jhel1*_constants[1] + jhel2*_constants[2];
+	  Complex fact = in1(ihel1,jhel1)*in2(ihel2,jhel2);
+	  for(int ohel=0;ohel<_constants[2];++ohel) {
+	    output += fact
+	      *_matrixelement[loc1+ohel]*conj(me2._matrixelement[loc2+ohel]);
+	  }
+	}
+      }
+    }
+  }
   return output;
 }

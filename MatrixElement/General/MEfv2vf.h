@@ -56,16 +56,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -90,7 +80,8 @@ private:
   ProductionMatrixElement
   fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
 	    const VBVector & vecOut, bool mc,
-	    const SpinorBarVector & spbOut, double & mesq) const;
+	    const SpinorBarVector & spbOut, 
+	    double & mesq, bool first) const;
 
   /**
    * Calculate the matrix element for an incoming anti-fermion
@@ -104,7 +95,8 @@ private:
   ProductionMatrixElement
   fbv2vfbHeME(const SpinorBarVector & spbIn,  const VBVector & vecIn, 
 	      const VBVector & vecOut, bool mc,
-	      const SpinorVector & spOut, double & mesq) const;
+	      const SpinorVector & spOut, 
+	      double & mesq, bool first) const;
   //@}
 
 protected:
@@ -153,6 +145,13 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
   //@}
 
 protected:
@@ -193,12 +192,12 @@ private:
   /**
    * A pair off FFVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * A pair of FFVVertex, VVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
     //@}
 
 };

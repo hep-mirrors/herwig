@@ -134,8 +134,7 @@ protected:
   double WWME(vector<SpinorWaveFunction>    & f1,
 	      vector<SpinorBarWaveFunction> & a1,
 	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
+	      vector<VectorWaveFunction>    & v2) const;
 
   /**
    * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
@@ -148,8 +147,7 @@ protected:
   double ZZME(vector<SpinorWaveFunction>    & f1,
 	      vector<SpinorBarWaveFunction> & a1,
 	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
+	      vector<VectorWaveFunction>    & v2) const;
 
 protected:
 

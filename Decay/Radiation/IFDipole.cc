@@ -508,24 +508,20 @@ double IFDipole::photon(double beta1,double ombeta1)
 double IFDipole::meWeight(ParticleVector children)
 {
   unsigned int spin = children[_map[0]]->dataPtr()->iSpin();
-  Energy2 pik   ;
-  Energy2 pjk   ;
-  Energy2 pipj  ;
-  Energy magpi ;
   double mewgt = 1.0;
   double beta1=sqrt( (_qnewprf[_map[0]].e()+_m[_map[0]+1])
                     *(_qnewprf[_map[0]].e()-_m[_map[0]+1]))
                    /_qnewprf[_map[0]].e();
   double ombeta1=sqr(_m[_map[0]+1]/_qnewprf[_map[0]].e())/(1.+beta1);
-  double opbc  ;
-  double ombc  ;
-  InvEnergy2 dipole;
   // option which does nothing
   if(_betaopt==0){mewgt=1.;}
   // collinear approx
   else if(_betaopt==1||_betaopt==2||_betaopt==3)
     {
+      double ombc;
+      InvEnergy2 dipole;
       for(unsigned int i=0;i<_multiplicity;++i) {
+	double opbc;
         if(_cosphot[i]<0.0)
           { opbc=ombeta1+beta1*sqr(_sinphot[i])/(1.-_cosphot[i]); }
         // if cos is greater than zero use result accurate as cos->-1
@@ -539,30 +535,31 @@ double IFDipole::meWeight(ParticleVector children)
           { ombc=1.-beta1*_cosphot[i]; }
         if(((_qnewprf[_map[0]].z()>ZERO)&&(_qprf[_map[0]].z()<ZERO))||
            ((_qnewprf[_map[0]].z()<ZERO)&&(_qprf[_map[0]].z()>ZERO))) {
-          pik    = _qnewprf[_map[0]].e()*_lprf[i].e()*opbc;
           dipole = sqr(beta1*_sinphot[i]/(opbc*_lprf[i].e()));
         } else {
-          pik    = _qnewprf[_map[0]].e()*_lprf[i].e()*ombc;
           dipole = sqr(beta1*_sinphot[i]/(ombc*_lprf[i].e()));
 	}
-  // here "dipole" is the exact dipole function divided by alpha/4pi^2.
-        pjk  = _m[0]*_lprf[i].e()                ;
-        pipj = _m[0]*_qnewprf[_map[0]].e()       ;
-        magpi= sqrt( sqr(_qnewprf[_map[0]].x())
-                   + sqr(_qnewprf[_map[0]].y())
-	           + sqr(_qnewprf[_map[0]].z())
-                   );
-        pik  = _qnewprf[_map[0]].e()*_lprf[i].e()
-	     - _qnewprf[_map[0]].x()*_lprf[i].x()
-             - _qnewprf[_map[0]].y()*_lprf[i].y()
-	     - _qnewprf[_map[0]].z()*_lprf[i].z();
-
+	// here "dipole" is the exact dipole function divided by alpha/4pi^2.
 
         if(spin==2) {
+	  Energy magpi= sqrt( sqr(_qnewprf[_map[0]].x())
+			      + sqr(_qnewprf[_map[0]].y())
+			      + sqr(_qnewprf[_map[0]].z())
+			      );
+
 	  mewgt += sqr(_lprf[i].e())*_qnewprf[_map[0]].e()*ombc
 	         / (sqr(magpi*_sinphot[i])*(_qnewprf[_map[0]].e()+_lprf[i].e()));
         }
         else if(spin==3) {
+	  Energy2 pik  = _qnewprf[_map[0]].e()*_lprf[i].e()
+	               - _qnewprf[_map[0]].x()*_lprf[i].x()
+                       - _qnewprf[_map[0]].y()*_lprf[i].y()
+	               - _qnewprf[_map[0]].z()*_lprf[i].z();
+
+	  Energy2 pjk = _m[0]*_lprf[i].e();
+
+	  Energy2 pipj = _m[0]*_qnewprf[_map[0]].e();
+
           mewgt += (2.*pjk*pipj/(pik*sqr(pipj+pjk))
 		   +2.*pjk/(pik*(pipj+pik))
 	           )/dipole;

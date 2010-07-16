@@ -71,7 +71,7 @@ double TSSDecayer::me2(const int , const Particle & inpart,
 			incoming,true,false);
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::
-	constructSpinInfo(decay[0],outgoing,true);
+	constructSpinInfo(decay[ix],outgoing,true);
     return 0.;
   }
   ScalarWaveFunction sca1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);

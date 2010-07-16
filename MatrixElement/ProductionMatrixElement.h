@@ -33,7 +33,7 @@ using namespace ThePEG;
  *  \author Peter Richardson
  */
 
-class ProductionMatrixElement: public Base {  
+class ProductionMatrixElement {  
       
 public:
 
@@ -535,6 +535,24 @@ public:
   RhoDMatrix calculateRhoMatrix(int,const RhoDMatrix &,
                                 const RhoDMatrix &,
 				const vector<RhoDMatrix> &) const;
+
+  /**
+   *  Compute the spin averaged matrix element
+   */
+  double average() const;
+
+  /**
+   *  Compute the spin average matrix element
+   */
+  double average(const RhoDMatrix & in1, 
+		 const RhoDMatrix & in2) const;
+
+  /**
+   *  Compute the spin average matrix element
+   */
+  Complex average(const ProductionMatrixElement & me2,
+		  const RhoDMatrix & in1, 
+		  const RhoDMatrix & in2) const;
   
 public:
 
@@ -548,25 +566,11 @@ public:
     _matrixelement = x._matrixelement;
     _constants     = x._constants;
   }
-
-public:
   
   /**
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-  
-private:
-  
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<ProductionMatrixElement> initProductionMatrixElement;
-  
-  /**
-   * Private and non-existent assignment operator.
-   */
-  ProductionMatrixElement & operator=(const ProductionMatrixElement& );
   
 private:
   

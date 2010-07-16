@@ -115,11 +115,11 @@ void MEPP2Higgs::doinit() {
   _mh = h0->mass();
   _wh = h0->generateWidth(_mh);
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(h0->massGenerator());
   }
   if(shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEPP2Higgs::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << "the mass generator must be an instance of the GenericMassGenerator class"
     << Exception::runerror;
 }
 
@@ -176,7 +176,7 @@ CrossSection MEPP2Higgs::dSigHatDR() const {
       (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
   }
   else {
-    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
+    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()));
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
   return UnitRemoval::InvE2 * sqr(hbarc) * cs;

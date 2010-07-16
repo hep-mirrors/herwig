@@ -80,13 +80,13 @@ public:
   /**
    * The default constructor.
    */
-  inline TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
+  TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
 
   /**
    * Function used to determine allowed decaymodes
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const PDVector & part);
+  virtual void DecayList(const set<PDPtr> & part);
 
   /**
    * Number of outgoing lines. Required for correct ordering.

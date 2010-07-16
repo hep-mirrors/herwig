@@ -18,6 +18,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
@@ -72,11 +73,11 @@ struct ColourSingletShower {
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _reconopt << ounit(_minQ,GeV);
+  os << _reconopt << ounit(_minQ,GeV) << _noRescale << _noRescaleVector;
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _reconopt >> iunit(_minQ,GeV);  
+  is >> _reconopt >> iunit(_minQ,GeV) >> _noRescale >> _noRescaleVector;  
 }
 
 ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
@@ -110,6 +111,16 @@ void QTildeReconstructor::Init() {
      &QTildeReconstructor::_minQ, GeV, 0.001*GeV, 1e-6*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
+  static RefVector<QTildeReconstructor,ParticleData> interfaceNoRescale
+    ("NoRescale",
+     "Particles which shouldn't be rescaled to be on shell by the shower",
+     &QTildeReconstructor::_noRescaleVector, -1, false, false, true, false, false);
+
+}
+
+void QTildeReconstructor::doinit() {
+  KinematicsReconstructor::doinit();
+  _noRescale = set<cPDPtr>(_noRescaleVector.begin(),_noRescaleVector.end());
 }
 
 bool QTildeReconstructor::
@@ -150,7 +161,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
       Energy dm = particleJetParent->data().constituentMass();
       if (abs(dm-particleJetParent->momentum().m())>0.001*MeV
 	  &&particleJetParent->dataPtr()->stable()
-	  &&particleJetParent->id()!=ParticleID::gamma) {
+	  &&particleJetParent->id()!=ParticleID::gamma
+	  &&_noRescale.find(particleJetParent->dataPtr())==_noRescale.end()) {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
 	if(dm>dum.e()) throw KinematicsReconstructionVeto();
 	dum.setMass(dm); 
@@ -899,7 +911,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-  double sinth(sqr(axis.x())+sqr(axis.y()));
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());

@@ -21,6 +21,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -196,6 +197,10 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
   // me to be returned
   ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,
 				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement gamma (PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement Zboson(PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
   // wavefunctions for the intermediate particles
   VectorWaveFunction interZ,interG;
   // temporary storage of the different diagrams
@@ -218,18 +223,31 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
 	  diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
 					  interG);
 	  // add up squares of individual terms
-	  total[1] += real(diag1*conj(diag1));
-	  total[2] += real(diag2*conj(diag2));
+	  total[1] += norm(diag1);
+	  Zboson(inhel1,inhel2,outhel1,outhel2) = diag1;
+	  total[2] += norm(diag2);
+	  gamma (inhel1,inhel2,outhel1,outhel2) = diag2;
 	  // the full thing including interference
-	  diag1+=diag2;
-	  total[0] += real(diag1*conj(diag1));
+	  diag1 += diag2;
+	  total[0] += norm(diag1);
 	  output(inhel1,inhel2,outhel1,outhel2)=diag1;
 	}
       }
     }
   }
+  for(int ix=0;ix<3;++ix) total[ix] *= 0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    total[0] = output.average(rho[0],rho[1]);
+    total[1] = Zboson.average(rho[0],rho[1]);
+    total[2] = gamma .average(rho[0],rho[1]);
+  }
   // results
-  for(int ix=0;ix<3;++ix){total[ix]*=0.75;}
+  for(int ix=0;ix<3;++ix) total[ix]*= 3.;
   cont = total[2];
   BW   = total[1];
   me   = total[0];
@@ -279,13 +297,18 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
   // set the matrix element for the vertex
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix)
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<4;++ix) {
+    tSpinfoPtr spin = dynamic_ptr_cast<tSpinfoPtr>(hard[ix]->spinInfo());
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->setProductionVertex(hardvertex);
+  }
 }
 
-void MEee2gZ2qq::rebind(const TranslationMap & trans)
-  {
-  // dummy = trans.translate(dummy);
+void MEee2gZ2qq::rebind(const TranslationMap & trans) {
   _theFFZVertex = trans.translate(_theFFZVertex);
   _theFFPVertex = trans.translate(_theFFPVertex);
   _Z0           = trans.translate(_Z0);

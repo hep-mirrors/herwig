@@ -30,6 +30,9 @@ class LEPJetAnalysis: public AnalysisHandler {
 
 public:
 
+  /// Default constructor
+  LEPJetAnalysis() : _nevent() {}
+
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**

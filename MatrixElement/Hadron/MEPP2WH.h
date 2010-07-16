@@ -79,6 +79,18 @@ protected:
   virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -96,19 +108,9 @@ private:
 private:
 
   /**
-   *  Switches to control the particles in the hard process
-   */
-  //@{
-  /**
-   *  The allowed flavours of the incoming quarks
-   */
-  unsigned int _maxflavour;
-
-  /**
    *  Which intermediate \f$W^\pm\f$ bosons to include
    */
   unsigned int _plusminus;
-  //@}
 
 };
 

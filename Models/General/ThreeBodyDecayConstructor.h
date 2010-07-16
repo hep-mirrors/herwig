@@ -60,7 +60,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor() : 
+  ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
     _minReleaseFraction(1e-3) {}
 
@@ -69,7 +69,7 @@ public:
    * in derived class.
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part);
+  virtual void DecayList(const set<PDPtr> & part);
 
   /**
    * Number of outgoing lines. Required for correct ordering.

@@ -5,7 +5,7 @@
 #ifndef HERWIG_HardProcessConstructor_FH
 #define HERWIG_HardProcessConstructor_FH
 
-#include "ThePEG/Config/Pointers.h"
+#include "ThePEG/Config/ThePEG.h"
 
 namespace Herwig {
 
