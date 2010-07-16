@@ -13,5 +13,7 @@ MEff2sv.cc MEff2sv.h \
 MEvv2vv.cc MEvv2vv.h \
 MEff2tv.cc MEff2tv.h \
 MEvv2tv.cc MEvv2tv.h \
-MEfv2tf.cc MEfv2tf.h 
-
+MEfv2tf.cc MEfv2tf.h \
+GeneralfftoVH.cc GeneralfftoVH.h GeneralfftoVH.fh\
+GeneralfftoffH.cc GeneralfftoffH.h GeneralfftoffH.fh\
+GeneralQQHiggs.cc GeneralQQHiggs.h GeneralQQHiggs.fh

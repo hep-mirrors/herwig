@@ -1,41 +1,36 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEPP2HiggsVBF_H
-#define HERWIG_MEPP2HiggsVBF_H
+#ifndef HERWIG_QQHiggsProcessConstructor_H
+#define HERWIG_QQHiggsProcessConstructor_H
 //
-// This is the declaration of the MEPP2HiggsVBF class.
+// This is the declaration of the QQHiggsProcessConstructor class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoffH.h"
+#include "HardProcessConstructor.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEPP2HiggsVBF class provides the matrix elements for the
- * production of the Higgs boson via the vector boson fusion mechanism
- * in hadron collisions
+ * Here is the documentation of the QQHiggsProcessConstructor class.
  *
- * @see \ref MEPP2HiggsVBFInterfaces "The interfaces"
- * defined for MEPP2HiggsVBF.
+ * @see \ref QQHiggsProcessConstructorInterfaces "The interfaces"
+ * defined for QQHiggsProcessConstructor.
  */
-class MEPP2HiggsVBF: public MEfftoffH {
+class QQHiggsProcessConstructor: public HardProcessConstructor {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEPP2HiggsVBF();
-
-  /** @name Virtual functions required by the MEBase class. */
-  //@{
+  QQHiggsProcessConstructor();
 
   /**
-   * Add all possible diagrams with the add() function.
+   * Main function called to start constructing the diagrams for 
+   * the 2->2 process
    */
-  virtual void getDiagrams() const;
-  //@}
+  void constructDiagrams();
 
 public:
 
@@ -65,31 +60,19 @@ public:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -98,14 +81,35 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEPP2HiggsVBF> initMEPP2HiggsVBF;
+  static ClassDescription<QQHiggsProcessConstructor> initQQHiggsProcessConstructor;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &);
+  QQHiggsProcessConstructor & operator=(const QQHiggsProcessConstructor &);
 
+private:
+
+  /**
+   * Which partonic processes to include 
+   */
+  unsigned int _process;
+
+  /**
+   *  Which outgoing quark flavours to include
+   */
+  unsigned int _quarkFlavour;
+
+  /**
+   *  The outgoing higgs bosons
+   */
+  PDVector _higgs;
+
+  /**
+   *  Treatment of the Higgs width
+   */
+  unsigned int _shapeOpt;
 };
 
 }
@@ -117,32 +121,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEPP2HiggsVBF. */
+ *  base classes of QQHiggsProcessConstructor. */
 template <>
-struct BaseClassTrait<Herwig::MEPP2HiggsVBF,1> {
-  /** Typedef of the first base class of MEPP2HiggsVBF. */
-  typedef Herwig::MEfftoffH NthBase;
+struct BaseClassTrait<Herwig::QQHiggsProcessConstructor,1> {
+  /** Typedef of the first base class of QQHiggsProcessConstructor. */
+  typedef Herwig::HardProcessConstructor NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEPP2HiggsVBF class and the shared object where it is defined. */
+ *  the QQHiggsProcessConstructor class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEPP2HiggsVBF>
-  : public ClassTraitsBase<Herwig::MEPP2HiggsVBF> {
+struct ClassTraits<Herwig::QQHiggsProcessConstructor>
+  : public ClassTraitsBase<Herwig::QQHiggsProcessConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2HiggsVBF"; }
+  static string className() { return "Herwig::QQHiggsProcessConstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEPP2HiggsVBF is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2HiggsVBF depends on other classes (base classes
+   * QQHiggsProcessConstructor is implemented. It may also include several, space-separated,
+   * libraries if the class QQHiggsProcessConstructor depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so"; }
+  static string library() { return "QQHiggsProcessConstructor.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEPP2HiggsVBF_H */
+#endif /* HERWIG_QQHiggsProcessConstructor_H */

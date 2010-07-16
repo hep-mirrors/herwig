@@ -1,0 +1,52 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+# run I coherence
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1994_S2952106
+# run I CDF multijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_S3108457
+# run I CDF multijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_S3349578
+# run I CDF 6 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1997_S3541940
+# run I CDF large total ET
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1998_S3618439
+# run I CDF di jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_S4266730
+# run I CDF di jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4517016
+# run I CDF di jet angles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_S3418421
+# run I CDF inclusive jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4563131
+# run I D0 3 and 4 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1996_S3214044
+# run I D0 dijet decorrelation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1996_S3324664
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Run-I-Jets LHCGenerator

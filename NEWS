@@ -1,5 +1,8 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+** Ticket #307: Momentum violation check in BasicConsistency
+   Added parameters AbsoluteMomentumTolerance and RelativeMomentumTolerance
+
 * Herwig++-2.4.2 release: 2009-12-11 (tagged at SVN r5022)
 
 ** Ticket #292: Tau decay numerical instability

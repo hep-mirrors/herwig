@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  MEfftoVH() : _shapeopt(2), _mh(), _wh() {}
+  MEfftoVH() : _shapeopt(2), _maxflavour(5), _mh(), _wh() {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -183,7 +183,34 @@ protected:
    *  Access to the \f$Z^0\f$ data
    */ 
   PDPtr Z0() const { return _z0; }
+
+  /**
+   *  Access to the higgs data
+   */ 
+  PDPtr higgs() const { return _higgs; }
+
+  /**
+   *  Set the higgs data
+   */ 
+  void higgs(PDPtr in) {_higgs =in;}
   //@}
+
+  /**
+   *  Set the pointer to the vector-vector-Higgs vertex
+   */
+  void setWWHVertex(AbstractVVSVertexPtr in) {
+    _vertexWWH = in;
+  }
+
+  /**
+   *  Set the line shape treatment
+   */
+  void lineShape(unsigned int in) {_shapeopt=in;}
+
+  /**
+   *  Maximum flavour of the incoming partons
+   */
+  unsigned int maxFlavour() const {return _maxflavour;}
 
 protected:
 
@@ -219,6 +246,11 @@ private:
   unsigned int _shapeopt;
 
   /**
+   *  The allowed flavours of the incoming quarks
+   */
+  unsigned int _maxflavour;
+
+  /**
    *  The intermediate vector bosons
    */
   //@{
@@ -236,6 +268,11 @@ private:
    *  \f$Z^0\f$
    */
   PDPtr _z0;
+
+  /**
+   *  The higgs bosom
+   */
+  PDPtr _higgs;
   //@}
 
   /**
@@ -272,7 +309,6 @@ private:
    *  The mass generator for the Higgs
    */
   GenericMassGeneratorPtr _hmass;
-
 
   /**
    * Matrix element for spin correlations

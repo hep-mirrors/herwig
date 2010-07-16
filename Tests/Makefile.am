@@ -92,6 +92,32 @@ test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 endif
 
+Rivet-LEP-% : Rivet/LEP-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
+Rivet-TVT-% : Rivet/TVT-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+#  Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
+#           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
+#           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
+#           Rivet-LEP-206 
+Rivet-LEP: Rivet-LEP-35
+	export DPATH=`rivet-config --datadir`; \
+	for i in LEP-*.aida; do echo $$i; \
+	rivet-rmgaps $$DPATH/ALEPH_2004_S5765862.aida $$i; done; \
+	rivet-rmgaps $$DPATH/ALEPH_1996_S3486095 LEP-91.aida
+	rm -rf Rivet-LEP
+	rivet-mkhtml --no-mc-errs -o Rivet-LEP LEP-*.aida
+
+Rivet-TVT: Rivet-TVT-Run-I-Z     Rivet-TVT-Run-I-W  Rivet-TVT-Run-II-PromptPhoton \
+           Rivet-TVT-Run-II-Z-e  Rivet-TVT-Run-II-W  Rivet-TVT-Run-II-DiPhoton \
+           Rivet-TVT-Run-II-Z-mu Rivet-TVT-Run-I-Jets Rivet-TVT-Run-II-Jets \
+           Rivet-TVT-Run-I-PromptPhoton
+	rm -rf Rivet-TVT
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*.aida
+
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
