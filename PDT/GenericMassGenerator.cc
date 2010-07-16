@@ -24,21 +24,21 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _particle
-     << ounit(_lowermass,GeV) << ounit(_uppermass,GeV) << _maxwgt 
-     << _BWshape << _ngenerate 
-     << ounit(_mass,GeV) << ounit(_width,GeV) 
-     << ounit(_mass2,GeV2) << ounit(_mwidth,GeV2) 
-     << _ninitial << _initialize << _widthgen << _widthopt;
+  os << particle_
+     << ounit(lowerMass_,GeV) << ounit(upperMass_,GeV) << maxWgt_ 
+     << BWShape_ << nGenerate_ 
+     << ounit(mass_,GeV) << ounit(width_,GeV) 
+     << ounit(mass2_,GeV2) << ounit(mWidth_,GeV2) 
+     << nInitial_ << initialize_ << widthGen_ << widthOpt_;
 }
 
 void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _particle
-     >> iunit(_lowermass,GeV) >> iunit(_uppermass,GeV) >> _maxwgt 
-     >> _BWshape >> _ngenerate 
-     >> iunit(_mass,GeV) >> iunit(_width ,GeV)
-     >> iunit(_mass2,GeV2) >> iunit(_mwidth ,GeV2)
-     >> _ninitial >> _initialize >> _widthgen >> _widthopt;
+  is >> particle_
+     >> iunit(lowerMass_,GeV) >> iunit(upperMass_,GeV) >> maxWgt_ 
+     >> BWShape_ >> nGenerate_ 
+     >> iunit(mass_,GeV) >> iunit(width_ ,GeV)
+     >> iunit(mass2_,GeV2) >> iunit(mWidth_ ,GeV2)
+     >> nInitial_ >> initialize_ >> widthGen_ >> widthOpt_;
 }
 
 ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGenerator;
@@ -62,7 +62,7 @@ void GenericMassGenerator::Init() {
   static Switch<GenericMassGenerator,bool> interfaceInitialize
     ("Initialize",
      "Initialize the calculation of the maximum weight etc",
-     &GenericMassGenerator::_initialize, false, false, false);
+     &GenericMassGenerator::initialize_, false, false, false);
   static SwitchOption interfaceInitializeInitialization
     (interfaceInitialize,
      "Yes",
@@ -77,7 +77,7 @@ void GenericMassGenerator::Init() {
   static Switch<GenericMassGenerator,int> interfaceBreitWignerShape
     ("BreitWignerShape",
      "Controls the shape of the mass distribution generated",
-     &GenericMassGenerator::_BWshape, 0, false, false);
+     &GenericMassGenerator::BWShape_, 0, false, false);
   static SwitchOption interfaceBreitWignerShapeDefault
     (interfaceBreitWignerShape,
      "Default",
@@ -102,25 +102,25 @@ void GenericMassGenerator::Init() {
   static Parameter<GenericMassGenerator,double> interfaceMaximumWeight
     ("MaximumWeight",
      "The maximum weight for the unweighting",
-     &GenericMassGenerator::_maxwgt, 1.0, 0.0, 1000.0,
+     &GenericMassGenerator::maxWgt_, 1.0, 0.0, 1000.0,
      false, false, true);
 
   static Parameter<GenericMassGenerator,int> interfaceNGenerate
     ("NGenerate",
      "The number of tries to generate the mass",
-     &GenericMassGenerator::_ngenerate, 100, 0, 10000,
+     &GenericMassGenerator::nGenerate_, 100, 0, 10000,
      false, false, true);
  
   static Parameter<GenericMassGenerator,int> interfaceNInitial
     ("NInitial",
      "Number of tries for the initialisation",
-     &GenericMassGenerator::_ninitial, 1000, 0, 100000,
+     &GenericMassGenerator::nInitial_, 1000, 0, 100000,
      false, false, true);
 
   static Switch<GenericMassGenerator,bool> interfaceWidthOption
     ("WidthOption",
      "Which width to use",
-     &GenericMassGenerator::_widthopt, false, false, false);
+     &GenericMassGenerator::widthOpt_, false, false, false);
   static SwitchOption interfaceWidthOptionNominalWidth
     (interfaceWidthOption,
      "NominalWidth",
@@ -135,54 +135,54 @@ void GenericMassGenerator::Init() {
 }
 
 bool GenericMassGenerator::accept(const ParticleData & in) const {
-  if(!_particle) return false;
-  return in.id() == _particle->id() || 
-    ( _particle->CC() && _particle->CC()->id() == in.id() );
+  if(!particle_) return false;
+  return in.id() == particle_->id() || 
+    ( particle_->CC() && particle_->CC()->id() == in.id() );
 }
 
 void GenericMassGenerator::doinit() {
   MassGenerator::doinit();
   // the width generator
-  _particle->init();
-  _widthgen=_particle->widthGenerator();
-  if(_widthgen){_widthgen->init();}
+  particle_->init();
+  widthGen_=particle_->widthGenerator();
+  if(widthGen_){widthGen_->init();}
   // local storage of particle properties for speed
-  _mass=_particle->mass();
-  _width= _widthopt ? _particle->generateWidth(_mass) : _particle->width();
-  _mass2=_mass*_mass;
-  _mwidth=_mass*_width;
-  _lowermass = _mass-_particle->widthLoCut();
-  _uppermass = _mass+_particle->widthUpCut();
+  mass_=particle_->mass();
+  width_= widthOpt_ ? particle_->generateWidth(mass_) : particle_->width();
+  mass2_=mass_*mass_;
+  mWidth_=mass_*width_;
+  lowerMass_ = mass_-particle_->widthLoCut();
+  upperMass_ = mass_+particle_->widthUpCut();
   // print out messagw if doing the initialisation
-  if(_initialize) {
+  if(initialize_) {
     // zero the maximum weight
-    _maxwgt=0.;
+    maxWgt_=0.;
     // storage of variables for the loop
     double wgt=0.,swgt=0.,sqwgt=0.;
     // perform the initialisation
-    for(int ix=0;ix<_ninitial;++ix) {
-      mass(wgt,*_particle,3);
+    for(int ix=0;ix<nInitial_;++ix) {
+      mass(wgt,*particle_,3);
       swgt  += wgt;
       sqwgt += sqr(wgt);
-      if(wgt>_maxwgt) _maxwgt=wgt;
+      if(wgt>maxWgt_) maxWgt_=wgt;
     }
-    swgt=swgt/_ninitial;
-    sqwgt=sqrt(max(0.,sqwgt/_ninitial-swgt*swgt)/_ninitial);
+    swgt=swgt/nInitial_;
+    sqwgt=sqrt(max(0.,sqwgt/nInitial_-swgt*swgt)/nInitial_);
   }
 }
   
 void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << name() << ":BreitWignerShape "   << _BWshape << "\n";
-  output << "set " << name() << ":MaximumWeight " << _maxwgt    << "\n";
-  output << "set " << name() << ":NGenerate "   << _ngenerate << "\n";
-  output << "set " << name() << ":WidthOption " << _widthopt << "\n";
-  if(header) output << "\n\" where BINARY ThePEGName=\"" 
-		    << name() << "\";" << endl;
+  output << "set " << fullName() << ":BreitWignerShape "   << BWShape_ << "\n";
+  output << "set " << fullName() << ":MaximumWeight " << maxWgt_    << "\n";
+  output << "set " << fullName() << ":NGenerate "   << nGenerate_ << "\n";
+  output << "set " << fullName() << ":WidthOption " << widthOpt_ << "\n";
+  if(header) output << "\n\" where BINARY ThePEGFullName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 void GenericMassGenerator::dofinish() {
-  if(_initialize) {
+  if(initialize_) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());
@@ -192,9 +192,9 @@ void GenericMassGenerator::dofinish() {
 }
 
 void GenericMassGenerator::setParticle(string p) {
-  if ( _particle = Repository::GetPtr<tPDPtr>(p) ) return;
-  _particle = Repository::findParticle(StringUtils::basename(p));
-  if ( ! _particle ) 
+  if ( particle_ = Repository::GetPtr<tPDPtr>(p) ) return;
+  particle_ = Repository::findParticle(StringUtils::basename(p));
+  if ( ! particle_ ) 
     Throw<InterfaceException>() 
       << "Could not set Particle interface "
       << "for the object \"" << name()
@@ -203,17 +203,17 @@ void GenericMassGenerator::setParticle(string p) {
 }
 
 string GenericMassGenerator::getParticle() const {
-  return _particle ? _particle->fullName() : "";
+  return particle_ ? particle_->fullName() : "";
 }
 
 void GenericMassGenerator::rebind(const TranslationMap & trans)
   {
-  _particle = trans.translate(_particle);
+  particle_ = trans.translate(particle_);
   MassGenerator::rebind(trans);
 }
 
 IVector GenericMassGenerator::getReferences() {
   IVector ret = MassGenerator::getReferences();
-  ret.push_back(_particle);
+  ret.push_back(particle_);
   return ret;
 }

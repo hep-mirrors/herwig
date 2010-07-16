@@ -49,7 +49,7 @@ public:
   /**
    * The default constructor.
    */
-  MEff2ff() : theScaV(0), theVecV(0), theTenV(0) {}
+  MEff2ff() : scalar_(0), vector_(0), tensor_(0) {}
 
 public:
 
@@ -63,16 +63,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-  
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
 private:
@@ -92,7 +82,7 @@ private:
   ProductionMatrixElement
   ffb2ffbHeME(SpinorVector & fin, SpinorBarVector & fbin,
 	      SpinorBarVector & fbout, SpinorVector & fout,
-	      double & me2) const;
+	      double & me2, bool first) const;
 
   /**
    * Compute the matrix element for \f$\Psi\Psi\to\Psi\Psi\f$
@@ -107,7 +97,7 @@ private:
   ProductionMatrixElement
   ff2ffHeME(SpinorVector & fin, SpinorVector & fin2,
 	    SpinorBarVector & fbout, SpinorBarVector & fbout2,
-	    double & me2) const;
+	    double & me2, bool first) const;
   
   /**
    * Compute the matrix element for 
@@ -123,7 +113,7 @@ private:
   ProductionMatrixElement
   fbfb2fbfbHeME(SpinorBarVector & fbin, SpinorBarVector & fbin2,
 		SpinorVector & fout, SpinorVector & fout2,
-		double & me2) const;
+		double & me2, bool first) const;
 
   /**
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\lambda\lambda\f$
@@ -141,7 +131,7 @@ private:
   ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin, 
 	       SpinorBarVector & fbout, SpinorVector & fout,
 	       SpinorVector & fout2, SpinorBarVector & fbout2,
-	       double & me2) const;
+	       double & me2, bool first) const;
   //@}
 
   /**
@@ -195,6 +185,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -233,17 +229,17 @@ private:
   /**
    * Store the vector of FFSVertex pairs
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > theScaV;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > scalar_;
 
   /**
    * Store the vector of FFVVertex pairs
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theVecV;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > vector_;
 
   /**
    * Store the vector of FFTVertex pairs
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > theTenV;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > tensor_;
 };
 
 }

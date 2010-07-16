@@ -1233,10 +1233,16 @@ void Evolver::hardestEmission(bool hard) {
       partnerFinder()->setInitialEvolutionScales(particles,!hard,
 						 _nasontree->interaction(),true);
     // inverse reconstruction
-    ShowerHandler::currentHandler()->evolver()->showerModel()->
-      kinematicsReconstructor()->
-      deconstructHardJets(_nasontree,ShowerHandler::currentHandler()->evolver(),
-			  _nasontree->interaction());
+    if(_hardme)
+      ShowerHandler::currentHandler()->evolver()->showerModel()->
+	kinematicsReconstructor()->
+	deconstructHardJets(_nasontree,ShowerHandler::currentHandler()->evolver(),
+			    _nasontree->interaction());
+    else
+      ShowerHandler::currentHandler()->evolver()->showerModel()->
+	kinematicsReconstructor()->
+	deconstructDecayJets(_nasontree,ShowerHandler::currentHandler()->evolver(),
+			     _nasontree->interaction());
   }
   else {
     // see if there is an appropriate hard emission generator

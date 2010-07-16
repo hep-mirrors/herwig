@@ -101,7 +101,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   bool anti;
   Lorentz5Momentum lastp(parton->momentum());
   int lastID(parton->id());
-  ColinePtr cl;
   Energy oldQ(_forcedSplitScale);
   _pdf = pdf;
   //do nothing if already valence quark
@@ -132,7 +131,7 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   PPtr newSea;
   if( lastID != ParticleID::g ) {
     newSea = forceSplit(rem, -lastID, oldQ, currentx, lastp, used,content);
-    cl = new_ptr(ColourLine());
+    ColinePtr cl = new_ptr(ColourLine());
     if(newSea->id() > 0) cl->addColoured(newSea);
     else cl->addAntiColoured(newSea);
     // if a secondard scatter finished so return
@@ -522,6 +521,13 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   double phi = Constants::twopi*UseRandom::rnd();
   Energy pt=sqrt(pt2);
   Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), ZERO, ZERO);
+  Axis axis(p_ref.vect().unit());
+  if(axis.perp2()>0.) {
+    LorentzRotation rot;
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    qt.transform(rot);
+  }
   // compute alpha for previous particle
   Energy2 p_dot_n  = p_ref*n_ref;
   double lastalpha =    pf*n_ref/p_dot_n;

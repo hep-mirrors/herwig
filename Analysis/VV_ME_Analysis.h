@@ -213,6 +213,22 @@ private:
    */
   Histogram _yJet2_yVV_10_h , _yJet2_yVV_40_h , _yJet2_yVV_80_h;
 
+  // Some more interesting spin corr plots 8-|
+  // pT of hardest visible lepton
+  Histogram _pT_lepton_h;
+  // Rapidity difference between vector boson 2 (p3+p4) and lepton 2 (p4)
+  Histogram _y56_y4_10_h;
+  Histogram _y56_y4_40_h;
+  Histogram _y56_y4_80_h;
+  // Rapidity difference between hardest jet and lepton 2 (p4)
+  Histogram _yJet_y4_10_h;
+  Histogram _yJet_y4_40_h;
+  Histogram _yJet_y4_80_h;
+  // Rapidity difference between hardest jet and hardest visible lepton
+  Histogram _yJet_ylept_10_h;
+  Histogram _yJet_ylept_40_h;
+  Histogram _yJet_ylept_80_h;
+
 public:
     
   /**

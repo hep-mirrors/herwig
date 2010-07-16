@@ -12,7 +12,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Decay/Baryon/Baryon1MesonDecayerBase.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void BaryonWidthGenerator::persistentOutput(PersistentOStream & os) const {
@@ -247,4 +247,10 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   return gam*MEcoupling(imode)*MEcoupling(imode);
 }
 
+void BaryonWidthGenerator::doinit() {
+  if(initialize()) { 
+    _baryondecayers.clear();
+    _modeloc.clear();
+  }
+  GenericWidthGenerator::doinit();
 }

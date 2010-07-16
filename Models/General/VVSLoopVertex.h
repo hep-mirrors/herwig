@@ -25,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  inline VVSLoopVertex() : masses(0), type(0), couplings(0), theNpart(0) {
+  VVSLoopVertex() : masses(0), type(0), couplings(0), theNpart(0) {
     kinematics(true);
   }
 

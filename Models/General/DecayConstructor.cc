@@ -126,13 +126,15 @@ void DecayConstructor::doinit() {
 
 void DecayConstructor::createDecayers(const PDVector & particles) {
   if ( particles.empty() || _theNBodyDecayConstructors.empty() ) return;
+  // turn the vector into a set to avoid duplicates
+  set<PDPtr> particleSet(particles.begin(),particles.end());
   typedef vector<NBodyDecayConstructorBasePtr>::iterator NBDecayIterator;
   NBDecayIterator it =  _theNBodyDecayConstructors.begin();
   NBDecayIterator iend = _theNBodyDecayConstructors.end();
   for( ; it != iend; ++it ) {
     (**it).init();
     (**it).decayConstructor(this);
-    (**it).DecayList(particles);
+    (**it).DecayList(particleSet);
   }
 }
 

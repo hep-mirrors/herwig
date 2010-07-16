@@ -12,12 +12,7 @@
 // This is the declaration of the ResonantProcessConstructor class.
 //
 
-#include "ThePEG/Interface/Interfaced.h"
-#include "HPDiagram.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Handlers/SubProcessHandler.h"
-#include "ThePEG/Handlers/StandardEventHandler.h"
+#include "HardProcessConstructor.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "ResonantProcessConstructor.fh"
 
@@ -30,17 +25,14 @@ using namespace ThePEG;
  *
  * @see \ref ResonantProcessConstructorInterfaces "The interfaces"
  * defined for ResonantProcessConstructor.
- * @see Interfaced
+ * @see HardProcessConstructor
  */
-class ResonantProcessConstructor: public Interfaced {
+class ResonantProcessConstructor: public HardProcessConstructor {
 
 public:
 
   /** Set of ParticleData pointers */
   typedef set<tPDPtr> tPDSet;
-
-  /** Vector of HPDiagrams. */
-  typedef vector<HPDiagram> HPDVector;
 
   /** Nested vector of doubles. */
   typedef vector<vector<double> > CFMatrix;
@@ -53,9 +45,9 @@ public:
   /**
    * The default constructor.
    */
-  inline ResonantProcessConstructor() :
-    theIncoming(0), theIntermediates(0), theOutgoing(0), theDiagrams(0),
-    theDebug(false) {}
+  ResonantProcessConstructor() :
+    theIncoming(0), theIntermediates(0), theOutgoing(0), theDiagrams(0)
+  {}
 
 public:
 
@@ -86,7 +78,7 @@ public:
   /**
    * The main function to create the resonant diagrams
    */
-  void constructResonances() ;
+  void constructDiagrams() ;
 
 protected:
 
@@ -103,18 +95,6 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
   //@}
 
 private:
@@ -160,11 +140,6 @@ private:
    */
   string MEClassname(const tcPDVector & extpart, string & objname) const;
 
-  /**
-   * Return colour factor for given process
-   */
-  CFMatrix colourFactor(const tcPDVector & extpart) const;
-
 private:
 
   /**
@@ -195,27 +170,12 @@ private:
   /**
    * Storage for the required intermediate particles
    */
-  vector<PDPtr> theOutgoing;  
-  
-  /**
-   * A pointer to the model being used
-   */
-  HwSMPtr theModel;
+  vector<PDPtr> theOutgoing; 
 
   /**
    * Storage for the diagrams
    */
   vector<HPDiagram> theDiagrams;
-
-  /**
-   * Store a pointer to the subprocess handler
-   */
-  SubHdlPtr theSubProcess; 
-  
-  /**
-   * Whether to debug the matrix element classes or not 
-   */
-  bool theDebug;
 };
 
   /** Exception class indicating setup problem. */
@@ -235,7 +195,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::ResonantProcessConstructor,1> {
   /** Typedef of the first base class of ResonantProcessConstructor. */
-  typedef Interfaced NthBase;
+  typedef Herwig::HardProcessConstructor NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

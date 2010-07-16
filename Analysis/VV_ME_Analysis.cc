@@ -50,7 +50,25 @@ VV_ME_Analysis::VV_ME_Analysis() :
   _yJet2_10_h(-10.0,10.0,200),_yJet2_40_h(-10.0,10.0,200),
   _yJet2_80_h(-10.0,10.0,200),
   _yJet2_yVV_10_h(-10.0,10.0,200),_yJet2_yVV_40_h(-10.0,10.0,200),
-  _yJet2_yVV_80_h(-10.0,10.0,200)
+  _yJet2_yVV_80_h(-10.0,10.0,200),
+
+
+  // Some more interesting spin corr plots 8-|
+  // pT of hardest visible lepton
+  _pT_lepton_h(0.,300.,300.),
+  // Rapidity difference between vector boson 2 (p3+p4) and lepton 2 (p4)
+  _y56_y4_10_h(-5., 5.,200),
+  _y56_y4_40_h(-5., 5.,200),
+  _y56_y4_80_h(-5., 5.,200),
+  // Rapidity difference between hardest jet and lepton 2 (p4)
+  _yJet_y4_10_h(-5., 5.,200),
+  _yJet_y4_40_h(-5., 5.,200),
+  _yJet_y4_80_h(-5., 5.,200),
+  // Rapidity difference between hardest jet and hardest visible lepton
+  _yJet_ylept_10_h(-5., 5.,200),
+  _yJet_ylept_40_h(-5., 5.,200),
+  _yJet_ylept_80_h(-5., 5.,200)
+
 {}
 
 void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -138,6 +156,15 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 //     cout << "leptons[2] " << *leptons[2] << endl;
 //     cout << "leptons[3] " << *leptons[3] << endl;
 
+  // Find the hardest *visible* lepton...
+  Lorentz5Momentum plept(ZERO,ZERO,ZERO,ZERO,ZERO);
+  for(int ix=0;ix<=3;ix++) {
+    if( leptons[ix]->dataPtr()->charged()&&
+       (leptons[ix]->momentum().perp()>plept.perp()))
+      plept=leptons[ix]->momentum();
+  }
+
+
   // Get the jets ordered by their Pt (largest Pt is first).
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int jx=0; jx<partons.size();jx++) {
@@ -215,6 +242,8 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // The two vector bosons together:
   _ptVV_h.addWeighted((p34+p56).perp()/GeV,1.);
   _yVV_h.addWeighted((p34+p56).rapidity(),1.);
+  // The hardest lepton:
+  _pT_lepton_h.addWeighted(plept.perp()/GeV,1.);
   // The hardest jet stuff - pT followed by rapidity:
   if(inclusiveJets.size()>0) {
     fastjet::PseudoJet hardestJet(inclusiveJets[0]);
@@ -224,18 +253,27 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
       _yJet_yV1_10_h.addWeighted(hardestJet.rapidity()-p34.rapidity(),1.);
       _yJet_yV2_10_h.addWeighted(hardestJet.rapidity()-p56.rapidity(),1.);
       _yJet_yVV_10_h.addWeighted(hardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      _y56_y4_10_h.addWeighted(p56.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_y4_10_h.addWeighted(hardestJet.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_ylept_10_h.addWeighted(hardestJet.rapidity()-plept.rapidity(),1.);
     }
     if(hardestJet.perp()>40.) {
       _yJet_40_h.addWeighted(hardestJet.rapidity(),1.);
       _yJet_yV1_40_h.addWeighted(hardestJet.rapidity()-p34.rapidity(),1.);
       _yJet_yV2_40_h.addWeighted(hardestJet.rapidity()-p56.rapidity(),1.);
       _yJet_yVV_40_h.addWeighted(hardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      _y56_y4_40_h.addWeighted(p56.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_y4_40_h.addWeighted(hardestJet.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_ylept_40_h.addWeighted(hardestJet.rapidity()-plept.rapidity(),1.);
     } 
     if(hardestJet.perp()>80.) {
       _yJet_80_h.addWeighted(hardestJet.rapidity(),1.);
       _yJet_yV1_80_h.addWeighted(hardestJet.rapidity()-p34.rapidity(),1.);
       _yJet_yV2_80_h.addWeighted(hardestJet.rapidity()-p56.rapidity(),1.);
       _yJet_yVV_80_h.addWeighted(hardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      _y56_y4_80_h.addWeighted(p56.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_y4_80_h.addWeighted(hardestJet.rapidity()-p[offset+4].rapidity(),1.);
+      _yJet_ylept_80_h.addWeighted(hardestJet.rapidity()-plept.rapidity(),1.);
     }
     if(inclusiveJets.size()>1) {
       fastjet::PseudoJet secondhardestJet(inclusiveJets[1]);
@@ -273,11 +311,38 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 		       )/GeV,1.);
   _y3456_h.addWeighted(p3456.rapidity(),1.);
   _m3456_h.addWeighted(sqrt(p3456.m2())/GeV,1.);
-  // The theta Born variables:
-  assert(abs(inbound_.first->children()[0]->id())<7);
-  assert(abs(inbound_.second->children()[0]->id())<7);
-  Lorentz5Momentum pplus(inbound_.first->children()[0]->momentum()); 
-  Lorentz5Momentum pminus(inbound_.second->children()[0]->momentum());
+  // Now to get the theta Born variables:
+  assert(inbound_.first->children().size()>1); 
+  assert(inbound_.second->children().size()>1);  
+  tPPtr p1_parton,p2_parton;
+  if((abs(inbound_.first->children()[0]->id())<7)
+   ||(abs(inbound_.first->children()[0]->id())==21)) { 
+    p1_parton = inbound_.first->children()[0];  
+  } else if((abs(inbound_.first->children()[1]->id())<7)
+	  ||(abs(inbound_.first->children()[1]->id())==21)) { 
+    p1_parton = inbound_.first->children()[1];
+  } else {
+    throw Exception() 
+      << "VV_ME_Analysis::analyze\n"
+      << "Error: could not find the incoming +z quark/gluon" 
+      << Exception::eventerror;
+  }
+  if((abs(inbound_.second->children()[0]->id())<7)
+   ||(abs(inbound_.second->children()[0]->id())==21)) { 
+    p2_parton = inbound_.second->children()[0];  
+  } else if((abs(inbound_.second->children()[1]->id())<7) 
+	  ||(abs(inbound_.second->children()[1]->id())==21)) { 
+    p2_parton = inbound_.second->children()[1];
+  } else {
+    throw Exception() 
+      << "VV_ME_Analysis::analyze\n"
+      << "Error: could not find the incoming -z quark/gluon" 
+      << Exception::eventerror;
+  }
+  assert(p1_parton->momentum().z()>=ZERO);
+  assert(p2_parton->momentum().z()<=ZERO);
+  Lorentz5Momentum pplus(p1_parton->momentum()); 
+  Lorentz5Momentum pminus(p2_parton->momentum());
   Lorentz5Momentum p3456rest(0.*GeV,0.*GeV,0.*GeV,p3456.m(),p3456.m());
   // Boost everything to the diboson rest frame:
   pplus  = boostx(pplus , p3456, p3456rest);
@@ -622,6 +687,62 @@ void VV_ME_Analysis::dofinish() {
 
   mcfm_file.close();
   mcatnlo_file.close();
+
+  ofstream spin_file;
+  string spin_filename 
+    = generator()->filename()+string("_")+name()+string("_spin.top");
+  spin_file.open(spin_filename.c_str());
+
+  // pT of hardest visible lepton
+  _pT_lepton_h.topdrawOutput(spin_file,Frame,"RED","hard vis lepton pT Unit Area");
+  _pT_lepton_h.normaliseToCrossSection();
+  _pT_lepton_h.prefactor(_pT_lepton_h.prefactor()*1.e6);
+  _pT_lepton_h.topdrawOutput(spin_file,Frame,"RED","hard vis lepton pT cross");
+
+  // Rapidity difference between vector boson 2 (p3+p4) and lepton 2 (p4)
+  _y56_y4_10_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>10 Unit Area");
+  _y56_y4_10_h.normaliseToCrossSection();
+  _y56_y4_10_h.prefactor(_y56_y4_10_h.prefactor()*1.e6);
+  _y56_y4_10_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>10 cross");
+  _y56_y4_40_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>40 Unit Area");
+  _y56_y4_40_h.normaliseToCrossSection();
+  _y56_y4_40_h.prefactor(_y56_y4_40_h.prefactor()*1.e6);
+  _y56_y4_40_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>40 cross");
+  _y56_y4_80_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>80 Unit Area");
+  _y56_y4_80_h.normaliseToCrossSection();
+  _y56_y4_80_h.prefactor(_y56_y4_80_h.prefactor()*1.e6);
+  _y56_y4_80_h.topdrawOutput(spin_file,Frame,"RED","yV2-yl2 pT>80 cross");
+
+  // Rapidity difference between hardest jet and lepton 2 (p4)
+  _yJet_y4_10_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>10 Unit Area");
+  _yJet_y4_10_h.normaliseToCrossSection();
+  _yJet_y4_10_h.prefactor(_yJet_y4_10_h.prefactor()*1.e6);
+  _yJet_y4_10_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>10 cross");
+  _yJet_y4_40_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>40 Unit Area");
+  _yJet_y4_40_h.normaliseToCrossSection();
+  _yJet_y4_40_h.prefactor(_yJet_y4_40_h.prefactor()*1.e6);
+  _yJet_y4_40_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>40 cross");
+  _yJet_y4_80_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>80 Unit Area");
+  _yJet_y4_80_h.normaliseToCrossSection();
+  _yJet_y4_80_h.prefactor(_yJet_y4_80_h.prefactor()*1.e6);
+  _yJet_y4_80_h.topdrawOutput(spin_file,Frame,"RED","yJet-yl2 pT>80 cross");
+
+  // Rapidity difference between hardest jet and hardest visible lepton
+  _yJet_ylept_10_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>10 Unit Area");
+  _yJet_ylept_10_h.normaliseToCrossSection();
+  _yJet_ylept_10_h.prefactor(_yJet_ylept_10_h.prefactor()*1.e6);
+  _yJet_ylept_10_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>10 cross");
+  _yJet_ylept_40_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>40 Unit Area");
+  _yJet_ylept_40_h.normaliseToCrossSection();
+  _yJet_ylept_40_h.prefactor(_yJet_ylept_40_h.prefactor()*1.e6);
+  _yJet_ylept_40_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>40 cross");
+  _yJet_ylept_80_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>80 Unit Area");
+  _yJet_ylept_80_h.normaliseToCrossSection();
+  _yJet_ylept_80_h.prefactor(_yJet_ylept_80_h.prefactor()*1.e6);
+  _yJet_ylept_80_h.topdrawOutput(spin_file,Frame,"RED","yJet-ylpt pT>80 cross");
+
+  spin_file.close();
+
 }
 
 

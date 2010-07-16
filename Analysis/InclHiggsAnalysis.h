@@ -181,17 +181,17 @@ private:
   Histogram _htJetsPlusHiggs_Cut;
 
   /**
+   *   Plot for Carlo.
+   */
+  Histogram _nJets_carlo;
+
+  /**
    *   Jet rates.
    */
   Histogram _y01;
   Histogram _y12;
   Histogram _y23;
   Histogram _y34;
-
-  /**
-   *   Plot for Carlo.
-   */
-  Histogram _nJets_carlo;
 
 public:
     

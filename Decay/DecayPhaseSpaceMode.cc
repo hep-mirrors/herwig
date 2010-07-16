@@ -117,7 +117,6 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       mmin+=_extpart[ix]->massMin();
     }
     for(int ix=0;ix<_npoint;++ix) {
-      int ichan;
       // set the mass of the decaying particle
       m0 = (inpart->dataPtr())->generateMass();
       double wgt=0.;
@@ -130,7 +129,8 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	pre = prewid>ZERO ? 1./prewid : 1./MeV;
 	// generate the weight for this point
 	try {
-	  wgt = pre*weight(false,ichan,*inpart,particles,true);
+	  int dummy;
+	  wgt = pre*weight(false,dummy,*inpart,particles,true);
 	}
 	catch (Veto) {
 	  wgt=0.;

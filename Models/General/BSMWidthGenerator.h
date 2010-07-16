@@ -31,15 +31,10 @@ class BSMWidthGenerator: public GenericWidthGenerator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline BSMWidthGenerator() : theModes(0) {}
-  //@}
-
-public:
+  BSMWidthGenerator() : theModes(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{

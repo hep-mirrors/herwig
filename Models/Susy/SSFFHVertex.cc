@@ -23,9 +23,9 @@ using namespace Herwig;
 
 SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO), 
 			     theSa(0.0), theSb(0.0),
-			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
-			     theLLast(0.0), theRLast(0.0), theHLast(0), 
-			     theFLast(0), theGlast(0.), theq2last() {
+			     theCa(0.0), theCb(0.0),
+			     theFLast(make_pair(0,0)), theGlast(0.),
+			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) {
   int higgs[] = { 25, 35, 36 };
   for ( long h = 0; h < 3; ++h ) {
     //neutral higgs
@@ -44,7 +44,7 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 }
 
 void SSFFHVertex::doinit() {
-  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSFFHVertex::doinit() - The pointer to the MSSM object is null!"
@@ -63,12 +63,12 @@ void SSFFHVertex::doinit() {
 }
 
 void SSFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << thetanb << ounit(theMw,GeV) << theSa
+  os << theMSSM << thetanb << ounit(theMw,GeV) << theSa
      << theSb << theCa << theCb;
 }
 
 void SSFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> thetanb >> iunit(theMw,GeV) >> theSa
+  is >> theMSSM >> thetanb >> iunit(theMw,GeV) >> theSa
      >> theSb >> theCa >> theCb;
 }
 
@@ -94,63 +94,57 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
 	    ((f2ID > 6 && f1ID < 11) || f2ID > 16 ) ));
   if( q2 != theq2last || theGlast==0.) {
     theGlast = weakCoupling(q2);
-    theq2last = q2;
   }
-  if(higgsID == theHLast && f1ID == theFLast) {
-    norm(theGlast*theCoupLast);
-    left(theLLast);
-    right(theRLast);
-    return;
+  if( q2 != theq2last || theFLast.first  != f1ID) {
+    theMassLast.first  = theMSSM->mass(q2,particle1);
+    theFLast.first  = f1ID;
   }
-  theHLast = higgsID;
+  if( q2 != theq2last || theFLast.second != f2ID) {
+    theMassLast.second = theMSSM->mass(q2,particle2);
+    theFLast.second = f2ID;
+  }
+  theq2last = q2;
+  Complex coup(0.);
+  Complex lcoup(1.),rcoup(1.);
   if( higgsID == ParticleID::h0 || higgsID == ParticleID::H0 ||
       higgsID == ParticleID::A0 ) {
-    assert( f1ID == f2ID);
-    theFLast = f1ID;
-    theCoupLast = getParticleData(f1ID)->mass()/2./theMw;
-    
+    coup = 0.5*theMassLast.first/theMw;
     if( higgsID == ParticleID::h0 ) {
       if( f1ID % 2 == 0 )
-	theCoupLast *= -theCa/theSb;
+	coup *= -theCa/theSb;
       else
-	theCoupLast *= theSa/theCb;
-      theLLast = 1.;
-      theRLast = 1.;
+	coup *=  theSa/theCb;
     }
     else if( higgsID == ParticleID::H0 ) {
       if( f1ID % 2 == 0 )
-	theCoupLast *= -theSa/theSb;
+	coup *= -theSa/theSb;
       else
-	theCoupLast *= -theCa/theCb;
-      theLLast = 1.;
-      theRLast = 1.;
+	coup *= -theCa/theCb;
     }
     else {
       if( f1ID % 2 == 0 )
-	theCoupLast /= thetanb; 
+	coup /= thetanb; 
       else
-	theCoupLast *= thetanb;
-      theCoupLast *= Complex(0.,1.);
-      theLLast = 1.;
-      theRLast = -1.;
+	coup *= thetanb;
+      coup *= Complex(0.,1.);
+      rcoup = -1.;
     }
   }
   //H+
   else {
-    if( f1ID % 2 != 0 ) swap(f1ID, f2ID);
-    theFLast = f1ID;
-    theCoupLast = 1./sqrt(2);
-    theLLast = getParticleData(f1ID)->mass()/thetanb/theMw;
-    theRLast = getParticleData(f2ID)->mass()*thetanb/theMw;
-    if( higgsID < 0 ) {
-      Complex tmp = theLLast;
-      theLLast = conj(theRLast);
-      theRLast = conj(tmp);
+    if( f1ID % 2 == 0 ) {
+      lcoup = theMassLast.first /thetanb/theMw;
+      rcoup = theMassLast.second*thetanb/theMw;
     }
+    else {
+      lcoup = theMassLast.second/thetanb/theMw;
+      rcoup = theMassLast.first *thetanb/theMw;
+    }
+    coup = sqrt(0.5);
+    if( higgsID < 0 ) swap(lcoup,rcoup);
   }
-  norm(theGlast*theCoupLast);
-  left(theLLast);
-  right(theRLast);
-
+  norm(theGlast*coup);
+  left (lcoup);
+  right(rcoup);
 }
 

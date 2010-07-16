@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwADDModel class.
+//
+#ifndef HERWIG_HwADDModel_FH
+#define HERWIG_HwADDModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ADDModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ADDModel,HwADDPtr);
+
+}
+
+#endif

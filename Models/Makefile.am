@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED Transplanckian
+SUBDIRS = RSModel  StandardModel General Susy UED Transplanckian ADD AnomalousCouplings

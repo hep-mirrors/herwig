@@ -9,7 +9,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/SMHiggsMassGenerator.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  MEfftoffH() : _shapeopt(2), _process(0), 
+  MEfftoffH() : _shapeopt(2), _maxflavour(5), _minflavour(1), _process(0), 
 		_mh(), _wh(), _swap(false) {}
   
   /** @name Virtual functions required by the MEBase class. */
@@ -179,7 +179,29 @@ protected:
    *  Access to the \f$Z^0\f$ data
    */ 
   PDPtr Z0() const {return _z0;}
+
+  /**
+   *  Access to the Higgs boson
+   */
+  PDPtr higgs() const {return _higgs;}
+
+  /**
+   *  Set the Higgs boson
+   */
+  void higgs(PDPtr in) {_higgs=in;}
   //@}
+
+  /**
+   *  Set the pointer to the vector-vector-Higgs vertex
+   */
+  void setWWHVertex(AbstractVVSVertexPtr in) {
+    _vertexWWH = in;
+  }
+
+  /**
+   *  Set the line shape treatment
+   */
+  void lineShape(unsigned int in) {_shapeopt=in;}
 
   /**
    *  Which process to generate
@@ -190,6 +212,21 @@ protected:
    *  Whether momenta are swapped
    */
   bool swapOrder() {return _swap;}
+
+  /**
+   *  Which process to generate
+   */
+  void process(unsigned int in) {_process = in;}
+
+  /**
+   *  Maximum flavour of the incoming partons
+   */
+  unsigned int maxFlavour() const {return _maxflavour;}
+
+  /**
+   *  Minimum flavour of the incoming partons
+   */
+  unsigned int minFlavour() const {return _minflavour;}
 
 protected:
 
@@ -225,6 +262,16 @@ private:
   unsigned int _shapeopt;
 
   /**
+   *  Maximum flavour of the quarks involved 
+   */
+  unsigned int _maxflavour;
+
+  /**
+   *  Minimum flavour of the quarks involved 
+   */
+  unsigned int _minflavour;
+
+  /**
    *  Whether to include $WW$ and $ZZ$ processes or both
    */
   unsigned int _process;
@@ -247,6 +294,11 @@ private:
    *  \f$Z^0\f$
    */
   PDPtr _z0;
+
+  /**
+   *  Higgs boson
+   */
+  PDPtr _higgs;
   //@}
 
   /**
@@ -282,7 +334,7 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  GenericMassGeneratorPtr _hmass;
 
 
   /**

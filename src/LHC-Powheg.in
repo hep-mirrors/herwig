@@ -32,6 +32,10 @@ set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2
 ##################################################
 cd /Herwig/Shower
 set Evolver:HardEmissionMode POWHEG
+# create and use the VV hard emission generator
+create Herwig::VVHardGenerator VVHardGenerator HwPowhegShower.so
+set VVHardGenerator:ShowerAlpha AlphaQCD
+insert Evolver:HardGenerator 0 VVHardGenerator
 
 ##################################################
 # LHC physics parameters (override defaults here) 
@@ -49,7 +53,7 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
 
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
+# insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
 # higgs + W (N.B. if considering all W decay modes useful to set )
@@ -62,6 +66,36 @@ insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 # gg/qqbar -> Higgs
 # insert SimpleQCD:MatrixElements[0] PowhegMEHiggs
+# Diboson production
+insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
+# N.B. VVHardGenerator currently doesn't support
+# photon radiation in vector boson decays if spin
+# correlations are to be included.
+set /Herwig/Decays/ZDecayer:PhotonGenerator NULL
+set /Herwig/Decays/WDecayer:PhotonGenerator NULL
+# N.B. Event generation time can be greatly 
+# reduced by fixing the vector bosons to be
+# on-shell. Also, W+/-Z and W+W- production
+# mass windows on the bosons must be such 
+# that the pole in the propagator of s-channel
+# contributions is not exposed: pV1^2 + pV2^2 > mW^2.
+# set PowhegMEPP2VV:MassOption OnMassShell
+# 60 < mZ < 110 GeV
+set /Herwig/Particles/Z0:WidthLoCut   31.188*GeV
+set /Herwig/Particles/Z0:WidthUpCut   18.812*GeV
+# 60 < mW+/mW- < 110 GeV
+set /Herwig/Particles/W+:WidthLoCut   20.419*GeV
+set /Herwig/Particles/W+:WidthUpCut   29.581*GeV
+set /Herwig/Particles/W-:WidthLoCut   20.419*GeV
+set /Herwig/Particles/W-:WidthUpCut   29.581*GeV
+# W+ W-
+set PowhegMEPP2VV:Process WW
+# W+ Z
+# set PowhegMEPP2VV:Process WpZ
+# W- Z
+# set PowhegMEPP2VV:Process WmZ
+# Z Z
+# set PowhegMEPP2VV:Process ZZ
 
 cd /Herwig/Generators
 ##################################################
@@ -69,6 +103,8 @@ cd /Herwig/Generators
 ##################################################
 # analysis of W/Z events
 # insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
+# analysis of parton level, leptonic, VV events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/VV
 
 ##################################################
 #  Useful analysis handlers for HepMC related output

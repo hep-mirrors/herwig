@@ -18,6 +18,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -166,11 +167,15 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
   // scale
   Energy2 mb2(scale());
   // matrix element to be stored
-  ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
-				PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement menew (PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement gamma (PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement Zboson(PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
   // which intermediates to include
-  bool gamma = _gammaZ==0 || _gammaZ==1;
-  bool Z0    = _gammaZ==0 || _gammaZ==2;
+  bool gam = _gammaZ==0 || _gammaZ==1;
+  bool Z0  = _gammaZ==0 || _gammaZ==2;
   // declare the variables we need
   VectorWaveFunction inter[2];
   double me[3]={0.,0.,0.};
@@ -181,7 +186,7 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
   for(lhel1=0;lhel1<2;++lhel1) {
     for(lhel2=0;lhel2<2;++lhel2) {
       // intermediate for photon
-      if(gamma) inter[0]=_theFFPVertex->evaluate(mb2,1,_gamma,f1[lhel1],a1[lhel2]);
+      if(gam) inter[0]=_theFFPVertex->evaluate(mb2,1,_gamma,f1[lhel1],a1[lhel2]);
       // intermediate for Z
       if(Z0)    inter[1]=_theFFZVertex->evaluate(mb2,1,_z0   ,f1[lhel1],a1[lhel2]);
       for(qhel1=0;qhel1<2;++qhel1) {
@@ -193,18 +198,20 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
 	  if(!lorder) swap(hel[0],hel[2]);
 	  if(!qorder) swap(hel[1],hel[3]);
 	  // first the photon exchange diagram
-	  diag1 = gamma ?
+	  diag1 = gam ?
 	    _theFFPVertex->evaluate(mb2,f2[qhel1],a2[qhel2],inter[0]) : 0.;
 	  // then the Z exchange diagram
 	  diag2 = Z0 ?
 	    _theFFZVertex->evaluate(mb2,f2[qhel1],a2[qhel2],inter[1]) : 0.;
 	  // add up squares of individual terms
 	  me[1] += norm(diag1);
+	  gamma (hel[0],hel[1],hel[2],hel[3]) = diag1;
 	  me[2] += norm(diag2);
+	  Zboson(hel[0],hel[1],hel[2],hel[3]) = diag2;
 	  // the full thing including interference
 	  diag1 += diag2;
 	  me[0] += norm(diag1);
-	  if(calc) menew(hel[0],hel[1],hel[2],hel[3]) = diag1;
+	  menew(hel[0],hel[1],hel[2],hel[3]) = diag1;
 	}
       }
     }
@@ -213,6 +220,16 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
   double colspin = 0.25;
   // results
   for(int ix=0;ix<3;++ix) me[ix] *= colspin;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me[0] = menew .average(rho[0],rho[1]);
+    me[1] = gamma .average(rho[0],rho[1]);
+    me[2] = Zboson.average(rho[0],rho[1]);
+  }
   DVector save;
   save.push_back(me[1]);
   save.push_back(me[2]);
@@ -299,7 +316,13 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    spin[ix]->setProductionVertex(hardvertex);
+    tSpinfoPtr spin = dynamic_ptr_cast<tSpinfoPtr>(hard[ix]->spinInfo());
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->setProductionVertex(hardvertex);
   }
 }
 

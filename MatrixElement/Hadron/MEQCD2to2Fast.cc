@@ -204,7 +204,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1,antiquark[ix],2,gluon,-15)));
     }
     // processes involving two quark lines
-    for(unsigned int iy=0;iy<_maxflavour;++iy) {
+    for(unsigned int iy=ix;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
       if(_process==0||_process==6) {
 	// gluon t-channel
@@ -225,6 +225,8 @@ void MEQCD2to2Fast::getDiagrams() const {
 	  add(new_ptr((Tree2toNDiagram(3),antiquark[ix],gluon,antiquark[iy],
 		       2,antiquark[ix],1,antiquark[iy],-19)));
       }
+    }
+    for(unsigned int iy=0;iy<_maxflavour;++iy) {
       // q qbar -> q qbar
       if(_process==0||_process==8) {
 	// gluon s-channel

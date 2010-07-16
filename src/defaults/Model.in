@@ -43,16 +43,22 @@ read StandardModelVertices.in
 mkdir /Herwig/NewPhysics
 cd /Herwig/NewPhysics
 create Herwig::ModelGenerator NewModel
-create Herwig::HardProcessConstructor HPConstructor
 create Herwig::ResonantProcessConstructor ResConstructor
+create Herwig::TwoToTwoProcessConstructor HPConstructor
+create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
+create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
+create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
 create Herwig::DecayConstructor DecayConstructor
 set DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 
-set NewModel:HardProcessConstructor HPConstructor
+insert NewModel:HardProcessConstructors[0] HPConstructor
+insert NewModel:HardProcessConstructors[1] ResConstructor
+insert NewModel:HardProcessConstructors[2] HVConstructor
+insert NewModel:HardProcessConstructors[3] HiggsVBFConstructor
+insert NewModel:HardProcessConstructors[4] QQHiggsConstructor
 set NewModel:DecayConstructor DecayConstructor
-set NewModel:ResonantProcessConstructor ResConstructor
 insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
 insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
 

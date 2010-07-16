@@ -5,8 +5,16 @@ DecayConstructor.cc DecayConstructor.h DecayConstructor.fh  \
 NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \
 NBodyDecayConstructorBase.fh \
 TwoBodyDecayConstructor.cc TwoBodyDecayConstructor.h \
+TwoToTwoProcessConstructor.h TwoToTwoProcessConstructor.fh \
+TwoToTwoProcessConstructor.cc \
 HardProcessConstructor.h HardProcessConstructor.fh \
 HardProcessConstructor.cc \
+HiggsVectorBosonProcessConstructor.h \
+HiggsVectorBosonProcessConstructor.cc \
+HiggsVBFProcessConstructor.h \
+HiggsVBFProcessConstructor.cc \
+QQHiggsProcessConstructor.h \
+QQHiggsProcessConstructor.cc \
 HPDiagram.h \
 ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
 WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \

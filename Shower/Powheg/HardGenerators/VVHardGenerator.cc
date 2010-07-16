@@ -221,7 +221,7 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
 	  children_.push_back(outgoing[ix]);
 	else
 	  photons_.push_back(outgoing[ix]);
-      };
+      }
     assert(children_.size()==4);
     if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
       swap(children_[0],children_[2]);

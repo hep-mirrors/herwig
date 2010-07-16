@@ -170,8 +170,7 @@ void debuggingMatrixElement(bool BGF,
 }
 }
 
-MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1),
-				 comptonWeight_(8.), BGFWeight_(30.), 
+MEPP2HiggsVBF::MEPP2HiggsVBF() : comptonWeight_(8.), BGFWeight_(30.), 
 				 pTmin_(1.*GeV),initial_(10.),final_(8.),
 				 procProb_(0.5), comptonInt_(0.), bgfInt_(0.),
 				 nover_(0),maxwgt_(make_pair(0.,0.))
@@ -185,6 +184,17 @@ void MEPP2HiggsVBF::doinit() {
   comptonInt_ = 2.*(-21./20.-6./(5.*r5)*ath+sqr(Constants::pi)/3.
 		    -2.*Math::ReLi2(1.-darg)-2.*Math::ReLi2(1.-1./darg));
   bgfInt_ = 121./9.-56./r5*ath;
+  // get the vertex pointers from the SM object
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  if(!hwsm)
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEPP2HiggsVBF::doinit() the Herwig++"
+			  << " version must be used" 
+			  << Exception::runerror;
+  // set the vertex
+  setWWHVertex(hwsm->vertexWWH());
+  higgs(getParticleData(ParticleID::h0));
+  MEfftoffH::doinit();
 }
 
 void MEPP2HiggsVBF::dofinish() {
@@ -203,34 +213,32 @@ void MEPP2HiggsVBF::getDiagrams() const {
     q   [ix] = getParticleData(ix+1);
     qbar[ix] = q[ix]->CC();
   }
-  // and the higgs
-  tcPDPtr higgs(getParticleData(ParticleID::h0));
   // WW processes
   if(process()==0||process()==1) {
     std::vector<pair<tcPDPtr,tcPDPtr> > parentpair;
     parentpair.reserve(6);
     // don't even think of putting 'break' in here!
-    switch(_maxflavour) {
+    switch(maxFlavour()) {
     case 5:
-      if (_minflavour<=4)
+      if (minFlavour()<=4)
       parentpair.push_back(make_pair(getParticleData(ParticleID::b),
 				     getParticleData(ParticleID::c)));
-      if (_minflavour<=2)
+      if (minFlavour()<=2)
       parentpair.push_back(make_pair(getParticleData(ParticleID::b),
 				     getParticleData(ParticleID::u)));
     case 4:
-      if (_minflavour<=3)
+      if (minFlavour()<=3)
       parentpair.push_back(make_pair(getParticleData(ParticleID::s),
 				     getParticleData(ParticleID::c)));
-      if (_minflavour<=1)
+      if (minFlavour()<=1)
       parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 				     getParticleData(ParticleID::c)));
     case 3:
-      if (_minflavour<=2)
+      if (minFlavour()<=2)
       parentpair.push_back(make_pair(getParticleData(ParticleID::s),
 				     getParticleData(ParticleID::u)));
     case 2:
-      if (_minflavour<=1)
+      if (minFlavour()<=1)
       parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 				     getParticleData(ParticleID::u)));
     default:
@@ -242,66 +250,66 @@ void MEPP2HiggsVBF::getDiagrams() const {
 	if(parentpair[ix].first->id()<parentpair[iy].second->id()) {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first, WMinus(), WPlus(), 
 		       parentpair[iy].second, 1, parentpair[ix].second, 4, 
-		       parentpair[iy].first, 2, higgs,-1)));
+		       parentpair[iy].first, 2, higgs(),-1)));
 	}
 	else {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[iy].second, WPlus(), WMinus(), 
 		       parentpair[ix].first, 1, parentpair[iy].first, 4,
-		       parentpair[ix].second, 2, higgs,-1)));
+		       parentpair[ix].second, 2, higgs(),-1)));
 	}
 	// q1 qbar2 -> q1' qbar2' h
 	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first, WMinus(), WPlus(), 
 		     parentpair[iy].first->CC(), 1,
 		     parentpair[ix].second, 4, parentpair[iy].second->CC(),
-		     2, higgs,-1)));
+		     2, higgs(),-1)));
 	add(new_ptr((Tree2toNDiagram(4),parentpair[iy].second, WPlus(), WMinus(),
 		     parentpair[ix].second->CC(), 1, parentpair[iy].first,
 		     4, parentpair[ix].first->CC(), 
-		     2, higgs,-1)));
+		     2, higgs(),-1)));
 	// qbar1 qbar2 -> qbar1' qbar2' h
 	if(parentpair[ix].first->id()<parentpair[ix].second->id()) {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first->CC(), WPlus(), WMinus(), 
 		       parentpair[iy].second->CC(), 1,
 		       parentpair[ix].second->CC(), 4, parentpair[iy].first->CC(),
-		       2, higgs,-1))); 
+		       2, higgs(),-1))); 
 	}
 	else {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[iy].second->CC(), WMinus(), WPlus(),
 		       parentpair[ix].first->CC(), 1, 
 		       parentpair[iy].first->CC(), 4, parentpair[ix].second->CC(),
-		       2, higgs,-1))); 
+		       2, higgs(),-1))); 
 	}
       }
     }
   }
   // ZZ processes
   if(process()==0||process()==2) {
-    for(unsigned int ix=_minflavour-1;ix<_maxflavour;++ix) {
-      for(unsigned int iy=ix;iy<_maxflavour;++iy) {
+    for(unsigned int ix=minFlavour()-1;ix<maxFlavour();++ix) {
+      for(unsigned int iy=ix;iy<maxFlavour();++iy) {
 	// q    q    -> q    q    H
 	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), q[iy], 
-		     1, q[ix], 4, q[iy], 2, higgs,-2))); 
+		     1, q[ix], 4, q[iy], 2, higgs(),-2))); 
 	// qbar qbar -> qbar qbar H
 	add(new_ptr((Tree2toNDiagram(4), qbar[ix], Z0(), Z0(), qbar[iy], 
-		     1, qbar[ix], 4, qbar[iy], 2, higgs,-2)));
+		     1, qbar[ix], 4, qbar[iy], 2, higgs(),-2)));
       }
       // q    qbar -> q    qbar H
-      for(unsigned int iy=_minflavour-1;iy<_maxflavour;++iy) {
+      for(unsigned int iy=minFlavour()-1;iy<maxFlavour();++iy) {
 	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), qbar[iy], 
-		     1, q[ix], 4, qbar[iy], 2, higgs,-2))); 
+		     1, q[ix], 4, qbar[iy], 2, higgs(),-2))); 
       }
     }
   }
 }
 
 void MEPP2HiggsVBF::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _minflavour << initial_ << final_
+  os << initial_ << final_
      << alpha_ << ounit(pTmin_,GeV) << comptonWeight_ << BGFWeight_ << gluon_
      << comptonInt_ << bgfInt_ << procProb_;
 }
 
 void MEPP2HiggsVBF::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _minflavour >> initial_ >> final_
+  is >> initial_ >> final_
      >> alpha_ >> iunit(pTmin_,GeV) >> comptonWeight_ >> BGFWeight_ >> gluon_
      >> comptonInt_ >> bgfInt_ >> procProb_;
 }
@@ -313,19 +321,6 @@ void MEPP2HiggsVBF::Init() {
 
   static ClassDocumentation<MEPP2HiggsVBF> documentation
     ("The MEPP2HiggsVBF class implements Higgs production via vector-boson fusion");
-
-  static Parameter<MEPP2HiggsVBF,unsigned int> interfaceMaxFlavour
-    ( "MaxFlavour",
-      "The heaviest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2HiggsVBF::_maxflavour, 5, 0, 5, false, false, true);
-
-  static Parameter<MEPP2HiggsVBF,unsigned int> interfaceMinFlavour
-    ( "MinFlavour",
-      "The lightest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2HiggsVBF::_minflavour, 1, 1, 5, false, false, true);
-
   static Reference<MEPP2HiggsVBF,ShowerAlpha> interfaceShowerAlphaQCD
     ("ShowerAlphaQCD",
      "The object calculating the strong coupling constant",

@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -296,7 +296,7 @@ protected:
    * @param bv The boost
    * @param parent The parent of the chain
    */
-  inline void boostChain(tPPtr p, const LorentzRotation & bv, tPPtr & parent) const;
+  void boostChain(tPPtr p, const LorentzRotation & bv, tPPtr & parent) const;
 
   /**
    * Given a 5-momentum and a scale factor, the method returns the
@@ -313,8 +313,8 @@ protected:
    * Compute boost parameter along z axis to get (Ep, any perp, qp)
    * from (E, same perp, q).
    */
-  inline double getBeta(const double E, const double q, 
-			const double Ep, const double qp) const
+  double getBeta(const double E, const double q, 
+		 const double Ep, const double qp) const
   {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
   //@}
 
@@ -419,13 +419,25 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -469,6 +481,18 @@ private:
    *  Current ShowerTree
    */
   mutable tShowerTreePtr _currentTree;
+
+  /**
+   * Particles which shouldn't have their masses rescaled as
+   * vector for the interface
+   */
+  PDVector _noRescaleVector;
+
+  /**
+   * Particles which shouldn't have their masses rescaled as
+   * set for quick access
+   */
+  set<cPDPtr> _noRescale;
 };
 
 }

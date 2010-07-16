@@ -131,9 +131,8 @@ void ThreeBodyDecayConstructor::Init() {
      false, false, Interface::limited);
 }
 
-void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
-  unsigned int np = particles.size();
-  if( np == 0 ) return;
+void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
+  if( particles.empty() ) return;
   // cast the StandardModel to the Hw++ one to get the vertices
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
   model->init();
@@ -141,8 +140,9 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
   // make sure vertices are initialized
   for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the decayers
-  for(unsigned int ip = 0; ip < np; ++ip) {
-    tPDPtr parent = particles[ip];
+  for(set<PDPtr>::const_iterator ip=particles.begin();
+      ip!=particles.end();++ip) {
+    tPDPtr parent = *ip;
     // create the prototype 1->2 decays which will be turned into
     // 1 -> 3 decays
     vector<TwoBodyPrototype> prototypes;
@@ -178,7 +178,7 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
     // now we have the potential diagrams we need to do some sorting
     // into decay modes
     vector< vector<TBDiagram> > modes;
-    Energy min = particles[ip]->mass();
+    Energy min = parent->mass();
     bool possibleOnShell(false);
     for(vector<TBDiagram>::const_iterator dit = diagrams.begin();
 	dit != diagrams.end(); ++dit) {
@@ -212,9 +212,9 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 	   abs(dit->outgoingPair.first)==ParticleID::Wplus))) continue;
       // remove processes where one of the outgoing particles has the 
       //same id as the incoming particles
-      if(abs(particles[ip]->id()) == abs(dit->outgoing           ) ||
-	 abs(particles[ip]->id()) == abs(dit->outgoingPair.first ) ||
-	 abs(particles[ip]->id()) == abs(dit->outgoingPair.second) ) continue;
+      if(abs(parent->id()) == abs(dit->outgoing           ) ||
+	 abs(parent->id()) == abs(dit->outgoingPair.first ) ||
+	 abs(parent->id()) == abs(dit->outgoingPair.second) ) continue;
       // if needed remove intermediate diagrams where intermediate can be
       // on shell
       Energy mint = dit->intermediate->mass();

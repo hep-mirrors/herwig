@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void RSModelFFGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << ounit(_theKappa,InvGeV);
+  os << ounit(kappa_,InvGeV);
 }
 
 void RSModelFFGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> iunit(_theKappa,InvGeV);
+  is >> iunit(kappa_,InvGeV);
 }
 
 ClassDescription<RSModelFFGRVertex> RSModelFFGRVertex::initRSModelFFGRVertex;
@@ -38,22 +38,24 @@ void RSModelFFGRVertex::Init() {
 }
   
 void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-  norm(Complex(_theKappa * UnitRemoval::E));
+  norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-RSModelFFGRVertex::RSModelFFGRVertex() {
+RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) {
   // PDG codes for the particles
   // the quarks
   for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
   // the leptons
   for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
-  _theKappa=InvEnergy();
 }
 
 void RSModelFFGRVertex::doinit() {
   FFTVertex::doinit();
-  _theModel = generator()->standardModel();
-  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
-  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
-  else{throw InitException();}
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  if(!hwRS)
+    throw Exception() << "Must have RSModel in RSModelFFGRVertex::doinit()"
+		      << Exception::runerror;
+  kappa_=2./hwRS->lambda_pi();
+  orderInGem(1);
+  orderInGs (0);
 }

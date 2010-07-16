@@ -70,9 +70,7 @@ void ScalarMassGenerator::Init() {
 
 void ScalarMassGenerator::dataBaseOutput(ofstream & output,bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
-  output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
-  output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
+  GenericMassGenerator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_coupling.size();++ix)
     output << "insert " << fullName() << ":Coupling " 
 	   << ix << " " << _coupling[ix]/GeV << "\n";
@@ -82,5 +80,85 @@ void ScalarMassGenerator::dataBaseOutput(ofstream & output,bool header) {
   for(unsigned int ix=0;ix<_mass2.size();++ix)
     output << "insert " << fullName() 
 	   << ":Mass2 " << ix << " " << _mass2[ix]/GeV << "\n";
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}
+
+void ScalarMassGenerator::doinit() {
+  if(_coupling.size()!=_mass1.size()||
+     _coupling.size()!=_mass2.size()) 
+    throw InitException() << "Parameter vectors have inconsistent sizes in "
+			  << "ScalarMassGenerator::doinit()"
+			  << Exception::runerror;
+  // initialise the local variables
+  for(unsigned int ix=0;ix<_mass1.size();++ix) {
+    _m2plus .push_back(sqr(_mass1[ix]+_mass2[ix]));
+    _m2minus.push_back(sqr(_mass1[ix]-_mass2[ix]));
+  }
+  // rest of the initialisation is handled in the base class
+  GenericMassGenerator::doinit();
+}
+
+double ScalarMassGenerator::weight(Energy q,int shape) const {
+  useMe();
+  Energy2 q2    = sqr(q);
+  Energy2 mass2 = sqr(nominalMass());
+  Energy2 mwidth= nominalMass()*nominalWidth();
+  Energy2 gamma[2]={0.*MeV2,ZERO};
+  if(shape==1) {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (mass2-_m2plus[ix])*(mass2-_m2minus[ix])/sqr(mass2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda)*q/nominalMass();
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda)*q/nominalMass();
+    }
+  }
+  else {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (q2-_m2plus[ix])*(q2-_m2minus[ix])/sqr(q2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda);
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda);
+    }
+  }
+  Energy2 numer(ZERO);
+  if(shape==2)      numer = nominalMass()*gamma[0]/q;
+  else if(shape==3) numer = nominalMass()*nominalWidth();
+  else              numer = gamma[0];
+  complex<Energy2> denom = (shape==2) ?
+    mass2 - q2 +mass2/q2*complex<Energy2>(gamma[1],-gamma[0]) :
+    mass2 - q2 +complex<Energy2>(gamma[1],-gamma[0]); 
+  // complex denominantor
+  Energy4 den = real(denom*conj(denom));
+  return numer/den*(sqr(mass2-q2)+sqr(mwidth))/Constants::pi/mwidth;
+}
+
+InvEnergy2 ScalarMassGenerator::BreitWignerWeight(Energy q, int shape) const {
+  useMe();
+  Energy2 q2    = sqr(q);
+  Energy2 mass2 = sqr(nominalMass());
+  Energy2 mwidth= nominalMass()*nominalWidth();
+  Energy2 gamma[2]={0.*MeV2,ZERO};
+  if(shape==1) {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (mass2-_m2plus[ix])*(mass2-_m2minus[ix])/sqr(mass2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda)*q/nominalMass();
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda)*q/nominalMass();
+    }
+  }
+  else {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (q2-_m2plus[ix])*(q2-_m2minus[ix])/sqr(q2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda);
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda);
+    }
+  }
+  Energy2 numer(ZERO);
+  if(shape==2)      numer = nominalMass()*gamma[0]/q;
+  else if(shape==3) numer = nominalMass()*nominalWidth();
+  else              numer = gamma[0];
+  complex<Energy2> denom = (shape==2) ?
+    mass2 - q2 +mass2/q2*complex<Energy2>(gamma[1],-gamma[0]) :
+    mass2 - q2 +complex<Energy2>(gamma[1],-gamma[0]); 
+  // complex denominantor
+  Energy4 den = real(denom*conj(denom));
+  return numer/den/Constants::pi;
 }

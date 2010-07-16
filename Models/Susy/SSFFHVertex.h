@@ -113,6 +113,11 @@ private:
 private:
 
   /**
+   * Pointer to the SM object.
+   */
+  tcMSSMPtr theMSSM;
+
+  /**
    * The value of \f$\tan\beta\f$.
    */
   double thetanb;
@@ -145,32 +150,12 @@ private:
   /**
    * The value of \f$\cos\beta\f$ 
    */
-  double theCb;  
-  
-  /**
-   * The value of the coupling when it was last evaluated.
-   */
-  Complex theCoupLast;
-
-  /**
-   * The value of the left-coupling when it was last evaluated.
-   */
-  Complex theLLast;
-  
-  /**
-   * The value of the right-coupling when it was last evaluated.
-   */
-  Complex theRLast;
-
-  /**
-   * The ID of the last higgs for which the vertex was evaluated
-   */
-  long theHLast;
+  double theCb; 
 
   /**
    * The ID of the last fermion for which the vertex was evaluated
    */
-  long theFLast;
+  pair<long,long> theFLast;
     
   /**
    * The value of \f$ \frac{e}{\sin\theta_W} \f$ when it was last evaluated.
@@ -181,6 +166,11 @@ private:
    * The scale at which then coupling was last evaluated. 
    */
   Energy2 theq2last;
+
+  /**
+   *  Values of the masses
+   */
+  pair<Energy,Energy> theMassLast;
 };
 }
 

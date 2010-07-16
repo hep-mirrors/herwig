@@ -40,7 +40,7 @@ public:
   /**
    * Default constructor.
    */
-  DecayMatrixElement() {}
+  DecayMatrixElement() : _nout(999) {}
 
   /** 
    * Constructor for two body decay.

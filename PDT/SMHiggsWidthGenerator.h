@@ -37,7 +37,11 @@ public:
   /**
    * The default constructor.
    */
-  inline SMHiggsWidthGenerator();
+  SMHiggsWidthGenerator() 
+    : _widthopt(2), _offshell(10.), _mw(ZERO),_mz(ZERO),_gamw(ZERO),
+      _gamz(ZERO),_qmass(7,ZERO),_lmass(3,ZERO),
+      _sw2(0.), _ca(0.), _cf(0.),_qlast(ZERO)
+  {}
 
   /** @name Virtual functions to be overridden from based class */
   //@{
@@ -111,13 +115,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -308,7 +312,5 @@ struct ClassTraits<Herwig::SMHiggsWidthGenerator>
 /** @endcond */
 
 }
-
-#include "SMHiggsWidthGenerator.icc"
 
 #endif /* HERWIG_SMHiggsWidthGenerator_H */

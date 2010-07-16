@@ -250,7 +250,6 @@ protected:
   virtual void dofinish();
   //@}
 
-
 protected:
 
   /** @name Clone Methods. */
@@ -281,18 +280,6 @@ private:
    * In fact, it should not even be implemented.
    */
   MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &);
-
-private:
-
-  /**
-   *  Maximum flavour of the quarks involved 
-   */
-  unsigned int _maxflavour;
-
-  /**
-   *  Minimum flavour of the quarks involved 
-   */
-  unsigned int _minflavour;
 
 private:
 

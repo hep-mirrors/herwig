@@ -15,9 +15,11 @@
 using namespace Herwig;
 
 bool WeakBHadronSelector::check(const Particle & p) const {
-  unsigned int id=abs(p.id());
+  long id = abs(p.id());
   if (!( ( id > 510 && id < 532 ) || ( id > 5121 && id < 5555 ) ) )
     return false; 
+  if ( p.children().size()==1 && abs(p.children()[0]->id()) == id )
+    return false;
   switch(id)
     {
     case  511: // B0
