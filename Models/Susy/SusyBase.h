@@ -164,6 +164,20 @@ public:
   }
 
   /**
+   *  Pointer to the chargino-chargino-Z vertex
+   */
+  virtual tAbstractFFVVertexPtr vertexCCZ() const {
+    return theCCZVertex;
+  }
+
+  /**
+   *  Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
+   */
+  virtual tAbstractFFSVertexPtr vertexCFSF() const {
+    return theCFSFVertex;
+  }
+
+  /**
    *  Pointer to the fermion-sfermion-neutralino vertex
    */
   virtual tAbstractFFSVertexPtr vertexNFSF() const {
