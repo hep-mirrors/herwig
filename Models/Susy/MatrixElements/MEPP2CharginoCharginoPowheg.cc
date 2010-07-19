@@ -231,7 +231,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 // 		      getParticleData(2000000+abs(mePartonData()[0]->id())-1)};
 
   tcPDPtr squark[2] = {getParticleData(1000000+abs(mePartonData()[0]->id())),
- 		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
+		       getParticleData(2000000+abs(mePartonData()[0]->id()))};
 
   // conjugate spinors for t-channel exchange diagram
   vector<SpinorWaveFunction> sbaroutconj;
@@ -263,8 +263,9 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
 	  // s-channel
-	  diag[0] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interZ);
-	  diag[1] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interP);
+ 	  diag[0] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interZ);
+	  if(spout[of1].particle()->id()==-sbarout[of2].particle()->id())
+	    diag[1] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interP);
 	  // t-channel squark exchanges	  
 // 	  for(unsigned int iq=0;iq<2;++iq) {
 // 	    // 1st t-channel
