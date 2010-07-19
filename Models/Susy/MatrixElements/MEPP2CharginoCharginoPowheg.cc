@@ -32,6 +32,7 @@ void MEPP2CharginoCharginoPowheg::doinit() {
   NLODrellYanBase::doinit();
   // get the photon and Z ParticleData objects
   Z0_    = getParticleData(ThePEG::ParticleID::Z0);
+  gamma_ = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
   tcSusyBasePtr hwsm=ThePEG::dynamic_ptr_cast<tcSusyBasePtr>(standardModel());
   if(!hwsm)
@@ -40,16 +41,17 @@ void MEPP2CharginoCharginoPowheg::doinit() {
 			  << Exception::abortnow;
   // do the initialisation (see Herwig::SusyBase Class)
   FFZVertex_ = hwsm->vertexFFZ();
+  FFPVertex_ = hwsm->vertexFFP();
   FFGVertex_ = hwsm->vertexFFG();
-  NNZVertex_ = hwsm->vertexNNZ();
-  NFSVertex_ = hwsm->vertexNFSF();
+  CCZVertex_ = hwsm->vertexCCZ();
+  CFSVertex_ = hwsm->vertexCFSF();
 }
 
 Selector<const ColourLines *>
 MEPP2CharginoCharginoPowheg::colourGeometries(tcDiagPtr diag) const {
   static const ColourLines c1("1 -2"), c2("1 2 -3");
   Selector<const ColourLines *> sel;
-  if(abs(diag->id())==1)
+  if(abs(diag->id())==1 || abs(diag->id())==2)
     sel.insert(1.0, &c1);
   else
     sel.insert(1.0, &c2);
@@ -58,29 +60,44 @@ MEPP2CharginoCharginoPowheg::colourGeometries(tcDiagPtr diag) const {
 
 void MEPP2CharginoCharginoPowheg::getDiagrams() const {
   // loop over the processes we need
-  tcPDPtr chi[4] = {getParticleData(1000022),getParticleData(1000023),
-		    getParticleData(1000025),getParticleData(1000035)};
+  tcPDPtr chi[2] = {getParticleData(1000024),getParticleData(1000037)};
+  tcPDPtr chib[2];
+  //  tcPDPtr uq, uqb, uqL, uqR, dq, dqb, dqL, dqR;
+  for(unsigned int ix=0;ix<2;++ix)
+    chib[ix] = chi[ix]->CC();
   for(int i = 1; i <= maxFlavour_; ++i) {
     tcPDPtr q  = getParticleData(i);
     tcPDPtr qb = q->CC();
     tcPDPtr qL = getParticleData(1000000+i);
     tcPDPtr qR = getParticleData(2000000+i);
-    for(int c1=0;c1<4;++c1) {
-      for(int c2=0;c2<=c1;++c2) {
-	if(process_==0 || process_ == 4*c2+c1+1) {
-	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   ,
-		       3, chi[c1], 3, chi[c2], -1)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
-		       1, chi[c1], 3, chi[c2], -2)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
-		       1, chi[c1], 3, chi[c2], -3)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
-		       3, chi[c1], 1, chi[c2], -4)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
-		       3, chi[c1], 1, chi[c2], -5)));
+//     if(q->positive()){
+//       uq  = q;
+//       uqb = uq->CC();
+//       uqL = getParticleData(1000000+i);
+//       uqR = getParticleData(2000000+i);
+//     }
+//     else{
+//       dq  = q;
+//       dqb = dq->CC();
+//       dqL = getParticleData(1000000+i);
+//       dqR = getParticleData(2000000+i);
+//     }
 
-	  //cout << c1 << " " << c2 << " " << 4*c2+c1+1 << endl;
-
+    for(unsigned int ix=0;ix<2;++ix){
+      for(unsigned int jx=0;jx<2;++jx){
+	if(process_==0 || process_==2*jx+ix+1){
+	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_,
+		       3, chi[ix], 3, chib[jx], -1)));
+	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_,
+		       3, chi[ix], 3, chib[jx], -2)));
+	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
+		       1, chi[ix], 3, chib[jx], -3)));
+	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
+		       1, chi[ix], 3, chib[jx], -4)));
+	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
+		       3, chi[ix], 1, chib[jx], -5)));
+	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
+		       3, chi[ix], 1, chib[jx], -6)));
 	}
       }
     }
@@ -104,13 +121,13 @@ IBPtr MEPP2CharginoCharginoPowheg::fullclone() const {
 }
 
 void MEPP2CharginoCharginoPowheg::persistentOutput(PersistentOStream & os) const {
-  os << FFZVertex_ << FFGVertex_ << NNZVertex_ << NFSVertex_
-     << Z0_ << process_ << maxFlavour_;
+  os << FFZVertex_ << FFPVertex_ << FFGVertex_ << CCZVertex_ << CFSVertex_
+     << Z0_ << gamma_ << process_ << maxFlavour_;
 }
 
 void MEPP2CharginoCharginoPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> FFZVertex_ >> FFGVertex_ >> NNZVertex_ >> NFSVertex_
-     >> Z0_ >> process_ >> maxFlavour_;
+  is >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ >> CCZVertex_ >> CFSVertex_
+     >> Z0_ >> gamma_ >> process_ >> maxFlavour_;
 }
 
 ClassDescription<MEPP2CharginoCharginoPowheg> 
@@ -121,8 +138,8 @@ void MEPP2CharginoCharginoPowheg::Init() {
 
   static ClassDocumentation<MEPP2CharginoCharginoPowheg> documentation
     ("MEPP2CharginoCharginoPowheg implements the ME calculation"
-     " of the fermion-antifermion to chargino-chargino or"
-     " neutralino-neutralino hard process.");
+     " of the fermion-antifermion to chargino-chargino"
+     " hard process.");
 
 
   static Switch<MEPP2CharginoCharginoPowheg,int> interfaceProcess
@@ -133,59 +150,30 @@ void MEPP2CharginoCharginoPowheg::Init() {
     (interfaceProcess,
      "All",
      "Generate all the processes"
-     " (i.e. both chargino and neutralino pair production"
-     " of all mass eigenstates.)",
+     " (i.e. all combinations of chargino"
+     "mass eigenstate pairs.)",
      0);
-  static SwitchOption interfaceProcessNeutralino11
+  static SwitchOption interfaceProcessChargino11
     (interfaceProcess,
-     "chi01chi01",
-     "Only produce chi01, chi01 pairs.",
+     "chi+1chi-1",
+     "Only produce chi+1, chi-1 pairs.",
      1);
-  static SwitchOption interfaceProcessNeutralino12
+  static SwitchOption interfaceProcessChargino12
     (interfaceProcess,
-     "chi01chi02",
-     "Only produce chi01, chi02 pairs.",
+     "chi+1chi-2",
+     "Only produce chi+1, chi-2 pairs.",
      2);
-  static SwitchOption interfaceProcessNeutralino13
+  static SwitchOption interfaceProcessChargino21
     (interfaceProcess,
-     "chi01chi03",
-     "Only produce chi01, chi03 pairs.",
+     "chi+2chi-1",
+     "Only produce chi+2, chi-1 pairs.",
      3);
-  static SwitchOption interfaceProcessNeutralino14
+  static SwitchOption interfaceProcessChargino22
     (interfaceProcess,
-     "chi01chi04",
-     "Only produce chi01, chi04 pairs.",
+     "chi+2chi-2",
+     "Only produce chi+2, chi-2 pairs.",
      4);
-  static SwitchOption interfaceProcessNeutralino22
-    (interfaceProcess,
-     "chi02chi02",
-     "Only produce chi02, chi02 pairs.",
-     6);
-  static SwitchOption interfaceProcessNeutralino23
-    (interfaceProcess,
-     "chi02chi03",
-     "Only produce chi02, chi03 pairs.",
-     7);
-  static SwitchOption interfaceProcessNeutralino24
-    (interfaceProcess,
-     "chi02chi04",
-     "Only produce chi02, chi04 pairs.",
-     8);
-  static SwitchOption interfaceProcessNeutralino33
-    (interfaceProcess,
-     "chi03chi03",
-     "Only produce chi03, chi04 pairs.",
-     11);
-  static SwitchOption interfaceProcessNeutralino34
-    (interfaceProcess,
-     "chi03chi04",
-     "Only produce chi03, chi04 pairs.",
-     12);
-  static SwitchOption interfaceProcessNeutralino44
-    (interfaceProcess,
-     "chi04chi04",
-     "Only produce chi04, chi04 pairs.",
-     16);
+
 
   static Parameter<MEPP2CharginoCharginoPowheg,int> interfaceMaxFlavour
     ("MaxFlavour",
@@ -200,11 +188,12 @@ Selector<MEBase::DiagramIndex>
 MEPP2CharginoCharginoPowheg::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    if ( diags[i]->id() == -1 )      sel.insert(meInfo()[0], i);
-    else if ( diags[i]->id() == -2 ) sel.insert(meInfo()[1], i);
-    else if ( diags[i]->id() == -3 ) sel.insert(meInfo()[2], i);
-    else if ( diags[i]->id() == -4 ) sel.insert(meInfo()[3], i);
-    else if ( diags[i]->id() == -5 ) sel.insert(meInfo()[4], i);
+    if ( diags[i]->id() == -1)     sel.insert(meInfo()[0], i);
+    else if ( diags[i]->id() == -3 ) sel.insert(meInfo()[1], i);
+    else if ( diags[i]->id() == -4 ) sel.insert(meInfo()[2], i);
+    else if ( diags[i]->id() == -5 ) sel.insert(meInfo()[3], i);
+    else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[4], i);
+    else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[5], i);
   }
   return sel;
 }
@@ -235,8 +224,15 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   // scale for the process
   const Energy2 q2(scale());
   // squarks for the t-channel
-  tcPDPtr squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())),
-		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
+
+//   tcPDPtr squark[2];
+//   if (abs(mePartonData()[0]->id())%2==0)
+//     squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())-1),
+// 		      getParticleData(2000000+abs(mePartonData()[0]->id())-1)};
+
+  tcPDPtr squark[2] = {getParticleData(1000000+abs(mePartonData()[0]->id())),
+ 		      getParticleData(2000000+abs(mePartonData()[0]->id()))};
+
   // conjugate spinors for t-channel exchange diagram
   vector<SpinorWaveFunction> sbaroutconj;
   vector<SpinorBarWaveFunction> spoutconj;
@@ -251,36 +247,39 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 					      spout[of1].direction()));
   }
   // storage of the matrix elements for specific diagrams
-  vector<double> me(5, 0.);
+  vector<double> me(6, 0.);
   double me2(0.);
   // storage of the individual diagrams
-  vector<Complex> diag(5, 0.);
+  vector<Complex> diag(6, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
-      VectorWaveFunction interV = FFZVertex_->
+      VectorWaveFunction interZ = FFZVertex_->
 	evaluate(q2, 1, Z0_, sp[if1],sbar[if2]);
+      VectorWaveFunction interP = FFPVertex_->
+	evaluate(q2, 1, gamma_, sp[if1],sbar[if2]);
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
-	  // s-channel Z exchange
-	  diag[0] = NNZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interV);
+	  // s-channel
+	  diag[0] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interZ);
+	  diag[1] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interP);
 	  // t-channel squark exchanges	  
-	  for(unsigned int iq=0;iq<2;++iq) {
-	    // 1st t-channel
-	    ScalarWaveFunction intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
-	    diag[2*iq+1] = 
-	      NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
-	    // swapped t-channel
-	    intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-	    diag[2*iq+2] = 
-	      -NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-	  }
+// 	  for(unsigned int iq=0;iq<2;++iq) {
+// 	    // 1st t-channel
+// 	    ScalarWaveFunction intersq = CFSVertex_->
+// 	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+// 	    diag[2*iq+2] = 
+// 	      CFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+// 	    // swapped t-channel
+// 	    intersq = CFSVertex_->
+// 	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+// 	    diag[2*iq+3] = 
+// 	      -CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+// 	  }
 	  // individual diagrams
-	  for(unsigned int id=0;id<5;++id){
+	  for(unsigned int id=0;id<6;++id){
 	    me[id] += norm(diag[id]);
 	  }
 	  // sum up the matrix elements
@@ -292,13 +291,12 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
     }
   }
   if(first) {
-    DVector save(5);
-    for(DVector::size_type ix = 0; ix < 5; ++ix)
+    DVector save(6);
+    for(DVector::size_type ix = 0; ix < 6; ++ix)
       save[ix] = me[ix]/12.;
     meInfo(save);
     me_.reset(pme);
   }
-  if(mePartonData()[2]->id() == mePartonData()[3]->id()) me2 *= 0.5;
   return me2/12.;
 }
 

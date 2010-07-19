@@ -219,19 +219,24 @@ private:
   AbstractFFVVertexPtr FFZVertex_;
 
   /**
+   *  Pointer to the photon fermions vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
    *  Pointer to the gluon fermions vertex
    */
   AbstractFFVVertexPtr FFGVertex_;
 
   /**
-   *  Pointer to the neutralino Z vertex
+   *  Pointer to the chargino Z vertex
    */
-  AbstractFFVVertexPtr NNZVertex_;
+  AbstractFFVVertexPtr CCZVertex_;
 
   /**
-   *  Pointer to the fermion-sfermion-neutralino vertex
+   *  Pointer to the fermion-sfermion-chargino vertex
    */
-  AbstractFFSVertexPtr NFSVertex_;
+  AbstractFFSVertexPtr CFSVertex_;
   //@}
 
   /**
@@ -242,6 +247,10 @@ private:
    *  Pointer to the Z ParticleData object
    */
   tcPDPtr Z0_;
+  /**
+   *  Pointer to the photon ParticleData object
+   */
+  tcPDPtr gamma_;
   //@}
 
   /**
