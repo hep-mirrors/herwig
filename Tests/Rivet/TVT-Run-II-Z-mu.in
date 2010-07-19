@@ -28,7 +28,12 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8671338
 # CDF Z+b jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_S6653332
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8095620
+# CDF underlying event
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_NOTE_9351
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8349509
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7863608
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

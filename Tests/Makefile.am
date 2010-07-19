@@ -97,11 +97,11 @@ Rivet-LEP-% : Rivet/LEP-%.in
 Rivet-TVT-% : Rivet/TVT-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
-#  Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
-#           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
-#           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
-#           Rivet-LEP-206 
-Rivet-LEP: Rivet-LEP-35
+
+Rivet-LEP: Rivet-LEP-35 Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
+           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
+           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
+           Rivet-LEP-206 
 	export DPATH=`rivet-config --datadir`; \
 	for i in LEP-*.aida; do echo $$i; \
 	rivet-rmgaps $$DPATH/ALEPH_2004_S5765862.aida $$i; done; \
@@ -109,13 +109,46 @@ Rivet-LEP: Rivet-LEP-35
 	rm -rf Rivet-LEP
 	rivet-mkhtml --no-mc-errs -o Rivet-LEP LEP-*.aida
 
-Rivet-TVT: Rivet-TVT-Run-I-Z     Rivet-TVT-Run-I-W  Rivet-TVT-Run-II-PromptPhoton \
-           Rivet-TVT-Run-II-Z-e  Rivet-TVT-Run-II-W  Rivet-TVT-Run-II-DiPhoton \
-           Rivet-TVT-Run-II-Z-mu Rivet-TVT-Run-I-Jets Rivet-TVT-Run-II-Jets \
-           Rivet-TVT-Run-I-PromptPhoton
-	rm -rf Rivet-TVT
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*.aida
+#           Rivet-TVT-Run-I-Jets 
+#  Rivet-TVT-Run-II-UE 
 
+Rivet-TVT-UE: Rivet-TVT-630-UE Rivet-TVT-Run-I-UE
+	rm -rf Rivet-TVT-UE
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*-UE*.aida
+
+Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Run-I-Powheg-Z \
+              Rivet-TVT-Run-I-W     Rivet-TVT-Run-I-Powheg-W \
+              Rivet-TVT-Run-II-Z-e  Rivet-TVT-Run-II-Powheg-Z-e  \
+              Rivet-TVT-Run-II-Z-mu Rivet-TVT-Run-II-Powheg-Z-mu \
+              Rivet-TVT-Run-II-W    Rivet-TVT-Run-II-Powheg-W \
+	export DPATH=`rivet-config --datadir`; \ 
+	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Z-e.aida; \
+	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Powheg-Z-e.aida; 
+	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets.aida
+	rm -rf Rivet-TVT-WZ
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*-{W,Z}.aida
+
+Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton \
+                  Rivet-TVT-Run-I-PromptPhoton Rivet-TVT-Run-II-PromptPhoton
+	rm -rf Rivet-TVT-WZ
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*Photon.aida
+
+Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
+                 Rivet-TVT-Run-II-Jets-3 Rivet-TVT-Run-II-Jets-4 \
+                 Rivet-TVT-Run-II-Jets-5
+	export DPATH=`rivet-config --datadir`; \ 
+	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets-4.aida	
+	rm -rf Rivet-TVT-Jets
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT-*-Jets-?.aida
+
+Rivet-Star: Rivet/Star.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,Star.in)) -N $${NUMEVENTS:-10000}
+	rm -rf Rivet-Star
+	export DPATH=`rivet-config --datadir`; \ 
+	rivet-rmgaps $$DPATH/STAR_2006_S6860818 Star.aida
+	rivet-mkhtml --no-mc-errs -o Rivet-Star Star.aida
+ 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
