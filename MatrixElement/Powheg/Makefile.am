@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = HwPowhegMEHadron.la
+pkglib_LTLIBRARIES = HwPowhegMEHadron.la HwPowhegMELepton.la
 HwPowhegMEHadron_la_LDFLAGS = -module -version-info 3:0:0
 HwPowhegMEHadron_la_SOURCES = \
 MEqq2gZ2ffPowheg.cc MEqq2gZ2ffPowheg.h \
@@ -12,3 +12,7 @@ MEPP2VGammaNewPowheg.cc  MEPP2VGammaNewPowheg.h \
 MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
 VVKinematics.cc VVKinematics.h
+
+HwPowhegMELepton_la_LDFLAGS = -module -version-info 1:0:0
+HwPowhegMELepton_la_SOURCES = \
+MEee2gZ2qqPowheg.cc MEee2gZ2qqPowheg.h 

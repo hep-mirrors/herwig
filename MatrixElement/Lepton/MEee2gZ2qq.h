@@ -41,8 +41,18 @@ public:
   /**
    * The default constructor.
    */
-  MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
+  MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1), pTmin_(GeV),
+		 preFactor_(6.)
   {}
+
+  /**
+   *  Members for hard corrections to the emission of QCD radiation 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
 
   /**
    *  Has an old fashioned ME correction
@@ -70,6 +80,12 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching);
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -205,7 +221,7 @@ protected:
   virtual IVector getReferences();
   //@}
 
-private:
+protected:
 
   /**
    * Member to calculate the matrix element
@@ -224,6 +240,19 @@ private:
 				     double & me,
 				     double & cont,
 				     double & BW ) const;
+
+
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemittor,
+		 bool subtract =false) const;
+  
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first) const;
+
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta) const;
 
 private:
 
@@ -336,6 +365,33 @@ private:
   double PS(double x1, double x2);
   //@}
 
+protected:
+  
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex() const {return FFZVertex_;}
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex() const {return FFPVertex_;}
+  
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0() const {return Z0_;}
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma() const {return gamma_;}
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon() const {return gluon_;}
+
 private:
 
   /**
@@ -355,37 +411,47 @@ private:
   /**
    *  Pointer to the fermion-antifermion Z vertex
    */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr FFZVertex_;
   
   /**
    *  Pointer to the fermion-antifermion photon vertex
    */
-  AbstractFFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
   
   /**
    *  Pointer to the particle data object for the Z
    */
-  PDPtr _Z0;
+  PDPtr Z0_;
 
   /**
    *  Pointer to the particle data object for the photon
    */
-  PDPtr _gamma;
+  PDPtr gamma_;
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon_;
 
   /**
    *  The minimum PDG of the quarks to be produced
    */
-   int _minflav;
+   int minflav_;
 
   /**
    *  The maximum PDG of the quarks to be produced
    */
-   int _maxflav;
+   int maxflav_;
 
   /**
    *  Option for the treatment of the top quark mass
    */
-  unsigned int _massopt;
+  unsigned int massopt_;
 
   /**
    * CM energy 
@@ -426,6 +492,29 @@ private:
    *  Pointer to the coupling
    */
   ShowerAlphaPtr alpha_;
+
+private:
+
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  /**
+   *  Overestimate for the prefactor
+   */
+  double preFactor_;
+
+  /**
+   *  ParticleData objects for the partons
+   */
+  vector<cPDPtr> partons_;
+
+  /**
+   *  Momenta of the leading-order partons
+   */
+  vector<Lorentz5Momentum> loMomenta_;
+
 };
 
 }
