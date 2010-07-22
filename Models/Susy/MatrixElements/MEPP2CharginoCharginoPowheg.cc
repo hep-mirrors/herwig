@@ -255,7 +255,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  // t-channel squark exchanges	  
 	  for(unsigned int iq=0;iq<2;++iq) {
 	    if(abs(mePartonData()[0]->id())%2==0) {
-	      intersq = CFSVertex_->
+	      ScalarWaveFunction intersq = CFSVertex_->
 		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
 	      diag[iq+2] = 
 		-CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
