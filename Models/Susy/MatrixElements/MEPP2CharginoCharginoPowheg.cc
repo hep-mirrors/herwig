@@ -62,7 +62,6 @@ void MEPP2CharginoCharginoPowheg::getDiagrams() const {
   // loop over the processes we need
   tcPDPtr chi[2] = {getParticleData(1000024),getParticleData(1000037)};
   tcPDPtr chib[2];
-  //  tcPDPtr uq, uqb, uqL, uqR, dq, dqb, dqL, dqR;
   for(unsigned int ix=0;ix<2;++ix)
     chib[ix] = chi[ix]->CC();
   for(int i = 1; i <= maxFlavour_; ++i) {
@@ -70,34 +69,28 @@ void MEPP2CharginoCharginoPowheg::getDiagrams() const {
     tcPDPtr qb = q->CC();
     tcPDPtr qL = getParticleData(1000000+i);
     tcPDPtr qR = getParticleData(2000000+i);
-//     if(q->positive()){
-//       uq  = q;
-//       uqb = uq->CC();
-//       uqL = getParticleData(1000000+i);
-//       uqR = getParticleData(2000000+i);
-//     }
-//     else{
-//       dq  = q;
-//       dqb = dq->CC();
-//       dqL = getParticleData(1000000+i);
-//       dqR = getParticleData(2000000+i);
-//     }
 
     for(unsigned int ix=0;ix<2;++ix){
       for(unsigned int jx=0;jx<2;++jx){
-	if(process_==0 || process_==2*jx+ix+1){
+	if(process_==0 || process_==2*ix+jx+1){
+	  // Z-mediated s-channel
 	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_,
 		       3, chi[ix], 3, chib[jx], -1)));
+	  // photon mediated s-channel
 	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_,
 		       3, chi[ix], 3, chib[jx], -2)));
+	  // ~qL mediated t-channel
 	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
 		       1, chi[ix], 3, chib[jx], -3)));
+	  // ~qR mediated t-channel
 	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
 		       1, chi[ix], 3, chib[jx], -4)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
-		       3, chi[ix], 1, chib[jx], -5)));
-	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
-		       3, chi[ix], 1, chib[jx], -6)));
+	  // ~qL mediated u-channel
+	  //	  add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
+	  //		       3, chi[ix], 1, chib[jx], -5)));
+	  // ~qR mediated u-channel
+	  //	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
+	  //		       3, chi[ix], 1, chib[jx], -6)));
 	}
       }
     }
@@ -189,14 +182,28 @@ MEPP2CharginoCharginoPowheg::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     if ( diags[i]->id() == -1)     sel.insert(meInfo()[0], i);
-    else if ( diags[i]->id() == -3 ) sel.insert(meInfo()[1], i);
-    else if ( diags[i]->id() == -4 ) sel.insert(meInfo()[2], i);
-    else if ( diags[i]->id() == -5 ) sel.insert(meInfo()[3], i);
-    else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[4], i);
+    else if ( diags[i]->id() == -2 ) sel.insert(meInfo()[1], i);
+    else if ( diags[i]->id() == -3 ) sel.insert(meInfo()[2], i);
+    else if ( diags[i]->id() == -4 ) sel.insert(meInfo()[3], i);
+    else if ( diags[i]->id() == -5 ) sel.insert(meInfo()[4], i);
     else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[5], i);
   }
   return sel;
 }
+
+// Selector<MEBase::DiagramIndex>
+// MEPP2CharginoCharginoPowheg::diagrams(const DiagramVector & diags) const {
+//   Selector<DiagramIndex> sel;
+//   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+//     if ( diags[i]->id() == -1)     sel.insert(meInfo()[0], i);
+//     else if ( diags[i]->id() == -3 ) sel.insert(meInfo()[1], i);
+//     else if ( diags[i]->id() == -4 ) sel.insert(meInfo()[2], i);
+//     else if ( diags[i]->id() == -5 ) sel.insert(meInfo()[3], i);
+//     else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[4], i);
+//     else if ( diags[i]->id() == -6 ) sel.insert(meInfo()[5], i);
+//   }
+//   return sel;
+// }
 
 NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   Singular output;
@@ -225,13 +232,25 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   const Energy2 q2(scale());
   // squarks for the t-channel
 
-//   tcPDPtr squark[2];
-//   if (abs(mePartonData()[0]->id())%2==0)
-//     squark[2]= {getParticleData(1000000+abs(mePartonData()[0]->id())-1),
-// 		      getParticleData(2000000+abs(mePartonData()[0]->id())-1)};
 
-  tcPDPtr squark[2] = {getParticleData(1000000+abs(mePartonData()[0]->id())),
-		       getParticleData(2000000+abs(mePartonData()[0]->id()))};
+
+  //  assert(mePartonData()[0]->id() == -mePartonData()[1]->id());
+
+  tcPDPtr squark[2];
+  if (abs(mePartonData()[0]->id())%2==0)
+    {
+      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+    }
+  else
+    {
+      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+    }
+
+
+  // tcPDPtr squark[2] = {getParticleData(1000000+abs(mePartonData()[0]->id())),
+  //	       getParticleData(2000000+abs(mePartonData()[0]->id()))};
 
   // conjugate spinors for t-channel exchange diagram
   vector<SpinorWaveFunction> sbaroutconj;
@@ -263,22 +282,22 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
 	  // s-channel
- 	  diag[0] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interZ);
-	  if(spout[of1].particle()->id()==-sbarout[of2].particle()->id())
-	    diag[1] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interP);
+  	  diag[0] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interZ);
+ 	  if(spout[of1].particle()->id()==-sbarout[of2].particle()->id())
+ 	    diag[1] = CCZVertex_->evaluate(q2, spout[of1],  sbarout[of2], interP);
 	  // t-channel squark exchanges	  
-// 	  for(unsigned int iq=0;iq<2;++iq) {
-// 	    // 1st t-channel
-// 	    ScalarWaveFunction intersq = CFSVertex_->
-// 	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
-// 	    diag[2*iq+2] = 
-// 	      CFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
-// 	    // swapped t-channel
+	  for(unsigned int iq=0;iq<2;++iq) {
+	    // 1st t-channel
+  	    ScalarWaveFunction intersq = CFSVertex_->
+  	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+  	    diag[2*iq+2] = 
+  	      CFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+	    // swapped t-channel
 // 	    intersq = CFSVertex_->
-// 	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-// 	    diag[2*iq+3] = 
-// 	      -CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-// 	  }
+//   	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+//   	    diag[2*iq+3] = 
+//   	      -CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+	  }
 	  // individual diagrams
 	  for(unsigned int id=0;id<6;++id){
 	    me[id] += norm(diag[id]);
