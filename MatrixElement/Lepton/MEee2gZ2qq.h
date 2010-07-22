@@ -224,6 +224,15 @@ protected:
 protected:
 
   /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */  
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first) const;
+
+  /**
    * Member to calculate the matrix element
    * @param fin  Spinors for incoming fermion
    * @param ain  Spinors for incoming antifermion
@@ -241,16 +250,27 @@ protected:
 				     double & cont,
 				     double & BW ) const;
 
-
+  /**
+   *  The ratio of the matrix element for one additional jet over the
+   * leading order result. In practice
+   * \[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * the spin and colour summed/averaged matrix element.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param subtract Whether or not to subtract the relevant dipole term
+   */
   double meRatio(vector<cPDPtr> partons, 
 		 vector<Lorentz5Momentum> momenta,
 		 unsigned int iemittor,
 		 bool subtract =false) const;
-  
-  double loME(const vector<cPDPtr> & partons, 
-	      const vector<Lorentz5Momentum> & momenta,
-	      bool first) const;
 
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */ 
   InvEnergy2 realME(const vector<cPDPtr> & partons, 
 		    const vector<Lorentz5Momentum> & momenta) const;
 
@@ -496,6 +516,10 @@ private:
 private:
 
   /**
+   *  Variables for the POWHEG style corrections
+   */
+  //@{
+  /**
    *  The cut off on pt, assuming massless quarks.
    */
   Energy pTmin_;
@@ -514,6 +538,7 @@ private:
    *  Momenta of the leading-order partons
    */
   vector<Lorentz5Momentum> loMomenta_;
+  //@}
 
 };
 
