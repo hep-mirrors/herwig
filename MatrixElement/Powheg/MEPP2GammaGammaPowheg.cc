@@ -101,10 +101,33 @@ void MEPP2GammaGammaPowheg::getDiagrams() const {
 }
 
 Energy2 MEPP2GammaGammaPowheg::scale() const {
-  Energy2 s(sHat()),u(uHat()),t(tHat());
 
+  /*
+  Boost beta;
+
+  beta = (meMomenta()[2]+meMomenta()[3]).findBoostToCM();
+  Lorentz5Momentum 
+  p1 = meMomenta()[2],
+  p2 = meMomenta()[3];
+  */
+  /*  Energy 
+    pt1 = sqrt(sqr(meMomenta()[2].y())+sqr(meMomenta()[2].z())), 
+    pt2 = sqrt(sqr(meMomenta()[3].y())+sqr(meMomenta()[3].z()));
+  
+  */
+  Energy pt;
+  if(meMomenta()[2].perp(meMomenta()[0].vect())>=
+     meMomenta()[3].perp(meMomenta()[0].vect())){
+    pt = meMomenta()[2].perp(meMomenta()[0].vect());
+  } else {
+    pt = meMomenta()[3].perp(meMomenta()[0].vect());
+  }
+
+
+  //  if(pt1 >= pt2 ) return sqr(pt1);
+  //else return sqr(pt2);
   //  return sHat();
-  return 2.*s*t*u/(s*s+t*t+u*u);
+  return sqr(pt);
 }
 
 int MEPP2GammaGammaPowheg::nDim() const {
@@ -439,6 +462,7 @@ CrossSection MEPP2GammaGammaPowheg::dSigHatDR() const {
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
   loME_ = me2();
+ 
   if( contrib_== 0 || mePartonData().size()==5 || 
       (mePartonData().size()==4&& mePartonData()[3]->coloured())) 
     return loME_*preFactor;
@@ -864,8 +888,6 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
     v2.push_back(v2_out);
   }
 
-  //luca changed
-  //vector<double> me(2,0.0);
   vector<double> me(4,0.0);
 
   if(first) me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
@@ -901,9 +923,7 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
   // spin and colour factors
   output *= 0.125/3./norm(FFPvertex_->norm());
 
-  //luca changed
-  //return output;
-  return 2.*output;
+  return output;
 }
 
 double MEPP2GammaGammaPowheg::loGammaqME(const cPDVector & particles,
@@ -1476,8 +1496,8 @@ double MEPP2GammaGammaPowheg::subtractedVirtual() const {
     2.+2.*log(v)+2.*log(1-v)+3.*(1-v)/v*(log(v)-log(1-v))+
     (2.+v/(1-v))*sqr(log(v))+(2.+(1-v)/v)*sqr(log(1-v));
   
-  double virt = 1./3.*F*((-4.+10.-sqr(Constants::pi))*
-			 ((1-v)/v+v/(1-v)-2.+finite_term));
+  double virt = 1./3.*F*((6.-(2./3.)*sqr(Constants::pi))*
+			 ((1-v)/v+v/(1-v))-2.+finite_term);
 
   return virt;
 }
