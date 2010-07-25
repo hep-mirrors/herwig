@@ -24,7 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  MEee2gZ2qqPowheg() : contrib_(1)
+  MEee2gZ2qqPowheg() : contrib_(1), zPow_(0.5), yPow_(0.9)
   {}
 
 public:
@@ -120,6 +120,16 @@ private:
    *  Whether to generate the positive, negative or leading order contribution
    */
   unsigned int contrib_;
+
+  /**
+   *  Phase-space sampling for z
+   */
+  double zPow_;
+
+  /**
+   *  Phase-space sampling for y
+   */
+  double yPow_;
 
   /**
    *  Radiation variables

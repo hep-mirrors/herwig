@@ -6,6 +6,7 @@
 
 #include "MEee2gZ2qqPowheg.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
@@ -24,11 +25,11 @@ IBPtr MEee2gZ2qqPowheg::fullclone() const {
 }
 
 void MEee2gZ2qqPowheg::persistentOutput(PersistentOStream & os) const {
-  os << contrib_;
+  os << contrib_ << yPow_ << zPow_;
 }
 
 void MEee2gZ2qqPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_;
+  is >> contrib_ >> yPow_ >> zPow_;
 }
 
 ClassDescription<MEee2gZ2qqPowheg> MEee2gZ2qqPowheg::initMEee2gZ2qqPowheg;
@@ -59,6 +60,19 @@ void MEee2gZ2qqPowheg::Init() {
      "NegativeNLO",
      "Generate the negative contribution to the full NLO cross section",
      2);
+
+  static Parameter<MEee2gZ2qqPowheg,double> interfacezPower
+    ("zPower",
+     "The sampling power for z",
+     &MEee2gZ2qqPowheg::zPow_, 0.5, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEee2gZ2qqPowheg,double> interfaceyPower
+    ("yPower",
+     "The sampling power for y",
+     &MEee2gZ2qqPowheg::yPow_, 0.9, 0.0, 1.0,
+     false, false, Interface::limited);
+
 }
 
 int MEee2gZ2qqPowheg::nDim() const {
@@ -111,7 +125,6 @@ double MEee2gZ2qqPowheg::me2() const {
   // wavefunctions for the intermediate particles
   VectorWaveFunction interZ,interG;
   // temporary storage of the different diagrams
-  Complex diag1,diag2;
   // sum over helicities to get the matrix element
   unsigned int inhel1,inhel2,outhel1,outhel2;
   double total[4]={0.,0.,0.,0.};
@@ -121,20 +134,20 @@ double MEee2gZ2qqPowheg::me2() const {
   for(inhel1=0;inhel1<2;++inhel1) {
     for(inhel2=0;inhel2<2;++inhel2) {
       // intermediate Z
-      interZ = FFZVertex()->evaluate(sHat(),1,Z0(),fin[inhel1],ain[inhel2]);
+      interZ = FFZVertex()->evaluate(scale(),1,Z0(),fin[inhel1],ain[inhel2]);
       // intermediate photon
-      interG = FFPVertex()->evaluate(sHat(),1,gamma(),fin[inhel1],ain[inhel2]);
+      interG = FFPVertex()->evaluate(scale(),1,gamma(),fin[inhel1],ain[inhel2]);
       // scalars
       Complex scalar1 = interZ.wave().dot(momDiff);
       Complex scalar2 = interG.wave().dot(momDiff);
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {		
 	  // first the Z exchange diagram
-	  diag1 = FFZVertex()->evaluate(sHat(),aout[outhel2],fout[outhel1],
-				       interZ);
+	  Complex diag1 = FFZVertex()->evaluate(scale(),aout[outhel2],fout[outhel1],
+						interZ);
 	  // then the photon exchange diagram
-	  diag2 = FFPVertex()->evaluate(sHat(),aout[outhel2],fout[outhel1],
-				       interG);
+	  Complex diag2 = FFPVertex()->evaluate(scale(),aout[outhel2],fout[outhel1],
+						interG);
 	  // extra stuff for NLO
 	  LorentzPolarizationVector left  = 
 	    aout[outhel2].wave(). leftCurrent(fout[outhel1].wave());
@@ -143,14 +156,15 @@ double MEee2gZ2qqPowheg::me2() const {
 	  Complex scalar = 
 	    aout[outhel2].wave().scalar(fout[outhel1].wave());
 	  // nlo specific pieces
-	  Complex diag3 =  Complex(0.,1.)*Zvertex->norm()*
+	  Complex diag3 =
+	           Complex(0.,1.)*Zvertex->norm()*
 	    (Zvertex->right()*( left.dot(interZ.wave())) +
 	     Zvertex-> left()*(right.dot(interZ.wave())) -
-	     ( Zvertex-> left()+Zvertex->right())*scalar1);
-	  diag3        +=  Complex(0.,1.)*Pvertex->norm()*
-	    (Pvertex-> left()*( left.dot(interG.wave())) +
-	     Pvertex->right()*(right.dot(interG.wave())) -
-	     ( Pvertex-> left()+Pvertex->right())*scalar2);
+	     ( Zvertex-> left()+Zvertex->right())*scalar1*scalar);
+	  diag3 += Complex(0.,1.)*Pvertex->norm()*
+	    (Pvertex->right()*( left.dot(interG.wave())) +
+	     Pvertex-> left()*(right.dot(interG.wave())) -
+	     ( Pvertex-> left()+Pvertex->right())*scalar2*scalar);
 	  // add up squares of individual terms
 	  total[1] += norm(diag1);
 	  ZbosonME(inhel1,inhel2,outhel1,outhel2) = diag1;
@@ -233,27 +247,34 @@ double MEee2gZ2qqPowheg::me2() const {
   // add up bits for f1
   f1 += CF*aS/Constants::pi*(fNS+VNS);
   // now for the real correction
+  double jac = 1.;
   // generate y
   double yminus = 0.; 
   double yplus  = 1.-2.*mu*(1.-mu)/(1.-2*mu2);
-  double y = yminus + y_*(yplus-yminus);
+  double rhoymax = pow(yplus-yminus,1.-yPow_);
+  double rhoy = y_*rhoymax;
+  double y = yminus+pow(rhoy,1./(1.-yPow_));
+  jac *= pow(y-yminus,yPow_)*rhoymax/(1.-yPow_);
   // generate z 
-  double vt = sqrt(sqr(2.*mu2+(1.-2.*mu2)*(1.-y))-4.*mu2)/(1.-2.*mu2)/(1.-y);
+  double vt = sqrt(max(sqr(2.*mu2+(1.-2.*mu2)*(1.-y))-4.*mu2,0.))/(1.-2.*mu2)/(1.-y);
   double zplus  = (1.+vt)*(1.-2.*mu2)*y/2./(mu2 +(1.-2.*mu2)*y);
   double zminus = (1.-vt)*(1.-2.*mu2)*y/2./(mu2 +(1.-2.*mu2)*y);
-  double z = zminus + z_*(zplus-zminus);
+  double rhozmax = pow(zplus-zminus,1.-zPow_);
+  double rhoz = z_*rhozmax;
+  double z = zminus+pow(rhoz,1./(1.-zPow_));
+  jac *= pow(z-zminus,zPow_)*rhozmax/(1.-zPow_);
   // calculate x1,x2,x3 and xT 
   double x2 = 1. - y*(1.-2.*mu2);
   double x1 = 1. - z*(x2-2.*mu2);
   double x3 = 2.-x1-x2;
-  double xT = sqrt(sqr(x3) -0.25*sqr(sqr(x2)+sqr(x3)-sqr(x1))/(sqr(x2)-4.*mu2));
+  double xT = sqrt(max(0.,sqr(x3) -0.25*sqr(sqr(x2)+sqr(x3)-sqr(x1))/(sqr(x2)-4.*mu2)));
   // calculate the momenta
   Energy M = sqrt(sHat());
-  Lorentz5Momentum pspect(ZERO,ZERO,-0.5*M*sqrt(sqr(x2)-4.*mu2),0.5*M*x2,M*mu); 
+  Lorentz5Momentum pspect(ZERO,ZERO,-0.5*M*sqrt(max(sqr(x2)-4.*mu2,0.)),0.5*M*x2,M*mu); 
   Lorentz5Momentum pemit (-0.5*M*xT*cos(phi_),-0.5*M*xT*sin(phi_),
-			  0.5*M*sqrt(sqr(x1)-sqr(xT)-4.*mu2),0.5*M*x1,M*mu);
+			  0.5*M*sqrt(max(sqr(x1)-sqr(xT)-4.*mu2,0.)),0.5*M*x1,M*mu);
   Lorentz5Momentum pgluon( 0.5*M*xT*cos(phi_), 0.5*M*xT*sin(phi_),
-			   0.5*M*sqrt(sqr(x3)-sqr(xT)),0.5*M*x3,ZERO);
+			   0.5*M*sqrt(max(sqr(x3)-sqr(xT),0.)),0.5*M*x3,ZERO);
   if(abs(pspect.z()+pemit.z()-pgluon.z())/M<1e-6) 
     pgluon.setZ(-pgluon.z());
   else if(abs(pspect.z()-pemit.z()+pgluon.z())/M<1e-6) 
@@ -281,13 +302,15 @@ double MEee2gZ2qqPowheg::me2() const {
     }
     momenta.push_back(eventFrame*pgluon);
     // calculate the weight
-    realwgt += meRatio(partons,momenta,iemit,true);
+    if(1.-x1>1e-5 && 1.-x2>1e-5) 
+      realwgt += meRatio(partons,momenta,iemit,true);
   }
   // total real emission contribution
-  double realFact = 0.25*(1.-y)*(yplus-yminus)*(zplus-zminus)*
+  double realFact = 0.25*(1.-y)*jac*
     sqr(1.-2.*mu2)/sqrt(1.-4.*mu2)/Constants::twopi*
     2.*CF*aS*realwgt;
   // the born + virtual + real
   total[0] = total[0]*(1. + f1 + realFact) + f2*total[3];
-  return total[0];
+  if(contrib_==2) total[0] *=-1.;
+  return max(total[0],0.);
 }
