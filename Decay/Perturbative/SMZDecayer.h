@@ -45,6 +45,11 @@ public:
    */
   //@{
   /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
    *  Has an old fashioned ME correction
    */
   virtual bool hasMECorrection() {return true;}
@@ -70,6 +75,11 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
 public:
@@ -306,6 +316,71 @@ protected:
   double PS(double x1, double x2);
   //@}
 
+protected:
+
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex() const {return FFZvertex_;}
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon() const {return gluon_;}
+
+  /**
+   *  Spin density matrix for the decay
+   */
+  RhoDMatrix & rho() const {return _rho;}
+
+  /**
+   *  Polarization vectors for the decay
+   */
+  vector<VectorWaveFunction> & vectors() const {return _vectors;}
+
+  /**
+   *  Spinors for the decay
+   */
+  vector<SpinorWaveFunction>  & wave() const {return _wave;}
+
+  /**
+   *  Barred spinors for the decay
+   */
+  vector<SpinorBarWaveFunction> & wavebar() const {return _wavebar;}
+
+  /**
+   *  Calculate the matrix element for \f$Z^0\to q \bar q$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */  
+  Energy2 loME(const vector<cPDPtr> & partons, 
+	       const vector<Lorentz5Momentum> & momenta,
+	       bool first) const;
+
+  /**
+   *  The ratio of the matrix element for one additional jet over the
+   * leading order result. In practice
+   * \[\frac{m^2_Z|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * the spin and colour summed/averaged matrix element.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param subtract Whether or not to subtract the relevant dipole term
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemittor,
+		 bool subtract =false) const;
+
+  /**
+   *  Calculate the matrix element for \f$Z^0 \to q \bar q g$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */ 
+  double realME(const vector<cPDPtr> & partons, 
+		const vector<Lorentz5Momentum> & momenta) const;
+
 private:
 
   /**
@@ -318,17 +393,22 @@ private:
    */
   SMZDecayer & operator=(const SMZDecayer &);
 
- private:
+
+private:
 
   /**
    * Pointer to the Z vertex
    */
   FFVVertexPtr FFZvertex_;
-
   /**
    * Pointer to the photon vertex
    */
   AbstractFFVVertexPtr FFPvertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * maximum weights for the different integrations
@@ -406,6 +486,39 @@ private:
    *  Pointer to the coupling
    */
   ShowerAlphaPtr alpha_;
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon_;
+
+private:
+
+  /**
+   *  Variables for the POWHEG style corrections
+   */
+  //@{
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  /**
+   *  Overestimate for the prefactor
+   */
+  double preFactor_;
+
+  /**
+   *  ParticleData objects for the partons
+   */
+  vector<cPDPtr> partons_;
+
+  /**
+   *  Momenta of the leading-order partons
+   */
+  vector<Lorentz5Momentum> loMomenta_;
+  //@}
+  
 };
 
 }
