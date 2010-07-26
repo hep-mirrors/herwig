@@ -68,8 +68,8 @@ set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
-set Model:Vertex/HHHH /Herwig/Vertices/HHHHVertex
+set Model:Vertex/WWHH NULL
+set Model:Vertex/HHHH NULL
 # MSSM feynman rules
 set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
@@ -78,9 +78,9 @@ set Model:Vertex/CFSF   /Herwig/Vertices/MSSM/MSSM_CFS
 set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
 set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
-set Model:Vertex/GNG    /Herwig/Vertices/MSSM/MSSM_GNG
+set Model:Vertex/GNG    NULL
 set Model:Vertex/NNZ    /Herwig/Vertices/MSSM/MSSM_NNZ
-set Model:Vertex/NNP    /Herwig/Vertices/MSSM/MSSM_NNP
+set Model:Vertex/NNP    NULL
 set Model:Vertex/CCZ    /Herwig/Vertices/MSSM/MSSM_CCZ
 set Model:Vertex/CNW    /Herwig/Vertices/MSSM/MSSM_CNW
 set Model:Vertex/SSWHH  /Herwig/Vertices/MSSM/MSSM_WHH
@@ -93,6 +93,21 @@ set Model:Vertex/WWH    /Herwig/Vertices/NMSSM/NMSSM_WWH
 set Model:Vertex/HHH    /Herwig/Vertices/NMSSM/NMSSM_HHH
 set Model:Vertex/HGG    /Herwig/Vertices/NMSSM/NMSSM_GGH
 set Model:Vertex/HPP    /Herwig/Vertices/NMSSM/NMSSM_PPH
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes Yes
+
+insert NewModel:DecayParticles 32 /Herwig/Particles/~chi_50
+insert NewModel:DecayParticles 33 /Herwig/Particles/H30
+insert NewModel:DecayParticles 34 /Herwig/Particles/A20
+
 ###################################################
 #
 #  Generate processes and decays in the NMSSM
