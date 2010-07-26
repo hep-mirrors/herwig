@@ -117,6 +117,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
                 Doc/refman.conf
+                Doc/refman.h
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
