@@ -28,11 +28,17 @@
 
 using namespace Herwig;
 
-SusyBase::SusyBase() : _readFile(false), _topModesFromFile(false),
-		       _tolerance(1e-6),
-		       _tanbeta(0), _mu(ZERO), 
-		       theMone(ZERO), theMtwo(ZERO),
-		       theMthree(ZERO) {}
+SusyBase::SusyBase() : readFile_(false), topModesFromFile_(false),
+		       tolerance_(1e-6),
+		       tanBeta_(0), mu_(ZERO), 
+		       M1_(ZERO), M2_(ZERO), M3_(ZERO),
+		       mH12_(ZERO),mH22_(ZERO),
+		       meL_(ZERO),mmuL_(ZERO),mtauL_(ZERO),
+		       meR_(ZERO),mmuR_(ZERO),mtauR_(ZERO),
+		       mq1L_(ZERO),mq2L_(ZERO),mq3L_(ZERO),
+		       mdR_(ZERO),muR_(ZERO),msR_(ZERO),
+		       mcR_(ZERO),mbR_(ZERO),mtR_(ZERO)
+{}
 
 IBPtr SusyBase::clone() const {
   return new_ptr(*this);
@@ -43,46 +49,58 @@ IBPtr SusyBase::fullclone() const {
 }
 
 void SusyBase::doinit() {
-  addVertex(theWSFSFVertex);
-  addVertex(theNFSFVertex);
-  addVertex(theGFSFVertex);
+  addVertex(WSFSFVertex_);
+  addVertex(NFSFVertex_);
+  addVertex(GFSFVertex_);
   addVertex(vertexHSS());
-  addVertex(theCFSFVertex);
-  addVertex(theGSFSFVertex);
-  addVertex(theGGSQSQVertex);
-  addVertex(theGSGSGVertex);
-  addVertex(theNNZVertex);
-  if(theNNPVertex) addVertex(theNNPVertex);
-  if(theGNGVertex) addVertex(theGNGVertex);
-  addVertex(theCCZVertex);
-  addVertex(theCNWVertex);
+  addVertex(CFSFVertex_);
+  addVertex(GSFSFVertex_);
+  addVertex(GGSQSQVertex_);
+  addVertex(GSGSGVertex_);
+  addVertex(NNZVertex_);
+  if(NNPVertex_) addVertex(NNPVertex_);
+  if(GNGVertex_) addVertex(GNGVertex_);
+  addVertex(CCZVertex_);
+  addVertex(CNWVertex_);
   addVertex(vertexGOGOH());
   addVertex(vertexWHH());
   StandardModel::doinit();
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << _readFile << _topModesFromFile 
-     << theNMix << theUMix << theVMix << theWSFSFVertex 
-     << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
-     << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
-     << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
-     << theGOGOHVertex << theWHHVertex 
-     << theGNGVertex << _tanbeta << ounit(_mu,GeV) 
-     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
-     << _tolerance;
+  os << readFile_ << topModesFromFile_ 
+     << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
+     << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
+     << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
+     << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
+     << GOGOHVertex_ << WHHVertex_ 
+     << GNGVertex_ << tanBeta_ << ounit(mu_,GeV) 
+     << ounit(M1_,GeV) << ounit(M2_,GeV) << ounit(M3_,GeV)
+     << ounit(mH12_,GeV2) << ounit(mH22_,GeV2) 
+     << ounit(meL_,GeV)  << ounit(mmuL_,GeV) << ounit(mtauL_,GeV) 
+     << ounit(meR_,GeV)  << ounit(mmuR_,GeV) << ounit(mtauR_,GeV) 
+     << ounit(mq1L_,GeV) << ounit(mq2L_,GeV) << ounit(mq3L_,GeV) 
+     << ounit(mdR_,GeV)  << ounit(muR_,GeV)  << ounit(msR_,GeV) 
+     << ounit(mcR_,GeV)  << ounit(mbR_,GeV)  << ounit(mtR_,GeV)
+     << tolerance_;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> _readFile >> _topModesFromFile
-     >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
-     >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
-     >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
-     >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
-     >> theGOGOHVertex >> theWHHVertex
-     >> theGNGVertex >> _tanbeta >> iunit(_mu,GeV) 
-     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
-     >> _tolerance;
+  is >> readFile_ >> topModesFromFile_
+     >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
+     >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
+     >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
+     >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
+     >> GOGOHVertex_ >> WHHVertex_
+     >> GNGVertex_ >> tanBeta_ >> iunit(mu_,GeV) 
+     >> iunit(M1_,GeV) >> iunit(M2_,GeV) >> iunit(M3_,GeV)
+     >> iunit(mH12_,GeV2) >> iunit(mH22_,GeV2) 
+     >> iunit(meL_,GeV)  >> iunit(mmuL_,GeV) >> iunit(mtauL_,GeV) 
+     >> iunit(meR_,GeV)  >> iunit(mmuR_,GeV) >> iunit(mtauR_,GeV) 
+     >> iunit(mq1L_,GeV) >> iunit(mq2L_,GeV) >> iunit(mq3L_,GeV) 
+     >> iunit(mdR_,GeV)  >> iunit(muR_,GeV)  >> iunit(msR_,GeV) 
+     >> iunit(mcR_,GeV)  >> iunit(mbR_,GeV)  >> iunit(mtR_,GeV)
+     >> tolerance_;
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -113,7 +131,7 @@ void SusyBase::Init() {
   static Switch<SusyBase,bool> interfaceTopModes
     ("TopModes",
      "Whether ro use the Herwig++ SM top decays or those from the SLHA file",
-     &SusyBase::_topModesFromFile, false, false, false);
+     &SusyBase::topModesFromFile_, false, false, false);
   static SwitchOption interfaceTopModesFile
     (interfaceTopModes,
      "File",
@@ -128,89 +146,89 @@ void SusyBase::Init() {
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
-     &SusyBase::theWSFSFVertex, false, false, true, false);
+     &SusyBase::WSFSFVertex_, false, false, true, false);
   
   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexNFSF
     ("Vertex/NFSF",
      "Reference to the neutralino-fermion-sfermion vertex",
-     &SusyBase::theNFSFVertex, false, false, true, false);
+     &SusyBase::NFSFVertex_, false, false, true, false);
 
   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexGFSF
     ("Vertex/GFSF",
      "Reference to the gluino-fermion-sfermion vertex",
-     &SusyBase::theGFSFVertex, false, false, true, false);
+     &SusyBase::GFSFVertex_, false, false, true, false);
   
   static Reference<SusyBase,Helicity::AbstractSSSVertex> interfaceVertexHSFSF
     ("Vertex/HSFSF",
      "Reference to the Higgs-fermion-sfermion vertex",
-     &SusyBase::theHSFSFVertex, false, false, true, false);
+     &SusyBase::HSFSFVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexCFSF
    ("Vertex/CFSF",
       "Reference to the chargino-fermion-sfermion vertex",
-      &SusyBase::theCFSFVertex, false, false, true, false);
+      &SusyBase::CFSFVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexGSFSF
    ("Vertex/GSFSF",
       "Reference to the gluon-sfermion-sfermion vertex",
-      &SusyBase::theGSFSFVertex, false, false, true, false);
+      &SusyBase::GSFSFVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexGGSS
      ("Vertex/GGSQSQ",
       "Reference to the gluon-gluon-squark-squark vertex",
-      &SusyBase::theGGSQSQVertex, false, false, true, false);
+      &SusyBase::GGSQSQVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGSGSG
      ("Vertex/GSGSG",
       "Reference to the gluon-gluino-gluino vertex",
-      &SusyBase::theGSGSGVertex, false, false, true, false);
+      &SusyBase::GSGSGVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNZ
     ("Vertex/NNZ",
      "Reference to Z-~chi_i0-~chi_i0 vertex",
-     &SusyBase::theNNZVertex, false, false, true, false);
+     &SusyBase::NNZVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNP
     ("Vertex/NNP",
      "Reference to photon-~chi_i0-~chi_i0 vertex",
-     &SusyBase::theNNPVertex, false, false, true, true, false);
+     &SusyBase::NNPVertex_, false, false, true, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGNG
     ("Vertex/GNG",
      "Reference to gluon-~chi_i0-gluino vertex",
-     &SusyBase::theGNGVertex, false, false, true, true, false);
+     &SusyBase::GNGVertex_, false, false, true, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",
      "Reference to ~chi_i+-~chi_i-Z vertex",
-     &SusyBase::theCCZVertex, false, false, true, false);
+     &SusyBase::CCZVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCNW
     ("Vertex/CNW",
      "Reference to ~chi_i+-chi_i0-W vertex",
-     &SusyBase::theCNWVertex, false, false, true, false);
+     &SusyBase::CNWVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexGOGOH
    ("Vertex/GOGOH",
     "Reference to the gaugino-gaugino-higgs vertex",
-    &SusyBase::theGOGOHVertex, false, false, true, false);
+    &SusyBase::GOGOHVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWHH
     ("Vertex/SSWHH",
      "Reference to Susy WHHVertex",
-     &SusyBase::theWHHVertex, false, false, true, false);
+     &SusyBase::WHHVertex_, false, false, true, false);
 
   static Parameter<SusyBase,double> interfaceBRTolerance
     ("BRTolerance",
      "Tolerance for the sum of branching ratios to be difference from one.",
-     &SusyBase::_tolerance, 1e-6, 1e-8, 0.01,
+     &SusyBase::tolerance_, 1e-6, 1e-8, 0.01,
      false, false, Interface::limited);
 
 }
 
 void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
-  if(_readFile)
+  if(readFile_)
     throw SetupException() 
       << "A second SLHA file " << filename << " has been opened."
       << "This is probably unintended and as it can cause crashes"
@@ -240,7 +258,7 @@ void SusyBase::readSetup(istream & is) {
   }
   // if taking the top modes from the file
   // delete the SM stuff
-  if(_topModesFromFile) {
+  if(topModesFromFile_) {
     PDPtr top = getParticleData(ParticleID::t);
     top->widthGenerator(WidthGeneratorPtr());
     top->massGenerator(MassGenPtr());
@@ -272,7 +290,7 @@ void SusyBase::readSetup(istream & is) {
 	   name.find("hmix") != 0)) {
 	 unsigned int row(0),col(0);
 	 MixingVector vals = readMatrix(file,row,col);
-	 _mixings[name] = make_pair(make_pair(row,col),vals);
+	 mixings_[name] = make_pair(make_pair(row,col),vals);
        }
        else if(name.find("au") == 0||name.find("ad") == 0||
 	       name.find("ae") == 0 ) {
@@ -286,7 +304,7 @@ void SusyBase::readSetup(istream & is) {
 	 if(scale>1e10) continue;
 	 unsigned int row(0),col(0);
 	 MixingVector vals = readMatrix(file,row,col);
-	 _mixings[name] = make_pair(make_pair(row,col),vals);
+	 mixings_[name] = make_pair(make_pair(row,col),vals);
        }
        else if( name.find("info") == string::npos)
 	 readBlock(file,name,line);
@@ -303,7 +321,7 @@ void SusyBase::readSetup(istream & is) {
    // mixing matrices have been created
    resetRepositoryMasses();
    // have now read the file
-   _readFile=true;
+   readFile_=true;
 }
 
 void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
@@ -332,8 +350,8 @@ void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
       double scale;
       is >> scale;
       // only store the lowest scale block
-      if(_parameters.find(name)!=_parameters.end()) {
-	set = scale < _parameters[name][-1];
+      if(parameters_.find(name)!=parameters_.end()) {
+	set = scale < parameters_[name][-1];
       }
       else {
 	store.insert(make_pair(-1,scale));
@@ -355,7 +373,7 @@ void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
 	 ifs.peek() == '#') break;
     }
   }
-  if(set) _parameters[name]=store;
+  if(set) parameters_[name]=store;
 }
 
 void SusyBase::readDecay(ifstream & ifs, 
@@ -373,7 +391,7 @@ void SusyBase::readDecay(ifstream & ifs,
   Energy width(ZERO);
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getParticleData(parent);
-  if(!_topModesFromFile&&abs(parent)==ParticleID::t) return;
+  if(!topModesFromFile_&&abs(parent)==ParticleID::t) return;
   if(!inpart)  {
     throw SetupException() 
     << "SusyBase::readDecay() - A ParticleData object with the PDG code "
@@ -438,7 +456,7 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  if( abs(brsum - 1.) > _tolerance && nmode!=0 ) {
+  if( abs(brsum - 1.) > tolerance_ && nmode!=0 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
 	 << " from the spectrum file does not sum to 1. The branching fractions"
 	 << " will be rescaled.\n";
@@ -545,8 +563,8 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
 }
 
 void SusyBase::resetRepositoryMasses() {
-  map<string,ParamMap>::const_iterator fit=_parameters.find("mass");
-  if(fit==_parameters.end()) 
+  map<string,ParamMap>::const_iterator fit=parameters_.find("mass");
+  if(fit==parameters_.end()) 
     throw Exception() << "BLOCK MASS not found in input file"
 		      << " can't set masses of SUSY particles"
 		      << Exception::runerror;
@@ -579,8 +597,8 @@ void SusyBase::adjustMixingMatrix(long id) {
   case 1000025 :
   case 1000035 : 
   case 1000045 : 
-    if(theNMix)
-      theNMix->adjustPhase(id);
+    if(NMix_)
+      NMix_->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
@@ -588,14 +606,14 @@ void SusyBase::adjustMixingMatrix(long id) {
     break;
   case 1000024 :
   case 1000037 : 
-    if(theUMix)
-      theUMix->adjustPhase(id);
+    if(UMix_)
+      UMix_->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
-    if(theVMix)
-      theVMix->adjustPhase(id);
+    if(VMix_)
+      VMix_->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
@@ -613,17 +631,17 @@ void SusyBase::adjustMixingMatrix(long id) {
 
 void SusyBase::createMixingMatrices() {
   map<string,pair<MatrixSize, MixingVector > >::const_iterator it;
-  for(it=_mixings.begin();it!=_mixings.end();++it) {
+  for(it=mixings_.begin();it!=mixings_.end();++it) {
     string name=it->first;
     // create the gaugino mixing matrices
     if(name == "nmix" || name == "nmnmix" ){
-      createMixingMatrix(theNMix,name,it->second.second,it->second.first);
+      createMixingMatrix(NMix_,name,it->second.second,it->second.first);
     }
     else if (name == "umix" ) {
-      createMixingMatrix(theUMix,name,it->second.second,it->second.first);
+      createMixingMatrix(UMix_,name,it->second.second,it->second.first);
     }
     else if (name == "vmix") {
-      createMixingMatrix(theVMix,name,it->second.second,it->second.first);
+      createMixingMatrix(VMix_,name,it->second.second,it->second.first);
     }
   }
 }
@@ -632,29 +650,29 @@ void SusyBase::extractParameters(bool checkmodel) {
   map<string,ParamMap>::const_iterator pit;
   ParamMap::const_iterator it;
   // try and get tan beta from extpar first
-  pit=_parameters.find("extpar");
+  pit=parameters_.find("extpar");
   // extract tan beta
-  _tanbeta = -1.;
-  if(pit!=_parameters.end()) {
+  tanBeta_ = -1.;
+  if(pit!=parameters_.end()) {
     it = pit->second.find(25);
-    if(it!=pit->second.end()) _tanbeta = it->second;
+    if(it!=pit->second.end()) tanBeta_ = it->second;
   }
   // otherwise from minpar
-  if(_tanbeta<0.) {
-    pit=_parameters.find("minpar");
-    if(pit!=_parameters.end()) { 
+  if(tanBeta_<0.) {
+    pit=parameters_.find("minpar");
+    if(pit!=parameters_.end()) { 
       it = pit->second.find(3);
-      if(it!=pit->second.end()) _tanbeta = it->second;
+      if(it!=pit->second.end()) tanBeta_ = it->second;
     }
   }
-  if(_tanbeta<0.) 
+  if(tanBeta_<0.) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
 		      << " or BLOCK EXTPAR " << Exception::runerror;
   // extract parameters from hmix
-  pit=_parameters.find("hmix");
-  if(pit==_parameters.end()) {
+  pit=parameters_.find("hmix");
+  if(pit==parameters_.end()) {
     cerr << "BLOCK HMIX not found setting mu to zero\n";
-    _mu=ZERO;
+    mu_=ZERO;
   }
   else {
     it = pit->second.find(1);
@@ -662,20 +680,34 @@ void SusyBase::extractParameters(bool checkmodel) {
       cerr << "mu not found in BLOCK HMIX setting to zero\n";
     }
     else {
-      _mu=it->second*GeV;
+      mu_=it->second*GeV;
     }
   }
-  pit = _parameters.find("msoft");
-  if( pit == _parameters.end() )
+  pit = parameters_.find("msoft");
+  if( pit == parameters_.end() )
     throw Exception() << "BLOCK MSOFT not found in " 
 		      << "SusyBase::extractParameters()"
 		      << Exception::runerror;
-  it = pit->second.find(1);
-  theMone = it->second*GeV;
-  it = pit->second.find(2);
-  theMtwo = it->second*GeV;
-  it = pit->second.find(3);
-  theMthree = it->second*GeV;
+  M1_    = pit->second.find(1 )->second*GeV;
+  M2_    = pit->second.find(2 )->second*GeV;
+  M3_    = pit->second.find(3 )->second*GeV;
+  mH12_  = pit->second.find(21)->second*GeV2;
+  mH22_  = pit->second.find(22)->second*GeV2;
+  meL_   = pit->second.find(31)->second*GeV;
+  mmuL_  = pit->second.find(32)->second*GeV;
+  mtauL_ = pit->second.find(33)->second*GeV; 
+  meR_   = pit->second.find(34)->second*GeV;
+  mmuR_  = pit->second.find(35)->second*GeV;
+  mtauR_ = pit->second.find(36)->second*GeV; 
+  mq1L_  = pit->second.find(41)->second*GeV;
+  mq2L_  = pit->second.find(42)->second*GeV;
+  mq3L_  = pit->second.find(43)->second*GeV; 
+  mdR_   = pit->second.find(45)->second*GeV;
+  muR_   = pit->second.find(46)->second*GeV;
+  msR_   = pit->second.find(47)->second*GeV;
+  mcR_   = pit->second.find(48)->second*GeV;
+  mbR_   = pit->second.find(49)->second*GeV;
+  mtR_   = pit->second.find(50)->second*GeV;
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"
