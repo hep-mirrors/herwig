@@ -32,7 +32,7 @@ SusyBase::SusyBase() : _readFile(false), _topModesFromFile(false),
 		       _tolerance(1e-6),
 		       _tanbeta(0), _mu(ZERO), 
 		       theMone(ZERO), theMtwo(ZERO),
-		       theMthree(ZERO) {}
+		       theMthree(ZERO), gluinoPhase_(1.) {}
 
 IBPtr SusyBase::clone() const {
   return new_ptr(*this);
@@ -71,7 +71,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theSSFFHVertex << theGOGOHVertex << theSSWWHVertex << theWHHVertex << theGNGVertex
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
-     << _tolerance;
+     << gluinoPhase_ << _tolerance;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -83,7 +83,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex >> theGNGVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
-     >> _tolerance;
+     >> gluinoPhase_ >> _tolerance;
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -562,6 +562,9 @@ void SusyBase::resetRepositoryMasses() {
 void SusyBase::adjustMixingMatrix(long id) {
   //get correct mixing matrix
   switch(id) {
+  case 1000021 :
+    gluinoPhase_ = Complex(0.,1.);
+    break;
   case 1000022 :
   case 1000023 :
   case 1000025 :
