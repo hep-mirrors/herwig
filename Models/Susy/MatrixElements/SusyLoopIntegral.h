@@ -42,7 +42,7 @@ class SusyLoopIntegral {
   }
 
   /**
-   *  The \fC_0\f$ function
+   *  The \f$C_0\f$ function
    */
   static complex<InvEnergy2> C0(Energy2 p1, Energy2 p2, Energy2 p3,
 				Energy m1, Energy m2, Energy m3);

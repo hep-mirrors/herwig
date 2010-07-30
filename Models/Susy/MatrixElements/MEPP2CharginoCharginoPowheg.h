@@ -135,7 +135,7 @@ protected:
    * Assumes the matrix element has the form
    * \f[ \frac{\alpha_S}{2\pi}\frac{C_F}{\Gamma(1-\epsilon)}
    *     \left(\frac{4\pi\mu^2}{\hat s}\right)^epsilon
-   *    \left(\frac{A}{\epsilon^2}+\frac{B}{\epsilon}+C}
+   *    \left(\frac{A}{\epsilon^2}+\frac{B}{\epsilon}+C\right)
    * \f]
    * and A, B and C are returned.
    */
