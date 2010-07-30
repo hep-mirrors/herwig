@@ -64,6 +64,7 @@ void SusyBase::doinit() {
   addVertex(CNWVertex_);
   addVertex(vertexGOGOH());
   addVertex(vertexWHH());
+  addVertex(NCTVertex_);
   StandardModel::doinit();
 }
 
@@ -73,8 +74,8 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
      << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
-     << GOGOHVertex_ << WHHVertex_ 
-     << GNGVertex_ << tanBeta_ << ounit(mu_,GeV) 
+     << GOGOHVertex_ << WHHVertex_ << GNGVertex_ << NCTVertex_
+     << tanBeta_ << ounit(mu_,GeV) 
      << ounit(M1_,GeV) << ounit(M2_,GeV) << ounit(M3_,GeV)
      << ounit(mH12_,GeV2) << ounit(mH22_,GeV2) 
      << ounit(meL_,GeV)  << ounit(mmuL_,GeV) << ounit(mtauL_,GeV) 
@@ -91,8 +92,8 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
      >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
-     >> GOGOHVertex_ >> WHHVertex_
-     >> GNGVertex_ >> tanBeta_ >> iunit(mu_,GeV) 
+     >> GOGOHVertex_ >> WHHVertex_ >> GNGVertex_ >> NCTVertex_
+     >> tanBeta_ >> iunit(mu_,GeV) 
      >> iunit(M1_,GeV) >> iunit(M2_,GeV) >> iunit(M3_,GeV)
      >> iunit(mH12_,GeV2) >> iunit(mH22_,GeV2) 
      >> iunit(meL_,GeV)  >> iunit(mmuL_,GeV) >> iunit(mtauL_,GeV) 
@@ -217,6 +218,12 @@ void SusyBase::Init() {
     ("Vertex/SSWHH",
      "Reference to Susy WHHVertex",
      &SusyBase::WHHVertex_, false, false, true, false);
+
+  static Reference<SusyBase,AbstractFFSVertex> interfaceVertexNCT
+    ("Vertex/NCT",
+     "Vertex for the flavour violating coupling of the top squark "
+     "to the neutralino and charm quark.",
+     &SusyBase::NCTVertex_, false, false, true, false, false);
 
   static Parameter<SusyBase,double> interfaceBRTolerance
     ("BRTolerance",
@@ -702,12 +709,12 @@ void SusyBase::extractParameters(bool checkmodel) {
   mq1L_  = pit->second.find(41)->second*GeV;
   mq2L_  = pit->second.find(42)->second*GeV;
   mq3L_  = pit->second.find(43)->second*GeV; 
-  mdR_   = pit->second.find(45)->second*GeV;
-  muR_   = pit->second.find(46)->second*GeV;
-  msR_   = pit->second.find(47)->second*GeV;
-  mcR_   = pit->second.find(48)->second*GeV;
+  muR_   = pit->second.find(44)->second*GeV;
+  mcR_   = pit->second.find(45)->second*GeV;
+  mtR_   = pit->second.find(46)->second*GeV;
+  mdR_   = pit->second.find(47)->second*GeV;
+  msR_   = pit->second.find(48)->second*GeV;
   mbR_   = pit->second.find(49)->second*GeV;
-  mtR_   = pit->second.find(50)->second*GeV;
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"

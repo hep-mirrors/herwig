@@ -687,6 +687,11 @@ private:
    * Pointer to the vertex for a gauge boson and higgs
    */
   AbstractVSSVertexPtr WHHVertex_;
+
+  /**
+   *  Pointer to the vertex for flavour changing stop decay
+   */
+  AbstractFFSVertexPtr NCTVertex_;
   //@}
 };
 
