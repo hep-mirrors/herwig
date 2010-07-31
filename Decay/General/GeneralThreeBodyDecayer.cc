@@ -491,7 +491,7 @@ colourConnections(const Particle & parent,
 	}
       }
     }
-    else if (singlet.size()==1&&triplet.size()==1&&octet.size()==1) {
+    else if (singlet.size()==1&&antitriplet.size()==1&&octet.size()==1) {
       if(inter) {
 	if(inter->children()[0]->dataPtr()->iColour()==PDT::Colour8 ||
 	   inter->children()[1]->dataPtr()->iColour()==PDT::Colour8) {
