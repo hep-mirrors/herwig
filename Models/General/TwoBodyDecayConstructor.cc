@@ -31,6 +31,8 @@
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.fh"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
@@ -149,6 +151,15 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vertex,
     break;
   case VVV :
     name = "VVVDecayer";
+    break;
+  case RFS :
+    if(icol==1)      name = "FRSDecayer";
+    else if(icol==2) name = "SRFDecayer";
+    else             name = "Unknown";
+    break;
+  case RFV :
+    if(icol==1)      name = "FRVDecayer";
+    else             name = "Unknown";
     break;
   default : throw NBodyDecayConstructorError() 
       << "Error: Cannot assign " << vertex->fullName() << " to a decayer. " 

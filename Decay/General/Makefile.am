@@ -16,6 +16,9 @@ VFFDecayer.h  VFFDecayer.cc \
 VSSDecayer.h  VSSDecayer.cc \
 VVSDecayer.h  VVSDecayer.cc \
 VVVDecayer.h  VVVDecayer.cc \
+SRFDecayer.h  SRFDecayer.cc \
+FRSDecayer.h  FRSDecayer.cc \
+FRVDecayer.h  FRVDecayer.cc \
 GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
 FFVCurrentDecayer.h FFVCurrentDecayer.cc \
 FtoFFFDecayer.h FtoFFFDecayer.cc \
