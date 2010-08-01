@@ -13,7 +13,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The SSGVNHVertex class implements the
+ * The SSGVNHVertex class implements the coupling of the gravitino to
+ * a neutralino and Higgs boson.
  *
  * @see \ref SSGVNHVertexInterfaces "The interfaces"
  * defined for SSGVNHVertex.
