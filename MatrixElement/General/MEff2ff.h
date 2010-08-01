@@ -76,6 +76,8 @@ private:
    * @param fbout SpinorBar Wavefunctions for outgoing particle
    * @param fout Spinors for first outgoing particle
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
@@ -91,6 +93,8 @@ private:
    * @param fbout SpinorBar for first outgoing particle
    * @param fbout2 SpinorBar Wavefunctions for outgoing particle
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
@@ -107,6 +111,8 @@ private:
    * @param fout Spinors for first outgoing particle
    * @param fout2 Spinors Wavefunctions for outgoing particle
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
@@ -124,6 +130,8 @@ private:
    * @param fout2 Spinor Wavefunctions for first outgoing particle
    * @param fbout2 SpinorBar Wavefunctions for second outgoing particle
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */

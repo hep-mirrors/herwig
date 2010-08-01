@@ -29,6 +29,7 @@ library HwSMDecay.so
 library HwTauDecay.so
 library HwTMDecay.so
 library HwBaryonDecay.so
+library HwSOPHTY.so
 library HwUA5.so
 library HwVMDecay.so
 library HwSatPDF.so
@@ -37,6 +38,6 @@ library HwIncomingPhotonEvolver.so
 @LOAD_RS@
 @LOAD_TRP@
 @LOAD_UED@
-@LOAD_BSM_ANALYSIS@
+@LOAD_ADD@
 @LOAD_FASTJET@
 doxygendump Herwig:: AllInterfaces.h

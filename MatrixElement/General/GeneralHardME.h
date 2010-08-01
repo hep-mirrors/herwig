@@ -139,7 +139,6 @@ public:
    * Set the diagrams and matrix of colour factors. 
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
-   * @param factors
    * @param colour The colour structure for the process
    * @param debug Whether to compare the numerical answer to an analytical
    * formula (This is only stored for certain processes. It is intended
@@ -181,7 +180,6 @@ protected:
   /**
    * A debugging function to test the value of me2 against an
    * analytic function. This is to be overidden in an inheriting class.
-   * @param x The value of \f$ |\mathcal{M} |^2 \f$
    */
   virtual void debug(double ) const {}  
 
