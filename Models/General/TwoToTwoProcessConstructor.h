@@ -220,11 +220,6 @@ private:
 private:
 
   /**
-   *  Option for effective vertices
-   */
-  bool effective_;
-
-  /**
    * Required initial state particles
    */
   PDVector incoming_;
@@ -287,6 +282,16 @@ private:
    *  Option to exclude certain external particles
    */
   vector<PDPtr> excludedExternal_;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVertexVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedVertexSet_;
 };
 
   /** Exception class indicating setup problem. */

@@ -241,6 +241,16 @@ private:
    *  Maximum number of particles from the decaying particle list
    */
   unsigned int _maxList;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedSet_;
 };
 
 }

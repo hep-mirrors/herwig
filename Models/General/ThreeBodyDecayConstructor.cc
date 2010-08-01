@@ -7,6 +7,7 @@
 #include "ThreeBodyDecayConstructor.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
@@ -30,12 +31,14 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
-     << _includeTopOnShell << _maxBoson << _maxList;
+     << _includeTopOnShell << _maxBoson << _maxList 
+     << excludedVector_ << excludedSet_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
-     >> _includeTopOnShell >> _maxBoson >> _maxList;
+     >> _includeTopOnShell >> _maxBoson >> _maxList 
+     >> excludedVector_ >> excludedSet_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -182,6 +185,11 @@ void ThreeBodyDecayConstructor::Init() {
      "Three particles from the list",
      3);
 
+  static RefVector<ThreeBodyDecayConstructor,VertexBase> interfaceExcludedVertices
+    ("ExcludedVertices",
+     "Vertices which are not included in the three-body decayers",
+     &ThreeBodyDecayConstructor::excludedVector_, -1, false, false, true, true, false);
+
 }
 
 void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
@@ -201,6 +209,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     vector<TwoBodyPrototype> prototypes;
     for(unsigned int iv = 0; iv < nv; ++iv) {
       VertexBasePtr vertex = model->vertex(iv);
+      if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
       //skip an effective vertex
       if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
 	continue;
@@ -217,6 +226,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     for(unsigned int ix=0;ix<prototypes.size();++ix) {
       for(unsigned int iv = 0; iv < nv; ++iv) {
 	VertexBasePtr vertex = model->vertex(iv);
+	if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
 	//skip an effective vertex
 	if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
 	  continue;
@@ -742,6 +752,8 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
 
 void ThreeBodyDecayConstructor::doinit() {
   NBodyDecayConstructorBase::doinit();
+  excludedSet_ = set<VertexBasePtr>(excludedVector_.begin(),
+				    excludedVector_.end());
   if(_removeOnShell==0) 
     generator()->log() << "Warning: Including diagrams with on-shell "
 		       << "intermediates in three-body BSM decays, this"

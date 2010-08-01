@@ -42,7 +42,7 @@ namespace {
 }
 
 TwoToTwoProcessConstructor::TwoToTwoProcessConstructor() : 
-  effective_(false), Nout_(0), nv_(0), allDiagrams_(true),
+  Nout_(0), nv_(0), allDiagrams_(true),
   processOption_(0), scaleChoice_(0) 
 {}
 
@@ -80,19 +80,25 @@ void TwoToTwoProcessConstructor::doinit() {
       }
     }
   }
+  // excluded vertices
+  excludedVertexSet_ = 
+    set<VertexBasePtr>(excludedVertexVector_.begin(),
+		       excludedVertexVector_.end());
 }
 
 
 void TwoToTwoProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << effective_ << vertices_ << incoming_ << outgoing_
+  os << vertices_ << incoming_ << outgoing_
      << allDiagrams_ << processOption_
-     << scaleChoice_ << excluded_ << excludedExternal_;
+     << scaleChoice_ << excluded_ << excludedExternal_
+     << excludedVertexVector_ << excludedVertexSet_;
 }
 
 void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> effective_ >> vertices_ >> incoming_ >> outgoing_
+  is >> vertices_ >> incoming_ >> outgoing_
      >> allDiagrams_ >> processOption_
-     >> scaleChoice_ >> excluded_ >> excludedExternal_;
+     >> scaleChoice_ >> excluded_ >> excludedExternal_
+     >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
 ClassDescription<TwoToTwoProcessConstructor> 
@@ -178,26 +184,16 @@ void TwoToTwoProcessConstructor::Init() {
      "Particles which are not allowed as intermediates",
      &TwoToTwoProcessConstructor::excluded_, -1, false, false, true, false, false);
 
-  static Switch<TwoToTwoProcessConstructor,bool> interfaceIncludeEffectiveVertices
-    ("IncludeEffectiveVertices",
-     "Whether or not to include effective vertices",
-     &TwoToTwoProcessConstructor::effective_, false, false, false);
-  static SwitchOption interfaceIncludeEffectiveVerticesNo
-    (interfaceIncludeEffectiveVertices,
-     "No",
-     "Don't include them",
-     false);
-  static SwitchOption interfaceIncludeEffectiveVerticesYes
-    (interfaceIncludeEffectiveVertices,
-     "Yes",
-     "Include them",
-     true);
-
   static RefVector<TwoToTwoProcessConstructor,ParticleData> interfaceExcludedExternal
     ("ExcludedExternal",
      "Particles which are not allowed as outgoing particles",
      &TwoToTwoProcessConstructor::excludedExternal_, -1,
      false, false, true, false, false);
+
+  static RefVector<TwoToTwoProcessConstructor,VertexBase> interfaceExcludedVertices
+    ("ExcludedVertices",
+     "Vertices which are not included in the 2 -> 2 scatterings",
+     &TwoToTwoProcessConstructor::excludedVertexVector_, -1, false, false, true, true, false);
 
 }
 
@@ -227,9 +223,8 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
     VertexBasePtr vertex = model()->vertex(ix); 
     vertex->init();
-    if(!effective_&&
-       int(vertex->orderInGem()+vertex->orderInGs())
-       >int(vertex->getNpoint())-2) continue;
+    if(excludedVertexSet_.find(vertex) != 
+       excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);
   }
   nv_ = vertices_.size();
@@ -245,8 +240,7 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 
 	//This skips an effective vertex and the EW ones if 
 	// we only want the strong diagrams
-	if( (vertexA->orderInGs() + vertexA->orderInGem() == 3) ||
-	    (!allDiagrams_ && vertexA->orderInGs() == 0) ) 
+	if( !allDiagrams_ && vertexA->orderInGs() == 0 ) 
 	  continue;
 
 	if(vertexA->getNpoint() == 3) {
