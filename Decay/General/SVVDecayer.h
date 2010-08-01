@@ -40,7 +40,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SVVDecayer() {  addToSearchList(2); }
+  SVVDecayer() {  addToSearchList(2); }
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

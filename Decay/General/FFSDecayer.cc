@@ -117,9 +117,9 @@ double FFSDecayer::me2(const int , const Particle & inpart,
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
       if(ferm) ME()(if1, if2, 0) = 
-	_perturbativeVertex->evaluate(scale,_wave[if1],_wavebar[if2],scal);
+	_abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],scal);
       else     ME()(if2, if1, 0) = 
-	_abstractVertex    ->evaluate(scale,_wave[if1],_wavebar[if2],scal);
+	_abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],scal);
     }
   }
   double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
