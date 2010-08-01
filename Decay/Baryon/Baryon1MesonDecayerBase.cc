@@ -398,20 +398,19 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(const int,
       //output+= norm(ME()(ispin));
     }
   }
+  double output = (ME().contract(_rho)).real();
   // test of the matrix element
-  /*
-  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
-  Energy2 Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
-  double r23(sqrt(2./3.));
-  Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
-  Complex h1(-2.*r23*pcm*m1/m2*Qm*B/(m1+m2)),h2( 2.*r23*pcm*m1/m2*Qp*A/(m1+m2));
-  cout << "testing 1/2->3/2 0 "
-       << 0.5*output << "   " 
-       << 0.25*(h1*conj(h1)+h2*conj(h2)) << "   " 
-       << 0.50*(h1*conj(h1)+h2*conj(h2))/output << endl;
-  */
+//   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+//   Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
+//   double r23(sqrt(2./3.));
+//   Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
+//   complex<Energy> h1(-2.*r23*pcm*m1/m2*Qm*B/(m1+m2)),h2( 2.*r23*pcm*m1/m2*Qp*A/(m1+m2));
+//   cout << "testing 1/2->3/2 0 " << inpart.id() << " "
+//        << output << "   " 
+//        << 0.25*(h1*conj(h1)+h2*conj(h2))/sqr(inpart.mass()) << "   " 
+//        << 0.25*(h1*conj(h1)+h2*conj(h2))/sqr(inpart.mass())/output << endl;
   // return the answer
-  return (ME().contract(_rho)).real();
+  return output;
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
@@ -526,33 +525,26 @@ halfThreeHalfVector(const int,const Particle & inpart,
       }
     }
   }
+  double output = (ME().contract(_rho)).real();
   // test of the matrix element
-  /*
-  Complex output;
-  for(ispin[0]=0;ispin[0]<2;++ispin[0]) {
-      for(ispin[1]=0;ispin[1]<4;++ispin[1]) {
-	  for(ispin[2]=0;ispin[2]<3;++ispin[2]) {
-	      output+= norm(ME()(ispin));
-	    }
-	}
-    }
-  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
-  Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
-  Energy2 Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
-  double r2(sqrt(2.)),r3(sqrt(3.));
-  Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
-  Complex h1(-2.*Qp*A1),h2(2.*Qm*B1);
-  Complex h3(-2./r3*Qp*(A1-Qm*Qm/m2*A2/msum));
-  Complex h4( 2./r3*Qm*(B1-Qp*Qp/m2*B2/msum));
-  Complex h5(-2.*r2/r3/m2/m3*Qp*(0.5*(m12-m22-m32)*A1+0.5*Qm*Qm*(m1+m2)*A2/msum
-				 +m12*pcm*pcm*A3/msum/msum));
-  Complex h6( 2.*r2/r3/m2/m3*Qm*(0.5*(m12-m22-m32)*B1-0.5*Qp*Qp*(m1-m2)*B2/msum
-				 +m12*pcm*pcm*B3/msum/msum));
-  cout << "testing 1/2->3/2 1 " 
-       << 0.5*output << "   " 
-       << 0.25*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)+h5*conj(h5)+h6*conj(h6)) << "   " 
-       << 0.50*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/output << endl;
-  */
+//   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+//   Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
+//   Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
+//   double r2(sqrt(2.)),r3(sqrt(3.));
+//   Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
+//   complex<Energy> h1(-2.*Qp*A1),h2(2.*Qm*B1);
+//   complex<Energy> h3(-2./r3*Qp*(A1-Qm*Qm/m2*A2/msum));
+//   complex<Energy> h4( 2./r3*Qm*(B1-Qp*Qp/m2*B2/msum));
+//   complex<Energy> h5(-2.*r2/r3/m2/m3*Qp*(0.5*(m12-m22-m32)*A1+0.5*Qm*Qm*(m1+m2)*A2/msum
+// 					 +m12*pcm*pcm*A3/msum/msum));
+//   complex<Energy> h6( 2.*r2/r3/m2/m3*Qm*(0.5*(m12-m22-m32)*B1-0.5*Qp*Qp*(m1-m2)*B2/msum
+// 					 +m12*pcm*pcm*B3/msum/msum));
+//   cout << "testing 1/2->3/2 1 " << inpart.id() << " "
+//        << output << "   " 
+//        << 0.25*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+
+// 		h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/sqr(inpart.mass()) << "   " 
+//        << 0.25*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+
+// 		h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/sqr(inpart.mass())/output << endl;
   // return the answer
   return (ME().contract(_rho)).real();
 }
