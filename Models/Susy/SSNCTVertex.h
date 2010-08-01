@@ -205,7 +205,7 @@ struct ClassTraits<Herwig::SSNCTVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "SSNCTVertex.so"; }
+  static string library() { return "HwSusy.so"; }
 };
 
 /** @endcond */

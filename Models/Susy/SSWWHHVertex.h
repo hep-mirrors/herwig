@@ -160,7 +160,7 @@ struct ClassTraits<Herwig::SSWWHHVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "SSWWHHVertex.so"; }
+  static string library() { return "HwSusy.so"; }
 };
 
 /** @endcond */
