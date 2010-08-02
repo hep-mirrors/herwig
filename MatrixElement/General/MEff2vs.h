@@ -173,6 +173,8 @@ private:
    * @param vec VectorWaveFunctions for outgoing vector
    * @param sca Outgoing ScalarWaveFunction
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */

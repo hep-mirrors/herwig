@@ -85,6 +85,11 @@ public:
   const MixingMatrixPtr & charginoVMix() const {
     return VMix_;
   }
+
+  /**
+   *  The phase for gluino vertices
+   */
+  const Complex & gluinoPhase() const {return gluinoPhase_;}
   //@}
 
 public:
@@ -603,6 +608,11 @@ private:
    */ 
   Energy mtR_;
   //@}
+
+  /**
+   *  Phase for the gluino
+   */
+  Complex gluinoPhase_;
 
   /**
    *  Neutralino and Chargino mixing matrices

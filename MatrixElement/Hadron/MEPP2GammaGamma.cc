@@ -245,7 +245,8 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
 //   cerr << "testing me " << 12./me*test << endl;
   // return the answer (including colour and spin factor)
   if(calc) _me.reset(newme);
-  return me/12;
+  // this is 1/3 colour average, 1/4 spin aver, 1/2 identical particles
+  return me/24.;
 }
 
 double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
@@ -320,7 +321,7 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
   //    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
   // final factors
   if(calc) _me.reset(newme);
-  return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(ZERO));
+  return 0.25*sum*sqr(SM().alphaS(scale())*SM().alphaEM(ZERO));
 }
 
 void MEPP2GammaGamma::constructVertex(tSubProPtr sub) {

@@ -72,6 +72,8 @@ private:
    * @param vout2  VectorWaveFunctions for outgoing particle
    * @param md Whether vout2 is massless or not
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */

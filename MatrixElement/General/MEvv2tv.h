@@ -125,6 +125,8 @@ private:
    * @param vec2 Vector of VectorWaveFunction for the 2nd incoming boson
    * @param ten TensorWaveFunction for outgoing tensor.
    * @param vec3 Vector of VectorWaveFunction for the outgoing boson
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param full_me The value of me2 calculation
    */
   ProductionMatrixElement vv2tvHeME(const VBVector & vec1,

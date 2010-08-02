@@ -94,6 +94,8 @@ private:
    * @param m1 Whether v1 is massless or not
    * @param v2 A vector of VectorWaveFunction objects for the second vector
    * @param m2 Whether v2 is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
    */
   ProductionMatrixElement 

@@ -93,8 +93,8 @@ protected:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  virtual Energy mass(double & wgt, const ParticleData & ,
-	      const Energy low,const Energy upp, int shape,
+  virtual Energy mass(double & wgt, const ParticleData & part,
+		      const Energy low,const Energy upp, int shape,
 		      double r=UseRandom::rnd()) const;
 
 private:

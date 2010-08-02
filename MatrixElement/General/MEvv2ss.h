@@ -74,6 +74,8 @@ private:
    * @param sca2 A ScalarWaveFunction for the second outgoing
    * @param me2 The value of the spin-summed matrix element squared
    * (to be calculated)
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement vv2ssME(const VBVector & v1, const VBVector & v2,
 				  const ScalarWaveFunction & sca1, 

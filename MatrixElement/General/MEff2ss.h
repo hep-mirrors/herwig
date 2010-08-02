@@ -168,6 +168,8 @@ private:
    * @param sca1 A ScalarWaveFunction for an outgoing scalar
    * @param sca2 A ScalarWaveFunction for the other outgoing scalar
    * @param me2 The spin averaged matrix element
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement ff2ssME(const SpinorVector & sp, 
 				  const SpinorBarVector & sbar, 

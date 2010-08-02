@@ -61,6 +61,7 @@ public:
    * Member to generate the photons from the dipole
    * @param p The decaying particle
    * @param children The decay products
+   * @param decayer The decayer for this mode
    * @return The decay products with additional radiation
    */
   virtual ParticleVector generatePhotons(const Particle & p,

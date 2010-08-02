@@ -38,7 +38,8 @@ SusyBase::SusyBase() : readFile_(false), topModesFromFile_(false),
 		       meR_(ZERO),mmuR_(ZERO),mtauR_(ZERO),
 		       mq1L_(ZERO),mq2L_(ZERO),mq3L_(ZERO),
 		       mdR_(ZERO),muR_(ZERO),msR_(ZERO),
-		       mcR_(ZERO),mbR_(ZERO),mtR_(ZERO)
+		       mcR_(ZERO),mbR_(ZERO),mtR_(ZERO),
+		       gluinoPhase_(1.) 
 {}
 
 IBPtr SusyBase::clone() const {
@@ -90,7 +91,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << ounit(mq1L_,GeV) << ounit(mq2L_,GeV) << ounit(mq3L_,GeV) 
      << ounit(mdR_,GeV)  << ounit(muR_,GeV)  << ounit(msR_,GeV) 
      << ounit(mcR_,GeV)  << ounit(mbR_,GeV)  << ounit(mtR_,GeV)
-     << tolerance_ << ounit(MPlanck_,GeV);
+     << gluinoPhase_ << tolerance_ << ounit(MPlanck_,GeV);
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -109,7 +110,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> iunit(mq1L_,GeV) >> iunit(mq2L_,GeV) >> iunit(mq3L_,GeV) 
      >> iunit(mdR_,GeV)  >> iunit(muR_,GeV)  >> iunit(msR_,GeV) 
      >> iunit(mcR_,GeV)  >> iunit(mbR_,GeV)  >> iunit(mtR_,GeV)
-     >> tolerance_ >> iunit(MPlanck_,GeV);
+     >> gluinoPhase_ >> tolerance_ >> iunit(MPlanck_,GeV);
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -647,6 +648,9 @@ void SusyBase::resetRepositoryMasses() {
 void SusyBase::adjustMixingMatrix(long id) {
   //get correct mixing matrix
   switch(id) {
+  case 1000021 :
+    gluinoPhase_ = Complex(0.,1.);
+    break;
   case 1000022 :
   case 1000023 :
   case 1000025 :

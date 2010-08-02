@@ -299,6 +299,11 @@ private:
 
   public:
 
+    /**
+     * Exception for error handling
+     * @param str Error message
+     * @param sev Severity
+     */
     TwoToTwoProcessConstructorError(const string & str, Severity sev) 
       : Exception(str,sev) {}
 

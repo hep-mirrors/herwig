@@ -401,7 +401,7 @@ fi
 AC_SUBST(LOAD_UED)
 
 if test "$add" -o "$all"; then
-   LOAD_ADD="library HwADD.so"
+   LOAD_ADD="library HwADDModel.so"
 fi
 AC_SUBST(LOAD_ADD)
 

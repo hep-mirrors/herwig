@@ -210,7 +210,6 @@ protected:
 
   /**
    * Return a mass with the weight using the specified limits.
-   * @param part The particle data pointer of the particle.
    * @param low The lower limit on the particle's mass.
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
