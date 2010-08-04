@@ -149,17 +149,18 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       Energy theMu = theMSSM->muParameter();
       if( higgs == ParticleID::h0 ) {
 	// lightest sbottom
-	
 	Complex coup = 0.5*UnitRemoval::InvE*
 	  (theQb1L *(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
 	   theQb1R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3) +
 	   theQb1LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB);
+
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt1L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB - theSinApB*brac4) -
+	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
 	   theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
+
 	couplings[1] = make_pair(coup, coup);
 	// heavier sbottom
 	coup = 0.5*UnitRemoval::InvE*
@@ -171,7 +172,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	// heavier stop
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt2L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt2R *( - sqr(mt)*theCosA/theMw/theSinB - theSinApB*brac4) -
+	   theQt2R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
 	   theQt2LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
 	   		
 	couplings[3] = make_pair(coup, coup);
@@ -195,7 +196,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	// lightest stop
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt1L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB + theCosApB*brac4) -
+	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4) -
 	   theQt1LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
 
 	couplings[1] = make_pair(coup, coup);
@@ -209,7 +210,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	// heavier stop
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt2L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB + theCosApB*brac4) -
+	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4) -
 	   theQt2LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
 	
 	couplings[3] = make_pair(coup, coup);
