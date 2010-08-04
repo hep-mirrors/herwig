@@ -154,21 +154,6 @@ void SusyBase::Init() {
      "Use the SM ones",
      false);
 
-  static Switch<SusyBase,bool> interfaceGravitinoInteractions
-    ("GravitinoInteractions",
-     "Include gravitino interactions?",
-     &SusyBase::gravitino_, false, false, false);
-  static SwitchOption interfaceGravitinoInteractionsNo
-    (interfaceGravitinoInteractions,
-     "No",
-     "Don't include them",
-     false);
-  static SwitchOption interfaceGravitinoInteractionsYes
-    (interfaceGravitinoInteractions,
-     "Yes",
-     "Include them",
-     true);
-
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
@@ -641,6 +626,8 @@ void SusyBase::resetRepositoryMasses() {
     ostringstream os;
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
+    // switch on gravitino interactions?
+    gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }
   theMasses.clear();
 }
