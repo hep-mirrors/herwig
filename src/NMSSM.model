@@ -109,6 +109,10 @@ insert NewModel:DecayParticles 32 /Herwig/Particles/~chi_50
 insert NewModel:DecayParticles 33 /Herwig/Particles/H30
 insert NewModel:DecayParticles 34 /Herwig/Particles/A20
 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 1000045 # SUSY_chi_50
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 45      # h30  
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 46      # a20
+
 ###################################################
 #
 #  Generate processes and decays in the NMSSM

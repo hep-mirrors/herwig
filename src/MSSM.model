@@ -265,6 +265,7 @@ insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 # and hard processes
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
@@ -273,6 +274,7 @@ insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
