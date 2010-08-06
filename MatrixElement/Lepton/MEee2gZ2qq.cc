@@ -164,7 +164,7 @@ void MEee2gZ2qq::Init() {
      &MEee2gZ2qq::alphaQCD_, false, false, true, false, false);
 
   static Reference<MEee2gZ2qq,ShowerAlpha> interfaceEMCoupling
-    ("AlphaEM",
+    ("AlphaQED",
      "Pointer to the object to calculate the EM coupling for the correction",
      &MEee2gZ2qq::alphaQED_, false, false, true, false, false);
 

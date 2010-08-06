@@ -28,7 +28,8 @@ library HwMEDIS.so
 create Herwig::MEee2gZ2qq MEee2gZ2qq
 set MEee2gZ2qq:MinimumFlavour 1
 set MEee2gZ2qq:MaximumFlavour 5
-set MEee2gZ2qq:Coupling /Herwig/Shower/AlphaQCD
+set MEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
+set MEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
 
 # e+e- -> l+l-
 create Herwig::MEee2gZ2ll MEee2gZ2ll
