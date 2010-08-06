@@ -84,7 +84,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual HardTreePtr generateHardest(ShowerTreePtr,
+				      vector<ShowerInteraction::Type>);
   //@}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -259,20 +260,24 @@ protected:
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
    * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param inter The type of interaction
    * @param subtract Whether or not to subtract the relevant dipole term
    */
   double meRatio(vector<cPDPtr> partons, 
 		 vector<Lorentz5Momentum> momenta,
 		 unsigned int iemittor,
+		 ShowerInteraction::Type inter,
 		 bool subtract =false) const;
 
   /**
    *  Calculate the matrix element for \f$e^-e^-\to q \bar q g$.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
+   * @param inter The type of interaction
    */ 
   InvEnergy2 realME(const vector<cPDPtr> & partons, 
-		    const vector<Lorentz5Momentum> & momenta) const;
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction::Type inter) const;
 
 private:
 
@@ -509,9 +514,14 @@ private:
   static const double EPS_;
 
   /**
-   *  Pointer to the coupling
+   *  Pointer to the strong coupling
    */
-  ShowerAlphaPtr alpha_;
+  ShowerAlphaPtr alphaQCD_;
+
+  /**
+   *  Pointer to the EM coupling
+   */
+  ShowerAlphaPtr alphaQED_;
 
 private:
 

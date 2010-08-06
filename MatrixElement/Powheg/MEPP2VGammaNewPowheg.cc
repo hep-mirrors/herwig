@@ -1924,7 +1924,8 @@ double MEPP2VGammaNewPowheg::subtractedReal(pair<double,double> x, double z,
 }
 
 HardTreePtr MEPP2VGammaNewPowheg::
-generateHardest(ShowerTreePtr tree) {
+generateHardest(ShowerTreePtr tree,
+		vector<ShowerInteraction::Type>) {
   beams_.clear();
   partons_.clear();
   // find the incoming particles

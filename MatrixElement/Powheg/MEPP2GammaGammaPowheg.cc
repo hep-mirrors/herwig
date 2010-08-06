@@ -1630,7 +1630,8 @@ void MEPP2GammaGammaPowheg::doinit() {
 }
 
 HardTreePtr MEPP2GammaGammaPowheg::
-generateHardest(ShowerTreePtr tree) {
+generateHardest(ShowerTreePtr tree,
+		vector<ShowerInteraction::Type>) {
   beams_.clear();
   partons_.clear();
   // find the incoming particles

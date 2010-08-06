@@ -304,8 +304,6 @@ struct ClassTraits<Herwig::MEPP2HiggsVBFPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-
-  // static string library() { return "MEPP2HiggsVBFPowheg.so"; }
   static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 

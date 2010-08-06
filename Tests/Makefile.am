@@ -97,11 +97,10 @@ Rivet-LEP-% : Rivet/LEP-%.in
 Rivet-TVT-% : Rivet/TVT-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
-#  Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
-#           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
-#           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
-#           Rivet-LEP-206 
-Rivet-LEP: Rivet-LEP-35
+Rivet-LEP: Rivet-LEP-35 Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
+           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
+           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
+           Rivet-LEP-206 
 	export DPATH=`rivet-config --datadir`; \
 	for i in LEP-*.aida; do echo $$i; \
 	rivet-rmgaps $$DPATH/ALEPH_2004_S5765862.aida $$i; done; \

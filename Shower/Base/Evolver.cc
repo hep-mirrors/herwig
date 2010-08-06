@@ -1158,7 +1158,7 @@ void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme)
-      _nasontree =  _hardme->generateHardest( currentTree() );
+      _nasontree =  _hardme->generateHardest( currentTree(),interactions_ );
     else
       _nasontree = _decayme->generateHardest( currentTree() );
     ShowerParticleVector particles;
