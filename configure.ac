@@ -107,6 +107,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/UED/Makefile
 		Models/LH/Makefile
 		Models/LHTP/Makefile
+		Models/HiddenValley/Makefile
 		Models/Transplanckian/Makefile
 		Models/AnomalousCouplings/Makefile
 		Models/Leptoquarks/Makefile
