@@ -347,7 +347,6 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
 AC_MSG_CHECKING([for BSM models to include])
 
-LOAD_BSM_ANALYSIS=""
 LOAD_RS=""
 LOAD_SUSY=""
 LOAD_TRP=""
@@ -372,8 +371,6 @@ if test ! "$all"; then
    done
    IFS="$oldIFS"
 fi
-
-AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
 
 if test "$rs" -o "$all" ; then
    LOAD_RS="library HwRSModel.so"
