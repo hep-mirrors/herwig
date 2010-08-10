@@ -74,6 +74,7 @@ set Model:Vertex/WWWGR /Herwig/Vertices/RS/RS_WWWGRVertex
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
 ###################################################
