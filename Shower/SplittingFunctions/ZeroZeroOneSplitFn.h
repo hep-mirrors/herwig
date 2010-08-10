@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// QtoQGSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ZeroZeroOneSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_QtoQGSplitFn_H
-#define HERWIG_QtoQGSplitFn_H
+#ifndef HERWIG_ZeroZeroOneSplitFn_H
+#define HERWIG_ZeroZeroOneSplitFn_H
 //
-// This is the declaration of the QtoQGSplitFn class.
+// This is the declaration of the ZeroZeroOneSplitFn class.
 //
 
 #include "SplittingFunction.h"
@@ -18,32 +18,31 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**\ingroup Shower
- *
+/** \ingroup Shower
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$q\to qg\f$. 
+ * splitting function for \f$\phi\to \phi g\f$.
  *
- *  In this case the splitting function is given by
- * \f[P(z,t) =C_F\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
- * where \f$C_F=\frac43\f$.
+ * In this case the splitting function is given by
+ * \f[P(z,t) = 2C\left(\frac{z}{1-z}-\frac{m^2_\phi}{t}\right),\f]
+ * where \f$C\f$ is the corresponding colour factor.
  * Our choice for the overestimate is 
- * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
+ * \f[P_{\rm over}(z) = \frac{2C}{1-z},\f]
  * therefore the integral is
- * \f[\int P_{\rm over}(z) {\rm d}z = -2C_F\ln(1-z),\f]
+ * \f[\int P_{\rm over}(z) {\rm d}z = -2C\ln(1-z),\f]
  * and its inverse is
- * \f[1-\exp\left(\frac{r}{2C_F}\right).\f]
+ * \f[1-\exp\left(\frac{r}{2C}\right).\f]
  *
- * @see \ref QtoQGSplitFnInterfaces "The interfaces"
- * defined for QtoQGSplitFn.
+ * @see \ref ZeroZeroOneSplitFnInterfaces "The interfaces"
+ * defined for ZeroZeroOneSplitFn.
  */
-class QtoQGSplitFn: public SplittingFunction {
+class ZeroZeroOneSplitFn: public SplittingFunction {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline QtoQGSplitFn()  : SplittingFunction(ShowerInteraction::QCD,1) {}
+  inline ZeroZeroOneSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -57,14 +56,14 @@ public:
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
+   * The concrete implementation of the splitting function, \f$P\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass) const;
+		   bool mass) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -77,14 +76,14 @@ public:
   /**
    * The concrete implementation of the
    * the ratio of the splitting function to the overestimate, i.e.
-   * \f$P(z,t)/P_{\rm over}(z)\f$.
+   * \f$P(z,\tilde{q}^2)/P_{\rm over}(z)\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass) const;
+			bool mass) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -109,19 +108,6 @@ public:
   virtual double invIntegOverP(const double r, const IdList & ids, 
 			       unsigned int PDFfactor=0) const;
   //@}
-
-  /**
-   * Purely virtual method which should make the proper colour connection 
-   * between the emitting parent and the branching products.
-   * @param parent The parent for the branching
-   * @param first  The first  branching product
-   * @param second The second branching product
-   * @param back Whether this is foward or backward evolution.
-   */
-  virtual void colourConnection(tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second,
-				const bool back) const;
 
 public:
 
@@ -154,15 +140,15 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<QtoQGSplitFn> initQtoQGSplitFn;
+  static NoPIOClassDescription<ZeroZeroOneSplitFn> initZeroZeroOneSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQGSplitFn & operator=(const QtoQGSplitFn &);
+  ZeroZeroOneSplitFn & operator=(const ZeroZeroOneSplitFn &);
 
 };
 
@@ -175,24 +161,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QtoQGSplitFn. */
+ *  base classes of ZeroZeroOneSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::QtoQGSplitFn,1> {
-  /** Typedef of the first base class of QtoQGSplitFn. */
+struct BaseClassTrait<Herwig::ZeroZeroOneSplitFn,1> {
+  /** Typedef of the first base class of ZeroZeroOneSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QtoQGSplitFn class and the shared object where it is defined. */
+ *  the ZeroZeroOneSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QtoQGSplitFn>
-  : public ClassTraitsBase<Herwig::QtoQGSplitFn> {
+struct ClassTraits<Herwig::ZeroZeroOneSplitFn>
+  : public ClassTraitsBase<Herwig::ZeroZeroOneSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::QtoQGSplitFn"; }
+  static string className() { return "Herwig::ZeroZeroOneSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QtoQGSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class QtoQGSplitFn depends on other classes (base classes
+   * ZeroZeroOneSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class ZeroZeroOneSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -203,4 +189,4 @@ struct ClassTraits<Herwig::QtoQGSplitFn>
 
 }
 
-#endif /* HERWIG_QtoQGSplitFn_H */
+#endif /* HERWIG_ZeroZeroOneSplitFn_H */

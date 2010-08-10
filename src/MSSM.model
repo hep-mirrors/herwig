@@ -315,12 +315,16 @@ insert NewModel:DecayParticles 31 /Herwig/Particles/H+
 ###################################################
 cd /Herwig/Shower
 
-create Herwig::PhitoPhiGSplitFn PhitoPhiGSplitFn
-create Herwig::GluinotoGluinoGSplitFn GluinotoGluinoGSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
+set PhitoPhiGSplitFn:InteractionType QCD
+set PhitoPhiGSplitFn:ColourStructure TripletTripletOctet
+
+create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
+set GluinotoGluinoGSplitFn:InteractionType QCD
+set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
 
 cp SudakovCommon PhitoPhiGSudakov
 set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
-set PhitoPhiGSudakov:PDFmax 35.0
 
 cp SudakovCommon GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
