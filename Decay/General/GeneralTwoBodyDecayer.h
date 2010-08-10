@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralTwoBodyDecayer() : _thelist(0,0), _maxweight(1,1.) {}
+  GeneralTwoBodyDecayer() : _thelist(0,0), _maxweight(1,1.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -119,7 +119,7 @@ protected:
   /** Set list to search
    * @param ilist 
    */
-  inline void addToSearchList(unsigned int ilist) { 
+  void addToSearchList(unsigned int ilist) { 
     _thelist.push_back(ilist); 
   }
   
@@ -127,13 +127,13 @@ protected:
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr getVertex() const { return _theVertex; }
 
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  inline void setWeight(const vector<double> & wgt) { _maxweight = wgt; }
+  void setWeight(const vector<double> & wgt) { _maxweight = wgt; }
 
   /**
    * Set colour connections
