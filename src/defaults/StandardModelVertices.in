@@ -51,15 +51,3 @@ set /Herwig/Model:Vertex/HGG HGGVertex
 #create the standard model HPP vertex
 create Herwig::SMHPPVertex HPPVertex
 set /Herwig/Model:Vertex/HPP HPPVertex
-
-#create the standard model HHH vertex
-create Herwig::SMHHHVertex HHHVertex
-set /Herwig/Model:Vertex/HHH HHHVertex
-
-#create the standard model WWHH vertex
-create Herwig::SMWWHHVertex WWHHVertex
-set /Herwig/Model:Vertex/WWHH WWHHVertex
-
-#create the standard model HHHH vertex
-create Herwig::SMHHHHVertex HHHHVertex
-set /Herwig/Model:Vertex/HHHH HHHHVertex

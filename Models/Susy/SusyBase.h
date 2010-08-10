@@ -17,6 +17,8 @@
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "SusyBase.fh"
 
 namespace Herwig {
@@ -223,6 +225,11 @@ public:
   const Energy & MtR() const {return mtR_;}
   //@}
 
+  /**
+   *  Planck mass
+   */
+  const Energy & MPlanck() const {return MPlanck_;}
+
 protected:
 
   /**
@@ -395,6 +402,16 @@ private:
    *  Tolerance for branching ratios
    */
   double tolerance_;
+
+  /**
+   *  Planck mass needed in GMSB models
+   */
+  Energy MPlanck_;
+
+  /**
+   *  Whether or not to include gravitino interactions
+   */
+  bool gravitino_;
 
   /*
    * Storage of the parameters.
@@ -636,6 +653,21 @@ private:
    *  Pointer to the vertex for flavour changing stop decay
    */
   AbstractFFSVertexPtr NCTVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-neutralino vector boson
+   */
+  AbstractRFVVertexPtr GVNVVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-neutralino Higgs boson
+   */
+  AbstractRFSVertexPtr GVNHVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-fermion sfermion 
+   */
+  AbstractRFSVertexPtr GVFSVertex_;
   //@}
 };
 

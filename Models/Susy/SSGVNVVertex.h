@@ -1,41 +1,47 @@
 // -*- C++ -*-
-#ifndef HERWIG_SMHHHHVertex_H
-#define HERWIG_SMHHHHVertex_H
+#ifndef HERWIG_SSGVNVVertex_H
+#define HERWIG_SSGVNVVertex_H
 //
-// This is the declaration of the SMHHHHVertex class.
+// This is the declaration of the SSGVNVVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/SSSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/RFVVertex.h"
+#include "MixingMatrix.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the SMHHHHVertex class.
+ * The SSGVNVVertex class implements the coupling of the gravitino
+ * to a gaugino and the assoicated gauge boson.
  *
- * @see \ref SMHHHHVertexInterfaces "The interfaces"
- * defined for SMHHHHVertex.
+ * @see \ref SSGVNVVertexInterfaces "The interfaces"
+ * defined for SSGVNVVertex.
  */
-  class SMHHHHVertex: public Helicity::SSSSVertex {
+class SSGVNVVertex: public Helicity::RFVVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  SMHHHHVertex();
+  SSGVNVVertex();
 
   /**
-   * Calculate the couplings.
+   * Calculate the couplings. This method is virtual and must be implemented in 
+   * classes inheriting from this.
    * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
-   * @param part4 The ParticleData pointer for the fourth particle.
+   * @param ioff An integer referring to which particle in the list is 
+   * offshell if applicable.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
-			   tcPDPtr part3,tcPDPtr part4);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,
+			   tcPDPtr part2,tcPDPtr part3);
+
+public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -78,7 +84,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -97,30 +102,50 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SMHHHHVertex> initSMHHHHVertex;
+  static ClassDescription<SSGVNVVertex> initSSGVNVVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMHHHHVertex & operator=(const SMHHHHVertex &);
+  SSGVNVVertex & operator=(const SSGVNVVertex &);
 
 private:
 
   /**
-   *  ratio of masses
+   *  \f$\sin\theta_W\f$
    */
-    double ratio_;
+  double sw_;
 
   /**
-   *  The last value of the electroweak coupling calculated.
+   *  \f$\sin\theta_W\f$
    */
-  Complex couplast_;
+  double cw_;
 
   /**
-   *  The scale \f$q^2\f$ at which the coupling was last evaluated.
+   * The value of \f$\sin\beta\f$ 
    */
-  Energy2 q2last_;
+  double sb_;
+
+  /**
+   * The value of \f$\cos\beta\f$ 
+   */
+  double cb_;
+
+  /**
+   *  The Z mass
+   */  
+  Energy mz_;
+  
+  /**
+   * Pointer to the neutralino mixing matrix
+   */
+  tMixingMatrixPtr nmix_;
+
+  /**
+   *  The Planck mass
+   */
+  Energy MPlanck_;
 
 };
 
@@ -133,24 +158,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SMHHHHVertex. */
+ *  base classes of SSGVNVVertex. */
 template <>
-struct BaseClassTrait<Herwig::SMHHHHVertex,1> {
-  /** Typedef of the first base class of SMHHHHVertex. */
-  typedef Helicity::SSSSVertex NthBase;
+struct BaseClassTrait<Herwig::SSGVNVVertex,1> {
+  /** Typedef of the first base class of SSGVNVVertex. */
+  typedef Helicity::RFVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SMHHHHVertex class and the shared object where it is defined. */
+ *  the SSGVNVVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SMHHHHVertex>
-  : public ClassTraitsBase<Herwig::SMHHHHVertex> {
+struct ClassTraits<Herwig::SSGVNVVertex>
+  : public ClassTraitsBase<Herwig::SSGVNVVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHHHHVertex"; }
+  static string className() { return "Herwig::SSGVNVVertex"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * SSGVNVVertex is implemented. It may also include several, space-separated,
+   * libraries if the class SSGVNVVertex depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "SSGVNVVertex.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_SMHHHHVertex_H */
+#endif /* HERWIG_SSGVNVVertex_H */

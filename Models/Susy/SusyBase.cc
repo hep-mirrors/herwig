@@ -29,7 +29,8 @@
 using namespace Herwig;
 
 SusyBase::SusyBase() : readFile_(false), topModesFromFile_(false),
-		       tolerance_(1e-6),
+		       tolerance_(1e-6), MPlanck_(2.4e18*GeV),
+		       gravitino_(false),
 		       tanBeta_(0), mu_(ZERO), 
 		       M1_(ZERO), M2_(ZERO), M3_(ZERO),
 		       mH12_(ZERO),mH22_(ZERO),
@@ -66,16 +67,22 @@ void SusyBase::doinit() {
   addVertex(GOGOHVertex_);
   addVertex(WHHVertex_);
   addVertex(NCTVertex_);
+  if(gravitino_) {
+    if(GVNHVertex_) addVertex(GVNHVertex_);
+    if(GVNVVertex_) addVertex(GVNVVertex_);
+    if(GVFSVertex_) addVertex(GVFSVertex_);
+  }
   StandardModel::doinit();
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << readFile_ << topModesFromFile_ 
+  os << readFile_ << topModesFromFile_ << gravitino_
      << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
      << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
      << GOGOHVertex_ << WHHVertex_ << GNGVertex_ << NCTVertex_
+     << GVNHVertex_ << GVNVVertex_ << GVFSVertex_
      << tanBeta_ << ounit(mu_,GeV) 
      << ounit(M1_,GeV) << ounit(M2_,GeV) << ounit(M3_,GeV)
      << ounit(mH12_,GeV2) << ounit(mH22_,GeV2) 
@@ -84,16 +91,17 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << ounit(mq1L_,GeV) << ounit(mq2L_,GeV) << ounit(mq3L_,GeV) 
      << ounit(mdR_,GeV)  << ounit(muR_,GeV)  << ounit(msR_,GeV) 
      << ounit(mcR_,GeV)  << ounit(mbR_,GeV)  << ounit(mtR_,GeV)
-     << gluinoPhase_ << tolerance_;
+     << gluinoPhase_ << tolerance_ << ounit(MPlanck_,GeV);
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> readFile_ >> topModesFromFile_
+  is >> readFile_ >> topModesFromFile_ >> gravitino_
      >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
      >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
      >> GOGOHVertex_ >> WHHVertex_ >> GNGVertex_ >> NCTVertex_
+     >> GVNHVertex_ >> GVNVVertex_ >> GVFSVertex_
      >> tanBeta_ >> iunit(mu_,GeV) 
      >> iunit(M1_,GeV) >> iunit(M2_,GeV) >> iunit(M3_,GeV)
      >> iunit(mH12_,GeV2) >> iunit(mH22_,GeV2) 
@@ -102,7 +110,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> iunit(mq1L_,GeV) >> iunit(mq2L_,GeV) >> iunit(mq3L_,GeV) 
      >> iunit(mdR_,GeV)  >> iunit(muR_,GeV)  >> iunit(msR_,GeV) 
      >> iunit(mcR_,GeV)  >> iunit(mbR_,GeV)  >> iunit(mtR_,GeV)
-     >> gluinoPhase_ >> tolerance_;
+     >> gluinoPhase_ >> tolerance_ >> iunit(MPlanck_,GeV);
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -112,7 +120,8 @@ void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
     ("This is the base class for any SUSY model.",
-     "SUSY spectrum files follow the Les Houches accord \\cite{Skands:2003cj,Allanach:2008qq}.",
+     "SUSY spectrum files follow the Les Houches accord"
+     " \\cite{Skands:2003cj,Allanach:2008qq}.",
      " %\\cite{Skands:2003cj}\n"
      "\\bibitem{Skands:2003cj}\n"
      "  P.~Skands {\\it et al.},\n"
@@ -226,10 +235,34 @@ void SusyBase::Init() {
      "to the neutralino and charm quark.",
      &SusyBase::NCTVertex_, false, false, true, false, false);
 
+  static Reference<SusyBase,AbstractRFSVertex> interfaceVertexGVNH
+    ("Vertex/GVNH",
+     "Vertex for the interfaction of the gravitino-neutralino"
+     " and Higgs bosons",
+     &SusyBase::GVNHVertex_, false, false, true, true, false);
+
+  static Reference<SusyBase,AbstractRFVVertex> interfaceVertexGVNV
+    ("Vertex/GVNV",
+     "Vertex for the interfaction of the gravitino-neutralino"
+     " and vector bosons",
+     &SusyBase::GVNVVertex_, false, false, true, true, false);
+
+  static Reference<SusyBase,AbstractRFSVertex> interfaceVertexGVFS
+    ("Vertex/GVFS",
+     "Vertex for the interfaction of the gravitino-fermion"
+     " and sfermion",
+     &SusyBase::GVFSVertex_, false, false, true, true, false);
+
   static Parameter<SusyBase,double> interfaceBRTolerance
     ("BRTolerance",
      "Tolerance for the sum of branching ratios to be difference from one.",
      &SusyBase::tolerance_, 1e-6, 1e-8, 0.01,
+     false, false, Interface::limited);
+
+  static Parameter<SusyBase,Energy> interfaceMPlanck
+    ("MPlanck",
+     "The Planck mass for GMSB models",
+     &SusyBase::MPlanck_, GeV, 2.4e18*GeV, 1.e16*GeV, 1.e20*GeV,
      false, false, Interface::limited);
 
 }
@@ -596,6 +629,8 @@ void SusyBase::resetRepositoryMasses() {
     ostringstream os;
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
+    // switch on gravitino interactions?
+    gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }
   theMasses.clear();
 }

@@ -17,7 +17,4 @@ libHwStandardModel_la_SOURCES = \
         SMWWWVertex.cc SMWWWVertex.h \
         SMWWWWVertex.cc SMWWWWVertex.h \
 	SMHGGVertex.cc SMHGGVertex.h \
-	SMHPPVertex.cc SMHPPVertex.h\
-	SMHHHVertex.cc SMHHHVertex.h \
-	SMWWHHVertex.cc SMWWHHVertex.h \
-	SMHHHHVertex.cc SMHHHHVertex.h
+	SMHPPVertex.cc SMHPPVertex.h
