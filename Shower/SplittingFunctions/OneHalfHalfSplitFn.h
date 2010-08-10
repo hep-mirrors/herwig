@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// GtoQQbarSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// OneHalfHalfSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_GtoQQbarSplitFn_H
-#define HERWIG_GtoQQbarSplitFn_H
+#ifndef HERWIG_OneHalfHalfSplitFn_H
+#define HERWIG_OneHalfHalfSplitFn_H
 //
-// This is the declaration of the GtoQQbarSplitFn class.
+// This is the declaration of the OneHalfHalfSplitFn class.
 //
 
 #include "SplittingFunction.h"
@@ -21,29 +21,29 @@ using namespace ThePEG;
 /**\ingroup Shower
  *
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$g\to q\bar{q}\f$. 
+ * splitting function for \f$1\to \frac12\frac12\f$. 
  *
  * In this case the splitting function is given by
- * \f[P(z,t) =T_R\left(1-2z(1-z)+2\frac{m_q^2}{t}\right),\f]
- * where \f$T_R=\frac12\f$
+ * \f[P(z,t) =C\left(1-2z(1-z)+2\frac{m_q^2}{t}\right),\f]
+ * where \f$C\f$ is the corresponding colour factor
  * Our choice for the overestimate is 
- * \f[P_{\rm over}(z) = T_R,\f]
+ * \f[P_{\rm over}(z) = C,\f]
  * therefore the integral is
- * \f[\int P_{\rm over}(z) {\rm d}z =T_Rz,\f]
+ * \f[\int P_{\rm over}(z) {\rm d}z =Cz,\f]
  * and its inverse is
- * \f[\frac{r}{T_R}\f]
+ * \f[\frac{r}{C}\f]
  *
- * @see \ref GtoQQbarSplitFnInterfaces "The interfaces"
- * defined for GtoQQbarSplitFn.
+ * @see \ref OneHalfHalfSplitFnInterfaces "The interfaces"
+ * defined for OneHalfHalfSplitFn.
  */
-class GtoQQbarSplitFn: public SplittingFunction {
+class OneHalfHalfSplitFn: public SplittingFunction {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline GtoQQbarSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
+  inline OneHalfHalfSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -111,19 +111,6 @@ public:
 			       unsigned int PDFfactor=0) const;
   //@}
 
-  /**
-   * Purely virtual method which should make the proper colour connection 
-   * between the emitting parent and the branching products.
-   * @param parent The parent for the branching
-   * @param first  The first  branching product
-   * @param second The second branching product
-   * @param back Whether this is foward or backward evolution.
-   */
-  virtual void colourConnection(tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second,
-				const bool back) const;
-
 public:
 
   /**
@@ -157,13 +144,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<GtoQQbarSplitFn> initGtoQQbarSplitFn;
+  static NoPIOClassDescription<OneHalfHalfSplitFn> initOneHalfHalfSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GtoQQbarSplitFn & operator=(const GtoQQbarSplitFn &);
+  OneHalfHalfSplitFn & operator=(const OneHalfHalfSplitFn &);
 
 };
 
@@ -176,24 +163,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of GtoQQbarSplitFn. */
+ *  base classes of OneHalfHalfSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::GtoQQbarSplitFn,1> {
-  /** Typedef of the first base class of GtoQQbarSplitFn. */
+struct BaseClassTrait<Herwig::OneHalfHalfSplitFn,1> {
+  /** Typedef of the first base class of OneHalfHalfSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the GtoQQbarSplitFn class and the shared object where it is defined. */
+ *  the OneHalfHalfSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::GtoQQbarSplitFn>
-  : public ClassTraitsBase<Herwig::GtoQQbarSplitFn> {
+struct ClassTraits<Herwig::OneHalfHalfSplitFn>
+  : public ClassTraitsBase<Herwig::OneHalfHalfSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::GtoQQbarSplitFn"; }
+  static string className() { return "Herwig::OneHalfHalfSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * GtoQQbarSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class GtoQQbarSplitFn depends on other classes (base classes
+   * OneHalfHalfSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class OneHalfHalfSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -204,4 +191,4 @@ struct ClassTraits<Herwig::GtoQQbarSplitFn>
 
 }
 
-#endif /* HERWIG_GtoQQbarSplitFn_H */
+#endif /* HERWIG_OneHalfHalfSplitFn_H */

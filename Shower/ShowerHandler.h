@@ -413,6 +413,15 @@ public:
     return currentHandler_;
   }
 
+protected:
+
+  /**
+   *  Set the current handler
+   */
+  void setCurrentHandler() {
+    currentHandler_ = this;
+  }
+
 };
 
 }

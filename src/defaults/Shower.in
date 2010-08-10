@@ -100,10 +100,19 @@ set AlphaQCD:AlphaMZ 0.120
 #
 #
 # Lets set up all the splittings
-create Herwig::QtoQGSplitFn QtoQGSplitFn
-create Herwig::GtoQQbarSplitFn GtoQQbarSplitFn
-create Herwig::GtoGGSplitFn GtoGGSplitFn
-create Herwig::QtoGQSplitFn QtoGQSplitFn
+create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
+set QtoQGSplitFn:InteractionType QCD
+set QtoQGSplitFn:ColourStructure TripletTripletOctet
+create Herwig::OneOneOneSplitFn GtoGGSplitFn
+set GtoGGSplitFn:InteractionType QCD
+set GtoGGSplitFn:ColourStructure OctetOctetOctet
+create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
+set GtoQQbarSplitFn:InteractionType QCD
+set GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
+create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
+set QtoGQSplitFn:InteractionType QCD
+set QtoGQSplitFn:ColourStructure TripletOctetTriplet
+
 #
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon

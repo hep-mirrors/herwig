@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// QtoQGSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// OneOneOneSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_QtoQGSplitFn_H
-#define HERWIG_QtoQGSplitFn_H
+#ifndef HERWIG_OneOneOneSplitFn_H
+#define HERWIG_OneOneOneSplitFn_H
 //
-// This is the declaration of the QtoQGSplitFn class.
+// This is the declaration of the OneOneOneSplitFn class.
 //
 
 #include "SplittingFunction.h"
@@ -18,32 +18,33 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**\ingroup Shower
+/** \ingroup Shower
  *
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$q\to qg\f$. 
+ * splitting function for \f$1\to 11\f$. 
  *
- *  In this case the splitting function is given by
- * \f[P(z,t) =C_F\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
- * where \f$C_F=\frac43\f$.
+ * In this case the splitting function is given by
+ * \f[P(z) =2C*\left(\frac{z}{1-z}+\frac{1-z}{z}+z(1-z)\right),\f]
+ * where \f$C=\f$ is the corresponding colour factor.
  * Our choice for the overestimate is 
- * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
+ * \f[P_{\rm over}(z) = 2C\left(\frac1z+\frac1{1-z}\right),\f]
  * therefore the integral is
- * \f[\int P_{\rm over}(z) {\rm d}z = -2C_F\ln(1-z),\f]
+ * \f[\int P_{\rm over}(z) {\rm d}z =2C\ln\left(\frac{z}{1-z}\right),\f]
  * and its inverse is
- * \f[1-\exp\left(\frac{r}{2C_F}\right).\f]
+ * \f[\frac{\exp\left(\frac{r}{2C}\right)}{(1+\exp\left(\frac{r}{2C}\right)}\f]
  *
- * @see \ref QtoQGSplitFnInterfaces "The interfaces"
- * defined for QtoQGSplitFn.
+ *
+ * @see \ref OneOneOneSplitFnInterfaces "The interfaces"
+ * defined for OneOneOneSplitFn.
  */
-class QtoQGSplitFn: public SplittingFunction {
+class OneOneOneSplitFn: public SplittingFunction {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline QtoQGSplitFn()  : SplittingFunction(ShowerInteraction::QCD,1) {}
+  inline OneOneOneSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -95,7 +96,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z, const IdList & ids, 
+  virtual double integOverP(const double z, const IdList & ids,
 			    unsigned int PDFfactor=0) const;
 
   /**
@@ -106,22 +107,9 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r, const IdList & ids, 
+  virtual double invIntegOverP(const double r, const IdList & ids,
 			       unsigned int PDFfactor=0) const;
   //@}
-
-  /**
-   * Purely virtual method which should make the proper colour connection 
-   * between the emitting parent and the branching products.
-   * @param parent The parent for the branching
-   * @param first  The first  branching product
-   * @param second The second branching product
-   * @param back Whether this is foward or backward evolution.
-   */
-  virtual void colourConnection(tShowerParticlePtr parent,
-				tShowerParticlePtr first,
-				tShowerParticlePtr second,
-				const bool back) const;
 
 public:
 
@@ -156,13 +144,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<QtoQGSplitFn> initQtoQGSplitFn;
+  static NoPIOClassDescription<OneOneOneSplitFn> initOneOneOneSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQGSplitFn & operator=(const QtoQGSplitFn &);
+  OneOneOneSplitFn & operator=(const OneOneOneSplitFn &);
 
 };
 
@@ -175,24 +163,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QtoQGSplitFn. */
+ *  base classes of OneOneOneSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::QtoQGSplitFn,1> {
-  /** Typedef of the first base class of QtoQGSplitFn. */
+struct BaseClassTrait<Herwig::OneOneOneSplitFn,1> {
+  /** Typedef of the first base class of OneOneOneSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QtoQGSplitFn class and the shared object where it is defined. */
+ *  the OneOneOneSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QtoQGSplitFn>
-  : public ClassTraitsBase<Herwig::QtoQGSplitFn> {
+struct ClassTraits<Herwig::OneOneOneSplitFn>
+  : public ClassTraitsBase<Herwig::OneOneOneSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::QtoQGSplitFn"; }
+  static string className() { return "Herwig::OneOneOneSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QtoQGSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class QtoQGSplitFn depends on other classes (base classes
+   * OneOneOneSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class OneOneOneSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -203,4 +191,4 @@ struct ClassTraits<Herwig::QtoQGSplitFn>
 
 }
 
-#endif /* HERWIG_QtoQGSplitFn_H */
+#endif /* HERWIG_OneOneOneSplitFn_H */
