@@ -39,7 +39,6 @@ void SMWWWVertex::Init() {
     
 // couplings for the WWW vertex
 void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
-  using ThePEG::Helicity::intermediate;
   int ida=a->id();
   int idb=b->id();
   int idc=c->id();

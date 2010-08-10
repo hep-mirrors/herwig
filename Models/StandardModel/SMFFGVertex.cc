@@ -42,14 +42,9 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   norm(_couplast);
   // the left and right couplings
   int iferm=abs(aa->id());
-  if(iferm>=1 && iferm<=6) {
-    left(1.);
-    right(1.);
-  }
-  else
-    throw HelicityConsistencyError() << "SMFFGVertex::setCoupling" 
-				     << "Unknown particle in gluon vertex" 
-				     << Exception::runerror;
+  assert(iferm>=1 && iferm<=6);
+  left(1.);
+  right(1.);
 }
 
 SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
