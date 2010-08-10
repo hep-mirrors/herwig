@@ -227,7 +227,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	couplings[8] = make_pair(coup, coup);
 	// charged higgs
 	coup = - UnitRemoval::InvE*theMw*(theCosBmA - 0.5/(1.-sqr(theSw))*
-		       (sqr(theCosB)-sqr(theSinB))*theCosApB);
+					  (sqr(theCosB)-sqr(theSinB))*theCosApB);
 	couplings[9] = make_pair(coup, coup);
 	// W boson
 	coup = UnitRemoval::InvE*theMw*theCosBmA;
@@ -380,7 +380,7 @@ void SSHPPVertex::doinit() {
   VVSLoopVertex::doinit();
   // test calc of the width
 //   for(unsigned int ix=0;ix<2;++ix) {
-//     Energy mh   = getParticleData(25+ix*10)->mass();
+//     Energy mh   = getParticleData(25+long(ix)*10)->mass();
 //     Energy mt   = theMSSM->mass(sqr(mh  ), thetop);    
 //     Energy mb   = theMSSM->mass(sqr(mh  ), thebot);    
 //     Energy mtau = theMSSM->mass(sqr(mh  ), thetau);

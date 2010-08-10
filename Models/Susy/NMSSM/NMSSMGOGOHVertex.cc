@@ -188,8 +188,8 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
       Complex coupR = -_lambda*rt*(*_mixS)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
 	-_couplast*rt*((*_mixS)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)+
 		       (*_mixS)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1));
-      left(-coupL);
-      right(-coupR);
+      left(coupL);
+      right(coupR);
       norm(1.0);
     }
     // neutralino
@@ -214,7 +214,7 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 			     us2*(ni1*nj4 + ni4*nj1) )/_cw;
       left(conj(YL));
       right(YL);
-      norm(-1.0);
+      norm(1.0);
     }
   }
   // CP-odd  neutral higgs

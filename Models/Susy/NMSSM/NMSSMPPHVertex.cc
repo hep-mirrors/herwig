@@ -195,7 +195,7 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 			     + _vd*((*_mixS)(iloc,0)*sqr(_cb) + 
 				    (*_mixS)(iloc,0)*sqr(_sb) 
 				    + 2.*(*_mixS)(iloc,1)*_sb*_cb)/_coup);
-      cpl /= -sqrt(2.)*_coup;
+      cpl /= -_coup;
       couplings[6] = make_pair(cpl*UnitRemoval::InvE,cpl*UnitRemoval::InvE);
       // sbottoms
       double f1 = mb/_mw/_cb;

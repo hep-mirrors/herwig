@@ -112,7 +112,7 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     fact = 0.5/_cw;
     // Z H+ H-
     if(abs(ih1)==37) {
-      fact *=2*(sqr(_cw)-sqr(_sw));
+      fact *= (sqr(_cw)-sqr(_sw));
       if(ih1<0) fact *=-1.;  
     }
     // Z CP even CP odd
@@ -135,19 +135,18 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   else {
     fact = 0.5; 
     if(abs(ih2)==37) {
-//      fact *=-1.; 
       swap(ih1,ih2);
     }
     if(ibos>0) fact*=-1; 
     // H+ CP even
     if(ih2%5==0) {
       int is = (ih2-25)/10;
-      fact *= (_cosb*(*_mixS)(is,1.)-_sinb*(*_mixS)(is,0.));
+      fact *= (_cosb*(*_mixS)(is,1)-_sinb*(*_mixS)(is,0));
     }
     // H+ CP odd
     else {
       int ip = (ih2-36)/10;
-      fact *= Complex(0.,1.)*(_cosb*(*_mixP)(ip,1.)+_sinb*(*_mixP)(ip,0.));
+      fact *= Complex(0.,1.)*(_cosb*(*_mixP)(ip,1)+_sinb*(*_mixP)(ip,0));
     }
   }
   //output the coupling
