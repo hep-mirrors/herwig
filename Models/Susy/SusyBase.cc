@@ -328,9 +328,7 @@ void SusyBase::readSetup(istream & is) {
        string name = StringUtils::car(StringUtils::cdr(line), " #");
        // mixing matrix
        if((name.find("mix")  != string::npos && 
-	   name.find("hmix") != 0)||
-	  name.find("au") == 0||name.find("ad") == 0||
-	  name.find("ae") == 0 ) {
+	   name.find("hmix") != 0)) {
 	 unsigned int row(0),col(0);
 	 MixingVector vals = readMatrix(file,row,col);
 	 mixings_[name] = make_pair(make_pair(row,col),vals);
