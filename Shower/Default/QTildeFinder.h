@@ -35,8 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeFinder() :  _finalFinalConditions(0),
-			   _initialFinalDecayConditions(0) {}
+  QTildeFinder() : _finalFinalConditions(0),
+		   _initialFinalDecayConditions(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -101,7 +101,7 @@ protected:
    * - 2 is maximal emmision from the anticoloured particle
    * - 3 is randomly selected maximal emmision
    */
-  inline unsigned int finalFinalConditions() const 
+  unsigned int finalFinalConditions() const 
   {return _finalFinalConditions;}
 
   /**
@@ -110,7 +110,7 @@ protected:
    * - 1 is maximal emission from the decay product
    * - 2 is the smooth choice
    */
-  inline unsigned int initialFinalDecayConditions() const
+  unsigned int initialFinalDecayConditions() const
   {return _initialFinalDecayConditions;}
   //@}
 
@@ -122,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:

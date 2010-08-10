@@ -24,6 +24,11 @@
 
 namespace Herwig {
 
+/**
+ *  Typedef for the ShowerTree for the decays
+ */
+typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
+
 using namespace ThePEG;
 
 /** \ingroup Shower
@@ -348,12 +353,6 @@ private:
    *  The incoming beam particles for the current collision
    */
   tPPair incoming_;
-
-
-  /**
-   *  Typedef for the ShowerTree for the decays
-   */
-  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
 
   /**
    *  The ShowerTree for the decays
