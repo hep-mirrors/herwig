@@ -346,7 +346,7 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
 	  generator()->preinitInterface(ndm, "Decayer", "set",
 					decayers.find(currents[ix][iy])
 					->second->fullName());
-	  generator()->preinitInterface(ndm, "OnOff", "set", "1");
+	  generator()->preinitInterface(ndm, "OnOff", "set", "On");
 	  ostringstream br;
 	  br << tbr;
 	  if(!br)
