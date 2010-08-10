@@ -359,14 +359,17 @@ colourConnections(const Particle & parent,
 	}
       }
     }
-    else throw Exception() 
-      << "Unknown colour structure in GeneralThreeBodyDecayer::"
-      << "colourConnections() for singlet decaying particle" 
-      << Exception::runerror; 
+    else {
+      string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	+ out[1]->PDGName() + " " + out[2]->PDGName();
+      throw Exception() 
+	<< "Unknown colour structure in GeneralThreeBodyDecayer::"
+	<< "colourConnections() for singlet decaying particle "
+	<< mode << Exception::runerror;
+    } 
   }
   // colour triplet decaying particle
   else if( inColour == PDT::Colour3) {
-
     if(singlet.size()==2&&triplet.size()==1) {
       outgoing[triplet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
       if(inter&&inter->coloured()) 
@@ -383,10 +386,13 @@ colourConnections(const Particle & parent,
 	    outgoing[triplet[1]]->colourLine()->addAntiColoured(inter);
 	    break;
 	  default:
-	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in "
+	    string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	      + out[1]->PDGName() + " " + out[2]->PDGName();
+	    throw Exception() << "Unknown colour for intermediate in "
 			      << "GeneralThreeBodyDecayer::"
-			      << "colourConnections()" << Exception::runerror;
+			      << "colourConnections() for "
+			      << "decaying colour triplet " 
+			      << mode << Exception::runerror;
 	  }
 	}
       }
@@ -400,18 +406,44 @@ colourConnections(const Particle & parent,
 	    outgoing[triplet[0]]->colourLine()->addAntiColoured(inter);
 	    break;
 	  default:
-	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in "
+	    string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	      + out[1]->PDGName() + " " + out[2]->PDGName();
+	    throw Exception() << "Unknown colour for intermediate in "
 			      << "GeneralThreeBodyDecayer::"
-			      << "colourConnections()" << Exception::runerror;
+			      << "colourConnections() for "
+			      << "decaying colour triplet " 
+			      << mode << Exception::runerror;
 	  }
 	}
       }
     }
-    else throw Exception() 
-      << "Unknown colour structure in GeneralThreeBodyDecayer::"
-      << "colourConnections() for triplet decaying particle" 
-      << Exception::runerror;
+    else if (singlet.size()==1&&triplet.size()==1&&octet.size()==1) {
+      if(inter) {
+	if(inter->children()[0]->dataPtr()->iColour()==PDT::Colour8 ||
+	   inter->children()[1]->dataPtr()->iColour()==PDT::Colour8) {
+	  inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
+	  outgoing[octet[0]]->incomingColour(inter);
+	  outgoing[octet[0]]->colourNeighbour(outgoing[triplet[0]]);
+	}
+	else {
+	  outgoing[octet[0]]->incomingColour(inter);
+	  outgoing[octet[0]]->colourNeighbour(inter);
+	  outgoing[triplet[0]]->incomingColour(inter);
+	}
+      }
+      else {
+	outgoing[octet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+	outgoing[octet[0]]->colourNeighbour(outgoing[triplet[0]]);
+      }
+    }
+    else {
+      string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	+ out[1]->PDGName() + " " + out[2]->PDGName();
+      throw Exception() 
+	<< "Unknown colour structure in GeneralThreeBodyDecayer::"
+	<< "colourConnections() for triplet decaying particle " 
+	<< mode << Exception::runerror;
+    }
   }
   else if( inColour == PDT::Colour3bar) {
     if(singlet.size()==2&&antitriplet.size()==1) {
@@ -428,10 +460,13 @@ colourConnections(const Particle & parent,
 	    outgoing[antitriplet[1]]->antiColourLine()->addAntiColoured(inter);
 	    break;
 	  default:
-	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour antitriplet in"
+	    string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	      + out[1]->PDGName() + " " + out[2]->PDGName();
+	    throw Exception() << "Unknown colour for intermediate in"
 			      << " GeneralThreeBodyDecayer::"
-			      << "colourConnections()" << Exception::runerror;
+			      << "colourConnections() for "
+			      << "decaying colour antitriplet " 
+			      << mode << Exception::runerror;
 	  }
 	}
       }
@@ -445,18 +480,44 @@ colourConnections(const Particle & parent,
 	    outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
 	    break;
 	  default:
-	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour antitriplet in "
+	    string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	      + out[1]->PDGName() + " " + out[2]->PDGName();
+	    throw Exception() << "Unknown colour for intermediate in "
 			      << "GeneralThreeBodyDecayer::"
-			      << "colourConnections()" << Exception::runerror;
+			      << "colourConnections() for "
+			      << "decaying colour antitriplet " 
+			      << mode << Exception::runerror;
 	  }
 	}
       }
     }
-    else throw Exception() 
-      << "Unknown colour structure in GeneralThreeBodyDecayer::"
-      << "colourConnections() for anti-triplet decaying particle" 
-      << Exception::runerror;
+    else if (singlet.size()==1&&antitriplet.size()==1&&octet.size()==1) {
+      if(inter) {
+	if(inter->children()[0]->dataPtr()->iColour()==PDT::Colour8 ||
+	   inter->children()[1]->dataPtr()->iColour()==PDT::Colour8) {
+	  inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
+	  outgoing[octet[0]]->incomingAntiColour(inter);
+	  outgoing[octet[0]]->antiColourNeighbour(outgoing[triplet[0]]);
+	}
+	else {
+	  outgoing[octet[0]]->incomingAntiColour(inter);
+	  outgoing[octet[0]]->antiColourNeighbour(inter);
+	  outgoing[triplet[0]]->incomingAntiColour(inter);
+	}
+      }
+      else {
+	outgoing[octet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+	outgoing[octet[0]]->antiColourNeighbour(outgoing[triplet[0]]);
+      }
+    }
+    else {
+      string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	+ out[1]->PDGName() + " " + out[2]->PDGName();
+      throw Exception() 
+	<< "Unknown colour structure in GeneralThreeBodyDecayer::"
+	<< "colourConnections() for anti-triplet decaying particle" 
+	<< mode << Exception::runerror;
+    }
   }
   else if( inColour == PDT::Colour8) {
     if(triplet.size()==1&&antitriplet.size()==1&&singlet.size()==1) {
@@ -471,16 +532,24 @@ colourConnections(const Particle & parent,
 	  outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
 	  break;
 	default:
-	  throw Exception() << "Unknown colour for intermediate for "
-			    << "decaying colour octet in GeneralThreeBodyDecayer::"
-			    << "colourConnections()" << Exception::runerror;
+	  string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	    + out[1]->PDGName() + " " + out[2]->PDGName();
+	  throw Exception() << "Unknown colour for intermediate"
+			    << " in GeneralThreeBodyDecayer::"
+			    << "colourConnections() for "
+			    << "decaying colour octet " 
+			    << mode << Exception::runerror;
 	}
       }
     }
-    else throw Exception() 
-      << "Unknown colour structure in GeneralThreeBodyDecayer::"
-      << "colourConnections() for octet decaying particle" 
-      << Exception::runerror;
+    else {
+      string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
+	+ out[1]->PDGName() + " " + out[2]->PDGName();
+      throw Exception() 
+	<< "Unknown colour structure in GeneralThreeBodyDecayer::"
+	<< "colourConnections() for octet decaying particle" 
+	<< mode << Exception::runerror;
+    }
   }
 }
 
