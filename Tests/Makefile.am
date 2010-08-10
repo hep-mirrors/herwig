@@ -121,7 +121,7 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Run-I-Powheg-Z \
               Rivet-TVT-Run-II-Z-e  Rivet-TVT-Run-II-Powheg-Z-e  \
               Rivet-TVT-Run-II-Z-mu Rivet-TVT-Run-II-Powheg-Z-mu \
               Rivet-TVT-Run-II-W    Rivet-TVT-Run-II-Powheg-W \
-	export DPATH=`rivet-config --datadir`; \ 
+	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Z-e.aida; \
 	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Powheg-Z-e.aida; 
 	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets.aida
@@ -136,7 +136,7 @@ Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton \
 Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
                  Rivet-TVT-Run-II-Jets-3 Rivet-TVT-Run-II-Jets-4 \
                  Rivet-TVT-Run-II-Jets-5
-	export DPATH=`rivet-config --datadir`; \ 
+	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets-4.aida	
 	rm -rf Rivet-TVT-Jets
 	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT-*-Jets-?.aida
@@ -145,7 +145,7 @@ Rivet-Star: Rivet/Star.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,Star.in)) -N $${NUMEVENTS:-10000}
 	rm -rf Rivet-Star
-	export DPATH=`rivet-config --datadir`; \ 
+	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/STAR_2006_S6860818 Star.aida
 	rivet-mkhtml --no-mc-errs -o Rivet-Star Star.aida
  
