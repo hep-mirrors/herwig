@@ -69,10 +69,10 @@ bool SMHiggsMassGenerator::accept(const ParticleData & part) const {
 
 void SMHiggsMassGenerator::doinit() {
   if(particle()->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(particle()->widthGenerator());
+    _hwidth=dynamic_ptr_cast<GenericWidthGeneratorPtr>(particle()->widthGenerator());
   }
   if(!_hwidth) throw InitException() 
-    << "Must be using the Herwig::SMHiggsWidthGenerator in "
+    << "Must be using the Herwig::GenericWidthGenerator in "
     << "SMHiggsMassGenerator::doinit()" << Exception::runerror;
   GenericMassGenerator::doinit();
 }

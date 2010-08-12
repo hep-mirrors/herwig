@@ -17,7 +17,6 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/StandardModel/SMHGGVertex.h"
 #include "Herwig++/Models/StandardModel/SMHPPVertex.h"
-#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -174,11 +173,6 @@ private:
    * Maximum weight for integration
    */
   vector<double> _h0wgt;
-
-  /**
-   *  Pointer to the width generator for the Higgs
-   */
-  SMHiggsWidthGeneratorPtr _hwidth;
   
   /**
    *  Spin density matrix

@@ -21,8 +21,7 @@ TwoOffShellCalculator.h \
 WidthCalculatorBase.cc WidthCalculatorBase.fh \
 WidthCalculatorBase.h \
 StandardMatchers.h StandardMatchers.cc \
-SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.fh \
-SMHiggsWidthGenerator.h \
+SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.h \
 SMHiggsMassGenerator.cc SMHiggsMassGenerator.fh \
 SMHiggsMassGenerator.h 
 

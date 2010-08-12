@@ -13,7 +13,7 @@
 //
 
 #include "GenericMassGenerator.h"
-#include "SMHiggsWidthGenerator.h"
+#include "GenericWidthGenerator.h"
 #include "SMHiggsMassGenerator.fh"
 
 namespace Herwig {
@@ -159,7 +159,7 @@ private:
   /**
    *  The width generator
    */
-  SMHiggsWidthGeneratorPtr _hwidth;
+  GenericWidthGeneratorPtr _hwidth;
 
 };
 
