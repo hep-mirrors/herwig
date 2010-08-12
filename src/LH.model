@@ -12,6 +12,28 @@
 #
 ###################################################
 cd /Herwig/Particles
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:OnOff Off
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:OnOff Off
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:OnOff Off 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:OnOff Off 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:OnOff Off
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:OnOff Off
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:OnOff Off
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:OnOff Off
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:OnOff Off
+set h0/h0->t,tbar;:BranchingRatio 0.0
+
 create ThePEG::ParticleData A_H
 setup A_H 32 A_H 500.0 0. 0. 0.0 0 0 3 0
 create ThePEG::ParticleData Z_H 
