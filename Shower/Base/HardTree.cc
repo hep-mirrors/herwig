@@ -15,7 +15,8 @@ HardTree::HardTree(vector<HardBranchingPtr> branchings,
 		   ShowerInteraction::Type type) 
   : _interaction(type),
     _branchings(branchings.begin(),branchings.end()),
-    _spacelike (spacelike .begin(),spacelike .end())
+    _spacelike (spacelike .begin(),spacelike .end()),
+    partnersSet_(false)
 {}
 
 bool HardTree::findNodes() {

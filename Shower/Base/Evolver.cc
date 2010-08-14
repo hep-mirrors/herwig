@@ -1231,7 +1231,9 @@ void Evolver::hardestEmission(bool hard) {
     }
     ShowerHandler::currentHandler()->evolver()->showerModel()->
       partnerFinder()->setInitialEvolutionScales(particles,!hard,
-						 _nasontree->interaction(),true);
+						 _nasontree->interaction(),
+						 !_nasontree->partnersSet());
+    _nasontree->partnersSet(true);
     // inverse reconstruction
     if(_hardme)
       ShowerHandler::currentHandler()->evolver()->showerModel()->
