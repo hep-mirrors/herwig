@@ -11,7 +11,8 @@ MEPP2VGammaPowheg.cc  MEPP2VGammaPowheg.h \
 MEPP2VGammaNewPowheg.cc  MEPP2VGammaNewPowheg.h \
 MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
-VVKinematics.cc VVKinematics.h
+VVKinematics.cc VVKinematics.h \
+MEqq2gZ2ffPowhegQED.h MEqq2gZ2ffPowhegQED.cc
 
 HwPowhegMELepton_la_LDFLAGS = -module -version-info 1:0:0
 HwPowhegMELepton_la_SOURCES = \
