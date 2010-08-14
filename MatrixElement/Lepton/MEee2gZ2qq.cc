@@ -759,10 +759,10 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   loMomenta_.push_back(qbProgenitor->progenitor()->momentum());
   // and ParticleData objects
   partons_.resize(5);
-  partons_.push_back(emProgenitor->progenitor()->dataPtr());
-  partons_.push_back(epProgenitor->progenitor()->dataPtr());
-  partons_.push_back(qkProgenitor->progenitor()->dataPtr());
-  partons_.push_back(qbProgenitor->progenitor()->dataPtr());
+  partons_[0]=emProgenitor->progenitor()->dataPtr();
+  partons_[1]=epProgenitor->progenitor()->dataPtr();
+  partons_[2]=qkProgenitor->progenitor()->dataPtr();
+  partons_[3]=qbProgenitor->progenitor()->dataPtr();
   // boost from lab to CMS frame with outgoing particles
   // along the z axis
   LorentzRotation eventFrame( ( loMomenta_[2] + loMomenta_[3] ).findBoostToCM() );
@@ -902,9 +902,10 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	  else
 	    contrib[ix][iy] *= alphaQED_->ratio(sqr(pT[ix]));
 	}
-	if(contrib[ix][0]+contrib[ix][1]>1.)
+ 	if(contrib[ix][0]+contrib[ix][1]>1.)
 	  cerr << "testing weight greater than one " 
 	       << contrib[ix][0]+contrib[ix][1] << "\n";
+
 	reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
       }
       while (reject);
@@ -955,6 +956,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     qbProgenitor->maximumpT(pTmin_);
     return HardTreePtr();
   }
+  partons_[4] = inter[iselect]==ShowerInteraction::QCD ? gluon_ : gamma_;
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;
   for(unsigned int ix=0;ix<partons_.size();++ix) {
@@ -995,9 +997,16 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     allBranchings.push_back( spectatorBranch );
     allBranchings.push_back( emitterBranch );
   }
+  emitterBranch  ->branchingParticle()->setPartner(spectatorBranch->branchingParticle());
+  spectatorBranch->branchingParticle()->setPartner(emitterBranch  ->branchingParticle());
+  if(inter[iselect]==ShowerInteraction::QED) {
+    spaceBranchings[0]->branchingParticle()->setPartner(spaceBranchings[1]->branchingParticle());
+    spaceBranchings[1]->branchingParticle()->setPartner(spaceBranchings[0]->branchingParticle());
+  }
   // Make the HardTree from the HardBranching vectors.
   HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
  					   inter[iselect]));
+  nasontree->partnersSet(true);
   // Set the maximum pt for all other emissions
   qkProgenitor->maximumpT(pTmax);
   qbProgenitor->maximumpT(pTmax);
