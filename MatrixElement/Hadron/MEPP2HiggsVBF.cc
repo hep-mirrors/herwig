@@ -177,7 +177,6 @@ MEPP2HiggsVBF::MEPP2HiggsVBF() : comptonWeight_(8.), BGFWeight_(30.),
 {}
 
 void MEPP2HiggsVBF::doinit() {
-  MEfftoffH::doinit();
   gluon_ = getParticleData(ParticleID::g);
   // integrals of me over phase space
   double r5=sqrt(5.),darg((r5-1.)/(r5+1.)),ath(0.5*log((1.+1./r5)/(1.-1./r5)));
