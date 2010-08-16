@@ -623,7 +623,7 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
       VNS = - mu2/1260.*(-6930. + 7560.*lmu + 2520.*mu - 16695.*mu2 + 1260.*mu2*sqr(Constants::pi) 
 			 + 12600.*lmu*mu2 + 1344.*mu*mu2 - 52780.*mu4 + 36960.*mu4*lmu 
 			 + 5040.*mu4*sqr(Constants::pi) - 12216.*mu*mu4);
-      f2 = ( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
+      f2 = mu2*( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
     }
     // subtracted virtual correction
     output += sqr(double(mePartonData()[2]->iCharge())/3.)*
