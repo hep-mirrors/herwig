@@ -23,26 +23,13 @@ using namespace ThePEG;
  */
 class MEqq2gZ2ffPowhegQED: public HwMEBase {
 
-protected:
+public:
 
   /**
-   *  Struct to return singular numbers
+   *  Enum for the type of Dipole
    */
-  struct Singular {
-    /**
-     * Coefficient of the \f$1/\epsilon^2\f$ singularity 
-     */
-    int eps2;
-
-    /**
-     * Coefficient of the \f$1/\epsilon^2\f$ singularity 
-     */
-    int eps1;
-
-    /**
-     *  Coefficient of the finite term
-     */
-    double finite;
+  enum DipoleType {
+    II12,II21,FF34,FF43
   };
 
 public:
@@ -187,20 +174,7 @@ protected:
   /**
    *  Calculate of the full next-to-leading order weight
    */
-  virtual double NLOWeight() const;
-
-  /**
-   * Virtual matrix element, to be implemented in the
-   * inheriting classes. The method should return the
-   * loop matrix element including it'sa singular terms
-   * Assumes the matrix element has the form
-   * \f[ \frac{\alpha_S}{2\pi}\frac{C_F}{\Gamma(1-\epsilon)}
-   *     \left(\frac{4\pi\mu^2}{\hat s}\right)^epsilon
-   *    \left(\frac{A}{\epsilon^2}+\frac{B}{\epsilon}+C\right)
-   * \f]
-   * and A, B and C are returned.
-   */
-  virtual Singular virtualME() const;
+  double NLOWeight() const;
 
   /**
    * The leading-order matrix element, to be implemented in the
@@ -210,18 +184,27 @@ protected:
    * @param first Whether or not this is the first call and the spin
    * and diagram information should be stored
    */
-  virtual double loME(const cPDVector & particles,
-		      const vector<Lorentz5Momentum> & momenta,
-		      bool first=false) const;
-
+  double loME(const cPDVector & particles,
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first=false) const;
+  
   /**
    * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
    * inheriting classes. 
    * @param particles The ParticleData objects of the particles
    * @param momenta The momenta of the particles
    */
-  virtual double realME(const cPDVector & particles,
-			const vector<Lorentz5Momentum> & momenta) const;
+  double realQCDME(const cPDVector & particles,
+		   const vector<Lorentz5Momentum> & momenta) const;
+  
+  /**
+   * The real matrix element divided by \f$2 e^2\f$, to be implemented in the
+   * inheriting classes. 
+   * @param particles The ParticleData objects of the particles
+   * @param momenta The momenta of the particles
+   */
+  vector<double> realQEDME(const cPDVector & particles,
+			   const vector<Lorentz5Momentum> & momenta) const;
   //@}
 
   /**
@@ -242,36 +225,25 @@ protected:
   /**
    *  Subtracted virtual contribution
    */
-  virtual double subtractedVirtual() const;
+  double subtractedVirtual() const;
 
   /**
    *  Subtracted real contribution
    */
-  virtual vector<double> 
-  subtractedReal(pair<double,double> x, double z,
-		 double zJac,
-		 double oldqPDF, double newqPDF, double newgPDF,
-		 bool order) const;
+  vector<double> 
+  subtractedRealQCD(pair<double,double> x, double z,
+		    double zJac,
+		    double oldqPDF, double newqPDF, double newgPDF,
+		    DipoleType dipole) const;
 
   /**
-   *  Kinematic variables for the real radiation
+   *  Subtracted real contribution
    */
-  //@{
-  /**
-   *  First  variable
-   */
-  double zTilde() const {return zTilde_;}
-
-  /**
-   *  Second variable
-   */
-  double vTilde() const {return vTilde_;}
-
-  /**
-   *  Azimuthal angle
-   */
-  double phi() const {return phi_;}
-  //@}
+  vector<double> 
+  subtractedRealQED(pair<double,double> x, double z,
+		    double zJac,
+		    double oldqPDF, double newqPDF, double newpPDF,
+		    DipoleType dipole) const;
 
   /**
    *  Calculate of the collinear counterterms
@@ -282,11 +254,11 @@ protected:
    */
   double collinearQuark(double x, Energy2 mu2, double jac, double z,
 			double oldPDF, double newPDF) const;
-
+  
   /**
-   *  Gluon collinear counter term
+   *  Gluon or photon collinear counter term
    */
-  double collinearGluon(Energy2 mu2, double jac, double z,
+  double collinearBoson(Energy2 mu2, double jac, double z,
 			double oldPDF, double newPDF) const;
   //@}
 
@@ -298,15 +270,29 @@ protected:
    *  \f$q\bar q\f$
    */
   pair<double,double> 
-  subtractedMEqqbar(const vector<Lorentz5Momentum> & pnew, bool order,
-		    bool subtract) const;
-
+  subtractedQCDMEqqbar(const vector<Lorentz5Momentum> & pnew, 
+		       DipoleType dipole, bool subtract) const;
+  
   /**
    *  \f$g\bar q\f$
    */
   pair<double,double> 
-  subtractedMEgqbar(const vector<Lorentz5Momentum> & pnew, bool order,
-		    bool subtract) const;
+  subtractedQCDMEgqbar(const vector<Lorentz5Momentum> & pnew,
+		       DipoleType dipole, bool subtract) const;
+  
+  /**
+   *  \f$q\bar q\f$
+   */
+  pair<double,double> 
+  subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & pnew,
+		       DipoleType dipole, bool subtract) const;
+  
+  /**
+   *  \f$g\bar q\f$
+   */
+  pair<double,double> 
+  subtractedQEDMEpqbar(const vector<Lorentz5Momentum> & pnew,
+		       DipoleType dipole, bool subtract) const;
 
   /**
    *  The supression function
@@ -391,6 +377,16 @@ private:
   //@}
 
   /**
+   *   Which corrections to included
+   */
+  unsigned int corrections_;
+
+  /**
+   *  Include incoming photons?
+   */
+  bool incomingPhotons_;
+
+  /**
    *  Whether to generate the positive, negative or leading order contribution
    */
   unsigned int contrib_;
@@ -399,6 +395,16 @@ private:
    *  Power for sampling \f$x_p\f$
    */
   double power_;
+
+  /**
+   *  Phase-space sampling for z
+   */
+  double zPow_;
+
+  /**
+   *  Phase-space sampling for y
+   */
+  double yPow_;
 
   /**
    *  Pointer to the gluon ParticleData object
@@ -416,19 +422,34 @@ private:
   mutable double TRfact_;
 
   /**
+   *  Factor for EM pieces
+   */
+  mutable double EMfact_;
+
+  /**
    *  Strong coupling
    */
   mutable double alphaS_;
 
   /**
-   *  Use a fixed value of \f$\alpha_S\f$
+   *  Strong coupling
    */
-  bool fixedAlphaS_;
+  mutable double alphaEM_;
+
+  /**
+   *  Use a fixed value of couplings
+   */
+  bool fixedCouplings_;
 
   /**
    *  Leading-order matrix element
    */
   mutable double loME_;
+
+  /**
+   *  Structure for the virtual FS QED corrections
+   */
+  mutable double f2term_;
 
   /**
    *  Choice of the supression function
@@ -451,22 +472,42 @@ private:
   /**
    *  Momenta of the particles for gluon emmision from first the particle
    */
-  mutable vector<Lorentz5Momentum> realEmissionGluon1_;
+  mutable vector<Lorentz5Momentum> realEmissionQCDGluon1_;
 
   /**
    *  Momenta of the particles for anti quark emission from the first particle
    */
-  mutable vector<Lorentz5Momentum> realEmissionQuark1_;
+  mutable vector<Lorentz5Momentum> realEmissionQCDQuark1_;
 
   /**
    *  Momenta of the particle for gluon emission from the second particle
    */
-  mutable vector<Lorentz5Momentum> realEmissionGluon2_;
+  mutable vector<Lorentz5Momentum> realEmissionQCDGluon2_;
 
   /**
    *  Momenta of the particles for quark emission from the second particle
    */
-  mutable vector<Lorentz5Momentum> realEmissionQuark2_;
+  mutable vector<Lorentz5Momentum> realEmissionQCDQuark2_;
+
+  /**
+   *  Momenta of the particles for gluon emmision from first the particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDPhoton1_;
+
+  /**
+   *  Momenta of the particles for anti quark emission from the first particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDQuark1_;
+
+  /**
+   *  Momenta of the particle for gluon emission from the second particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDPhoton2_;
+
+  /**
+   *  Momenta of the particles for quark emission from the second particle
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDQuark2_;
 
   /**
    *  Properties of the incoming particles
