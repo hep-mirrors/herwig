@@ -33,13 +33,13 @@ IBPtr SMHiggsWidthGenerator::fullclone() const {
 void SMHiggsWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << widthopt_ << offshell_ << ounit(mw_,GeV) << ounit(mz_,GeV) 
      << ounit(gamw_,GeV) << ounit(gamz_,GeV) << ounit(qmass_,GeV) 
-     << ounit(lmass_,GeV) << sw2_ << ca_ << cf_;
+     << ounit(lmass_,GeV) << sw2_ << ca_ << cf_ << locMap_;
 }
 
 void SMHiggsWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> widthopt_ >> offshell_ >> iunit(mw_,GeV) >> iunit(mz_,GeV) 
      >> iunit(gamw_,GeV) >> iunit(gamz_,GeV) >> iunit(qmass_,GeV) 
-     >> iunit(lmass_,GeV) >> sw2_ >> ca_ >> cf_;
+     >> iunit(lmass_,GeV) >> sw2_ >> ca_ >> cf_ >> locMap_;
 }
 
 ClassDescription<SMHiggsWidthGenerator> SMHiggsWidthGenerator::initSMHiggsWidthGenerator;
