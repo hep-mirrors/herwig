@@ -158,7 +158,6 @@ Energy FRVDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(perturbativeVertex_) {
-    Energy test= GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
     Energy m1(inpart.second),m2(outa.second),m3(outb.second);
     Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
     Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
@@ -207,3 +206,4 @@ void FRVDecayer::Init() {
      "a spin-3/2 particle and a vector boson.");
 
 }
+

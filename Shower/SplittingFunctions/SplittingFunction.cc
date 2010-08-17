@@ -307,4 +307,5 @@ bool SplittingFunction::checkColours(const IdList & ids) const {
   else {
     assert(false);
   }
+  return false;
 }

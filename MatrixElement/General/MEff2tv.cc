@@ -297,4 +297,48 @@ void MEff2tv::debug(double me2) const {
 }
 
 void MEff2tv::constructVertex(tSubProPtr sub) {
+  ParticleVector ext = hardParticles(sub);
+  vector<SpinorWaveFunction> sp;
+  SpinorWaveFunction(sp, ext[0], incoming, false);
+  vector<SpinorBarWaveFunction> sbar;
+  SpinorBarWaveFunction(sbar, ext[1], incoming, false);
+  vector<VectorWaveFunction> v2;
+  vector<TensorWaveFunction> t1;
+  bool mc  = !(ext[2]->momentum().mass() > ZERO);
+  bool md  = !(ext[3]->data()    .mass() > ZERO);
+  TensorWaveFunction(t1, ext[2], outgoing, true, mc);
+  VectorWaveFunction(v2, ext[3], outgoing, true, md);
+  // Need to use rescale momenta to calculate matrix element
+  setRescaledMomenta(ext);
+  SpinorWaveFunction spr   (rescaledMomenta()[0],
+			    ext[0]->dataPtr(), incoming);
+  SpinorBarWaveFunction sbr(rescaledMomenta()[1],
+			    ext[1]->dataPtr(), incoming);
+  TensorWaveFunction tr1   (rescaledMomenta()[2],
+			    ext[2]->dataPtr(), outgoing);
+  VectorWaveFunction vr2   (rescaledMomenta()[3],
+			    ext[3]->dataPtr(), outgoing);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+    spr.reset(ihel);
+    sp[ihel] = spr;
+    sbr.reset(ihel);
+    sbar[ihel] = sbr;
+    tr1.reset(4*ihel);
+    t1[4*ihel] = tr1;
+    vr2.reset(2*ihel);
+    v2[2*ihel] = vr2;
+  }
+  if( !mc ) {
+    for(unsigned int ihel=1;ihel<4;++ihel) {
+      tr1.reset(ihel);
+      t1[ihel] = tr1;
+    }
+  }
+  if( !md ) {
+    vr2.reset(1);
+    v2[1] = vr2;
+  }
+  double dummy(0.);
+  ProductionMatrixElement pme = ffb2tvHeME(sp, sbar, t1, v2,dummy,false);
+  createVertex(pme,ext);
 }

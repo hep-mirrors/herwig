@@ -190,9 +190,6 @@ set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
-set Model:Vertex/HHH  /Herwig/Vertices/HHHVertex
-set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
-set Model:Vertex/HHHH /Herwig/Vertices/HHHHVertex
 # MUED Feynman rules
 set Model:Vertex/F1F1Z /Herwig/Vertices/MUED/UED_F1F1Z
 set Model:Vertex/F1F1P /Herwig/Vertices/MUED/UED_F1F1P

@@ -65,7 +65,7 @@ void StandardModel::doinit() {
   addVertex(WWWWVertex_);
   addVertex(vertexHGG());
   addVertex(HPPVertex_);
-  addVertex(HHHVertex_);
+  if(HHHVertex_ ) addVertex(HHHVertex_);
   if(WWHHVertex_) addVertex(WWHHVertex_);
   if(HHHHVertex_) addVertex(HHHHVertex_);
   StandardModelBase::doinit();
@@ -155,7 +155,7 @@ void StandardModel::Init() {
   static Reference<StandardModel,AbstractSSSVertex> interfaceVertexHHH
     ("Vertex/HHH",
      "Reference to the Standard Model HHHVertex",
-     &StandardModel::HHHVertex_, false, false, true, false, false);
+     &StandardModel::HHHVertex_, false, false, true, true, false);
 
   static Reference<StandardModel,AbstractVVSSVertex> interfaceVertexWWHH
     ("Vertex/WWHH",

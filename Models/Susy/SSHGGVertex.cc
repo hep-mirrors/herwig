@@ -57,8 +57,8 @@ void SSHGGVertex::doinit() {
   theSinApB = theSinA*theCosB + theCosA*theSinB;
   theCosApB = theCosA*theCosB - theSinA*theSinB;
   
-  stop = theMSSM->stopMix();
-  sbot = theMSSM->sbottomMix();
+  MixingMatrixPtr stop = theMSSM->stopMix();
+  MixingMatrixPtr sbot = theMSSM->sbottomMix();
   theQt1L  = (*stop)(0,0)*(*stop)(0,0);
   theQt1R  = (*stop)(0,1)*(*stop)(0,1);
   theQt1LR = (*stop)(0,1)*(*stop)(0,0) + (*stop)(0,1)*(*stop)(0,0);

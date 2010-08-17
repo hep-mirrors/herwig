@@ -118,29 +118,10 @@ public:
    */
   static void Init();
 
+public:
+
   /**@name Functions to access specific vertices.*/
   //@{
-  /**
-   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
-   */
-  virtual tAbstractVSSVertexPtr vertexWHH() const {
-    return WHHVertex_;
-  }
-
-  /**
-   * Pointer to the higgs coupling to a pair of gauginos
-   */
-  virtual tAbstractFFSVertexPtr vertexGOGOH() const {
-    return GOGOHVertex_;
-  }
-
-  /**
-   * Pointer to higgs-sfermion-sfermion vertex 
-   */
-  virtual tAbstractSSSVertexPtr vertexHSS() const {
-    return HSFSFVertex_;
-  }
-
   /**
    *  Pointer to the electroweak gauge boson sfermion-sfermion vertex
    */

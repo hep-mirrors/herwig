@@ -35,26 +35,38 @@ CLEANFILES = HerwigDefaults.rpo \
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
 	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in --exitonerror
 
+check_BSM_Full=
 check_BSM=
 if WANT_MSSM
 check_BSM += check-LHC-MSSM 
+check_BSM_Full += check-LHC-MSSM
 endif
 if WANT_NMSSM
 check_BSM += check-LHC-NMSSM
 endif
 if WANT_UED
 check_BSM += check-LHC-MUED-no3body
+check_BSM_Full += check-LHC-MUED
 endif
 if WANT_RS
 check_BSM += check-LHC-RS
+check_BSM_Full += check-LHC-RS
 endif
 if WANT_LH
-check_BSM += check-LHC-LH
+check_BSM_Full += check-LHC-LH
+endif
+if WANT_TRP
+check_BSM_Full += check-LHC-TRP
+endif
+if WANT_ADD
+check_BSM_Full += check-LHC-ADD
 endif
 
 check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
+
+check-BSM: $(check_BSM_Full)
 
 link-helper-files:
 	@for i in $(HELPERFILES); do \

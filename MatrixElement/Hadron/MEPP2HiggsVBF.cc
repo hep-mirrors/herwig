@@ -114,10 +114,10 @@ void MEPP2HiggsVBF::getDiagrams() const {
   }
 }
 
-void MEPP2HiggsVBF::persistentOutput(PersistentOStream & os) const {
+void MEPP2HiggsVBF::persistentOutput(PersistentOStream & ) const {
 }
 
-void MEPP2HiggsVBF::persistentInput(PersistentIStream & is, int) {
+void MEPP2HiggsVBF::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<MEPP2HiggsVBF> MEPP2HiggsVBF::initMEPP2HiggsVBF;

@@ -54,7 +54,7 @@ void SusyBase::doinit() {
   addVertex(WSFSFVertex_);
   addVertex(NFSFVertex_);
   addVertex(GFSFVertex_);
-  addVertex(vertexHSS());
+  addVertex(HSFSFVertex_);
   addVertex(CFSFVertex_);
   addVertex(GSFSFVertex_);
   addVertex(GGSQSQVertex_);
@@ -64,8 +64,8 @@ void SusyBase::doinit() {
   if(GNGVertex_) addVertex(GNGVertex_);
   addVertex(CCZVertex_);
   addVertex(CNWVertex_);
-  addVertex(vertexGOGOH());
-  addVertex(vertexWHH());
+  addVertex(GOGOHVertex_);
+  addVertex(WHHVertex_);
   addVertex(NCTVertex_);
   if(gravitino_) {
     if(GVNHVertex_) addVertex(GVNHVertex_);

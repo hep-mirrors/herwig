@@ -14,7 +14,6 @@
 
 #include "GenericMassGenerator.h"
 #include "GenericWidthGenerator.h"
-#include "SMHiggsMassGenerator.fh"
 
 namespace Herwig {
 
