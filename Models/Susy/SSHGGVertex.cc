@@ -90,7 +90,7 @@ void SSHGGVertex::persistentOutput(PersistentOStream & os) const {
      << theQb1L << theQb1R << theQb1LR << theQb2L << theQb2R << theQb2LR
      << thetop << thebot << theTanB
      << theSinA << theCosA << theSinB << theCosB << theSinApB << theCosApB
-     << ounit(theSqmass, GeV)<< stop << sbot;
+     << ounit(theSqmass, GeV);
 }
 
 void SSHGGVertex::persistentInput(PersistentIStream & is, int) {
@@ -99,7 +99,7 @@ void SSHGGVertex::persistentInput(PersistentIStream & is, int) {
      >> theQb1L >> theQb1R >> theQb1LR >> theQb2L >> theQb2R >> theQb2LR 
      >> thetop >> thebot >> theTanB
      >> theSinA >> theCosA >> theSinB >> theCosB >> theSinApB >> theCosApB
-     >> iunit(theSqmass, GeV) >> stop >> sbot;
+     >> iunit(theSqmass, GeV);
 }
 
 ClassDescription<SSHGGVertex> SSHGGVertex::initSSHGGVertex;
@@ -126,7 +126,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       << "particle content in it. " << higgs << " " 
       << particle2->id() << " " << particle3->id();
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
-    theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2)); //0.1172*4.0*Constants::pi
+    theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2));
     Energy mt = theMSSM->mass(q2, thetop);    
     Energy mb = theMSSM->mass(q2, thebot);
     masses.resize(0);

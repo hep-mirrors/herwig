@@ -260,6 +260,7 @@ void ModelGenerator::doinit() {
     if( parent->CC() ) parent->CC()->synchronize();
     
     if( parent->decaySelector().empty() ) {
+      parent->stable(true);
       parent->width(ZERO);
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());

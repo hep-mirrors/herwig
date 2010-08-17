@@ -200,6 +200,7 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
       << "pointer is null!\n"
       << Exception::runerror;
   tPDPtr inpart = decays[0].parent_;
+  inpart->stable(false);
   tEGPtr eg = generator();
   vector<TwoBodyDecay>::const_iterator dend = decays.end();
   for( vector<TwoBodyDecay>::const_iterator dit = decays.begin();

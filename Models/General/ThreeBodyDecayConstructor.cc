@@ -515,6 +515,7 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
   // incoming particle is now unstable
+  inpart->stable(false);
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;

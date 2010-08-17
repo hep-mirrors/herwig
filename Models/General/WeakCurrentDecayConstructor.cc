@@ -291,6 +291,7 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
   vector<vector<WeakDecayCurrentPtr> > currents(decays.size()/3);
   PDVector particles(3);
   if(inpart->CC()) inpart = inpart->CC();
+  inpart->stable(false);
   particles[0] = inpart;
   string dmtag,dmtagb;
   bool Wplus;
