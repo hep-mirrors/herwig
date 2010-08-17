@@ -50709,6 +50709,7 @@ set /Herwig/Particles/Sigma*bar-:Width_generator Sigma*+Width
 #
 create Herwig::SMHiggsWidthGenerator  HiggsWidth
 set HiggsWidth:WidthScheme 2
+set HiggsWidth:Particle /Herwig/Particles/h0
 set /Herwig/Particles/h0:Width_generator HiggsWidth
 #
 create Herwig::BaryonWidthGenerator  Xi*-Width

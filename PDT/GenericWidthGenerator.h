@@ -32,7 +32,7 @@ typedef Selector<tDMPtr> DecayMap;
 
 /** \ingroup PDT
  *
- * The <code>GenericWidthGenerator</code> class is designed to automatically
+ * The GenericWidthGenerator class is designed to automatically
  * calculate the running width for a given particle using information from
  * the decayModes and the Decayers to construct the running width.
  *
@@ -58,8 +58,8 @@ public:
    * Default constructor
    */
   GenericWidthGenerator()
-    : _mass(),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
-      _BRminimum(0.01), _intorder(1)
+    : mass_(), prefactor_(1.), initialize_(false),BRnorm_(true),npoints_(50),
+      BRminimum_(0.01), intOrder_(1)
   {}
 
   /** @name Functions used by the persistent I/O system. */
@@ -91,9 +91,9 @@ public:
    * @return True if this class can handle the particle and false otherwise
    */
   virtual bool accept(const ParticleData & part) const {
-    if(!_theParticle) return false;
-    return part.id() == _theParticle->id() ||
-      ( part.CC() && part.CC()->id() == _theParticle->id() );
+    if(!particle_) return false;
+    return part.id() == particle_->id() ||
+      ( part.CC() && part.CC()->id() == particle_->id() );
   }
 
   /** @name Members to calculate the width and decay modes. */
@@ -129,7 +129,13 @@ public:
    * @param iloc The location of the mode in the list
    * @return The partial width for the mode.
    */
-  Energy partialWidth(int iloc,Energy m) const;
+  virtual Energy partialWidth(int iloc,Energy m) const;
+
+  /**
+   *  Return the total width and the sum of the partial widths for
+   *  modes which are used
+   */
+  virtual pair<Energy,Energy> width(Energy, const ParticleData &) const;
   //@}
 
   /**
@@ -154,7 +160,7 @@ protected:
    * @return The partial width.
    */
   Energy partial2BodyWidth(int iloc,Energy q) const {
-    return partial2BodyWidth(iloc,q,_MEmass1[iloc],_MEmass2[iloc]);
+    return partial2BodyWidth(iloc,q,MEmass1_[iloc],MEmass2_[iloc]);
   }
 
   /**
@@ -178,7 +184,7 @@ protected:
   /**
    *  Access to the particle dat for inheriting classes
    */
-  tPDPtr particle() const {return _theParticle;}
+  tPDPtr particle() const {return particle_;}
 
 protected:
 
@@ -209,12 +215,6 @@ protected:
   virtual void doinit();
 
   /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -241,34 +241,36 @@ protected:
   //@}
 
   /**
-   * set up the interpolators
-   */
-  void setInterpolators();
-
-  /**
    *  Matrix element code for a given mode 
    * @param imode The mode.
    */
-  int MEcode(int imode) const {return _MEcode[imode];}
+  int MEcode(int imode) const {return MEcode_[imode];}
 
   /**
    *  Coupling for a given mode
    * @param imode The mode.
    */
-  double MEcoupling(int imode) const {return _MEcoupling[imode];}
+  double MEcoupling(int imode) const {return MEcoupling_[imode];}
 
 
   /**
    *  The on-shell mass of the particle
    */
-  Energy mass() const {return _mass;}
+  Energy mass() const {return mass_;}
 
   /**
    * Initialization option for use by the inheriting classes
    */
-  bool initialize() const {return _initialize;}
+  bool initialize() const {return initialize_;}
+
+  /**
+   *  Access to the decay modes
+   */
+  vector<tDMPtr> decayModes() const {return decayModes_;}
+  
 
 private:
+
   /**
    * Helper function for the interface
    */
@@ -296,106 +298,106 @@ private:
   /**
    * The pointer to the ParticleData object for the particle for this width generator.
    */
-  tPDPtr _theParticle;
+  tPDPtr particle_;
 
   /**
    * The decaymodes
    */
-  vector<tDMPtr> _decaymodes;
+  vector<tDMPtr> decayModes_;
 
   /**
    *  The tags for the DecayMode s
    */
-  vector<string> _decaytags;
+  vector<string> decayTags_;
   
   /**
    *  The minimum mass of the decaying particle for which this decay mode is possible
    */
-  vector<Energy> _minmass;
+  vector<Energy> minMass_;
 
   /**
    * The on-shell mass of the particle
    */
-  Energy _mass;
+  Energy mass_;
 
   /**
    * Prefactor to get the on-shell width
    */
-  double _prefactor;
+  double prefactor_;
 
   /**
    * The type of ME, whether it is fixed, calculated by this class or interpolation
    */
-  vector<int> _MEtype;
+  vector<int> MEtype_;
 
   /**
    * The code for the matrix element
    */
-  vector<int> _MEcode;
+  vector<int> MEcode_;
 
   /**
    *  Mass of the first outgoing particle for the simple \f$1\to2\f$ ME's
    */
-  vector<Energy> _MEmass1;
+  vector<Energy> MEmass1_;
   /**
    *  Mass of the second outgoing particle for the simple \f$1\to2\f$ ME's
    */
-  vector<Energy> _MEmass2;
+  vector<Energy> MEmass2_;
 
   /**
    * the coupling for a given me
    */
-  vector<double> _MEcoupling; 
+  vector<double> MEcoupling_; 
 
   /**
    * is this mode used for the running width
    */
-  vector<bool> _modeon;
+  vector<bool> modeOn_;
 
   /**
    * storage of the massesto set up the interpolation tables
    */
-  vector<Energy> _intermasses;
+  vector<Energy> interMasses_;
 
   /**
    * storage of the widths to set up the interpolation tables
    */
-  vector<Energy> _interwidths;
+  vector<Energy> interWidths_;
 
   /**
    * the number of entries in the decay table for a particular mode
    */
-  vector<int> _noofentries;
+  vector<int> noOfEntries_;
 
   /**
    * initialize the generator using the particle data object
    */
-  bool _initialize;
+  bool initialize_;
 
   /**
    * normalise the terms so that the partial widths for an on-shell particle are correct
    */
-  bool _BRnorm;
+  bool BRnorm_;
 
   /**
    * number of points to use for interpolation tables
    */
-  int _npoints;
+  int npoints_;
 
   /**
    * intepolators for the running width
    */
-  vector<Interpolator<Energy,Energy>::Ptr> _interpolators;
+  vector<Interpolator<Energy,Energy>::Ptr> interpolators_;
 
   /**
    * minimum branching ratio for the inclusion in the total running width
    */
-  double _BRminimum;
+  double BRminimum_;
 
   /**
    *  Order of the interpolation for the tables
    */
-  unsigned int _intorder;
+  unsigned int intOrder_;
 };
 
 }

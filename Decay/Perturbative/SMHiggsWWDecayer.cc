@@ -63,9 +63,6 @@ void SMHiggsWWDecayer::doinit() {
   _theHVVVertex = hwsm->vertexWWH();
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);
-  if(higgs->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
-  }
   // the W+W- decays
   for(unsigned int ix=0;ix<2;++ix) {
     tPDPtr h0     = getParticleData(ParticleID::h0);
@@ -169,12 +166,12 @@ bool SMHiggsWWDecayer::accept(tcPDPtr parent, const tPDVector & children) const 
 
 void SMHiggsWWDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theFFWVertex << _theFFZVertex << _theHVVVertex 
-     << _wdecays << _zdecays << _ratio << _wmax << _zmax << _hwidth;
+     << _wdecays << _zdecays << _ratio << _wmax << _zmax;
 }
 
 void SMHiggsWWDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _theFFWVertex >> _theFFZVertex >> _theHVVVertex 
-     >> _wdecays >> _zdecays >> _ratio >> _wmax >> _zmax >> _hwidth;
+     >> _wdecays >> _zdecays >> _ratio >> _wmax >> _zmax;
 }
 
 ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
@@ -287,11 +284,6 @@ double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
   output/=_ratio[imode()];
   // if Z0 decays identical particle factor
   if(Z0) output*=0.5;
-  // divide by width if needed
-  if(_hwidth) {
-    if(Z0) output *=inpart.data().width()/_hwidth->partialWidth(inpart.mass(),11);
-    else   output *=inpart.data().width()/_hwidth->partialWidth(inpart.mass(),10);
-  }
   // return the answer
   return output;
 }

@@ -18,7 +18,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 
 namespace Herwig {
 
@@ -186,11 +185,6 @@ private:
    */
   AbstractVVSVertexPtr _theHVVVertex;
   //@}
-
-  /**
-   *  Pointer to the width generator for the Higgs
-   */
-  SMHiggsWidthGeneratorPtr _hwidth;
 
   /**
    *  Selectors for the gauge boson decay modes

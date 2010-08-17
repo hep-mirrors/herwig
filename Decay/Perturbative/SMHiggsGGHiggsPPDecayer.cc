@@ -54,11 +54,11 @@ ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hggvertex  << _hppvertex << _h0wgt << _hwidth;
+  os << _hggvertex  << _hppvertex << _h0wgt;
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hggvertex >> _hppvertex >> _h0wgt >> _hwidth;
+  is >> _hggvertex >> _hppvertex >> _h0wgt;
 }
 
 ClassDescription<SMHiggsGGHiggsPPDecayer>
@@ -133,13 +133,6 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
   //symmetric final states
   output /= 2.;
 
-  // normalize if width generator
-  if(_hwidth) {
-    if(decay[0]->id() == ParticleID::g) 
-      output *= part.data().width()/_hwidth->partialWidth(part.mass(),13);
-    else
-      output *= part.data().width()/_hwidth->partialWidth(part.mass(),12);
-  }
   return output;
 }
 
@@ -147,9 +140,6 @@ void SMHiggsGGHiggsPPDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);
-  if(higgs->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
-  }
   if(_hggvertex) {
     _hggvertex->init();
   }
