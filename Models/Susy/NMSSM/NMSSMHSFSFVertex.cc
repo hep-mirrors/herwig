@@ -58,20 +58,12 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       addToList(odd[h], -2000000 - q, 1000000 + q);
     }
     //sleptons
-    for(long l = 11; l < 15; l += 2) {
+    for(long l = 11; l < 16; l += 2) {
       //12
       addToList(odd[h], -1000000 - l, 2000000 + l);
       //21
       addToList(odd[h], -2000000 - l, 1000000 + l);
     }
-    //~tau LL/RR
-    addToList(odd[h], -1000015, 1000015); 
-    addToList(odd[h], -2000015, 2000015); 
-    //~bot LL/RR
-    addToList(odd[h], -1000005, 1000005); 
-    addToList(odd[h], -2000005, 2000005);
-    addToList(odd[h], -1000006, 1000006); 
-    addToList(odd[h], -2000006, 2000006);
   }
   //charged higgs
   //squarks
@@ -185,34 +177,20 @@ void NMSSMHSFSFVertex::doinit() {
 
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 				   tcPDPtr part2, tcPDPtr part3) {
-  long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())); 
-  long higgs(0), isf1(0), isf2(0);
-  if( id1 == 25 || id1 == 35 || id1 == 45 || id1 == 36 || id1 == 46 || 
-      id1 == 37 ) {
-    higgs = id1;
-    isf1 = id2;
-    isf2 = id3;
-  }
-  else if( id2 == 25 || id2 == 35 || id2 == 45 || id2 == 36 || id2 == 46 || 
-	   id2 == 37 ) { 
-    higgs = id2;
-    isf1 = id1;
-    isf2 = id3;
-  }
-  else if( id3 == 25 || id3 == 35 || id3 == 45 || id3 == 36 || id3 == 46 || 
-	   id3 == 37 ) { 
-    higgs = id3;
-    isf1 = id1;
-    isf2 = id2;
-  }
-  else {
-    throw HelicityConsistencyError()
-      << "NMSSMHSFSFVertex::setCoupling - There is no higgs particle "
-      << "in this vertex. " << part1->id() << " " << part2->id() << " "
-      << part3->id() << Exception::runerror;
-    return;
-  }
-  
+  // extract particle ids
+  long higgs(part1->id()), isf1(part2->id()), isf2(part3->id());
+  // higgs first
+  if(abs(isf1)<100) swap(higgs,isf1);
+  if(abs(isf2)<100) swap(higgs,isf2);
+  // squark second
+  if(isf1<0) swap(isf1,isf2);
+  // check higgs
+  assert( higgs == 25 || higgs == 35 || higgs == 45 || 
+	  higgs == 36 || higgs == 46 || abs(higgs) == 37 );
+  // abs of antisquark and check
+  isf2 *=-1;
+  assert(isf1>0&&isf2>0);
+  // running coupling
   if( q2 != _q2last ) {
     _q2last = q2;
     _couplast = weakCoupling(q2);
@@ -293,8 +271,8 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 
     // down type squarks and charged sleptons
     if( smid % 2 != 0 ) {
-      double ef = (smid < 7) ? 1./3. : 1.;
-      fact = - f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b)
+      double ef = (smid < 7) ? -1./3. : -1.;
+      fact = - f2*( (1. + 2.*ef*sqr(_sw))*m1a*m2a - 2.*ef*sqr(_sw)*m1b*m2b)
 	- f1*_masslast.first*(*_mixS)(iloc,0)*(m1a*m2a + m1b*m2b) 
 	- 0.5*f1*(( - _lambdaVEV*(*_mixS)(iloc,1) 
 		    - _lambda*_v2*(*_mixS)(iloc,2)/_couplast 
@@ -317,18 +295,19 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     int iloc = (higgs - 36)/10;
     // down type squarks and charged sleptons
     if( smid % 2 != 0 ) {
-      fact = Complex(0.0,1.0)*(-0.5*f1*(m2a*m1b + m1a*m2b)*
-	( - _lambdaVEV*(*_mixP)(iloc,1) 
-	  - _lambda*_v2*(*_mixP)(iloc,2)/_couplast
-	  - af*(*_mixP)(iloc,0) ));
+      fact = -0.5*f1*Complex(0.0,1.0)*
+	( _lambdaVEV*(*_mixP)(iloc,1) +
+	  _lambda*_v2*(*_mixP)(iloc,2)/_couplast +
+	  af*(*_mixP)(iloc,0) );
     }
     // up-type squarks and sneutrinos
     else {
-      fact = Complex(0.0,1.0)*(0.5*f1*(m2a*m1b + m1a*m2b)*
-	( - _lambdaVEV*(*_mixP)(iloc,0) 
-	  - _lambda*_v1*(*_mixP)(iloc,2)/_couplast
-	  - af*(*_mixP)(iloc,1)));
+      fact =-0.5*f1*Complex(0.0,1.0)*
+	( _lambdaVEV *(*_mixP)(iloc,0) +
+	  _lambda*_v1*(*_mixP)(iloc,2)/_couplast +
+	  af*(*_mixP)(iloc,1));
     }
+    if(alpha<beta) fact *= -1.;
   }
   norm(_couplast*fact*UnitRemoval::InvE);
 }
