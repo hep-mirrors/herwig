@@ -125,12 +125,12 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       int iloc = (ihiggs-36)/10;
       output *= (id%2==0) ? (*_mixP)(iloc,1)/_sinb : (*_mixP)(iloc,0)/_cosb;
       left(1.); right(-1.);
-      output *= Complex(0.,-1.);
+      output *= Complex(0., 1.);
     }
   }
   // Charged higgs
   else if(abs(ihiggs)==37) {
-    output*=-sqrt(2.);
+    output *= -sqrt(2.);
     int id2=abs(b->id());
     if(id2<id) swap(id,id2);
     if(_idlast.first!=id||_idlast.second!=id2||q2!=_q2last) {
@@ -139,8 +139,8 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       _masslast.first  = _theSM->mass(q2,a);
       _masslast.second = _theSM->mass(q2,b);
     }
-    double rgt=_masslast.first *_tanb/_mw;
-    double lft =_masslast.second/_tanb/_mw;
+    double rgt = _masslast.first *_tanb/_mw;
+    double lft = _masslast.second/_tanb/_mw;
     if(ihiggs<0) swap(lft,rgt);
     right(rgt);
     left (lft);
