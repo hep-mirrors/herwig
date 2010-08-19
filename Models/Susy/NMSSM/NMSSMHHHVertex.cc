@@ -160,11 +160,11 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
     unsigned int b = (higgs[1] - 25)/10;
     unsigned int c = (higgs[2] - 25)/10;
     coupling = 
-      sqr(_lambda)*rt*(_vu*(usMix(a,b,c,1,0,0) + usMix(a,b,c,1,2,2))/_glast 
-		       + _vd*(usMix(a,b,c,0,1,1) + usMix(a,b,c,0,2,2))/_glast
-		       + _s*(usMix(a,b,c,2,1,1) + usMix(a,b,c,2,0,0)))
-      - _lambda*_kappa*rt*(_vu*usMix(a,b,c,0,2,2)/_glast
-			   + _vd*usMix(a,b,c,2,1,2)/_glast + 2.*_s*usMix(a,b,c,1,0,2))
+      sqr(_lambda)*rt*(_vu*(usMix(a,b,c,1,0,0) + usMix(a,b,c,1,2,2))/_glast +
+		       _vd*(usMix(a,b,c,0,1,1) + usMix(a,b,c,0,2,2))/_glast +
+		       _s *(usMix(a,b,c,2,1,1) + usMix(a,b,c,2,0,0)))
+      - _lambda*_kappa*rt*(_vu*usMix(a,b,c,0,2,2)/_glast +
+			   _vd*usMix(a,b,c,2,1,2)/_glast + 2.*_s*usMix(a,b,c,1,0,2))
       + sqr(_kappa)/rt*_s*usMix(a,b,c,2,2,2)
       - _lambda*_theAl*rt*usMix(a,b,c,1,0,2)
       + _kappa*_theAk*rt/3.*usMix(a,b,c,2,2,2)
@@ -202,9 +202,9 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       c = (higgs[1] - 36)/10;
     }
     coupling =	
-      sqr(_lambda)*rt*(_vu*(upMix(a,b,c,1,0,0) + upMix(a,b,c,1,2,2))/_glast 
-		       + _vd*(upMix(a,b,c,0,1,1) + upMix(a,b,c,0,2,2))/_glast
-		       + _s*(upMix(a,b,c,2,1,1) + upMix(a,b,c,2,0,0)))
+      sqr(_lambda)*rt*(_vu*(upMix(a,b,c,1,0,0) + upMix(a,b,c,1,2,2))/_glast +
+		       _vd*(upMix(a,b,c,0,1,1) + upMix(a,b,c,0,2,2))/_glast +
+		       _s *(upMix(a,b,c,2,1,1) + upMix(a,b,c,2,0,0)))
       + _lambda*_kappa*rt*(_vu*(upMix(a,b,c,0,2,2) 
 				- 2.*upMix(a,b,c,2,0,2))/_glast +
 			   _vd*(upMix(a,b,c,1,2,2)
@@ -215,10 +215,10 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       +_lambda*_theAl*rt*(upMix(a,b,c,1,0,2)
 			  + upMix(a,b,c,0,1,2) + upMix(a,b,c,2,1,0))
       - _kappa*_theAk*rt*upMix(a,b,c,2,2,2)
-      + sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(upMix(a,b,c,1,1,1)
-					   - upMix(a,b,c,1,0,0))/_glast - 
-				      _vd*(upMix(a,b,c,0,1,1)
-					   - upMix(a,b,c,0,0,0))/_glast);
+      + sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(upMix(a,b,c,1,1,1) -
+					   upMix(a,b,c,1,0,0))/_glast - 
+				      _vd*(upMix(a,b,c,0,1,1) -
+					   upMix(a,b,c,0,0,0))/_glast);
     if(_includeRadiative) {
       complex <Energy> radtop = upMix(a,b,c,1,1,1)*3.0*sqrt(2.0)*radlog*
 	sqr(_mt)*sqr(_mt)*sqr(_glast)*_glast/
@@ -242,7 +242,7 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       sqr(_lambda)*rt*2.*(_s*((*_mixS)(a,2)*sqr(_cb) + (*_mixS)(a,2)*sqr(_sb))
 			  - (_vu*(*_mixS)(a,0)/_glast + 
 			     _vd*(*_mixS)(a,1)/_glast)*_sb*_cb)
-      +_lambda*_sb*_cb*2*(*_mixS)(a,2)*(_kappa*_s/rt + rt*_theAl)
+      +_lambda*_sb*_cb*2.*(*_mixS)(a,2)*(_kappa*_s/rt + rt*_theAl)
       + sqr(_glast)*0.5*rt*_sw2/sqr(_cw)*((_vu*(*_mixS)(a,1)/_glast - 
 					   _vd*(*_mixS)(a,0)/_glast)*sqr(_cb) + 
 					  (_vd*(*_mixS)(a,0)/_glast -
