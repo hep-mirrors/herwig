@@ -94,7 +94,8 @@ Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
-    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, in);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1. - 4.*musq);
     double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;

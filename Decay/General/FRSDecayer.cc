@@ -155,8 +155,9 @@ Energy FRSDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy Qp(sqrt((q+m1)*(q+m1)-m22)),Qm(sqrt((q-m1)*(q-m1)-m22));
     double r23(sqrt(2./3.));
     // couplings
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     perturbativeVertex_->setCoupling(sqr(inpart.second), outa.first, 
-				     inpart.first,  outb.first);
+				     in,  outb.first);
     Complex left  = perturbativeVertex_-> left()*perturbativeVertex_-> norm();
     Complex right = perturbativeVertex_->right()*perturbativeVertex_-> norm();
     complex<InvEnergy> A1 = 0.5*(left+right)*UnitRemoval::InvE;

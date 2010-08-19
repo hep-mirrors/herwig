@@ -113,8 +113,8 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale = sqr(inpart.second);
-    _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,
-				     outb.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(scale, in, outa.first, outb.first);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1- 4.*musq);
     double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
