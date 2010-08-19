@@ -196,7 +196,7 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     else  {
       int in1 = (ig1 < 1000024) ? (ig1 - 1000022) : (ig1 - 1000005)/10; 
       int in2 = (ig2 < 1000024) ? (ig2 - 1000022) : (ig2 - 1000005)/10;
-      Complex us1 = (*_mixS)(iloc, 1), us2 = (*_mixS)(iloc, 0);
+      Complex us1 = (*_mixS)(iloc, 0), us2 = (*_mixS)(iloc, 1);
       Complex us3 = (*_mixS)(iloc, 2);
       Complex ni1 = (*_mixN)(in1,0), nj1 = (*_mixN)(in2,0);	  
       Complex ni2 = (*_mixN)(in1,1), nj2 = (*_mixN)(in2,1);
@@ -204,16 +204,16 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
       Complex ni4 = (*_mixN)(in1,2), nj4 = (*_mixN)(in2,2); 
       Complex ni5 = (*_mixN)(in1,4), nj5 = (*_mixN)(in2,4);
       Complex YL =  
-	- _lambda*rt*(us1*(ni4*nj5 + ni5*nj4) + 
-		      us2*(ni3*nj5 + ni5*nj3) +
+	- _lambda*rt*(us2*(ni4*nj5 + ni5*nj4) + 
+		      us1*(ni3*nj5 + ni5*nj3) +
 		      us3*(ni3*nj4 + ni4*nj3))
 	+ sqrt(2.)*_kappa*us3*ni5*nj5 
-	- _couplast*0.5*(us1*(ni2*nj3 + ni3*nj2) -
-			 us2*(ni2*nj4 + ni4*nj2))
-	+ _couplast*0.5*_sw*(us1*(ni1*nj3 + ni3*nj1) - 
-			     us2*(ni1*nj4 + ni4*nj1) )/_cw;
-      left(conj(YL));
-      right(YL);
+	- _couplast*0.5*(us2*(ni2*nj3 + ni3*nj2) -
+			 us1*(ni2*nj4 + ni4*nj2))
+	+ _couplast*0.5*_sw*(us2*(ni1*nj3 + ni3*nj1) - 
+			     us1*(ni1*nj4 + ni4*nj1) )/_cw;
+      left(-conj(YL));
+      right(-YL);
       norm(1.0);
     }
   }
