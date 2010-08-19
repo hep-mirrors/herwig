@@ -202,7 +202,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   theHLast = higgs;
   theSF1Last = sq1;
   theSF2Last = sq2;
-  if( higgs == ParticleID::Hplus ) 
+  if( abs(higgs) == ParticleID::Hplus ) 
     chargedHiggs(sq1, sq2);
   else {
     long sm(0);

@@ -197,7 +197,7 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   }
  
   //charged higgs
-  if( higgs == 37 ) {
+  if( abs(higgs) == 37 ) {
     norm(_couplast*chargedHiggs(q2, isf1, isf2));
     return;
   }
