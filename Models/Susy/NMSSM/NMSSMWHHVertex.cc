@@ -104,9 +104,9 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     _q2last=q2;
   }
   // gauge bosons
-  int ibos=a->id();
-  int ih1 =b->id();
-  int ih2 =c->id();
+  int ibos= a->id();
+  int ih1 = b->id();
+  int ih2 = c->id();
   Complex fact;
   if(ibos==ParticleID::Z0) {
     fact = 0.5/_cw;
@@ -117,6 +117,7 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     }
     // Z CP even CP odd
     else {
+      fact *= -1.; 
       if(ih1%10==6) {
 	fact *= -1.; 
 	swap(ih1,ih2);
@@ -129,15 +130,16 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   }
   // gamma CP even CP odd
   else if(ibos==ParticleID::gamma) {
-    fact = ih1>0 ? 1. : -1;  
+    fact = ih1>0 ? _sw : -_sw;  
   }
-  //Charged Higgs
+  // W boson
   else {
     fact = 0.5; 
     if(abs(ih2)==37) {
       swap(ih1,ih2);
+      fact*=-1; 
     }
-    if(ibos>0) fact*=-1; 
+    if(ibos<0&&ih2%5==0) fact*=-1; 
     // H+ CP even
     if(ih2%5==0) {
       int is = (ih2-25)/10;
