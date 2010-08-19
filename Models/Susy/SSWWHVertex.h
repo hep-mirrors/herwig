@@ -29,18 +29,10 @@ class SSWWHVertex: public VVSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSWWHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSWWHVertex();
-  //@}
 
 public:
 

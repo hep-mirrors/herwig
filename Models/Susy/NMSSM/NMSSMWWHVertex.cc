@@ -87,10 +87,5 @@ void NMSSMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr c) {
   // couplings
   if(ibos==24)      norm(_couplast*hmix);
   else if(ibos==23) norm(_couplast*hmix*_zfact);
-  else {
-    throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
-				     << "Invalid particles in WWH Vertex" 
-				     << Exception::warning;
-    norm(0.);
-  }
+  else assert(false);
 }
