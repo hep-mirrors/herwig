@@ -11,10 +11,10 @@
 
 using namespace Herwig;
 
-void RPV::persistentOutput(PersistentOStream & os) const {
+void RPV::persistentOutput(PersistentOStream & ) const {
 }
 
-void RPV::persistentInput(PersistentIStream & is, int) {
+void RPV::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<RPV> RPV::initRPV;

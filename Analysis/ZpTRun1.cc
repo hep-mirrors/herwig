@@ -66,12 +66,10 @@ void ZpTRun1::doinitrun() {
   
 }
 
-void ZpTRun1::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void ZpTRun1::persistentOutput(PersistentOStream & ) const {
 }
 
-void ZpTRun1::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void ZpTRun1::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<ZpTRun1> ZpTRun1::initZpTRun1;
@@ -105,7 +103,7 @@ void ZpTRun1::dofinish() {
   outfile.close();
 }
 
-void ZpTRun1::analyze(tEventPtr event, long ieve, int loop, int state) {
+void ZpTRun1::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   // find the outgoing particles in the hard process
