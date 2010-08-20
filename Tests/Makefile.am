@@ -56,9 +56,9 @@ HWRUN = $(HERWIG) run
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma
 
 if WANT_LIBFASTJET
-tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-Quarks test-LEP-Leptons test-LEP-TopDecay
+tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons test-LEP-default test-LEP-TopDecay
 else
-tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons test-LEP-TopDecay
+tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons
 endif
 
 tests-DIS : test-DIS-Charged test-DIS-Neutral
@@ -120,18 +120,18 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Run-I-Powheg-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Run-I-Powheg-W \
               Rivet-TVT-Run-II-Z-e  Rivet-TVT-Run-II-Powheg-Z-e  \
               Rivet-TVT-Run-II-Z-mu Rivet-TVT-Run-II-Powheg-Z-mu \
-              Rivet-TVT-Run-II-W    Rivet-TVT-Run-II-Powheg-W \
+              Rivet-TVT-Run-II-W    Rivet-TVT-Run-II-Powheg-W
 	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Z-e.aida; \
 	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Powheg-Z-e.aida; 
 	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets.aida
 	rm -rf Rivet-TVT-WZ
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*-{W,Z}.aida
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT-WZ TVT-*-{W,Z}.aida
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton \
                   Rivet-TVT-Run-I-PromptPhoton Rivet-TVT-Run-II-PromptPhoton
-	rm -rf Rivet-TVT-WZ
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT TVT-*Photon.aida
+	rm -rf Rivet-TVT-Photon
+	rivet-mkhtml --no-mc-errs -o Rivet-Photon TVT-*Photon.aida
 
 Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
                  Rivet-TVT-Run-II-Jets-3 Rivet-TVT-Run-II-Jets-4 \
