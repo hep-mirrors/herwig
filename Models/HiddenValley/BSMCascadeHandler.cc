@@ -29,10 +29,10 @@ IBPtr BSMCascadeHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-void BSMCascadeHandler::persistentOutput(PersistentOStream & os) const {
+void BSMCascadeHandler::persistentOutput(PersistentOStream & ) const {
 }
 
-void BSMCascadeHandler::persistentInput(PersistentIStream & is, int) {
+void BSMCascadeHandler::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<BSMCascadeHandler> BSMCascadeHandler::initBSMCascadeHandler;

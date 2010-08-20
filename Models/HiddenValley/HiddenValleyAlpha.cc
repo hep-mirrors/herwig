@@ -309,6 +309,7 @@ double HiddenValleyAlpha::derivativealphaS(Energy q, Energy lam, int nf) const {
     return -4.*pi/(b0*sqr(lx))*(1.-2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
   else
     assert(false);
+  return 0.;
 }
 
 double HiddenValleyAlpha::alphaS(Energy q, Energy lam, int nf) const {
@@ -326,4 +327,5 @@ double HiddenValleyAlpha::alphaS(Energy q, Energy lam, int nf) const {
   }
   else
     assert(false);
+  return 0.;
 }

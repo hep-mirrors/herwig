@@ -22,10 +22,10 @@ IBPtr HiddenPartnerFinder::fullclone() const {
   return new_ptr(*this);
 }
 
-void HiddenPartnerFinder::persistentOutput(PersistentOStream & os) const {
+void HiddenPartnerFinder::persistentOutput(PersistentOStream & ) const {
 }
 
-void HiddenPartnerFinder::persistentInput(PersistentIStream & is, int) {
+void HiddenPartnerFinder::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<HiddenPartnerFinder> HiddenPartnerFinder::initHiddenPartnerFinder;

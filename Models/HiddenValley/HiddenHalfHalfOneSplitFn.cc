@@ -97,4 +97,5 @@ bool HiddenHalfHalfOneSplitFn::checkColours(const IdList & ids) const {
   else {
     assert(false);
   }
+  return false;
 }

@@ -57,6 +57,7 @@ public:
     default:
       assert(false);
     }
+    return 0.;
   }
 
   /**
@@ -78,6 +79,7 @@ public:
     default:
       assert(false);
     }
+    return 0.;
   }
 
   /**
@@ -98,6 +100,7 @@ public:
     default:
       assert(false);
     }
+    return 0.;
   }
   
   /**

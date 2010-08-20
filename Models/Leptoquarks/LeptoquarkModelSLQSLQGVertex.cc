@@ -19,7 +19,8 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() :  _couplast(0.),_q2last(ZERO) {
+LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() : _q2last(ZERO),
+							       _couplast(0.) {
   addToList(21,9941551,-9941551);
   addToList(21,9911561,-9911561);
   addToList(21,9921551,-9921551);
