@@ -222,7 +222,6 @@ set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/WWHH NULL
-set Model:Vertex/HHHH NULL
 # MSSM feynman rules
 set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS

@@ -46,6 +46,8 @@ void SMWWHHVertex::Init() {
 void SMWWHHVertex::doinit() {
   VVSSVertex::doinit();
   ratio_ = 1./(1.-sin2ThetaW());
+  orderInGem(2);
+  orderInGs (0);
 }
 
 void SMWWHHVertex::setCoupling(Energy2 q2,
@@ -53,7 +55,7 @@ void SMWWHHVertex::setCoupling(Energy2 q2,
 			       tcPDPtr part3,tcPDPtr part4) {
   assert(part3->id()==ParticleID::h0 && part4->id()==ParticleID::h0 );
   if(q2!=q2last_||couplast_==0.) {
-    couplast_ = weakCoupling(q2);
+    couplast_ = sqr(weakCoupling(q2));
     q2last_=q2;
   }
   if(part1->id()==ParticleID::Z0) {

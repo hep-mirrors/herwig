@@ -263,13 +263,6 @@ public:
   }
 
   /**
-   * Pointer to the HHHH vertex
-   */
-  tAbstractSSSSVertexPtr vertexHHHH() const {
-    return HHHHVertex_;
-  }
-
-  /**
    *  Total number of vertices
    */
   unsigned int numberOfVertices() const {
@@ -424,11 +417,6 @@ private:
    * Pointer to  WWHH vertex
    */
   AbstractVVSSVertexPtr WWHHVertex_; 
-
-  /**
-   * Pointer to quartic Higgs vertex
-   */
-  AbstractSSSSVertexPtr HHHHVertex_; 
   
   /**
    *  Full list of vertices as a vector to allow searching

@@ -48,6 +48,8 @@ void SMHHHVertex::doinit() {
   SSSVertex::doinit();
   ratio_ = -1.5*sqr(getParticleData(ParticleID::h0)->mass())/
     getParticleData(ParticleID::Wplus)->mass();
+  orderInGem(1);
+  orderInGs (0);
 }
 
 void SMHHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3) {

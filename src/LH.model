@@ -107,7 +107,6 @@ set Model:Vertex/GGGG  /Herwig/Vertices/GGGGVertex
 set Model:Vertex/HGG   /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP   /Herwig/Vertices/HPPVertex
 set Model:Vertex/HHH   /Herwig/Vertices/HHHVertex
-set Model:Vertex/HHHH  /Herwig/Vertices/HHHHVertex
 # LH vertices
 set Model:Vertex/FFZ  /Herwig/Vertices/LH/FFZVertex
 set Model:Vertex/FFP  /Herwig/Vertices/LH/FFPVertex

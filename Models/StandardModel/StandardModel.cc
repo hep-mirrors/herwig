@@ -35,7 +35,7 @@ StandardModel::StandardModel(const StandardModel & x)
     WWWVertex_ (x.WWWVertex_) , GGGGVertex_(x.GGGGVertex_),
     WWWWVertex_(x.WWWWVertex_), HGGVertex_ (x.HGGVertex_) ,
     HPPVertex_ (x.HPPVertex_) , HHHVertex_ (x.HHHVertex_) ,
-    WWHHVertex_ (x.WWHHVertex_) , HHHHVertex_ (x.HHHHVertex_) ,
+    WWHHVertex_ (x.WWHHVertex_) ,
     vertexList_(x.vertexList_),
     runningMass_(x.runningMass_),modelGenerator_(x.modelGenerator_) 
 {}
@@ -67,7 +67,6 @@ void StandardModel::doinit() {
   addVertex(HPPVertex_);
   if(HHHVertex_ ) addVertex(HHHVertex_);
   if(WWHHVertex_) addVertex(WWHHVertex_);
-  if(HHHHVertex_) addVertex(HHHHVertex_);
   StandardModelBase::doinit();
 }
 
@@ -75,7 +74,7 @@ void StandardModel::persistentOutput(PersistentOStream & os) const {
   os << FFZVertex_ <<FFPVertex_ << FFGVertex_ << FFWVertex_ 
      << FFHVertex_ << WWHVertex_ << GGGGVertex_ << WWWWVertex_
      << GGGVertex_ << WWWVertex_  << HGGVertex_  << HPPVertex_ 
-     << HHHVertex_ << WWHHVertex_ << HHHHVertex_
+     << HHHVertex_ << WWHHVertex_ 
      << runningMass_ << vertexList_ << modelGenerator_;
 }
 
@@ -83,7 +82,7 @@ void StandardModel::persistentInput(PersistentIStream & is, int) {
   is >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ >> FFWVertex_
      >> FFHVertex_ >> WWHVertex_ >> GGGGVertex_ >> WWWWVertex_
      >> GGGVertex_ >> WWWVertex_ >> HGGVertex_  >> HPPVertex_ 
-     >> HHHVertex_ >> WWHHVertex_ >> HHHHVertex_
+     >> HHHVertex_ >> WWHHVertex_ 
      >> runningMass_ >> vertexList_ >> modelGenerator_;
 }
 
@@ -161,11 +160,6 @@ void StandardModel::Init() {
     ("Vertex/WWHH",
      "Reference to the Standard Model WWHHVertex",
      &StandardModel::WWHHVertex_, false, false, true, true, false);
-
-  static Reference<StandardModel,AbstractSSSSVertex> interfaceVertexHHHH
-    ("Vertex/HHHH",
-     "Reference to the Standard Model HHHHVertex",
-     &StandardModel::HHHHVertex_, false, false, true, true, false);
 
   static Reference<StandardModel,RunningMassBase> interfaceRunningMass
     ("RunningMass",
