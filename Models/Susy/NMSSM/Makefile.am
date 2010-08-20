@@ -10,5 +10,6 @@ NMSSMHSFSFVertex.h NMSSMHSFSFVertex.cc\
 NMSSMGOGOHVertex.h NMSSMGOGOHVertex.cc \
 NMSSMHHHVertex.h   NMSSMHHHVertex.cc   \
 NMSSMGGHVertex.h   NMSSMGGHVertex.cc \
-NMSSMPPHVertex.h   NMSSMPPHVertex.cc 
+NMSSMPPHVertex.h   NMSSMPPHVertex.cc  \
+NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc 
 HwNMSSM_la_LDFLAGS = -module
