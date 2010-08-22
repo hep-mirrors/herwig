@@ -207,6 +207,7 @@ create Herwig::SSWHHVertex MSSM_WHH
 create Herwig::SSHHHVertex MSSM_HHH
 create Herwig::SSHGGVertex MSSM_HGG
 create Herwig::SSHPPVertex MSSM_HPP
+create Herwig::SSWWHHVertex MSSM_WWHH
 create Herwig::SSNCTVertex MSSM_NCT
 create Herwig::SSGVNHVertex MSSM_GVNH
 create Herwig::SSGVFSVertex MSSM_GVFS
@@ -221,7 +222,6 @@ set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/WWHH NULL
 # MSSM feynman rules
 set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
@@ -243,6 +243,7 @@ set Model:Vertex/SSWHH  /Herwig/Vertices/MSSM/MSSM_WHH
 set Model:Vertex/HHH    /Herwig/Vertices/MSSM/MSSM_HHH
 set Model:Vertex/HGG    /Herwig/Vertices/MSSM/MSSM_HGG
 set Model:Vertex/HPP    /Herwig/Vertices/MSSM/MSSM_HPP
+set Model:Vertex/WWHH   /Herwig/Vertices/MSSM/MSSM_WWHH
 set Model:Vertex/NCT    /Herwig/Vertices/MSSM/MSSM_NCT
 set Model:Vertex/GVNH   /Herwig/Vertices/MSSM/MSSM_GVNH
 set Model:Vertex/GVFS   /Herwig/Vertices/MSSM/MSSM_GVFS

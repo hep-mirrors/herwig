@@ -50,14 +50,15 @@ set Model:RunningMass /Herwig/RunningMass
 # Create additional NMSSM vertices
 mkdir /Herwig/Vertices/NMSSM
 cd /Herwig/Vertices/NMSSM
-create Herwig::NMSSMFFHVertex NMSSM_FFH     
+create Herwig::NMSSMFFHVertex   NMSSM_FFH     
 create Herwig::NMSSMGOGOHVertex NMSSM_GOGOH 
 create Herwig::NMSSMHSFSFVertex NMSSM_HSS     
-create Herwig::NMSSMWHHVertex NMSSM_WHH     
-create Herwig::NMSSMWWHVertex NMSSM_WWH     
-create Herwig::NMSSMHHHVertex NMSSM_HHH
-create Herwig::NMSSMGGHVertex NMSSM_GGH
-create Herwig::NMSSMPPHVertex NMSSM_PPH
+create Herwig::NMSSMWHHVertex   NMSSM_WHH     
+create Herwig::NMSSMWWHVertex   NMSSM_WWH     
+create Herwig::NMSSMHHHVertex   NMSSM_HHH
+create Herwig::NMSSMGGHVertex   NMSSM_GGH
+create Herwig::NMSSMPPHVertex   NMSSM_PPH
+create Herwig::NMSSMWWHHVertex  NMSSM_WWHH
 cd /Herwig/NewPhysics/NMSSM
 # SM vertices
 set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
@@ -68,7 +69,6 @@ set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/WWHH NULL
 # MSSM feynman rules
 set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
@@ -93,6 +93,7 @@ set Model:Vertex/WWH    /Herwig/Vertices/NMSSM/NMSSM_WWH
 set Model:Vertex/HHH    /Herwig/Vertices/NMSSM/NMSSM_HHH
 set Model:Vertex/HGG    /Herwig/Vertices/NMSSM/NMSSM_GGH
 set Model:Vertex/HPP    /Herwig/Vertices/NMSSM/NMSSM_PPH
+set Model:Vertex/WWHH   /Herwig/Vertices/NMSSM/NMSSM_WWHH
 
 ###################################################
 #

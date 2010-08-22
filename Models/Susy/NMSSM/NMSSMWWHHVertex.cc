@@ -19,7 +19,7 @@ NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
   // scalar higgs bosons
   for(unsigned int i=0;i<3;++i) {
     // pair of scalars
-    for(unsigned int j=0;j<3;++i) {
+    for(unsigned int j=0;j<3;++j) {
       addToList( 24,-24,scalar[i],scalar[j]);
       addToList( 23, 23,scalar[i],scalar[j]);
     }
@@ -31,7 +31,7 @@ NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
   }
   // pair of pseudoscalars
   for(unsigned int i=0;i<2;++i) {
-    for(unsigned int j=0;j<2;++i) {
+    for(unsigned int j=0;j<2;++j) {
       addToList( 24,-24,pseudo[i],pseudo[j]);
       addToList( 23, 23,pseudo[i],pseudo[j]);
     }
@@ -139,10 +139,10 @@ void NMSSMWWHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 	  abs(ibos2)==ParticleID::Wplus) {
     if(abs(ibos1)==ParticleID::gamma ||
        abs(ibos2)==ParticleID::gamma) {
-      fact *=  0.5/sqr(cw_);
+      fact *= -0.5/sw_;
     }
     else {
-      fact *= -0.5/sw_;
+      fact *=  0.5/cw_;
     }
     if((isca1-5)%10==0) {
       unsigned int i = (isca1-25)/10;
