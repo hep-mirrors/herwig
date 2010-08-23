@@ -102,7 +102,7 @@ Complex AnomalousWWWVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
   unsigned int order;
   setCoupling(q2,vec1.particle(),vec2.particle(),vec3.particle(),
 	      g,kappa,order);
-  Energy2 p2[3],mw2;
+  Energy2 p2[3]={ZERO,ZERO,ZERO},mw2(ZERO);
   Complex test = Complex(0.,1.)*norm()*UnitRemoval::InvE*
     (dot12*(dotp13-dotp23)+dot23*(dotp21-dotp31)+dot31*(dotp32-dotp12));
   if(order==0) {
@@ -147,6 +147,8 @@ Complex AnomalousWWWVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
     p2[1] = vec2.momentum().m2();
     p2[2] = vec3.momentum().m2();
   }
+  else
+    assert(false);
   // finally calculate the vertex
   Complex output = Complex(0.,1.)*norm()*UnitRemoval::InvE*
     ((g+kappa+lambda_*p2[0]/mw2)*dotp21*dot23-
