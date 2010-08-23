@@ -388,10 +388,10 @@ realME(const cPDVector & particles,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-	SpinorWaveFunction    inters = FFGVertex_->evaluate(q2, 5, sp[ihel1].particle(),
+	SpinorWaveFunction    inters = FFGVertex_->evaluate(q2, 5, sp[ihel1].particle()->CC(),
 							    sp[ihel1], gluon[ohel1]);
-	SpinorBarWaveFunction interb = FFGVertex_->evaluate(q2,5,sbar[ihel1].particle(),
-							    sbar[ihel1],gluon[ohel1]);
+	SpinorBarWaveFunction interb = FFGVertex_->evaluate(q2,5,sbar[ihel2].particle()->CC(),
+							    sbar[ihel2],gluon[ohel1]);
 	VectorWaveFunction interV[2] = 
 	  {FFZVertex_->evaluate(q2, 1, Z0_, inters,sbar[ihel2]),
 	   FFZVertex_->evaluate(q2, 1, Z0_, sp[ihel1],interb)};
@@ -409,32 +409,32 @@ realME(const cPDVector & particles,
 	      // emission quark
 	      intersq = NFSVertex_->
 		evaluate(q2, 3, squark[iq], inters, sbarout[ohel3]);
-	      diag[6*iq+3] = 
+	      diag[6*iq+2] = 
 		NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
 	      // emission antiquark
 	      intersq = NFSVertex_->
 		evaluate(q2, 3, squark[iq], sp[ihel1], sbarout[ohel3]);
-	      diag[6*iq+4] = 
+	      diag[6*iq+3] = 
 		NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
 	      // emission from intermediate
 	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+5] = 
-		NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq2);
+	      diag[6*iq+4] = 
+		NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
 	      // swapped t-channel
 	      // emission quark
 	      intersq = NFSVertex_->
 		evaluate(q2, 3, squark[iq], inters, spoutconj[ohel2]);
-	      diag[6*iq+6] = 
+	      diag[6*iq+5] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
 	      // emission antiquark
 	      intersq = NFSVertex_->
 		evaluate(q2, 3, squark[iq], sp[ihel1], spoutconj[ohel2]);
-	      diag[6*iq+7] = 
+	      diag[6*iq+6] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
 	      // emission from intermediate
 	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+8] = 
-		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq2);
+	      diag[6*iq+7] = 
+		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
 	    }
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
