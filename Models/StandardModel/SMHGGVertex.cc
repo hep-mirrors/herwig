@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace Herwig;
 using namespace ThePEG;  
@@ -174,6 +175,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   case 2: {
     if (q2 != _q2last) {
+      clearcache();
       _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
       _q2last = q2;
     }

@@ -10,6 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Models/Susy/NMSSM/NMSSM.h"
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace Herwig;
 
@@ -135,6 +136,7 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
   long hid(p3->id());
   double rt = sqrt(0.5);
   if( q2 != _q2last ) {
+    clearcache();
     _couplast = sqr(electroMagneticCoupling(q2));
     _coup = weakCoupling(q2);
     _q2last = q2;
