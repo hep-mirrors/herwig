@@ -105,6 +105,13 @@ cd /Herwig/NewPhysics
 set TwoBodyDC:CreateDecayModes Yes
 set ThreeBodyDC:CreateDecayModes Yes
 
+# exclude higgs gg and gamma gamma effective vertices from three body decays
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/NMSSM/NMSSM_GGH
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/NMSSM/NMSSM_PPH
+# and hard processes
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/NMSSM/NMSSM_GGH
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/NMSSM/NMSSM_PPH
+
 insert NewModel:DecayParticles 32 /Herwig/Particles/~chi_50
 insert NewModel:DecayParticles 33 /Herwig/Particles/H30
 insert NewModel:DecayParticles 34 /Herwig/Particles/A20
