@@ -177,6 +177,17 @@ public:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
+
+protected:
+
   /**
    * A debugging function to test the value of me2 against an
    * analytic function. This is to be overidden in an inheriting class.
