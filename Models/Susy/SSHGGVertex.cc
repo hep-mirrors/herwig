@@ -16,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Looptools/clooptools.h"
 #include <cassert>
 
 using namespace ThePEG::Helicity;
@@ -117,16 +118,12 @@ void SSHGGVertex::Init() {
 void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 			      tcPDPtr particle3, tcPDPtr particle1) {
   long higgs(abs(particle1->id()));
-  if( higgs != ParticleID::h0 && 
-      higgs != ParticleID::H0 &&
-      higgs != ParticleID::A0 &&
-      particle2->id() != ParticleID::g && particle3->id() != ParticleID::g )
-    throw HelicityConsistencyError() 
-      << "SSHGGVertex::setCoupling(): This vertex has the incorrect "
-      << "particle content in it. " << higgs << " " 
-      << particle2->id() << " " << particle3->id();
+  assert( higgs == ParticleID::h0 || higgs == ParticleID::H0 ||
+	  higgs == ParticleID::A0 );
+  assert(particle2->id() == ParticleID::g && particle3->id() == ParticleID::g );
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
-    theCouplast = sqr(strongCoupling(q2))*weakCoupling(q2);
+    clearcache();
+    theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2));
     Energy mt = theMSSM->mass(q2, thetop);    
     Energy mb = theMSSM->mass(q2, thebot);
     masses.resize(0);

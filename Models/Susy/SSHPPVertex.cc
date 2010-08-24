@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include <cassert>
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace ThePEG::Helicity;
 using namespace Herwig;
@@ -48,6 +49,7 @@ void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
      << theLt1L << theLt1R << theLt1LR << theLt2L << theLt2R << theLt2LR
      << thetop << thebot << thetau << theTanB
      << theSinA << theCosA << theSinB << theCosB << theSinApB << theCosApB
+     << theSinBmA << theCosBmA
      << ounit(theSfmass, GeV) << theU << theV;
 }
 
@@ -58,6 +60,7 @@ void SSHPPVertex::persistentInput(PersistentIStream & is, int) {
      >> theLt1L >> theLt1R >> theLt1LR >> theLt2L >> theLt2R >> theLt2LR
      >> thetop >> thebot >> thetau >> theTanB
      >> theSinA >> theCosA >> theSinB >> theCosB >> theSinApB >> theCosApB
+     >> theSinBmA >> theCosBmA
      >> iunit(theSfmass, GeV) >> theU >> theV;
 }
 
@@ -83,6 +86,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	 particle3->id() == ParticleID::gamma );
   // couplings
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
+    clearcache();
     theCouplast = sqr(electroMagneticCoupling(q2))*weakCoupling(q2);
     Energy mt   = theMSSM->mass(q2, thetop);    
     Energy mb   = theMSSM->mass(q2, thebot);

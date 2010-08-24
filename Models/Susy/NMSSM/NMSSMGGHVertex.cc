@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/Susy/NMSSM/NMSSM.h"
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace Herwig;
 
@@ -113,6 +114,7 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 				 tcPDPtr p3) {			 
   long hid(p3->id());
   if( q2 != _q2last ) {
+    clearcache();
     _couplast = sqr(strongCoupling(q2));
     _coup = weakCoupling(q2);
     _q2last = q2;
