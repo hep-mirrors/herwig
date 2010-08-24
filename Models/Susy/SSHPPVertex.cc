@@ -49,6 +49,7 @@ void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
      << theLt1L << theLt1R << theLt1LR << theLt2L << theLt2R << theLt2LR
      << thetop << thebot << thetau << theTanB
      << theSinA << theCosA << theSinB << theCosB << theSinApB << theCosApB
+     << theSinBmA << theCosBmA
      << ounit(theSfmass, GeV) << theU << theV;
 }
 
@@ -59,6 +60,7 @@ void SSHPPVertex::persistentInput(PersistentIStream & is, int) {
      >> theLt1L >> theLt1R >> theLt1LR >> theLt2L >> theLt2R >> theLt2LR
      >> thetop >> thebot >> thetau >> theTanB
      >> theSinA >> theCosA >> theSinB >> theCosB >> theSinApB >> theCosApB
+     >> theSinBmA >> theCosBmA
      >> iunit(theSfmass, GeV) >> theU >> theV;
 }
 
