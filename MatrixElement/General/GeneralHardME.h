@@ -49,7 +49,8 @@ public:
   /**
    *  Enum for the possible colour structures
    */
-  enum ColourStructure {Colour11to11,Colour11to33bar,Colour11to88,
+  enum ColourStructure {UNDEFINED,
+			Colour11to11,Colour11to33bar,Colour11to88,
 			Colour33to33,Colour33barto11,Colour33barto33bar,
 			Colour33barto18,Colour33barto81,Colour33barto88,
 			Colour38to13,Colour38to31,

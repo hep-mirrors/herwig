@@ -42,7 +42,7 @@ check_BSM += check-LHC-MSSM
 check_BSM_Full += check-LHC-MSSM
 endif
 if WANT_NMSSM
-check_BSM += check-LHC-NMSSM
+check_BSM_Full += check-LHC-NMSSM
 endif
 if WANT_UED
 check_BSM += check-LHC-MUED-no3body
