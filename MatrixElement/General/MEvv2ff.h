@@ -13,6 +13,8 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
@@ -171,6 +173,10 @@ private:
   
   /** @name Dynamically casted vertices. */
   //@{
+  /**
+   *  Intermediate scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr > > scalar_;
   /**
    * Intermediate fermion 
    */

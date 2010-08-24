@@ -15,9 +15,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::TensorWaveFunction;
@@ -26,6 +23,7 @@ using ThePEG::Helicity::outgoing;
 
 void MEvv2ff::doinit() {
   GeneralHardME::doinit();
+  scalar_ .resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
@@ -46,7 +44,14 @@ void MEvv2ff::doinit() {
       fermion_[i] = make_pair(ffv1, ffv2);
     }
     else if( dg.channelType == HPDiagram::sChannel ) {
-      if( dg.intermediate->iSpin() == PDT::Spin1) {
+      if( dg.intermediate->iSpin() == PDT::Spin0 ) {
+	AbstractVVSVertexPtr vvs = 
+	  dynamic_ptr_cast<AbstractVVSVertexPtr>(dg.vertices.first );
+	AbstractFFSVertexPtr ffs = 
+	  dynamic_ptr_cast<AbstractFFSVertexPtr>(dg.vertices.second);
+	scalar_[i] = make_pair(vvs,ffs);
+      }
+      else if( dg.intermediate->iSpin() == PDT::Spin1) {
 	AbstractVVVVertexPtr vvv = 
 	  dynamic_ptr_cast<AbstractVVVVertexPtr>(dg.vertices.first);
 	AbstractFFVVertexPtr ffv = 
@@ -135,7 +140,13 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->iSpin() == PDT::Spin1) {
+	      if(offshell->iSpin() == PDT::Spin0) {
+		ScalarWaveFunction interS = scalar_[ix].first->
+		  evaluate(q2, 1, offshell, v1[iv1], v2[iv2]);
+		diag = scalar_[ix].second->
+		  evaluate(q2, sp[of2], sbar[of1], interS);
+	      }
+	      else if(offshell->iSpin() == PDT::Spin1) {
 		VectorWaveFunction interV = vector_[ix].first->
 		  evaluate(q2, 1, offshell, v1[iv1], v2[iv2]);
 		diag = vector_[ix].second->
@@ -179,11 +190,11 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 }
 
 void MEvv2ff::persistentOutput(PersistentOStream & os) const {
-  os << fermion_ << vector_ << tensor_;
+  os << scalar_ << fermion_ << vector_ << tensor_;
 }
 
 void MEvv2ff::persistentInput(PersistentIStream & is, int) {
-  is >> fermion_ >> vector_ >> tensor_;
+  is >> scalar_ >> fermion_ >> vector_ >> tensor_;
 }
 
 ClassDescription<MEvv2ff> MEvv2ff::initMEvv2ff;
