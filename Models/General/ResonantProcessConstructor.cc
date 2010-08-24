@@ -87,7 +87,7 @@ namespace {
 
 void ResonantProcessConstructor::constructDiagrams() {
   size_t ninc = theIncoming.size() , ninter = theIntermediates.size();
-  if(ninc == 0 || ninter == 0 || theOutgoing.size() == 0) return;
+  if(ninc == 0 || ninter == 0 ) return;
   // find the incoming particle pairs
   vector<tPDPair> incPairs;
   for(PDVector::size_type i = 0; i < ninc; ++i) {
@@ -115,7 +115,7 @@ void ResonantProcessConstructor::constructDiagrams() {
     model()->vertex(iv)->init();
   //To construct resonant diagrams loop over the incoming particles, intermediates
   //and vertices to find allowed diagrams. Need to exclude the diagrams that have 
-  //the intermediate as an external particle aswell
+  //the intermediate as an external particle as well
   for(vector<tcPDPair>::size_type is = 0; is < incPairs.size(); ++is) {
     tPDPair ppi = incPairs[is]; 
     for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
@@ -149,34 +149,53 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
   //We have the left hand part of the diagram, just need all the possibilities
   //for the RHS
   size_t nvertices = model()->numberOfVertices(); 
-  for(size_t io = 0; io < theOutgoing.size(); ++io) {
-    tcPDPtr outa = theOutgoing[io];
+  if(!theOutgoing.empty()) {
+    for(size_t io = 0; io < theOutgoing.size(); ++io) {
+      tcPDPtr outa = theOutgoing[io];
+      for(size_t iv = 0; iv < nvertices; ++iv) {
+	VBPtr vertex2 = model()->vertex(iv);
+	if(vertex2->getNpoint() > 3) continue;
+	tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
+			     outgoing);
+	for(tPDSet::const_iterator ita = outb.begin(); ita != outb.end(); ++ita)
+	  makeResonantDiagram(in, partc, outa->id(),(**ita).id(), 
+			      make_pair(vertex, vertex2));
+      }
+    }
+  }
+  else {
     for(size_t iv = 0; iv < nvertices; ++iv) {
       VBPtr vertex2 = model()->vertex(iv);
       if(vertex2->getNpoint() > 3) continue;
-      tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
-			  outgoing);
-      makeResonantDiagrams(in, partc, outa->id(), outb, 
-			   make_pair(vertex, vertex2));
+      for(unsigned int ix = 0;ix < 3; ++ix) {
+	vector<long> pdlist = vertex2->search(ix, partc->id());
+	for(unsigned int iy=0;iy<pdlist.size();iy+=3) {
+	  long out1 = ix==0 ? pdlist.at(iy+1) : pdlist.at(iy  );
+	  long out2 = ix==2 ? pdlist.at(iy+1) : pdlist.at(iy+2);
+	  if(partc->mass() < getParticleData(out1)->mass() + 
+	     getParticleData(out2)->mass()) continue;
+	  makeResonantDiagram(in, partc, out1, out2, 
+			      make_pair(vertex, vertex2));
+	}
+      }
     }
   }
 }
 
 void ResonantProcessConstructor::
-makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const tPDSet & out, 
+makeResonantDiagram(IDPair in, PDPtr offshell, long outa, long outb, 
 		     VBPair vertpair) {
-  for(tPDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
-    if( abs(outa) == abs(offshell->id()) || 
-	abs((*ita)->id()) == abs(offshell->id())) continue;
-    HPDiagram newdiag(in,make_pair(outa, (*ita)->id()) );
-    newdiag.intermediate = offshell;
-    newdiag.vertices = vertpair;
-    newdiag.channelType = HPDiagram::sChannel;
-    fixFSOrder(newdiag);
-    assignToCF(newdiag);
-    if(!duplicate(newdiag,theDiagrams))
-      theDiagrams.push_back(newdiag);
-  }
+  assert(vertpair.first && vertpair.second);
+  if( abs(outa) == abs(offshell->id()) || 
+      abs(outb) == abs(offshell->id())) return;
+  HPDiagram newdiag(in,make_pair(outa,outb));
+  newdiag.intermediate = offshell;
+  newdiag.vertices = vertpair;
+  newdiag.channelType = HPDiagram::sChannel;
+  fixFSOrder(newdiag);
+  assignToCF(newdiag);
+  if(!duplicate(newdiag,theDiagrams))
+    theDiagrams.push_back(newdiag);
 }
 	
 set<tPDPtr> 
@@ -261,7 +280,7 @@ createMatrixElement(const HPDiagram & diag) const {
     return;
   }
   matrixElement->setProcessInfo(HPDVector(1, diag),
-				colourFlow(extpart), debug(),1);
+				colourFlow(extpart), debug(),0);
   generator()->preinitInterface(subProcess(), "MatrixElements", 
 				subProcess()->MEs().size(),
 				"insert", matrixElement->fullName()); 

@@ -108,8 +108,8 @@ private:
   /**
    * Function to create the appropriate diagrams
    */
-  void makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, 
-			    const tPDSet & out, VBPair vertices);
+  void makeResonantDiagram(IDPair in, PDPtr offshell, long outa, 
+			   long outb, VBPair vertices);
   
   /**
    * Given a vertex and 2 particle id's find the possible states

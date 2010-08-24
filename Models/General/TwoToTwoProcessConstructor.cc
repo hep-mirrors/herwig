@@ -321,8 +321,7 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < nv_; ++iv) {
       tVertexBasePtr vertexB = vertices_[iv];
       if( vertexB->getNpoint() != 3) continue;
-      if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
-	  (!allDiagrams_ && vertexB->orderInGs() == 0) ) continue;
+      if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
       
       tPDSet final;
       if( vertexB->isOutgoing(getParticleData(fs)) &&
@@ -330,9 +329,9 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 	final = search(vertexB, (*it)->id(), incoming, fs,
 		       outgoing, outgoing);
       //Now make diagrams
-	if(!final.empty()) 
-	  makeDiagrams(inc, fs, final, *it, HPDiagram::sChannel,
-		       make_pair(vertex, vertexB), make_pair(true,true));
+      if(!final.empty()) 
+	makeDiagrams(inc, fs, final, *it, HPDiagram::sChannel,
+		     make_pair(vertex, vertexB), make_pair(true,true));
     }
   }
 
@@ -350,8 +349,7 @@ createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
      for(size_t iv = 0; iv < nv_; ++iv) {
        tVertexBasePtr vertexB = vertices_[iv];
        if( vertexB->getNpoint() != 3 ) continue;
-       if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
-	   (!allDiagrams_ && vertexB->orderInGs() == 0 ) ) continue;
+       if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
        tPDSet final;
        if( vertexB->isIncoming(inpp.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
@@ -369,8 +367,7 @@ createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < nv_; ++iv) {
        tVertexBasePtr vertexB = vertices_[iv];
        if( vertexB->getNpoint() != 3 ) continue;
-       if((vertexB->orderInGs() + vertexB->orderInGem() == 3) || 
-	  (!allDiagrams_ && vertexB->orderInGs() == 0) ) continue;
+       if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
 
        tPDSet final;
        if( vertexB->isIncoming(inpp.first) )
