@@ -82,9 +82,9 @@ void SSWWHHVertex::doinit() {
   // ZZH+H-
   coup_[2] = 0.5*sqr(c2w)/cw2/sw2;
   // Z W h0 H+
-  coup_[3] =-0.5/cw*sinbma;
+  coup_[3] =-0.5/cw*cosbma;
   // Z W H0 H+
-  coup_[4] = 0.5/cw*cosbma;
+  coup_[4] = 0.5/cw*sinbma;
   // Z W A0 H+
   coup_[5] =-Complex(0.,0.5)/cw;
   // A A H+H-
@@ -102,7 +102,7 @@ void SSWWHHVertex::doinit() {
 void SSWWHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 			       tcPDPtr part3, tcPDPtr part4) {
   if(q2!=q2last_||couplast_==0.) {
-    couplast_ = weakCoupling(q2);
+    couplast_ = sqr(electroMagneticCoupling(q2));
     q2last_=q2;
   }
   int ibos1 = part1->id(), ibos2 = part2->id();
@@ -129,28 +129,6 @@ void SSWWHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
        abs(ibos2)==ParticleID::gamma) {
       if(abs(isca1)==ParticleID::h0 ||
 	 abs(isca2)==ParticleID::h0) {
-	norm(couplast_*coup_[3]);
-      }
-      else if(abs(isca1)==ParticleID::H0 ||
-	      abs(isca2)==ParticleID::H0) {
-	norm(couplast_*coup_[4]);
-      }
-      else if(abs(isca1)==ParticleID::A0 ||
-	      abs(isca2)==ParticleID::A0) {
-	if(isca1==ParticleID::Hplus ||
-	   isca2==ParticleID::Hplus) {
-	  norm(couplast_*coup_[5]);
-	}
-	else {
-	  norm(couplast_*conj(coup_[5]));
-	}
-      }
-      else
-	assert(false);
-    }
-    else {
-      if(abs(isca1)==ParticleID::h0 ||
-	 abs(isca2)==ParticleID::h0) {
 	norm(couplast_*coup_[8]);
       }
       else if(abs(isca1)==ParticleID::H0 ||
@@ -161,10 +139,32 @@ void SSWWHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 	      abs(isca2)==ParticleID::A0) {
 	if(isca1==ParticleID::Hplus ||
 	   isca2==ParticleID::Hplus) {
-	  norm(couplast_*coup_[10]);
+	  norm(couplast_*     coup_[10] );
 	}
 	else {
 	  norm(couplast_*conj(coup_[10]));
+	}
+      }
+      else
+	assert(false);
+    }
+    else {
+      if(abs(isca1)==ParticleID::h0 ||
+	 abs(isca2)==ParticleID::h0) {
+	norm(couplast_*coup_[3]);
+      }
+      else if(abs(isca1)==ParticleID::H0 ||
+	      abs(isca2)==ParticleID::H0) {
+	norm(couplast_*coup_[4]);
+      }
+      else if(abs(isca1)==ParticleID::A0 ||
+	      abs(isca2)==ParticleID::A0) {
+	if(isca1==ParticleID::Hplus ||
+	   isca2==ParticleID::Hplus) {
+	  norm(couplast_*     coup_[5] );
+	}
+	else {
+	  norm(couplast_*conj(coup_[5]));
 	}
       }
       else
