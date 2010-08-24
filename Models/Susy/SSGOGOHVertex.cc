@@ -55,8 +55,6 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
   }
 }
 
-SSGOGOHVertex::~SSGOGOHVertex() {}
-
 void SSGOGOHVertex::doinit() {
   FFSVertex::doinit();
   

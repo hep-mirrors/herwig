@@ -208,12 +208,12 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 		      us1*(ni3*nj5 + ni5*nj3) +
 		      us3*(ni3*nj4 + ni4*nj3))
 	+ sqrt(2.)*_kappa*us3*ni5*nj5 
-	- _couplast*0.5*(us2*(ni2*nj3 + ni3*nj2) -
-			 us1*(ni2*nj4 + ni4*nj2))
-	+ _couplast*0.5*_sw*(us2*(ni1*nj3 + ni3*nj1) - 
-			     us1*(ni1*nj4 + ni4*nj1) )/_cw;
-      left(-conj(YL));
-      right(-YL);
+	- _couplast*0.5*(us1*(ni2*nj3 + ni3*nj2) -
+			 us2*(ni2*nj4 + ni4*nj2))
+	+ _couplast*0.5*_sw*(us1*(ni1*nj3 + ni3*nj1) - 
+			     us2*(ni1*nj4 + ni4*nj1) )/_cw;
+      left(conj(YL));
+      right(YL);
       norm(1.0);
     }
   }
