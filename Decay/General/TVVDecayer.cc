@@ -107,7 +107,8 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
-    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, in);
     double mu2 = sqr(outa.second/inpart.second);
     double b = sqrt(1 - 4.*mu2);
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
@@ -129,3 +130,4 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

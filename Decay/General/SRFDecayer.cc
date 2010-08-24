@@ -136,14 +136,15 @@ Energy SRFDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy q = inpart.second;
     Energy m1 = outa.second, m2 = outb.second;
     // couplings
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin()==PDT::Spin1Half) {
       swap(m1,m2);
       perturbativeVertex_->setCoupling(sqr(inpart.second),outb.first,
-				       outa.first, inpart.first);
+				       outa.first, in);
     }
     else {
       perturbativeVertex_->setCoupling(sqr(inpart.second),outa.first,
-				       outb.first, inpart.first);
+				       outb.first, in);
     }
     Complex left  = perturbativeVertex_-> left()*perturbativeVertex_-> norm();
     Complex right = perturbativeVertex_->right()*perturbativeVertex_-> norm();

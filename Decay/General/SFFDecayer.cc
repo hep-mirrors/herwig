@@ -111,8 +111,9 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
-				     inpart.first);
+				     in);
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
     double c2 = norm(_perturbativeVertex->norm());
     Complex al(_perturbativeVertex->left()), ar(_perturbativeVertex->right());

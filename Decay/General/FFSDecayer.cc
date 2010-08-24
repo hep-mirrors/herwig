@@ -135,17 +135,16 @@ Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(0.),mu2(0.);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin() == PDT::Spin1Half) {
       mu1 = outa.second/inpart.second;
       mu2 = outb.second/inpart.second;
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outa.first, outb.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in, outa.first, outb.first);
     }
     else {
       mu1 = outb.second/inpart.second;
       mu2 = outa.second/inpart.second;
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outb.first, outa.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in, outb.first, outa.first);
       
     }
     double c2 = norm(_perturbativeVertex->norm());

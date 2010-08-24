@@ -132,12 +132,13 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if( outa.first->iSpin() == PDT::Spin1Half)
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in,
 				       outa.first, outb.first);
     else {
       swap(mu1,mu2);
-      _perturbativeVertex->setCoupling(sqr(inpart.second),inpart.first,
+      _perturbativeVertex->setCoupling(sqr(inpart.second),in,
 				       outb.first,outa.first);
     }
     Complex cl(_perturbativeVertex->left()),cr(_perturbativeVertex->right());

@@ -164,8 +164,9 @@ Energy FRVDecayer::partialWidth(PMPair inpart, PMPair outa,
     double r2(sqrt(2.)),r3(sqrt(3.));
     Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
     // couplings
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     perturbativeVertex_->setCoupling(sqr(inpart.second), outa.first, 
-				     inpart.first,  outb.first);
+				     in,  outb.first);
     vector<Complex> left  = perturbativeVertex_-> left();
     vector<Complex> right = perturbativeVertex_->right();
     Complex A1 = 0.5*(left [0]+right[0])*perturbativeVertex_-> norm();
