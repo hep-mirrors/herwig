@@ -18,9 +18,9 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
