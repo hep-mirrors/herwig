@@ -608,3 +608,11 @@ selectColourFlow(vector<double> & flow,vector<double> & me,
   // return the answer
   return output;
 }
+
+void GeneralHardME::doinitrun() {
+  HwME2to2Base::doinitrun();
+  for(unsigned int ix=0;ix<diagrams_.size();++ix) {
+    diagrams_[ix].vertices.first ->initrun();
+    diagrams_[ix].vertices.second->initrun();
+  }
+}
