@@ -126,7 +126,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
 	coup /= thetanb; 
       else
 	coup *= thetanb;
-      coup *= Complex(0.,1.);
+      coup *= Complex(0.,-1.);
       rcoup = -1.;
     }
   }
