@@ -29,18 +29,25 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
   int higgs[] = { 25, 35, 36 };
   for ( long h = 0; h < 3; ++h ) {
     //neutral higgs
-    //3rd generation quarks
-    addToList(-5,5,higgs[h]);
-    addToList(-6,6,higgs[h]);
-    //tau lepton
-    addToList(-15,15,higgs[h]);
+    // quarks
+    for(long ix=1;ix<7;++ix)
+      addToList(-ix,ix,higgs[h]);
+    // charged leptons
+    for(long ix=11;ix<16;ix+=2)
+      addToList(-ix,ix,higgs[h]);
   }
-  //outgoing H+
-  addToList(-6 , 5, 37);
-  addToList(-16,15, 37);
-  //outgoing H-
-  addToList(-5 ,6 ,-37);
-  addToList(-15,16,-37);
+  for(long ix=1;ix<6;ix+=2) {
+    //outgoing H+
+    addToList(-ix-1,  ix, 37);
+    //outgoing H-
+    addToList(-ix  ,ix+1,-37);
+  }
+  for(long ix=11;ix<16;ix+=2) {
+    //outgoing H+
+    addToList(-ix-1,  ix, 37);
+    //outgoing H-
+    addToList(-ix  ,ix+1,-37);
+  }
 }
 
 void SSFFHVertex::doinit() {
