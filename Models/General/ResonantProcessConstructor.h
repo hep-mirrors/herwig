@@ -46,7 +46,8 @@ public:
    * The default constructor.
    */
   ResonantProcessConstructor() :
-    theIncoming(0), theIntermediates(0), theOutgoing(0), theDiagrams(0)
+    processOption_(0), incoming_(0), intermediates_(0),
+    outgoing_(0), diagrams_(0)
   {}
 
 public:
@@ -95,6 +96,18 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard HardProcessConstructor functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -157,26 +170,32 @@ private:
   ResonantProcessConstructor & operator=(const ResonantProcessConstructor &);
 
 private:
+
+  /**
+   * Which types of processes to generate
+   */
+  unsigned int processOption_;
   
   /**
    * Storage for the required intermediate particles
    */
-  vector<PDPtr> theIncoming;
+  vector<PDPtr> incoming_;
 
   /**
    * Storage for the required intermediate particles
    */
-  vector<PDPtr> theIntermediates;
+  vector<PDPtr> intermediates_;
 
   /**
    * Storage for the required intermediate particles
    */
-  vector<PDPtr> theOutgoing; 
+  vector<PDPtr> outgoing_; 
 
   /**
    * Storage for the diagrams
    */
-  vector<HPDiagram> theDiagrams;
+  vector<HPDiagram> diagrams_;
+
 };
 
   /** Exception class indicating setup problem. */
