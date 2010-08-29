@@ -272,10 +272,6 @@ private:
    *  right scalar top mass
    */
   Energy _MU2;
-    /**
-   * The mass of the last fermion for which the coupling was evaluated.
-   */
-  pair<Energy,Energy> _masslast;
 
   /**
    *  Whether or onto to include the radiative terms
