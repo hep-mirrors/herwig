@@ -73,11 +73,13 @@ struct ColourSingletShower {
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _reconopt << ounit(_minQ,GeV) << _noRescale << _noRescaleVector;
+  os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
+     << _noRescaleVector;
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _reconopt >> iunit(_minQ,GeV) >> _noRescale >> _noRescaleVector;  
+  is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
+     >> _noRescaleVector;  
 }
 
 ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
@@ -115,6 +117,21 @@ void QTildeReconstructor::Init() {
     ("NoRescale",
      "Particles which shouldn't be rescaled to be on shell by the shower",
      &QTildeReconstructor::_noRescaleVector, -1, false, false, true, false, false);
+
+  static Switch<QTildeReconstructor,unsigned int> interfaceInitialInitialBoostOption
+    ("InitialInitialBoostOption",
+     "Option for how the boost from the system before ISR to that after ISR is applied.",
+     &QTildeReconstructor::_initialBoost, 0, false, false);
+  static SwitchOption interfaceInitialInitialBoostOptionOneBoost
+    (interfaceInitialInitialBoostOption,
+     "OneBoost",
+     "Apply one boost from old CMS to new CMS",
+     0);
+  static SwitchOption interfaceInitialInitialBoostOptionLongTransBoost
+    (interfaceInitialInitialBoostOption,
+     "LongTransBoost",
+     "First apply a longitudinal and then a transverse boost",
+     1);
 
 }
 
@@ -257,7 +274,7 @@ reconstructHardJets(ShowerTreePtr hard,
       }
       // now decide what to do
       // initial-initial connection and final-state colour singlet systems
-      Boost toRest,fromRest;
+      LorentzRotation toRest,fromRest;
       bool applyBoost(false);
       bool general(false);
       // Drell-Yan type
@@ -265,7 +282,8 @@ reconstructHardJets(ShowerTreePtr hard,
 	// reconstruct initial-initial system
 	for(unsigned int ix=0;ix<systems.size();++ix) {
 	  if(systems[ix].type==II) 
-	    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,systems[ix].jets);
+	    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
+					    systems[ix].jets);
 	}
       }
       // DIS and VBF type
@@ -312,7 +330,8 @@ reconstructHardJets(ShowerTreePtr hard,
       if(!general) {
 	for(unsigned int ix=0;ix<systems.size();++ix) {
 	  if(systems[ix].type==F) 
-	    reconstructFinalStateSystem(applyBoost,toRest,fromRest,systems[ix].jets);
+	    reconstructFinalStateSystem(applyBoost,toRest,fromRest,
+					systems[ix].jets);
 	}
       }
       else {
@@ -822,7 +841,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       else                  out.jets.push_back(*it);
     }
     // do the initial-state reconstruction
-    Boost toRest,fromRest;
+    LorentzRotation toRest,fromRest;
     bool applyBoost(false);
     reconstructInitialInitialShower(applyBoost,toRest,fromRest,
 				    tree,in.jets);
@@ -1057,12 +1076,14 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
 }
 
 void QTildeReconstructor::
-reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest, 
+reconstructFinalStateSystem(bool applyBoost, 
+			    const LorentzRotation &   toRest,
+			    const LorentzRotation & fromRest, 
 			    vector<ShowerProgenitorPtr> jets) const {
   // special for case of individual particle
   if(jets.size()==1) {
-    jets[0]->progenitor()->deepBoost(toRest);
-    jets[0]->progenitor()->deepBoost(fromRest);
+    jets[0]->progenitor()->deepTransform(  toRest);
+    jets[0]->progenitor()->deepTransform(fromRest);
     return;
   }
   bool radiated(false);
@@ -1103,14 +1124,16 @@ reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest,
     if(gottaBoost) Trafo.boost(-beta_cm);
     if(radiated || gottaBoost) it->parent->deepTransform(Trafo);
     if(applyBoost) {
-      it->parent->deepBoost(toRest);
-      it->parent->deepBoost(fromRest);
+      it->parent->deepTransform(  toRest);
+      it->parent->deepTransform(fromRest);
     }
   }
 }
 
 void QTildeReconstructor::
-reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromRest,  
+reconstructInitialInitialSystem(bool & applyBoost, 
+				LorentzRotation &   toRest, 
+				LorentzRotation & fromRest,  
 				vector<ShowerProgenitorPtr> jets) const {
   bool radiated = false;
   Lorentz5Momentum pcm;
@@ -1185,13 +1208,28 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
     newcmf+=toBoost->momentum();
   }
   if(newcmf.m()<ZERO||newcmf.e()<ZERO) throw KinematicsReconstructionVeto();
-  toRest   = pcm.findBoostToCM();
-  fromRest = newcmf.boostVector();
+  // do one boost
+  toRest   = LorentzRotation(pcm.findBoostToCM());
+  if(_initialBoost==0) {
+    fromRest = LorentzRotation(newcmf.boostVector());
+  }
+  else if(_initialBoost==1) {
+    // first apply longitudinal boost
+    double beta = newcmf.z()/sqrt(newcmf.m2()+sqr(newcmf.z()));
+    fromRest=LorentzRotation(Boost(0.,0.,beta));
+    // then transverse one
+    Energy pT = sqrt(sqr(newcmf.x())+sqr(newcmf.y()));
+    beta = pT/newcmf.t();
+    fromRest.boost(Boost(beta*newcmf.x()/pT,beta*newcmf.y()/pT,0.));
+  }
+  else
+    assert(false);
 }
 
 void QTildeReconstructor::
-reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
-				Boost & fromRest,
+reconstructInitialInitialShower(bool & applyBoost,
+				LorentzRotation &   toRest,
+				LorentzRotation & fromRest,
 				HardTreePtr tree,
 				vector<HardBranchingPtr> jets) const {
   // get the momenta of the particles
@@ -1254,17 +1292,34 @@ reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
   jets[1]->showerMomentum(x[1]*jets[1]->pVector());
   // and calculate the boosts 
   applyBoost=true;
-  toRest   = -pcm.boostVector();
-  fromRest = (jets[0]->showerMomentum()+jets[1]->showerMomentum()).boostVector();
+  // do one boost
+  toRest   = LorentzRotation(pcm.findBoostToCM());
+  if(_initialBoost==0) {
+    toRest   = LorentzRotation(-pcm.boostVector());
+  }
+  else if(_initialBoost==1) {
+    // first the transverse boost
+    Energy pT = sqrt(sqr(pcm.x())+sqr(pcm.y()));
+    double beta = -pT/pcm.t();
+    toRest=LorentzRotation(Boost(beta*pcm.x()/pT,beta*pcm.y()/pT,0.));
+    // the longitudinal 
+    beta = pcm.z()/sqrt(pcm.m2()+sqr(pcm.z()));
+    toRest.boost(Boost(0.,0.,-beta));
+  }
+  else
+    assert(false);
+  fromRest = LorentzRotation((jets[0]->showerMomentum()+
+			      jets[1]->showerMomentum()).boostVector());
 }
 
 void QTildeReconstructor::
-reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
+reconstructFinalStateShower(const LorentzRotation &   toRest,
+			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
 			    EvolverPtr evolver) const {
   if(jets.size()==1) {
     LorentzRotation R(toRest);
-    R.boost(fromRest);
+    R.transform(fromRest);
     jets[0]->original(R*jets[0]->branchingParticle()->momentum());
     return;
   }
@@ -1278,7 +1333,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
   // boost all the momenta to the rest frame of the decaying particle
   Lorentz5Momentum pin;
   for(unsigned int ix=0;ix<pout.size();++ix) {
-    pout[ix].boost(toRest);
+    pout[ix].transform(toRest);
     pin += pout[ix];
   }
   // rescaling factor
@@ -1286,12 +1341,12 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
   // now calculate the p reference vectors 
   for(cit=jets.begin();cit!=jets.end();++cit){
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
-    pvect.boost(toRest);
+    pvect.transform(toRest);
     pvect /= lambda;
     pvect.setMass((*cit)->branchingParticle()->dataPtr()->mass());
     pvect.rescaleEnergy();
     (*cit)->pVector(pvect);
-    pvect.boost(fromRest);
+    pvect.transform(fromRest);
     (*cit)->showerMomentum(pvect);
   }
   // find the colour partners
@@ -1381,8 +1436,8 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
     // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
     // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost
-    LorentzRotation A=LorentzRotation(toRest);
-    LorentzRotation R=solveBoost(qnew,A*(*cjt)->branchingParticle()->momentum())*A;
+    LorentzRotation R=solveBoost(qnew,
+				 toRest*(*cjt)->branchingParticle()->momentum())*toRest;
     (*cjt)->setMomenta(R,1.0,Lorentz5Momentum());  
   }
 }
@@ -1426,7 +1481,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
       in.jets.push_back(ShowerHardJets[ix]);
   }
   // reconstruct initial-initial system
-  Boost toRest,fromRest;
+  LorentzRotation toRest,fromRest;
   bool applyBoost(false);
   reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
   // reconstruct the final-state systems
