@@ -22,8 +22,7 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _s2b(0.), _c2b(0.), _vu(0.*MeV),
 				   _vd(0.*MeV), _s(0.*MeV), _q2last(0.*MeV2),
 				   _glast(0.), _MQ3(0.*MeV), _MU2(0.*MeV),
-				   _masslast(make_pair(0.*MeV,0*MeV)),
-				   _includeRadiative(true) {
+				   _includeRadiative(false) {
   // PDG codes for the particles in vertex _vd
   //CP-even Higgs
   addToList(25, 35, 45);
@@ -80,16 +79,16 @@ void NMSSMHHHVertex::doinit() {
 }
 
 void NMSSMHHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_mw, GeV) << ounit(_mz,GeV) << ounit(_mb, GeV) << ounit(_mt,GeV)
+  os << ounit(_mw, GeV) << ounit(_mz,GeV) 
      << _sw2 << _cw <<  _lambda << _includeRadiative
      << _kappa <<  ounit(_lambdaVEV,GeV) <<  ounit(_theAl, GeV) 
      << ounit(_theAk,GeV) <<  _sb <<  _cb << _s2b <<  _c2b
-     << ounit(_vu,GeV) << ounit(_vu,GeV) << ounit(_s,GeV) << _mixS << _mixP
+     << ounit(_vu,GeV) << ounit(_vd,GeV) << ounit(_s,GeV) << _mixS << _mixP
      << ounit(_MQ3,GeV) << ounit(_MU2,GeV) << _theSM;
 }
 
 void NMSSMHHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_mw, GeV) >> iunit(_mz,GeV)>> iunit(_mb, GeV) >> iunit(_mt,GeV)
+  is >> iunit(_mw, GeV) >> iunit(_mz,GeV) 
      >> _sw2 >> _cw >>  _lambda >> _includeRadiative
      >> _kappa >>  iunit(_lambdaVEV,GeV) >>  iunit(_theAl, GeV) 
      >> iunit(_theAk,GeV) >>  _sb >>  _cb >> _s2b >>  _c2b
@@ -108,7 +107,7 @@ void NMSSMHHHVertex::Init() {
   static Switch<NMSSMHHHVertex,bool> interfaceIncludeRadiativeCorrections
     ("IncludeRadiativeCorrections",
      "Include radiative corrections in the vertex",
-     &NMSSMHHHVertex::_includeRadiative, true, false, false);
+     &NMSSMHHHVertex::_includeRadiative, false, false, false);
   static SwitchOption interfaceIncludeRadiativeCorrectionsYes
     (interfaceIncludeRadiativeCorrections,
      "Yes",
@@ -141,13 +140,11 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
   if( q2 != _q2last ) {
     _q2last = q2;
     _glast = weakCoupling(q2);
-    _masslast.first = _theSM->mass(q2,getParticleData(5));
-    _masslast.second = _theSM->mass(q2,getParticleData(6));
+    _mb = _theSM->mass(q2,getParticleData(5));
+    _mt = _theSM->mass(q2,getParticleData(6));
   }
   //define VEV's
   double rt = sqrt(0.5);
-  _mb = _masslast.first;
-  _mt = _masslast.second;
   Energy _mtpole = getParticleData(6)->mass();
   Energy2 Qstsb = _MQ3*_MU2;
   double temp = Qstsb/sqr(_mtpole);
