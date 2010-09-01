@@ -29,11 +29,11 @@ IBPtr ResonantProcessConstructor::fullclone() const {
 }
 
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << theIncoming << theIntermediates << theOutgoing;
+  os << incoming_ << intermediates_ << outgoing_ << processOption_;
 }
 
 void ResonantProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> theIncoming >> theIntermediates >> theOutgoing;
+  is >> incoming_ >> intermediates_ >> outgoing_ >> processOption_;
 }
 
 ClassDescription<ResonantProcessConstructor> 
@@ -49,20 +49,58 @@ void ResonantProcessConstructor::Init() {
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOffshell
     ("Intermediates",
      "A vector of offshell particles for resonant diagrams",
-     &ResonantProcessConstructor::theIntermediates, -1, false, false, true, 
+     &ResonantProcessConstructor::intermediates_, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceIncoming
     ("Incoming",
      "A vector of incoming particles for resonant diagrams",
-     &ResonantProcessConstructor::theIncoming, -1, false, false, true, 
+     &ResonantProcessConstructor::incoming_, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOutgoing
     ("Outgoing",
      "A vector of outgoin particles for resonant diagrams",
-     &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
+     &ResonantProcessConstructor::outgoing_, -1, false, false, true, 
      false);
+
+  static Switch<ResonantProcessConstructor,unsigned int> interfaceProcesses
+    ("Processes",
+     "Whether to generate inclusive or exclusive processes",
+     &ResonantProcessConstructor::processOption_, 0, false, false);
+  static SwitchOption interfaceProcessesSingleParticleInclusive
+    (interfaceProcesses,
+     "SingleParticleInclusive",
+     "Require at least one particle from the list of outgoing particles"
+     " in the hard process",
+     0);
+  static SwitchOption interfaceProcessesTwoParticleInclusive
+    (interfaceProcesses,
+     "TwoParticleInclusive",
+     "Require that both the particles in the hard processes are in the"
+     " list of outgoing particles",
+     1);
+  static SwitchOption interfaceProcessesExclusive
+    (interfaceProcesses,
+     "Exclusive",
+     "Require that both the particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     2);
+  static SwitchOption interfaceProcessesInclusive
+    (interfaceProcesses,
+     "Inclusive",
+     "Generate all modes which are allowed for the on-shell intermediate particle",
+     3);
+}
+
+void ResonantProcessConstructor::doinit() {
+  HardProcessConstructor::doinit();
+  if(processOption_==2&&outgoing_.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two outgoing particles but " << outgoing_.size()
+      << "have been inserted in ResonantProcessConstructor::doinit()."
+      << Exception::runerror;
 }
 
 namespace {
@@ -86,13 +124,13 @@ namespace {
 }
 
 void ResonantProcessConstructor::constructDiagrams() {
-  size_t ninc = theIncoming.size() , ninter = theIntermediates.size();
+  size_t ninc = incoming_.size() , ninter = intermediates_.size();
   if(ninc == 0 || ninter == 0 ) return;
   // find the incoming particle pairs
   vector<tPDPair> incPairs;
   for(PDVector::size_type i = 0; i < ninc; ++i) {
     for(PDVector::size_type j = 0; j < ninc; ++j) {
-      tPDPair inc = make_pair(theIncoming[i], theIncoming[j]);
+      tPDPair inc = make_pair(incoming_[i], incoming_[j]);
       if( (inc.first->iSpin() > inc.second->iSpin()) ||
 	  (inc.first->iSpin() == inc.second->iSpin() &&
 	   inc.first->id() < inc.second->id()) )
@@ -119,7 +157,7 @@ void ResonantProcessConstructor::constructDiagrams() {
   for(vector<tcPDPair>::size_type is = 0; is < incPairs.size(); ++is) {
     tPDPair ppi = incPairs[is]; 
     for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
-      long ipart = theIntermediates[ik]->id();
+      long ipart = intermediates_[ik]->id();
       for(size_t iv = 0; iv < nvertices; ++iv) {
 	VBPtr vertex = model()->vertex(iv);
 	if(vertex->getNpoint() > 3) continue;
@@ -132,15 +170,15 @@ void ResonantProcessConstructor::constructDiagrams() {
 	   vertex->allowed(ipart, part1, part2) ||
 	   vertex->allowed(ipart, part2, part1) ) {
 	  constructVertex2(make_pair(ppi.first->id(), ppi.second->id()), vertex, 
-			   theIntermediates[ik]);
+			   intermediates_[ik]);
 	}
       }
     }
   }
   //Create matrix element for each process
-  const HPDVector::size_type ndiags = theDiagrams.size();
+  const HPDVector::size_type ndiags = diagrams_.size();
   for(HPDVector::size_type ix = 0; ix < ndiags; ++ix)
-    createMatrixElement(theDiagrams[ix]);
+    createMatrixElement(diagrams_[ix]);
 }
 
 void ResonantProcessConstructor::
@@ -149,9 +187,9 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
   //We have the left hand part of the diagram, just need all the possibilities
   //for the RHS
   size_t nvertices = model()->numberOfVertices(); 
-  if(!theOutgoing.empty()) {
-    for(size_t io = 0; io < theOutgoing.size(); ++io) {
-      tcPDPtr outa = theOutgoing[io];
+  if(processOption_!=3) {
+    for(size_t io = 0; io < outgoing_.size(); ++io) {
+      tcPDPtr outa = outgoing_[io];
       for(size_t iv = 0; iv < nvertices; ++iv) {
 	VBPtr vertex2 = model()->vertex(iv);
 	if(vertex2->getNpoint() > 3) continue;
@@ -194,8 +232,27 @@ makeResonantDiagram(IDPair in, PDPtr offshell, long outa, long outb,
   newdiag.channelType = HPDiagram::sChannel;
   fixFSOrder(newdiag);
   assignToCF(newdiag);
-  if(!duplicate(newdiag,theDiagrams))
-    theDiagrams.push_back(newdiag);
+  if(duplicate(newdiag,diagrams_)) return;
+  // if inclusive enforce the exclusivity
+  if(processOption_==1) {
+    PDVector::const_iterator loc = 
+      std::find(outgoing_.begin(),outgoing_.end(),
+		getParticleData(newdiag.outgoing. first));
+    if(loc==outgoing_.end()) return;
+    loc = 
+      std::find(outgoing_.begin(),outgoing_.end(),
+		getParticleData(newdiag.outgoing.second));
+    if(loc==outgoing_.end()) return;
+  }
+  else if(processOption_==2) {
+    if(!((newdiag.outgoing. first==outgoing_[0]->id()&&
+	  newdiag.outgoing.second==outgoing_[1]->id())||
+	 (newdiag.outgoing. first==outgoing_[1]->id()&&
+	  newdiag.outgoing.second==outgoing_[0]->id())))
+      return;
+  }
+  // add to the list
+  diagrams_.push_back(newdiag);
 }
 	
 set<tPDPtr> 

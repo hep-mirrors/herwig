@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -172,9 +173,14 @@ private:
   /** @name The dynamically casted vertices. */
   //@{
   /**
+   * Intermediate s-channel scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractSSSVertexPtr> > scalar1_;
+
+  /**
    * Intermediate t-channel scalar
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar_;
+  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar2_;
 
   /**
    * Intermediate s-channel vector

@@ -272,7 +272,7 @@ public:
   /**
    * Access to a vertex from the list
    */
-  tVertexBasePtr vertex(unsigned int ix) {
+  tVertexBasePtr vertex(unsigned int ix) const {
     return vertexList_[ix];
   }
   //@}  

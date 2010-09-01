@@ -60,7 +60,8 @@ void TwoToTwoProcessConstructor::doinit() {
     throw InitException() 
       << "Exclusive processes require exactly"
       << " two outgoing particles but " << outgoing_.size()
-      << "have been inserted." << Exception::runerror;
+      << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
+      << Exception::runerror;
   Nout_ = outgoing_.size();
   PDVector::size_type ninc = incoming_.size();
   // exit if nothing to do
