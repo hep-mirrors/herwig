@@ -76,12 +76,10 @@ void Wpt::doinitrun() {
   
 }
 
-void Wpt::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void Wpt::persistentOutput(PersistentOStream & ) const {
 }
 
-void Wpt::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void Wpt::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<Wpt> Wpt::initWpt;
@@ -113,7 +111,7 @@ void Wpt::dofinish() {
   outfile.close();
 }
 
-void Wpt::analyze(tEventPtr event, long ieve, int loop, int state) {
+void Wpt::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   // find the outgoing particles in the hard process

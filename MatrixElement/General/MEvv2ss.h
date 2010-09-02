@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -74,6 +75,8 @@ private:
    * @param sca2 A ScalarWaveFunction for the second outgoing
    * @param me2 The value of the spin-summed matrix element squared
    * (to be calculated)
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement vv2ssME(const VBVector & v1, const VBVector & v2,
 				  const ScalarWaveFunction & sca1, 
@@ -170,9 +173,14 @@ private:
   /** @name The dynamically casted vertices. */
   //@{
   /**
+   * Intermediate s-channel scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractSSSVertexPtr> > scalar1_;
+
+  /**
    * Intermediate t-channel scalar
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar_;
+  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar2_;
 
   /**
    * Intermediate s-channel vector

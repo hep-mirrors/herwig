@@ -28,18 +28,10 @@ class SSGOGOHVertex: public FFSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSGOGOHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSGOGOHVertex();
-  //@}
 
 public:
 

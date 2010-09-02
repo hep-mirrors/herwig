@@ -141,21 +141,6 @@ private:
   double thecbma;
   
   /**
-   * The ID of the gauge boson when the vertex was last evaluated
-   */
-  long theGBlast;
-
-  /**
-   * The ID of the higgs when the vertex was last evaluated
-   */
-  long theHlast;
-
-  /**
-   * The value of the coupling when last evaluated
-   */
-  Complex theCouplast;
-  
-  /**
    * The scale at which the coupling  was last evaluated.
    */
   Energy2 theq2last;
@@ -164,7 +149,9 @@ private:
    * The value of the \f$\sqrt{4\pi\alpha}\f$  when last evaluated.
    */
   double theElast;
+
 };
+
 }
 
 

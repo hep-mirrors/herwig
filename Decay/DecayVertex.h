@@ -69,6 +69,7 @@ public:
   /**
    * Method to calculate the \f$\rho\f$ matrix for one of the decay products
    * @param iprod The product we are calculating the \f$\rho\f$ matrix for.
+   * @param recursive Whether or not to recursive calculate the matrix
    */
   virtual RhoDMatrix getRhoMatrix(int iprod,bool recursive) const;
 

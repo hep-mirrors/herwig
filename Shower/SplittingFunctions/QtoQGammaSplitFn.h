@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  QtoQGammaSplitFn() : SplittingFunction(ShowerInteraction::QED,1) {}
+  QtoQGammaSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting

@@ -49,7 +49,8 @@ public:
   /**
    *  Enum for the possible colour structures
    */
-  enum ColourStructure {Colour11to11,Colour11to33bar,Colour11to88,
+  enum ColourStructure {UNDEFINED,
+			Colour11to11,Colour11to33bar,Colour11to88,
 			Colour33to33,Colour33barto11,Colour33barto33bar,
 			Colour33barto18,Colour33barto81,Colour33barto88,
 			Colour38to13,Colour38to31,
@@ -139,7 +140,6 @@ public:
    * Set the diagrams and matrix of colour factors. 
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
-   * @param factors
    * @param colour The colour structure for the process
    * @param debug Whether to compare the numerical answer to an analytical
    * formula (This is only stored for certain processes. It is intended
@@ -178,10 +178,20 @@ public:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
+
+protected:
+
   /**
    * A debugging function to test the value of me2 against an
    * analytic function. This is to be overidden in an inheriting class.
-   * @param x The value of \f$ |\mathcal{M} |^2 \f$
    */
   virtual void debug(double ) const {}  
 

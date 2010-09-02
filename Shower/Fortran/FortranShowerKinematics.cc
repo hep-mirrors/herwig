@@ -27,7 +27,7 @@ updateChildren(const tShowerParticlePtr theParent,
   }
   Energy dqtilde = scale();
   double dz = z(); 
-  double dphi = phi();
+//   double dphi = phi();
   theChildren[0]->showerVariables().resize(5,0.*MeV);
   theChildren[1]->showerVariables().resize(5,0.*MeV);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
@@ -53,19 +53,19 @@ updateChildren(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[1]);
 }
 
-void FortranShowerKinematics::updateParent(const tShowerParticlePtr theParent, 
-		  const ShowerParticleVector theChildren) const {
+void FortranShowerKinematics::updateParent(const tShowerParticlePtr , 
+					   const ShowerParticleVector ) const {
   throw Exception() << "FortranShowerKinematics::updateParent "
 		    << " not implemented" << Exception::runerror;
 }
 
-void FortranShowerKinematics::updateLast(const tShowerParticlePtr theLast) const {
+void FortranShowerKinematics::updateLast(const tShowerParticlePtr ) const {
   throw Exception() << "FortranShowerKinematics::updateLast "
 		    << " not implemented" << Exception::runerror;
 }
 
-void FortranShowerKinematics::reconstructChildren(const tShowerParticlePtr theParent, 
-			 const ShowerParticleVector theChildren) const {
+void FortranShowerKinematics::reconstructChildren(const tShowerParticlePtr , 
+						  const ShowerParticleVector ) const {
   throw Exception() << "FortranShowerKinematics::reconstructChildren "
 		    << " not implemented" << Exception::runerror;
 }
@@ -97,7 +97,7 @@ void FortranShowerKinematics::reconstructParent(const tShowerParticlePtr thePare
 }
 
 void FortranShowerKinematics::reconstructLast(const tShowerParticlePtr theLast,
-		     unsigned int iopt) const {
+					      unsigned int ) const {
   Energy mass=theLast->dataPtr()->constituentMass();
   theLast->set5Momentum(mass);
   Energy2 p2=sqr(theLast->showerVariables()[0])-sqr(mass);
@@ -105,7 +105,7 @@ void FortranShowerKinematics::reconstructLast(const tShowerParticlePtr theLast,
   cerr << "testing last " << theLast->mass()/MeV << "\n";
 }
 
-void FortranShowerKinematics::initialize(ShowerParticle & particle) {
+void FortranShowerKinematics::initialize(ShowerParticle & ) {
 }
 
 vector<Lorentz5Momentum> FortranShowerKinematics::getBasis() const {

@@ -20,7 +20,7 @@ inline IBPtr ZpTRun2::fullclone() const {
   return new_ptr(*this);
 }
 
-void ZpTRun2::analyze(tEventPtr event, long ieve, int loop, int state) {
+void ZpTRun2::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   tParticleVector outgoing = event->primaryCollision()->step(1)->getFinalState();

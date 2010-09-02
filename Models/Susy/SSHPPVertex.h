@@ -135,73 +135,109 @@ private:
    * The mixing matrix factor \f$Q^{2i}_{11}Q^{2i}_{11}\f$ 
    * for the \f$\tilde{t}\f$
    */
-  Complex theQt11;
+  Complex theQt1L;
   
   /**
    * The mixing matrix factor \f$Q^{2i}_{12}Q^{2i}_{12}\f$ 
    * for the \f$\tilde{t}\f$
    */
-  Complex theQt12;
+  Complex theQt1R;
+  
+  /**
+   * The mixing matrix factor \f$Q^{2i}_{12}Q^{2i}_{12}\f$ 
+   * for the \f$\tilde{t}\f$
+   */
+  Complex theQt1LR;
 
   /**
    * The mixing matrix factor \f$Q^{2i}_{21}Q^{2i}_{21}\f$ 
    * for the \f$\tilde{t}\f$
    */
-  Complex theQt21;
+  Complex theQt2L;
 
   /**
    * The mixing matrix factor \f$Q^{2i}_{22}Q^{2i}_{22}\f$ 
    * for the \f$\tilde{t}\f$
    */
-  Complex theQt22;
+  Complex theQt2R;
+
+  /**
+   * The mixing matrix factor \f$Q^{2i}_{22}Q^{2i}_{22}\f$ 
+   * for the \f$\tilde{t}\f$
+   */
+  Complex theQt2LR;
 
  /**
    * The mixing matrix factor \f$Q^{2i-1}_{11}Q^{2i-1}_{11}\f$ 
    * for the \f$\tilde{b}\f$
    */
-  Complex theQb11;
+  Complex theQb1L;
 
  /**
    * The mixing matrix factor \f$Q^{2i-1}_{12}Q^{2i-1}_{12}\f$ 
    * for the \f$\tilde{b}\f$
    */
-  Complex theQb12;
+  Complex theQb1R;
+
+ /**
+   * The mixing matrix factor \f$Q^{2i-1}_{12}Q^{2i-1}_{12}\f$ 
+   * for the \f$\tilde{b}\f$
+   */
+  Complex theQb1LR;
 
   /**
    * The mixing matrix factor \f$Q^{2i-1}_{21}Q^{2i-1}_{21}\f$ 
    * for the \f$\tilde{b}\f$
    */
-  Complex theQb21;
+  Complex theQb2L;
 
   /**
    * The mixing matrix factor \f$Q^{2i-1}_{22}Q^{2i-1}_{22}\f$ 
    * for the \f$\tilde{b}\f$
    */
-  Complex theQb22; 
+  Complex theQb2R; 
+
+  /**
+   * The mixing matrix factor \f$Q^{2i-1}_{22}Q^{2i-1}_{22}\f$ 
+   * for the \f$\tilde{b}\f$
+   */
+  Complex theQb2LR; 
   
   /**
    * The mixing matrix factor \f$L^{2i}_{11}L^{2i}_{11}\f$ 
    * for the \f$\tilde{\tau}\f$
    */
-  Complex theLt11;
+  Complex theLt1L;
   
   /**
    * The mixing matrix factor \f$L^{2i}_{12}L^{2i}_{12}\f$ 
    * for the \f$\tilde{\tau}\f$
    */
-  Complex theLt12;
+  Complex theLt1R;
+  
+  /**
+   * The mixing matrix factor \f$L^{2i}_{12}L^{2i}_{12}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt1LR;
 
   /**
    * The mixing matrix factor \f$L^{2i}_{21}L^{2i}_{21}\f$ 
    * for the \f$\tilde{\tau}\f$
    */
-  Complex theLt21;
+  Complex theLt2L;
 
   /**
    * The mixing matrix factor \f$L^{2i}_{22}L^{2i}_{22}\f$ 
    * for the \f$\tilde{\tau}\f$
    */
-  Complex theLt22;
+  Complex theLt2R;
+
+  /**
+   * The mixing matrix factor \f$L^{2i}_{22}L^{2i}_{22}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt2LR;
   
   /**
    * A pointer to the top quark ParticleData object 
@@ -276,7 +312,7 @@ private:
   /**
    * The V mixing matrix
    */
-  tMixingMatrixPtr theV;
+  tMixingMatrixPtr theV;  
 
   /**
    * Last value of the coupling calculated

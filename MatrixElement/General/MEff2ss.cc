@@ -15,10 +15,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VectorWaveFunction;
@@ -29,6 +25,7 @@ using ThePEG::Helicity::outgoing;
 void MEff2ss::doinit() {
   GeneralHardME::doinit();
   fermion_.resize(numberOfDiags());
+  scalar_ .resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
   flowME().resize(numberOfFlows(),
@@ -50,7 +47,11 @@ void MEff2ss::doinit() {
 			      << Exception::runerror;
     }
     else if(current.channelType == HPDiagram::sChannel) {
-      if(current.intermediate->iSpin() == PDT::Spin1)
+      if(current.intermediate->iSpin() == PDT::Spin0)
+	scalar_[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractSSSVertexPtr>(current.vertices.second));
+      else if(current.intermediate->iSpin() == PDT::Spin1)
 	vector_[i] = 
 	  make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first), 
 		    dynamic_ptr_cast<AbstractVSSVertexPtr>(current.vertices.second));
@@ -138,7 +139,12 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 	  }
 	}
 	else if(current.channelType == HPDiagram::sChannel) {
-	  if(internal->iSpin() == PDT::Spin1) {
+	  if(internal->iSpin() == PDT::Spin0) {
+	    ScalarWaveFunction interS = scalar_[ix].first->
+	      evaluate(q2, 1, internal, sp[if1], sbar[if2]);
+	    diag = scalar_[ix].second->evaluate(q2, interS, sca2, sca1);
+	  }
+	  else if(internal->iSpin() == PDT::Spin1) {
 	    VectorWaveFunction interV = vector_[ix].first->
 	      evaluate(q2, 1, internal, sp[if1], sbar[if2]);
 	    diag = vector_[ix].second->evaluate(q2, interV, sca2, sca1);
@@ -179,11 +185,11 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 
 
 void MEff2ss::persistentOutput(PersistentOStream & os) const {
-  os << fermion_ << vector_ << tensor_;
+  os << fermion_ << scalar_ << vector_ << tensor_;
 }
 
 void MEff2ss::persistentInput(PersistentIStream & is, int) {
-  is >> fermion_ >> vector_ >> tensor_;
+  is >> fermion_ >> scalar_ >> vector_ >> tensor_;
 }
 
 ClassDescription<MEff2ss> MEff2ss::initMEff2ss;

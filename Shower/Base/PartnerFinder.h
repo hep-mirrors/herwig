@@ -161,6 +161,11 @@ protected:
 							  const bool isDecayCase)=0;
   //@}
 
+  /**
+   *  The approach for the colour partners
+   */
+  bool approach() const {return _approach;}
+
 private:
 
   /**

@@ -557,7 +557,11 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   assert(_incomingLines.size()==1);
   _colour.clear();
   // find final particle from previous tree
-  ShowerParticlePtr final=_parent->_treelinks[this].second;
+  PPtr final;
+  if(_parent&&!_parent->_treelinks.empty()) 
+    final = _parent->_treelinks[this].second;
+  else 
+    final=_incomingLines.begin()->first->original();
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   if(copy->colourLine()) 

@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  inline VFFDecayer() { addToSearchList(2); }
+  VFFDecayer() { addToSearchList(2); }
 
 public:
 

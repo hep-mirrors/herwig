@@ -23,7 +23,7 @@ using namespace ThePEG;
 
 /**
  * The GeneralQQHiggs class implements the matrix elements for
- * \f$gg\to Q \bar Q h^0$ and \f$q\bar q\to Q \bar Q h^0\f$.
+ * \f$gg\to Q \bar Q h^0\f$ and \f$q\bar q\to Q \bar Q h^0\f$.
  *
  * @see \ref GeneralQQHiggsInterfaces "The interfaces"
  * defined for GeneralQQHiggs.

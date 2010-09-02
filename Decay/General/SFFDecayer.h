@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SFFDecayer() { addToSearchList(2); }
+  SFFDecayer() { addToSearchList(2); }
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

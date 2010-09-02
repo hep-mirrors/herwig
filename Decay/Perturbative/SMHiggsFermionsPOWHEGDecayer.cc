@@ -207,8 +207,10 @@ me2(const int ichan, const Particle & part,
   InvEnergy2 realEmission = calculateRealEmission( x1, x2);
   // calculate the virtual
   double virtualTerm = calculateVirtualTerm();
+  // running mass correction
+  virtualTerm += (8./3. - 2.*log(mu2_))*aS_/Constants::pi;
   //answer = (born + virtual + real)/born * LO
-  output *= 1.+ virtualTerm + 2.*jac*realPrefactor*(realEmission*abs(D1)/dipoleSum  - D1);
+  output *= 1. + virtualTerm + 2.*jac*realPrefactor*(realEmission*abs(D1)/dipoleSum  - D1);
   // return the answer
   return output;
 }
@@ -279,42 +281,49 @@ calculateNonSingletTerm(double beta, double L) const {
 void SMHiggsFermionsPOWHEGDecayer::doinit() {
   SMHiggsFermionsDecayer::doinit();
   gluon_ = getParticleData(ParticleID::g);
-
-
-  // Energy quarkMass = getParticleData(ParticleID::b )->mass();
-  // Energy higgsMass = getParticleData(ParticleID::h0)->mass();
-  // double mu = quarkMass/higgsMass;
-  // double beta = sqrt(1.-4.*sqr(mu));
-  // double beta2 = sqr(beta);
-  // double aS = SM().alphaS(sqr(higgsMass));
-  // double L = log((1.+beta)/(1.-beta));
-  // cerr << "testing " << beta << " " << mu << "\n";
-  // cerr << "testing " << aS << " " << L << "\n";
-  // double fact = 
-  //   6.-0.75*(1.+beta2)/beta2+12.*log(mu)-8.*log(beta)
-  //   +(5./beta-2.*beta+0.375*sqr(1.-beta2)/beta2/beta)*L
-  //   +(1.+beta2)/beta*(4.*L*log(0.5*(1.+beta)/beta)
-  //   		  -2.*log(0.5*(1.+beta))*log(0.5*(1.-beta))
-  //   		  +8.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))
-  //   		  -4.*Herwig::Math::ReLi2(0.5*(1.-beta)));
-  // cerr << "testing correction " 
-  //      << 1.+4./3.*aS/Constants::twopi*fact
-  //      << "\n";
-  // double real = 4./3.*aS/Constants::twopi*
-  //   (8.-0.75*(1.+beta2)/beta2+8.*log(mu)-8.*log(beta)
-  //    +(3./beta+0.375*sqr(1.-beta2)/pow(beta,3))*L
-  //    +(1.+beta2)/beta*(-0.5*sqr(L)+4.*L*log(0.5*(1.+beta))
-  //   		   -2.*L*log(beta)-2.*log(0.5*(1.+beta))*log(0.5*(1.-beta))
-  //   		   +6.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))
-  //   		   -4.*Herwig::Math::ReLi2(0.5*(1.-beta))
-  //   		   -2./3.*sqr(Constants::pi)));
-  // double virt = 4./3.*aS/Constants::twopi*
-  //   (-2.+4.*log(mu)+(2./beta-2.*beta)*L
-  //    +(1.+beta2)/beta*(0.5*sqr(L)-2.*L*log(beta)+2.*sqr(Constants::pi)/3.
-  //   		   +2.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))));
-  // cerr << "testing real " << real << "\n";
-  // cerr << "testing virtual " << virt << "\n";
-  // cerr << "testing total " << 1.+real+virt << "\n";
+//   Energy quarkMass = getParticleData(ParticleID::b )->mass();
+//   Energy higgsMass = getParticleData(ParticleID::h0)->mass();
+//   double mu = quarkMass/higgsMass;
+//   double beta = sqrt(1.-4.*sqr(mu));
+//   double beta2 = sqr(beta);
+//   double aS = SM().alphaS(sqr(higgsMass));
+//   double L = log((1.+beta)/(1.-beta));
+//   cerr << "testing " << beta << " " << mu << "\n";
+//   cerr << "testing " << aS << " " << L << "\n";
+//   double fact = 
+//     6.-0.75*(1.+beta2)/beta2+12.*log(mu)-8.*log(beta)
+//     +(5./beta-2.*beta+0.375*sqr(1.-beta2)/beta2/beta)*L
+//     +(1.+beta2)/beta*(4.*L*log(0.5*(1.+beta)/beta)
+// 		      -2.*log(0.5*(1.+beta))*log(0.5*(1.-beta))
+// 		      +8.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))
+// 		      -4.*Herwig::Math::ReLi2(0.5*(1.-beta)));
+//   cerr << "testing correction " 
+//        << 1.+4./3.*aS/Constants::twopi*fact
+//        << "\n"; 
+//   double real = 4./3.*aS/Constants::twopi*
+//     (8.-0.75*(1.+beta2)/beta2+8.*log(mu)-8.*log(beta)
+//      +(3./beta+0.375*sqr(1.-beta2)/pow(beta,3))*L
+//      +(1.+beta2)/beta*(-0.5*sqr(L)+4.*L*log(0.5*(1.+beta))
+// 		       -2.*L*log(beta)-2.*log(0.5*(1.+beta))*log(0.5*(1.-beta))
+// 		       +6.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))
+// 		       -4.*Herwig::Math::ReLi2(0.5*(1.-beta))
+// 		       -2./3.*sqr(Constants::pi)));
+//   double virt = 4./3.*aS/Constants::twopi*
+//     (-2.+4.*log(mu)+(2./beta-2.*beta)*L
+//      +(1.+beta2)/beta*(0.5*sqr(L)-2.*L*log(beta)+2.*sqr(Constants::pi)/3.
+// 		       +2.*Herwig::Math::ReLi2((1.-beta)/(1.+beta))));
+//   cerr << "testing real " << real << "\n";
+//   cerr << "testing virtual " << virt << "\n";
+//   cerr << "testing total no mb corr " << 1.+real+virt << "\n";
+//   cerr << "testing total    mb corr " << 1.+real+virt +(8./3. - 2.*log(sqr(mu)))*aS/Constants::pi << "\n";
+//   InvEnergy2 Gf = 1.166371e-5/GeV2;
+//   Gf = sqrt(2.)*4*Constants::pi*SM().alphaEM(sqr(higgsMass))/8./SM().sin2ThetaW()/
+//     sqr(getParticleData(ParticleID::Wplus)->mass());
+//   cerr << "testing GF " << Gf*GeV2 << "\n";
+//   Energy LO = (3./8./Constants::pi)*sqrt(2)*sqr(quarkMass)*Gf*higgsMass*beta*beta*beta;
+//   cerr << "testing LO " << LO/GeV << "\n";
+//   cerr << "testing quark mass " << quarkMass/GeV << "\n";
+//   cerr << "testing gamma " << (1.+real+virt)*LO/MeV << "\n";
 }
 
 bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
@@ -336,9 +345,9 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   probTemp[0][0]=probTemp[0][1]=probTemp[1][0]=probTemp[1][1]=0.;
   double x1Solution[2][2] = {{0.,0.},{0.,0.}};
   double x2Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x3Solution[2]    = {0.,0.};
-  Energy pT[2]            = {pTmax,pTmax};
-  double yTemp[2]={0.,0.};
+  double x3Solution[2]     = {0.,0.};
+  Energy pT[2]                 = {pTmax,pTmax};
+  double yTemp[2]           ={0.,0.};
   for(int i=0; i<2; i++) {
     do {
       // reject the emission

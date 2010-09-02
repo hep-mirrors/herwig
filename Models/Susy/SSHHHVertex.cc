@@ -114,9 +114,9 @@ void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   if( h1 == 3 || h2 == 3 ) {
     coupling = -3.*theZfact*theC2a;
     if( h1 == 3 )
-      coupling *= theCbpa;
-    else
       coupling *= theSbpa;
+    else
+      coupling *= theCbpa;
   }
   else if( h1 == 1 ) {
     if( h2 == 2 )

@@ -18,6 +18,9 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSSVertex.h"
 #include "Herwig++/Models/General/ModelGenerator.fh"
 #include "StandardModel.fh"
 
@@ -50,7 +53,7 @@ class StandardModel: public StandardModelBase {
    */
   typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
   //@}
-
+  
 public:
   
   /** @name Standard constructors and destructors. */
@@ -59,12 +62,12 @@ public:
    * Default constructor
    */
   StandardModel();
-
+  
   /**
    * Copy-constructor.
    */
   StandardModel(const StandardModel &);
-
+  
   /**
    * Destructor
    */
@@ -165,98 +168,112 @@ public:
    * Pointer to the fermion-fermion-Z vertex
    */
   tAbstractFFVVertexPtr  vertexFFZ() const {
-    return _theFFZVertex;
+    return FFZVertex_;
   }
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
   tAbstractFFVVertexPtr  vertexFFP() const {
-    return _theFFPVertex;
+    return FFPVertex_;
   }
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
   tAbstractFFVVertexPtr  vertexFFG() const {
-    return _theFFGVertex;
+    return FFGVertex_;
   }
   
   /**
    * Pointer to the fermion-fermion-W vertex
    */
   tAbstractFFVVertexPtr  vertexFFW() const {
-    return _theFFWVertex;
+    return FFWVertex_;
   }
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
   virtual tAbstractFFSVertexPtr  vertexFFH() const {
-    return _theFFHVertex;
+    return FFHVertex_;
   }
 
   /**
    * Pointer to the triple gluon vertex
    */
   tAbstractVVVVertexPtr  vertexGGG() const {
-    return _theGGGVertex;
+    return GGGVertex_;
   }
   
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
   tAbstractVVVVertexPtr  vertexWWW() const {
-    return _theWWWVertex;
+    return WWWVertex_;
   }
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
   virtual tAbstractVVSVertexPtr  vertexWWH() const {
-    return _theWWHVertex;
+    return WWHVertex_;
   }
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
   tAbstractVVVVVertexPtr vertexWWWW() const {
-    return _theWWWWVertex;
+    return WWWWVertex_;
   }
 
   /**
    * Pointer to the quartic gluon vertex
    */
   tAbstractVVVVVertexPtr vertexGGGG() const {
-    return _theGGGGVertex;
+    return GGGGVertex_;
   }
   
   /**
    * Pointer to the quartic gluon vertex
    */
   virtual tAbstractVVSVertexPtr vertexHGG() const {
-    return _theHGGVertex;
+    return HGGVertex_;
   }
 
   /**
    * Pointer to the quartic gluon vertex
    */
   tAbstractVVSVertexPtr vertexHPP() const {
-    return _theHPPVertex;
+    return HPPVertex_;
+  }
+
+  /**
+   * Pointer to the triple Higgs vertex
+   */
+  tAbstractSSSVertexPtr vertexHHH() const {
+    return HHHVertex_;
+  }
+
+  /**
+   * Pointer to the WWHH vertex
+   */
+  tAbstractVVSSVertexPtr vertexWWHH() const {
+    return WWHHVertex_;
   }
 
   /**
    *  Total number of vertices
    */
   unsigned int numberOfVertices() const {
-    return _vertexlist.size();
+    return vertexList_.size();
   }
 
   /**
    * Access to a vertex from the list
    */
-  tVertexBasePtr vertex(unsigned int ix) {
-    return _vertexlist[ix];
+  tVertexBasePtr vertex(unsigned int ix) const {
+    return vertexList_[ix];
   }
   //@}  
 
@@ -266,14 +283,14 @@ public:
    * @param part The ParticleData object for the particle
    */
   Energy mass(Energy2 scale,tcPDPtr part) const {
-    return _theRunningMass->value(scale,part);
+    return runningMass_->value(scale,part);
   }
   
   /**
    * Return a pointer to the object handling the running mass.
    */
   trunPtr massPtr() const {
-    return _theRunningMass;
+    return runningMass_;
   }
   
 protected:
@@ -309,7 +326,7 @@ protected:
    *  Add a vertex to the list
    */
   void addVertex(VertexBasePtr in) {
-    _vertexlist.push_back(in);
+    vertexList_.push_back(in);
   }
 
 private:
@@ -334,78 +351,88 @@ private:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr FFZVertex_;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  AbstractFFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr FFPVertex_;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  AbstractFFVVertexPtr _theFFGVertex;
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  AbstractFFVVertexPtr _theFFWVertex;
+  AbstractFFVVertexPtr FFWVertex_;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  AbstractFFSVertexPtr _theFFHVertex;
+  AbstractFFSVertexPtr FFHVertex_;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  AbstractVVSVertexPtr _theWWHVertex;
+  AbstractVVSVertexPtr WWHVertex_;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  AbstractVVVVertexPtr _theGGGVertex;
+  AbstractVVVVertexPtr GGGVertex_;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  AbstractVVVVertexPtr _theWWWVertex;
+  AbstractVVVVertexPtr WWWVertex_;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  AbstractVVVVVertexPtr _theGGGGVertex;
+  AbstractVVVVVertexPtr GGGGVertex_;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  AbstractVVVVVertexPtr _theWWWWVertex;
+  AbstractVVVVVertexPtr WWWWVertex_;
 
   /**
    * Pointer to higgs-gluon-gluon vertex
    */
-  AbstractVVSVertexPtr _theHGGVertex;
+  AbstractVVSVertexPtr HGGVertex_;
 
   /**
    * Pointer to higgs-gamma-gamma vertex
    */
-  AbstractVVSVertexPtr _theHPPVertex; 
+  AbstractVVSVertexPtr HPPVertex_; 
+
+  /**
+   * Pointer to triple Higgs vertex
+   */
+  AbstractSSSVertexPtr HHHVertex_; 
+
+  /**
+   * Pointer to  WWHH vertex
+   */
+  AbstractVVSSVertexPtr WWHHVertex_; 
   
   /**
    *  Full list of vertices as a vector to allow searching
    */
-  vector<VertexBasePtr> _vertexlist;
+  vector<VertexBasePtr> vertexList_;
   //@}
 
   /**
    * The running mass.
    */
-  runPtr _theRunningMass;
+  runPtr runningMass_;
 
   /**
    * Pointer to ModelGenerator Class
    */
-  ModelGeneratorPtr _theModelGenerator;
+  ModelGeneratorPtr modelGenerator_;
 };
 
 }

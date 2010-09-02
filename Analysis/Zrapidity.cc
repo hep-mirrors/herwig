@@ -79,12 +79,10 @@ void Zrapidity::doinitrun() {
  
 }
 
-void Zrapidity::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void Zrapidity::persistentOutput(PersistentOStream & ) const {
 }
 
-void Zrapidity::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void Zrapidity::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<Zrapidity> Zrapidity::initZrapidity;
@@ -117,7 +115,7 @@ void Zrapidity::dofinish() {
   outfile.close();
 }
 
-void Zrapidity::analyze(tEventPtr event, long ieve, int loop, int state) {
+void Zrapidity::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   // find the outgoing particles in the hard process

@@ -112,8 +112,8 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
-    _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
-				     inpart.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
     Complex cl(_perturbativeVertex->left()), cr(_perturbativeVertex->right());
     double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
 					 + sqr(mu1) + sqr(mu2) - 2.)
@@ -131,3 +131,4 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

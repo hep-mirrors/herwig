@@ -15,8 +15,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::ScalarWaveFunction;
@@ -144,7 +142,7 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 		ScalarWaveFunction interS = scalar_[ix].first->
 		  evaluate(q2, 1, offshell, sp[if1], sbar[if2]);
 		diag = scalar_[ix].second->
-		  evaluate(q2, v1[if1], v2[if2],interS);
+		  evaluate(q2, v1[vh1], v2[vh2],interS);
 	      }
 	      else if(current.intermediate->iSpin() == PDT::Spin1) {
 		VectorWaveFunction interV = vector_[ix].first->

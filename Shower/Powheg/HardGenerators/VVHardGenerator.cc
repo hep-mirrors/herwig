@@ -40,7 +40,7 @@ using namespace Herwig;
 VVHardGenerator::VVHardGenerator() 
   : realMESpinCorrelations_(true),
     power_(2.0),
-    preqqbar_(2.2),preqg_(16.0),pregqbar_(11.0),
+    preqqbar_(3.7),preqg_(16.0),pregqbar_(11.0),
     b0_((11.-2./3.*5.)/4./Constants::pi),
     LambdaQCD_(91.118*GeV*exp(-1./2./((11.-2./3.*5.)/4./Constants::pi)/0.118)),
     min_pT_(2.*GeV),
@@ -617,8 +617,10 @@ double VVHardGenerator::getResult(int channel, realVVKinematics R, Energy pT) {
 
   // This routine should return the integrand of the exact Sudakov form factor,
   // defined precisely as
-  // \Delta(pT) = exp[ - \int_{pT}^{pTmax} dpT dYk d\phi/2pi * getResult(...) ]
- 
+// KH 19th August - next 2 lines changed for phi in 0->pi not 0->2pi
+  // \Delta(pT) = exp[ - \int_{pT}^{pTmax} dpT dYk d\phi/pi * getResult(...) ]
+  // (Where phi is in 0->pi NOT 0->2*pi !)
+
   // Get pi for the prefactor:
   using Constants::pi;
 
@@ -737,7 +739,9 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
       // Generate rapidity of the jet:
       Yk = minYk + UseRandom::rnd()*(maxYk - minYk);
       // Generate the theta2 radiative variable:
-      theta2 = UseRandom::rnd() * 2.*Constants::pi;
+// KH 19th August - next line changed for phi in 0->pi not 0->2pi
+//      theta2 = UseRandom::rnd() * 2.*Constants::pi;
+      theta2 = UseRandom::rnd() * Constants::pi;
       // eT of the diboson system:
       Energy eT = sqrt(pT*pT+p2);
       // Calculate the eT and then solve for x_{\oplus} & x_{\ominus}:

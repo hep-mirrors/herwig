@@ -75,6 +75,8 @@ private:
    * @param spbOut A vector of SpinorBarWaveFunctions for the outgoing fermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
    * @param mc If the outgoing vector is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
@@ -90,6 +92,8 @@ private:
    * @param spOut A vector of Spinors for the outgoing antifermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
    * @param mc If the outgoing vector is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement

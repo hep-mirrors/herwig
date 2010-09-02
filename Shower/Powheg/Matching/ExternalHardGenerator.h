@@ -162,7 +162,7 @@ struct ClassTraits<Herwig::ExternalHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegME.so HwPowhegShower.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so HwPowhegShower.so"; }
 };
 
 /** @endcond */

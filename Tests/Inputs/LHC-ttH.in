@@ -4,7 +4,7 @@ set /Herwig/Particles/t:Stable Stable
 set /Herwig/Particles/tbar:Stable Stable
 set /Herwig/Particles/h0:Stable Stable
 cd /Herwig/Partons
-create ThePEG::LHAPDF LHAPDF
+create ThePEG::LHAPDF LHAPDF ThePEGLHAPDF.so
 set LHAPDF:PType Nucleon
 set LHAPDF:PDFName cteq5l.LHgrid
 set LHAPDF:PDFNumber 19070

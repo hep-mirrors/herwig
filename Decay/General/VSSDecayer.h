@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  inline VSSDecayer() { addToSearchList(0); }
+  VSSDecayer() { addToSearchList(0); }
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

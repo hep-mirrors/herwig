@@ -79,11 +79,26 @@ set AlphaQCD:AlphaMZ 0.120
 #
 #
 # Lets set up all the splittings
-create Herwig::QtoQGSplitFn QtoQGSplitFn
-create Herwig::QtoQGammaSplitFn QtoQGammaSplitFn
-create Herwig::GtoQQbarSplitFn GtoQQbarSplitFn
-create Herwig::GtoGGSplitFn GtoGGSplitFn
-create Herwig::QtoGQSplitFn QtoGQSplitFn
+#create Herwig::QtoQGammaSplitFn QtoQGammaSplitFn
+#set QtoQGSplitFn:InteractionType QED
+#set QtoQGSplitFn:ColourStructure SingletSingletSinglet
+
+create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
+set QtoQGSplitFn:InteractionType QCD
+set QtoQGSplitFn:ColourStructure TripletTripletOctet
+
+create Herwig::OneOneOneSplitFn GtoGGSplitFn
+set GtoGGSplitFn:InteractionType QCD
+set GtoGGSplitFn:ColourStructure OctetOctetOctet
+
+create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
+set GtoQQbarSplitFn:InteractionType QCD
+set GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
+
+create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
+set QtoGQSplitFn:InteractionType QCD
+set QtoGQSplitFn:ColourStructure TripletOctetTriplet
+
 #
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
@@ -95,10 +110,10 @@ cp SudakovCommon QtoQGSudakov
 set QtoQGSudakov:SplittingFunction QtoQGSplitFn
 set QtoQGSudakov:PDFmax 1.9
 
-cp SudakovCommon QtoQGammaSudakov
-set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
-set QtoQGammaSudakov:Alpha AlphaQED
-set QtoQGammaSudakov:PDFmax 1.9
+#cp SudakovCommon QtoQGammaSudakov
+#set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
+#set QtoQGammaSudakov:Alpha AlphaQED
+#set QtoQGammaSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
 set GtoGGSudakov:SplittingFunction GtoGGSplitFn
@@ -148,16 +163,16 @@ do SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
 do SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 do SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
-set SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
 
-set SplittingGenerator:AddFinalSplitting e-->e-,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting e-->e-,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; QtoQGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to
@@ -169,12 +184,12 @@ do SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
+#set SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
 #
 do SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #

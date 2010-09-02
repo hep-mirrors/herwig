@@ -108,6 +108,11 @@ protected:
    * Pointer to the _sbottom mixing matrix
    */
   tMixingMatrixPtr _sbottom;
+
+  /**
+   *  Gluino Phase
+   */
+  Complex gluinoPhase_;
   
   /**
    * The scale at which the coupling was last evaluated;

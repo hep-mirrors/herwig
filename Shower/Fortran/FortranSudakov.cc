@@ -250,23 +250,23 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   return showerKin;
 }
 
-ShoKinPtr FortranSudakov::generateNextDecayBranching(const Energy startingScale,
-						     const Energy stoppingScale,
-						     const Energy minmass,
-						     const IdList &ids,
-						     const bool cc,
-						     double enhance) {
+ShoKinPtr FortranSudakov::generateNextDecayBranching(const Energy ,
+						     const Energy ,
+						     const Energy ,
+						     const IdList &,
+						     const bool ,
+						     double ) {
   throw Exception() << "FortranSudakov::generateNextDecayBranching() not yet "
 		    << "implemented" << Exception::runerror;
   return ShoKinPtr();
 }
 
 ShoKinPtr FortranSudakov::
-generateNextSpaceBranching(const Energy startingScale,
-			   const IdList &ids,double x,
-			   const bool cc,
-			   double enhance,
-			   Ptr<BeamParticleData>::transient_const_pointer beam) {
+generateNextSpaceBranching(const Energy ,
+			   const IdList &,double ,
+			   const bool ,
+			   double ,
+			   Ptr<BeamParticleData>::transient_const_pointer ) {
   throw Exception() << "FortranSudakov::generateNextSpaceBranching() not yet "
 		    << "implemented" << Exception::runerror;
   return ShoKinPtr();
@@ -348,8 +348,8 @@ double FortranSudakovIntegrand::operator() (double zlog) const {
   return output/2./pi;
 }
 
-Energy FortranSudakov::calculateScale(double z, Energy pt, IdList ids,
-					 unsigned int iopt) {
+Energy FortranSudakov::calculateScale(double , Energy , IdList ,
+				      unsigned int ) {
   throw Exception() << "Base class udakovFormFactor::calculateScale() called "
 		    << "this should be overidden in the inheriting class"
 		    << Exception::runerror;
@@ -361,8 +361,8 @@ ShoKinPtr FortranSudakov::createFinalStateBranching(Energy ,double ,
 		    << Exception::runerror;
 }
 
-ShoKinPtr FortranSudakov::createInitialStateBranching(Energy,double ,
-						      double , Energy) {
+ShoKinPtr FortranSudakov::createInitialStateBranching(Energy , double ,
+						      double , Energy ) {
   throw Exception() << " FortranSudakov::createInitialStateBranching() not implemented"
 		    << Exception::runerror;
 }

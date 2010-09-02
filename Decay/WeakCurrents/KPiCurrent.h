@@ -32,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline KPiCurrent();
+  KPiCurrent();
 
 
   /** @name Methods for the construction of the phase space integrator. */

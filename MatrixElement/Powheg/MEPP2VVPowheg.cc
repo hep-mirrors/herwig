@@ -176,17 +176,20 @@ Energy2 MEPP2VVPowheg::scale() const {
   // chosen to be like the MC@NLO one (it ought
   // to be more like sHat instead?).
   return scaleopt_ == 1 ? 
-        0.5*(meMomenta()[2].m2()+meMomenta()[3].m2()) : sqr(mu_UV_);
+//        0.5*(meMomenta()[2].m2()+meMomenta()[3].m2()) : sqr(mu_UV_);
+        sHat() : sqr(mu_UV_);
 }
 
 Energy2 MEPP2VVPowheg::mu_F2() const {
   return scaleopt_ == 1 ? 
-        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_F_);
+//        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_F_);
+        sHat() : sqr(mu_F_);
 }
 
 Energy2 MEPP2VVPowheg::mu_UV2() const {
   return scaleopt_ == 1 ? 
-        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_UV_);
+//        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_UV_);
+        sHat() : sqr(mu_UV_);
 }
 
 void MEPP2VVPowheg::doinit() {
@@ -252,7 +255,9 @@ bool MEPP2VVPowheg::generateKinematics(const double * r) {
     // Generate the radiative integration variables:
     xt      = (*(r +nDim() -2));
     y       = (*(r +nDim() -1)) * 2. - 1.;
-    theta2  = UseRandom::rnd() * 2.*Constants::pi;
+// KH 19th August - next line changed for phi in 0->pi not 0->2pi
+//    theta2  = UseRandom::rnd() * 2.*Constants::pi;
+    theta2  = UseRandom::rnd() *Constants::pi;
   }
 
   // Continue with lo matrix element code:
