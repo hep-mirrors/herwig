@@ -130,3 +130,4 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

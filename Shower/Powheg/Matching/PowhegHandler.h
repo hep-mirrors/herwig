@@ -13,14 +13,13 @@
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "CKKWTree.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/Shower/Base/CKKWVeto.h"
-
 
 namespace Herwig {
   class PowhegHandler;
@@ -85,7 +84,7 @@ struct PotentialTree {
   /**
    *  Constructor
    */
-  PotentialTree(HardTreePtr itree, DiagPtr idiag, 
+  PotentialTree(CKKWTreePtr itree, DiagPtr idiag, 
 		Ptr<ColourLines>::transient_const_pointer icl) 
     : tree(itree), diagram(idiag), cl(icl)
   {}
@@ -93,7 +92,7 @@ struct PotentialTree {
   /**
    *  The tree
    */
-  HardTreePtr tree;
+  CKKWTreePtr tree;
 
   /**
    *  All diagrams
@@ -143,7 +142,7 @@ public:
   /**
    *  access to the hard tree object
    */
-  HardTreePtr getHardTree() const {return hardTree_.tree;}
+  CKKWTreePtr getCKKWTree() const {return hardTree_.tree;}
 
   /**
    *  whether the current event is a highest multiplicity event.
@@ -276,22 +275,22 @@ private:
   /**
    * Sets the beam relations in the hard subprocess
    */
-  void setBeams(HardTreePtr);
+  void setBeams(CKKWTreePtr);
  
   /**
    *  Calculate the Sudakov weight
    */
-  double sudakovWeight( HardTreePtr );
+  double sudakovWeight( CKKWTreePtr );
  
   /**
    *  Calculate the PDF weight
    */
-  double pdfWeight( HardTreePtr );
+  double pdfWeight( CKKWTreePtr );
  
   /**
    *  Calculate the splitting function weight
    */
-  double splittingFnWeight( HardTreePtr );
+  double splittingFnWeight( CKKWTreePtr );
 
   /**
    * Checks to see that the splitting is allowed.
@@ -313,7 +312,7 @@ private:
 		    ShowerParticlePtr & part_j ) ;
 
   /**
-   *  update sub process based on the HardTree and Diagram
+   *  update sub process based on the CKKWTree and Diagram
    */
   bool updateSubProcess();
 
@@ -339,7 +338,7 @@ private:
   map< HardBranchingPtr , pair< ShowerParticlePtr, ShowerParticlePtr > > _all_clusters;
 
   /**
-   * The ProtoTrees which will become HardTrees
+   * The ProtoTrees which will become CKKWTrees
    */
   set< ProtoTreePtr > _proto_trees;
 
@@ -351,7 +350,7 @@ private:
   /**
    * The possible shower configurations that are not angular-ordered
    */
-  vector< pair< PotentialTree, double > > _rejectedHardTrees;
+  vector< pair< PotentialTree, double > > _rejectedCKKWTrees;
 
   /**
    *  The chosen hard tree

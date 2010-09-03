@@ -139,7 +139,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
-		Shower/Default/MECorrections/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
 		Shower/Powheg/Makefile

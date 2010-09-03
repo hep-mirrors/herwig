@@ -35,9 +35,9 @@ public:
   /**
    * The default constructor.
    */
-  QTildeFinder() : _finalFinalConditions(0),
-		   _initialFinalDecayConditions(0),
-			   _initialInitialConditions(0) {}
+  QTildeFinder() :  _finalFinalConditions(0),
+		    _initialFinalDecayConditions(0),
+		    _initialInitialConditions(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{

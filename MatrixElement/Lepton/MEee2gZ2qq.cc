@@ -25,7 +25,8 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
+#include <numeric>
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
@@ -34,22 +35,24 @@ const double MEee2gZ2qq::EPS_=0.00000001;
 
 void MEee2gZ2qq::doinit() {
   HwMEBase::doinit();
-  massOption(vector<unsigned int>(2,_massopt));
+  massOption(vector<unsigned int>(2,massopt_));
   rescalingOption(3);
-  if(_minflav>_maxflav)
-    throw InitException() << "The minimum flavour " << _minflav  
-			  << "must be lower the than maximum flavour " << _maxflav
+  if(minflav_>maxflav_)
+    throw InitException() << "The minimum flavour " << minflav_  
+			  << "must be lower the than maximum flavour " << maxflav_
 			  << " in MEee2gZ2qq::doinit() " 
 			  << Exception::runerror;
   // set the particle data objects
-  _Z0=getParticleData(ThePEG::ParticleID::Z0);
-  _gamma=getParticleData(ThePEG::ParticleID::gamma);
+  Z0_    = getParticleData(ParticleID::Z0);
+  gamma_ = getParticleData(ParticleID::gamma);
+  gluon_ = getParticleData(ParticleID::g);
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm) {
-    _theFFZVertex = hwsm->vertexFFZ();
-    _theFFPVertex = hwsm->vertexFFP();
+    FFZVertex_ = hwsm->vertexFFZ();
+    FFPVertex_ = hwsm->vertexFFP();
+    FFGVertex_ = hwsm->vertexFFG();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
 			     << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
@@ -58,12 +61,12 @@ void MEee2gZ2qq::doinit() {
 
 void MEee2gZ2qq::getDiagrams() const {
   // specific the diagrams
-  tcPDPtr ep = getParticleData(ParticleID::eplus);
-  tcPDPtr em = getParticleData(ParticleID::eminus);
+  tcPDPtr ep    = getParticleData(ParticleID::eplus);
+  tcPDPtr em    = getParticleData(ParticleID::eminus);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
-  tcPDPtr Z0 = getParticleData(ParticleID::Z0);
+  tcPDPtr Z0    = getParticleData(ParticleID::Z0);
   // setup the processes
-  for ( int i =_minflav; i<=_maxflav; ++i ) {
+  for ( int i =minflav_; i<=maxflav_; ++i ) {
     tcPDPtr qk = getParticleData(i);
     tcPDPtr qb = qk->CC();
     add(new_ptr((Tree2toNDiagram(2), em, ep, 1, gamma, 3, qk, 3, qb, -1)));
@@ -72,7 +75,8 @@ void MEee2gZ2qq::getDiagrams() const {
 }
 
 Energy2 MEee2gZ2qq::scale() const {
-  return sHat();
+  return sqr(getParticleData(ParticleID::Z0)->mass());
+//   return sHat();
 }
 
 unsigned int MEee2gZ2qq::orderInAlphaS() const {
@@ -107,13 +111,17 @@ MEee2gZ2qq::colourGeometries(tcDiagPtr ) const {
 }
 
 void MEee2gZ2qq::persistentOutput(PersistentOStream & os) const {
-  os << _theFFZVertex << _theFFPVertex << _Z0 << _gamma << _minflav 
-     << _maxflav << _massopt << alpha_;
+  os << FFZVertex_ << FFPVertex_ << FFGVertex_ 
+     << Z0_ << gamma_ << gluon_ << minflav_ 
+     << maxflav_ << massopt_ << alpha_ << ounit(pTmin_,GeV)
+     << preFactor_;
 }
 
 void MEee2gZ2qq::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFZVertex >> _theFFPVertex >> _Z0 >> _gamma >> _minflav 
-     >> _maxflav >> _massopt >> alpha_;
+  is >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ 
+     >> Z0_ >> gamma_ >> gluon_ >> minflav_ 
+     >> maxflav_ >> massopt_ >> alpha_ >> iunit(pTmin_,GeV)
+     >> preFactor_;
 }
 
 ClassDescription<MEee2gZ2qq> MEee2gZ2qq::initMEee2gZ2qq;
@@ -126,19 +134,19 @@ void MEee2gZ2qq::Init() {
   static Parameter<MEee2gZ2qq,int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The PDG code of the quark with the lowest PDG code to produce.",
-     &MEee2gZ2qq::_minflav, 1, 1, 6,
+     &MEee2gZ2qq::minflav_, 1, 1, 6,
      false, false, Interface::limited);
 
   static Parameter<MEee2gZ2qq,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The PDG code of the quark with the highest PDG code to produce",
-     &MEee2gZ2qq::_maxflav, 5, 1, 6,
+     &MEee2gZ2qq::maxflav_, 5, 1, 6,
      false, false, Interface::limited);
 
   static Switch<MEee2gZ2qq,unsigned int> interfaceTopMassOption
     ("TopMassOption",
      "Option for the treatment of the top quark mass",
-     &MEee2gZ2qq::_massopt, 1, false, false);
+     &MEee2gZ2qq::massopt_, 1, false, false);
   static SwitchOption interfaceTopMassOptionOnMassShell
     (interfaceTopMassOption,
      "OnMassShell",
@@ -158,37 +166,7 @@ void MEee2gZ2qq::Init() {
 }
 
 double MEee2gZ2qq::me2() const {
-  int ie(0),ip(1),iqk(2),iqb(3);
-  // get the order right
-  if(mePartonData()[0]->id()!=11) swap(ie,ip);
-  if(mePartonData()[2]->id()<0)   swap(iqk,iqb);
-  // compute the spinors
-  vector<SpinorWaveFunction> fin,aout;
-  vector<SpinorBarWaveFunction>  ain,fout;
-  SpinorWaveFunction    ein  (rescaledMomenta()[ie ],mePartonData()[ie ],incoming);
-  SpinorBarWaveFunction pin  (rescaledMomenta()[ip ],mePartonData()[ip ],incoming);
-  SpinorBarWaveFunction qkout(rescaledMomenta()[iqk],mePartonData()[iqk],outgoing);
-  SpinorWaveFunction    qbout(rescaledMomenta()[iqb],mePartonData()[iqb],outgoing);
-  for(unsigned int ix=0;ix<2;++ix) {
-    ein.reset(ix)  ;fin.push_back( ein  );
-    pin.reset(ix)  ;ain.push_back( pin  );
-    qkout.reset(ix);fout.push_back(qkout);
-    qbout.reset(ix);aout.push_back(qbout);
-  }
-  // compute the matrix element
-  double me,lastCont,lastBW;
-  HelicityME(fin,ain,fout,aout,me,lastCont,lastBW);
-  // save the components
-  DVector save;
-  save.push_back(lastCont);
-  save.push_back(lastBW);
-  meInfo(save);
-  // add the QCD K-factor
-  int Nf = SM().Nf(scale());
-  me *= (1.0 + alphaS()/Constants::pi 
-	 + (1.986-0.115*Nf)*sqr(alphaS()/Constants::pi));
-  // return the answer
-  return me;
+  return loME(mePartonData(),rescaledMomenta(),true); 
 }
 
 ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & fin,
@@ -218,21 +196,21 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
   Complex diag1,diag2;
   // sum over helicities to get the matrix element
   unsigned int inhel1,inhel2,outhel1,outhel2;
-  double total[3]={0.,0.};
+  double total[3]={0.,0.,0.};
   for(inhel1=0;inhel1<2;++inhel1) {
     for(inhel2=0;inhel2<2;++inhel2) {
       // intermediate Z
-      interZ = _theFFZVertex->evaluate(sHat(),1,_Z0,fin[inhel1],ain[inhel2]);
+      interZ = FFZVertex_->evaluate(scale(),1,Z0_,fin[inhel1],ain[inhel2]);
       // intermediate photon
-      interG = _theFFPVertex->evaluate(sHat(),1,_gamma,fin[inhel1],ain[inhel2]);
+      interG = FFPVertex_->evaluate(scale(),1,gamma_,fin[inhel1],ain[inhel2]);
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {		
 	  // first the Z exchange diagram
-	  diag1 = _theFFZVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
-					  interZ);
+	  diag1 = FFZVertex_->evaluate(scale(),aout[outhel2],fout[outhel1],
+				       interZ);
 	  // then the photon exchange diagram
-	  diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
-					  interG);
+	  diag2 = FFPVertex_->evaluate(scale(),aout[outhel2],fout[outhel1],
+				       interG);
 	  // add up squares of individual terms
 	  total[1] += norm(diag1);
 	  Zboson(inhel1,inhel2,outhel1,outhel2) = diag1;
@@ -251,8 +229,9 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
     {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
      dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
   if( beam[0] || beam[1] ) {
-    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
-			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    RhoDMatrix rho[2] = 
+      {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+       beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
     total[0] = output.average(rho[0],rho[1]);
     total[1] = Zboson.average(rho[0],rho[1]);
     total[2] = gamma .average(rho[0],rho[1]);
@@ -320,19 +299,23 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
 }
 
 void MEee2gZ2qq::rebind(const TranslationMap & trans) {
-  _theFFZVertex = trans.translate(_theFFZVertex);
-  _theFFPVertex = trans.translate(_theFFPVertex);
-  _Z0           = trans.translate(_Z0);
-  _gamma        = trans.translate(_gamma);
+  FFZVertex_ = trans.translate(FFZVertex_);
+  FFPVertex_ = trans.translate(FFPVertex_);
+  FFGVertex_ = trans.translate(FFGVertex_);
+  Z0_        = trans.translate(Z0_);
+  gamma_     = trans.translate(gamma_);
+  gluon_     = trans.translate(gluon_);
   HwMEBase::rebind(trans);
 }
 
 IVector MEee2gZ2qq::getReferences() {
   IVector ret = HwMEBase::getReferences();
-  ret.push_back(_theFFZVertex);
-  ret.push_back(_theFFPVertex);
-  ret.push_back(_Z0          );
-  ret.push_back(_gamma       );
+  ret.push_back(FFZVertex_);
+  ret.push_back(FFPVertex_);
+  ret.push_back(FFGVertex_);
+  ret.push_back(Z0_       );
+  ret.push_back(gamma_    );
+  ret.push_back(gluon_    );
   return ret;
 }
 
@@ -364,7 +347,7 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   for (int i=0; i<2; i++) {
     if (newfs[i].e() < qq[i]->data().constituentMass()) return;
   }
-  if (newfs[2].e() < getParticleData(ParticleID::g)->constituentMass())
+  if (newfs[2].e() < gluon_->constituentMass())
     return;
   // set masses
   for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
@@ -374,10 +357,10 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     newfs[2].vect().perp2(newfs[0].vect())<
     newfs[2].vect().perp2(newfs[1].vect());
   // create the new quark, antiquark and gluon
-  PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
+  PPtr newg = gluon_->produceParticle(newfs[2]);
   PPtr newq,newa;
   if(firstEmits) {
-    newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
+    newq = qq[0]->dataPtr()->produceParticle(newfs[0]);
     newa = new_ptr(Particle(*qq[1]));
     qq[1]->antiColourLine()->removeAntiColoured(newa);
     newa->set5Momentum(newfs[1]);
@@ -386,7 +369,7 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     newq = new_ptr(Particle(*qq[0]));
     qq[0]->colourLine()->removeColoured(newq);
     newq->set5Momentum(newfs[0]);
-    newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
+    newa = qq[1]->dataPtr()->produceParticle(newfs[1]);
   }
   // get the original colour line
   ColinePtr col;
@@ -747,4 +730,414 @@ double MEee2gZ2qq::PS(double x, double xbar) {
   // limit.  double brack = (1.+z*z)/(1.-z);
   double den = (1.-xbar)*sqrt(xbar*xbar - 4.*d_rho_);
   return brack/den;
+}
+
+HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
+  // get the momenta of the incoming and outgoing partons 
+  // incoming
+  ShowerProgenitorPtr 
+    emProgenitor = tree->incomingLines().begin() ->first,
+    epProgenitor = tree->incomingLines().rbegin()->first; 
+  // outgoing
+  ShowerProgenitorPtr 
+    qkProgenitor = tree->outgoingLines().begin() ->first,
+    qbProgenitor = tree->outgoingLines().rbegin()->first;
+  // get the order right 
+  if(emProgenitor->id()<0) swap(emProgenitor,epProgenitor);
+  if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
+  loMomenta_.resize(0);
+  // extract the momenta 
+  loMomenta_.push_back(emProgenitor->progenitor()->momentum());
+  loMomenta_.push_back(epProgenitor->progenitor()->momentum());
+  loMomenta_.push_back(qkProgenitor->progenitor()->momentum());
+  loMomenta_.push_back(qbProgenitor->progenitor()->momentum());
+  // and ParticleData objects
+  partons_.resize(0);
+  partons_.push_back(emProgenitor->progenitor()->dataPtr());
+  partons_.push_back(epProgenitor->progenitor()->dataPtr());
+  partons_.push_back(qkProgenitor->progenitor()->dataPtr());
+  partons_.push_back(qbProgenitor->progenitor()->dataPtr());
+  partons_.push_back(gluon_);
+  // boost from lab to CMS frame with outgoing particles
+  // along the z axis
+  LorentzRotation eventFrame( ( loMomenta_[2] + loMomenta_[3] ).findBoostToCM() );
+  Lorentz5Momentum spectator = eventFrame*loMomenta_[2];
+  eventFrame.rotateZ( -spectator.phi() );
+  eventFrame.rotateY( -spectator.theta()  );
+  eventFrame.invert();
+  // mass of the final-state system
+  Energy2 M2 = (loMomenta_[2]+loMomenta_[3]).m2();
+  Energy  M  = sqrt(M2);
+  double mu1 = loMomenta_[2].mass()/M;
+  double mu2 = loMomenta_[3].mass()/M;
+  double mu12 = sqr(mu1), mu22 = sqr(mu2);
+  double lambda = sqrt(1.+sqr(mu12)+sqr(mu22)-2.*mu12-2.*mu22-2.*mu12*mu22);
+  // max pT
+  Energy pTmax = 0.5*sqrt(M2)*
+    (1.-sqr(loMomenta_[2].mass()+loMomenta_[3].mass())/M2);
+  // max y
+  double ymax = acosh(pTmax/pTmin_);
+  // prefactor for the overestimate of the Sudakov
+  double a = 4./3.*alpha_->overestimateValue()/Constants::twopi*
+    2.*ymax*preFactor_;
+  // variables for the emission
+  Energy pT[2];
+  double  y[2],phi[2],x3[2],x1[2][2],x2[2][2];
+  double contrib[2][2];
+  // storage of the real emmision momenta
+  vector<Lorentz5Momentum> realMomenta[2][2]=
+    {{vector<Lorentz5Momentum>(5),vector<Lorentz5Momentum>(5)},
+     {vector<Lorentz5Momentum>(5),vector<Lorentz5Momentum>(5)}};
+  for(unsigned int ix=0;ix<2;++ix)
+    for(unsigned int iy=0;iy<2;++iy)
+      for(unsigned int iz=0;iz<2;++iz)
+	realMomenta[ix][iy][iz] = loMomenta_[iz];
+  // generate the emission
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(ix==1) {
+      swap(mu1 ,mu2 );
+      swap(mu12,mu22);
+    }
+    pT[ix] = pTmax;
+    y [ix] = 0.;
+    bool reject = true;
+    do {
+      // generate pT
+      pT[ix] *= pow(UseRandom::rnd(),1./a);
+      if(pT[ix]<pTmin_) {
+        pT[ix] = -GeV;
+        break;
+      }
+      // generate y
+      y[ix] = -ymax+2.*UseRandom::rnd()*ymax;
+      // generate phi
+      phi[ix] = UseRandom::rnd()*Constants::twopi;
+      // calculate x3 and check in allowed region
+      x3[ix] = 2.*pT[ix]*cosh(y[ix])/M;
+      if(x3[ix] < 0. || x3[ix] > 1. -sqr( mu1 + mu2 ) ) continue;
+      // find the possible solutions for x1
+      double xT2 = sqr(2./M*pT[ix]);
+      double root = (-sqr(x3[ix])+xT2)*
+	(xT2*mu22+2.*x3[ix]-sqr(mu12)+2.*mu22+2.*mu12-sqr(x3[ix])-1.
+	 +2.*mu12*mu22-sqr(mu22)-2.*mu22*x3[ix]-2.*mu12*x3[ix]);
+      double c1=2.*sqr(x3[ix])-4.*mu22-6.*x3[ix]+4.*mu12-xT2*x3[ix]
+	+2.*xT2-2.*mu12*x3[ix]+2.*mu22*x3[ix]+4.;
+      if(root<0.) continue;
+      x1[ix][0] = 1./(4.-4.*x3[ix]+xT2)*(c1-2.*sqrt(root));
+      x1[ix][1] = 1./(4.-4.*x3[ix]+xT2)*(c1+2.*sqrt(root));
+      // change sign of y if 2nd particle emits
+      if(ix==1) y[ix] *=-1.;
+      // loop over the solutions
+      for(unsigned int iy=0;iy<2;++iy) {
+	contrib[ix][iy]=0.;
+	// check x1 value allowed
+	if(x1[ix][iy]<2.*mu1||x1[ix][iy]>1.+mu12-mu22) continue;
+	// calculate x2 value and check allowed
+	x2[ix][iy] = 2.-x3[ix]-x1[ix][iy];
+	double root = max(0.,sqr(x1[ix][iy])-4.*mu12);
+	root = sqrt(root);
+	double x2min = 1.+mu22-mu12
+	  -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12+root);
+	double x2max = 1.+mu22-mu12
+	  -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12-root);
+	if(x2[ix][iy]<x2min||x2[ix][iy]>x2max) continue;
+	// check the z components
+	double z1 =  sqrt(sqr(x1[ix][iy])-4.*mu12-xT2);
+	double z2 = -sqrt(sqr(x2[ix][iy])-4.*mu22);
+	double z3 =  pT[ix]*sinh(y[ix])*2./M;
+	if(ix==1) z3 *=-1.;
+	if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
+	if(abs(z1+z2+z3)>1e-3) continue;
+	// construct the momenta
+	realMomenta[ix][iy][4] =
+	  Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
+			   pT[ix]*sinh(y[ix]) ,pT[ix]*cosh(y[ix]),ZERO);
+	if(ix==0) {
+	  realMomenta[ix][iy][2] =
+	    Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
+			     z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
+	  realMomenta[ix][iy][3] =
+	    Lorentz5Momentum(ZERO,ZERO, z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
+	}
+	else {
+	  realMomenta[ix][iy][2] =
+	    Lorentz5Momentum(ZERO,ZERO,-z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
+	  realMomenta[ix][iy][3] =
+	    Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
+			     -z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
+	}
+	// boost the momenta back to the lab
+	for(unsigned int iz=2;iz<5;++iz)
+	  realMomenta[ix][iy][iz] *= eventFrame;
+	// jacobian and prefactors for the weight
+	Energy J = M/sqrt(xT2)*abs(-x1[ix][iy]*x2[ix][iy]+2.*mu22*x1[ix][iy]
+				   +x2[ix][iy]+x2[ix][iy]*mu12+mu22*x2[ix][iy]
+				   -sqr(x2[ix][iy]))
+	  /pow(sqr(x2[ix][iy])-4.*mu22,1.5);
+	// prefactors etc
+	contrib[ix][iy] = 0.5*pT[ix]/J/preFactor_/lambda;
+	// matrix element piece
+	contrib[ix][iy] *= alpha_->ratio(sqr(pT[ix]))*
+	  meRatio(partons_,realMomenta[ix][iy],ix,false);
+      }
+      if(contrib[ix][0]+contrib[ix][1]>1.)
+	cerr << "testing weight greater than one " 
+	     << contrib[ix][0]+contrib[ix][1] << "\n";
+      reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
+    }
+    while (reject);
+    if(pT[ix]<pTmin_)
+      pT[ix] = -GeV;
+  }
+  if(pT[0]<ZERO && pT[1]<ZERO) {
+    qkProgenitor->maximumpT(pTmin_);
+    qbProgenitor->maximumpT(pTmin_);
+    return HardTreePtr();
+  }
+  // now pick the emission with highest pT
+  vector<Lorentz5Momentum> emmision;
+  unsigned int iemit=0,ispect=0;
+  Energy pTveto;
+  if(pT[0]>pT[1]) {
+    iemit  = 2;
+    ispect = 3;
+    pTveto = pT[0];
+    if(UseRandom::rnd()<contrib[0][0]/(contrib[0][0]+contrib[0][1]))
+      emmision = realMomenta[0][0];
+    else
+      emmision = realMomenta[0][1];
+  }
+  else {
+    iemit  = 3;
+    ispect = 2;
+    pTveto = pT[1];
+    if(UseRandom::rnd()<contrib[1][0]/(contrib[1][0]+contrib[1][1]))
+      emmision = realMomenta[1][0];
+    else
+      emmision = realMomenta[1][1];
+  }
+  // Make the particles for the hard tree
+  ShowerParticleVector hardParticles;
+  for(unsigned int ix=0;ix<partons_.size();++ix) {
+    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
+    hardParticles.back()->set5Momentum(emmision[ix]);
+  }
+  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
+  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
+  parentMomentum.setMass(partons_[iemit]->mass());
+  parent->set5Momentum(parentMomentum);
+  // Create the vectors of HardBranchings to create the HardTree:
+  vector<HardBranchingPtr> spaceBranchings,allBranchings;
+  // Incoming boson:
+  for(unsigned int ix=0;ix<2;++ix) {
+    spaceBranchings.push_back(new_ptr(HardBranching(hardParticles[ix],SudakovPtr(),
+						    HardBranchingPtr(),
+						    HardBranching::Incoming)));
+    allBranchings.push_back(spaceBranchings.back());
+  }
+  // Outgoing particles from hard emission:
+  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(hardParticles[ispect],
+ 							 SudakovPtr(),HardBranchingPtr(),
+ 							 HardBranching::Outgoing)));
+  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
+						       HardBranchingPtr(),
+						       HardBranching::Outgoing)));
+  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit], 
+ 						SudakovPtr(),HardBranchingPtr(),
+ 						HardBranching::Outgoing)));
+  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[4],
+ 						SudakovPtr(),HardBranchingPtr(),
+ 						HardBranching::Outgoing)));
+  if(iemit==0) {
+    allBranchings.push_back(emitterBranch);
+    allBranchings.push_back(spectatorBranch);
+  } 
+  else {
+    allBranchings.push_back( spectatorBranch );
+    allBranchings.push_back( emitterBranch );
+  }
+  // Make the HardTree from the HardBranching vectors.
+  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+					   ShowerInteraction::QCD));
+  // Set the maximum pt for all other emissions
+  qkProgenitor->maximumpT(pTveto);
+  qbProgenitor->maximumpT(pTveto);
+  // Connect the particles with the branchings in the HardTree
+  nasontree->connect( qkProgenitor->progenitor(), allBranchings[2] );
+  nasontree->connect( qbProgenitor->progenitor(), allBranchings[3] );
+  // colour flow
+  ColinePtr newline=new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+      newline->addColoured((**cit).branchingParticle());
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+      newline->addAntiColoured((**cit).branchingParticle());
+  }
+  // Return the HardTree
+  return nasontree;
+}
+
+double MEee2gZ2qq::meRatio(vector<cPDPtr> partons, 
+			   vector<Lorentz5Momentum> momenta,
+			   unsigned int iemitter,bool subtract) const {
+  Lorentz5Momentum q = momenta[2]+momenta[3]+momenta[4];
+  Energy2 Q2=q.m2();
+  Energy2 lambda = sqrt((Q2-sqr(momenta[2].mass()+momenta[3].mass()))*
+			(Q2-sqr(momenta[2].mass()-momenta[3].mass())));
+  InvEnergy2 D[2];
+  double lome[2];
+  for(unsigned int iemit=0;iemit<2;++iemit) {
+    unsigned int ispect = iemit==0 ? 1 : 0;
+    Energy2 pipj = momenta[4      ] * momenta[2+iemit ];
+    Energy2 pipk = momenta[4      ] * momenta[2+ispect];
+    Energy2 pjpk = momenta[2+iemit] * momenta[2+ispect];
+    double y = pipj/(pipj+pipk+pjpk);
+    double z = pipk/(     pipk+pjpk);
+    Energy mij = sqrt(2.*pipj+sqr(momenta[2+iemit].mass()));
+    Energy2 lamB = sqrt((Q2-sqr(mij+momenta[2+ispect].mass()))*
+			(Q2-sqr(mij-momenta[2+ispect].mass())));
+    Energy2 Qpk = q*momenta[2+ispect];
+    Lorentz5Momentum pkt = 
+      lambda/lamB*(momenta[2+ispect]-Qpk/Q2*q)
+      +0.5/Q2*(Q2+sqr(momenta[2+ispect].mass())-sqr(momenta[2+ispect].mass()))*q;
+    Lorentz5Momentum pijt = 
+      q-pkt;
+    double muj = momenta[2+iemit ].mass()/sqrt(Q2);
+    double muk = momenta[2+ispect].mass()/sqrt(Q2);
+    double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
+    double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
+      /(1.-y)/(1.-sqr(muj)-sqr(muk));
+    // dipole term
+    D[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
+			 -vt/v*(2.-z+sqr(momenta[2+iemit].mass())/pipj));
+    // matrix element
+    vector<Lorentz5Momentum> lomom(4);
+    lomom[0] = momenta[0];
+    lomom[1] = momenta[1];
+    if(iemit==0) {
+      lomom[2] = pijt;
+      lomom[3] = pkt ;
+    }
+    else {
+      lomom[3] = pijt;
+      lomom[2] = pkt ;
+    }
+    lome[iemit]  = loME(partons,lomom,false)/3.;
+  }
+  InvEnergy2 ratio = realME(partons,momenta)
+    *abs(D[iemitter])/(abs(D[0]*lome[0])+abs(D[1]*lome[1]));
+  if(subtract)
+    return Q2*(ratio-2.*D[iemitter]);
+  else
+    return Q2*ratio;
+}
+
+double MEee2gZ2qq::loME(const vector<cPDPtr> & partons, 
+			const vector<Lorentz5Momentum> & momenta,
+			bool first) const {
+  // compute the spinors
+  vector<SpinorWaveFunction> fin,aout;
+  vector<SpinorBarWaveFunction>  ain,fout;
+  SpinorWaveFunction    ein  (momenta[0],partons[0],incoming);
+  SpinorBarWaveFunction pin  (momenta[1],partons[1],incoming);
+  SpinorBarWaveFunction qkout(momenta[2],partons[2],outgoing);
+  SpinorWaveFunction    qbout(momenta[3],partons[3],outgoing);
+  for(unsigned int ix=0;ix<2;++ix) {
+    ein.reset(ix)  ;
+    fin.push_back( ein  );
+    pin.reset(ix)  ;
+    ain.push_back( pin  );
+    qkout.reset(ix);
+    fout.push_back(qkout);
+    qbout.reset(ix);
+    aout.push_back(qbout);
+  }
+  // compute the matrix element
+  double me,lastCont,lastBW;
+  HelicityME(fin,ain,fout,aout,me,lastCont,lastBW);
+  // save the components
+  if(first) {
+    DVector save;
+    save.push_back(lastCont);
+    save.push_back(lastBW);
+    meInfo(save);
+  }
+  // return the answer
+  return me;
+}
+
+InvEnergy2 MEee2gZ2qq::realME(const vector<cPDPtr> & partons, 
+			      const vector<Lorentz5Momentum> & momenta) const {
+  // compute the spinors
+  vector<SpinorWaveFunction> fin,aout;
+  vector<SpinorBarWaveFunction>  ain,fout;
+  vector<VectorWaveFunction> gout;
+  SpinorWaveFunction    ein  (momenta[0],partons[0],incoming);
+  SpinorBarWaveFunction pin  (momenta[1],partons[1],incoming);
+  SpinorBarWaveFunction qkout(momenta[2],partons[2],outgoing);
+  SpinorWaveFunction    qbout(momenta[3],partons[3],outgoing);
+  VectorWaveFunction    gluon(momenta[4],partons[4],outgoing);
+  for(unsigned int ix=0;ix<2;++ix) {
+    ein.reset(ix)  ;
+    fin.push_back( ein  );
+    pin.reset(ix)  ;
+    ain.push_back( pin  );
+    qkout.reset(ix);
+    fout.push_back(qkout);
+    qbout.reset(ix);
+    aout.push_back(qbout);
+    gluon.reset(2*ix);
+    gout.push_back(gluon);
+  }
+  vector<Complex> diag(4,0.);
+  ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1);
+  double total(0.);
+  for(unsigned int inhel1=0;inhel1<2;++inhel1) {
+    for(unsigned int inhel2=0;inhel2<2;++inhel2) {
+      // intermediate Z
+      VectorWaveFunction interZ = 
+	FFZVertex_->evaluate(scale(),1,Z0_,fin[inhel1],ain[inhel2]);
+      // intermediate photon
+      VectorWaveFunction interG = 
+	FFPVertex_->evaluate(scale(),1,gamma_,fin[inhel1],ain[inhel2]);
+      for(unsigned int outhel1=0;outhel1<2;++outhel1) {
+	for(unsigned int outhel2=0;outhel2<2;++outhel2) {
+	  for(unsigned int outhel3=0;outhel3<2;++outhel3) {
+	    SpinorBarWaveFunction off1 =
+	      FFGVertex_->evaluate(scale(),3,partons[2],fout[outhel1],gout[outhel3]);
+	    diag[0] = FFZVertex_->evaluate(scale(),aout[outhel2],off1,interZ);
+	    diag[1] = FFPVertex_->evaluate(scale(),aout[outhel2],off1,interG);
+	    SpinorWaveFunction    off2 = 
+	      FFGVertex_->evaluate(scale(),3,partons[3],aout[outhel2],gout[outhel3]);
+	    diag[2] = FFZVertex_->evaluate(scale(),off2,fout[outhel1],interZ);
+	    diag[3] = FFPVertex_->evaluate(scale(),off2,fout[outhel1],interG);
+	    // sum of diagrams
+	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
+	    // matrix element
+	    output(inhel1,inhel2,outhel1,outhel2,outhel3)=sum;
+	    // me2
+	    total += norm(sum);
+	  }
+	}
+      }		
+    }
+  }
+  // spin average
+  total *= 0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(partons[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(partons[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = 
+      {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+       beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    total = output.average(rho[0],rho[1]);
+  }
+  // divide out the coupling
+  total /= norm(FFGVertex_->norm());
+  // return the total
+  return total*UnitRemoval::InvE2;
 }

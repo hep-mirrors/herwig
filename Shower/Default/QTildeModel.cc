@@ -16,7 +16,6 @@
 #include "QTildeReconstructor.h"
 #include "QTildeFinder.h"
 #include "QTildeSudakov.h"
-#include "Herwig++/Shower/Default/MECorrections/QTildeMECorrection.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 
@@ -58,15 +57,5 @@ void QTildeModel::checkConsistency() {
       Throw<InitException>() << "SudakovFormFactors must be either "
 			     << "QTildeSudakov or a class inheriting from it"
 			     << "in QTildeModel::checkConsistency()"; 
-  }
-  // Matrix element corrections
-  // check KinematicsReconstructor
-  vector<MECorrectionPtr>::const_iterator mit;
-  for(mit=meCorrections().begin();mit!=meCorrections().end();++mit) {
-    if(!dynamic_ptr_cast<Ptr<QTildeMECorrection>::pointer>(*mit)) {
-      Throw<InitException>() << "meCorrections must be either "
-			     << "TildeMECorrection or a class inheriting from it"
-			     << "in QTildeModel::checkConsistency()"; 
-    }
   }
 }

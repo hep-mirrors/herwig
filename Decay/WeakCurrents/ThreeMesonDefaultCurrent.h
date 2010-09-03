@@ -336,7 +336,7 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const  {
+  Complex a1BreitWigner(Energy2 q2) const  {
     Complex ii(0.,1.);
     Energy2 m2(_a1mass*_a1mass);
     Energy  q(sqrt(q2));

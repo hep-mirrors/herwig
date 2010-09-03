@@ -9,7 +9,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -455,13 +454,13 @@ PotentialTree PowhegHandler::doClustering() {
   _noShowerHists = false;
   // remove backChildRelations from all hardtrees 
   // - to avoid cyclic pointer relations causing memory leaks
-  for( size_t ix = 0; ix < _rejectedHardTrees.size(); ++ix )
-    _rejectedHardTrees[ix].first.tree->removeBackChildren();
+  for( size_t ix = 0; ix < _rejectedCKKWTrees.size(); ++ix )
+    _rejectedCKKWTrees[ix].first.tree->removeBackChildren();
   for( size_t ix = 0; ix < _hardTrees.size(); ix++ )
     _hardTrees[ix].first.tree->removeBackChildren();
   // clear the hard trees
   _hardTrees.clear();
-  _rejectedHardTrees.clear();
+  _rejectedCKKWTrees.clear();
   map <ShowerParticlePtr,HardBranchingPtr> branchingMap;
   // loops through the FS particles and create hardBranchings
   for( unsigned int i = 0; i < outgoing.size(); ++i) {
@@ -511,9 +510,9 @@ PotentialTree PowhegHandler::doClustering() {
     }
     // Create the hard tree
     PotentialTree newTree;
-    newTree.tree = new_ptr( HardTree( theBranchings, spaceBranchings ,
+    newTree.tree = new_ptr( CKKWTree( theBranchings, spaceBranchings ,
 				      ShowerInteraction::QCD) );
-    // check the created HardTree corresponds to an allowed LO configuration
+    // check the created CKKWTree corresponds to an allowed LO configuration
     // (does matrix element have a corresponding diagram)
     getDiagram( newTree );
     if( !newTree.diagram ) continue;
@@ -535,7 +534,7 @@ PotentialTree PowhegHandler::doClustering() {
       totalWeight += treeWeight;
     }
     else {
-      _rejectedHardTrees.push_back( make_pair( newTree, 1. ) );
+      _rejectedCKKWTrees.push_back( make_pair( newTree, 1. ) );
       totalWeight += 1.;
     }
   }
@@ -565,10 +564,10 @@ PotentialTree PowhegHandler::doClustering() {
       }
     }
     else{
-      for(unsigned int ix = 0; ix < _rejectedHardTrees.size(); ix++ ){
-	if( _rejectedHardTrees[ix].first.tree->totalPt() < min_pt ){
-	  min_pt = _rejectedHardTrees[ix].first.tree->totalPt();
-	  chosen_hardTree.tree = _rejectedHardTrees[ix].first.tree;
+      for(unsigned int ix = 0; ix < _rejectedCKKWTrees.size(); ix++ ){
+	if( _rejectedCKKWTrees[ix].first.tree->totalPt() < min_pt ){
+	  min_pt = _rejectedCKKWTrees[ix].first.tree->totalPt();
+	  chosen_hardTree.tree = _rejectedCKKWTrees[ix].first.tree;
 	}
       }
     }
@@ -910,7 +909,7 @@ void PowhegHandler::getDiagram(PotentialTree & tree) {
   }
 }
 
-double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
+double PowhegHandler::splittingFnWeight( CKKWTreePtr theTree ){
   double splitFnWgt = 1.;
   for( map< HardBranchingPtr, Energy>::const_iterator cit = theTree->getNodes().begin();
        cit != theTree->getNodes().end(); ++cit ) {
@@ -926,7 +925,7 @@ double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
   return splitFnWgt;
 }
 
-double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
+double PowhegHandler::sudakovWeight( CKKWTreePtr theTree ) {
   //ktcut for sudakovs
   Energy kt_cut = _highestMult ? 
     theTree->lowestPt( _jetMeasureMode, _s ) : _showerVeto->getVeto();
@@ -954,7 +953,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   return alphaWgt*PDFweight;
 }
 
-void PowhegHandler::setBeams( HardTreePtr tree ) {
+void PowhegHandler::setBeams( CKKWTreePtr tree ) {
   PPair beams = lastXCombPtr()->lastParticles();
   //remove children of beams
   PVector beam_children = beams.first->children();
@@ -1210,7 +1209,7 @@ bool ProtoTree::fixFwdBranchings(){
   return true;
 }
 
-double PowhegHandler::pdfWeight( HardTreePtr tree) {
+double PowhegHandler::pdfWeight( CKKWTreePtr tree) {
   double current_pdf;
   double pdf_wgt = 1.;
   double x_frac;

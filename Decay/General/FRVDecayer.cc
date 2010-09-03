@@ -207,4 +207,3 @@ void FRVDecayer::Init() {
      "a spin-3/2 particle and a vector boson.");
 
 }
-

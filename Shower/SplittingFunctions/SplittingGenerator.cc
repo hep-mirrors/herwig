@@ -22,6 +22,7 @@
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/ShowerHandler.h"
+#include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 
 using namespace Herwig;

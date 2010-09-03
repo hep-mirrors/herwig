@@ -11,7 +11,6 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/PDF/HwRemDecayer.h"
 #include "AdditionalGaugeParticleData.h"
 

@@ -15,6 +15,7 @@ ShowerHandler.h ShowerHandler.fh ShowerHandler.cc
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \
+Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
 Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \
 Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc \

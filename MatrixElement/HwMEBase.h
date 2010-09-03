@@ -6,6 +6,7 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/Shower/Base/Branching.h"
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/HardTree.h"

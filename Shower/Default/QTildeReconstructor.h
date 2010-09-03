@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(0.001*GeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -212,7 +212,9 @@ protected:
    *  Perform the reconstruction of a system with only final-state
    *  particles
    */
-  void reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest, 
+  void reconstructFinalStateSystem(bool applyBoost, 
+				   const LorentzRotation & toRest,
+				   const LorentzRotation & fromRest, 
 				   vector<ShowerProgenitorPtr>) const;
 
   /**
@@ -225,7 +227,8 @@ protected:
    *  particles
    */
   void reconstructInitialInitialSystem(bool & applyBoost,
-				       Boost & toRest, Boost & fromRest,
+				       LorentzRotation & toRest,
+				       LorentzRotation & fromRest,
 				       vector<ShowerProgenitorPtr>) const;
   //@}
 
@@ -238,7 +241,8 @@ protected:
    *  Perform the inverse reconstruction of a system with only final-state
    *  particles
    */
-  void deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
+  void deconstructFinalStateSystem(const LorentzRotation & toRest,
+				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
 				   EvolverPtr,
@@ -249,7 +253,8 @@ protected:
    *  particles
    */
   void deconstructInitialInitialSystem(bool & applyBoost,
-				       Boost & toRest, Boost & fromRest,
+				       LorentzRotation & toRest,
+				       LorentzRotation & fromRest,
 				       HardTreePtr,
 				       vector<HardBranchingPtr>,
 				       ShowerInteraction::Type ) const;
@@ -461,6 +466,11 @@ private:
    *  Option for handling the reconstruction
    */
   unsigned int _reconopt;
+
+  /**
+   *  Option for the boost for initial-initial reconstruction
+   */
+  unsigned int _initialBoost;
 
   /**
    * Minimum invariant mass for initial-final dipoles to allow the

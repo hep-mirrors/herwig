@@ -17,9 +17,9 @@
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerTree.h"
-#include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
+#include "Branching.h"
 #include "ShowerVeto.h"
 #include "HardTree.h"
 #include "ThePEG/Handlers/XComb.h"
@@ -45,12 +45,6 @@ class Evolver: public Interfaced {
  *  The ShowerHandler is a friend to set some parameters at initialisation
  */
 friend class ShowerHandler;
-
-/**
- *  The MECorrectionBase class is a friend to access some protected
- *  member functions to set the radiation enhancement factors
- */
-friend class MECorrectionBase;
 
 public:
   
@@ -176,7 +170,7 @@ protected:
    * It does the forward evolution of the time-like input particle
    * (and recursively for all its radiation products).
    * accepting only emissions which conforms to the showerVariables
-   * and soft matrix element correction pointed by meCorrectionPtr.
+   * and soft matrix element correction.
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
@@ -573,11 +567,6 @@ private:
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;
-
-  /**
-   *  Matrix element correction used for the current shower
-   */
-  MECorrectionPtr _currentme;
 
   /**
    *  Matrix element

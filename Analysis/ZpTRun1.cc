@@ -66,10 +66,10 @@ void ZpTRun1::doinitrun() {
   
 }
 
-void ZpTRun1::persistentOutput(PersistentOStream & ) const {
+void ZpTRun1::persistentOutput(PersistentOStream &) const {
 }
 
-void ZpTRun1::persistentInput(PersistentIStream & , int) {
+void ZpTRun1::persistentInput(PersistentIStream &, int) {
 }
 
 ClassDescription<ZpTRun1> ZpTRun1::initZpTRun1;

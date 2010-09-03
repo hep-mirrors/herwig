@@ -11,7 +11,6 @@
 #include "Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/HardTree.h"
 
 using namespace Herwig;

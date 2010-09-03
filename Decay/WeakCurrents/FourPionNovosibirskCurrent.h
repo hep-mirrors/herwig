@@ -194,7 +194,7 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate();
+  virtual void doupdate();
   //@}
 
 private:

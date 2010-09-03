@@ -13,11 +13,10 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "Herwig++/Shower/Base/Branching.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "ThePEG/Utilities/Rebinder.h"
-#include<vector>     
 
 namespace Herwig {
 

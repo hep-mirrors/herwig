@@ -25,13 +25,13 @@
 using namespace Herwig;
 
 void CKKWVeto::persistentOutput(PersistentOStream & os) const {
-  os <<  _vetoTimelike << _vetoSpacelike << _ptVetoDefinition << ounit(_Ptveto,GeV) 
-     << _reversePtVeto;
+  os << vetoTimeLike_ << vetoSpaceLike_ << pTVetoDefinition_ << ounit(pTVeto_,GeV) 
+     << reversepTVeto_;
 }
 
 void CKKWVeto::persistentInput(PersistentIStream & is, int) {
-  is  >> _vetoTimelike >> _vetoSpacelike >> _ptVetoDefinition >> iunit(_Ptveto,GeV) 
-      >> _reversePtVeto;
+  is >> vetoTimeLike_ >> vetoSpaceLike_ >> pTVetoDefinition_ >> iunit(pTVeto_,GeV) 
+     >> reversepTVeto_;
 }
 
 ClassDescription<CKKWVeto> CKKWVeto::initCKKWVeto;
@@ -45,7 +45,7 @@ void CKKWVeto::Init() {
   static Switch<CKKWVeto, unsigned int> ifaceJetMeasureMode
     ("JetMeasure",
      "Choice of the jet measure algorithm",
-     &CKKWVeto::_ptVetoDefinition, 1, false, false);
+     &CKKWVeto::pTVetoDefinition_, 1, false, false);
   static SwitchOption Durham
     (ifaceJetMeasureMode,"Durham","Durham jet measure", 0);
   static SwitchOption Shower
@@ -55,68 +55,67 @@ void CKKWVeto::Init() {
   static SwitchOption Hadron
     (ifaceJetMeasureMode,"Hadron","Hadron jet measure", 3);
  
-
   static Parameter< CKKWVeto, Energy > interfacePtCut
     ("JetCut",
      "The jet cut (in specified jet measure) for shower vetoes",
-     &CKKWVeto::_Ptveto, GeV, ZERO, ZERO, 100000.0 * GeV,
+     &CKKWVeto::pTVeto_, GeV, ZERO, ZERO, 100000.0 * GeV,
      false, false, Interface::limited );
 
   static Switch<CKKWVeto, bool> ifaceReverseVeto
     ("ReversePtVeto",
      "Reverse pt veto to veto emissions below cut",
-     &CKKWVeto::_reversePtVeto, false, false, false);
+     &CKKWVeto::reversepTVeto_, false, false, false);
   static SwitchOption RevVetoFalse
     (ifaceReverseVeto,"No","Veto emissions above cut", false);
   static SwitchOption RevVetoTrue
     (ifaceReverseVeto,"Yes","Veto emissions below cut", true);
 
-  static Switch<CKKWVeto,bool> interfacevetoTimelike
-    ("VetoTimelike",
-     "Veto timelike showering",
-     &CKKWVeto::_vetoTimelike, true, false, false);
-  static SwitchOption interfacevetoTimelikevetoTimelikeOn
-    (interfacevetoTimelike,
+  static Switch<CKKWVeto,bool> interfacevetoTimeLike
+    ("VetoTimeLike",
+     "Veto timeLike showering",
+     &CKKWVeto::vetoTimeLike_, true, false, false);
+  static SwitchOption interfacevetoTimeLikevetoTimeLikeOn
+    (interfacevetoTimeLike,
      "Yes",
-     "Veto timelike showering",
+     "Veto timeLike showering",
      true);
-  static SwitchOption interfacevetoTimelikevetoTimelikeOff
-    (interfacevetoTimelike,
+  static SwitchOption interfacevetoTimeLikevetoTimeLikeOff
+    (interfacevetoTimeLike,
      "No",
-     "Do not veto timelike showering",
+     "Do not veto timeLike showering",
      false);
 
-  static Switch<CKKWVeto,bool> interfacevetoSpacelike
-    ("VetoSpacelike",
-     "Veto spacelike showering",
-     &CKKWVeto::_vetoSpacelike, true, false, false);
-  static SwitchOption interfacevetoSpacelikevetoSpacelikeOn
-    (interfacevetoSpacelike,
+  static Switch<CKKWVeto,bool> interfacevetoSpaceLike
+    ("VetoSpaceLike",
+     "Veto spaceLike showering",
+     &CKKWVeto::vetoSpaceLike_, true, false, false);
+  static SwitchOption interfacevetoSpaceLikevetoSpaceLikeOn
+    (interfacevetoSpaceLike,
      "Yes",
-     "Veto spacelike showering",
+     "Veto spaceLike showering",
      true);
-  static SwitchOption interfacevetoSpacelikevetoSpacelikeOff
-    (interfacevetoSpacelike,
+  static SwitchOption interfacevetoSpaceLikevetoSpaceLikeOff
+    (interfacevetoSpaceLike,
      "No",
-     "Do not veto spacelike showering",
+     "Do not veto spaceLike showering",
      false);
 }
 
 bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticlePtr,
-			     const Branching & fb ){
+			     const Branching & fb ) {
+  // if not applying veto return
+  if(!vetoTimeLike_) return false;
   //find pt at which we are vetoing
-  Energy2 ptVeto;
-  if( _Ptveto > ZERO && !_highestMult ) ptVeto = sqr( _Ptveto );
-  else ptVeto = sqr( progenitor->maximumpT() );
+  Energy2 pTVeto = ( pTVeto_ > ZERO && !highestMult_ ) ? 
+    sqr( pTVeto_ ) : sqr( progenitor->maximumpT() );
   //find corresponding pt measure based on the emission variables
   Energy2 kt_measure;
   Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
-  // Energy2 s = sqr( 91.2*GeV);
   Energy pt = fb.kinematics->pT();
-  double z = fb.kinematics->z();
+  double z  = fb.kinematics->z();
   //exact single durham/luclus cuts
-  if( fb.kinematics && ( _ptVetoDefinition == 0 || _ptVetoDefinition == 2 ) 
-      && ! _highestMult ){
+  if( fb.kinematics && ( pTVetoDefinition_ == 0 || pTVetoDefinition_ == 2 ) 
+      && ! highestMult_ ){
     Energy2 m0 = sqr(getParticleData( fb.ids[0] )->constituentMass());
     Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
     Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
@@ -135,13 +134,13 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
     double costheta = ( Z1*Z2 - sqr(pt) )
       / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
     
-    if( _ptVetoDefinition == 0 )
+    if( pTVetoDefinition_ == 0 )
       kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
-    else if( _ptVetoDefinition == 2 )
+    else if( pTVetoDefinition_ == 2 )
       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
   }
   //hadron jet measure cuts
-  else if( fb.kinematics && _ptVetoDefinition == 3 && !_highestMult ){
+  else if( fb.kinematics && pTVetoDefinition_ == 3 && !highestMult_ ) {
     Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
     Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
     
@@ -159,16 +158,17 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
     kt_measure = sqr( pt )* deltaR;
   } 
   //normal shower pt veto - should always be called for highest mult
-  else kt_measure = sqr( fb.kinematics->pT() );
+  else 
+    kt_measure = sqr( fb.kinematics->pT() );
   
   //veto emission or the full event 
-  if( _dynamicSuds ){
-    if( ! _reversePtVeto && kt_measure > ptVeto ) throw Veto();
-    else if(  _reversePtVeto && kt_measure < ptVeto ) throw Veto();
+  if( dynamicSuds_ ){
+    if     ( ! reversepTVeto_ && kt_measure > pTVeto ) throw Veto();
+    else if(   reversepTVeto_ && kt_measure < pTVeto ) throw Veto();
   }
   else{
-    if( ! _reversePtVeto && kt_measure > ptVeto ) return true;
-    else if(  _reversePtVeto && kt_measure < ptVeto ) return true;
+    if     ( ! reversepTVeto_ && kt_measure > pTVeto ) return true;
+    else if(   reversepTVeto_ && kt_measure < pTVeto ) return true;
   }
   return false;
 }
@@ -178,21 +178,21 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
  * particle and progenitor is vetoed.
  */
 bool CKKWVeto::vetoSpaceLike (tcShowerProgenitorPtr progenitor, tcShowerParticlePtr,
-			      const Branching & bb){
-  Energy ptVeto;
-  if( _Ptveto > ZERO && !_highestMult ) ptVeto = _Ptveto;
-  else  ptVeto = progenitor->maximumpT();
-
+			      const Branching & bb) {
+  // if not applying veto return
+  if(!vetoSpaceLike_) return false;
+  // select the veto, if set and not hightest mult
+  Energy pTVeto = (pTVeto_ > ZERO && !highestMult_ ) ? pTVeto_ : progenitor->maximumpT();
+  // pT of the emisson
   Energy kt_measure = bb.kinematics->pT();
-
   //veto emission or the full event 
-  if( _dynamicSuds ){
-    if( ! _reversePtVeto && kt_measure > ptVeto ) throw Veto();
-    else if(  _reversePtVeto && kt_measure < ptVeto ) throw Veto();
+  if( dynamicSuds_ ){
+    if     ( ! reversepTVeto_ && kt_measure > pTVeto ) throw Veto();
+    else if(   reversepTVeto_ && kt_measure < pTVeto ) throw Veto();
   }
   else{
-    if( ! _reversePtVeto && kt_measure > ptVeto ) return true;
-    else if(  _reversePtVeto && kt_measure < ptVeto ) return true;
+    if     ( ! reversepTVeto_ && kt_measure > pTVeto ) return true;
+    else if(   reversepTVeto_ && kt_measure < pTVeto ) return true;
   }
   return false;
 }

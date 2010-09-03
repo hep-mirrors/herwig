@@ -18,7 +18,6 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/CKKWVeto.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -57,7 +56,7 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
     (tree->incomingLines(). begin()->first->progenitor()->momentum() +
      tree->incomingLines().rbegin()->first->progenitor()->momentum()).m2();
   // Get the HardTree from the CKKW handler.
-  HardTreePtr hardtree = CKKWh_->getHardTree();
+  CKKWTreePtr hardtree = CKKWh_->getCKKWTree();
   Energy veto_pt = sqrt( s );
   // evolver vetoes should be set to use shower pt in highest multiplicity case
   if( CKKWh_->highestMult() && hardtree ) veto_pt = hardtree->lowestPt( 1, s );
@@ -77,104 +76,110 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   if( ! hardtree ) return HardTreePtr();
   // check the trees match
   if( ! hardtree->connect(tree) ) return HardTreePtr();
-  //fill the dead zone by generating an emission with the hard generator
-  //updating the _theHardTree and vetoeing the event if the emission pt 
-  //(from lowest pt) is greater than the merge scale
-  if(  CKKWh_->lowestMult() && 
-       CKKWh_->matrixElement() &&
-       CKKWh_->matrixElement()->hasPOWHEGCorrection() ) { 
-    hardtree = CKKWh_->matrixElement()->generateHardest( tree );
-    if( hardtree ) {
-      ShowerParticleVector particles;
-      // Sudakovs for ISR
-      for(set<HardBranchingPtr>::iterator cit=hardtree->branchings().begin();
-	  cit!=hardtree->branchings().end();++cit) {
-	if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
-	  IdList br(3);
-	  br[0] = (**cit).parent()->branchingParticle()->id();
-	  br[1] = (**cit).          branchingParticle()->id();
-	  br[2] = (**cit).parent()->children()[0]==*cit ?
-	    (**cit).parent()->children()[1]->branchingParticle()->id() :
-	    (**cit).parent()->children()[0]->branchingParticle()->id();
-	  BranchingList branchings = 
-	    evolver()->splittingGenerator()->initialStateBranchings();
-	  if(br[1]<0&&br[0]==br[1]) {
-	    br[0] = abs(br[0]);
-	    br[1] = abs(br[1]);
-	  }
-	  else if(br[1]<0) {
-	    br[1] = -br[1];
-	    br[2] = -br[2];
-	  }
-	  long index = abs(br[1]);
-	  SudakovPtr sudakov;
-	  for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
-	      cjt != branchings.upper_bound(index); ++cjt ) {
-	    IdList ids = cjt->second.second;
-	    if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	      sudakov=cjt->second.first;
-	      break;
-	    }
-	  }
-	  if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-					 << "Evolver::generateHardest()" 
-					 << Exception::runerror;
-	  (**cit).parent()->sudakov(sudakov);
-	}
-	else if(!(**cit).children().empty()) {
-	  IdList br(3);
-	  br[0] = (**cit)               .branchingParticle()->id();
-	  br[1] = (**cit).children()[0]->branchingParticle()->id();
-	  br[2] = (**cit).children()[1]->branchingParticle()->id();
-	  BranchingList branchings = 
-	    evolver()->splittingGenerator()->finalStateBranchings();
-	  if(br[0]<0) {
-	    br[0] = abs(br[0]);
-	    br[1] = abs(br[1]);
-	    br[2] = abs(br[2]);
-	  }
-	  long index = br[0];
-	  SudakovPtr sudakov;
-	  for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
-	      cjt != branchings.upper_bound(index); ++cjt ) {
-	    IdList ids = cjt->second.second;
-	    if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	      sudakov=cjt->second.first;
-	      break;
-	    }
-	  }
-	  if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-					 << "Evolver::generateHardest()" 
-					 << Exception::runerror;
-	  (**cit).sudakov(sudakov);
+  // if not lowest multiplcity return
+  if( !CKKWh_->lowestMult() ) return hardtree; 
+  // if no correction return
+  if( !CKKWh_->matrixElement() || 
+      !CKKWh_->matrixElement()->hasPOWHEGCorrection() ) return hardtree;
+  // fill the dead zone by generating an emission with the hard generator
+  // updating the _theHardTree and vetoeing the event if the emission pt 
+  // (from lowest pt) is greater than the merge scale
+  HardTreePtr newHardTree = CKKWh_->matrixElement()->generateHardest( tree );
+  if(!newHardTree) return hardtree;
+  ShowerParticleVector particles;
+  // Sudakovs for ISR
+  for(set<HardBranchingPtr>::iterator cit=newHardTree->branchings().begin();
+      cit!=newHardTree->branchings().end();++cit) {
+    if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
+      IdList br(3);
+      br[0] = (**cit).parent()->branchingParticle()->id();
+      br[1] = (**cit).          branchingParticle()->id();
+      br[2] = (**cit).parent()->children()[0]==*cit ?
+	(**cit).parent()->children()[1]->branchingParticle()->id() :
+	(**cit).parent()->children()[0]->branchingParticle()->id();
+      BranchingList branchings = 
+	evolver()->splittingGenerator()->initialStateBranchings();
+      if(br[1]<0&&br[0]==br[1]) {
+	br[0] = abs(br[0]);
+	br[1] = abs(br[1]);
+      }
+      else if(br[1]<0) {
+	br[1] = -br[1];
+	br[2] = -br[2];
+      }
+      long index = abs(br[1]);
+      SudakovPtr sudakov;
+      for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
+	  cjt != branchings.upper_bound(index); ++cjt ) {
+	IdList ids = cjt->second.second;
+	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
+	  sudakov=cjt->second.first;
+	  break;
 	}
       }
-      // calculate the evolution scale
-      for(set<HardBranchingPtr>::iterator cit=hardtree->branchings().begin();
-	  cit!=hardtree->branchings().end();++cit) {
-	particles.push_back((*cit)->branchingParticle());
-      }
-      evolver()->showerModel()->
-	partnerFinder()->setInitialEvolutionScales(particles,false,
-						   hardtree->interaction(),true);
-      // inverse reconstruction
-      evolver()->showerModel()->kinematicsReconstructor()->
-	deconstructHardJets(hardtree,ShowerHandler::currentHandler()->evolver(),
-			    hardtree->interaction());
-      hardtree->findNodes();
-      // reject the event if newhardtree->lowestPt
-      // is greater than pt_cut
-      if( hardtree->lowestPt( 1, s ) > CKKWh_->theVeto()->getVeto() ) 
- 	throw Veto();
+      if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+				     << "Evolver::generateHardest()" 
+				     << Exception::runerror;
+      (**cit).parent()->sudakov(sudakov);
     }
-    //maximum pt of shower progenitors will also have been 
-    //updated to something below the veto scale
-    //set the CKKWVeto to use the maximum pt scale as veto scale 
-    //rather than the fixed veto scale
-    //this means doing it as if it is a highest multiplicity emission 
-    CKKWh_->theVeto()->setHighest( true );
+    else if(!(**cit).children().empty()) {
+      IdList br(3);
+      br[0] = (**cit)               .branchingParticle()->id();
+      br[1] = (**cit).children()[0]->branchingParticle()->id();
+      br[2] = (**cit).children()[1]->branchingParticle()->id();
+      BranchingList branchings = 
+	evolver()->splittingGenerator()->finalStateBranchings();
+      if(br[0]<0) {
+	br[0] = abs(br[0]);
+	br[1] = abs(br[1]);
+	br[2] = abs(br[2]);
+      }
+      long index = br[0];
+      SudakovPtr sudakov;
+      for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
+	  cjt != branchings.upper_bound(index); ++cjt ) {
+	IdList ids = cjt->second.second;
+	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
+	  sudakov=cjt->second.first;
+	  break;
+	}
+      }
+      if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+				     << "Evolver::generateHardest()" 
+				     << Exception::runerror;
+      (**cit).sudakov(sudakov);
+    }
   }
-  return hardtree;
+  // calculate the evolution scale
+  for(set<HardBranchingPtr>::iterator cit=newHardTree->branchings().begin();
+      cit!=newHardTree->branchings().end();++cit) {
+    particles.push_back((*cit)->branchingParticle());
+  }
+  evolver()->showerModel()->
+    partnerFinder()->setInitialEvolutionScales(particles,false,
+					       newHardTree->interaction(),true);
+  // inverse reconstruction
+  evolver()->showerModel()->kinematicsReconstructor()->
+    deconstructHardJets(newHardTree,ShowerHandler::currentHandler()->evolver(),
+			newHardTree->interaction());
+
+  // \todo needs sorting out !!!!!!!!!!
+
+//   newHardTree->findNodes();
+//   // reject the event if newnewHardTree->lowestPt
+//   // is greater than pt_cut
+//   if( newHardTree->lowestPt( 1, s ) > CKKWh_->theVeto()->getVeto() ) 
+//     throw Veto();
+
+
+
+  //maximum pt of shower progenitors will also have been 
+  //updated to something below the veto scale
+  //set the CKKWVeto to use the maximum pt scale as veto scale 
+  //rather than the fixed veto scale
+  //this means doing it as if it is a highest multiplicity emission 
+  CKKWh_->theVeto()->setHighest( true );
+  return newHardTree;
 }
 
 bool ExternalHardGenerator::canHandle(ShowerTreePtr) {
