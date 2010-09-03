@@ -27,7 +27,6 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
-#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
