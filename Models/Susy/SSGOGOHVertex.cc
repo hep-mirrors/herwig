@@ -55,8 +55,6 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
   }
 }
 
-SSGOGOHVertex::~SSGOGOHVertex() {}
-
 void SSGOGOHVertex::doinit() {
   FFSVertex::doinit();
   
@@ -85,8 +83,8 @@ void SSGOGOHVertex::doinit() {
 	theSij[i][j] = vmix(i,1)*umix(j,0)/sqrt(2);
       }
       if( j < 2 ) {
-	theQijLp[i][j] = nmix(i, 3)*vmix(j,0) 
-	  + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2);
+	theQijLp[i][j] = conj(nmix(i, 3)*vmix(j,0) 
+			      + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2));
 	theQijRp[i][j] = nmix(i, 2)*umix(j,0) 
 	  - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2);
       }

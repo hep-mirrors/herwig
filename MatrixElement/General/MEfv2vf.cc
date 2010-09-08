@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::incoming;
@@ -284,7 +283,8 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   ParticleVector ext = hardParticles(sub);
   VBVector v1, v3;
   bool mc = !(ext[2]->data().mass() > ZERO);
-  SpinorVector sp;  SpinorBarVector sbar;
+  SpinorVector sp;  
+  SpinorBarVector sbar;
   VectorWaveFunction(v1, ext[1], incoming, false, true);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc);
   double dummy(0.);

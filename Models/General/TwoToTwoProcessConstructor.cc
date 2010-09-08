@@ -42,7 +42,7 @@ namespace {
 }
 
 TwoToTwoProcessConstructor::TwoToTwoProcessConstructor() : 
-  effective_(false), Nout_(0), nv_(0), allDiagrams_(true),
+  Nout_(0), nv_(0), allDiagrams_(true),
   processOption_(0), scaleChoice_(0) 
 {}
 
@@ -60,7 +60,8 @@ void TwoToTwoProcessConstructor::doinit() {
     throw InitException() 
       << "Exclusive processes require exactly"
       << " two outgoing particles but " << outgoing_.size()
-      << "have been inserted." << Exception::runerror;
+      << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
+      << Exception::runerror;
   Nout_ = outgoing_.size();
   PDVector::size_type ninc = incoming_.size();
   // exit if nothing to do
@@ -80,19 +81,25 @@ void TwoToTwoProcessConstructor::doinit() {
       }
     }
   }
+  // excluded vertices
+  excludedVertexSet_ = 
+    set<VertexBasePtr>(excludedVertexVector_.begin(),
+		       excludedVertexVector_.end());
 }
 
 
 void TwoToTwoProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << effective_ << vertices_ << incoming_ << outgoing_
+  os << vertices_ << incoming_ << outgoing_
      << allDiagrams_ << processOption_
-     << scaleChoice_ << excluded_ << excludedExternal_;
+     << scaleChoice_ << excluded_ << excludedExternal_
+     << excludedVertexVector_ << excludedVertexSet_;
 }
 
 void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> effective_ >> vertices_ >> incoming_ >> outgoing_
+  is >> vertices_ >> incoming_ >> outgoing_
      >> allDiagrams_ >> processOption_
-     >> scaleChoice_ >> excluded_ >> excludedExternal_;
+     >> scaleChoice_ >> excluded_ >> excludedExternal_
+     >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
 ClassDescription<TwoToTwoProcessConstructor> 
@@ -178,26 +185,16 @@ void TwoToTwoProcessConstructor::Init() {
      "Particles which are not allowed as intermediates",
      &TwoToTwoProcessConstructor::excluded_, -1, false, false, true, false, false);
 
-  static Switch<TwoToTwoProcessConstructor,bool> interfaceIncludeEffectiveVertices
-    ("IncludeEffectiveVertices",
-     "Whether or not to include effective vertices",
-     &TwoToTwoProcessConstructor::effective_, false, false, false);
-  static SwitchOption interfaceIncludeEffectiveVerticesNo
-    (interfaceIncludeEffectiveVertices,
-     "No",
-     "Don't include them",
-     false);
-  static SwitchOption interfaceIncludeEffectiveVerticesYes
-    (interfaceIncludeEffectiveVertices,
-     "Yes",
-     "Include them",
-     true);
-
   static RefVector<TwoToTwoProcessConstructor,ParticleData> interfaceExcludedExternal
     ("ExcludedExternal",
      "Particles which are not allowed as outgoing particles",
      &TwoToTwoProcessConstructor::excludedExternal_, -1,
      false, false, true, false, false);
+
+  static RefVector<TwoToTwoProcessConstructor,VertexBase> interfaceExcludedVertices
+    ("ExcludedVertices",
+     "Vertices which are not included in the 2 -> 2 scatterings",
+     &TwoToTwoProcessConstructor::excludedVertexVector_, -1, false, false, true, true, false);
 
 }
 
@@ -227,9 +224,8 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
     VertexBasePtr vertex = model()->vertex(ix); 
     vertex->init();
-    if(!effective_&&
-       int(vertex->orderInGem()+vertex->orderInGs())
-       >int(vertex->getNpoint())-2) continue;
+    if(excludedVertexSet_.find(vertex) != 
+       excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);
   }
   nv_ = vertices_.size();
@@ -245,8 +241,7 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 
 	//This skips an effective vertex and the EW ones if 
 	// we only want the strong diagrams
-	if( (vertexA->orderInGs() + vertexA->orderInGem() == 3) ||
-	    (!allDiagrams_ && vertexA->orderInGs() == 0) ) 
+	if( !allDiagrams_ && vertexA->orderInGs() == 0 ) 
 	  continue;
 
 	if(vertexA->getNpoint() == 3) {
@@ -327,8 +322,7 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < nv_; ++iv) {
       tVertexBasePtr vertexB = vertices_[iv];
       if( vertexB->getNpoint() != 3) continue;
-      if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
-	  (!allDiagrams_ && vertexB->orderInGs() == 0) ) continue;
+      if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
       
       tPDSet final;
       if( vertexB->isOutgoing(getParticleData(fs)) &&
@@ -336,9 +330,9 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 	final = search(vertexB, (*it)->id(), incoming, fs,
 		       outgoing, outgoing);
       //Now make diagrams
-	if(!final.empty()) 
-	  makeDiagrams(inc, fs, final, *it, HPDiagram::sChannel,
-		       make_pair(vertex, vertexB), make_pair(true,true));
+      if(!final.empty()) 
+	makeDiagrams(inc, fs, final, *it, HPDiagram::sChannel,
+		     make_pair(vertex, vertexB), make_pair(true,true));
     }
   }
 
@@ -356,8 +350,7 @@ createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
      for(size_t iv = 0; iv < nv_; ++iv) {
        tVertexBasePtr vertexB = vertices_[iv];
        if( vertexB->getNpoint() != 3 ) continue;
-       if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
-	   (!allDiagrams_ && vertexB->orderInGs() == 0 ) ) continue;
+       if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
        tPDSet final;
        if( vertexB->isIncoming(inpp.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
@@ -375,8 +368,7 @@ createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < nv_; ++iv) {
        tVertexBasePtr vertexB = vertices_[iv];
        if( vertexB->getNpoint() != 3 ) continue;
-       if((vertexB->orderInGs() + vertexB->orderInGem() == 3) || 
-	  (!allDiagrams_ && vertexB->orderInGs() == 0) ) continue;
+       if( !allDiagrams_ && vertexB->orderInGs() == 0 ) continue;
 
        tPDSet final;
        if( vertexB->isIncoming(inpp.first) )
@@ -574,10 +566,10 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   unsigned int scale;
   if(scaleChoice_==0) {
     // check coloured initial and final state
-    bool inColour  = !( extpart[0]->coloured() ||
-			extpart[1]->coloured());
-    bool outColour = !( extpart[2]->coloured() ||
-			extpart[3]->coloured());
+    bool inColour  = ( extpart[0]->coloured() ||
+		       extpart[1]->coloured());
+    bool outColour = ( extpart[2]->coloured() ||
+		       extpart[3]->coloured());
     if(inColour&&outColour) {
       bool coloured = false;
       for(unsigned int ix=0;ix<process.size();++ix) {

@@ -18,9 +18,9 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -87,6 +87,8 @@ private:
    * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spbOut Vector of SpinorBarWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param full_me The value of me2 calculation
    */
   ProductionMatrixElement fv2fbsHeME(const SpinorVector & spIn, 
@@ -101,6 +103,8 @@ private:
    * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spOut Vector of SpinorWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param full_me The value of me2 calculation
    */
   ProductionMatrixElement fbv2fsHeME(const SpinorBarVector & spbIn, 

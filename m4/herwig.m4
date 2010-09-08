@@ -347,7 +347,6 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
 AC_MSG_CHECKING([for BSM models to include])
 
-LOAD_BSM_ANALYSIS=""
 LOAD_RS=""
 LOAD_SUSY=""
 LOAD_TRP=""
@@ -355,7 +354,7 @@ LOAD_UED=""
 LOAD_ADD=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm ued rs trp add) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -373,7 +372,9 @@ if test ! "$all"; then
    IFS="$oldIFS"
 fi
 
-AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
+if test "$nmssm"; then
+   mssm=yes
+fi
 
 if test "$rs" -o "$all" ; then
    LOAD_RS="library HwRSModel.so"
@@ -396,11 +397,12 @@ fi
 AC_SUBST(LOAD_UED)
 
 if test "$add" -o "$all"; then
-   LOAD_ADD="library HwADD.so"
+   LOAD_ADD="library HwADDModel.so"
 fi
 AC_SUBST(LOAD_ADD)
 
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
+AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])

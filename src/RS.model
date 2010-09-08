@@ -46,18 +46,18 @@ create Herwig::RSModelGGGGRVertex RS_GGGGRVertex
 create Herwig::RSModelWWWGRVertex RS_WWWGRVertex
 cd /Herwig/NewPhysics/RS
 # SM vertices
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
-set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWH  /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
 # RS model vertices
 set Model:Vertex/FFGR  /Herwig/Vertices/RS/RS_FFGRVertex
 set Model:Vertex/FFGGR /Herwig/Vertices/RS/RS_FFGGRVertex
@@ -74,6 +74,7 @@ set Model:Vertex/WWWGR /Herwig/Vertices/RS/RS_WWWGRVertex
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
 ###################################################

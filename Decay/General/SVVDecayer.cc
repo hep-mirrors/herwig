@@ -109,8 +109,9 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     _perturbativeVertex->setCoupling(scale, outa.first , 
-				    outb.first, inpart.first);
+				    outb.first, in);
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
     double m1pm2 = mu1sq + mu2sq;

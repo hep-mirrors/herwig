@@ -1,3 +1,4 @@
+SUBDIRS = NMSSM
 if WANT_MSSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif
@@ -18,10 +19,15 @@ SSCNWVertex.cc    SSCNWVertex.h    \
 SSFFHVertex.cc    SSFFHVertex.h    \
 SSGOGOHVertex.cc  SSGOGOHVertex.h  \
 SSWWHVertex.cc    SSWWHVertex.h    \
+SSWWHHVertex.cc   SSWWHHVertex.h   \
 SSWHHVertex.cc    SSWHHVertex.h    \
 SSHHHVertex.cc    SSHHHVertex.h    \
 SSHGGVertex.cc    SSHGGVertex.h    \
 SSHPPVertex.cc    SSHPPVertex.h    \
 SSNNPVertex.h SSNNPVertex.cc \
-SSGNGVertex.h SSGNGVertex.cc
+SSGNGVertex.h SSGNGVertex.cc \
+SSNCTVertex.h SSNCTVertex.cc \
+SSGVNHVertex.h SSGVNHVertex.cc\
+SSGVNVVertex.h SSGVNVVertex.cc\
+SSGVFSVertex.h SSGVFSVertex.cc
 HwSusy_la_LDFLAGS = -module -version-info 6:0:0

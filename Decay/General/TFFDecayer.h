@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  inline TFFDecayer() { addToSearchList(2); }
+  TFFDecayer() { addToSearchList(2); }
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

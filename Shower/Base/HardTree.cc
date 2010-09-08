@@ -36,15 +36,27 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   }
   // calculate the evolution scale and phi
   if(!_children.empty()) {
-    double z = _children[0]->_z;
-    Energy pt = _children[0]->_pt;
     IdList ids(3);
     ids[0]=_particle->id();
     ids[1]=_children[0]->_particle->id();
     ids[2]=_children[1]->_particle->id();
+    double z;
+    Energy pt;
+    Lorentz5Momentum vect;
+    if( !_incoming ||
+	( _incoming && !_children[1]->_incoming ) ) { 
+      z  = _children[0]->_z ;
+      pt = _children[0]->_pt;
+      vect=_children[0]->_qt;
+    }
+    else {
+      z  = _children[1]->_z ;
+      pt = _children[1]->_pt;
+      swap(ids[1],ids[2]);
+      vect=_children[1]->_qt;
+    }
     _scale=_sudakov->calculateScale(z,pt,ids,_incoming ? 1 : 0);
     // get the pt vector
-    Lorentz5Momentum vect=_children[0]->_qt;
     Boost beta_bb = -(_p+ _n).boostVector();
     Lorentz5Momentum p_bb = _p;
     vect.boost(beta_bb);
@@ -61,8 +73,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
       vect.setZ(vect.z());
     }
     _phi= atan2(vect.y(),vect.x());
-    if(_phi<0.)                 _phi+=Constants::twopi;
-    if(_children[1]->_incoming) _phi+=Constants::pi;
+    if(_phi<0.) _phi+=Constants::twopi;
   }
 }
 

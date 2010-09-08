@@ -237,6 +237,10 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   // previous scale
   Energy2 told = t;
   // overestimated limits on z
+  if(tmax<masssquared_[0]) {
+    t=-1.0*GeV2;
+    return false;
+  }
   pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
 				       1.-masses_[2]/sqrt(tmax-masssquared_[0])
 				       +0.5*masssquared_[2]/(tmax-masssquared_[0]));

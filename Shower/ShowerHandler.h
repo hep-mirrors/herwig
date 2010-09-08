@@ -24,6 +24,11 @@
 
 namespace Herwig {
 
+/**
+ *  Typedef for the ShowerTree for the decays
+ */
+typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
+
 using namespace ThePEG;
 
 /** \ingroup Shower
@@ -349,12 +354,6 @@ private:
    */
   tPPair incoming_;
 
-
-  /**
-   *  Typedef for the ShowerTree for the decays
-   */
-  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
-
   /**
    *  The ShowerTree for the decays
    */
@@ -412,6 +411,15 @@ public:
   static const ShowerHandler * currentHandler() {
     assert(currentHandler_);
     return currentHandler_;
+  }
+
+protected:
+
+  /**
+   *  Set the current handler
+   */
+  void setCurrentHandler() {
+    currentHandler_ = this;
   }
 
 };

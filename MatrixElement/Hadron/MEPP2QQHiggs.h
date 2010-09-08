@@ -22,7 +22,7 @@ using namespace ThePEG;
 
 /**
  * The MEPP2QQHiggs class implements the matrix elements for
- * \f$gg\to Q \bar Q h^0$ and \f$q\bar q\to Q \bar Q h^0\f$.
+ * \f$gg\to Q \bar Q h^0\f$ and \f$q\bar q\to Q \bar Q h^0\f$.
  *
  * @see \ref MEPP2QQHiggsInterfaces "The interfaces"
  * defined for MEPP2QQHiggs.

@@ -152,6 +152,8 @@ protected:
    * @param f2  Spinors for second incoming fermion
    * @param a1  Spinors for first  outgoing fermion
    * @param a2  Spinors for second outgoing fermion
+   * @param swap1 Whether or not to swap the order for the first fermion line
+   * @param swap2 Whether or not to swap the order for the second fermion line
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double helicityME(vector<SpinorWaveFunction> & f1 ,

@@ -23,8 +23,7 @@ using namespace Herwig;
 
 SSWHHVertex::SSWHHVertex() : 
   theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
-  theGBlast(0), theHlast(0), theCouplast(0.), theq2last(ZERO), 
-  theElast(0.) {
+  theq2last(ZERO), theElast(0.) {
   addToList(22,37,-37);
   addToList(23,36,25);
   addToList(23,36,35);
@@ -58,7 +57,6 @@ void SSWHHVertex::doinit() {
   double cosb = sqrt( 1. - sqr(sinb) );
   thesbma = sinb*cosa - sina*cosb;
   thecbma = cosa*cosb + sina*sinb;
-
   orderInGs(0);
   orderInGem(1);
 }
@@ -83,76 +81,46 @@ void SSWHHVertex::Init() {
 
 void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
 			      tcPDPtr particle2, tcPDPtr particle3) {
-  long id1(abs(particle1->id())), id2(abs(particle2->id())),
-    id3(abs(particle3->id())), gboson(0), h1ID(0), h2ID(0);
-  if( id1 == ParticleID::Z0 || id1 == ParticleID::gamma || 
-      id1 == ParticleID::Wplus ) {
-    gboson = id1;
-    h1ID = id2;
-    h2ID = id3;
-  }
-  else if( id2 == ParticleID::Z0 || id2 == ParticleID::gamma || 
-	   id2 == ParticleID::Wplus ) {
-    gboson = id2;
-    h1ID = id1;
-    h2ID = id3;
-  }
-  else if( id3 == ParticleID::Z0 || id3 == ParticleID::gamma || 
-	   id3 == ParticleID::Wplus ) {
-    gboson = id3;
-    h1ID = id1;
-    h2ID = id2;
-  }
-  else {
-    throw HelicityConsistencyError() 
-      << "SSWHHVertex::setCoupling - There is no gauge boson particle in "
-      << "this vertex. Particles: " << id1 << " " << id2 << " " << id3
-      << Exception::warning;
-    return;
-  }
-  long higgs(0);
-  if( gboson == ParticleID::Wplus )
-    higgs = (h1ID == ParticleID::Hplus) ? h2ID : h1ID;
-  else
-    higgs = (h1ID >= ParticleID::A0) ? h2ID : h1ID;
-
-  if( higgs != ParticleID::h0 && higgs != ParticleID::H0 &&
-      higgs != ParticleID::A0 && higgs != ParticleID::Hplus) {
-    throw HelicityConsistencyError() 
-      << "SSWHHVertex::setCoupling - There is no higgs in this "
-      << "this vertex. " << higgs << Exception::warning;
-    norm(0.0);
-    return;
-  }
-
-  if( gboson != theGBlast || higgs != theHlast ) {
-    theGBlast = gboson;
-    theHlast = higgs;
-    //photon
-    if( gboson == ParticleID::gamma )
-      theCouplast = 1.;
-    else if( gboson == ParticleID::Z0 ) {
-      if( higgs == ParticleID::Hplus ) 
-	theCouplast = theC2w/theS2w;
-      else if( higgs == ParticleID::h0 ) 
-	theCouplast = -Complex(0., 1.)*thecbma/theS2w;
-      else 
-	theCouplast = Complex(0., 1.)*thesbma/theS2w;
+  long gboson = particle1->id();
+  assert(     gboson  == ParticleID::Z0    ||
+	      gboson  == ParticleID::gamma || 
+	  abs(gboson) == ParticleID::Wplus );
+  long h1ID = particle2->id();
+  long h2ID = particle3->id();
+  Complex coup(0.);
+  if( gboson == ParticleID::Z0 ) {
+    if( abs(h1ID) == ParticleID::Hplus ) {
+      coup = theC2w/theS2w;
+      if(h1ID<0) coup *= -1.;
+    }
+    else if( h1ID == ParticleID::h0 ||  
+	     h2ID == ParticleID::h0 ) {
+      coup = Complex(0., 1.)*thecbma/theS2w;
     }
     else {
-      if( higgs == ParticleID::h0 ) {
-	theCouplast = -0.5*thecbma/theSw;
-      }
-      else if( higgs == ParticleID::H0) 
-	theCouplast = 0.5*thesbma/theSw;
-      else 
-	theCouplast = Complex(0., 0.5)/theSw;
+      coup =-Complex(0., 1.)*thesbma/theS2w;
     }
+    if(h2ID==ParticleID::A0) coup *=-1.;
+  }
+  else if( gboson == ParticleID::gamma ) {
+    coup = 1.;
+    if(h1ID<0) coup *= -1.;
+  }
+  else {
+    long higgs = abs(h1ID) == ParticleID::Hplus ? h2ID : h1ID;
+    if( higgs == ParticleID::h0 ) {
+      coup =  0.5*thecbma/theSw;
+    }
+    else if( higgs == ParticleID::H0) 
+      coup = -0.5*thesbma/theSw;
+    else 
+      coup = Complex(0., 0.5)/theSw;
+    if(abs(h2ID) == ParticleID::Hplus ) coup *= -1.;
+    if(gboson<0&&higgs!=ParticleID::A0) coup *= -1.;
   }
   if( q2 != theq2last || theElast==0.) {
     theq2last = q2;
     theElast = electroMagneticCoupling(q2);
   }
-
-  norm(theElast*theCouplast);
+  norm(theElast*coup);
 }

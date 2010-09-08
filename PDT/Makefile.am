@@ -21,10 +21,8 @@ TwoOffShellCalculator.h \
 WidthCalculatorBase.cc WidthCalculatorBase.fh \
 WidthCalculatorBase.h \
 StandardMatchers.h StandardMatchers.cc \
-SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.fh \
-SMHiggsWidthGenerator.h \
-SMHiggsMassGenerator.cc SMHiggsMassGenerator.fh \
-SMHiggsMassGenerator.h 
+SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.h \
+SMHiggsMassGenerator.cc SMHiggsMassGenerator.h 
 
 
 libHwBaryonWidth_la_SOURCES = \

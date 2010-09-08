@@ -88,7 +88,7 @@ void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     _gblast = boson;
     _id1last = ichar1;
     _id2last = ichar2;
-    if( boson == ParticleID::Z0 ){
+    if( boson == ParticleID::Z0 ) {
       unsigned int ic1(0), ic2(0);
       if(abs(ichar1) == 1000037) ic1 = 1;
       if(abs(ichar2) == 1000037) ic2 = 1;
@@ -102,15 +102,21 @@ void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       }
       _leftlast /= sqrt(_sw2)*_cw;
       _rightlast /= sqrt(_sw2)*_cw;
-      if(ichar1>0) {
-	Complex temp = _leftlast;
-	_leftlast  = -_rightlast;
-	_rightlast = -temp;
-      }
     }
     else {
-      _leftlast  = -1.;
-      _rightlast = -1.;
+      if(abs(ichar1) == abs(ichar2)) {
+	_leftlast  = -1.;
+	_rightlast = -1.;
+      }
+      else {
+	_leftlast  = 0.;
+	_rightlast = 0.;
+      }
+    }
+    if(ichar1>0) {
+      Complex temp = _leftlast;
+      _leftlast  = -_rightlast;
+      _rightlast = -temp;
     }
   }
   left(_leftlast);

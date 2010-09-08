@@ -185,6 +185,7 @@ colourFlow(const tcPDVector & extpart) const {
   // unknown colour flow
   else 
     assert(false);
+  return GeneralHardME::UNDEFINED;
 }
 
 

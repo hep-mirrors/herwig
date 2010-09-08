@@ -505,7 +505,6 @@ def compareHiggsJet(directory1,directory2,wiki,plotLocation) :
         out  = h1.writeDifference(h2,fo,True,"RED")
         totalDegree += out[0]
         totalChi += out[1]
-    print 'in higgs jet',totalDegree,totalChi
     fo.close()
     f1.close()
     f2.close()

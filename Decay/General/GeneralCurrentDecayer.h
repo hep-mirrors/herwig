@@ -35,7 +35,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralCurrentDecayer() : 
+  GeneralCurrentDecayer() : 
     _maxmass(5.*GeV) {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -120,18 +120,18 @@ protected:
    *  Access to the map between the number of the mode and the modes in
    *  the current
    */
-  inline vector<unsigned int> modeMap() const {  return _modemap; }
+  vector<unsigned int> modeMap() const {  return _modemap; }
 
   /**
    *  Access to the weak current
    */
-  inline WeakDecayCurrentPtr weakCurrent() const { return _current; }
+  WeakDecayCurrentPtr weakCurrent() const { return _current; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr getVertex() const { return _theVertex; }
 
 private:
 

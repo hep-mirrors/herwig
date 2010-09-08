@@ -176,10 +176,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double threeBodyMatrixElement(const int iopt, const Energy2 q2,
-				       const Energy2 s3, const Energy2 s2, 
-				       const Energy2 s1, const Energy  m1,
-				       const Energy  m2, const Energy  m3) const;
+  double threeBodyMatrixElement(const int iopt, const Energy2 q2,
+				const Energy2 s3, const Energy2 s2, 
+				const Energy2 s1, const Energy  m1,
+				const Energy  m2, const Energy  m3) const;
 
 protected:
 
@@ -249,12 +249,12 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate();
+  virtual void doupdate();
   //@}
 
 private:

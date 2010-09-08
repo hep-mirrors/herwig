@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace Herwig;
 using namespace ThePEG;  
@@ -104,6 +105,11 @@ void SMHGGVertex::Init() {
      "RunningMasses",
      "running quark masses are taken in the loop",
      2);
+  static SwitchOption interfaceInfiniteTopMass
+    (interfaceMassOption,
+     "InfiniteTopMass",
+     "the loop consists of an infinitely massive top quark",
+     3);
 
   static Switch<SMHGGVertex,unsigned int> interfaceScheme
     ("CoefficientScheme",
@@ -131,6 +137,19 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     Qmaxloop=_minloop;
     Qminloop=_maxloop;
   }
+  if(massopt==3) {
+    if(q2 != _q2last) {
+      double g   = weakCoupling(q2);
+      double gs2 = sqr(strongCoupling(q2));
+      _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);
+      _q2last = q2;
+    }
+    norm(_couplast);
+    Complex loop(2./3.);
+    a00( loop);    a11(0.0);   a12(0.0);
+    a21(-loop);    a22(0.0);   aEp(0.0);
+    return;
+  }
   switch (_CoefRepresentation) {
   case 1: {
     if(q2 != _q2last||_couplast==0.) {
@@ -156,6 +175,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   case 2: {
     if (q2 != _q2last) {
+      clearcache();
       _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
       _q2last = q2;
     }

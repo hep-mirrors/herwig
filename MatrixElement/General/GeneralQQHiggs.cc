@@ -304,7 +304,7 @@ bool GeneralQQHiggs::generateKinematics(const double * r) {
 CrossSection GeneralQQHiggs::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
-  InvEnergy2 bwfact;
+  InvEnergy2 bwfact(ZERO);
   Energy moff = meMomenta()[4].mass();
   if(shapeOpt_==1) {
     bwfact = mePartonData()[4]->generateWidth(moff)*moff/pi/

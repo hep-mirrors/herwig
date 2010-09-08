@@ -15,7 +15,6 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -162,11 +161,6 @@ private:
    * maximum weights for the different decay modes
    */
   vector<double> _maxwgt;
-
-  /**
-   *  Pointer to the width generator for the Higgs
-   */
-  SMHiggsWidthGeneratorPtr _hwidth;
 
   /**
    *  Spin density matrix

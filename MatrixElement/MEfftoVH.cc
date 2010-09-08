@@ -408,7 +408,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
 CrossSection MEfftoVH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
-  InvEnergy2 bwfact;
+  InvEnergy2 bwfact(ZERO);
   Energy moff =meMomenta()[2].mass();
   if(_shapeopt==1) {
     tcPDPtr h0 = mePartonData()[2]->iSpin()==PDT::Spin0 ?

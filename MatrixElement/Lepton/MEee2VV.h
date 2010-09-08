@@ -129,7 +129,6 @@ protected:
    * @param a1  Spinors for the incoming antifermion
    * @param v1  Polarization vector for the 1st outgoing boson
    * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WWME(vector<SpinorWaveFunction>    & f1,
 	      vector<SpinorBarWaveFunction> & a1,
@@ -142,7 +141,6 @@ protected:
    * @param a1  Spinors for the incoming antifermion
    * @param v1  Polarization vector for the 1st outgoing boson
    * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double ZZME(vector<SpinorWaveFunction>    & f1,
 	      vector<SpinorBarWaveFunction> & a1,

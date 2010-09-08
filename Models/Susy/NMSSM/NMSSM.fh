@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NMSSM class.
+//
+#ifndef HERWIG_NMSSM_FH
+#define HERWIG_NMSSM_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class NMSSM;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::NMSSM,NMSSMPtr);
+
+}
+
+#endif

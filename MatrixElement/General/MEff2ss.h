@@ -16,11 +16,9 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -168,6 +166,8 @@ private:
    * @param sca1 A ScalarWaveFunction for an outgoing scalar
    * @param sca2 A ScalarWaveFunction for the other outgoing scalar
    * @param me2 The spin averaged matrix element
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement ff2ssME(const SpinorVector & sp, 
 				  const SpinorBarVector & sbar, 
@@ -182,6 +182,12 @@ private:
    * fermion
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > fermion_;
+
+  /**
+   * Storage for dynamically cast vertices for a diagram with intermediate
+   * vector
+   */
+  vector<pair<AbstractFFSVertexPtr, AbstractSSSVertexPtr> > scalar_;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate

@@ -41,6 +41,7 @@ public:
    *  in classes inheriting from this one to produce the radiation.
    * @param p The decaying particle
    * @param children The decay products
+   * @param decayer The decayer for with decay mode
    * @return The decay products with additional radiation
    */
   virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children,

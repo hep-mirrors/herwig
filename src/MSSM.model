@@ -207,39 +207,47 @@ create Herwig::SSWHHVertex MSSM_WHH
 create Herwig::SSHHHVertex MSSM_HHH
 create Herwig::SSHGGVertex MSSM_HGG
 create Herwig::SSHPPVertex MSSM_HPP
+create Herwig::SSWWHHVertex MSSM_WWHH
+create Herwig::SSNCTVertex MSSM_NCT
+create Herwig::SSGVNHVertex MSSM_GVNH
+create Herwig::SSGVFSVertex MSSM_GVFS
+create Herwig::SSGVNVVertex MSSM_GVNV
 cd /Herwig/NewPhysics/MSSM
 # SM vertices
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
-set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 # MSSM feynman rules
-set Model:Vertex/WSFSF /Herwig/Vertices/MSSM/MSSM_WSS
-set Model:Vertex/NFSF /Herwig/Vertices/MSSM/MSSM_NFS
-set Model:Vertex/GFSF /Herwig/Vertices/MSSM/MSSM_GFS
-set Model:Vertex/HSFSF /Herwig/Vertices/MSSM/MSSM_HSS
-set Model:Vertex/CFSF /Herwig/Vertices/MSSM/MSSM_CFS
-set Model:Vertex/GSFSF /Herwig/Vertices/MSSM/MSSM_GSS
+set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
+set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
+set Model:Vertex/GFSF   /Herwig/Vertices/MSSM/MSSM_GFS
+set Model:Vertex/HSFSF  /Herwig/Vertices/MSSM/MSSM_HSS
+set Model:Vertex/CFSF   /Herwig/Vertices/MSSM/MSSM_CFS
+set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
-set Model:Vertex/GSGSG /Herwig/Vertices/MSSM/MSSM_GGOGO
-set Model:Vertex/GNG /Herwig/Vertices/MSSM/MSSM_GNG
-set Model:Vertex/NNZ /Herwig/Vertices/MSSM/MSSM_NNZ
-set Model:Vertex/NNP /Herwig/Vertices/MSSM/MSSM_NNP
-set Model:Vertex/CCZ /Herwig/Vertices/MSSM/MSSM_CCZ
-set Model:Vertex/CNW /Herwig/Vertices/MSSM/MSSM_CNW
-set Model:Vertex/SSFFH /Herwig/Vertices/MSSM/MSSM_FFH
-set Model:Vertex/GOGOH /Herwig/Vertices/MSSM/MSSM_GOGOH
-set Model:Vertex/SSWWH /Herwig/Vertices/MSSM/MSSM_WWH
-set Model:Vertex/SSWHH /Herwig/Vertices/MSSM/MSSM_WHH
-set Model:Vertex/HHH /Herwig/Vertices/MSSM/MSSM_HHH
-set Model:Vertex/HGG /Herwig/Vertices/MSSM/MSSM_HGG
-set Model:Vertex/HPP /Herwig/Vertices/MSSM/MSSM_HPP
+set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
+set Model:Vertex/GNG    /Herwig/Vertices/MSSM/MSSM_GNG
+set Model:Vertex/NNZ    /Herwig/Vertices/MSSM/MSSM_NNZ
+set Model:Vertex/NNP    /Herwig/Vertices/MSSM/MSSM_NNP
+set Model:Vertex/CCZ    /Herwig/Vertices/MSSM/MSSM_CCZ
+set Model:Vertex/CNW    /Herwig/Vertices/MSSM/MSSM_CNW
+set Model:Vertex/FFH    /Herwig/Vertices/MSSM/MSSM_FFH
+set Model:Vertex/GOGOH  /Herwig/Vertices/MSSM/MSSM_GOGOH
+set Model:Vertex/WWH    /Herwig/Vertices/MSSM/MSSM_WWH
+set Model:Vertex/SSWHH  /Herwig/Vertices/MSSM/MSSM_WHH
+set Model:Vertex/HHH    /Herwig/Vertices/MSSM/MSSM_HHH
+set Model:Vertex/HGG    /Herwig/Vertices/MSSM/MSSM_HGG
+set Model:Vertex/HPP    /Herwig/Vertices/MSSM/MSSM_HPP
+set Model:Vertex/WWHH   /Herwig/Vertices/MSSM/MSSM_WWHH
+set Model:Vertex/NCT    /Herwig/Vertices/MSSM/MSSM_NCT
+set Model:Vertex/GVNH   /Herwig/Vertices/MSSM/MSSM_GVNH
+set Model:Vertex/GVFS   /Herwig/Vertices/MSSM/MSSM_GVFS
+set Model:Vertex/GVNV   /Herwig/Vertices/MSSM/MSSM_GVNV
 ###################################################
 #
 #  Set up spin correlation Decayers
@@ -249,6 +257,24 @@ cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes No
 set ThreeBodyDC:CreateDecayModes No
+# exclude gravitino and effective vertices from three body decays
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
+# and hard processes
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
@@ -289,12 +315,16 @@ insert NewModel:DecayParticles 31 /Herwig/Particles/H+
 ###################################################
 cd /Herwig/Shower
 
-create Herwig::PhitoPhiGSplitFn PhitoPhiGSplitFn
-create Herwig::GluinotoGluinoGSplitFn GluinotoGluinoGSplitFn
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
+set PhitoPhiGSplitFn:InteractionType QCD
+set PhitoPhiGSplitFn:ColourStructure TripletTripletOctet
+
+create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
+set GluinotoGluinoGSplitFn:InteractionType QCD
+set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
 
 cp SudakovCommon PhitoPhiGSudakov
 set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
-set PhitoPhiGSudakov:PDFmax 35.0
 
 cp SudakovCommon GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn

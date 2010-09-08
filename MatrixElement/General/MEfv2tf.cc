@@ -318,4 +318,72 @@ void MEfv2tf::debug(double me2) const {
 }
 
 void MEfv2tf::constructVertex(tSubProPtr sub) {
+  ParticleVector ext = hardParticles(sub);
+  VBVector v1;
+  vector<TensorWaveFunction> t3;
+  bool mc  = !(ext[2]->momentum().mass() > ZERO);
+  SpinorVector sp;  
+  SpinorBarVector sbar;
+  VectorWaveFunction(v1, ext[1], incoming, false, true);
+  TensorWaveFunction(t3, ext[2], outgoing, true, mc);
+  double dummy(0.);
+  //Need to use rescale momenta to calculate matrix element
+  setRescaledMomenta(ext);
+  // wavefunctions with rescaled momenta 
+  VectorWaveFunction vec(rescaledMomenta()[1],
+			 ext[1]->dataPtr(), incoming);
+  TensorWaveFunction ten(rescaledMomenta()[2],
+			 ext[2]->dataPtr(), outgoing);
+  if( ext[0]->id() > 0 ) {
+    SpinorWaveFunction   (sp  , ext[0], incoming, false);
+    SpinorBarWaveFunction(sbar, ext[3], outgoing, true);
+    SpinorWaveFunction spr   (rescaledMomenta()[0],
+			      ext[0]->dataPtr(), incoming);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[3],
+			      ext[3]->dataPtr(), outgoing);
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      spr.reset(ihel);
+      sp[ihel] = spr;
+      vec.reset(2*ihel);
+      v1[ihel] = vec;
+      ten.reset(4*ihel);
+      t3[4*ihel] = ten;
+      sbr.reset(ihel);
+      sbar[ihel] = sbr;
+    }
+    if( !mc ) {
+      for(unsigned int ihel=1;ihel<4;++ihel) {
+	ten.reset(ihel);
+	t3[ihel] = ten;
+      }
+    }
+    ProductionMatrixElement pme = fv2tfHeME(sp, v1, t3, sbar, dummy,false);
+    createVertex(pme,ext);
+  }
+  else {
+    SpinorBarWaveFunction(sbar, ext[0], incoming, false);
+    SpinorWaveFunction(sp, ext[3], outgoing, true);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[0],
+			      ext[0]->dataPtr(), incoming);
+    SpinorWaveFunction spr   (rescaledMomenta()[3],
+			      ext[3]->dataPtr(), outgoing);
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      sbr.reset(ihel);
+      sbar[ihel] = sbr;
+      vec.reset(2*ihel);
+      v1[ihel] = vec;
+      ten.reset(4*ihel);
+      t3[4*ihel] = ten;
+      spr.reset(ihel);
+      sp[ihel] = spr;
+    }
+    if( !mc ) {
+      for(unsigned int ihel=1;ihel<4;++ihel) {
+	ten.reset(ihel);
+	t3[ihel] = ten;
+      }
+    }
+    ProductionMatrixElement pme = fbv2tfbHeME(sbar, v1, t3, sp, dummy,false);
+    createVertex(pme,ext);
+  }
 }

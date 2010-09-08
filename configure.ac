@@ -101,6 +101,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/RSModel/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
+		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
 		Models/Transplanckian/Makefile
 		Models/ADD/Makefile
@@ -117,6 +118,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
                 Doc/refman.conf
+                Doc/refman.h
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile

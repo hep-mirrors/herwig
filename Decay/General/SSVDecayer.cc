@@ -110,14 +110,13 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
   if(_perturbativeVertex) {
     double mu1sq(sqr(outa.second/inpart.second)),
       mu2sq(sqr(outb.second/inpart.second));
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin() == PDT::Spin0) {
-      _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
-				       inpart.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,in);
     }
     else {
       swap(mu1sq,mu2sq);
-      _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
-				       inpart.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
     }
     double me2(0.);
     if(mu2sq == 0.) 
@@ -136,3 +135,4 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

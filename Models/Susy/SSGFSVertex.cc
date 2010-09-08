@@ -30,11 +30,11 @@ SSGFSVertex::SSGFSVertex() :_q2last(0.*GeV2),_couplast(0.),
 }
 
 void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _stop << _sbottom;
+  os << _stop << _sbottom << gluinoPhase_;
 }
 
 void SSGFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _stop >> _sbottom;
+  is >> _stop >> _sbottom >> gluinoPhase_;
 }
 
 ClassDescription<SSGFSVertex> SSGFSVertex::initSSGFSVertex;
@@ -98,21 +98,21 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     _id2last = isc;
     unsigned int eig = (isc/1000000) - 1;
     if(iferm == 6) {
-      _leftlast = -(*_stop)(eig,1);
-      _rightlast = (*_stop)(eig,0);
+      _leftlast  = -(*_stop)(eig,1)*conj(gluinoPhase_);
+      _rightlast =  (*_stop)(eig,0)*     gluinoPhase_ ;
     }
     else if(iferm == 5){
-      _leftlast = -(*_sbottom)(eig,1);
-      _rightlast = (*_sbottom)(eig,0);
+      _leftlast  = -(*_sbottom)(eig,1)*conj(gluinoPhase_);
+      _rightlast =  (*_sbottom)(eig,0)*     gluinoPhase_ ;
     }
     else {
       if(eig == 0) { 
-	_leftlast = 0.;
-	_rightlast = 1.;
+	_leftlast  =  0.;
+	_rightlast =  gluinoPhase_;
       }
       else {
-	_leftlast = -1.;
-	_rightlast = 0.;
+	_leftlast  = -conj(gluinoPhase_);
+	_rightlast =  0.;
       }
     }
   }
@@ -134,7 +134,7 @@ void SSGFSVertex::doinit() {
 
   _stop = model->stopMix();
   _sbottom = model->sbottomMix();
-
+  gluinoPhase_ = model->gluinoPhase();
   if(!_stop || !_sbottom)
     throw InitException() << "SSGFSVertex::doinit() - "
 			  << "There is a null mixing matrix pointer. "

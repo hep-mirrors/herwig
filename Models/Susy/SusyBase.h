@@ -17,6 +17,8 @@
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "SusyBase.fh"
 
 namespace Herwig {
@@ -56,48 +58,38 @@ public:
   /**
    * Value of \f$\tan\beta\f$.
    */
-  double tanBeta() const { return _tanbeta; }
+  double tanBeta() const { return tanBeta_; }
 
   /**
    * Value of \f$\mu\f$ parameter.
    */
-  Energy muParameter() const { return _mu; }
-
-  /**
-   * Value of soft breaking mass for the bino
-   */
-  Energy softMOne() const { return theMone; }
-
-  /**
-   * Value of soft breaking mass for the wino
-   */
-  Energy softMTwo() const { return theMtwo; }
-
-  /**
-   * Value of soft breaking mass for the gluino
-   */
-  Energy softMThree() const { return theMthree; }
+  Energy muParameter() const { return mu_; }
 
   /**
    * The neutralino mixing matrix
    */
   const MixingMatrixPtr & neutralinoMix() const { 
-    return theNMix;
+    return NMix_;
   }
 
   /**
    * The U-type chargino mixing matrix
    */
   const MixingMatrixPtr & charginoUMix() const {
-    return theUMix;
+    return UMix_;
   }
 
   /**
    * The V-type chargino mixing matrix
    */
   const MixingMatrixPtr & charginoVMix() const {
-    return theVMix;
+    return VMix_;
   }
+
+  /**
+   *  The phase for gluino vertices
+   */
+  const Complex & gluinoPhase() const {return gluinoPhase_;}
   //@}
 
 public:
@@ -126,50 +118,117 @@ public:
    */
   static void Init();
 
-  /**@name Functions to access specific vertices.*/
+public:
+
+  /**
+   *  Soft breaking parameters
+   */
   //@{
   /**
-   * Pointer to the MSSM fermion-antifermion-higgs vertex 
+   * The bilinear breaking mass term for the bino
    */
-  virtual tAbstractFFSVertexPtr vertexFFH() const {
-    return theSSFFHVertex;
-  }
+  const Energy & M1() const {return M1_;}
   
   /**
-   * Pointer to the MSSM double gauge boson-higgs vertex 
+   * The bilinear breaking mass term for the wino
    */
-  virtual tAbstractVVSVertexPtr vertexWWH() const {
-    return theSSWWHVertex;
-  }
+  const Energy & M2() const {return M2_;}
 
   /**
-   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
+   * The bilinear breaking mass term for the gluinos
    */
-  virtual tAbstractVSSVertexPtr vertexWHH() const {
-    return theWHHVertex;
-  }
+  const Energy & M3() const {return M3_;}
 
   /**
-   * Pointer to the higgs coupling to a pair of gauginos
+   *  The soft breaking mass squared for \f$H_1\f$
    */
-  virtual tAbstractFFSVertexPtr vertexGOGOH() const {
-    return theGOGOHVertex;
-  }
+  const Energy2 & Mh12() const {return mH12_;}
 
   /**
-   * Pointer to the triple higgs vertex
+   *  The soft breaking mass squared for \f$H_2\f$
    */
-  virtual tAbstractSSSVertexPtr vertexHHH() const {
-    return theHHHVertex;
-  }
+  const Energy2 & Mh22() const {return mH22_;}
 
   /**
-   * Pointer to higgs-sfermion-sfermion vertex 
+   *  Soft breaking mass for the first generation lepton doublet
    */
-  virtual tAbstractSSSVertexPtr vertexHSS() const {
-    return theHSFSFVertex;
-  }
+  const Energy & MeL() const {return meL_;}
+
+  /**
+   *  Soft breaking mass for the second generation lepton doublet
+   */
+  const Energy & MmuL() const {return mmuL_;}
+
+  /**
+   *  Soft breaking mass for the third generation lepton doublet
+   */
+  const Energy & MtauL() const {return mtauL_;} 
+
+  /**
+   *  Soft breaking mass for the first generation lepton singlet
+   */
+  const Energy & MeR() const {return meR_;}
+
+  /**
+   *  Soft breaking mass for the second generation lepton singlet
+   */
+  const Energy & MmuR() const {return mmuR_;}
+
+  /**
+   *  Soft breaking mass for the third generation lepton singlet
+   */
+  const Energy & MtauR() const {return mtauR_;} 
+
+  /**
+   *  Soft breaking mass for the first generation quark doublet
+   */
+  const Energy & Mq1L() const {return mq1L_;}
+
+  /**
+   *  Soft breaking mass for the second generation quark doublet
+   */
+  const Energy & Mq2L() const {return mq2L_;}
+
+  /**
+   *  Soft breaking mass for the third generation quark doublet
+   */
+  const Energy & Mq3L() const {return mq3L_;}
+
+  /**
+   *  Soft breaking mass for the down singlet
+   */ 
+  const Energy & MdR() const {return mdR_;}
+
+  /**
+   *  Soft breaking mass for the up singlet
+   */ 
+  const Energy & MuR() const {return muR_;}
+
+  /**
+   *  Soft breaking mass for the strange singlet
+   */ 
+  const Energy & MsR() const {return msR_;}
+
+  /**
+   *  Soft breaking mass for the charm singlet
+   */ 
+  const Energy & McR() const {return mcR_;}
+
+  /**
+   *  Soft breaking mass for the bottom singlet
+   */ 
+  const Energy & MbR() const {return mbR_;}
+
+  /**
+   *  Soft breaking mass for the top singlet
+   */ 
+  const Energy & MtR() const {return mtR_;}
   //@}
+
+  /**
+   *  Planck mass
+   */
+  const Energy & MPlanck() const {return MPlanck_;}
 
 protected:
 
@@ -188,7 +247,7 @@ private:
    * @param ifs input stream containg data
    * @param name The name of the block
    */
-  void readBlock(ifstream & ifs,string name);
+  void readBlock(ifstream & ifs,string name,string line);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -257,31 +316,31 @@ protected:
    *  Parameter blocks
    */
   const map<string,ParamMap> & parameters() const {
-    return _parameters;
+    return parameters_;
   }
 
   /**
    *  Mixing blocks
    */
   const map<string,pair<MatrixSize,MixingVector> > & mixings() const {
-    return _mixings;
+    return mixings_;
   }
   //@}
 
   /**
    * Reset neutralino mixing matrix
    */
-  void neutralinoMix(MixingMatrixPtr nm) { theNMix = nm; }
+  void neutralinoMix(MixingMatrixPtr nm) { NMix_ = nm; }
 
   /**
    * Reset the U-type chargino mixing matrix
    */
-  void charginoUMix(MixingMatrixPtr um) { theUMix = um; }
+  void charginoUMix(MixingMatrixPtr um) { UMix_ = um; }
 
   /**
    *  Reset the V-type chargino mixing matrix
    */
-  void charginoVMix(MixingMatrixPtr vm) { theVMix = vm; }
+  void charginoVMix(MixingMatrixPtr vm) { VMix_ = vm; }
   
 protected:
 
@@ -331,18 +390,28 @@ private:
   /**
    *  Whether or not the SLHA fiel has been read
    */
-  bool _readFile;
+  bool readFile_;
 
   /**
    * Whether or not to replace the top decay modes with those from
    * the SLHA files
    */
-  bool _topModesFromFile;
+  bool topModesFromFile_;
 
   /**
    *  Tolerance for branching ratios
    */
-  double _tolerance;
+  double tolerance_;
+
+  /**
+   *  Planck mass needed in GMSB models
+   */
+  Energy MPlanck_;
+
+  /**
+   *  Whether or not to include gravitino interactions
+   */
+  bool gravitino_;
 
   /*
    * Storage of the parameters.
@@ -351,38 +420,133 @@ private:
   /**
    *  Parameter blocks
    */
-  map<string,ParamMap> _parameters;
+  map<string,ParamMap> parameters_;
 
   /**
    *  Mixing blocks
    */
-  map<string,pair<MatrixSize, MixingVector> > _mixings;
+  map<string,pair<MatrixSize, MixingVector> > mixings_;
 
   /**
    *  \f$\tan\beta\f$
    */
-  double _tanbeta;
+  double tanBeta_;
 
   /**
    *  \f$\mu\f$
    */
-  Energy _mu;
+  Energy mu_;
+  //@}
 
+  /**
+   *  Soft breaking parameters
+   */
+  //@{
   /**
    * The bilinear breaking mass term for the bino
    */
-  Energy theMone;
+  Energy M1_;
   
   /**
    * The bilinear breaking mass term for the wino
    */
-  Energy theMtwo;
+  Energy M2_;
 
   /**
    * The bilinear breaking mass term for the gluinos
    */
-  Energy theMthree;  
+  Energy M3_;
+
+  /**
+   *  The soft breaking mass squared for \f$H_1\f$
+   */
+  Energy2 mH12_;
+
+  /**
+   *  The soft breaking mass squared for \f$H_2\f$
+   */
+  Energy2 mH22_;
+
+  /**
+   *  Soft breaking mass for the first generation lepton doublet
+   */
+  Energy meL_;
+
+  /**
+   *  Soft breaking mass for the second generation lepton doublet
+   */
+  Energy mmuL_;
+
+  /**
+   *  Soft breaking mass for the third generation lepton doublet
+   */
+  Energy mtauL_; 
+
+  /**
+   *  Soft breaking mass for the first generation lepton singlet
+   */
+  Energy meR_;
+
+  /**
+   *  Soft breaking mass for the second generation lepton singlet
+   */
+  Energy mmuR_;
+
+  /**
+   *  Soft breaking mass for the third generation lepton singlet
+   */
+  Energy mtauR_; 
+
+  /**
+   *  Soft breaking mass for the first generation quark doublet
+   */
+  Energy mq1L_;
+
+  /**
+   *  Soft breaking mass for the second generation quark doublet
+   */
+  Energy mq2L_;
+
+  /**
+   *  Soft breaking mass for the third generation quark doublet
+   */
+  Energy mq3L_;
+
+  /**
+   *  Soft breaking mass for the down singlet
+   */ 
+  Energy mdR_;
+
+  /**
+   *  Soft breaking mass for the up singlet
+   */ 
+  Energy muR_;
+
+  /**
+   *  Soft breaking mass for the strange singlet
+   */ 
+  Energy msR_;
+
+  /**
+   *  Soft breaking mass for the charm singlet
+   */ 
+  Energy mcR_;
+
+  /**
+   *  Soft breaking mass for the bottom singlet
+   */ 
+  Energy mbR_;
+
+  /**
+   *  Soft breaking mass for the top singlet
+   */ 
+  Energy mtR_;
   //@}
+
+  /**
+   *  Phase for the gluino
+   */
+  Complex gluinoPhase_;
 
   /**
    *  Neutralino and Chargino mixing matrices
@@ -395,17 +559,17 @@ private:
   /**
    * The neutralino mixing matrix
    */
-  MixingMatrixPtr theNMix; 
+  MixingMatrixPtr NMix_; 
 
   /**
    * The \f$U\f$ mixing matrix for the charginos
    */
-  MixingMatrixPtr theUMix; 
+  MixingMatrixPtr UMix_; 
 
   /**
    * The \f$V\f$ mixing matrix for the charginos
    */
-  MixingMatrixPtr theVMix; 
+  MixingMatrixPtr VMix_; 
   //@}
 
   /**@name Vertex pointers. */
@@ -413,92 +577,97 @@ private:
   /**
    * Pointer to the gauge boson sfermion-sfermion vertex
    */
-  AbstractVSSVertexPtr theWSFSFVertex;
+  AbstractVSSVertexPtr WSFSFVertex_;
   
   /**
    * Pointer to the neutralino-fermion-sfermion vertex
    */
-  AbstractFFSVertexPtr theNFSFVertex;
+  AbstractFFSVertexPtr NFSFVertex_;
   
   /**
    * Pointer to the gluino-fermion-sfermion coupling
    */
-  AbstractFFSVertexPtr theGFSFVertex;
+  AbstractFFSVertexPtr GFSFVertex_;
 
   /**
    * Pointer to the Higgs-sfermion-sfermion vertex
    */
-  AbstractSSSVertexPtr theHSFSFVertex;
+  AbstractSSSVertexPtr HSFSFVertex_;
 
   /**
    * Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
    */
-  AbstractFFSVertexPtr theCFSFVertex;
+  AbstractFFSVertexPtr CFSFVertex_;
 
   /**
    * Pointer to the gluon-sfermion-sfermion vertex
    */
-  AbstractVSSVertexPtr theGSFSFVertex;
+  AbstractVSSVertexPtr GSFSFVertex_;
 
   /**
    * Pointer to the gluon-gluon-squark-squark vertex;
    */
-  AbstractVVSSVertexPtr theGGSQSQVertex;
+  AbstractVVSSVertexPtr GGSQSQVertex_;
 
   /**
    * Pointer to the gluon-gluino-gluino vertex
    */
-  AbstractFFVVertexPtr theGSGSGVertex; 
+  AbstractFFVVertexPtr GSGSGVertex_; 
 
   /**
    * Pointer to the gluino-neutralino-gluon vertex
    */
-  AbstractFFVVertexPtr theGNGVertex;
+  AbstractFFVVertexPtr GNGVertex_;
 
   /**
    * Pointer to the neutralino-neutralino-Z vertex
    */
-  AbstractFFVVertexPtr theNNZVertex;
+  AbstractFFVVertexPtr NNZVertex_;
 
   /**
    * Pointer to the neutralino-neutralino-photon vertex
    */
-  AbstractFFVVertexPtr theNNPVertex;
+  AbstractFFVVertexPtr NNPVertex_;
 
   /**
    * Pointer to the  vertex chargino-chargino-Z vertex
    */
-  AbstractFFVVertexPtr theCCZVertex;
+  AbstractFFVVertexPtr CCZVertex_;
   
   /**
    * Pointer to the  vertex chargino-neutralino-Z vertex
    */
-  AbstractFFVVertexPtr theCNWVertex;
-
-  /**
-   * Pointer to the vertex fermion-antifermion-higgs vertex
-   */
-  AbstractFFSVertexPtr theSSFFHVertex;
+  AbstractFFVVertexPtr CNWVertex_;
 
   /**
    * Pointer to the vertex gaugino-gaugino-higgs vertex
    */
-  AbstractFFSVertexPtr theGOGOHVertex;
-  
-  /**
-   * Pointer to the vertex for a pair of gauge bosons and higgs
-   */
-  AbstractVVSVertexPtr theSSWWHVertex;
+  AbstractFFSVertexPtr GOGOHVertex_;
   
   /**
    * Pointer to the vertex for a gauge boson and higgs
    */
-  AbstractVSSVertexPtr theWHHVertex;
+  AbstractVSSVertexPtr WHHVertex_;
 
   /**
-   * Pointer to triple higgs vertex
+   *  Pointer to the vertex for flavour changing stop decay
    */
-  AbstractSSSVertexPtr theHHHVertex;
+  AbstractFFSVertexPtr NCTVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-neutralino vector boson
+   */
+  AbstractRFVVertexPtr GVNVVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-neutralino Higgs boson
+   */
+  AbstractRFSVertexPtr GVNHVertex_;
+
+  /**
+   *  Pointer to the vertex for gravitino-fermion sfermion 
+   */
+  AbstractRFSVertexPtr GVFSVertex_;
   //@}
 };
 

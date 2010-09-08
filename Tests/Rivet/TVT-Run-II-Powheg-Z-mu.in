@@ -1,0 +1,41 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase-Powheg.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
+set PowhegMEqq2gZ2ff:Process Muon
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# D0 run II Z pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8671338
+# CDF Z+b jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_S6653332
+# CDF underlying event
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_NOTE_9351
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8349509
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7863608
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Run-II-Powheg-Z-mu LHCGenerator

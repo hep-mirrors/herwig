@@ -135,7 +135,6 @@ InvEnergy2 ScalarMassGenerator::BreitWignerWeight(Energy q, int shape) const {
   useMe();
   Energy2 q2    = sqr(q);
   Energy2 mass2 = sqr(nominalMass());
-  Energy2 mwidth= nominalMass()*nominalWidth();
   Energy2 gamma[2]={0.*MeV2,ZERO};
   if(shape==1) {
     for(unsigned int ix=0;ix<_coupling.size();++ix) {

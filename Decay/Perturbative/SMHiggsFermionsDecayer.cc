@@ -52,9 +52,6 @@ void SMHiggsFermionsDecayer::doinit() {
   _hvertex->init();
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);
-  if(higgs->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
-  }
   // set up the decay modes
   vector<double> wgt(0);
   unsigned int imode=0;
@@ -105,11 +102,11 @@ ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
 
 
 void SMHiggsFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _maxwgt << _hvertex << _hwidth;
+  os << _maxwgt << _hvertex;
 }
 
 void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _maxwgt >> _hvertex >> _hwidth;
+  is >> _maxwgt >> _hvertex;
 }
 
 ClassDescription<SMHiggsFermionsDecayer> SMHiggsFermionsDecayer::initSMHiggsFermionsDecayer;
@@ -169,13 +166,6 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
   int id = abs(decay[0]->id());
   double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
   if(id <=6) output*=3.;
-  // normalize if width generator
-  if(_hwidth) {
-    if(id<=6) 
-      output *= inpart.data().width()/_hwidth->partialWidth(inpart.mass(),id);
-    else if(id>=11&&id<=15&&(id-9)%2==0) 
-      output *= inpart.data().width()/_hwidth->partialWidth(inpart.mass(),(id+3)/2);
-  }
   // test of the partial width
   /*
   Ptr<Herwig::StandardModel>::transient_const_pointer 

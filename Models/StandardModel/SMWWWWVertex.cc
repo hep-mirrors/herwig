@@ -69,7 +69,6 @@ void SMWWWWVertex::Init() {
   
 }
 
-
 // couplings for the WWWW vertex
 void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 			       tcPDPtr c,tcPDPtr d) {
@@ -106,9 +105,7 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 	++iy;
       }
     }
-    if (iy!=3) throw HelicityConsistencyError() 
-      << "SMWWWWVertex::setCoupling Error setting order" 
-      << Exception::runerror;
+    assert(iy==3);
     // finally the W-
     for(int ix=0;iy<4&&ix<4;++ix) {
       if(id[ix]==-24) {
@@ -116,10 +113,7 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 	++iy;
       }
     }
-    if(iy!=4) 
-      throw HelicityConsistencyError() 
-	<< "SMWWWWVertex::setCoupling Error setting order" 
-	<< Exception::warning;
+    assert(iy==4);
   }
   else {
     int iy=0;
@@ -130,9 +124,7 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 	++iy;
       }
     }
-    if(iy!=2) throw HelicityConsistencyError() 
-      << "SMWWWWVertex::setCoupling Error setting order" 
-      << Exception::warning;
+    assert(iy==2);
     // finally the W-
     for(int ix=0;iy<4&&ix<4;++ix) {
       if(id[ix]==-24) {
@@ -140,9 +132,7 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 	++iy;
       }
     }
-    if(iy!=4) throw HelicityConsistencyError() 
-      << "SMWWWWVertex::setCoupling Error setting order" 
-      << Exception::warning;
+    assert(iy==4);
     setIntermediate(_gamma,_Z0,_sw2,_cw2);
   }
   setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);
@@ -170,7 +160,5 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   else if(ida==22&&idb==22) norm(_couplast);
   // gamma  Z WW coupling
   else if(ida==22&&idb==23) norm(_vfact[3]*_couplast);
-  else throw HelicityConsistencyError() 
-    << "SMWWWWVertex::setCoupling unknown particles" 
-    << Exception::runerror;
+  else assert(false);
 }
