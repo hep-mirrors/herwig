@@ -5,7 +5,7 @@ create ThePEG::NoRemnants NoRemnants
 create ThePEG::NoPDF NoPDF
 set NoPDF:RemnantHandler NoRemnants
 
-create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
+create ThePEG::UnResolvedRemnant LeptonRemnants UnResolvedRemnant.so
 
 create Herwig::HwRemDecayer RemnantDecayer HwShower.so
 
