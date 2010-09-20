@@ -796,7 +796,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     else {
       partons_[4] = gamma_;
       a = 4./3.*alphaQED_->overestimateValue()/Constants::twopi*
-	2.*ymax*preFactor_;
+	2.*ymax*preFactor_*sqr(double(mePartonData()[2]->iCharge())/3.);
     }
     // variables for the emission
     Energy pT[2];
@@ -895,7 +895,8 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	  // prefactors etc
 	  contrib[ix][iy] = 0.5*pT[ix]/J/preFactor_/lambda;
 	  // matrix element piece
-	  contrib[ix][iy] *= meRatio(partons_,realMomenta[ix][iy],ix,inter[iinter],false);
+	  contrib[ix][iy] *= meRatio(partons_,realMomenta[ix][iy],
+				     ix,inter[iinter],false);
 	  // coupling piece
 	  if(inter[iinter]==ShowerInteraction::QCD)
 	    contrib[ix][iy] *= alphaQCD_->ratio(sqr(pT[ix]));
@@ -1077,10 +1078,12 @@ double MEee2gZ2qq::meRatio(vector<cPDPtr> partons,
   }
   InvEnergy2 ratio = realME(partons,momenta,inter)
     *abs(D[iemitter])/(abs(D[0]*lome[0])+abs(D[1]*lome[1]));
-  if(subtract)
-    return Q2*(ratio-2.*D[iemitter]);
-  else
-    return Q2*ratio;
+  double output = Q2*ratio;
+  if(subtract) output -= 2.*Q2*D[iemitter];
+  // divide by charge if QED
+  if(inter==ShowerInteraction::QED)
+    output /= sqr(double(mePartonData()[2]->iCharge()/3.));
+  return output;
 }
 
 double MEee2gZ2qq::loME(const vector<cPDPtr> & partons, 
@@ -1191,6 +1194,9 @@ InvEnergy2 MEee2gZ2qq::realME(const vector<cPDPtr> & partons,
   }
   // divide out the coupling
   total /= norm(vertex->norm());
+  // and charge (if needed)
+  if(inter==ShowerInteraction::QED)
+    total /= sqr(double(mePartonData()[2]->iCharge())/3.);
   // return the total
   return total*UnitRemoval::InvE2;
 }
