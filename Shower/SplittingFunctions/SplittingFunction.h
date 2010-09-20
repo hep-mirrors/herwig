@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
@@ -25,8 +26,11 @@ using namespace ThePEG;
    * Enum to define the possible types of colour structure which can occur in
    * the branching.
    */
-  enum ColourStructure {Undefined=-1,TripletTripletOctet=0,OctetOctetOctet=1,
-			OctetTripletTriplet=2,TripletOctetTriplet=3};
+  enum ColourStructure {Undefined=0,
+			TripletTripletOctet  = 1,OctetOctetOctet    =2,
+			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
+			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
+			NeutralChargedCharged=-3};
 
 
 /** \ingroup Shower
@@ -94,7 +98,23 @@ public:
   /**
    *  Return the colour factor
    */
-  double colourFactor() const {return _colourFactor;}
+  double colourFactor(const IdList &ids) const {
+    if(_colourStructure>0)
+      return _colourFactor;
+    else if(_colourStructure<0) {
+      if(_colourStructure==ChargedChargedNeutral ||
+	 _colourStructure==ChargedNeutralCharged) {
+	tPDPtr part=getParticleData(ids[0]);
+	return sqr(double(part->iCharge())/3.);
+      }
+      else {
+	tPDPtr part=getParticleData(ids[1]);
+	return sqr(double(part->iCharge())/3.);
+      }
+    }
+    else
+      assert(false);
+  }
   //@}
 
   /**

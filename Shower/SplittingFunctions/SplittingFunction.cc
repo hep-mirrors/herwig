@@ -55,6 +55,21 @@ void SplittingFunction::Init() {
      "TripletOctetTriplet",
      "3 -> 8 3",
      TripletOctetTriplet);
+  static SwitchOption interfaceColourStructureChargedChargedNeutral
+    (interfaceColourStructure,
+     "ChargedChargedNeutral",
+     "q -> q 0",
+     ChargedChargedNeutral);
+  static SwitchOption interfaceColourStructureNeutralChargedCharged
+    (interfaceColourStructure,
+     "NeutralChargedCharged",
+     "0 -> q qbar",
+     NeutralChargedCharged);
+  static SwitchOption interfaceColourStructureChargedNeutralCharged
+    (interfaceColourStructure,
+     "ChargedNeutralCharged",
+     "q -> 0 q",
+     ChargedNeutralCharged);
 
   static Switch<SplittingFunction,ShowerInteraction::Type> 
     interfaceInteractionType
@@ -65,6 +80,9 @@ void SplittingFunction::Init() {
   static SwitchOption interfaceInteractionTypeQCD
     (interfaceInteractionType,
      "QCD","QCD",ShowerInteraction::QCD);
+  static SwitchOption interfaceInteractionTypeQED
+    (interfaceInteractionType,
+     "QED","QED",ShowerInteraction::QED);
 
 }
 
@@ -247,6 +265,60 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
+  else if(_colourStructure == ChargedChargedNeutral) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // q -> q g
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar g
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(_colourStructure == ChargedNeutralCharged) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(second);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(second);
+      }
+    }
+    else {
+      ColinePair csecond = ColinePair(second->colourLine(), 
+				      second->antiColourLine());
+      // q -> q g
+      if(csecond.first) {
+	csecond.first->addColoured(parent);
+      }
+      // qbar -> qbar g
+      else {
+	csecond.second->addAntiColoured(parent);
+      }
+    }
+  }
   else {
     assert(false);
   }
@@ -255,6 +327,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 void SplittingFunction::doinit() {
   Interfaced::doinit();
   assert(_interactionType!=ShowerInteraction::UNDEFINED);
+  assert((_colourStructure>0&&_interactionType==ShowerInteraction::QCD) ||
+	 (_colourStructure<0&&_interactionType==ShowerInteraction::QED) );
   if(_colourFactor>0.) return;
   // compute the colour factors if need
   if(_colourStructure==TripletTripletOctet) {
@@ -268,6 +342,9 @@ void SplittingFunction::doinit() {
   }
   else if(_colourStructure==TripletOctetTriplet) {
     _colourFactor = 4./3.;
+  }
+  else if(_colourStructure<0) {
+    _colourFactor = 1.;
   }
   else {
     assert(false);
@@ -302,6 +379,24 @@ bool SplittingFunction::checkColours(const IdList & ids) const {
     if(ids[0]!=ids[2]) return false;
     if((pd[0]->iColour()==PDT::Colour3||pd[0]->iColour()==PDT::Colour3bar) &&
        pd[1]->iColour()==PDT::Colour8) return true;
+    return false;
+  }
+  else if(_colourStructure==ChargedChargedNeutral) {
+    if(ids[0]!=ids[1]) return false;
+    if(pd[2]->iCharge()!=0) return false;
+    if(pd[0]->iCharge()==pd[1]->iCharge()) return true;
+    return false;
+  }
+  else if(_colourStructure==ChargedNeutralCharged) {
+    if(ids[0]!=ids[2]) return false;
+    if(pd[1]->iCharge()!=0) return false;
+    if(pd[0]->iCharge()==pd[2]->iCharge()) return true;
+    return false;
+  }
+  else if(_colourStructure==NeutralChargedCharged) {
+    if(ids[1]!=-ids[2]) return false;
+    if(pd[0]->iCharge()!=0) return false;
+    if(pd[1]->iCharge()==-pd[2]->iCharge()) return true;
     return false;
   }
   else {

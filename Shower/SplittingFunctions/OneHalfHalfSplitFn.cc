@@ -38,11 +38,12 @@ double OneHalfHalfSplitFn::P(const double z, const Energy2 t,
     Energy m = getParticleData(ids[1])->mass();
     val +=2.*sqr(m)/t;
   }
-  return colourFactor()*val;
+  return colourFactor(ids)*val;
 }
 
-double OneHalfHalfSplitFn::overestimateP(const double, const IdList &) const {
-  return colourFactor(); 
+double OneHalfHalfSplitFn::overestimateP(const double,
+					 const IdList &ids) const {
+  return colourFactor(ids); 
 }
 
 double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t, 
@@ -56,34 +57,35 @@ double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 }
 
-double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ,
-				   unsigned int PDFfactor) const { 
+double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ids,
+				      unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
-    return colourFactor()*z; 
+    return colourFactor(ids)*z; 
   case 1:
-    return colourFactor()*log(z);
+    return colourFactor(ids)*log(z);
   case 2:
-    return -colourFactor()*log(1.-z);
+    return -colourFactor(ids)*log(1.-z);
   case 3:
-    return colourFactor()*log(z/(1.-z));
+    return colourFactor(ids)*log(z/(1.-z));
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
   }
 }
 
-double OneHalfHalfSplitFn::invIntegOverP(const double r, const IdList & ,
-				      unsigned int PDFfactor) const {
+double OneHalfHalfSplitFn::invIntegOverP(const double r,
+					 const IdList & ids,
+					 unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    return r/colourFactor(); 
+    return r/colourFactor(ids); 
   case 1:
-    return exp(r/colourFactor());
+    return exp(r/colourFactor(ids));
   case 2:
-    return 1.-exp(-r/colourFactor());
+    return 1.-exp(-r/colourFactor(ids));
   case 3:
-    return 1./(1.+exp(-r/colourFactor()));
+    return 1./(1.+exp(-r/colourFactor(ids)));
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;

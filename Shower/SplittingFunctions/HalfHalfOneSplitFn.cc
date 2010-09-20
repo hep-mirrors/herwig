@@ -37,15 +37,16 @@ double HalfHalfOneSplitFn::P(const double z, const Energy2 t,
     Energy m = getParticleData(ids[0])->mass();  
     val -= 2.*sqr(m)/t;
   }
-  return colourFactor()*val;
+  return colourFactor(ids)*val;
 }
 
-double HalfHalfOneSplitFn::overestimateP(const double z, const IdList &) const { 
-  return 2.*colourFactor()/(1.-z); 
+double HalfHalfOneSplitFn::overestimateP(const double z,
+					 const IdList & ids) const { 
+  return 2.*colourFactor(ids)/(1.-z); 
 }
 
 double HalfHalfOneSplitFn::ratioP(const double z, const Energy2 t,
-				  const IdList &ids, const bool mass) const {
+				  const IdList & ids, const bool mass) const {
   double val = 1. + sqr(z);
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();
@@ -54,15 +55,16 @@ double HalfHalfOneSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 } 
 
-double HalfHalfOneSplitFn::integOverP(const double z, const IdList & ,
+double HalfHalfOneSplitFn::integOverP(const double z,
+				      const IdList & ids,
 				      unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
-    return -2.*colourFactor()*log(1.-z);
+    return -2.*colourFactor(ids)*log(1.-z);
   case 1:
-    return  2.*colourFactor()*log(z/(1.-z));
+    return  2.*colourFactor(ids)*log(z/(1.-z));
   case 2:
-    return  2.*colourFactor()/(1.-z);
+    return  2.*colourFactor(ids)/(1.-z);
   case 3:
   default:
     throw Exception() << "HalfHalfOneSplitFn::integOverP() invalid PDFfactor = "
@@ -70,15 +72,15 @@ double HalfHalfOneSplitFn::integOverP(const double z, const IdList & ,
   } 
 }
 
-double HalfHalfOneSplitFn::invIntegOverP(const double r, const IdList & ,
-				   unsigned int PDFfactor) const {
+double HalfHalfOneSplitFn::invIntegOverP(const double r, const IdList & ids,
+					 unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
-    return 1. - exp(- 0.5*r/colourFactor()); 
+    return 1. - exp(- 0.5*r/colourFactor(ids)); 
   case 1:
-    return 1./(1.-exp(-0.5*r/colourFactor()));
+    return 1./(1.-exp(-0.5*r/colourFactor(ids)));
   case 2:
-    return 1.-2.*colourFactor()/r;
+    return 1.-2.*colourFactor(ids)/r;
   case 3:
   default:
     throw Exception() << "HalfHalfOneSplitFn::invIntegOverP() invalid PDFfactor = "
