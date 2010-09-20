@@ -25,11 +25,11 @@ IBPtr MEee2gZ2qqPowheg::fullclone() const {
 }
 
 void MEee2gZ2qqPowheg::persistentOutput(PersistentOStream & os) const {
-  os << contrib_ << yPow_ << zPow_;
+  os << contrib_ << corrections_ << yPow_ << zPow_;
 }
 
 void MEee2gZ2qqPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_ >> yPow_ >> zPow_;
+  is >> contrib_ >> corrections_ >> yPow_ >> zPow_;
 }
 
 ClassDescription<MEee2gZ2qqPowheg> MEee2gZ2qqPowheg::initMEee2gZ2qqPowheg;
@@ -72,6 +72,26 @@ void MEee2gZ2qqPowheg::Init() {
      "The sampling power for y",
      &MEee2gZ2qqPowheg::yPow_, 0.9, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Switch<MEee2gZ2qqPowheg,unsigned int> interfaceCorrections
+    ("Corrections",
+     "Which corrections to include",
+     &MEee2gZ2qqPowheg::corrections_, 1, false, false);
+  static SwitchOption interfaceCorrectionsQCD
+    (interfaceCorrections,
+     "QCD",
+     "Only include the QCD corrections",
+     1);
+  static SwitchOption interfaceCorrectionsQED
+    (interfaceCorrections,
+     "QED",
+     "Only include the QED corrections",
+     2);
+  static SwitchOption interfaceCorrectionsQCDandQED
+    (interfaceCorrections,
+     "QCDandQED",
+     "Include both QED and QCD corrections",
+     3);
 
 }
 
@@ -241,7 +261,7 @@ double MEee2gZ2qqPowheg::me2() const {
     VNS = - mu2/1260.*(-6930. + 7560.*lmu + 2520.*mu - 16695.*mu2 + 1260.*mu2*sqr(Constants::pi) 
 		       + 12600.*lmu*mu2 + 1344.*mu*mu2 - 52780.*mu4 + 36960.*mu4*lmu 
 		       + 5040.*mu4*sqr(Constants::pi) - 12216.*mu*mu4);
-    f2 = ( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
+    f2 = mu2*( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
   }
   // add up bits for f1
   f1 += fNS+VNS;
@@ -303,10 +323,16 @@ double MEee2gZ2qqPowheg::me2() const {
     // calculate the weight
     if(1.-x1>1e-5 && 1.-x2>1e-5) {
       for(unsigned int ix=0;ix<2;++ix) {
-	if(ix==0)
+	if(ix==0 && (corrections_==1 || corrections_==3 ) ) {
+	  partons[4] = gluon();
 	  realwgt[ix] += meRatio(partons,momenta,iemit,ShowerInteraction::QCD,true);
+	}
+	else if( ix==1 && (corrections_==2 || corrections_==3 )) {
+	  partons[4] = gamma();
+	  realwgt[ix] += meRatio(partons,momenta,iemit,ShowerInteraction::QED,true);
+	}
 	else
-	  realwgt[ix] += meRatio(partons,momenta,iemit,ShowerInteraction::QED,true);	
+	  realwgt[ix]=0.;
       }
     }
   }
@@ -314,14 +340,32 @@ double MEee2gZ2qqPowheg::me2() const {
   double realFact = 0.25*(1.-y)*jac*sqr(1.-2.*mu2)/sqrt(1.-4.*mu2);
   for(unsigned int ix=0;ix<2;++ix) realwgt[ix] *= realFact;
   // coupling prefactors
+  double charge = sqr(double(mePartonData()[2]->iCharge())/3.);
   double aS  = CF*SM().alphaS (scale())/Constants::pi;
-  double aEM =    SM().alphaEM(scale())/Constants::pi;
-  f1 *= aS + aEM;
-  f2 *= aS + aEM;
+  double aEM =    SM().alphaEM(scale())/Constants::pi*charge;
+
+  aEM *= 100.;
+
+  // coupling factors
+  // correction for real emission
   realwgt[0] *= aS ;
   realwgt[1] *= aEM;
+  // and virtual
+  if(corrections_==1) {
+    f1 *= aS;
+    f2 *= aS;
+  }
+  else if(corrections_==2) {
+    f1 *= aEM;
+    f2 *= aEM;
+  }
+  else if(corrections_==3) {
+    f1 *= aS + aEM;
+    f2 *= aS + aEM;
+  }
   // the born + virtual + real
-  total[0] = total[0]*(1. + f1 + realwgt[0]+realwgt[1]) + f2*total[3];
+  total[0] = total[0]*(1. + f1 + realwgt[0]+charge*realwgt[1]) + f2*total[3];
+  // return the answer
   if(contrib_==2) total[0] *=-1.;
   return max(total[0],0.);
 }
