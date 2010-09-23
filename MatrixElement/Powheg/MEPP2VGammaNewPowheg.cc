@@ -312,15 +312,18 @@ CrossSection MEPP2VGammaNewPowheg::dSigHatDR() const {
   // couplings
   if(!fixedAlphaS_) alphaS_ = SM().alphaS(scale());
   alphaEM_ = SM().alphaEM();
+  //alphaEM_ = 1./128.9;
     // cross section
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
   loME_ = me2();
   if( contrib_== 0 || mePartonData().size()==5 || 
-      (mePartonData().size()==4&& mePartonData()[3]->coloured())) 
+      (mePartonData().size()==4&& mePartonData()[3]->coloured())) {
     return loME_*preFactor;
-  else
+  }
+  else {
     return NLOWeight()*preFactor;
+  }
 }
 
 unsigned int MEPP2VGammaNewPowheg::orderInAlphaS() const {
@@ -949,7 +952,8 @@ void MEPP2VGammaNewPowheg::getDiagrams() const {
 		     3, qb, -9)));
       }
       // Z + jet + gamma
-      if((process_==0 && contrib_==1) || process_ == 3) {
+      if(supressionFunction_!=0 && 
+	 ((process_==0 && contrib_==1) || process_ == 3)) {
 	// Z + g + gamma
 	if(threeBodyProcess_==0 || threeBodyProcess_==1) {
 	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
@@ -1508,7 +1512,7 @@ realVGammaqME(const cPDVector & particles,
   cPDVector part(particles.begin(),--particles.end());
   part[1] = particles[4]->CC();
   double lo1 = loVGammaME(part,pa);
-  InvEnergy2 D1 = 0.25/(momenta[1]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
+  InvEnergy2 D1 = 0.5/(momenta[1]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
   // initial-final QED dipole
   vector<Lorentz5Momentum> pb(4);
   x = 1.-(momenta[3]*momenta[4])/(momenta[4]*momenta[0]+momenta[0]*momenta[3]);
@@ -1516,13 +1520,13 @@ realVGammaqME(const cPDVector & particles,
   pb[0] = x*momenta[0];
   pb[1] = momenta[1];
   pb[2] = momenta[2];
-  double z = momenta[0]*momenta[3]/(momenta[0]*momenta[3]+momenta[0]*momenta[4]);
+  double z = momenta[0]*momenta[4]/(momenta[0]*momenta[3]+momenta[0]*momenta[4]);
   part[1] = particles[1];
   part[3] = particles[4];
   double lo2 = loVqME(part,pb);
   Energy pT = sqrt(-(pb[0]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
-  InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
-  InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
+  InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
+  InvEnergy2 DI = 1./(momenta[0]*momenta[3])/x*(2./(2.-x-z)-(1.+x))*lo2;
   DI *= sqr(double(particles[0]->iCharge())/3.);  
   DF *= sqr(double(particles[0]->iCharge())/3.);
   InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
@@ -1584,7 +1588,7 @@ realVGammaqbarME(const cPDVector & particles,
   cPDVector part(particles.begin(),--particles.end());
   part[0] = particles[4]->CC();
   double lo1 = loVGammaME(part,pa);
-  InvEnergy2 D1 = 0.25/(momenta[0]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
+  InvEnergy2 D1 = 0.5/(momenta[0]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
   // initial-final QED dipole
   vector<Lorentz5Momentum> pb(4);
   x = 1.-(momenta[3]*momenta[4])/(momenta[4]*momenta[1]+momenta[1]*momenta[3]);
@@ -1592,13 +1596,13 @@ realVGammaqbarME(const cPDVector & particles,
   pb[0] = momenta[0];
   pb[1] = x*momenta[1];
   pb[2] = momenta[2];
-  double z = momenta[1]*momenta[3]/(momenta[1]*momenta[3]+momenta[1]*momenta[4]);
+  double z = momenta[1]*momenta[4]/(momenta[1]*momenta[3]+momenta[1]*momenta[4]);
   part[0] = particles[0];
   part[3] = particles[4];
   double lo2 = loVqbarME(part,pb);
   Energy pT = sqrt(-(pb[1]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
-  InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
-  InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
+  InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
+  InvEnergy2 DI = 1./(momenta[1]*momenta[3])/x*(2./(2.-x-z)-(1.+x))*lo2;
   InvEnergy2 term;
   DI *= sqr(double(particles[1]->iCharge())/3.);
   DF *= sqr(double(particles[1]->iCharge())/3.);
@@ -1666,7 +1670,7 @@ double MEPP2VGammaNewPowheg::subtractedVirtual() const {
   double remainder = F1 * F2 * ( + (10.-2.*sqr(Constants::pi)/3.)*K0 
 				 + 3.0*K1 + 2.0*K2);
   // finite piece
-  double finite =  0.125*(charge0*tHat()+ charge1*uHat())/(tHat()+uHat())* 
+  double finite =  F1*0.125*(charge0*tHat()+ charge1*uHat())/(tHat()+uHat())* 
     ( charge0 * FV(tHat(),uHat(),sHat(),MV2) + 
       charge1 * FV(uHat(),tHat(),sHat(),MV2) );
   return remainder + finite;
@@ -1838,9 +1842,9 @@ double MEPP2VGammaNewPowheg::realME(const cPDVector & particles,
   }
   // divide out the em and strong couplings
   sum /= norm(FFGvertex_->norm()*FFPvertex_->norm());
-  // final spin and colour factors spin = 1/4 colour = 4/9
+  // final spin and colour factors spin = 1/4 colour = 1/9
   if(particles[4]->id()==ParticleID::g) sum /= 9.;
-  // final spin and colour factors spin = 1/4 colour = 4/(3*8)
+  // final spin and colour factors spin = 1/4 colour = 1/(3*8)
   else                                  sum /= 24.;
   return sum;
 }
