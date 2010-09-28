@@ -30,8 +30,8 @@ LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() : _q2last(ZERO),
   addToList(21,21,9931661,-9931661);
   addToList(21,21,9941561,-9941561);
   addToList(21,21,9951551,-9951551);
-  addToList(21,21,9951651,-9951651);
-  addToList(21,21,9961651,-9961651);
+  addToList(21,21,9951551,-9951551);
+  addToList(21,21,9961651,-9961551);
   addToList(21,21,9971561,-9971561);
   addToList(21,21,9981561,-9981561);
   addToList(21,21,9981551,-9981551);
