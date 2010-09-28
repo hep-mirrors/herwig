@@ -833,8 +833,8 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    dynamic_ptr_cast<ThePEG::Helicity::SpinfoPtr>(hard[ix]->spinInfo())->
-      setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->
+      productionVertex(hardvertex);
   }
 }
 

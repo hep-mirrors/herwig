@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::SpinfoPtr;
+
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 

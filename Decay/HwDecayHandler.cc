@@ -65,7 +65,7 @@ handle(EventHandler &, const tPVector & tagged,
 // and for the decayer to specify intermediate decay products
 void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
   long ntry = 0;
-  tcSpinfoPtr hwspin;
+  tcSpinPtr hwspin;
   tcMixedParticleDataPtr 
     mixdata=dynamic_ptr_cast<tcMixedParticleDataPtr>(parent->dataPtr());
   if(mixdata) {
@@ -152,10 +152,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
 	}
       }
       // sort out the spinInfo for the parent after the decays
-      if(parent->spinInfo()) {
-	hwspin=dynamic_ptr_cast<tcSpinfoPtr>(parent->spinInfo());
-	if(hwspin) hwspin->develop();
-      }
+      if(parent->spinInfo()) parent->spinInfo()->develop();
       return;
     }
     catch (Veto) 
