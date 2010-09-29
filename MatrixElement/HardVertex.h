@@ -11,13 +11,12 @@
 //
 // This is the declaration of the HardVertex class.
 
-#include "ThePEG/Helicity/HelicityVertex.h"
+#include "ThePEG/EventRecord/HelicityVertex.h"
 #include "ProductionMatrixElement.h"
 #include "HardVertex.fh"
 // #include "HardVertex.xh"
 
 namespace Herwig {
-using ThePEG::Helicity::HelicityVertex;
 
 using namespace ThePEG;
     
@@ -115,7 +114,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::HardVertex,1> {
   /** Typedef of the base class of HardVertex. */
-  typedef ThePEG::Helicity::HelicityVertex NthBase;
+  typedef ThePEG::HelicityVertex NthBase;
 };
   
 /**  

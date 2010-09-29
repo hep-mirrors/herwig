@@ -21,7 +21,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
+
 using ThePEG::Helicity::u_spinortype;
 using ThePEG::Helicity::v_spinortype;
 using ThePEG::Helicity::VectorWaveFunction;
@@ -145,7 +145,8 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   do {
     --ix;
     ispin[ix]=decay[ix]->data().iSpin();
-    itemp*=ispin[ix];constants[ix]=itemp;
+    itemp*=ispin[ix];
+    constants[ix]=itemp;
   }
   while(ix>0);
   constants[decay.size()]=1;

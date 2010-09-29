@@ -23,11 +23,11 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include <ThePEG/Helicity/SpinInfo.h>
+
 #include <ThePEG/Repository/CurrentGenerator.h>
 
 using namespace Herwig;
-using ThePEG::Helicity::SpinInfo;
+
   
 DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr in) 
   : _mode(in) {}

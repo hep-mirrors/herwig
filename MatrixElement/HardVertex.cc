@@ -13,14 +13,12 @@
 // Author: Peter Richardson
 //
 
+#include "ThePEG/EventRecord/SpinInfo.h"
 #include "HardVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Helicity/SpinInfo.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::SpinInfo;
-using ThePEG::Helicity::tcSpinfoPtr;
-  
+
 NoPIOClassDescription<HardVertex> HardVertex::initHardVertex;
   // Definition of the static class description member.
     
@@ -38,15 +36,15 @@ RhoDMatrix HardVertex::getRhoMatrix(int i,bool) const {
   vector<RhoDMatrix> rhoout(outgoing().size()-1);
   for(int ix=0,N=outgoing().size();ix<N;++ix) {
     if(ix<i)      rhoout[ix  ] = 
-      dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
+		    outgoing()[ix]->DMatrix();
     else if(ix>i) rhoout[ix-1] = 
-      dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
+		    outgoing()[ix]->DMatrix();
   }
   // calculate the spin density matrix
   return _matrixelement.
     calculateRhoMatrix(i,
-		       dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->rhoMatrix(),
-		       dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->rhoMatrix(),rhoout);
+		       incoming()[0]->rhoMatrix(),
+		       incoming()[1]->rhoMatrix(),rhoout);
 }
 
 // method to get the D matrix for an incoming particle
@@ -54,8 +52,8 @@ RhoDMatrix HardVertex::getDMatrix(int i) const {
   // get rho rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout(outgoing().size());
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
-    rhoout[ix] = dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
+    rhoout[ix] = outgoing()[ix]->DMatrix();
   // calculate the decay matrix
   return _matrixelement.
-    calculateDMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->rhoMatrix(),rhoout);
+    calculateDMatrix(i,incoming()[1]->rhoMatrix(),rhoout);
 }

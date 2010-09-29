@@ -21,7 +21,7 @@ using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::SpinfoPtr;
+
 
 void MEvv2vv::doinit() {
   GeneralHardME::doinit();

@@ -28,7 +28,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::SpinfoPtr;
+
 
 void MEee2VectorMeson::getDiagrams() const {
   tcPDPtr em = getParticleData(ParticleID::eminus);
@@ -217,7 +217,7 @@ void MEee2VectorMeson::constructVertex(tSubProPtr sub) {
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<3;++ix) {
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
   }
 }
 

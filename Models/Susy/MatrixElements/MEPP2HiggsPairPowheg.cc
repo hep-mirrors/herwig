@@ -487,7 +487,7 @@ void MEPP2HiggsPairPowheg::constructVertex(tSubProPtr sub) {
   HardVertexPtr hv = new_ptr(HardVertex());
   hv->ME(me_);
   for(unsigned int i = 0; i < 4; ++i )
-    dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+    ext[i]->spinInfo()->productionVertex(hv);
 }
 
 Energy2 MEPP2HiggsPairPowheg::scale() const {

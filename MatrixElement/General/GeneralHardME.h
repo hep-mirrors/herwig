@@ -19,7 +19,7 @@
 #include "Herwig++/Models/General/HPDiagram.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
-#include "ThePEG/Helicity/SpinInfo.h"
+#include "ThePEG/EventRecord/SpinInfo.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "GeneralHardME.fh"
 
@@ -340,14 +340,13 @@ protected:
     HardVertexPtr hardvertex = new_ptr(HardVertex());
     hardvertex->ME(me);
     for(ParticleVector::size_type i = 0; i < 4; ++i) {
-      Helicity::tSpinfoPtr spin = 
-	dynamic_ptr_cast<Helicity::tSpinfoPtr>(external[i]->spinInfo());
+      tSpinPtr spin = external[i]->spinInfo();
       if(i<2) {
 	tcPolarizedBeamPDPtr beam = 
 	  dynamic_ptr_cast<tcPolarizedBeamPDPtr>(external[i]->dataPtr());
 	if(beam) spin->rhoMatrix() = beam->rhoMatrix();
       }
-      spin->setProductionVertex(hardvertex);
+      spin->productionVertex(hardvertex);
     }
   }
 

@@ -13,10 +13,10 @@
 
 #include <ThePEG/Config/ThePEG.h>
 #include <ThePEG/Utilities/ClassDescription.h>
-#include <ThePEG/Helicity/RhoDMatrix.h>
+#include <ThePEG/EventRecord/RhoDMatrix.h>
 
 namespace Herwig {
-using ThePEG::Helicity::RhoDMatrix;
+
 
 using namespace ThePEG;
 

@@ -313,7 +313,7 @@ SudakovPtr PowhegHandler::getSud( long & emmitter_id,
 void PowhegHandler::fillProtoTrees( map< ShowerParticlePtr, HardBranchingPtr > branchingMap, 
 				    ProtoTreePtr currentProtoTree ){
   // SHOULD CHECK WITH ME class BUT MOST CONCIVABLE ONES ARE 2->2
-  //const int no_FS_parts = 2;
+  if(branchingMap.size()==4) return;
   for( map< ShowerParticlePtr, HardBranchingPtr >::iterator ita = branchingMap.begin();
        ita != branchingMap.end(); ++ita ) {
     for( map< ShowerParticlePtr, HardBranchingPtr >::iterator itb = branchingMap.begin();
@@ -436,7 +436,7 @@ bool PowhegHandler::repeatProtoTree( ProtoTreePtr currentProtoTree ) {
     }
     // DOES THIS EVER RETURN TRUE ????
     if( no_matches == currentProtoTree->getBranchings().size() ) {
-      assert(false);
+      //      assert(false);
       return true;
     }
   }
@@ -480,7 +480,6 @@ PotentialTree PowhegHandler::doClustering() {
   currentBranching =  new_ptr( HardBranching( currentParticle, SudakovPtr(), HardBranchingPtr(),
 					      HardBranching::Incoming ) );
   branchingMap.insert( make_pair( currentParticle, currentBranching ) );
-
 
   //create and initialise the first tree
   ProtoTreePtr initialProtoTree = new_ptr( ProtoTree() );

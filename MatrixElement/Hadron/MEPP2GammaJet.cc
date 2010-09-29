@@ -472,7 +472,6 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
 }
 
 void MEPP2GammaJet::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -517,14 +516,11 @@ void MEPP2GammaJet::constructVertex(tSubProPtr sub) {
     p[1]=p[2];g[1]=g[2];
     qqbarME(q,qb,g,p,true);
   }
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) 
-    spin[ix]->setProductionVertex(hardvertex);
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

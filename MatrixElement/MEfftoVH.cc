@@ -224,7 +224,6 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEfftoVH::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[5];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -245,22 +244,19 @@ void MEfftoVH::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(fout,hard[3],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[4],outgoing,true ,true);
   helicityME(fin,ain,fout,aout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<5;++ix) {
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
-  }
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix) {
+    tcSpinPtr spin = hard[ix]->spinInfo();
     if(ix<2) {
       tcPolarizedBeamPDPtr beam = 
 	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
-      if(beam) spin[ix]->rhoMatrix() = beam->rhoMatrix();
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
     }
-    spin[ix]->setProductionVertex(hardvertex);
+    spin->productionVertex(hardvertex);
   }
 }
 

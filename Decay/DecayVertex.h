@@ -11,13 +11,11 @@
 //
 // This is the declaration of the DecayVertex class.
 //
-#include <ThePEG/Helicity/HelicityVertex.h>
+#include <ThePEG/EventRecord/HelicityVertex.h>
 #include "DecayMatrixElement.h"
 #include "DecayVertex.fh"
 
 namespace Herwig {
-
-using ThePEG::Helicity::HelicityVertex;
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -113,7 +111,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::DecayVertex,1> {
   /** Typedef of the base class of DecayVertex. */
-  typedef Herwig::HelicityVertex NthBase;
+  typedef ThePEG::HelicityVertex NthBase;
 };
   
 /**
