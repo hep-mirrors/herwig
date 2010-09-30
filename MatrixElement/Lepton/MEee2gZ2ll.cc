@@ -248,13 +248,13 @@ void MEee2gZ2ll::constructVertex(tSubProPtr sub) {
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    tSpinfoPtr spin = dynamic_ptr_cast<tSpinfoPtr>(hard[ix]->spinInfo());
+    tSpinPtr spin = hard[ix]->spinInfo();
     if(ix<2) {
       tcPolarizedBeamPDPtr beam = 
 	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
       if(beam) spin->rhoMatrix() = beam->rhoMatrix();
     }
-    spin->setProductionVertex(hardvertex);
+    spin->productionVertex(hardvertex);
   }
 }
 

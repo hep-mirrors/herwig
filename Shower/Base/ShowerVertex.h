@@ -12,13 +12,11 @@
 // This is the declaration of the ShowerVertex class.
 //
 
-#include "ThePEG/Helicity/HelicityVertex.h"
+#include "ThePEG/EventRecord/HelicityVertex.h"
 #include "Herwig++/Decay/DecayMatrixElement.h"
 #include "ShowerVertex.fh"
 
 namespace Herwig {
-
-using ThePEG::Helicity::HelicityVertex;
 
 using namespace ThePEG;
 

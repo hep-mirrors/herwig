@@ -234,15 +234,15 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
   if(add) particles_.push_back(in);
 }
 
-SpinfoPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
-					ShowerParticle & particle,ShoKinPtr showerkin) {
+SpinPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
+				      ShowerParticle & particle,ShoKinPtr showerkin) {
   // output spininfo
-  SpinfoPtr output;
+  SpinPtr output;
   // if the particle is final-state and not from the hard process
   if(!particle.perturbative() && particle.isFinalState()) {
     // mapping is the identity
     mapping=RhoDMatrix(particle.dataPtr()->iSpin());
-    output=dynamic_ptr_cast<SpinfoPtr>(particle.spinInfo());
+    output=particle.spinInfo();
     // should have spin info
     if(!output) {
       cerr << " particle does not have spinInfo " << endl;

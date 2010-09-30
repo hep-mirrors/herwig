@@ -151,8 +151,8 @@ void MEee2Z::constructVertex(tSubProPtr sub) {
   hardvertex->ME(prodme);
   // set the pointers to and from the vertex
   for(unsigned int ix=0;ix<3;++ix) {
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->
-      setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->
+      productionVertex(hardvertex);
   }
 }
 

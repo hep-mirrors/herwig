@@ -15,14 +15,13 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
-#include "ThePEG/Helicity/RhoDMatrix.h"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig++/Decay/DecayMatrixElement.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using Helicity::RhoDMatrix;
 
   /** \ingroup Shower
    * Enum to define the possible types of colour structure which can occur in

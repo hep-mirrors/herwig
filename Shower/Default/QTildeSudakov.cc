@@ -24,7 +24,6 @@
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::VertexPtr;
 
 NoPIOClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
@@ -331,7 +330,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
 				  ShoKinPtr kinematics) {
   // get the spin density matrix and the mapping
   RhoDMatrix rho,mapping;
-  SpinfoPtr inspin(getMapping(rho,mapping,particle,kinematics));
+  SpinPtr inspin(getMapping(rho,mapping,particle,kinematics));
   // map the rho matrix to the shower basis
   RhoDMatrix rhop(rho.iSpin());
   cout << rhop << "\n";
@@ -359,7 +358,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
   // set the matrix element
   Svertex->ME().reset(me);
   // set the incoming particle for the vertex
-  inspin->setDecayVertex(Svertex);
+  inspin->decayVertex(Svertex);
   // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
   return phi;
 }
@@ -367,7 +366,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
 // void QTildeSudakov::constructVertex(const tShowerParticlePtr theParent, 
 // 				    const ShowerParticleVector theChildren) {
 //   // cast the spin info of the decaying particle (return if fails)
-//   SpinfoPtr pspin(dynamic_ptr_cast<SpinfoPtr>(theParent->spinInfo()));
+//   SpinPtr pspin(theParent->spinInfo());
 //   if(!pspin) return;
 //   // get the vertex
 //   VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->getDecayVertex()));
@@ -418,7 +417,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
 // 			<< Exception::runerror;
 //     }
 //     // connect the spinInfo object to the vertex
-//     dynamic_ptr_cast<SpinfoPtr>((*pit)->spinInfo())->setProductionVertex(vertex);
+//     (*pit)->spinInfo()->setProductionVertex(vertex);
 //     (*pit)->set5Momentum(porig);
 //   }
 // }

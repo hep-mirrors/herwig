@@ -14,7 +14,6 @@ using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::SpinfoPtr;
 
 IBPtr MEvv2vs::clone() const {
   return new_ptr(*this);

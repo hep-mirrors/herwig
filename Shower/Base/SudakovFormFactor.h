@@ -19,16 +19,14 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
-#include "ThePEG/Helicity/RhoDMatrix.h"
-#include "ThePEG/Helicity/SpinInfo.h"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
+#include "ThePEG/EventRecord/SpinInfo.h"
 #include "ShowerKinematics.h"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::SpinfoPtr;
 
 /**
  *  A typedef for the BeamParticleData
@@ -436,8 +434,8 @@ protected:
    * @param particle The particle
    * @param showerkin The ShowerKinematics object
    */
-  SpinfoPtr getMapping(RhoDMatrix & rho, RhoDMatrix & map,
-		       ShowerParticle & particle,ShoKinPtr showerkin);
+  SpinPtr getMapping(RhoDMatrix & rho, RhoDMatrix & map,
+		     ShowerParticle & particle,ShoKinPtr showerkin);
 
   /**
    *  Methods to set the member variables for inheriting classes

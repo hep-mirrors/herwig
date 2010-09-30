@@ -14,12 +14,12 @@
 #include <ThePEG/Config/ThePEG.h>
 #include <ThePEG/Utilities/ClassDescription.h>
 #include <ThePEG/Helicity/HelicityDefinitions.h>
-#include <ThePEG/Helicity/RhoDMatrix.h>
+#include <ThePEG/EventRecord/RhoDMatrix.h>
 
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
+
 
 /** \ingroup Helicity
  *  \author Peter Richardson

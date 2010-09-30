@@ -11,18 +11,11 @@
 // functions of the ShowerVertex class.
 //
 
-#include "ShowerVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Helicity/SpinInfo.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerVertex.tcc"
-#endif
-
+#include "ThePEG/EventRecord/SpinInfo.h"
+#include "ShowerVertex.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::SpinInfo;
-using ThePEG::Helicity::tcSpinfoPtr;
 using namespace Herwig::Helicity;
 using namespace ThePEG;
 
@@ -38,30 +31,26 @@ void ShowerVertex::Init() {
 }
 
 // method to get the rho matrix for a given outgoing particle
-RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const
-{
+RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout;
-  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
-    {
-      if(int(ix)!=i)
-	{rhoout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());}
-    }
+  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
+    if(int(ix)!=i)
+      rhoout.push_back(outgoing()[ix]->DMatrix());
+  }
   // calculate the spin density matrix
-  RhoDMatrix input=dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->rhoMatrix();
+  RhoDMatrix input=incoming()[0]->rhoMatrix();
   RhoDMatrix temp=_matrixelement.calculateRhoMatrix(i,input,rhoout);
   return temp;
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix ShowerVertex::getDMatrix(int) const
-{
+RhoDMatrix ShowerVertex::getDMatrix(int) const {
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;
-  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
-    {
-      Dout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());
-    }
+  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
+    Dout.push_back(outgoing()[ix]->DMatrix());
+  }
   // calculate the spin density matrix and return the answer
   RhoDMatrix temp = _matrixelement.calculateDMatrix(Dout);
   return temp;

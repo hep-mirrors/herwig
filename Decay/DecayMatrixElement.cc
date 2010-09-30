@@ -67,7 +67,7 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoou
 // calculate the rho matrix for a given outgoing particle
 RhoDMatrix DecayMatrixElement::
 calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
-		   const vector<RhoDMatrix> & rhoout) const{
+		   const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
@@ -89,7 +89,7 @@ calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
       // matrix element piece
       temp=_matrixelement[ix]*conj(_matrixelement[iy]);
       // spin denisty matrix for the incoming particle
-      temp*=rhoin(ihel1[0],ihel2[0]);
+      temp *= rhoin(ihel1[0],ihel2[0]);
       // spin density matrix for the outgoing particles
       for(iz=0;iz<_outspin.size()-1;++iz) {
 	if(int(iz)<id) temp*=rhoout[iz](ihel1[iz+1],ihel2[iz+1]);
