@@ -456,6 +456,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   _decayme = HwDecayerBasePtr();
   // set the current tree
   currentTree(hard);
+  hardTree(HardTreePtr());
   // number of attempts if more than one interaction switched on
   unsigned int interactionTry=0;
   bool showerOrder(true);
@@ -771,6 +772,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
   currentTree(decay);
+  hardTree(HardTreePtr());
   unsigned int interactionTry=0;
   bool showerOrder(true);
   do {
