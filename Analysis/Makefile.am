@@ -70,22 +70,11 @@ HwInclHiggsAnalysis_la_SOURCES = \
 InclHiggsAnalysis.cc InclHiggsAnalysis.h
 endif
 
-pkglib_LTLIBRARIES += HwZpt.la
-HwZpt_la_LDFLAGS = -module -version-info 4:0:0
-HwZpt_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwZpt_la_SOURCES = \
+pkglib_LTLIBRARIES += HwTevatronAnalysis.la
+HwTevatronAnalysis_la_LDFLAGS = -module -version-info 1:0:0
+HwTevatronAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwTevatronAnalysis_la_SOURCES = \
 ZpTRun2.cc ZpTRun2.h \
-ZpTRun1.cc ZpTRun1.h 
-
-pkglib_LTLIBRARIES += HwWpt.la
-HwWpt_la_LDFLAGS = -module -version-info 4:0:0
-HwWpt_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwWpt_la_SOURCES = \
-Wpt.cc Wpt.h 
-
-
-pkglib_LTLIBRARIES += HwZrap.la
-HwZrap_la_LDFLAGS = -module -version-info 4:0:0
-HwZrap_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwZrap_la_SOURCES = \
+ZpTRun1.cc ZpTRun1.h \
+Wpt.cc Wpt.h \
 Zrapidity.cc Zrapidity.h 

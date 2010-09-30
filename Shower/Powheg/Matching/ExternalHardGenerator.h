@@ -35,12 +35,6 @@ class ExternalHardGenerator: public HardestEmissionGenerator {
 public:
 
   /**
-   * The default constructor.
-   */
-  inline ExternalHardGenerator()
-  {}
-
-  /**
    *  Members which must be overridden in the inheriting classes
    */
   //@{
@@ -89,7 +83,7 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const{
+  virtual IBPtr clone() const{
     return new_ptr(*this);
   }
 
@@ -97,7 +91,7 @@ protected:
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {
+  virtual IBPtr fullclone() const {
     return new_ptr(*this);
   }
   //@}

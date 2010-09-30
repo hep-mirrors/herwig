@@ -640,7 +640,7 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
   if(C.y()== 1.&&!(abs(a->id())>0&&abs(a->id())<7)) 
     cout << "\nCtilde_qq::for Cqq^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(C.y()==-1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
+  if(C.y()==-1.&&!(abs(b->id())>0&&abs(b->id())<7))
     cout << "\nCtilde_qq::for Cqq^minus b must be a quark! id = " 
 	 << b->id() << "\n";
   double xt = C.xt();

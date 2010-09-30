@@ -9,7 +9,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "QTildeSudakovIntegrator.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"

@@ -44,8 +44,9 @@ public:
   /**
    * The default constructor.
    */
-  inline CKKWVeto() : ShowerVeto(ShowerVeto::Emission), _ptVetoDefinition(1), _reversePtVeto(false), 
-		      _Ptveto(ZERO), _highestMult(false), _dynamicSuds(false) {}
+  CKKWVeto() : ShowerVeto(ShowerVeto::Emission), pTVetoDefinition_(1),
+	       reversepTVeto_(false), pTVeto_(ZERO), 
+	       highestMult_(false), dynamicSuds_(false) {}
   //@}
 
 public:
@@ -94,48 +95,22 @@ public:
    *  Set whether showering highest multiplicity configuration
    */ 
   void setHighest( bool isHighest ){
-    _highestMult = isHighest;
+    highestMult_ = isHighest;
   }
 
   /**
    * Access to the veto scale for CKKW merging
    */
-  Energy getVeto(){
-    return _Ptveto;
+  Energy getVeto() {
+    return pTVeto_;
   }
 
   /**
    * Set dynamic sudakovs on or off
    */
-  void setDynamicSuds( bool dynamicSuds ){
-    _dynamicSuds = dynamicSuds;
+  void setDynamicSuds( bool dynamicSuds ) {
+    dynamicSuds_ = dynamicSuds;
   }
-
-private:
-  /**
-   * The transverse momentum definition to be used
-   */
-  unsigned int _ptVetoDefinition;
-  
-  /**
-   * Whether to reverse the veto
-   */
-  bool _reversePtVeto; 
-
-  /**
-   * The scale at which the veto should be applied
-   */
-  Energy _Ptveto;
-
-  /**
-   * Whether we are showering highest multiplicity channe;
-   */
-  bool _highestMult;
-  
-  /**
-   * Whether to generate the Sudakov weights dynamically by event vetoes
-   */
-  bool _dynamicSuds;
 
 protected:
 
@@ -171,14 +146,40 @@ private:
 private:
 
   /**
+   * The transverse momentum definition to be used
+   */
+  unsigned int pTVetoDefinition_;
+  
+  /**
+   * Whether to reverse the veto
+   */
+  bool reversepTVeto_; 
+
+  /**
+   * The scale at which the veto should be applied
+   */
+  Energy pTVeto_;
+
+  /**
+   * Whether we are showering highest multiplicity channe;
+   */
+  bool highestMult_;
+  
+  /**
+   * Whether to generate the Sudakov weights dynamically by event vetoes
+   */
+  bool dynamicSuds_;
+
+  /**
    * Apply the veto to timelike showering
    */
-  bool _vetoTimelike;
+  bool vetoTimeLike_;
 
   /**
    * Apply the veto to spacelike showering
    */
-  bool _vetoSpacelike;
+  bool vetoSpaceLike_;
+
 };
 
 }

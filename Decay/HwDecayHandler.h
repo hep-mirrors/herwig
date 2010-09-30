@@ -13,7 +13,7 @@
 //
 #include "ThePEG/Handlers/DecayHandler.h"
 #include "ThePEG/EventRecord/Particle.h"
-#include "ThePEG/Helicity/SpinInfo.h"
+
 
 namespace Herwig {
 using namespace ThePEG;
@@ -137,10 +137,9 @@ protected:
    *  Develop a stable particle
    */
   void develop(tPPtr particle) const {
-    if(!particle->spinInfo()) return;
-    Helicity::tcSpinfoPtr hwspin = 
-      dynamic_ptr_cast<Helicity::tcSpinfoPtr>(particle->spinInfo());
-    if(hwspin) hwspin->develop();
+    tcSpinPtr hwspin = particle->spinInfo();
+    if ( hwspin ) 
+      hwspin->develop();
   }
 
 private:

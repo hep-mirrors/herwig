@@ -1,4 +1,4 @@
-SUBDIRS = SplittingFunctions Couplings Powheg Fortran \
+SUBDIRS = SplittingFunctions Couplings Powheg \
           Default Base .
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = -module -version-info 11:1:0
@@ -15,6 +15,7 @@ ShowerHandler.h ShowerHandler.fh ShowerHandler.cc
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \
+Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
 Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \
 Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc \

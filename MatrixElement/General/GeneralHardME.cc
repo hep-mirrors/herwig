@@ -54,10 +54,10 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   }
   if(outgoing_.first  == incoming_.first ||
      outgoing_.first  == incoming_.second )
-    mopt[0]=0;
+    mopt[0] = 0;
   if(outgoing_.second == incoming_.first ||
      outgoing_.second == incoming_.second )
-    mopt[1]=0;
+    mopt[1] = 0;
   massOption(mopt);
   if( offshell.first == true &&  offshell.second == true &&
       abs(outgoing_.first) == abs(outgoing_.second)  )

@@ -29,7 +29,6 @@
 #include "ShowerProgenitor.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
-#include "MECorrectionBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
@@ -99,9 +98,6 @@ void Evolver::doinit() {
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
-    showerModel()->meCorrections()[ix]->evolver(this);
-  }
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
     _hardgenerator[ix]->setEvolver(this);
   //init hists and other variables
@@ -557,8 +553,6 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 }
 
 void Evolver::hardMatrixElementCorrection(bool hard) {
-  // set me correction to null pointer
-  _currentme=MECorrectionPtr();
   // set the initial enhancement factors for the soft correction
   _initialenhance = 1.;
   _finalenhance   = 1.;
@@ -566,14 +560,12 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   if(!MECOn()) return;
   // see if we can get the correction from the matrix element
   // or decayer
-  bool appliedHard = false;
   if(hard) {
     if(_hardme&&_hardme->hasMECorrection()) {
       _hardme->initializeMECorrection(_currenttree,
 				      _initialenhance,_finalenhance);
       if(hardMEC())
 	_hardme->applyHardMatrixElementCorrection(_currenttree);
-      appliedHard = true;
     }
   }
   else {
@@ -582,41 +574,8 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
 				       _initialenhance,_finalenhance);
       if(hardMEC())
 	_decayme->applyHardMatrixElementCorrection(_currenttree);
-      appliedHard = true;
     }
   }
-  // if we've taken the correction from ME or decayer return
-  if(appliedHard) return;
-  // see if there is an appropriate matrix element correction
-  for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
-    double initial,final;
-    if(!showerModel()->meCorrections()[ix]->canHandle(_currenttree,
-						      initial,final,this)) continue;
-    if(_currentme) {
-      ostringstream output;
-      output << "There is more than one possible matrix"
-	     << "element which could be applied for ";
-      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-      for(cit=_currenttree->incomingLines().begin();
-	  cit!=_currenttree->incomingLines().end();++cit)
-	{output << cit->first->progenitor()->PDGName() << " ";}
-      output << " -> ";
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-      for(cjt=_currenttree->outgoingLines().begin();
-	  cjt!=_currenttree->outgoingLines().end();++cjt)
-	{output << cjt->first->progenitor()->PDGName() << " ";}
-      output << "in Evolver::hardMatrixElementCorrection()\n";
-      throw Exception() << output << Exception::runerror;
-    }
-    else {
-      _currentme=showerModel()->meCorrections()[ix];
-      _initialenhance = initial;
-      _finalenhance   = final;
-    }
-  }
-  // now apply the hard correction
-  if(_currentme && hardMEC()) 
-    _currentme->applyHardMatrixElementCorrection(_currenttree);
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle, 
@@ -1046,10 +1005,6 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
       if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
 	return true;
     }
-    else if(_currentme) {
-      if(_currentme->softMatrixElementVeto(_progenitor,particle,fb))
-	return true;
-    }
   }
   // veto on maximum pt
   if(fb.kinematics->pT()>_progenitor->maximumpT()) return true;
@@ -1081,15 +1036,9 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
   if (hardVetoIS() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
   // apply the soft correction
-  if( softMEC()) {
-    if(_hardme && _hardme->hasMECorrection()) {
-      if(_hardme->softMatrixElementVeto(_progenitor,particle,bb))
-	return true;
-    }
-    else if(_currentme ) {
-      if(_currentme->softMatrixElementVeto(_progenitor,particle,bb))
-	return true;
-    }
+  if( softMEC() && _hardme && _hardme->hasMECorrection()) {
+    if(_hardme->softMatrixElementVeto(_progenitor,particle,bb))
+      return true;
   }
   // the more general vetos
 
@@ -1121,15 +1070,9 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
 bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 				    ShowerParticlePtr particle ) {
   // apply the soft correction
-  if( softMEC()) {
-    if(_decayme && _decayme->hasMECorrection()) {
-      if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
-	return true;
-    }
-    else if(_currentme) {
-      if(_currentme->softMatrixElementVeto(_progenitor,particle,fb))
-	return true;
-    }
+  if( softMEC() && _decayme && _decayme->hasMECorrection()) {
+    if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+      return true;
   }
   // veto on hardest pt in the shower
   if(fb.kinematics->pT()> _progenitor->maximumpT()) return true;

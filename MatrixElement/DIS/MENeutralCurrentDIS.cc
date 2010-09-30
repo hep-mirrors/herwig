@@ -305,24 +305,19 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(a1,hard[order[2]],outgoing, lorder,true);
   SpinorBarWaveFunction(a2,hard[order[3]],outgoing, qorder,true);
   helicityME(f1,f2,a1,a2,lorder,qorder,false);
-  // get the spin info objects
-  SpinfoPtr spin[4];
-  for(unsigned int ix=0;ix<4;++ix) {
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
-  }
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    tSpinfoPtr spin = dynamic_ptr_cast<tSpinfoPtr>(hard[ix]->spinInfo());
+    tSpinPtr spin = hard[ix]->spinInfo();
     if(ix<2) {
       tcPolarizedBeamPDPtr beam = 
 	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
       if(beam) spin->rhoMatrix() = beam->rhoMatrix();
     }
-    spin->setProductionVertex(hardvertex);
+    spin->productionVertex(hardvertex);
   }
 }
 

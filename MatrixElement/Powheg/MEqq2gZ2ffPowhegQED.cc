@@ -1658,16 +1658,15 @@ void MEqq2gZ2ffPowhegQED::constructVertex(tSubProPtr sub) {
   SpinorWaveFunction(   aout,hard[3],outgoing,true ,true);
   qqbarME(fin,ain,fout,aout,true);
   // get the spin info objects
-  SpinfoPtr spin[4];
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
+  SpinPtr spin[4];
+  for(unsigned int ix=0;ix<4;++ix) spin[ix]=hard[ix]->spinInfo();
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(me_);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) 
-    spin[ix]->setProductionVertex(hardvertex);
+    spin[ix]->productionVertex(hardvertex);
 }
 
 HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree) {

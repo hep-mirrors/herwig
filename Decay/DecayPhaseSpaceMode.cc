@@ -18,11 +18,11 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "DecayIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/Helicity/HelicityVertex.h"
+#include "ThePEG/EventRecord/HelicityVertex.h"
 #include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/SpinInfo.h"
+
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Utilities/Debug.h"
 
@@ -392,9 +392,9 @@ void DecayPhaseSpaceMode::constructVertex(const Particle & inpart,
   VertexPtr vertex(new_ptr(DecayVertex()));
   DVertexPtr Dvertex(dynamic_ptr_cast<DVertexPtr>(vertex));
   // set the incoming particle for the decay vertex
-  dynamic_ptr_cast<tcSpinfoPtr>(inpart.spinInfo())->setDecayVertex(vertex);
+  (inpart.spinInfo())->decayVertex(vertex);
   for(unsigned int ix=0;ix<decay.size();++ix) {
-    dynamic_ptr_cast<tcSpinfoPtr>(decay[ix]->spinInfo())->setProductionVertex(vertex);
+    (decay[ix]->spinInfo())->productionVertex(vertex);
   }
   // set the matrix element
   Dvertex->ME().reset(_integrator->ME());

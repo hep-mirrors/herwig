@@ -584,7 +584,6 @@ GeneralQQHiggs::diagrams(const DiagramVector & diags) const {
 }
 
 void GeneralQQHiggs::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[5];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -621,15 +620,13 @@ void GeneralQQHiggs::constructVertex(tSubProPtr sub) {
     ScalarWaveFunction hwave(        hard[4],outgoing,true);
     qqME(q1,q2,q3,q4,hwave,flow_);
   }
-  // get the spin info objects
-  for(unsigned int ix=0;ix<5;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(me_);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<5;++ix) spin[ix]->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<5;++ix) 
+    hard[ix]->spinInfo()->productionVertex(hardvertex);
 }
 
 double GeneralQQHiggs::getCosTheta(double ctmin, double ctmax, double r) {

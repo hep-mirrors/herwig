@@ -1,7 +1,5 @@
-SUBDIRS = MECorrections .
 ## libHwDefaultShower.la will go into HwShower.so
 noinst_LTLIBRARIES = libHwDefaultShower.la
-libHwDefaultShower_la_LIBADD = MECorrections/libHwDefaultMECorrections.la
 libHwDefaultShower_la_SOURCES = \
 QTildeSudakov.cc QTildeSudakov.h\
 QTildeModel.cc QTildeModel.h\
@@ -12,4 +10,3 @@ QtildaShowerKinematics1to2.cc QtildaShowerKinematics1to2.fh\
 QtildaShowerKinematics1to2.h  \
 QTildeFinder.cc QTildeFinder.h\
 QTildeReconstructor.cc QTildeReconstructor.h
-
