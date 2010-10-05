@@ -168,47 +168,10 @@ void HerwigRun::generateEvents() {
     status_ = ERROR;
     return;
   }
-
   if ( seed_ > 0 ) 
     eg->setSeed(seed_);
-	
-  std::cout << "Initializing. This can take a while." << std::endl;
-  eg->initialize();
-
-  if ( N_ == -1 )
-    N_ = eg->N();
-  else if ( N_ > eg->N() ) {
-    std::cerr << "Warning: will only generate " 
-	      << eg->N() << " events;\n"
-	      << "Warning: you can increase NumberOfEvents "
-	      << "in the input files.\n";
-    N_ = eg->N();
-  }
-  const long maxNum = N_;
-
-  long step = std::max( maxNum/100l, 1l );
-
-  std::cout << "Generating events.\r" << std::flush;
-
-  try {
-    while ( eg->shoot() )
-      {
-	long i = eg->currentEventNumber();
-	if ( i % step == 0 )
-	  std::cout << "Generated event: " << i 
-		    << " of " << maxNum << "\r" << std::flush;
-	if ( i >= maxNum ) 
- 	  break;
-      }
-  }
-  catch (...) {
-    std::cout << '\n';
-    eg->finish();
-    throw;
-  }
-
+  eg->go( 1, N_, true );
   std::cout << '\n';
-  eg->finalize();
   status_ = SUCCESS;
 }
 
