@@ -22,7 +22,7 @@ using namespace Herwig;
 void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
   _s = (event->incoming().first ->momentum()+
 	event->incoming().second->momentum()).m2();
-  _weight = event->weight();
+  double weight = event->weight();
   set<tPPtr> particles;
   StepVector steps = event->primaryCollision()->steps();
   for ( StepVector::const_iterator it = steps.begin()+2;
@@ -37,29 +37,25 @@ void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
        id==ParticleID::D0      || id==ParticleID::Dstar0       )
       output.push_back(*it);
   }
-  analyze(output);
+  analyze(output,weight);
 }
 
-void CLEOCharmAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void CLEOCharmAnalysis::analyze(tPPtr particle) {
+void CLEOCharmAnalysis::analyze(tPPtr particle, double weight) {
   // Calls analyze() for each particle.
   double xp = particle->momentum().vect().mag()/
     sqrt(0.25*_s-sqr(particle->mass()));
   int id = abs(particle->id());
   if(id==ParticleID::Dstarplus) {
-    _histDstarplus->addWeighted(xp,_weight);
+    _histDstarplus->addWeighted(xp,weight);
   }
   else if(id==ParticleID::Dstar0) {
-    _histDstar0   ->addWeighted(xp,_weight);
+    _histDstar0   ->addWeighted(xp,weight);
   }
   else if(id==ParticleID::D0) {
-    _histD0       ->addWeighted(xp,_weight);
+    _histD0       ->addWeighted(xp,weight);
   }
   else if(id==ParticleID::Dplus) {
-    _histDplus    ->addWeighted(xp,_weight);
+    _histDplus    ->addWeighted(xp,weight);
   }
 }
 

@@ -28,7 +28,7 @@ struct BranchingInfo {
    * @param mult  The observed multiplcity.
    * @param error The error on the observed multiplicity
    */
-  inline BranchingInfo(double mult=0.,double error=0.);
+  BranchingInfo(double mult=0.,double error=0.);
 
   /**
    *  The observed multiplicity
@@ -94,7 +94,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LEPBMultiplicity();
+  LEPBMultiplicity();
 
 public:
 
@@ -138,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -216,7 +216,5 @@ struct ClassTraits<Herwig::LEPBMultiplicity>
 /** @endcond */
 
 }
-
-#include "LEPBMultiplicity.icc"
 
 #endif /* HERWIG_LEPBMultiplicity_H */

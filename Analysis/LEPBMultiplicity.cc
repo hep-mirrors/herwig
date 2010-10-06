@@ -21,6 +21,33 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+BranchingInfo::BranchingInfo(double inmult,double inerror)
+  : obsBranching(inmult), obsError(inerror), actualCount(0), 
+    sumofsquares(0.0)
+{}
+  
+double BranchingInfo::simBranching(long N, BranchingInfo den) {
+  return den.actualCount>0 ? 
+    double(actualCount) / double(den.actualCount) : 
+    double(actualCount) / double(N)       ;
+}
+
+double BranchingInfo::simError(long N, BranchingInfo den) {
+  double rn = N*( sumofsquares/double(N)  -  sqr(simBranching(N))) /
+    sqr(double(actualCount));
+  double rd = den.actualCount>0 ?
+    N*( den.sumofsquares/double(N)  -  sqr(den.simBranching(N))) /
+    sqr(double(den.actualCount)) : 0.;
+  return simBranching(N,den)*sqrt(rn+rd);
+}
+
+double BranchingInfo::nSigma(long N,BranchingInfo den) {
+  return obsBranching == 0.0 ?
+    0.0 :
+    (simBranching(N,den) - obsBranching) 
+    / sqrt(sqr(simError(N,den)) + sqr(obsError));
+}
+
 string BranchingInfo::bargraph(long N, BranchingInfo den) {
   if (obsBranching == 0.0) return "     ?     ";
   else if (nSigma(N,den) >= 6.0)  return "-----|---->";
@@ -38,7 +65,7 @@ string BranchingInfo::bargraph(long N, BranchingInfo den) {
   else                            return "<----|-----";
 }
 
-inline LEPBMultiplicity::LEPBMultiplicity() {
+LEPBMultiplicity::LEPBMultiplicity() {
   // B+
   _data[521 ] = BranchingInfo(0.403, 0.009);
   // B_s
