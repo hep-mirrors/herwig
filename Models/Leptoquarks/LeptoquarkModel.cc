@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member

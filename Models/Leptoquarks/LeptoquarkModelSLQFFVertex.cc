@@ -69,33 +69,33 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   addToList(-15,5,-9951551);
 
   //dS0
-  addToList(-15,-5,9961551);
-  addToList(15,5,-9961551);
+  addToList(15,-5,9961551);
+  addToList(-15,5,-9961551);
 
-  addToList(-16,-6,9961551);
-  addToList(16,6,-9961551);
+  addToList(16,-6,9961551);
+  addToList(-16,6,-9961551);
 
   //~dS0
-  addToList(-15,-6,9971561);
-  addToList(15,6,-9971561);
+  addToList(15,-6,9971561);
+  addToList(-15,6,-9971561);
 
 
   //dS1 triplet
 
   //dS1p
-  addToList(-15,-6,9981561);
-  addToList(15,6,-9981561);
+  addToList(15,-6,9981561);
+  addToList(-15,6,-9981561);
 
   //dS1z
-  addToList(-16,-6,9981551);
-  addToList(16,6,-9981551);
+  addToList(16,-6,9981551);
+  addToList(-16,6,-9981551);
 
-  addToList(-15,-5,9981551);
-  addToList(15,5,-9981551);
+  addToList(15,-5,9981551);
+  addToList(-15,5,-9981551);
 
   //dS1m
-  addToList(-16,-5,9981651);
-  addToList(16,5,-9981651);
+  addToList(16,-5,9981651);
+  addToList(-16,5,-9981651);
 
   //dS1/2 doublet
   addToList(-15,-5,9991551);
@@ -244,7 +244,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
       _cL = _dcL0 * mbot +_dcR0 * mtau; _cR = _dcR0 * mbot + _dcL0 * mtau;
     }
     if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
-      _cL = _dcR0 * mtop; _cR = 0;
+      _cL = _dcL0 * mtop; _cR = 0;
     }
     _cL /= sqrt(2.) * _derivscale; 
     _cR /= sqrt(2.) * _derivscale; 
