@@ -144,6 +144,13 @@ public:
   }
 
   /**
+   *  Pointer to the chargino-neutralino-W vertex
+   */
+  virtual tAbstractFFVVertexPtr vertexCNW() const {
+    return CNWVertex_;
+  }
+
+  /**
    *  Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
    */
   virtual tAbstractFFSVertexPtr vertexCFSF() const {
