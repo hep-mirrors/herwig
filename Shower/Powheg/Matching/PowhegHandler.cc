@@ -490,6 +490,7 @@ PotentialTree PowhegHandler::doClustering() {
   _proto_trees.insert( initialProtoTree );
   //fill _proto_trees with all possible trees
   fillProtoTrees( branchingMap, initialProtoTree );
+
   double totalWeight = 0.;
   // create a hardtree from each proto tree and fill _hardTrees with angular ordered configs
   for( set< ProtoTreePtr >::const_iterator cit = _proto_trees.begin(); 
@@ -597,8 +598,9 @@ PotentialTree PowhegHandler::doClustering() {
   chosen_hardTree.tree->fixFwdBranchings();
   setBeams( chosen_hardTree.tree );
   getDiagram( chosen_hardTree);
-  assert ( evolver()->showerModel()->kinematicsReconstructor()
-	   ->deconstructHardJets( chosen_hardTree.tree, evolver(),ShowerInteraction::QCD ) );
+  bool result = evolver()->showerModel()->kinematicsReconstructor()
+    ->deconstructHardJets( chosen_hardTree.tree, evolver(),ShowerInteraction::QCD );
+  assert( result );
   assert( chosen_hardTree.tree );
   ++_trees_created;
   return chosen_hardTree;
@@ -761,19 +763,24 @@ void PowhegHandler::getDiagram(PotentialTree & tree) {
       }
     }
     if(!incoming.first || !incoming.second) return;
-    string tag;
-    if ( incoming.first->id() < incoming.second->id() )
-      swap(incoming.first,incoming.second);
-    tag = incoming.first ->PDGName() + "," + incoming.second->PDGName() + "->";
+    pair<string,string> tag;
+    tag.first  = incoming.first  ->PDGName() + "," + incoming.second->PDGName() + "->";
+    tag.second = incoming.second ->PDGName() + "," + incoming.first ->PDGName() + "->";
+
+    string tag_out;
     for ( multiset<tcPDPtr,ParticleOrdering>::iterator i = outgoing.begin();
 	  i != outgoing.end(); ++i ) {
-      if ( i != outgoing.begin() ) tag += ",";
-      tag += (**i).PDGName();
+      if ( i != outgoing.begin() ) tag_out += ",";
+      tag_out += (**i).PDGName();
     }
+    tag.first  += tag_out;
+    tag.second += tag_out;
     // find the diagrams
-    for ( int i = 0, N = _matrixElement->diagrams().size(); i < N; ++i )
-      if ( _matrixElement->diagrams()[i]->getTag() == tag )
+    for ( int i = 0, N = _matrixElement->diagrams().size(); i < N; ++i ) {
+      string temp = _matrixElement->diagrams()[i]->getTag();
+      if ( temp == tag.first || temp == tag.second )
 	tree.diagrams.push_back(_matrixElement->diagrams()[i]);
+    }
   }
   if(tree.diagrams.empty()) return;
   // construct a set of on-shell momenta for the hard collison
@@ -830,7 +837,21 @@ void PowhegHandler::getDiagram(PotentialTree & tree) {
   for( unsigned int ix = 0; ix < meMomenta.size(); ++ix )
     meMomenta[ix].transform(R);
   // now rescale to put on shell
-  // MUST WRITE THIS
+  Energy Ebeam = 0.5 * ( meMomenta[0].e() + meMomenta[1].e() );
+  for( unsigned int i = 0; i < 2; ++i ) {
+    meMomenta[i].setZ( meMomenta[i].z() / abs(meMomenta[i].z()) * Ebeam  );
+    meMomenta[i].setT( Ebeam );
+  }
+  Energy2 s = 4.0 * sqr(Ebeam);
+  Energy m1 = mePartonData[2]->mass();
+  Energy m2 = mePartonData[3]->mass();
+  double lambda = 0.25/Ebeam/meMomenta[2].rho() * 
+    sqrt( ( s - sqr(m1+m2) ) * ( s - sqr(m1-m2) ) );
+  for( unsigned int i = 2; i < meMomenta.size(); ++i ) {
+    meMomenta[i] *= lambda;
+    meMomenta[i].setMass(mePartonData[i]->mass());
+    meMomenta[i].rescaleEnergy();
+  }
   // incoming pair
   PPair in( mePartonData[0]->produceParticle( meMomenta[0] ),
 	    mePartonData[1]->produceParticle( meMomenta[1] ) );

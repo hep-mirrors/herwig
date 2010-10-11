@@ -129,7 +129,8 @@ public:
 		    _highestMultOption(true), _lowestMult(false), 
 		    _clusterOption( 0 ),  _rejectNonAO( true ), 
 		    _rejectNoHistories( true ),
-		    _trees_created(0),_unorderedEvents(0),_ordered_trees_created(0), _cutOption( 0 )
+		    _trees_created(0),_unorderedEvents(0),
+		    _ordered_trees_created(0), _cutOption( 0 )
   {}
 
   /**

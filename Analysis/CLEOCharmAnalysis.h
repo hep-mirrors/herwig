@@ -33,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  CLEOCharmAnalysis() : _s(), _weight() {}
+  CLEOCharmAnalysis() : _s() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -57,17 +57,12 @@ public:
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
   /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
    */
-  virtual void analyze(tPPtr particle);
+  virtual void analyze(tPPtr particle, double weight);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -159,11 +154,6 @@ private:
    *  CMF energy squared
    */
   Energy2 _s;
-
-  /**
-   *  The weight for the event
-   */
-  double _weight;
 };
 
 }

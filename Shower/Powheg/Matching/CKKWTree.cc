@@ -12,7 +12,9 @@ using namespace Herwig;
 
 CKKWTree::CKKWTree(vector<HardBranchingPtr> branchings,
 		   vector<HardBranchingPtr> spacelike,
-		   ShowerInteraction::Type type) : HardTree(branchings,spacelike,type)
+		   ShowerInteraction::Type type) : HardTree(branchings,spacelike,type),
+						   lowestpTMomentum_(ZERO),
+						   totalpT_(ZERO)
 {}
 
 bool CKKWTree::checkXOrdering() {
@@ -191,11 +193,18 @@ bool CKKWTree::checkHardOrdering( ) {
       HardBranchingPtr spacelike = *it;
       vector< pair< Energy, double > > space_like_line;
       while( spacelike->parent() ) {
-	totalpT_ += spacelike->pT();
+	Energy branchingPt = spacelike->pT();
+	assert( spacelike->parent()->children().size() == 2 );
+	HardBranchingPtr emitted = spacelike->parent()->children()[0] == spacelike ?
+	  spacelike->parent()->children()[1] : spacelike->parent()->children()[0];
+	// included factor to favour ISFS branchings between partons in same z direction
+	//hard coded factor here should make a parameter
+	if( ( emitted            ->branchingParticle()->momentum().z() > ZERO ) ==
+	    ( spacelike->parent()->branchingParticle()->momentum().z() > ZERO ) )
+	  branchingPt *= 0.9;  
+ 	totalpT_ += branchingPt;
 	//create a protoline from the time like child of parent
 	vector< pair< Energy, double > > time_like_line = space_like_line;
-	if( spacelike->parent()->children().empty() ) 
-	  cerr<<"HardTree::checkHardOrdering() connection problem\n";
 	//timelike child is always first child
 	time_like_line.push_back( make_pair( spacelike->parent()->scale(), 
 					     spacelike->parent()->children()[1]->z() ) );
@@ -322,10 +331,7 @@ bool CKKWTree::fixFwdBranchings(){
     if( current->backChildren().empty() ) continue;
     vector< HardBranchingPtr > backChildren = current->backChildren();
     while( ! backChildren.empty() ){
-      if( backChildren.size() != 2 ) {
-	cerr << "fixFwdBranchings:: wrong number of back childrem\n";
-	continue;
-      }
+      assert( backChildren.size() == 2 );
       if( !backChildren[0] || !backChildren[1] ) continue;
       //remove any exiting children
       backChildren[0]->clearChildren();
@@ -333,10 +339,7 @@ bool CKKWTree::fixFwdBranchings(){
       backChildren[0]->addChild( backChildren[1] );
       current->parent( backChildren[0] );
       backChildren[1]->parent ( backChildren[0] );
-      if( !current->backSudakov() ){
-	cerr<<"fixFwdBranchings: problem finding backSudakov \n";
-	continue;
-      }
+      assert( current->backSudakov() );
       backChildren[0]->sudakov( current->backSudakov() );
       //continue along incoming line (always the first child)
       current = backChildren[0];
@@ -386,12 +389,13 @@ Energy CKKWTree::lowestPt( int jetMeasureMode, Energy2 s ){
     double costheta = ( Z1*Z2 - sqr(pt) )
       / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
 
-    Energy2 kt_measure;
+    Energy2 kt_measure(ZERO);
     if(  jetMeasureMode == 0 )
       kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
     else if( jetMeasureMode == 2 )
       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
-    
+    else
+      assert(false);
     kt_softest = sqrt( kt_measure );
   }
   else if( jetMeasureMode == 3 && ! lowestpT_->status() == HardBranching::Incoming ){
@@ -403,11 +407,6 @@ Energy CKKWTree::lowestPt( int jetMeasureMode, Energy2 s ){
     
     double beta1 = 2.*( m1 + sqr(pt) ) / z  / s;
     double beta2 = 2.*( m2 + sqr(pt) ) / ( 1. - z ) / s;
-    
-    Energy E1 = sqrt(s)/2.*( z + beta1 );
-    Energy E2 = sqrt(s)/2.*( (1.-z) + beta2 );
-    Energy Z1 = sqrt(s)/2.*( z - beta1 );
-    Energy Z2 = sqrt(s)/2.*( (1.-z) - beta2 );
       
     //delta phi is always pi for first emission (qt_i = +-pt)
     double deltaR = sqr(  log( z / beta1 ) - log( (1-z) / beta2 ) ) / 4. 

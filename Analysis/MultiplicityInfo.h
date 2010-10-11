@@ -28,8 +28,8 @@ struct MultiplicityInfo {
    * @param error The error on the observed multiplicity
    * @param type  The type of particle
    */
-  inline MultiplicityInfo(double mult=0.,double error=0.,
-			  ParticleSpecies type=other)
+  MultiplicityInfo(double mult=0.,double error=0.,
+		   ParticleSpecies type=other)
     : obsMultiplicity(mult), obsError(error), type(type) {};
 
   /**

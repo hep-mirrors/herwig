@@ -36,7 +36,7 @@ public:
   /**
    * Default constructor
    */
-  inline LEPFourJetsAnalysis ()
+  LEPFourJetsAnalysis ()
     : _ca34(), _cchiBZ(), _cphiKSW(), _cthNR(),
       _charged(true) {}
 
@@ -100,7 +100,7 @@ protected:
   /**
    *  Compute \f$\cos\chi_{BZ}\f$
    */
-  inline double cosChiBZ(vector<Lorentz5Momentum> p) {
+  double cosChiBZ(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
       ThreeVector<Energy2> v1 = p[0].vect().cross(p[1].vect());
       ThreeVector<Energy2> v2 = p[2].vect().cross(p[3].vect());
@@ -112,7 +112,7 @@ protected:
   /**
    *  Compute \f$\cos\Phi_{KSW}\f$.
    */ 
-  inline double cosPhiKSW(vector<Lorentz5Momentum> p) {
+  double cosPhiKSW(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
       ThreeVector<Energy2> v1 = p[0].vect().cross(p[3].vect());
       ThreeVector<Energy2> v2 = p[1].vect().cross(p[2].vect());
@@ -128,7 +128,7 @@ protected:
   /**
    *  Compute \f$\cos\Theta_{NR}\f$
    */
-  inline double cosThetaNR(vector<Lorentz5Momentum> p) {
+  double cosThetaNR(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
       ThreeVector<Energy> v1 = p[0].vect() - p[1].vect();
       ThreeVector<Energy> v2 = p[2].vect() - p[3].vect();
@@ -140,7 +140,7 @@ protected:
   /**
    *  Compute \f$\cos\alpha_{34}\f$
    */
-  inline double cosAlpha34(std::vector<Lorentz5Momentum> p) {
+  double cosAlpha34(std::vector<Lorentz5Momentum> p) {
     if (p.size() == 4)
       return cos(p[2].vect().angle(p[3].vect()));
     else 
@@ -156,7 +156,7 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {
+  virtual IBPtr clone() const {
     return new_ptr(*this);
   }
 
@@ -164,7 +164,7 @@ protected:
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {
+  virtual IBPtr fullclone() const {
     return new_ptr(*this);
   }
   //@}

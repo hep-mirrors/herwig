@@ -144,26 +144,7 @@ void LPairAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-LorentzRotation LPairAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void LPairAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void LPairAnalysis::analyze(tPPtr) {}
-
-void LPairAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void LPairAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<LPairAnalysis> LPairAnalysis::initLPairAnalysis;
+NoPIOClassDescription<LPairAnalysis> LPairAnalysis::initLPairAnalysis;
 // Definition of the static class description member.
 
 void LPairAnalysis::Init() {

@@ -109,7 +109,7 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
   Energy2 pTVeto = ( pTVeto_ > ZERO && !highestMult_ ) ? 
     sqr( pTVeto_ ) : sqr( progenitor->maximumpT() );
   //find corresponding pt measure based on the emission variables
-  Energy2 kt_measure;
+  Energy2 kt_measure(ZERO);
   Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
   Energy pt = fb.kinematics->pT();
   double z  = fb.kinematics->z();
@@ -138,6 +138,8 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
       kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
     else if( pTVetoDefinition_ == 2 )
       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
+    else
+      assert(false);
   }
   //hadron jet measure cuts
   else if( fb.kinematics && pTVetoDefinition_ == 3 && !highestMult_ ) {
@@ -146,11 +148,6 @@ bool CKKWVeto::vetoTimeLike (tcShowerProgenitorPtr progenitor, tcShowerParticleP
     
     double beta1 = 2.*( m1 + sqr(pt) ) / z  / s;
     double beta2 = 2.*( m2 + sqr(pt) ) / ( 1. - z ) / s;
-    
-    Energy E1 = sqrt(s)/2.*( z + beta1 );
-    Energy E2 = sqrt(s)/2.*( (1.-z) + beta2 );
-    Energy Z1 = sqrt(s)/2.*( z - beta1 );
-    Energy Z2 = sqrt(s)/2.*( (1.-z) - beta2 );
       
     //delta phi is always pi for first emission (qt_i = +-pt)
     double deltaR = sqr(  log( z / beta1 ) - log( (1-z) / beta2 ) ) / 4. 

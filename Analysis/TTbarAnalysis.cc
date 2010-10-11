@@ -133,17 +133,6 @@ void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-LorentzRotation TTbarAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void TTbarAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void TTbarAnalysis::analyze(tPPtr) {}
-
 NoPIOClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
 // Definition of the static class description member.
 
