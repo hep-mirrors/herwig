@@ -125,7 +125,7 @@ private:
   /**
    *  Identidies of the leptons
    */
-  vector<unsigned int> _outgoingL;
+  vector<long> _outgoingL;
 
   /**
    *  Histograms
