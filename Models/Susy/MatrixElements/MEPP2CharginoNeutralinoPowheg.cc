@@ -88,8 +88,10 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
       for(unsigned int jx=0;jx<4;++jx){
 	if(process_==0 || process_==4*ix+jx+1){
 	  // W-mediated s-channel
+	  // if(mePartonData()[0]->charge()/eplus
+	  //    + mePartonData()[1]->charge()/eplus == -1){
 	  // add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
-	  //3, chab[ix], 3, neu[jx], -1)));
+	  //3, chab[ix], 3, neu[jx], -1)));}
 	  //	  else{add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
 	  //	    3, cha[ix], 3, neu[jx], -2)));}	  
 	  
@@ -101,13 +103,15 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
 	    // ~qR mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
 			 3, chab[ix], 1, neu[jx], -4)));
+
 	    // ~qL mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
-			 1, chab[ix], 3, neu[jx], -5)));
+			 3, neu[jx], 1, chab[ix], -5)));
 	    // ~qR mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
-			 1, chab[ix], 3, neu[jx], -6)));
+			 3, neu[jx], 1, chab[ix], -6)));
 	  }
+
 // 	  // q is up type
 // 	  else {
 // 	    // ~qL mediated t-channel
@@ -146,12 +150,12 @@ IBPtr MEPP2CharginoNeutralinoPowheg::fullclone() const {
 }
 
 void MEPP2CharginoNeutralinoPowheg::persistentOutput(PersistentOStream & os) const {
-  os << FFWVertex_ << FFGVertex_ << CNWVertex_ << CFSVertex_
+  os << FFWVertex_ << FFGVertex_ << CNWVertex_ << CFSVertex_ << NFSVertex_
      << Wplus_ << Wminus_ << process_ << maxFlavour_;
 }
 
 void MEPP2CharginoNeutralinoPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> FFWVertex_ >> FFGVertex_ >> CNWVertex_ >> CFSVertex_
+  is >> FFWVertex_ >> FFGVertex_ >> CNWVertex_ >> CFSVertex_ >> NFSVertex_
      >> Wplus_ >> Wminus_ >> process_ >> maxFlavour_;
 }
 
@@ -257,7 +261,13 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   // scale for the process
   const Energy2 q2(scale());
   tcPDPtr squark[2];
-  if(mePartonData()[3]->charged()){
+
+//   cerr << mePartonData()[0]->charge()/eplus << " "
+//        << mePartonData()[1]->charge()/eplus << " "
+//        << mePartonData()[2]->charge()/eplus << " "
+//        << mePartonData()[3]->charge()/eplus << " " << endl;
+
+  if(mePartonData()[2]->charged()){
     if (abs(mePartonData()[0]->id())%2==0) {
       squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
       squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
@@ -271,6 +281,15 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
     squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id()));
     squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id()));
   }
+
+  //  cerr << mePartonData()[2]->charge()/eplus << " "
+  //       << mePartonData()[3]->charge()/eplus << endl;
+  //  cout << squark[0]->charge()/eplus << " " << squark[1]->charge()/eplus << endl;
+  //  cout << squark[0]->id() << " " << squark[1]->id() << endl;
+
+
+  //  if(mePartonData()[3]->charged())
+  //    cout << "yes!" << endl;
   
   // conjugate spinors for t-channel diagram
   vector<SpinorWaveFunction> sbaroutconj;
@@ -302,18 +321,18 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
 	  // s-channel
-	  if(mePartonData()[0]->charge()/eplus == +2/3
-	     || mePartonData()[2]->charge()/eplus == +2/3){
- 	    //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWp);
-	    diag[0] = 0.;
-	  }
-	  else{
-	    //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWm);
-	    diag[0] = 0.;
-	  }
+// 	  if(mePartonData()[0]->charge()/eplus == -2/3
+// 	     || mePartonData()[1]->charge()/eplus == -2/3){
+	  //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWm);
+
+// 	  }
+// 	  else{
+//  	    diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWp);
+// 	  }
 	  for(unsigned int iq=0;iq<2;++iq) {
 	    // t-channel squark exchange
-	    if(mePartonData()[3]->charged()){
+	    //	    if(mePartonData()[2]->charged()){
+	    if(abs(squark[iq]->charge()/eplus) == 2/3){
 	      ScalarWaveFunction intersq = NFSVertex_->
 		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
 	      diag[iq+1] = 
