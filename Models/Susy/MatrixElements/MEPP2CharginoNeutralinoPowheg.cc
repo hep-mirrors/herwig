@@ -260,37 +260,23 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	bool first) const {
   // scale for the process
   const Energy2 q2(scale());
-  tcPDPtr squark[2];
-
-//   cerr << mePartonData()[0]->charge()/eplus << " "
-//        << mePartonData()[1]->charge()/eplus << " "
-//        << mePartonData()[2]->charge()/eplus << " "
-//        << mePartonData()[3]->charge()/eplus << " " << endl;
-
-  if(mePartonData()[2]->charged()){
-    if (abs(mePartonData()[0]->id())%2==0) {
-      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
-      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
-    }
-    else {
-      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
-      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
-    }
+  tcPDPtr squark[4];
+  if (abs(mePartonData()[0]->id())%2==0) {
+    // t-channel
+    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+    // u-channel
+    squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
+    squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
   }
-  else{
-    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id()));
-    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id()));
+  else {
+    // t-channel
+    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+    // u-channel
+    squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
+    squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
   }
-
-  //  cerr << mePartonData()[2]->charge()/eplus << " "
-  //       << mePartonData()[3]->charge()/eplus << endl;
-  //  cout << squark[0]->charge()/eplus << " " << squark[1]->charge()/eplus << endl;
-  //  cout << squark[0]->id() << " " << squark[1]->id() << endl;
-
-
-  //  if(mePartonData()[3]->charged())
-  //    cout << "yes!" << endl;
-  
   // conjugate spinors for t-channel diagram
   vector<SpinorWaveFunction> sbaroutconj;
   vector<SpinorBarWaveFunction> spoutconj;
@@ -305,50 +291,37 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 					      spout[of1].direction()));
   }
   // storage of the matrix elements for specific diagrams
-  vector<double> me(3, 0.);
+  vector<double> me(5, 0.);
   double me2(0.);
   // storage of the individual diagrams
-  vector<Complex> diag(3, 0.);
+  vector<Complex> diag(5, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
-      VectorWaveFunction interWp = FFWVertex_->
-	evaluate(q2, 1, Wplus_, sp[if1],sbar[if2]);
-      VectorWaveFunction interWm = FFWVertex_->
-	evaluate(q2, 1, Wminus_, sp[if1],sbar[if2]);
+      VectorWaveFunction interW = FFWVertex_->
+	evaluate(q2, 1, mePartonData()[0]->iCharge() >0 ? Wplus_ : Wminus_,
+		 sp[if1],sbar[if2]);
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
 	  // s-channel
-// 	  if(mePartonData()[0]->charge()/eplus == -2/3
-// 	     || mePartonData()[1]->charge()/eplus == -2/3){
-	  //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWm);
-
-// 	  }
-// 	  else{
-//  	    diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWp);
-// 	  }
+	  diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interW);
+	  // t and u channels
 	  for(unsigned int iq=0;iq<2;++iq) {
-	    // t-channel squark exchange
-	    //	    if(mePartonData()[2]->charged()){
-	    if(abs(squark[iq]->charge()/eplus) == 2/3){
-	      ScalarWaveFunction intersq = NFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-	      diag[iq+1] = 
-		CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);}
-	    // u-channel squark exchange
-	    else{
-	      ScalarWaveFunction intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
-	      diag[iq+1] = 
-		NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-	    }
+	    // t-channel
+	    ScalarWaveFunction intersq = CFSVertex_->
+	      evaluate(q2, 3, squark [iq   ], sp[if1], spoutconj[of1]);
+	    diag[iq+1] =  NFSVertex_->
+	      evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
+	    // u-channel
+	    intersq = NFSVertex_->
+		evaluate(q2, 3, squark[iq+2], sp[if1], sbarout[of2]);
+	    diag[iq+3] = CFSVertex_->
+	      evaluate(q2, spout[of1], sbar[if2], intersq);
 	  }
 	  // individual diagrams
-	  for(unsigned int id=0;id<3;++id){
-	    me[id] += norm(diag[id]);
-	  }
+	  for(unsigned int id=0;id<5;++id) me[id] += norm(diag[id]);
 	  // sum up the matrix elements
 	  Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
 	  me2 += norm(total);
