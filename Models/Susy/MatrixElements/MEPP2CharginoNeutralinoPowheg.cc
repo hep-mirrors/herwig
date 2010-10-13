@@ -76,35 +76,53 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
 //     else{
 //       q  = getParticleData(i);
 //       qb = getParticleData(i-1)->CC();}
-    tcPDPtr qL = getParticleData(1000000+i);
-    tcPDPtr qR = getParticleData(2000000+i);
+
+    //qLdt = Left-handed squark, t-channel
+    tcPDPtr qLt = getParticleData(1000000+i);
+    tcPDPtr qRt = getParticleData(2000000+i);
+    tcPDPtr qLu = getParticleData(1000000+i+1);
+    tcPDPtr qRu = getParticleData(2000000+i+1);
+    tcPDPtr qLd = getParticleData(1000000+i-1);
+    tcPDPtr qRd = getParticleData(2000000+i-1);
     for(unsigned int ix=0;ix<2;++ix){
       for(unsigned int jx=0;jx<4;++jx){
 	if(process_==0 || process_==4*ix+jx+1){
 	  // W-mediated s-channel
-	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
-			 3, chab[ix], 3, neu[jx], -1)));
+	  // add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
+	  //3, chab[ix], 3, neu[jx], -1)));
 	  //	  else{add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
 	  //	    3, cha[ix], 3, neu[jx], -2)));}	  
 	  
-	  // down type
+	  // q is down type
 	  if(i%2==1) {
 	    // ~qL mediated t-channel
-	    add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
+	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
 			 3, chab[ix], 1, neu[jx], -3)));
 	    // ~qR mediated t-channel
-	    add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
+	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
 			 3, chab[ix], 1, neu[jx], -4)));
+	    // ~qL mediated u-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
+			 1, chab[ix], 3, neu[jx], -5)));
+	    // ~qR mediated u-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
+			 1, chab[ix], 3, neu[jx], -6)));
 	  }
-	  // up type
-	  else {
-	    // ~qL mediated t-channel
-	    add(new_ptr((Tree2toNDiagram(3), q, qL, qb,
-			 1, chab[ix], 3, neu[jx], -3)));
-	    // ~qR mediated t-channel
-	    add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
-			 1, chab[ix], 3, neu[jx], -4)));
-	  }
+// 	  // q is up type
+// 	  else {
+// 	    // ~qL mediated t-channel
+// 	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
+// 			 3, cha[ix], 1, neu[jx], -3)));
+// 	    // ~qR mediated t-channel
+// 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
+// 			 3, cha[ix], 1, neu[jx], -4)));
+// 	    // ~qL mediated u-channel
+// 	    add(new_ptr((Tree2toNDiagram(3), q, qLd, qb,
+// 			 1, cha[ix], 3, neu[jx], -3)));
+// 	    // ~qR mediated u-channel
+// 	    add(new_ptr((Tree2toNDiagram(3), q, qRd, qb,
+// 			 1, cha[ix], 3, neu[jx], -4)));
+//	  }
 	}
       }
     }
@@ -239,14 +257,21 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   // scale for the process
   const Energy2 q2(scale());
   tcPDPtr squark[2];
-  if (abs(mePartonData()[0]->id())%2==0) {
-    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
-    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+  if(mePartonData()[3]->charged()){
+    if (abs(mePartonData()[0]->id())%2==0) {
+      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+    }
+    else {
+      squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+      squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+    }
   }
-  else {
-    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
-    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+  else{
+    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id()));
+    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id()));
   }
+  
   // conjugate spinors for t-channel diagram
   vector<SpinorWaveFunction> sbaroutconj;
   vector<SpinorBarWaveFunction> spoutconj;
@@ -277,25 +302,28 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
 	  // s-channel
-// 	  if(mePartonData()[0]->id()==1 || mePartonData()[0]->id()==3 ||
-// 	     mePartonData()[1]->id()==1 || mePartonData()[1]->id()==3){
-// 	    diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWp);}
-	  //	  else{
-	  diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWm);
-//}
-	  // t-channel squark exchanges	  
+	  if(mePartonData()[0]->charge()/eplus == +2/3
+	     || mePartonData()[2]->charge()/eplus == +2/3){
+ 	    //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWp);
+	    diag[0] = 0.;
+	  }
+	  else{
+	    //diag[0] = CNWVertex_->evaluate(q2, spout[of1],  sbarout[of2], interWm);
+	    diag[0] = 0.;
+	  }
 	  for(unsigned int iq=0;iq<2;++iq) {
-	    if(abs(mePartonData()[0]->id())%2==0) {
+	    // t-channel squark exchange
+	    if(mePartonData()[3]->charged()){
+	      ScalarWaveFunction intersq = NFSVertex_->
+		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+	      diag[iq+1] = 
+		CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);}
+	    // u-channel squark exchange
+	    else{
 	      ScalarWaveFunction intersq = CFSVertex_->
 		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
 	      diag[iq+1] = 
-		-CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
-	    }
-	    else {
-	      ScalarWaveFunction intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
-	      diag[iq+1] = 
-		CFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
+		NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
 	    }
 	  }
 	  // individual diagrams

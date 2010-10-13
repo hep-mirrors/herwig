@@ -38,8 +38,8 @@ NLODrellYanBase::NLODrellYanBase()
 {}
 
 Energy2 NLODrellYanBase::scale() const {
-  //return sHat();
-  return sqr(0.5*(mePartonData()[2]->mass()+mePartonData()[3]->mass()));
+  return sHat();
+  //return sqr(0.5*(mePartonData()[2]->mass()+mePartonData()[3]->mass()));
 }
 
 int NLODrellYanBase::nDim() const {
