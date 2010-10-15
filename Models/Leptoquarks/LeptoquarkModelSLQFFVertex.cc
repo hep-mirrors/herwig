@@ -175,7 +175,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   double mbot = 4.2;
   double mtau = 1.77699;
   int lqtype1[9] = { 9911561, 9921551, 9931551, 9931561, 9931661, 9991551, 9991561, 9901561, 9901661 };
-  int lqtype2[9] = { 9941561, 9941551, 9951551, 9951651, 9961651, 9971561, 9981561, 9981551, 9981651 };
+  int lqtype2[9] = { 9941561, 9941551, 9951551, 9951651, 9961551, 9971561, 9981561, 9981551, 9981651 };
 
 
   //set the couplings to left and right 
