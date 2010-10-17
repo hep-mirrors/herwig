@@ -312,7 +312,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	    // t-channel
 	    ScalarWaveFunction intersq = CFSVertex_->
 	      evaluate(q2, 3, squark [iq   ], sp[if1], spoutconj[of1]);
-	    diag[iq+1] =  NFSVertex_->
+	    diag[iq+1] = -NFSVertex_->
 	      evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
 	    // u-channel
 	    intersq = NFSVertex_->
