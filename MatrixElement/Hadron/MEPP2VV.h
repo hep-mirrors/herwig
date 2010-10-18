@@ -61,6 +61,11 @@ public:
   virtual Energy2 scale() const;
 
   /**
+   * Return the process being run (WW/ZZ/WZ).
+   */
+  virtual int process() const { return process_; }
+
+  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;

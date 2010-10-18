@@ -18,6 +18,7 @@
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
 #include "Herwig++/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
@@ -148,6 +149,11 @@ public:
    *  Access to the Evolver
    */
   tEvolverPtr evolver() const {return evolver_;}
+
+  /**
+   *  Generate hard emissions for CKKW etc
+   */
+  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
 
 protected:
 

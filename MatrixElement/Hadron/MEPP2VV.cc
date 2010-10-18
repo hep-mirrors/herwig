@@ -63,6 +63,17 @@ void MEPP2VV::Init() {
      "ZZ",
      "Only include ZZ",
      3);
+ 
+  static SwitchOption interfaceProcessWpZ
+    (interfaceProcess,
+     "WpZ",
+     "Only include W+ Z",
+     4);
+  static SwitchOption interfaceProcessWmZ
+    (interfaceProcess,
+     "WmZ",
+     "Only include W- Z",
+     5);
 
   static Parameter<MEPP2VV,int> interfaceMaximumFlavour
     ("MaximumFlavour",
@@ -220,7 +231,7 @@ void MEPP2VV::getDiagrams() const {
     }
   }
   // W+/- Z
-  if(process_==0||process_==2) {
+  if(process_==0||process_==2||process_==4||process_==5) {
     // possible parents
     Pairvector parentpair;
     parentpair.reserve(6);
@@ -246,25 +257,29 @@ void MEPP2VV::getDiagrams() const {
       ;
     }
     // W+ Z
-    for(unsigned int ix=0;ix<parentpair.size();++ix) {
-      add(new_ptr((Tree2toNDiagram(3), parentpair[ix].second->CC(), 
-		   parentpair[ix].first, parentpair[ix].first->CC(),
-		   1, wPlus, 2, z0, -1)));
-      add(new_ptr((Tree2toNDiagram(3), parentpair[ix].second->CC(), 
-		   parentpair[ix].second->CC() , parentpair[ix].first->CC(),
-		   2, wPlus, 1, z0, -2)));
-      add(new_ptr((Tree2toNDiagram(2), parentpair[ix].second->CC(),
-		   parentpair[ix].first->CC(), 1, wPlus, 3, wPlus, 3, z0,  -3)));
+    if(process_==0||process_==2||process_==4) {
+      for(unsigned int ix=0;ix<parentpair.size();++ix) {
+	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].second->CC(), 
+		     parentpair[ix].first, parentpair[ix].first->CC(),
+		     1, wPlus, 2, z0, -1)));
+	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].second->CC(), 
+		     parentpair[ix].second->CC() , parentpair[ix].first->CC(),
+		     2, wPlus, 1, z0, -2)));
+	add(new_ptr((Tree2toNDiagram(2), parentpair[ix].second->CC(),
+		     parentpair[ix].first->CC(), 1, wPlus, 3, wPlus, 3, z0,  -3)));
+      }
     }
     // W- Z
-    for(unsigned int ix=0;ix<parentpair.size();++ix) {
-      add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
-		   parentpair[ix].second->CC(),
-		   parentpair[ix].second, 1, wMinus, 2, z0, -1)));
-      add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
-		   parentpair[ix].first , parentpair[ix].second, 2, wMinus, 1, z0, -2)));
-      add(new_ptr((Tree2toNDiagram(2), parentpair[ix].first,
-		   parentpair[ix].second, 1, wMinus, 3, wMinus, 3, z0,  -3))); 
+    if(process_==0||process_==2||process_==5) {
+      for(unsigned int ix=0;ix<parentpair.size();++ix) {
+	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
+		     parentpair[ix].second->CC(),
+		     parentpair[ix].second, 1, wMinus, 2, z0, -1)));
+	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
+		     parentpair[ix].first , parentpair[ix].second, 2, wMinus, 1, z0, -2)));
+	add(new_ptr((Tree2toNDiagram(2), parentpair[ix].first,
+		     parentpair[ix].second, 1, wMinus, 3, wMinus, 3, z0,  -3))); 
+      }
     }
   }
   // Z Z
@@ -363,7 +378,7 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
 	  // t-channel
 	  for(unsigned int ix=0;ix<3;++ix) {
 	    SpinorWaveFunction inter = 
-	      FFWvertex_->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
+	      FFWvertex_->evaluate(scale(),5,tc[ix],f1[ihel1],v1[ohel1]);
 	    diag[ix] = 
 	      FFWvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
 	  }

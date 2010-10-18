@@ -26,7 +26,6 @@
 #include "Evolver.fh"
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Decay/HwDecayerBase.h"
-#include "HardestEmissionGenerator.h"
 
 namespace Herwig {
 
@@ -109,6 +108,11 @@ public:
    */
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
+
+  /**
+   *  Connect the Hard and Shower trees
+   */
+  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
 
 public:
 
@@ -450,10 +454,11 @@ protected:
    */
   virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
-  vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
-  {return _hardgenerator;}
-
+  /**
+   *  Only generate the hard emission, for testing only.
+   */
   bool hardOnly() const {return _hardonly;}
+
 protected:
 
   /** @name Clone Methods. */
@@ -469,17 +474,6 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@} 
-
-protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.   
-   */
-  virtual void doinitrun();
   //@}
 
 private:
@@ -495,16 +489,6 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
-
-  /**
-   * Recursive function to find FS end point of shower line
-   */
-  bool findShowerEnd( PPtr parton );
-  
-  /**
-   * Recursive function to find FS end point of hardBranching line
-   */
-  bool findHardTreeEnd( HardBranchingPtr parton );
 
 private:
 
@@ -630,11 +614,6 @@ private:
   unsigned int _nfs;
 
   /**
-   *  Vector of objects responisble for generating the hardest emission
-   */
-  vector<HardestEmissionGeneratorPtr> _hardgenerator;
-
-  /**
    *  Only generate the emission from the hardest emission
    *  generate for testing only
    */
@@ -654,13 +633,6 @@ private:
    *  Mode for the hard emissions
    */
   unsigned int _hardEmissionMode;
-
-  /**
-   * Storage of the end points from shower and hard tree for 
-   * momentum reconstruction checks
-   */
-  multimap< long, PPtr > _showerEndPoints;
-  vector< PPtr > _hardTreeEndPoints;
 };
 
 }

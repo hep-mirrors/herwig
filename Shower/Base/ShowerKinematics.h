@@ -306,14 +306,6 @@ struct ClassTraits<Herwig::ShowerKinematics>
   : public ClassTraitsBase<Herwig::ShowerKinematics> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ShowerKinematics"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerKinematics is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerKinematics depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

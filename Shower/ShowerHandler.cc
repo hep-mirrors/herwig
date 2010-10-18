@@ -33,6 +33,7 @@
 #include "Herwig++/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/PDF/HwRemDecayer.h"
@@ -705,4 +706,8 @@ void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
 
   // reset the PDFs stored in the base class
   resetPDFs(newpdf);
+}
+
+HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
+  return HardTreePtr();
 }

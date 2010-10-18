@@ -155,6 +155,10 @@ set PowhegMEHiggs:ShapeScheme MassGenerator
 set PowhegMEHiggs:Process gg
 set PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
+# PP->VV
+create Herwig::MEPP2VVPowheg PowhegMEPP2VV
+set PowhegMEPP2VV:ShowerAlpha /Herwig/Shower/AlphaQCD
+
 ##########################################################
 # DIS matrix elements
 ##########################################################

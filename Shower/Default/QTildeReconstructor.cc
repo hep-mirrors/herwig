@@ -1681,8 +1681,10 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
     pvect.transform(toRest);
     pvect /= lambda;
-    if((*cit)->branchingParticle()->getThePEGBase())
-      pvect.setMass((*cit)->branchingParticle()->getThePEGBase()->mass());
+    if((*cit)->branchingParticle()->children().size()==0 ||
+       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
+	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
+      pvect.setMass((*cit)->branchingParticle()->momentum().mass());
     else
       pvect.setMass((*cit)->branchingParticle()->dataPtr()->mass());
     pvect.rescaleEnergy();

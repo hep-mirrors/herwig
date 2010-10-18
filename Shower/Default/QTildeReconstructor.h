@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
