@@ -21,9 +21,8 @@ MEGammaGamma2WW::MEGammaGamma2WW() : massOption_(2)
 {}
 
 void MEGammaGamma2WW::doinit() {
-  HwME2to2Base::doinit();
-  massOption(true ,massOption_);
-  massOption(false,massOption_);
+  HwMEBase::doinit();
+  massOption(vector<unsigned int>(2,massOption_));
   rescalingOption(2);
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());

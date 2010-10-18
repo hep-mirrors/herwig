@@ -5,7 +5,7 @@
 // This is the declaration of the MEChargedCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * @see \ref MEChargedCurrentDISInterfaces "The interfaces"
  * defined for MEChargedCurrentDIS.
  */
-class MEChargedCurrentDIS: public HwME2to2Base {
+class MEChargedCurrentDIS: public HwMEBase {
 
 public:
 
@@ -234,7 +234,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
   /** Typedef of the first base class of MEChargedCurrentDIS. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

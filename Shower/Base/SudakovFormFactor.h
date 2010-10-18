@@ -19,7 +19,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
-#include "ShowerKinematics.h"
+#include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {
@@ -185,7 +185,7 @@ public:
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param beam The beam particle
-   * @param enhance THe radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
@@ -206,6 +206,12 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   tShowerAlphaPtr alpha() const { return alpha_; }
+
+  /**
+   *  The type of interaction
+   */
+  inline ShowerInteraction::Type interactionType() const 
+  {return splittingFn_->interactionType();}
   //@}
 
 public:
@@ -252,6 +258,12 @@ public:
    */
   virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
 						double phi, Energy pt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for a decay branching
+   */
+  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
+					 double phi, Energy pt)=0;
 
 public:
 
@@ -354,8 +366,8 @@ protected:
    * @return true if vetoed
    */
   bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > Math::powi(alpha_->ratio(pt2),
-					splittingFn_->interactionOrder());}
+  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+						splittingFn_->interactionOrder());}
   //@}
 
   /**
@@ -477,6 +489,14 @@ public:
    */
   Energy2 pT2min() const { return pT2min_; }
   //@}
+
+  /**
+   *   Set the PDF
+   */
+  void setPDF(tcPDFPtr pdf, Energy scale) {
+    pdf_ = pdf;
+    freeze_ = scale;
+  }
 
 private:
 
@@ -610,6 +630,21 @@ private:
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zlimits_;
+
+  /**
+   *  Stuff for the PDFs
+   */
+  //@{
+  /**
+   *  PDf
+   */
+  tcPDFPtr pdf_;
+
+  /**
+   *  Freezing scale
+   */
+  Energy freeze_;
+  //@}
 };
 
 }
@@ -635,14 +670,6 @@ struct ClassTraits<Herwig::SudakovFormFactor>
   : public ClassTraitsBase<Herwig::SudakovFormFactor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SudakovFormFactor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SudakovFormFactor is implemented. It may also include several, space-separated,
-   * libraries if the class SudakovFormFactor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

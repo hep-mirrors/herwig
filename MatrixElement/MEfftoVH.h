@@ -5,7 +5,7 @@
 // This is the declaration of the MEfftoVH class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "DrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -22,7 +22,7 @@ using namespace ThePEG;
  * @see \ref MEfftoVHInterfaces "The interfaces"
  * defined for MEfftoVH.
  */
-class MEfftoVH: public MEBase {
+class MEfftoVH: public DrellYanBase {
 
 public:
 
@@ -329,7 +329,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEfftoVH,1> {
   /** Typedef of the first base class of MEfftoVH. */
-  typedef MEBase NthBase;
+  typedef Herwig::DrellYanBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

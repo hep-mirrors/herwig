@@ -12,7 +12,7 @@
 // This is the declaration of the GeneralHardME class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -34,10 +34,10 @@ using Helicity::VertexBasePtr;
  * ME. It stores a vector of diagram structures that contain the required
  * to calculate the matrix element.
  *
- * @see HwME2to2Base
+ * @see HwMEBase
  */
 
-class GeneralHardME: public HwME2to2Base {
+class GeneralHardME: public HwMEBase {
 
 public:
 
@@ -475,7 +475,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::GeneralHardME,1> {
   /** Typedef of the first base class of GeneralHardME. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

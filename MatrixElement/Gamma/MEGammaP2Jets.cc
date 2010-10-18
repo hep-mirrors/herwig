@@ -18,8 +18,7 @@
 using namespace Herwig;
 
 MEGammaP2Jets::MEGammaP2Jets() : _process(0), _minflavour(1) ,_maxflavour(5) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 unsigned int MEGammaP2Jets::orderInAlphaS() const {
@@ -152,7 +151,7 @@ void MEGammaP2Jets::doinit() {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 Selector<const ColourLines *>

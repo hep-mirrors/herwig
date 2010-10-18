@@ -37,3 +37,12 @@ HwLEPJetAnalysis_la_SOURCES = \
 LEPJetAnalysis.cc LEPJetAnalysis.h\
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.h
 endif
+
+pkglib_LTLIBRARIES += HwTevatronAnalysis.la
+HwTevatronAnalysis_la_LDFLAGS = -module -version-info 1:0:0
+HwTevatronAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwTevatronAnalysis_la_SOURCES = \
+ZpTRun2.cc ZpTRun2.h \
+ZpTRun1.cc ZpTRun1.h \
+Wpt.cc Wpt.h \
+Zrapidity.cc Zrapidity.h 

@@ -24,12 +24,13 @@ using namespace Herwig;
 
 MEChargedCurrentDIS::MEChargedCurrentDIS() 
   : _maxflavour(5), _massopt(0) {
-  massOption(true ,1);
-  massOption(false,_massopt);
+  vector<unsigned int> mopt(2,1);
+  mopt[1] = _massopt;
+  massOption(mopt);
 }
 
 void MEChargedCurrentDIS::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   _wp = getParticleData(ThePEG::ParticleID::Wplus );
   _wm = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer

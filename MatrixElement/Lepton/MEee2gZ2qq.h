@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2qq class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -34,15 +34,58 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2qqInterfaces "The interfaces"
  * defined for MEee2gZ2qq.
  */
-class MEee2gZ2qq: public HwME2to2Base {
+class MEee2gZ2qq: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
+  MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1), pTmin_(GeV),
+		 preFactor_(6.)
   {}
+
+  /**
+   *  Members for hard corrections to the emission of QCD radiation 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Has an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return true;}
+
+  /**
+   *  Initialize the ME correction
+   */
+  virtual void initializeMECorrection(ShowerTreePtr, double &,
+				      double & );
+
+  /**
+   *  Apply the hard matrix element correction to a given hard process or decay
+   */
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+
+  /**
+   * Apply the soft matrix element correction
+   * @param initial The particle from the hard process which started the 
+   * shower
+   * @param parent The initial particle in the current branching
+   * @param br The branching struct
+   * @return If true the emission should be vetoed
+   */
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
+				     ShowerParticlePtr,Branching);
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -178,7 +221,16 @@ protected:
   virtual IVector getReferences();
   //@}
 
-private:
+protected:
+
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */  
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first) const;
 
   /**
    * Member to calculate the matrix element
@@ -197,7 +249,169 @@ private:
 				     double & me,
 				     double & cont,
 				     double & BW ) const;
+
+  /**
+   *  The ratio of the matrix element for one additional jet over the
+   * leading order result. In practice
+   * \[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * the spin and colour summed/averaged matrix element.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param subtract Whether or not to subtract the relevant dipole term
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemittor,
+		 bool subtract =false) const;
+
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */ 
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta) const;
+
+private:
+
+  /**
+   *  Apply the hard matrix element
+   */
+  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
+
+  /**
+   *  Get the weight for hard emission
+   */
+  double getHard(double &, double &);
+
+  /**
+   *  Set the \f$\rho\f$ parameter
+   */
+  void setRho(double);
+
+  /**
+   *  Set the \f$\tilde{\kappa}\f$ parameters symmetrically 
+   */
+  void setKtildeSymm();
+
+  /**
+   * Set second \f$\tilde{\kappa}\f$, given the first.
+   */
+  void setKtilde2();
+
+  /**
+   *  Translate the variables from \f$x_q,x_{\bar{q}}\f$ to \f$\tilde{\kappa},z\f$
+   */
+  //@{
+  /**
+   *  Calculate \f$z\f$.
+   */
+  double getZfromX(double, double);
+
+  /**
+   *  Calculate \f$\tilde{\kappa}\f$.
+   */
+  double getKfromX(double, double);
+  //@}
+
+  /**
+   * Calculate \f$x_{q},x_{\bar{q}}\f$ from \f$\tilde{\kappa},z\f$.
+   * @param kt \f$\tilde{\kappa}\f$
+   * @param z \f$z\f$
+   * @param x \f$x_{q}\f$
+   * @param xbar \f$x_{\bar{q}}\f$
+   */
+  void getXXbar(double kt, double z, double & x, double & xbar);
+
+  /**
+   *  Soft weight
+   */
+  //@{
+  /**
+   *  Soft quark weight calculated from \f$x_{q},x_{\bar{q}}\f$
+   * @param x \f$x_{q}\f$
+   * @param xbar \f$x_{\bar{q}}\f$
+   */
+  double qWeight(double x, double xbar); 
+
+  /**
+   *  Soft antiquark weight calculated from \f$x_{q},x_{\bar{q}}\f$
+   * @param x \f$x_{q}\f$
+   * @param xbar \f$x_{\bar{q}}\f$
+   */
+  double qbarWeight(double x, double xbar);
+
+  /**
+   * Soft quark weight calculated from \f$\tilde{q},z\f$
+   * @param qtilde  \f$\tilde{q}\f$
+   * @param z \f$z\f$
+   */
+  double qWeightX(Energy qtilde, double z);
+
+  /**
+   * Soft antiquark weight calculated from \f$\tilde{q},z\f$
+   * @param qtilde  \f$\tilde{q}\f$
+   * @param z \f$z\f$
+   */
+  double qbarWeightX(Energy qtilde, double z);
+  //@}
+
+  /**
+   * ????
+   */
+  double u(double);
+
+  /**
+   *  Vector and axial vector parts of the matrix element
+   */
+  //@{
+  /**
+   *  Vector part of the matrix element
+   */
+  double MEV(double, double);
+
+  /**
+   *  Axial vector part of the matrix element
+   */
+  double MEA(double, double);
+
+  /**
+   * The matrix element, given \f$x_1\f$, \f$x_2\f$.
+   * @param x1 \f$x_1\f$
+   * @param x2 \f$x_2\f$
+   */
+  double PS(double x1, double x2);
+  //@}
+
+protected:
   
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex() const {return FFZVertex_;}
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex() const {return FFPVertex_;}
+  
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0() const {return Z0_;}
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma() const {return gamma_;}
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon() const {return gluon_;}
+
 private:
 
   /**
@@ -217,37 +431,114 @@ private:
   /**
    *  Pointer to the fermion-antifermion Z vertex
    */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr FFZVertex_;
   
   /**
    *  Pointer to the fermion-antifermion photon vertex
    */
-  AbstractFFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
   
   /**
    *  Pointer to the particle data object for the Z
    */
-  PDPtr _Z0;
+  PDPtr Z0_;
 
   /**
    *  Pointer to the particle data object for the photon
    */
-  PDPtr _gamma;
+  PDPtr gamma_;
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon_;
 
   /**
    *  The minimum PDG of the quarks to be produced
    */
-   int _minflav;
+   int minflav_;
 
   /**
    *  The maximum PDG of the quarks to be produced
    */
-   int _maxflav;
+   int maxflav_;
 
   /**
    *  Option for the treatment of the top quark mass
    */
-  unsigned int _massopt;
+  unsigned int massopt_;
+
+  /**
+   * CM energy 
+   */
+  Energy d_Q_;
+
+  /**
+   *  Quark mass
+   */
+  Energy d_m_;
+
+  /**
+   * The rho parameter 
+   */
+  double d_rho_;
+
+  /**
+   * The v parameter
+   */
+  double d_v_;
+
+  /**
+   * The initial kappa-tilde values for radiation from the quark
+   */
+  double d_kt1_;
+
+  /**
+   * The initial kappa-tilde values for radiation from the antiquark
+   */
+  double d_kt2_;
+
+  /**
+   *  Cut-off parameter
+   */
+  static const double EPS_;
+
+  /**
+   *  Pointer to the coupling
+   */
+  ShowerAlphaPtr alpha_;
+
+private:
+
+  /**
+   *  Variables for the POWHEG style corrections
+   */
+  //@{
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  /**
+   *  Overestimate for the prefactor
+   */
+  double preFactor_;
+
+  /**
+   *  ParticleData objects for the partons
+   */
+  vector<cPDPtr> partons_;
+
+  /**
+   *  Momenta of the leading-order partons
+   */
+  vector<Lorentz5Momentum> loMomenta_;
+  //@}
 
 };
 
@@ -264,7 +555,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2qq,1> {
   /** Typedef of the first base class of MEee2gZ2qq. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

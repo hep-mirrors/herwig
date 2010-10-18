@@ -39,11 +39,11 @@ void MEPP2QQ::rebind(const TranslationMap & trans) {
     _quark[ix]=trans.translate(_quark[ix]);
   for(unsigned int ix=0;ix<_antiquark.size();++ix)
     _antiquark[ix]=trans.translate(_quark[ix]);
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
 }
 
 IVector MEPP2QQ::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_gggvertex);
   ret.push_back(_qqgvertex);
   ret.push_back(_gluon);
@@ -55,15 +55,13 @@ IVector MEPP2QQ::getReferences() {
 }
 
 void MEPP2QQ::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // handling of masses
   if(_quarkflavour==6) {
-    massOption(true ,_topopt);
-    massOption(false,_topopt);
+    massOption(vector<unsigned int>(2,_topopt));
   }
   else {
-    massOption(true ,_bottomopt);
-    massOption(false,_bottomopt);
+    massOption(vector<unsigned int>(2,_bottomopt));
   }
   // get the vertex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());

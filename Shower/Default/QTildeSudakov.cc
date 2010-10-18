@@ -339,6 +339,10 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
     Energy2 scale=(sqr(pt)+zin*masssquared_[2])/sqr(1.-zin);
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
+  else if(iopt==2) {
+    Energy2 scale = (sqr(pt)+zin*masssquared_[2])/sqr(1.-zin)+masssquared_[0];
+    return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
+  }
   else {
     throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
@@ -352,7 +356,7 @@ ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
@@ -363,7 +367,7 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
@@ -374,6 +378,6 @@ ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }

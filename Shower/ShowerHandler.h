@@ -18,6 +18,7 @@
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
 #include "Herwig++/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
@@ -144,6 +145,16 @@ public:
   }
   //@}
 
+  /**
+   *  Access to the Evolver
+   */
+  tEvolverPtr evolver() const {return evolver_;}
+
+  /**
+   *  Generate hard emissions for CKKW etc
+   */
+  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -166,7 +177,7 @@ protected:
   /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub);
+  tPPair cascade(tSubProPtr sub,XCPtr xcomb);
 
   /**
    * At the end of the Showering, transform ShowerParticle objects
@@ -221,11 +232,6 @@ protected:
    *  Test for decay products
    */
   bool decayProduct(tPPtr) const;
-
-  /**
-   *  Access to the Evolver
-   */
-  tEvolverPtr evolver() const {return evolver_;}
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs

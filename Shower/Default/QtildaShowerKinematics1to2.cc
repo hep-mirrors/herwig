@@ -32,7 +32,7 @@ void QtildaShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
 Lorentz5Momentum QtildaShowerKinematics1to2::
 sudakov2Momentum(double alpha, double beta, Energy px, 
 		 Energy py,unsigned int iopt) const {
-  if(isnan(beta)) 
+  if(isnan(beta)||isinf(beta)) 
     throw Exception() << "beta infinite in "
 		      << "QtildaShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
@@ -82,8 +82,18 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     // add transverse components
     dq.setX(px);
     dq.setY(py);
-    // rotate to have z-axis parallel to n
-    dq.rotateUz( unitVector(n_bb.vect()) );
+    // changed to be same as other case
+//     dq.rotateUz( unitVector(n_bb.vect()) );
+    Axis axis(n_bb.vect().unit());
+    if(axis.perp2()>0.) {
+      LorentzRotation rot;
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      dq.transform(rot);
+    }
+    else if(axis.z()<0.) {
+      dq.setZ(-dq.z());
+    }
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass();

@@ -625,7 +625,7 @@ void HwRemDecayer::setRemMasses() const {
       psystem.rescaleMass();
       ++iloc;
       if(ptotal.mass() > psystem.mass() + diquark->mass() &&
-	 DISRemnantOpt_<2 && ptotal.e() > 0.*GeV ) break;
+	 psystem.mass()>1*MeV && DISRemnantOpt_<2 && ptotal.e() > 0.*GeV ) break;
     }
     while(iloc<progenitors.size());
     if(ptotal.mass() > psystem.mass() + diquark->mass()) --iloc;

@@ -266,12 +266,12 @@ private:
   /**
    * The \f$T_R\f$ colour factor
    */
-  const double _TR;
+  const double TR_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  const double _CF;
+  const double CF_;
 
   /**
    *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation
@@ -400,7 +400,7 @@ struct ClassTraits<Herwig::MEqq2W2ffPowheg>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2W2ffPowheg class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */

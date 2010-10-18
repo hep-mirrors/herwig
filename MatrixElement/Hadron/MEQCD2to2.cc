@@ -27,8 +27,7 @@
 #include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 void MEQCD2to2::rebind(const TranslationMap & trans)
@@ -41,11 +40,11 @@ void MEQCD2to2::rebind(const TranslationMap & trans)
     {_quark[ix]=trans.translate(_quark[ix]);}
   for(unsigned int ix=0;ix<_antiquark.size();++ix)
     {_antiquark[ix]=trans.translate(_quark[ix]);}
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
 }
 
 IVector MEQCD2to2::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_ggggvertex);
   ret.push_back(_gggvertex);
   ret.push_back(_qqgvertex);
@@ -59,7 +58,7 @@ IVector MEQCD2to2::getReferences() {
 
 void MEQCD2to2::doinit() {
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

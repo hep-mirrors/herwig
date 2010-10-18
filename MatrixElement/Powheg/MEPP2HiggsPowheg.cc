@@ -22,7 +22,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-
+ 
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 

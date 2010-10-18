@@ -5,7 +5,7 @@
 // This is the declaration of the MEGammaGamma2ff class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -23,7 +23,7 @@ using namespace ThePEG;
  * @see \ref MEGammaGamma2ffInterfaces "The interfaces"
  * defined for MEGammaGamma2ff.
  */
-class MEGammaGamma2ff: public HwME2to2Base {
+class MEGammaGamma2ff: public HwMEBase {
 
 public:
 
@@ -205,7 +205,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEGammaGamma2ff,1> {
   /** Typedef of the first base class of MEGammaGamma2ff. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

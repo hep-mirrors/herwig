@@ -167,19 +167,18 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
   double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
   if(id <=6) output*=3.;
   // test of the partial width
-  /*
-  Ptr<Herwig::StandardModel>::transient_const_pointer 
-    hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
-  double g2(hwsm->alphaEM(scale)*4.*pi/hwsm->sin2ThetaW());
-  Energy mass(hwsm->mass(scale,decay[0]->dataPtr())),
-    mw(getParticleData(ParticleID::Wplus)->mass());
-  double beta(sqrt(1.-4.*decay[0]->mass()*decay[0]->mass()/scale));
-  Energy test(g2*mass*mass*beta*beta*beta*inpart.mass()/32./pi/mw/mw);
-  if(abs(decay[0]->id())<=6){test *=3.;}
-  cout << "testing the answer " << output << "     " 
-       << test
-       << endl;
-  */
+//   Ptr<Herwig::StandardModel>::transient_const_pointer 
+//     hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+//   double g2(hwsm->alphaEM(scale)*4.*Constants::pi/hwsm->sin2ThetaW());
+//   Energy mass(hwsm->mass(scale,decay[0]->dataPtr())),
+//     mw(getParticleData(ParticleID::Wplus)->mass());
+//   double beta(sqrt(1.-4.*decay[0]->mass()*decay[0]->mass()/scale));
+//   cerr << "testing alpha " << hwsm->alphaEM(scale) << "\n";
+//   Energy test(g2*mass*mass*beta*beta*beta*inpart.mass()/32./Constants::pi/mw/mw);
+//   if(abs(decay[0]->id())<=6){test *=3.;}
+//   cout << "testing the answer " << output << "     " 
+//        << test/GeV
+//        << endl;
   return output;
 }
 

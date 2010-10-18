@@ -28,7 +28,10 @@ SimpleLHCAnalysis::SimpleLHCAnalysis() :
   _ptWm(4,Histogram(0.,250.,250)), 
   _mZ(0.,250.,250), _mWp(0.,250.,250), _mWm(0.,250.,250), 
   _rapZ(-10.,10.,100),_rapWp(-10.,10.,100),_rapWm(-10.,10.,100),
-  _phiZ(-3.2,3.2,100),_phiWp(-3.2,3.2,100),_phiWm(-3.2,3.2,100) {}
+  _phiZ(-Constants::pi,Constants::pi,100),
+  _phiWp(-Constants::pi,Constants::pi,100),
+  _phiWm(-Constants::pi,Constants::pi,100) 
+{}
 
 void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);

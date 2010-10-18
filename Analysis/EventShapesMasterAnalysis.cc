@@ -19,7 +19,8 @@
 
 using namespace Herwig;
 
-void EventShapesMasterAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void EventShapesMasterAnalysis::analyze(tEventPtr event, long ieve,
+					int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 }
 

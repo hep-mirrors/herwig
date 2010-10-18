@@ -130,12 +130,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Powheg/Makefile
                 MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
-		Shower/Couplings/Makefile
-		Shower/Default/MECorrections/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
-		Shower/Powheg/Makefile
-		Shower/Powheg/HardGenerators/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

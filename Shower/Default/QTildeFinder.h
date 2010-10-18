@@ -35,8 +35,9 @@ public:
   /**
    * The default constructor.
    */
-  QTildeFinder() : _finalFinalConditions(0),
-		   _initialFinalDecayConditions(0) {}
+  QTildeFinder() :  _finalFinalConditions(0),
+		    _initialFinalDecayConditions(0),
+		    _initialInitialConditions(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -172,6 +173,17 @@ private:
    *     available for emissions from the charged child is fairly minimal.
    */
   unsigned int _initialFinalDecayConditions;
+
+  /**
+   * Initial conditions for the shower with an initial-initial colour
+   * connection. This is done according to the colour connection 
+   * calculation in JHEP12(2003)_045. The options act as follows:
+   *  0: This is the default 'symmetric' choice which more or less divides
+   *     the phase space evenly between the two incoming partons.
+   *  1: This increases the phase space for emission from "parton b".
+   *  2: This increases the phase space for emission from "parton c".
+   */
+  unsigned int _initialInitialConditions;
   //@}
 };
 
