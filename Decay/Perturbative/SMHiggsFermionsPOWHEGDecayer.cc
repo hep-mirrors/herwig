@@ -43,8 +43,8 @@ void SMHiggsFermionsPOWHEGDecayer::Init() {
   static ClassDocumentation<SMHiggsFermionsPOWHEGDecayer> documentation
     ("There is no documentation for the SMHiggsFermionsPOWHEGDecayer class");
 
-  static Reference<SMHiggsFermionsPOWHEGDecayer,ShowerAlpha> interfaceShowerAlphaQCD
-    ("ShowerAlphaQCD",
+  static Reference<SMHiggsFermionsPOWHEGDecayer,ShowerAlpha> interfaceCoupling
+    ("Coupling",
      "The object calculating the strong coupling constant",
      &SMHiggsFermionsPOWHEGDecayer::alphaS_, false, false, true, false, false);
 
