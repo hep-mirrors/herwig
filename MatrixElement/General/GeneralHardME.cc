@@ -24,8 +24,7 @@ GeneralHardME::GeneralHardME() : incoming_(0, 0), outgoing_(0, 0),
 				 diagrams_(0), numberOfDiagrams_(0), 
 				 colour_(0), numberOfFlows_(0) , 
 				 debug_(false), scaleChoice_(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
   
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
@@ -42,22 +41,24 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   scaleChoice_ = scaleOption; 
   // OffShell options
   pair<bool, bool> offshell(make_pair(false, false));
+  vector<unsigned int> mopt(2,1);
   if( getParticleData(outgoing_.first )->widthGenerator() ||
       getParticleData(outgoing_.first )-> massGenerator()) {
     offshell.first = true;
-    massOption(true, 2);
+    mopt[0] = 2;
   }
   if( getParticleData(outgoing_.second)->widthGenerator() ||
       getParticleData(outgoing_.second)-> massGenerator() ) {
     offshell.second = true;
-    massOption(false, 2);
+    mopt[1] = 2;
   }
   if(outgoing_.first  == incoming_.first ||
      outgoing_.first  == incoming_.second )
-    massOption(true, 0);
+    mopt[0] = 0;
   if(outgoing_.second == incoming_.first ||
      outgoing_.second == incoming_.second )
-    massOption(false, 0);
+    mopt[1] = 0;
+  massOption(mopt);
   if( offshell.first == true &&  offshell.second == true &&
       abs(outgoing_.first) == abs(outgoing_.second)  )
     rescalingOption(3);
@@ -610,7 +611,7 @@ selectColourFlow(vector<double> & flow,vector<double> & me,
 }
 
 void GeneralHardME::doinitrun() {
-  HwME2to2Base::doinitrun();
+  HwMEBase::doinitrun();
   for(unsigned int ix=0;ix<diagrams_.size();++ix) {
     diagrams_[ix].vertices.first ->initrun();
     diagrams_[ix].vertices.second->initrun();

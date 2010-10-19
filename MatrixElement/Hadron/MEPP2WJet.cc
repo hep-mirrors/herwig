@@ -27,7 +27,7 @@ MEPP2WJet::MEPP2WJet() : _process(0), _maxflavour(5), _plusminus(0),
 {}
 
 void MEPP2WJet::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   _wplus  = getParticleData(ThePEG::ParticleID::Wplus );
   _wminus = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer

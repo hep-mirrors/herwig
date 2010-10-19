@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2QQ class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2QQInterfaces "The interfaces"
  * defined for MEPP2QQ.
  */
-class MEPP2QQ: public HwME2to2Base {
+class MEPP2QQ: public HwMEBase {
 
 public:
 
@@ -365,7 +365,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2QQ,1> {
   /** Typedef of the first base class of MEPP2QQ. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

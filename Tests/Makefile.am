@@ -158,11 +158,11 @@ test-DIS-% : Inputs/DIS-%.in DISTest.la
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 if WANT_LIBFASTJET 
-test-LHC-% : Inputs/LHC-%.in HadronTest.la HadronJetTest.la
+test-LHC-% : Inputs/LHC-%.in HadronTest.la GammaTest.la HadronJetTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 else
-test-LHC-% : Inputs/LHC-%.in HadronTest.la
+test-LHC-% : Inputs/LHC-%.in HadronTest.la GammaTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 endif

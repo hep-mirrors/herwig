@@ -174,14 +174,6 @@ struct ClassTraits<Herwig::ShowerAlpha>
   : public ClassTraitsBase<Herwig::ShowerAlpha> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ShowerAlpha"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerAlpha is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerAlpha depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

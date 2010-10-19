@@ -13,7 +13,7 @@
 //
 // The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/Interpolator.h"
 
@@ -25,7 +25,7 @@ using namespace ThePEG;
  * The METRP2to2 class implements the matrix elements for
  * Transplanckian \f$2\to2\f$ scattering process
  */
-class METRP2to2: public HwME2to2Base {
+class METRP2to2: public HwMEBase {
 
 public:
 
@@ -248,7 +248,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::METRP2to2,1> {
   /** Typedef of the first base class of METRP2to2. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 
 };
 

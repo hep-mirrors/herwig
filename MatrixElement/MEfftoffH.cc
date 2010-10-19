@@ -113,7 +113,7 @@ Energy2 MEfftoffH::scale() const {
 }
 
 void MEfftoffH::setKinematics() {
-  MEBase::setKinematics();
+  HwMEBase::setKinematics();
 }
 
 Selector<MEBase::DiagramIndex>
@@ -157,7 +157,7 @@ MEfftoffH::colourGeometries(tcDiagPtr ) const {
 }
 
 void MEfftoffH::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   // get the vertex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

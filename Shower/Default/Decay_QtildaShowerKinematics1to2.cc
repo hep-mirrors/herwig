@@ -21,7 +21,8 @@ using namespace Herwig;
 
 void Decay_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector & theChildren ) const {
+	       const ShowerParticleVector & theChildren,
+	       bool angularOrder ) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
  		      << "Warning! too many children!" << Exception::eventerror;
@@ -39,8 +40,14 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[ix]->showerVariables() .resize(3);
     theChildren[ix]->showerParameters().resize(2);
   }
-  theChildren[0]->setEvolutionScale(        dqtilde);
-  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  if(angularOrder) {
+    theChildren[0]->setEvolutionScale(        dqtilde);
+    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  }
+  else {
+    theChildren[0]->setEvolutionScale(        dqtilde);
+    theChildren[1]->setEvolutionScale(        dqtilde);
+  }
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 
   theChildren[1]->showerParameters()[0]=(1.-dz)*theParent->showerParameters()[0];
@@ -94,7 +101,8 @@ void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     p = particle.momentum();
     ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
-    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    // reomved to make inverse recon work properly
+    //if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
     pcm.boost(boost);

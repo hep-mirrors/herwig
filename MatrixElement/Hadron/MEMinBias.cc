@@ -51,7 +51,7 @@ int MEMinBias::nDim() const {
 }
 
 void MEMinBias::setKinematics() {
-  MEBase::setKinematics(); // Always call the base class method first.
+  HwMEBase::setKinematics(); // Always call the base class method first.
 }
 
 bool MEMinBias::generateKinematics(const double *) {

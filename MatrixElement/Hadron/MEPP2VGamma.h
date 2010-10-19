@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2VGamma class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -20,7 +20,7 @@ using namespace ThePEG;
  * @see \ref MEPP2VGammaInterfaces "The interfaces"
  * defined for MEPP2VGamma.
  */
-class MEPP2VGamma: public HwME2to2Base {
+class MEPP2VGamma: public HwMEBase {
 
 public:
 
@@ -249,7 +249,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2VGamma,1> {
   /** Typedef of the first base class of MEPP2VGamma. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

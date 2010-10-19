@@ -31,12 +31,11 @@ using namespace Herwig;
 
 MEqq2gZ2ff::MEqq2gZ2ff() : _minflavour(1), _maxflavour(5), 
 			   _gammaZ(0), _process(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEqq2gZ2ff::doinit() {
-  HwME2to2Base::doinit();
+  DrellYanBase::doinit();
   _z0=getParticleData(ThePEG::ParticleID::Z0);
   _gamma=getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer

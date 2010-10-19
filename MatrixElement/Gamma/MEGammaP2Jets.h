@@ -5,7 +5,7 @@
 // This is the declaration of the MEGammaP2Jets class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -23,7 +23,7 @@ using namespace ThePEG;
  * @see \ref MEGammaP2JetsInterfaces "The interfaces"
  * defined for MEGammaP2Jets.
  */
-class MEGammaP2Jets: public HwME2to2Base {
+class MEGammaP2Jets: public HwMEBase {
 
 public:
 
@@ -251,7 +251,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEGammaP2Jets,1> {
   /** Typedef of the first base class of MEGammaP2Jets. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

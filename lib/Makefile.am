@@ -16,6 +16,7 @@ $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(top_builddir)/Looptools/libHwLooptoolsXFC.la \
+$(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
 
 all-local: done-all-links

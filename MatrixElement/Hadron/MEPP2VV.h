@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2VV class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -21,7 +21,7 @@ using namespace ThePEG;
  * @see \ref MEPP2VVInterfaces "The interfaces"
  * defined for MEPP2VV.
  */
-class MEPP2VV: public HwME2to2Base {
+class MEPP2VV: public HwMEBase {
 
 public:
 
@@ -59,6 +59,11 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
+
+  /**
+   * Return the process being run (WW/ZZ/WZ).
+   */
+  virtual int process() const { return process_; }
 
   /**
    * Add all possible diagrams with the add() function.
@@ -271,7 +276,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2VV,1> {
   /** Typedef of the first base class of MEPP2VV. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

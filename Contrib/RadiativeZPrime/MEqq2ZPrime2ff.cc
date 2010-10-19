@@ -64,10 +64,10 @@ void MEqq2ZPrime2ff::getDiagrams() const {
 	  );
     // if not a valid process continue
     if(!(quark||lepton)) continue;
-    tcPDPtr lm = getParticleData(ix);
+    tcPDPtr lm = getParticleData(long(ix));
     tcPDPtr lp = lm->CC();
     for(unsigned int i = 1; i <= _maxflavour; ++i) {
-      tcPDPtr q  = getParticleData(i);
+      tcPDPtr q  = getParticleData(long(i));
       tcPDPtr qb = q->CC();
       if(Z0)     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _z0    , 3, lm, 3, lp, -1)));
       if(gamma)  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _gamma , 3, lm, 3, lp, -2)));

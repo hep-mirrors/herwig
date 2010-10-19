@@ -22,9 +22,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Deleted.h"
-
-#include "ThePEG/Repository/CurrentGenerator.h"
-
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
@@ -240,7 +237,7 @@ void MPIHandler::MultDistribution(string filename) const {
 }
 
 void MPIHandler::statistics() const {
-  ostream & file = CurrentGenerator::current().misc();
+  ostream & file = generator()->misc();
   
   string line = "======================================="
     "=======================================\n";

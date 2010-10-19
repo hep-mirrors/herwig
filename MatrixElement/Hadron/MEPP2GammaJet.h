@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2GammaJet class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2GammaJetInterfaces "The interfaces"
  * defined for MEPP2GammaJet.
  */
-class MEPP2GammaJet: public HwME2to2Base {
+class MEPP2GammaJet: public HwMEBase {
 
 public:
 
@@ -272,7 +272,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaJet,1> {
   /** Typedef of the first base class of MEPP2GammaJet. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

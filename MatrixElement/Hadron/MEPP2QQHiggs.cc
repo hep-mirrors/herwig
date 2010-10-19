@@ -123,7 +123,7 @@ IBPtr MEPP2QQHiggs::fullclone() const {
 }
 
 void MEPP2QQHiggs::setKinematics() {
-  MEBase::setKinematics();
+  HwMEBase::setKinematics();
 }
 
 void MEPP2QQHiggs::persistentOutput(PersistentOStream & os) const {
@@ -143,7 +143,7 @@ void MEPP2QQHiggs::persistentInput(PersistentIStream & is, int) {
 }
 
 void MEPP2QQHiggs::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   // stuff for the higgs mass
   higgs_=getParticleData(ParticleID::h0);
   mh_ = higgs_->mass();

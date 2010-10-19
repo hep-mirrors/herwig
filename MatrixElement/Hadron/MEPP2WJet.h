@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2WJet class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -24,7 +24,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2WJetInterfaces "The interfaces"
  * defined for MEPP2WJet.
  */
-class MEPP2WJet: public MEBase {
+class MEPP2WJet: public HwMEBase {
 
 public:
 
@@ -336,7 +336,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2WJet,1> {
   /** Typedef of the first base class of MEPP2WJet. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

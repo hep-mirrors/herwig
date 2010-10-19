@@ -44,7 +44,7 @@ void MEqq2ZPrime2ZGamma::getDiagrams() const {
   tcPDPtr Z0    = getParticleData(ParticleID::Z0);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   for(unsigned int i = 1; i <= _maxflavour; ++i) {
-    tcPDPtr q  = getParticleData(i);
+    tcPDPtr q  = getParticleData(long(i));
     tcPDPtr qb = q->CC();
     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _zPrime, 3, Z0, 3, gamma, -1)));
   }

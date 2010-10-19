@@ -87,17 +87,6 @@ void HiggsJetAnalysis::analyze(tEventPtr event, long, int, int) {
   (_phih)+=ph.phi();
 }
 
-LorentzRotation HiggsJetAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void HiggsJetAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void HiggsJetAnalysis::analyze(tPPtr) {}
-
 NoPIOClassDescription<HiggsJetAnalysis> HiggsJetAnalysis::initHiggsJetAnalysis;
 // Definition of the static class description member.
 

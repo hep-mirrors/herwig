@@ -21,6 +21,8 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -198,7 +200,8 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 }
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
-						     double enhance) const {
+						     double enhance,
+						     ShowerInteraction::Type type) const {
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
   SudakovPtr sudakov=SudakovPtr();
@@ -211,6 +214,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
+    if(type!=cit->second.first->interactionType()) continue;
     // check size of scales beforehand...
     ShoKinPtr newKin= cit->second.first->
       generateNextTimeBranching(particle.evolutionScale(), 
@@ -237,10 +241,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   return Branching(kinematics, ids,sudakov);
 }
 
-Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
-						   Energy stoppingScale,
-						   Energy minmass,
-						   double enhance) const {
+Branching SplittingGenerator::
+chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
+		     Energy minmass, double enhance,
+		     ShowerInteraction::Type type) const {
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
   SudakovPtr sudakov;
@@ -253,6 +257,7 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
+    if(type!=cit->second.first->interactionType()) continue;
     ShoKinPtr newKin;
     if(particle.evolutionScale() < stoppingScale) 
       newKin = cit->second.first->
@@ -279,7 +284,9 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
 Branching SplittingGenerator::
 chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			double enhance,
-			Ptr<BeamParticleData>::transient_const_pointer beam) const {
+			Ptr<BeamParticleData>::transient_const_pointer beam,
+			ShowerInteraction::Type type,
+			tcPDFPtr pdf, Energy freeze) const {
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   SudakovPtr sudakov;
@@ -292,6 +299,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
+    if(type!=cit->second.first->interactionType()) continue;
+    cit->second.first->setPDF(pdf,freeze);
     ShoKinPtr newKin=cit->second.first->
       generateNextSpaceBranching(particle.evolutionScale(),
 				 cit->second.second, particle.x(),

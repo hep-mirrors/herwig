@@ -14,7 +14,7 @@
 
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {
@@ -50,7 +50,7 @@ public:
    */
   ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
 		       _scale(), _z( 0.0 ), _phi( 0.0 ), _pt(),
-		       _splitFun() {}
+		       _sudakov() {}
 
   /**
    *  The updateChildren and updateParent
@@ -68,7 +68,8 @@ public:
    * @param theChildren The children
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector & theChildren) const;
+			      const ShowerParticleVector & theChildren,
+			      bool angularOrder) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -76,8 +77,9 @@ public:
    * @param theParent   The parent
    * @param theChildren The children
    */
-  virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ShowerParticleVector & theChildren) const;
+  virtual void updateParent(const tShowerParticlePtr theParent,
+			    const ShowerParticleVector & theChildren,
+			    bool angularOrder) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -216,17 +218,28 @@ public:
   /**
    *  Set and get methods for the SplittingFunction object
    */
+  //@{
   /**
    * Access the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  tSplittingFnPtr splittingFn() const { return _splitFun; }
+  tSplittingFnPtr splittingFn() const { return _sudakov-> splittingFn(); }
+  //@}
 
   /**
-   * Set the SplittingFunction object responsible of the 
+   *  Set and get methods for the SudakovFormFactor object
+   */
+  /**
+   * Access the SudakovFormFactor object responsible of the 
    * eventual branching of this particle.
    */
-  void splittingFn(const tSplittingFnPtr sf) { _splitFun=sf; }
+  tSudakovPtr SudakovFormFactor() const { return _sudakov; }
+
+  /**
+   * Set the SudakovFormFactor object responsible of the 
+   * eventual branching of this particle.
+   */
+  void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
 private:
@@ -267,7 +280,7 @@ private:
   /**
    *  The splitting function for the branching of the particle
    */
-  tSplittingFnPtr _splitFun;
+  tSudakovPtr _sudakov;
 };
 
 }
@@ -293,14 +306,6 @@ struct ClassTraits<Herwig::ShowerKinematics>
   : public ClassTraitsBase<Herwig::ShowerKinematics> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ShowerKinematics"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerKinematics is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerKinematics depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

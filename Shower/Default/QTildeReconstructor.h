@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -120,14 +120,16 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr,
+				    ShowerInteraction::Type) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr,
+				   ShowerInteraction::Type) const;
   //@}
 
 public:
@@ -196,65 +198,90 @@ protected:
   //@}
 
   /**
-   * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
-   * ones before showering and the masses are reconstructed after the showering,
-   * this method returns the overall scaling factor for the 3-momenta of the
-   * vector of particles, vec{P}_i -> k * vec{P}_i, such to preserve energy-
-   * momentum conservation, i.e. after the rescaling the center of mass 5-momentum 
-   * is equal to the one specified in input, cmMomentum. 
-   * The method returns 0 if such factor cannot be found.
-   * @param root_s Centre-of-mass energy
-   * @param jets The jets
+   *  Methods to perform the reconstruction of various types of colour
+   *  singlet systems
    */
-  double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
+  //@{
+  /**
+   *  Perform the reconstruction of a system with one incoming and at least one
+   *  outgoing particle
+   */
+  void reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
 
   /**
-   *  Calculate the rescaling factors for the jets in a particle decay where
-   *  there was initial-state radiation
-   * @param mb The mass of the decaying particle
-   * @param n  The reference vector for the initial state radiation
-   * @param pjet The momentum of the initial-state jet
-   * @param jetKinematics The JetKinStruct objects for the jets
-   * @param partner The colour partner
-   * @param ppartner The momentum of the colour partner of the decaying particle
-   * before and after radiation
-   * @param k1 The rescaling parameter for the partner
-   * @param k2 The rescaling parameter for the outgoing singlet
-   * @param qt The transverse momentum vector
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
    */
-  bool solveDecayKFactor(Energy mb, 
-			 const Lorentz5Momentum & n, 
-			 const Lorentz5Momentum & pjet, 
-			 const JetKinVect & jetKinematics, 
-			 ShowerParticlePtr partner,
-			 Lorentz5Momentum ppartner[2],
-			 double & k1, 
-			 double & k2,
-			 Lorentz5Momentum & qt) const;
-
+  void reconstructFinalStateSystem(bool applyBoost, 
+				   const LorentzRotation & toRest,
+				   const LorentzRotation & fromRest, 
+				   vector<ShowerProgenitorPtr>) const;
 
   /**
-   * Compute the momentum rescaling factor needed to invert the shower
-   * @param pout The momenta of the outgoing particles
-   * @param mon  The on-shell masses
-   * @param roots The mass of the decaying particle
+   *  Reconstruction of a general coloured system
    */
-  double inverseRescalingFactor(vector<Lorentz5Momentum> pout,
-				 vector<Energy> mon,Energy roots) const;
+  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
 
   /**
-   * Check the rescaling conserves momentum
-   * @param k The rescaling
-   * @param root_s The centre-of-mass energy
-   * @param jets The jets
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
    */
-  Energy momConsEq(const double & k, const Energy & root_s,
-			  const JetKinVect & jets) const;
+  void reconstructInitialInitialSystem(bool & applyBoost,
+				       LorentzRotation & toRest,
+				       LorentzRotation & fromRest,
+				       vector<ShowerProgenitorPtr>) const;
+  //@}
 
+  /**
+   *  Methods to perform the inverse reconstruction of various types of
+   *  colour singlet systems
+   */
+  //@{
+  /**
+   *  Perform the inverse reconstruction of a system with only final-state
+   *  particles
+   */
+  void deconstructFinalStateSystem(const LorentzRotation & toRest,
+				   const LorentzRotation & fromRest,
+				   HardTreePtr,
+				   vector<HardBranchingPtr>,
+				   EvolverPtr,
+				   ShowerInteraction::Type) const;
+  
+  /**
+   *  Perform the inverse reconstruction of a system with only initial-state
+   *  particles
+   */
+  void deconstructInitialInitialSystem(bool & applyBoost,
+				       LorentzRotation & toRest,
+				       LorentzRotation & fromRest,
+				       HardTreePtr,
+				       vector<HardBranchingPtr>,
+				       ShowerInteraction::Type ) const;
+
+  /**
+   *  Perform the inverse reconstruction of a system with only initial-state
+   *  particles
+   */
+  void deconstructInitialFinalSystem(HardTreePtr,
+				     vector<HardBranchingPtr>,
+				     EvolverPtr,
+				     ShowerInteraction::Type ) const;
+
+  bool deconstructGeneralSystem(HardTreePtr, EvolverPtr,
+				ShowerInteraction::Type) const;
+  //@}
+
+  /**
+   *  Various methods for the Lorentz transforms needed to do the 
+   *  rescalings
+   */
+  //@{
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
+  LorentzRotation solveBoost(const double k, 
+			     const Lorentz5Momentum & newq, 
 			     const Lorentz5Momentum & oldp) const;
   
   /**
@@ -295,66 +322,100 @@ protected:
   double getBeta(const double E, const double q, 
 		 const double Ep, const double qp) const
   {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
+  //@}
+
+  /**
+   *  Methods to calculate the various scaling factors
+   */
+  //@{
+  /**
+   * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
+   * ones before showering and the masses are reconstructed after the showering,
+   * this method returns the overall scaling factor for the 3-momenta of the
+   * vector of particles, vec{P}_i -> k * vec{P}_i, such to preserve energy-
+   * momentum conservation, i.e. after the rescaling the center of mass 5-momentum 
+   * is equal to the one specified in input, cmMomentum. 
+   * The method returns 0 if such factor cannot be found.
+   * @param root_s Centre-of-mass energy
+   * @param jets The jets
+   */
+  double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
+
+  /**
+   *  Calculate the rescaling factors for the jets in a particle decay where
+   *  there was initial-state radiation
+   * @param mb The mass of the decaying particle
+   * @param n  The reference vector for the initial state radiation
+   * @param pjet The momentum of the initial-state jet
+   * @param jetKinematics The JetKinStruct objects for the jets
+   * @param partner The colour partner
+   * @param ppartner The momentum of the colour partner of the decaying particle
+   * before and after radiation
+   * @param k1 The rescaling parameter for the partner
+   * @param k2 The rescaling parameter for the outgoing singlet
+   * @param qt The transverse momentum vector
+   */
+  bool solveDecayKFactor(Energy mb, 
+			 const Lorentz5Momentum & n, 
+			 const Lorentz5Momentum & pjet, 
+			 const JetKinVect & jetKinematics, 
+			 ShowerParticlePtr partner,
+			 Lorentz5Momentum ppartner[2],
+			 double & k1, 
+			 double & k2,
+			 Lorentz5Momentum & qt) const;
+
+  /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   */
+  double inverseRescalingFactor(vector<Lorentz5Momentum> pout,
+				vector<Energy> mon,Energy roots) const;
+
+  /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   */
+  bool inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
+				   vector<Energy> mon,Energy roots,
+				   Lorentz5Momentum ppartner, Energy mbar,
+				   double & k1, double & k2) const;
+
+  /**
+   * Check the rescaling conserves momentum
+   * @param k The rescaling
+   * @param root_s The centre-of-mass energy
+   * @param jets The jets
+   */
+  Energy momConsEq(const double & k, const Energy & root_s,
+			  const JetKinVect & jets) const;
+  //@}
 
   /**
    *  Find the colour partners of a particle to identify the colour singlet
-   *  systems.
+   *  systems for the reconstruction.
    */
   vector<unsigned int> findPartners(unsigned int ,vector<ShowerProgenitorPtr>) const;
 
   /**
-   *  Perform the reconstruction of a system with one incoming and at least one
-   *  outgoing particle
+   *  Find the colour partners for as branching  to identify the colour singlet
+   *  systems for the inverse reconstruction.
    */
-  void reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
-
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructFinalStateSystem(bool applyBoost,
-				   const LorentzRotation & toRest, 
-				   const LorentzRotation & fromRest, 
-				   vector<ShowerProgenitorPtr>) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructFinalStateShower(const LorentzRotation & toRest, 
-				   const LorentzRotation & fromRest,
-				   HardTreePtr,
-				   vector<HardBranchingPtr>,
-				   EvolverPtr ) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructInitialInitialSystem(bool & applyBoost,
-				       LorentzRotation & toRest,
-				       LorentzRotation & fromRest,
-				       vector<ShowerProgenitorPtr>) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructInitialInitialShower(bool & applyBoost,
-				       LorentzRotation & toRest, 
-				       LorentzRotation & fromRest,
-				       HardTreePtr,
-				       vector<HardBranchingPtr> ) const;
-
-  /**
-   *  Reconstruction of a general coloured system
-   */
-  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
+  void findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
+		    const set<HardBranchingPtr> & branchings,
+		    vector<HardBranchingPtr> & jets) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
+
+  void deepTransform(PPtr particle,const LorentzRotation & r,
+		     bool match=true,PPtr original=PPtr()) const;
 
 protected:
 
@@ -426,6 +487,11 @@ private:
    * Storage of the intrinsic \f$p_T\f$
    */
   mutable map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
+
+  /**
+   *  Current ShowerTree
+   */
+  mutable tShowerTreePtr _currentTree;
 
   /**
    * Particles which shouldn't have their masses rescaled as

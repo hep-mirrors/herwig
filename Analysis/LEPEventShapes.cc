@@ -38,7 +38,6 @@ LorentzRotation LEPEventShapes::transform(tEventPtr) const {
 
 void LEPEventShapes::analyze(const tPVector & ) {
   double eventweight = generator()->currentEvent()->weight();
-  //  _shapes->reset(particles);
   _omthr ->addWeighted( 1.-_shapes->thrust() ,eventweight);
   _maj ->addWeighted( _shapes->thrustMajor() ,eventweight);
   _min ->addWeighted( _shapes->thrustMinor() ,eventweight);
@@ -426,8 +425,8 @@ void LEPEventShapes::doinitrun() {
   double error6syst[]={0.75	,0.55	,0.28	,0.176  ,0.098  ,
 		       0.056  ,0.035  ,0.0188 ,0.0118 ,0.0079 ,
 		       0.0043 ,0.0027 ,0.0014 ,0.00052,0.00018};
-  double error6[19];
-  for(unsigned int ix=0;ix<19;++ix){error6[ix]=sqrt(sqr(error6stat[ix])+
+  double error6[15];
+  for(unsigned int ix=0;ix<15;++ix){error6[ix]=sqrt(sqr(error6stat[ix])+
 						    sqr(error6syst[ix]));}
   bins  = vector<double>(vals6 ,vals6 +16);
   data  = vector<double>(data6 ,data6 +15);
