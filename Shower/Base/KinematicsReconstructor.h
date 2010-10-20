@@ -101,7 +101,7 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool deconstructDecayJets(HardTreePtr decay,EvolverPtr,
+  virtual bool deconstructDecayJets(HardTreePtr decay,cEvolverPtr,
 				    ShowerInteraction::Type) const=0;
 
   /**
@@ -109,7 +109,7 @@ public:
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr hard,EvolverPtr,
+  virtual bool deconstructHardJets(HardTreePtr hard,cEvolverPtr,
 				   ShowerInteraction::Type) const=0;
   //@}
 
