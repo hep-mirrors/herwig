@@ -17,10 +17,7 @@ set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
 
-##################################################
-# Tevatron physics parameters (override defaults) 
-##################################################
-set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 ##################################################
 #  Need to use an NLO PDF
@@ -38,8 +35,8 @@ set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:HardEmissionMode POWHEG
+set Evolver:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 #  Create the Herwig analysis

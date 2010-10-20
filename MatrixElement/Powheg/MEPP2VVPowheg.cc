@@ -196,8 +196,8 @@ void MEPP2VVPowheg::Init() {
      "takes into account the effects of real radiation",
      1);
 
-  static Reference<MEPP2VVPowheg,ShowerAlpha> interfaceShowerAlpha
-    ("ShowerAlpha",
+  static Reference<MEPP2VVPowheg,ShowerAlpha> interfaceCoupling
+    ("Coupling",
      "The object calculating the strong coupling constant",
      &MEPP2VVPowheg::showerAlphaS_, false, false, true, false, false);
 

@@ -159,7 +159,7 @@ set PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
 # PP->VV
 create Herwig::MEPP2VVPowheg PowhegMEPP2VV
-set PowhegMEPP2VV:ShowerAlpha /Herwig/Shower/AlphaQCD
+set PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 
 ##########################################################
 # DIS matrix elements

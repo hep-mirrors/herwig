@@ -16,34 +16,13 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
+set LHCGenerator:EventHandler:StatLevel Full
 
-##################################################
-# Tevatron physics parameters (override defaults) 
-##################################################
-set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
-
-##################################################
-#  Need to use an NLO PDF
-##################################################
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-
-##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
-
-##################################################
-#  Setup the POWHEG shower
-##################################################
-cd /Herwig/Shower
-set Evolver:IntrinsicPtGaussian 1.9*GeV
-set Evolver:HardEmissionMode POWHEG
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 ##################################################
 #  Create the Herwig analysis
 ##################################################
-cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
