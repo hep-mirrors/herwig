@@ -1467,6 +1467,9 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
 	sqr( particlesToShower[ix]->progenitor()->momentum().y() - (**cit).showerMomentum().y() ) +
 	sqr( particlesToShower[ix]->progenitor()->momentum().z() - (**cit).showerMomentum().z() ) +
 	sqr( particlesToShower[ix]->progenitor()->momentum().t() - (**cit).showerMomentum().t() );
+      // add mass difference for identical particles (e.g. Z0 Z0 production)
+      dtest += 1e10*sqr(particlesToShower[ix]->progenitor()->momentum().m()-
+			(**cit).showerMomentum().m());
       if( dtest < dmin ) {
 	iloc = ix;
 	dmin = dtest;
