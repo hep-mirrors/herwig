@@ -25,7 +25,7 @@ using namespace Herwig;
 void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
 					    int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
-  _weight = event->weight();
+  double weight = event->weight();
   ///////////////////////////
   // Hadron Level Analysis //
   ///////////////////////////
@@ -36,7 +36,7 @@ void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
   tPVector particles(allParticles.begin(),allParticles.end());
   // numerator
   _emax = 0.5*generator()->maximumCMEnergy();   
-  analyze(particles); 
+  analyze(particles,weight); 
 
   ////////////////////////////////////////
   // Parton Level Analysis (e+e-->bbar) //
@@ -48,20 +48,16 @@ void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
   // Finally go off down the b quark lines to find the b's just before they
   // hadronize (b_end and bbar_end respectively).
   ParticleSet pert=event->primaryCollision()->step(1)->all();
-  analyze_bquarks(pert);
+  analyze_bquarks(pert,weight);
 }
 
-void BFragmentationAnalysisHandler::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
+void BFragmentationAnalysisHandler::analyze(tPPtr part, double weight) {
+  _fragBxE ->addWeighted(part->momentum().e()/_emax, weight);
+  _fragBxEa->addWeighted(part->momentum().e()/_emax, weight);
 }
 
-void BFragmentationAnalysisHandler::analyze(tPPtr part) {
-  _fragBxE ->addWeighted(part->momentum().e()/_emax,_weight);
-  _fragBxEa->addWeighted(part->momentum().e()/_emax,_weight);
-}
-
-void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert) {
+void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert, 
+						    double weight) {
   ParticleSet::const_iterator pit;
   PPtr b_orig,bbar_orig,ZGamma,b_start,bbar_start,b_end,bbar_end;
   // First go through all the particles looking for b's coming out of Z/gamma's:
@@ -104,13 +100,13 @@ void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert) {
   bbar_end = root_b[1];
   // Fill the energy fraction histograms with that of the b quarks.
   _fragbquarkxE      ->
-    addWeighted( b_end->momentum().e()/_emax   ,_weight);
+    addWeighted( b_end->momentum().e()/_emax   ,weight);
   _fragbquarkxE      ->
-    addWeighted( bbar_end->momentum().e()/_emax,_weight);
+    addWeighted( bbar_end->momentum().e()/_emax,weight);
   _fragbquarkjetmass ->
-    addWeighted( b_start->momentum().m()/GeV   ,_weight);
+    addWeighted( b_start->momentum().m()/GeV   ,weight);
   _fragbquarkjetmass ->
-    addWeighted( bbar_start->momentum().m()/GeV,_weight);
+    addWeighted( bbar_start->momentum().m()/GeV,weight);
 }
 
 NoPIOClassDescription<BFragmentationAnalysisHandler> 

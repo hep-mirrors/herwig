@@ -17,7 +17,8 @@ using namespace Herwig;
 
 bornVVKinematics::bornVVKinematics() {}
     
-bornVVKinematics::bornVVKinematics(vector<Lorentz5Momentum> Momenta, double x1, double x2) {
+bornVVKinematics::bornVVKinematics(vector<Lorentz5Momentum> Momenta,
+				   double x1, double x2) {
     
   // Leading order momentum fractions and associated etabar's:
   x1b_   = x1;

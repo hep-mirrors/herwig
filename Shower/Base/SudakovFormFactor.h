@@ -670,14 +670,6 @@ struct ClassTraits<Herwig::SudakovFormFactor>
   : public ClassTraitsBase<Herwig::SudakovFormFactor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SudakovFormFactor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SudakovFormFactor is implemented. It may also include several, space-separated,
-   * libraries if the class SudakovFormFactor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

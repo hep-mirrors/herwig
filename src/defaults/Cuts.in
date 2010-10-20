@@ -69,6 +69,7 @@ create ThePEG::KTRapidityCut HiggsBosonKtCut KTRapidityCut.so
 set HiggsBosonKtCut:Matcher /Herwig/Matchers/HiggsBoson
 set HiggsBosonKtCut:MinKT 0.0*GeV
 
+
 # create a cut on the invariant mass of lepton pairs
 create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so
 set MassCut:MaxM 14000.*GeV

@@ -750,13 +750,13 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
 					  HardBranchingPtr(),HardBranching::Incoming)));
   nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						 nasonin[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
   nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					    nasonin[iemit],HardBranching::Incoming)));
   nasonin[iemit]->addChild(nasonhard.back());
+  // create the branching for the emitted jet
+  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						 nasonin[iemit],HardBranching::Outgoing)));
   // set the colour partners
   nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
   nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());

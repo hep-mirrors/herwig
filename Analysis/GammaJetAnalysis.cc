@@ -95,26 +95,7 @@ void GammaJetAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-LorentzRotation GammaJetAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void GammaJetAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void GammaJetAnalysis::analyze(tPPtr) {}
-
-void GammaJetAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void GammaJetAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<GammaJetAnalysis> GammaJetAnalysis::initGammaJetAnalysis;
+NoPIOClassDescription<GammaJetAnalysis> GammaJetAnalysis::initGammaJetAnalysis;
 // Definition of the static class description member.
 
 void GammaJetAnalysis::Init() {

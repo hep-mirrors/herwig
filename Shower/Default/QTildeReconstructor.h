@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -120,7 +120,7 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr,
+  virtual bool deconstructDecayJets(HardTreePtr, cEvolverPtr,
 				    ShowerInteraction::Type) const;
 
   /**
@@ -128,7 +128,7 @@ public:
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr,
+  virtual bool deconstructHardJets(HardTreePtr, cEvolverPtr,
 				   ShowerInteraction::Type) const;
   //@}
 
@@ -213,7 +213,7 @@ protected:
    *  particles
    */
   void reconstructFinalStateSystem(bool applyBoost, 
-				   const LorentzRotation &   toRest,
+				   const LorentzRotation & toRest,
 				   const LorentzRotation & fromRest, 
 				   vector<ShowerProgenitorPtr>) const;
 
@@ -245,7 +245,7 @@ protected:
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
-				   EvolverPtr,
+				   cEvolverPtr,
 				   ShowerInteraction::Type) const;
   
   /**
@@ -265,10 +265,10 @@ protected:
    */
   void deconstructInitialFinalSystem(HardTreePtr,
 				     vector<HardBranchingPtr>,
-				     EvolverPtr,
+				     cEvolverPtr,
 				     ShowerInteraction::Type ) const;
 
-  bool deconstructGeneralSystem(HardTreePtr, EvolverPtr,
+  bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
 				ShowerInteraction::Type) const;
   //@}
 
@@ -280,7 +280,8 @@ protected:
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
+  LorentzRotation solveBoost(const double k, 
+			     const Lorentz5Momentum & newq, 
 			     const Lorentz5Momentum & oldp) const;
   
   /**

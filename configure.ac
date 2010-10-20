@@ -37,6 +37,7 @@ dnl ==========================================
 AC_LANG([C++])
 
 AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 dnl Checks for programs.
 AC_PROG_CXX([g++])
 AC_PROG_INSTALL
@@ -130,12 +131,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Powheg/Makefile
                 MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
-		Shower/Couplings/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
-		Shower/Powheg/Makefile
-		Shower/Powheg/HardGenerators/Makefile
-		Shower/Powheg/Matching/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

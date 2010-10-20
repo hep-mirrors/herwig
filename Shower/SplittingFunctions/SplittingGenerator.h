@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
 
@@ -368,14 +368,6 @@ struct ClassTraits<Herwig::SplittingGenerator>
   : public ClassTraitsBase<Herwig::SplittingGenerator> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SplittingGenerator"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SplittingGenerator is implemented. It may also include several, space-separated,
-   * libraries if the class SplittingGenerator depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

@@ -204,7 +204,6 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   p2.boost(boostv);
   // calculate quantities for the scales
   Energy2 Q2 = p12.m2();
-  Energy Q   = sqrt(Q2);
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
   if(b<0.) {

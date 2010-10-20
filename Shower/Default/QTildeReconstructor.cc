@@ -704,7 +704,7 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
+deconstructDecayJets(HardTreePtr decay, cEvolverPtr evolver,
 		     ShowerInteraction::Type type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
@@ -1007,7 +1007,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 
 bool QTildeReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
-			 EvolverPtr evolver,
+			 cEvolverPtr evolver,
 			 ShowerInteraction::Type type) const {
   // extract incoming and outgoing particles
   ColourSingletShower in,out;
@@ -1040,7 +1040,7 @@ deconstructGeneralSystem(HardTreePtr tree,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      EvolverPtr evolver,
+					      cEvolverPtr evolver,
 					      ShowerInteraction::Type type) const {
   // inverse of old recon method
   if(_reconopt==0) {
@@ -1585,7 +1585,6 @@ deconstructInitialInitialSystem(bool & applyBoost,
   // and calculate the boosts 
   applyBoost=true;
   // do one boost
-  toRest   = LorentzRotation(pcm.findBoostToCM());
   if(_initialBoost==0) {
     toRest   = LorentzRotation(-pcm.boostVector());
   }
@@ -1608,12 +1607,12 @@ void QTildeReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    EvolverPtr evolver,
+			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
   if(jets.size()==1) {
     LorentzRotation R(toRest);
     R.transform(fromRest);
-    tree->showerRot( R );
+    // \todo What does this do?    tree->showerRot( R );
     jets[0]->original(R*jets[0]->branchingParticle()->momentum());
     jets[0]->showerMomentum(R*jets[0]->branchingParticle()->momentum());
     // find the colour partners
@@ -1766,7 +1765,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
       Boost trans = -1./pb.e()*pb.vect();
       trans.setZ(0.);
       rot.boost(trans);
-      Energy scale=(**cjt).beam()->momentum().t();
+      Energy scale=(**cjt).beam()->momentum().e();
       Lorentz5Momentum pbasis(ZERO,(**cjt).beam()->momentum().vect().unit()*scale);
       Lorentz5Momentum pcm = rot*pbasis;
       rot.invert();
@@ -1927,7 +1926,7 @@ findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
 
 void QTildeReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
-			      EvolverPtr evolver,
+			      cEvolverPtr evolver,
 			      ShowerInteraction::Type type) const {
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;

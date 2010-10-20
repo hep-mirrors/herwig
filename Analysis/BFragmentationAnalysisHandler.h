@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  BFragmentationAnalysisHandler() : _emax(), _weight() {}
+  BFragmentationAnalysisHandler() : _emax() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -63,20 +63,15 @@ public:
    *  Identifies which step(2) final state particles originate
    *  from the b/bbar...
    */
-  void analyze_bquarks(ParticleSet);
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
+  void analyze_bquarks(ParticleSet, double);
 
   /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
    */
-  virtual void analyze(tPPtr particle);
+  virtual void analyze(tPPtr particle, double weight);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -163,11 +158,6 @@ private:
    *  Centre-of-mass energy of the collision
    */
   Energy _emax;
-
-  /**
-   *  The weight for the event
-   */
-  double _weight;
 
 };
 

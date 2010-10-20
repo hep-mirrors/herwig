@@ -313,14 +313,6 @@ struct ClassTraits<Herwig::SplittingFunction>
   : public ClassTraitsBase<Herwig::SplittingFunction> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SplittingFunction"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SplittingFunction is implemented. It may also include several, space-separated,
-   * libraries if the class SplittingFunction depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

@@ -24,12 +24,30 @@ using Constants::pi;
  */
 class MEPP2VVPowheg: public MEPP2VV {
 
+  /**
+   * Typedef for the BeamParticleData object
+   */
+  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+
 public:
 
   /**
    * The default constructor.
    */
   MEPP2VVPowheg();
+ 
+  /** @name Member functions for the generation of hard QCD radiation */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  //@}
 
 public:
 
@@ -329,8 +347,8 @@ private:
   /**
    *  The BeamParticleData object for the plus and minus direction hadrons
    */
-  Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
-  Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
+  tcBeamPtr hadron_A_;
+  tcBeamPtr hadron_B_;
 
   /**
    * Born / virtual 2->2 kinematics.
@@ -377,12 +395,6 @@ private:
    *  (which can be in a different order to ab_ and bb_).
    */
   tcPDPtr quark_, antiquark_;
-
-  /**
-   *  Flag indicating if the q & qbar are flipped or not i.e. this
-   *  is true if q enters from the -z direction in the lab frame.
-   */
-  bool flipped_;
 
   /**
    *  Values of the PDF's before radiation
@@ -532,6 +544,234 @@ private:
    *  The value of \f$\alpha_S\f$ used for the calculation
    */
   mutable double alphaS_;
+
+protected:
+
+  /**
+   * Returns the matrix element for a given type of process,
+   * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
+   * @param emis_type the type of emission,
+   * (0 is \f$q\bar{q}\to Vg\f$, 1 is \f$qg\to Vq\f$ and 2 is \f$g\bar{q}\to V\bar{q}\f$)
+   * @param pT The transverse momentum of the jet
+   * @param yj The rapidity of the jet
+   */
+  double getResult(int emis_type, realVVKinematics R, Energy pT);
+ 
+  /**
+   *  generates the hardest emission (yj,p)
+   * @param pnew The momenta of the new particles
+   * @param emissiontype The type of emission, as for getResult
+   * @return Whether not an emission was generated
+   */
+  bool getEvent(vector<Lorentz5Momentum> & pnew,unsigned int & emissiontype);
+  
+  /**
+   *  sets the QCD, EW and PDF scales
+   * @param pT The pT of the current step in the veto algorithm
+   */
+  void setTheScales(Energy pT);
+
+  /**
+   * The matrix element q + qb -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix) const;
+
+
+  /**
+   * The matrix element q + g  -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) const;
+
+  /**
+   * The matrix element g + qb -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix) const;
+
+  /**
+   * The matrix element for the kinematical configuration
+   * previously provided by the last call to setKinematics(), suitably
+   * scaled by sHat() to give a dimension-less number.
+   * @return the matrix element scaled with sHat() to give a
+   * dimensionless number.
+   */
+  double lo_me(bool getMatrix) const;
+
+  /**
+   * Recalculate hard vertex to include spin correlations for radiative events.
+   */
+  void recalculateVertex();
+
+  /**
+   * Member which selects a two body decay mode for each vector
+   * boson and distributes decay products isotropically
+   */
+  bool isotropicDecayer();
+
+  /**
+   * The triangle function lambda(x,y,z)=sqrt(x^2+y^2+z^2-2*x*y-2*y*z-2*x*z)
+   */
+  Energy2 triangleFn(Energy2,Energy2,Energy2);
+
+private:
+
+  /**
+   * If this boolean is true the n+1 body helicity amplitudes will be
+   * used to calculate a hard vertex based on those kinematics for spin
+   * correlations in the decays.
+   */
+  bool realMESpinCorrelations_;
+
+  /**
+   * The colour & spin averaged n-body (leading order) matrix element squared.
+   */
+  double lo_me_;
+
+  /**
+   * The resolved 2->3 real emission kinematics.
+   */
+  realVVKinematics R_;
+
+  /**
+   * This specifies the emitting configuration: 
+   * 1: q + qbar -> V1 + V2 + g
+   * 2: q + g    -> V1 + V2 + q
+   * 3: g + qbar -> V1 + V2 + qbar.
+   */
+  unsigned int channel_;
+
+  /**
+   * Identifies the space-like mother of the branching
+   * as quark (+1) or antiquark (-1):
+   */
+  int fermionNumberOfMother_;
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr showerAlphaS_;
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   * The power, \f$n\f$, for the sampling
+   */
+  double power_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double preqqbar_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double preqg_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double pregqbar_;
+
+  /**
+   * The QCD beta function divided by 4pi, (11-2/3*nf)/4/pi, with nf = 5.
+   */
+  double b0_;
+
+  /**
+   * The fundamental QCD scale in the one-loop alpha_{S} used for the crude
+   * (not the very crude) overestimate of the Sudakov exponent. The default
+   * value is set so such that alphaS(MZ), neglecting all flavour threshold
+   * effects i.e. MZ*exp(-1/2/b0_/alphaS(MZ)).
+   */
+  Energy LambdaQCD_;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> prefactor_;
+  //@}
+
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the ShowerProgenitor objects for the partons
+   */
+  ShowerProgenitorPtr qProgenitor_;
+  ShowerProgenitorPtr qbProgenitor_;
+
+  /**
+   *  Pointers to the Shower particle objects for the partons
+   */
+  ShowerParticlePtr showerQuark_;
+  ShowerParticlePtr showerAntiquark_;
+
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  tcBeamPtr qHadron_;
+  tcBeamPtr qbHadron_;
+  //@}
+
+  /**
+   *  Properties of the boson and jets
+   */
+  //@{
+  /**
+   *  Pointers to the Shower particle objects for the partons
+   */
+  PPtr gluon_;
+  ShowerParticlePtr V1_;
+  ShowerParticlePtr V2_;
+  vector<PPtr> children_;
+  vector<PPtr> photons_;
+
+  /**
+   *  Flag indicating if the q & qbar are flipped or not i.e. this
+   *  is true if q enters from the -z direction in the lab frame.
+   */
+  bool flipped_;
+
+  /**
+   *  the rapidity of the jet
+   */
+  double Yk_;
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy pT_;
+  //@}
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy min_pT_;
+
+  // Work out the scales we want to use in the matrix elements and the pdfs:
+  /**
+   * Scale for alpha_S: pT^2 of the diboson system.
+   */
+  Energy2 QCDScale_;
+
+  /**
+   * Scale for real emission PDF: 
+   */
+  Energy2 PDFScale_;
+
+  /**
+   * Scale of electroweak vertices: mVV^2 the invariant mass of the diboson system.
+   */
+  Energy2 EWScale_;
+
+  /**
+   * A matrix to hold the home-grown production matrix element
+   */
+  mutable Complex productionMatrix_[3][3][3][3];
 
 };
 

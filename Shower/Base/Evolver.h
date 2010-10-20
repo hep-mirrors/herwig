@@ -26,8 +26,6 @@
 #include "Evolver.fh"
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Decay/HwDecayerBase.h"
-#include "Herwig++/Utilities/Histogram.h"
-#include "HardestEmissionGenerator.h"
 
 namespace Herwig {
 
@@ -65,13 +63,13 @@ public:
   /**
    *  Default Constructor
    */
-  Evolver() : _maxtry(100),
-	      _meCorrMode(1), _hardVetoMode(1), 
+  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
-	       interaction_(1), _hardonly(false), _trunc_Mode(true),
-	      _hardEmissionMode(0), _checkShowerMomenta(false) {}
+	       interaction_(1),
+	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0)
+  {}
 
   /**
    *  Members to perform the shower
@@ -118,6 +116,11 @@ public:
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
 
+  /**
+   *  Connect the Hard and Shower trees
+   */
+  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -163,12 +166,6 @@ protected:
    * @return The particles to be showered
    */
   virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
-
-  /**
-   *  Implementation of checks on momentum reconstruction
-   */
-  virtual bool checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower,
-				    bool IS );
 
   /**
    *  set the colour partners
@@ -357,12 +354,12 @@ protected:
   /**
    *  The HardTree currently being showered
    */
-  inline tHardTreePtr hardTree() {return _nasontree;}
+  tHardTreePtr hardTree() {return _nasontree;}
 
   /**
    *  The HardTree currently being showered
    */
-  inline void hardTree(tHardTreePtr in) {_nasontree = in;}
+  void hardTree(tHardTreePtr in) {_nasontree = in;}
   //@}
 
   /**
@@ -464,9 +461,9 @@ protected:
    */
   virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
-  vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
-  {return _hardgenerator;}
-
+  /**
+   *  Only generate the hard emission, for testing only.
+   */
   bool hardOnly() const {return _hardonly;}
 
   /**
@@ -525,13 +522,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.   */
-  virtual void doinitrun();
-
-  virtual void dofinish();
   //@}
 
 private:
@@ -547,16 +537,6 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
-
-  /**
-   * Recursive function to find FS end point of shower line
-   */
-  bool findShowerEnd( PPtr parton );
-  
-  /**
-   * Recursive function to find FS end point of hardBranching line
-   */
-  bool findHardTreeEnd( HardBranchingPtr parton );
 
 private:
 
@@ -692,11 +672,6 @@ private:
   vector<ShowerInteraction::Type> interactions_;
 
   /**
-   *  Vector of objects responisble for generating the hardest emission
-   */
-  vector<HardestEmissionGeneratorPtr> _hardgenerator;
-
-  /**
    *  Only generate the emission from the hardest emission
    *  generate for testing only
    */
@@ -716,31 +691,6 @@ private:
    *  Mode for the hard emissions
    */
   unsigned int _hardEmissionMode;
-
-  /**
-   * Switch for the momentum reconstruction checks
-   */
-  bool _checkShowerMomenta;
-  
-  /**
-   *  Histograms of momentum differences in reconstructed momenta
-   */
-  HistogramPtr _h_Xdiff;
-  HistogramPtr _h_Ydiff;
-  HistogramPtr _h_Zdiff;
-  HistogramPtr _h_Ediff;
-
-  /**
-   * Count of events passing momenta reconstruction acceptance
-   */
-  int _no_events;
-  int _mom_fails;
-  /**
-   * Storage of the end points from shower and hard tree for 
-   * momentum reconstruction checks
-   */
-  multimap< long, PPtr > _showerEndPoints;
-  vector< PPtr > _hardTreeEndPoints;
 };
 
 }
