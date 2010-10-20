@@ -105,7 +105,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
 		Models/Transplanckian/Makefile
-		Models/AnomalousCouplings/Makefile
 		Models/ADD/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile

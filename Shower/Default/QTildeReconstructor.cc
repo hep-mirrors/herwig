@@ -600,7 +600,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	    Trafo = solveBoost(k2, it->q, it->p);
 	  }
 	}
-	Lorentz5Momentum ptest=Trafo*it->q;
 	if(gottaBoost)  Trafo.boost(-boosttorest,gammarest);
 	if(atLeastOnce || gottaBoost) deepTransform(it->parent,Trafo);
       }
@@ -663,11 +662,9 @@ solveDecayKFactor(Energy mb,
   // magnitudes of the momenta for fast access
   vector<Energy2> pmag;
   Energy total(Ejet);
-  Lorentz5Momentum ptest;
   for(unsigned int ix=0;ix<jetKinematics.size();++ix) {
     pmag.push_back(jetKinematics[ix].p.vect().mag2());
     total+=jetKinematics[ix].q.mass();
-    ptest+=jetKinematics[ix].p;
   }
   // return if no possible solution
   if(total>mb) return false;
@@ -1176,7 +1173,6 @@ findPartners(unsigned int iloc ,
 void QTildeReconstructor::
 reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pin[2],pout[2];
-  Lorentz5Momentum ptest;
   bool atLeastOnce(false);
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // final-state parton
@@ -1190,9 +1186,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
       pin[0]  +=jets[ix]->progenitor()->momentum();
       atLeastOnce |= reconstructSpaceLikeJet(jets[ix]->progenitor());
       assert(!jets[ix]->original()->parents().empty());
-      Lorentz5Momentum pbeam = jets[ix]->original()->parents()[0]->momentum();
-      Energy scale=abs(pbeam.z());
-      pbeam = Lorentz5Momentum(ZERO,pbeam.vect().unit()*scale);
     }
   }
   // add intrinsic pt if needed

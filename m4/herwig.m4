@@ -64,7 +64,7 @@ if test "x$with_thepeg" = "xno"; then
 	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG. Please set --with-thepeg.])
 fi
 
-THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG $GSLLIBS"
+THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
 THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
@@ -354,7 +354,7 @@ LOAD_UED=""
 LOAD_ADD=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add anomalous) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -405,7 +405,6 @@ AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
-AM_CONDITIONAL(WANT_Anomalous,[test "$anomalous" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
 ])
