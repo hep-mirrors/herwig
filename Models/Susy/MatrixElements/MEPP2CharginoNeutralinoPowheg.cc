@@ -73,11 +73,10 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
     if(i%2==1){
       q  = getParticleData(i);
       qb = getParticleData(i+1)->CC();}
-//     else{
-//       q  = getParticleData(i);
-//       qb = getParticleData(i-1)->CC();}
+    else{
+      q  = getParticleData(i);
+      qb = getParticleData(i-1)->CC();}
 
-    //qLdt = Left-handed squark, t-channel
     tcPDPtr qLt = getParticleData(1000000+i);
     tcPDPtr qRt = getParticleData(2000000+i);
     tcPDPtr qLu = getParticleData(1000000+i+1);
@@ -86,47 +85,51 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
     tcPDPtr qRd = getParticleData(2000000+i-1);
     for(unsigned int ix=0;ix<2;++ix){
       for(unsigned int jx=0;jx<4;++jx){
+	// Wminus mediated processes
 	if(process_==0 || process_==4*ix+jx+1){
-	  // W-mediated s-channel
-	  // if(mePartonData()[0]->charge()/eplus
-	  //    + mePartonData()[1]->charge()/eplus == -1){
-	  // add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
-	  //3, chab[ix], 3, neu[jx], -1)));}
-	  //	  else{add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
-	  //	    3, cha[ix], 3, neu[jx], -2)));}	  
-	  
 	  // q is down type
 	  if(i%2==1) {
+	    // W-mediated s-channel
+	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
+			 3, chab[ix], 3, neu[jx], -1)));
+	    
 	    // ~qL mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
-			 3, chab[ix], 1, neu[jx], -3)));
+			 3, chab[ix], 1, neu[jx], -2)));
 	    // ~qR mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
-			 3, chab[ix], 1, neu[jx], -4)));
+			 3, chab[ix], 1, neu[jx], -3)));
+	    
+	    // ~qL mediated u-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
+			 3, neu[jx], 1, chab[ix], -4)));
+	    // ~qR mediated u-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
+			 3, neu[jx], 1, chab[ix], -5)));
+	  }
+	}
+	// Wplus mediated processes
+	if(process_ == 0 || process_ == 4*ix+jx+9){
+	  // q is up type
+	  if(i%2==0) {
+	    // W-mediated s-channel
+	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
+			 3, cha[ix], 3, neu[jx], -1)));
+
+	    // ~qL mediated t-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
+			 3, cha[ix], 1, neu[jx], -2)));
+	    // ~qR mediated t-channel
+	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
+			 3, cha[ix], 1, neu[jx], -3)));
 
 	    // ~qL mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
-			 3, neu[jx], 1, chab[ix], -5)));
+			 3, neu[jx], 1, cha[ix], -4)));
 	    // ~qR mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
-			 3, neu[jx], 1, chab[ix], -6)));
+			 3, neu[jx], 1, cha[ix], -5)));
 	  }
-
-// 	  // q is up type
-// 	  else {
-// 	    // ~qL mediated t-channel
-// 	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
-// 			 3, cha[ix], 1, neu[jx], -3)));
-// 	    // ~qR mediated t-channel
-// 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
-// 			 3, cha[ix], 1, neu[jx], -4)));
-// 	    // ~qL mediated u-channel
-// 	    add(new_ptr((Tree2toNDiagram(3), q, qLd, qb,
-// 			 1, cha[ix], 3, neu[jx], -3)));
-// 	    // ~qR mediated u-channel
-// 	    add(new_ptr((Tree2toNDiagram(3), q, qRd, qb,
-// 			 1, cha[ix], 3, neu[jx], -4)));
-//	  }
 	}
       }
     }
@@ -182,46 +185,86 @@ void MEPP2CharginoNeutralinoPowheg::Init() {
      " (i.e. all combinations of chargino"
      "and neutralino mass eigenstate pairs.)",
      0);
-  static SwitchOption interfaceProcessChargino11
+  static SwitchOption interfaceProcessCharginom11
+    (interfaceProcess,
+     "chi+1chi01",
+     "Only produce chi-1, chi01 pairs.",
+     1);
+  static SwitchOption interfaceProcessCharginom12
+    (interfaceProcess,
+     "chi+1chi02",
+     "Only produce chi-1, chi02 pairs.",
+     2);
+  static SwitchOption interfaceProcessCharginom13
+    (interfaceProcess,
+     "chi+1chi03",
+     "Only produce chi-1, chi03 pairs.",
+     3);
+  static SwitchOption interfaceProcessCharginom14
+    (interfaceProcess,
+     "chi+1chi04",
+     "Only produce chi-1, chi04 pairs.",
+     4);
+  static SwitchOption interfaceProcessCharginom21
+    (interfaceProcess,
+     "chi+2chi01",
+     "Only produce chi-2, chi01 pairs.",
+     5);
+  static SwitchOption interfaceProcessCharginom22
+    (interfaceProcess,
+     "chi+2chi02",
+     "Only produce chi-2, chi02 pairs.",
+     6);
+  static SwitchOption interfaceProcessCharginom23
+    (interfaceProcess,
+     "chi+2chi03",
+     "Only produce chi-2, chi03 pairs.",
+     7);
+  static SwitchOption interfaceProcessCharginom24
+    (interfaceProcess,
+     "chi+2chi04",
+     "Only produce chi-2, chi04 pairs.",
+     8);
+  static SwitchOption interfaceProcessCharginop11
     (interfaceProcess,
      "chi+1chi01",
      "Only produce chi+1, chi01 pairs.",
-     1);
-  static SwitchOption interfaceProcessChargino12
+     9);
+  static SwitchOption interfaceProcessCharginop12
     (interfaceProcess,
      "chi+1chi02",
      "Only produce chi+1, chi02 pairs.",
-     2);
-  static SwitchOption interfaceProcessChargino13
+     10);
+  static SwitchOption interfaceProcessCharginop13
     (interfaceProcess,
      "chi+1chi03",
      "Only produce chi+1, chi03 pairs.",
-     3);
-  static SwitchOption interfaceProcessChargino14
+     11);
+  static SwitchOption interfaceProcessCharginop14
     (interfaceProcess,
      "chi+1chi04",
      "Only produce chi+1, chi04 pairs.",
-     4);
-  static SwitchOption interfaceProcessChargino21
+     12);
+  static SwitchOption interfaceProcessCharginop21
     (interfaceProcess,
      "chi+2chi01",
      "Only produce chi+2, chi01 pairs.",
-     5);
-  static SwitchOption interfaceProcessChargino22
+     13);
+  static SwitchOption interfaceProcessCharginop22
     (interfaceProcess,
      "chi+2chi02",
      "Only produce chi+2, chi02 pairs.",
-     6);
-  static SwitchOption interfaceProcessChargino23
+     14);
+  static SwitchOption interfaceProcessCharginop23
     (interfaceProcess,
      "chi+2chi03",
      "Only produce chi+2, chi03 pairs.",
-     7);
-  static SwitchOption interfaceProcessChargino24
+     15);
+  static SwitchOption interfaceProcessCharginop24
     (interfaceProcess,
      "chi+2chi04",
      "Only produce chi+2, chi04 pairs.",
-     8);
+     16);
 
 
   static Parameter<MEPP2CharginoNeutralinoPowheg,int> interfaceMaxFlavour
@@ -262,18 +305,18 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   const Energy2 q2(scale());
   tcPDPtr squark[4];
   if (abs(mePartonData()[0]->id())%2==0) {
-    // t-channel
+    // u-channel
     squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
     squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
-    // u-channel
+    // t-channel
     squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
     squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
   }
   else {
-    // t-channel
+    // u-channel
     squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
     squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
-    // u-channel
+    // t-channel
     squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
     squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
   }
@@ -301,7 +344,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
       VectorWaveFunction interW = FFWVertex_->
-	evaluate(q2, 1, mePartonData()[0]->iCharge() >0 ? Wplus_ : Wminus_,
+	evaluate(q2, 1, mePartonData()[0]->iCharge() > 0 ? Wplus_ : Wminus_,
 		 sp[if1],sbar[if2]);
       for(unsigned int of1 = 0; of1 < 2; ++of1) {
 	for(unsigned int of2 = 0; of2 < 2; ++of2) {
