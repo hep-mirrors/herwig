@@ -74,7 +74,11 @@ void SSNNZVertex::Init() {
 }
 
 void SSNNZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
+#ifndef NDEBUG
 			      tcPDPtr part2,tcPDPtr part3) {
+#else
+			      tcPDPtr part2,tcPDPtr) {
+#endif
   assert(part3->id() == ParticleID::Z0);
   long ic1 = part2->id();
   long ic2 = part1->id();

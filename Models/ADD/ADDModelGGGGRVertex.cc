@@ -56,8 +56,13 @@ void ADDModelGGGGRVertex::Init() {
   
 }
 
+#ifndef NDEBUG
 void ADDModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 				     tcPDPtr c, tcPDPtr) {
+#else
+void ADDModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				     tcPDPtr, tcPDPtr) {
+#endif
   assert(a->id() == ParticleID::g && b->id() ==  ParticleID::g &&
 	 c->id() == ParticleID::g);
   if(q2!=q2last_||couplast_==0.) {
