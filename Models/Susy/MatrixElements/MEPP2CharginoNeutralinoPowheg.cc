@@ -86,7 +86,7 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
     for(unsigned int ix=0;ix<2;++ix){
       for(unsigned int jx=0;jx<4;++jx){
 	// Wminus mediated processes
-	if(process_==0 || process_==4*ix+jx+1){
+	if(process_==-1 || process_==4*ix+jx+1){
 	  // q is down type
 	  if(i%2==1) {
 	    // W-mediated s-channel
@@ -178,10 +178,17 @@ void MEPP2CharginoNeutralinoPowheg::Init() {
      "Which processes to generate",
      &MEPP2CharginoNeutralinoPowheg::process_, 0, false, false);
 
-  static SwitchOption interfaceProcessAll
+  static SwitchOption interfaceProcessAllWm
     (interfaceProcess,
      "All",
-     "Generate all the processes"
+     "Generate all Wminus-mediated processes"
+     " (i.e. all combinations of chargino"
+     "and neutralino mass eigenstate pairs.)",
+     -1);
+  static SwitchOption interfaceProcessAllWp
+    (interfaceProcess,
+     "All",
+     "Generate all Wplus-mediated processes"
      " (i.e. all combinations of chargino"
      "and neutralino mass eigenstate pairs.)",
      0);
