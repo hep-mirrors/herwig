@@ -29,90 +29,91 @@ IBPtr LeptoquarkModelSLQFFVertex::fullclone() const {
 
 LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  {
   //S0
-  addToList(-15,-6,9911561);
-  addToList(15,6,-9911561);
-  addToList(-16,-5,9911561);
-  addToList(16,5,-9911561);
+  addToList(-6,-15,9911561);
+  addToList(6,15,-9911561);
+  addToList(-5,-16,9911561);
+  addToList(5,16,-9911561);
 
   //~S0
-  addToList(-15,-5,9921551);
-  addToList(15,5,-9921551);
+  addToList(-5,-15,9921551);
+  addToList(5,15,-9921551);
 
   //S1 triplet
   //S1p
-  addToList(-15,-5,9931551);
-  addToList(15,5,-9931551);
+  addToList(-5,-15,9931551);
+  addToList(5,15,-9931551);
   //S1z
-  addToList(-15,-6,9931561);
-  addToList(15,6,-9931561);
-  addToList(-16,-5,9931561);
-  addToList(16,5,-9931561);
+  addToList(-6,-15,9931561);
+  addToList(6,15,-9931561);
+  addToList(-5,-16,9931561);
+  addToList(5,16,-9931561);
   //S1m
-  addToList(-16,-6,9931661);
-  addToList(16,6,-9931661);
+  addToList(-6,-16,9931661);
+  addToList(6,16,-9931661);
 
   //S1/2 doublet
-  addToList(15,-6,9941561);
-  addToList(-15,6,-9941561);
+  addToList(-6,15,9941561);
+  addToList(6,-15,-9941561);
   
-  addToList(-15,5,-9941551);
-  addToList(-16,6,-9941551);
-  addToList(15,-5,9941551);
-  addToList(16,-6,9941551);
+  addToList(5,-15,-9941551);
+  addToList(6,-16,-9941551);
+  addToList(-5,15,9941551);
+  addToList(-6,16,9941551);
 
 
   //S1/2 tilde doublet
-  addToList(16,-5,9951651);
-  addToList(15,-5,9951551);
+  addToList(5,-16,-9951651);
+  addToList(-5, 16,9951651);
 
-  addToList(-16,5,-9951651);
-  addToList(-15,5,-9951551);
+  addToList(-5, 15,9951551);
+  addToList(5,-15,-9951551);
+
 
   //dS0
-  addToList(15,-5,9961551);
-  addToList(-15,5,-9961551);
+  addToList(-5,15,9961551);
+  addToList(5,-15,-9961551);
 
-  addToList(16,-6,9961551);
-  addToList(-16,6,-9961551);
+  addToList(-6,16,9961551);
+  addToList(6,-16,-9961551);
 
   //~dS0
-  addToList(15,-6,9971561);
-  addToList(-15,6,-9971561);
+  addToList(-6, 15,9971561);
+  addToList(6,-15,-9971561);
 
 
   //dS1 triplet
 
   //dS1p
-  addToList(15,-6,9981561);
-  addToList(-15,6,-9981561);
+  addToList(-6,15,9981561);
+  addToList(6,-15,-9981561);
 
   //dS1z
-  addToList(16,-6,9981551);
-  addToList(-16,6,-9981551);
+  addToList(-6,16,9981551);
+  addToList(6,-16,-9981551);
 
-  addToList(15,-5,9981551);
-  addToList(-15,5,-9981551);
+  addToList(-5,15,9981551);
+  addToList(5,-15,-9981551);
 
   //dS1m
-  addToList(16,-5,9981651);
-  addToList(-16,5,-9981651);
+  addToList(-5,16,9981651);
+  addToList(5,-16,-9981651);
 
   //dS1/2 doublet
-  addToList(-15,-5,9991551);
-  addToList(15,5,-9991551);
+  addToList(-5,-15,9991551);
+  addToList(5,15,-9991551);
 
-  addToList(-15,-6,9991561);
-  addToList(15,6,-9991561);
+  addToList(-6,-15,9991561);
+  addToList(6,15,-9991561);
 
-  addToList(-16,-5,9991561);
-  addToList(16,5,-9991561);
+  addToList(-5,-16,9991561);
+  addToList(5,16,-9991561);
 
   //dS1/2 tilde doublet
-  addToList(-15,-6,9901561);
-  addToList(15,6,-9901561);
+  addToList(-6,-15,9901561);
+  addToList(6,15,-9901561);
 
-  addToList(-16,-6,9901661);
-  addToList(16,6,-9901661);
+  addToList(-6,-16,9901661);
+  addToList(6,16,-9901661);
 
 }
 
@@ -182,7 +183,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   //S0
   if( fabs(isc) == 9911561 || fabs(ism) == 9911561 || fabs(ichg) == 9911561 ) {
     if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
-      _cL = -_cL0; _cR = 0.;
+      _cL = -_cL0; _cR = Complex(0.);
     }
     if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
       _cL = _cL0; _cR = _cR0;
@@ -190,21 +191,21 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   }
   //~S0
   if( fabs(isc) == 9921551 || fabs(ism) == 9921551 || fabs(ichg) == 9921551 ) {
-    _cL = 0; _cR = _cR0t;
+    _cL = Complex(0.); _cR = _cR0t;
   }
   
   //S1 triplet
   //Q = + 4/3
   if( fabs(isc) == 9931551 || fabs(ism) == 9931551 || fabs(ichg) == 9931551 ) {
-    _cL = - sqrt(2.)* _cL1; _cR = 0;
+    _cL = sqrt(2.)* _cL1; _cR = Complex(0.);
   }
   //Q = + 1/3
   if( fabs(isc) == 9931561 || fabs(ism) == 9931561 || fabs(ichg) == 9931561 ) {
-    _cL = - _cL1; _cR = 0;
+    _cL = - _cL1; _cR = Complex(0.);
   }
   //Q = - 2/3
   if( fabs(isc) == 9931661 || fabs(ism) == 9931661 || fabs(ichg) == 9931661 ) {
-    _cL = sqrt(2.) * _cL1; _cR = 0;
+    _cL = sqrt(2.) * _cL1; _cR = Complex(0.);
   }
   
   //S1/2 doublet
@@ -218,10 +219,10 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   //Q = + 2/3 
   if( fabs(isc) == 9941551 || fabs(ism) == 9941551 || fabs(ichg) == 9941551 ) {
     if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
-      _cL = 0.; _cR = - _cR12;
+      _cL = Complex(0.); _cR = - _cR12;
     }
     if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
-      _cL = 0.; _cR = _cL12;
+      _cL = Complex(0.); _cR = _cL12;
     }
   }
 
@@ -229,13 +230,13 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
 
   //Q = + 2/3 
   if( fabs(isc) == 9951551 || fabs(ism) == 9951551 || fabs(ichg) == 9951551 ) {
-    _cL = _cL12t; _cR = 0.;
+    _cL = _cL12t; _cR = Complex(0.);
   }
   
   
   //Q = - 1/3 
   if( fabs(isc) == 9951651 || fabs(ism) == 9951651 || fabs(ichg) == 9951651 ) {
-    _cL = _cL12t; _cR = 0.;
+    _cL = _cL12t; _cR = Complex(0.);
   }
 
   //dS0
@@ -244,7 +245,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
       _cL = _dcL0 * mbot +_dcR0 * mtau; _cR = _dcR0 * mbot + _dcL0 * mtau;
     }
     if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
-      _cL = _dcL0 * mtop; _cR = 0;
+      _cL = _dcL0 * mtop; _cR = Complex(0.);
     }
     _cL /= sqrt(2.) * _derivscale; 
     _cR /= sqrt(2.) * _derivscale; 
@@ -266,7 +267,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
       _cL = -_dcL1 * mbot; _cR = -_dcL1 * mtau;
     }
     if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
-      _cL = _dcL1 * mtop; _cR = 0.;
+      _cL = _dcL1 * mtop; _cR = Complex(0.);
     }
     _cL /= sqrt(2.) * _derivscale; 
     _cR /= sqrt(2.) * _derivscale; 
@@ -274,7 +275,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
 
   if( fabs(isc) == 9981651 || fabs(ism) == 9981651 || fabs(ichg) ==  9981651) {
     _cL = sqrt(2.) * _dcL1 * mbot / (sqrt(2.) * _derivscale);
-    _cR = 0.;
+    _cR = Complex(0.);
   }
   
   
@@ -304,7 +305,7 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   }
   
   if( fabs(isc) == 9901661 || fabs(ism) == 9901661  || fabs(ichg) == 9901661 ) {
-    _cL = _dcL12t * mtop / (sqrt(2.) * _derivscale); _cR = 0.;
+    _cL = _dcL12t * mtop / (sqrt(2.) * _derivscale); _cR = Complex(0.);
   }
   
   
@@ -318,13 +319,13 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     idt1 = lqtype1[lt];
     idt2 = lqtype2[lt];
     if( isc == -idt1 || ism == -idt1 || ichg == -idt1  ) {
-      	left(_cR); right(_cL);
+      //     left(conj(_cR)); right(conj(_cL));
     }
  
-    if( isc == idt2 || ism == idt2 || ichg == idt2  ) {
-      	left(_cR); right(_cL);
+    if( isc == -idt2 || ism == -idt2 || ichg == -idt2  ) {
+      left(conj(_cR)); right(conj(_cL));
     }
   }
-
+  //cout << _cL << " " << _cR << endl;
   norm(_CFF);
 }

@@ -127,73 +127,83 @@ private:
   /**
    *  Overall coupling to left-handed leptons 
    */
-  double _cL;
+  //double _cL;
+  Complex _cL;
 
   /**
    *  Overall coupling to right-handed leptons 
    */
-  double _cR;
-
+  //  double _cR;
+  Complex _cR;
 
   /**
    *  Overall coupling to left-handed leptons for S0
    */
-  double _cL0;
+  // double _cL0;
+  Complex _cL0;
+  
 
   /**
    *  Overall coupling to right-handed leptons for S0
    */
-  double _cR0;
-
+  //  double _cR0;
+  Complex _cR0;
 
   /**
    *  Overall coupling to right-handed leptons for ~S0
    */
-  double _cR0t;
-
+  // double _cR0t;
+  Complex _cR0t;
+  
   /**
    *  Overall coupling to left-handed leptons for ~S1 triplet
    */
-  double _cL1;
+  // double _cL1;
+  Complex _cL1;
 
   /**
    *  Overall coupling to left-handed leptons for S1/2 triplet
    */
-  double _cL12;
-
+  // double _cL12;
+  Complex _cL12;
+  
 
   /**
    *  Overall coupling to right-handed leptons for S1/2 triplet
    */
-  double _cR12;
+  // double _cR12;
+  Complex _cR12;
 
   /**
    *  Overall coupling to left-handed leptons for ~S1/2 triplet
    */
-  double _cL12t;
-
+  //  double _cL12t;
+  Complex _cL12t;
   
   /**
    *  Overall coupling to left-handed leptons 
    */
-  double _dcL;
+  //double _dcL;
+  Complex _dcL;
 
   /**
    *  Overall coupling to right-handed leptons 
    */
-  double _dcR;
+  // double _dcR;
+  Complex _dcR;
 
 
   /**
    *  Overall coupling to left-handed leptons for dS0
    */
-  double _dcL0;
+  //  double _dcL0;
+  Complex _dcL0;
 
   /**
    *  Overall coupling to right-handed leptons for dS0
    */
-  double _dcR0;
-
+  //  double _dcR0;
+  Complex _dcR0;
 
   /**
    *  Overall coupling to right-handed leptons for ~dS0
@@ -208,19 +218,21 @@ private:
   /**
    *  Overall coupling to left-handed leptons for dS1/2 triplet
    */
-  double _dcL12;
-
+  //double _dcL12;
+  Complex _dcL12;
 
   /**
    *  Overall coupling to right-handed leptons for dS1/2 triplet
    */
-  double _dcR12;
+  //double _dcR12;
+  Complex _dcR12;
+
 
   /**
    *  Overall coupling to left-handed leptons for ~dS1/2 triplet
    */
-  double _dcL12t;
-
+  //  double _dcL12t;
+  Complex _dcL12t;
   
   /**
    *  Suppression scale for derivatively coupled scalar leptoquarks
