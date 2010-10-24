@@ -3924,7 +3924,7 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
   k2->set5Momentum(theRealMomenta[3]);
   k ->set5Momentum(theRealMomenta[4]);
   // Then construct another set of ShowerPointers that will be
-  // useful in creating the nasonTree, using this information:
+  // useful in creating the hardTree, using this information:
   ShowerParticlePtr mother;
   ShowerParticlePtr spacelikeSon;
   ShowerParticlePtr timelikeSon;
@@ -3998,13 +3998,13 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
     recalculateVertex();
   }
   // Construct the HardTree object needed to perform the showers
-  HardTreePtr nasonTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
+  HardTreePtr hardTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
 					 ShowerInteraction::QCD));
   
-  if(nasonTree->branchings().size()!=4) throw Exception() 
+  if(hardTree->branchings().size()!=4) throw Exception() 
          << "MEPP2VVPowheg::generateHardest()\n" 
-         << "The nasonTree has " << nasonTree->branchings().size() << "branchings\n"
-	 << nasonTree << "\n" <<  Exception::runerror;
+         << "The hardTree has " << hardTree->branchings().size() << "branchings\n"
+	 << hardTree << "\n" <<  Exception::runerror;
   if((motherBranching->parent()!=spacelikeSonBranching)&&
      spacelikeSonBranching->parent()!=HardBranchingPtr()&&
      spectatorBranching->parent()!=HardBranchingPtr()) throw Exception() 
@@ -4017,20 +4017,20 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
 	 <<  Exception::runerror;
 
   if(fermionNumberOfMother_== 1) {
-    nasonTree->connect(showerQuark_    ,motherBranching   );
-    nasonTree->connect(showerAntiquark_,spectatorBranching);
+    hardTree->connect(showerQuark_    ,motherBranching   );
+    hardTree->connect(showerAntiquark_,spectatorBranching);
     spacelikeSonBranching->beam(qProgenitor_ ->original()->parents()[0]);
     motherBranching      ->beam(qProgenitor_ ->original()->parents()[0]);
     spectatorBranching   ->beam(qbProgenitor_->original()->parents()[0]);
   } else if(fermionNumberOfMother_==-1) {
-    nasonTree->connect(showerAntiquark_,motherBranching   );
-    nasonTree->connect(showerQuark_    ,spectatorBranching);
+    hardTree->connect(showerAntiquark_,motherBranching   );
+    hardTree->connect(showerQuark_    ,spectatorBranching);
     spacelikeSonBranching->beam(qbProgenitor_->original()->parents()[0]);
     motherBranching      ->beam(qbProgenitor_->original()->parents()[0]);
     spectatorBranching   ->beam(qProgenitor_ ->original()->parents()[0]);
   }
-//   nasonTree->connect(V1_ ,V1_Branching );
-//   nasonTree->connect(V2_ ,V2_Branching );
+//   hardTree->connect(V1_ ,V1_Branching );
+//   hardTree->connect(V2_ ,V2_Branching );
 
   // This if {...} else if {...} puts the mother and spectator on the same colour
   // line. If we don't do this, then when reconstructFinalStateShower calls
@@ -4135,7 +4135,7 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
       cjt->first->copy()      ->deepTransform(boost);
     }
   }
-  return nasonTree;
+  return hardTree;
 }   
 
 double MEPP2VVPowheg::getResult(int channel, realVVKinematics R, Energy pT) {

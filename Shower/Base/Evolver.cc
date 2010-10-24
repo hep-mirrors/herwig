@@ -368,7 +368,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 	reconstructHardJets(hard,intrinsicpT())&&
 	maximumTries()>++ntry);
   _hardme=HwMEBasePtr();
-  _nasontree=HardTreePtr();
+  _hardtree=HardTreePtr();
   if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
   
   // the tree has now showered
@@ -699,7 +699,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type ) {
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerParticlePtr> particles;
-  // match the particles in the ShowerTree and NasonTree
+  // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
 		      << "Evolver::setEvolutionPartners()"
@@ -732,7 +732,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type ) {
   }
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_nasontree);
+    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_hardtree);
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
@@ -892,15 +892,15 @@ void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme)
-      _nasontree =  _hardme->generateHardest( currentTree() );
+      _hardtree =  _hardme->generateHardest( currentTree() );
     else
-      _nasontree = _decayme->generateHardest( currentTree() );
-    if(!_nasontree) return;
+      _hardtree = _decayme->generateHardest( currentTree() );
+    if(!_hardtree) return;
     // join up the two tree
-    connectTrees(currentTree(),_nasontree,hard);
+    connectTrees(currentTree(),_hardtree,hard);
   }
   else {
-    _nasontree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
   }
 }
 

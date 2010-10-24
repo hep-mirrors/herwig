@@ -737,34 +737,34 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
 						  true)));
     newparticles.back()->set5Momentum(boost*cjt->first->original()->momentum());
   }
-  vector<HardBranchingPtr> nasonin,nasonhard;
+  vector<HardBranchingPtr> inBranch,hardBranch;
   // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					    nasonin[iemit],HardBranching::Incoming)));
-  nasonin[iemit]->addChild(nasonhard.back());
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					    inBranch[iemit],HardBranching::Incoming)));
+  inBranch[iemit]->addChild(hardBranch.back());
   // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						 nasonin[iemit],HardBranching::Outgoing)));
+  inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						 inBranch[iemit],HardBranching::Outgoing)));
   // set the colour partners
-  nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
-  nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());
+  hardBranch.back()->colourPartner(inBranch[iemit==0 ? 1 : 0]);
+  inBranch[iemit==0 ? 1 : 0]->colourPartner(hardBranch.back());
   // add other particle
-  nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
+  hardBranch.push_back(inBranch[iemit==0 ? 1 : 0]);
   // outgoing particles
   for(unsigned int ix=4;ix<newparticles.size();++ix) {
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
 					      HardBranchingPtr(),HardBranching::Outgoing)));
   }
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
     else particlesToShower[ix]->maximumpT(_pt);
@@ -775,7 +775,7 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
 	    (**mit).status()==HardBranching::Outgoing)||
 	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
 	   (**mit).status()==HardBranching::Incoming))) {
-	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
 	if((**mit).status()==HardBranching::Incoming) {
 	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
@@ -788,15 +788,15 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
     }
   }
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  return nasontree;
+  return hardtree;
 }
 
 double DrellYanBase::getResult(int emis_type, Energy pt, double yj) {

@@ -909,31 +909,31 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit],false)));
   newparticles.back()->set5Momentum(poff);
-  vector<HardBranchingPtr> nasonin,nasonhard; // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  vector<HardBranchingPtr> inBranch,hardBranch; // create the branchings for the incoming particles
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-						 nasonin[iemit],HardBranching::Outgoing)));
+  inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+						 inBranch[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					    nasonin[iemit],HardBranching::Incoming)));
-  nasonin[iemit]->addChild(nasonhard.back());
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
+					    inBranch[iemit],HardBranching::Incoming)));
+  inBranch[iemit]->addChild(hardBranch.back());
   // set the colour partners
-  nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
-  nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());
+  hardBranch.back()->colourPartner(inBranch[iemit==0 ? 1 : 0]);
+  inBranch[iemit==0 ? 1 : 0]->colourPartner(hardBranch.back());
   // add other particle
-  nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
+  hardBranch.push_back(inBranch[iemit==0 ? 1 : 0]);
   // outgoing Higgs boson
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 					    HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if( pt_ < minpT_ ) particlesToShower[ix]->maximumpT(minpT_);
     else particlesToShower[ix]->maximumpT(pt_);
@@ -946,7 +946,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
 	   (**mit).status()==HardBranching::Incoming))) {
 	if(particlesToShower[ix]->progenitor()->momentum().z()/
 	   (*mit)->branchingParticle()->momentum().z()<0.) continue;
- 	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+ 	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
  	if((**mit).status()==HardBranching::Incoming) {
  	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
@@ -961,8 +961,8 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   ColinePtr cline1 = new_ptr(ColourLine());
   ColinePtr cline2 = new_ptr(ColourLine());
   unsigned int ng(0);
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()!=PDT::Colour8) continue;
     if(ng==0) {
       cline1->addColoured    ((**cit).branchingParticle());
@@ -975,7 +975,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
     }
   }
   // return the answer
-  return nasontree;
+  return hardtree;
 }
 
 bool MEPP2Higgs::applyHard(ShowerParticleVector gluons, 
