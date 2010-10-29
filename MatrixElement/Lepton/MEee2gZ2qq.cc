@@ -846,7 +846,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
 	double z3 =  pT[ix]*sinh(y[ix])*2./M;
 	if(ix==1) z3 *=-1.;
 	if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
-	if(abs(z1+z2+z3)>1e-3) continue;
+	if(abs(z1+z2+z3)>1e-5) continue;
 	// construct the momenta
 	realMomenta[ix][iy][4] =
 	  Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
@@ -879,9 +879,13 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
 	contrib[ix][iy] *= alpha_->ratio(sqr(pT[ix]))*
 	  meRatio(partons_,realMomenta[ix][iy],ix,false);
       }
-      if(contrib[ix][0]+contrib[ix][1]>1.)
-	cerr << "testing weight greater than one " 
-	     << contrib[ix][0]+contrib[ix][1] << "\n";
+      if(contrib[ix][0]+contrib[ix][1]>1.) {
+	ostringstream s;
+	s << "MEee2gZ2qq::generateHardest weight for channel " << ix
+	  << "is " << contrib[ix][0]+contrib[ix][1] 
+	  << " which is greater than 1";
+	generator()->logWarning( Exception(s.str(), Exception::warning) );
+      }
       reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
     }
     while (reject);
