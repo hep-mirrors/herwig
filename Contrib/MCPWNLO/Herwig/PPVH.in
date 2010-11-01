@@ -79,7 +79,6 @@ insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyVHAnalysis
 cd /Herwig/Generators/
 set MGGenerator:NumberOfEvents 1000000
 set MGGenerator:RandomNumberGenerator:Seed 31122001
-set MGGenerator:DebugLevel 1
 set MGGenerator:PrintEvent 10
 set MGGenerator:MaxErrors 100000000
 set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL

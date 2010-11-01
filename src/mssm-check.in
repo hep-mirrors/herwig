@@ -38,7 +38,6 @@ set Basics:CheckQuark No
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 100000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 

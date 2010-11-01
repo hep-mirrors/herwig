@@ -79,7 +79,6 @@ set /Herwig/Shower/Evolver:MECorrMode 0
 cd /Herwig/Generators/
 set MGGenerator:NumberOfEvents 1000000
 set MGGenerator:RandomNumberGenerator:Seed 31122001
-set MGGenerator:DebugLevel 1
 set MGGenerator:PrintEvent 100
 set MGGenerator:MaxErrors 100000000
 set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL

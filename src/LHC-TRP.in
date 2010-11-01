@@ -22,7 +22,6 @@ cd /Herwig
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 1000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
