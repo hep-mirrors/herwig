@@ -71,7 +71,11 @@ void PartnerFinder::Init() {
 
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 					      const bool isDecayCase,
+#ifndef NDEBUG
 					      ShowerInteraction::Type type,
+#else
+					      ShowerInteraction::Type,
+#endif
 					      const bool setPartners) {
   assert(type==ShowerInteraction::QCD); 
   return setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);

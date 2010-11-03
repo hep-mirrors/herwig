@@ -703,7 +703,7 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay, EvolverPtr,
+deconstructDecayJets(HardTreePtr decay, cEvolverPtr,
 		     ShowerInteraction::Type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
@@ -1006,7 +1006,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 
 bool QTildeReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
-			 EvolverPtr evolver,
+			 cEvolverPtr evolver,
 			 ShowerInteraction::Type type) const {
   // extract incoming and outgoing particles
   ColourSingletShower in,out;
@@ -1039,7 +1039,7 @@ deconstructGeneralSystem(HardTreePtr tree,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      EvolverPtr evolver,
+					      cEvolverPtr evolver,
 					      ShowerInteraction::Type type) const {
   // inverse of old recon method
   if(_reconopt==0) {
@@ -1120,6 +1120,15 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     // e+e- type
     else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
       // only FS needed
+      // but need to boost to rest frame if QED ISR
+      Lorentz5Momentum ptotal;
+      for(unsigned int ix=0;ix<systems.size();++ix) {
+	if(systems[ix].type==I) 
+	  ptotal += systems[ix].jets[0]->branchingParticle()->momentum();
+      }
+      toRest = LorentzRotation(ptotal.findBoostToCM());
+      fromRest = toRest;
+      fromRest.invert();
     }
     // general type
     else {
@@ -1601,7 +1610,7 @@ void QTildeReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    EvolverPtr evolver,
+			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
   if(jets.size()==1) {
     LorentzRotation R(toRest);
@@ -1702,7 +1711,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     particles.push_back((**cjt).branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true,type,false);
+    ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
   set<HardBranchingPtr>::iterator clt;
@@ -1920,7 +1929,7 @@ findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
 
 void QTildeReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
-			      EvolverPtr evolver,
+			      cEvolverPtr evolver,
 			      ShowerInteraction::Type type) const {
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;

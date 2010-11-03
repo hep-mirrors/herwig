@@ -56,8 +56,13 @@ void RSModelFFGGRVertex::Init() {
 }
 
 // FFGGR coupling
+#ifndef NDEBUG
 void RSModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,
 				     tcPDPtr cc, tcPDPtr) {
+#else
+void RSModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				      tcPDPtr, tcPDPtr) {
+#endif
   // work out the particles
   assert(cc->id()==ParticleID::g && abs(aa->id()) <=6 );
   // overall factor

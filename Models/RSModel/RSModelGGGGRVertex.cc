@@ -56,8 +56,13 @@ void RSModelGGGGRVertex::Init() {
 
 
 // couplings for the GGGGR vertex
+#ifndef NDEBUG
 void RSModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 				     tcPDPtr c, tcPDPtr) {
+#else
+void RSModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				     tcPDPtr, tcPDPtr) {
+#endif
   assert(a->id() == ParticleID::g && b->id() ==  ParticleID::g &&
 	 c->id() == ParticleID::g);
   if(q2!=_q2last||_couplast==0.) {

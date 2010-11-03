@@ -25,7 +25,6 @@ set MEee2gZ2qq:MaximumFlavour 5
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 0
 set LEPGenerator:MaxErrors 10000
 

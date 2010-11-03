@@ -3,9 +3,9 @@
 #
 create ThePEG::PolarizedBeamParticleData e-
 setup e- 11 e- 0.00051099892 0.  0 0 -3 0 2 1 
-create ThePEG::ParticleData mu-
+create ThePEG::BeamParticleData mu-
 setup mu- 13 mu- 0.105658369 2.9959121177432E-19 0 658654 -3 0 2 1 
-create ThePEG::ParticleData mu+
+create ThePEG::BeamParticleData mu+
 setup mu+ -13 mu+ 0.105658369 2.9959121177432E-19 0 658654 3 0 2 1 
 makeanti mu+ mu-
 create ThePEG::PolarizedBeamParticleData e+
@@ -16,14 +16,14 @@ setup tau+ -15 tau+ 1.77699 2.2652617380324E-12 0 0.08711 3 0 2 0
 create ThePEG::ParticleData tau-
 setup tau- 15 tau- 1.77699 2.2652617380324E-12 0 0.08711 -3 0 2 0 
 makeanti tau- tau+
-create ThePEG::ParticleData nu_e
+create ThePEG::BeamParticleData nu_e
 setup nu_e 12 nu_e 0 0.  0 0 0 0 2 1 
-create ThePEG::ParticleData nu_ebar
+create ThePEG::BeamParticleData nu_ebar
 setup nu_ebar -12 nu_ebar 0 0.  0 0 0 0 2 1 
 makeanti nu_ebar nu_e
-create ThePEG::ParticleData nu_mu
+create ThePEG::BeamParticleData nu_mu
 setup nu_mu 14 nu_mu 0 0.  0 0 0 0 2 1 
-create ThePEG::ParticleData nu_mubar
+create ThePEG::BeamParticleData nu_mubar
 setup nu_mubar -14 nu_mubar 0 0.  0 0 0 0 2 1 
 makeanti nu_mubar nu_mu
 create ThePEG::ParticleData nu_tau

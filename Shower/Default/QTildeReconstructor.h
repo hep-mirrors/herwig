@@ -120,7 +120,7 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr,
+  virtual bool deconstructDecayJets(HardTreePtr, cEvolverPtr,
 				    ShowerInteraction::Type) const;
 
   /**
@@ -128,7 +128,7 @@ public:
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr,
+  virtual bool deconstructHardJets(HardTreePtr, cEvolverPtr,
 				   ShowerInteraction::Type) const;
   //@}
 
@@ -245,7 +245,7 @@ protected:
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
-				   EvolverPtr,
+				   cEvolverPtr,
 				   ShowerInteraction::Type) const;
   
   /**
@@ -265,10 +265,10 @@ protected:
    */
   void deconstructInitialFinalSystem(HardTreePtr,
 				     vector<HardBranchingPtr>,
-				     EvolverPtr,
+				     cEvolverPtr,
 				     ShowerInteraction::Type ) const;
 
-  bool deconstructGeneralSystem(HardTreePtr, EvolverPtr,
+  bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
 				ShowerInteraction::Type) const;
   //@}
 

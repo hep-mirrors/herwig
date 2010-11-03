@@ -38,7 +38,6 @@ insert ResConstructor:Outgoing 0 /Herwig/Particles/t
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0

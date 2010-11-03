@@ -45,6 +45,15 @@ set MEee2ZH:Coupling /Herwig/Shower/AlphaQCD
 create Herwig::MEee2HiggsVBF MEee2HiggsVBF
 
 ############################################################
+# NLO (POWHEG e+e- matrix elements
+############################################################
+library HwPowhegMELepton.so 
+create Herwig::MEee2gZ2qqPowheg PowhegMEee2gZ2qq
+set PowhegMEee2gZ2qq:MinimumFlavour 1
+set PowhegMEee2gZ2qq:MaximumFlavour 5
+set PowhegMEee2gZ2qq:Coupling /Herwig/Shower/AlphaQCD
+
+############################################################
 #  hadron-hadron matrix elements
 ############################################################
 
@@ -157,7 +166,7 @@ set PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
 # PP->VV
 create Herwig::MEPP2VVPowheg PowhegMEPP2VV
-set PowhegMEPP2VV:ShowerAlpha /Herwig/Shower/AlphaQCD
+set PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 
 ##########################################################
 # DIS matrix elements

@@ -77,7 +77,11 @@ void UEDF1F1W0Vertex::Init() {
 }
 
 void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+#ifndef NDEBUG
 				  tcPDPtr part3) {
+#else
+				  tcPDPtr) {
+#endif
   long ianti(abs(part1->id())), iferm(abs(part2->id()));
   assert( abs(part3->id()) == 24 );
   bool ferma = (iferm >= 5100001 && iferm <= 5100006) ||

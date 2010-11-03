@@ -26,8 +26,6 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # CDF Run I Z pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_S4155203
-# D0 Run I Z pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2001_S4674421
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
