@@ -1900,36 +1900,36 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree) {
     newparticles[4]->set5Momentum(pnew[3]);
     newparticles[5]->set5Momentum(pnew[2]);
   }
-  vector<HardBranchingPtr> nasonin,nasonhard;
+  vector<HardBranchingPtr> inBranch,hardBranch;
   // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					    nasonin[emission_type>2],HardBranching::Incoming)));
-  nasonin[emission_type>2]->addChild(nasonhard.back());
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					    inBranch[emission_type>2],HardBranching::Incoming)));
+  inBranch[emission_type>2]->addChild(hardBranch.back());
   // create the branching for the emitted jet
-  nasonin[emission_type>2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-							   nasonin[emission_type>2],
+  inBranch[emission_type>2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+							   inBranch[emission_type>2],
 							   HardBranching::Outgoing)));
   // set the colour partners
-  nasonhard.back()->colourPartner(nasonin[emission_type<=2]);
-  nasonin[emission_type<=2]->colourPartner(nasonhard.back());
+  hardBranch.back()->colourPartner(inBranch[emission_type<=2]);
+  inBranch[emission_type<=2]->colourPartner(hardBranch.back());
   // add other particle
-  nasonhard.push_back(nasonin[emission_type<=2]);
+  hardBranch.push_back(inBranch[emission_type<=2]);
   // outgoing particles
   for(unsigned int ix=4;ix<newparticles.size();++ix) {
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
 					      HardBranchingPtr(),HardBranching::Outgoing)));
   }
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   Energy pt = pnew[4].perp();
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     particlesToShower[ix]->maximumpT(pt);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
@@ -1939,7 +1939,7 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree) {
 	    (**mit).status()==HardBranching::Outgoing)||
 	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
 	   (**mit).status()==HardBranching::Incoming))) {
-	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
 	if((**mit).status()==HardBranching::Incoming) {
 	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	  HardBranchingPtr parent=(*mit)->parent();
@@ -1952,13 +1952,13 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree) {
     }
   }
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  return nasontree;
+  return hardtree;
 }

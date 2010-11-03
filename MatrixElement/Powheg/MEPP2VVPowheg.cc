@@ -764,7 +764,6 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 s(H_.sr());
   Energy2 sCp(Cp_.sr());
   Energy2 sCm(Cm_.sr());
-  Energy2 s2(H_.s2r());
 
   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_ ));
   Energy2 t_u_M_R_qqb_Cp(t_u_M_R_qqb(Cp_));
@@ -818,7 +817,6 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 s(H_.sr());
   Energy2 sCp(Cp_.sr());
   Energy2 sCm(Cm_.sr());
-  Energy2 s2(H_.s2r());
 
   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_ ));
   Energy2 t_u_M_R_gqb_Cp(t_u_M_R_gqb(Cp_));
@@ -872,7 +870,6 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 s(H_.sr());
   Energy2 sCp(Cp_.sr());
   Energy2 sCm(Cm_.sr());
-  Energy2 s2(H_.s2r());
 
   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_ ));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
@@ -1425,7 +1422,6 @@ Energy2 Fu1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
 /***************************************************************************/
 Energy4 H1  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
     Energy2 sig(mZ2+mW2);
-    Energy2 del(mZ2-mW2);
     Energy4 Val(0.*GeV2*GeV2);
     Val  =   8.*t*t+8.*t*(s-sig)+s*s+6.*s*sig+mZ2*mZ2+10.*mW2*mZ2+mW2*mW2
 	   - sqr(s-sig)*(t*u+2.*s*sig)/mW2/mZ2;
@@ -1471,8 +1467,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(realVVKinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   double eZ2(eZ2_);
@@ -1990,7 +1984,6 @@ Energy6 t_u_RZs(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
 Energy6 t_u_RZa(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
 		Energy2 s2,Energy2 mW2,Energy2 mZ2) {
   Energy6 Val(0.*GeV2*GeV2*GeV2);
-  Energy2 sig(mZ2+mW2);
 
   Val += - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
          - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
@@ -2588,7 +2581,6 @@ double MEPP2VVPowheg::M_Born_ZZ(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
-  Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   
@@ -2613,7 +2605,6 @@ double MEPP2VVPowheg::M_V_regular_ZZ(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
-  Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
   double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
   double cosThetaW(sqrt(1.-sin2ThetaW_));
@@ -2707,8 +2698,6 @@ double MEPP2VVPowheg::M_V_regular_ZZ(realVVKinematics S) const {
 // tk * uk!
 Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(realVVKinematics R) const {
   // First the Born variables:
-  Energy2 s2(R.s2r());
-  Energy2 mW2(R.k12r());
   Energy2 mZ2(R.k22r());
   // Then the rest:
   Energy2 s(R.sr());
@@ -2718,8 +2707,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(realVVKinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   
@@ -2853,7 +2840,6 @@ double MEPP2VVPowheg::M_Born_WW(bornVVKinematics B) const {
   Energy2 t(B.tb());
   Energy2 u(B.ub());
   Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
-  Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
     
   bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3.    : -1./3. ; 
@@ -2903,7 +2889,6 @@ double MEPP2VVPowheg::M_V_regular_WW(realVVKinematics S) const {
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
   Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
-  Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
   double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
     
   bool up_type = abs(quark_->id())%2==0 ? true : false;
@@ -2993,7 +2978,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
-  Energy2 mZ2(R.k22r());
   // Then the rest:
   Energy2 s(R.sr());
   Energy2 tk(R.tkr());
@@ -3002,8 +2986,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(realVVKinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
   bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3. : -1./3.; 
@@ -3942,7 +3924,7 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
   k2->set5Momentum(theRealMomenta[3]);
   k ->set5Momentum(theRealMomenta[4]);
   // Then construct another set of ShowerPointers that will be
-  // useful in creating the nasonTree, using this information:
+  // useful in creating the hardTree, using this information:
   ShowerParticlePtr mother;
   ShowerParticlePtr spacelikeSon;
   ShowerParticlePtr timelikeSon;
@@ -4016,13 +3998,13 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
     recalculateVertex();
   }
   // Construct the HardTree object needed to perform the showers
-  HardTreePtr nasonTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
+  HardTreePtr hardTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
 					 ShowerInteraction::QCD));
   
-  if(nasonTree->branchings().size()!=4) throw Exception() 
+  if(hardTree->branchings().size()!=4) throw Exception() 
          << "MEPP2VVPowheg::generateHardest()\n" 
-         << "The nasonTree has " << nasonTree->branchings().size() << "branchings\n"
-	 << nasonTree << "\n" <<  Exception::runerror;
+         << "The hardTree has " << hardTree->branchings().size() << "branchings\n"
+	 << hardTree << "\n" <<  Exception::runerror;
   if((motherBranching->parent()!=spacelikeSonBranching)&&
      spacelikeSonBranching->parent()!=HardBranchingPtr()&&
      spectatorBranching->parent()!=HardBranchingPtr()) throw Exception() 
@@ -4035,20 +4017,20 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
 	 <<  Exception::runerror;
 
   if(fermionNumberOfMother_== 1) {
-    nasonTree->connect(showerQuark_    ,motherBranching   );
-    nasonTree->connect(showerAntiquark_,spectatorBranching);
+    hardTree->connect(showerQuark_    ,motherBranching   );
+    hardTree->connect(showerAntiquark_,spectatorBranching);
     spacelikeSonBranching->beam(qProgenitor_ ->original()->parents()[0]);
     motherBranching      ->beam(qProgenitor_ ->original()->parents()[0]);
     spectatorBranching   ->beam(qbProgenitor_->original()->parents()[0]);
   } else if(fermionNumberOfMother_==-1) {
-    nasonTree->connect(showerAntiquark_,motherBranching   );
-    nasonTree->connect(showerQuark_    ,spectatorBranching);
+    hardTree->connect(showerAntiquark_,motherBranching   );
+    hardTree->connect(showerQuark_    ,spectatorBranching);
     spacelikeSonBranching->beam(qbProgenitor_->original()->parents()[0]);
     motherBranching      ->beam(qbProgenitor_->original()->parents()[0]);
     spectatorBranching   ->beam(qProgenitor_ ->original()->parents()[0]);
   }
-//   nasonTree->connect(V1_ ,V1_Branching );
-//   nasonTree->connect(V2_ ,V2_Branching );
+//   hardTree->connect(V1_ ,V1_Branching );
+//   hardTree->connect(V2_ ,V2_Branching );
 
   // This if {...} else if {...} puts the mother and spectator on the same colour
   // line. If we don't do this, then when reconstructFinalStateShower calls
@@ -4153,7 +4135,7 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
       cjt->first->copy()      ->deepTransform(boost);
     }
   }
-  return nasonTree;
+  return hardTree;
 }   
 
 double MEPP2VVPowheg::getResult(int channel, realVVKinematics R, Energy pT) {

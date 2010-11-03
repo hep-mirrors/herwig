@@ -52,7 +52,11 @@ void SMWWHHVertex::doinit() {
 
 void SMWWHHVertex::setCoupling(Energy2 q2,
 			       tcPDPtr part1,tcPDPtr,
+#ifndef NDEBUG
 			       tcPDPtr part3,tcPDPtr part4) {
+#else
+			       tcPDPtr,tcPDPtr) {
+#endif
   assert(part3->id()==ParticleID::h0 && part4->id()==ParticleID::h0 );
   if(q2!=q2last_||couplast_==0.) {
     couplast_ = sqr(weakCoupling(q2));

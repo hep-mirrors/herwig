@@ -74,7 +74,11 @@ void SSCNWVertex::Init() {
 }
 
 void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+#ifndef NDEBUG
 			      tcPDPtr part3) {
+#else
+			      tcPDPtr) {
+#endif
   assert(abs(part3->id()) == ParticleID::Wplus);
   long neu, cha;
   if(part1->charged()) {

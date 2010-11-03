@@ -354,12 +354,12 @@ protected:
   /**
    *  The HardTree currently being showered
    */
-  tHardTreePtr hardTree() {return _nasontree;}
+  tHardTreePtr hardTree() {return _hardtree;}
 
   /**
    *  The HardTree currently being showered
    */
-  void hardTree(tHardTreePtr in) {_nasontree = in;}
+  void hardTree(tHardTreePtr in) {_hardtree = in;}
   //@}
 
   /**
@@ -618,7 +618,7 @@ private:
   /**
    *  The HardTree currently being showered
    */
-  HardTreePtr _nasontree;
+  HardTreePtr _hardtree;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm

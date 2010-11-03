@@ -57,8 +57,13 @@ void ADDModelFFGGRVertex::Init() {
   
 }
 
+#ifndef NDEBUG
 void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,
 				      tcPDPtr cc, tcPDPtr) {
+#else
+void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				      tcPDPtr, tcPDPtr) {
+#endif
   // work out the particles
   assert(cc->id()==ParticleID::g && abs(aa->id()) <= 6);
   Complex coup;

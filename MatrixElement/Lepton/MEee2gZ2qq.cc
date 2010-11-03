@@ -864,7 +864,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	  double z3 =  pT[ix]*sinh(y[ix])*2./M;
 	  if(ix==1) z3 *=-1.;
 	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
-	  if(abs(z1+z2+z3)>1e-3) continue;
+	  if(abs(z1+z2+z3)>1e-5) continue;
 	  // construct the momenta
 	  realMomenta[ix][iy][4] =
 	    Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
@@ -902,10 +902,13 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	  else
 	    contrib[ix][iy] *= alphaQED_->ratio(sqr(pT[ix]));
 	}
- 	if(contrib[ix][0]+contrib[ix][1]>1.)
-	  cerr << "testing weight greater than one " 
-	       << contrib[ix][0]+contrib[ix][1] << "\n";
-
+ 	if(contrib[ix][0]+contrib[ix][1]>1.) {
+	  ostringstream s;
+	  s << "MEee2gZ2qq::generateHardest weight for channel " << ix
+	    << "is " << contrib[ix][0]+contrib[ix][1] 
+	    << " which is greater than 1";
+	  generator()->logWarning( Exception(s.str(), Exception::warning) );
+	}
 	reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
       }
       while (reject);
@@ -1004,26 +1007,26 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     spaceBranchings[1]->branchingParticle()->setPartner(spaceBranchings[0]->branchingParticle());
   }
   // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
  					   inter[iselect]));
-  nasontree->partnersSet(true);
+  hardtree->partnersSet(true);
   // Set the maximum pt for all other emissions
   qkProgenitor->maximumpT(pTmax);
   qbProgenitor->maximumpT(pTmax);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect( qkProgenitor->progenitor(), allBranchings[2] );
-  nasontree->connect( qbProgenitor->progenitor(), allBranchings[3] );
+  hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
+  hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
   // colour flow
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // Return the HardTree
-  return nasontree;
+  return hardtree;
 }
 
 double MEee2gZ2qq::meRatio(vector<cPDPtr> partons, 

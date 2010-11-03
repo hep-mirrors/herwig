@@ -1151,25 +1151,25 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
     allBranchings.push_back( emitterBranch );
   }
   // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
  					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
   qkProgenitor->maximumpT(pTveto);
   qbProgenitor->maximumpT(pTveto);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect( qkProgenitor->progenitor(), allBranchings[1] );
-  nasontree->connect( qbProgenitor->progenitor(), allBranchings[2] );
+  hardtree->connect( qkProgenitor->progenitor(), allBranchings[1] );
+  hardtree->connect( qbProgenitor->progenitor(), allBranchings[2] );
   // colour flow
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // Return the HardTree
-  return nasontree;
+  return hardtree;
 }
 
 double SMZDecayer::meRatio(vector<cPDPtr> partons, 

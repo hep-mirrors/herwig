@@ -77,7 +77,11 @@ void SSGNGVertex::Init() {
 }
 
 void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
+#ifndef NDEBUG
 			      tcPDPtr part2,tcPDPtr part3) {
+#else
+                              tcPDPtr part2,tcPDPtr) {
+#endif
   int o[2]={1,0};
   long in1 = part1->id();
   long in2 = part2->id();

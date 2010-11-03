@@ -73,7 +73,12 @@ void SSGVFSVertex::Init() {
      "a fermion-sfermion");
 }
 
-void SSGVFSVertex::setCoupling(Energy2 ,tcPDPtr part1,
+void SSGVFSVertex::setCoupling(Energy2 ,
+#ifndef NDEBUG
+			       tcPDPtr part1,
+#else
+			       tcPDPtr,
+#endif
 			       tcPDPtr part2,tcPDPtr part3) {
   assert(part1->id()==ParticleID::SUSY_Gravitino);
   assert(part3->iSpin()==PDT::Spin0);

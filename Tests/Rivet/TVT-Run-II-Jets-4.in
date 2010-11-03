@@ -42,8 +42,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2004_S5992206
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7662670
 # D0 dijet angles
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2009_S8320160
-# D0 dijet invariant mass
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2010_S8566488
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

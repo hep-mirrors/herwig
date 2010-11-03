@@ -293,7 +293,11 @@ public:
    * @param ptr3 is the third  constituent
    */
   inline tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+#ifndef NDEBUG
 				tcPDPtr ptr3 = PDPtr ()) const {
+#else
+                                tcPDPtr = PDPtr ()) const {
+#endif
     // The method assumes ptr3 == 0  
     // rest not implemented
     assert(ptr1 && ptr2 && !ptr3);
@@ -340,7 +344,11 @@ public:
    * @param ptr3 is the third  constituent 
    */
   inline Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-				   tcPDPtr ptr3 = PDPtr ()) const {
+#ifndef NDEBUG
+  				   tcPDPtr ptr3 = PDPtr ()) const {
+#else
+                                   tcPDPtr = PDPtr ()) const {
+#endif
     // The method assumes ptr3 == empty  
     assert(!(ptr3));
     // find entry in the table

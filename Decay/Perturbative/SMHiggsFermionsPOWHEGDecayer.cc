@@ -143,27 +143,27 @@ generateHardest(ShowerTreePtr tree) {
   // Add incoming boson to allBranchings
   allBranchings.push_back( spaceBranchings.back() );
   // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
   Energy ptveto(pT_);
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect( QProgenitor->progenitor(), allBranchings[0] );
-  nasontree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
+  hardtree->connect( QProgenitor->progenitor(), allBranchings[0] );
+  hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
   // colour flow
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  //  generator()->log() << *nasontree << "\n";
-  return nasontree;
+  //  generator()->log() << *hardtree << "\n";
+  return hardtree;
 }
 
 double SMHiggsFermionsPOWHEGDecayer::

@@ -2111,36 +2111,36 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 						  progenitor()->dataPtr(),true)));
     newparticles.back()->set5Momentum(selectedMomenta[ix]);
   }
-  vector<HardBranchingPtr> nasonin,nasonhard;
+  vector<HardBranchingPtr> inBranch,hardBranch;
   // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   // create the branching for the emitted jet
-  nasonin[iemit%2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						   nasonin[iemit%2],
+  inBranch[iemit%2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						   inBranch[iemit%2],
 						   HardBranching::Outgoing)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					    nasonin[iemit%2],HardBranching::Incoming)));
-  nasonin[iemit%2]->addChild(nasonhard.back());
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					    inBranch[iemit%2],HardBranching::Incoming)));
+  inBranch[iemit%2]->addChild(hardBranch.back());
   // set the colour partners
-  nasonhard.back()->colourPartner(nasonin[iemit%2==0 ? 1 : 0]);
-  nasonin[iemit%2==0 ? 1 : 0]->colourPartner(nasonhard.back());
+  hardBranch.back()->colourPartner(inBranch[iemit%2==0 ? 1 : 0]);
+  inBranch[iemit%2==0 ? 1 : 0]->colourPartner(hardBranch.back());
   // add other particle
-  nasonhard.push_back(nasonin[iemit%2==0 ? 1 : 0]);
+  hardBranch.push_back(inBranch[iemit%2==0 ? 1 : 0]);
   // outgoing particles
   for(unsigned int ix=4;ix<newparticles.size();++ix) {
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
 					      HardBranchingPtr(),
 					      HardBranching::Outgoing)));
   }
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     particlesToShower[ix]->maximumpT(pTmax);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
@@ -2150,7 +2150,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 	    (**mit).status()==HardBranching::Outgoing)||
 	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
 	   (**mit).status()==HardBranching::Incoming))) {
-	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
 	if((**mit).status()==HardBranching::Incoming) {
 	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
@@ -2163,15 +2163,15 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
     }
   }
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  return nasontree;
+  return hardtree;
 }
 
 HardTreePtr MEPP2VGammaNewPowheg::
@@ -2453,72 +2453,72 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 						  progenitor()->dataPtr(),true)));
     newparticles.back()->set5Momentum(selectedMomenta[ix==2 ? 2 : 4 ]);
   }
-  vector<HardBranchingPtr> nasonin,nasonhard;
+  vector<HardBranchingPtr> inBranch,hardBranch;
   // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   if(iemit<3) {
     int icharged = iemit;
     if(icharged==2) icharged = particlesToShower[0]->progenitor()->
 		      dataPtr()->charged() ? 0 : 1;
     // create the branching for the emitted jet
-    nasonin[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						      nasonin[icharged],
+    inBranch[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						      inBranch[icharged],
 						      HardBranching::Outgoing)));
     // intermediate IS particle
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					      nasonin[icharged],HardBranching::Incoming)));
-    nasonin[icharged]->addChild(nasonhard.back());
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					      inBranch[icharged],HardBranching::Incoming)));
+    inBranch[icharged]->addChild(hardBranch.back());
     // set the colour partners
     if(iemit<2) {
-      nasonhard.back()->colourPartner(nasonin[icharged==0 ? 1 : 0]);
-      nasonin[icharged==0 ? 1 : 0]->colourPartner(nasonhard.back());
+      hardBranch.back()->colourPartner(inBranch[icharged==0 ? 1 : 0]);
+      inBranch[icharged==0 ? 1 : 0]->colourPartner(hardBranch.back());
     }
     // add other particle
-    nasonhard.push_back(nasonin[icharged == 0 ? 1 : 0]);
+    hardBranch.push_back(inBranch[icharged == 0 ? 1 : 0]);
     // outgoing particles
     for(unsigned int ix=4;ix<newparticles.size();++ix) {
-      nasonhard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+      hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
     }
     if(iemit==2) {
-      nasonhard.back()->colourPartner(nasonhard[0]);
-      nasonhard[0]->colourPartner(nasonhard.back());
+      hardBranch.back()->colourPartner(hardBranch[0]);
+      hardBranch[0]->colourPartner(hardBranch.back());
     }
   }
   else {
     for(unsigned int ix=0;ix<2;++ix)
-      nasonhard.push_back(nasonin[ix]);
+      hardBranch.push_back(inBranch[ix]);
     for(unsigned int ix=0;ix<newparticles.size();++ix)
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
 					      HardBranchingPtr(),
 					      HardBranching::Outgoing)));
-    nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+    hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					      HardBranchingPtr(),
 					      HardBranching::Outgoing)));
-    nasonhard.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
+    hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
 						     HardBranchingPtr(),
 						     HardBranching::Outgoing)));
-    nasonhard.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+    hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 						     HardBranchingPtr(),
 						     HardBranching::Outgoing)));
-    if(nasonhard[0]->branchingParticle()->dataPtr()->charged()) {
-      nasonhard.back()->colourPartner(nasonhard[0]);
-      nasonhard[0]->colourPartner(nasonhard.back());
+    if(hardBranch[0]->branchingParticle()->dataPtr()->charged()) {
+      hardBranch.back()->colourPartner(hardBranch[0]);
+      hardBranch[0]->colourPartner(hardBranch.back());
     }
     else {
-      nasonhard.back()->colourPartner(nasonhard[1]);
-      nasonhard[1]->colourPartner(nasonhard.back());
+      hardBranch.back()->colourPartner(hardBranch[1]);
+      hardBranch[1]->colourPartner(hardBranch.back());
     }
   }
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QED));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QED));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     particlesToShower[ix]->maximumpT(pTmax);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
@@ -2528,7 +2528,7 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 	    (**mit).status()==HardBranching::Outgoing)||
 	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
 	   (**mit).status()==HardBranching::Incoming))) {
-	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
 	if((**mit).status()==HardBranching::Incoming) {
 	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
@@ -2542,8 +2542,8 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   }
   ColinePtr newline1 = new_ptr(ColourLine());
   ColinePtr newline2 = new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
       if((**cit).status()==HardBranching::Incoming) {
 	newline1->addColoured    ((**cit).branchingParticle());
@@ -2568,7 +2568,7 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
     }
   }
   // return the tree
-  return nasontree;
+  return hardtree;
 }
 
 

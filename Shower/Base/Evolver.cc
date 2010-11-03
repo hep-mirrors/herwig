@@ -798,8 +798,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
   if(_hardEmissionMode==1) hardestEmission(hard);
   // set the initial colour partners
-  setEvolutionPartners(hard,_nasontree ? 
-		       _nasontree->interaction() : interactions_[0]);
+  setEvolutionPartners(hard,_hardtree ? 
+		       _hardtree->interaction() : interactions_[0]);
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -830,7 +830,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerParticlePtr> particles;
-  // match the particles in the ShowerTree and NasonTree
+  // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
 		      << "Evolver::setEvolutionPartners()"
@@ -862,7 +862,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
   }
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,type,!_nasontree);
+    setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
@@ -1022,15 +1022,15 @@ void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme)
-      _nasontree =  _hardme->generateHardest( currentTree(),interactions_ );
+      _hardtree =  _hardme->generateHardest( currentTree(),interactions_ );
     else
-      _nasontree = _decayme->generateHardest( currentTree() );
-    if(!_nasontree) return;
+      _hardtree = _decayme->generateHardest( currentTree() );
+    if(!_hardtree) return;
     // join up the two tree
-    connectTrees(currentTree(),_nasontree,hard);
+    connectTrees(currentTree(),_hardtree,hard);
   }
   else {
-    _nasontree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
   }
 }
 

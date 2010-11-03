@@ -9,7 +9,6 @@
 cd /Herwig/Generators
 set DISGenerator:NumberOfEvents 10000000
 set DISGenerator:RandomNumberGenerator:Seed 31122001
-set DISGenerator:DebugLevel 1
 set DISGenerator:PrintEvent 10
 set DISGenerator:MaxErrors 10000
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL

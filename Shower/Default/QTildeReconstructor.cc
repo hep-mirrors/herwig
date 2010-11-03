@@ -701,8 +701,8 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay, cEvolverPtr evolver,
-		     ShowerInteraction::Type type) const {
+deconstructDecayJets(HardTreePtr decay, cEvolverPtr,
+		     ShowerInteraction::Type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
@@ -1118,6 +1118,15 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     // e+e- type
     else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
       // only FS needed
+      // but need to boost to rest frame if QED ISR
+      Lorentz5Momentum ptotal;
+      for(unsigned int ix=0;ix<systems.size();++ix) {
+	if(systems[ix].type==I) 
+	  ptotal += systems[ix].jets[0]->branchingParticle()->momentum();
+      }
+      toRest = LorentzRotation(ptotal.findBoostToCM());
+      fromRest = toRest;
+      fromRest.invert();
     }
     // general type
     else {

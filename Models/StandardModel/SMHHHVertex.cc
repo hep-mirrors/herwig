@@ -52,7 +52,11 @@ void SMHHHVertex::doinit() {
   orderInGs (0);
 }
 
+#ifndef NDEBUG
 void SMHHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3) {
+#else
+void SMHHHVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,tcPDPtr) {
+#endif
   assert(part1->id()==ParticleID::h0 &&
 	 part2->id()==ParticleID::h0 &&
 	 part3->id()==ParticleID::h0 );
