@@ -483,8 +483,10 @@ NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
-  for(unsigned int ix=2;ix<4;++ix)
+  for(unsigned int ix=2;ix<4;++ix) {
     pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
+    pa[ix].setMass(meMomenta()[ix].mass());
+  }
   // first LO matrix element
   double lo1 = loME(mePartonData(),pa,false);
   // momenta for qbar -> qbar g emission
@@ -494,8 +496,10 @@ NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   Ksum = K+Kt;
   K2 = K.m2();
   Ksum2 = Ksum.m2();
-  for(unsigned int ix=2;ix<4;++ix)
+  for(unsigned int ix=2;ix<4;++ix) {
     pb[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
+    pb[ix].setMass(meMomenta()[ix].mass());
+  }
   // second LO matrix element
   double lo2 = loME(mePartonData(),pb,false);
   // first dipole
@@ -561,8 +565,10 @@ NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
-  for(unsigned int ix=2;ix<4;++ix)
+  for(unsigned int ix=2;ix<4;++ix) {
     pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2; 
+    pa[ix].setMass(meMomenta()[ix].mass());
+  }
   // first LO matrix element 
   double lo1 = loME(mePartonData(),pa,false); 
   // dipole
