@@ -451,6 +451,7 @@ realME(const cPDVector & particles,
   else  {
     output *= 1./24.;
   }
+  if(mePartonData()[2]->id() == mePartonData()[3]->id()) output *= 0.5;
   // divided by 2 g_S^2
   return 0.5*output/norm(FFGVertex_->norm());
 }
