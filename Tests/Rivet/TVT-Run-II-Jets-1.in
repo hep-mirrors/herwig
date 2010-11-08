@@ -15,7 +15,7 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
 cd /Herwig/MatrixElements
 insert SimpleQCD:MatrixElements[0] MEQCD2to2
 set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/Cuts/JetKtCut:MinKT 30.
+set /Herwig/Cuts/JetKtCut:MinKT 25.
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0

@@ -8,6 +8,7 @@
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 # no MPI
@@ -26,7 +27,10 @@ create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
 ##################################################
-#  Use the q qbar matrix element
+#  Use the NLO q qbar matrix element
 ##################################################
-# default e+e- > q qbar (5 flavours d,u,s,c,b)
-insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+create Herwig::O2AlphaS /Herwig/O2AlphaS 
+set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/O2AlphaS
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
+insert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/PowhegMEee2gZ2qq

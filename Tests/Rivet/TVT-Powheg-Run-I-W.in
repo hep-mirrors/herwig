@@ -1,7 +1,7 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read TVTBase.in
+read TVTBase-Powheg.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
@@ -13,9 +13,9 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
-insert SimpleQCD:MatrixElements[0] MEQCD2to2
-set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/Cuts/JetKtCut:MinKT 65.
+# Drell-Yan W
+insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
+set PowhegMEqq2W2ff:Process Electron
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -23,16 +23,15 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 ##################################################
 # select the analyses
 ##################################################
-# run I CDF di jet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4517016
-# run I CDF inclusive jet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4563131
-# run I CDF UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
-
+# CDF Run I W pT corrections and normalization are CRAP
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1991_S2313472
+# D0 Run I W pT corrections and normalization are CRAP
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1998_S3711838
+# D0 Run I W pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2000_S4480767
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun TVT-Run-I-Jets-3 LHCGenerator
+saverun TVT-Powheg-Run-I-W LHCGenerator

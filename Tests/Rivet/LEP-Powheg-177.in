@@ -1,7 +1,7 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LEPBase.in
+read LEPBase-Powheg.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
@@ -20,4 +20,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LEP-177 LEPGenerator
+saverun LEP-Powheg-177 LEPGenerator
