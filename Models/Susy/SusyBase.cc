@@ -406,8 +406,16 @@ void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
       }
       istringstream is(line);
       long index;
-      double value;   
-      is >> index >> value;
+      double value;
+      if(name.find("rvlam")!= string::npos||
+	 name=="rvt" || name=="rvtp" || name=="rvtpp") {
+	int i,j,k;
+	is >> i >> j >> k >> value;
+	index = i*100+j*10+k;
+      }
+      else {
+	is >> index >> value;
+      }
       store.insert(make_pair(index, value));
       if(ifs.peek() == 'B' || ifs.peek() == 'D' ||
 	 ifs.peek() == 'b' || ifs.peek() == 'd' ||
