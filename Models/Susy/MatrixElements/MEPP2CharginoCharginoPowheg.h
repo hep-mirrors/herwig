@@ -8,6 +8,7 @@
 #include "NLODrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -237,6 +238,11 @@ private:
    *  Pointer to the fermion-sfermion-chargino vertex
    */
   AbstractFFSVertexPtr CFSVertex_;
+
+  /**
+   *  Pointer to the squark squark gluon vertex
+   */
+  AbstractVSSVertexPtr GSSVertex_;
   //@}
 
   /**
