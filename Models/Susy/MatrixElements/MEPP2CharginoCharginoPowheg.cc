@@ -378,7 +378,7 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 					   outgoing);
   }
   double output(0.);
-  vector<Complex> diag(16,0.);
+  vector<Complex> diag(10,0.);
   Energy2 q2 = scale();
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
@@ -404,40 +404,44 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 	      // first photon diagram (emission from quark)
 	      diag[2] = CCZVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interV[2]);
 	      // second photon diagram (emission from anti-quark)
-	      diag[3] = CCZVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interV[3]);}
+	      diag[3] = CCZVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interV[3]);
+	    }
 	    // t-channel squark exchanges
 	    ScalarWaveFunction intersq,intersq2;	  
 	    for(unsigned int iq=0;iq<2;++iq) {
-	      // 1st t-channel
-	      // emission quark
-	      intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], inters, sbarout[ohel3]);
-	      diag[6*iq+4] = 
-		CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
-	      // emission antiquark
-	      intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[ihel1], sbarout[ohel3]);
-	      diag[6*iq+5] = 
-		CFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
-	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+6] = 
-		CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
-	      // swapped t-channel
-	      // emission quark
-	      intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], inters, spoutconj[ohel2]);
-	      diag[6*iq+7] = 
-		-CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
-	      // emission antiquark
-	      intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[ihel1], spoutconj[ohel2]);
-	      diag[6*iq+8] = 
-		-CFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
-	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+9] = 
-		-CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
+	      // u-type
+	      if(abs(mePartonData()[0]->id())%2==0) {
+		intersq = CFSVertex_->
+		  evaluate(q2, 3, squark[iq], inters, spoutconj[ohel2]);
+		diag[3*iq+4] = 
+		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
+		// emission antiquark
+		intersq = CFSVertex_->
+		  evaluate(q2, 3, squark[iq], sp[ihel1], spoutconj[ohel2]);
+		diag[3*iq+5] = 
+		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+		diag[3*iq+6] = 
+		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
+	      }
+	      // down type
+	      else {
+		// emission quark
+		intersq = CFSVertex_->
+		  evaluate(q2, 3, squark[iq], inters, sbarout[ohel3]);
+		diag[3*iq+4] = 
+		  CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
+		// emission antiquark
+		intersq = CFSVertex_->
+		  evaluate(q2, 3, squark[iq], sp[ihel1], sbarout[ohel3]);
+		diag[3*iq+5] = 
+		  CFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+		diag[3*iq+6] = 
+		  CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
+	      }
 	    }
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
