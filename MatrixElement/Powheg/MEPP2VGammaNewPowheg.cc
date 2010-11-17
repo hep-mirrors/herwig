@@ -128,21 +128,13 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
   // use vTilde to select the dipole for emission
   // V gamma g processes
   if(mePartonData()[4]->id()==ParticleID::g) {
-    if(vTilde_<=0.25) {
+    if(vTilde_<=0.5) {
       dipole_ = IIQCD1;
       vTilde_ = 4.*vTilde_;
     }
-    else if(vTilde_<=0.5) {
+    else {
       dipole_ = IIQCD2;
       vTilde_ = 4.*(vTilde_-0.25);
-    }
-    else if(vTilde_<=0.75) {
-      dipole_ = IIQED1;
-      vTilde_ = 4.*(vTilde_-0.50);
-    }
-    else {
-      dipole_ = IIQED2;
-      vTilde_ = 4.*(vTilde_-0.75);
     }
     jacobian(4.*jacobian());
   }
@@ -958,12 +950,8 @@ void MEPP2VGammaNewPowheg::getDiagrams() const {
 	if(threeBodyProcess_==0 || threeBodyProcess_==1) {
 	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
 		       2, gamma, 3, g, -10)));
-	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 1,    z0,
-		       3, gamma, 2, g, -11)));
 	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
 		       2, gamma, 1, g, -12)));
-	  add(new_ptr((Tree2toNDiagram(4), qk, qk, qk, qb, 3,    z0,
-		     1, gamma, 2, g, -13)));
 	}
 	// Z + q + gamma
 	if(threeBodyProcess_==0 || threeBodyProcess_==2) {
@@ -1040,11 +1028,7 @@ MEPP2VGammaNewPowheg::diagrams(const DiagramVector & diags) const {
     for ( DiagramIndex i = 0; i < diags.size(); ++i ) { 
       if(abs(diags[i]->id()) == 10 && dipole_ == IIQCD2 ) 
 	sel.insert(1., i);
-      else if(abs(diags[i]->id()) == 11 && dipole_ == IIQED2 ) 
-	sel.insert(1., i);
       else if(abs(diags[i]->id()) == 12 && dipole_ == IIQCD1 ) 
-	sel.insert(1., i);
-      else if(abs(diags[i]->id()) == 13 && dipole_ == IIQED1 ) 
 	sel.insert(1., i);
       else if(abs(diags[i]->id()) == 20 && dipole_ == IIQCD2 ) 
 	sel.insert(1., i);
@@ -1413,75 +1397,67 @@ realVGammagME(const cPDVector & particles,
 	      bool first) const {
   // matrix element
   double sum = realME(particles,momenta);
-  // loop over the QCD and QCD dipoles
-  InvEnergy2 dipoles[2][2];
-  pair<double,double> supress[2][2];
-  InvEnergy2 denom(ZERO);
-  for(unsigned int inter=0;inter<2;++inter) {
-    // compute the two dipole terms
-    unsigned int iemit = inter == 0 ? 4 : 3;
-    unsigned int ihard = inter == 0 ? 3 : 4;
-    double x = (momenta[0]*momenta[1]-momenta[iemit]*momenta[1]-
-		momenta[iemit]*momenta[0])/(momenta[0]*momenta[1]);
-    Lorentz5Momentum Kt = momenta[0]+momenta[1]-momenta[iemit];
-    vector<Lorentz5Momentum> pa(4),pb(4);
-    // momenta for q -> q g/gamma emission
-    pa[0] = x*momenta[0];
-    pa[1] =   momenta[1];
-    Lorentz5Momentum K = pa[0]+pa[1];
-    Lorentz5Momentum Ksum = K+Kt;
-    Energy2 K2 = K.m2();
-    Energy2 Ksum2 = Ksum.m2();
-    pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
-    pa[2].setMass(momenta[2].mass());
-    pa[3] = momenta[ihard]
-      -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
-    pa[3].setMass(ZERO);
-    cPDVector part(particles.begin(),--particles.end());
-    part[3] = particles[ihard];
-    // first leading-order matrix element
-    double lo1 = inter==0 ? loVGammaME(part,pa) : loVgME(part,pa);
-    // first dipole
-    dipoles[inter][0] = 1./(momenta[0]*momenta[iemit])/x*(2./(1.-x)-(1.+x))*lo1;
-    supress[inter][0] = supressionFunction(momenta[iemit].perp(),pa[3].perp());
-    // momenta for qbar -> qbar g/gamma emission
-    pb[0] =   momenta[0];
-    pb[1] = x*momenta[1];
-    K = pb[0]+pb[1];
-    Ksum = K+Kt;
-    K2 = K.m2();
-    Ksum2 = Ksum.m2();
-    pb[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
-    pb[2].setMass(momenta[2].mass());
-    pb[3] = momenta[ihard]
-      -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
-    pb[3].setMass(ZERO);
-    // second LO matrix element
-    double lo2 = inter==0 ? loVGammaME(part,pb) : loVgME    (part,pb);
-    // second dipole
-    dipoles[inter][1] = 1./(momenta[1]*momenta[iemit])/x*(2./(1.-x)-(1.+x))*lo2;
-    supress[inter][1] = supressionFunction(momenta[iemit].perp(),pb[3].perp());
-    for(unsigned int ix=0;ix<2;++ix) {
-      if(inter==0) dipoles[inter][ix] *= 4./3.;
-      else         dipoles[inter][ix] *= sqr(double(particles[ix]->iCharge())/3.);  
-    }
-    // denominator for the matrix element
-    denom += abs(dipoles[inter][0]) + abs(dipoles[inter][1]);
-  }
+  InvEnergy2 dipoles[2];
+  pair<double,double> supress[2];
+  // compute the two dipole terms
+  unsigned int iemit = 4;
+  unsigned int ihard = 3;
+  double x = (momenta[0]*momenta[1]-momenta[iemit]*momenta[1]-
+	      momenta[iemit]*momenta[0])/(momenta[0]*momenta[1]);
+  Lorentz5Momentum Kt = momenta[0]+momenta[1]-momenta[iemit];
+  vector<Lorentz5Momentum> pa(4),pb(4);
+  // momenta for q -> q g/gamma emission
+  pa[0] = x*momenta[0];
+  pa[1] =   momenta[1];
+  Lorentz5Momentum K = pa[0]+pa[1];
+  Lorentz5Momentum Ksum = K+Kt;
+  Energy2 K2 = K.m2();
+  Energy2 Ksum2 = Ksum.m2();
+  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pa[2].setMass(momenta[2].mass());
+  pa[3] = momenta[ihard]
+    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
+  pa[3].setMass(ZERO);
+  cPDVector part(particles.begin(),--particles.end());
+  part[3] = particles[ihard];
+  // first leading-order matrix element
+  double lo1 = loVGammaME(part,pa);
+  // first dipole
+  dipoles[0] = 1./(momenta[0]*momenta[iemit])/x*(2./(1.-x)-(1.+x))*lo1;
+  supress[0] = supressionFunction(momenta[iemit].perp(),pa[3].perp());
+  // momenta for qbar -> qbar g/gamma emission
+  pb[0] =   momenta[0];
+  pb[1] = x*momenta[1];
+  K = pb[0]+pb[1];
+  Ksum = K+Kt;
+  K2 = K.m2();
+  Ksum2 = Ksum.m2();
+  pb[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pb[2].setMass(momenta[2].mass());
+  pb[3] = momenta[ihard]
+    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
+  pb[3].setMass(ZERO);
+  // second LO matrix element
+  double lo2 = loVGammaME(part,pb);
+  // second dipole
+  dipoles[1] = 1./(momenta[1]*momenta[iemit])/x*(2./(1.-x)-(1.+x))*lo2;
+  supress[1] = supressionFunction(momenta[iemit].perp(),pb[3].perp());
+  for(unsigned int ix=0;ix<2;++ix) dipoles[ix] *= 4./3.;
+  // denominator for the matrix element
+  InvEnergy2 denom = abs(dipoles[0]) + abs(dipoles[1]);
   // contribution
-  if( denom==ZERO || dipoles[abs(dipole-2)%2][(dipole-1)/2]==ZERO ) return ZERO;
-  sum *= abs(dipoles[abs(dipole-2)%2][(dipole-1)/2])/denom;
+  if( denom==ZERO || dipoles[(dipole-1)/2]==ZERO ) return ZERO;
+  sum *= abs(dipoles[(dipole-1)/2])/denom;
   // final coupling factors
   InvEnergy2 output;
   if(rad==Subtraction) {
     output = alphaS_*alphaEM_*
-      (sum*UnitRemoval::InvE2*supress[abs(dipole-2)%2][(dipole-1)/2].first 
-       - dipoles[abs(dipole-2)%2][(dipole-1)/2]);
+      (sum*UnitRemoval::InvE2*supress[(dipole-1)/2].first - dipoles[(dipole-1)/2]);
   }
   else {
     output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
-    if(rad==Hard)        output *=supress[abs(dipole-2)%2][(dipole-1)/2].second;
-    else if(rad==Shower) output *=supress[abs(dipole-2)%2][(dipole-1)/2].first ;
+    if(rad==Hard)        output *=supress[(dipole-1)/2].second;
+    else if(rad==Shower) output *=supress[(dipole-1)/2].first ;
   }
   return output;
 }
@@ -1557,7 +1533,6 @@ realVGammaqME(const cPDVector & particles,
     if(rad==Hard)        output *= supress.second;
     else if(rad==Shower) output *= supress.first ;
   }
-  output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
   // final coupling factors
   return output;
 }
@@ -2177,6 +2152,10 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 HardTreePtr MEPP2VGammaNewPowheg::
 hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 		ShowerTreePtr tree) {
+  // return if not emission from quark
+  if(particlesToShower[0]->progenitor()->id()!=ParticleID::g &&
+     particlesToShower[1]->progenitor()->id()!=ParticleID::g )
+    return HardTreePtr();
   Energy rootS = sqrt(lastS());
   // limits on the rapidity of the jet
   double minyj = -8.0,maxyj = 8.0;
@@ -2190,224 +2169,125 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   vector<Lorentz5Momentum> selectedMomenta;
   int iemit(-1);
   pair<double,double> mewgt(make_pair(0.,0.));
-  if(particlesToShower[0]->progenitor()->id()==ParticleID::g ||
-     particlesToShower[1]->progenitor()->id()==ParticleID::g ) {
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      selectedParticles.push_back(particlesToShower[ix]->progenitor()->dataPtr());
-      selectedMomenta.push_back(particlesToShower[ix]->progenitor()->momentum());
-    }
-    selectedParticles.push_back(getParticleData(ParticleID::gamma));
-    swap(selectedParticles[3],selectedParticles[4]);
-    selectedMomenta.push_back(Lorentz5Momentum());
-    swap(selectedMomenta[3],selectedMomenta[4]);
-    Lorentz5Momentum pin,pout;
-    double xB;
-    unsigned int iloc;
-    if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
-      pin = particlesToShower[0]->progenitor()->momentum();
-      xB = x.first;
-      iloc = 6;
-    }
-    else {
-      pin = particlesToShower[1]->progenitor()->momentum();
-      xB = x.second;
-      iloc = 7;
-    }
-    pout = particlesToShower[3]->progenitor()->momentum();
-    Lorentz5Momentum q = pout-pin;
-    Axis axis(q.vect().unit());
-    LorentzRotation rot;
-    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-    rot = LorentzRotation();
-    if(axis.perp2()>1e-20) {
-      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      rot.rotateX(Constants::pi);
-    }
-    if(abs(1.-q.e()/q.vect().mag())>1e-6) 
-      rot.boostZ(q.e()/q.vect().mag());
-    Lorentz5Momentum ptemp = rot*pin;
-    if(ptemp.perp2()/GeV2>1e-20) {
-      Boost trans = -1./ptemp.e()*ptemp.vect();
-      trans.setZ(0.);
-      rot.boost(trans);
-    }
-    rot.invert();
-    Energy Q = sqrt(-q.m2());
-    double xT = sqrt((1.-xB)/xB);
-    double xTMin = 2.*minpT_/Q;
-    double wgt(0.);
-    double a = alphaQED_->overestimateValue()*prefactor_[iloc]/Constants::twopi;
-    Lorentz5Momentum p1,p2,p3;
-    do {
-      wgt = 0.;
-      // intergration variables dxT/xT^3
-      xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
-      // dz
-      double zp = UseRandom::rnd();
-      double xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
-      if(xT<xTMin) break;
-      // check allowed
-      if(xp<xB||xp>1.) continue;
-      // phase-space piece of the weight
-      wgt = 4.*sqr(1.-xp)*(1.-zp)*zp/prefactor_[iloc];
-      // coupling
-      Energy2 pT2 = 0.25*sqr(Q*xT);
-      wgt *= alphaQED_->ratio(pT2);
-      // matrix element
-      wgt *= 16.*sqr(Constants::pi)/alphaEM_;
-      // PDF
-      double pdf[2];
-      if(iloc==6) {
-	pdf[0] = beams_[0]->pdf()->
-	  xfx(beams_[0],partons_[0],scale()    ,x.first    );
-	pdf[1] = beams_[0]->pdf()->
-	  xfx(beams_[0],partons_[0],scale()+pT2,x.first /xp);
-      }
-      else {
-	pdf[0] = beams_[1]->pdf()->
-	  xfx(beams_[1],partons_[1],scale()    ,x.second   );
-	pdf[1] = beams_[1]->pdf()->
-	  xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
-      }
-      if(pdf[0]<=0.||pdf[1]<=0.) continue;
-      wgt *= pdf[1]/pdf[0];
-      // matrix element piece
-      double phi = Constants::twopi*UseRandom::rnd();
-      double x2 = 1.-(1.-zp)/xp;
-      double x3 = 2.-1./xp-x2;
-      p1=Lorentz5Momentum(ZERO,ZERO,0.5*Q/xp,0.5*Q/xp,ZERO);
-      p2=Lorentz5Momentum( 0.5*Q*xT*cos(phi), 0.5*Q*xT*sin(phi),
-			   -0.5*Q*x2,0.5*Q*sqrt(sqr(xT)+sqr(x2)));
-      p3=Lorentz5Momentum(-0.5*Q*xT*cos(phi),-0.5*Q*xT*sin(phi),
-			  -0.5*Q*x3,0.5*Q*sqrt(sqr(xT)+sqr(x3)));
-      selectedMomenta[iloc-6] = rot*p1;
-      selectedMomenta[3] = rot*p3;
-      selectedMomenta[4] = rot*p2;
-      if(iloc==6) {
-	mewgt.first  = 
-	  sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,IFQED1,Shower,false);
-	mewgt.second = 
-	  sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,FIQED1,Shower,false);
-	wgt *= mewgt.first+mewgt.second;
-      }
-      else {
-	mewgt.first  = 
-	  sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,IFQED2,Shower,false);
-	mewgt.second = 
-	  sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,FIQED2,Shower,false); 
-	wgt *= mewgt.first+mewgt.second;
-      }
-      if(wgt>1.) generator()->log() << "Weight greater than one in "
-				    << "MEPP2VGammaNewPowheg::hardQEDEmission() "
-				    << "for IF channel "
-				    << " Weight = " << wgt << "\n";
-    }
-    while(xT>xTMin&&UseRandom::rnd()>wgt);
-    // if no emission
-    if(xT<xTMin) {
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-	particlesToShower[ix]->maximumpT(minpT_);
-      return HardTreePtr();
-    }
-    pTmax = 0.5*xT*Q;
-    iemit = mewgt.first>mewgt.second ? 2 : 3;
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    selectedParticles.push_back(particlesToShower[ix]->progenitor()->dataPtr());
+    selectedMomenta.push_back(particlesToShower[ix]->progenitor()->momentum());
+  }
+  selectedParticles.push_back(getParticleData(ParticleID::gamma));
+  swap(selectedParticles[3],selectedParticles[4]);
+  selectedMomenta.push_back(Lorentz5Momentum());
+  swap(selectedMomenta[3],selectedMomenta[4]);
+  Lorentz5Momentum pin,pout;
+  double xB;
+  unsigned int iloc;
+  if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
+    pin = particlesToShower[0]->progenitor()->momentum();
+    xB = x.first;
+    iloc = 6;
   }
   else {
-    for(unsigned int ix=0;ix<2;++ix) {
-      pT.push_back(0.5*generator()->maximumCMEnergy());
-      cPDVector particles;
-      for(unsigned int iy=0;iy<particlesToShower.size();++iy) 
-	particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
-      particles.push_back(particles[3]);
-      particles[3] = getParticleData(ParticleID::gamma);
-      vector<Lorentz5Momentum> momenta(5);
-      double a = alphaQED_->overestimateValue()*prefactor_[ix+4]*(maxyj-minyj)*
-	sqr(particles[0]->iCharge()/3.)/Constants::twopi;
-      do {
-	pT[ix] *= pow(UseRandom::rnd(),1./a);
-	if(pT[ix]<minpT_) break;
-	double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
-	double vt,z;
-	if(ix==0) {
-	  vt = pT[ix]*exp(-y)/rootS/x.second;
-	  z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
-	  if(z>1.||z<x.first) continue;
-	}
-	else {
-	  vt = pT[ix]*exp( y)/rootS/x.first ;
-	  z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
-	  if(z>1.||z<x.second) continue;
-	}
-	if(vt>1.-z || vt<0.) continue;
-	if(ix==0) {
-	  momenta[0] = particlesToShower[0]->progenitor()->momentum()/z;
-	  momenta[1] = particlesToShower[1]->progenitor()->momentum();
-	}
-	else {
-	  momenta[0] = particlesToShower[0]->progenitor()->momentum();
-	  momenta[1] = particlesToShower[1]->progenitor()->momentum()/z;
-	}
-	double phi = Constants::twopi*UseRandom::rnd();
-	momenta[2] = particlesToShower[2]->progenitor()->momentum();
-	momenta[3] = particlesToShower[3]->progenitor()->momentum();
-	if(!quarkplus_) y *= -1.;
-	momenta[4] = Lorentz5Momentum(pT[ix]*cos(phi),pT[ix]*sin(phi),
-				      pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
-	Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
-	Lorentz5Momentum Kt = momenta[2]+momenta[3];
-	Lorentz5Momentum Ksum = K+Kt;
-	Energy2 K2 = K.m2(), Ksum2 = Ksum.m2();
-	for(unsigned int iy=2;iy<4;++iy) {
-	  momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
-	    +2*K*(Kt*momenta [iy])/K2;
-	}
-	swap(momenta[3],momenta[4]);
-	double wgt = alphaQED_->ratio(sqr(pT[ix]))*z/(1.-vt)
-	  /prefactor_[ix+4]/lo/sqr(particles[0]->iCharge()/3.);
-	if(ix==0)
-	  wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQED1,Shower,false);
-	else
-	  wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQED2,Shower,false);
-	wgt *= 16.*sqr(Constants::pi)/alphaEM_;
-	// pdf piece
-	double pdf[2];
-	if(ix%2==0) {
-	  pdf[0] = beams_[0]->pdf()->xfx(beams_[0],partons_ [0],
-					 scale(),            x.first   )  /x.first;
-	  pdf[1] = beams_[0]->pdf()->xfx(beams_[0],particles[0],
-					 scale()+sqr(pT[ix]),x.first /z)*z/x.first;
-	}
-	else {
-	  pdf[0] = beams_[1]->pdf()->xfx(beams_[1],partons_ [1],
-					 scale()            ,x.second  )  /x.second;
-	  pdf[1] = beams_[1]->pdf()->xfx(beams_[1],particles[1],
-					 scale()+sqr(pT[ix]),x.second/z)*z/x.second;
-	}
-	if(pdf[0]<=0.||pdf[1]<=0.) continue;
-	wgt *= pdf[1]/pdf[0];
-	if(wgt>1.) {
-	  if(wgt>1.) generator()->log() << "Weight greater than one in "
-					<< "MEPP2VGammaNewPowheg::hardQEDEmission() "
-					<< "for II channel " << ix 
-					<< " Weight = " << wgt << "\n";
-	}
-	if(UseRandom::rnd()<wgt) break;
-      }
-      while(pT[ix]>minpT_);
-      if(pT[ix]>minpT_ && pT[ix]>pTmax) {
-	pTmax = pT[ix];
-	selectedParticles = particles;
-	selectedMomenta = momenta;
-	iemit=ix;
-      }
-    }
-    // if no emission
-    if(pTmax<ZERO) {
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-	particlesToShower[ix]->maximumpT(minpT_);
-      return HardTreePtr();
-    }
+    pin = particlesToShower[1]->progenitor()->momentum();
+    xB = x.second;
+    iloc = 7;
   }
+  pout = particlesToShower[3]->progenitor()->momentum();
+  Lorentz5Momentum q = pout-pin;
+  Axis axis(q.vect().unit());
+  LorentzRotation rot;
+  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+  rot = LorentzRotation();
+  if(axis.perp2()>1e-20) {
+    rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot.rotateX(Constants::pi);
+  }
+  if(abs(1.-q.e()/q.vect().mag())>1e-6) 
+    rot.boostZ(q.e()/q.vect().mag());
+  Lorentz5Momentum ptemp = rot*pin;
+  if(ptemp.perp2()/GeV2>1e-20) {
+    Boost trans = -1./ptemp.e()*ptemp.vect();
+    trans.setZ(0.);
+    rot.boost(trans);
+  }
+  rot.invert();
+  Energy Q = sqrt(-q.m2());
+  double xT = sqrt((1.-xB)/xB);
+  double xTMin = 2.*minpT_/Q;
+  double wgt(0.);
+  double a = alphaQED_->overestimateValue()*prefactor_[iloc]/Constants::twopi;
+  Lorentz5Momentum p1,p2,p3;
+  do {
+    wgt = 0.;
+    // intergration variables dxT/xT^3
+    xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+    // dz
+    double zp = UseRandom::rnd();
+    double xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
+    if(xT<xTMin) break;
+    // check allowed
+    if(xp<xB||xp>1.) continue;
+    // phase-space piece of the weight
+    wgt = 4.*sqr(1.-xp)*(1.-zp)*zp/prefactor_[iloc];
+    // coupling
+    Energy2 pT2 = 0.25*sqr(Q*xT);
+    wgt *= alphaQED_->ratio(pT2);
+    // matrix element
+    wgt *= 16.*sqr(Constants::pi)/alphaEM_;
+    // PDF
+    double pdf[2];
+    if(iloc==6) {
+      pdf[0] = beams_[0]->pdf()->
+	xfx(beams_[0],partons_[0],scale()    ,x.first    );
+      pdf[1] = beams_[0]->pdf()->
+	xfx(beams_[0],partons_[0],scale()+pT2,x.first /xp);
+    }
+    else {
+      pdf[0] = beams_[1]->pdf()->
+	xfx(beams_[1],partons_[1],scale()    ,x.second   );
+      pdf[1] = beams_[1]->pdf()->
+	xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
+    }
+    if(pdf[0]<=0.||pdf[1]<=0.) continue;
+    wgt *= pdf[1]/pdf[0];
+    // matrix element piece
+    double phi = Constants::twopi*UseRandom::rnd();
+    double x2 = 1.-(1.-zp)/xp;
+    double x3 = 2.-1./xp-x2;
+    p1=Lorentz5Momentum(ZERO,ZERO,0.5*Q/xp,0.5*Q/xp,ZERO);
+    p2=Lorentz5Momentum( 0.5*Q*xT*cos(phi), 0.5*Q*xT*sin(phi),
+			 -0.5*Q*x2,0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+    p3=Lorentz5Momentum(-0.5*Q*xT*cos(phi),-0.5*Q*xT*sin(phi),
+			-0.5*Q*x3,0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+    selectedMomenta[iloc-6] = rot*p1;
+    selectedMomenta[3] = rot*p3;
+    selectedMomenta[4] = rot*p2;
+    if(iloc==6) {
+      mewgt.first  = 
+	sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,IFQED1,Shower,false);
+      mewgt.second = 
+	sqr(Q)*realVGammaqME(selectedParticles,selectedMomenta,FIQED1,Shower,false);
+      wgt *= mewgt.first+mewgt.second;
+    }
+    else {
+      mewgt.first  = 
+	sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,IFQED2,Shower,false);
+      mewgt.second = 
+	sqr(Q)*realVGammaqbarME(selectedParticles,selectedMomenta,FIQED2,Shower,false); 
+      wgt *= mewgt.first+mewgt.second;
+    }
+    if(wgt>1.) generator()->log() << "Weight greater than one in "
+				  << "MEPP2VGammaNewPowheg::hardQEDEmission() "
+				  << "for IF channel "
+				  << " Weight = " << wgt << "\n";
+  }
+  while(xT>xTMin&&UseRandom::rnd()>wgt);
+  // if no emission
+  if(xT<xTMin) {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+      particlesToShower[ix]->maximumpT(minpT_);
+    return HardTreePtr();
+  }
+  pTmax = 0.5*xT*Q;
+  iemit = mewgt.first>mewgt.second ? 2 : 3;
   // construct the HardTree object needed to perform the showers
   // create the partons
   ShowerParticleVector newparticles;
@@ -2570,7 +2450,3 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   // return the tree
   return hardtree;
 }
-
-
-
-

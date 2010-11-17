@@ -23,7 +23,7 @@ using namespace ThePEG;
  */
 class MEPP2VGammaNewPowheg: public HwMEBase {
 
-  enum DipoleType { IIQED1=1, IIQCD1=2, IIQED2=3, IIQCD2=4, 
+  enum DipoleType {           IIQCD1=2,           IIQCD2=4, 
 		    IFQED1=5, FIQED1=6, IFQED2=7, FIQED2=8 };
 
   enum RadiationType {Subtraction,Hard,Shower};
