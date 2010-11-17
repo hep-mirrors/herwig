@@ -293,8 +293,8 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     vec[2]->addChild(diquark);
     ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
 
-    vec[0]->addChild(nclus);
-    diquark->addChild(nclus);
+    //vec[0]->addChild(nclus);
+    //diquark->addChild(nclus);
     (*cluIter)->addChild(nclus);
 
     nclus->set5Momentum((*cluIter)->momentum());
