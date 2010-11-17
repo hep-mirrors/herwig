@@ -10,8 +10,7 @@ Hadronization.in HerwigDefaults.in HerwigCleanup.in \
 lepton_decays.in leptons.in \
 masses.in MatrixElements.in meson_decays.in mesons.in Model.in \
 Particles.in QEDRadiation.in quark_decays.in quarks.in \
-Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in \
-DoublyHeavyBaryons.in
+Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in
 
 dist_defaults_DATA = $(INPUTFILES)
 
