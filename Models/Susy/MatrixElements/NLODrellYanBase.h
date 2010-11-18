@@ -43,6 +43,12 @@ protected:
     double finite;
   };
 
+  /**
+   *  Which piece of the calculation is currently being done
+   */
+  enum Status {Born,Virtual,CollinearQQBar,CollinearQG,CollinearQBarG,
+	       RealQQBar,RealQG,RealQBarG};
+
 public:
 
   /** @name Standard constructors and destructors. */
@@ -270,6 +276,11 @@ protected:
     }
   }
 
+  /**
+   *  Which bit of the calculation
+   */
+  Status status() {return status_;}
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -373,6 +384,11 @@ private:
    * generation
    */
   mutable vector<double> weights_;
+
+  /**
+   *  Which bit of the calculation are we doing
+   */
+  mutable Status status_;
 
 private:
 

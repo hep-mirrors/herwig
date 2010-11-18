@@ -60,6 +60,7 @@ CrossSection NLODrellYanBase::dSigHatDR() const {
   // old technique
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
+  status_ = Born;
   loME_ = me2();
   if(contrib_<4) return NLOWeight()*preFactor;
   // folding technique to ensure positive
@@ -241,7 +242,7 @@ double NLODrellYanBase::subtractedVirtual() const {
   Singular Ieps;
   Ieps.eps2 = 2;
   Ieps.eps1 = 3;
-  Ieps.finite = 10.-sqr(Constants::pi);
+  Ieps.finite = -sqr(Constants::pi)/3.;
   // check the singular pieces cancel
   assert(Ieps.eps2==-virt.eps2 && Ieps.eps1 == -virt.eps1 );
   return virt.finite+Ieps.finite;
@@ -260,6 +261,7 @@ double NLODrellYanBase::NLOWeight() const {
   CFfact_ = 4./3.*alphaS_/Constants::twopi;
   TRfact_ = 1./2.*alphaS_/Constants::twopi;
   // virtual pieces
+  status_ = Virtual;
   double virt = CFfact_*subtractedVirtual();
   // extract the partons and stuff for the real emission
   //  and collinear counter terms
@@ -308,12 +310,15 @@ double NLODrellYanBase::NLOWeight() const {
 					 x.second/z.second)*z.second/x.second);
   // coll terms
   // g -> q
+  status_ = CollinearQG;
   double collGQ    = collinearGluon(mu2,zJac.first,z.first,
 				    oldqPDF.first,newgPDF.first);
   // g -> qbar
+  status_ = CollinearQBarG;
   double collGQbar = collinearGluon(mu2,zJac.second,z.second,
 				    oldqPDF.second,newgPDF.second);
   // q -> q
+  status_ = CollinearQQBar;
   double collQQ       = collinearQuark(x.first ,mu2,zJac.first ,z.first ,
 				       oldqPDF.first ,newqPDF.first );
   // qbar -> qbar
@@ -368,7 +373,7 @@ double NLODrellYanBase::collinearQuark(double x, Energy2 mu2,
   if(1.-z < 1.e-8) return 0.;
   return CFfact_*(
 		  // this bit is multiplied by LO PDF
-		  sqr(Constants::pi)/3.-5.+2.*sqr(log(1.-x ))
+		  +2.*sqr(log(1.-x ))
 		  +(1.5+2.*log(1.-x ))*log(sHat()/mu2)
 		  // NLO PDF bit
 		  +jac /z * newPDF /oldPDF *
@@ -468,6 +473,7 @@ vector<double> NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
 pair<double,double> 
 NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
 				   bool order,bool subtract) const {
+  status_ = RealQQBar;
   // use the inheriting class to calculate the matrix element
   cPDVector particles(mePartonData());
   particles.push_back(gluon_);
@@ -540,10 +546,12 @@ NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   // use the inheriting class to calculate the matrix element
   cPDVector particles(mePartonData());
   if(order) {
+    status_ = RealQG;
     particles.push_back(particles[0]->CC());
     particles[0] = gluon_;
   }
   else {
+    status_ = RealQBarG;
     particles.push_back(particles[1]->CC());
     particles[1] = gluon_;
   }
