@@ -270,13 +270,28 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  // t-channel squark exchanges	  
 	  for(unsigned int iq=0;iq<2;++iq) {
 	    // 1st t-channel
-	    ScalarWaveFunction intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+	    ScalarWaveFunction intersq;
+	    if((mePartonData()[0]->id()==ParticleID::g &&
+		mePartonData()[1]->id()<0) ||
+	       (mePartonData()[0]->id()>0 &&
+		mePartonData()[1]->id()==ParticleID::g)){
+	      intersq = NFSVertex_->
+		evaluate(q2, 7, squark[iq], sp[if1], sbarout[of2]);
+	    }
+	    else {intersq = NFSVertex_->
+		evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);}
 	    diag[2*iq+1] = 
 	      NFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
 	    // swapped t-channel
+	    if((mePartonData()[0]->id()==ParticleID::g &&
+		mePartonData()[1]->id()<0) ||
+	       (mePartonData()[0]->id()>0 &&
+		mePartonData()[1]->id()==ParticleID::g)){
 	    intersq = NFSVertex_->
-	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+	      evaluate(q2, 7, squark[iq], sp[if1], spoutconj[of1]);
+	    }
+	    else {intersq = NFSVertex_->
+	      evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);}
 	    diag[2*iq+2] = 
 	      -NFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
 	  }
@@ -417,10 +432,10 @@ realME(const cPDVector & particles,
 	      diag[6*iq+3] = 
 		NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
 	      // emission from intermediate
-	      if((particles[0]->id()==ParticleID::g &&
-		  particles[1]->id()<0) ||
-		 (particles[0]->id()>0 &&
-		  particles[1]->id()==ParticleID::g)){
+	    if((mePartonData()[0]->id()==ParticleID::g &&
+		mePartonData()[1]->id()<0) ||
+	       (mePartonData()[0]->id()>0 &&
+		mePartonData()[1]->id()==ParticleID::g)){
 		intersq2 = GSSVertex_->evaluate(q2,7,squark[iq],gluon[ohel1],intersq);
 	      }
 	      else intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
@@ -438,10 +453,10 @@ realME(const cPDVector & particles,
 	      diag[6*iq+6] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
 	      // emission from intermediate
-	      if((particles[0]->id()==ParticleID::g &&
-		  particles[1]->id()<0) ||
-		 (particles[0]->id()>0 &&
-		  particles[1]->id()==ParticleID::g)){
+	    if((mePartonData()[0]->id()==ParticleID::g &&
+		mePartonData()[1]->id()<0) ||
+	       (mePartonData()[0]->id()>0 &&
+		mePartonData()[1]->id()==ParticleID::g)){
 		intersq2 = GSSVertex_->evaluate(q2,7,squark[iq],gluon[ohel1],intersq);
 	      }
 	      else intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
