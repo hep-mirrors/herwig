@@ -417,7 +417,13 @@ realME(const cPDVector & particles,
 	      diag[6*iq+3] = 
 		NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
 	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+	      if((particles[0]->id()==ParticleID::g &&
+		  particles[1]->id()<0) ||
+		 (particles[0]->id()>0 &&
+		  particles[1]->id()==ParticleID::g)){
+		intersq2 = GSSVertex_->evaluate(q2,7,squark[iq],gluon[ohel1],intersq);
+	      }
+	      else intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
 	      diag[6*iq+4] = 
 		NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
 	      // swapped t-channel
@@ -432,7 +438,13 @@ realME(const cPDVector & particles,
 	      diag[6*iq+6] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
 	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+	      if((particles[0]->id()==ParticleID::g &&
+		  particles[1]->id()<0) ||
+		 (particles[0]->id()>0 &&
+		  particles[1]->id()==ParticleID::g)){
+		intersq2 = GSSVertex_->evaluate(q2,7,squark[iq],gluon[ohel1],intersq);
+	      }
+	      else intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
 	      diag[6*iq+7] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
 	    }
