@@ -240,6 +240,11 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   vector<Complex> diag(4, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
+  unsigned int propopt;
+  if(status()==RealQG || status()==RealQBarG){
+    propopt = 7;
+  }
+  else propopt = 3;
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
@@ -257,13 +262,13 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  for(unsigned int iq=0;iq<2;++iq) {
 	    if(abs(mePartonData()[0]->id())%2==0) {
 	      ScalarWaveFunction intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[if1], spoutconj[of1]);
+		evaluate(q2, propopt, squark[iq], sp[if1], spoutconj[of1]);
 	      diag[iq+2] = 
 		-CFSVertex_->evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
 	    }
 	    else {
 	      ScalarWaveFunction intersq = CFSVertex_->
-		evaluate(q2, 3, squark[iq], sp[if1], sbarout[of2]);
+		evaluate(q2, propopt, squark[iq], sp[if1], sbarout[of2]);
 	      diag[iq+2] = 
 		CFSVertex_->evaluate(q2, spout[of1], sbar[if2], intersq);
 	    }
@@ -380,6 +385,11 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
   double output(0.);
   vector<Complex> diag(10,0.);
   Energy2 q2 = scale();
+  unsigned int propopt;
+  if(status()==RealQG || status()==RealQBarG){
+    propopt = 7;
+  }
+  else propopt = 3;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
@@ -411,17 +421,18 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 	    for(unsigned int iq=0;iq<2;++iq) {
 	      // u-type
 	      if(abs(mePartonData()[0]->id())%2==0) {
+		// emission from quark
 		intersq = CFSVertex_->
-		  evaluate(q2, 3, squark[iq], inters, spoutconj[ohel2]);
+		  evaluate(q2, propopt, squark[iq], inters, spoutconj[ohel2]);
 		diag[3*iq+4] = 
 		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
 		// emission antiquark
 		intersq = CFSVertex_->
-		  evaluate(q2, 3, squark[iq], sp[ihel1], spoutconj[ohel2]);
+		  evaluate(q2, propopt, squark[iq], sp[ihel1], spoutconj[ohel2]);
 		diag[3*iq+5] = 
 		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
 		// emission from intermediate
-		intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
 		diag[3*iq+6] = 
 		  -CFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
 	      }
@@ -429,16 +440,16 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 	      else {
 		// emission quark
 		intersq = CFSVertex_->
-		  evaluate(q2, 3, squark[iq], inters, sbarout[ohel3]);
+		  evaluate(q2, propopt, squark[iq], inters, sbarout[ohel3]);
 		diag[3*iq+4] = 
 		  CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
 		// emission antiquark
 		intersq = CFSVertex_->
-		  evaluate(q2, 3, squark[iq], sp[ihel1], sbarout[ohel3]);
+		  evaluate(q2, propopt, squark[iq], sp[ihel1], sbarout[ohel3]);
 		diag[3*iq+5] = 
 		  CFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
 		// emission from intermediate
-		intersq2 = GSSVertex_->evaluate(q2,3,squark[iq],gluon[ohel1],intersq);
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
 		diag[3*iq+6] = 
 		  CFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
 	      }
