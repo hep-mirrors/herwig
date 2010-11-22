@@ -279,7 +279,7 @@ protected:
   /**
    *  Which bit of the calculation
    */
-  Status status() {return status_;}
+  Status status() const {return status_;}
 
 protected:
 
