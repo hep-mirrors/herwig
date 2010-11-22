@@ -46,6 +46,8 @@ void MEPP2CharginoNeutralinoPowheg::doinit() {
   CNWVertex_ = hwsm->vertexCNW();
   CFSVertex_ = hwsm->vertexCFSF();
   NFSVertex_ = hwsm->vertexNFSF();
+  GSSVertex_ = hwsm->vertexGSFSF();
+
 }
 
 Selector<const ColourLines *>
@@ -154,12 +156,12 @@ IBPtr MEPP2CharginoNeutralinoPowheg::fullclone() const {
 
 void MEPP2CharginoNeutralinoPowheg::persistentOutput(PersistentOStream & os) const {
   os << FFWVertex_ << FFGVertex_ << CNWVertex_ << CFSVertex_ << NFSVertex_
-     << Wplus_ << Wminus_ << process_ << maxFlavour_;
+     << GSSVertex_ << Wplus_ << Wminus_ << process_ << maxFlavour_;
 }
 
 void MEPP2CharginoNeutralinoPowheg::persistentInput(PersistentIStream & is, int) {
   is >> FFWVertex_ >> FFGVertex_ >> CNWVertex_ >> CFSVertex_ >> NFSVertex_
-     >> Wplus_ >> Wminus_ >> process_ >> maxFlavour_;
+     >> GSSVertex_ >> Wplus_ >> Wminus_ >> process_ >> maxFlavour_;
 }
 
 ClassDescription<MEPP2CharginoNeutralinoPowheg> 
@@ -194,42 +196,42 @@ void MEPP2CharginoNeutralinoPowheg::Init() {
      0);
   static SwitchOption interfaceProcessCharginom11
     (interfaceProcess,
-     "chi+1chi01",
+     "chi-1chi01",
      "Only produce chi-1, chi01 pairs.",
      1);
   static SwitchOption interfaceProcessCharginom12
     (interfaceProcess,
-     "chi+1chi02",
+     "chi-1chi02",
      "Only produce chi-1, chi02 pairs.",
      2);
   static SwitchOption interfaceProcessCharginom13
     (interfaceProcess,
-     "chi+1chi03",
+     "chi-1chi03",
      "Only produce chi-1, chi03 pairs.",
      3);
   static SwitchOption interfaceProcessCharginom14
     (interfaceProcess,
-     "chi+1chi04",
+     "chi-1chi04",
      "Only produce chi-1, chi04 pairs.",
      4);
   static SwitchOption interfaceProcessCharginom21
     (interfaceProcess,
-     "chi+2chi01",
+     "chi-2chi01",
      "Only produce chi-2, chi01 pairs.",
      5);
   static SwitchOption interfaceProcessCharginom22
     (interfaceProcess,
-     "chi+2chi02",
+     "chi-2chi02",
      "Only produce chi-2, chi02 pairs.",
      6);
   static SwitchOption interfaceProcessCharginom23
     (interfaceProcess,
-     "chi+2chi03",
+     "chi-2chi03",
      "Only produce chi-2, chi03 pairs.",
      7);
   static SwitchOption interfaceProcessCharginom24
     (interfaceProcess,
-     "chi+2chi04",
+     "chi-2chi04",
      "Only produce chi-2, chi04 pairs.",
      8);
   static SwitchOption interfaceProcessCharginop11
@@ -347,6 +349,12 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   vector<Complex> diag(5, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
+//   unsigned int propopt;
+//   if(status()==RealQG || status()==RealQBarG){
+//     propopt = 7;
+//   }
+//   else propopt = 3;
+  unsigned int propopt = 3;
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
@@ -361,16 +369,16 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	  for(unsigned int iq=0;iq<2;++iq) {
 	    // t-channel
 	    ScalarWaveFunction intersq = CFSVertex_->
-	      evaluate(q2, 3, squark [iq   ], sp[if1], spoutconj[of1]);
+	      evaluate(q2, propopt, squark [iq   ], sp[if1], spoutconj[of1]);
 	    diag[iq+1] = -NFSVertex_->
 	      evaluate(q2, sbaroutconj[of2], sbar[if2], intersq);
 	    // u-channel
 	    intersq = NFSVertex_->
-		evaluate(q2, 3, squark[iq+2], sp[if1], sbarout[of2]);
+		evaluate(q2, propopt, squark[iq+2], sp[if1], sbarout[of2]);
 	    diag[iq+3] = CFSVertex_->
 	      evaluate(q2, spout[of1], sbar[if2], intersq);
 	  }
-	  // individual diagrams
+	  // Individual diagrams
 	  for(unsigned int id=0;id<5;++id) me[id] += norm(diag[id]);
 	  // sum up the matrix elements
 	  Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -417,98 +425,176 @@ double MEPP2CharginoNeutralinoPowheg::loME(const cPDVector & particles,
 
 double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
  				      const vector<Lorentz5Momentum> & momenta) const {
-//   vector<SpinorWaveFunction> sp(2);
-//   vector<SpinorBarWaveFunction> sbar(2);
-//   vector<VectorWaveFunction> gluon(2);
-//   // wavefunctions for the q qbar -> sf sf g process
-//   if(particles[0]->id()==-particles[1]->id()) {
-//     for( unsigned int i = 0; i < 2; ++i ) {
-//       sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
-//       sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
-//       gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
-//     }
-//   }
-//   else if(particles[0]->id()==ParticleID::g &&
-// 	  particles[1]->id()<0) {
-//     for( unsigned int i = 0; i < 2; ++i ) {
-//       sp[i]   = SpinorWaveFunction   (momenta[4],particles[4],  i,outgoing);
-//       sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
-//       gluon[i]= VectorWaveFunction   (momenta[0],particles[0],2*i,incoming);
-//     }
-//   }
-//   else if(particles[0]->id()>0 &&
-// 	  particles[1]->id()==ParticleID::g) {
-//     for( unsigned int i = 0; i < 2; ++i ) {
-//       sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
-//       sbar[i] = SpinorBarWaveFunction(momenta[4],particles[4],  i,outgoing);
-//       gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
-//     }
-//   }
-//   else {
-//     for(unsigned int ix=0;ix<particles.size();++ix) {
-//       cerr << particles[ix]->PDGName() << " " << momenta[ix]/GeV << "\n";
-//     }
-//     assert(false);
-//   }
-//   // wavefunctions for the outgoing charginos
-//   vector<SpinorWaveFunction> spout(2);
-//   vector<SpinorBarWaveFunction> sbarout(2);
-//   for( unsigned int i = 0; i < 2; ++i ) {
-//     spout[i] = SpinorWaveFunction(momenta[2], particles[2], i,
-// 			       incoming);
-//     sbarout[i] = SpinorBarWaveFunction(momenta[3], particles[3], i,
-// 				    incoming);
-//   }
+  vector<SpinorWaveFunction> sp(2);
+  vector<SpinorBarWaveFunction> sbar(2);
+  vector<VectorWaveFunction> gluon(2);
+  // squarks
+  tcPDPtr squark[4];
+  if (abs(mePartonData()[0]->id())%2==0) {
+    // u-channel
+    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+    // t-channel
+    squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
+    squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
+  }
+  else {
+    // u-channel
+    squark[0] = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+    squark[1] = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+    // t-channel
+    squark[2] = getParticleData(1000000+abs(mePartonData()[0]->id())  );
+    squark[3] = getParticleData(2000000+abs(mePartonData()[0]->id())  );
+  }
 
-//   double output(0.);
-//   Complex diag[4]={0.,0.,0.,0.};
-//   Energy2 shat = scale();
-//   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-//     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-//       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-// 	// first Z diagram (emission from quark)
-//  	SpinorWaveFunction inters = FFGVertex_->evaluate(shat, 5, sp[ihel1].particle(),
-// 							 sp[ihel1], gluon[ohel1]);
-// 	VectorWaveFunction interV = FFWVertex_->evaluate(shat, 1, Z0_, inters, 
-// 							 sbar[ihel2]);
-// 	diag[0] = CNWVertex_->evaluate(shat, spout[ihel1], sbarout[ihel2], interV);
-// 	// second Z diagram (emission from anti-quark)
-// 	SpinorBarWaveFunction interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
-// 							    sbar[ihel1],gluon[ohel1]);
-// 	interV = FFWVertex_->evaluate(shat, 1, Z0_, sp[ihel1], 
-// 				      interb);
-// 	diag[1] = CNWVertex_->evaluate(shat, spout[ihel1], sbarout[ihel2], interV);
+  // wavefunctions for the q qbar -> chi chi g process
+  // up type quark, down type anti-quark
+  if(particles[1]->id()==-(particles[0]->id()-1)) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
+      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
+      gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
+    }
+  }
+  // down type quark, up type anti-quark
+  else if(particles[1]->id()==-(particles[0]->id()+1)) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
+      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
+      gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
+    }
+  }
+  // g qbar
+  else if(particles[0]->id()==ParticleID::g &&
+	  particles[1]->id()<0) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[4],particles[4],  i,outgoing);
+      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
+      gluon[i]= VectorWaveFunction   (momenta[0],particles[0],2*i,incoming);
+    }
+  }
+  // g q
+  else if(particles[0]->id()>0 &&
+	  particles[1]->id()==ParticleID::g) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
+      sbar[i] = SpinorBarWaveFunction(momenta[4],particles[4],  i,outgoing);
+      gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
+    }
+  }
+  else {
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      cerr << particles[ix]->PDGName() << " " << momenta[ix]/GeV << "\n";
+    }
+    assert(false);
+  }
+  // wavefunctions for the outgoing charginos/neutralinos
+  vector<SpinorWaveFunction> spout(2),sbaroutconj(2);
+  vector<SpinorBarWaveFunction> sbarout(2),spoutconj(2);
+  for( unsigned int i = 0; i < 2; ++i ) {
+    spout[i]       = SpinorWaveFunction(momenta[2], particles[2], i,
+					outgoing);
+    spoutconj[i]   = SpinorBarWaveFunction(momenta[2], particles[2],
+					   spout[i].wave().bar().conjugate(),
+					   outgoing);
+    sbarout[i]     = SpinorBarWaveFunction(momenta[3], particles[3], i,
+					   outgoing);
+    sbaroutconj[i] = SpinorWaveFunction   (momenta[3], particles[3],
+					   sbarout[i].wave().bar().conjugate(),
+					   outgoing);
+  }
+  double output(0.);
+  vector<Complex> diag(14,0.);
+  Energy2 q2 = scale();
+  unsigned int propopt = 3;
+//   if(status()==RealQG || status()==RealQBarG){
+//     propopt = 7;
+//   }
+//   else propopt = 3;
+  ScalarWaveFunction intersq,intersq2;
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+	SpinorWaveFunction    inters = FFGVertex_->evaluate(q2, 5, sp[ihel1].particle()->CC(),
+							    sp[ihel1], gluon[ohel1]);
+	SpinorBarWaveFunction interb = FFGVertex_->evaluate(q2,5,sbar[ihel2].particle()->CC(),
+							    sbar[ihel2],gluon[ohel1]);	
+	VectorWaveFunction interW[2] = {FFWVertex_->
+					evaluate(q2, 1, mePartonData()[0]->iCharge() > 0 ?
+						 Wplus_ : Wminus_, inters, sbar[ihel2]),
+					FFWVertex_->
+					evaluate(q2, 1, mePartonData()[0]->iCharge() > 0 ?
+						 Wplus_ : Wminus_, sp[ihel1], interb)};
+	
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  for(unsigned int ohel3=0;ohel3<2;++ohel3) {
+	    // s-channel diagrams
+	    // first W diagram (emission from quark)
+	    diag[0] = CNWVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interW[0]);
+	    // second W diagram (emission from anti-quark)
+	    diag[1] = CNWVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interW[1]);
+	    // t and u channels
+	  for(unsigned int iq=0;iq<2;++iq) {
+	    // t-channel
+	    // emission from quark
+	    intersq = CFSVertex_->
+	      evaluate(q2, propopt, squark [iq], inters, spoutconj[ohel2]);
+	    diag[6*iq+2] = -NFSVertex_->
+	      evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
+	    // emission from anti-quark
+	    intersq = CFSVertex_->
+	      evaluate(q2, propopt, squark [iq], sp[ihel1], spoutconj[ohel2]);
+	    diag[6*iq+3] = -NFSVertex_->
+	      evaluate(q2, sbaroutconj[ohel3], interb, intersq);
+	    // emission from intermediate
+	    intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
+	    diag[6*iq+4] = -NFSVertex_->
+	      evaluate(q2,sbaroutconj[ohel3], sbar[ihel2], intersq2);
+
+	    // u-channel
+	    // emission from quark
+	    intersq = NFSVertex_->
+	      evaluate(q2, propopt, squark [iq+2], inters, sbarout[ohel3]);
+	    diag[6*iq+5] = CFSVertex_->
+	      evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
+	    // emission from anti-quark
+	    intersq = NFSVertex_->
+	      evaluate(q2, propopt, squark [iq+2], sp[ihel1], sbarout[ohel3]);
+	    diag[6*iq+6] = CFSVertex_->
+	      evaluate(q2, spout[ohel2], interb, intersq);
+	    // emission from intermediate
+	    intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq+2],gluon[ohel1],intersq);
+	    diag[6*iq+7] = CFSVertex_->
+	      evaluate(q2,spout[ohel2], sbar[ihel2], intersq2);
+	  }
 
 
-// 	if(particles[2]->id()==-particles[3]->id()&&particles[2]->charged()) {
-//  	  // first photon diagram
-//  	inters = FFGVertex_->evaluate(shat, 5, sp[ihel1].particle(),
-// 							 sp[ihel1], gluon[ohel1]);
-// 	interV = FFPVertex_->evaluate(shat, 1, gamma_, inters, 
-// 							 sbar[ihel2]);
-// 	diag[2] = CNWVertex_->evaluate(shat, spout[ihel1], sbarout[ihel2], interV);
-// 	// second photon diagram
-// 	interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
-// 							    sbar[ihel1],gluon[ohel1]);
-// 	interV = FFPVertex_->evaluate(shat, 1, gamma_, sp[ihel1], 
-// 				      interb);
-// 	diag[3] = CNWVertex_->evaluate(shat, spout[ihel1], sbarout[ihel2], interV);
-//  	}
-// 	// add them up
-// 	output += norm(diag[0]+diag[1]+diag[2]+diag[3]);
-//       }
-//     }
-//   }
-//   // colour and spin factors
-//   if(particles[0]->id()==-particles[1]->id()) {
-//     output *= 1./9.;
-//   }
-//   else  {
-//     output *= 1./24.;
-//   }
-//   // divided by 2 g_S^2
-//   return 0.5*output/norm(FFGVertex_->norm());
-				      return 1;
+	    // add them up
+	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
+	    output += norm(total);
+
+	    // Gauge invariance check
+// 	    double all = 0.;
+// 	    for(unsigned int ix=0;ix<14;++ix){
+// 	      all += norm(diag[ix]);}
+// 	    if(isnan(norm(total)/all) != 1)
+// 	      cout << norm(total)/all << endl;
+
+
+	  }
+	}
+      }
+    }
+  }
+  // colour and spin factors
+  if(particles[0]->id()==-particles[1]->id()) {
+    output *= 1./9.;
+  }
+  else  {
+    output *= 1./24.;
+  }
+  // divided by 2 g_S^2
+  return 0.5*output/norm(FFGVertex_->norm());
 }
 
 void MEPP2CharginoNeutralinoPowheg::constructVertex(tSubProPtr sub) {
