@@ -27,3 +27,22 @@ set MRST-NLO:RemnantHandler HadronRemnants
 create ThePEG::WeizsackerWilliamsPDF WWPDF WeizsackerWilliamsPDF.so
 create ThePEG::UnResolvedRemnant /Herwig/Partons/LeptonGammaRemnants 
 set /Herwig/Partons/WWPDF:RemnantHandler /Herwig/Partons/LeptonGammaRemnants
+
+# photons from protons in Budnev approx
+create ThePEG::BudnevPDF BudnevPDF BudnevPDF.so
+create ThePEG::UnResolvedRemnant /Herwig/Partons/HadronGammaRemnants 
+set /Herwig/Partons/BudnevPDF:RemnantHandler /Herwig/Partons/HadronGammaRemnants
+
+# pomerons
+create Herwig::PomeronFlux PomeronFlux HwPomeronFlux.so
+set PomeronFlux:PDFFit Pomeron2006A
+set PomeronFlux:Q2Max 1.
+set PomeronFlux:Q2Min 1.0e-6
+create ThePEG::UnResolvedRemnant /Herwig/Partons/ProtonRemnant UnResolvedRemnant.so
+set /Herwig/Partons/PomeronFlux:RemnantHandler /Herwig/Partons/ProtonRemnant
+
+create Herwig::PomeronPDF PomeronPDF HwPomeronPDF.so
+set PomeronPDF:RemnantHandler HadronRemnants
+set PomeronPDF:RootName  @HERWIG_PDF_POMERON@
+set /Herwig/Particles/pomeron:PDF PomeronPDF
+set PomeronPDF:PDFFit 2006A
