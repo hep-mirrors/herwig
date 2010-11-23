@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// IS_QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// IS_QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the IS_QtildaShowerKinematics1to2 class.
+// functions of the IS_QTildeShowerKinematics1to2 class.
 //
 
-#include "IS_QtildaShowerKinematics1to2.h"
+#include "IS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -19,7 +19,7 @@
 
 using namespace Herwig;
 
-void IS_QtildaShowerKinematics1to2::
+void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
 		bool ) const {
@@ -47,7 +47,7 @@ updateChildren( const tShowerParticlePtr theParent,
 }
 
 
-void IS_QtildaShowerKinematics1to2::
+void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
 	     const ShowerParticleVector & theChildren,
 	     bool angularOrder) const {
@@ -72,7 +72,7 @@ updateParent(const tShowerParticlePtr theParent,
   }
 }
 
-void IS_QtildaShowerKinematics1to2::
+void IS_QTildeShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
 		  const ParticleVector & theChildren ) const {
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
@@ -95,7 +95,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   c1->set5Momentum(pc1);
 }
 
-void IS_QtildaShowerKinematics1to2::
+void IS_QTildeShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   if(theLast->isFinalState()) return;
   Energy2 pt2=sqr(px)+sqr(py);
@@ -116,7 +116,7 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   theLast->set5Momentum(plast);
 }
  
-void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
+void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, pcm;
   assert(particle.perturbative()!=2);

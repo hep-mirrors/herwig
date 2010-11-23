@@ -61,9 +61,9 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
     // from a colour source, or ends in a colour sink. In the case of double
     // baryon violating decays, but with overall baryon conservation 
     //  ( for instance:
-    //       tilda_u_R -> dbar_1 + dbar_2 
-    //       tilda_u_R_star -> d1 + d2 
-    //    where tilda_u_R and tilda_u_R_star are colour connected )
+    //       tilde_u_R -> dbar_1 + dbar_2 
+    //       tilde_u_R_star -> d1 + d2 
+    //    where tilde_u_R and tilde_u_R_star are colour connected )
     // a special treatment is needed, because first we have to process all
     // partons in the current step, and then for each left pair of quarks which
     // stem from a colour source we have to find the corresponding pair of 

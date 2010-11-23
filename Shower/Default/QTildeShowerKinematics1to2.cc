@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,33 +8,33 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QtildaShowerKinematics1to2 class.
+// functions of the QTildeShowerKinematics1to2 class.
 //
 
-#include "QtildaShowerKinematics1to2.h"
+#include "QTildeShowerKinematics1to2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
-vector<Lorentz5Momentum> QtildaShowerKinematics1to2::getBasis() const {
+vector<Lorentz5Momentum> QTildeShowerKinematics1to2::getBasis() const {
   vector<Lorentz5Momentum> dum;
   dum.push_back( _pVector );
   dum.push_back( _nVector );
   return dum; 
 }
 
-void QtildaShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
+void QTildeShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
 					  const Lorentz5Momentum & n) {
   _pVector=p;
   _nVector=n;
 }
 
-Lorentz5Momentum QtildaShowerKinematics1to2::
+Lorentz5Momentum QTildeShowerKinematics1to2::
 sudakov2Momentum(double alpha, double beta, Energy px, 
 		 Energy py,unsigned int iopt) const {
   if(isnan(beta)||isinf(beta)) 
     throw Exception() << "beta infinite in "
-		      << "QtildaShowerKinematics1to2::sudakov2Momentum()"
+		      << "QTildeShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
   Lorentz5Momentum dq;
   if(iopt==0) {

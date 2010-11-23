@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// FS_QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FS_QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,22 +8,22 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the FS_QtildaShowerKinematics1to2 class.
+// functions of the FS_QTildeShowerKinematics1to2 class.
 //
 
-#include "FS_QtildaShowerKinematics1to2.h"
+#include "FS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
-void FS_QtildaShowerKinematics1to2::
+void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
 	       const ShowerParticleVector & theChildren,
 	       bool angularOrder) const {
   if(theChildren.size() != 2)
-    throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
+    throw Exception() <<  "FS_QTildeShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
   // copy scales etc
   Energy dqtilde = scale();
@@ -71,11 +71,11 @@ updateChildren(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[1]);
 }
 
-void FS_QtildaShowerKinematics1to2::
+void FS_QTildeShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
 	     const ParticleVector & theChildren ) const {
   if(theChildren.size() != 2) 
-    throw Exception() << "FS_QtildaShowerKinematics1to2::updateParent() " 
+    throw Exception() << "FS_QTildeShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 
 		      << Exception::eventerror;
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
@@ -85,7 +85,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   theParent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
-void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
+void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
 						    unsigned int iopt, 
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
@@ -102,7 +102,7 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 					  theLast->showerVariables()[1],iopt));
 }
 
-void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
+void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   // set the basis vectors
   Lorentz5Momentum p,n;
   if(particle.perturbative()!=0) {
