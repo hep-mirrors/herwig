@@ -449,20 +449,20 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 
   // wavefunctions for the q qbar -> chi chi g process
   // q qbar
-  if(((particles[1]->id()==-(particles[0]->id()-1)
-       && abs(particles[0]->id()-1)>0 && abs(particles[0]->id()-1)<7))) {
+  if(abs(particles[0]->id())<=6 &&
+     abs(particles[1]->id())<=6) {
     for( unsigned int i = 0; i < 2; ++i ) {
       sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
       sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
       gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
     }
   }
-  else if(((particles[1]->id()==-(particles[0]->id()+1)
-	    && abs(particles[0]->id()+1)>0 && abs(particles[0]->id()+1)<7))) {
+  else if(particles[0]->id()>0 &&
+	  particles[1]->id()==ParticleID::g) {
     for( unsigned int i = 0; i < 2; ++i ) {
       sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
-      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
-      gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
+      sbar[i] = SpinorBarWaveFunction(momenta[4],particles[4],  i,outgoing);
+      gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
     }
   }
   // g qbar
@@ -472,15 +472,6 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
       sp[i]   = SpinorWaveFunction   (momenta[4],particles[4],  i,outgoing);
       sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
       gluon[i]= VectorWaveFunction   (momenta[0],particles[0],2*i,incoming);
-    }
-  }
-  // g q
-  else if(particles[0]->id()>0 &&
-	  particles[1]->id()==ParticleID::g) {
-    for( unsigned int i = 0; i < 2; ++i ) {
-      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
-      sbar[i] = SpinorBarWaveFunction(momenta[4],particles[4],  i,outgoing);
-      gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
     }
   }
   else {
@@ -588,22 +579,13 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
     }
   }
   // colour and spin factors
-  if(particles[0]->id()==ParticleID::g ||particles[1]->id()==ParticleID::g){
+  if(particles[0]->id()==ParticleID::g ||
+     particles[1]->id()==ParticleID::g){
     output *= 1./24.;
   }
   else {
     output *=1./9.;
-      }
-  
-  
-//   if(particles[0]->id()==-particles[1]->id()) {
-//     output *= 1./9.;
-//   }
-//   else  {
-//     output *= 1./24.;
-//   }
-
-
+  }
   // divided by 2 g_S^2
   return 0.5*output/norm(FFGVertex_->norm());
 }
