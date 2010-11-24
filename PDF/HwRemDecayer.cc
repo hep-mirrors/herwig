@@ -132,8 +132,8 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   if( lastID != ParticleID::g ) {
     newSea = forceSplit(rem, -lastID, oldQ, currentx, lastp, used,content);
     ColinePtr cl = new_ptr(ColourLine());
-    if(newSea->id() > 0) cl->addColoured(newSea);
-    else cl->addAntiColoured(newSea);
+    if(newSea->id() > 0) cl->    addColoured(newSea);
+    else                 cl->addAntiColoured(newSea);
     // if a secondard scatter finished so return
     if(!first || content.isValenceQuark(ParticleID::g) ){
       partners.push_back(make_pair(parton, newSea));
@@ -961,12 +961,12 @@ void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
   if(theRems.first) {
     fixColours(theMaps.first, theanti.first, colourDisrupt);
     if(theContent.first.hadron->id()==ParticleID::pomeron&&
-       pomeronStructure_==0) fixColours(theMaps.first, true, colourDisrupt);
+       pomeronStructure_==0) fixColours(theMaps.first, !theanti.first, colourDisrupt);
   }
   if(theRems.second) {
     fixColours(theMaps.second, theanti.second, colourDisrupt);
     if(theContent.second.hadron->id()==ParticleID::pomeron&&
-       pomeronStructure_==0) fixColours(theMaps.second, true, colourDisrupt);
+       pomeronStructure_==0) fixColours(theMaps.second, !theanti.second, colourDisrupt);
   }
 
   if( !theRems.first || !theRems.second ) return;
