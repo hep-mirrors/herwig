@@ -237,7 +237,8 @@ private:
       for(unsigned int i=0; i<flav.size(); i++) {
 	if(id == sign*flav[i]){
 	  if(hadron->id() == ParticleID::gamma || 
-	     (hadron->id() == ParticleID::pomeron && pomeronStructure==1)) {
+	     (hadron->id() == ParticleID::pomeron && pomeronStructure==1) ||
+	     hadron->id() == ParticleID::reggeon) {
 	    flav[0] =  id;
 	    flav[1] = -id;
 	    extracted = 0;
