@@ -26,8 +26,10 @@ using namespace Herwig;
 
 bool ReggeonPDF::canHandleParticle(tcPDPtr particle) const {
   // Return true if this PDF can handle the extraction of parton from the
-  // given particle ie. if the particle is a proton or neutron.
-  return ( abs(particle->id()) == ParticleID::reggeon );
+  // given particle 
+  if( particle->id() != ParticleID::reggeon ) return false;
+  if( !particle_ ) return true;
+  else return ptrPDF_->canHandle(particle_);
 }
 
 cPDVector ReggeonPDF::partons(tcPDPtr p) const {
@@ -35,37 +37,40 @@ cPDVector ReggeonPDF::partons(tcPDPtr p) const {
   // densities.
   cPDVector ret;
   if ( canHandleParticle(p) ) {
-    ret.push_back(getParticleData( ParticleID::g));
-    ret.push_back(getParticleData( ParticleID::c));
-    ret.push_back(getParticleData( ParticleID::cbar));
-    ret.push_back(getParticleData( ParticleID::u));
-    ret.push_back(getParticleData( ParticleID::ubar));
-    ret.push_back(getParticleData( ParticleID::b));
-    ret.push_back(getParticleData( ParticleID::bbar));
-    ret.push_back(getParticleData( ParticleID::s));
-    ret.push_back(getParticleData( ParticleID::sbar));
+    p = particle_;
+    if(!particle_) {
+      p = getParticleData(particleID_);
+      if(!p) throw SetupException() 
+	       << "No ParticleData object for particle with PDG code " 
+	       << particleID_ << " in ReggeonPDF::partons()"
+	       << Exception::runerror;
+    }
+    ret = ptrPDF_->partons(p);
   }
   return ret;
 }
 
-double ReggeonPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
+double ReggeonPDF::xfx(tcPDPtr , tcPDPtr parton, Energy2 qq,
 		       double x, double, Energy2) const {
-  return ptrPDF_->xfx(particle, parton, qq ,x);
+  return ptrPDF_->xfx(particle_, parton, qq ,x);
 }
 
-double ReggeonPDF::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
+double ReggeonPDF::xfvx(tcPDPtr , tcPDPtr parton, Energy2 qq,
 			double x, double, Energy2) const {
-  return ptrPDF_->xfvx(particle, parton, qq ,x);
+  return ptrPDF_->xfvx(particle_, parton, qq ,x);
 }
-
 
 void ReggeonPDF::doinit() {
   PDFBase::doinit();
+  particle_ = getParticleData(particleID_);
+  if(!particle_) throw SetupException() 
+		   << "No ParticleData object for particle with PDG code " 
+		   << particleID_ << " in ReggeonPDF::doinit()"
+		   << Exception::runerror;
 }
 
 ClassDescription<ReggeonPDF> ReggeonPDF::initReggeonPDF; 
 // Definition of the static class description member.
-
 
 void ReggeonPDF::Init(){
 
@@ -76,6 +81,12 @@ void ReggeonPDF::Init(){
     ("PDF",
      "The PDf object to use for the underyling PDF",
      &ReggeonPDF::ptrPDF_, false, false, true, false, false);
+
+  static Parameter<ReggeonPDF,long> interfaceParticleID
+    ("ParticleID",
+     "PDG code for the particle used to mimic the reggeon in the underlying PDF.",
+     &ReggeonPDF::particleID_, 111, -1000000, 1000000,
+     false, false, Interface::limited);
  
 }
 
@@ -88,9 +99,9 @@ IBPtr ReggeonPDF::fullclone() const {
 }
 
 void ReggeonPDF::persistentOutput(PersistentOStream & os) const {
-  os << ptrPDF_ ;
+  os << ptrPDF_ << particle_ << particleID_;
 }
 
 void ReggeonPDF::persistentInput(PersistentIStream & is, int) {
-  is >> ptrPDF_;
+  is >> ptrPDF_ >> particle_ >> particleID_;
 }

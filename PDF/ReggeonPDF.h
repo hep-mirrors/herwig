@@ -32,6 +32,11 @@ class ReggeonPDF : public PDFBase {
 
 public:
 
+  /**
+   *  Default constructor
+   */
+  ReggeonPDF() : particleID_(111) {}
+
   /** @name Virtual functions from PDFBase */
   //@{
   /**
@@ -150,6 +155,16 @@ private:
    * Pointer to the concrete PDF reggeon structure function. 
    */
   PDFPtr ptrPDF_;
+
+  /**
+   *  PDG code for the particle
+   */
+  long particleID_;
+
+  /**
+   *  Pointer to the particle
+   */
+  PDPtr particle_;
 
 };
 
