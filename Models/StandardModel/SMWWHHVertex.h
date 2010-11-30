@@ -17,15 +17,15 @@ using namespace ThePEG;
  * @see \ref SMWWHHVertexInterfaces "The interfaces"
  * defined for SMWWHHVertex.
  */
-  class SMWWHHVertex: public Helicity::VVSSVertex {
+class SMWWHHVertex: public Helicity::VVSSVertex {
 
 public:
-
+  
   /**
    * The default constructor.
    */
   SMWWHHVertex();
-
+  
   /**
    * Calculate the couplings.
    * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
@@ -36,7 +36,7 @@ public:
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
 			   tcPDPtr part4);
-
+  
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -97,30 +97,30 @@ private:
    * Indicates that this is a concrete class with persistent data.
    */
   static ClassDescription<SMWWHHVertex> initSMWWHHVertex;
-
+  
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SMWWHHVertex & operator=(const SMWWHHVertex &);
-
+  
 private:
-
+  
   /**
    *  ratio of masses
    */
-    double ratio_;
-
+  double ratio_;
+  
   /**
    *  The last value of the electroweak coupling calculated.
    */
   Complex couplast_;
-
+  
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
   Energy2 q2last_;
-
+  
 };
 
 }
