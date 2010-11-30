@@ -46,8 +46,10 @@ double PomeronFlux::xfl(tcPDPtr, tcPDPtr parton, Energy2 qq,
     return normP_*qq*exp(-(betaP_ + 2.*alfapP_*l)*qq + 2.*(alfa0P_ - 1)*l);
   else if(parton->id()==ParticleID::reggeon)
     return nR_*normR_*qq*exp(-(betaR_ + 2.*alfapR_*l)*qq + 2.*(alfa0R_ - 1)*l);
-  else 
+  else {
     assert(false);
+    return 0.;
+  }
 }
 
 double PomeronFlux::xfvl(tcPDPtr, tcPDPtr, Energy2, double,
@@ -174,21 +176,24 @@ double PomeronFlux::flattenScale(tcPDPtr proton, tcPDPtr parton, const PDFCuts &
 double PomeronFlux::flattenL(tcPDPtr, tcPDPtr parton, const PDFCuts & c,
 			     double z, double & jacobian) const { 
   if(parton->id()==ParticleID::pomeron) {
-                      jacobian *= c.lMax() - c.lMin();
-                      return c.lMin() + z*(c.lMax() - c.lMin());
-                                        }
-   else if(parton->id()==ParticleID::reggeon) {
-     double k = 2.*(alfa0R_ - 1.);
-     double rho =exp(k*c.lMin()) + z*(exp(k*c.lMax()) - exp(k*c.lMin()));
-     jacobian *= (exp(k*c.lMax()) - exp(k*c.lMin()))/(rho*k);
-     return log(rho)/k;
-                                             }
-  else assert(false);
+    jacobian *= c.lMax() - c.lMin();
+    return c.lMin() + z*(c.lMax() - c.lMin());
+  }
+  else if(parton->id()==ParticleID::reggeon) {
+    double k = 2.*(alfa0R_ - 1.);
+    double rho =exp(k*c.lMin()) + z*(exp(k*c.lMax()) - exp(k*c.lMin()));
+    jacobian *= (exp(k*c.lMax()) - exp(k*c.lMin()))/(rho*k);
+    return log(rho)/k;
+  }
+  else {
+    assert(false);
+    return 0.;
+  }
 }
 
-Energy2 PomeronFlux::intxFx(double x, Energy2 qqmin, Energy2 qqmax
-			    ,double alfa0, InvEnergy2 alfap,  InvEnergy2 beta) const {
- InvEnergy2 k =  beta - 2.*log(x)*alfap;
+Energy2 PomeronFlux::intxFx(double x, Energy2 qqmin, Energy2 qqmax,
+			    double alfa0, InvEnergy2 alfap,  InvEnergy2 beta) const {
+  InvEnergy2 k =  beta - 2.*log(x)*alfap;
   return exp(-2.*(alfa0 - 1.)*log(x))*(exp(-qqmin*k) - exp(-qqmax*k))/k;
 }
 
