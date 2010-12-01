@@ -26,7 +26,8 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # CDF jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2005_S6217184
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8057893
+# not ready
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8057893
 # CDF inclusive jet kt
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2007_S7057202
 # CDF inclusive jet cone
