@@ -1437,9 +1437,14 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
   showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,!hard,hardTree->interaction(),true);
   // inverse reconstruction
-  showerModel()->kinematicsReconstructor()->
-    deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
-			hardTree->interaction());
+  if(hard)
+    showerModel()->kinematicsReconstructor()->
+      deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			  hardTree->interaction());
+  else
+    showerModel()->kinematicsReconstructor()->
+      deconstructDecayJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			   hardTree->interaction());
   // now reset the momenta of the showering particles
   vector<ShowerProgenitorPtr> particlesToShower;
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
