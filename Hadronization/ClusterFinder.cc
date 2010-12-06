@@ -271,7 +271,16 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     tcPDPtr temp1  = vec[1]->dataPtr();
     tcPDPtr temp2  = vec[2]->dataPtr();
 
-   tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    
+    if(!dataDiquark) 
+      throw Exception() << "Could not make a diquark from"
+			<< temp1->PDGName() << " and "
+			<< temp2->PDGName() 
+			<< " in ClusterFinder::reduceToTwoComponents()"
+			<< Exception::eventerror;
+   
+
     // Create the new cluster (with two components) and assign to it the same
     // momentum and position of the original (with three components) one.
     // Furthermore, assign to the diquark component a momentum given by the
