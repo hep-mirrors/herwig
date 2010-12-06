@@ -181,6 +181,11 @@ protected:
 		      bool first=false) const = 0;
 
   /**
+   *  The value of the LO matrix element for the current point
+   */
+  double loWeight() const {return loME_;}
+
+  /**
    * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
    * inheriting classes. 
    * @param particles The ParticleData objects of the particles

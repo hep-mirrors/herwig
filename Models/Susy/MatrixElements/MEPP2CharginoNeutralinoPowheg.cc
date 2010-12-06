@@ -179,7 +179,6 @@ void MEPP2CharginoNeutralinoPowheg::Init() {
     ("Process",
      "Which processes to generate",
      &MEPP2CharginoNeutralinoPowheg::process_, 0, false, false);
-
   static SwitchOption interfaceProcessAllWm
     (interfaceProcess,
      "All",
@@ -300,6 +299,7 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   output.eps2 = -2;
   output.eps1 = -3;
   output.finite =-8.+sqr(Constants::pi);
+  output.finite *= loWeight();
   return output;
 }
 

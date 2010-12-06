@@ -73,7 +73,7 @@ void MEPP2CharginoCharginoPowheg::getDiagrams() const {
 
     for(unsigned int ix=0;ix<2;++ix){
       for(unsigned int jx=0;jx<2;++jx){
-	if(process_==0 || process_==2*ix+jx+1){
+	if(process_==0 || process_== 2*ix+jx+1 ){
 	  // Z-mediated s-channel
 	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_,
 		       3, chi[ix], 3, chib[jx], -1)));
@@ -145,7 +145,6 @@ void MEPP2CharginoCharginoPowheg::Init() {
     ("Process",
      "Which processes to generate",
      &MEPP2CharginoCharginoPowheg::process_, 0, false, false);
-
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -199,6 +198,7 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   output.eps2 = -2;
   output.eps1 = -3;
   output.finite =-8.+sqr(Constants::pi);
+  output.finite *= loWeight();
   return output;
 }
 
@@ -473,7 +473,7 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
   return 0.5*output/norm(FFGVertex_->norm());
 }
 
-void MEPP2CharginoCharginoPowheg::constructVertex(tSubProPtr sub) {
+void MEPP2CharginoCharginoPowheg::constructVertex(tSubProPtr ) {
 //   //get particles
 //   ParticleVector ext(4);
 //   ext[0] = sub->incoming().first;

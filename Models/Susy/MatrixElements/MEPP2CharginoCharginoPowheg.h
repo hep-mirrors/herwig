@@ -27,15 +27,10 @@ class MEPP2CharginoCharginoPowheg: public NLODrellYanBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MEPP2CharginoCharginoPowheg();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{

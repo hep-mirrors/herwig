@@ -333,7 +333,7 @@ double NLODrellYanBase::NLOWeight() const {
     subtractedReal(x,z.second,zJac.second, 
 		   oldqPDF.second,newqPDF.second,newgPDF.second,false);
   // add up all the terms and return the answer
-  double wgt = loME_*( 1. + virt + coll ) +real1[0] + real1[2] +real2[0] +real2[2];
+  double wgt = loME_*( 1. + coll ) + virt + real1[0] + real1[2] + real2[0] + real2[2];
   if(isnan(wgt)||isinf(wgt)) {
     generator()->log() << "testing bad weight "
 	 << collQQ << " " << collQbarQbar << " "

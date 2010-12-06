@@ -14,6 +14,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "SusyLoopIntegral.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -205,10 +206,35 @@ MEPP2gZ2SleptonsPowheg::diagrams(const DiagramVector & diags) const {
 }
 
 NLODrellYanBase::Singular MEPP2gZ2SleptonsPowheg::virtualME() const {
+  // singular pieces of the output
   Singular output;
   output.eps2 = -2;
   output.eps1 = -3;
-  output.finite =-8.+sqr(Constants::pi);
+  // cut-off parameter
+  Energy2 eps = 0.1*MeV2;
+  // average of outgoing masses
+  Energy2 mav2 = 0.25*sqr(meMomenta()[2].mass()+meMomenta()[3].mass());
+  // renormalisation/factorization scale
+  Energy2 scale2 = scale();
+  // gluino mass
+  Energy mg  = getParticleData(ParticleID::SUSY_g)->mass();
+  Energy2 mg2(sqr(mg));
+  // average of left/right squark masses
+  Energy  ms = 0.5*(getParticleData(1000000+mePartonData()[0]->id())->mass()+
+		    getParticleData(2000000+mePartonData()[0]->id())->mass());
+  Energy2 ms2(sqr(ms));
+  // the finite piece
+  output.finite = -3.*log(sHat()/mav2) + sqr(log(sHat()/mav2))
+    - sqr(log(sHat()/scale2)) + sqr(Constants::pi) -1.
+    +(1.+2.*(mg2-ms2)/sHat())*(SusyLoopIntegral::B0 (sHat(),ms    ,ms    ,scale2)-
+			       SusyLoopIntegral::B0 (ZERO  ,mg    ,ms    ,scale2))
+    -3.*SusyLoopIntegral::B0 (sHat(),ZERO  ,ZERO  ,scale2)
+    -   SusyLoopIntegral::B0P(ZERO  ,mg    ,ms    ,scale2)*(mg2-ms2)
+    +2.*real(SusyLoopIntegral::C0 (eps,eps,sHat(),ms,mg,ms))*
+    (sqr(ms2-mg2)/sHat() + mg2);
+  // QCD only piece for testing
+  //output.finite =-8.+sqr(Constants::pi);
+  output.finite *= loWeight();
   return output;
 }
 
@@ -305,12 +331,8 @@ double MEPP2gZ2SleptonsPowheg::realME(const cPDVector & particles,
       gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
     }
   }
-  else {
-    for(unsigned int ix=0;ix<particles.size();++ix) {
-      cerr << particles[ix]->PDGName() << " " << momenta[ix]/GeV << "\n";
-    }
+  else 
     assert(false);
-  }
   // wavefunctions for the scalars 
   ScalarWaveFunction sca1(momenta[2], particles[2],Complex(1.), outgoing);
   ScalarWaveFunction sca2(momenta[3], particles[3],Complex(1.), outgoing);

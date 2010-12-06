@@ -25,6 +25,8 @@ using namespace ThePEG;
  */
 class SusyLoopIntegral {
 
+public:
+
   /**
    *  The \fB_0\f$ function
    */
@@ -56,6 +58,8 @@ class SusyLoopIntegral {
     Energy m1 = sqrt(m12),m2 = sqrt(m22),m3 = sqrt(m32), m4 = sqrt(m42);
     return real( D0(p1,p2,p3,p4,p12,p23,m1,m2,m3,m4) );
   }
+
+private:
 
   static complex<InvEnergy4> D0(Energy2 p1,Energy2 p2,Energy2 p3,Energy2 p4,
 				Energy2 p12,Energy2 p23,

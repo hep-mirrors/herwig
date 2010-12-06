@@ -215,6 +215,7 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   output.eps2 = -2;
   output.eps1 = -3;
   output.finite =-8.+sqr(Constants::pi);
+  output.finite *= loWeight();
   return output;
 }
 
