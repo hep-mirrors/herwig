@@ -138,7 +138,7 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W
 	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Z-e.aida; \
-	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Powheg-Z-e.aida; 
+	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Powheg-Run-II-Z-e.aida; 
 	rm -rf Rivet-TVT-WZ
 	python/merge-aida TVT-Run-II-W.aida TVT-Run-II-Z-{e,mu}.aida\
                           TVT-Run-I-{W,Z,WZ}.aida -o TVT-WZ.aida
