@@ -245,7 +245,7 @@ double NLODrellYanBase::subtractedVirtual() const {
   Ieps.finite = -sqr(Constants::pi)/3.;
   // check the singular pieces cancel
   assert(Ieps.eps2==-virt.eps2 && Ieps.eps1 == -virt.eps1 );
-  return virt.finite+Ieps.finite;
+  return virt.finite+Ieps.finite*loWeight();
 }
 
 double NLODrellYanBase::NLOWeight() const {
