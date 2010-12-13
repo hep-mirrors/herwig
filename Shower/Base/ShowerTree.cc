@@ -35,7 +35,6 @@ void findBeam(tPPtr & beam, PPtr incoming) {
     if(found) break;
     beam = beam->children()[0];
   }
-  assert(!beam->children().empty());
 }
 }
 
