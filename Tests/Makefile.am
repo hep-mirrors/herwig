@@ -170,7 +170,7 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
 	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets-4.aida	
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT--Jets.aida:Hw++
+	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
 Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
             Rivet-Star-Jets-2 Rivet-Star-Jets-3 \
