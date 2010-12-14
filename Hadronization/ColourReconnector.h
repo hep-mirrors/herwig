@@ -30,8 +30,6 @@ using namespace ThePEG;
  *  reconnection is actually accepted, then the previous collections of "usual"
  *  clusters is first deleted and then the new one is created.
  *
- *  Note: by default this class does nothing. It can be inherited and overridden
- *  in future hadronization models.
  * * @see \ref ColourReconnectorInterfaces "The interfaces"
  * defined for ColourReconnector.
  */
@@ -114,6 +112,45 @@ private:
    * Do we do colour reconnections?
    */
   int _clreco;
+
+  /**
+   * Probability that a found reconnection possibility is actually accepted.
+   */
+  double _preco;
+
+
+private:
+
+  /** Returns the Cluster (within the ClusterVector cv) where the sum of the
+   * invariant Cluster masses becomes minimal in the case of a colour
+   * reconnection with cl. If no reconnection partner can be found, a pointer to
+   * the original Cluster cl is returned.
+   */
+  ClusterPtr _findRecoPartner(ClusterPtr cl, ClusterVector cv) const;
+
+  /**
+   * @return 	the anticoloured constituent of a cluster, i.e. an antiquark or
+   * 		a diquark
+   */
+  tPPtr _getAnti3(ClusterPtr cl) const;
+
+  /**
+   * @return 	the coloured constituent of a cluster, i.e. a quark or an
+   * 		antidiquark
+   */
+  tPPtr _get3(ClusterPtr cl) const;
+
+  /**
+   * @return	true, if the the two partons are splitting products of the same
+   * 		gluon
+   */
+  bool _isColour8(tPPtr p1, tPPtr p2) const;
+
+  /** Reconnects the constituents of the given clusters to the (only)other
+   * possible cluster combination.
+   */
+  pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr c1, ClusterPtr c2) const;
+
 };
 
 

@@ -63,6 +63,11 @@ using namespace ThePEG;
 class Cluster : public Particle {
   
 public:
+
+  /**
+   * ColourReconnector needs access to the _original constituents.
+   */
+  friend class ColourReconnector;
   
   /** @name Standard constructors and destructors. */
   //@{
