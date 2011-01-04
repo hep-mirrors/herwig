@@ -240,9 +240,9 @@ void ShowerHandler::cascade() {
   }
   // if a non-hadron collision return (both incoming non-hadronic)
   if( ( !incomingBins.first||
-        !HadronMatcher::Check(incomingBins.first ->particle()->data()))&&
+        !isResolvedHadron(incomingBins.first ->particle()))&&
       ( !incomingBins.second||
-        !HadronMatcher::Check(incomingBins.second->particle()->data()))) {
+        !isResolvedHadron(incomingBins.second->particle()))) {
     // boost back to lab if needed
     if(btotal) boostCollision(true);
     // unset the current ShowerHandler
@@ -533,8 +533,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   decay_.clear();
   done_.clear();
   // non hadronic case return
-  if (!HadronMatcher::Check(incoming_.first ->data()) && 
-      !HadronMatcher::Check(incoming_.second->data()) )
+  if (!isResolvedHadron(incoming_.first ) && 
+      !isResolvedHadron(incoming_.second) )
     return incoming_;
   // remake the remnants (needs to be after the colours are sorted
   //                       out in the insertion into the event record)
@@ -655,7 +655,7 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
 
 namespace {
 
-void addChildren(tPPtr in,set<tPPtr> particles) {
+void addChildren(tPPtr in,set<tPPtr> & particles) {
   particles.insert(in);
   for(unsigned int ix=0;ix<in->children().size();++ix)
     addChildren(in->children()[ix],particles);
@@ -706,6 +706,14 @@ void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
 
   // reset the PDFs stored in the base class
   resetPDFs(newpdf);
+}
+
+bool ShowerHandler::isResolvedHadron(tPPtr particle) {
+  if(!HadronMatcher::Check(particle->data())) return false;
+  for(unsigned int ix=0;ix<particle->children().size();++ix) {
+    if(particle->children()[ix]->id()==ExtraParticleID::Remnant) return true;
+  }
+  return false;
 }
 
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {

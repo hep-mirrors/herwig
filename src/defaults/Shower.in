@@ -159,7 +159,6 @@ do SplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
-do SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
 #
 do SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #
@@ -168,17 +167,14 @@ do SplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
 do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
-do SplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
 #
 do SplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
 do SplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
 do SplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
-do SplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
 do SplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
 do SplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
-do SplittingGenerator:AddInitialSplitting tbar->g,tbar; QtoGQSudakov

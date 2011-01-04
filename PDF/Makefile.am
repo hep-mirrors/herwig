@@ -7,6 +7,29 @@ HwMRST_la_LDFLAGS = -module -version-info 6:1:0
 
 EXTRA_DIST = mrst
 
+pkglib_LTLIBRARIES += HwPomeronPDF.la
+HwPomeronPDF_la_SOURCES = \
+PomeronPDF.cc PomeronPDF.h 
+## add this to produce tests of the PDFs
+## HwDIFFRACTIVEPDF_la_CPPFLAGS=$(AM_CPPFLAGS) -DDIFFRACTIVEPDF_TESTING
+HwPomeronPDF_la_LDFLAGS = -module -version-info 6:1:0
+
+EXTRA_DIST += pomeronPDF
+
+pkglib_LTLIBRARIES += HwReggeonPDF.la
+HwReggeonPDF_la_SOURCES = \
+ReggeonPDF.cc ReggeonPDF.h 
+## add this to produce tests of the PDFs
+## HwDIFFRACTIVEPDF_la_CPPFLAGS=$(AM_CPPFLAGS) -DDIFFRACTIVEPDF_TESTING
+HwReggeonPDF_la_LDFLAGS = -module -version-info 6:1:0
+
+EXTRA_DIST += reggeonPDF
+
+pkglib_LTLIBRARIES += HwPomeronFlux.la
+HwPomeronFlux_la_SOURCES = \
+PomeronFlux.h PomeronFlux.cc
+HwPomeronFlux_la_LDFLAGS = -module -version-info 6:1:0
+
 ## bound into HwShower.la
 noinst_LTLIBRARIES = libHwRemDecayer.la
 libHwRemDecayer_la_SOURCES = \
@@ -33,6 +56,16 @@ HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 3:1:0
 if WANT_LOCAL_PDF
 install-data-local:
 	for i in `find $(srcdir)/mrst -name '*.dat'`; \
+	do \
+	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
+	done
+
+	for i in `find $(srcdir)/diffraction/2006 -name '*.data'`; \
+	do \
+	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
+	done
+
+	for i in `find $(srcdir)/diffraction/2007 -name '*.data'`; \
 	do \
 	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
 	done

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Decay_QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Decay_QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the Decay_QtildaShowerKinematics1to2 class.
+// functions of the Decay_QTildeShowerKinematics1to2 class.
 //
 
-#include "Decay_QtildaShowerKinematics1to2.h"
+#include "Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -19,12 +19,12 @@
 
 using namespace Herwig;
 
-void Decay_QtildaShowerKinematics1to2::
+void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
 	       const ShowerParticleVector & theChildren,
 	       bool angularOrder ) const {
   if(theChildren.size() != 2)
-    throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
+    throw Exception() <<  "Decay_QTildeShowerKinematics1to2::updateChildren() " 
  		      << "Warning! too many children!" << Exception::eventerror;
   // copy scales etc
   Energy dqtilde = scale();
@@ -70,13 +70,13 @@ updateChildren(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[1]);
 }
 
-void Decay_QtildaShowerKinematics1to2::
+void Decay_QTildeShowerKinematics1to2::
 reconstructParent( const tShowerParticlePtr, const ParticleVector &) const {
-  throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
+  throw Exception() << "Decay_QTildeShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }
 
-void Decay_QtildaShowerKinematics1to2::
+void Decay_QTildeShowerKinematics1to2::
 reconstructLast(const tShowerParticlePtr theLast,
 		unsigned int iopt,Energy mass) const {
   // set beta component and consequently all missing data from that,
@@ -93,7 +93,7 @@ reconstructLast(const tShowerParticlePtr theLast,
 					    theLast->showerVariables()[1],iopt));
 }
 
-void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
+void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   Lorentz5Momentum p, n, ppartner, pcm;
   assert(particle.perturbative()!=1);
   // this is for the initial decaying particle

@@ -1,20 +1,20 @@
 // -*- C++ -*-
 //
-// QtildaShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_QtildaShowerKinematics1to2_H
-#define HERWIG_QtildaShowerKinematics1to2_H
+#ifndef HERWIG_QTildeShowerKinematics1to2_H
+#define HERWIG_QTildeShowerKinematics1to2_H
 //
-// This is the declaration of the QtildaShowerKinematics1to2 class.
+// This is the declaration of the QTildeShowerKinematics1to2 class.
 //
 
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
-#include "QtildaShowerKinematics1to2.fh"
+#include "QTildeShowerKinematics1to2.fh"
 
 namespace Herwig {
 
@@ -27,11 +27,11 @@ using namespace ThePEG;
  *  the choice of \f$\tilde{q}\f$ as evolution variable.
  *
  *  @see ShowerKinematics
- *  @see IS_QtildaShowerKinematics1to2
- *  @see FS_QtildaShowerKinematics1to2
+ *  @see IS_QTildeShowerKinematics1to2
+ *  @see FS_QTildeShowerKinematics1to2
  *  @see KinematicsReconstructor
  */ 
-class QtildaShowerKinematics1to2: public ShowerKinematics {
+class QTildeShowerKinematics1to2: public ShowerKinematics {
 
 public:
 
@@ -87,7 +87,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtildaShowerKinematics1to2 & operator=(const QtildaShowerKinematics1to2 &);
+  QTildeShowerKinematics1to2 & operator=(const QTildeShowerKinematics1to2 &);
 
 private:
 
@@ -105,4 +105,4 @@ private:
 
 }
 
-#endif /* HERWIG_QtildaShowerKinematics1to2_H */
+#endif /* HERWIG_QTildeShowerKinematics1to2_H */

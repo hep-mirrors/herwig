@@ -17,9 +17,9 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/Decay_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 
 using namespace Herwig;
 
@@ -351,7 +351,7 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 
 ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
 						   double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
@@ -362,7 +362,7 @@ ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
 
 ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(IS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
@@ -373,7 +373,7 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 
 ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+  ShoKinPtr  showerKin = new_ptr(Decay_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);

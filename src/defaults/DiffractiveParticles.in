@@ -1,3 +1,6 @@
 # for MEMinBias:
-create ThePEG::ParticleData pomeron 
+create ThePEG::BeamParticleData pomeron 
 setup pomeron 990 pomeron 0.0 0.0 0.0 0.0 0 0 0 1
+
+create ThePEG::BeamParticleData reggeon 
+setup reggeon 110 reggeon 0.0 0.0 0.0 0.0 0 0 0 1

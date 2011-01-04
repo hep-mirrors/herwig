@@ -547,6 +547,7 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
     }
     else if (idout[ix]==ParticleID::eta) {
       imode=4;
+      break;
     }
   }
   if(nkaon==2) imode=3;

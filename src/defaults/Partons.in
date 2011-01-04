@@ -8,6 +8,7 @@ set NoPDF:RemnantHandler NoRemnants
 create ThePEG::UnResolvedRemnant LeptonRemnants UnResolvedRemnant.so
 
 create Herwig::HwRemDecayer RemnantDecayer HwShower.so
+set RemnantDecayer:PomeronStructure Gluon
 
 create ThePEG::SoftRemnantHandler HadronRemnants
 set HadronRemnants:RemnantDecayer RemnantDecayer

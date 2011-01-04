@@ -239,6 +239,11 @@ protected:
    */
   void boostCollision(bool boost);
 
+  /**
+   *  Is a beam particle where hadronic structure is resolved
+   */
+  bool isResolvedHadron(tPPtr);
+
 protected:
 
   /** @name Standard Interfaced functions. */

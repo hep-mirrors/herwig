@@ -1147,9 +1147,6 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       }
     return true;
   }
-
-
-
 }
 
 vector<unsigned int> QTildeReconstructor::
@@ -1175,6 +1172,43 @@ findPartners(unsigned int iloc ,
       if(jets[iloc]->progenitor()->antiColourLine() &&
 	 jets[iloc]->progenitor()->antiColourLine() == jets[iy]->progenitor()->colourLine())
 	isPartner = true;
+    }
+    // special for sources/sinks
+    if(jets[iloc]->progenitor()->colourLine()) {
+      if(jets[iloc]->progenitor()->colourLine()->sourceNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sourceNeighbours();
+	if(lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+	   lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine()) 
+	  isPartner = true;
+      }
+      if(jets[iloc]->progenitor()->colourLine()->sinkNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sinkNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
+    }
+    if(jets[iloc]->progenitor()->antiColourLine()) {
+      if(jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
+      if(jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
     }
     if(isPartner) output.push_back(iy);
   }

@@ -85,9 +85,9 @@ HerwigRun::HerwigRun(int argc, char **argv)
     else if ( arg.substr(0,2) == "-L" )
       DynamicLoader::prependPath(arg.substr(2));
     else if ( arg == "-d" ) 
-      Debug::level = atoi(argv[++iarg]);
+      Debug::setDebug(atoi(argv[++iarg]));
     else if ( arg.substr(0,2) == "-d" )
-      Debug::level = atoi(arg.substr(2).c_str());
+      Debug::setDebug(atoi(arg.substr(2).c_str()));
     else if ( arg == "--exitonerror" ) 
       Repository::exitOnError() = 1;
     else if ( arg == "-h" || arg == "--help" ) {

@@ -22,12 +22,30 @@ using namespace ThePEG;
 
 set<long> ShowerTree::_decayInShower = set<long>();
 
+namespace {
+void findBeam(tPPtr & beam, PPtr incoming) {
+  while(!beam->children().empty()) {
+    bool found=false;
+    for(unsigned int ix=0;ix<beam->children().size();++ix) {
+      if(beam->children()[ix]==incoming) {
+	found = true;
+	break;
+      }
+    }
+    if(found) break;
+    beam = beam->children()[0];
+  }
+}
+}
+
 // constructor from hard process
 ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
 		       ShowerDecayMap& decay) 
   : _hardMECorrection(false), _wasHard(true),
     _parent(), _hasShowered(false) {
   tPPair beam = CurrentGenerator::current().currentEvent()->incoming();
+  findBeam(beam.first ,incoming.first );
+  findBeam(beam.second,incoming.second);
   _incoming = incoming;
   double x1(_incoming.first ->momentum().rho()/beam.first ->momentum().rho());
   double x2(_incoming.second->momentum().rho()/beam.second->momentum().rho());

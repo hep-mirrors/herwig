@@ -1,0 +1,623 @@
+#! /usr/bin/env python
+import lighthisto
+import logging
+import sys
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+import os, copy, re
+from math import sqrt
+
+## Try to load faster but non-standard cElementTree module
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    try:
+        import cElementTree as ET
+    except ImportError:
+        try:
+            import xml.etree.ElementTree as ET
+        except:
+            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
+            sys.exit(1)
+
+
+
+# #############################################
+
+def fillAbove(desthisto, sourcehistosbyptmin):
+    for i,b in enumerate(desthisto.getBins()):
+        ## Fill bins with pT-ordered histos (so that 'highest always wins')
+        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
+            newb = h.getBin(i)
+            if newb.xlow <= float(ptmin) and newb.xhigh >=float(ptmin):
+                b.yval =  newb.yval
+                b.yerrplus =  newb.yerrplus
+                b.yerrminus =  newb.yerrminus
+                b.focus= newb.focus
+
+def merge(hpath):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos[hpath])
+    except:
+        pass
+
+def useOne(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)]
+    except:
+        pass
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+
+    ## Prefix used in dat file headers
+    headerprefix = "# "
+
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+# #######################################
+
+aidafiles=["-133.aida","-177.aida","-196.aida","-206.aida","-91.aida" ,\
+           "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
+           "-189.aida","-200.aida","-44.aida" ]
+
+## Get histos
+inhistos = {}
+outhistos={}
+weights = {}
+for f in aidafiles:
+    file = args[0]+f
+    if(file.find("35")>0) :
+        sqrts=35
+    elif(file.find("44")>0) :
+        sqrts=44
+    elif(file.find("91")>0) :
+        sqrts=91
+    elif(file.find("133")>0) :
+        sqrts=133
+    elif(file.find("161")>0) :
+        sqrts=161
+    elif(file.find("172")>0) :
+        sqrts=172
+    elif(file.find("177")>0) :
+        sqrts=177
+    elif(file.find("183")>0) :
+        sqrts=183
+    elif(file.find("189")>0) :
+        sqrts=189
+    elif(file.find("196")>0) :
+        sqrts=196
+    elif(file.find("197")>0) :
+        sqrts=197
+    elif(file.find("200")>0) :
+        sqrts=200
+    elif(file.find("206")>0) :
+        sqrts=206
+
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        tree = ET.parse(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    tree = ET.parse(file)
+    ## Get histos from this AIDA file
+    for dps in tree.findall("dataPointSet"):
+        h = lighthisto.Histo.fromDPS(dps)
+        # di-jet decorrelations
+        # jet shapes
+        if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or h.fullPath().find("5765862")>0) :
+           if not inhistos.has_key(h.fullPath()):
+               inhistos[h.fullPath()] = {}
+           tmpE = inhistos[h.fullPath()]
+           if not tmpE.has_key(sqrts):
+               tmpE[sqrts] = h
+           else:
+                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+        elif(h.fullPath().find("4553896")>0 or h.fullPath().find("MULTIPLICITIES")>0 or
+             h.fullPath().find("2435284")>0 or h.fullPath().find("3486095")>0 or
+             h.fullPath().find("3430090")>0 or h.fullPath().find("3137023")>0 or
+             h.fullPath().find("3780481")>0 or h.fullPath().find("WUD_03_11")>0 or
+             h.fullPath().find("CONF-603")>0) :
+            outhistos[h.fullPath()] = h
+
+## Make empty output histos if needed
+for hpath,hsets in inhistos.iteritems():
+    if( h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or h.fullPath().find("5765862")>0) :
+        workhisto = copy.deepcopy(hsets.values()[0])
+        outhistos[hpath] = workhisto
+        ## Empty the bin set for histos which we're going to merge
+        for b in outhistos[hpath]:
+            b.yval = 0
+            b.yerrplus = 0
+            b.yerrminus = 0
+            b.focus= None
+
+useOne("/JADE_OPAL_2000_S4300807/d07-x01-y01","35")
+useOne("/JADE_OPAL_2000_S4300807/d07-x01-y02","35")
+useOne("/JADE_OPAL_2000_S4300807/d07-x01-y03","35")
+useOne("/JADE_OPAL_2000_S4300807/d07-x01-y04","35")
+useOne("/JADE_OPAL_2000_S4300807/d07-x01-y05","35")
+useOne("/JADE_OPAL_2000_S4300807/d08-x01-y01","44")
+useOne("/JADE_OPAL_2000_S4300807/d08-x01-y02","44")
+useOne("/JADE_OPAL_2000_S4300807/d08-x01-y03","44")
+useOne("/JADE_OPAL_2000_S4300807/d08-x01-y04","44")
+useOne("/JADE_OPAL_2000_S4300807/d08-x01-y05","44")
+useOne("/JADE_OPAL_2000_S4300807/d09-x01-y01","91")
+useOne("/JADE_OPAL_2000_S4300807/d09-x01-y02","91")
+useOne("/JADE_OPAL_2000_S4300807/d09-x01-y03","91")
+useOne("/JADE_OPAL_2000_S4300807/d09-x01-y04","91")
+useOne("/JADE_OPAL_2000_S4300807/d09-x01-y05","91")
+useOne("/JADE_OPAL_2000_S4300807/d10-x01-y01","133")
+useOne("/JADE_OPAL_2000_S4300807/d10-x01-y02","133")
+useOne("/JADE_OPAL_2000_S4300807/d10-x01-y03","133")
+useOne("/JADE_OPAL_2000_S4300807/d10-x01-y04","133")
+useOne("/JADE_OPAL_2000_S4300807/d10-x01-y05","133")
+useOne("/JADE_OPAL_2000_S4300807/d11-x01-y01","161")
+useOne("/JADE_OPAL_2000_S4300807/d11-x01-y02","161")
+useOne("/JADE_OPAL_2000_S4300807/d11-x01-y03","161")
+useOne("/JADE_OPAL_2000_S4300807/d11-x01-y04","161")
+useOne("/JADE_OPAL_2000_S4300807/d11-x01-y05","161")
+useOne("/JADE_OPAL_2000_S4300807/d12-x01-y01","172")
+useOne("/JADE_OPAL_2000_S4300807/d12-x01-y02","172")
+useOne("/JADE_OPAL_2000_S4300807/d12-x01-y03","172")
+useOne("/JADE_OPAL_2000_S4300807/d12-x01-y04","172")
+useOne("/JADE_OPAL_2000_S4300807/d12-x01-y05","172")
+useOne("/JADE_OPAL_2000_S4300807/d13-x01-y01","183")
+useOne("/JADE_OPAL_2000_S4300807/d13-x01-y02","183")
+useOne("/JADE_OPAL_2000_S4300807/d13-x01-y03","183")
+useOne("/JADE_OPAL_2000_S4300807/d13-x01-y04","183")
+useOne("/JADE_OPAL_2000_S4300807/d13-x01-y05","183")
+useOne("/JADE_OPAL_2000_S4300807/d14-x01-y01","189")
+useOne("/JADE_OPAL_2000_S4300807/d14-x01-y02","189")
+useOne("/JADE_OPAL_2000_S4300807/d14-x01-y03","189")
+useOne("/JADE_OPAL_2000_S4300807/d14-x01-y04","189")
+useOne("/JADE_OPAL_2000_S4300807/d14-x01-y05","189")
+useOne("/JADE_OPAL_2000_S4300807/d16-x01-y01","35") 
+useOne("/JADE_OPAL_2000_S4300807/d16-x01-y02","35") 
+useOne("/JADE_OPAL_2000_S4300807/d16-x01-y03","35") 
+useOne("/JADE_OPAL_2000_S4300807/d16-x01-y04","35") 
+useOne("/JADE_OPAL_2000_S4300807/d16-x01-y05","35") 
+useOne("/JADE_OPAL_2000_S4300807/d17-x01-y01","44") 
+useOne("/JADE_OPAL_2000_S4300807/d17-x01-y02","44") 
+useOne("/JADE_OPAL_2000_S4300807/d17-x01-y03","44") 
+useOne("/JADE_OPAL_2000_S4300807/d17-x01-y04","44") 
+useOne("/JADE_OPAL_2000_S4300807/d17-x01-y05","44") 
+useOne("/JADE_OPAL_2000_S4300807/d18-x01-y01","91") 
+useOne("/JADE_OPAL_2000_S4300807/d18-x01-y02","91") 
+useOne("/JADE_OPAL_2000_S4300807/d18-x01-y03","91") 
+useOne("/JADE_OPAL_2000_S4300807/d18-x01-y04","91") 
+useOne("/JADE_OPAL_2000_S4300807/d18-x01-y05","91") 
+useOne("/JADE_OPAL_2000_S4300807/d19-x01-y01","133")
+useOne("/JADE_OPAL_2000_S4300807/d19-x01-y02","133")
+useOne("/JADE_OPAL_2000_S4300807/d19-x01-y03","133")
+useOne("/JADE_OPAL_2000_S4300807/d19-x01-y04","133")
+useOne("/JADE_OPAL_2000_S4300807/d19-x01-y05","133")
+useOne("/JADE_OPAL_2000_S4300807/d20-x01-y01","161")
+useOne("/JADE_OPAL_2000_S4300807/d20-x01-y02","161")
+useOne("/JADE_OPAL_2000_S4300807/d20-x01-y03","161")
+useOne("/JADE_OPAL_2000_S4300807/d20-x01-y04","161")
+useOne("/JADE_OPAL_2000_S4300807/d20-x01-y05","161")
+useOne("/JADE_OPAL_2000_S4300807/d21-x01-y01","172")
+useOne("/JADE_OPAL_2000_S4300807/d21-x01-y02","172")
+useOne("/JADE_OPAL_2000_S4300807/d21-x01-y03","172")
+useOne("/JADE_OPAL_2000_S4300807/d21-x01-y04","172")
+useOne("/JADE_OPAL_2000_S4300807/d21-x01-y05","172")
+useOne("/JADE_OPAL_2000_S4300807/d22-x01-y01","183")
+useOne("/JADE_OPAL_2000_S4300807/d22-x01-y02","183")
+useOne("/JADE_OPAL_2000_S4300807/d22-x01-y03","183")
+useOne("/JADE_OPAL_2000_S4300807/d22-x01-y04","183")
+useOne("/JADE_OPAL_2000_S4300807/d22-x01-y05","183")
+useOne("/JADE_OPAL_2000_S4300807/d23-x01-y01","189")
+useOne("/JADE_OPAL_2000_S4300807/d23-x01-y02","189")
+useOne("/JADE_OPAL_2000_S4300807/d23-x01-y03","189")
+useOne("/JADE_OPAL_2000_S4300807/d23-x01-y04","189")
+useOne("/JADE_OPAL_2000_S4300807/d23-x01-y05","189")
+useOne("/JADE_OPAL_2000_S4300807/d24-x01-y01","35")
+useOne("/JADE_OPAL_2000_S4300807/d24-x01-y02","35")
+useOne("/JADE_OPAL_2000_S4300807/d24-x01-y03","35")
+useOne("/JADE_OPAL_2000_S4300807/d24-x01-y04","35")
+useOne("/JADE_OPAL_2000_S4300807/d25-x01-y01","44")
+useOne("/JADE_OPAL_2000_S4300807/d25-x01-y02","44")
+useOne("/JADE_OPAL_2000_S4300807/d25-x01-y03","44")
+useOne("/JADE_OPAL_2000_S4300807/d25-x01-y04","44")
+useOne("/JADE_OPAL_2000_S4300807/d26-x01-y01","91") 
+useOne("/JADE_OPAL_2000_S4300807/d26-x01-y02","91") 
+useOne("/JADE_OPAL_2000_S4300807/d26-x01-y03","91") 
+useOne("/JADE_OPAL_2000_S4300807/d26-x01-y04","91") 
+useOne("/JADE_OPAL_2000_S4300807/d27-x01-y01","133")
+useOne("/JADE_OPAL_2000_S4300807/d27-x01-y02","133")
+useOne("/JADE_OPAL_2000_S4300807/d27-x01-y03","133")
+useOne("/JADE_OPAL_2000_S4300807/d27-x01-y04","133")
+useOne("/JADE_OPAL_2000_S4300807/d28-x01-y01","161")
+useOne("/JADE_OPAL_2000_S4300807/d28-x01-y02","161")
+useOne("/JADE_OPAL_2000_S4300807/d28-x01-y03","161")
+useOne("/JADE_OPAL_2000_S4300807/d28-x01-y04","161")
+useOne("/JADE_OPAL_2000_S4300807/d29-x01-y01","172")
+useOne("/JADE_OPAL_2000_S4300807/d29-x01-y02","172")
+useOne("/JADE_OPAL_2000_S4300807/d29-x01-y03","172")
+useOne("/JADE_OPAL_2000_S4300807/d29-x01-y04","172")
+useOne("/JADE_OPAL_2000_S4300807/d30-x01-y01","183")
+useOne("/JADE_OPAL_2000_S4300807/d30-x01-y02","183")
+useOne("/JADE_OPAL_2000_S4300807/d30-x01-y03","183")
+useOne("/JADE_OPAL_2000_S4300807/d30-x01-y04","183")
+useOne("/JADE_OPAL_2000_S4300807/d31-x01-y01","189")
+useOne("/JADE_OPAL_2000_S4300807/d31-x01-y02","189")
+useOne("/JADE_OPAL_2000_S4300807/d31-x01-y03","189")
+useOne("/JADE_OPAL_2000_S4300807/d31-x01-y04","189")
+
+useOne("/OPAL_2004_S6132243/d01-x01-y01","91")
+useOne("/OPAL_2004_S6132243/d01-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d01-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d01-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d02-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d02-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d02-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d02-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d03-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d03-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d03-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d03-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d04-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d04-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d04-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d04-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d05-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d05-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d05-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d05-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d06-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d06-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d06-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d06-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d07-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d07-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d07-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d07-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d08-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d08-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d08-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d08-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d09-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d09-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d09-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d09-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d10-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d10-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d10-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d10-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d11-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d11-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d11-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d11-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d12-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d12-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d12-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d12-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d13-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d13-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d13-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d13-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d14-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d14-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d14-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d14-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d15-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d15-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d15-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d15-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d16-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d16-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d16-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d16-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d17-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d17-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d17-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d17-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d18-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d18-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d18-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d18-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d19-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d19-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d19-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d19-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d20-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d20-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d20-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d20-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d21-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d21-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d21-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d21-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d22-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d22-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d22-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d22-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d23-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d23-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d23-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d23-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d24-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d24-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d24-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d24-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d25-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d25-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d25-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d25-x01-y04","197")
+useOne("/OPAL_2004_S6132243/d26-x01-y01","91") 
+useOne("/OPAL_2004_S6132243/d26-x01-y02","133")
+useOne("/OPAL_2004_S6132243/d26-x01-y03","177")
+useOne("/OPAL_2004_S6132243/d26-x01-y04","197")
+
+merge("/ALEPH_2004_S5765862/d01-x01-y01")
+useOne("/ALEPH_2004_S5765862/d02-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d03-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d04-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d05-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d06-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d07-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d08-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d09-x01-y01","206")
+
+useOne("/ALEPH_2004_S5765862/d11-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d12-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d13-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d14-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d15-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d16-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d17-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d18-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d19-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d20-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d21-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d22-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d23-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d24-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d25-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d26-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d27-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d28-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d29-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d30-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d31-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d32-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d33-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d34-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d35-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d36-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d37-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d38-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d39-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d40-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d41-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d42-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d43-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d44-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d45-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d46-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d47-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d48-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d49-x01-y01","196")
+useOne("/ALEPH_2004_S5765862/d50-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d51-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d54-x01-y01","91")
+useOne("/ALEPH_2004_S5765862/d55-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d56-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d57-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d58-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d59-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d60-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d61-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d62-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d63-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d64-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d65-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d66-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d67-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d68-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d69-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d70-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d71-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d72-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d73-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d74-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d75-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d76-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d77-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d78-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d79-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d80-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d81-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d82-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d83-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d84-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d85-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d86-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d87-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d88-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d89-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d90-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d91-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d92-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d93-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d94-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d95-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d96-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d97-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d98-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d99-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d100-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d101-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d102-x01-y01","91")
+useOne("/ALEPH_2004_S5765862/d103-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d104-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d105-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d106-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d107-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d108-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d109-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d110-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d111-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d112-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d113-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d114-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d115-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d116-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d117-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d118-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d119-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d120-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d121-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d122-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d123-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d124-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d125-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d126-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d127-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d128-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d129-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d130-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d131-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d132-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d133-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d134-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d135-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d136-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d137-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d138-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d139-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d140-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d141-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d142-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d143-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d144-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d145-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d146-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d147-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d148-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d149-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d150-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d151-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d152-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d153-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d154-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d155-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d156-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d157-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d158-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d159-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d160-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d161-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d162-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d163-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d164-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d165-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d166-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d167-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d168-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d169-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d170-x01-y01","189")
+
+useOne("/ALEPH_2004_S5765862/d172-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d173-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d174-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d175-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d176-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d177-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d178-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d179-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d180-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d181-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d182-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d183-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d184-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d185-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d186-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d187-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d188-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d189-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d190-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d191-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d192-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d193-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d194-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d195-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d196-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d197-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d198-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d199-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d200-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d201-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d202-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d203-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d204-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d205-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d206-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d207-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d208-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d209-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d210-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d211-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d212-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d213-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d214-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d215-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d216-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d217-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d218-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d219-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d220-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d221-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d222-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d223-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d224-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d225-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d226-x01-y01","206")
+useOne("/ALEPH_2004_S5765862/d227-x01-y01","91") 
+useOne("/ALEPH_2004_S5765862/d228-x01-y01","133")
+useOne("/ALEPH_2004_S5765862/d229-x01-y01","161")
+useOne("/ALEPH_2004_S5765862/d230-x01-y01","172")
+useOne("/ALEPH_2004_S5765862/d231-x01-y01","183")
+useOne("/ALEPH_2004_S5765862/d232-x01-y01","189")
+useOne("/ALEPH_2004_S5765862/d233-x01-y01","200")
+useOne("/ALEPH_2004_S5765862/d234-x01-y01","206")
+
+# Choose output file
+name = args[0]+".aida"
+out = open(name, "w")
+## Write out merged histos
+out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
+out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
+out.write('<aida version="3.3">\n')
+out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
+for hpath, h in sorted(outhistos.iteritems()):
+    logging.debug("hpath = %s" % hpath)
+    out.write(h.asAIDA() + "\n\n")
+out.write('</aida>\n')
+
+sys.exit(0)

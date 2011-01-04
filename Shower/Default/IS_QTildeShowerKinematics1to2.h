@@ -1,18 +1,18 @@
 // -*- C++ -*-
 //
-// IS_QtildaShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// IS_QTildeShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_IS_QtildaShowerKinematics1to2_H
-#define HERWIG_IS_QtildaShowerKinematics1to2_H
+#ifndef HERWIG_IS_QTildeShowerKinematics1to2_H
+#define HERWIG_IS_QTildeShowerKinematics1to2_H
 //
-// This is the declaration of the IS_QtildaShowerKinematics1to2 class.
+// This is the declaration of the IS_QTildeShowerKinematics1to2 class.
 //
 
-#include "QtildaShowerKinematics1to2.h"
+#include "QTildeShowerKinematics1to2.h"
 
 namespace Herwig {
 
@@ -23,12 +23,12 @@ using namespace ThePEG;
  *  This (concrete) class provides the specific Intial State shower
  *  kinematics information.
  *
- *  @see QtildaShowerKinematics1to2
- *  @see FS_QtildaShowerKinematics1to2
- *  @see Decay_QtildaShowerKinematics1to2
+ *  @see QTildeShowerKinematics1to2
+ *  @see FS_QTildeShowerKinematics1to2
+ *  @see Decay_QTildeShowerKinematics1to2
  *  @see KinematicsReconstructor
  */
-class IS_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
+class IS_QTildeShowerKinematics1to2: public QTildeShowerKinematics1to2 {
 
 public:
 
@@ -37,7 +37,7 @@ public:
   /**
    *  Construct in terms of the basis states
    */
-  inline IS_QtildaShowerKinematics1to2() {}
+  inline IS_QTildeShowerKinematics1to2() {}
   //@}
 
 public:
@@ -106,10 +106,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IS_QtildaShowerKinematics1to2 & operator=(const IS_QtildaShowerKinematics1to2 &);
+  IS_QTildeShowerKinematics1to2 & operator=(const IS_QTildeShowerKinematics1to2 &);
 
 };
 
 }
 
-#endif /* HERWIG_IS_QtildaShowerKinematics1to2_H */
+#endif /* HERWIG_IS_QTildeShowerKinematics1to2_H */

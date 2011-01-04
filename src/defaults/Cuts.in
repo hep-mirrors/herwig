@@ -27,7 +27,7 @@ set EECuts:MHatMin 22.36*GeV
 
 # create the cuts object for hadron collisions
 create ThePEG::Cuts QCDCuts
-set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:ScaleMin 2.0*GeV
 set QCDCuts:X1Min 1.0e-5
 set QCDCuts:X2Min 1.0e-5
 set QCDCuts:MHatMin 20.*GeV

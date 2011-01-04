@@ -61,9 +61,9 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
     // from a colour source, or ends in a colour sink. In the case of double
     // baryon violating decays, but with overall baryon conservation 
     //  ( for instance:
-    //       tilda_u_R -> dbar_1 + dbar_2 
-    //       tilda_u_R_star -> d1 + d2 
-    //    where tilda_u_R and tilda_u_R_star are colour connected )
+    //       tilde_u_R -> dbar_1 + dbar_2 
+    //       tilde_u_R_star -> d1 + d2 
+    //    where tilde_u_R and tilde_u_R_star are colour connected )
     // a special treatment is needed, because first we have to process all
     // partons in the current step, and then for each left pair of quarks which
     // stem from a colour source we have to find the corresponding pair of 
@@ -271,7 +271,16 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     tcPDPtr temp1  = vec[1]->dataPtr();
     tcPDPtr temp2  = vec[2]->dataPtr();
 
-   tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    
+    if(!dataDiquark) 
+      throw Exception() << "Could not make a diquark from"
+			<< temp1->PDGName() << " and "
+			<< temp2->PDGName() 
+			<< " in ClusterFinder::reduceToTwoComponents()"
+			<< Exception::eventerror;
+   
+
     // Create the new cluster (with two components) and assign to it the same
     // momentum and position of the original (with three components) one.
     // Furthermore, assign to the diquark component a momentum given by the
@@ -293,8 +302,8 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     vec[2]->addChild(diquark);
     ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
 
-    vec[0]->addChild(nclus);
-    diquark->addChild(nclus);
+    //vec[0]->addChild(nclus);
+    //diquark->addChild(nclus);
     (*cluIter)->addChild(nclus);
 
     nclus->set5Momentum((*cluIter)->momentum());

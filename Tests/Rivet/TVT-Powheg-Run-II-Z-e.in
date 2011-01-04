@@ -42,4 +42,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8202443
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun TVT-Run-II-Powheg-Z-e LHCGenerator
+saverun TVT-Powheg-Run-II-Z-e LHCGenerator

@@ -229,10 +229,12 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	}
 	total+=sqrt(wsqsum[ix])*_channelwgts[ix];
       }
-      double temp;
-      for(unsigned int ix=0;ix<_channels.size();++ix) {
-	temp=sqrt(wsqsum[ix])*_channelwgts[ix]/total;
-	_channelwgts[ix]=temp;
+      if(total>0.) {
+	double temp;
+	for(unsigned int ix=0;ix<_channels.size();++ix) {
+	  temp=sqrt(wsqsum[ix])*_channelwgts[ix]/total;
+	  _channelwgts[ix]=temp;
+	}
       }
     }
     // factor for the weight with spin correlations

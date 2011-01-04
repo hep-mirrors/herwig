@@ -1,24 +1,22 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read TVTBase-Powheg.in
+read TVTBase.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
 
 ##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
-# Drell-Yan W
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
-set PowhegMEqq2W2ff:Process Electron
-# Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
-set PowhegMEqq2gZ2ff:Process Electron
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+set /Herwig/Cuts/JetKtCut:MinKT 30.
+set /Herwig/Cuts/QCDCuts:MHatMin 500.*GeV
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -26,11 +24,16 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 ##################################################
 # select the analyses
 ##################################################
-# D0 Run I W/Z pT corrections
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2001_S4674421
+
+# D0 dijet invariant mass
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2010_S8566488
+# D0 dijet angles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2009_S8320160
+# CDF dijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8093652
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun TVT-Run-I-Powheg-WZ LHCGenerator
+saverun TVT-Run-II-Jets-9 LHCGenerator

@@ -500,6 +500,8 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   return wgt;
 }
 Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
+  static const Energy eps=1e-9*MeV;
+  if(lower<eps) lower=eps;
   Energy mass=ZERO;
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed" 
@@ -513,10 +515,15 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
   // use a Breit-Wigner
   if(_jactype[ires]==0) {
     if(_intmwidth[ires]!=ZERO) {
-      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
-      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      Energy2 lower2 = sqr(lower);
+      Energy2 upper2 = sqr(upper);
+
+      double rhomin = atan((lower2 - _intmass2[ires])/_intmwidth[ires]);
+      double rhomax = atan((upper2 - _intmass2[ires])/_intmwidth[ires])-rhomin;
       double rho = rhomin+rhomax*UseRandom::rnd();
-      mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
+      Energy2 mass2 = max(lower2,min(upper2,_intmass2[ires]+_intmwidth[ires]*tan(rho)));
+      if(mass2<ZERO) mass2 = ZERO;
+      mass = sqrt(mass2);
     }
     else {
       mass = sqrt(_intmass2[ires]+
@@ -570,7 +577,7 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   p1 = Lorentz5Momentum(m1, pstarVector);
   p2 = Lorentz5Momentum(m2,-pstarVector);
   // boost from CM to LAB
-  Boost bv=p.boostVector();
+  Boost bv = p.vect() * (1./p.t());
   p1.boost( bv );   
   p2.boost( bv );
 }

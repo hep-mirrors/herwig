@@ -1,34 +1,25 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read TVTBase-Powheg.in
+read LEPBase-Powheg.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
-
-##################################################
-#  Use the q qbar matrix element
-##################################################
-cd /Herwig/MatrixElements
-# Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
-set PowhegMEqq2gZ2ff:Process Electron
-
-# No QED radiation
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 183.
 
 ##################################################
 # select the analyses
 ##################################################
 
-# CDF Run I Z pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_S4155203
+# ALEPH jet and event shapes at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
+# OPAL/JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun TVT-Run-I-Powheg-Z LHCGenerator
+saverun LEP-Powheg-183 LEPGenerator

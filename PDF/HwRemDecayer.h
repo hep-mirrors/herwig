@@ -70,7 +70,8 @@ public:
 			  _kinCutoff(0.75*GeV), 
 			  _forcedSplitScale(2.5*GeV),
 			  _range(1.1), _zbin(0.05),_ybin(0.),
-			  _nbinmax(100), DISRemnantOpt_(0) {}
+			  _nbinmax(100), DISRemnantOpt_(0),
+			  pomeronStructure_(0) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -87,11 +88,7 @@ public:
    * Return true if this decayer can handle the extraction of the \a   
    * extracted parton from the given \a particle.   
    */  
-  virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const {
-    if(!(StandardQCDPartonMatcher::Check(*parton) ||
-	 parton->id()==ParticleID::gamma)) return false;
-    return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma;
-  } 
+  virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const;
   
   /**   
    * Return true if this decayed can extract more than one parton from   
@@ -239,11 +236,16 @@ private:
     inline void extract(int id) {
       for(unsigned int i=0; i<flav.size(); i++) {
 	if(id == sign*flav[i]){
-	  if(hadron->id() == ParticleID::gamma) {
+	  if(hadron->id() == ParticleID::gamma || 
+	     (hadron->id() == ParticleID::pomeron && pomeronStructure==1) ||
+	     hadron->id() == ParticleID::reggeon) {
 	    flav[0] =  id;
 	    flav[1] = -id;
 	    extracted = 0;
 	    flav.resize(2);
+	  }
+	  else if (hadron->id() == ParticleID::pomeron && pomeronStructure==0) {
+	    extracted = 0;
 	  }
 	  else {
 	    extracted = i;
@@ -271,8 +273,14 @@ private:
      * Method to determine whether \a parton is a valence quark.
      */
     bool isValenceQuark(tcPPtr parton) const {
-      int id(sign*parton->id());
-      return find(flav.begin(),flav.end(),id) != flav.end();
+      return isValenceQuark(parton->id());
+    }
+
+    /**
+     * Method to determine whether \a parton is a valence quark.
+     */
+    bool isValenceQuark(int id) const {
+      return find(flav.begin(),flav.end(),sign*id) != flav.end();
     }
 
     /** The valence flavours of the corresponding baryon. */                    
@@ -286,6 +294,9 @@ private:
 
     /** The ParticleData objects of the hadron */
     tcPDPtr hadron;
+
+    /** Pomeron treatment */
+    unsigned int pomeronStructure;
   }; 
 
   /**
@@ -523,6 +534,10 @@ private:
    */
   unsigned int DISRemnantOpt_;
 
+  /**
+   *  Option for the treatment of the pomeron structure
+   */
+  unsigned int pomeronStructure_;
   //@}
 
 };

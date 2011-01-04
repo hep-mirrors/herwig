@@ -1,18 +1,18 @@
 // -*- C++ -*-
 //
-// Decay_QtildaShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FS_QTildeShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_Decay_QtildaShowerKinematics1to2_H
-#define HERWIG_Decay_QtildaShowerKinematics1to2_H
+#ifndef HERWIG_FS_QTildeShowerKinematics1to2_H
+#define HERWIG_FS_QTildeShowerKinematics1to2_H
 //
-// This is the declaration of the Decay_QtildaShowerKinematics1to2 class.
+// This is the declaration of the FS_QTildeShowerKinematics1to2 class.
 //
 
-#include "QtildaShowerKinematics1to2.h"
+#include "QTildeShowerKinematics1to2.h"
 
 namespace Herwig {
 
@@ -20,18 +20,22 @@ using namespace ThePEG;
 
 /** \ingroup Shower
  *
- *  This (concrete) class provides the specific decay shower
+ *  This (concrete) class provides the specific Final State shower
  *  kinematics information.
  *
- *  @see QtildaShowerKinematics1to2
- *  @see IS_QtildaShowerKinematics1to2
- *  @see FS_QtildaShowerKinematics1to2
+ *  @see QTildeShowerKinematics1to2
+ *  @see IS_QTildeShowerKinematics1to2
+ *  @see Decay_QTildeShowerKinematics1to2
  *  @see KinematicsReconstructor
- *
  */
-class Decay_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
+class FS_QTildeShowerKinematics1to2: public QTildeShowerKinematics1to2 {
 
 public:
+
+  /**
+   * Default constructor
+   */
+  inline FS_QTildeShowerKinematics1to2() {}
 
   /**
    *  The updateChildren, updateParent and updateLast
@@ -53,7 +57,7 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
 			       const ShowerParticleVector & theChildren,
-			       bool angularOrder ) const;
+			       bool angularOrder) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -86,14 +90,15 @@ public:
   //@}
 
 private:
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Decay_QtildaShowerKinematics1to2 & operator=(const Decay_QtildaShowerKinematics1to2 &);
+  FS_QTildeShowerKinematics1to2 & operator=(const FS_QTildeShowerKinematics1to2 &);
 
 };
 
 }
 
-#endif /* HERWIG_Decay_QtildaShowerKinematics1to2_H */
+#endif /* HERWIG_FS_QTildeShowerKinematics1to2_H */

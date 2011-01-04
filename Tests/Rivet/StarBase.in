@@ -40,10 +40,3 @@ set /Herwig/Decays/DecayHandler:LifeTimeOption 0
 set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 
 set /Herwig/Cuts/QCDCuts:X2Min 0.01
-
-##################################################
-# select the analyses
-##################################################
-
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 
-

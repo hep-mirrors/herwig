@@ -195,7 +195,6 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	}
 	break;
       default:
-	exit(2);
 	throw Exception() << "Invalid approach for setting colour partner in"
 			  << " PartnerFinder::setQCDInitialEvolutionScale()"
 			  << Exception::abortnow;
