@@ -186,7 +186,6 @@ set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
 set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
 
 set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
-set Model:Vertex/HHHH /Herwig/Vertices/HHHHVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # Leptoquark model vertices
 set Model:Vertex/SLQSLQG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGVertex

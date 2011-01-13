@@ -110,8 +110,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/LHTP/Makefile
 		Models/HiddenValley/Makefile
 		Models/Transplanckian/Makefile
-		Models/AnomalousCouplings/Makefile
 		Models/Leptoquarks/Makefile
+		Models/AnomalousCouplings/Makefile
 		Models/Feynrules/Makefile
 		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile

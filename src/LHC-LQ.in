@@ -61,7 +61,6 @@ cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 1000
 set LHCGenerator:MaxErrors 10000
 
