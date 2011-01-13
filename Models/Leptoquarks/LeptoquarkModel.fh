@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwLeptoquarkModel class.
+//
+#ifndef HERWIG_HwLeptoquarkModel_FH
+#define HERWIG_HwLeptoquarkModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LeptoquarkModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LeptoquarkModel,HwLeptoquarkPtr);
+
+}
+
+#endif

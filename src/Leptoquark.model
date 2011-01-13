@@ -1,0 +1,238 @@
+##################################################
+# Common setup for Leptoquark models
+#
+# See LHC-LQ.in or ILC-LQ.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-LQ.in
+#
+###################################################
+#
+#  Particle Data object for the Leptoquarks
+#
+###################################################
+cd /Herwig/Particles
+
+create /ThePEG/ParticleData S0bar
+setup S0bar 9911561 S0bar 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData S0
+setup S0 -9911561 S0 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti S0bar S0
+
+create /ThePEG/ParticleData ~S0bar
+setup ~S0bar 9921551 ~S0bar 400.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData ~S0
+setup ~S0 -9921551 ~S0 400.0 0.0 0.0 0.0 4 -3 1 0
+makeanti ~S0bar ~S0
+
+create /ThePEG/ParticleData S1pbar
+setup S1pbar 9931551 S1pbar 400.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData S1p
+setup S1p -9931551 S1p 400.0 0.0 0.0 0.0 4 -3 1 0
+makeanti S1pbar S1p
+
+create /ThePEG/ParticleData S1mbar
+setup S1mbar 9931661 S1mbar 400.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData S1m
+setup S1m -9931661 S1m 400.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti S1mbar S1m
+
+create /ThePEG/ParticleData S1zbar
+setup S1zbar 9931561 S1zbar 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData S1z
+setup S1z -9931561 S1z 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti S1zbar S1z
+
+create /ThePEG/ParticleData S12p
+setup S12p 9941561 S12p 400.0 0.0 0.0 0.0 5 3 1 0
+create /ThePEG/ParticleData S12pbar
+setup S12pbar -9941561 S12pbar 400.0 0.0 0.0 0.0 -5 -3 1 0
+makeanti S12p S12pbar
+
+create /ThePEG/ParticleData S12m
+setup S12m 9941551 S12m 400.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData S12mbar
+setup S12mbar -9941551 S12mbar 400.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti S12m S12mbar
+
+create /ThePEG/ParticleData S12tp
+setup S12tp 9951551 S12tp 400.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData S12tpbar
+setup S12tpbar -9951551 S12tpbar 400.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti S12tp S12tpbar
+
+create /ThePEG/ParticleData S12tm
+setup S12tm 9951651 S12tm 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData S12tmbar
+setup S12tmbar -9951651 S12tmbar 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti S12tm S12tmbar
+
+create /ThePEG/ParticleData dS0
+setup dS0 9961551 dS0 400.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData dS0bar
+setup dS0bar -9961551 dS0bar 400.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti dS0 dS0bar
+
+create /ThePEG/ParticleData ~dS0
+setup ~dS0 9971561 ~dS0 400.0 0.0 0.0 0.0 5 3 1 0
+create /ThePEG/ParticleData ~dS0bar
+setup ~dS0bar -9971561 ~dS0bar 400.0 0.0 0.0 0.0 -5 -3 1 0
+makeanti ~dS0 ~dS0bar
+
+create /ThePEG/ParticleData dS1p
+setup dS1p 9981561 dS1p 400.0 0.0 0.0 0.0 5 3 1 0
+create /ThePEG/ParticleData dS1pbar
+setup dS1pbar -9981561 dS1pbar 400.0 0.0 0.0 0.0 -5 -3 1 0
+makeanti dS1p dS1pbar
+
+create /ThePEG/ParticleData dS1m
+setup dS1m 9981651 dS1m 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS1mbar
+setup dS1mbar -9981651 dS1mbar 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS1m dS1mbar
+
+create /ThePEG/ParticleData dS1z
+setup dS1z 9981551 dS1z 400.0 0.0 0.0 0.0 2 3 1 0
+create /ThePEG/ParticleData dS1zbar
+setup dS1zbar -9981551 dS1zbar 400.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti dS1z dS1zbar
+
+create /ThePEG/ParticleData dS12pbar
+setup dS12pbar 9991551 dS12pbar 400.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData dS12p
+setup dS12p -9991551 dS12p 400.0 0.0 0.0 0.0 4 -3 1 0
+makeanti dS12pbar dS12p
+
+create /ThePEG/ParticleData dS12mbar
+setup dS12mbar 9991561 dS12mbar 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS12m
+setup dS12m -9991561 dS12m 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS12mbar dS12m
+
+create /ThePEG/ParticleData dS12tpbar
+setup dS12tpbar 9901561 dS12tpbar 400.0 0.0 0.0 0.0 -4 3 1 0
+create /ThePEG/ParticleData dS12tp
+setup dS12tp -9901561 dS12tp 400.0 0.0 0.0 0.0 4 -3 1 0
+makeanti dS12tpbar dS12tp
+
+create /ThePEG/ParticleData dS12tmbar
+setup dS12tmbar 9901661 dS12tmbar 400.0 0.0 0.0 0.0 -1 3 1 0
+create /ThePEG/ParticleData dS12tm
+setup dS12tm -9901661 dS12tm 400.0 0.0 0.0 0.0 1 -3 1 0
+makeanti dS12tmbar dS12tm
+
+
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/Leptoquark
+cd /Herwig/NewPhysics/Leptoquark
+create Herwig::LeptoquarkModel Model HwLeptoquarkModel.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+set Model:LQCoupling 0.312
+set Model:g_S0_L 1.0
+set Model:g_S0_R 1.0
+set Model:g_S0t_R 1.0
+set Model:g_S1_L 1.0
+set Model:g_S12_L 1.0
+set Model:g_S12_R 1.0
+set Model:g_S12t_L 1.0
+set Model:g_dS0_L 1.0
+set Model:g_dS0_R 1.0
+set Model:g_dS0t_R 1.0
+set Model:g_dS1_L 1.0
+set Model:g_dS12_L 1.0
+set Model:g_dS12_R 1.0
+set Model:g_dS12t_L 1.0
+set Model:derivscale 500.0
+
+
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create Leptoquark model vertices
+mkdir /Herwig/Vertices/Leptoquark
+cd /Herwig/Vertices/Leptoquark
+library HwLeptoquarkModel.so
+create Herwig::LeptoquarkModelSLQSLQGVertex Leptoquark_SLQSLQGVertex
+create Herwig::LeptoquarkModelSLQSLQGGVertex Leptoquark_SLQSLQGGVertex
+create Herwig::LeptoquarkModelSLQFFVertex Leptoquark_SLQFFVertex
+
+
+cd /Herwig/NewPhysics/Leptoquark
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# Leptoquark model vertices
+set Model:Vertex/SLQSLQG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGVertex
+set Model:Vertex/SLQSLQGG  /Herwig/Vertices/Leptoquark/Leptoquark_SLQSLQGGVertex
+set Model:Vertex/SLQFF  /Herwig/Vertices/Leptoquark/Leptoquark_SLQFFVertex
+
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/S0bar
+insert NewModel:DecayParticles 1 /Herwig/Particles/~S0bar
+insert NewModel:DecayParticles 2 /Herwig/Particles/S1pbar
+insert NewModel:DecayParticles 3 /Herwig/Particles/S1mbar
+insert NewModel:DecayParticles 4 /Herwig/Particles/S1zbar
+insert NewModel:DecayParticles 5 /Herwig/Particles/S12p
+insert NewModel:DecayParticles 6 /Herwig/Particles/S12m
+insert NewModel:DecayParticles 7 /Herwig/Particles/S12tp
+insert NewModel:DecayParticles 8 /Herwig/Particles/S12tm
+insert NewModel:DecayParticles 9 /Herwig/Particles/dS0
+insert NewModel:DecayParticles 10 /Herwig/Particles/~dS0
+insert NewModel:DecayParticles 11 /Herwig/Particles/dS1p
+insert NewModel:DecayParticles 12 /Herwig/Particles/dS1m
+insert NewModel:DecayParticles 13 /Herwig/Particles/dS1z
+insert NewModel:DecayParticles 14 /Herwig/Particles/dS12pbar
+insert NewModel:DecayParticles 15 /Herwig/Particles/dS12mbar
+insert NewModel:DecayParticles 16 /Herwig/Particles/dS12tpbar
+insert NewModel:DecayParticles 17 /Herwig/Particles/dS12tmbar
+
+###################################################
+# Set up the model framework
+###################################################
+set Leptoquark/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose Leptoquark over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
+
+#insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9911561 
