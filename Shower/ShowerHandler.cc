@@ -631,7 +631,10 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
   if(particle->momentum().m2()<=ZERO||
      particle == currentSubProcess()->incoming().first||
      particle == currentSubProcess()->incoming().second) return false;
-  // must not be the s-channel intermediate
+  // if only 1 outgoing and this is it
+  if(currentSubProcess()->outgoing().size()==1 &&
+     currentSubProcess()->outgoing()[0]==particle) return true;
+  // must not be the s-channel intermediate otherwise
   if(find(currentSubProcess()->incoming().first->children().begin(),
 	  currentSubProcess()->incoming().first->children().end(),particle)!=
      currentSubProcess()->incoming().first->children().end()&&
