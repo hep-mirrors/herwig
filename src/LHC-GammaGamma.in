@@ -51,10 +51,10 @@ set /Herwig/MatrixElements/MEgg2ff:Process Muon
 ##################################################
 # LHC physics parameters (override defaults) 
 ##################################################
+cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.
 set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
-cd /Herwig/Generators
 
 ##################################################
 #  Useful analysis handlers for HepMC related output
