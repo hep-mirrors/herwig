@@ -32,12 +32,12 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual bool hasPOWHEGCorrection() {return _alpha;}
 
   /**
    *  Has an old fashioned ME correction
    */
-  virtual bool hasMECorrection() {return true;}
+  virtual bool hasMECorrection() {return _alpha;}
 
   /**
    *  Initialize the ME correction
