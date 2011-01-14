@@ -382,26 +382,26 @@ void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) co
   useMe();
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::WSBFormFactor " << name() << " \n";
-  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":F0 " 
+      output << "newdef " << name() << ":F0 " 
 	     << ix << "  " << _F0[ix] << "\n";
-      output << "set " << name() << ":V  " 
+      output << "newdef " << name() << ":V  " 
 	     << ix << "  " << _V[ix]  << "\n";
-      output << "set " << name() << ":A0 " 
+      output << "newdef " << name() << ":A0 " 
 	     << ix << "  " << _A0[ix] << "\n";
-      output << "set " << name() << ":A1 " 
+      output << "newdef " << name() << ":A1 " 
 	     << ix << "  " << _A1[ix] << "\n";
-      output << "set " << name() << ":A2 " 
+      output << "newdef " << name() << ":A2 " 
 	     << ix << "  " << _A2[ix] << "\n";
-      output << "set " << name() << ":ScalarMass " 
+      output << "newdef " << name() << ":ScalarMass " 
 	     << ix << "  " << _mS0[ix]/GeV << "\n";
-      output << "set " << name() << ":PseudoScalarMass " 
+      output << "newdef " << name() << ":PseudoScalarMass " 
 	     << ix << "  " << _mS1[ix]/GeV << "\n";
-      output << "set " << name() << ":VectorMass " 
+      output << "newdef " << name() << ":VectorMass " 
 	     << ix << "  " << _mV0[ix]/GeV << "\n";
-      output << "set " << name() << ":PseudoVectorMass " 
+      output << "newdef " << name() << ":PseudoVectorMass " 
 	     << ix << "  " << _mV1[ix]/GeV << "\n";
     }
     else {

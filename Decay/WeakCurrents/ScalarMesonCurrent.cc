@@ -215,13 +215,13 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
     output << "create Herwig::ScalarMesonCurrent " << name() 
 	   << " HwWeakCurrents.so\n";
   }
-  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   unsigned int ix;
   for(ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":ID " << ix 
+      output << "newdef " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << name() << ":Decay_Constant " << ix 
+      output << "newdef " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
     else {

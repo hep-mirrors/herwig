@@ -230,21 +230,21 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
   // parameters
-  output << "set  " << name() << ":PartonSplitter " 
+  output << "newdef  " << name() << ":PartonSplitter " 
 	 << _partonSplitter->name() << " \n";
-  output << "set  " << name() << ":ClusterFinder " 
+  output << "newdef  " << name() << ":ClusterFinder " 
 	 << _clusterFinder->name() << " \n";
-  output << "set  " << name() << ":ColourReconnector " 
+  output << "newdef  " << name() << ":ColourReconnector " 
 	 << _colourReconnector->name() << " \n";
-  output << "set  " << name() << ":ClusterFissioner " 
+  output << "newdef  " << name() << ":ClusterFissioner " 
 	 << _clusterFissioner->name() << " \n";
-  output << "set  " << name() << ":LightClusterDecayer " 
+  output << "newdef  " << name() << ":LightClusterDecayer " 
 	 << _lightClusterDecayer->name() << " \n";
-  output << "set  " << name() << ":ClusterDecayer " 
+  output << "newdef  " << name() << ":ClusterDecayer " 
 	 << _clusterDecayer->name() << " \n";
-  output << "set  " << name() << ":Exclusive " <<  _exclusive<< " \n";
-  output << "set  " << name() << ":Intermediates " << _inter << " \n";
-  output << "set  " << name() << ":Partonic_Tries " << _partontries << " \n";
+  output << "newdef  " << name() << ":Exclusive " <<  _exclusive<< " \n";
+  output << "newdef  " << name() << ":Intermediates " << _inter << " \n";
+  output << "newdef  " << name() << ":Partonic_Tries " << _partontries << " \n";
   // footer for MySQL
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

@@ -580,43 +580,43 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "set " << name() << ":Coupling " 
+      output << "newdef " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "set " << name() << ":DirectCoupling " 
+      output << "newdef " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "set " << name() << ":Rho2Coupling " 
+      output << "newdef " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "set " << name() << ":Rho3Coupling " 
+      output << "newdef " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "set " << name() << ":DirectPhase " 
+      output << "newdef " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "set " << name() << ":Rho2Phase " 
+      output << "newdef " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "set " << name() << ":Rho3Phase " 
+      output << "newdef " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "set " << name() << ":Rho1Weight " 
+      output << "newdef " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "set " << name() << ":Rho2Weight " 
+      output << "newdef " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "set " << name() << ":Rho3Weight " 
+      output << "newdef " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "set " << name() << ":Rho1Mass " 
+      output << "newdef " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "set " << name() << ":Rho2Mass " 
+      output << "newdef " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "set " << name() << ":Rho3Mass " 
+      output << "newdef " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "set " << name() << ":Rho1Width " 
+      output << "newdef " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "set " << name() << ":Rho2Width " 
+      output << "newdef " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "set " << name() << ":Rho3Width " 
+      output << "newdef " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "set " << name() << ":DefaultParameters " 
+      output << "newdef " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
     else {

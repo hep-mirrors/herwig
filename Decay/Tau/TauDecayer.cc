@@ -349,6 +349,6 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
 	   << _weights[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":WeakCurrent " << _current->name() << " \n";
+  output << "newdef " << name() << ":WeakCurrent " << _current->name() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

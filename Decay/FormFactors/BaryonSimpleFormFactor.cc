@@ -223,12 +223,12 @@ void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BaryonSimpleFormFactor " 
 		    << name() << " \n";
-  output << "set " << name() << ":g_A " <<  _gA << " \n";
-  output << "set " << name() << ":alpha_D " << _alphaD  << " \n";
-  output << "set " << name() << ":eta_V " << _etaV  << " \n";
-  output << "set " << name() << ":eta_A " <<  _etaA << " \n";
-  output << "set " << name() << ":rho_E " << _rhoE  << " \n";
-  output << "set " << name() << ":rho_M " << _rhoM  << " \n";
+  output << "newdef " << name() << ":g_A " <<  _gA << " \n";
+  output << "newdef " << name() << ":alpha_D " << _alphaD  << " \n";
+  output << "newdef " << name() << ":eta_V " << _etaV  << " \n";
+  output << "newdef " << name() << ":eta_A " <<  _etaA << " \n";
+  output << "newdef " << name() << ":rho_E " << _rhoE  << " \n";
+  output << "newdef " << name() << ":rho_M " << _rhoM  << " \n";
   BaryonFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

@@ -216,11 +216,11 @@ void SMWDecayer::dataBaseOutput(ofstream & output,
 				 bool header) const {
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<quarkWeight_.size();++ix) {
-    output << "set " << name() << ":QuarkMax " << ix << " "
+    output << "newdef " << name() << ":QuarkMax " << ix << " "
 	   << quarkWeight_[ix] << "\n";
   }
   for(unsigned int ix=0;ix<leptonWeight_.size();++ix) {
-    output << "set " << name() << ":LeptonMax " << ix << " "
+    output << "newdef " << name() << ":LeptonMax " << ix << " "
 	   << leptonWeight_[ix] << "\n";
   }
   // parameters for the DecayIntegrator base class

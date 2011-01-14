@@ -244,29 +244,29 @@ void KiselevBcFormFactor::dataBaseOutput(ofstream & output,
   if(create) output << "create Herwig::KiselevBcFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":Fplus "  << ix << "  " 
+      output << "newdef " << name() << ":Fplus "  << ix << "  " 
 	     << _fp[ix]  << "\n";
-      output << "set " << name() << ":Fminus "  << ix << "  " 
+      output << "newdef " << name() << ":Fminus "  << ix << "  " 
 	     << _fm[ix]  << "\n";
-      output << "set " << name() << ":FV "  << ix << "  " 
+      output << "newdef " << name() << ":FV "  << ix << "  " 
 	     << _FV[ix]*GeV  << "\n";
-      output << "set " << name() << ":F0A "  << ix << "  " 
+      output << "newdef " << name() << ":F0A "  << ix << "  " 
 	     << _F0A[ix]/GeV  << "\n";
-      output << "set " << name() << ":FplusA "  << ix << "  " 
+      output << "newdef " << name() << ":FplusA "  << ix << "  " 
 	     << _FpA[ix]*GeV  << "\n";
-      output << "set " << name() << ":FminusA "  << ix << "  " 
+      output << "newdef " << name() << ":FminusA "  << ix << "  " 
 	     << _FmA[ix]*GeV  << "\n";
-      output << "set " << name() << ":MpoleFplus "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFplus "  << ix << "  " 
 	     << _Mfp[ix]/GeV  << "\n";
-      output << "set " << name() << ":MpoleFminus "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFminus "  << ix << "  " 
 	     << _Mfm[ix]/GeV  << "\n";
-      output << "set " << name() << ":MpoleFV "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFV "  << ix << "  " 
 	     << _MFV[ix]/GeV  << "\n";
-      output << "set " << name() << ":MpoleF0A "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleF0A "  << ix << "  " 
 	     << _MF0A[ix]/GeV  << "\n";
-      output << "set " << name() << ":MpoleFplusA "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFplusA "  << ix << "  " 
 	     << _MFpA[ix]/GeV  << "\n";
-      output << "set " << name() << ":MpoleFminusA "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFminusA "  << ix << "  " 
 	     << _MFmA[ix]/GeV  << "\n";
     }
     else {

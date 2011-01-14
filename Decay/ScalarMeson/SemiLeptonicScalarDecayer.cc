@@ -332,8 +332,8 @@ void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 	   << _maxwgt[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":Current " << _current->name() << " \n";
+  output << "newdef " << name() << ":Current " << _current->name() << " \n";
   _form->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":FormFactor " << _form->name() << " \n";
+  output << "newdef " << name() << ":FormFactor " << _form->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

@@ -342,11 +342,11 @@ void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
-    os << "set " << name() << ":QuarkWeights " << ix << " "
+    os << "newdef " << name() << ":QuarkWeights " << ix << " "
 	   << _wquarkwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_wleptonwgt.size();++ix) {
-    os << "set " << name() << ":LeptonWeights " << ix << " "
+    os << "newdef " << name() << ":LeptonWeights " << ix << " "
 	   << _wleptonwgt[ix] << "\n";
   }
   DecayIntegrator::dataBaseOutput(os,false);

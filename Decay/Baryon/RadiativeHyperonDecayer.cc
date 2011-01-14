@@ -176,15 +176,15 @@ void RadiativeHyperonDecayer::dataBaseOutput(ofstream & output,bool header) cons
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<incomingB_.size();++ix) {
     if(ix<initsize_) {
-      output << "set " << name() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << maxweight_[ix] << "\n";
-      output << "set " << name() << ":IncomingBaryon " << ix << " " 
+      output << "newdef " << name() << ":IncomingBaryon " << ix << " " 
 	     << incomingB_[ix] << "\n";
-      output << "set " << name() << ":OutgoingBaryon " << ix << " " 
+      output << "newdef " << name() << ":OutgoingBaryon " << ix << " " 
 	     << outgoingB_[ix] << "\n";
-      output << "set " << name() << ":CouplingA " << ix << " " 
+      output << "newdef " << name() << ":CouplingA " << ix << " " 
 	     << A_[ix]*GeV << "\n";
-      output << "set " << name() << ":CouplingB " << ix << " " 
+      output << "newdef " << name() << ":CouplingB " << ix << " " 
 	     << B_[ix]*GeV << "\n";
     }
     else {

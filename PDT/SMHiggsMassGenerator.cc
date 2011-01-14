@@ -79,6 +79,6 @@ void SMHiggsMassGenerator::doinit() {
 
 void SMHiggsMassGenerator::dataBaseOutput(ofstream & output,bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << fullName() << ":BreitWignerShape "   << _shape << "\n";
+  output << "newdef " << fullName() << ":BreitWignerShape "   << _shape << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

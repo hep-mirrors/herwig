@@ -148,7 +148,7 @@ void MelikhovFormFactor::dataBaseOutput(ofstream & output,bool header,
 					bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::MelikhovFormFactor " << name() << " \n";
-  output << "set " << name() << ":Fit " << _ifit << " \n";
+  output << "newdef " << name() << ":Fit " << _ifit << " \n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

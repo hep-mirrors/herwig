@@ -337,21 +337,21 @@ void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming   " << ix << " "
+      output << "newdef " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << name() << ":Outgoing  " << ix << " "
+      output << "newdef " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "set " << name() << ":Charged " << ix << " "
+      output << "newdef " << name() << ":Charged " << ix << " "
 		 << _charged[ix]  << "\n";
-      output << "set " << name() << ":Prefactor " << ix << " "
+      output << "newdef " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "set " << name() << ":a " << ix << " "
+      output << "newdef " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "set " << name() << ":b " << ix << " "
+      output << "newdef " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "set " << name() << ":c " << ix << " "
+      output << "newdef " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "set " << name() << ":MaxWeight  " << ix << " "
+      output << "newdef " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
     else {
