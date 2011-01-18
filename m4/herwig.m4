@@ -351,6 +351,7 @@ AC_MSG_CHECKING([for BSM models to include])
 
 LOAD_RS=""
 LOAD_SUSY=""
+LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
@@ -374,9 +375,11 @@ if test ! "$all"; then
    IFS="$oldIFS"
 fi
 
-if test "$nmssm"; then
+if test "$nmssm" -o "$all"; then
+   LOAD_NMSSM="library HwNMSSM.so"
    mssm=yes
 fi
+AC_SUBST(LOAD_NMSSM)
 
 if test "$rs" -o "$all" ; then
    LOAD_RS="library HwRSModel.so"
@@ -402,6 +405,11 @@ if test "$add" -o "$all"; then
    LOAD_ADD="library HwADDModel.so"
 fi
 AC_SUBST(LOAD_ADD)
+
+if test "$leptoquarks" -o "$all"; then
+   LOAD_LEPTOQUARKS="library HwLeptoquarkModel.so"
+fi
+AC_SUBST(LOAD_LEPTOQUARKS)
 
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])

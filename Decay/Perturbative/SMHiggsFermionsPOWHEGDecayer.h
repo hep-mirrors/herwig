@@ -115,13 +115,44 @@ private:
    */
   SMHiggsFermionsPOWHEGDecayer & operator=(const SMHiggsFermionsPOWHEGDecayer &);
 
+  /**
+   *  Calcluate the Kallen function
+   */
   double calculateLambda(double x, double y, double z) const;
+
+  /**
+   *  Dipole subtraction term
+   */
   InvEnergy2 dipoleSubtractionTerm(double x1, double x2) const;
+
+  /**
+   *  Real emission term
+   */
   InvEnergy2 calculateRealEmission(double x1, double x2) const;
+
+  /**
+   *  Virtual term
+   */
   double calculateVirtualTerm() const;
+
+  /**
+   *  Non-singlet term
+   */
   double calculateNonSingletTerm(double beta, double L) const;
+
+  /**
+   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
+   */
   bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
+
+  /**
+   *  Calculate the Jacobian
+   */
   InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
+
+  /**
+   *  Generate a real emission event
+   */
   bool getEvent();
 
 private:

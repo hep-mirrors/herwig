@@ -247,6 +247,7 @@ private:
    * Read block from LHA file
    * @param ifs input stream containg data
    * @param name The name of the block
+   * @param line The line defining the block
    */
   void readBlock(CFileLineReader & ifs,string name,string line);
 

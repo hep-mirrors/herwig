@@ -160,7 +160,7 @@ private:
    * This function calculates the PDF value for the given particles and a given x and q
    * @param flPDF Flavour of the PDF function
    * @param x     The x of the pomeron
-   * @param q2    The scale
+   * @param qq    The scale
    *
    */
   double getPDFValue(PDFFlavour flPDF, double x, Energy2 qq) const;

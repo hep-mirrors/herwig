@@ -39,39 +39,109 @@ public:
    * Read-only access to all of the above member variables.
    */
 
-  // Leading order momentum fractions and associated etabar's:
+  /**
+   * @name Leading order momentum fractions and associated etabar's:
+   */
+  //@{
+  /**
+   * Leading order momentum fraction for first particle
+   */
   double x1b()   const { return x1b_; }
+
+  /**
+   * Leading order etabar for first particle
+   */
   double eta1b() const { return eta1b_; } 
+
+  /**
+   * Leading order momentum fraction for second particle
+   */
   double x2b()   const { return x2b_; }
+
+  /**
+   * Leading order etabar for second particle
+   */
   double eta2b() const { return eta2b_; }
+  //@}
 
-  // The Born momenta according to the notation of the FMNR papers,
-  // in the diboson centre of mass frame:
+  /**
+   * @name The Born momenta according to the notation of the FMNR papers,
+   * in the diboson centre of mass frame:
+   */
+  //@{
+  /**
+   * Momentum \f$p_1\f$
+   */
   Lorentz5Momentum p1b() const { return p1b_; }
+  
+  /**
+   * Momentum \f$p_2\f$
+   */
   Lorentz5Momentum p2b() const { return p2b_; }
+  
+  /**
+   * Momentum \f$k_1\f$
+   */
   Lorentz5Momentum k1b() const { return k1b_; }
+  
+  /**
+   * Momentum \f$k_2\f$
+   */
   Lorentz5Momentum k2b() const { return k2b_; }
+  //@}
 
-  // The diboson invariant mass / shat, that and uhat:
+  /**
+   * @name The diboson invariant mass / shat, that and uhat:
+   */
+  //@{
+  /**
+   * \f$\hat s\f$
+   */
   Energy2 sb() const { return sb_; }
+
+  /**
+   * \f$\hat t\f$
+   */
   Energy2 tb() const { return tb_; }
+
+  /**
+   * \f$\hat u\f$
+   */
   Energy2 ub() const { return ub_; }
+  //@}
 
-  // The diboson rapidity:
+  /**
+   * The diboson rapidity:
+   * Note Yb_ = + lastY() if flipped = false 
+   * but  Yb_ = - lastY() if flipped = true.
+   * Yb_ is always defined with the quark travelling in the +z direction!
+   */
   double Yb() const { return Yb_; }
-  // Note Yb_ = + lastY() if flipped = false 
-  // but  Yb_ = - lastY() if flipped = true.
-  // Yb_ is always defined with the quark travelling in the +z direction!
 
-  // Masses of the final state bosons:
+  /**
+   * @name Masses of the final state bosons:
+   */
+  //@{
+  /**
+   *  Mass squared og the first boson
+   */
   Energy2 k12b() const { return k12b_; }
-  Energy2 k22b() const { return k22b_; }
 
-  // Polar and azimuthal angles of the dibosons in their rest frame:
+  /**
+   *  Mass squared og the second boson
+   */
+  Energy2 k22b() const { return k22b_; }
+  //@}
+
+  /**
+   * Polar and azimuthal angles of the dibosons in their rest frame:
+   */
   double theta1b() const { return theta1b_; }
 
-  // A check to make sure that the momenta calculated from 
-  // the energies and angles are equal to those of meMomenta().
+  /**
+   * A check to make sure that the momenta calculated from 
+   * the energies and angles are equal to those of meMomenta().
+   */
   void sanityCheck() const;
 
  private:
@@ -81,35 +151,103 @@ public:
    * order quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
 
-  // Leading order momentum fractions and associated etabar's:
+  /**
+   * @name Leading order momentum fractions and associated etabar's:
+   */
+  //@{
+  /**
+   * Leading order momentum fraction for first particle
+   */
   double x1b_;
+
+  /**
+   * Leading order etabar for first particle
+   */
   double eta1b_;
+
+  /**
+   * Leading order momentum fraction for second particle
+   */
   double x2b_;
+
+  /**
+   * Leading order etabar for second particle
+   */
   double eta2b_;
+  //@}
 
-  // The Born momenta according to the notation of the FMNR papers,
-  // in the diboson centre of mass frame:
+  /**
+   * @name The Born momenta according to the notation of the FMNR papers,
+   * in the diboson centre of mass frame:
+   */
+  //@{
+  /**
+   * Momentum \f$p_1\f$
+   */
   Lorentz5Momentum p1b_;
+  
+  /**
+   * Momentum \f$p_2\f$
+   */
   Lorentz5Momentum p2b_;
+  
+  /**
+   * Momentum \f$k_1\f$
+   */
   Lorentz5Momentum k1b_;
+  
+  /**
+   * Momentum \f$k_2\f$
+   */
   Lorentz5Momentum k2b_;
+  //@}
 
-  // The diboson invariant mass / shat, that and uhat:
+  /**
+   * @name The diboson invariant mass / shat, that and uhat:
+   */
+  //@{
+  /**
+   * \f$\hat s\f$
+   */
   Energy2 sb_;
+
+  /**
+   * \f$\hat t\f$
+   */
   Energy2 tb_;
+
+  /**
+   * \f$\hat u\f$
+   */
   Energy2 ub_;
+  //@}
 
-  // The diboson rapidity:
+  /**
+   * The diboson rapidity:
+   * Note Yb_ = + lastY() if flipped = false 
+   * but  Yb_ = - lastY() if flipped = true.
+   * Yb_ is always defined with the quark travelling in the +z direction!
+   */
   double Yb_;
-  // Note Yb_ = + lastY() if flipped = false 
-  // but  Yb_ = - lastY() if flipped = true.
-  // Yb_ is always defined with the quark travelling in the +z direction!
 
-  // Masses of the final state bosons:
+  /**
+   * @name Masses of the final state bosons:
+   */
+  //@{
+  /**
+   *  Mass squared og the first boson
+   */
   Energy2 k12b_;
-  Energy2 k22b_;
 
-  // Polar angle of the dibosons in their rest frame:
+  /**
+   *  Mass squared og the second boson
+   */
+  Energy2 k22b_;
+  //@}
+
+  /**
+   * Polar angle of the dibosons in their rest frame:
+   */
   double theta1b_;     
 };
 
@@ -132,18 +270,20 @@ public:
   /**
    * Meaningful constructor: takes the Born variables
    * from the leading order /virtual 2->2 process and 
-   * the raw \tilde{x}, y radiative variables and turns
+   * the raw \f$\tilde{x}, y\f$ radiative variables and turns
    * these into a set of 2->3 momenta with associated 
    * Mandelstam variables, Bjorken x values etc. 
-   * @param xt The \tilde{x} radiative variable.
+   * @param xt The \f$\tilde{x}\f$ radiative variable.
    * @param y  The angular radiative variable (the cosine 
    * of the  polar angle of the emitted gluon in the partonic 
    * CMS frame). 
    */
   realVVKinematics(bornVVKinematics bornVariables,double xt, double y, double theta2);
 
-  // A check to make sure that the momenta calculated from 
-  // the energies and angles are equal to those of meMomenta().
+  /**
+   * A check to make sure that the momenta calculated from 
+   * the energies and angles are equal to those of meMomenta().
+   */
   void sanityCheck() const;
      
 public:
@@ -152,16 +292,35 @@ public:
    * Read-only access to all of the above member variables.
    */
 
-  // The bornVVKinematics underlying the 2->3 kinematics
+  /**
+   * The bornVVKinematics underlying the 2->3 kinematics
+   */
   bornVVKinematics bornVariables() const { return bornVariables_; }
 
-  // The lower bound on the x integration:
+  /**
+   * The lower bound on the x integration:
+   */
   double xbar() const { return xbar_; }
 
-  // The `raw' radiative variables.
+  /**
+   * @name The `raw' radiative variables.
+   */
+  //@{
+  /**
+   *  The \f$\tilde{x}\f$ radiative variable
+   */
   double xt() const { return xt_; }
+
+  /**
+   *  The \f$y\f$ radiative variable
+   */
   double y() const { return y_; }
+
+  /**
+   *  The \f$x_r\f$ radiative variable
+   */
   double xr() const { return xr_; }
+  //@}
 
   /**
    * The momentum fraction of the parton incident from the +z direction.

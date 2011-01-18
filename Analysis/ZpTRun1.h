@@ -111,7 +111,10 @@ namespace Herwig {
 
   
   private:
-    //pt histogram
+    
+    /**
+     * \f$p_T\f$ histogram
+     */
     HistogramPtr  _hpt;
   
     /**

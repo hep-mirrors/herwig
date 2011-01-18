@@ -14,7 +14,7 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /** \ingroup Helicity
- * The <code>NMSSMHHHVertex<\code> defines the triple
+ * The NMSSMHHHVertex defines the triple
  * Higgs coupling in the NMSSM.
  *
  * @see \ref NMSSMHHHVertexInterfaces "The interfaces"
@@ -24,8 +24,6 @@ class NMSSMHHHVertex: public SSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */

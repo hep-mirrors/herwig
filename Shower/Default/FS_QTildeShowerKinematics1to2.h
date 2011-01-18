@@ -54,6 +54,7 @@ public:
    * ***ACHTUNG*** Might be extended to update colour connections as well.
    * @param theParent The branching particle
    * @param theChildren The particles produced in the branching
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
 			       const ShowerParticleVector & theChildren,

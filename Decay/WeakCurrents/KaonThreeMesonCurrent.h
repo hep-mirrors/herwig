@@ -67,16 +67,20 @@ public:
   
   /**
    * the matrix element for the \f$a_1\f$ decay to calculate the running width
+   * @param imode The mode for which the matrix element is needed.
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  double threeBodyMatrixElement(const int ,  const Energy2 q2,
+  double threeBodyMatrixElement(const int imode,  const Energy2 q2,
 				const Energy2 s3, const Energy2 s2, 
-				const Energy2 s1, const Energy  , 
-				const Energy  , const Energy  ) const {
+				const Energy2 s1, const Energy  m1, 
+				const Energy  m2, const Energy  m3) const {
     Energy2 mpi2(sqr(_mpi));
     Complex propb(Trho1(s1,-1)),propa(Trho1(s2,-1)); 
     // the matrix element

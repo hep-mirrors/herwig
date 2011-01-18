@@ -379,6 +379,10 @@ protected:
    * @param pout The momenta of the outgoing particles
    * @param mon  The on-shell masses
    * @param roots The mass of the decaying particle
+   * @param ppartner The momentum of the colour partner
+   * @param mbar The mass of the decaying particle
+   * @param k1 The first scaling factor
+   * @param k2 The second scaling factor
    */
   bool inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 				   vector<Energy> mon,Energy roots,
@@ -414,6 +418,14 @@ protected:
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
 
+  /**
+   *  Apply a transform to the particle and any child, including child ShowerTree
+   *  objects
+   * @param particle The particle
+   * @param r The Lorentz transformation
+   * @param match Whether or not to look at children etc
+   * @param original The original particle
+   */
   void deepTransform(PPtr particle,const LorentzRotation & r,
 		     bool match=true,PPtr original=PPtr()) const;
 

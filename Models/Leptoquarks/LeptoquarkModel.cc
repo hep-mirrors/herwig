@@ -26,7 +26,6 @@ void LeptoquarkModel::doinit()  {
 
 LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0), _rightcouptilde(1.0), _leftcoup1(1.0) , _leftcoup12(1.0), _rightcoup12(1.0), _leftcoup12t(1.0), _dleftcoup(1.0), _drightcoup(1.0), _drightcouptilde(1.0), _dleftcoup1(1.0) , _dleftcoup12(1.0), _drightcoup12(1.0), _dleftcoup12t(1.0), _derivscalef(500.0) {}
 
-LeptoquarkModel::~LeptoquarkModel() {}
 
 IBPtr LeptoquarkModel::clone() const {
   return new_ptr(*this);
