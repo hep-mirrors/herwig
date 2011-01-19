@@ -273,9 +273,11 @@ public:
    * the raw \f$\tilde{x}, y\f$ radiative variables and turns
    * these into a set of 2->3 momenta with associated 
    * Mandelstam variables, Bjorken x values etc. 
+   * @param bornVariables The object for the Born kinematics
    * @param xt The \f$\tilde{x}\f$ radiative variable.
    * @param y  The angular radiative variable (the cosine 
-   * of the  polar angle of the emitted gluon in the partonic 
+   * of the  polar angle of the emitted gluon in the partonic  
+   * @param theta2 The angle \f$\theta_2\f$
    * CMS frame). 
    */
   realVVKinematics(bornVVKinematics bornVariables,double xt, double y, double theta2);
@@ -337,42 +339,168 @@ public:
    * quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
 
-  // First the Born variables:
+  /**
+   * @name First the Born variables:
+   */
+  //@{
+  /**
+   *  \f$s_2\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 s2r() const { return s2r_; }
+
+  /**
+   *  \f$k_1^2\f$ mass of first vector boson
+   */
   Energy2 k12r() const { return k12r_; }
+
+  /**
+   *  \f$k_2^2\f$ mass of second vector boson
+   */
   Energy2 k22r() const { return k22r_; }
+
+  /**
+   * \f$\theta_1\f$ angle from Frixione et al. NPB.383,3
+   */
   double  theta1r() const { return theta1r_; }
+
+  /**
+   * \f$\theta_2\f$ angle from Frixione et al. NPB.383,3
+   */
   double  theta2r() const { return theta2r_; }
+  //@}
 
-  // Then the rest:
+  /**
+   * @name Then the rest:
+   */
+  //@{
+  /**
+   *  \f$p_T^2\f$ in the lab frame
+   */
   Energy2 pT2_in_lab() const { return tkr_*ukr_/sr_; }
-  Energy2 sr() const { return sr_; }
-  Energy2 tkr() const { return tkr_; }   
-  Energy2 ukr() const { return ukr_; }
-  double  cpsir() const { return cpsir_; }
-  double  cpsipr() const { return cpsiprr_; }
-  double  betaxr() const { return betaxr_; }
-  double  v1r() const { return v1r_; }
-  double  v2r() const { return v2r_; }
-  Energy2 q1r() const { return q1r_; }
-  Energy2 q2r() const { return q2r_; } 
-  Energy2 q1hatr() const { return q1hatr_; }
-  Energy2 q2hatr() const { return q2hatr_; }
-  Energy2 w1r() const { return w1r_; }
-  Energy2 w2r() const { return w2r_; }
-  Lorentz5Momentum p1r() const { return p1r_; }
-  Lorentz5Momentum p2r() const { return p2r_; }
-  Lorentz5Momentum kr()  const { return kr_ ; }
-  Lorentz5Momentum k1r() const { return k1r_; }
-  Lorentz5Momentum k2r() const { return k2r_; }
-  void p1r(Lorentz5Momentum p1r) { p1r_ = p1r; }
-  void p2r(Lorentz5Momentum p2r) { p2r_ = p2r; }
-  void kr (Lorentz5Momentum kr ) { kr_  = kr ; }
-  void k1r(Lorentz5Momentum k1r) { k1r_ = k1r; }
-  void k2r(Lorentz5Momentum k2r) { k2r_ = k2r; }
 
+  /**
+   * \f$s\f$ from Frixione et al. NPB.383,3
+   */
+  Energy2 sr() const { return sr_; }
+
+  /**
+   * \f$t_k\f$ from Frixione et al. NPB.383,3
+   */
+  Energy2 tkr() const { return tkr_; }   
+
+  /**
+   * \f$u_k\f$ from Frixione et al. NPB.383,3
+   */
+  Energy2 ukr() const { return ukr_; }
+
+  /**
+   * \f$\cos\psi\f$ from Frixione et al. NPB.383,3
+   */
+  double  cpsir() const { return cpsir_; }
+
+  /**
+   * \f$\cos\psi'\f$ from Frixione et al. NPB.383,3
+   */
+  double  cpsipr() const { return cpsiprr_; }
+
+  /**
+   * \f$\beta_x\f$ from Frixione et al. NPB.383,3
+   */
+  double  betaxr() const { return betaxr_; }
+
+  /**
+   * \f$v_1\f$ variable from Frixione et al. NPB.383,3
+   */
+  double  v1r() const { return v1r_; }
+
+  /**
+   * \f$v_2\f$ variable from Frixione et al. NPB.383,3
+   */
+  double  v2r() const { return v2r_; }
+
+  /**
+   * \f$q_1\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 q1r() const { return q1r_; }
+
+  /**
+   * \f$q_2\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 q2r() const { return q2r_; } 
+
+  /**
+   * \f$\hat q_1\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 q1hatr() const { return q1hatr_; }
+
+  /**
+   * \f$\hat q_2\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 q2hatr() const { return q2hatr_; }
+
+  /**
+   * \f$\hat w_1\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 w1r() const { return w1r_; }
+
+  /**
+   * \f$\hat w_2\f$ variable from Frixione et al. NPB.383,3
+   */
+  Energy2 w2r() const { return w2r_; }
+
+  /**
+   *  4-momentum \f$p_1\f$ from Frixione et al. NPB.383,3
+   */
+  Lorentz5Momentum p1r() const { return p1r_; }
+
+  /**
+   *  4-momentum \f$p_2\f$ from Frixione et al. NPB.383,3
+   */
+  Lorentz5Momentum p2r() const { return p2r_; }
+
+  /**
+   *  4-momentum \f$k\f$ from Frixione et al. NPB.383,3
+   */
+  Lorentz5Momentum kr()  const { return kr_ ; }
+
+  /**
+   *  4-momentum \f$k_1\f$ from Frixione et al. NPB.383,3
+   */
+  Lorentz5Momentum k1r() const { return k1r_; }
+
+  /**
+   *  4-momentum \f$k_2\f$ from Frixione et al. NPB.383,3
+   */
+  Lorentz5Momentum k2r() const { return k2r_; }
+
+  /**
+   *  Set 4-momentum \f$p_1\f$ from Frixione et al. NPB.383,3
+   */
+  void p1r(Lorentz5Momentum p1r) { p1r_ = p1r; }
+
+  /**
+   *  Set 4-momentum \f$p_2\f$ from Frixione et al. NPB.383,3
+   */
+  void p2r(Lorentz5Momentum p2r) { p2r_ = p2r; }
+
+  /**
+   *  Set 4-momentum \f$k\f$ from Frixione et al. NPB.383,3
+   */
+  void kr (Lorentz5Momentum kr ) { kr_  = kr ; }
+
+  /**
+   *  Set 4-momentum \f$k_1\f$ from Frixione et al. NPB.383,3
+   */
+  void k1r(Lorentz5Momentum k1r) { k1r_ = k1r; }
+
+  /**
+   *  Set 4-momentum \f$k_2\f$ from Frixione et al. NPB.383,3
+   */
+  void k2r(Lorentz5Momentum k2r) { k2r_ = k2r; }
+  //@}
  
 private:
+
   /**
    * The bornVVKinematics object underlying the 2->3 kinematics.
    */
@@ -384,9 +512,25 @@ private:
   double xbar_;
 
   // The `raw' radiative variables.
+  /**
+   * @name The `raw' radiative variables.
+   */
+  //@{
+  /**
+   *  The \f$\tilde{x}\f$ radiative variable
+   */
   double xt_;
+
+  /**
+   *  The \f$y\f$ radiative variable
+   */
   double y_;
+
+  /**
+   *  The \f$x_r\f$ radiative variable
+   */
   double xr_;
+  //@}
 
   /**
    * The momentum fraction of the parton incident from the +z direction.
@@ -402,32 +546,136 @@ private:
    * Invariants required for the evaluation of next-to-leading order
    * quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
-  // First the Born variables:
+
+  /**
+   * @name First the Born variables:
+   */
+  //@{
+  /**
+   *  \f$s_2\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 s2r_;
+
+  /**
+   *  \f$k_1^2\f$ mass of first vector boson
+   */
   Energy2 k12r_;
+
+  /**
+   *  \f$k_2^2\f$ mass of second vector boson
+   */
   Energy2 k22r_;
+
+  /**
+   * \f$\theta_1\f$ angle from Frixione et al. NPB.383,3
+   */
   double  theta1r_;
+
+  /**
+   * \f$\theta_2\f$ angle from Frixione et al. NPB.383,3
+   */
   double  theta2r_;
-  // Then the rest:
+  //@}
+
+  /**
+   * @name Then the rest:
+   */
+  //@{
+  /**
+   * \f$s\f$ from Frixione et al. NPB.383,3
+   */
   Energy2 sr_;
+
+  /**
+   * \f$t_k\f$ from Frixione et al. NPB.383,3
+   */
   Energy2 tkr_;
+
+  /**
+   * \f$u_k\f$ from Frixione et al. NPB.383,3
+   */
   Energy2 ukr_;
+
+  /**
+   * \f$\cos\psi\f$ from Frixione et al. NPB.383,3
+   */
   double  cpsir_;
+
+  /**
+   * \f$\cos\psi'\f$ from Frixione et al. NPB.383,3
+   */
   double  cpsiprr_;
+
+  /**
+   * \f$\beta_x\f$ from Frixione et al. NPB.383,3
+   */
   double  betaxr_;
+
+  /**
+   * \f$v_1\f$ variable from Frixione et al. NPB.383,3
+   */
   double  v1r_;
+
+  /**
+   * \f$v_2\f$ variable from Frixione et al. NPB.383,3
+   */
   double  v2r_;
+
+  /**
+   * \f$q_1\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 q1r_;
+
+  /**
+   * \f$q_2\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 q2r_;
+
+  /**
+   * \f$\hat q_1\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 q1hatr_;
+
+  /**
+   * \f$\hat q_2\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 q2hatr_;
+
+  /**
+   * \f$\hat w_1\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 w1r_;
+
+  /**
+   * \f$\hat w_2\f$ variable from Frixione et al. NPB.383,3
+   */
   Energy2 w2r_;
+
+  /**
+   *  4-momentum \f$p_1\f$ from Frixione et al. NPB.383,3
+   */
   Lorentz5Momentum p1r_;
+
+  /**
+   *  4-momentum \f$p_2\f$ from Frixione et al. NPB.383,3
+   */
   Lorentz5Momentum p2r_;
+
+  /**
+   *  4-momentum \f$k\f$ from Frixione et al. NPB.383,3
+   */
   Lorentz5Momentum kr_;
+
+  /**
+   *  4-momentum \f$k_1\f$ from Frixione et al. NPB.383,3
+   */
   Lorentz5Momentum k1r_;
+
+  /**
+   *  4-momentum \f$k_2\f$ from Frixione et al. NPB.383,3
+   */
   Lorentz5Momentum k2r_;
+  //@}
 
 };
 

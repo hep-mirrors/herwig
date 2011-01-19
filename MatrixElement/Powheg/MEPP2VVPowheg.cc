@@ -70,6 +70,20 @@ ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
 
 void MEPP2VVPowheg::Init() {
 
+  static ClassDocumentation<MEPP2VVPowheg> documentation
+    ("The MEPP2VVPowheg class implements the NLO matrix elements for the production of"
+     "pairs of electroweak vector bosons.",
+     "The calcultaion of $W^+W^-$, $W^\\pm Z^0$ and $Z^0Z^0$ production"
+     " in hadron collisions at next-to-leading order in the POWHEG scheme"
+     " is described in \\cite{Hamilton:2010mb}.",
+     "\\bibitem{Hamilton:2010mb}\n"
+     " K.~Hamilton,\n"
+     "%``A positive-weight next-to-leading order simulation of weak boson pair\n"
+     "%production,''\n"
+     "JHEP {\bf 1101} (2011) 009\n"
+     "[arXiv:1009.5391 [hep-ph]].\n"
+     "%%CITATION = JHEPA,1101,009;%%\n");
+
   static Switch<MEPP2VVPowheg,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
