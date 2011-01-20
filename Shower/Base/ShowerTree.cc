@@ -355,6 +355,29 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
       }
     }
   }
+  else {
+    for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
+      ShowerParticlePtr init=(*cit).first->progenitor();
+      assert(init->getThePEGBase());
+      PPtr original = (*cit).first->original();
+      if(original->parents().empty()) continue;
+      PPtr hadron= original->parents()[0];
+      assert(!original->children().empty());
+      PPtr copy=cit->first->copy();
+      ParticleVector intermediates=original->children();
+      for(unsigned int ix=0;ix<intermediates.size();++ix) {
+	init->abandonChild(intermediates[ix]);
+	copy->abandonChild(intermediates[ix]);
+      }
+      // break mother/daugther relations
+      init->addChild(original);
+      hadron->abandonChild(original);
+      // no showering for this particle
+      updateColour(init);
+      hadron->addChild(init);
+      pstep->addIntermediate(init);
+    }
+  }
   // final-state radiation
   for(cjt=outgoingLines().begin();cjt!=outgoingLines().end();++cjt) {
     ShowerParticlePtr init=(*cjt).first->progenitor();
