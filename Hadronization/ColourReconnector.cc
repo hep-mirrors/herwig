@@ -32,7 +32,7 @@ void ColourReconnector::rearrange(EventHandler & ch,
 
   ClusterVector newClusters = clusters;
 
-  // try avoiding systematic errors by randomizing the reconnection order
+  // try to avoid systematic errors by randomising the reconnection order
   long (*p_irnd)(long) = UseRandom::irnd;
   random_shuffle( newClusters.begin(), newClusters.end(), p_irnd ); 
 
