@@ -248,7 +248,22 @@ public:
   /**
    *  Transform the tree
    */
-  void transform(const LorentzRotation & rot);
+  void transform(const LorentzRotation & rot, bool applyNow);
+
+  /**
+   *  Apply any postphoned transformations
+   */
+  void applyTransforms();
+
+  /**
+   *   Clear any postphoned transformations
+   */ 
+  void clearTransforms();
+
+  /**
+   *  Transform which needs to be applied
+   */
+  const LorentzRotation & transform() {return _transforms;}
 
 protected:
 
@@ -373,6 +388,11 @@ private:
    *  Has this tree showered
    */
   bool _hasShowered;
+
+  /**
+   *  The transforms which still need to be applied
+   */
+  LorentzRotation _transforms;
 
 private:
 

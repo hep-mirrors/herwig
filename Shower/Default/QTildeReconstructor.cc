@@ -1430,7 +1430,7 @@ reconstructFinalStateSystem(bool applyBoost,
       for(tit  = _currentTree->treelinks().begin();
 	  tit != _currentTree->treelinks().end();++tit) {
 	if(tit->second.first && tit->second.second==tempJetKin.parent)
-	  tit->first->transform(LorentzRotation(beta_cm));
+	  tit->first->transform(LorentzRotation(beta_cm),false);
       }
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
@@ -2170,12 +2170,13 @@ void QTildeReconstructor::deepTransform(PPtr particle,
     if(tit->second.first && tit->second.second==original) {
       Lorentz5Momentum pnew = tit->first->incomingLines().begin()
 	->first->progenitor()->momentum();
+      pnew *=  tit->first->transform();
       Lorentz5Momentum pdiff = porig-pnew;
       Energy2 test = sqr(pdiff.x()) + sqr(pdiff.y()) + 
 	sqr(pdiff.z()) + sqr(pdiff.t());
       LorentzRotation rot;
       if(test>1e-6*GeV2) rot = solveBoost(porig,pnew);
-      tit->first->transform(r*rot);
+      tit->first->transform(r*rot,false);
     }
   }
 }
