@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *--#[ log:
 *	$Id: ffcrr.f,v 1.5 1995/11/10 19:04:23 gj Exp $
 *	$Log: ffcrr.f,v $
@@ -76,7 +79,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

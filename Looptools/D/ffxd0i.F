@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffx2ir:
 	subroutine ffx2ir(cs1,cs2,xpip,dpipjp,ier)
 ***#[*comment:***********************************************************
@@ -47,7 +50,7 @@
 *
 *	common
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *

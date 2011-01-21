@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ff2dl2:
 	subroutine ff2dl2(del2d2,del2n,xpi,dpipj,piDpj, i,
      +			j,k,kj,iskj,l, m,n,nm,isnm, ns, ier)
@@ -37,7 +40,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ get del2n:
 *	we need this in any case !
@@ -224,7 +227,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations: 
 *  #[ special cases:
 	if ( i .eq. n .or. i .eq. m ) then
@@ -359,7 +362,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations: 
 *  #[ split up l,m:
 	if ( i .eq. l ) then

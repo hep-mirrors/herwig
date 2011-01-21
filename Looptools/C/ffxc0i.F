@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *--#[ log:
 *	$Id: ffxc0i.f,v 1.3 1996/06/03 12:11:43 gj Exp $
 *	$Log: ffxc0i.f,v $
@@ -47,7 +50,7 @@ c
 *
 *	common blocks etc
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -186,14 +189,13 @@ c
 	else
 	    n = 15
 	endif
-	do 10 i=1,n
+	do i=1,n
 	    csum = csum + cs(i)
 	    xmax = max(xmax,absc(csum))
-   10	continue
+	enddo
 	csum = csum + ipi12*DBLE(pi12)
 	cc0 = -csum*DBLE(1/(2*sdel2))
 *  #] sum:
-  900	continue
 *###] ffxc0i:
 	end
 
@@ -228,7 +230,7 @@ c
 *
 *	common blocks etc
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -716,7 +718,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ work:

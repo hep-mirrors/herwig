@@ -1,7 +1,7 @@
 * Bget.F
 * retrieve the two-point tensor coefficients
 * this file is part of LoopTools
-* last modified 28 Oct 05 th
+* last modified 15 Jun 09 th
 
 #include "defs.h"
 
@@ -19,7 +19,9 @@
 
 	para(1) = p
 	para(2) = m1
+	if( abs(para(2)) .lt. minmass ) para(2) = 0
 	para(3) = m2
+	if( abs(para(3)) .lt. minmass ) para(3) = 0
 
 	XBget = cachelookup(para, Bval(1,0), XBcoeff, RC*Pbb, Nbb)
 	end

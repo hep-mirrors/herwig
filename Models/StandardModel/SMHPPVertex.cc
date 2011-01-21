@@ -133,7 +133,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   }
   case 2: {
     if(q2 != _q2last||_couplast==0.) {
-      clearcache();
+      Looptools::clearcache();
       double e = electroMagneticCoupling(q2);
       _couplast = pow(e,3)/sqrt(sin2ThetaW());
       _q2last = q2;
@@ -276,5 +276,6 @@ void SMHPPVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(electroMagneticCoupling(sqr(mh))))
 //     /1024./pow(Constants::pi,5)/16.*sqr(mh/_mw)*mh*std::norm(I);
 //   cerr << "testing anal " << width/GeV << "\n";
+  Looptools::ltexi();
 }
 

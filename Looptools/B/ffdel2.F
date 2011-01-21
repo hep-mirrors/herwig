@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffdel2:
 	subroutine ffdel2(del2,piDpj,ns,i1,i2,i3,lerr,ier)
 *************************************************************************
@@ -21,7 +24,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	calculations
 *
@@ -76,7 +79,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ stupid tree:
 *	1
@@ -206,7 +209,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ stupid tree:
 	idsub = idsub + 1
@@ -286,7 +289,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	if ( in .eq. jn ) then
@@ -372,7 +375,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *

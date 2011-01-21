@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcc0p:
 	subroutine ffcc0p(cs3,ipi12,isoort,clogi,ilogi,cpi,cpipj,
      +		cpiDpj,sdel2,cel2si,etalam,etami,delpsi,alpha,npoin,ier)
@@ -55,7 +58,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *  #] declarations:
 *  #[ get roots etc:
@@ -313,7 +316,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

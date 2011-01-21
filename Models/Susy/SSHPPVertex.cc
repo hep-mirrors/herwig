@@ -86,7 +86,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	 particle3->id() == ParticleID::gamma );
   // couplings
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
-    clearcache();
+    Looptools::clearcache();
     theCouplast = sqr(electroMagneticCoupling(q2))*weakCoupling(q2);
     Energy mt   = theMSSM->mass(q2, thetop);    
     Energy mb   = theMSSM->mass(q2, thebot);
@@ -574,5 +574,6 @@ void SSHPPVertex::doinit() {
 // 	 << pre*std::norm(Isb1+Isb2+Ist1+Ist2+Istau1+Istau2+
 // 			  Itop+Ibot+Itau+Ih+IW+IC[0]+IC[1])/GeV << "\n";
 //   }
+  Looptools::ltexi();
 }
  

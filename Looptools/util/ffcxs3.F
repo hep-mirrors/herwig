@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcxs3:
 	subroutine ffcxs3(cs3,ipi12,y,z,dyz,d2yzz,dy2z,xpi,piDpj,ii,ns,
      +					isoort,ier)
@@ -53,7 +56,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ get counters:
@@ -187,7 +190,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -398,7 +401,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -571,7 +574,7 @@
 *
 *	common
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ complex  masses or imaginary roots:

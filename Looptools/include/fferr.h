@@ -260,11 +260,11 @@
 	character*80 e96
 	parameter (e96="ffzf0: Im(p^2) != 0")
 	character*80 e97
-	parameter (e97="ffxc0j: ill-defined IR-divergent C0 f"//
-     +   "or massless charged particles.")
+	parameter (e97="ffxc0j: ill-defined IR-divergent C0 "//
+     +   "for massless charged particles.")
 	character*80 e98
-	parameter (e98="ffxdbd: ill-defined IR-divergent D0 f"//
-     +   "or massless charged particles.")
+	parameter (e98="ffxdbd: ill-defined IR-divergent D0 "//
+     +   "for massless charged particles.")
 	character*80 e100
 	parameter (e100="ffrcvr: probably underflow, I do"//
      +   " not know where or how severe.")
@@ -272,7 +272,24 @@
 	parameter (e101="ffxdb1: case not defined")
 	character*80 e102
 	parameter (e102="ffxdb11: case not defined")
-	character*80 error(102)
+	character*80 e103
+	parameter (e103="ffd0c: cannot handle this case")
+	character*80 e104
+	parameter (e104="ffwbeta: prefactor 1/(SV-TU) = 1/0 "//
+     +    "for all y")
+	character*80 e105
+	parameter (e105="ffT_lin: prefactor 1/(SV-TU) = 1/0 "//
+     +    "for all y")
+	character*80 e99
+	parameter (e99="ffT13: prefactor 1/(SV-TU) = 1/0 "//
+     +    "for all y")
+	character*80 e89
+	parameter (e89="ffS2: log(0) singularity")
+	character*80 e90
+	parameter (e90="ffS3n: end-point singularity")
+	character*80 e91
+	parameter (e91="ffS3n: log(0) singularity")
+	character*80 error(105)
 	data error / e1,e2,e3,e4,e5,e6,e7,e8,e9,
      +   e10,e11,e12,e13,e14,e15,e16,e17,e18,e19,
      +   e20,e21,e22,e23,e24,e25,e26,e27,e28,e29,
@@ -281,6 +298,6 @@
      +   e50,e51,e52,e53,e54,e55,e56,e57,e58,e59,
      +   e60,e61,e62,e63,e64,e65,e66,e67,e68,e69,
      +   e70,e71,e72,e73,e74,e75,e76,e77,e78,e79,
-     +   e80,e81,e82,e83,e84,e85,e86,e87,e88," ",
-     +   " "," ",e92,e93,e94,e95,e96,e97,e98," ",
-     +   e100,e101,e102 /
+     +   e80,e81,e82,e83,e84,e85,e86,e87,e88,e89,
+     +   e90,e91,e92,e93,e94,e95,e96,e97,e98,e99,
+     +   e100,e101,e102,e103,e104,e105 /
