@@ -39,7 +39,7 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   channelwgtA_(0.45),channelwgtB_(0.15),
 			   ggPow_(1.6), qgPow_(1.6), enhance_(1.1),
 			   nover_(0), ntry_(0), ngen_(0), maxwgt_(0.),
-			   power_(2.0), pregg_(5.), preqg_(3.),
+			   power_(2.0), pregg_(7.), preqg_(3.),
 			   pregqbar_(3.), minpT_(2.*GeV)
 {}
 
@@ -227,7 +227,7 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,double> interfacePrefactorgg
     ("Prefactorgg",
      "The prefactor for the sampling of the q qbar channel",
-     &MEPP2Higgs::pregg_, 5.0, 0.0, 1000.0,
+     &MEPP2Higgs::pregg_, 7.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<MEPP2Higgs,double> interfacePrefactorqg
