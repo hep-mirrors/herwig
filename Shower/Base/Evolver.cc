@@ -1425,7 +1425,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
 	}
       }
       if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-				     << "Evolver::generateHardest()" 
+				     << "Evolver::connectTrees()" 
 				     << Exception::runerror;
       (**cit).sudakov(sudakov);
     }
