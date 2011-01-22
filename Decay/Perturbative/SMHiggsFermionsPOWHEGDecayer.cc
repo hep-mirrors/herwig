@@ -67,6 +67,7 @@ generateHardest(ShowerTreePtr tree) {
   partons_.resize(2);
   partons_[0] = QProgenitor->progenitor()   ->dataPtr();
   partons_[1] = QbarProgenitor->progenitor()->dataPtr();
+  if(!partons_[0]->coloured()) return HardTreePtr();
   // momentum of the partons
   quark_.resize(2);
   quark_[0] = QProgenitor   ->copy()->momentum();
@@ -109,12 +110,6 @@ generateHardest(ShowerTreePtr tree) {
   spectator->set5Momentum(quark_[ispectator]);  
   gauge    ->set5Momentum(gauge_); 
   hboson->set5Momentum(higgs_->momentum());  
-  // generator()->log() << "testing momenta quark " 
-  //   	     << quark_[0]/GeV << " " << quark_[0].m()/GeV << "\n";
-  // generator()->log() << "testing momenta qbar  " 
-  //   	     << quark_[1]/GeV << " " << quark_[1].m()/GeV << "\n";
-  // generator()->log() << "testing momenta gluon " 
-  //   	     << gauge_/GeV    << " " << gauge_.m()/GeV    << "\n";
   Lorentz5Momentum parentMomentum(quark_[iemitter]+gauge_);
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
@@ -162,7 +157,6 @@ generateHardest(ShowerTreePtr tree) {
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  //  generator()->log() << *hardtree << "\n";
   return hardtree;
 }
 

@@ -201,25 +201,8 @@ private:
    */
   Energy pTmin_;
 
-
-//   /**
-//    *  The dalitz variables (xq,xqb,xg=2-xq-xqb). These are
-//    *  the COM energies of the q,qb,g divided by 0.5*sqrt(_s).
-//    */
-//   double xq_;
-//   double xqb_;
-//   double xg_;
-
   //  radiative variables (pt,y)
   Energy pT_;
-
- 
-//   // The phi angle of the rotation of emitter-gluon plane 
-//   double _phi;
-
-//   // iemit = 0 quark emission: =1 antiquark emission
-//   int _iemitter;
-//   int _ispectator;
 
   /**
    *  The ParticleData objects for the fermions
