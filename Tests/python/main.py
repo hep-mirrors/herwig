@@ -1,9 +1,9 @@
 import compare
 # directories for the comparison
-directory1="trunk/"
-directory2="recon/"
+directory1="trunk-ThePEG-trunk/Tests/"
+directory2="trunk-ThePEG-NLO/Tests/"
 # location for the plots
-plotLocation="http://projects.hepforge.org/herwig/private/images/peter/comparison1"
+plotLocation="http://projects.hepforge.org/herwig/private/images/simon/NLO-validation/trunk-trunk-to-trunk-NLO"
 # file for the wiki
 wiki = open("wiki.info",'w') 
 wiki.write("= Comparision of Heriwg++ results =\n")
