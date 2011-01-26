@@ -100,6 +100,7 @@ void NMSSMPPHVertex::doinit()  {
   orderInGem(3);
   orderInGs(0);
   VVSLoopVertex::doinit();
+  Looptools::ltexi();
 }
 
 void NMSSMPPHVertex::persistentOutput(PersistentOStream & os) const {
@@ -136,7 +137,7 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
   long hid(p3->id());
   double rt = sqrt(0.5);
   if( q2 != _q2last ) {
-    clearcache();
+    Looptools::clearcache();
     _couplast = sqr(electroMagneticCoupling(q2));
     _coup = weakCoupling(q2);
     _q2last = q2;

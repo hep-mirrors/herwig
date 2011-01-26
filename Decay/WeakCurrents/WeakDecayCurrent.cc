@@ -59,9 +59,9 @@ void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create)
   }
   for(unsigned int ix=0;ix<_quark.size();++ix) {
     if(ix<_numbermodes) {
-      output << "set " << name() << ":Quark "     
+      output << "newdef " << name() << ":Quark "     
 	     << ix << "  " << _quark[ix]     << endl;
-      output << "set " << name() << ":AntiQuark " 
+      output << "newdef " << name() << ":AntiQuark " 
 	     << ix << "  " << _antiquark[ix] << endl;
     }
     else {

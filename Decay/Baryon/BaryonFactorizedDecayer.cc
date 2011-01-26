@@ -776,11 +776,11 @@ void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) con
   unsigned int ix;
   if(header){output << "update decayers set parameters=\"";}
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":a1Bottom "  << _a1b << "\n";
-  output << "set " << name() << ":a2Bottom "  << _a2b << "\n";
-  output << "set " << name() << ":a1Charm "   << _a1c << "\n";
-  output << "set " << name() << ":a2Charm "   << _a2c << "\n";
-  output << "set " << name() << ":CKM "       << _theCKM->name() << " \n";
+  output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
+  output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
+  output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";
+  output << "newdef " << name() << ":a2Charm "   << _a2c << "\n";
+  output << "newdef " << name() << ":CKM "       << _theCKM->name() << " \n";
   for(ix=0;ix<_wgtloc.size();++ix)
     {output << "insert " << name() << ":WeightLocation " << ix << " " 
 	    << _wgtloc[ix] << "\n";}
@@ -791,8 +791,8 @@ void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) con
     {output << "insert " << name() << ":Weights "        << ix << " " 
 	    << _weights[ix] << "\n";}
   _current->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":Current " << _current->name() << " \n";
+  output << "newdef " << name() << ":Current " << _current->name() << " \n";
   _form->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":FormFactor " << _form->name() << " \n";
+  output << "newdef " << name() << ":FormFactor " << _form->name() << " \n";
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }

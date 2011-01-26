@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffcxs4.f,v 1.3 1995/10/17 06:55:09 gj Exp $
 *	$Log: ffcxs4.f,v $
 c Revision 1.3  1995/10/17  06:55:09  gj
@@ -38,7 +41,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations: 
 *  #[ groundwork:
 	if ( isoort(2) .eq. 0 ) then
@@ -141,7 +144,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -287,7 +290,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations: 
 *  #[ groundwork:
 	if ( dwz .eq. 0 .and. iepsz .eq. iepsw ) return
@@ -492,7 +495,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

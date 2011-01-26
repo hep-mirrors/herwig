@@ -6,56 +6,56 @@
 
 # create the Standard Model fermion-antifermion Z vertex
 create Herwig::SMFFZVertex FFZVertex
-set /Herwig/Model:Vertex/FFZ FFZVertex
+newdef /Herwig/Model:Vertex/FFZ FFZVertex
 
 # create the Standard Model fermion-antiferion W vertex
 create Herwig::SMFFWVertex FFWVertex
-set /Herwig/Model:Vertex/FFW FFWVertex
+newdef /Herwig/Model:Vertex/FFW FFWVertex
 
 # create the standard model fermion-fermion higgs vertex
 create Herwig::SMFFHVertex FFHVertex
-set /Herwig/Model:Vertex/FFH FFHVertex
+newdef /Herwig/Model:Vertex/FFH FFHVertex
 
 # create the Standard Model quark-antiquark-gluon vertex
 create Herwig::SMFFGVertex FFGVertex
-set /Herwig/Model:Vertex/FFG FFGVertex
+newdef /Herwig/Model:Vertex/FFG FFGVertex
 
 # create the standard model fermion-antifermion gamma vertex
 create Herwig::SMFFPVertex FFPVertex
-set /Herwig/Model:Vertex/FFP FFPVertex
+newdef /Herwig/Model:Vertex/FFP FFPVertex
 
 # create the Standard Model triple gluon vertex
 create Herwig::SMGGGVertex GGGVertex
-set /Herwig/Model:Vertex/GGG GGGVertex
+newdef /Herwig/Model:Vertex/GGG GGGVertex
 
 # create the standartd model 4-gluon vertex
 create Herwig::SMGGGGVertex GGGGVertex
-set /Herwig/Model:Vertex/GGGG GGGGVertex
+newdef /Herwig/Model:Vertex/GGGG GGGGVertex
 
 # create the standard model WWH vertex
 create Herwig::SMWWHVertex WWHVertex
-set /Herwig/Model:Vertex/WWH WWHVertex
+newdef /Herwig/Model:Vertex/WWH WWHVertex
 
 # create the standard model WWW vertex
 create Herwig::SMWWWVertex WWWVertex
-set /Herwig/Model:Vertex/WWW WWWVertex
+newdef /Herwig/Model:Vertex/WWW WWWVertex
 
 # create the standard model WWWW vertex
 create Herwig::SMWWWWVertex WWWWVertex
-set /Herwig/Model:Vertex/WWWW WWWWVertex
+newdef /Herwig/Model:Vertex/WWWW WWWWVertex
 
 #create the standard model HGG vertex
 create Herwig::SMHGGVertex HGGVertex
-set /Herwig/Model:Vertex/HGG HGGVertex
+newdef /Herwig/Model:Vertex/HGG HGGVertex
 
 #create the standard model HPP vertex
 create Herwig::SMHPPVertex HPPVertex
-set /Herwig/Model:Vertex/HPP HPPVertex
+newdef /Herwig/Model:Vertex/HPP HPPVertex
 
 #create the standard model HHH vertex
 create Herwig::SMHHHVertex HHHVertex
-set /Herwig/Model:Vertex/HHH HHHVertex
+newdef /Herwig/Model:Vertex/HHH HHHVertex
 
 #create the standard model WWHH vertex
 create Herwig::SMWWHHVertex WWHHVertex
-set /Herwig/Model:Vertex/WWHH WWHHVertex
+newdef /Herwig/Model:Vertex/WWHH WWHHVertex

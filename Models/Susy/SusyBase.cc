@@ -338,6 +338,7 @@ void SusyBase::readSetup(istream & is) {
     // start of a block
     if(line.find("block") == 0) {
       string name = StringUtils::car(StringUtils::cdr(line), " #");
+      name = StringUtils::stripws(name);
       // mixing matrix
       if((name.find("mix")  != string::npos && 
 	  name.find("hmix") != 0)) {
@@ -345,7 +346,7 @@ void SusyBase::readSetup(istream & is) {
 	MixingVector vals = readMatrix(cfile,row,col);
 	mixings_[name] = make_pair(make_pair(row,col),vals);
       }
-      else if(name.find("au") == 0||name.find("ad") == 0||
+      else if(name.find("au") == 0 || name.find("ad") == 0 ||
 	      name.find("ae") == 0 ) {
 	string test = StringUtils::car(line, "#");
 	while (test.find("=")!= string::npos) {
@@ -354,9 +355,9 @@ void SusyBase::readSetup(istream & is) {
 	istringstream is(test);
 	double scale;
 	is >> scale;
-	if(scale>1e10) continue;
 	unsigned int row(0),col(0);
 	MixingVector vals = readMatrix(cfile,row,col);
+	if(scale>1e10) continue;
 	mixings_[name] = make_pair(make_pair(row,col),vals);
       }
       else if( name.find("info") == string::npos) {

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcel2:
 	subroutine ffcel2(del2,piDpj,ns,i1,i2,i3,lerr,ier)
 *************************************************************************
@@ -22,7 +25,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
 *
@@ -79,7 +82,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -214,7 +217,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -288,7 +291,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

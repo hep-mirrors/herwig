@@ -66,6 +66,7 @@ public:
    * of the parent kinematics. 
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
 			      const ShowerParticleVector & theChildren,
@@ -76,6 +77,7 @@ public:
    * of the children. This method will be used by the KinematicsReconstructor.
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateParent(const tShowerParticlePtr theParent,
 			    const ShowerParticleVector & theChildren,

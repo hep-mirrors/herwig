@@ -1,7 +1,7 @@
 * ini.F
 * routines for initializing and setting some parameters
 * this file is part of LoopTools
-* last modified 7 Dec 05 th
+* last modified 9 Dec 10 th
 
 #include "defs.h"
 
@@ -15,7 +15,7 @@
 
 	do i = 1, ncaches
 	  cacheptr(1,1,i) = 0
-	  cacheptr(1,2,i) = 0
+	  cacheptr(2,1,i) = 0
 	enddo
 	end
 
@@ -30,7 +30,7 @@
 
 	do i = 1, ncaches
 	  savedptr(1,i) = cacheptr(1,1,i)
-	  savedptr(2,i) = cacheptr(1,2,i)
+	  savedptr(2,i) = cacheptr(2,1,i)
 	enddo
 	end
 
@@ -45,7 +45,7 @@
 
 	do i = 1, ncaches
 	  cacheptr(1,1,i) = savedptr(1,i)
-	  cacheptr(1,2,i) = savedptr(2,i)
+	  cacheptr(2,1,i) = savedptr(2,i)
 	enddo
 	end
 
@@ -57,6 +57,15 @@
 	implicit none
 	double complex base(*)
 	integer offset
+
+	logical ini
+	data ini /.TRUE./
+
+	if( ini ) then
+	  print *, "setcachelast is deprecated"
+	  print *, "use clearcache or restorecache instead"
+	  ini = .FALSE.
+	endif
 
 	if( offset .eq. 0 ) then
 	  call clearcache
@@ -72,6 +81,15 @@
 	integer function getcachelast(base)
 	implicit none
 	double complex base(*)
+
+	logical ini
+	data ini /.TRUE./
+
+	if( ini ) then
+	  print *, "getcachelast is deprecated"
+	  print *, "use markcache instead"
+	  ini = .FALSE.
+	endif
 
 	getcachelast = 1
 	call markcache
@@ -141,6 +159,28 @@
 #include "lt.h"
 
 	getlambda = lambda
+	end
+
+************************************************************************
+
+	subroutine setminmass(minmass_)
+	implicit none
+	double precision minmass_
+
+#include "lt.h"
+
+	minmass = minmass_
+	call clearcache
+	end
+
+************************************************************************
+
+	double precision function getminmass()
+	implicit none
+
+#include "lt.h"
+
+	getminmass = minmass
 	end
 
 ************************************************************************
@@ -259,6 +299,27 @@
 
 	debugfrom = debugfrom_
 	debugto = debugto_
+	end
+
+************************************************************************
+
+	subroutine setcmpbits(cmpbits_)
+	implicit none
+	integer cmpbits_
+
+#include "lt.h"
+
+	cmpbits = cmpbits_
+	end
+
+************************************************************************
+
+	integer function getcmpbits()
+	implicit none
+
+#include "lt.h"
+
+	getcmpbits = cmpbits
 	end
 
 ************************************************************************

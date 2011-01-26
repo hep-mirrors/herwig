@@ -134,8 +134,8 @@ void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::LambdabExcitedLambdacSumRuleFormFactor " 
 		    << name() << " \n";
-  output << "set " << name() << ":Xi          " << _xi1          << " \n";
-  output << "set " << name() << ":Rho2        " << _rho2         << " \n";
+  output << "newdef " << name() << ":Xi          " << _xi1          << " \n";
+  output << "newdef " << name() << ":Rho2        " << _rho2         << " \n";
   BaryonFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

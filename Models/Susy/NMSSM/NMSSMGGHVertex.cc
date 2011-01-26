@@ -82,6 +82,7 @@ void NMSSMGGHVertex::doinit()  {
   orderInGs(2);
 
   VVSLoopVertex::doinit();
+  Looptools::ltexi();
 }
 
 void NMSSMGGHVertex::persistentOutput(PersistentOStream & os) const {
@@ -114,7 +115,7 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 				 tcPDPtr p3) {			 
   long hid(p3->id());
   if( q2 != _q2last ) {
-    clearcache();
+    Looptools::clearcache();
     _couplast = sqr(strongCoupling(q2));
     _coup = weakCoupling(q2);
     _q2last = q2;

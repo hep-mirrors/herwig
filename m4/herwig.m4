@@ -4,27 +4,27 @@ AC_DEFUN([HERWIG_CHECK_ABS_BUG],
 AC_REQUIRE([HERWIG_COMPILERFLAGS])
 if test "$GCC" = "yes"; then
 AC_MSG_CHECKING([for gcc abs bug])
-AC_RUN_IFELSE(
+AC_RUN_IFELSE([
 	AC_LANG_PROGRAM(
-		[ int foo (int i) { return -2 * __builtin_abs(i - 2); }	],
-		[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]
-	),
+		[[ int foo (int i) { return -2 * __builtin_abs(i - 2); } ]],
+		[[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]]
+	)],
 	[ AC_MSG_RESULT([not found. Compiler is ok.]) ],
 	[
 	AC_MSG_RESULT([found. Builtin abs() is buggy.])
 	AC_MSG_CHECKING([if -fno-builtin-abs works])
 	oldcxxflags=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -fno-builtin-abs"
-	AC_RUN_IFELSE(
+	AC_RUN_IFELSE([
 		AC_LANG_PROGRAM(
-			[
+			[[
 			#include <cstdlib>
 			int foo (int i) { return -2 * std::abs(i - 2); }
-			],
-			[
+			]],
+			[[
 			if (foo(1) != -2 || foo(3) != -2) return 1; 
-			]
-		),
+			]]
+		)],
 		[
 		AC_MSG_RESULT([yes. Setting -fno-builtin-abs.])
 		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin-abs"
@@ -351,6 +351,7 @@ AC_MSG_CHECKING([for BSM models to include])
 
 LOAD_RS=""
 LOAD_SUSY=""
+LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
@@ -374,9 +375,11 @@ if test ! "$all"; then
    IFS="$oldIFS"
 fi
 
-if test "$nmssm"; then
+if test "$nmssm" -o "$all"; then
+   LOAD_NMSSM="library HwNMSSM.so"
    mssm=yes
 fi
+AC_SUBST(LOAD_NMSSM)
 
 if test "$rpv"; then
    mssm=yes
@@ -406,6 +409,11 @@ if test "$add" -o "$all"; then
    LOAD_ADD="library HwADDModel.so"
 fi
 AC_SUBST(LOAD_ADD)
+
+if test "$leptoquarks" -o "$all"; then
+   LOAD_LEPTOQUARKS="library HwLeptoquarkModel.so"
+fi
+AC_SUBST(LOAD_LEPTOQUARKS)
 
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])

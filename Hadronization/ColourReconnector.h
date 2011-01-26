@@ -21,7 +21,7 @@ using namespace ThePEG;
 /** \ingroup Hadronization
  *  \class ColourReconnector
  *  \brief Class for changing colour reconnections of partons.
- *  \author Alberto Ribon
+ *  \author Alberto Ribon, Christian Roehr
  * 
  *  This class does the nonperturbative colour rearrangement, after the 
  *  nonperturbative gluon splitting and the "normal" cluster formation. 
@@ -46,12 +46,10 @@ public:
   //@}
 
   /**
-   * Does the colour rearrangment.
-   *
-   * Does the colour rearrangement, starting from the list of particles
-   * in the event record, and the collection of "usual" clusters passed
-   * in input. If the actual rearrangement is accepted, the new collection 
-   * of clusters is overriden to the intial one.
+   * Does the colour rearrangement, starting out from the list of particles in
+   * the event record and the collection of "usual" clusters passed as
+   * arguments. If the actual rearrangement is accepted, the initial collection of
+   * clusters is overridden by the old ones.
    */
   void rearrange(EventHandler & ch,
                  ClusterVector & clusters);
@@ -121,7 +119,8 @@ private:
 
 private:
 
-  /** Returns the Cluster (within the ClusterVector cv) where the sum of the
+  /**
+   * Returns the Cluster (within the ClusterVector cv) where the sum of the
    * invariant Cluster masses becomes minimal in the case of a colour
    * reconnection with cl. If no reconnection partner can be found, a pointer to
    * the original Cluster cl is returned.
@@ -141,12 +140,13 @@ private:
   tPPtr _get3(ClusterPtr cl) const;
 
   /**
-   * @return	true, if the the two partons are splitting products of the same
+   * @return	true, if the two partons are splitting products of the same
    * 		gluon
    */
   bool _isColour8(tPPtr p1, tPPtr p2) const;
 
-  /** Reconnects the constituents of the given clusters to the (only)other
+  /**
+   * Reconnects the constituents of the given clusters to the (only) other
    * possible cluster combination.
    */
   pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr c1, ClusterPtr c2) const;

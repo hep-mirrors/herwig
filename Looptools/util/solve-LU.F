@@ -1,19 +1,20 @@
-* GaussPivot.F
-* Solution of the linear equation A.x = B by Gaussian elimination
+* solve-LU.F
+* Solution of the linear system A.x = B by LU decomposition
 * with partial pivoting
 * this file is part of LoopTools
-* last modified 24 Jan 06 th
+* last modified 14 Dec 10 th
 
 * Author: Michael Rauch, 7 Dec 2004
-* Reference: Folkmar Bornemann, course notes to
-* Numerische Mathematik 1, Technische Universitaet, Munich, Germany
+* Reference: Folkmar Bornemann, lecture notes to
+* Numerische Mathematik 1, Technical University, Munich, Germany
 
 #include "defs.h"
 
-#define MAXDIM 8
+#define EPS 2D0**(-51)
+
 
 ************************************************************************
-* LUDecomp computes the LU decomposition of the n-by-n matrix A
+* XDecomp computes the LU decomposition of the n-by-n matrix A
 * by Gaussian Elimination with partial pivoting;
 * compact (in situ) storage scheme
 * Input:
@@ -34,25 +35,31 @@
 *     ( xn1 xn2 ...   1 )  (   0   0 ... ynn ) 
 *   perm: permutation vector
 
-	subroutine XLUDecomp(A, n, perm)
+	subroutine XDecomp(n, A,ldA, perm)
 	implicit none
-	integer n, perm(*)
-	QVAR A(n,*)
+	integer n, ldA, perm(*)
+	QVAR A(ldA,*)
 
-	integer i, j, k, imax
+	integer i, j, k, pj, invperm(MAXDIM)
 	QVAR tmp
-	QREAL Amax
+	QREAL absA, pabsA
+
+	do j = 1, n
+	  invperm(j) = j
+	enddo
 
 	do j = 1, n
 * do U part (minus diagonal one)
-	  do i = 1, j - 1
+	  do i = 2, j - 1
+	    tmp = 0
 	    do k = 1, i - 1
-	      A(i,j) = A(i,j) - A(i,k)*A(k,j)
+	      tmp = tmp + A(i,k)*A(k,j)
 	    enddo
+	    A(i,j) = A(i,j) - tmp
 	  enddo
 
 * do L part (plus diagonal from U case)
-	  Amax = 0
+	  pabsA = -1
 	  do i = j, n
 	    tmp = 0
 	    do k = 1, j - 1
@@ -62,34 +69,37 @@
 
 * do partial pivoting ...
 * find the pivot
-	    if( abs(A(i,j)) .gt. Amax ) then
-	      Amax = abs(A(i,j))
-	      imax = i
+	    absA = abs(A(i,j))
+	    if( absA .gt. pabsA ) then
+	      pabsA = absA
+	      pj = i
 	    endif
 	  enddo
 
+          perm(invperm(pj)) = j
+
 * exchange rows
-	  perm(j) = imax
-	  do k = 1, n
-	    tmp = A(j,k)
-	    A(j,k) = A(imax,k)
-	    A(imax,k) = tmp
-	  enddo
+	  if( pj .ne. j ) then
+	    invperm(pj) = invperm(j)
+	    do k = 1, n
+	      tmp = A(j,k)
+	      A(j,k) = A(pj,k)
+	      A(pj,k) = tmp
+	    enddo
+	  endif
 
 * division by the pivot element
-	  if( A(j,j) .eq. 0 ) then
-	    tmp = 1D123
-	  else
+	  if( abs(A(j,j)) .gt. EPS ) then
 	    tmp = 1/A(j,j)
+	    do i = j + 1, n
+	      A(i,j) = A(i,j)*tmp
+	    enddo
 	  endif
-	  do i = j + 1, n
-	    A(i,j) = A(i,j)*tmp
-	  enddo
 	enddo
 	end
 
 ************************************************************************
-* LUBackSubst computes the x in A.x = b from the LU-decomposed A.
+* XSolve computes the x in A.x = b from the LU-decomposed A.
 * Input:
 *   A: LU-decomposed n-by-n matrix A
 *   b: input vector b in A.x = b
@@ -98,75 +108,72 @@
 * Output:
 *   b: solution vector x in A.x = b
 
-	subroutine XLUBackSubst(A, n, p, b)
+	subroutine XSolve(n, A,ldA, b)
 	implicit none
-	integer n, p(*)
-	QVAR A(n,*)
+	integer n, ldA
+	QVAR A(ldA,*)
 	double complex b(*)
 
 	integer i, j
 	double complex tmp
 
-* permute b 
+* forward substitution L.y = b
 	do i = 1, n
-	  tmp = b(i)
-	  b(i) = b(p(i))
-	  b(p(i)) = tmp
-	enddo
-
-* forward substitution L.Y = B
-	do i = 1, n
+	  tmp = 0
 	  do j = 1, i - 1
-	    b(i) = b(i) - A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(j)
 	  enddo
+	  b(i) = b(i) - tmp
 	enddo
 
-* backward substitution U.X = Y
+* backward substitution U.x = y
 	do i = n, 1, -1
+	  tmp = 0
 	  do j = i + 1, n
-	    b(i) = b(i) - A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(j)
 	  enddo
-	  b(i) = b(i)/A(i,i)
+	  b(i) = (b(i) - tmp)/A(i,i)
 	enddo
 	end
 
 ************************************************************************
-* same as LUBackSubst, but for real b
 
 #ifdef COMPLEXPARA
-#define LUBackSubstD LUBackSubstC
+
+#undef RSolve
+#define RSolve XSolve
+
 #else
-	subroutine LUBackSubstD(A, n, p, b)
+
+* same as XSolve but for real vector b
+
+	subroutine RSolve(n, A,ldA, b)
 	implicit none
-	integer n, p(*)
-	QVAR A(n,*)
-	QVAR b(*)
+	integer n, ldA
+	QVAR A(ldA,*), b(*)
 
 	integer i, j
 	QVAR tmp
 
-* permute b 
+* forward substitution L.y = b
 	do i = 1, n
-	  tmp = b(i)
-	  b(i) = b(p(i))
-	  b(p(i)) = tmp
-	enddo
-
-* forward substitution L.Y = B
-	do i = 1, n
+	  tmp = 0
 	  do j = 1, i - 1
-	    b(i) = b(i) - A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(j)
 	  enddo
+	  b(i) = b(i) - tmp
 	enddo
 
-* backward substitution U.X = Y
+* backward substitution U.x = y
 	do i = n, 1, -1
+	  tmp = 0
 	  do j = i + 1, n
-	    b(i) = b(i) - A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(j)
 	  enddo
-	  b(i) = b(i)/A(i,i)
+	  b(i) = (b(i) - tmp)/A(i,i)
 	enddo
 	end
+
 #endif
 
 ************************************************************************
@@ -178,19 +185,28 @@
 *   determinant of A
 * Warning: A is overwritten
 
-	QVAR function XDet(A, n)
+	subroutine XDet(n, A,ldA, det)
 	implicit none
-	integer n
-	QVAR A(n,*)
+	integer n, ldA
+	QVAR A(ldA,*), det
 
-	integer i, perm(MAXDIM)
+	integer i, j, s, perm(MAXDIM)
 
-	call XLUDecomp(A, n, perm)
-	XDet = 1
+	call XDecomp(n, A,ldA, perm)
+	det = 1
+	s = 0
 	do i = 1, n
-	  XDet = XDet*A(i,i)
-	  if( perm(i) .ne. i ) XDet = -XDet
+	  det = det*A(i,i)
+	  j = i
+	  do while( perm(j) .ne. i )
+	    j = j + 1
+	  enddo
+	  if( j .ne. i ) then
+	    perm(j) = perm(i)
+	    s = s + 1
+	  endif
 	enddo
+	if( iand(s, 1) .ne. 0 ) det = -det
 	end
 
 ************************************************************************
@@ -203,20 +219,20 @@
 *   Ainv: inverse of A
 *   perm: permutation vector
 
-	subroutine XInverse(A, Ainv, n, perm)
+	subroutine XInverse(n, A,ldA, Ainv,ldAinv, perm)
 	implicit none
-	integer n, perm(*)
-	QVAR A(n,*), Ainv(n,*)
+	integer n, ldA, ldAinv, perm(*)
+	QVAR A(ldA,*), Ainv(ldAinv,*)
 
 	integer i, j
 
-	call XLUDecomp(A, n, perm)
+	call XDecomp(n, A,ldA, perm)
 	do i = 1, n
 	  do j = 1, n
 	    Ainv(j,i) = 0
 	  enddo
-	  Ainv(i,i) = 1
-	  call LUBackSubstD(A, n, perm, Ainv(1,i))
+	  Ainv(perm(i),i) = 1
+	  call RSolve(n, A,ldA, Ainv(1,i))
 	enddo
 	end
 

@@ -125,24 +125,24 @@ void LeptoquarkModelSLQFFVertex::doinit() {
   _theModel = generator()->standardModel();
   tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
   if(hwLeptoquark){
-    _CFF=hwLeptoquark->_cfermion();
-    _cL0 =hwLeptoquark->_cleft();
-    _cR0 =hwLeptoquark->_cright();
-    _cR0t = hwLeptoquark->_crighttilde();
-    _cL1 =hwLeptoquark->_cleft1(); 
-    _cL12 =hwLeptoquark->_cleft12(); 
-    _cR12 =hwLeptoquark->_cright12(); 
-    _cL12t =hwLeptoquark->_cleft12tilde(); 
+    _CFF=hwLeptoquark->cfermion();
+    _cL0 =hwLeptoquark->cleft();
+    _cR0 =hwLeptoquark->cright();
+    _cR0t = hwLeptoquark->crighttilde();
+    _cL1 =hwLeptoquark->cleft1(); 
+    _cL12 =hwLeptoquark->cleft12(); 
+    _cR12 =hwLeptoquark->cright12(); 
+    _cL12t =hwLeptoquark->cleft12tilde(); 
     
     
-    _derivscale = hwLeptoquark->_fscale();
-    _dcL0 =hwLeptoquark->_dcleft();
-    _dcR0 =hwLeptoquark->_dcright();
-    _dcR0t = hwLeptoquark->_dcrighttilde();
-    _dcL1 =hwLeptoquark->_dcleft1(); 
-    _dcL12 =hwLeptoquark->_dcleft12(); 
-    _dcR12 =hwLeptoquark->_dcright12(); 
-    _dcL12t =hwLeptoquark->_dcleft12tilde(); 
+    _derivscale = hwLeptoquark->fscale();
+    _dcL0 =hwLeptoquark->dcleft();
+    _dcR0 =hwLeptoquark->dcright();
+    _dcR0t = hwLeptoquark->dcrighttilde();
+    _dcL1 =hwLeptoquark->dcleft1(); 
+    _dcL12 =hwLeptoquark->dcleft12(); 
+    _dcR12 =hwLeptoquark->dcright12(); 
+    _dcL12t =hwLeptoquark->dcleft12tilde(); 
     
   }
   FFSVertex::doinit();

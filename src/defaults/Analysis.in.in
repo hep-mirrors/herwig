@@ -49,16 +49,16 @@ create Herwig::BFragmentationAnalysisHandler BFrag HwLEPAnalysis.so
 # master LEP event shape analysis and object which does the work
 create Herwig::EventShapesMasterAnalysis Shapes
 create Herwig::EventShapes LEPShapes
-set Shapes:EventShapes LEPShapes
+newdef Shapes:EventShapes LEPShapes
 # LEP event shapes
 create Herwig::LEPEventShapes LEPEvent
-set LEPEvent:EventShapes LEPShapes
+newdef LEPEvent:EventShapes LEPShapes
 insert Shapes:Slaves 0 LEPEvent
 # LEP identified particles
 create Herwig::IdentifiedParticleAnalysis LEPIdent
 # LEP single particle analysis
 create Herwig::SingleParticleAnalysis LEPSingle
-set LEPSingle:EventShapes LEPShapes
+newdef LEPSingle:EventShapes LEPShapes
 insert Shapes:Slaves 0 LEPSingle
 
 # 

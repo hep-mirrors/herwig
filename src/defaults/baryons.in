@@ -6,13 +6,13 @@
 #
 create ThePEG::ParticleData Lambda(1405)0
 setup Lambda(1405)0 13122 Lambda(1405)0 1.406 0.05 0.155 0 0 0 2 0 
-set Lambda(1405)0:WidthLoCut 0.06
-set Lambda(1405)0:WidthUpCut 0.25
+newdef Lambda(1405)0:WidthLoCut 0.06
+newdef Lambda(1405)0:WidthUpCut 0.25
 create ThePEG::ParticleData Lambdabar(1405)0
 setup Lambdabar(1405)0 -13122 Lambdabar(1405)0 1.406 0.05 0.155 0 0 0 2 0 
 makeanti Lambdabar(1405)0 Lambda(1405)0
-set Lambdabar(1405)0:WidthLoCut 0.06
-set Lambdabar(1405)0:WidthUpCut 0.25
+newdef Lambdabar(1405)0:WidthLoCut 0.06
+newdef Lambdabar(1405)0:WidthUpCut 0.25
 create ThePEG::ParticleData Lambda_c(2593)+
 setup Lambda_c(2593)+ 14122 Lambda_c(2593)+ 2.5954 0.0036 0.018 0 3 0 2 0 
 create ThePEG::ParticleData Lambda_c(2593)bar-
@@ -20,13 +20,13 @@ setup Lambda_c(2593)bar- -14122 Lambda_c(2593)bar- 2.5954 0.0036 0.018 0 -3 0 2 
 makeanti Lambda_c(2593)bar- Lambda_c(2593)+
 create ThePEG::ParticleData Lambda_b10
 setup Lambda_b10 15122 Lambda_b10 5.957 0.004 0.03 0 0 0 2 0 
-set Lambda_b10:WidthLoCut 0.02
-set Lambda_b10:WidthUpCut 0.04
+newdef Lambda_b10:WidthLoCut 0.02
+newdef Lambda_b10:WidthUpCut 0.04
 create ThePEG::ParticleData Lambda_b1bar0
 setup Lambda_b1bar0 -15122 Lambda_b1bar0 5.957 0.004 0.03 0 0 0 2 0 
 makeanti Lambda_b1bar0 Lambda_b10
-set Lambda_b1bar0:WidthLoCut 0.02
-set Lambda_b1bar0:WidthUpCut 0.04
+newdef Lambda_b1bar0:WidthLoCut 0.02
+newdef Lambda_b1bar0:WidthUpCut 0.04
 create ThePEG::ParticleData Xi_c(2790)0
 setup Xi_c(2790)0 14312 Xi_c(2790)0 2.7919 0.00113 0.0113 0 0 0 2 0 
 create ThePEG::ParticleData Xi_c(2790)bar0
@@ -52,13 +52,13 @@ makeanti Xi_b1bar+ Xi_b1-
 #
 create ThePEG::ParticleData Lambda(1520)0
 setup Lambda(1520)0 3124 Lambda(1520)0 1.5195 0.0156 0.118 0 0 0 4 0 
-set Lambda(1520)0:WidthLoCut 0.08
-set Lambda(1520)0:WidthUpCut 0.156
+newdef Lambda(1520)0:WidthLoCut 0.08
+newdef Lambda(1520)0:WidthUpCut 0.156
 create ThePEG::ParticleData Lambdabar(1520)0
 setup Lambdabar(1520)0 -3124 Lambdabar(1520)0 1.5195 0.0156 0.118 0 0 0 4 0 
 makeanti Lambdabar(1520)0 Lambda(1520)0
-set Lambdabar(1520)0:WidthLoCut 0.08
-set Lambdabar(1520)0:WidthUpCut 0.156
+newdef Lambdabar(1520)0:WidthLoCut 0.08
+newdef Lambdabar(1520)0:WidthUpCut 0.156
 create ThePEG::ParticleData Lambda_c(2625)+
 setup Lambda_c(2625)+ 4124 Lambda_c(2625)+ 2.6281 0.0015 0.0075 0 3 0 4 0 
 create ThePEG::ParticleData Lambda_c(2625)bar-
@@ -94,91 +94,91 @@ makeanti Xi_b1*bar+ Xi_b1*-
 #
 create ThePEG::ParticleData Delta-
 setup Delta- 1114 Delta- 1.232 0.12 0.375 0 -3 0 4 0 
-set Delta-:WidthLoCut 0.15
-set Delta-:WidthUpCut 0.6
+newdef Delta-:WidthLoCut 0.15
+newdef Delta-:WidthUpCut 0.6
 create ThePEG::ParticleData Deltabar+
 setup Deltabar+ -1114 Deltabar+ 1.232 0.12 0.375 0 3 0 4 0 
 makeanti Deltabar+ Delta-
-set Deltabar+:WidthLoCut 0.15
-set Deltabar+:WidthUpCut 0.6
+newdef Deltabar+:WidthLoCut 0.15
+newdef Deltabar+:WidthUpCut 0.6
 create ThePEG::ParticleData Delta0
 setup Delta0 2114 Delta0 1.232 0.12 0.375 0 0 0 4 0 
-set Delta0:WidthLoCut 0.15
-set Delta0:WidthUpCut 0.6
+newdef Delta0:WidthLoCut 0.15
+newdef Delta0:WidthUpCut 0.6
 create ThePEG::ParticleData Deltabar0
 setup Deltabar0 -2114 Deltabar0 1.232 0.12 0.375 0 0 0 4 0 
 makeanti Deltabar0 Delta0
-set Deltabar0:WidthLoCut 0.15
-set Deltabar0:WidthUpCut 0.6
+newdef Deltabar0:WidthLoCut 0.15
+newdef Deltabar0:WidthUpCut 0.6
 create ThePEG::ParticleData Delta+
 setup Delta+ 2214 Delta+ 1.232 0.12 0.375 0 3 0 4 0 
-set Delta+:WidthLoCut 0.15
-set Delta+:WidthUpCut 0.6
+newdef Delta+:WidthLoCut 0.15
+newdef Delta+:WidthUpCut 0.6
 create ThePEG::ParticleData Deltabar-
 setup Deltabar- -2214 Deltabar- 1.232 0.12 0.375 0 -3 0 4 0 
 makeanti Deltabar- Delta+
-set Deltabar-:WidthLoCut 0.15
-set Deltabar-:WidthUpCut 0.6
+newdef Deltabar-:WidthLoCut 0.15
+newdef Deltabar-:WidthUpCut 0.6
 create ThePEG::ParticleData Delta++
 setup Delta++ 2224 Delta++ 1.232 0.12 0.375 0 6 0 4 0 
-set Delta++:WidthLoCut 0.15
-set Delta++:WidthUpCut 0.6
+newdef Delta++:WidthLoCut 0.15
+newdef Delta++:WidthUpCut 0.6
 create ThePEG::ParticleData Deltabar--
 setup Deltabar-- -2224 Deltabar-- 1.232 0.12 0.375 0 -6 0 4 0 
 makeanti Deltabar-- Delta++
-set Deltabar--:WidthLoCut 0.15
-set Deltabar--:WidthUpCut 0.6
+newdef Deltabar--:WidthLoCut 0.15
+newdef Deltabar--:WidthUpCut 0.6
 create ThePEG::ParticleData Sigma*-
 setup Sigma*- 3114 Sigma*- 1.3872 0.0394 0.257 0 -3 0 4 0 
-set Sigma*-:VariableRatio 1
-set Sigma*-:WidthLoCut 0.12
-set Sigma*-:WidthUpCut 0.394
+newdef Sigma*-:VariableRatio 1
+newdef Sigma*-:WidthLoCut 0.12
+newdef Sigma*-:WidthUpCut 0.394
 create ThePEG::ParticleData Sigma*bar+
 setup Sigma*bar+ -3114 Sigma*bar+ 1.3872 0.0394 0.257 0 3 0 4 0 
 makeanti Sigma*bar+ Sigma*-
-set Sigma*bar+:VariableRatio 1
-set Sigma*bar+:WidthLoCut 0.12
-set Sigma*bar+:WidthUpCut 0.394
+newdef Sigma*bar+:VariableRatio 1
+newdef Sigma*bar+:WidthLoCut 0.12
+newdef Sigma*bar+:WidthUpCut 0.394
 create ThePEG::ParticleData Sigma*0
 setup Sigma*0 3214 Sigma*0 1.3837 0.036 0.24 0 0 0 4 0 
-set Sigma*0:VariableRatio 1
-set Sigma*0:WidthLoCut 0.12
-set Sigma*0:WidthUpCut 0.36
+newdef Sigma*0:VariableRatio 1
+newdef Sigma*0:WidthLoCut 0.12
+newdef Sigma*0:WidthUpCut 0.36
 create ThePEG::ParticleData Sigma*bar0
 setup Sigma*bar0 -3214 Sigma*bar0 1.3837 0.036 0.24 0 0 0 4 0 
 makeanti Sigma*bar0 Sigma*0
-set Sigma*bar0:VariableRatio 1
-set Sigma*bar0:WidthLoCut 0.12
-set Sigma*bar0:WidthUpCut 0.36
+newdef Sigma*bar0:VariableRatio 1
+newdef Sigma*bar0:WidthLoCut 0.12
+newdef Sigma*bar0:WidthUpCut 0.36
 create ThePEG::ParticleData Sigma*+
 setup Sigma*+ 3224 Sigma*+ 1.3828 0.0358 0.239 0 3 0 4 0 
-set Sigma*+:VariableRatio 1
-set Sigma*+:WidthLoCut 0.12
-set Sigma*+:WidthUpCut 0.358
+newdef Sigma*+:VariableRatio 1
+newdef Sigma*+:WidthLoCut 0.12
+newdef Sigma*+:WidthUpCut 0.358
 create ThePEG::ParticleData Sigma*bar-
 setup Sigma*bar- -3224 Sigma*bar- 1.3828 0.0358 0.239 0 -3 0 4 0 
 makeanti Sigma*bar- Sigma*+
-set Sigma*bar-:VariableRatio 1
-set Sigma*bar-:WidthLoCut 0.12
-set Sigma*bar-:WidthUpCut 0.358
+newdef Sigma*bar-:VariableRatio 1
+newdef Sigma*bar-:WidthLoCut 0.12
+newdef Sigma*bar-:WidthUpCut 0.358
 create ThePEG::ParticleData Xi*-
 setup Xi*- 3314 Xi*- 1.535 0.0099 0.0845 0 -3 0 4 0 
-set Xi*-:WidthLoCut 0.07
-set Xi*-:WidthUpCut 0.099
+newdef Xi*-:WidthLoCut 0.07
+newdef Xi*-:WidthUpCut 0.099
 create ThePEG::ParticleData Xi*bar+
 setup Xi*bar+ -3314 Xi*bar+ 1.535 0.0099 0.0845 0 3 0 4 0 
 makeanti Xi*bar+ Xi*-
-set Xi*bar+:WidthLoCut 0.07
-set Xi*bar+:WidthUpCut 0.099
+newdef Xi*bar+:WidthLoCut 0.07
+newdef Xi*bar+:WidthUpCut 0.099
 create ThePEG::ParticleData Xi*0
 setup Xi*0 3324 Xi*0 1.5318 0.0091 0.0805 0 0 0 4 0 
-set Xi*0:WidthLoCut 0.07
-set Xi*0:WidthUpCut 0.091
+newdef Xi*0:WidthLoCut 0.07
+newdef Xi*0:WidthUpCut 0.091
 create ThePEG::ParticleData Xi*bar0
 setup Xi*bar0 -3324 Xi*bar0 1.5318 0.0091 0.0805 0 0 0 4 0 
 makeanti Xi*bar0 Xi*0
-set Xi*bar0:WidthLoCut 0.07
-set Xi*bar0:WidthUpCut 0.091
+newdef Xi*bar0:WidthLoCut 0.07
+newdef Xi*bar0:WidthUpCut 0.091
 create ThePEG::ParticleData Omega-
 setup Omega- 3334 Omega- 1.67245 8.018161316538E-15 0 24.61 -3 0 4 0 
 create ThePEG::ParticleData Omegabar+
@@ -382,173 +382,173 @@ makeanti Omega_bbar+ Omega_b-
 #
 create ThePEG::ParticleData Lambda(1600)0
 setup Lambda(1600)0 23122 Lambda(1600)0 1.6 0.15 0.43 0 0 0 2 0 
-set Lambda(1600)0:VariableRatio 1
-set Lambda(1600)0:WidthLoCut 0.26
-set Lambda(1600)0:WidthUpCut 0.6
+newdef Lambda(1600)0:VariableRatio 1
+newdef Lambda(1600)0:WidthLoCut 0.26
+newdef Lambda(1600)0:WidthUpCut 0.6
 create ThePEG::ParticleData Lambdabar(1600)0
 setup Lambdabar(1600)0 -23122 Lambdabar(1600)0 1.6 0.15 0.43 0 0 0 2 0 
 makeanti Lambdabar(1600)0 Lambda(1600)0
-set Lambdabar(1600)0:VariableRatio 1
-set Lambdabar(1600)0:WidthLoCut 0.26
-set Lambdabar(1600)0:WidthUpCut 0.6
+newdef Lambdabar(1600)0:VariableRatio 1
+newdef Lambdabar(1600)0:WidthLoCut 0.26
+newdef Lambdabar(1600)0:WidthUpCut 0.6
 create ThePEG::ParticleData p(1440)+
 setup p(1440)+ 12212 p(1440)+ 1.44 0.3 0.45 0 3 0 2 0 
-set p(1440)+:VariableRatio 1
-set p(1440)+:WidthLoCut 0.3
-set p(1440)+:WidthUpCut 0.6
+newdef p(1440)+:VariableRatio 1
+newdef p(1440)+:WidthLoCut 0.3
+newdef p(1440)+:WidthUpCut 0.6
 create ThePEG::ParticleData pbar(1440)
 setup pbar(1440) -12212 pbar(1440) 1.44 0.3 0.45 0 -3 0 2 0 
 makeanti pbar(1440) p(1440)+
-set pbar(1440):VariableRatio 1
-set pbar(1440):WidthLoCut 0.3
-set pbar(1440):WidthUpCut 0.6
+newdef pbar(1440):VariableRatio 1
+newdef pbar(1440):WidthLoCut 0.3
+newdef pbar(1440):WidthUpCut 0.6
 create ThePEG::ParticleData n(1440)0
 setup n(1440)0 12112 n(1440)0 1.44 0.3 0.45 0 0 0 2 0 
-set n(1440)0:VariableRatio 1
-set n(1440)0:WidthLoCut 0.3
-set n(1440)0:WidthUpCut 0.6
+newdef n(1440)0:VariableRatio 1
+newdef n(1440)0:WidthLoCut 0.3
+newdef n(1440)0:WidthUpCut 0.6
 create ThePEG::ParticleData nbar(1440)
 setup nbar(1440) -12112 nbar(1440) 1.44 0.3 0.45 0 0 0 2 0 
 makeanti nbar(1440) n(1440)0
-set nbar(1440):VariableRatio 1
-set nbar(1440):WidthLoCut 0.3
-set nbar(1440):WidthUpCut 0.6
+newdef nbar(1440):VariableRatio 1
+newdef nbar(1440):WidthLoCut 0.3
+newdef nbar(1440):WidthUpCut 0.6
 create ThePEG::ParticleData Sigma(1660)-
 setup Sigma(1660)- 13112 Sigma(1660)- 1.66 0.1 0.45 0 -3 0 2 0 
-set Sigma(1660)-:VariableRatio 1
-set Sigma(1660)-:WidthLoCut 0.4
-set Sigma(1660)-:WidthUpCut 0.5
+newdef Sigma(1660)-:VariableRatio 1
+newdef Sigma(1660)-:WidthLoCut 0.4
+newdef Sigma(1660)-:WidthUpCut 0.5
 create ThePEG::ParticleData Sigmabar(1660)+
 setup Sigmabar(1660)+ -13112 Sigmabar(1660)+ 1.66 0.1 0.45 0 3 0 2 0 
 makeanti Sigmabar(1660)+ Sigma(1660)-
-set Sigmabar(1660)+:VariableRatio 1
-set Sigmabar(1660)+:WidthLoCut 0.4
-set Sigmabar(1660)+:WidthUpCut 0.5
+newdef Sigmabar(1660)+:VariableRatio 1
+newdef Sigmabar(1660)+:WidthLoCut 0.4
+newdef Sigmabar(1660)+:WidthUpCut 0.5
 create ThePEG::ParticleData Sigma(1660)0
 setup Sigma(1660)0 13212 Sigma(1660)0 1.66 0.1 0.45 0 0 0 2 0 
-set Sigma(1660)0:VariableRatio 1
-set Sigma(1660)0:WidthLoCut 0.4
-set Sigma(1660)0:WidthUpCut 0.5
+newdef Sigma(1660)0:VariableRatio 1
+newdef Sigma(1660)0:WidthLoCut 0.4
+newdef Sigma(1660)0:WidthUpCut 0.5
 create ThePEG::ParticleData Sigmabar(1660)0
 setup Sigmabar(1660)0 -13212 Sigmabar(1660)0 1.66 0.1 0.45 0 0 0 2 0 
 makeanti Sigmabar(1660)0 Sigma(1660)0
-set Sigmabar(1660)0:VariableRatio 1
-set Sigmabar(1660)0:WidthLoCut 0.4
-set Sigmabar(1660)0:WidthUpCut 0.5
+newdef Sigmabar(1660)0:VariableRatio 1
+newdef Sigmabar(1660)0:WidthLoCut 0.4
+newdef Sigmabar(1660)0:WidthUpCut 0.5
 create ThePEG::ParticleData Sigma(1660)+
 setup Sigma(1660)+ 13222 Sigma(1660)+ 1.66 0.1 0.45 0 3 0 2 0 
-set Sigma(1660)+:VariableRatio 1
-set Sigma(1660)+:WidthLoCut 0.4
-set Sigma(1660)+:WidthUpCut 0.5
+newdef Sigma(1660)+:VariableRatio 1
+newdef Sigma(1660)+:WidthLoCut 0.4
+newdef Sigma(1660)+:WidthUpCut 0.5
 create ThePEG::ParticleData Sigmabar(1660)-
 setup Sigmabar(1660)- -13222 Sigmabar(1660)- 1.66 0.1 0.45 0 -3 0 2 0 
 makeanti Sigmabar(1660)- Sigma(1660)+
-set Sigmabar(1660)-:VariableRatio 1
-set Sigmabar(1660)-:WidthLoCut 0.4
-set Sigmabar(1660)-:WidthUpCut 0.5
+newdef Sigmabar(1660)-:VariableRatio 1
+newdef Sigmabar(1660)-:WidthLoCut 0.4
+newdef Sigmabar(1660)-:WidthUpCut 0.5
 create ThePEG::ParticleData Xi(1690)0
 setup Xi(1690)0 13322 Xi(1690)0 1.69 0.01 0.085 0 0 0 2 0 
-set Xi(1690)0:WidthLoCut 0.01
-set Xi(1690)0:WidthUpCut 0.1
+newdef Xi(1690)0:WidthLoCut 0.01
+newdef Xi(1690)0:WidthUpCut 0.1
 create ThePEG::ParticleData Xibar(1690)0
 setup Xibar(1690)0 -13322 Xibar(1690)0 1.69 0.01 0.085 0 0 0 2 0 
 makeanti Xibar(1690)0 Xi(1690)0
-set Xibar(1690)0:WidthLoCut 0.01
-set Xibar(1690)0:WidthUpCut 0.1
+newdef Xibar(1690)0:WidthLoCut 0.01
+newdef Xibar(1690)0:WidthUpCut 0.1
 create ThePEG::ParticleData Xi(1690)-
 setup Xi(1690)- 13312 Xi(1690)- 1.69 0.01 0.085 0 -3 0 2 0 
-set Xi(1690)-:WidthLoCut 0.01
-set Xi(1690)-:WidthUpCut 0.1
+newdef Xi(1690)-:WidthLoCut 0.01
+newdef Xi(1690)-:WidthUpCut 0.1
 create ThePEG::ParticleData Xibar(1690)+
 setup Xibar(1690)+ -13312 Xibar(1690)+ 1.69 0.01 0.085 0 3 0 2 0 
 makeanti Xibar(1690)+ Xi(1690)-
-set Xibar(1690)+:WidthLoCut 0.01
-set Xibar(1690)+:WidthUpCut 0.1
+newdef Xibar(1690)+:WidthLoCut 0.01
+newdef Xibar(1690)+:WidthUpCut 0.1
 #
 # the (70,1^-_1)  40 multiplet
 #
 create ThePEG::ParticleData Lambda(1670)0
 setup Lambda(1670)0 33122 Lambda(1670)0 1.67 0.035 0.275 0 0 0 2 0 
-set Lambda(1670)0:WidthLoCut 0.068
-set Lambda(1670)0:WidthUpCut 0.35
+newdef Lambda(1670)0:WidthLoCut 0.068
+newdef Lambda(1670)0:WidthUpCut 0.35
 create ThePEG::ParticleData Lambdabar(1670)0
 setup Lambdabar(1670)0 -33122 Lambdabar(1670)0 1.67 0.035 0.275 0 0 0 2 0 
 makeanti Lambdabar(1670)0 Lambda(1670)0
-set Lambdabar(1670)0:WidthLoCut 0.2
-set Lambdabar(1670)0:WidthUpCut 0.35
+newdef Lambdabar(1670)0:WidthLoCut 0.2
+newdef Lambdabar(1670)0:WidthUpCut 0.35
 create ThePEG::ParticleData p(1535)+
 setup p(1535)+ 22212 p(1535)+ 1.535 0.15 0.525 0 3 0 2 0 
-set p(1535)+:VariableRatio 1
-set p(1535)+:WidthLoCut 0.45
-set p(1535)+:WidthUpCut 0.6
+newdef p(1535)+:VariableRatio 1
+newdef p(1535)+:WidthLoCut 0.45
+newdef p(1535)+:WidthUpCut 0.6
 create ThePEG::ParticleData pbar(1535)
 setup pbar(1535) -22212 pbar(1535) 1.535 0.15 0.525 0 -3 0 2 0 
 makeanti pbar(1535) p(1535)+
-set pbar(1535):VariableRatio 1
-set pbar(1535):WidthLoCut 0.45
-set pbar(1535):WidthUpCut 0.6
+newdef pbar(1535):VariableRatio 1
+newdef pbar(1535):WidthLoCut 0.45
+newdef pbar(1535):WidthUpCut 0.6
 create ThePEG::ParticleData n(1535)0
 setup n(1535)0 22112 n(1535)0 1.535 0.15 0.525 0 0 0 2 0 
-set n(1535)0:VariableRatio 1
-set n(1535)0:WidthLoCut 0.45
-set n(1535)0:WidthUpCut 0.6
+newdef n(1535)0:VariableRatio 1
+newdef n(1535)0:WidthLoCut 0.45
+newdef n(1535)0:WidthUpCut 0.6
 create ThePEG::ParticleData nbar(1535)
 setup nbar(1535) -22112 nbar(1535) 1.535 0.15 0.525 0 0 0 2 0 
 makeanti nbar(1535) n(1535)0
-set nbar(1535):VariableRatio 1
-set nbar(1535):WidthLoCut 0.45
-set nbar(1535):WidthUpCut 0.6
+newdef nbar(1535):VariableRatio 1
+newdef nbar(1535):WidthLoCut 0.45
+newdef nbar(1535):WidthUpCut 0.6
 create ThePEG::ParticleData Sigma(1750)-
 setup Sigma(1750)- 23112 Sigma(1750)- 1.75 0.09 0.35 0 -3 0 2 0 
-set Sigma(1750)-:VariableRatio 1
-set Sigma(1750)-:WidthLoCut 0.25
-set Sigma(1750)-:WidthUpCut 0.45
+newdef Sigma(1750)-:VariableRatio 1
+newdef Sigma(1750)-:WidthLoCut 0.25
+newdef Sigma(1750)-:WidthUpCut 0.45
 create ThePEG::ParticleData Sigmabar(1750)+
 setup Sigmabar(1750)+ -23112 Sigmabar(1750)+ 1.75 0.09 0.35 0 3 0 2 0 
 makeanti Sigmabar(1750)+ Sigma(1750)-
-set Sigmabar(1750)+:VariableRatio 1
-set Sigmabar(1750)+:WidthLoCut 0.25
-set Sigmabar(1750)+:WidthUpCut 0.45
+newdef Sigmabar(1750)+:VariableRatio 1
+newdef Sigmabar(1750)+:WidthLoCut 0.25
+newdef Sigmabar(1750)+:WidthUpCut 0.45
 create ThePEG::ParticleData Sigma(1750)0
 setup Sigma(1750)0 23212 Sigma(1750)0 1.75 0.09 0.35 0 0 0 2 0 
-set Sigma(1750)0:VariableRatio 1
-set Sigma(1750)0:WidthLoCut 0.25
-set Sigma(1750)0:WidthUpCut 0.45
+newdef Sigma(1750)0:VariableRatio 1
+newdef Sigma(1750)0:WidthLoCut 0.25
+newdef Sigma(1750)0:WidthUpCut 0.45
 create ThePEG::ParticleData Sigmabar(1750)0
 setup Sigmabar(1750)0 -23212 Sigmabar(1750)0 1.75 0.09 0.35 0 0 0 2 0 
 makeanti Sigmabar(1750)0 Sigma(1750)0
-set Sigmabar(1750)0:VariableRatio 1
-set Sigmabar(1750)0:WidthLoCut 0.25
-set Sigmabar(1750)0:WidthUpCut 0.45
+newdef Sigmabar(1750)0:VariableRatio 1
+newdef Sigmabar(1750)0:WidthLoCut 0.25
+newdef Sigmabar(1750)0:WidthUpCut 0.45
 create ThePEG::ParticleData Sigma(1750)+
 setup Sigma(1750)+ 23222 Sigma(1750)+ 1.75 0.09 0.35 0 3 0 2 0 
-set Sigma(1750)+:VariableRatio 1
-set Sigma(1750)+:WidthLoCut 0.25
-set Sigma(1750)+:WidthUpCut 0.45
+newdef Sigma(1750)+:VariableRatio 1
+newdef Sigma(1750)+:WidthLoCut 0.25
+newdef Sigma(1750)+:WidthUpCut 0.45
 create ThePEG::ParticleData Sigmabar(1750)-
 setup Sigmabar(1750)- -23222 Sigmabar(1750)- 1.75 0.09 0.35 0 -3 0 2 0 
 makeanti Sigmabar(1750)- Sigma(1750)+
-set Sigmabar(1750)-:VariableRatio 1
-set Sigmabar(1750)-:WidthLoCut 0.25
-set Sigmabar(1750)-:WidthUpCut 0.45
+newdef Sigmabar(1750)-:VariableRatio 1
+newdef Sigmabar(1750)-:WidthLoCut 0.25
+newdef Sigmabar(1750)-:WidthUpCut 0.45
 create ThePEG::ParticleData Xi(1950)-
 setup Xi(1950)- 23312 Xi(1950)- 1.959 0.06 0.465 0 -3 0 2 0 
-set Xi(1950)-:WidthLoCut 0.33
-set Xi(1950)-:WidthUpCut 0.6
+newdef Xi(1950)-:WidthLoCut 0.33
+newdef Xi(1950)-:WidthUpCut 0.6
 create ThePEG::ParticleData Xibar(1950)+
 setup Xibar(1950)+ -23312 Xibar(1950)+ 1.95 0.06 0.465 0 3 0 2 0 
 makeanti Xibar(1950)+ Xi(1950)-
-set Xibar(1950)+:WidthLoCut 0.33
-set Xibar(1950)+:WidthUpCut 0.6
+newdef Xibar(1950)+:WidthLoCut 0.33
+newdef Xibar(1950)+:WidthUpCut 0.6
 create ThePEG::ParticleData Xi(1950)0
 setup Xi(1950)0 23322 Xi(1950)0 1.959 0.06 0.465 0 0 0 2 0 
-set Xi(1950)0:WidthLoCut 0.33
-set Xi(1950)0:WidthUpCut 0.6
+newdef Xi(1950)0:WidthLoCut 0.33
+newdef Xi(1950)0:WidthUpCut 0.6
 create ThePEG::ParticleData Xibar(1950)0
 setup Xibar(1950)0 -23322 Xibar(1950)0 1.959 0.06 0.465 0 0 0 2 0 
 makeanti Xibar(1950)0 Xi(1950)0
-set Xibar(1950)0:WidthLoCut 0.33
-set Xibar(1950)0:WidthUpCut 0.6
+newdef Xibar(1950)0:WidthLoCut 0.33
+newdef Xibar(1950)0:WidthUpCut 0.6
 #
 # the (70,1^-_1)  40 multiplet
 #
@@ -559,26 +559,26 @@ setup Lambdabar(1690)0 -13124 Lambdabar(1690)0 1.69 0.06 0.24 0 0 0 4 0
 makeanti Lambdabar(1690)0 Lambda(1690)0
 create ThePEG::ParticleData p(1520)+
 setup p(1520)+ 2124 p(1520)+ 1.52 0.12 0.52 0 3 0 4 0 
-set p(1520)+:VariableRatio 1
-set p(1520)+:WidthLoCut 0.44
-set p(1520)+:WidthUpCut 0.6
+newdef p(1520)+:VariableRatio 1
+newdef p(1520)+:WidthLoCut 0.44
+newdef p(1520)+:WidthUpCut 0.6
 create ThePEG::ParticleData pbar(1520)-
 setup pbar(1520)- -2124 pbar(1520)- 1.52 0.12 0.52 0 -3 0 4 0 
 makeanti pbar(1520)- p(1520)+
-set pbar(1520)-:VariableRatio 1
-set pbar(1520)-:WidthLoCut 0.44
-set pbar(1520)-:WidthUpCut 0.6
+newdef pbar(1520)-:VariableRatio 1
+newdef pbar(1520)-:WidthLoCut 0.44
+newdef pbar(1520)-:WidthUpCut 0.6
 create ThePEG::ParticleData n(1520)0
 setup n(1520)0 1214 n(1520)0 1.52 0.12 0.52 0 0 0 4 0 
-set n(1520)0:VariableRatio 1
-set n(1520)0:WidthLoCut 0.44
-set n(1520)0:WidthUpCut 0.6
+newdef n(1520)0:VariableRatio 1
+newdef n(1520)0:WidthLoCut 0.44
+newdef n(1520)0:WidthUpCut 0.6
 create ThePEG::ParticleData nbar(1520)0
 setup nbar(1520)0 -1214 nbar(1520)0 1.52 0.12 0.52 0 0 0 4 0 
 makeanti nbar(1520)0 n(1520)0
-set nbar(1520)0:VariableRatio 1
-set nbar(1520)0:WidthLoCut 0.44
-set nbar(1520)0:WidthUpCut 0.6
+newdef nbar(1520)0:VariableRatio 1
+newdef nbar(1520)0:WidthLoCut 0.44
+newdef nbar(1520)0:WidthUpCut 0.6
 create ThePEG::ParticleData Sigma(1670)-
 setup Sigma(1670)- 13114 Sigma(1670)- 1.67 0.06 0.3 0 -3 0 4 0 
 create ThePEG::ParticleData Sigmabar(1670)+

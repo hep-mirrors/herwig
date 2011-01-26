@@ -399,28 +399,28 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
   if(header){output << "update decayers set parameters=\"";}
   if(create)
     {output << "create Herwig::ChengHeavyBaryonFormFactor " << name() << " \n";}
-  output << "set " << name() << ":DownMass     " << _md/GeV << " \n";
-  output << "set " << name() << ":UpMass       " << _mu/GeV << " \n";
-  output << "set " << name() << ":StrangeMass  " << _ms/GeV << " \n";
-  output << "set " << name() << ":CharmMass    " << _mc/GeV << " \n";
-  output << "set " << name() << ":BottomMass   " << _mb/GeV << " \n";
-  output << "set " << name() << ":VectorMassbc " << _mVbc/GeV << " \n";
-  output << "set " << name() << ":AxialMassbc  " << _mAbc/GeV << " \n";
-  output << "set " << name() << ":VectorMassbs " << _mVbs/GeV << " \n";
-  output << "set " << name() << ":AxialMassbs  " << _mAbs/GeV << " \n";
-  output << "set " << name() << ":VectorMassbd " << _mVbd/GeV << " \n";
-  output << "set " << name() << ":AxialMassbd  " << _mAbd/GeV << " \n";
-  output << "set " << name() << ":VectorMasscs " << _mVcs/GeV << " \n";
-  output << "set " << name() << ":AxialMasscs  " << _mAcs/GeV << " \n";
-  output << "set " << name() << ":VectorMasscu " << _mVcu/GeV << " \n";
-  output << "set " << name() << ":AxialMasscu  " << _mAcu/GeV << " \n";
+  output << "newdef " << name() << ":DownMass     " << _md/GeV << " \n";
+  output << "newdef " << name() << ":UpMass       " << _mu/GeV << " \n";
+  output << "newdef " << name() << ":StrangeMass  " << _ms/GeV << " \n";
+  output << "newdef " << name() << ":CharmMass    " << _mc/GeV << " \n";
+  output << "newdef " << name() << ":BottomMass   " << _mb/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbc " << _mVbc/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbc  " << _mAbc/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbs " << _mVbs/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbs  " << _mAbs/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbd " << _mVbd/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbd  " << _mAbd/GeV << " \n";
+  output << "newdef " << name() << ":VectorMasscs " << _mVcs/GeV << " \n";
+  output << "newdef " << name() << ":AxialMasscs  " << _mAcs/GeV << " \n";
+  output << "newdef " << name() << ":VectorMasscu " << _mVcu/GeV << " \n";
+  output << "newdef " << name() << ":AxialMasscu  " << _mAcu/GeV << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       if(ix<initialModes())
 	{
-	  output << "set " << name() << ":Nfi " << ix << "  " 
+	  output << "newdef " << name() << ":Nfi " << ix << "  " 
 		<< _Nfi[ix] << endl;
-	  output << "set " << name() << ":Eta " << ix << "  " 
+	  output << "newdef " << name() << ":Eta " << ix << "  " 
 		<< _eta[ix] << endl;
 	}
       else

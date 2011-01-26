@@ -68,6 +68,7 @@ public:
   /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
+   * @param weight The weight for the event
    */
   virtual void analyze(tPPtr particle, double weight);
 

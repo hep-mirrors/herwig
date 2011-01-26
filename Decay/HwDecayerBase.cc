@@ -126,3 +126,9 @@ void HwDecayerBase::dofinish() {
     dataBaseOutput(output,true);
   }
 }
+
+bool HwDecayerBase::softMatrixElementVeto(ShowerProgenitorPtr,
+					  ShowerParticlePtr,
+					  Branching) {
+  return false;
+}

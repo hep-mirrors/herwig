@@ -236,11 +236,11 @@ void SU3BaryonSingletOctetPhotonDecayer::dataBaseOutput(ofstream & output,
 							bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":Coupling " << _c*GeV << "\n";
-  output << "set " << name() << ":Parity " << _parity<< "\n";
-  output << "set " << name() << ":Sigma0 " << _sigma0 << "\n";
-  output << "set " << name() << ":Lambda " << _lambda << "\n";
-  output << "set " << name() << ":ExcitedLambda " << _elambda << "\n";
+  output << "newdef " << name() << ":Coupling " << _c*GeV << "\n";
+  output << "newdef " << name() << ":Parity " << _parity<< "\n";
+  output << "newdef " << name() << ":Sigma0 " << _sigma0 << "\n";
+  output << "newdef " << name() << ":Lambda " << _lambda << "\n";
+  output << "newdef " << name() << ":ExcitedLambda " << _elambda << "\n";
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     output << "insert " << name() << ":MaxWeight " << ix << " " 
 	   << _maxweight[ix] << "\n";

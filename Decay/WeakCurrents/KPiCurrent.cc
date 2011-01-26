@@ -368,39 +368,39 @@ void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::KPiCurrent " << name() 
 		    << " HeWeakCurrents.so\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":Transverse "      << _transverse << "\n";
-  output << "set " << name() << ":cV " << _cV << "\n";
-  output << "set " << name() << ":cS " << _cS << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Transverse "      << _transverse << "\n";
+  output << "newdef " << name() << ":cV " << _cV << "\n";
+  output << "newdef " << name() << ":cS " << _cS << "\n";
   for(unsigned int ix=0;ix<_vecmag.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":VectorMagnitude " << ix << " " << _vecmag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":VectorPhase "     << ix << " " << _vecphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_scamag.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":ScalarMagnitude " << ix << " " << _scamag[ix]  << "\n";
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":ScalarPhase "     << ix << " " << _scaphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_vecmass.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_scamass.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
   }

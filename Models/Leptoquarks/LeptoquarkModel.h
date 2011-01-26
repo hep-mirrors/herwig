@@ -25,8 +25,6 @@ class LeptoquarkModel: public StandardModel {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -48,16 +46,6 @@ public:
    * Pointer to the object handling the S0ql vertex.
    */
   tAbstractFFSVertexPtr   vertexSLQFF() const {return _theSLQFFVertex;}
-
-
-
-
-
-  /**
-   * The destructor.
-   */
-  virtual ~LeptoquarkModel();
-  //@}
 
 public:
 
@@ -88,84 +76,85 @@ public:
  /**
    * Return the overall fermion coupling
    */
-  double _cfermion() const {return _CouplFF;}
+  double cfermion() const {return _CouplFF;}
 
   /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S0)
    */
+  double cleft() const {return _leftcoup;}
 
-  double _cleft() const {return _leftcoup;}
  /**
    * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (S0)
    */
-  double _cright() const {return _rightcoup;}
+  double cright() const {return _rightcoup;}
 
   /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1 triplet)
    */
+  double cleft1() const {return _leftcoup1;}
 
-  double _cleft1() const {return _leftcoup1;}
-
-   /* Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (~S0)
+  /**
+   * Return the coupling of the leptoquark to right-handed leptons
+   * + left-handed quarks (~S0)
    */
-  double _crighttilde() const {return _rightcouptilde;}
+  double crighttilde() const {return _rightcouptilde;}
 
  /**
   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1/2)
-   */
-  
-  double _cleft12() const {return _leftcoup12;}
+   */  
+  double cleft12() const {return _leftcoup12;}
+
   /**
    * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (S1/2)
    */
-  double _cright12() const {return _rightcoup12;}
+  double cright12() const {return _rightcoup12;}
 
   /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S1/2)
    */
-  
-  double _cleft12tilde() const {return _leftcoup12t;}
+  double cleft12tilde() const {return _leftcoup12t;}
+
  /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (S0)
    */
-
-  double _dcleft() const {return _dleftcoup;}
+  double dcleft() const {return _dleftcoup;}
  /**
    * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (dS0)
    */
-  double _dcright() const {return _drightcoup;}
+  double dcright() const {return _drightcoup;}
 
   /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1 triplet)
    */
 
-  double _dcleft1() const {return _dleftcoup1;}
+  double dcleft1() const {return _dleftcoup1;}
 
-   /* Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (~dS0)
+  /**
+   * Return the coupling of the leptoquark to right-handed leptons
+   * + left-handed quarks (~dS0)
    */
-  double _dcrighttilde() const {return _drightcouptilde;}
+  double dcrighttilde() const {return _drightcouptilde;}
 
  /**
   * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1/2)
-   */
-  
-  double _dcleft12() const {return _dleftcoup12;}
+   */  
+  double dcleft12() const {return _dleftcoup12;}
+
   /**
    * Return the coupling of the leptoquark to right-handed leptons + left-handed quarks (dS1/2)
    */
-  double _dcright12() const {return _drightcoup12;}
+  double dcright12() const {return _drightcoup12;}
 
   /**
    * Return the coupling of the leptoquark to left-handed leptons + right-handed quarks (dS1/2)
    */
   
-  double _dcleft12tilde() const {return _dleftcoup12t;}
-
+  double dcleft12tilde() const {return _dleftcoup12t;}
   /**
    * Suppression scale for derivatively coupled scalar leptoquarks
    */
   
-  double _fscale() const {return _derivscalef;}
+  double fscale() const {return _derivscalef;}
 
 
 

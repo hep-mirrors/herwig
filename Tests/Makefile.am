@@ -56,7 +56,8 @@ HWRUN = $(HERWIG) run
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma
 
 if WANT_LIBFASTJET
-tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons test-LEP-default test-LEP-TopDecay
+tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons \
+            test-LEP-default test-LEP-Powheg test-LEP-TopDecay
 else
 tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-BB test-LEP-Quarks test-LEP-Leptons
 endif

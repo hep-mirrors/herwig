@@ -116,7 +116,10 @@ namespace Herwig {
     
     
   private:
-   
+
+    /**
+     *  Rapidity histogram
+     */   
     HistogramPtr _hy;
 
     /**

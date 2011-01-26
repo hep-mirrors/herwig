@@ -339,29 +339,29 @@ void NonLeptonicOmegaDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,En
 
 void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  output << "set " << name() << ":DStar " << _dstar<< "\n";
-  output << "set " << name() << ":FStar " << _fstar << "\n";
-  output << "set " << name() << ":omegad " << _omegad<< "\n";
-  output << "set " << name() << ":omegaf " << _omegaf<< "\n";
-  output << "set " << name() << ":CBstar " << _cbstar<< "\n";
-  output << "set " << name() << ":sc " << _sc << "\n";
-  output << "set " << name() << ":C " << _c << "\n";
-  output << "set " << name() << ":Fpi " << _fpi/MeV << "\n";
-  output << "set " << name() << ":hc " << _hc/GeV << "\n";
-  output << "set " << name() << ":hpi " << _hpi<< "\n";
-  output << "set " << name() << ":d " << _d/GeV << "\n";
-  output << "set " << name() << ":f " << _f/GeV << "\n";
-  output << "set " << name() << ":MLambda " << _mlambda/MeV << "\n";
-  output << "set " << name() << ":MXi " << _mxi/MeV << "\n";
-  output << "set " << name() << ":MOmega " << _momega/MeV << "\n";
-  output << "set " << name() << ":MXiStar " << _mxistar/MeV << "\n";
-  output << "set " << name() << ":Mpiplus " << _mpip/MeV << "\n";
-  output << "set " << name() << ":MKplus " << _mkp/MeV << "\n";
-  output << "set " << name() << ":Mpi0 " << _mpi0/MeV << "\n";
-  output << "set " << name() << ":MK0 " << _mk0/MeV << "\n";
-  output << "set " << name() << ":MBstar " << _mbstar/MeV << "\n";
-  output << "set " << name() << ":MR " << _mr/MeV << "\n";
-  output << "set " << name() << ":LocalMasses " << _localmasses << "\n";
+  output << "newdef " << name() << ":DStar " << _dstar<< "\n";
+  output << "newdef " << name() << ":FStar " << _fstar << "\n";
+  output << "newdef " << name() << ":omegad " << _omegad<< "\n";
+  output << "newdef " << name() << ":omegaf " << _omegaf<< "\n";
+  output << "newdef " << name() << ":CBstar " << _cbstar<< "\n";
+  output << "newdef " << name() << ":sc " << _sc << "\n";
+  output << "newdef " << name() << ":C " << _c << "\n";
+  output << "newdef " << name() << ":Fpi " << _fpi/MeV << "\n";
+  output << "newdef " << name() << ":hc " << _hc/GeV << "\n";
+  output << "newdef " << name() << ":hpi " << _hpi<< "\n";
+  output << "newdef " << name() << ":d " << _d/GeV << "\n";
+  output << "newdef " << name() << ":f " << _f/GeV << "\n";
+  output << "newdef " << name() << ":MLambda " << _mlambda/MeV << "\n";
+  output << "newdef " << name() << ":MXi " << _mxi/MeV << "\n";
+  output << "newdef " << name() << ":MOmega " << _momega/MeV << "\n";
+  output << "newdef " << name() << ":MXiStar " << _mxistar/MeV << "\n";
+  output << "newdef " << name() << ":Mpiplus " << _mpip/MeV << "\n";
+  output << "newdef " << name() << ":MKplus " << _mkp/MeV << "\n";
+  output << "newdef " << name() << ":Mpi0 " << _mpi0/MeV << "\n";
+  output << "newdef " << name() << ":MK0 " << _mk0/MeV << "\n";
+  output << "newdef " << name() << ":MBstar " << _mbstar/MeV << "\n";
+  output << "newdef " << name() << ":MR " << _mr/MeV << "\n";
+  output << "newdef " << name() << ":LocalMasses " << _localmasses << "\n";
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     output << "insert " << name() << ":MaxWeight " << ix << " " 
 	   << _maxweight[ix] << "\n";

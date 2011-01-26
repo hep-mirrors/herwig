@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *--#[ log:
 *	$Id: ffxd0h.f,v 1.6 1996/01/22 13:33:49 gj Exp $
 *	$Log: ffxd0h.f,v $
@@ -58,7 +61,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -127,6 +130,22 @@ c
 		    goto 40
 		endif
 	    endif
+*
+*	    all masses equal, three momenta zero:
+*	    added by TH 24 Dec 09
+*
+#if 0
+	    if( xpi(iold(5,irota)) .eq. 0 .and.
+     &          xpi(iold(6,irota)) .eq. 0 .and.
+     &          xpi(iold(7,irota)) .eq. 0 .and.
+     &          abs(xpi(iold(1,irota)) - xpi(iold(2,irota))) +
+     &          abs(xpi(iold(1,irota)) - xpi(iold(3,irota))) +
+     &          abs(xpi(iold(1,irota)) - xpi(iold(4,irota)))
+     &            .lt. precx ) then
+	      itype = 3
+	      return
+	    endif
+#endif
 *
 	    ier0 = 0
 	    call ffxlam(del2,xpi,dpipj,10,
@@ -222,7 +241,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	calculations
 *
@@ -269,7 +288,7 @@ c
 	DOUBLE PRECISION xpi(13),dpipj(10,13),piDpj(10,10)
 	integer is1,is2,is3,ip1,ip2,ip3,i,j,ier0,ier1
 	DOUBLE PRECISION xmax,som,xmxp
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ check input:
 	if ( ns .ne. 10 ) print *,'ffdot4: error: ns <> 10 '
@@ -607,7 +626,7 @@ c
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ get dotproducts:

@@ -14,12 +14,14 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
-HELPERFILES = SPhenoSPS1a.spc NMSSM.spc MUED.model MSSM.model NMSSM.model RS.model ADD.model LH.model
+HELPERFILES = SPhenoSPS1a.spc NMSSM.spc MUED.model MSSM.model NMSSM.model\
+              RS.model ADD.model Leptoquark.model LH.model
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
              LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in LHC-LH.in\
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
-	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-Anomalous.in 
+	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-Anomalous.in \
+             LHC-diffractive.in  LHC-GammaGamma.in LHC-LQ.in
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 

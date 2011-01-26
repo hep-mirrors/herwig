@@ -144,11 +144,11 @@ void HQETFormFactor::dataBaseOutput(ofstream & os,bool header,bool create) const
   if(header) os << "update decayers set parameters=\"";
   if(create) os << "create Herwig::HQETFormFactor " << name() << "\n";
   ScalarFormFactor::dataBaseOutput(os,false,false);
-  os << "set " << name() << ":F1Scalar   " << _f1scalar   << "\n";
-  os << "set " << name() << ":F1Vector   " << _f1vector   << "\n";
-  os << "set " << name() << ":Rho2Scalar " << _rho2scalar << "\n";
-  os << "set " << name() << ":Rho2Vector " << _rho2vector << "\n";
-  os << "set " << name() << ":R1         " << _r1         << "\n";
-  os << "set " << name() << ":R2         " << _r2         << "\n";
+  os << "newdef " << name() << ":F1Scalar   " << _f1scalar   << "\n";
+  os << "newdef " << name() << ":F1Vector   " << _f1vector   << "\n";
+  os << "newdef " << name() << ":Rho2Scalar " << _rho2scalar << "\n";
+  os << "newdef " << name() << ":Rho2Vector " << _rho2vector << "\n";
+  os << "newdef " << name() << ":R1         " << _r1         << "\n";
+  os << "newdef " << name() << ":R2         " << _r2         << "\n";
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

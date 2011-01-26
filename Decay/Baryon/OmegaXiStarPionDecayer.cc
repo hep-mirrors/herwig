@@ -157,14 +157,14 @@ threeHalfThreeHalfScalarCoupling(int,Energy,Energy,Energy,
 void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":Acomm " << Acomm_ << "\n";
-  output << "set " << name() << ":AP " << AP_ << "\n";
-  output << "set " << name() << ":AS " << AS_ << "\n";
-  output << "set " << name() << ":BP " << BP_ << "\n";
-  output << "set " << name() << ":BS " << BS_ << "\n";
-  output << "set " << name() << ":MaximumWeight " << wgtmax_ << "\n";
-  output << "set " << name() << ":Incoming " << idin_ << "\n";
-  output << "set " << name() << ":Outgoing " << idout_ << "\n";
+  output << "newdef " << name() << ":Acomm " << Acomm_ << "\n";
+  output << "newdef " << name() << ":AP " << AP_ << "\n";
+  output << "newdef " << name() << ":AS " << AS_ << "\n";
+  output << "newdef " << name() << ":BP " << BP_ << "\n";
+  output << "newdef " << name() << ":BS " << BS_ << "\n";
+  output << "newdef " << name() << ":MaximumWeight " << wgtmax_ << "\n";
+  output << "newdef " << name() << ":Incoming " << idin_ << "\n";
+  output << "newdef " << name() << ":Outgoing " << idout_ << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

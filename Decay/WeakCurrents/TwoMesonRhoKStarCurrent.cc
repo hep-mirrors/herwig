@@ -562,45 +562,45 @@ void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
 		    << name() << " HwWeakCurrents.so\n";
   unsigned int ix;
   for(ix=0;ix<_rhomasses.size();++ix) {
-    if(ix<3)  output << "set ";
+    if(ix<3)  output << "newdef ";
     else      output << "insert ";
     output << name() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarmasses.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarwidths.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
   }
-  output << "set " << name() << ":RhoParameters " << _rhoparameters << "\n";
-  output << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "newdef " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  output << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
   for(ix=0;ix<_piwgt.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
   }
   for(ix=0;ix<_kwgt.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
   }
-  output << "set " << name() << ":PiModel " << _pimodel << "\n";
-  output << "set " << name() << ":KModel  " << _kmodel  << "\n";
+  output << "newdef " << name() << ":PiModel " << _pimodel << "\n";
+  output << "newdef " << name() << ":KModel  " << _kmodel  << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

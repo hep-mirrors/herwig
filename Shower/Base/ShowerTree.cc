@@ -355,6 +355,29 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
       }
     }
   }
+  else {
+    for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
+      ShowerParticlePtr init=(*cit).first->progenitor();
+      assert(init->getThePEGBase());
+      PPtr original = (*cit).first->original();
+      if(original->parents().empty()) continue;
+      PPtr hadron= original->parents()[0];
+      assert(!original->children().empty());
+      PPtr copy=cit->first->copy();
+      ParticleVector intermediates=original->children();
+      for(unsigned int ix=0;ix<intermediates.size();++ix) {
+	init->abandonChild(intermediates[ix]);
+	copy->abandonChild(intermediates[ix]);
+      }
+      // break mother/daugther relations
+      init->addChild(original);
+      hadron->abandonChild(original);
+      // no showering for this particle
+      updateColour(init);
+      hadron->addChild(init);
+      pstep->addIntermediate(init);
+    }
+  }
   // final-state radiation
   for(cjt=outgoingLines().begin();cjt!=outgoingLines().end();++cjt) {
     ShowerParticlePtr init=(*cjt).first->progenitor();
@@ -736,6 +759,7 @@ void ShowerTree::clear() {
   if(_wasHard)
     for(cjt=_incomingLines.begin();cjt!=_incomingLines.end();++cjt)
       _backward.insert(cjt->first->progenitor());
+  clearTransforms();
 }
 
 void ShowerTree::resetShowerProducts() {
@@ -830,22 +854,61 @@ vector<ShowerProgenitorPtr> ShowerTree::extractProgenitors() {
   return ShowerHardJets;
 }
 
-void ShowerTree::transform(const LorentzRotation & boost) {
-  // now boost all the particles
-  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  // incoming
-  for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
-    cit->first->progenitor()->deepTransform(boost);
-    cit->first->copy()->deepTransform(boost);
+void ShowerTree::transform(const LorentzRotation & boost, bool applyNow) {
+  if(applyNow) {
+    // now boost all the particles
+    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+    // incoming
+    for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
+      cit->first->progenitor()->deepTransform(boost);
+      cit->first->copy()->deepTransform(boost);
+    }
+    // outgoing
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+    for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
+      cjt->first->progenitor()->deepTransform(boost);
+      cjt->first->copy()->deepTransform(boost);
+    }
   }
-  // outgoing
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
-    cjt->first->progenitor()->deepTransform(boost);
-    cjt->first->copy()->deepTransform(boost);
+  else {
+    Lorentz5Momentum ptemp1 = _incomingLines.begin()->first->progenitor()->momentum();
+    Lorentz5Momentum ptemp2 = ptemp1;
+    ptemp1 *= _transforms;
+    ptemp1 *= boost;
+    _transforms.transform(boost);
+    ptemp2 *= _transforms;
   }
   // child trees
   for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
 	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
-    tit->first->transform(boost);
+    tit->first->transform(boost,applyNow);
+}
+
+void ShowerTree::applyTransforms() {
+  // now boost all the particles
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  // incoming
+  for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {
+    cit->first->progenitor()->deepTransform(_transforms);
+    cit->first->copy()->deepTransform(_transforms);
+  }
+  // outgoing
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+  for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt) {
+    cjt->first->progenitor()->deepTransform(_transforms);
+    cjt->first->copy()->deepTransform(_transforms);
+  }
+  // child trees
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
+    tit->first->applyTransforms();
+  _transforms = LorentzRotation();
+}
+
+void ShowerTree::clearTransforms() {
+  _transforms = LorentzRotation();
+  // child trees
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
+    tit->first->clearTransforms();
 }

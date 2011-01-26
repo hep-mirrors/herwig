@@ -12,7 +12,7 @@
 
 using namespace Herwig;
 using namespace ThePEG;
-using namespace Looptools;
+namespace LT = Looptools;
 
 IBPtr VVSLoopVertex::clone() const {
   return new_ptr(*this);
@@ -32,17 +32,17 @@ void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
 
 void VVSLoopVertex::doinit() {
   // ffini needed here for BSM initialization code!
-  Looptools::ffini();
+  Looptools::ltini();
   GeneralVVSVertex::doinit();
 }
 
 void VVSLoopVertex::dofinish() {
-  Looptools::ffexi();
+  Looptools::ltexi();
   GeneralVVSVertex::dofinish();
 }
 
 void VVSLoopVertex::doinitrun() {
-  Looptools::ffini();
+  Looptools::ltini();
   GeneralVVSVertex::doinitrun();
 }
 
@@ -68,17 +68,17 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
     double mls = sqr(lmass);
     Complex lc = couplings[i].first;
     if(type[i] == PDT::Spin1Half) {
-      Complex C0 =  C0i(cc0,pv1s,pv2s,ps2,mls,mls,mls); 
-      long  theC = Cget(ps2,pv2s,pv1s,    mls,mls,mls);
-      Complex C1  = Cval(cc1,theC);
-      Complex C2  = Cval(cc2,theC);
-      Complex C00 = Cval(cc00,theC);
-      Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);
-      Complex C22 = Cval(cc22,theC);
+      Complex C0 =  LT::C0i(LT::cc0,pv1s,pv2s,ps2,mls,mls,mls); 
+      long  theC = LT::Cget(ps2,pv2s,pv1s,    mls,mls,mls);
+      Complex C1  = LT::Cval(LT::cc1,theC);
+      Complex C2  = LT::Cval(LT::cc2,theC);
+      Complex C00 = LT::Cval(LT::cc00,theC);
+      Complex C11 = LT::Cval(LT::cc11,theC);
+      Complex C12 = LT::Cval(LT::cc12,theC);
+      Complex C22 = LT::Cval(LT::cc22,theC);
       Complex lpr = lc + couplings[i].second;
 
-      a +=  4.*lpr*lmass*(-2.*B0(ps2,mls,mls)+ C0*(pv1s + pv2s - ps2) + 8.*C00)/ps2;
+      a +=  4.*lpr*lmass*(-2.*LT::B0(ps2,mls,mls)+ C0*(pv1s + pv2s - ps2) + 8.*C00)/ps2;
       b +=  8.*lpr*lmass*(C0 + 3.*C1 +3.*C2 + 2.*(C11 + 2.*C12 + C22)); 
       c +=  4.*lpr*lmass*(C0 +2.*(2.*C1+C2 + 2.*(C11 +C12)));
       d +=  4.*lpr*lmass*(C0 + 4.*(C1+C11+C12));
@@ -87,11 +87,11 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
 
     }
     else if(type[i] == PDT::Spin1) {
-      long theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
-      Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
-      Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);
-      Complex C22 = Cval(cc22,theC);
+      long theC = LT::Cget(ps2,pv2s,pv1s,mls,mls,mls);
+      Complex C1 = LT::Cval(LT::cc1,theC);Complex C2 = LT::Cval(LT::cc2,theC);
+      Complex C00 = LT::Cval(LT::cc00,theC);Complex C11 = LT::Cval(LT::cc11,theC);
+      Complex C12 = LT::Cval(LT::cc12,theC);
+      Complex C22 = LT::Cval(LT::cc22,theC);
       
       /**
        * vector type can contain different types of particle 
@@ -102,13 +102,13 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
        */
       double pv12 = pv1s*pv2s;
       Complex 
-	C0A(C0(pv1s,pv2s,ps2,mls,mls,mls)),A0A(A0(mls)),
-	B0A(B0(ps2 ,mls,mls)),
-	B1A(B1(ps2 ,mls,mls)),B11A(B11(ps2 ,mls,mls)),
-	B0B(B0(pv1s,mls,mls)),B00B(B00(pv1s,mls,mls)),
-	B1B(B1(pv1s,mls,mls)),B11B(B11(pv1s,mls,mls)),
-	B0C(B0(pv2s,mls,mls)),B00C(B00(pv2s,mls,mls)),
-	B1C(B1(pv2s,mls,mls)),B11C(B11(pv2s,mls,mls));
+	C0A(LT::C0(pv1s,pv2s,ps2,mls,mls,mls)),A0A(LT::A0(mls)),
+	B0A(LT::B0(ps2 ,mls,mls)),
+	B1A(LT::B1(ps2 ,mls,mls)),B11A(LT::B11(ps2 ,mls,mls)),
+	B0B(LT::B0(pv1s,mls,mls)),B00B(LT::B00(pv1s,mls,mls)),
+	B1B(LT::B1(pv1s,mls,mls)),B11B(LT::B11(pv1s,mls,mls)),
+	B0C(LT::B0(pv2s,mls,mls)),B00C(LT::B00(pv2s,mls,mls)),
+	B1C(LT::B1(pv2s,mls,mls)),B11C(LT::B11(pv2s,mls,mls));
       double mls2(mls*mls),mls3(mls2*mls);
       // coefficient
       a += 
@@ -206,15 +206,15 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
 	      + (2.*mls - pv1s)*(2.*mls - pv2s)*ps2)*C11 )/mls3;
     }    
     else if(type[i] == PDT::Spin0) {
-      long theC = Cget(ps2,pv2s,pv1s,
+      long theC = LT::Cget(ps2,pv2s,pv1s,
 		      mls,mls,mls);
-      Complex C1 = Cval(cc1,theC);
-      Complex C2 = Cval(cc2,theC);
-      Complex C00 = Cval(cc00,theC);
-      Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);
-      Complex C22 = Cval(cc22,theC);
-      Complex Cz = C0(pv1s,pv2s,ps2,mls,mls,mls);
+      Complex C1 = LT::Cval(LT::cc1,theC);
+      Complex C2 = LT::Cval(LT::cc2,theC);
+      Complex C00 = LT::Cval(LT::cc00,theC);
+      Complex C11 = LT::Cval(LT::cc11,theC);
+      Complex C12 = LT::Cval(LT::cc12,theC);
+      Complex C22 = LT::Cval(LT::cc22,theC);
+      Complex Cz = LT::C0(pv1s,pv2s,ps2,mls,mls,mls);
       /**
        * vector type can contain different types of particle 
        * and hence the coupling is different
@@ -222,7 +222,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
        * type rather than creating another
        * vector to hold them.
        */
-      a +=  4.*lc*(B0(ps2,mls,mls) - 4.*C00)/ps2;
+      a +=  4.*lc*(LT::B0(ps2,mls,mls) - 4.*C00)/ps2;
       b += -4.*lc*(Cz + 3.*C1 + 3.*C2 +2.*(C11 + 2.*C12 + C22 ));
       c += -2.*lc*(Cz + 2.*(2.*C1+ C2 + 2.*(C11 +C12)));
       d += -8.*lc*(C1 +C11 + C12);

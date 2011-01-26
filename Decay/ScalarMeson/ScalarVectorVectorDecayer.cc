@@ -226,15 +226,15 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming   " << ix << " "
+      output << "newdef " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << name() << ":FirstOutgoing  " << ix << " "
+      output << "newdef " << name() << ":FirstOutgoing  " << ix << " "
 	     << _outgoing1[ix]  << "\n";
-      output << "set " << name() << ":SecondOutgoing " << ix << " "
+      output << "newdef " << name() << ":SecondOutgoing " << ix << " "
 	     << _outgoing2[ix]  << "\n";
-      output << "set " << name() << ":Coupling   " << ix << " "
+      output << "newdef " << name() << ":Coupling   " << ix << " "
 	     << _coupling[ix]*GeV   << "\n";
-      output << "set " << name() << ":MaxWeight  " << ix << " "
+      output << "newdef " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
     else {

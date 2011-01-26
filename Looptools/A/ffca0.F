@@ -1,60 +1,42 @@
-*###[ ffca0:
-	subroutine ffca0(ca0,cm,ier)
-***#[*comment:***********************************************************
-*									*
-*	calculates the one-point function (see 't Hooft and		*
-*	Veltman) for complex mass					*
-*									*
-*	Input:	cm	(complex) mass2, re>0, im<0.			*
-*									*
-*	Output:	ca0	(complex) A0, the one-point function,		*
-*		ier	0 (OK)						*
-*									*
-*	Calls:	log.							*
-*									*
-***#]*comment:***********************************************************
-*  #[ declarations:
+* ffca0.F
+* the one-point function for complex mass
+* original code by G.J. van Oldenborgh
+* this file is part of LoopTools
+* last modified 7 Dec 10 th
+
+#include "externals.h"
+
+* Input:	cm	(complex) mass2, re > 0, im < 0.
+* Output:	ca0	(complex) A0, the one-point function,
+*		ier	0 (OK)
+
+	subroutine ffca0(ca0, cm, ier)
 	implicit none
-*
-*	arguments
-*
+	double complex ca0, cm
 	integer ier
-	DOUBLE COMPLEX ca0,cm
-*
-*	local variables
-*
-	DOUBLE COMPLEX cmu,clogm,c
-	DOUBLE PRECISION absc,xm
-*
-*	common blocks etc
-*
-	include 'ff.h'
+
+#include "ff.h"
+
+	double complex cmu, clogm
+
+	double precision absc
+	double complex c
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
-*
-*  #] declarations:
-*  #[ the real case:
-*	
-*	adapted to log-and-pole scheme 25-mar-1992
-*	
-	if ( DIMAG(cm) .eq. 0 .or. nschem .lt. 7 ) then
-	    xm = DBLE(cm)
-	    call ffxa0(ca0,xm,ier)
-	    return
+
+* the real case:
+* adapted to log-and-pole scheme 25-mar-1992
+	if( DIMAG(cm) .eq. 0 .or. nschem .lt. 7 ) then
+	  call ffxa0(ca0, cm, ier)
+	  return
 	endif
-*  #] the real case:
-*  #[ "calculations":
-	if ( mudim .ne. 0 ) then
-	    cmu = cm/DBLE(mudim)
+
+	cmu = cm
+	if( mudim .ne. 0 ) cmu = cmu/mudim
+	if( absc(cmu) .gt. xclogm ) then
+	  clogm = log(cmu)
 	else
-	    cmu = cm
+	  clogm = 0
+	  if ( cmu .ne. 0 ) call fferr(1, ier)
 	endif
-	if ( absc(cmu) .gt. xclogm ) then
-	    clogm = log(cmu)
-	else
-	    clogm = 0
-	    if ( cmu .ne. czero ) call fferr(1,ier)
-	endif
-	ca0 = - cm * ( clogm - 1 - DBLE(delta) )
-*  #] "calculations":
-*###] ffca0:
+	ca0 = -cm*(clogm - 1 - delta)
 	end

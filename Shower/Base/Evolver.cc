@@ -554,6 +554,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
   currentTree(decay);
+  decay->applyTransforms();
   // extract particles to be shower, set scales and 
   // perform hard matrix element correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
@@ -1424,7 +1425,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
 	}
       }
       if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-				     << "Evolver::generateHardest()" 
+				     << "Evolver::connectTrees()" 
 				     << Exception::runerror;
       (**cit).sudakov(sudakov);
     }
@@ -1497,7 +1498,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
     Lorentz5Momentum newMomentum = tit->second.second->momentum();
     LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
     boost.boost          (-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
-    decayTree->transform(boost);
+    decayTree->transform(boost,true);
   }
 }
 

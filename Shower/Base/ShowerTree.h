@@ -49,6 +49,7 @@ public:
   //@{
   /**
    * Constructor for a scattering process
+   * @param incoming The incoming particles
    * @param out The outgoing particles
    * @param decay Map into which the trees for any unstable particles are inserted
    */
@@ -247,7 +248,22 @@ public:
   /**
    *  Transform the tree
    */
-  void transform(const LorentzRotation & rot);
+  void transform(const LorentzRotation & rot, bool applyNow);
+
+  /**
+   *  Apply any postphoned transformations
+   */
+  void applyTransforms();
+
+  /**
+   *   Clear any postphoned transformations
+   */ 
+  void clearTransforms();
+
+  /**
+   *  Transform which needs to be applied
+   */
+  const LorentzRotation & transform() {return _transforms;}
 
 protected:
 
@@ -373,6 +389,11 @@ private:
    */
   bool _hasShowered;
 
+  /**
+   *  The transforms which still need to be applied
+   */
+  LorentzRotation _transforms;
+
 private:
 
   /**
@@ -380,6 +401,10 @@ private:
    */
   static set<long> _decayInShower;
 
+  /**
+   *  Check if a particle decays in the shower
+   * @param id The PDG code for the particle
+   */
   static bool decaysInShower(long id) {
     return ( _decayInShower.find( abs(id) ) != 
 	     _decayInShower.end() ); 

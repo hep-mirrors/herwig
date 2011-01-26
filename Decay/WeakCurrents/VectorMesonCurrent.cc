@@ -194,9 +194,9 @@ void VectorMesonCurrent::dataBaseOutput(ofstream & output,
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":ID " << ix 
+      output << "newdef " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << name() << ":Decay_Constant " << ix 
+      output << "newdef " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
     else {

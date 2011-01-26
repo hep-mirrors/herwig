@@ -14,8 +14,8 @@ mkdir /Herwig/Shower
 cd /Herwig/Shower
 
 create Herwig::ShowerHandler ShowerHandler
-set ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
-set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+newdef ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+newdef ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 
 #####################################
 # initial setup, don't change these!
@@ -26,15 +26,15 @@ create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 create Herwig::QTildeReconstructor KinematicsReconstructor
-set KinematicsReconstructor:ReconstructionOption Colour
+newdef KinematicsReconstructor:ReconstructionOption Colour
 
-set /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
+newdef /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
 
-set ShowerHandler:Evolver Evolver
-set ShowerModel:PartnerFinder PartnerFinder
-set ShowerModel:KinematicsReconstructor KinematicsReconstructor
-set Evolver:ShowerModel ShowerModel
-set Evolver:SplittingGenerator SplittingGenerator
+newdef ShowerHandler:Evolver Evolver
+newdef ShowerModel:PartnerFinder PartnerFinder
+newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
+newdef Evolver:ShowerModel ShowerModel
+newdef Evolver:SplittingGenerator SplittingGenerator
 
 ##################################################################
 # Intrinsic pT
@@ -46,15 +46,15 @@ set Evolver:SplittingGenerator SplittingGenerator
 #
 # Set all parameters to 0 to disable
 ##################################################################
-set Evolver:IntrinsicPtGaussian 1.9*GeV
-set Evolver:IntrinsicPtBeta  	0
-set Evolver:IntrinsicPtGamma 	0*GeV
-set Evolver:IntrinsicPtIptmax   0*GeV
+newdef Evolver:IntrinsicPtGaussian 1.9*GeV
+newdef Evolver:IntrinsicPtBeta  	0
+newdef Evolver:IntrinsicPtGamma 	0*GeV
+newdef Evolver:IntrinsicPtIptmax   0*GeV
 #############################################################
 # Main control switches for the parton shower.
 #############################################################
-set SplittingGenerator:ISR Yes
-set SplittingGenerator:FSR Yes
+newdef SplittingGenerator:ISR Yes
+newdef SplittingGenerator:FSR Yes
 #############################################################
 
 
@@ -68,67 +68,67 @@ set SplittingGenerator:FSR Yes
 #############################################################
 #
 # a few default values
-set Evolver:MECorrMode 1
-set AlphaQCD:ScaleFactor 1.0
-set AlphaQCD:NPAlphaS 2
-set AlphaQCD:Qmin 0.935
-set AlphaQCD:NumberOfLoops 3
-set AlphaQCD:InputOption 1
-set AlphaQCD:AlphaMZ 0.120
+newdef Evolver:MECorrMode 1
+newdef AlphaQCD:ScaleFactor 1.0
+newdef AlphaQCD:NPAlphaS 2
+newdef AlphaQCD:Qmin 0.935
+newdef AlphaQCD:NumberOfLoops 3
+newdef AlphaQCD:InputOption 1
+newdef AlphaQCD:AlphaMZ 0.120
 #
 #
 # Lets set up all the splittings
 create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
-set QtoQGSplitFn:InteractionType QCD
-set QtoQGSplitFn:ColourStructure TripletTripletOctet
+newdef QtoQGSplitFn:InteractionType QCD
+newdef QtoQGSplitFn:ColourStructure TripletTripletOctet
 create Herwig::OneOneOneSplitFn GtoGGSplitFn
-set GtoGGSplitFn:InteractionType QCD
-set GtoGGSplitFn:ColourStructure OctetOctetOctet
+newdef GtoGGSplitFn:InteractionType QCD
+newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
-set GtoQQbarSplitFn:InteractionType QCD
-set GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
+newdef GtoQQbarSplitFn:InteractionType QCD
+newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
-set QtoGQSplitFn:InteractionType QCD
-set QtoGQSplitFn:ColourStructure TripletOctetTriplet
+newdef QtoGQSplitFn:InteractionType QCD
+newdef QtoGQSplitFn:ColourStructure TripletOctetTriplet
 
 #
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
-set SudakovCommon:Alpha AlphaQCD
-set SudakovCommon:cutoffKinScale 2.650*GeV
-set SudakovCommon:PDFmax 1.0
+newdef SudakovCommon:Alpha AlphaQCD
+newdef SudakovCommon:cutoffKinScale 2.650*GeV
+newdef SudakovCommon:PDFmax 1.0
 
 cp SudakovCommon QtoQGSudakov
-set QtoQGSudakov:SplittingFunction QtoQGSplitFn
-set QtoQGSudakov:PDFmax 1.9
+newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
+newdef QtoQGSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
-set GtoGGSudakov:SplittingFunction GtoGGSplitFn
-set GtoGGSudakov:PDFmax 2.0
+newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
+newdef GtoGGSudakov:PDFmax 2.0
 
 cp SudakovCommon GtoQQbarSudakov
-set GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
-set GtoQQbarSudakov:PDFmax 120.0
+newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
+newdef GtoQQbarSudakov:PDFmax 120.0
 
 cp SudakovCommon GtobbbarSudakov
-set GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
-set GtobbbarSudakov:PDFmax 40000.0
+newdef GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
+newdef GtobbbarSudakov:PDFmax 40000.0
 
 cp SudakovCommon GtoccbarSudakov
-set GtoccbarSudakov:SplittingFunction GtoQQbarSplitFn
-set GtoccbarSudakov:PDFmax 2000.0
+newdef GtoccbarSudakov:SplittingFunction GtoQQbarSplitFn
+newdef GtoccbarSudakov:PDFmax 2000.0
 
 cp SudakovCommon QtoGQSudakov
-set QtoGQSudakov:SplittingFunction QtoGQSplitFn
+newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
 
 cp SudakovCommon utoGuSudakov
-set utoGuSudakov:SplittingFunction QtoGQSplitFn
-set utoGuSudakov:PDFFactor OverOneMinusZ
-set utoGuSudakov:PDFmax 5.0
+newdef utoGuSudakov:SplittingFunction QtoGQSplitFn
+newdef utoGuSudakov:PDFFactor OverOneMinusZ
+newdef utoGuSudakov:PDFmax 5.0
 
 cp SudakovCommon dtoGdSudakov
-set dtoGdSudakov:SplittingFunction QtoGQSplitFn
-set dtoGdSudakov:PDFFactor OverOneMinusZ
+newdef dtoGdSudakov:SplittingFunction QtoGQSplitFn
+newdef dtoGdSudakov:PDFFactor OverOneMinusZ
 
 
 #

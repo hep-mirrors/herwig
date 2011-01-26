@@ -888,42 +888,42 @@ halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":OneOverNc " <<  oneNC_ << "\n";
-  output << "set " << name() << ":Fpi " << fpi_/MeV << "\n";
-  output << "set " << name() << ":FK " << fk_/MeV  << "\n";
-  output << "set " << name() << ":Frho " << frho_ << "\n";
-  output << "set " << name() << ":fKstar " << fKstar_ << "\n";
-  output << "set " << name() << ":Mdcplus " << mdcplus_/GeV << "\n";
-  output << "set " << name() << ":Mscplus " << mscplus_/GeV << "\n";
-  output << "set " << name() << ":Mdcminus " << mdcminus_/GeV << "\n";
-  output << "set " << name() << ":Mscminus " << mscminus_/GeV << "\n";
-  output << "set " << name() << ":Cplus " << cplus_ << "\n";
-  output << "set " << name() << ":Cminus " << cminus_ << "\n";
-  output << "set " << name() << ":H2 " << H2_/GeV << "\n";
-  output << "set " << name() << ":H3 " << H3_/GeV << "\n";
+  output << "newdef " << name() << ":OneOverNc " <<  oneNC_ << "\n";
+  output << "newdef " << name() << ":Fpi " << fpi_/MeV << "\n";
+  output << "newdef " << name() << ":FK " << fk_/MeV  << "\n";
+  output << "newdef " << name() << ":Frho " << frho_ << "\n";
+  output << "newdef " << name() << ":fKstar " << fKstar_ << "\n";
+  output << "newdef " << name() << ":Mdcplus " << mdcplus_/GeV << "\n";
+  output << "newdef " << name() << ":Mscplus " << mscplus_/GeV << "\n";
+  output << "newdef " << name() << ":Mdcminus " << mdcminus_/GeV << "\n";
+  output << "newdef " << name() << ":Mscminus " << mscminus_/GeV << "\n";
+  output << "newdef " << name() << ":Cplus " << cplus_ << "\n";
+  output << "newdef " << name() << ":Cminus " << cminus_ << "\n";
+  output << "newdef " << name() << ":H2 " << H2_/GeV << "\n";
+  output << "newdef " << name() << ":H3 " << H3_/GeV << "\n";
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     if(ix<initsize_) {
-      output << "set " << name() << ":I1 " 
+      output << "newdef " << name() << ":I1 " 
 	     << ix << " " << I1_[ix] << "\n";
-      output << "set " << name() << ":I2 " 
+      output << "newdef " << name() << ":I2 " 
 	     << ix << " " << I2_[ix] << "\n";
-      output << "set " << name() << ":I3 " 
+      output << "newdef " << name() << ":I3 " 
 	     << ix << " " << I3_[ix] << "\n";
-      output << "set " << name() << ":I4 " 
+      output << "newdef " << name() << ":I4 " 
 	     << ix << " " << I4_[ix] << "\n";
-      output << "set " << name() << ":I5 " 
+      output << "newdef " << name() << ":I5 " 
 	     << ix << " " << I5_[ix] << "\n";
-      output << "set " << name() << ":Ihat3 " 
+      output << "newdef " << name() << ":Ihat3 " 
 	     << ix << " " << Ihat3_[ix] << "\n";
-      output << "set " << name() << ":Ihat4 " 
+      output << "newdef " << name() << ":Ihat4 " 
 	     << ix << " " << Ihat4_[ix] << "\n";
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << incoming_[ix] << "\n";
-      output << "set " << name() << ":OutgoingB " 
+      output << "newdef " << name() << ":OutgoingB " 
 	     << ix << " " << outgoingB_[ix] << "\n";
-      output << "set " << name() << ":OutgoingM " 
+      output << "newdef " << name() << ":OutgoingM " 
 	     << ix << " " << outgoingM_[ix] << "\n";
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << maxweight_[ix] << "\n";
     }
     else {
