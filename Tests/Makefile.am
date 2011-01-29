@@ -65,15 +65,15 @@ endif
 tests-DIS : test-DIS-Charged test-DIS-Neutral
 
 if WANT_LIBFASTJET
-tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma test-LHC-ZGamma \
+tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma \
 	    test-LHC-ZH test-LHC-WH test-LHC-ZJet test-LHC-WJet test-LHC-Z test-LHC-W test-LHC-ZZVBF test-LHC-VBF \
 	    test-LHC-WWVBF test-LHC-bbH test-LHC-ttH test-LHC-GammaGamma test-LHC-GammaJet test-LHC-Higgs \
-	    test-LHC-HiggsJet test-LHC-QCDFast test-LHC-QCD test-LHC-Top \
+	    test-LHC-HiggsJet test-LHC-QCDFast test-LHC-QCD test-LHC-Top test-LHC-Bottom \
             test-LHC-WHJet test-LHC-ZHJet test-LHC-HJet test-LHC-ZShower test-LHC-WShower\
             test-LHC-WHJet-Powheg test-LHC-ZHJet-Powheg test-LHC-HJet-Powheg \
             test-LHC-ZShower-Powheg test-LHC-WShower-Powheg
 else
-tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma test-LHC-ZGamma \
+tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma \
 	    test-LHC-ZH test-LHC-WH test-LHC-ZJet test-LHC-WJet test-LHC-Z test-LHC-W test-LHC-ZZVBF test-LHC-VBF \
 	    test-LHC-WWVBF test-LHC-bbH test-LHC-ttH test-LHC-GammaGamma test-LHC-GammaJet test-LHC-Higgs \
 	    test-LHC-HiggsJet test-LHC-QCDFast test-LHC-QCD test-LHC-Top
@@ -175,7 +175,7 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
 
 Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
             Rivet-Star-Jets-2 Rivet-Star-Jets-3 \
-            Rivet-Star-Jets-4 Rivet-Star-Jets-5
+            Rivet-Star-Jets-4
 	rm -rf Rivet-Star
 	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/STAR_2006_S6860818 Star-UE.aida

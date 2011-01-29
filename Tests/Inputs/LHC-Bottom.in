@@ -1,0 +1,16 @@
+read LHC.common
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:StatLevel Full
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 100000
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+set MEHeavyQuark:QuarkType Bottom
+cd /Herwig/Generators
+set /Herwig/Analysis/Basics:CheckQuark 0
+create Herwig::GammaPMETest BottomTest GammaTest.so
+insert LHCGenerator:AnalysisHandlers 0 BottomTest
+saverun LHC-Bottom LHCGenerator
