@@ -1,0 +1,237 @@
+#! /usr/bin/env python
+import lighthisto
+import logging
+import sys
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+import os, copy, re
+from math import sqrt
+
+## Try to load faster but non-standard cElementTree module
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    try:
+        import cElementTree as ET
+    except ImportError:
+        try:
+            import xml.etree.ElementTree as ET
+        except:
+            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
+            sys.exit(1)
+
+# #############################################
+
+def fillAbove(desthisto, sourcehistosbyptmin):
+    for i,b in enumerate(desthisto.getBins()):
+        ## Fill bins with pT-ordered histos (so that 'highest always wins')
+        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
+            newb = h.getBin(i)
+            if newb.xlow >= ptmin:
+                b.yval =  newb.yval
+                b.yerrplus =  newb.yerrplus
+                b.yerrminus =  newb.yerrminus
+                b.focus= newb.focus
+
+def mergeByPt(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
+    except:
+        pass
+
+def useOnePt(hpath, sqrts, ptmin):
+    global inhistos
+    global outhistos
+    try:
+       ## Find best pT_min match
+        ptmins = inhistos[hpath][float(sqrts)].keys()
+        closest_ptmin = None
+        for ptm in ptmins:
+            if closest_ptmin is None or \
+                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+                closest_ptmin = ptm
+        if closest_ptmin != float(ptmin):
+            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
+                                "using pTmin=%e instead" % closest_ptmin)
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)][closest_ptmin]
+    except:
+        pass
+
+# #######################################
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+
+    ## Prefix used in dat file headers
+    headerprefix = "# "
+
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+aidafiles=["-UE.aida","-Jets-1.aida","-Jets-2.aida","-Jets-3.aida","-Jets-4.aida"]
+
+## Get histos
+inhistos = {}
+outhistos={}
+weights = {}
+for f in aidafiles:
+    file=args[0]+f
+    if(file.find("-UE")>0) :
+        sqrts=200
+        ptmin=0.
+    elif(file.find("-Jets-1")>0) :
+        sqrts=200
+        ptmin=2.
+    elif(file.find("-Jets-2")>0) :
+        sqrts=200
+        ptmin=5.
+    elif(file.find("-Jets-3")>0) :
+        sqrts=200
+        ptmin=26.
+    elif(file.find("-Jets-4")>0) :
+        sqrts=200
+        ptmin=15.
+
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        tree = ET.parse(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    tree = ET.parse(file)
+    ## Get histos from this AIDA file
+    for dps in tree.findall("dataPointSet"):
+        h = lighthisto.Histo.fromDPS(dps)
+        if(h.fullPath().find("6870392")>0 or h.fullPath().find("HELEN")>0) :
+            if not inhistos.has_key(h.fullPath()):
+                inhistos[h.fullPath()] = {}
+            tmpE = inhistos[h.fullPath()]
+            if not tmpE.has_key(sqrts):
+                tmpE[sqrts] = {}
+            tmpP = tmpE[sqrts]
+            if not tmpP.has_key(ptmin):
+                tmpP[ptmin] = h
+            else:
+                raise Exception("A set with ptmin = %s already exists" % ( ptmin))
+        else :
+            outhistos[h.fullPath()] = h
+
+# aidafiles=["-Run-II-Jets-8.aida","-Run-II-Jets-9.aida","-Run-II-Jets-10.aida",\
+#            "-Run-I-Jets-6.aida","-Run-I-Jets-7.aida","-Run-I-Jets-8.aida"]
+
+# for f in aidafiles:
+#     file=args[0]+f
+#     if(file.find("Run-II-Jets-8")>0) :
+#         sqrts=1960
+#         ptmin=0.150
+#     elif(file.find("Run-II-Jets-9")>0) :
+#         sqrts=1960
+#         ptmin=0.600
+#     elif(file.find("Run-II-Jets-10")>0) :
+#         sqrts=1960
+#         ptmin=1.000
+#     elif(file.find("Run-I-Jets-6")>0) :
+#         sqrts=1800
+#         ptmin=0.150
+#     elif(file.find("Run-I-Jets-7")>0) :
+#         sqrts=1800
+#         ptmin=0.5
+#     elif(file.find("Run-I-Jets-8")>0) :
+#         sqrts=1800
+#         ptmin=0.8
+#     if not os.access(file, os.R_OK):
+#         logging.error("%s can not be read" % file)
+#         break
+#     try:
+#         tree = ET.parse(file)
+#     except:
+#         logging.error("%s can not be parsed as XML" % file)
+#         break
+#     tree = ET.parse(file)
+#     ## Get histos from this AIDA file
+#     for dps in tree.findall("dataPointSet"):
+#         h = lighthisto.Histo.fromDPS(dps)
+#         if(h.fullPath().find("8566488")>0 or h.fullPath().find("8320160")>0) :
+#            if not inhistos.has_key(h.fullPath()):
+#                inhistos[h.fullPath()] = {}
+#            tmpE = inhistos[h.fullPath()]
+#            if not tmpE.has_key(sqrts):
+#                tmpE[sqrts] = {}
+#            tmpP = tmpE[sqrts]
+#            if not tmpP.has_key(ptmin):
+#                tmpP[ptmin] = h
+#            else:
+#                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
+#         elif(h.fullPath().find("8093652")>0 or h.fullPath().find("3418421")>0 or 
+#              h.fullPath().find("4266730")>0) :
+#            if not inhistos.has_key(h.fullPath()):
+#                inhistos[h.fullPath()] = {}
+#            tmpE = inhistos[h.fullPath()]
+#            if not tmpE.has_key(sqrts):
+#                tmpE[sqrts] = {}
+#            tmpP = tmpE[sqrts]
+#            if not tmpP.has_key(1000.*ptmin):
+#                tmpP[1000.*ptmin] = h
+#            else:
+#                 raise Exception("A set with ptmin = %s already exists" % ( 1000.*ptmin))
+
+
+
+
+
+## Make empty output histos if needed
+for hpath,hsets in inhistos.iteritems():
+    if( (hpath.find("6870392")>0 and hpath.find("d02-x01-y01" )>0 ) or
+        hpath.find("HELEN")>0 ) :
+        workhisto = copy.deepcopy(hsets.values()[0].values()[0])
+        outhistos[hpath] = workhisto
+        ## Empty the bin set for histos which we're going to merge
+        for b in outhistos[hpath]:
+            b.yval = 0
+            b.yerrplus = 0
+            b.yerrminus = 0
+            b.focus= None
+
+
+useOnePt("/STAR_2006_S6870392/d01-x01-y01","200","2")
+mergeByPt("/STAR_2006_S6870392/d02-x01-y01","200")
+mergeByPt("/STAR_2009_UE_HELEN/d01-x01-y01","200")
+mergeByPt("/STAR_2009_UE_HELEN/d02-x01-y01","200")
+mergeByPt("/STAR_2009_UE_HELEN/d03-x01-y01","200")
+
+
+# Choose output file
+name = args[0]+".aida"
+out = open(name, "w")
+## Write out merged histos
+out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
+out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
+out.write('<aida version="3.3">\n')
+out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
+for hpath, h in sorted(outhistos.iteritems()):
+    logging.debug("hpath = %s" % hpath)
+    out.write(h.asAIDA() + "\n\n")
+out.write('</aida>\n')
+
+sys.exit(0)
