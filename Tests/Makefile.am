@@ -179,7 +179,8 @@ Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
 	rm -rf Rivet-Star
 	export DPATH=`rivet-config --datadir`; \
 	rivet-rmgaps $$DPATH/STAR_2006_S6860818 Star-UE.aida
-	rivet-mkhtml --no-mc-errs -o Rivet-Star Star-Jets-?.aida Star-UE.aida
+	python/merge-Star Star
+	rivet-mkhtml --no-mc-errs -o Rivet-Star Star.aida
 
 Rivet-LHC-EW: Rivet-LHC-W  Rivet-LHC-Powheg-W \
               Rivet-LHC-Z  Rivet-LHC-Powheg-Z \
