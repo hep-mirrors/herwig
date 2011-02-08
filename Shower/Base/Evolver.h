@@ -178,7 +178,8 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type,
+			      bool first); 
 
   /**
    * It does the backward evolution of the space-like input particle 

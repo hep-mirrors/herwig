@@ -73,7 +73,7 @@ public:
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-      _scale(ZERO), _thePEGBase() {}
+      _scale(ZERO), _vMass(ZERO), _thePEGBase() {}
 
   /**
    * Copy constructor from a ThePEG Particle
@@ -85,7 +85,7 @@ public:
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-    _scale(ZERO), _thePEGBase(&x) {}
+    _scale(ZERO), _vMass(ZERO), _thePEGBase(&x) {}
   //@}
 
 public:
@@ -161,6 +161,15 @@ public:
    */
   void setEvolutionScale(Energy scale) { _scale = scale; }
 
+  /**
+   * Return the virtual mass\f$
+   */
+  Energy virtualMass() const { return _vMass; }
+
+  /**
+   *  Set the virtual mass
+   */
+  void setVirtualMass(Energy mass) { _vMass = mass; }
 
   /** 
    * Return the partner
@@ -291,6 +300,11 @@ private:
    *  Evolution scales
    */
   Energy _scale;
+
+  /**
+   *  Virtual mass
+   */
+  Energy _vMass;
 
   /**
    *  Partners

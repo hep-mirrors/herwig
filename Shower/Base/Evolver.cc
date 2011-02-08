@@ -402,55 +402,77 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle, 
-			     ShowerInteraction::Type type) {
+			     ShowerInteraction::Type type,
+			     bool first) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || _limitEmissions == 3 || 
      ( _limitEmissions == 2 && _nfs != 0) ) return false;
-  // generate the emission
-  Branching fb;
-  while (true) {
-    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
-    // no emission return
-    if(!fb.kinematics) return false;
-    // if emission OK break
-    if(!timeLikeVetoed(fb,particle)) break;
-    // otherwise reset scale and continue - SO IS involved in veto algorithm
-    particle->setEvolutionScale(fb.kinematics->scale());
-  }
-  // has emitted
-  // Assign the shower kinematics to the emitting particle.
-  particle->setShowerKinematics(fb.kinematics);
-  // Assign the splitting function to the emitting particle. 
-  // For the time being we are considering only 1->2 branching
-  // Create the ShowerParticle objects for the two children of
-  // the emitting particle; set the parent/child relationship
-  // if same as definition create particles, otherwise create cc
-  tcPDPtr pdata[2];
-  for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-  if(particle->id()!=fb.ids[0]) {
-    for(unsigned int ix=0;ix<2;++ix) {
-      tPDPtr cc(pdata[ix]->CC());
-      if(cc) pdata[ix]=cc;
+  ShowerParticleVector theChildren; 
+  do {
+    // generate the emission
+    Branching fb;
+    while (true) {
+      fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
+      // no emission return
+      if(!fb.kinematics) return false;
+      // if emission OK break
+      if(!timeLikeVetoed(fb,particle)) break;
+      // otherwise reset scale and continue - SO IS involved in veto algorithm
+      particle->setEvolutionScale(fb.kinematics->scale());
+    }
+    // has emitted
+    // Assign the shower kinematics to the emitting particle.
+    particle->setShowerKinematics(fb.kinematics);
+    // Assign the splitting function to the emitting particle. 
+    // For the time being we are considering only 1->2 branching
+    // Create the ShowerParticle objects for the two children of
+    // the emitting particle; set the parent/child relationship
+    // if same as definition create particles, otherwise create cc
+    tcPDPtr pdata[2];
+    for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
+    if(particle->id()!=fb.ids[0]) {
+      for(unsigned int ix=0;ix<2;++ix) {
+	tPDPtr cc(pdata[ix]->CC());
+	if(cc) pdata[ix]=cc;
+      }
+    }
+    theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
+    theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true)));
+    // update the children
+    particle->showerKinematics()->updateChildren(particle, theChildren,true);
+    // update number of emissions
+    ++_nfs;
+    if(_limitEmissions!=0) return true;
+    // shower the first  particle
+    timeLikeShower(theChildren[0],type,false);
+    // shower the second particle
+    timeLikeShower(theChildren[1],type,false);
+    // branching has happened
+    particle->showerKinematics()->updateParent(particle, theChildren,true);
+    // clean up the vetoed emission
+    if(particle->virtualMass()==ZERO) {
+      particle->setShowerKinematics(ShoKinPtr());
+      for(unsigned int ix=0;ix<theChildren.size();++ix)
+	particle->abandonChild(theChildren[ix]);
+      theChildren.clear();
     }
   }
-  ShowerParticleVector theChildren; 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
-  // update the children
-  particle->showerKinematics()->updateChildren(particle, theChildren,true);
-  // update the history if needed
-  if(particle==_currenttree->getFinalStateShowerProduct(_progenitor))
-    _currenttree->updateFinalStateShowerProduct(_progenitor,
-						particle,theChildren);
-  _currenttree->addFinalStateBranching(particle,theChildren);
-  // update number of emissions
-  ++_nfs;
-  if(_limitEmissions!=0) return true;
-  // shower the first  particle
-  timeLikeShower(theChildren[0],type);
-  // shower the second particle
-  timeLikeShower(theChildren[1],type);
-  // branching has happened
+  while(particle->virtualMass()==ZERO);
+  if(first) {
+//     cerr << "testing before reset " << *particle << "\n";
+//     cerr << "testing before reset " << particle->showerKinematics() << "\n";
+    particle->showerKinematics()->resetChildren(particle,theChildren);
+//     cerr << "testing after  reset " << *particle << "\n";
+  }
+  // needs sorting out
+//   // update the history if needed
+//   if(particle==_currenttree->getFinalStateShowerProduct(_progenitor))
+//     _currenttree->updateFinalStateShowerProduct(_progenitor,
+// 						particle,theChildren);
+//   _currenttree->addFinalStateBranching(particle,theChildren);
+
+
+
   return true;
 }
 
@@ -526,7 +548,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   particle->showerKinematics()->updateChildren(newParent, theChildren,true);
   if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
-  timeLikeShower(otherChild,type);
+  timeLikeShower(otherChild,type,true);
   // return the emitted
   return true;
 }
@@ -661,7 +683,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   // shower the first  particle
   spaceLikeDecayShower(theChildren[0],maxscale,minmass,type);
   // shower the second particle
-  timeLikeShower(theChildren[1],type);
+  timeLikeShower(theChildren[1],type,true);
   // branching has happened
   return true;
 }
@@ -746,7 +768,7 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
     }
   }
   return  hardOnly() ? false :
-    timeLikeShower(progenitor()->progenitor() ,type) ;
+    timeLikeShower(progenitor()->progenitor() ,type,true) ;
 }
 
 bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
@@ -1006,7 +1028,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     // shower the first  particle
     if( branch->children()[0]->children().empty() ) {
       if( ! hardOnly() )
-	timeLikeShower(theChildren[0],type);
+	timeLikeShower(theChildren[0],type,false);
     }
     else {
       truncatedTimeLikeShower( theChildren[0],branch->children()[0],type);
@@ -1014,7 +1036,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     // shower the second particle
     if( branch->children()[1]->children().empty() ) {
       if( ! hardOnly() )
-	timeLikeShower( theChildren[1] , type);
+	timeLikeShower( theChildren[1] , type,false);
     }
     else {
       truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
@@ -1041,10 +1063,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   currentTree()->addFinalStateBranching( particle, theChildren );
   // shower the first  particle
   if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
-  else            timeLikeShower( theChildren[0]  , type);
+  else            timeLikeShower( theChildren[0]  , type,false);
   // shower the second particle
   if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type );
-  else            timeLikeShower( theChildren[1]  , type);
+  else            timeLikeShower( theChildren[1]  , type,false);
   // branching has happened
   return true;
 }
@@ -1163,7 +1185,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     if(hardOnly()) return true;
     // perform the shower of the final-state particle
     if( timelike->children().empty() ) {
-      timeLikeShower( otherChild , type);
+      timeLikeShower( otherChild , type,true);
     }
     else {
       truncatedTimeLikeShower( otherChild, timelike , type);
@@ -1203,7 +1225,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   particle->showerKinematics()->updateChildren( newParent, theChildren , true);
   // perform the shower of the final-state particle
-  timeLikeShower( otherChild , type);
+  timeLikeShower( otherChild , type,true);
   // return the emitted
   return true;
 }
@@ -1313,7 +1335,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
       }
       // shower the second particle
       if( branch->children()[1]->children().empty() ) {
-	if( ! hardOnly() ) timeLikeShower( theChildren[1] , type);
+	if( ! hardOnly() ) timeLikeShower( theChildren[1] , type,true);
       }
       else {
 	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
@@ -1333,7 +1355,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
       }
       // shower the second particle
       if( branch->children()[0]->children().empty() ) {
-	if( ! hardOnly() ) timeLikeShower( theChildren[0] , type);
+	if( ! hardOnly() ) timeLikeShower( theChildren[0] , type,true);
       }
       else {
 	truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type);
@@ -1360,7 +1382,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   // shower the first  particle
   truncatedSpaceLikeDecayShower(theChildren[0],maxscale,minmass,branch,type);
   // shower the second particle
-  timeLikeShower(theChildren[1],type);
+  timeLikeShower(theChildren[1],type,true);
   // branching has happened
   return true;
 }

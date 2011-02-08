@@ -60,6 +60,21 @@ public:
 			       const ShowerParticleVector & theChildren,
 			       bool angularOrder) const;
 
+  virtual void resetChildren( const tShowerParticlePtr theParent, 
+			      const ShowerParticleVector & theChildren) const;
+
+
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the KinematicsReconstructor.
+   * @param theParent   The parent
+   * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
+   */
+  virtual void updateParent(const tShowerParticlePtr theParent,
+			    const ShowerParticleVector & theChildren,
+			    bool angularOrder) const;
+
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the 

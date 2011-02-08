@@ -805,7 +805,7 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
 }
 
 void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
-					       const ShowerParticleVector & children) {
+					const ShowerParticleVector & children) {
   assert(children.size()==2);
   _forward.erase(parent);
   for(unsigned int ix=0; ix<children.size(); ++ix) {

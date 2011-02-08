@@ -27,8 +27,6 @@ updateChildren(const tShowerParticlePtr theParent,
 		      << "Warning! too many children!" << Exception::eventerror;
   // copy scales etc
   Energy dqtilde = scale();
-  double dz = z(); 
-  double dphi = phi();
   // resize the parameter vectors
   if(theParent->showerVariables().empty()) {
     theParent->showerVariables().resize(3);
@@ -41,25 +39,25 @@ updateChildren(const tShowerParticlePtr theParent,
   theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
   if(angularOrder) {
-    theChildren[0]->setEvolutionScale(dz*dqtilde);
-    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+    theChildren[0]->setEvolutionScale(z()*dqtilde);
+    theChildren[1]->setEvolutionScale((1.-z())*dqtilde);
   }
   else {
     theChildren[0]->setEvolutionScale(dqtilde);
     theChildren[1]->setEvolutionScale(dqtilde);
   }
   // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters()[0]=     dz *theParent->showerParameters()[0];
-  theChildren[1]->showerParameters()[0]= (1.-dz)*theParent->showerParameters()[0];
+  theChildren[0]->showerParameters()[0]=     z() *theParent->showerParameters()[0];
+  theChildren[1]->showerParameters()[0]= (1.-z())*theParent->showerParameters()[0];
   // set the values
   theChildren[0]->showerVariables()[0]=   
-    pT()*cos(dphi) +     dz *theParent->showerVariables()[0];
+    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
   theChildren[0]->showerVariables()[1]=   
-    pT()*sin(dphi) +     dz *theParent->showerVariables()[1];
+    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
   theChildren[1]->showerVariables()[0]= 
-    - pT()*cos(dphi) + (1.-dz)*theParent->showerVariables()[0];
+    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
   theChildren[1]->showerVariables()[1]= 
-    - pT()*sin(dphi) + (1.-dz)*theParent->showerVariables()[1];
+    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
   for(unsigned int ix=0;ix<2;++ix)
     theChildren[ix]->showerVariables()[2]=
       sqrt(sqr(theChildren[ix]->showerVariables()[0])+
@@ -151,4 +149,71 @@ void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   }
   // set the basis vectors
   setBasis(p,n);
+}
+
+void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
+						 const ShowerParticleVector & children,
+						 bool) const {
+  IdList ids(3);
+  ids[0] = parent->id();
+  ids[1] = children[0]->id();
+  ids[2] = children[1]->id();
+  vector<Energy> virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  if(children[0]->children().empty()) children[0]->setVirtualMass(virtualMasses[1]);
+  if(children[1]->children().empty()) children[1]->setVirtualMass(virtualMasses[2]);
+  // compute the new pT of the branching
+  Energy2 pt2=sqr(z()*(1.-z()))*sqr(scale())
+    - sqr(children[0]->virtualMass())*(1.-z())
+    - sqr(children[1]->virtualMass())*    z() ;
+  if(ids[0]!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
+
+//   cerr << "Result = " << pt2/GeV2 << "\n";
+  Energy2 q2 = 
+    sqr(children[0]->virtualMass())/z() + 
+    sqr(children[1]->virtualMass())/(1.-z()) +
+    pt2/z()/(1.-z());
+  if(pt2<ZERO) {
+    parent->setVirtualMass(ZERO);
+  }
+  else {
+    parent->setVirtualMass(sqrt(q2));
+    pT(sqrt(pt2));
+  }
+// cerr << "NEGATIVE!!!\n";
+
+//   cerr << "testing branching " << pt2/GeV2 << " " << sqr(pT()/GeV) << " " << q2/GeV2
+//        << "\n";
+
+//   cerr << "testing got here ??? PARENT: " 
+//        << *parent << " " << virtualMasses[0]/GeV << "\n"
+//        << "CHILD : " << *children[0] << " " << children[0]->virtualMass()/GeV << "\n"
+//        << "CHILD : " << *children[1] << " " << children[1]->virtualMass()/GeV << "\n";
+
+
+}
+
+void FS_QTildeShowerKinematics1to2::
+resetChildren(const tShowerParticlePtr theParent, 
+	      const ShowerParticleVector & theChildren) const {
+  // set the values
+  theChildren[0]->showerVariables()[0]=   
+    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
+  theChildren[0]->showerVariables()[1]=   
+    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
+  theChildren[1]->showerVariables()[0]= 
+    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
+  theChildren[1]->showerVariables()[1]= 
+    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
+  for(unsigned int ix=0;ix<2;++ix)
+    theChildren[ix]->showerVariables()[2]=
+      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
+	   sqr(theChildren[ix]->showerVariables()[1]));
+  for(unsigned int ix=0;ix<theChildren.size();++ix) {
+    if(theChildren[ix]->children().empty()) continue;
+    ShowerParticleVector children;
+    for(unsigned int iy=0;iy<theChildren[ix]->children().size();++iy)
+      children.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+			 (theChildren[ix]->children()[iy]));
+    theChildren[ix]->showerKinematics()->resetChildren(theChildren[ix],children);
+  }
 }
