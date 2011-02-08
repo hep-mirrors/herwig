@@ -17,4 +17,4 @@ UEDW0A1H1Vertex.cc UEDW0A1H1Vertex.h \
 UEDZ0A1h1Vertex.cc UEDZ0A1h1Vertex.h \
 UEDW0W1W1Vertex.cc UEDW0W1W1Vertex.h \
 UEDF1F0H1Vertex.cc UEDF1F0H1Vertex.h
-HwUED_la_LDFLAGS = -module -version-info 4:0:0
+HwUED_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:0

@@ -5,8 +5,8 @@ AUTOMAKE_OPTIONS = -Wno-portability
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
-Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h
-Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
+Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
+Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
@@ -15,13 +15,13 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = SPhenoSPS1a.spc NMSSM.spc MUED.model MSSM.model NMSSM.model\
-              RS.model ADD.model Leptoquark.model
+              RS.model ADD.model Leptoquark.model ColourRec.LEPtune
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
              LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in\
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
 	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-diffractive.in \
-             LHC-GammaGamma.in LHC-LQ.in
+             LHC-GammaGamma.in LHC-LQ.in LHC-UE7-1.in
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 
@@ -30,7 +30,8 @@ pkgdata_DATA = Makefile-UserModules
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
-  multi.test *.output probs.test chisq.value
+  multi.test *.output probs.test chisq.value \
+  LHC-RS-BR.spc LHC-MUED-no3body-BR.spc LHC-MSSM-BR.spc
 
 ## checking targets ##
 
@@ -121,4 +122,7 @@ unregister-from-thepeg-repo:
 		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
 	fi
 
-include $(top_srcdir)/Utilities/Makefile.am.versionstring
+EXTRA_DIST = herwigopts.ggo
+
+herwigopts.h herwigopts.c : herwigopts.ggo
+	gengetopt < $<
