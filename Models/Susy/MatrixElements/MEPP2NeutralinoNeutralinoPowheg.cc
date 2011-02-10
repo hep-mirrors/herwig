@@ -79,9 +79,6 @@ void MEPP2NeutralinoNeutralinoPowheg::getDiagrams() const {
 		       3, chi[c1], 1, chi[c2], -4)));
 	  add(new_ptr((Tree2toNDiagram(3), q, qR, qb,
 		       3, chi[c1], 1, chi[c2], -5)));
-
-	  //cout << c1 << " " << c2 << " " << 4*c2+c1+1 << endl;
-
 	}
       }
     }
@@ -376,6 +373,7 @@ realME(const cPDVector & particles,
   // wavefunctions for the outgoing neutralinos
   vector<SpinorWaveFunction> spout(2),sbaroutconj(2);
   vector<SpinorBarWaveFunction> sbarout(2),spoutconj(2);
+  ScalarWaveFunction intersq,intersq2;	  
   for( unsigned int i = 0; i < 2; ++i ) {
     spout[i]       =    SpinorWaveFunction(momenta[2], particles[2], i,
 					   outgoing);
@@ -395,7 +393,7 @@ realME(const cPDVector & particles,
   if(status()==RealQG || status()==RealQBarG){
     propopt = 7;
   }
-  else propopt = 3;
+  else propopt = 3; 
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
@@ -406,6 +404,7 @@ realME(const cPDVector & particles,
 	VectorWaveFunction interV[2] = 
 	  {FFZVertex_->evaluate(q2, 1, Z0_, inters,sbar[ihel2]),
 	   FFZVertex_->evaluate(q2, 1, Z0_, sp[ihel1],interb)};
+	
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  for(unsigned int ohel3=0;ohel3<2;++ohel3) {
 	    // s-channel Z exchange diagrams
@@ -414,7 +413,6 @@ realME(const cPDVector & particles,
 	    // second Z diagram (emission from anti-quark)
 	    diag[1] = NNZVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interV[1]);
 	    // t-channel squark exchanges
-	    ScalarWaveFunction intersq,intersq2;	  
 	    for(unsigned int iq=0;iq<2;++iq) {
 	      // 1st t-channel
 	      // emission quark
@@ -446,6 +444,19 @@ realME(const cPDVector & particles,
 	      intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
 	      diag[6*iq+7] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
+
+
+// 	      if(6*iq+4 == 4 || 6*iq+4 == 10 || 6*iq+7 == 7 || 6*iq+7 == 13){
+// 		sqinvmass = sqrt(abs(intersq2.m2()*UnitRemoval::InvE2));
+// 		sqp = intersq2.momentum();
+// 		g2  = norm(GSSVertex_->norm());
+// 	      }
+// 	      else {sqinvmass = sqrt(abs(intersq.m2()*UnitRemoval::InvE2));
+// 		sqp = intersq.momentum();
+// 		g2 = norm(FFGVertex_->norm());}
+	      
+
+
 	    }
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -455,6 +466,86 @@ realME(const cPDVector & particles,
       }
     }
   }
+  
+  
+  bool sqdecay = 0;
+  Lorentz5Momentum glup = gluon[0].momentum();
+  Lorentz5Momentum qp = sp[0].momentum();
+  Lorentz5Momentum neup = sbarout[0].momentum();
+  // Should I be using intersq2 for the squark momentum sqp???
+  Lorentz5Momentum sqp = intersq.momentum();
+  double sqcounter;
+  double sqinvmass;
+  double g2 = norm(FFGVertex_->norm());;
+  
+  if(particles[4]->id() <= 6){
+
+    sqinvmass = min(sqrt(abs(intersq2.m2()*UnitRemoval::InvE2)),
+		    sqrt(abs(intersq.m2()*UnitRemoval::InvE2)));
+    
+    if(  (sqrt(sHat()) > (squark[0]->mass() + spout[0].mass() )) || 
+	 (sqrt(sHat()) > (squark[1]->mass() + spout[0].mass() )) ){
+      
+      // cout << "On-shell squark production possible!" << endl;
+      if(  (sqinvmass
+	 > (sbar[0].mass()*UnitRemoval::InvE +
+	    sbarout[0].mass()*UnitRemoval::InvE)) ||  
+	  (sqinvmass
+	 > (sbar[0].mass()*UnitRemoval::InvE +
+	    spout[0].mass()*UnitRemoval::InvE))   ){
+
+	sqdecay = 1;
+	// cout << "And squark can decay to chi+q !" << endl;
+      }
+      // else cout << "Squark decay to chi+q impossible." << endl;
+    }
+    // else cout << "No on-shell squarks." << endl;
+  }
+  //else cout << particles[4]->id() << endl;
+  
+  if(sqdecay==1){
+    // Create a counterterm for the squark decay pole.   
+    Energy2 msq2 = sqr(intersq.mass());
+    Energy2 mneut2 = sqr(sbarout[0].mass());
+    Energy2 sqwidth2 = 0.01 * msq2;
+    Energy2 t3 = tHat() - msq2;
+    Energy2 u4 = uHat() - mneut2;
+    //Energy2 t3 = -2. * glup * sqp;
+    //Energy2 u4 = -2. * glup * neup;
+    //double g2 = norm(FFGVertex_->norm());
+    double Cf = 4./3.;
+    double Nc = 3.;
+    double a2 = norm(NFSVertex_->norm());
+
+    cout << g2 << "\t" << a2 << endl;
+    
+    double sqprod2 = 2. * g2 * Cf * Nc * a2 *
+      (-u4/sHat() - (2*(msq2-mneut2)*u4)/sHat()/t3 * (1+mneut2/u4+msq2/t3));
+    Energy2 sqdecay2 = 4. * a2 * qp * neup;
+    Energy4 denom = ((qp+sqp)*(qp+sqp) - msq2)*((qp+sqp)*(qp+sqp) - msq2) + msq2*sqwidth2;
+    
+    sqcounter = sqprod2 * (sqdecay2*UnitRemoval::InvE2) / (denom*UnitRemoval::InvE4);
+
+    
+    cout << sqprod2 << "\t" << sqdecay2*UnitRemoval::InvE2 <<
+      "\t" << denom*UnitRemoval::InvE4 << "\t" << sqcounter << "\t" << output << endl;
+
+
+    if(  (abs(1.-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass))) < 0.1  ){
+      cout << "Yes! \t" << sqinvmass << "\t"
+	   << squark[0]->mass()*UnitRemoval::InvE <<
+	"\t" << 1-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass) <<
+	"\t" << output << "\t" << sqcounter << endl;
+    }
+    
+    output -= sqcounter;
+
+  }
+  
+ 
+
+
+
   // colour and spin factors
   if(particles[0]->id()==-particles[1]->id()) {
     output *= 1./9.;
