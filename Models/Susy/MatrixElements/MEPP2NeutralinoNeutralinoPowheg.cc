@@ -14,6 +14,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -444,19 +445,6 @@ realME(const cPDVector & particles,
 	      intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
 	      diag[6*iq+7] = 
 		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
-
-
-// 	      if(6*iq+4 == 4 || 6*iq+4 == 10 || 6*iq+7 == 7 || 6*iq+7 == 13){
-// 		sqinvmass = sqrt(abs(intersq2.m2()*UnitRemoval::InvE2));
-// 		sqp = intersq2.momentum();
-// 		g2  = norm(GSSVertex_->norm());
-// 	      }
-// 	      else {sqinvmass = sqrt(abs(intersq.m2()*UnitRemoval::InvE2));
-// 		sqp = intersq.momentum();
-// 		g2 = norm(FFGVertex_->norm());}
-	      
-
-
 	    }
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -466,81 +454,81 @@ realME(const cPDVector & particles,
       }
     }
   }
-  
-  
-  bool sqdecay = 0;
-  Lorentz5Momentum glup = gluon[0].momentum();
-  Lorentz5Momentum qp = sp[0].momentum();
-  Lorentz5Momentum neup = sbarout[0].momentum();
-  // Should I be using intersq2 for the squark momentum sqp???
-  Lorentz5Momentum sqp = intersq.momentum();
-  double sqcounter;
-  double sqinvmass;
-  double g2 = norm(FFGVertex_->norm());;
-  
-  if(particles[4]->id() <= 6){
-
-    sqinvmass = min(sqrt(abs(intersq2.m2()*UnitRemoval::InvE2)),
-		    sqrt(abs(intersq.m2()*UnitRemoval::InvE2)));
-    
-    if(  (sqrt(sHat()) > (squark[0]->mass() + spout[0].mass() )) || 
-	 (sqrt(sHat()) > (squark[1]->mass() + spout[0].mass() )) ){
-      
-      // cout << "On-shell squark production possible!" << endl;
-      if(  (sqinvmass
-	 > (sbar[0].mass()*UnitRemoval::InvE +
-	    sbarout[0].mass()*UnitRemoval::InvE)) ||  
-	  (sqinvmass
-	 > (sbar[0].mass()*UnitRemoval::InvE +
-	    spout[0].mass()*UnitRemoval::InvE))   ){
-
-	sqdecay = 1;
-	// cout << "And squark can decay to chi+q !" << endl;
-      }
-      // else cout << "Squark decay to chi+q impossible." << endl;
-    }
-    // else cout << "No on-shell squarks." << endl;
-  }
-  //else cout << particles[4]->id() << endl;
-  
-  if(sqdecay==1){
-    // Create a counterterm for the squark decay pole.   
-    Energy2 msq2 = sqr(intersq.mass());
-    Energy2 mneut2 = sqr(sbarout[0].mass());
-    Energy2 sqwidth2 = 0.01 * msq2;
-    Energy2 t3 = tHat() - msq2;
-    Energy2 u4 = uHat() - mneut2;
-    //Energy2 t3 = -2. * glup * sqp;
-    //Energy2 u4 = -2. * glup * neup;
-    //double g2 = norm(FFGVertex_->norm());
+  // strong coupling
+  double gs2 = norm(FFGVertex_->norm());
+  // subtract the on-shell squark decay if neccessary
+  if(abs(particles[4]->id())<=6) {
+    Energy roots = (momenta[0]+momenta[1]).m();
+    // off-shell masses of the squarks
+    Energy2 msq1 = (momenta[2]+momenta[4]).m2();
+    Energy2 msq2 = (momenta[3]+momenta[4]).m2();
+    Lorentz5Momentum pgluon = 
+      particles[0]->id() == ParticleID::g ? momenta[0] : momenta[1];
+    tcPDPtr quark = particles[0]->id() == ParticleID::g ? particles[1] : particles[0];
+    FFSVertexPtr vertex = dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
     double Cf = 4./3.;
     double Nc = 3.;
-    double a2 = norm(NFSVertex_->norm());
-
-    cout << g2 << "\t" << a2 << endl;
-    
-    double sqprod2 = 2. * g2 * Cf * Nc * a2 *
-      (-u4/sHat() - (2*(msq2-mneut2)*u4)/sHat()/t3 * (1+mneut2/u4+msq2/t3));
-    Energy2 sqdecay2 = 4. * a2 * qp * neup;
-    Energy4 denom = ((qp+sqp)*(qp+sqp) - msq2)*((qp+sqp)*(qp+sqp) - msq2) + msq2*sqwidth2;
-    
-    sqcounter = sqprod2 * (sqdecay2*UnitRemoval::InvE2) / (denom*UnitRemoval::InvE4);
-
-    
-    cout << sqprod2 << "\t" << sqdecay2*UnitRemoval::InvE2 <<
-      "\t" << denom*UnitRemoval::InvE4 << "\t" << sqcounter << "\t" << output << endl;
-
-
-    if(  (abs(1.-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass))) < 0.1  ){
-      cout << "Yes! \t" << sqinvmass << "\t"
-	   << squark[0]->mass()*UnitRemoval::InvE <<
-	"\t" << 1-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass) <<
-	"\t" << output << "\t" << sqcounter << endl;
+    Energy2 sh = (momenta[0]+momenta[1]).m2();
+    for(unsigned int ix=0;ix<2;++ix) {
+      Energy2 sqwidth2 = sqr(squark[ix]->width());
+      // is on-shell mass allowed for first neutralino and squark
+      if( roots > squark[ix]->mass() + momenta[2].mass() ) {
+	// Create a counterterm for the squark decay pole.
+	Energy2 mneut2 = sqr(momenta[2].mass()); 
+	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
+	Energy2 u4 = (pgluon-momenta[2]).m2()-mneut2;
+	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+	double a2 = norm(vertex->norm())*
+	  (norm(vertex->left())+norm(vertex->right()));
+	double sqprod2 = 2. * gs2 * Cf * Nc * a2 *
+	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
+	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+	a2 = norm(vertex->norm())*
+	  (norm(vertex->left())+norm(vertex->right()));
+	Energy2 sqdecay2 = 4. * a2 * (msq2-sqr(particles[3]->mass()));
+	Energy4 denom = sqr(msq2-sqr(squark[ix]->mass())) + 
+	  sqr(squark[ix]->mass())*sqwidth2;
+	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
+	output -= sqcounter;
+      }
+      // is on-shell mass allowed for second neutralino and squark
+      if( roots > squark[ix]->mass() + momenta[3].mass() ) {
+	Energy2 mneut2 = sqr(momenta[3].mass()); 
+	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
+	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
+	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+	double a2 = norm(vertex->norm())*
+	  (norm(vertex->left())+norm(vertex->right()));
+	double sqprod2 = 2. * gs2 * Cf * Nc * a2 *
+	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
+	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+	a2 = norm(vertex->norm())*
+	  (norm(vertex->left())+norm(vertex->right()));
+	Energy2 sqdecay2 = 4. * a2 * (msq1-sqr(particles[2]->mass()));
+	Energy4 denom = sqr(msq1-sqr(squark[ix]->mass())) + 
+	  sqr(squark[ix]->mass())*sqwidth2;
+	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
+	output -= sqcounter;
+      }
     }
-    
-    output -= sqcounter;
-
   }
+    
+
+    
+//     cout << sqprod2 << "\t" << sqdecay2*UnitRemoval::InvE2 <<
+//       "\t" << denom*UnitRemoval::InvE4 << "\t" << sqcounter << "\t" << output << endl;
+
+
+//     if(  (abs(1.-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass))) < 0.1  ){
+//       cout << "Yes! \t" << sqinvmass << "\t"
+// 	   << squark[0]->mass()*UnitRemoval::InvE <<
+// 	"\t" << 1-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass) <<
+// 	"\t" << output << "\t" << sqcounter << endl;
+//     }
+    
+//     output -= sqcounter;
+
+//   }
   
  
 
@@ -555,7 +543,7 @@ realME(const cPDVector & particles,
   }
   if(mePartonData()[2]->id() == mePartonData()[3]->id()) output *= 0.5;
   // divided by 2 g_S^2
-  return 0.5*output/norm(FFGVertex_->norm());
+  return 0.5*output/gs2;
 }
 
 void MEPP2NeutralinoNeutralinoPowheg::constructVertex(tSubProPtr sub) {
