@@ -627,7 +627,7 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
     }
     // subtracted virtual correction
     output += sqr(double(mePartonData()[2]->iCharge())/3.)*
-      EMfact_*(f1+fNS+VNS + f2*f2term_/loME_);
+      2.*EMfact_*(f1+fNS+VNS + f2*f2term_/loME_);
   }
   return output;
 }
