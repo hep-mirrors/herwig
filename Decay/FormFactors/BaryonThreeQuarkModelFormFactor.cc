@@ -162,9 +162,9 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
     // output some plots for testing
     double lambdabar = -999.999;
     ofstream output("ThreeQuark.top");
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 3 from paper \"" << endl;
-    output << "set limits x 1 1.44 y 0.5 1" << endl;
+    output << "newdef limits x 1 1.44 y 0.5 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.44),
 	step((omegamax-omegamin)/100.),omega(1.),xi;
@@ -192,9 +192,9 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
       else if(ix==4){output << "join magenta" << endl;}
     }
     output << "new frame " << endl;
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 6 from paper \"" << endl;
-    output << "set limits x 1 1.4 y 0.5 1" << endl;
+    output << "newdef limits x 1 1.4 y 0.5 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
       unsigned int ioff(0);
@@ -223,9 +223,9 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
       else if(ix==4){output << "join magenta" << endl;}
     }
     output << "new frame " << endl;
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 7 from paper \"" << endl;
-    output << "set limits x 1 1.33 y 0.4 1" << endl;
+    output << "newdef limits x 1 1.33 y 0.4 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
       unsigned int ioff(_order+1);
@@ -490,13 +490,13 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool head
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BaryonThreeQuarkModelFormFactor " 
 		    << name() << " \n";
-  output << "set " << name() << ":Order       " << _order        << " \n";
-  output << "set " << name() << ":LightMass   " << _mlight/GeV   << " \n";
-  output << "set " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
-  output << "set " << name() << ":LambdaQ     " << _LambdaQ/GeV  << " \n";
-  output << "set " << name() << ":Lambdaqq    " << _Lambdaqq/GeV << " \n";
-  output << "set " << name() << ":Lambdasq    " << _Lambdasq/GeV << " \n";
-  output << "set " << name() << ":Lambdass    " << _Lambdass/GeV << " \n";
+  output << "newdef " << name() << ":Order       " << _order        << " \n";
+  output << "newdef " << name() << ":LightMass   " << _mlight/GeV   << " \n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
+  output << "newdef " << name() << ":LambdaQ     " << _LambdaQ/GeV  << " \n";
+  output << "newdef " << name() << ":Lambdaqq    " << _Lambdaqq/GeV << " \n";
+  output << "newdef " << name() << ":Lambdasq    " << _Lambdasq/GeV << " \n";
+  output << "newdef " << name() << ":Lambdass    " << _Lambdass/GeV << " \n";
   // the number of terms to include in the sum for the form-factors
   for(unsigned int ix=0;ix<_C0.size();++ix)
     output << "insert " << name() << ":C0 " << ix << "   " << _C0[ix] << " \n";

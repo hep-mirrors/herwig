@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffxc0p.f,v 1.3 1995/10/06 09:17:26 gj Exp $
 *	$Log: ffxc0p.f,v $
 c Revision 1.3  1995/10/06  09:17:26  gj
@@ -76,7 +79,7 @@ c
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -474,7 +477,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMZDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -212,11 +212,11 @@ void SMZDecayer::dataBaseOutput(ofstream & output,
 				 bool header) const {
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<quarkWeight_.size();++ix) {
-    output << "set " << name() << ":QuarkMax " << ix << " "
+    output << "newdef " << name() << ":QuarkMax " << ix << " "
 	   << quarkWeight_[ix] << "\n";
   }
   for(unsigned int ix=0;ix<leptonWeight_.size();++ix) {
-    output << "set " << name() << ":LeptonMax " << ix << " "
+    output << "newdef " << name() << ":LeptonMax " << ix << " "
 	   << leptonWeight_[ix] << "\n";
   }
   // parameters for the DecayIntegrator base class

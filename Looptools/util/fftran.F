@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffai:
 	subroutine ffai(ai,daiaj,aai,laai,del2s,sdel2s,xpi,dpipj,piDpj,
      +		ier)
@@ -47,7 +50,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations: 
 *  #[ get ai:
@@ -336,7 +339,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 	ifirst = 0
 *  #] declarations: 

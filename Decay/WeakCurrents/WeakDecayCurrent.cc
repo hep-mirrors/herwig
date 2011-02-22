@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WeakDecayCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -59,9 +59,9 @@ void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create)
   }
   for(unsigned int ix=0;ix<_quark.size();++ix) {
     if(ix<_numbermodes) {
-      output << "set " << name() << ":Quark "     
+      output << "newdef " << name() << ":Quark "     
 	     << ix << "  " << _quark[ix]     << endl;
-      output << "set " << name() << ":AntiQuark " 
+      output << "newdef " << name() << ":AntiQuark " 
 	     << ix << "  " << _antiquark[ix] << endl;
     }
     else {

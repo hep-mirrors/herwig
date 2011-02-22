@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // OniumToOniumPiPiDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -354,23 +354,23 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << name() << ":Outgoing " << ix << " " 
+      output << "newdef " << name() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "set " << name() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "set " << name() << ":ReA " << ix << " " 
+      output << "newdef " << name() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
-      output << "set " << name() << ":ImA " << ix << " " 
+      output << "newdef " << name() << ":ImA " << ix << " " 
 	     << _imA[ix]*MeV2 << "\n";
-      output << "set " << name() << ":ReB " << ix << " " 
+      output << "newdef " << name() << ":ReB " << ix << " " 
 	     << _reB[ix]*MeV2 << "\n";
-      output << "set " << name() << ":ImB " << ix << " " 
+      output << "newdef " << name() << ":ImB " << ix << " " 
 	     << _imB[ix]*MeV2 << "\n";
-      output << "set " << name() << ":ReC " << ix << " " 
+      output << "newdef " << name() << ":ReC " << ix << " " 
 	     << _reC[ix]*MeV2 << "\n";
-      output << "set " << name() << ":ImC " << ix << " " 
+      output << "newdef " << name() << ":ImC " << ix << " " 
 	     << _imC[ix]*MeV2 << "\n";
     }
     else {
@@ -396,7 +396,7 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   }
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(ix<2*_initsize) {
-      output << "set " << name() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {

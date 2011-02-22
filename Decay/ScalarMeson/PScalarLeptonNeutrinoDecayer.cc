@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PScalarLeptonNeutrinoDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -283,17 +283,17 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming   " << ix << " "
+      output << "newdef " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << name() << ":Leptons    " << ix << " "
+      output << "newdef " << name() << ":Leptons    " << ix << " "
 	     << _leptons[ix]   << "\n";
-      output << "set " << name() << ":MaxWeightElectron " << ix << " "
+      output << "newdef " << name() << ":MaxWeightElectron " << ix << " "
 	     << _maxweighte[ix]   << "\n";
-      output << "set " << name() << ":MaxWeightMuon "     << ix << " "
+      output << "newdef " << name() << ":MaxWeightMuon "     << ix << " "
 	     << _maxweightmu[ix]   << "\n";
-      output << "set " << name() << ":MaxWeightTau "      << ix << " "
+      output << "newdef " << name() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
-      output << "set " << name() << ":DecayConstant "     << ix << " "
+      output << "newdef " << name() << ":DecayConstant "     << ix << " "
 	     << _decayconstant[ix]/MeV  << "\n";
     }
     else {

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxb2p:
 	subroutine ffxb2p(cb2i,cb1,cb0,ca0i,xp,xm1,xm2,piDpj,ier)
 ***#[*comment:***********************************************************
@@ -82,7 +85,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

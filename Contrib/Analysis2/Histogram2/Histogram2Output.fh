@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Histogram2Output class.
+//
+#ifndef Analysis2_Histogram2Output_FH
+#define Analysis2_Histogram2Output_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class Histogram2Output;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::Histogram2Output,Histogram2OutputPtr);
+
+}
+
+#endif

@@ -630,41 +630,41 @@ threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
 void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":gSigma_cLambda_cPi " 
+  output << "newdef " << name() << ":gSigma_cLambda_cPi " 
 	 << _gsigma_clambda_cpi*GeV << "\n";
-  output << "set " << name() << ":gXiStar_cXi_cPi " 
+  output << "newdef " << name() << ":gXiStar_cXi_cPi " 
 	 << _gxistar_cxi_cpi*GeV << "\n";
-  output << "set " << name() << ":fLambda_c1Sigma_cPi " 
+  output << "newdef " << name() << ":fLambda_c1Sigma_cPi " 
 	 << _flambda_c1sigma_cpi << "\n";
-  output << "set " << name() << ":fXi_c1Xi_cPi " 
+  output << "newdef " << name() << ":fXi_c1Xi_cPi " 
 	 << _fxi_c1xi_cpi << "\n";
-  output << "set " << name() << ":fLambda_c1*Sigma_cPi " 
+  output << "newdef " << name() << ":fLambda_c1*Sigma_cPi " 
 	 << _flambda_c1starsigma_cpi*GeV2 << "\n";
-  output << "set " << name() << ":fXi_c1*Xi_cPi " 
+  output << "newdef " << name() << ":fXi_c1*Xi_cPi " 
 	 << _fxi_c1starxi_cpi*GeV2 << "\n";
-  output << "set " << name() << ":gSigma_bLambda_bPi " 
+  output << "newdef " << name() << ":gSigma_bLambda_bPi " 
 	 << _gsigma_blambda_bpi*GeV << "\n";
-  output << "set " << name() << ":gXiStar_bXi_bPi " 
+  output << "newdef " << name() << ":gXiStar_bXi_bPi " 
 	 << _gxistar_bxi_bpi*GeV << "\n";
-  output << "set " << name() << ":fLambda_b1Sigma_bPi " 
+  output << "newdef " << name() << ":fLambda_b1Sigma_bPi " 
 	 << _flambda_b1sigma_bpi << "\n";
-  output << "set " << name() << ":fXi_b1Xi_bPi " 
+  output << "newdef " << name() << ":fXi_b1Xi_bPi " 
 	 << _fxi_b1xi_bpi << "\n";
-  output << "set " << name() << ":fLambda_b1*Sigma_bPi " 
+  output << "newdef " << name() << ":fLambda_b1*Sigma_bPi " 
 	 << _flambda_b1starsigma_bpi*GeV2 << "\n";
-  output << "set " << name() << ":fXi_b1*Xi_bPi " 
+  output << "newdef " << name() << ":fXi_b1*Xi_bPi " 
 	 << _fxi_b1starxi_bpi*GeV2 << "\n";
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << "\n";
-      output << "set " << name() << ":OutgoingB " 
+      output << "newdef " << name() << ":OutgoingB " 
 	     << ix << " " << _outgoingB[ix] << "\n";
-      output << "set " << name() << ":OutgoingM " 
+      output << "newdef " << name() << ":OutgoingM " 
 	     << ix << " " << _outgoingM[ix] << "\n";
-      output << "set " << name() << ":ModeType " 
+      output << "newdef " << name() << ":ModeType " 
 	     << ix << " " << _modetype[ix] << "\n";
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << _maxweight[ix] << "\n";
     }
     else {

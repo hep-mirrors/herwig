@@ -1,0 +1,107 @@
+################################################################################
+# 
+# This file contains the parameters from a re-tune of the parton shower and
+# hadronisation (including colour reconnection) to LEP data. Despite the name
+# of this file, the colour reconnection settings, however, are set in
+# LHC-UE7-1.in, which reads in this file. This is because these settings vary
+# in different underlying-event (UE) / minimum-bias (MB) tunes.
+#
+# This release ships with the file LHC-UE7-1.in. It contains our best tune to
+# UE data from ATLAS at 7 TeV. More recent tunes and tunes for other
+# centre-of-mass energies can be obtained from the Herwig++ wiki page
+# http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+#
+################################################################################
+
+
+################################################################################
+# shower parameters
+################################################################################
+
+cd /Herwig/Shower
+
+set AlphaQCD:AlphaMZ 0.1142
+set AlphaQCD:Qmin 0.88487
+
+set /Herwig/Particles/g:ConstituentMass 1.1232*GeV
+
+################################################################################
+# hadronization parameters
+################################################################################
+
+cd /Herwig/Hadronization
+
+# light quark fragmentation
+
+set ClusterFissioner:ClMaxLight                  3.1921*GeV
+set ClusterFissioner:ClPowLight                  0.80595
+set ClusterFissioner:PSplitLight                 1.1737
+set ClusterDecayer:ClDirLight                    1 
+set ClusterDecayer:ClSmrLight                    1.302
+
+# charm quark fragmentation
+
+set ClusterFissioner:ClMaxCharm                  3.1921*GeV
+set ClusterFissioner:ClPowCharm                  0.80595
+set ClusterFissioner:PSplitCharm                 1.1737
+set ClusterDecayer:ClDirCharm                    1 
+set ClusterDecayer:ClSmrCharm                    1.302
+
+# bottom quark fragmentation
+
+set ClusterFissioner:ClMaxBottom                 3.1921*GeV
+set ClusterFissioner:ClPowBottom                 0.80595
+set ClusterFissioner:PSplitBottom                1.1737
+set ClusterDecayer:ClDirBottom                   1 
+set ClusterDecayer:ClSmrBottom                   1.302
+
+# multiplicity driving
+
+set LightClusterDecayer:SingleHadronLimitBottom  0
+set LightClusterDecayer:SingleHadronLimitCharm   0
+
+set HadronSelector:PwtUquark                     1
+set HadronSelector:PwtDquark                     1
+set HadronSelector:PwtSquark                     0.68
+set HadronSelector:PwtCquark                     1
+set HadronSelector:PwtBquark                     1
+set HadronSelector:PwtDIquark                    0.49
+set HadronSelector:SngWt                         0.74
+set HadronSelector:DecWt                         0.62
+
+
+
+#set EECuts:MHatMin 0.0*GeV
+#set QCDCuts:ScaleMin 0.0*GeV
+
+#set PhotonKtCut:MinKT 0.0*GeV
+#set PhotonKtCut:MinEta -8.
+#set PhotonKtCut:MaxEta  8.
+
+#set MassCut:MinM 0.*GeV
+#set NeutralCurrentCut:MinQ2 0.
+#set ChargedCurrentCut:MinQ2 0.
+
+##################################################
+# saturation modifications
+##################################################
+#cd /Herwig/Partons
+#create Herwig::SatPDF SaturationMod HwSatPDF.so
+#set SaturationMod:RemnantHandler HadronRemnants
+## Assign the pdf that should be modified:
+## use internal pdf
+#set SaturationMod:PDF MRST
+## use lhapdf. This depends on the name you have
+## chosen for the LHAPDF set
+#set SaturationMod:PDF foo
+## may change X0: default is 1E-4
+#set SaturationMod:X0 1E-4
+## may change Exp: default is 0
+#set SaturationMod:Exp 1
+## Assign the modified pdf to the beam particles,
+## without this step the original pdf«s will be used
+#set /Herwig/Particles/p+:PDF SaturationMod
+#set /Herwig/Particles/pbar-:PDF SaturationMod
+
+cd /
+

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ScalarFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -137,17 +137,17 @@ void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
   if(create) output << "create Herwig::ScalarFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<_incomingid.size();++ix) {
     if(ix<_numbermodes) {
-      output << "set " << name() << ":Incoming "  << ix << " " 
+      output << "newdef " << name() << ":Incoming "  << ix << " " 
 	     << _incomingid[ix] << "\n";
-      output << "set " << name() << ":Outgoing "  << ix << " " 
+      output << "newdef " << name() << ":Outgoing "  << ix << " " 
 	     << _outgoingid[ix] << "\n";
-      output << "set " << name() << ":Spin "      << ix << " " 
+      output << "newdef " << name() << ":Spin "      << ix << " " 
 	     << _outgoingJ[ix] << "\n";
-      output << "set " << name() << ":Spectator " << ix << " " 
+      output << "newdef " << name() << ":Spectator " << ix << " " 
 	     << _spectator[ix] << "\n";
-      output << "set " << name() << ":InQuark "   << ix << " " 
+      output << "newdef " << name() << ":InQuark "   << ix << " " 
 	     << _inquark[ix] << "\n";
-      output << "set " << name() << ":OutQuark "  << ix << " " 
+      output << "newdef " << name() << ":OutQuark "  << ix << " " 
 	     << _outquark[ix]<< "\n";
     }
     else {

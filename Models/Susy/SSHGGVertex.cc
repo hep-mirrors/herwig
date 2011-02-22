@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSHGGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -82,6 +82,7 @@ void SSHGGVertex::doinit() {
   orderInGs(2);
   orderInGem(1);
   VVSLoopVertex::doinit();
+  Looptools::ltexi();
 }
 
 
@@ -122,7 +123,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	  higgs == ParticleID::A0 );
   assert(particle2->id() == ParticleID::g && particle3->id() == ParticleID::g );
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
-    clearcache();
+    Looptools::clearcache();
     theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2));
     Energy mt = theMSSM->mass(q2, thetop);    
     Energy mb = theMSSM->mass(q2, thebot);

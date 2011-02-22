@@ -3,14 +3,15 @@ cd /Herwig/Partons
 
 create ThePEG::NoRemnants NoRemnants
 create ThePEG::NoPDF NoPDF
-set NoPDF:RemnantHandler NoRemnants
+newdef NoPDF:RemnantHandler NoRemnants
 
 create ThePEG::UnResolvedRemnant LeptonRemnants UnResolvedRemnant.so
 
 create Herwig::HwRemDecayer RemnantDecayer HwShower.so
+newdef RemnantDecayer:PomeronStructure Gluon
 
 create ThePEG::SoftRemnantHandler HadronRemnants
-set HadronRemnants:RemnantDecayer RemnantDecayer
+newdef HadronRemnants:RemnantDecayer RemnantDecayer
 
 
 read PDF.in
@@ -18,9 +19,9 @@ read PDF.in
 
 # Make particle extractors
 create ThePEG::PartonExtractor EEExtractor
-set EEExtractor:NoPDF NoPDF
+newdef EEExtractor:NoPDF NoPDF
 cp EEExtractor QCDExtractor
-set QCDExtractor:FlatSHatY 1
+newdef QCDExtractor:FlatSHatY 1
 cp EEExtractor DISExtractor
-set DISExtractor:FlatSHatY 1
+newdef DISExtractor:FlatSHatY 1
 

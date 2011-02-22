@@ -19,9 +19,9 @@ MEPP2HiggsVBF.cc   MEPP2HiggsVBF.h  \
 MEMinBias.h MEMinBias.cc \
 MEPP2VGammaJet.h MEPP2VGammaJet.cc
 
-HwMEHadron_la_LDFLAGS = -module -version-info 2:1:0
+HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwMEHadronFast.la
 HwMEHadronFast_la_SOURCES = \
 MEQCD2to2Fast.h MEQCD2to2Fast.cc
-HwMEHadronFast_la_LDFLAGS = -module -version-info 2:0:0
+HwMEHadronFast_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0

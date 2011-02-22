@@ -1,6 +1,6 @@
 SUBDIRS = SplittingFunctions Default Base .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = -module -version-info 11:1:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
 HwShower_la_LIBADD = Default/libHwDefaultShower.la\
 $(top_builddir)/Shower/SplittingFunctions/libHwSplitting.la \
 $(top_builddir)/Shower/Base/libHwShowerBase.la \
@@ -23,7 +23,7 @@ Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
 Base/HardTree.h Base/HardTree.fh Base/HardTree.cc\
 Base/SudakovFormFactor.cc Base/SudakovFormFactor.h Base/SudakovFormFactor.fh \
 Base/HardBranching.h Base/HardBranching.fh Base/HardBranching.cc\
-Couplings/ShowerAlpha.h Couplings/ShowerAlpha.cc\
+Couplings/ShowerAlpha.h Couplings/ShowerAlpha.cc Couplings/ShowerAlpha.fh\
 SplittingFunctions/SplittingGenerator.cc SplittingFunctions/SplittingGenerator.h\
 SplittingFunctions/SplittingGenerator.fh \
 SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \

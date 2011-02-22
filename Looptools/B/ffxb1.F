@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxb1:
 	subroutine ffxb1(cb1,cb0,ca0i,xp,xm1,xm2,piDpj,ier)
 ***#[*comment:***********************************************************
@@ -32,7 +35,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ get differences:
@@ -86,7 +89,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

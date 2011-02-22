@@ -1,5 +1,8 @@
+#include "externals.h"
+
+
 *###[ ffdel5:
-	subroutine ffdel5(del5,xpi,pDp,ns,ier)
+	subroutine ffdel5(del5,xpi,pDp)
 ***#[*comment:***********************************************************
 *									*
 *	Calculate del5(pDp) = det(si.sj)	with			*
@@ -8,10 +11,8 @@
 *	p(5-10) = p(i)							*
 *	p(11-15) = p(i)+p(i+1)						*
 *									*
-*	Input:	xpi(ns)		(real)					*
-*		pDp(ns,ns)	(real)					*
-*		ns		(integer)				*
-*		ier		(integer)				*
+*	Input:	xpi(15)		(real)					*
+*		pDp(15,15)	(real)					*
 *									*
 *	Output:	del5		(real)	det(si.sj)			*
 *									*
@@ -21,7 +22,6 @@
 *
 *	arguments:
 *
-	integer ns,ier
 	DOUBLE PRECISION del5,xpi(15),pDp(15,15)
 *
 *	local variables:
@@ -35,13 +35,13 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ data:
 	data memind /0/
 	data memarr /mem*0,mem*0,mem*1/
 	data inow /1/
-	include 'ffperm5.h'
+#include "ffperm5.h"
 *  #] data:
 *  #[ out of memory:
 *
@@ -181,17 +181,11 @@
 	memarr(memind,2) = idsub
 	memarr(memind,3) = inow
 *  #] into memory:
-*  #[ error messages:
 	return
-  910	print *,'ffdel5: error: cannot open file ffperm5.dat with data'
-	stop
-  920	print *,'ffdel5: error: error reading from ffperm5.dat'
-	stop
-*  #] error messages:
 *###] ffdel5:
 	end
 *###[ ffdl4p:
-	subroutine ffdl4p(dl4p,xpi,piDpj,ns,ii,ier)
+	subroutine ffdl4p(dl4p,piDpj,ii)
 ***#[*comment:***********************************************************
 *	calculate in a numerically stable way				*
 *									*
@@ -203,15 +197,14 @@
 *	     p5 = -p1-p2-p3-p4						*
 *	     xpi(ii(n+5)) = pn+p(n+1), n=1,5				*
 *									*
-*	ier is the usual error flag.					*
 ***#]*comment:***********************************************************
 *  #[ declarations:
 	implicit none
 *
 *	arguments:
 *
-	integer ns,ii(10),ier
-	DOUBLE PRECISION dl4p,xpi(ns),piDpj(ns,ns)
+	integer ii(10)
+	DOUBLE PRECISION dl4p,piDpj(15,15)
 *
 *	local variables
 *
@@ -220,7 +213,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data	(the permutations with 2 from each (1-5) and (6-10) are
 *		still lacking)
@@ -338,7 +331,7 @@
 *###] ffdl4p:
 	end
 *###[ ffdl4r:
-	subroutine ffdl4r(dl4r,xpi,piDpj,ns,miss,ier)
+	subroutine ffdl4r(dl4r,piDpj,miss)
 ***#[*comment:***********************************************************
 *	calculate in a numerically stable way				*
 *									*
@@ -348,15 +341,14 @@
 *									*
 *	with s(miss) NOT included					*
 *									*
-*	ier is the usual error flag.					*
 ***#]*comment:***********************************************************
 *  #[ declarations:
 	implicit none
 *
 *	arguments:
 *
-	integer ns,miss,ier
-	DOUBLE PRECISION dl4r,xpi(ns),piDpj(ns,ns)
+	integer miss
+	DOUBLE PRECISION dl4r,piDpj(15,15)
 *
 *	local variables
 *
@@ -369,7 +361,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ data:
 	data memind /0/
@@ -547,7 +539,6 @@
   120	continue
 *  #] calculations:
 *  #[ into memory:
-  800	continue
 	memind = memind + 1
 	if ( memind .gt. mem ) memind = 1
 	memarr(memind,1) = id

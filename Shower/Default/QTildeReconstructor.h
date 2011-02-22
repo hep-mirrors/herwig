@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeReconstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -379,6 +379,10 @@ protected:
    * @param pout The momenta of the outgoing particles
    * @param mon  The on-shell masses
    * @param roots The mass of the decaying particle
+   * @param ppartner The momentum of the colour partner
+   * @param mbar The mass of the decaying particle
+   * @param k1 The first scaling factor
+   * @param k2 The second scaling factor
    */
   bool inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 				   vector<Energy> mon,Energy roots,
@@ -414,6 +418,14 @@ protected:
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
 
+  /**
+   *  Apply a transform to the particle and any child, including child ShowerTree
+   *  objects
+   * @param particle The particle
+   * @param r The Lorentz transformation
+   * @param match Whether or not to look at children etc
+   * @param original The original particle
+   */
   void deepTransform(PPtr particle,const LorentzRotation & r,
 		     bool match=true,PPtr original=PPtr()) const;
 

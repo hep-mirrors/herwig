@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Evolver.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -650,6 +650,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
   currentTree(decay);
+  decay->applyTransforms();
   hardTree(HardTreePtr());
   unsigned int interactionTry=0;
   bool showerOrder(true);
@@ -1823,7 +1824,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 	}
       }
       if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-				     << "Evolver::generateHardest()" 
+				     << "Evolver::connectTrees()" 
 				     << Exception::runerror;
       (**cit).sudakov(sudakov);
     }
@@ -1838,12 +1839,14 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 			      !hardTree->partnersSet());
   hardTree->partnersSet(true);
   // inverse reconstruction
-  if(hard) 
+  if(hard)
     showerModel()->kinematicsReconstructor()->
-      deconstructHardJets(hardTree,this,hardTree->interaction());
-  else 
+      deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			  hardTree->interaction());
+  else
     showerModel()->kinematicsReconstructor()->
-      deconstructDecayJets(hardTree,this,hardTree->interaction());
+      deconstructDecayJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			   hardTree->interaction());
   // now reset the momenta of the showering particles
   vector<ShowerProgenitorPtr> particlesToShower;
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
@@ -1896,6 +1899,6 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     Lorentz5Momentum newMomentum = tit->second.second->momentum();
     LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
     boost.boost          (-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
-    decayTree->transform(boost);
+    decayTree->transform(boost,true);
   }
 }

@@ -263,3 +263,8 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double * r) {
   }
   return cth;
 }
+
+bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
+				     ShowerParticlePtr,Branching) {
+  return false;
+}

@@ -208,15 +208,15 @@ void SingletonFormFactor::dataBaseOutput(ofstream & output,bool header,
 					 bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::SingletonFormFactor " << name() << " \n";
-  output << "set " << name() << ":CharmMass " << _mcharm/GeV << " \n";
-  output << "set " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
-  output << "set " << name() << ":ThetaLambda " << _thetalambda << " \n";
-  output << "set " << name() << ":ThetaSigma " << _thetasigma << " \n";
-  output << "set " << name() << ":ThetaXi " << _thetaxi << " \n";
-  output << "set " << name() << ":ThetaXiPrime " << _thetaxip << " \n";
+  output << "newdef " << name() << ":CharmMass " << _mcharm/GeV << " \n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
+  output << "newdef " << name() << ":ThetaLambda " << _thetalambda << " \n";
+  output << "newdef " << name() << ":ThetaSigma " << _thetasigma << " \n";
+  output << "newdef " << name() << ":ThetaXi " << _thetaxi << " \n";
+  output << "newdef " << name() << ":ThetaXiPrime " << _thetaxip << " \n";
   for(unsigned int ix=0;ix<_polemass.size();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":PoleMass " << ix << "  " 
+      output << "newdef " << name() << ":PoleMass " << ix << "  " 
 	     << _polemass[ix]/GeV << endl;
     }
     else {

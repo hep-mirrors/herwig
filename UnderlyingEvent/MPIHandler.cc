@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,7 +21,6 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
@@ -709,37 +708,5 @@ void MPIHandler::Init() {
      "New",
      "Parametrization taking hard and soft pomeron contributions into account",
      3);
-
-
-  //outdated interfaces....
-  string desc("The supported way of determining in which mode the ");
-  desc += "MPI model runs is by setting MPIHandler:IdenticalToUE.";
-  static Deleted<MPIHandler> delint("Algorithm", desc);
-
-  static Switch<MPIHandler,int> interfaceAlgorithm
-    ("Algorithm",
-     "This option is outdated and only kept for backward compatibility."
-     "One should rather set MPIHandler:IdenticalToUE",
-     &MPIHandler::algorithm_, 2, false, false);
-
-  static SwitchOption interfaceAlgorithm0
-    (interfaceAlgorithm,
-     "lowpt",
-     "Signal process has similar cross section than UE.",
-     0);
-
-  static SwitchOption interfaceAlgorithm1
-    (interfaceAlgorithm,
-     "highpt",
-     "Signal process has a much smaller cross section "
-     "than UE, but the same ME's",
-     1);
-
-  static SwitchOption interfaceAlgorithm2
-    (interfaceAlgorithm,
-     "rare",
-     "Signal process has a much smaller cross section "
-     "than UE and is a different process.",
-     2);
 
 }

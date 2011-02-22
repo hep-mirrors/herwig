@@ -10,13 +10,6 @@ cd /Herwig/Generators
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 206.
 
 ##################################################
-#  Use the q qbar matrix element
-##################################################
-cd /Herwig/MatrixElements
-# default e+e- > q qbar (5 flavours d,u,s,c,b)
-insert SimpleEE:MatrixElements 0 MEee2gZ2qq
-
-##################################################
 # select the analyses
 ##################################################
 

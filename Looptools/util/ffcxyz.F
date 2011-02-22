@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcxyz:
 	subroutine ffcxyz(cy,cz,cdyz,cd2yzz,ivert,sdelpp,sdelps,
      +			etami,delps,xpi,piDpj,isoort,ldel2s,ns,ier)
@@ -47,7 +50,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *  #] declarations:
 *  #[ set up pointers:
@@ -196,7 +199,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

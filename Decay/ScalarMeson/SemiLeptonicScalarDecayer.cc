@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SemiLeptonicScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -332,8 +332,8 @@ void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 	   << _maxwgt[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":Current " << _current->name() << " \n";
+  output << "newdef " << name() << ":Current " << _current->name() << " \n";
   _form->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":FormFactor " << _form->name() << " \n";
+  output << "newdef " << name() << ":FormFactor " << _form->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

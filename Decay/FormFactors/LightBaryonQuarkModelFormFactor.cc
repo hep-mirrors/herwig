@@ -214,17 +214,17 @@ void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output,bool heade
 		    << name() << " \n";
   for(unsigned int ix=0;ix<_f1.size();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":f1 " << ix << "  " << _f1[ix] << "\n";
-      output << "set " << name() << ":g1 " << ix << "  " << _g1[ix] << "\n";
-      output << "set " << name() << ":f2 " << ix << "  " << _f2[ix]*GeV << "\n";
-      output << "set " << name() << ":g2 " << ix << "  " << _g2[ix]*GeV << "\n";
-      output << "set " << name() << ":Lambdaf1 " << ix << "  " 
+      output << "newdef " << name() << ":f1 " << ix << "  " << _f1[ix] << "\n";
+      output << "newdef " << name() << ":g1 " << ix << "  " << _g1[ix] << "\n";
+      output << "newdef " << name() << ":f2 " << ix << "  " << _f2[ix]*GeV << "\n";
+      output << "newdef " << name() << ":g2 " << ix << "  " << _g2[ix]*GeV << "\n";
+      output << "newdef " << name() << ":Lambdaf1 " << ix << "  " 
 	     << _Lambdaf1[ix]/GeV << "\n";
-      output << "set " << name() << ":Lambdaf2 " << ix << "  " 
+      output << "newdef " << name() << ":Lambdaf2 " << ix << "  " 
 	     << _Lambdaf2[ix]/GeV << "\n";
-      output << "set " << name() << ":Lambdag1 " << ix << "  " 
+      output << "newdef " << name() << ":Lambdag1 " << ix << "  " 
 	     << _Lambdag1[ix]/GeV << "\n";
-      output << "set " << name() << ":Lambdag2 " << ix << "  " 
+      output << "newdef " << name() << ":Lambdag2 " << ix << "  " 
 	     << _Lambdag2[ix]/GeV << "\n";
     }
     else {

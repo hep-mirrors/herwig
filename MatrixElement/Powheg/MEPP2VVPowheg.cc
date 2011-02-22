@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2VVPowheg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -69,6 +69,20 @@ ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
 // Definition of the static class description member.
 
 void MEPP2VVPowheg::Init() {
+
+  static ClassDocumentation<MEPP2VVPowheg> documentation
+    ("The MEPP2VVPowheg class implements the NLO matrix elements for the production of"
+     "pairs of electroweak vector bosons.",
+     "The calcultaion of $W^+W^-$, $W^\\pm Z^0$ and $Z^0Z^0$ production"
+     " in hadron collisions at next-to-leading order in the POWHEG scheme"
+     " is described in \\cite{Hamilton:2010mb}.",
+     "\\bibitem{Hamilton:2010mb}\n"
+     " K.~Hamilton,\n"
+     "%``A positive-weight next-to-leading order simulation of weak boson pair\n"
+     "%production,''\n"
+     "JHEP {\bf 1101} (2011) 009\n"
+     "[arXiv:1009.5391 [hep-ph]].\n"
+     "%%CITATION = JHEPA,1101,009;%%\n");
 
   static Switch<MEPP2VVPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -154,7 +168,7 @@ void MEPP2VVPowheg::Init() {
   static SwitchOption interfaceDynamic
     (interfaceScaleOption,
      "Dynamic",
-     "QCD factorization & renormalization scales are (mT(V1)+mT(V2))/2. "
+     "QCD factorization & renormalization scales are sqr(pV1+pV2). "
      "EW scale is (mV1^2+mV2^2)/2 (similar to MCatNLO)",
      1);
   static SwitchOption interfaceFixed

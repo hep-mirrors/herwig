@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHGGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -59,6 +59,7 @@ void SMHGGVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(strongCoupling(sqr(mh))))/36./8.*sqr(mh/_mw)*mh
 //     /sqr(4.*sqr(Constants::pi))*std::norm(I)/Constants::pi;
 //   cerr << "testing anal " << width/GeV << "\n";
+  Looptools::ltexi();
 }
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
@@ -175,7 +176,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   case 2: {
     if (q2 != _q2last) {
-      clearcache();
+      Looptools::clearcache();
       _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
       _q2last = q2;
     }

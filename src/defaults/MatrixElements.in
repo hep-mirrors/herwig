@@ -26,21 +26,21 @@ library HwMEDIS.so
 ############################################################
 # e+e- > q qbar
 create Herwig::MEee2gZ2qq MEee2gZ2qq
-set MEee2gZ2qq:MinimumFlavour 1
-set MEee2gZ2qq:MaximumFlavour 5
-set MEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
-set MEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
+newdef MEee2gZ2qq:MinimumFlavour 1
+newdef MEee2gZ2qq:MaximumFlavour 5
+newdef MEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
+newdef MEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
 
 # e+e- -> l+l-
 create Herwig::MEee2gZ2ll MEee2gZ2ll
-set MEee2gZ2ll:Allowed Charged
+newdef MEee2gZ2ll:Allowed Charged
 
 # e+e- -> W+W- ZZ
 create Herwig::MEee2VV MEee2VV
 
 # e+e- -> ZH
 create Herwig::MEee2ZH MEee2ZH
-set MEee2ZH:Coupling /Herwig/Shower/AlphaQCD
+newdef MEee2ZH:Coupling /Herwig/Shower/AlphaQCD
 
 # e+e- -> e+e-H/nu_enu_ebarH
 create Herwig::MEee2HiggsVBF MEee2HiggsVBF
@@ -50,10 +50,10 @@ create Herwig::MEee2HiggsVBF MEee2HiggsVBF
 ############################################################
 library HwPowhegMELepton.so 
 create Herwig::MEee2gZ2qqPowheg PowhegMEee2gZ2qq
-set PowhegMEee2gZ2qq:MinimumFlavour 1
-set PowhegMEee2gZ2qq:MaximumFlavour 5
-set PowhegMEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
-set PowhegMEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
+newdef PowhegMEee2gZ2qq:MinimumFlavour 1
+newdef PowhegMEee2gZ2qq:MaximumFlavour 5
+newdef PowhegMEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
+newdef PowhegMEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
 
 ############################################################
 #  hadron-hadron matrix elements
@@ -64,21 +64,21 @@ set PowhegMEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
 ###################################
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ff MEqq2gZ2ff
-set MEqq2gZ2ff:Process 3
-set MEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef MEqq2gZ2ff:Process 3
+newdef MEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
 
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ff  MEqq2W2ff
-set MEqq2W2ff:Process 2
-set MEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef MEqq2W2ff:Process 2
+newdef MEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
 
 # W+jet
 create Herwig::MEPP2WJet MEWJet
-set MEWJet:WDecay Leptons
+newdef MEWJet:WDecay Leptons
 
 # Z+jet
 create Herwig::MEPP2ZJet MEZJet
-set MEZJet:ZDecay ChargedLeptons
+newdef MEZJet:ZDecay ChargedLeptons
 
 # PP->WW/WZ/ZZ
 create Herwig::MEPP2VV MEPP2VV
@@ -111,20 +111,20 @@ create Herwig::MEPP2QQ         MEHeavyQuark
 
 # hadron-hadron to higgs
 create Herwig::MEPP2Higgs   MEHiggs
-set MEHiggs:ShapeScheme MassGenerator
-set MEHiggs:Process gg
-set MEHiggs:Coupling /Herwig/Shower/AlphaQCD
+newdef MEHiggs:ShapeScheme MassGenerator
+newdef MEHiggs:Process gg
+newdef MEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
 # hadron-hadron to higgs+jet
 create Herwig::MEPP2HiggsJet   MEHiggsJet
 
 # PP->ZH
 create Herwig::MEPP2ZH MEPP2ZH
-set MEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
+newdef MEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
 
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
-set MEPP2WH:Coupling /Herwig/Shower/AlphaQCD
+newdef MEPP2WH:Coupling /Herwig/Shower/AlphaQCD
 
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
@@ -132,11 +132,11 @@ set MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
 
 # PP -> t tbar Higgs
 create Herwig::MEPP2QQHiggs MEPP2ttbarH
-set MEPP2ttbarH:QuarkType Top
+newdef MEPP2ttbarH:QuarkType Top
 
 # PP -> b bbar Higgs
 create Herwig::MEPP2QQHiggs MEPP2bbbarH
-set MEPP2bbbarH:QuarkType Bottom
+newdef MEPP2bbbarH:QuarkType Bottom
 
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme
@@ -145,31 +145,31 @@ library HwPowhegMEHadron.so
 
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ffPowheg PowhegMEqq2gZ2ff
-set PowhegMEqq2gZ2ff:Process 3
-set PowhegMEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEqq2gZ2ff:Process 3
+newdef PowhegMEqq2gZ2ff:Coupling /Herwig/Shower/AlphaQCD
 
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
-set PowhegMEqq2W2ff:Process 2
-set PowhegMEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEqq2W2ff:Process 2
+newdef PowhegMEqq2W2ff:Coupling /Herwig/Shower/AlphaQCD
  
 # PP->ZH
 create Herwig::MEPP2ZHPowheg PowhegMEPP2ZH
-set PowhegMEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2ZH:Coupling /Herwig/Shower/AlphaQCD
 
 # PP->WH
 create Herwig::MEPP2WHPowheg PowhegMEPP2WH
-set PowhegMEPP2WH:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2WH:Coupling /Herwig/Shower/AlphaQCD
 
 # hadron-hadron to higgs
 create Herwig::MEPP2HiggsPowheg PowhegMEHiggs
-set PowhegMEHiggs:ShapeScheme MassGenerator
-set PowhegMEHiggs:Process gg
-set PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEHiggs:ShapeScheme MassGenerator
+newdef PowhegMEHiggs:Process gg
+newdef PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 
 # PP->VV
 create Herwig::MEPP2VVPowheg PowhegMEPP2VV
-set PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 
 ##########################################################
 # DIS matrix elements
@@ -216,16 +216,16 @@ create Herwig::MEGammaP2Jets MEGammaP2Jets HwMEGammaHadron.so
 # For e+e-
 ##########################################################
 create ThePEG::SubProcessHandler SimpleEE
-set SimpleEE:PartonExtractor /Herwig/Partons/EEExtractor
+newdef SimpleEE:PartonExtractor /Herwig/Partons/EEExtractor
 
 ##########################################################
 # For hadron-hadron 
 ##########################################################
 create ThePEG::SubProcessHandler SimpleQCD
-set SimpleQCD:PartonExtractor /Herwig/Partons/QCDExtractor
+newdef SimpleQCD:PartonExtractor /Herwig/Partons/QCDExtractor
 
 ##########################################################
 # For DIS 
 ##########################################################
 create ThePEG::SubProcessHandler SimpleDIS
-set SimpleDIS:PartonExtractor /Herwig/Partons/DISExtractor
+newdef SimpleDIS:PartonExtractor /Herwig/Partons/DISExtractor

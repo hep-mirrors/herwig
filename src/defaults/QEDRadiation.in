@@ -17,11 +17,11 @@ create Herwig::IFDipole IFDipole HwSOPHTY.so
 create Herwig::SOPHTY   SOPHTY
 
 # assigned the dipoles to the decay radiation handler
-set SOPHTY:FFDipole FFDipole
-set SOPHTY:IFDipole IFDipole
+newdef SOPHTY:FFDipole FFDipole
+newdef SOPHTY:IFDipole IFDipole
 
 # create the QEDRadiation handler
 create Herwig::QEDRadiationHandler QEDRadiationHandler
 
 # assign the decay radiation handler to the QEDRadiationHandler
-set QEDRadiationHandler:RadiationGenerator SOPHTY
+newdef QEDRadiationHandler:RadiationGenerator SOPHTY

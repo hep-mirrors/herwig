@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcb1:
 	subroutine ffcb1(cb1,cb0,ca0i,xp,xm1,xm2,piDpj,ier)
 ***#[*comment:***********************************************************
@@ -34,7 +37,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ real case:
@@ -113,7 +116,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

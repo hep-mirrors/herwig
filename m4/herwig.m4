@@ -4,27 +4,27 @@ AC_DEFUN([HERWIG_CHECK_ABS_BUG],
 AC_REQUIRE([HERWIG_COMPILERFLAGS])
 if test "$GCC" = "yes"; then
 AC_MSG_CHECKING([for gcc abs bug])
-AC_RUN_IFELSE(
+AC_RUN_IFELSE([
 	AC_LANG_PROGRAM(
-		[ int foo (int i) { return -2 * __builtin_abs(i - 2); }	],
-		[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]
-	),
+		[[ int foo (int i) { return -2 * __builtin_abs(i - 2); } ]],
+		[[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]]
+	)],
 	[ AC_MSG_RESULT([not found. Compiler is ok.]) ],
 	[
 	AC_MSG_RESULT([found. Builtin abs() is buggy.])
 	AC_MSG_CHECKING([if -fno-builtin-abs works])
 	oldcxxflags=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -fno-builtin-abs"
-	AC_RUN_IFELSE(
+	AC_RUN_IFELSE([
 		AC_LANG_PROGRAM(
-			[
+			[[
 			#include <cstdlib>
 			int foo (int i) { return -2 * std::abs(i - 2); }
-			],
-			[
+			]],
+			[[
 			if (foo(1) != -2 || foo(3) != -2) return 1; 
-			]
-		),
+			]]
+		)],
 		[
 		AC_MSG_RESULT([yes. Setting -fno-builtin-abs.])
 		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin-abs"
@@ -232,22 +232,24 @@ AC_ARG_WITH(pdf,
         [],
         [with_pdf=${prefix}]
         )
-HERWIG_PDF_PREFIX=${with_pdf}/share/Herwig++PDF/mrst
+HERWIG_PDF_PREFIX=${with_pdf}/share/Herwig++PDF
 
-if test -f "${HERWIG_PDF_PREFIX}/2008/mrstMCal.dat"; then
+if test -f "${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat"; then
 	AC_MSG_RESULT([$with_pdf])
 	localPDFneeded=false
 else
 	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_PREFIX=PDF/mrst
+	HERWIG_PDF_PREFIX=PDF
 	localPDFneeded=true
 fi
-HERWIG_PDF_DEFAULT=${HERWIG_PDF_PREFIX}/2008/mrstMCal.dat
-HERWIG_PDF_NLO=${HERWIG_PDF_PREFIX}/2002/mrst2002nlo.dat
+HERWIG_PDF_DEFAULT=${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat
+HERWIG_PDF_NLO=${HERWIG_PDF_PREFIX}/mrst/2002/mrst2002nlo.dat
+HERWIG_PDF_POMERON=${HERWIG_PDF_PREFIX}/diffraction/
 
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
 AC_SUBST(HERWIG_PDF_DEFAULT)
 AC_SUBST(HERWIG_PDF_NLO)
+AC_SUBST(HERWIG_PDF_POMERON)
 ])
 
 dnl ###### GSL ######
@@ -336,6 +338,15 @@ if test -n "$GCC"; then
 	fi
 fi
 
+dnl do an actual capability check on ld instead of this workaround
+case "${host}" in
+  *-darwin*) 
+     ;;
+  *)
+     AM_LDFLAGS="-Wl,--enable-new-dtags"
+     ;;
+esac
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
 AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
@@ -349,12 +360,13 @@ AC_MSG_CHECKING([for BSM models to include])
 
 LOAD_RS=""
 LOAD_SUSY=""
+LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -372,9 +384,11 @@ if test ! "$all"; then
    IFS="$oldIFS"
 fi
 
-if test "$nmssm"; then
+if test "$nmssm" -o "$all"; then
+   LOAD_NMSSM="library HwNMSSM.so"
    mssm=yes
 fi
+AC_SUBST(LOAD_NMSSM)
 
 if test "$rs" -o "$all" ; then
    LOAD_RS="library HwRSModel.so"
@@ -401,10 +415,16 @@ if test "$add" -o "$all"; then
 fi
 AC_SUBST(LOAD_ADD)
 
+if test "$leptoquarks" -o "$all"; then
+   LOAD_LEPTOQUARKS="library HwLeptoquarkModel.so"
+fi
+AC_SUBST(LOAD_LEPTOQUARKS)
+
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
+AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
 ])

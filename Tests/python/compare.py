@@ -1,18 +1,18 @@
 import re
 import os
 import histogram
-td_command = '~/bin/td-Linux.libc6 -b -d POSTSCRIPT'
+td_command = '/export/pc/bin/tdps'
 
 def compareCrossSections(fname1,fname2) :
     f1 = open(fname1)
     test = f1.readline()
     while test:
         test = f1.readline()
-        loc = test.find("Total")
+        loc = test.find("Total (from unweighted events)")
         if ( loc >= 0 ) :
             temp1 = test.rsplit(")")
-            exponent = temp1[1]
-            temp2 = temp1[0].rsplit("(")
+            exponent = temp1[2]
+            temp2 = temp1[1].rsplit("(")
             errors = temp2[1]
             temp1 = temp2[0].rsplit("  ",1)
             mantisa = temp1[1]
@@ -26,11 +26,11 @@ def compareCrossSections(fname1,fname2) :
     test = f2.readline()
     while test:
         test = f2.readline()
-        loc = test.find("Total")
+        loc = test.find("Total (from unweighted events)")
         if ( loc >= 0 ) :
             temp1 = test.rsplit(")")
-            exponent = temp1[1]
-            temp2 = temp1[0].rsplit("(")
+            exponent = temp1[2]
+            temp2 = temp1[1].rsplit("(")
             errors = temp2[1]
             temp1 = temp2[0].rsplit("  ",1)
             mantisa = temp1[1]

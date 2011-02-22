@@ -6,24 +6,43 @@
 
 # Handle leptons
 create ThePEG::LeptonLeptonPDF LeptonPDF LeptonLeptonPDF.so
-set LeptonPDF:RemnantHandler LeptonRemnants
-set /Herwig/Particles/e-:PDF LeptonPDF
-set /Herwig/Particles/e+:PDF LeptonPDF
+newdef LeptonPDF:RemnantHandler LeptonRemnants
+newdef /Herwig/Particles/e-:PDF LeptonPDF
+newdef /Herwig/Particles/e+:PDF LeptonPDF
 
 # Handle hadrons
 create Herwig::MRST MRST HwMRST.so
 setup MRST @HERWIG_PDF_DEFAULT@
-set MRST:RemnantHandler HadronRemnants
-set /Herwig/Particles/p+:PDF MRST
-set /Herwig/Particles/pbar-:PDF MRST
+newdef MRST:RemnantHandler HadronRemnants
+newdef /Herwig/Particles/p+:PDF MRST
+newdef /Herwig/Particles/pbar-:PDF MRST
 
 # NLO PDFs (needed for NLO matrix elements)
 create Herwig::MRST MRST-NLO HwMRST.so
-set MRST-NLO:Interpolation Cubic
+newdef MRST-NLO:Interpolation Cubic
 setup MRST-NLO @HERWIG_PDF_NLO@
-set MRST-NLO:RemnantHandler HadronRemnants
+newdef MRST-NLO:RemnantHandler HadronRemnants
 
 # photons from leptons in WW approx
 create ThePEG::WeizsackerWilliamsPDF WWPDF WeizsackerWilliamsPDF.so
 create ThePEG::UnResolvedRemnant /Herwig/Partons/LeptonGammaRemnants 
-set /Herwig/Partons/WWPDF:RemnantHandler /Herwig/Partons/LeptonGammaRemnants
+newdef /Herwig/Partons/WWPDF:RemnantHandler /Herwig/Partons/LeptonGammaRemnants
+
+# photons from protons in Budnev approx
+create ThePEG::BudnevPDF BudnevPDF BudnevPDF.so
+create ThePEG::UnResolvedRemnant /Herwig/Partons/HadronGammaRemnants 
+newdef /Herwig/Partons/BudnevPDF:RemnantHandler /Herwig/Partons/HadronGammaRemnants
+
+# pomerons
+create Herwig::PomeronFlux PomeronFlux HwPomeronFlux.so
+newdef PomeronFlux:PDFFit Pomeron2006A
+newdef PomeronFlux:Q2Max 1.
+newdef PomeronFlux:Q2Min 1.0e-6
+create ThePEG::UnResolvedRemnant /Herwig/Partons/ProtonRemnant UnResolvedRemnant.so
+newdef /Herwig/Partons/PomeronFlux:RemnantHandler /Herwig/Partons/ProtonRemnant
+
+create Herwig::PomeronPDF PomeronPDF HwPomeronPDF.so
+newdef PomeronPDF:RemnantHandler HadronRemnants
+newdef PomeronPDF:RootName  @HERWIG_PDF_POMERON@
+newdef /Herwig/Particles/pomeron:PDF PomeronPDF
+newdef PomeronPDF:PDFFit 2006A

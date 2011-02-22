@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GenericWidthGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -597,11 +597,11 @@ void GenericWidthGenerator::doinit() {
 void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header) {
   if(header) output << "update Width_Generators set parameters=\"";
   // prefactor and general switiches
-  output << "set " << name() << ":Prefactor "   << prefactor_ << "\n";
-  output << "set " << name() << ":BRNormalize " << BRnorm_    << "\n";
-  output << "set " << name() << ":BRMinimum "   << BRminimum_ << "\n";
-  output << "set " << name() << ":Points "      << npoints_   << "\n";
-  output << "set " << name() << ":InterpolationOrder " << intOrder_ << "\n";
+  output << "newdef " << name() << ":Prefactor "   << prefactor_ << "\n";
+  output << "newdef " << name() << ":BRNormalize " << BRnorm_    << "\n";
+  output << "newdef " << name() << ":BRMinimum "   << BRminimum_ << "\n";
+  output << "newdef " << name() << ":Points "      << npoints_   << "\n";
+  output << "newdef " << name() << ":InterpolationOrder " << intOrder_ << "\n";
   // the type of the matrix element
   for(unsigned int ix=0;ix<MEtype_.size();++ix) {
     output << "insert " << name() << ":MEtype " << ix << " " 

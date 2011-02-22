@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Cluster.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -63,6 +63,11 @@ using namespace ThePEG;
 class Cluster : public Particle {
   
 public:
+
+  /**
+   * ColourReconnector needs access to the _original constituents.
+   */
+  friend class ColourReconnector;
   
   /** @name Standard constructors and destructors. */
   //@{

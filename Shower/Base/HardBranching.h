@@ -41,7 +41,7 @@ public:
    * @param particle The particle which is branching
    * @param sudakov  The Sudakov form factor for the branching
    * @param parent   The parent for the branching
-   * @param incoming Whether the particle is incoming or outgoing
+   * @param status Whether the particle is incoming or outgoing
    */
   HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
 		tHardBranchingPtr parent,Status status);

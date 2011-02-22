@@ -3,4 +3,4 @@ HwMEDIS_la_SOURCES = \
 DISBase.h DISBase.cc \
 MENeutralCurrentDIS.cc  MENeutralCurrentDIS.h  \
 MEChargedCurrentDIS.cc  MEChargedCurrentDIS.h  
-HwMEDIS_la_LDFLAGS = -module -version-info 2:1:0
+HwMEDIS_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FourPionNovosibirskCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -930,29 +930,29 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::FourPionNovosibirskCurrent " 
 		    << name() << " HwWeakCurrents.so\n";
-  output << "set " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
-  output << "set " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
-  output << "set " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
-  output << "set " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
-  output << "set " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
-  output << "set " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
-  output << "set " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
-  output << "set " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
-  output << "set " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
-  output << "set " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
-  output << "set " << name() << ":SigmaPhase " << _zphase  << "\n";
-  output << "set " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
-  output << "set " << name() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << name() << ":Initializea1 " <<  _initializea1 << "\n";
+  output << "newdef " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
+  output << "newdef " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
+  output << "newdef " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
+  output << "newdef " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
+  output << "newdef " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "newdef " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
+  output << "newdef " << name() << ":SigmaPhase " << _zphase  << "\n";
+  output << "newdef " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
+  output << "newdef " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "newdef " << name() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
     output << name() << ":a1RunningWidth " << ix << " " 
 	   << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
     output << name() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
   }

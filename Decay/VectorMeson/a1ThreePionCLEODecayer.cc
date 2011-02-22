@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1ThreePionCLEODecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -1043,80 +1043,80 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // masses and widths of the intermediate particles
-  output << "set " << name() << ":f_2Mass "    << _f2mass/GeV     << "\n";
-  output << "set " << name() << ":f_2Width "   << _f2width/GeV    << "\n";
-  output << "set " << name() << ":f_0Mass "    << _f0mass/GeV     << "\n";
-  output << "set " << name() << ":f_0Width "   << _f0width/GeV    << "\n";
-  output << "set " << name() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
-  output << "set " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "newdef " << name() << ":f_2Mass "    << _f2mass/GeV     << "\n";
+  output << "newdef " << name() << ":f_2Width "   << _f2width/GeV    << "\n";
+  output << "newdef " << name() << ":f_0Mass "    << _f0mass/GeV     << "\n";
+  output << "newdef " << name() << ":f_0Width "   << _f0width/GeV    << "\n";
+  output << "newdef " << name() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoMasses " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
     else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoWidths " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
     else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
   }
   // couplings and phases for different channels
-  output << "set " << name() << ":f0Phase " << _f0phase << "\n";
-  output << "set " << name() << ":f2Phase " << _f2phase<< "\n";
-  output << "set " << name() << ":sigmaPhase " << _sigmaphase<< "\n";
-  output << "set " << name() << ":f0Magnitude " << _f0mag<< "\n";
-  output << "set " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
-  output << "set " << name() << ":sigmaMagnitude " << _sigmamag << "\n";
-  output << "set " << name() << ":Coupling " << _coupling*GeV << "\n";
+  output << "newdef " << name() << ":f0Phase " << _f0phase << "\n";
+  output << "newdef " << name() << ":f2Phase " << _f2phase<< "\n";
+  output << "newdef " << name() << ":sigmaPhase " << _sigmaphase<< "\n";
+  output << "newdef " << name() << ":f0Magnitude " << _f0mag<< "\n";
+  output << "newdef " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
+  output << "newdef " << name() << ":sigmaMagnitude " << _sigmamag << "\n";
+  output << "newdef " << name() << ":Coupling " << _coupling*GeV << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoPWaveMagnitude " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix << " " 
 		    << _rhomagP[ix] << "\n";
     else     output << "insert " << name() << ":RhoPWaveMagnitude " << ix << " " 
 		    << _rhomagP[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoPWavePhase " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoPWavePhase " << ix << " " 
 		    << _rhophaseP[ix] << "\n";
     else     output << "insert " << name() << ":RhoPWavePhase " << ix << " " 
 		    << _rhophaseP[ix] << "\n";
   }  
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoDWaveMagnitude " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix << " " 
 		    << _rhomagD[ix]*MeV2 << "\n";
     else     output << "insert " << name() << ":RhoDWaveMagnitude " << ix << " " 
 		    << _rhomagD[ix]*MeV2 << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
-    if(ix<2) output << "set    " << name() << ":RhoDWavePhase " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoDWavePhase " << ix << " " 
 		    << _rhophaseD[ix] << "\n";
     else     output << "insert " << name() << ":RhoDWavePhase " << ix << " " 
 		    << _rhophaseD[ix] << "\n";
   }
   // use local values of the masses etc.
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   // integration weights for the different channels
   for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
-    output << "set " << name() << ":AllNeutralWeights " 
+    output << "newdef " << name() << ":AllNeutralWeights " 
 	   << ix << " " << _zerowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << name() << ":OneChargedWeights " 
+    output << "newdef " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << name() << ":TwoChargedWeights " 
+    output << "newdef " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << name() << ":ThreeChargedWeights " 
+    output << "newdef " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
   // maximum weights for the different  channels
-  output << "set " << name() << ":ZeroMax "  << _zeromax  << "\n";
-  output << "set " << name() << ":OneMax "   << _onemax   << "\n";
-  output << "set " << name() << ":TwoMax "   << _twomax   << "\n";
-  output << "set " << name() << ":ThreeMax " << _threemax << "\n";
+  output << "newdef " << name() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "newdef " << name() << ":OneMax "   << _onemax   << "\n";
+  output << "newdef " << name() << ":TwoMax "   << _twomax   << "\n";
+  output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

@@ -1,0 +1,25 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Powheg.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 161.
+
+##################################################
+# select the analyses
+##################################################
+
+# ALEPH jet and event shapes at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
+# OPAL/JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LEP-Powheg-161 LEPGenerator

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -240,9 +240,9 @@ void ShowerHandler::cascade() {
   }
   // if a non-hadron collision return (both incoming non-hadronic)
   if( ( !incomingBins.first||
-        !HadronMatcher::Check(incomingBins.first ->particle()->data()))&&
+        !isResolvedHadron(incomingBins.first ->particle()))&&
       ( !incomingBins.second||
-        !HadronMatcher::Check(incomingBins.second->particle()->data()))) {
+        !isResolvedHadron(incomingBins.second->particle()))) {
     // boost back to lab if needed
     if(btotal) boostCollision(true);
     // unset the current ShowerHandler
@@ -533,8 +533,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   decay_.clear();
   done_.clear();
   // non hadronic case return
-  if (!HadronMatcher::Check(incoming_.first ->data()) && 
-      !HadronMatcher::Check(incoming_.second->data()) )
+  if (!isResolvedHadron(incoming_.first ) && 
+      !isResolvedHadron(incoming_.second) )
     return incoming_;
   // remake the remnants (needs to be after the colours are sorted
   //                       out in the insertion into the event record)
@@ -631,7 +631,10 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
   if(particle->momentum().m2()<=ZERO||
      particle == currentSubProcess()->incoming().first||
      particle == currentSubProcess()->incoming().second) return false;
-  // must not be the s-channel intermediate
+  // if only 1 outgoing and this is it
+  if(currentSubProcess()->outgoing().size()==1 &&
+     currentSubProcess()->outgoing()[0]==particle) return true;
+  // must not be the s-channel intermediate otherwise
   if(find(currentSubProcess()->incoming().first->children().begin(),
 	  currentSubProcess()->incoming().first->children().end(),particle)!=
      currentSubProcess()->incoming().first->children().end()&&
@@ -655,7 +658,7 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
 
 namespace {
 
-void addChildren(tPPtr in,set<tPPtr> particles) {
+void addChildren(tPPtr in,set<tPPtr> & particles) {
   particles.insert(in);
   for(unsigned int ix=0;ix<in->children().size();++ix)
     addChildren(in->children()[ix],particles);
@@ -706,6 +709,14 @@ void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
 
   // reset the PDFs stored in the base class
   resetPDFs(newpdf);
+}
+
+bool ShowerHandler::isResolvedHadron(tPPtr particle) {
+  if(!HadronMatcher::Check(particle->data())) return false;
+  for(unsigned int ix=0;ix<particle->children().size();++ix) {
+    if(particle->children()[ix]->id()==ExtraParticleID::Remnant) return true;
+  }
+  return false;
 }
 
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {

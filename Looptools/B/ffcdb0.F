@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffcdb0:
 	subroutine ffcdb0(cdb0,cdb0p,cp,cma,cmb,ier)
 ***#[*comment:***********************************************************
@@ -31,7 +34,7 @@
 *
 *	common
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations: 
 *  #[ check input:
@@ -108,7 +111,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -250,11 +253,10 @@
 		print *,'ffcdbd: IR divergent B0'', using cutoff ',
      &            lambda
 	    endif
-	    if ( lambda.eq.0 ) then
-		call fferr(74,ier)
-		cdb0p = 0
+	    if ( lambda .le. 0 ) then
+		cdb0p = -1 + log(cm/mudim)/2
 	    else
-		cdb0p = -1 + log(cm/DBLE(lambda))/2
+		cdb0p = -1 + log(cm/lambda)/2
 	    endif
 	    cdb0 = cdb0p/cp
 	    goto 990
@@ -595,7 +597,7 @@
 *
 *		    first s2:
 *
-  490		    s2p = s2 - alpha
+		    s2p = s2 - alpha
 		    if ( absc(s2p) .lt. xloss*absc(s2) ) then
 * -#[			bounds:
 *			determine the boundaries for 1,5,10,15 terms
@@ -639,7 +641,7 @@
 *
 *		    next s1:
 *
-  495		    s1p = s1 - alph1
+		    s1p = s1 - alph1
 		    if ( absc(s1p) .lt. xloss*absc(s1) ) then
 * -#[			bounds:
 *			determine the boundaries for 1,5,10,15 terms
@@ -699,7 +701,7 @@
 *
 *		    finally ...
 *
-  496		    cdb0p = s1p + s2p
+		    cdb0p = s1p + s2p
 *--#]		    third try: 
 		endif
 	endif

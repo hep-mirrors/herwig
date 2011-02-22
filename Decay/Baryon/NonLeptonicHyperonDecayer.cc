@@ -196,17 +196,17 @@ void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output,bool header) co
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<_incomingB.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
-      output << "set " << name() << ":IncomingBaryon " << ix << " " 
+      output << "newdef " << name() << ":IncomingBaryon " << ix << " " 
 	     << _incomingB[ix] << "\n";
-      output << "set " << name() << ":OutgoingBaryon " << ix << " " 
+      output << "newdef " << name() << ":OutgoingBaryon " << ix << " " 
 	     << _outgoingB[ix] << "\n";
-      output << "set " << name() << ":OutgoingMeson " << ix << " " 
+      output << "newdef " << name() << ":OutgoingMeson " << ix << " " 
 	     << _outgoingM[ix] << "\n";
-      output << "set " << name() << ":CouplingA " << ix << " " 
+      output << "newdef " << name() << ":CouplingA " << ix << " " 
 	     << _a[ix] << "\n";
-      output << "set " << name() << ":CouplingB " << ix << " " 
+      output << "newdef " << name() << ":CouplingB " << ix << " " 
 	     << _b[ix] << "\n";
     }
     else {

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *(##[ ffxd0p:
 	subroutine ffxd0p(cs4,ipi12,isoort,cfac,xpi,dpipj,piDpj,
      +		xqi,dqiqj,qiDqj,ai,daiaj,ldel2s,ier)
@@ -33,7 +36,7 @@
 *	arguments
 *
 	DOUBLE COMPLEX cs4(175),cfac
-	integer ipi12(26),isoort(16),ier
+	integer ipi12(28),isoort(16),ier
 	logical ldel2s
 	DOUBLE PRECISION xpi(10),dpipj(10,10),piDpj(10,10),
      +		xqi(10),dqiqj(10,10),qiDqj(10,10),ai(4),daiaj(4,4)
@@ -55,7 +58,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -368,12 +371,12 @@
 	    else
 		if ( lcroot ) then
 		   call ffcxra(cs4(167),ipi12(23),xqi,qiDqj,sdel2,2,ier)
-		   call ffcxra(cs4(169),ipi12(25),xqi,qiDqj,sdel2,3,ier)
+		   call ffcxra(cs4(169),ipi12(26),xqi,qiDqj,sdel2,3,ier)
 		else
 		   call ffxtra(cs4(167),ipi12(23),xqi,qiDqj,sdel2,2,ier)
-		   call ffxtra(cs4(169),ipi12(25),xqi,qiDqj,sdel2,3,ier)
+		   call ffxtra(cs4(169),ipi12(26),xqi,qiDqj,sdel2,3,ier)
 *		   call ffxtro(cs4(167),ipi12(23),xqi,qiDqj,sdel2,2,ier)
-*		   call ffxtro(cs4(169),ipi12(25),xqi,qiDqj,sdel2,3,ier)
+*		   call ffxtro(cs4(169),ipi12(26),xqi,qiDqj,sdel2,3,ier)
 		endif
 	    endif
 	endif
@@ -438,7 +441,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -485,7 +488,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -568,7 +571,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -645,7 +648,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimpleLHCAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -33,6 +33,15 @@ SimpleLHCAnalysis::SimpleLHCAnalysis() :
   _phiWm(-Constants::pi,Constants::pi,100) 
 {}
 
+void sumMomenta(Lorentz5Momentum & psum, tPPtr parent) {
+  if(!parent->children().empty()) {
+    for(unsigned int ix=0;ix<parent->children().size();++ix)
+      sumMomenta(psum,parent->children()[ix]);
+  }
+  else
+    psum += parent->momentum();
+}
+
 void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
@@ -52,7 +61,8 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
     for( ;iter!=end;++iter) {
       if((**iter).children().size()!=2) continue;
       if((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
 	if(mz>20.&&mz<80.)        _ptZ[1].addWeighted(pt,event->weight());
@@ -64,7 +74,8 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	_phiZ  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wplus) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
 	if(mz>20.&&mz<80.)        _ptWp[1].addWeighted(pt,event->weight());
@@ -76,7 +87,8 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	_phiWp  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wminus) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
 	if(mz>20.&&mz<80.)        (_ptWm[1]).addWeighted(pt,event->weight());

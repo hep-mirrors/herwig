@@ -223,17 +223,17 @@ void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) 
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":M1Coupling " 
+      output << "newdef " << name() << ":M1Coupling " 
 	     << ix << " " << _m1coupling[ix]*MeV << "\n";
-      output << "set " << name() << ":E1Coupling " 
+      output << "newdef " << name() << ":E1Coupling " 
 	     << ix << " " << _e1coupling[ix]*MeV2 << "\n";
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << "\n";
-      output << "set " << name() << ":OutgoingB " 
+      output << "newdef " << name() << ":OutgoingB " 
 	     << ix << " " << _outgoingB[ix] << "\n";
-      output << "set " << name() << ":ModeType " 
+      output << "newdef " << name() << ":ModeType " 
 	     << ix << " " << _modetype[ix] << "\n";
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << _maxweight[ix] << "\n";
     }
     else {
