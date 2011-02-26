@@ -284,91 +284,19 @@ protected:
 private:
 
   /**
-   *  Apply the hard matrix element
+   *  Generate the momenta for a hard configuration
    */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double &, double &);
-
-  /**
-   *  Set the \f$\rho\f$ parameter
-   */
-  void setRho(double);
-
-  /**
-   *  Set the \f$\tilde{\kappa}\f$ parameters symmetrically 
-   */
-  void setKtildeSymm();
-
-  /**
-   * Set second \f$\tilde{\kappa}\f$, given the first.
-   */
-  void setKtilde2();
-
-  /**
-   *  Translate the variables from \f$x_q,x_{\bar{q}}\f$ to \f$\tilde{\kappa},z\f$
-   */
-  //@{
-  /**
-   *  Calculate \f$z\f$.
-   */
-  double getZfromX(double, double);
+  pair<Energy,ShowerInteraction::Type> 
+  generateHard(ShowerTreePtr tree, 
+	       vector<Lorentz5Momentum> & emission,
+	       unsigned int & iemit, unsigned int & ispect,
+	       bool applyVeto,
+	       vector<ShowerInteraction::Type>);
 
   /**
    *  Calculate \f$\tilde{\kappa}\f$.
    */
   double getKfromX(double, double);
-  //@}
-
-  /**
-   * Calculate \f$x_{q},x_{\bar{q}}\f$ from \f$\tilde{\kappa},z\f$.
-   * @param kt \f$\tilde{\kappa}\f$
-   * @param z \f$z\f$
-   * @param x \f$x_{q}\f$
-   * @param xbar \f$x_{\bar{q}}\f$
-   */
-  void getXXbar(double kt, double z, double & x, double & xbar);
-
-  /**
-   *  Soft weight
-   */
-  //@{
-  /**
-   *  Soft quark weight calculated from \f$x_{q},x_{\bar{q}}\f$
-   * @param x \f$x_{q}\f$
-   * @param xbar \f$x_{\bar{q}}\f$
-   */
-  double qWeight(double x, double xbar); 
-
-  /**
-   *  Soft antiquark weight calculated from \f$x_{q},x_{\bar{q}}\f$
-   * @param x \f$x_{q}\f$
-   * @param xbar \f$x_{\bar{q}}\f$
-   */
-  double qbarWeight(double x, double xbar);
-
-  /**
-   * Soft quark weight calculated from \f$\tilde{q},z\f$
-   * @param qtilde  \f$\tilde{q}\f$
-   * @param z \f$z\f$
-   */
-  double qWeightX(Energy qtilde, double z);
-
-  /**
-   * Soft antiquark weight calculated from \f$\tilde{q},z\f$
-   * @param qtilde  \f$\tilde{q}\f$
-   * @param z \f$z\f$
-   */
-  double qbarWeightX(Energy qtilde, double z);
-  //@}
-
-  /**
-   * ????
-   */
-  double u(double);
 
   /**
    *  Vector and axial vector parts of the matrix element
@@ -378,11 +306,6 @@ private:
    *  Vector part of the matrix element
    */
   double MEV(double, double);
-
-  /**
-   *  Axial vector part of the matrix element
-   */
-  double MEA(double, double);
 
   /**
    * The matrix element, given \f$x_1\f$, \f$x_2\f$.
@@ -422,12 +345,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEee2gZ2qq> initMEee2gZ2qq;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -436,35 +353,9 @@ private:
 private:
 
   /**
-   *  Pointer to the fermion-antifermion Z vertex
+   *  Parameters controlling the loead-order process
    */
-  AbstractFFVVertexPtr FFZVertex_;
-  
-  /**
-   *  Pointer to the fermion-antifermion photon vertex
-   */
-  AbstractFFVVertexPtr FFPVertex_;
-  
-  /**
-   *  Pointer to the fermion-antifermion photon vertex
-   */
-  AbstractFFVVertexPtr FFGVertex_;
-  
-  /**
-   *  Pointer to the particle data object for the Z
-   */
-  PDPtr Z0_;
-
-  /**
-   *  Pointer to the particle data object for the photon
-   */
-  PDPtr gamma_;
-
-  /**
-   *  Pointer to the particle data object for the gluon
-   */
-  PDPtr gluon_;
-
+  //@{
   /**
    *  The minimum PDG of the quarks to be produced
    */
@@ -479,6 +370,47 @@ private:
    *  Option for the treatment of the top quark mass
    */
   unsigned int massopt_;
+  //@}
+
+  /**
+   *  Pointers to the vertices
+   */
+  //@{
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
+  //@}
+
+  /**
+   *  Pointer to the ParticleData objects
+   */
+  //@{
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0_;
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma_;
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon_;
+  //@}
 
   /**
    * CM energy 
@@ -553,37 +485,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEee2gZ2qq. */
-template <>
-struct BaseClassTrait<Herwig::MEee2gZ2qq,1> {
-  /** Typedef of the first base class of MEee2gZ2qq. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEee2gZ2qq class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEee2gZ2qq>
-  : public ClassTraitsBase<Herwig::MEee2gZ2qq> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2gZ2qq"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEee2gZ2qq class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwMELepton.so"; }
-};
-
-/** @endcond */
 
 }
 

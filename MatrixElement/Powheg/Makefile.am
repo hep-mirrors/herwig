@@ -16,4 +16,5 @@ MEqq2gZ2ffPowhegQED.h MEqq2gZ2ffPowhegQED.cc
 
 HwPowhegMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 HwPowhegMELepton_la_SOURCES = \
-MEee2gZ2qqPowheg.cc MEee2gZ2qqPowheg.h 
+MEee2gZ2qqPowheg.cc MEee2gZ2qqPowheg.h \
+MEee2gZ2llPowheg.cc MEee2gZ2llPowheg.h 

@@ -450,7 +450,8 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 	  }
  	}
  	while(!showerModel()->kinematicsReconstructor()->
- 	      reconstructHardJets(hard,intrinsicpT())&&
+ 	      reconstructHardJets(hard,intrinsicpT(),
+				  interactions_[inter])&&
  	      maximumTries()>++ntry);
 	if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
       }
@@ -724,7 +725,8 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
  	    }
 	  }
 	}
-	while(!showerModel()->kinematicsReconstructor()->reconstructDecayJets(decay)&&
+	while(!showerModel()->kinematicsReconstructor()->
+	      reconstructDecayJets(decay,interactions_[inter])&&
 	      maximumTries()>++ntry);
 	if(maximumTries()==ntry) 
 	  throw Exception() << "Failed to generate the shower after "
@@ -1027,7 +1029,7 @@ void Evolver::hardestEmission(bool hard) {
     else
       _hardtree = _decayme->generateHardest( currentTree() );
     if(!_hardtree) return;
-    // join up the two tree
+    // join up the two trees
     connectTrees(currentTree(),_hardtree,hard);
   }
   else {
@@ -1764,7 +1766,7 @@ void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
 }
 
 void Evolver::connectTrees(ShowerTreePtr showerTree, 
-			   HardTreePtr hardTree, bool hard )const {
+			   HardTreePtr hardTree, bool hard ) const {
   ShowerParticleVector particles;
   // find the Sudakovs
   for(set<HardBranchingPtr>::iterator cit=hardTree->branchings().begin();

@@ -201,7 +201,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
-		    pair<Energy,double> > & intrinsic) const {
+		    pair<Energy,double> > & intrinsic,
+		    ShowerInteraction::Type type) const {
   _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
@@ -320,7 +321,7 @@ reconstructHardJets(ShowerTreePtr hard,
       }
       // e+e- type
       else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
-	// only FS needed
+	general = type==ShowerInteraction::QED;
       }
       // general type
       else {
@@ -477,7 +478,8 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq,
 }
 
 bool QTildeReconstructor::
-reconstructDecayJets(ShowerTreePtr decay) const {
+reconstructDecayJets(ShowerTreePtr decay,
+		     ShowerInteraction::Type type) const {
   _currentTree = decay;
   try {
     // extract the particles from the ShowerTree
@@ -1127,6 +1129,22 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       toRest = LorentzRotation(ptotal.findBoostToCM());
       fromRest = toRest;
       fromRest.invert();
+      if(type==ShowerInteraction::QED) {
+	general=false;
+	vector<ColourSingletShower> oldsystems=systems;
+	systems.clear();
+	ColourSingletShower finalState;
+	finalState.type = F;
+	for(unsigned int ix=0;ix<oldsystems.size();++ix) {
+	  if(oldsystems[ix].type==F) {
+	    for(unsigned int iy=0;iy<oldsystems[ix].jets.size();++iy)
+	      finalState.jets.push_back(oldsystems[ix].jets[iy]);
+	  }
+	  else
+	    systems.push_back(oldsystems[ix]);
+	}
+	systems.push_back(finalState);
+      }
     }
     // general type
     else {

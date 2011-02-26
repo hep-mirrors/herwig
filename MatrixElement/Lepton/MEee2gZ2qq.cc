@@ -27,6 +27,7 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
@@ -48,14 +49,13 @@ void MEee2gZ2qq::doinit() {
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
-  if(hwsm) {
-    FFZVertex_ = hwsm->vertexFFZ();
-    FFPVertex_ = hwsm->vertexFFP();
-    FFGVertex_ = hwsm->vertexFFG();
-  }
-  else throw InitException() << "Wrong type of StandardModel object in "
-			     << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
-			     << Exception::runerror;
+  if(!hwsm) throw InitException() 
+	      << "Wrong type of StandardModel object in "
+	      << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
+	      << Exception::runerror;
+  FFZVertex_ = hwsm->vertexFFZ();
+  FFPVertex_ = hwsm->vertexFFP();
+  FFGVertex_ = hwsm->vertexFFG();
 }
 
 void MEee2gZ2qq::getDiagrams() const {
@@ -123,8 +123,14 @@ void MEee2gZ2qq::persistentInput(PersistentIStream & is, int) {
      >> iunit(pTmin_,GeV) >> preFactor_;
 }
 
-ClassDescription<MEee2gZ2qq> MEee2gZ2qq::initMEee2gZ2qq;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<MEee2gZ2qq,HwMEBase>
+describeMEee2gZ2qq("Herwig::MEee2gZ2qq", "HwMELepton.so");
+
 void MEee2gZ2qq::Init() {
 
   static ClassDocumentation<MEee2gZ2qq> documentation
@@ -156,6 +162,18 @@ void MEee2gZ2qq::Init() {
      "OffShell",
      "The top is generated off-shell using the mass and width generator.",
      2);
+
+  static Parameter<MEee2gZ2qq,Energy> interfacepTMin
+    ("pTMin",
+     "Minimum pT for hard radiation",
+     &MEee2gZ2qq::pTmin_, GeV, 1.0*GeV, 0.001*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MEee2gZ2qq,double> interfacePrefactor
+    ("Prefactor",
+     "Prefactor for the overestimate of the emission probability",
+     &MEee2gZ2qq::preFactor_, 6.0, 1.0, 100.0,
+     false, false, Interface::limited);
 
   static Reference<MEee2gZ2qq,ShowerAlpha> interfaceQCDCoupling
     ("AlphaQCD",
@@ -328,14 +346,27 @@ void MEee2gZ2qq::initializeMECorrection(ShowerTreePtr , double &  initial,
   d_Q_ = sqrt(sHat());
   d_m_ = 0.5*(meMomenta()[2].mass()+meMomenta()[3].mass());
   // set the other parameters
-  setRho(sqr(d_m_/d_Q_));
-  setKtildeSymm();
-  // otherwise can do it
-  initial=1.;
-  final  =1.;
+  d_rho_ = sqr(d_m_/d_Q_);
+  d_v_ = sqrt(1.-4.*d_rho_);
+  // maximum evolution scale
+  d_kt1_ = (1. + sqrt(1. - 4.*d_rho_))/2.;
+  double num = d_rho_ * d_kt1_ + 0.25 * d_v_ *(1.+d_v_)*(1.+d_v_);
+  double den = d_kt1_ - d_rho_;
+  d_kt2_ = num/den;
+  // maximums for reweighting
+  initial = 1.;
+  final   = 1.;
 }
 
 void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
+  vector<Lorentz5Momentum> emission;
+  unsigned int iemit,ispect;
+  pair<Energy,ShowerInteraction::Type>  output = 
+    generateHard(tree,emission,iemit,ispect,true,
+		 vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
+  Energy pTveto = output.first;
+  //ShowerInteraction::Type force = output.second;
+  if(emission.empty()) return;
   // get the quark and antiquark
   ParticleVector qq; 
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
@@ -343,37 +374,32 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     qq.push_back(cit->first->copy());
   // ensure quark first
   if(qq[0]->id()<0) swap(qq[0],qq[1]);
-  // get the momenta
-  vector<Lorentz5Momentum> newfs = applyHard(qq);
-  // return if no emission
-  if(newfs.size()!=3) return;
   // perform final check to ensure energy greater than constituent mass
   for (int i=0; i<2; i++) {
-    if (newfs[i].e() < qq[i]->data().constituentMass()) return;
+    if (emission[i+2].e() < qq[i]->data().constituentMass()) return;
   }
-  if (newfs[2].e() < gluon_->constituentMass())
-    return;
+  if (emission[4].e() < gluon_->constituentMass()) return;
   // set masses
-  for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
-  newfs[2].setMass(ZERO);
+  for (int i=0; i<2; i++) emission[i+2].setMass(qq[i]->mass());
+  emission[4].setMass(ZERO);
   // decide which particle emits
   bool firstEmits=
-    newfs[2].vect().perp2(newfs[0].vect())<
-    newfs[2].vect().perp2(newfs[1].vect());
+    emission[4].vect().perp2(emission[2].vect())<
+    emission[4].vect().perp2(emission[3].vect());
   // create the new quark, antiquark and gluon
-  PPtr newg = gluon_->produceParticle(newfs[2]);
+  PPtr newg = gluon_->produceParticle(emission[4]);
   PPtr newq,newa;
   if(firstEmits) {
-    newq = qq[0]->dataPtr()->produceParticle(newfs[0]);
+    newq = qq[0]->dataPtr()->produceParticle(emission[2]);
     newa = new_ptr(Particle(*qq[1]));
     qq[1]->antiColourLine()->removeAntiColoured(newa);
-    newa->set5Momentum(newfs[1]);
+    newa->set5Momentum(emission[3]);
   }
   else {
     newq = new_ptr(Particle(*qq[0]));
     qq[0]->colourLine()->removeColoured(newq);
-    newq->set5Momentum(newfs[0]);
-    newa = qq[1]->dataPtr()->produceParticle(newfs[1]);
+    newq->set5Momentum(emission[2]);
+    newa = qq[1]->dataPtr()->produceParticle(emission[3]);
   }
   // get the original colour line
   ColinePtr col;
@@ -426,158 +452,6 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   tree->hardMatrixElementCorrection(true);
 }
 
-vector<Lorentz5Momentum> MEee2gZ2qq::
-applyHard(const ParticleVector &p) {
-  double x, xbar;
-  vector<Lorentz5Momentum> fs; 
-  // return if no emission
-  if (getHard(x, xbar) < UseRandom::rnd() || p.size() != 2) return fs; 
-  // centre of mass energy
-  Lorentz5Momentum pcm = p[0]->momentum() + p[1]->momentum(); 
-  // momenta of quark,antiquark and gluon
-  Lorentz5Momentum pq, pa, pg;
-  if (p[0]->id() > 0) {
-    pq = p[0]->momentum(); 
-    pa = p[1]->momentum(); 
-  } else {
-    pa = p[0]->momentum(); 
-    pq = p[1]->momentum(); 
-  }
-  // boost to boson rest frame
-  Boost beta = (pcm.findBoostToCM()); 
-  pq.boost(beta);    
-  pa.boost(beta);
-  // return if fails ?????
-  double xg = 2.-x-xbar; 
-  if((1.-x)*(1.-xbar)*(1.-xg) < d_rho_*xg*xg) return fs;
-  Axis u1, u2, u3;
-  // moduli of momenta in units of Q and cos theta
-  // stick to q direction?
-  // p1 is the one that is kept, p2 is the other fermion, p3 the gluon.
-  Energy e1, e2, e3; 
-  Energy pp1, pp2, pp3;
-  bool keepq = true; 
-  if (UseRandom::rnd() > sqr(x)/(sqr(x)+sqr(xbar))) 
-    keepq = false; 
-  if (keepq) {
-    pp1 = d_Q_*sqrt(sqr(x)-4.*d_rho_)/2.;
-    pp2 = d_Q_*sqrt(sqr(xbar)-4.*d_rho_)/2.;
-    e1 = d_Q_*x/2.; 
-    e2 = d_Q_*xbar/2.; 
-    u1 = pq.vect().unit();
-  } else {
-    pp2 = d_Q_*sqrt(sqr(x)-4.*d_rho_)/2.;
-    pp1 = d_Q_*sqrt(sqr(xbar)-4.*d_rho_)/2.;
-    e2 = d_Q_*x/2.; 
-    e1 = d_Q_*xbar/2.; 
-    u1 = pa.vect().unit();
-  }
-  pp3 = d_Q_*xg/2.;       
-  e3 = pp3; 
-  u2 = u1.orthogonal();
-  u2 /= u2.mag();
-  u3 = u1.cross(u2);
-  u3 /= u3.mag();
-  double ct2=-2., ct3=-2.;
-  if (pp1 == ZERO || pp2 == ZERO || pp3 == ZERO) {
-    bool touched = false;
-    if (pp1 == ZERO) {
-      ct2 = 1; 
-      ct3 = -1; 
-      touched = true;
-    } 
-    if (pp2 == ZERO || pp3 == ZERO) {
-      ct2 = 1; 
-      ct3 = 1; 
-      touched = true;
-    }
-    if (!touched) 
-      throw Exception() << "MEee2gZ2qq::applyHard()"
-			<< " did not set ct2/3" 
-			<< Exception::abortnow;
-  } else {
-    ct3 = (sqr(pp1)+sqr(pp3)-sqr(pp2))/(2.*pp1*pp3);
-    ct2 = (sqr(pp1)+sqr(pp2)-sqr(pp3))/(2.*pp1*pp2);
-  }
-  double phi = Constants::twopi*UseRandom::rnd();
-  double cphi = cos(phi);
-  double sphi = sin(phi); 
-  double st2 = sqrt(1.-sqr(ct2));
-  double st3 = sqrt(1.-sqr(ct3));
-  ThreeVector<Energy> pv1, pv2, pv3; 
-  pv1 = pp1*u1;
-  pv2 = -ct2*pp2*u1 + st2*cphi*pp2*u2 + st2*sphi*pp2*u3;
-  pv3 = -ct3*pp3*u1 - st3*cphi*pp3*u2 - st3*sphi*pp3*u3;
-  if (keepq) {
-    pq = Lorentz5Momentum(pv1, e1);
-    pa = Lorentz5Momentum(pv2, e2);
-  } else {
-    pa = Lorentz5Momentum(pv1, e1);
-    pq = Lorentz5Momentum(pv2, e2);
-  }
-  pg = Lorentz5Momentum(pv3, e3);
-  pq.boost(-beta);
-  pa.boost(-beta);
-  pg.boost(-beta);
-  fs.push_back(pq); 
-  fs.push_back(pa); 
-  fs.push_back(pg); 
-  return fs;
-}
-
-double MEee2gZ2qq::getHard(double &x1, double &x2) {
-  double w = 0.0;
-  double y1 = UseRandom::rnd(),y2 = UseRandom::rnd(); 
-  // simply double MC efficiency 
-  // -> weight has to be divided by two (Jacobian)
-  if (y1 + y2 > 1) {
-    y1 = 1.-y1; 
-    y2 = 1.-y2;
-  }
-  bool inSoft = false; 
-  if (y1 < 0.25) { 
-    if (y2 < 0.25) {
-      inSoft = true; 
-      if (y1 < y2) {
-	y1 = 0.25-y1;
-	y2 = y1*(1.5 - 2.*y2);
-      }	else {
-	y2 = 0.25 - y2;
-	y1 = y2*(1.5 - 2.*y1);
-      }
-    } else {
-      if (y2 < y1 + 2.*sqr(y1)) return w;
-    }
-  } else {
-    if (y2 < 0.25) {
-      if (y1 < y2 + 2.*sqr(y2)) return w;
-    }
-  } 
-  // inside PS?
-  x1 = 1.-y1;
-  x2 = 1.-y2;
-  if(y1*y2*(1.-y1-y2) < d_rho_*sqr(y1+y2)) return w;
-  double k1 = getKfromX(x1, x2);
-  double k2 = getKfromX(x2, x1);
-  // Is it in the quark emission zone?
-  if (k1 < d_kt1_) return 0.0;
-  // No...is it in the anti-quark emission zone?
-  if (k2 < d_kt2_) return 0.0;  
-  // Point is in dead zone: compute q qbar g weight
-  w = MEV(x1, x2); 
-  // for axial: 
-  //  w = MEA(x1, x2); 
-  // Reweight soft region
-  if (inSoft) { 
-    if (y1 < y2) w *= 2.*y1;
-    else w *= 2.*y2;
-  }
-  // alpha and colour factors
-  Energy2 pt2 = sqr(d_Q_)*(1.-x1)*(1.-x2);
-  w *= 1./3./Constants::pi*alphaQCD_->value(pt2); 
-  return w; 
-}
-
 bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
 				       ShowerParticlePtr parent,Branching br) {
   // check we should be applying the veto
@@ -585,16 +459,58 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
      br.ids[0]!=br.ids[1]||
      br.ids[2]!=ParticleID::g) return false;
   // calculate pt
-  double d_z = br.kinematics->z();
-  Energy d_qt = br.kinematics->scale();
+  double d_z   = br.kinematics->z();
+  Energy d_qt  = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
   if(pPerp<initial->highestpT()) return false;
+  // calculate x and xb
+  double kti = sqr(d_qt/d_Q_);
+  double w = sqr(d_v_) + kti*(-1. + d_z)*d_z*(2. + kti*(-1. + d_z)*d_z);
+  if (w < 0) {
+    initial->highestpT(pPerp);
+    return false;
+  }  
+  double x  = (1. + sqr(d_v_)*(-1. + d_z) + sqr(kti*(-1. + d_z))*d_z*d_z*d_z 
+	       + d_z*sqrt(w)
+	       - kti*(-1. + d_z)*d_z*(2. + d_z*(-2 + sqrt(w))))/
+    (1. - kti*(-1. + d_z)*d_z + sqrt(w));
+  double xb = 1. + kti*(-1. + d_z)*d_z;
   // calculate the weight
-  double weight = 0.;
-  if(parent->id()>0) weight = qWeightX(d_qt, d_z);
-  else weight = qbarWeightX(d_qt, d_z);
+  if(parent->id()<0) swap(x,xb);
+  // if exceptionally out of phase space, leave this emission, as there 
+  // is no good interpretation for the soft ME correction. 
+  if( x<0 || xb<0) {
+    initial->highestpT(pPerp);
+    return false;
+  }
+  double xg = 2. - xb - x;
+  // always return one in the soft gluon region
+  if(xg < EPS_) {
+    initial->highestpT(pPerp);
+    return false;
+  }
+  // check it is in the phase space
+  if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
+    parent->setEvolutionScale(br.kinematics->scale());
+    return true;
+  }
+  double k1 = getKfromX(x, xb);
+  double k2 = getKfromX(xb, x);
+  double weight = 1.;
+  // quark emission
+  if(parent->id() > 0 && k1 < d_kt1_) {
+    weight = MEV(x, xb)/PS(x, xb);
+    // is it also in the anti-quark emission zone?
+    if(k2 < d_kt2_) weight *= 0.5;
+  }
+  // antiquark emission
+  if(parent->id() < 0 && k2 < d_kt2_) {
+    weight = MEV(x, xb)/PS(xb, x);
+    // is it also in the quark emission zone?
+    if(k1 < d_kt1_) weight *= 0.5;
+  }
   // compute veto from weight
   bool veto = !UseRandom::rndbool(weight);
   // if not vetoed reset max
@@ -605,32 +521,12 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   return veto;
 }
 
-void MEee2gZ2qq::setRho(double r) { 
-  d_rho_ = r;
-  d_v_ = sqrt(1.-4.*d_rho_);
-}
-
-void MEee2gZ2qq::setKtildeSymm() { 
-  d_kt1_ = (1. + sqrt(1. - 4.*d_rho_))/2.;
-  setKtilde2();
-}
-
-void MEee2gZ2qq::setKtilde2() { 
-   double num = d_rho_ * d_kt1_ + 0.25 * d_v_ *(1.+d_v_)*(1.+d_v_);
-   double den = d_kt1_ - d_rho_;
-   d_kt2_ = num/den;
-}
-
-double MEee2gZ2qq::getZfromX(double x1, double x2) {
-  double uval = u(x2);
+double MEee2gZ2qq::getKfromX(double x1, double x2) {
+  double uval = 0.5*(1. + d_rho_/(1.-x2+d_rho_));
   double num = x1 - (2. - x2)*uval;
   double den = sqrt(x2*x2 - 4.*d_rho_);
-  return uval + num/den;
-}
-
-double MEee2gZ2qq::getKfromX(double x1, double x2) {
-   double zval = getZfromX(x1, x2);
-   return (1.-x2)/(zval*(1.-zval));
+  double zval = uval + num/den;
+  return (1.-x2)/(zval*(1.-zval));
 }
 
 double MEee2gZ2qq::MEV(double x1, double x2) {
@@ -640,89 +536,6 @@ double MEee2gZ2qq::MEV(double x1, double x2) {
   double den = (1.+2.*d_rho_)*(1.-x1)*(1.-x2);
   return (num/den - 2.*d_rho_/((1.-x1)*(1.-x1)) 
 	  - 2*d_rho_/((1.-x2)*(1.-x2)))/d_v_;
-}
-
-double MEee2gZ2qq::MEA(double x1, double x2) {
-  // Axial part
-  double num = (x1+2.*d_rho_)*(x1+2.*d_rho_) + (x2+2.*d_rho_)*(x2+2.*d_rho_) 
-    + 2.*d_rho_*((5.-x1-x2)*(5.-x1-x2) - 19.0 + 4*d_rho_);
-  double den = d_v_*d_v_*(1.-x1)*(1.-x2);
-  return (num/den - 2.*d_rho_/((1.-x1)*(1.-x1)) 
-	  - 2*d_rho_/((1.-x2)*(1.-x2)))/d_v_;
-}
-
-double MEee2gZ2qq::u(double x2) {
-  return 0.5*(1. + d_rho_/(1.-x2+d_rho_));
-}
-
-void MEee2gZ2qq::
-getXXbar(double kti, double z, double &x, double &xbar) {
-  double w = sqr(d_v_) + kti*(-1. + z)*z*(2. + kti*(-1. + z)*z);
-  if (w < 0) {
-    x = -1.; 
-    xbar = -1;
-  } else {
-    x = (1. + sqr(d_v_)*(-1. + z) + sqr(kti*(-1. + z))*z*z*z 
-	 + z*sqrt(w)
-	 - kti*(-1. + z)*z*(2. + z*(-2 + sqrt(w))))/
-      (1. - kti*(-1. + z)*z + sqrt(w));
-    xbar = 1. + kti*(-1. + z)*z;
-  }
-}
-
-double MEee2gZ2qq::qWeight(double x, double xbar) {
-  double rval; 
-  double xg = 2. - xbar - x;
-  // always return one in the soft gluon region
-  if(xg < EPS_) return 1.0;
-  // check it is in the phase space
-  if((1.-x)*(1.-xbar)*(1.-xg) < d_rho_*xg*xg) return 0.0;
-  double k1 = getKfromX(x, xbar);
-  double k2 = getKfromX(xbar, x);
-  // Is it in the quark emission zone?
-  if(k1 < d_kt1_) {
-    rval = MEV(x, xbar)/PS(x, xbar);
-    // is it also in the anti-quark emission zone?
-    if(k2 < d_kt2_) rval *= 0.5;
-    return rval;
-  }
-  return 1.0;
-}
-
-double MEee2gZ2qq::qbarWeight(double x, double xbar) {
-  double rval; 
-  double xg = 2. - xbar - x;
-  // always return one in the soft gluon region
-  if(xg < EPS_) return 1.0;
-  // check it is in the phase space
-  if((1.-x)*(1.-xbar)*(1.-xg) < d_rho_*xg*xg) return 0.0;
-  double k1 = getKfromX(x, xbar);
-  double k2 = getKfromX(xbar, x);
-  // Is it in the antiquark emission zone?
-  if(k2 < d_kt2_) {
-    rval = MEV(x, xbar)/PS(xbar, x);
-    // is it also in the quark emission zone?
-    if(k1 < d_kt1_) rval *= 0.5;
-    return rval;
-  }
-  return 1.0;
-}
-
-double MEee2gZ2qq::qWeightX(Energy qtilde, double z) {
-  double x, xb;
-  getXXbar(sqr(qtilde/d_Q_), z, x, xb);
-  // if exceptionally out of phase space, leave this emission, as there 
-  // is no good interpretation for the soft ME correction. 
-  if (x < 0 || xb < 0) return 1.0; 
-  return qWeight(x, xb); 
-}
-
-double MEee2gZ2qq::qbarWeightX(Energy qtilde, double z) {
-  double x, xb;
-  getXXbar(sqr(qtilde/d_Q_), z, xb, x);
-  // see above in qWeightX. 
-  if (x < 0 || xb < 0) return 1.0; 
-  return qbarWeight(x, xb); 
 }
 
 double MEee2gZ2qq::PS(double x, double xbar) {
@@ -736,8 +549,12 @@ double MEee2gZ2qq::PS(double x, double xbar) {
   return brack/den;
 }
 
-HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
-					vector<ShowerInteraction::Type> inter) {
+pair<Energy,ShowerInteraction::Type>
+MEee2gZ2qq::generateHard(ShowerTreePtr tree, 
+			 vector<Lorentz5Momentum> & emmision,
+			 unsigned int & iemit, unsigned int & ispect,
+			 bool applyVeto,
+			 vector<ShowerInteraction::Type> inter) {
   // get the momenta of the incoming and outgoing partons 
   // incoming
   ShowerProgenitorPtr 
@@ -783,7 +600,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   double ymax = acosh(pTmax/pTmin_);
   vector<Energy> pTemit;
   vector<vector<Lorentz5Momentum> > emittedMomenta;;
-  vector<unsigned int> iemit,ispect;
+  vector<unsigned int> iemitter,ispectater;
   for(unsigned int iinter=0;iinter<inter.size();++iinter) {
     double a;
     if(inter[iinter]==ShowerInteraction::QCD) {
@@ -794,7 +611,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     }
     else {
       partons_[4] = gamma_;
-      a = 4./3.*alphaQED_->overestimateValue()/Constants::twopi*
+      a =       alphaQED_->overestimateValue()/Constants::twopi*
 	2.*ymax*preFactor_*sqr(double(mePartonData()[2]->iCharge())/3.);
     }
     // variables for the emission
@@ -865,6 +682,23 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	  if(ix==1) z3 *=-1.;
 	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
 	  if(abs(z1+z2+z3)>1e-5) continue;
+	  // if using as an ME correction the veto
+	  if(applyVeto) {
+	    double xb = x1[ix][iy], xc = x2[ix][iy];
+	    double b  = mu12, c = mu22;
+	    double r = 0.5*(1.+b/(1.+c-xc));
+	    double z1  = r + (xb-(2.-xc)*r)/sqrt(sqr(xc)-4.*c);
+	    double kt1 = (1.-b+c-xc)/z1/(1.-z1);
+	    r = 0.5*(1.+c/(1.+b-xb));
+	    double z2  = r + (xc-(2.-xb)*r)/sqrt(sqr(xb)-4.*b);
+	    double kt2 = (1.-c+b-xb)/z2/(1.-z2);
+	    if(ix==1) {
+	      swap(z1 ,z2);
+	      swap(kt1,kt2);
+	    }
+	    // veto the shower region
+	    if( kt1 < d_kt1_ || kt2 < d_kt2_ ) continue;
+	  }
 	  // construct the momenta
 	  realMomenta[ix][iy][4] =
 	    Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
@@ -919,14 +753,14 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     if(pT[0]<ZERO && pT[1]<ZERO) {
       pTemit.push_back(-GeV);
       emittedMomenta.push_back(vector<Lorentz5Momentum>());
-      iemit .push_back(0);
-      ispect.push_back(0);
+      iemitter  .push_back(0);
+      ispectater.push_back(0);
     }
     // now pick the emission with highest pT
     vector<Lorentz5Momentum> emission;
     if(pT[0]>pT[1]) {
-      iemit .push_back(2);
-      ispect.push_back(3);
+      iemitter  .push_back(2);
+      ispectater.push_back(3);
       pTemit.push_back(pT[0]);
       if(UseRandom::rnd()<contrib[0][0]/(contrib[0][0]+contrib[0][1]))
 	emission = realMomenta[0][0];
@@ -934,8 +768,8 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 	emission = realMomenta[0][1];
     }
     else {
-      iemit .push_back(3);
-      ispect.push_back(2);
+      iemitter  .push_back(3);
+      ispectater.push_back(2);
       pTemit.push_back(pT[1]);
       if(UseRandom::rnd()<contrib[1][0]/(contrib[1][0]+contrib[1][1]))
 	emission = realMomenta[1][0];
@@ -957,18 +791,49 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   if(iselect<0) {
     qkProgenitor->maximumpT(pTmin_);
     qbProgenitor->maximumpT(pTmin_);
-    return HardTreePtr();
+    return make_pair(ZERO,ShowerInteraction::QCD);
   }
   partons_[4] = inter[iselect]==ShowerInteraction::QCD ? gluon_ : gamma_;
+  iemit  = iemitter[iselect];
+  ispect = ispectater[iselect];
+  emmision = emittedMomenta[iselect];
+  // return pT of emission
+  return make_pair(pTmax,inter[iselect]);
+}
+
+HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
+					vector<ShowerInteraction::Type> inter) {
+  // generate the momenta for the hard emission
+  vector<Lorentz5Momentum> emmision;
+  unsigned int iemit,ispect;
+  pair<Energy,ShowerInteraction::Type> output 
+    = generateHard(tree,emmision,iemit,ispect,false,inter);
+  Energy pTveto = output.first;
+  ShowerInteraction::Type force = output.second;
+  // outgoing progenitors
+  ShowerProgenitorPtr 
+    qkProgenitor = tree->outgoingLines().begin() ->first,
+    qbProgenitor = tree->outgoingLines().rbegin()->first;
+  if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
+  // maximum pT of emission
+  if(emmision.empty()) {
+    qkProgenitor->maximumpT(pTmin_);
+    qbProgenitor->maximumpT(pTmin_);
+    return HardTreePtr();
+  }
+  else {
+    qkProgenitor->maximumpT(pTveto);
+    qbProgenitor->maximumpT(pTveto);
+  }
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;
   for(unsigned int ix=0;ix<partons_.size();++ix) {
     hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
-    hardParticles.back()->set5Momentum(emittedMomenta[iselect][ix]);
+    hardParticles.back()->set5Momentum(emmision[ix]);
   }
-  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit[iselect]],true)));
-  Lorentz5Momentum parentMomentum(emittedMomenta[iselect][iemit[iselect]]+emittedMomenta[iselect][4]);
-  parentMomentum.setMass(partons_[iemit[iselect]]->mass());
+  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
+  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
+  parentMomentum.setMass(partons_[iemit]->mass());
   parent->set5Momentum(parentMomentum);
   // Create the vectors of HardBranchings to create the HardTree:
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
@@ -980,19 +845,19 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     allBranchings.push_back(spaceBranchings.back());
   }
   // Outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(hardParticles[ispect[iselect]],
+  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(hardParticles[ispect],
  							 SudakovPtr(),HardBranchingPtr(),
  							 HardBranching::Outgoing)));
   HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
 						       HardBranchingPtr(),
 						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit[iselect]], 
+  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit], 
  						SudakovPtr(),HardBranchingPtr(),
  						HardBranching::Outgoing)));
   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[4],
  						SudakovPtr(),HardBranchingPtr(),
  						HardBranching::Outgoing)));
-  if(iemit[iselect]==0) {
+  if(iemit==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
   } 
@@ -1002,17 +867,14 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   }
   emitterBranch  ->branchingParticle()->setPartner(spectatorBranch->branchingParticle());
   spectatorBranch->branchingParticle()->setPartner(emitterBranch  ->branchingParticle());
-  if(inter[iselect]==ShowerInteraction::QED) {
+  if(force==ShowerInteraction::QED) {
     spaceBranchings[0]->branchingParticle()->setPartner(spaceBranchings[1]->branchingParticle());
     spaceBranchings[1]->branchingParticle()->setPartner(spaceBranchings[0]->branchingParticle());
   }
   // Make the HardTree from the HardBranching vectors.
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
- 					   inter[iselect]));
+					  force));
   hardtree->partnersSet(true);
-  // Set the maximum pt for all other emissions
-  qkProgenitor->maximumpT(pTmax);
-  qbProgenitor->maximumpT(pTmax);
   // Connect the particles with the branchings in the HardTree
   hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
   hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
@@ -1082,9 +944,6 @@ double MEee2gZ2qq::meRatio(vector<cPDPtr> partons,
     *abs(D[iemitter])/(abs(D[0]*lome[0])+abs(D[1]*lome[1]));
   double output = Q2*ratio;
   if(subtract) output -= 2.*Q2*D[iemitter];
-  // divide by charge if QED
-  if(inter==ShowerInteraction::QED)
-    output /= sqr(double(mePartonData()[2]->iCharge()/3.));
   return output;
 }
 
