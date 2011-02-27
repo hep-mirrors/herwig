@@ -364,8 +364,6 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   pair<Energy,ShowerInteraction::Type>  output = 
     generateHard(tree,emission,iemit,ispect,true,
 		 vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
-  Energy pTveto = output.first;
-  //ShowerInteraction::Type force = output.second;
   if(emission.empty()) return;
   // get the quark and antiquark
   ParticleVector qq; 
@@ -789,8 +787,6 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   }
   // no emission return
   if(iselect<0) {
-    qkProgenitor->maximumpT(pTmin_);
-    qbProgenitor->maximumpT(pTmin_);
     return make_pair(ZERO,ShowerInteraction::QCD);
   }
   partons_[4] = inter[iselect]==ShowerInteraction::QCD ? gluon_ : gamma_;
