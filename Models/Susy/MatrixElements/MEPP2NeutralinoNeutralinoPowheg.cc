@@ -470,7 +470,8 @@ realME(const cPDVector & particles,
     double Nc = 3.;
     Energy2 sh = (momenta[0]+momenta[1]).m2();
     for(unsigned int ix=0;ix<2;++ix) {
-      Energy2 sqwidth2 = sqr(squark[ix]->width());
+      //Energy2 sqwidth2 = sqr(squark[ix]->width());
+      Energy2 sqwidth2 = sqr(0.01*squark[ix]->mass());
       // is on-shell mass allowed for first neutralino and squark
       if( roots > squark[ix]->mass() + momenta[2].mass() ) {
 	// Create a counterterm for the squark decay pole.
@@ -480,7 +481,7 @@ realME(const cPDVector & particles,
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
 	double a2 = norm(vertex->norm())*
 	  (norm(vertex->left())+norm(vertex->right()));
-	double sqprod2 = 2. * gs2 * Cf * Nc * a2 *
+	double sqprod2 = 0.5 * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
 	a2 = norm(vertex->norm())*
@@ -499,7 +500,7 @@ realME(const cPDVector & particles,
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
 	double a2 = norm(vertex->norm())*
 	  (norm(vertex->left())+norm(vertex->right()));
-	double sqprod2 = 2. * gs2 * Cf * Nc * a2 *
+	double sqprod2 = 0.5 * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
 	a2 = norm(vertex->norm())*
