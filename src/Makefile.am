@@ -124,5 +124,7 @@ unregister-from-thepeg-repo:
 
 EXTRA_DIST = herwigopts.ggo
 
+GENGETOPT = gengetopt
+
 herwigopts.h herwigopts.c : herwigopts.ggo
-	gengetopt < $<
+	$(GENGETOPT) < $<

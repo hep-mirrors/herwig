@@ -148,7 +148,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       rcoup = theMassLast.first *thetanb/theMw;
     }
     coup = sqrt(0.5);
-    if( higgsID < 0 ) swap(lcoup,rcoup);
+    if( higgsID > 0 ) swap(lcoup,rcoup);
   }
   norm(theGlast*coup);
   left (lcoup);

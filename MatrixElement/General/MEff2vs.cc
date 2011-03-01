@@ -205,7 +205,7 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
   // wavefunctions with rescaled momenta
   SpinorWaveFunction spr(   rescaledMomenta()[0], hdp[0]->dataPtr(), incoming);
   SpinorBarWaveFunction sbr(rescaledMomenta()[1], hdp[1]->dataPtr(), incoming);
-  VectorWaveFunction vr(    rescaledMomenta()[2], hdp[2]->dataPtr(), mv, outgoing);
+  VectorWaveFunction vr(    rescaledMomenta()[2], hdp[2]->dataPtr(), outgoing);
   sca = ScalarWaveFunction( rescaledMomenta()[3], hdp[3]->dataPtr(), outgoing);
   for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
     spr.reset(ihel);
