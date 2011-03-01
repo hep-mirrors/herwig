@@ -126,5 +126,6 @@ EXTRA_DIST = herwigopts.ggo
 
 GENGETOPT = gengetopt
 
-herwigopts.h herwigopts.c : herwigopts.ggo
+%opts.h %opts.c : %opts.ggo
 	$(GENGETOPT) < $<
+
