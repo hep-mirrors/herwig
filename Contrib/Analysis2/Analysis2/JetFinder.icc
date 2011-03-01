@@ -1,0 +1,72 @@
+// -*- C++ -*-
+
+// (C) 2007-2009 Simon Plaetzer -- sp@particle.uni-karlsruhe.de
+
+#include <algorithm>
+
+namespace Analysis2 {
+
+inline JetFinder::JetFinder()
+  : _dCut(10.*GeV), _yCut(0.1), _R(0.7), _lastEvent(vector<Lorentz5Momentum>()),
+    _jets(vector<Lorentz5Momentum>())
+{}
+
+
+inline Energy JetFinder::dCut () const {
+  return _dCut;
+}
+
+inline double JetFinder::yCut () const {
+  return _yCut;
+}
+
+inline double JetFinder::R () const {
+  return _R;
+}
+
+inline void JetFinder::use (const vector<Lorentz5Momentum>& evt,bool) {
+  _lastEvent = evt;
+}
+
+inline const vector<Lorentz5Momentum>& JetFinder::lastEvent () const {
+  return _lastEvent;
+}
+
+inline unsigned int JetFinder::getNJets () const {
+  return _jets.size();
+}
+
+inline const vector<Lorentz5Momentum>& JetFinder::jets () const {
+  return _jets;
+}
+
+inline void JetFinder::jets (const vector<Lorentz5Momentum>& jets) {
+  _jets.clear();
+  _jets = jets;
+}
+
+inline void JetFinder::sortEnergy () {
+  sort(_jets.begin(),_jets.end(),GreaterInEnergy());
+}
+
+inline void JetFinder::sortEt () {
+  sort(_jets.begin(),_jets.end(),GreaterInEt());
+}
+
+inline void JetFinder::sortPt () {
+  sort(_jets.begin(),_jets.end(),GreaterInPt());
+}
+
+inline void JetFinder::sortY () {
+  sort(_jets.begin(),_jets.end(),GreaterInY());
+}
+
+inline void JetFinder::sortEta () {
+  sort(_jets.begin(),_jets.end(),GreaterInEta());
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+}

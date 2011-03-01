@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the KtJetFinder class.
+//
+#ifndef Analysis2_KtJetFinder_FH
+#define Analysis2_KtJetFinder_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class KtJetFinder;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::KtJetFinder,KtJetFinderPtr);
+
+}
+
+#endif

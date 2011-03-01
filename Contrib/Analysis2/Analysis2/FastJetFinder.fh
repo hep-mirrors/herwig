@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FastJetFinder class.
+//
+#ifndef Analysis2_FastJetFinder_FH
+#define Analysis2_FastJetFinder_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class FastJetFinder;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::FastJetFinder,FastJetFinderPtr);
+
+}
+
+#endif

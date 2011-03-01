@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreeMesonDefaultCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -1097,4 +1097,23 @@ Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
   Complex ii(0.,1.);
   complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);
   return numer/denom;
+}
+
+double ThreeMesonDefaultCurrent::
+threeBodyMatrixElement(const int       , const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy    , 
+		       const Energy    , const Energy    ) const {
+  Energy2 mpi2(sqr(_mpi));
+  Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
+  // the matrix element
+  Energy2 output(ZERO); 
+  // first resonance
+  output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
+  // second resonance
+  output += ((s2-4.*mpi2) + 0.25*(s3-s1)*(s3-s1)/q2) * real(propa*conj(propa)); 
+  // the interference term 
+  output += (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+							      propb*conj(propa)); 
+  return output/sqr(_rhoF123masses[0]);
 }

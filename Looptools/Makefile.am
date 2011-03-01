@@ -3,7 +3,8 @@ noinst_LTLIBRARIES += libHwLooptools.la
 
 EXTRA_DIST = include/lt.h include/ftypes.h include/ff.h include/ffwarn.h \
   include/fferr.h include/defs.h include/looptools.h include/ffperm5.h \
-  include/clooptools.h
+  include/clooptools.h include/cexternals.h include/externals.h \
+  util/solve-LU.F util/solve-LU.h util/solve-Eigen.F
 
 theXFCSOURCES = \
 A/A0.F            A/A00.F           A/ffxa0.F         A/ffca0.F         B/Bget.F \
@@ -48,8 +49,9 @@ libHwLooptoolsCFC_la_FFLAGS = $(AM_FFLAGS) -ffixed-line-length-none
 ##endif
 
 libHwLooptools_la_SOURCES = util/cache.c clooptools.cc
-libHwLooptools_la_CPPFLAGS = $(commonCPPFLAGS)
-libHwLooptools_la_CFLAGS = $(AM_CFLAGS) -std=c99
+libHwLooptools_la_CXXFLAGS = $(AM_CXXFLAGS) -Wno-strict-aliasing
+libHwLooptools_la_CPPFLAGS = $(commonCPPFLAGS) 
+libHwLooptools_la_CFLAGS = $(AM_CFLAGS) -std=c99 
 libHwLooptools_la_LIBADD = libHwLooptoolsXFC.la libHwLooptoolsCFC.la
 
 

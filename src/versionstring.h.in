@@ -1,5 +1,0 @@
-// versionstring.h. Generated from versionstring.h.in by Makefile.am
-// only useful for inclusion in HerwigRun.cc
-namespace {
-  const char versionstring[] = "@HERWIGVERSIONSTRING@";
-}

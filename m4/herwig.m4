@@ -338,6 +338,15 @@ if test -n "$GCC"; then
 	fi
 fi
 
+dnl do an actual capability check on ld instead of this workaround
+case "${host}" in
+  *-darwin*) 
+     ;;
+  *)
+     AM_LDFLAGS="-Wl,--enable-new-dtags"
+     ;;
+esac
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
 AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DifractivePDF.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -59,8 +59,13 @@ cPDVector PomeronPDF::partons(tcPDPtr p) const {
   return ret;
 }
 
+#ifdef NDEBUG
+double PomeronPDF::xfx(tcPDPtr, tcPDPtr parton, Energy2 qq,
+		       double x, double, Energy2) const {
+#else
 double PomeronPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
 		       double x, double, Energy2) const {
+#endif
   // assert particle is pomeron
   assert(particle->id()==ParticleID::pomeron);
   switch(parton->id()) {
@@ -80,8 +85,13 @@ double PomeronPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
   }
 }
 
+#ifdef NDEBUG
+double PomeronPDF::xfvx(tcPDPtr, tcPDPtr parton, Energy2 qq,
+			    double x, double, Energy2) const {
+#else
 double PomeronPDF::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
 			    double x, double, Energy2) const {
+#endif
   // assert particle is pomeron
   assert(particle->id()==ParticleID::pomeron);
   // valence parton is just gluon

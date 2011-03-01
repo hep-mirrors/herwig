@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GnuplotOutput class.
+//
+#ifndef Analysis2_GnuplotOutput_FH
+#define Analysis2_GnuplotOutput_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class GnuplotOutput;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::GnuplotOutput,GnuplotOutputPtr);
+
+}
+
+#endif
