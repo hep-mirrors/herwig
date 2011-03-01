@@ -6,6 +6,7 @@ defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
+BUILT_SOURCES = herwigopts.c herwigopts.h
 Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
