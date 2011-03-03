@@ -1256,7 +1256,6 @@ InvEnergy2 MEPP2GammaGammaPowheg::realGammaGammaqME(const cPDVector & particles,
     if(rad==Hard)        output *= supress.second;
     else if(rad==Shower) output *= supress.first ;
   }
-  output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
   // final coupling factors
   return output;
 }
