@@ -136,7 +136,7 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
       dipole_ = IIQCD2;
       vTilde_ = 4.*(vTilde_-0.25);
     }
-    jacobian(4.*jacobian());
+    jacobian(2.*jacobian());
   }
   // V gamma q processes
   else if(mePartonData()[4]->id()>0&&mePartonData()[4]->id()<6) {
@@ -305,7 +305,7 @@ CrossSection MEPP2VGammaNewPowheg::dSigHatDR() const {
   if(!fixedAlphaS_) alphaS_ = SM().alphaS(scale());
   alphaEM_ = SM().alphaEM();
   //alphaEM_ = 1./128.9;
-    // cross section
+  // cross section
   CrossSection preFactor = 
     jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
   loME_ = me2();
@@ -335,7 +335,10 @@ IBPtr MEPP2VGammaNewPowheg::fullclone() const {
 }
 
 Energy2 MEPP2VGammaNewPowheg::scale() const {
-  return sqr(mePartonData()[2]->mass());
+  if(scaleOption_==0)
+    return sqr(mePartonData()[2]->mass());
+  else
+    return sHat();
 }
 
 void MEPP2VGammaNewPowheg::doinit() {
@@ -805,7 +808,7 @@ void MEPP2VGammaNewPowheg::persistentOutput(PersistentOStream & os) const {
      << contrib_ << power_ << boson_ << gluon_ << prefactor_
      << process_ << threeBodyProcess_<< maxflavour_ << alphaS_ << fixedAlphaS_
      << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV)
-     << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV)
+     << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV) << scaleOption_
      << preQCDqqbarq_ << preQCDqqbarqbar_ << preQCDqg_ << preQCDgqbar_
      << preQEDqqbarq_ << preQEDqqbarqbar_ << preQEDqgq_ << preQEDgqbarqbar_;
 }
@@ -815,7 +818,7 @@ void MEPP2VGammaNewPowheg::persistentInput(PersistentIStream & is, int) {
      >> contrib_ >> power_ >> boson_ >> gluon_ >> prefactor_
      >> process_ >> threeBodyProcess_ >> maxflavour_ >> alphaS_ >> fixedAlphaS_
      >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV)
-     >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV)
+     >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV) >> scaleOption_
      >> preQCDqqbarq_ >> preQCDqqbarqbar_ >> preQCDqg_ >> preQCDgqbar_
      >> preQEDqqbarq_ >> preQEDqqbarqbar_ >> preQEDqgq_ >> preQEDgqbarqbar_;
 }
@@ -824,9 +827,9 @@ MEPP2VGammaNewPowheg::MEPP2VGammaNewPowheg()
   : contrib_(1), power_(0.1), boson_(0), process_(0), threeBodyProcess_(0),
     maxflavour_(5), alphaS_(0.), fixedAlphaS_(false),
     supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV),
-    preQCDqqbarq_(5.), preQCDqqbarqbar_(0.5), preQCDqg_(50.), preQCDgqbar_(50.),
-    preQEDqqbarq_(40.), preQEDqqbarqbar_(0.5), preQEDqgq_(1.), preQEDgqbarqbar_(1.),
-    minpT_(2.*GeV)
+    preQCDqqbarq_(30.), preQCDqqbarqbar_(30.), preQCDqg_(40.), preQCDgqbar_(40.),
+    preQEDqqbarq_(60.), preQEDqqbarqbar_(60.), preQEDqgq_(60.), preQEDgqbarqbar_(60.),
+    minpT_(2.*GeV), scaleOption_(0)
 {}
 
 void MEPP2VGammaNewPowheg::getDiagrams() const {
@@ -1307,6 +1310,23 @@ void MEPP2VGammaNewPowheg::Init() {
 //   prefactor_.push_back(preQEDqqbarqbar_);
 //   prefactor_.push_back(preQEDqgq_);
 //   prefactor_.push_back(preQEDgqbarqbar_);
+
+
+  static Switch<MEPP2VGammaNewPowheg,unsigned int> interfaceScaleOption
+    ("ScaleOption",
+     "The option for the scale",
+     &MEPP2VGammaNewPowheg::scaleOption_, 0, false, false);
+  static SwitchOption interfaceScaleOptionWZMass
+    (interfaceScaleOption,
+     "WZMass",
+     "Use the mass of the W or Z boson",
+     0);
+  static SwitchOption interfaceScaleOptionWZGammaMass
+    (interfaceScaleOption,
+     "WZGammaMass",
+     "Use the mass of the W/Z + photon singlet system",
+     1);
+
 }
 
 double MEPP2VGammaNewPowheg::NLOWeight() const {
@@ -1394,7 +1414,7 @@ realVGammagME(const cPDVector & particles,
 	      const vector<Lorentz5Momentum> & momenta,
 	      DipoleType dipole,
 	      RadiationType rad,
-	      bool first) const {
+	      bool ) const {
   // matrix element
   double sum = realME(particles,momenta);
   InvEnergy2 dipoles[2];
@@ -1413,10 +1433,10 @@ realVGammagME(const cPDVector & particles,
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
-  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2.*K*(Kt*momenta[2])/K2;
   pa[2].setMass(momenta[2].mass());
   pa[3] = momenta[ihard]
-    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
+    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2.*K*(Kt*momenta[ihard])/K2;
   pa[3].setMass(ZERO);
   cPDVector part(particles.begin(),--particles.end());
   part[3] = particles[ihard];
@@ -1432,10 +1452,10 @@ realVGammagME(const cPDVector & particles,
   Ksum = K+Kt;
   K2 = K.m2();
   Ksum2 = Ksum.m2();
-  pb[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pb[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2.*K*(Kt*momenta[2])/K2;
   pb[2].setMass(momenta[2].mass());
   pb[3] = momenta[ihard]
-    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2*K*(Kt*momenta[ihard])/K2;
+    -2.*Ksum*(Ksum*momenta[ihard])/Ksum2+2.*K*(Kt*momenta[ihard])/K2;
   pb[3].setMass(ZERO);
   // second LO matrix element
   double lo2 = loVGammaME(part,pb);
@@ -1467,7 +1487,7 @@ realVGammaqME(const cPDVector & particles,
 	      const vector<Lorentz5Momentum> & momenta,
 	      DipoleType dipole,
 	      RadiationType rad,
-	      bool first) const {
+	      bool ) const {
   double sum = realME(particles,momenta);
   // initial-state QCD dipole
   double x = (momenta[0]*momenta[1]-momenta[4]*momenta[1]-
@@ -1480,10 +1500,9 @@ realVGammaqME(const cPDVector & particles,
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
-  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2.*K*(Kt*momenta[2])/K2;
   pa[2].setMass(momenta[2].mass());
-  pa[3] = momenta[3]
-    -2.*Ksum*(Ksum*momenta[3])/Ksum2+2*K*(Kt*momenta[3])/K2;
+  pa[3] = momenta[3]-2.*Ksum*(Ksum*momenta[3])/Ksum2+2.*K*(Kt*momenta[3])/K2;
   pa[3].setMass(ZERO);
   cPDVector part(particles.begin(),--particles.end());
   part[1] = particles[4]->CC();
@@ -1503,8 +1522,11 @@ realVGammaqME(const cPDVector & particles,
   Energy pT = sqrt(-(pb[0]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
   InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
   InvEnergy2 DI = 1./(momenta[0]*momenta[3])/x*(2./(2.-x-z)-(1.+x))*lo2;
-  DI *= sqr(double(particles[0]->iCharge())/3.);  
-  DF *= sqr(double(particles[0]->iCharge())/3.);
+  double charge_i = particles[0]->iCharge()/3.;
+//   double charge_V = particles[2]->iCharge()/3.;
+  double charge_q = particles[4]->iCharge()/3.;
+  DI *= charge_i*charge_q;  
+  DF *= charge_i*charge_q;
   InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
   pair<double,double> supress;
   InvEnergy2 term;
@@ -1526,7 +1548,7 @@ realVGammaqME(const cPDVector & particles,
   InvEnergy2 output;
   if(rad==Subtraction) {
     output = alphaS_*alphaEM_*
-      (sum*UnitRemoval::InvE2 - term);
+      (sum*UnitRemoval::InvE2*supress.first - term);
   }
   else {
     output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
@@ -1542,7 +1564,7 @@ realVGammaqbarME(const cPDVector & particles,
 		 const vector<Lorentz5Momentum> & momenta,
 		 DipoleType dipole,
 		 RadiationType rad,
-		 bool first) const {
+		 bool ) const {
   double sum = realME(particles,momenta);
   // initial-state QCD dipole
   double x = (momenta[0]*momenta[1]-momenta[4]*momenta[1]-momenta[4]*momenta[0])/
@@ -1555,10 +1577,9 @@ realVGammaqbarME(const cPDVector & particles,
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
-  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2*K*(Kt*momenta[2])/K2;
+  pa[2] = momenta[2]-2.*Ksum*(Ksum*momenta[2])/Ksum2+2.*K*(Kt*momenta[2])/K2;
   pa[2].setMass(momenta[2].mass());
-  pa[3] = momenta[3]
-    -2.*Ksum*(Ksum*momenta[3])/Ksum2+2*K*(Kt*momenta[3])/K2;
+  pa[3] = momenta[3]-2.*Ksum*(Ksum*momenta[3])/Ksum2+2.*K*(Kt*momenta[3])/K2;
   pa[3].setMass(ZERO);
   cPDVector part(particles.begin(),--particles.end());
   part[0] = particles[4]->CC();
@@ -1578,9 +1599,12 @@ realVGammaqbarME(const cPDVector & particles,
   Energy pT = sqrt(-(pb[1]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
   InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
   InvEnergy2 DI = 1./(momenta[1]*momenta[3])/x*(2./(2.-x-z)-(1.+x))*lo2;
+  double charge_i = particles[1]->iCharge()/3.;
+//   double charge_V = particles[2]->iCharge()/3.;
+  double charge_q = particles[4]->iCharge()/3.;
   InvEnergy2 term;
-  DI *= sqr(double(particles[1]->iCharge())/3.);
-  DF *= sqr(double(particles[1]->iCharge())/3.);
+  DI *= charge_i*charge_q;  
+  DF *= charge_i*charge_q;
   InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
   pair<double,double> supress;
   if     ( dipole == IFQED2 ) {
@@ -1601,7 +1625,7 @@ realVGammaqbarME(const cPDVector & particles,
   InvEnergy2 output;
   if(rad==Subtraction) {
     output = alphaS_*alphaEM_*
-      (sum*UnitRemoval::InvE2 - term);
+      (sum*UnitRemoval::InvE2*supress.first - term);
   }
   else {
     output = alphaS_*alphaEM_*sum*UnitRemoval::InvE2;
@@ -1736,6 +1760,7 @@ double MEPP2VGammaNewPowheg::realME(const cPDVector & particles,
     qbar_in = SpinorBarWaveFunction (momenta[4],particles[4],outgoing);
     g_out   = VectorWaveFunction    (momenta[1],particles[1],incoming);
   }
+  // qbar g -> V gamma qbar
   else if(particles[4]->id()<0) {
     q_in    = SpinorWaveFunction    (momenta[4],particles[4],outgoing);
     qbar_in = SpinorBarWaveFunction (momenta[1],particles[1],incoming);
@@ -1817,9 +1842,9 @@ double MEPP2VGammaNewPowheg::realME(const cPDVector & particles,
   }
   // divide out the em and strong couplings
   sum /= norm(FFGvertex_->norm()*FFPvertex_->norm());
-  // final spin and colour factors spin = 1/4 colour = 1/9
+  // final spin and colour factors spin = 1/4 colour = 4/9
   if(particles[4]->id()==ParticleID::g) sum /= 9.;
-  // final spin and colour factors spin = 1/4 colour = 1/(3*8)
+  // final spin and colour factors spin = 1/4 colour = 4/(3*8)
   else                                  sum /= 24.;
   return sum;
 }
@@ -1872,7 +1897,7 @@ double MEPP2VGammaNewPowheg::subtractedReal(pair<double,double> x, double z,
   for(unsigned int ix=2;ix<4;++ix) {
     pnew [ix].boost(blab);
     pnew [ix] = pnew [ix] - 2.*Ksum*(Ksum*pnew [ix])/Ksum2
-      +2*K*(Kt*pnew [ix])/K2;
+      +2.*K*(Kt*pnew [ix])/K2;
   }
   // phase-space prefactors
   double phase = zJac*vJac/z;
@@ -1960,7 +1985,6 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
 				    particlesToShower[1]->progenitor()->x());
   vector<Energy> pT;
-  double lo = loME_/(2.*Constants::twopi*alphaEM_);
   Energy pTmax(-GeV);
   cPDVector selectedParticles;
   vector<Lorentz5Momentum> selectedMomenta;
@@ -2020,7 +2044,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 	  +2*K*(Kt*momenta [iy])/K2;
       }
       // matrix element piece
-      double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactor_[ix]/lo;
+      double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactor_[ix]/loME_;
       if(ix==0)
 	wgt *= sqr(pT[ix])*realVGammagME(particles,momenta,IIQCD1,Shower,false);
       else if(ix==1)
@@ -2029,7 +2053,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 	wgt *= sqr(pT[ix])*realVGammaqbarME(particles,momenta,IIQCD1,Shower,false);
       else if(ix==3)
 	wgt *= sqr(pT[ix])*realVGammaqME(particles,momenta,IIQCD2,Shower,false);
-      wgt *= 16.*sqr(Constants::pi)/alphaS_;
+      wgt *= 4.*Constants::pi/alphaS_;
       // pdf piece
       double pdf[2];
       if(ix%2==0) {
@@ -2157,13 +2181,10 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
      particlesToShower[1]->progenitor()->id()!=ParticleID::g )
     return HardTreePtr();
   Energy rootS = sqrt(lastS());
-  // limits on the rapidity of the jet
-  double minyj = -8.0,maxyj = 8.0;
   // generate the hard emission
   pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
 				    particlesToShower[1]->progenitor()->x());
   vector<Energy> pT;
-  double lo = loME_/(2.*Constants::twopi*alphaS_);
   Energy pTmax(-GeV);
   cPDVector selectedParticles;
   vector<Lorentz5Momentum> selectedMomenta;
@@ -2226,12 +2247,12 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
     // check allowed
     if(xp<xB||xp>1.) continue;
     // phase-space piece of the weight
-    wgt = 4.*sqr(1.-xp)*(1.-zp)*zp/prefactor_[iloc];
+    wgt = 4.*sqr(1.-xp)*(1.-zp)*zp/prefactor_[iloc]/loME_;
     // coupling
     Energy2 pT2 = 0.25*sqr(Q*xT);
     wgt *= alphaQED_->ratio(pT2);
     // matrix element
-    wgt *= 16.*sqr(Constants::pi)/alphaEM_;
+    wgt *= 4.*Constants::pi/alphaEM_;
     // PDF
     double pdf[2];
     if(iloc==6) {

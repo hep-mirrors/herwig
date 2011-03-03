@@ -559,6 +559,11 @@ private:
    *  Pointer to the object calculating the EM
    */
   ShowerAlphaPtr alphaQED_;
+
+  /**
+   *  Option for the scale
+   */
+  unsigned int scaleOption_;
 };
 
 }
