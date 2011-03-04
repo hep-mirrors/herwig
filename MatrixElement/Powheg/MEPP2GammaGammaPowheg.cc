@@ -842,7 +842,7 @@ double MEPP2GammaGammaPowheg::NLOWeight() const {
   double real2 = subtractedReal(x,z.second,zJac.second,oldqPDF.second,
 				newqPDF.second,newgPDF.second,false);
   // the total weight
-  double wgt = loME_ + virt + loME_*coll + real1 + real2;
+  double wgt = loME_ + loME_*virt + loME_*coll + real1 + real2;
   return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -1471,51 +1471,17 @@ realME(const cPDVector & particles,
 }
 
 double MEPP2GammaGammaPowheg::subtractedVirtual() const {
-  Lorentz5Momentum p1, p2, P1, P2;
-  double x1, x2, W, V, v, w;
-  ThePEG::Energy2 U, T, S, u, t, s;
-
-  if(lastPartons().first ->dataPtr()==mePartonData()[0]) {
-    x1=lastX1();
-    p1=meMomenta()[0];
-    x2=lastX2();
-    p2=meMomenta()[1];
-  } else {
-    x2=lastX1();
-    p2=meMomenta()[0];
-    x1=lastX2();
-    p1=meMomenta()[1];
-  }
-
-  P1 = p1/x1;
-  P2 = p2/x2;
-
-  S = (P1 + P2).m2();
-  s = (p1 + p2).m2();
-  T = (P1-meMomenta()[2]).m2();
-  t = (p1-meMomenta()[2]).m2();
-  U = (P2-meMomenta()[2]).m2();
-  u = (p2-meMomenta()[2]).m2();
-
-  W = -U/(S+T);
-  w = -u/(s+t);
-  V = 1+T/S;
-  v = 1+t/s;
-
-  double eq = lastPartons().first ->dataPtr()->charge()/eplus;
-
-  Energy2 mu2 = scale();
-  double F = 2.*Constants::twopi*sqr(SM().alphaEM(mu2))*sqr(sqr(eq));
-
-  double finite_term = ((1-v)/v+v/(1-v))*
+  double v = 1+tHat()/sHat();
+  double born = (1-v)/v+v/(1-v);
+  double finite_term = born*
     (2./3.*sqr(Constants::pi)-3.+sqr(log(v))+sqr(log(1-v))+3.*log(1-v))+
     2.+2.*log(v)+2.*log(1-v)+3.*(1-v)/v*(log(v)-log(1-v))+
     (2.+v/(1-v))*sqr(log(v))+(2.+(1-v)/v)*sqr(log(1-v));
-  
-  double virt = 1./3.*F*((6.-(2./3.)*sqr(Constants::pi))*
-			 ((1-v)/v+v/(1-v))-2.+finite_term);
 
-  return virt;
+  double virt = ((6.-(2./3.)*sqr(Constants::pi))*
+		 born-2.+finite_term);
+
+    return virt/born;
 }
 
 double MEPP2GammaGammaPowheg::subtractedReal(pair<double,double> x, double z,
