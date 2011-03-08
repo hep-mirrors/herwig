@@ -226,7 +226,7 @@ protected:
   /**
    *  Reset the PDF's after the hard collision has been showered
    */
-  void setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf);
+  void setMPIPDFs();
 
   /**
    *  Test for decay products
@@ -394,6 +394,11 @@ private:
    *  Boost to get back to the lab
    */
   LorentzRotation boost_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> mpipdfs_;
 
 public:
 
