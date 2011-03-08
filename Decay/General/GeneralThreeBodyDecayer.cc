@@ -497,17 +497,17 @@ colourConnections(const Particle & parent,
 	   inter->children()[1]->dataPtr()->iColour()==PDT::Colour8) {
 	  inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
 	  outgoing[octet[0]]->incomingAntiColour(inter);
-	  outgoing[octet[0]]->antiColourNeighbour(outgoing[triplet[0]]);
+	  outgoing[octet[0]]->antiColourNeighbour(outgoing[antitriplet[0]]);
 	}
 	else {
 	  outgoing[octet[0]]->incomingAntiColour(inter);
 	  outgoing[octet[0]]->antiColourNeighbour(inter);
-	  outgoing[triplet[0]]->incomingAntiColour(inter);
+	  outgoing[antitriplet[0]]->incomingAntiColour(inter);
 	}
       }
       else {
 	outgoing[octet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	outgoing[octet[0]]->antiColourNeighbour(outgoing[triplet[0]]);
+	outgoing[octet[0]]->antiColourNeighbour(outgoing[antitriplet[0]]);
       }
     }
     else {
