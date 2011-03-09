@@ -88,7 +88,9 @@ int main(int argc, char * argv[]) {
     // Debugging level
     if ( args_info.debug_given )
       Debug::setDebug( args_info.debug_arg );
-    if ( Debug::level ) 
+
+    // Floating point exceptions
+    if ( args_info.debug_fpe_flag ) 
       Debug::unmaskFpuErrors();
 
     // Exit-on-error flag

@@ -37,7 +37,7 @@ CLEANFILES = HerwigDefaults.rpo \
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in --exitonerror
+	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D --exitonerror
 
 check_BSM_Full=
 check_BSM=
@@ -75,8 +75,8 @@ link-helper-files:
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read $< --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 --exitonerror
+	./Herwig++ read -D $< --exitonerror
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D --exitonerror
 
 ## valgrind targets ##
 
@@ -85,12 +85,12 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -d 1 -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read -d 1 LHC.in &> /tmp/valgrind-read.log
+	$(VALGRIND) ./Herwig++ read -d1 -D LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -d 1 -N5 LHC.run &> /tmp/valgrind-run.log
+	$(VALGRIND) ./Herwig++ run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
 
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
