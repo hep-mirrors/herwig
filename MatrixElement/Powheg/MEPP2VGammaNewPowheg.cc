@@ -2087,7 +2087,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   // if no emission
   if(pTmax<ZERO) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_);
+      particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
@@ -2141,7 +2141,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(pTmax);
+    particlesToShower[ix]->maximumpT(pTmax,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
@@ -2304,7 +2304,7 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   // if no emission
   if(xT<xTMin) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_);
+      particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QED);
     return HardTreePtr();
   }
   pTmax = 0.5*xT*Q;
@@ -2421,7 +2421,7 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(pTmax);
+    particlesToShower[ix]->maximumpT(pTmax,ShowerInteraction::QED);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
  	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&

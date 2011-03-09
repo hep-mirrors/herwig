@@ -1931,7 +1931,7 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree) {
   Energy pt = pnew[4].perp();
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(pt);
+    particlesToShower[ix]->maximumpT(pt,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&

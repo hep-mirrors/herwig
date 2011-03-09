@@ -1859,6 +1859,10 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 HardTreePtr MEPP2GammaGammaPowheg::
 hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 		ShowerTreePtr tree) {
+  // return if not emission from quark
+  if(particlesToShower[0]->progenitor()->id()!=ParticleID::g &&
+     particlesToShower[1]->progenitor()->id()!=ParticleID::g )
+    return HardTreePtr();
   Energy rootS = sqrt(lastS());
   // generate the hard emission
   pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
@@ -1945,8 +1949,11 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 	xfx(beams_[1],partons_[1],scale()    ,x.second   );
       pdf[1] = beams_[1]->pdf()->
 	xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
-      }
-    if(pdf[0]<=0.||pdf[1]<=0.) continue;
+    }
+    if(pdf[0]<=0.||pdf[1]<=0.) {
+      wgt = 0.;
+      continue;
+    }
     wgt *= pdf[1]/pdf[0];
     // matrix element piece
     double phi = Constants::twopi*UseRandom::rnd();
@@ -2066,19 +2073,18 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   else {
     for(unsigned int ix=0;ix<2;++ix)
       hardBranch.push_back(inBranch[ix]);
-    for(unsigned int ix=0;ix<newparticles.size();++ix)
     hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					      HardBranchingPtr(),
-					      HardBranching::Outgoing)));
+					       HardBranchingPtr(),
+					       HardBranching::Outgoing)));
     hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					      HardBranchingPtr(),
-					      HardBranching::Outgoing)));
+					       HardBranchingPtr(),
+					       HardBranching::Outgoing)));
     hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
-						     HardBranchingPtr(),
-						     HardBranching::Outgoing)));
+						      HardBranchingPtr(),
+						      HardBranching::Outgoing)));
     hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						     HardBranchingPtr(),
-						     HardBranching::Outgoing)));
+						      HardBranchingPtr(),
+						      HardBranching::Outgoing)));
     if(hardBranch[0]->branchingParticle()->dataPtr()->charged()) {
       hardBranch.back()->colourPartner(hardBranch[0]);
       hardBranch[0]->colourPartner(hardBranch.back());
