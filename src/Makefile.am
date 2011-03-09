@@ -75,7 +75,7 @@ link-helper-files:
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read -D $< --exitonerror
+	./Herwig++ read $< -D --exitonerror
 	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D --exitonerror
 
 ## valgrind targets ##
