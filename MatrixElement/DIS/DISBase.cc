@@ -1061,7 +1061,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if(!(*cjt)->branchingParticle()->isFinalState()&&
@@ -1083,7 +1083,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if((*cjt)->branchingParticle()->isFinalState()&&

@@ -1086,8 +1086,8 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
     if(pT[ix]<pTmin_) pT[ix] = -GeV;
   }
   if(pT[0]<ZERO && pT[1]<ZERO) {
-    qkProgenitor->maximumpT(pTmin_);
-    qbProgenitor->maximumpT(pTmin_);
+    qkProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    qbProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // now pick the emission with highest pT
@@ -1154,8 +1154,8 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
  					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
-  qkProgenitor->maximumpT(pTveto);
-  qbProgenitor->maximumpT(pTveto);
+  qkProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+  qbProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
   // Connect the particles with the branchings in the HardTree
   hardtree->connect( qkProgenitor->progenitor(), allBranchings[1] );
   hardtree->connect( qbProgenitor->progenitor(), allBranchings[2] );

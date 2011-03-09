@@ -697,7 +697,7 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) {
 //     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-//       particlesToShower[ix]->maximumpT(_min_pt);
+//       particlesToShower[ix]->maximumpT(_min_pt,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
@@ -773,8 +773,8 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
-    else particlesToShower[ix]->maximumpT(_pt);
+    if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt,ShowerInteraction::QCD);
+    else particlesToShower[ix]->maximumpT(_pt,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&

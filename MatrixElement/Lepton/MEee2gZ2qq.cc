@@ -813,13 +813,17 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
   // maximum pT of emission
   if(emmision.empty()) {
-    qkProgenitor->maximumpT(pTmin_);
-    qbProgenitor->maximumpT(pTmin_);
+    for(unsigned int ix=0;ix<inter.size();++ix) {
+      qkProgenitor->maximumpT(pTmin_,inter[ix]);
+      qbProgenitor->maximumpT(pTmin_,inter[ix]);
+    }
     return HardTreePtr();
   }
   else {
-    qkProgenitor->maximumpT(pTveto);
-    qbProgenitor->maximumpT(pTveto);
+    for(unsigned int ix=0;ix<inter.size();++ix) {
+      qkProgenitor->maximumpT(pTveto,inter[ix]);
+      qbProgenitor->maximumpT(pTveto,inter[ix]);
+    }
   }
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;

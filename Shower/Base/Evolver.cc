@@ -510,7 +510,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // no emission return
     if(!fb.kinematics) return false;
     // if emission OK break
-    if(!timeLikeVetoed(fb,particle)) break;
+    if(!timeLikeVetoed(fb,particle,type)) break;
     // otherwise reset scale and continue - SO IS involved in veto algorithm
     particle->setEvolutionScale(fb.kinematics->scale());
   }
@@ -576,7 +576,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     // return if no emission
     if(!bb.kinematics) return false;
     // if not vetoed break
-    if(!spaceLikeVetoed(bb,particle)) break;
+    if(!spaceLikeVetoed(bb,particle,type)) break;
     // otherwise reset scale and continue
     particle->setEvolutionScale(bb.kinematics->scale());
   }
@@ -760,7 +760,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle)) break;
+    if(!spaceLikeDecayVetoed(fb,particle,type)) break;
     // otherwise reset scale and continue
     particle->setEvolutionScale(fb.kinematics->scale());
   }
@@ -913,7 +913,8 @@ bool Evolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
 }
 
 bool Evolver::timeLikeVetoed(const Branching & fb,
-			     ShowerParticlePtr particle) {
+			     ShowerParticlePtr particle,
+			     ShowerInteraction::Type type) {
   // check whether emission was harder than largest pt of hard subprocess
   if ( hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
@@ -929,7 +930,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     }
   }
   // veto on maximum pt
-  if(fb.kinematics->pT()>_progenitor->maximumpT()) return true;
+  if(fb.kinematics->pT()>_progenitor->maximumpT(type)) return true;
   // general vetos
   if (fb.kinematics && !_vetoes.empty()) {
     bool vetoed=false;
@@ -953,7 +954,8 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
   return false;
 }
 
-bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
+bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle,
+			      ShowerInteraction::Type type) {
   // check whether emission was harder than largest pt of hard subprocess
   if (hardVetoIS() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
@@ -965,7 +967,7 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
   // the more general vetos
 
   // check vs max pt for the shower
-  if(bb.kinematics->pT()>_progenitor->maximumpT()) return true;
+  if(bb.kinematics->pT()>_progenitor->maximumpT(type)) return true;
 
   if (!_vetoes.empty()) {
     bool vetoed=false;
@@ -990,14 +992,15 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
 }
 
 bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
-				    ShowerParticlePtr particle ) {
+				    ShowerParticlePtr particle,
+				    ShowerInteraction::Type type ) {
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
     if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
       return true;
   }
   // veto on hardest pt in the shower
-  if(fb.kinematics->pT()> _progenitor->maximumpT()) return true;
+  if(fb.kinematics->pT()> _progenitor->maximumpT(type)) return true;
   // general vetos
   if (!_vetoes.empty()) {
     bool vetoed=false;
@@ -1090,12 +1093,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
     }
     // pt veto
-    if(fb.kinematics->pT() > progenitor()->maximumpT()) {
+    if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
       particle->setEvolutionScale(fb.kinematics->scale());
       continue;
     }
     // should do base class vetos as well
-    if(timeLikeVetoed(fb,particle)) {
+    if(timeLikeVetoed(fb,particle,type)) {
       particle->setEvolutionScale(fb.kinematics->scale());
       continue;
     }
@@ -1221,13 +1224,13 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     }
     // others
     if( part[0]->id() != particle->id() || // if particle changes type
-	bb.kinematics->pT() > progenitor()->maximumpT() ||   // pt veto
+	bb.kinematics->pT() > progenitor()->maximumpT(type) ||   // pt veto
 	bb.kinematics->scale() < branch->scale()) { // angular ordering veto
       particle->setEvolutionScale(bb.kinematics->scale() );
       continue;
     }
     // and those from the base class
-    if(spaceLikeVetoed(bb,particle)) {
+    if(spaceLikeVetoed(bb,particle,type)) {
       particle->setEvolutionScale(bb.kinematics->scale() );
       continue;
     }
@@ -1391,13 +1394,13 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
       }
     }
     // pt veto
-    if(fb.kinematics->pT() > progenitor()->maximumpT()) {
+    if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
       particle->setEvolutionScale(fb.kinematics->scale());
       continue;
     }
     // should do base class vetos as well
     // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle)) break;
+    if(!spaceLikeDecayVetoed(fb,particle,type)) break;
     // otherwise reset scale and continue
     particle->setEvolutionScale(fb.kinematics->scale());
   }
@@ -1498,14 +1501,14 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
 }
 
 bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
-				    ShowerInteraction::Type inter) {
+				 ShowerInteraction::Type inter) {
   Energy ptmax(-GeV);
   // get the maximum pt is all ready a hard tree
   if(hardTree()) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      if(particlesToShower[ix]->maximumpT()>ptmax&&
+      if(particlesToShower[ix]->maximumpT(inter)>ptmax&&
 	 particlesToShower[ix]->progenitor()->isFinalState()) 
-	ptmax = particlesToShower[ix]->maximumpT();
+	ptmax = particlesToShower[ix]->maximumpT(inter);
     }
   }
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
@@ -1597,7 +1600,7 @@ bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower
   for(cjt=currentTree()->outgoingLines().begin();
       cjt!=currentTree()->outgoingLines().end();++cjt) {
     particlesToShower.push_back(((*cjt).first));
-    if(ptmax>ZERO) particlesToShower.back()->maximumpT(ptmax);
+    if(ptmax>ZERO) particlesToShower.back()->maximumpT(ptmax,inter);
   }
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 

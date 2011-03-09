@@ -469,12 +469,12 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
     for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	  cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
       if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-	cit->first->maximumpT(pTmin_);
+	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
     }
     for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
 	  cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
       if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-	cit->first->maximumpT(pTmin_);
+	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
     }
     return HardTreePtr();
   }
@@ -610,7 +610,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
     if(cit->first->progenitor()==first.first) {
       ++cjt;++cjt;++cjt;
@@ -630,7 +630,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if((*cjt)->branchingParticle()->isFinalState()&&
