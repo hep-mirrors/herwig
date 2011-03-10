@@ -26,6 +26,9 @@ option  "seed" s "The random number generator seed."
 option "debug" d "Set the ThePEG debug level."
   int  optional
 
+option "debug-fpe" D "Enable floating point exceptions."
+  flag off
+
 option "quiet" q "Disable event counter."
   flag off
 

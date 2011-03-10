@@ -256,29 +256,36 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	continue;
       // remove QED and QCD radiation diagrams
       // radiation from intermediate
-      if((dit->outgoingPair.first ==dit->intermediate->id() &&
+      long interID = dit->intermediate->id();
+      if((dit->outgoingPair.first ==interID &&
 	  (dit->outgoingPair.second==ParticleID::g ||
 	   dit->outgoingPair.second==ParticleID::gamma ||
 	   dit->outgoingPair.second==ParticleID::Z0 ))||
-	 (dit->outgoingPair.second==dit->intermediate->id() &&
+	 (dit->outgoingPair.second==interID &&
 	  (dit->outgoingPair.first ==ParticleID::g ||
 	   dit->outgoingPair.first ==ParticleID::gamma ||
 	   dit->outgoingPair.first ==ParticleID::Z0 ))) continue;
       // radiation from the parent
       if((dit->outgoing ==dit->incoming&&
-	  (dit->intermediate->id()==ParticleID::g ||
-	   dit->intermediate->id()==ParticleID::gamma ||
-	   dit->intermediate->id()==ParticleID::Z0 ))||
-	 (dit->intermediate->id()==dit->incoming &&
+	  (interID==ParticleID::g ||
+	   interID==ParticleID::gamma ||
+	   interID==ParticleID::Z0 ))||
+	 (interID==dit->incoming &&
 	  (dit->outgoing ==ParticleID::g ||
 	   dit->outgoing ==ParticleID::gamma ||
 	   dit->outgoing ==ParticleID::Z0 ))) continue;
       // remove weak decays of quarks other than top
-      if(StandardQCDPartonMatcher::Check(dit->intermediate->id()) &&
+      if(StandardQCDPartonMatcher::Check(interID) &&
 	 ((StandardQCDPartonMatcher::Check(dit->outgoingPair.first)&&
 	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
 	  (StandardQCDPartonMatcher::Check(dit->outgoingPair.second)&&
 	   abs(dit->outgoingPair.first)==ParticleID::Wplus))) continue;
+      // remove weak lepton decays
+      if((abs(interID)>=11&&abs(interID)<=16) && (
+	 ((abs(dit->outgoingPair.first)>=11&&abs(dit->outgoingPair.first)<=16)&&
+	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
+	  ((abs(dit->outgoingPair.second)>=11&&abs(dit->outgoingPair.second)<=16)&&
+	   abs(dit->outgoingPair.first)==ParticleID::Wplus)) )  continue;
       // remove processes where one of the outgoing particles has the 
       //same id as the incoming particles
       if(abs(parent->id()) == abs(dit->outgoing           ) ||
@@ -301,7 +308,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	if(mint > mout[1] + mout[2] ) {
 	  // special for top
 	  if(abs(dit->incoming)==ParticleID::t&&
-	     abs(dit->intermediate->id())==ParticleID::Wplus) {
+	     abs(interID)==ParticleID::Wplus) {
 	    if(!_includeTopOnShell) continue;
 	  }
 	  // general
@@ -345,26 +352,26 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       if(!added) modes.push_back(vector<TBDiagram>(1,*dit));
     }
     // print out info on the potential modes
-//     cerr << "testing there are " << modes.size() << " modes\n";
-//     for(unsigned int ix=0;ix<modes.size();++ix) {
-//       cerr << "testing mode " << ix << "\n";
-//       cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
-//       cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
-// 	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
-// 	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
-//       cerr << "testing there are " << modes[ix].size() << " diagrams\n";
-//       for(unsigned int iy=0;iy<modes[ix].size();++iy) {
-// 	cerr << "testing diagram " << iy << "\n";
-// 	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
-// 	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
-// 	     << modes[ix][iy].outgoingPair.first  << " "
-// 	     << modes[ix][iy].outgoingPair.second << "\n";
-// 	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
-// 	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
-// 	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
-// 	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
-//       }
-//     }
+    // cerr << "testing there are " << modes.size() << " modes\n";
+    // for(unsigned int ix=0;ix<modes.size();++ix) {
+    //   cerr << "testing mode " << ix << "\n";
+    //   cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
+    //   cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
+    // 	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
+    // 	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
+    //   cerr << "testing there are " << modes[ix].size() << " diagrams\n";
+    //   for(unsigned int iy=0;iy<modes[ix].size();++iy) {
+    // 	cerr << "testing diagram " << iy << "\n";
+    // 	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
+    // 	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
+    // 	     << modes[ix][iy].outgoingPair.first  << " "
+    // 	     << modes[ix][iy].outgoingPair.second << "\n";
+    // 	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
+    // 	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
+    // 	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
+    // 	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
+    //   }
+    // }
     // now we need to create the decayers for the mode
     bool inter(false);
     if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
