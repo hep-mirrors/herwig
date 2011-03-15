@@ -456,6 +456,14 @@ realME(const cPDVector & particles,
   }
   // strong coupling
   double gs2 = norm(FFGVertex_->norm());
+
+
+  double totcount = 0.;
+//   bool first = 0.;
+//   bool second = 0.;
+//   Energy sqmom2,sqmass;
+
+
   // subtract the on-shell squark decay if neccessary
   if(abs(particles[4]->id())<=6) {
     Energy roots = (momenta[0]+momenta[1]).m();
@@ -470,72 +478,85 @@ realME(const cPDVector & particles,
     double Nc = 3.;
     Energy2 sh = (momenta[0]+momenta[1]).m2();
     for(unsigned int ix=0;ix<2;++ix) {
-      //Energy2 sqwidth2 = sqr(squark[ix]->width());
-      Energy2 sqwidth2 = sqr(0.01*squark[ix]->mass());
+      Energy2 sqwidth2 = sqr(squark[ix]->width());
       // is on-shell mass allowed for first neutralino and squark
-      if( roots > squark[ix]->mass() + momenta[2].mass() ) {
+      if( roots >= squark[ix]->mass() + momenta[2].mass() ) {
 	// Create a counterterm for the squark decay pole.
 	Energy2 mneut2 = sqr(momenta[2].mass()); 
 	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
 	Energy2 u4 = (pgluon-momenta[2]).m2()-mneut2;
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+// 	double a2 = norm(vertex->norm())*
+// 	  (norm(vertex->left())+norm(vertex->right()));
 	double a2 = norm(vertex->norm())*
-	  (norm(vertex->left())+norm(vertex->right()));
-	double sqprod2 = 0.5 * gs2 * Cf * Nc * a2 *
+	  (norm(vertex->left() + vertex->right()));
+	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+// 	a2 = norm(vertex->norm())*
+// 	  (norm(vertex->left())+norm(vertex->right()));
 	a2 = norm(vertex->norm())*
-	  (norm(vertex->left())+norm(vertex->right()));
+	  (norm(vertex->left() + vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq2-sqr(particles[3]->mass()));
 	Energy4 denom = sqr(msq2-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
-	output -= sqcounter;
+
+// 	if(abs(1.-abs(sqrt(msq2)/squark[ix]->mass()))<0.000001){
+// 	  first = 1.;
+// 	  sqmom2 = sqrt(msq2);
+// 	  sqmass = squark[ix]->mass();
+// 	}
+	totcount += sqcounter;
+	//output -= sqcounter;
       }
       // is on-shell mass allowed for second neutralino and squark
-      if( roots > squark[ix]->mass() + momenta[3].mass() ) {
-	Energy2 mneut2 = sqr(momenta[3].mass()); 
+      else if( roots >= squark[ix]->mass() + momenta[3].mass() ) {
+	Energy2 mneut2 = sqr(momenta[3].mass());
 	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
 	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+// 	double a2 = norm(vertex->norm())*
+// 	  (norm(vertex->left())+norm(vertex->right()));
 	double a2 = norm(vertex->norm())*
-	  (norm(vertex->left())+norm(vertex->right()));
-	double sqprod2 = 0.5 * gs2 * Cf * Nc * a2 *
+	  (norm(vertex->left() + vertex->right()));
+	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+// 	a2 = norm(vertex->norm())*
+// 	  (norm(vertex->left())+norm(vertex->right()));
 	a2 = norm(vertex->norm())*
-	  (norm(vertex->left())+norm(vertex->right()));
+	  (norm(vertex->left() + vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq1-sqr(particles[2]->mass()));
 	Energy4 denom = sqr(msq1-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
-	output -= sqcounter;
+
+// 	if(abs(1.-abs(sqrt(msq1)/squark[ix]->mass()))<0.000001){
+// 	  second = 1.;
+// 	  sqmom2 = sqrt(msq1);
+// 	  sqmass = squark[ix]->mass();
+// 	}
+	totcount += sqcounter;
+	//output -= sqcounter;
       }
     }
   }
-    
-
-    
-//     cout << sqprod2 << "\t" << sqdecay2*UnitRemoval::InvE2 <<
-//       "\t" << denom*UnitRemoval::InvE4 << "\t" << sqcounter << "\t" << output << endl;
 
 
-//     if(  (abs(1.-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass))) < 0.1  ){
-//       cout << "Yes! \t" << sqinvmass << "\t"
-// 	   << squark[0]->mass()*UnitRemoval::InvE <<
-// 	"\t" << 1-abs((squark[0]->mass()*UnitRemoval::InvE)/sqinvmass) <<
-// 	"\t" << output << "\t" << sqcounter << endl;
-//     }
-    
-//     output -= sqcounter;
-
+//   if( first == 1. || second == 1.){
+//     cout << "\n \n" << particles[0]->id() << "\t" << particles[1]->id() << endl;
+//     cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id() << endl;
+//     cout << sqmom2/GeV << "\t" << sqmass/GeV << endl;
+//     cout << "ratios: " << output << "\t" << totcount << "\t" << output/totcount << "\t" << (output-totcount)/totcount << "\n \n" << endl;
 //   }
-  
- 
+
+
+  output -= totcount;
 
 
 
-  // colour and spin factors
+  // Colour and spin factors
   if(particles[0]->id()==-particles[1]->id()) {
     output *= 1./9.;
   }
