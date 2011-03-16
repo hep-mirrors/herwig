@@ -213,11 +213,6 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  // delete the matrix elements we already have
-  int nme = subProcess()->MEs().size();
-  for(int ix = nme - 1; ix >= 0; --ix)
-    generator()->preinitInterface(subProcess(), "MatrixElements", 
-				  ix, "erase", "");
   model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised

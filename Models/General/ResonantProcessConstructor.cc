@@ -140,11 +140,6 @@ void ResonantProcessConstructor::constructDiagrams() {
       }
     }
   }
-  //Remove matrix elements already present
-  EGPtr eg = generator();
-  int nme = subProcess()->MEs().size();
-  for(int ix = nme - 1; ix >= 0; --ix)
-    eg->preinitInterface(subProcess(), "MatrixElements", ix, "erase", "");
   // Get a pointer to the model in use
   model()->init();
   size_t nvertices = model()->numberOfVertices(); 
