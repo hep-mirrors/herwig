@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
@@ -274,7 +275,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
   }
   // special case for gluon radiating
   pair<double,double> limits;
-  if(ids_[0]==ParticleID::g) {
+  if(ids_[0]==ParticleID::g||ids_[0]==ParticleID::gamma) {
     // no emission possible
     if(t<16.*masssquared_[1]) {
       t=-1.*GeV2;
@@ -285,11 +286,11 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
     limits.second = 1.-limits.first;
   }
   // special case for radiated particle is gluon 
-  else if(ids_[2]==ParticleID::g) {
+  else if(ids_[2]==ParticleID::g||ids_[2]==ParticleID::gamma) {
     limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
     limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
   }
-  else if(ids_[1]==ParticleID::g) {
+  else if(ids_[1]==ParticleID::g||ids_[1]==ParticleID::gamma) {
     limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
     limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
   }
