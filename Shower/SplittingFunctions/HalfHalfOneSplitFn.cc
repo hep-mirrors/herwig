@@ -14,6 +14,7 @@
 #include "HalfHalfOneSplitFn.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Utilities/Maths.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
@@ -60,7 +61,7 @@ double HalfHalfOneSplitFn::integOverP(const double z,
 				      unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
-    return -2.*colourFactor(ids)*log(1.-z);
+    return -2.*colourFactor(ids)*Math::log1m(z);
   case 1:
     return  2.*colourFactor(ids)*log(z/(1.-z));
   case 2:
