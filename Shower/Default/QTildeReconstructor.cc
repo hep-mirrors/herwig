@@ -69,6 +69,56 @@ struct ColourSingletShower {
 
 };
 
+void combineFinalStateSystem(vector<ColourSingletSystem> & systems) {
+  // check that 1 particle final-state systems which can be combine
+  bool canCombine(true);
+  for(unsigned int ix=0;ix<systems.size();++ix) {
+    if(systems[ix].type!=F) continue;
+    if(systems[ix].jets.size()!=1) canCombine = false;
+  }
+  // return if can't combine
+  if(!canCombine) return;
+  // otherwise combine them
+  vector<ColourSingletSystem> oldsystems=systems;
+  systems.clear();
+  ColourSingletSystem finalState;
+  finalState.type = F;
+  for(unsigned int ix=0;ix<oldsystems.size();++ix) {
+    if(oldsystems[ix].type==F) {
+      for(unsigned int iy=0;iy<oldsystems[ix].jets.size();++iy)
+	finalState.jets.push_back(oldsystems[ix].jets[iy]);
+    }
+    else
+      systems.push_back(oldsystems[ix]);
+  }
+  systems.push_back(finalState);
+}
+
+void combineFinalStateShower(vector<ColourSingletShower> & systems) {
+  // check that 1 particle final-state systems which can be combine
+  bool canCombine(true);
+  for(unsigned int ix=0;ix<systems.size();++ix) {
+    if(systems[ix].type!=F) continue;
+    if(systems[ix].jets.size()!=1) canCombine = false;
+  }
+  // return if can't combine
+  if(!canCombine) return;
+  // otherwise combine them
+  vector<ColourSingletShower> oldsystems=systems;
+  systems.clear();
+  ColourSingletShower finalState;
+  finalState.type = F;
+  for(unsigned int ix=0;ix<oldsystems.size();++ix) {
+    if(oldsystems[ix].type==F) {
+      for(unsigned int iy=0;iy<oldsystems[ix].jets.size();++iy)
+	finalState.jets.push_back(oldsystems[ix].jets[iy]);
+    }
+    else
+      systems.push_back(oldsystems[ix]);
+  }
+  systems.push_back(finalState);
+}
+
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
@@ -285,6 +335,10 @@ reconstructHardJets(ShowerTreePtr hard,
 	  if(systems[ix].type==II) 
 	    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					    systems[ix].jets);
+	}
+	if(type==ShowerInteraction::QED) {
+	  combineFinalStateSystem(systems);
+	  general=false;
 	}
       }
       // DIS and VBF type
@@ -1108,6 +1162,10 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 	  deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					  systems[ix].jets,type);
       }
+      if(type==ShowerInteraction::QED) {
+	combineFinalStateShower(systems);
+	general=false;
+      }
     }
     // DIS and VBF type
     else if(nnun==0&&nnii==0&&((nnif==1&&nnf>0&&nni==1)||
@@ -1130,20 +1188,8 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       fromRest = toRest;
       fromRest.invert();
       if(type==ShowerInteraction::QED) {
+	combineFinalStateShower(systems);
 	general=false;
-	vector<ColourSingletShower> oldsystems=systems;
-	systems.clear();
-	ColourSingletShower finalState;
-	finalState.type = F;
-	for(unsigned int ix=0;ix<oldsystems.size();++ix) {
-	  if(oldsystems[ix].type==F) {
-	    for(unsigned int iy=0;iy<oldsystems[ix].jets.size();++iy)
-	      finalState.jets.push_back(oldsystems[ix].jets[iy]);
-	  }
-	  else
-	    systems.push_back(oldsystems[ix]);
-	}
-	systems.push_back(finalState);
       }
     }
     // general type
