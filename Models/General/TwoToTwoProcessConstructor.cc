@@ -270,14 +270,15 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
        dit->intermediate->mass() > out1->mass()+ out2->mass()) {
       tPDPtr in1 = getParticleData(dit->incoming.first );
       tPDPtr in2 = getParticleData(dit->incoming.second);
-      generator()->log() << " can be on-shell in the process "
+      generator()->log() << dit->intermediate->PDGName() 
+			 << " can be on-shell in the process "
 			 << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
 			 << out1->PDGName() << " " << out2->PDGName() 
 			 << " but has zero width.\nEither set the width, enable "
 			 << "calculation of its decays, and hence the width,\n"
 			 << "or disable it as a potential intermediate using\n"
 			 << "insert " << fullName() << ":Excluded 0 "
-			 << dit->intermediate->fullName() << "\n";
+			 << dit->intermediate->fullName() << "\n---\n";
       abort = true;
     }
     grouped.insert(*dit);
