@@ -29,7 +29,7 @@ public:
    *  Enum for the type of Dipole
    */
   enum DipoleType {
-    II12,II21,FF34,FF43
+    II12,II21,FF34,FF43,IF13,IF14,IF23,IF24
   };
 
 public:
@@ -52,7 +52,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual HardTreePtr generateHardest(ShowerTreePtr,
+				      vector<ShowerInteraction::Type> inter);
   //@}
 
 public:
@@ -221,7 +222,6 @@ protected:
 		 vector<SpinorWaveFunction>    & aout,
 		 bool me) const;
 
-
   /**
    *  Subtracted virtual contribution
    */
@@ -311,6 +311,36 @@ protected:
     }
   }
 
+  /**
+   *  Generate a hard QCD emission
+   */
+  void hardQCDEmission(vector<ShowerProgenitorPtr> & particlesToShower,
+		       int & emission_type, Energy & pTmax);
+
+  /**
+   *  Generate a hard QED emission
+   */
+  void hardQEDEmission(vector<ShowerProgenitorPtr> & particlesToShower,
+		       int & emission_type, Energy & pTmax);
+
+  /**
+   *  Generate a hard initial-initial QED radiation
+   */
+  void hardQEDIIEmission(vector<ShowerProgenitorPtr> & particlesToShower,
+			 int & emission_type, Energy & pTmax);
+
+  /**
+   *  Generate a hard initial-final QED radiation
+   */
+  void hardQEDIFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
+			 int & emission_type, Energy & pTmax);
+
+  /**
+   *  Generate a hard final-final QED radiation
+   */
+  void hardQEDFFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
+			 int & emission_type, Energy & pTmax);
+
 protected:
 
   /** @name Clone Methods. */
@@ -380,6 +410,11 @@ private:
    *   Which corrections to included
    */
   unsigned int corrections_;
+
+  /**
+   *  Which QED terms to include
+   */
+  unsigned int QEDContributions_;
 
   /**
    *  Include incoming photons?
@@ -510,6 +545,16 @@ private:
   mutable vector<Lorentz5Momentum> realEmissionQEDQuark2_;
 
   /**
+   *  Momenta of the particles for photon emission from the lepton
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDFFLepton3_;
+
+  /**
+   *  Momenta of the particles for photon emission from the antilepton
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDFFLepton4_;
+
+  /**
    *  Properties of the incoming particles
    */
   //@{
@@ -535,38 +580,78 @@ private:
    */
   //@{
   /**
-   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel for QCD emission
    */
-  double preqqbarq_;
+  double preqqbarqQCD_;
   /**
-   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel for QCD emission
    */
-  double preqqbarqbar_;
+  double preqqbarqbarQCD_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
    */
-  double preqg_;
+  double preqgQCD_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
    */
-  double pregqbar_;
+  double pregqbarQCD_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel for QED emission
+   */
+  double preqqbarqQED_;
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel for QED emission
+   */
+  double preqqbarqbarQED_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\gamma\f$ channel
+   */
+  double preqgQED_;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$\gamma\bar{q}\f$ channel
+   */
+  double pregqbarQED_;
+
+  /**
+   *  The prefactor for final-state QED radiation
+   */
+  double preFFQED_;
 
   /**
    *  The prefactors as a vector for easy use
    */
-  vector<double> prefactor_;
-  //@}
+  vector<double> prefactorQCD_;
+
   /**
-   *  The transverse momentum of the jet
+   *  The prefactors as a vector for easy use
    */
-  Energy minpT_;
+  vector<double> prefactorQED_;
+  //@}
+
+  /**
+   *  Minimum transverse momentum of the QCD radiation
+   */
+  Energy minpTQCD_;
+
+  /**
+   *  Minimum transverse momentum of the QED radiation
+   */
+  Energy minpTQED_;
 
   /**
    *  Pointer to the object calculating the strong coupling
    */
   ShowerAlphaPtr alphaQCD_;
+
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alphaQED_;
 
   /**
    *  Pointers to the intermediate resonances
