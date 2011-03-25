@@ -415,36 +415,46 @@ realME(const cPDVector & particles,
 	    diag[1] = NNZVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interV[1]);
 	    // t-channel squark exchanges
 	    for(unsigned int iq=0;iq<2;++iq) {
-	      // 1st t-channel
-	      // emission quark
-	      intersq = NFSVertex_->
-		evaluate(q2, propopt, squark[iq], inters, sbarout[ohel3]);
-	      diag[6*iq+2] = 
-		NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
-	      // emission antiquark
-	      intersq = NFSVertex_->
-		evaluate(q2, propopt, squark[iq], sp[ihel1], sbarout[ohel3]);
-	      diag[6*iq+3] = 
-		NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
-	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+4] = 
-		NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
-	      // swapped t-channel
-	      // emission quark
-	      intersq = NFSVertex_->
-		evaluate(q2, propopt, squark[iq], inters, spoutconj[ohel2]);
-	      diag[6*iq+5] = 
-		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
-	      // emission antiquark
-	      intersq = NFSVertex_->
-		evaluate(q2, propopt, squark[iq], sp[ihel1], spoutconj[ohel2]);
-	      diag[6*iq+6] = 
-		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
-	      // emission from intermediate
-	      intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
-	      diag[6*iq+7] = 
-		-NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);
+	      //2.0*ms/(abs(m1)+abs(m2))>20.0
+	      if(   (2.*squark[iq]->mass())/(momenta[2].mass()+momenta[3].mass()) > 20.){
+		diag[6*iq+2]=0.;
+		diag[6*iq+3]=0.;
+		diag[6*iq+4]=0.;
+		diag[6*iq+5]=0.;
+		diag[6*iq+6]=0.;
+		diag[6*iq+7]=0.;
+	      } else{
+		
+		// 1st t-channel
+		// emission quark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark[iq], inters, sbarout[ohel3]);
+		diag[6*iq+2] = 
+		  NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
+		// emission antiquark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark[iq], sp[ihel1], sbarout[ohel3]);
+		diag[6*iq+3] = 
+		  NFSVertex_->evaluate(q2, spout[ohel2], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
+		diag[6*iq+4] = 
+		  NFSVertex_->evaluate(q2, spout[ohel2], sbar[ihel2], intersq2);
+		// swapped t-channel
+		// emission quark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark[iq], inters, spoutconj[ohel2]);
+		diag[6*iq+5] = 
+		  -NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
+		// emission antiquark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark[iq], sp[ihel1], spoutconj[ohel2]);
+		diag[6*iq+6] = 
+		  -NFSVertex_->evaluate(q2, sbaroutconj[ohel3], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
+		diag[6*iq+7] = 
+		  -NFSVertex_->evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq2);}
 	    }
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -456,12 +466,12 @@ realME(const cPDVector & particles,
   }
   // strong coupling
   double gs2 = norm(FFGVertex_->norm());
-
-
+  
+  
   double totcount = 0.;
-//   bool first = 0.;
-//   bool second = 0.;
-//   Energy sqmom2,sqmass;
+  //   bool first = 0.;
+  //   bool second = 0.;
+  Energy sqmom2,sqmass;
 
 
   // subtract the on-shell squark decay if neccessary
@@ -480,65 +490,58 @@ realME(const cPDVector & particles,
     for(unsigned int ix=0;ix<2;++ix) {
       Energy2 sqwidth2 = sqr(squark[ix]->width());
       // is on-shell mass allowed for first neutralino and squark
-      if( roots >= squark[ix]->mass() + momenta[2].mass() ) {
+      //      if( roots >= squark[ix]->mass() + momenta[2].mass() ) {
+      if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
+	   && (squark[ix]->mass() > momenta[3].mass())){
 	// Create a counterterm for the squark decay pole.
 	Energy2 mneut2 = sqr(momenta[2].mass()); 
 	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
 	Energy2 u4 = (pgluon-momenta[2]).m2()-mneut2;
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
-// 	double a2 = norm(vertex->norm())*
-// 	  (norm(vertex->left())+norm(vertex->right()));
-	double a2 = norm(vertex->norm())*
-	  (norm(vertex->left() + vertex->right()));
+ 	double a2 = norm(vertex->norm())*
+ 	  (norm(vertex->left())+norm(vertex->right()));
 	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
-// 	a2 = norm(vertex->norm())*
-// 	  (norm(vertex->left())+norm(vertex->right()));
-	a2 = norm(vertex->norm())*
-	  (norm(vertex->left() + vertex->right()));
+ 	a2 = norm(vertex->norm())*
+ 	  (norm(vertex->left())+norm(vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq2-sqr(particles[3]->mass()));
 	Energy4 denom = sqr(msq2-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
 
-// 	if(abs(1.-abs(sqrt(msq2)/squark[ix]->mass()))<0.000001){
-// 	  first = 1.;
-// 	  sqmom2 = sqrt(msq2);
-// 	  sqmass = squark[ix]->mass();
-// 	}
+	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
+	    && (squark[ix]->mass()>1.e4*GeV))
+	  sqcounter = 0;
+
 	totcount += sqcounter;
-	//output -= sqcounter;
       }
+
       // is on-shell mass allowed for second neutralino and squark
-      else if( roots >= squark[ix]->mass() + momenta[3].mass() ) {
+      //else if( roots >= squark[ix]->mass() + momenta[3].mass() ) {
+      if((roots >= squark[ix]->mass() + momenta[3].mass() )
+	 && (squark[ix]->mass() > momenta[2].mass())){
 	Energy2 mneut2 = sqr(momenta[3].mass());
 	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
 	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
-// 	double a2 = norm(vertex->norm())*
-// 	  (norm(vertex->left())+norm(vertex->right()));
-	double a2 = norm(vertex->norm())*
-	  (norm(vertex->left() + vertex->right()));
+ 	double a2 = norm(vertex->norm())*
+ 	  (norm(vertex->left())+norm(vertex->right()));
 	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
-// 	a2 = norm(vertex->norm())*
-// 	  (norm(vertex->left())+norm(vertex->right()));
 	a2 = norm(vertex->norm())*
-	  (norm(vertex->left() + vertex->right()));
+	  (norm(vertex->left())+norm(vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq1-sqr(particles[2]->mass()));
 	Energy4 denom = sqr(msq1-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
 
-// 	if(abs(1.-abs(sqrt(msq1)/squark[ix]->mass()))<0.000001){
-// 	  second = 1.;
-// 	  sqmom2 = sqrt(msq1);
-// 	  sqmass = squark[ix]->mass();
-// 	}
+	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
+	    && (squark[ix]->mass()>1.e4*GeV))
+	  sqcounter = 0;
+
 	totcount += sqcounter;
-	//output -= sqcounter;
       }
     }
   }
