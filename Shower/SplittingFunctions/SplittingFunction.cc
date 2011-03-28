@@ -319,6 +319,37 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       }
     }
   }
+  else if(_colourStructure == NeutralChargedCharged ) {
+    if(!back) {
+      if(first->dataPtr()->coloured()) {
+	ColinePtr newline=new_ptr(ColourLine());
+	if(first->dataPtr()->iColour()==PDT::Colour3) {
+	  newline->addColoured    (first );
+	  newline->addAntiColoured(second);
+	}
+	else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
+	  newline->addColoured    (second);
+	  newline->addAntiColoured(first );
+	}
+	else
+	  assert(false);
+      }
+    }
+    else {   
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // gamma -> q qbar
+      if(cfirst.first) {
+	cfirst.first->addAntiColoured(second);
+      }
+      // gamma -> qbar q
+      else if(cfirst.second) {
+	cfirst.second->addColoured(second);
+      }
+      else 
+	assert(false);
+    }
+  }
   else {
     assert(false);
   }
