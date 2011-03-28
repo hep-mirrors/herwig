@@ -752,15 +752,22 @@ HardTreePtr NLODrellYanBase::generateHardest(ShowerTreePtr tree) {
       while(pT[ix]>minpT_);
       if(pT[ix]>minpT_ && pT[ix]>pTmax) {
 	pTmax = pT[ix];
-	emission_type=ix+1;
-	if(ix==0)
+	if(ix==0) {
 	  realEmissionGluon1_=momenta;
-	else if(ix==1)
-	  realEmissionQuark1_=momenta;
-	else if(ix==2)
+	  emission_type=1;
+	}
+	else if(ix==1) {
 	  realEmissionGluon2_=momenta;
-	else if(ix==3)
+	  emission_type=3;
+	}
+	else if(ix==2) {
+	  realEmissionQuark1_=momenta;
+	  emission_type=2;
+	}
+	else if(ix==3) {
 	  realEmissionQuark2_=momenta;
+	  emission_type=4;
+	}
       }
     }
     if(emission_type<0) return HardTreePtr();
