@@ -1846,38 +1846,48 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
       Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
       Lorentz5Momentum Kt = momenta[2]+momenta[3];
       Lorentz5Momentum Ksum = K+Kt;
-      Energy2 K2 = K.m2(), Ksum2 = Ksum.m2();
+      Energy2 K2 = Kt.m2(), Ksum2 = Ksum.m2();
       for(unsigned int iy=2;iy<4;++iy) {
 	momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
-	  +2*K*(Kt*momenta [iy])/K2;
+	  +2.*K*(Kt*momenta [iy])/K2;
       }
       // matrix element piece
       double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactorQCD_[ix]/loME_;
       // compute me piece here
       if(ix==0)
-	wgt *= 4./3.*2.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II12,false).first;
+	wgt *= 8./3.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II12,false).first;
       else if(ix==1)
-	wgt *= 4./3.*2.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II21,false).first;
+	wgt *= 8./3.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II21,false).first;
       else if(ix==2)
-	wgt *=          sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II12,false).first;
+	wgt *=       sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II12,false).first;
       else if(ix==3)
-	wgt *=          sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II21,false).first;
+ 	wgt *=       sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II21,false).first;
       // pdf piece
-      double pdf[2];
+      double pdf[4];
       if(ix%2==0) {
 	pdf[0] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
 				       scale(),            x.first   )  /x.first;
 	pdf[1] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
 				       scale()+sqr(pT[ix]),x.first /z)*z/x.first;
+	pdf[2] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
+				       scale()            ,x.second  )  /x.second;
+	pdf[3] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
+				       scale()+sqr(pT[ix]),x.second  )  /x.second;
       }
       else {
 	pdf[0] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
 				       scale()            ,x.second  )  /x.second;
 	pdf[1] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
 				       scale()+sqr(pT[ix]),x.second/z)*z/x.second;
+	pdf[2] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
+				       scale(),            x.first   )  /x.first;
+	pdf[3] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
+				       scale()+sqr(pT[ix]),x.first   )  /x.first;
       }
       if(pdf[0]<=0.||pdf[1]<=0.) continue;
+      if(pdf[2]<=0.||pdf[3]<=0.) continue;
       wgt *= pdf[1]/pdf[0];
+      wgt *= pdf[3]/pdf[2];
       // check weight less than one
       if(wgt>1.) {
 	generator()->log() << "Weight greater than one for emission type " << ix
