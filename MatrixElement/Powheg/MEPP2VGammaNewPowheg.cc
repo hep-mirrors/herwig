@@ -2393,19 +2393,18 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
   else {
     for(unsigned int ix=0;ix<2;++ix)
       hardBranch.push_back(inBranch[ix]);
-    for(unsigned int ix=0;ix<newparticles.size();++ix)
     hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					      HardBranchingPtr(),
-					      HardBranching::Outgoing)));
+					       HardBranchingPtr(),
+					       HardBranching::Outgoing)));
     hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					      HardBranchingPtr(),
-					      HardBranching::Outgoing)));
+					       HardBranchingPtr(),
+					       HardBranching::Outgoing)));
     hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
-						     HardBranchingPtr(),
-						     HardBranching::Outgoing)));
+						      HardBranchingPtr(),
+						      HardBranching::Outgoing)));
     hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						     HardBranchingPtr(),
-						     HardBranching::Outgoing)));
+						      HardBranchingPtr(),
+						      HardBranching::Outgoing)));
     if(hardBranch[0]->branchingParticle()->dataPtr()->charged()) {
       hardBranch.back()->colourPartner(hardBranch[0]);
       hardBranch[0]->colourPartner(hardBranch.back());
