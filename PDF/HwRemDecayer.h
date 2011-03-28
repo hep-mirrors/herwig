@@ -528,7 +528,12 @@ private:
   /**
    *  Pointer to the object calculating the QCD coupling
    */
-  ShowerAlphaPtr _alpha; 
+  ShowerAlphaPtr _alphaS;
+
+  /**
+   *  Pointer to the object calculating the QED coupling
+   */
+  ShowerAlphaPtr _alphaEM; 
 
   /**
    *  Option for the DIS remnant
