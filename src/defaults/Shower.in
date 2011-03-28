@@ -29,7 +29,8 @@ create Herwig::QTildeFinder PartnerFinder
 create Herwig::QTildeReconstructor KinematicsReconstructor
 newdef KinematicsReconstructor:ReconstructionOption Colour
 
-newdef /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
+newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
+newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
 newdef ShowerHandler:Evolver Evolver
 newdef ShowerModel:PartnerFinder PartnerFinder
@@ -95,9 +96,17 @@ create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
 
+create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
+newdef GammatoQQbarSplitFn:InteractionType QED
+newdef GammatoQQbarSplitFn:ColourStructure NeutralChargedCharged
+
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
 newdef QtoGQSplitFn:InteractionType QCD
 newdef QtoGQSplitFn:ColourStructure TripletOctetTriplet
+
+create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
+newdef QtoGammaQSplitFn:InteractionType QED
+newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 
 #
 # Now the Sudakovs
@@ -123,6 +132,10 @@ cp SudakovCommon GtoQQbarSudakov
 newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
 newdef GtoQQbarSudakov:PDFmax 120.0
 
+cp SudakovCommon GammatoQQbarSudakov
+newdef GammatoQQbarSudakov:SplittingFunction GammatoQQbarSplitFn
+newdef GammatoQQbarSudakov:PDFmax 120.0
+
 cp SudakovCommon GtobbbarSudakov
 newdef GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
 newdef GtobbbarSudakov:PDFmax 40000.0
@@ -133,6 +146,9 @@ newdef GtoccbarSudakov:PDFmax 2000.0
 
 cp SudakovCommon QtoGQSudakov
 newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
+
+cp SudakovCommon QtoGammaQSudakov
+newdef QtoGammaQSudakov:SplittingFunction QtoGammaQSplitFn
 
 cp SudakovCommon utoGuSudakov
 newdef utoGuSudakov:SplittingFunction QtoGQSplitFn
@@ -163,6 +179,16 @@ do SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
 do SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 do SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
+do SplittingGenerator:AddFinalSplitting gamma->u,ubar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->d,dbar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->s,sbar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->c,cbar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->b,bbar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->t,tbar; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->e-,e+; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->mu-,mu+; GammatoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting gamma->tau-,tau+; GammatoQQbarSudakov
+#
 do SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
@@ -188,7 +214,7 @@ do SplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
 
 do SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #
@@ -197,6 +223,12 @@ do SplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
 do SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
 do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
+#
+do SplittingGenerator:AddInitialSplitting gamma->d,dbar; GammatoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting gamma->u,ubar; GammatoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting gamma->s,sbar; GammatoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting gamma->c,cbar; GammatoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
 #
 do SplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
 do SplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
@@ -208,3 +240,14 @@ do SplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
 do SplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
 do SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
+#
+do SplittingGenerator:AddInitialSplitting d->gamma,d; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting u->gamma,u; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting s->gamma,s; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting c->gamma,c; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting b->gamma,b; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting dbar->gamma,dbar; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting ubar->gamma,ubar; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting sbar->gamma,sbar; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting cbar->gamma,cbar; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
