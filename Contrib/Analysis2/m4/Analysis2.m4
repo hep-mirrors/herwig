@@ -178,7 +178,7 @@ if test "x$with_clhep" != "xno"; then
 	oldLDFLAGS="$LDFLAGS"
 	oldCPPFLAGS="$CPPFLAGS"
 	LIBS="$LIBS $CLHEPLIB"
-	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+	LDFLAGS="$LDFLAGS `echo $CLHEPLDFLAGS | sed -e 's!-R.* ! !'`"
 	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE"
 	
 	# check CLHEP first
@@ -246,7 +246,7 @@ else
 	oldlibs=$LIBS
 	oldcxxflags=$CXXFLAGS
 	LIBS=""
-	CXXFLAGS="-L$KTJETPATH/lib $ktjetrpath -l$ktjetname $CLHEPLDFLAGS"
+	CXXFLAGS="-L$KTJETPATH/lib -l$ktjetname $CLHEPLDFLAGS"
 	AC_CHECK_LIB([$ktjetname],[abort],
 		     [],
 		     [

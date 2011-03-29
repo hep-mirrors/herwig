@@ -4142,7 +4142,6 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
 		oldMomentum.e()/oldMomentum.mass());
     for(cjt=decayTree->outgoingLines().begin();
 	cjt!=decayTree->outgoingLines().end();++cjt) {
-      Lorentz5Momentum ptemp = boost*cjt->first->progenitor()->momentum();
       cjt->first->original()  ->set5Momentum(cjt->first->progenitor()->momentum());
       cjt->first->progenitor()->deepTransform(boost);
       cjt->first->original()  ->deepTransform(boost);
