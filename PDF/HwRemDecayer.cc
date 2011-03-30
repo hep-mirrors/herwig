@@ -216,7 +216,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
     }
   }
   // forced splitting for first parton
-  if(partons.first->data().coloured()) { 
+  if(isPartonic(partons.first )) { 
     try {
       split(partons.first, theContent.first, theRems.first, 
 	    theUsed.first, theMaps.first, pdfs.first, first);
@@ -228,7 +228,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
     }
   }
   // forced splitting for second parton
-  if(partons.second->data().coloured()) { 
+  if(isPartonic(partons.second)) { 
     try {
       split(partons.second, theContent.second, theRems.second, 
 	    theUsed.second, theMaps.second, pdfs.second, first);
@@ -1205,4 +1205,17 @@ bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
        parton->id()==ParticleID::gamma)) return false;
   return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
     || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;
+}
+
+bool HwRemDecayer::isPartonic(tPPtr parton) const {
+  if(parton->parents().empty()) return false;
+  tPPtr parent = parton->parents()[0];
+  bool partonic = false;
+  for(unsigned int ix=0;ix<parent->children().size();++ix) {
+    if(dynamic_ptr_cast<tRemPPtr>(parent->children()[ix])) {
+      partonic = true;
+      break;
+    }
+  }
+  return partonic;
 }

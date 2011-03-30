@@ -65,13 +65,13 @@ public:
   /**
    * The default constructor.
    */
-  inline HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
-			  colourDisrupt_(1.0), 
-			  _kinCutoff(0.75*GeV), 
-			  _forcedSplitScale(2.5*GeV),
-			  _range(1.1), _zbin(0.05),_ybin(0.),
-			  _nbinmax(100), DISRemnantOpt_(0),
-			  pomeronStructure_(0), mg_(ZERO) {}
+  HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
+		   colourDisrupt_(1.0), 
+		   _kinCutoff(0.75*GeV), 
+		   _forcedSplitScale(2.5*GeV),
+		   _range(1.1), _zbin(0.05),_ybin(0.),
+		   _nbinmax(100), DISRemnantOpt_(0),
+		   pomeronStructure_(0), mg_(ZERO) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -377,6 +377,12 @@ private:
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,
 		  HadronContent & content) const;
 
+  /**
+   *  Check if a particle is a parton from a hadron or not
+   * @param parton The parton to be tested
+   */
+  bool isPartonic(tPPtr parton) const;
+
   /** @name Soft interaction methods. */
   //@{
 
@@ -404,7 +410,6 @@ private:
    * @param p = Lorentz5Momentum of the new particle
    */
   tPPtr addParticle(tcPPtr parent, long id, Lorentz5Momentum p) const;
-
   //@}
 
   /**
