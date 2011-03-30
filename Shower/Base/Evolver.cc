@@ -1697,16 +1697,17 @@ void Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
   for(cjt=currentTree()->outgoingLines().begin();
       cjt!=currentTree()->outgoingLines().end();++cjt)
     particlesToShower.push_back(((*cjt).first));
-//   // reset momenta
-//   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-//     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-//       eit=hardTree()->particles().end(),
-//       mit = hardTree()->particles().find(particlesToShower[ix]->progenitor());
-//     if( mit != eit) {
-//       if(mit->second->status()==HardBranching::Outgoing)
-// 	particlesToShower[ix]->progenitor()->set5Momentum(mit->second->pVector());
-//     }
-//   }
+  // reset momenta
+  if(hardTree()) {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+	eit=hardTree()->particles().end(),
+	mit = hardTree()->particles().find(particlesToShower[ix]->progenitor());
+      if( mit != eit) {
+	particlesToShower[ix]->progenitor()->set5Momentum(mit->second->showerMomentum());
+      }
+    }
+  }
 }
 
 void Evolver::constructTimeLikeLine(tHardBranchingPtr branch,

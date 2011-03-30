@@ -1203,6 +1203,19 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 	  deconstructFinalStateSystem(toRest,fromRest,tree,
 				      systems[ix].jets,evolver,type);
       }
+      // only at this point that we can be sure all the reference vectors
+      // are correct
+      for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
+	  it!=tree->branchings().end();++it) {
+	if((**it).status()==HardBranching::Incoming) continue;
+	if((**it).branchingParticle()->coloured())
+	  (**it).setMomenta(LorentzRotation(),1.,Lorentz5Momentum(),false);
+      }
+      for(set<HardBranchingPtr>::const_iterator it=tree->incoming().begin();
+	  it!=tree->incoming().end();++it) {
+	(**it).setMomenta(LorentzRotation(),1.,Lorentz5Momentum(),false);
+      }
+      return true;
     }
     else {
       return deconstructGeneralSystem(tree,evolver,type);
