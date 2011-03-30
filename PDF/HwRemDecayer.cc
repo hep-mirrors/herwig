@@ -216,83 +216,87 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
     }
   }
   // forced splitting for first parton
-  try {
-    split(partons.first, theContent.first, theRems.first, 
-	  theUsed.first, theMaps.first, pdfs.first, first);
-  }
-  catch(ShowerHandler::ExtraScatterVeto) {
-    theX.first -= partons.first->momentum().rho()/
-      parent(theRems.first)->momentum().rho();
-    throw ShowerHandler::ExtraScatterVeto();
+  if(partons.first->data().coloured()) { 
+    try {
+      split(partons.first, theContent.first, theRems.first, 
+	    theUsed.first, theMaps.first, pdfs.first, first);
+    }
+    catch(ShowerHandler::ExtraScatterVeto) {
+      theX.first -= partons.first->momentum().rho()/
+	parent(theRems.first)->momentum().rho();
+      throw ShowerHandler::ExtraScatterVeto();
+    }
   }
   // forced splitting for second parton
-  try {
-    split(partons.second, theContent.second, theRems.second, 
-	  theUsed.second, theMaps.second, pdfs.second, first);
-    // additional check for the remnants
-    // if can't do the rescale veto the emission
-    if(!first&&partons.first->data().coloured()&&
-       partons.second->data().coloured()) {
-      Lorentz5Momentum pnew[2]=
-	{theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
-	 theRems.second->momentum() - theUsed.second - partons.second->momentum()};
-      
-      pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
-      pnew[0].rescaleEnergy();
-      pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
-      pnew[1].rescaleEnergy();
-      
-      for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
-	pnew[0] += theRems.first->children()[iy]->momentum();
-      
-      for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
-	pnew[1] += theRems.second->children()[iy]->momentum();
-      
-      Lorentz5Momentum ptotal=
-	theRems.first ->momentum()-partons.first ->momentum()+
-	theRems.second->momentum()-partons.second->momentum();
-      
-      if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
-	if(partons.second->id() != ParticleID::g){
-	  if(partons.second==theMaps.second.back().first) 
-	    theUsed.second -= theMaps.second.back().second->momentum();
-	  else
-	    theUsed.second -= theMaps.second.back().first->momentum();
-	  
-	  thestep->removeParticle(theMaps.second.back().first);
-	  thestep->removeParticle(theMaps.second.back().second);
+  if(partons.second->data().coloured()) { 
+    try {
+      split(partons.second, theContent.second, theRems.second, 
+	    theUsed.second, theMaps.second, pdfs.second, first);
+      // additional check for the remnants
+      // if can't do the rescale veto the emission
+      if(!first&&partons.first->data().coloured()&&
+	 partons.second->data().coloured()) {
+	Lorentz5Momentum pnew[2]=
+	  {theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
+	   theRems.second->momentum() - theUsed.second - partons.second->momentum()};
+	
+	pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
+	pnew[0].rescaleEnergy();
+	pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
+	pnew[1].rescaleEnergy();
+	
+	for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
+	  pnew[0] += theRems.first->children()[iy]->momentum();
+	
+	for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
+	  pnew[1] += theRems.second->children()[iy]->momentum();
+	
+	Lorentz5Momentum ptotal=
+	  theRems.first ->momentum()-partons.first ->momentum()+
+	  theRems.second->momentum()-partons.second->momentum();
+	
+	if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
+	  if(partons.second->id() != ParticleID::g){
+	    if(partons.second==theMaps.second.back().first) 
+	      theUsed.second -= theMaps.second.back().second->momentum();
+	    else
+	      theUsed.second -= theMaps.second.back().first->momentum();
+	    
+	    thestep->removeParticle(theMaps.second.back().first);
+	    thestep->removeParticle(theMaps.second.back().second);
+	  }
+	  theMaps.second.pop_back();
+	  throw ShowerHandler::ExtraScatterVeto();
 	}
-	theMaps.second.pop_back();
-	throw ShowerHandler::ExtraScatterVeto();
       }
     }
-  }
-  catch(ShowerHandler::ExtraScatterVeto){
-    if(!partons.first||!partons.second||
-       !theRems.first||!theRems.second) 
-      throw ShowerHandler::ExtraScatterVeto();
-    //case of the first forcedSplitting worked fine
-    theX.first -= partons.first->momentum().rho()/
-      parent(theRems.first)->momentum().rho();
-    theX.second -= partons.second->momentum().rho()/
-      parent(theRems.second)->momentum().rho();
-    
-    //case of the first interaction
-    //throw veto immediately, because event get rejected anyway.
-    if(first) throw ShowerHandler::ExtraScatterVeto();
-    //secondary interactions have to end on a gluon, if parton 
-    //was NOT a gluon, the forced splitting particles must be removed
-    if(partons.first->id() != ParticleID::g) {
-      if(partons.first==theMaps.first.back().first) 
-	theUsed.first -= theMaps.first.back().second->momentum();
-      else
-	theUsed.first -= theMaps.first.back().first->momentum();
+    catch(ShowerHandler::ExtraScatterVeto){
+      if(!partons.first||!partons.second||
+	 !theRems.first||!theRems.second) 
+	throw ShowerHandler::ExtraScatterVeto();
+      //case of the first forcedSplitting worked fine
+      theX.first -= partons.first->momentum().rho()/
+	parent(theRems.first)->momentum().rho();
+      theX.second -= partons.second->momentum().rho()/
+	parent(theRems.second)->momentum().rho();
       
-      thestep->removeParticle(theMaps.first.back().first);
-      thestep->removeParticle(theMaps.first.back().second);
+      //case of the first interaction
+      //throw veto immediately, because event get rejected anyway.
+      if(first) throw ShowerHandler::ExtraScatterVeto();
+      //secondary interactions have to end on a gluon, if parton 
+      //was NOT a gluon, the forced splitting particles must be removed
+      if(partons.first->id() != ParticleID::g) {
+	if(partons.first==theMaps.first.back().first) 
+	  theUsed.first -= theMaps.first.back().second->momentum();
+	else
+	  theUsed.first -= theMaps.first.back().first->momentum();
+	
+	thestep->removeParticle(theMaps.first.back().first);
+	thestep->removeParticle(theMaps.first.back().second);
+      }
+      theMaps.first.pop_back();
+      throw ShowerHandler::ExtraScatterVeto();
     }
-    theMaps.first.pop_back();
-    throw ShowerHandler::ExtraScatterVeto();
   }
   // veto if not enough energy for extraction
   if( !first &&(theRems.first ->momentum().e() - 
