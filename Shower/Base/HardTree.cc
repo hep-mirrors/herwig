@@ -69,8 +69,10 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
       it!=x.branchings_.end();++it) {
     os << "Hard Particle: " << *(**it).branchingParticle() << " has Sudakov " 
        << (**it).sudakov() << "\n";
-    os << "It's colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
+    os << "Its colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
        <<  (**it).branchingParticle()->antiColourLine() << "\n";
+    os << "Its basis vectors are " << (**it).pVector()/GeV 
+       << " " << (**it).nVector()/GeV << "\n";
     for(unsigned int iy=0;iy<(**it).children().size();++iy) {
       os << "\t Children : " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
