@@ -15,6 +15,7 @@
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "SusyLoopIntegral.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -319,7 +320,8 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
 
 
   // bit proportional to LO
-  output.finite = -3.*log(sHat()/mav2) + sqr(log(sHat()/mav2)) -1. - Pi**2/6.
+  output.finite = -3.*log(sHat()/mav2) + sqr(log(sHat()/mav2))
+    -1. - sqr(Constants::pi)/6.
 
     -SusyLoopIntegral::B0P(ZERO  ,mg    ,ms    ,scale2)*(mg2-ms2);
   output.finite *= loWeight();
@@ -348,10 +350,22 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
 
 //       mav2 = (abs(m1)+abs(m2))**2/4.D0
 
-c               finite part from virtual subtraction matrix element 
-      finite = - 3.D0/2.D0 * Pi**2/6.D0 
-     &         - 3.D0/2.D0 * log(s/mav2) 
-     &         + log(s/mav2)**2 /2.D0
+
+
+
+
+
+
+
+//   finite part from virtual subtraction matrix element 
+//       finite = - 3.D0/2.D0 * Pi**2/6.D0 
+//      &         - 3.D0/2.D0 * log(s/mav2) 
+//      &         + log(s/mav2)**2 /2.D0
+
+
+
+
+
 
 
   /*
