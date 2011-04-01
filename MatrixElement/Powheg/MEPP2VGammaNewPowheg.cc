@@ -2267,7 +2267,10 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
       pdf[1] = beams_[1]->pdf()->
 	xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
     }
-    if(pdf[0]<=0.||pdf[1]<=0.) continue;
+    if(pdf[0]<=0.||pdf[1]<=0.) {
+      wgt=0.;
+      continue;
+    }
     wgt *= pdf[1]/pdf[0];
     // matrix element piece
     double phi = Constants::twopi*UseRandom::rnd();
