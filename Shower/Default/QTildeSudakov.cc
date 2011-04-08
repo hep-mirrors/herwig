@@ -267,7 +267,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
@@ -305,7 +305,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }

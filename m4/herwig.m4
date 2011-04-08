@@ -157,7 +157,7 @@ if test "x$with_fastjet" != "xno"; then
 	oldLIBS="$LIBS"
 	oldLDFLAGS="$LDFLAGS"
 	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $FASTJETLIBS"
+	LIBS="$LIBS `echo $FASTJETLIBS | sed -e 's!-R.* ! !'`"
 	LDFLAGS="$LDFLAGS"
 	CPPFLAGS="$CPPFLAGS $FASTJETINCLUDE"
 

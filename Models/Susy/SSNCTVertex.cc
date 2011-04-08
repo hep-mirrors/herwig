@@ -152,7 +152,7 @@ void SSNCTVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     Complex n1prime = (*nmix_)(nl,0)*cw_ + (*nmix_)(nl,1)*sw_;
     tcPDPtr smf = getParticleData(ism);
     double qf = smf->charge()/eplus;
-    Complex bracketl = qf*sw_*( conj(n1prime) - sw_*conj(n2prime)/cw_ );
+    //Complex bracketl = qf*sw_*( conj(n1prime) - sw_*conj(n2prime)/cw_ );
     double lambda(0.);
     //neutralino mixing element
     Complex nlf(0.);

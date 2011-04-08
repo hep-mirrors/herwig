@@ -28,7 +28,7 @@ set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 #  and strong coupling
 ##################################################
 create Herwig::O2AlphaS O2AlphaS 
-set Model:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 
 ##################################################
 #  Setup the POWHEG shower

@@ -403,11 +403,10 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   // no emission
   if(pT[0]<ZERO&&pT[1]<ZERO) return false;
   //pick the spectator and x1 x2 values
-  double x1,x2,x3,y;
+  double x1,x2,y;
   //particle 1 emits, particle 2 spectates
   unsigned int iemit=0;
   if(pT[0]>pT[1]){ 
-    x3  = x3Solution[0];
     pT_ = pT[0];
     y=yTemp[0];
     if(probTemp[0][0]>UseRandom::rnd()*(probTemp[0][0]+probTemp[0][1])) {
@@ -422,7 +421,6 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   //particle 2 emits, particle 1 spectates
   else {
     iemit=1;
-    x3  = x3Solution[1];
     pT_ = pT[1];
     y=yTemp[1];
     if(probTemp[1][0]>UseRandom::rnd()*(probTemp[1][0]+probTemp[1][1])) {

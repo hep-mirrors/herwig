@@ -213,11 +213,6 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  // delete the matrix elements we already have
-  int nme = subProcess()->MEs().size();
-  for(int ix = nme - 1; ix >= 0; --ix)
-    generator()->preinitInterface(subProcess(), "MatrixElements", 
-				  ix, "erase", "");
   model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
@@ -262,23 +257,45 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
   //need to find all of the diagrams that relate to the same process
   //first insert them into a map which uses the '<' operator 
   //to sort the diagrams 
-  multimap<HPDiagram,HPDiagram > grouped;
+  multiset<HPDiagram> grouped;
   HPDVector::iterator dit = processes_.begin();
   HPDVector::iterator dend = processes_.end();
+  bool abort=false;
   for( ; dit != dend; ++dit) {
-    grouped.insert(make_pair(*dit, *dit));
+    // check for on-shell s-channel
+    tPDPtr out1 = getParticleData(dit->outgoing.first );
+    tPDPtr out2 = getParticleData(dit->outgoing.second);
+    if(dit->channelType == HPDiagram::sChannel && 
+       dit->intermediate->width()==ZERO &&
+       dit->intermediate->mass() > out1->mass()+ out2->mass()) {
+      tPDPtr in1 = getParticleData(dit->incoming.first );
+      tPDPtr in2 = getParticleData(dit->incoming.second);
+      generator()->log() << dit->intermediate->PDGName() 
+			 << " can be on-shell in the process "
+			 << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
+			 << out1->PDGName() << " " << out2->PDGName() 
+			 << " but has zero width.\nEither set the width, enable "
+			 << "calculation of its decays, and hence the width,\n"
+			 << "or disable it as a potential intermediate using\n"
+			 << "insert " << fullName() << ":Excluded 0 "
+			 << dit->intermediate->fullName() << "\n---\n";
+      abort = true;
+    }
+    grouped.insert(*dit);
   }
+  if(abort) throw Exception() << "One or more processes with zero width"
+			      << " resonant intermediates"
+			      << Exception::runerror;
   assert( processes_.size() == grouped.size() );
   processes_.clear();
-  typedef multimap<HPDiagram, HPDiagram>::const_iterator map_iter;
-  map_iter it = grouped.begin();
-  map_iter iend = grouped.end();
+  typedef multiset<HPDiagram>::const_iterator set_iter;
+  set_iter it = grouped.begin(), iend = grouped.end();
   while( it != iend ) {
-    pair< map_iter, map_iter> range = grouped.equal_range(it->first);
-    map_iter itb = range.first;
+    pair<set_iter,set_iter> range = grouped.equal_range(*it);
+    set_iter itb = range.first;
     HPDVector process;
     for( ; itb != range.second; ++itb ) {
-      process.push_back(itb->second);
+      process.push_back(*itb);
     }
     // if inclusive enforce the exclusivity
     if(processOption_==2) {
