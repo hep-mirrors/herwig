@@ -16,6 +16,8 @@
 
 using namespace Herwig;
 
+const double SusyLoopIntegral::epsi = 1e-8;
+
 double SusyLoopIntegral::B0(Energy2 s, Energy m1, Energy m2, Energy2 mu2) {
   Energy2 m12(sqr(m1)),m22(sqr(m2));
   if(s==ZERO) {
@@ -99,7 +101,7 @@ InvEnergy2 SusyLoopIntegral::B0P(Energy2 s, Energy m1, Energy m2, Energy2 mu2) {
 }
 
 complex<InvEnergy2> SusyLoopIntegral::C0(Energy2 p1, Energy2 p2, Energy2 p3,
-					  Energy m1, Energy m2, Energy m3) {
+					 Energy m1, Energy m2, Energy m3) {
   static const Energy2 eps = 1e-8*GeV2;
   static const Complex im(0.,1.);
   static const complex<InvEnergy2> ieps(ZERO,1e-17/GeV2);  

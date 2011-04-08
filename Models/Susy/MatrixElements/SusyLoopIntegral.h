@@ -50,13 +50,49 @@ public:
 				Energy m1, Energy m2, Energy m3);
 
   /**
+   *  The divergent \f%C_0\f$ function
+   */
+  static double C0div(Energy2 t,Energy m1,Energy,Energy ms,
+		      Energy2 mu2) {
+    Energy2 ms2=sqr(ms),m1s=sqr(m1);
+    complex<Energy2> msc2 = ms2*Complex(1.,-epsi);
+    return real(spenceFunction(double(t/ms2)))-real(spenceFunction(double(m1s/ms2)))
+      + real(sqr(log(1.-t  /msc2))) 
+      - real(sqr(log(1.-m1s/msc2)))
+      + log(ms2/mu2)*log(abs(-(t-ms2)/(ms2-m1s)));
+  }
+
+  /**
    *  Real version of the \f$D_0\f$ function
    */
   static InvEnergy4 D_fin(Energy2 p1 ,Energy2 p2 ,Energy2 p3 ,Energy2 p4 ,
-			  Energy2 p12,Energy2 p23,Energy2 m12,Energy2 m22,
-			  Energy2 m32,Energy2 m42) {
-    Energy m1 = sqrt(m12),m2 = sqrt(m22),m3 = sqrt(m32), m4 = sqrt(m42);
+			  Energy2 p12,Energy2 p23,Energy m1,Energy m2,
+			  Energy m3,Energy m4) {
     return real( D0(p1,p2,p3,p4,p12,p23,m1,m2,m3,m4) );
+  }
+
+  /**
+   * divergent \f$D_0\f$ function
+   */
+  static double D_div(Energy2 t,Energy m1,Energy m2,Energy ms,
+		      Energy2 s,Energy2 mu2) {
+    double zeta2 = sqr(Constants::pi)/6.;
+    Energy2 m1s=sqr(m1),m2s=sqr(m2),ms2=sqr(ms);
+    complex<Energy2> msc2 = ms2*Complex(1.,-epsi);
+    complex<Energy2>   sc = s  *Complex(1., epsi); 
+    return 
+      -2.*real(spenceFunction(1.+(ms2-m1s)/(t-ms2)))
+      -2.*real(spenceFunction(1.+(ms2-m2s)/(t-ms2)))
+      -   real(spenceFunction(1.+(ms2-m1s)*(ms2-m2s)/s/ms2 ))
+      -1.5*zeta2
+      - real(log(1.+(msc2-m1s)*(msc2-m2s)/s/msc2)*
+	     (log(-(msc2-m1s)*(msc2-m2s)/s/msc2)
+	      -log((msc2-m1s)/mu2)-log((msc2-m2s)/mu2)
+	      +log(-s*msc2/sqr(mu2))))
+      + 0.5*sqr(log(s/mu2)) - 0.5*sqr(log(s/ms2))
+      + 2.*real(log(-sc/mu2)*log(-(t-msc2)/msc2))
+      - real(log((msc2-m1s)/mu2)*log((msc2-m1s)/msc2))
+      - real(log((msc2-m2s)/mu2)*log((msc2-m2s)/msc2));
   }
 
 private:
@@ -105,6 +141,8 @@ private:
     Complex x2 = 0.5/a*(-b-sqrt(sqr(b)-4.*a*c));
     return abs(x1)>abs(x2) ?  x1 : x2;
   }
+
+  static const double epsi;
 };
 
 }
