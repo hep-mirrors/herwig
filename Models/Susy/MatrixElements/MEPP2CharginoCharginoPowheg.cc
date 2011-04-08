@@ -29,7 +29,7 @@ MEPP2CharginoCharginoPowheg::MEPP2CharginoCharginoPowheg()
 }
 
 void MEPP2CharginoCharginoPowheg::doinit() {
-  NLODrellYanBase::doinit();
+  MEPP2GauginoGauginoPowheg::doinit();
   // get the photon and Z ParticleData objects
   Z0_    = getParticleData(ThePEG::ParticleID::Z0);
   gamma_ = getParticleData(ThePEG::ParticleID::gamma);

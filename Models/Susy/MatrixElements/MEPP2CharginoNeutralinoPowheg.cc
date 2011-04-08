@@ -29,7 +29,7 @@ MEPP2CharginoNeutralinoPowheg::MEPP2CharginoNeutralinoPowheg()
 }
 
 void MEPP2CharginoNeutralinoPowheg::doinit() {
-  NLODrellYanBase::doinit();
+  MEPP2GauginoGauginoPowheg::doinit();
   // get the photon and W ParticleData objects
   Wplus_    = getParticleData(ThePEG::ParticleID::Wplus);
   Wminus_   = getParticleData(ThePEG::ParticleID::Wminus);

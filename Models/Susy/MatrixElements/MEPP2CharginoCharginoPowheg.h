@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2CharginoCharginoPowheg class.
 //
 
-#include "NLODrellYanBase.h"
+#include "MEPP2GauginoGauginoPowheg.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
@@ -23,7 +23,7 @@ using namespace ThePEG;
  * @see \ref MEPP2CharginoCharginoPowhegInterfaces "The interfaces"
  * defined for MEPP2CharginoCharginoPowheg.
  */
-class MEPP2CharginoCharginoPowheg: public NLODrellYanBase {
+class MEPP2CharginoCharginoPowheg: public MEPP2GauginoGauginoPowheg {
 
 public:
 
@@ -283,7 +283,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2CharginoCharginoPowheg,1> {
   /** Typedef of the first base class of MEPP2CharginoCharginoPowheg. */
-  typedef Herwig::NLODrellYanBase NthBase;
+  typedef Herwig::MEPP2GauginoGauginoPowheg NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

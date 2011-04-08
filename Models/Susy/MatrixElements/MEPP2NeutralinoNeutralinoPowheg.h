@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2NeutralinoNeutralinoPowheg class.
 //
 
-#include "NLODrellYanBase.h"
+#include "MEPP2GauginoGauginoPowheg.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
@@ -23,7 +23,7 @@ using namespace ThePEG;
  * @see \ref MEPP2NeutralinoNeutralinoPowhegInterfaces "The interfaces"
  * defined for MEPP2NeutralinoNeutralinoPowheg.
  */
-class MEPP2NeutralinoNeutralinoPowheg: public NLODrellYanBase {
+class MEPP2NeutralinoNeutralinoPowheg: public MEPP2GauginoGauginoPowheg {
 
 public:
 
@@ -274,7 +274,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2NeutralinoNeutralinoPowheg,1> {
   /** Typedef of the first base class of MEPP2NeutralinoNeutralinoPowheg. */
-  typedef Herwig::NLODrellYanBase NthBase;
+  typedef Herwig::MEPP2GauginoGauginoPowheg NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
