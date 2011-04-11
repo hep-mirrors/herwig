@@ -132,7 +132,10 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   else if(abs(ihiggs)==37) {
     output *= -sqrt(2.);
     int id2=abs(b->id());
-    if(id2<id) swap(id,id2);
+    if(id2<id) {
+      swap(id,id2);
+      swap(a,b);
+    }
     if(_idlast.first!=id||_idlast.second!=id2||q2!=_q2last) {
       _idlast.first =id ;
       _idlast.second=id2;
@@ -141,7 +144,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     }
     double rgt = _masslast.first *_tanb/_mw;
     double lft = _masslast.second/_tanb/_mw;
-    if(ihiggs<0) swap(lft,rgt);
+    if(ihiggs>0) swap(lft,rgt);
     right(rgt);
     left (lft);
   }

@@ -7,7 +7,6 @@ LeptonME \
 MCPWNLO \
 PGSInterface \
 RadiativeZPrime \
-RootInterface \
 TauAnalysis
 
 

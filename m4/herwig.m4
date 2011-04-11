@@ -157,7 +157,7 @@ if test "x$with_fastjet" != "xno"; then
 	oldLIBS="$LIBS"
 	oldLDFLAGS="$LDFLAGS"
 	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $FASTJETLIBS"
+	LIBS="$LIBS `echo $FASTJETLIBS | sed -e 's!-R.* ! !'`"
 	LDFLAGS="$LDFLAGS"
 	CPPFLAGS="$CPPFLAGS $FASTJETINCLUDE"
 
@@ -337,6 +337,15 @@ if test -n "$GCC"; then
 		AM_CPPFLAGS="$AM_CPPFLAGS -D_GLIBCXX_DEBUG"
 	fi
 fi
+
+dnl do an actual capability check on ld instead of this workaround
+case "${host}" in
+  *-darwin*) 
+     ;;
+  *)
+     AM_LDFLAGS="-Wl,--enable-new-dtags"
+     ;;
+esac
 
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])

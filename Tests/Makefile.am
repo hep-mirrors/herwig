@@ -173,6 +173,14 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
+Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
+                Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
+                Rivet-LHC-7-Jets-5  Rivet-LHC-7-Jets-6 \
+                Rivet-LHC-7-Jets-7  Rivet-LHC-7-UE	
+	rm -rf Rivet-LHC-Jets
+	python/merge-LHC-Jets
+	rivet-mkhtml --no-mc-errs -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
+
 Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
             Rivet-Star-Jets-2 Rivet-Star-Jets-3 \
             Rivet-Star-Jets-4

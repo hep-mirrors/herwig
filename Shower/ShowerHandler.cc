@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -273,9 +273,7 @@ void ShowerHandler::cascade() {
     return;
   }
   // generate the multiple scatters use modified pdf's now:
-  // We need newpdf to be in scope through the rest of this function.
-  pair <PDFPtr, PDFPtr> newpdf;
-  setMPIPDFs(newpdf);
+  setMPIPDFs();
   // additional "hard" processes
   unsigned int tries(0);
   // This is the loop over additional hard scatters (most of the time
@@ -689,26 +687,28 @@ void ShowerHandler::boostCollision(bool boost) {
   if(!boost) boost_.invert();
 }
 
-// DO NOT CHANGE THIS SIGNATURE to return the PDFPtr pair. They go out of scope!
-void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
+void ShowerHandler::setMPIPDFs() {
 
-  // first have to check for MinBiasPDF
-  tcMinBiasPDFPtr first = dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf());
-  if(first)
-    newpdf.first = new_ptr(MPIPDF(first->originalPDF()));
-  else
-    newpdf.first = new_ptr(MPIPDF(firstPDF().pdf()));
+  if ( !mpipdfs_.first ) {
+    // first have to check for MinBiasPDF
+    tcMinBiasPDFPtr first = dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf());
+    if(first)
+      mpipdfs_.first = new_ptr(MPIPDF(first->originalPDF()));
+    else
+      mpipdfs_.first = new_ptr(MPIPDF(firstPDF().pdf()));
+  }
 
-
-  tcMinBiasPDFPtr second = dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf());
-  if(second)
-    newpdf.second = new_ptr(MPIPDF(second->originalPDF()));
-  else
-    newpdf.second = new_ptr(MPIPDF(secondPDF().pdf()));
-
+  if ( !mpipdfs_.second ) {
+    tcMinBiasPDFPtr second = dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf());
+    if(second)
+      mpipdfs_.second = new_ptr(MPIPDF(second->originalPDF()));
+    else
+      mpipdfs_.second = new_ptr(MPIPDF(secondPDF().pdf()));
+  }
 
   // reset the PDFs stored in the base class
-  resetPDFs(newpdf);
+  resetPDFs(mpipdfs_);
+
 }
 
 bool ShowerHandler::isResolvedHadron(tPPtr particle) {

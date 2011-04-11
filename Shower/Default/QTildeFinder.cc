@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeFinder.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -139,7 +139,6 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
     //    occurs for (ktilde_b-1)=(ktilde_c-c)=(1/2)*(1-a+c+lambda) 
     //  - We find the most 'smooth' way to populate the phase space
     //    occurs for...
-    Lorentz5Momentum pa = pb-pc;
     Energy2 mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
     double c=sqr(ppair.second->mass())/mb2;

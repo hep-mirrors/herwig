@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -71,7 +71,7 @@ public:
 			  _forcedSplitScale(2.5*GeV),
 			  _range(1.1), _zbin(0.05),_ybin(0.),
 			  _nbinmax(100), DISRemnantOpt_(0),
-			  pomeronStructure_(0) {}
+			  pomeronStructure_(0), mg_(ZERO) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -205,6 +205,7 @@ protected:
   virtual void doinit() {
     Interfaced::doinit();
     _ybin=0.25/_zbin;
+    mg_ = getParticleData(ParticleID::g)->constituentMass();
   }
   //@}
 
@@ -539,6 +540,11 @@ private:
    */
   unsigned int pomeronStructure_;
   //@}
+
+  /**
+   * The gluon constituent mass.
+   */
+  Energy mg_;
 
 };
 

@@ -9,4 +9,4 @@ RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
 RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
 RSModelWWWGRVertex.cc RSModelWWWGRVertex.h\
 RSModelGGGGRVertex.cc RSModelGGGGRVertex.h 
-HwRSModel_la_LDFLAGS = -module -version-info 6:0:0
+HwRSModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0

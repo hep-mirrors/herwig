@@ -5,8 +5,9 @@ AUTOMAKE_OPTIONS = -Wno-portability
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
-Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h
-Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
+Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
+BUILT_SOURCES = herwigopts.c herwigopts.h
+Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
@@ -15,13 +16,13 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = SPhenoSPS1a.spc NMSSM.spc MUED.model MSSM.model NMSSM.model\
-              RS.model ADD.model Leptoquark.model
+              RS.model ADD.model Leptoquark.model ColourRec.LEPtune
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
              LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in\
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
 	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-diffractive.in \
-             LHC-GammaGamma.in LHC-LQ.in
+             LHC-GammaGamma.in LHC-LQ.in LHC-UE7-1.in
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 
@@ -30,12 +31,13 @@ pkgdata_DATA = Makefile-UserModules
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
-  multi.test *.output probs.test chisq.value
+  multi.test *.output probs.test chisq.value \
+  LHC-RS-BR.spc LHC-MUED-no3body-BR.spc LHC-MSSM-BR.spc
 
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in --exitonerror
+	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D --exitonerror
 
 check_BSM_Full=
 check_BSM=
@@ -73,8 +75,8 @@ link-helper-files:
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read $< --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 --exitonerror
+	./Herwig++ read $< -D --exitonerror
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D --exitonerror
 
 ## valgrind targets ##
 
@@ -83,12 +85,12 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -d 1 -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read -d 1 LHC.in &> /tmp/valgrind-read.log
+	$(VALGRIND) ./Herwig++ read -d1 -D LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -d 1 -N5 LHC.run &> /tmp/valgrind-run.log
+	$(VALGRIND) ./Herwig++ run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
 
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
@@ -121,4 +123,10 @@ unregister-from-thepeg-repo:
 		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
 	fi
 
-include $(top_srcdir)/Utilities/Makefile.am.versionstring
+EXTRA_DIST = herwigopts.ggo
+
+GENGETOPT = gengetopt
+
+%opts.h %opts.c : %opts.ggo
+	$(GENGETOPT) < $<
+

@@ -12,4 +12,4 @@ SOPHTY.h SOPHTY.cc \
 FFDipole.cc  FFDipole.fh  FFDipole.h \
 IFDipole.cc  IFDipole.fh  IFDipole.h \
 YFSFormFactors.cc  YFSFormFactors.h
-HwSOPHTY_la_LDFLAGS = -module -version-info 1:1:0
+HwSOPHTY_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0

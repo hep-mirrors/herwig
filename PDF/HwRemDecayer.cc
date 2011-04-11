@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -763,7 +763,6 @@ Energy HwRemDecayer::softPt() const {
 void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2, 
 				  Lorentz5Momentum &g1, Lorentz5Momentum &g2) const {
 
-  const Energy mg(0.75*GeV);
   g1 = Lorentz5Momentum();
   g2 = Lorentz5Momentum();
   //All necessary variables for the two soft gluons
@@ -800,8 +799,8 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
 
-  ig1.setMass(mg);
-  ig2.setMass(mg);
+  ig1.setMass(mg_);
+  ig2.setMass(mg_);
   ig1.rescaleEnergy();
   ig2.rescaleEnergy();
 
@@ -810,15 +809,15 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   Boost boostv(cmf.boostVector());
 
   //outgoing gluons in cmf
-  g1.setMass(mg);
-  g2.setMass(mg);
+  g1.setMass(mg_);
+  g2.setMass(mg_);
 
   g1.setX(pt*cos(phi));
   g2.setX(-pt*cos(phi));
   g1.setY(pt*sin(phi));
   g2.setY(-pt*sin(phi));
   
-  pz2 = cmf.m2()/4 - sqr(mg) - sqr(pt);
+  pz2 = cmf.m2()/4 - sqr(mg_) - sqr(pt);
 
   if(pz2/GeV2 < 0.0){
     if(dbg)
@@ -1065,13 +1064,15 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range 
      << _zbin << _ybin << _nbinmax << _alpha << DISRemnantOpt_
-     << maxtrySoft_ << colourDisrupt_ << pomeronStructure_;
+     << maxtrySoft_ << colourDisrupt_ << pomeronStructure_
+     << ounit(mg_,GeV);
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range 
      >> _zbin >> _ybin >> _nbinmax >> _alpha >> DISRemnantOpt_
-     >> maxtrySoft_ >> colourDisrupt_ >> pomeronStructure_;
+     >> maxtrySoft_ >> colourDisrupt_ >> pomeronStructure_
+     >> iunit(mg_,GeV);
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
