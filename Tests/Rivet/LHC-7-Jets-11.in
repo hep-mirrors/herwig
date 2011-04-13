@@ -16,6 +16,8 @@ cd /Herwig/MatrixElements
 insert SimpleQCD:MatrixElements[0] MEQCD2to2
 set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
 set /Herwig/Cuts/JetKtCut:MinKT 20.
+set /Herwig/Cuts/QCDCuts:MHatMin 600.*GeV
+
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -24,8 +26,6 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 # select the analyses
 ##################################################
 
-# ATLAS jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
 
@@ -33,4 +33,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-Jets-2 LHCGenerator
+saverun LHC-7-Jets-11 LHCGenerator
