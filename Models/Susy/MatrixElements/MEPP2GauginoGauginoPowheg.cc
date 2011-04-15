@@ -113,7 +113,7 @@ finiteVirtual(Energy ms, Energy2 mb2,
 //   cerr << "testing tg,ug" << tg/GeV2<< " " <<ug/GeV2<< "\n";
 //   cerr << "testing t1,u1" << t1/GeV2<< " " <<u1/GeV2<< "\n";
 //   cerr << "testing t2,u2" << t2/GeV2<< " " <<u2/GeV2<< "\n";
-
+  
 //   cerr << "testing pieces A" << b_s << " " << b_t << " " << b_u<< "\n";
 //   cerr << "testing pieces B" << b_tx << " " << b_tm<< "\n";
 //   cerr << "testing pieces C" << b_ux << " " << b_um<< "\n";
@@ -122,11 +122,10 @@ finiteVirtual(Energy ms, Energy2 mb2,
 
  
   // test of the LO
-  // //   double test = 0.5*(b_s + b_t + b_u)/16./sqr(Constants::pi);
-  //   double test = 0.5*sqr(ee*ee)*(b_s+b_t+b_u)/3./16./sqr(Constants::pi)/12.;
-  
-  //   cerr << "testing " << test << " " << loWeight() << " "
-  //        << test/loWeight() << "\n";
+//   double ee=0.308016122;
+//   double test = 0.5*sqr(ee*ee)*(b_s+b_t+b_u)/3./16./sqr(Constants::pi)/12.;
+//   cerr << "testing LO " << test << " " << loWeight() << " "
+//        << test/loWeight() << "\n";
   // now for the finite piece
   Complex values[26];
   // LO like piece
@@ -207,7 +206,6 @@ finiteVirtual(Energy ms, Energy2 mb2,
   values[11] += -6.*B0s*b_s;
   values[11] += -4.*B0s*(b_tx*tHat()*ts/t1/t2+b_ux*uHat()*us/u1/u2);
   // cerr << "testing L " << values[11] << "\n";
-  complex<InvEnergy2> test = SusyLoopIntegral::C0(m12,eps,tHat(),eps2,ms  ,mg  );
   double C01tsg = ( sHat()*SusyLoopIntegral::C0(m12,eps,tHat(),eps2,ms  ,mg  )).real();
   values[12] +=  4.*C01tsg*Cv[0]*b_t/sHat()/t1*m1*mg*(mg2-ms2-t1);
   values[12] +=  2.*C01tsg*b_um*us/sqr(sHat())*(2.*(mg2-ms2)-t1);

@@ -243,7 +243,7 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   ee = vertex2->electroMagneticCoupling(scale()); 
   Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
   vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL->CC());
-  Cl[1] =  -0.5*vertex2->right()*vertex2->norm()/ee;
+  Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
   Cl[2] = Cl[0];
   Cl[3] = Cl[1];
   // right squark couplings
@@ -251,7 +251,7 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkR);
   Cr[0] = 0.5*vertex2->right() *vertex2->norm()/ee;
   vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkR->CC());
-  Cr[1] = 0.5*vertex2->left() *vertex2->norm()/ee;
+  Cr[1] = 0.5*conj(vertex2->left() *vertex2->norm())/ee;
   Cr[2] = Cr[0];
   Cr[3] = Cr[1];
   // s-channel
