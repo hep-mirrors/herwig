@@ -16,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
@@ -29,11 +30,13 @@ IBPtr ResonantProcessConstructor::fullclone() const {
 }
 
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << incoming_ << intermediates_ << outgoing_ << processOption_;
+  os << incoming_ << intermediates_ << outgoing_ 
+     << processOption_ << scaleFactor_;
 }
 
 void ResonantProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> incoming_ >> intermediates_ >> outgoing_ >> processOption_;
+  is >> incoming_ >> intermediates_ >> outgoing_ 
+     >> processOption_ >> scaleFactor_;
 }
 
 ClassDescription<ResonantProcessConstructor> 
@@ -91,6 +94,14 @@ void ResonantProcessConstructor::Init() {
      "Inclusive",
      "Generate all modes which are allowed for the on-shell intermediate particle",
      3);
+
+  static Parameter<ResonantProcessConstructor,double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The prefactor used in the scale calculation. The scale used is"
+     " sHat multiplied by this prefactor",
+     &ResonantProcessConstructor::scaleFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
 }
 
 void ResonantProcessConstructor::doinit() {
@@ -332,7 +343,7 @@ createMatrixElement(const HPDiagram & diag) const {
     return;
   }
   matrixElement->setProcessInfo(HPDVector(1, diag),
-				colourFlow(extpart), debug(),0);
+				colourFlow(extpart), debug(),0,scaleFactor_);
   generator()->preinitInterface(subProcess(), "MatrixElements", 
 				subProcess()->MEs().size(),
 				"insert", matrixElement->fullName()); 
