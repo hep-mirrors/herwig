@@ -462,7 +462,8 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< Exception::runerror;
   }
   else
-    throw Exception() << "Unknown colour for the decaying particle in "
+    throw Exception() << "Unknown colour "
+		      << in->iColour() << " for the decaying particle in "
 		      << "GeneralTwoBodyDecayer::colourFactor() for "
 		      << in->PDGName() << " -> "
 		      << out1->PDGName() << " " << out2->PDGName() 
