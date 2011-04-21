@@ -22,7 +22,18 @@ using namespace Herwig;
 using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
-			     _q2last(0.*sqr(MeV)) {
+			     _q2last(0.*sqr(MeV)) 
+{}
+
+void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
+  os << _ckm;
+}
+  
+void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _ckm;
+}
+  
+void SMFFWVertex::doinit() {
   // particles for outgoing W-
   // quarks
   for(int ix=1;ix<6;ix+=2) {
@@ -45,17 +56,6 @@ SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
   for(int ix=11;ix<17;ix+=2) {
     addToList(-ix-1, ix, 24);
   }
-}
-
-void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _ckm;
-}
-  
-void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _ckm;
-}
-  
-void SMFFWVertex::doinit() {
   ThePEG::Helicity::FFVVertex::doinit();
   Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
