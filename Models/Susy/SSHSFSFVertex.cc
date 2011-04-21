@@ -28,7 +28,10 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theMw(ZERO), theMz(ZERO), theMu(ZERO), 
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
-				 theSF2Last(0) {
+				 theSF2Last(0) 
+{}
+
+void SSHSFSFVertex::doinit() {
   int higgs = 25;
   //h0,H0
   for(unsigned int i = 0; i < 2; ++i) {
@@ -104,9 +107,6 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
     addToList(-37, 1000001 + ii, -1000000 - ii);
     addToList(-37, 1000001 + ii, -2000000 - ii);
   }
-}
-
-void SSHSFSFVertex::doinit() {
   SSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

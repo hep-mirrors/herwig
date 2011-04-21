@@ -29,15 +29,6 @@ IBPtr SMFFHVertex::fullclone() const {
 
 
 SMFFHVertex::SMFFHVertex()  {
-  // PDG codes for the particles
-  // the quarks
-  for(int ix=1;ix<7;++ix) {
-    addToList(-ix, ix, 25);
-  }
-  // the leptons
-  for(int ix=11;ix<17;ix+=2) {
-    addToList(-ix, ix, 25);
-  }
   // set up for the couplings
   _couplast=InvEnergy();
   _idlast=0;
@@ -47,6 +38,15 @@ SMFFHVertex::SMFFHVertex()  {
 }
 
 void SMFFHVertex::doinit() {
+  // PDG codes for the particles
+  // the quarks
+  for(int ix=1;ix<7;++ix) {
+    addToList(-ix, ix, 25);
+  }
+  // the leptons
+  for(int ix=11;ix<17;ix+=2) {
+    addToList(-ix, ix, 25);
+  }
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) 
     throw InitException();

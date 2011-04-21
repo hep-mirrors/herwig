@@ -21,11 +21,11 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
-				     theq2Last(ZERO), theCoupLast(0.) {
-  addToList(23, 5100036, 5100025);
-}
+				     theq2Last(ZERO), theCoupLast(0.) 
+{}
 
 void UEDZ0A1h1Vertex::doinit() {
+  addToList(23, 5100036, 5100025);
   VSSVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

@@ -22,7 +22,10 @@ using namespace Herwig;
 
 UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
-				    thefermALast(0), thefermBLast(0) {
+				    thefermALast(0), thefermBLast(0) 
+{}
+
+void UEDF1F1W0Vertex::doinit() {
   //outgoing W+
   for( long i = 2; i < 17; i += 2 ) {
     if( i == 7 ) i += 5;
@@ -43,9 +46,6 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO),
   }
   addToList(-6100005, 5100006, -24);
   addToList(-5100005, 6100006, -24);
-}
-
-void UEDF1F1W0Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)

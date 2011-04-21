@@ -19,11 +19,11 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-ADDModelSSGRVertex::ADDModelSSGRVertex() : kappa_(ZERO), r_(ZERO) {
-  addToList(25,25,39);
-}
+ADDModelSSGRVertex::ADDModelSSGRVertex() : kappa_(ZERO), r_(ZERO) 
+{}
 
 void ADDModelSSGRVertex::doinit() {
+  addToList(25,25,39);
   SSTVertex::doinit();
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD) 

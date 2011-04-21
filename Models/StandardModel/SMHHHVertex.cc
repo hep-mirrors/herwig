@@ -13,9 +13,8 @@
 
 using namespace Herwig;
 
-SMHHHVertex::SMHHHVertex() : couplast_(0.), q2last_(ZERO) {
-  addToList(25,25,25);
-}
+SMHHHVertex::SMHHHVertex() : couplast_(0.), q2last_(ZERO) 
+{}
 
 IBPtr SMHHHVertex::clone() const {
   return new_ptr(*this);
@@ -45,6 +44,7 @@ void SMHHHVertex::Init() {
 }
 
 void SMHHHVertex::doinit() {
+  addToList(25,25,25);
   SSSVertex::doinit();
   ratio_ = -1.5*sqr(getParticleData(ParticleID::h0)->mass())/
     getParticleData(ParticleID::Wplus)->mass();

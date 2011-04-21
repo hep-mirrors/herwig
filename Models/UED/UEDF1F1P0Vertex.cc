@@ -22,7 +22,10 @@ using namespace Herwig;
 
 UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
 				     thefermLast(0), theLRLast(0.0), 
-				     theCharges(3) {
+				     theCharges(3) 
+{}
+
+void UEDF1F1P0Vertex::doinit() {
   long photon = 22;
   //quarks
   for(long i = 1; i < 7; ++i) {
@@ -38,9 +41,6 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
     //right
     addToList(-6100000 - i, 6100000 + i, photon);
   }
-}
-
-void UEDF1F1P0Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

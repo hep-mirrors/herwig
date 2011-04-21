@@ -57,7 +57,10 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 }
 
 SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
-			     _couplast(0.0), _q2last(ZERO) {
+			     _couplast(0.0), _q2last(ZERO) 
+{}
+
+void SMFFZVertex::doinit() {
   // PDG codes for the particles
   // the quarks
   for(int ix=1;ix<7;++ix) {
@@ -67,9 +70,6 @@ SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
   for(int ix=11;ix<17;++ix) {
     addToList(-ix, ix, 23);
   }
-}
-
-void SMFFZVertex::doinit() {
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sin2ThetaW();
   double fact = 0.25/sqrt(sw2*(1.-sw2));
