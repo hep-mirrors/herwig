@@ -20,14 +20,8 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSGFSVertex::SSGFSVertex() :_q2last(0.*GeV2),_couplast(0.), 
-			    _id1last(0), _id2last(0) {
-  for(long ix=1;ix<7;++ix) {
-    addToList(1000021, ix, -(ix+1000000));
-    addToList(1000021, ix, -(ix+2000000));
-    addToList(1000021, -ix, (ix+1000000));
-    addToList(1000021, -ix, (ix+2000000));
-  }
-}
+			    _id1last(0), _id2last(0) 
+{}
 
 void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _stop << _sbottom << gluinoPhase_;
@@ -129,6 +123,12 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 }
 
 void SSGFSVertex::doinit() {
+  for(long ix=1;ix<7;++ix) {
+    addToList(1000021, ix, -(ix+1000000));
+    addToList(1000021, ix, -(ix+2000000));
+    addToList(1000021, -ix, (ix+1000000));
+    addToList(1000021, -ix, (ix+2000000));
+  }
   FFSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
 

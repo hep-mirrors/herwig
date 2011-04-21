@@ -35,12 +35,8 @@ SSHPPVertex::SSHPPVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), 
 			     theSinBmA(0.), theCosBmA(0.), 
 			     theCouplast(0.), 
-			     theq2last(), theHaveCoeff(false), theLastID(0) {
-  //PDG codes for particles at vertices
-  addToList(22,22,25);
-  addToList(22,22,35);
-  addToList(22,22,36);
-}
+			     theq2last(), theHaveCoeff(false), theLastID(0) 
+{}
 
 void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
   os << theMSSM << theSw << ounit(theMw,GeV) << ounit(theZfact,GeV) 
@@ -325,6 +321,10 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 // }
 
 void SSHPPVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(22,22,25);
+  addToList(22,22,35);
+  addToList(22,22,36);
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM ) 
     throw InitException()

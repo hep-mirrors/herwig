@@ -18,7 +18,20 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
 				   _tanb(0.), _idlast(make_pair(0,0)),
 				   _q2last(0.*MeV2), 
 				   _masslast(make_pair(0.*MeV,0*MeV)),
-				   _couplast(0.) {
+				   _couplast(0.) 
+{}
+
+void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {
+  os << _mixS << _mixP << ounit(_mw,GeV)
+     << _sinb << _cosb << _tanb << _sw << _theSM;
+}
+
+void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _mixS >> _mixP >> iunit(_mw,GeV)
+     >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
+}
+
+void NMSSMFFHVertex::doinit() {
   // the quarks and neutral higgs
   int in[5]={25,35,45,36,46};
   for(unsigned int iy=0;iy<5;++iy)
@@ -47,19 +60,6 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
   //H+
   for(int ix=0;ix<3;++ix)
     addToList( -(2*ix+12), 2*ix+11, 37 );
-}
-
-void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _mixS << _mixP << ounit(_mw,GeV)
-     << _sinb << _cosb << _tanb << _sw << _theSM;
-}
-
-void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _mixS >> _mixP >> iunit(_mw,GeV)
-     >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
-}
-
-void NMSSMFFHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

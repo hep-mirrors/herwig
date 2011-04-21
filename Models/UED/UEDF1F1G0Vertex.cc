@@ -21,14 +21,8 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDF1F1G0Vertex::UEDF1F1G0Vertex() 
-  : theq2Last(ZERO), theCoupLast(0.) {
-  long boson = 21;
-  //QQ
-  for(long i = 5100001; i < 6100007; ++i) {
-    if(i == 5100007) i += 999994;
-    addToList(-i, i, boson);
-  }
-}
+  : theq2Last(ZERO), theCoupLast(0.) 
+{}
 
 NoPIOClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
 // Definition of the static class description member.
@@ -70,6 +64,12 @@ void UEDF1F1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << Exception::warning;
 }
 void UEDF1F1G0Vertex::doinit() {
+  long boson = 21;
+  //QQ
+  for(long i = 5100001; i < 6100007; ++i) {
+    if(i == 5100007) i += 999994;
+    addToList(-i, i, boson);
+  }
   FFVVertex::doinit();
   orderInGs(1);
   orderInGem(0);

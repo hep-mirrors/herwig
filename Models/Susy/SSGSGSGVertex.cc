@@ -20,9 +20,8 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
-  addToList(1000021, 1000021, 21);
-}
+SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) 
+{}
 
 NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
 // Definition of the static class description member.
@@ -61,6 +60,7 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 }
 
 void SSGSGSGVertex::doinit() {
+  addToList(1000021, 1000021, 21);
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

@@ -22,7 +22,11 @@ using namespace Herwig;
 
 SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
-			     _rightlast(0.) {
+			     _rightlast(0.) 
+{}
+
+
+void SSCNWVertex::doinit() {
   long neu[] = { 1000022, 1000023, 1000025, 1000035, 1000045 };
   long cha[] = { 1000024, 1000037 };
   // sign == -1 outgoing W-, sign == +1 outgoing W+
@@ -30,10 +34,6 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO),
     for(unsigned int ine = 0; ine < 5; ++ine)
       for(unsigned int ic = 0; ic < 2; ++ic)
 	addToList(-sign*cha[ic], neu[ine], sign*24);
-}
-
-
-void SSCNWVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS)

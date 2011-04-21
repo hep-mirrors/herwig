@@ -25,14 +25,14 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO),
 			     theh0Zfact(ZERO), theH0Zfact(ZERO),
 			     theCoupLast(ZERO), theElast(0.0),
 			     theq2last(ZERO), theHlast(0), 
-			     theGBlast(0) {
+			     theGBlast(0) 
+{}
+
+void SSWWHVertex::doinit() {
   addToList(23,23,25);
   addToList(-24,24,25);
   addToList(23,23,35);
   addToList(-24,24,35);
-}
-
-void SSWWHVertex::doinit() {
   VVSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !model )

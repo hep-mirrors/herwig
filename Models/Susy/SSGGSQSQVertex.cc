@@ -19,16 +19,8 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
-  //L-L squarks
-  for(long ix=1000001;ix<1000007;++ix) {
-    addToList(21,21,ix,-ix);
-  }
-  //R-R squarks
-  for(long ix=2000001;ix<2000007;++ix) {
-    addToList(21,21,ix,-ix);
-  }
-}
+SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) 
+{}
 
 NoPIOClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
 // Definition of the static class description member.
@@ -50,6 +42,14 @@ void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
 }
 
 void SSGGSQSQVertex::doinit() {
+  //L-L squarks
+  for(long ix=1000001;ix<1000007;++ix) {
+    addToList(21,21,ix,-ix);
+  }
+  //R-R squarks
+  for(long ix=2000001;ix<2000007;++ix) {
+    addToList(21,21,ix,-ix);
+  }
   orderInGs(2);
   orderInGem(0);
   VVSSVertex::doinit();

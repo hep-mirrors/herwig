@@ -17,7 +17,36 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _triTp(0.*MeV), _triBt(0.*MeV), _triTa(0.*MeV), _lambda(0.),
   _lambdaVEV(0.*MeV), _v1(0.*MeV), _v2(0.*MeV), _sw(0.), _cw(0.), 
   _mw(0.*MeV), _mz(0.*MeV), _sb(0.), _cb(0.), _tb(0.), _q2last(0.*MeV2), 
-  _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
+  _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) 
+{}
+
+void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {
+  os << _theSM << _mixS << _mixP << _mixTp << _mixBt << _mixTa
+     << ounit(_triTp,GeV) << ounit(_triBt,GeV) << ounit(_triTa,GeV) 
+     << _lambda << ounit(_lambdaVEV,GeV) << ounit(_v1,GeV) << ounit(_v2,GeV)
+     << _sw << _cw << ounit(_mw,GeV) << ounit(_mz,GeV) << _sb << _cb
+     << _tb;
+}
+
+
+void NMSSMHSFSFVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _theSM >> _mixS >> _mixP >> _mixTp >> _mixBt >> _mixTa
+     >> iunit(_triTp,GeV) >> iunit(_triBt,GeV) >> iunit(_triTa,GeV) 
+     >> _lambda >> iunit(_lambdaVEV,GeV) >> iunit(_v1,GeV) >> iunit(_v2,GeV) 
+     >> _sw >> _cw >> iunit(_mw,GeV) >> iunit(_mz,GeV) >> _sb >> _cb >> _tb;
+}
+
+ClassDescription<NMSSMHSFSFVertex> NMSSMHSFSFVertex::initNMSSMHSFSFVertex;
+// Definition of the static class description member.
+
+void NMSSMHSFSFVertex::Init() {
+
+  static ClassDocumentation<NMSSMHSFSFVertex> documentation
+    ("The coupling of Higgs bosons to sfermions in the MSSM.");
+
+}
+
+void NMSSMHSFSFVertex::doinit() {
   //CP even
   int even[3] = {25, 35, 45};
   for(size_t h = 0; h < 3; ++h ) {
@@ -101,35 +130,6 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
     //RL
     addToList(+37, -l - 1000001, l + 2000000);
   }
-}
-
-void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << _mixS << _mixP << _mixTp << _mixBt << _mixTa
-     << ounit(_triTp,GeV) << ounit(_triBt,GeV) << ounit(_triTa,GeV) 
-     << _lambda << ounit(_lambdaVEV,GeV) << ounit(_v1,GeV) << ounit(_v2,GeV)
-     << _sw << _cw << ounit(_mw,GeV) << ounit(_mz,GeV) << _sb << _cb
-     << _tb;
-}
-
-
-void NMSSMHSFSFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> _mixS >> _mixP >> _mixTp >> _mixBt >> _mixTa
-     >> iunit(_triTp,GeV) >> iunit(_triBt,GeV) >> iunit(_triTa,GeV) 
-     >> _lambda >> iunit(_lambdaVEV,GeV) >> iunit(_v1,GeV) >> iunit(_v2,GeV) 
-     >> _sw >> _cw >> iunit(_mw,GeV) >> iunit(_mz,GeV) >> _sb >> _cb >> _tb;
-}
-
-ClassDescription<NMSSMHSFSFVertex> NMSSMHSFSFVertex::initNMSSMHSFSFVertex;
-// Definition of the static class description member.
-
-void NMSSMHSFSFVertex::Init() {
-
-  static ClassDocumentation<NMSSMHSFSFVertex> documentation
-    ("The coupling of Higgs bosons to sfermions in the MSSM.");
-
-}
-
-void NMSSMHSFSFVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
   if( !nmssm )

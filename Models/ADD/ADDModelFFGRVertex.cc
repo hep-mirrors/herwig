@@ -41,15 +41,15 @@ void ADDModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) {
+ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) 
+{}
+
+void ADDModelFFGRVertex::doinit() {
   // PDG codes for the particles
   // the quarks
   for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
   // the leptons
   for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
-}
-
-void ADDModelFFGRVertex::doinit() {
   FFTVertex::doinit();
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD)

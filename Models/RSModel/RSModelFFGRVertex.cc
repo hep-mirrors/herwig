@@ -41,15 +41,15 @@ void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) {
+RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) 
+{}
+
+void RSModelFFGRVertex::doinit() {
   // PDG codes for the particles
   // the quarks
   for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
   // the leptons
   for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
-}
-
-void RSModelFFGRVertex::doinit() {
   FFTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(!hwRS)

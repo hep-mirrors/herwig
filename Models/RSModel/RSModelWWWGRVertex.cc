@@ -21,12 +21,12 @@ using namespace ThePEG;
 
 RSModelWWWGRVertex::RSModelWWWGRVertex() 
   : kappa_(ZERO), _couplast(0.), 
-    _q2last(ZERO), _zfact(0.) {
-  addToList(24,-24, 22, 39);
-  addToList(24,-24, 23, 39);
-}
+    _q2last(ZERO), _zfact(0.) 
+{}
 
 void RSModelWWWGRVertex::doinit() {
+  addToList(24,-24, 22, 39);
+  addToList(24,-24, 23, 39);
   VVVTVertex::doinit();
   _zfact = sqrt((1.-sin2ThetaW())/sin2ThetaW());
   // set the graviton coupling 

@@ -41,14 +41,14 @@ void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(UnitRemoval::E * kappa_));
 }
 
-RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO) {
+RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO)
+{}
+
+void RSModelVVGRVertex::doinit() {
   addToList(23,23,39);
   addToList(22,22,39);
   addToList(24,-24,39);
   addToList(21,21,39);
-}
-
-void RSModelVVGRVertex::doinit() {
   VVTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(!hwRS)

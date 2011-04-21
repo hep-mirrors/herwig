@@ -21,15 +21,15 @@ NMSSMPPHVertex::NMSSMPPHVertex()
     _sb(0.), _cb(0.), 
     _kappa(0.),_vu(ZERO),_vd(ZERO),_s(ZERO),_theAl(ZERO),
     _masslast(make_pair(0.*MeV,0.*MeV)),_q2last(0.*MeV2),
-    _couplast(0.), _coup(0.), _hlast(0), _recalc(true) {
+    _couplast(0.), _coup(0.), _hlast(0), _recalc(true) 
+{}
+
+void NMSSMPPHVertex::doinit()  {
   addToList(22,22,25);
   addToList(22,22,35);
   addToList(22,22,36);
   addToList(22,22,45);
   addToList(22,22,46);
-}
-
-void NMSSMPPHVertex::doinit()  {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) {
     throw InitException() << "NMSSMPPHVertex::doinit - The SM pointer is null!"
