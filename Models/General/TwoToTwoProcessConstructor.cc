@@ -221,12 +221,10 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
+    VertexBasePtr vertex = model()->vertex(ix);
     if(excludedVertexSet_.find(vertex) != 
        excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);

@@ -151,12 +151,7 @@ void ResonantProcessConstructor::constructDiagrams() {
       }
     }
   }
-  // Get a pointer to the model in use
-  model()->init();
   size_t nvertices = model()->numberOfVertices(); 
-  //init the vertices
-  for(size_t iv = 0; iv < nvertices; ++iv)
-    model()->vertex(iv)->init();
   //To construct resonant diagrams loop over the incoming particles, intermediates
   //and vertices to find allowed diagrams. Need to exclude the diagrams that have 
   //the intermediate as an external particle as well
