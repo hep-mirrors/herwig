@@ -53,10 +53,10 @@ void StandardModel::doinit() {
     runningMass_->init();
   }
   //add Standard Model vertices
-  addVertex(FFZVertex_);
-  addVertex(FFPVertex_);
-  addVertex(FFGVertex_);
-  addVertex(FFWVertex_);
+  addVertex(vertexFFZ());
+  addVertex(vertexFFP());
+  addVertex(vertexFFG());
+  addVertex(vertexFFW());
   addVertex(vertexFFH());
   addVertex(vertexWWH());
   addVertex(GGGVertex_);
@@ -170,7 +170,7 @@ void StandardModel::Init() {
     ("ModelGenerator",
      "Pointer to ModelGenerator class",
      &StandardModel::modelGenerator_, false, false, true, true);
-  
+
   static ClassDocumentation<StandardModel> documentation
     ("The StandardModel class inherits from StandardModelBase"
      "and supplies additional couplings and access to the StandardModel"
