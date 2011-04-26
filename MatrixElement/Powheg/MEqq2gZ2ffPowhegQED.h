@@ -29,7 +29,8 @@ public:
    *  Enum for the type of Dipole
    */
   enum DipoleType {
-    II12,II21,FF34,FF43,IF13,IF14,IF23,IF24
+    II12,II21,FF34,FF43,
+    IF13,IF14,IF23,IF24
   };
 
 public:
@@ -553,6 +554,26 @@ private:
    *  Momenta of the particles for photon emission from the antilepton
    */
   mutable vector<Lorentz5Momentum> realEmissionQEDFFLepton4_;
+
+  /**
+   *  Momenta of the particles for photon emission from 13 dipole
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDIF13_;
+
+  /**
+   *  Momenta of the particles for photon emission from 23 dipole
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDIF23_;
+
+  /**
+   *  Momenta of the particles for photon emission from 14 dipole
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDIF14_;
+
+  /**
+   *  Momenta of the particles for photon emission from 24 dipole
+   */
+  mutable vector<Lorentz5Momentum> realEmissionQEDIF24_;
 
   /**
    *  Properties of the incoming particles

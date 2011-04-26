@@ -658,7 +658,7 @@ void MEqq2gZ2ffPowhegQED::Init() {
     (interfaceQEDContributions,
      "ISRPlusFSR",
      "Only include inital- and final-state QED radiation, no intereference",
-     2);
+     3);
 
 }
 
@@ -711,6 +711,11 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
     output += sqr(double(mePartonData()[2]->iCharge())/3.)*
       2.*EMfact_*(f1+fNS+VNS + f2*f2term_/loME_);
   }
+  // ISR/FSR interference
+  if((corrections_==2||corrections_==3) && QEDContributions_==0 ) {
+    // TODO add these
+  }
+  // return the total
   return output;
 }
 
@@ -838,7 +843,9 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
   }
   // real QED emission
   vector<double> realQED1(4,0.),realQED2(4,0.),
-    realQED3(2,0.),realQED4(2,0.);
+    realQED3(2,0.),realQED4(2,0.),
+    realQED5(2,0.),realQED6(2,0.),
+    realQED7(2,0.),realQED8(2,0.);
   if(corrections_==2||corrections_==3) {
     // ISR
     if(QEDContributions_!=2) {
@@ -858,7 +865,22 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 				   oldqPDF. first,0.,FF43);
       wgt += realQED3[0] + realQED4[0];
     }
-    // \todo need to include IF terms
+    // ISR/FSR interference
+    if(QEDContributions_==0) {
+      realQED5 = subtractedRealQED(x,z. first,zJac. first,
+				   oldqPDF. first,newqPDF. first,
+				   newpPDF. first, IF13);
+      realQED6 = subtractedRealQED(x,z. first,zJac. first,
+				   oldqPDF. first,newqPDF. first,
+				   newpPDF. first, IF14);
+      realQED7 = subtractedRealQED(x,z.second,zJac.second, 
+				   oldqPDF.second,newqPDF.second,
+				   newpPDF.second, IF23);
+      realQED8 = subtractedRealQED(x,z.second,zJac.second, 
+				   oldqPDF.second,newqPDF.second,
+				   newpPDF.second, IF24);
+      wgt += realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0];
+    }
   }
   if(isnan(wgt)||isinf(wgt)) {
     generator()->log() << "testing bad weight "
@@ -869,7 +891,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     generator()->log() << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
     assert(false);
   }
-  weights_.resize(11,0.);
+  weights_.resize(15,0.);
   if(corrections_==1||corrections_==3) {
     weights_[ 1] = realQCD1[1];
     weights_[ 2] = realQCD1[3];
@@ -883,6 +905,10 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     weights_[ 8] = realQED2[3];
     weights_[ 9] = realQED3[1];
     weights_[10] = realQED4[1];
+    weights_[11] = realQED5[1];
+    weights_[12] = realQED6[1];
+    weights_[13] = realQED7[1];
+    weights_[14] = realQED8[1];
   }
   if( contrib_ < 3 ) {
     weights_[0] = wgt;
@@ -1390,6 +1416,110 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
     output[1] = realFF.second*realFact;
     return output;
   }
+  // ISR/FSR interference
+  else if (dipole == IF13 || dipole == IF14 ||
+	   dipole == IF23 || dipole == IF24) {
+    // particles making up the dipole
+    int iin    = dipole == IF13 || dipole == IF14 ? 0 : 1;
+    int iother = iin == 0 ? 1 : 0;
+    int iout  = dipole == IF13 || dipole == IF23 ? 2 : 3;
+    double xB = iin==0 ? x.first : x.second;
+    // momentum of system
+    Lorentz5Momentum q = meMomenta()[iout]-meMomenta()[iin];
+    q.rescaleMass();
+    Energy  Q  = -q.mass();
+    Energy2 Q2 = sqr(Q);
+    // reduced mass
+    Energy mj = meMomenta()[iout].mass();
+    double mu2 = sqr(mj)/Q2;
+    // second integration variable
+    double vJac = (1.-mu2*z/(1.+mu2-z));
+    double vt = vTilde_*vJac;
+    // work out LT to Breit-Frame
+    Lorentz5Momentum pcmf = meMomenta()[iin]/xB+0.5/xB*q;
+    pcmf.rescaleMass();
+    LorentzRotation rot(-pcmf.boostVector());
+    Lorentz5Momentum pbeam = rot*meMomenta()[iin];
+    Axis axis(pbeam.vect().unit());
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    Lorentz5Momentum pl    = rot*meMomenta()[iother];
+    rot.rotateZ(-atan2(pl.y(),pl.x()));
+    // born incoming and outgoing momenta
+    Lorentz5Momentum pij = rot*meMomenta()[iout];
+    Lorentz5Momentum pat = rot*meMomenta()[iin ];
+    // generate the real emission momenta
+    double x1 = -(1.+mu2)/z;
+    double x2 = 1-mu2-vt*(1.+mu2)/z;
+    double x3 = 2.+x1-x2;
+    double z2=sqr(z);
+    double corr1 = -mu2/sqr(1+mu2)/vt/(1.-vt)/(1.-z)*
+      (-4.*vt*z2 + vt*vt*mu2*mu2 - 2*mu2*mu2*z
+       - 4 * mu2 * z2*z + 2 * z2 * mu2 * mu2 - mu2 * mu2 * vt
+       - 2 * z - 4 * vt * z2 * mu2 + 3 * vt * z - vt + 2 * z2
+       - 4 * z * mu2 - 2 * vt * mu2 + 4 * z2 * mu2 + vt * vt 
+       + 2 * vt * vt * mu2 + 6 * z * vt * mu2 + 3 * mu2 * mu2 * z * vt);
+    double xT = sqrt(4.*(1.-z)/z*vt*(1.-vt)*(1.+corr1));
+    // incoming momentum
+    Lorentz5Momentum pa(ZERO,ZERO,-0.5*x1*Q,-0.5*x1*Q,ZERO);
+    // outgoing momentum
+    Lorentz5Momentum pj( 0.5*Q*xT*cos(phi_), 0.5*Q*xT*sin(phi_),
+			-0.5*Q*x2,0.5*Q*sqrt(sqr(x2)+sqr(xT)+4.*mu2),mj);
+    Lorentz5Momentum pi(-0.5*Q*xT*cos(phi_),-0.5*Q*xT*sin(phi_),
+			-0.5*Q*x3,0.5*Q*sqrt(sqr(x3)+sqr(xT)       ),ZERO);
+    // boost back to the lab
+    rot.invert();
+    pa *= rot;
+    pi *= rot;
+    pj *= rot;
+    // new momenta
+    vector<Lorentz5Momentum> pnew(5);
+    // incoming
+    if(iin==0) {
+      pnew[0] = pa;
+      pnew[1] = meMomenta()[1];
+    }
+    else {
+      pnew[0] = meMomenta()[0];
+      pnew[1] = pa;
+    }
+    // outgoing
+    if(iout==2) {
+      pnew[2] = pj;
+      pnew[3] = meMomenta()[3];
+    }
+    else {
+      pnew[2] = meMomenta()[2];
+      pnew[3] = pj;
+    }
+    // emitted
+    pnew[4] = pi;
+    // phase-space prefactors
+    double phase = zJac*vJac/z*(1.+mu2);
+    if      ( dipole == IF13 ) {
+      realEmissionQEDIF13_ = pnew;
+    }
+    else if ( dipole == IF14 ) {
+      realEmissionQEDIF14_ = pnew;
+    }
+    else if ( dipole == IF23 ) {
+      realEmissionQEDIF23_ = pnew;
+    }
+    else if ( dipole == IF24 ) {
+      realEmissionQEDIF24_ = pnew;
+    }
+    else
+      assert(false);
+    vector<double> output(2,0.);
+    if(!(zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 )) {
+      pair<double,double> realIF = subtractedQEDMEqqbar(pnew,dipole,true);
+      double fact = EMfact_*phase*newqPDF/oldqPDF;
+      output[0] = realIF.first *fact;
+      output[1] = realIF.second*fact;
+    }
+    // return the answer
+    return output;
+  }
   else {
     assert(false);
     return vector<double>(4,0.);
@@ -1403,87 +1533,144 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   cPDVector particles(mePartonData());
   particles.push_back(gamma_);
   vector<double> me = realQEDME(particles,p);
+  // scale for the phase space
+  Energy2 scale(ZERO);
   /////////// compute the two II dipole terms ////////////////////////////
-  double x = (p[0]*p[1]-p[4]*p[1]-p[4]*p[0])/(p[0]*p[1]);
-  Lorentz5Momentum Kt = p[0]+p[1]-p[4];
-  vector<Lorentz5Momentum> pa(4),pb(4);
-  // momenta for q -> q g emission
-  pa[0] = x*p[0];
-  pa[1] =   p[1];
-  Lorentz5Momentum K = pa[0]+pa[1];
-  Lorentz5Momentum Ksum = K+Kt;
-  Energy2 K2 = K.m2();
-  Energy2 Ksum2 = Ksum.m2();
-  for(unsigned int ix=2;ix<4;++ix)
-    pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
-  // first LO matrix element
-  double lo1 = loME(mePartonData(),pa,false);
-  // momenta for qbar -> qbar g emission
-  pb[0] =   p[0];
-  pb[1] = x*p[1];
-  K = pb[0]+pb[1];
-  Ksum = K+Kt;
-  K2 = K.m2();
-  Ksum2 = Ksum.m2();
-  for(unsigned int ix=2;ix<4;++ix)
-    pb[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
-  // second LO matrix element
-  double lo2 = loME(mePartonData(),pb,false);
-  // II dipoles
-  InvEnergy2 DII[2] = {0.5/(p[0]*p[4])/x*(2./(1.-x)-(1.+x))*lo1,
-		       0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x))*lo2};
+  InvEnergy2 DII[2] = {ZERO,ZERO};
+  if(QEDContributions_!=2) {
+    double x = (p[0]*p[1]-p[4]*p[1]-p[4]*p[0])/(p[0]*p[1]);
+    Lorentz5Momentum Kt = p[0]+p[1]-p[4];
+    vector<Lorentz5Momentum> pa(4),pb(4);
+    // momenta for q -> q gamma emission
+    pa[0] = x*p[0];
+    pa[1] =   p[1];
+    Lorentz5Momentum K = pa[0]+pa[1];
+    Lorentz5Momentum Ksum = K+Kt;
+    Energy2 K2 = K.m2();
+    Energy2 Ksum2 = Ksum.m2();
+    for(unsigned int ix=2;ix<4;++ix)
+      pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
+    // first LO matrix element
+    double lo1 = loME(mePartonData(),pa,false);
+    // momenta for qbar -> qbar gamma emission
+    pb[0] =   p[0];
+    pb[1] = x*p[1];
+    K = pb[0]+pb[1];
+    Ksum = K+Kt;
+    K2 = K.m2();
+    Ksum2 = Ksum.m2();
+    for(unsigned int ix=2;ix<4;++ix)
+      pb[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2.*K*(Kt*p[ix])/K2;
+    // second LO matrix element
+    double lo2 = loME(mePartonData(),pb,false);
+    // II dipoles
+    DII[0] = 0.5/(p[0]*p[4])/x*(2./(1.-x)-(1.+x))*lo1;
+    DII[1] = 0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x))*lo2;
+    // charge factors
+    for(unsigned int ix=0;ix<2;++ix)
+      DII[ix] *= sqr(double(mePartonData()[0]->iCharge())/3.);
+    // phase-space factor
+    if(dipole==II12||dipole==II21) scale = sHat();
+  }
   /////////// compute the two FF dipole terms ////////////////////////////
   InvEnergy2 DFF[2]={ZERO,ZERO};
-  Lorentz5Momentum q = p[0]+p[1];
-  Energy2 Q2=q.m2();
-  Energy2 lambda = sqrt((Q2-sqr(p[2].mass()+p[3].mass()))*
-			(Q2-sqr(p[2].mass()-p[3].mass())));
-  Energy2 pT2final[2];
-  for(unsigned int iemit=0;iemit<2;++iemit) {
-    unsigned int ispect = iemit==0 ? 1 : 0;
-    Energy2 pipj = p[4      ] * p[2+iemit ];
-    Energy2 pipk = p[4      ] * p[2+ispect];
-    Energy2 pjpk = p[2+iemit] * p[2+ispect];
-    double y = pipj/(pipj+pipk+pjpk);
-    double z = pipk/(     pipk+pjpk);
-    Energy mij = sqrt(2.*pipj+sqr(p[2+iemit].mass()));
-    Energy2 lamB = sqrt((Q2-sqr(mij+p[2+ispect].mass()))*
- 			(Q2-sqr(mij-p[2+ispect].mass())));
-    Energy2 Qpk = q*p[2+ispect];
-    Lorentz5Momentum pkt = 
-      lambda/lamB*(p[2+ispect]-Qpk/Q2*q)
-      +0.5/Q2*(Q2+sqr(p[2+ispect].mass())-sqr(p[2+ispect].mass()))*q;
-    Lorentz5Momentum pijt = 
-      q-pkt;
-    double muj = p[2+iemit ].mass()/sqrt(Q2);
-    double muk = p[2+ispect].mass()/sqrt(Q2);
-    double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
-    double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
+  Energy2 pT2final[2]={ZERO,ZERO};
+  if(QEDContributions_!=1) {
+    Lorentz5Momentum q = p[0]+p[1];
+    Energy2 Q2=q.m2();
+    Energy2 lambda = sqrt((Q2-sqr(p[2].mass()+p[3].mass()))*
+			  (Q2-sqr(p[2].mass()-p[3].mass())));
+    for(unsigned int iemit=0;iemit<2;++iemit) {
+      unsigned int ispect = iemit==0 ? 1 : 0;
+      Energy2 pipj = p[4      ] * p[2+iemit ];
+      Energy2 pipk = p[4      ] * p[2+ispect];
+      Energy2 pjpk = p[2+iemit] * p[2+ispect];
+      double y = pipj/(pipj+pipk+pjpk);
+      double z = pipk/(     pipk+pjpk);
+      Energy mij = sqrt(2.*pipj+sqr(p[2+iemit].mass()));
+      Energy2 lamB = sqrt((Q2-sqr(mij+p[2+ispect].mass()))*
+			  (Q2-sqr(mij-p[2+ispect].mass())));
+      Energy2 Qpk = q*p[2+ispect];
+      Lorentz5Momentum pkt = 
+	lambda/lamB*(p[2+ispect]-Qpk/Q2*q)
+	+0.5/Q2*(Q2+sqr(p[2+ispect].mass())-sqr(p[2+ispect].mass()))*q;
+      Lorentz5Momentum pijt = 
+	q-pkt;
+      double muj = p[2+iemit ].mass()/sqrt(Q2);
+      double muk = p[2+ispect].mass()/sqrt(Q2);
+      double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
+      double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
       /(1.-y)/(1.-sqr(muj)-sqr(muk));
-    // transverse momentum
-    double x1 = 2.*p[2+iemit ]*q/Q2;
-    double x2 = 2.*p[2+ispect]*q/Q2;
-    pT2final[iemit] = 0.25*Q2/(sqr(x2)-4.*sqr(muk))*
-      ((sqr(x1)-4.*sqr(muj))*(sqr(x2)-4.*sqr(muk)) - 
-       sqr(2.*x1+2.*x2-2.-x1*x2-2.*sqr(muj)-2.*sqr(muk)));
-    // dipole term
-    DFF[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
-			   -vt/v*(2.-z+sqr(p[2+iemit].mass())/pipj));
-    // matrix element
-    vector<Lorentz5Momentum> lomom(4);
-    lomom[0] = p[0];
-    lomom[1] = p[1];
-    if(iemit==0) {
-      lomom[2] = pijt;
-      lomom[3] = pkt ;
+      // transverse momentum
+      double x1 = 2.*p[2+iemit ]*q/Q2;
+      double x2 = 2.*p[2+ispect]*q/Q2;
+      pT2final[iemit] = 0.25*Q2/(sqr(x2)-4.*sqr(muk))*
+	((sqr(x1)-4.*sqr(muj))*(sqr(x2)-4.*sqr(muk)) - 
+	 sqr(2.*x1+2.*x2-2.-x1*x2-2.*sqr(muj)-2.*sqr(muk)));
+      // dipole term
+      DFF[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
+			     -vt/v*(2.-z+sqr(p[2+iemit].mass())/pipj));
+      // matrix element
+      vector<Lorentz5Momentum> lomom(4);
+      lomom[0] = p[0];
+      lomom[1] = p[1];
+      if(iemit==0) {
+	lomom[2] = pijt;
+	lomom[3] = pkt ;
+      }
+      else {
+	lomom[3] = pijt;
+	lomom[2] = pkt ;
+      }
+      // leading-order matrix element
+      double lo = loME(mePartonData(),lomom,false);
+      DFF[iemit] *= lo*sqr(double(mePartonData()[2]->iCharge())/3.);
     }
-    else {
-      lomom[3] = pijt;
-      lomom[2] = pkt ;
+    // phase-space factpr
+    if(dipole==FF34||dipole==FF43) scale = sHat();
+  }
+  /////////// ISR/FSR interference ////////////////////////////
+  InvEnergy2 DIF[4]={ZERO,ZERO,ZERO,ZERO};
+  Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
+  if(QEDContributions_==0) {
+    for(unsigned int ix=0;ix<4;++ix) {
+      // incoming and outgoing particles in the dipole
+      unsigned int iin  = ix<2 ? 0 :1;
+      unsigned int iout = ix%2 == 0 ? 2 : 3;
+      // emission variables
+      double x = 1.-p[iout]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+      double z =    p[iin ]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+      // momenta for the born process
+      Lorentz5Momentum pat = x*p[iin];
+      Lorentz5Momentum pjt = p[4]+p[iout]-(1.-x)*p[iin];
+      vector<Lorentz5Momentum> pa(4);
+      for(unsigned iy=0;iy<4;++iy) {
+	if(iy==iin)       pa[iy] = pat;
+	else if(iy==iout) pa[iy] = pjt;
+	else              pa[iy] = p[iy];
+      }
+      // pT
+      Energy mj = p[iout].mass();
+      Energy2 Q2 = -(pjt-pat).m2();
+      double mu2 = sqr(mj)/Q2;
+      double x2 = sqr(x);
+      double corr1 = -mu2/sqr(1+mu2)/z/(1.-z)/(1.-x)*
+	(-4.*z*x2 + z*z*mu2*mu2 - 2*mu2*mu2*x
+	 - 4 * mu2 * x2*x + 2 * x2 * mu2 * mu2 - mu2 * mu2 * z
+	 - 2 * x - 4 * z * x2 * mu2 + 3 * z * x - z + 2 * x2
+	 - 4 * x * mu2 - 2 * z * mu2 + 4 * x2 * mu2 + z * z 
+	 + 2 * z * z * mu2 + 6 * x * z * mu2 + 3 * mu2 * mu2 * x * z);
+      pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr1);
+      // LO matrix element
+      double lo = loME(mePartonData(),pa,false);
+      DIF[ix] = 
+	0.5/(p[iin ]*p[4])/x*(2./(1.-x-z)-1.-x) +
+	0.5/(p[iout]*p[4])/x*(2./(1.-x-z)-2.+z-sqr(mj)/(p[iout]*p[4]));
+      // lo piece and charge factors
+      DIF[ix] *= -lo*double(mePartonData()[iin]->iCharge())*
+	double(mePartonData()[iout]->iCharge())/9.;
+      if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
     }
-    // leading-order matrix element
-    double lo = loME(mePartonData(),lomom,false);
-    DFF[iemit] *= lo;
   }
   // supression function
   Energy2 pT2sup=ZERO;
@@ -1493,15 +1680,17 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   else if(dipole==FF34||dipole==FF43) {
     pT2sup = dipole==FF34 ? pT2final[0] : pT2final[1];
   }
-  else {
+  else if(dipole==IF13) 
+    pT2sup = pT2IF[0];
+  else if(dipole==IF14) 
+    pT2sup = pT2IF[1];
+  else if(dipole==IF23) 
+    pT2sup = pT2IF[2];
+  else if(dipole==IF24) 
+    pT2sup = pT2IF[3];
+  else 
     assert(false);
-  }
   pair<double,double> supressionFactor = supressionFunction(pT2sup);
-  // charge factors
-  for(unsigned int ix=0;ix<2;++ix) {
-    DII[ix] *= sqr(double(mePartonData()[0]->iCharge())/3.);
-    DFF[ix] *= sqr(double(mePartonData()[2]->iCharge())/3.);
-  }
   // numerator for dipole ratio
   InvEnergy2 num;
   switch (dipole) {
@@ -1516,6 +1705,18 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     break;
   case FF43 :
     num = DFF[1];
+    break;
+  case IF13 :
+    num = DIF[0];
+    break;
+  case IF14 :
+    num = DIF[1];
+    break;
+  case IF23 :
+    num = DIF[2];
+    break;
+  case IF24 :
+    num = DIF[3];
     break;
   default:
     assert(false);
@@ -1537,12 +1738,11 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     den = abs(DFF[0])+abs(DFF[1]);
   }
   // full result
-  else if(QEDContributions_==4) {
-    assert(false);
+  else if(QEDContributions_==0) {
     // for the moment matrix element is only IFS+FSR (no interference)
-    meout = me[0]+me[1];
-    // denominator for dipole ratio
+    meout = me[2];
     den = abs(DII[0])+abs(DII[1])+abs(DFF[0])+abs(DFF[1]);
+    for(unsigned int ix=0;ix<4;++ix) den += abs(DIF[ix]);
   }
   else 
     assert(false);
@@ -1551,12 +1751,12 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   if(den>ZERO) {
     meout *= abs(num)/den;
     if(subtract) {
-      output.first  = sHat()*(UnitRemoval::InvE2*meout*supressionFactor.first -num);
+      output.first  = scale*(UnitRemoval::InvE2*meout*supressionFactor.first -num);
     }
     else {
-      output.first  = sHat()* UnitRemoval::InvE2*meout*supressionFactor.first;
+      output.first  = scale* UnitRemoval::InvE2*meout*supressionFactor.first;
     }
-    output.second   = sHat()* UnitRemoval::InvE2*meout*supressionFactor.second;
+    output.second   = scale* UnitRemoval::InvE2*meout*supressionFactor.second;
   }
   return output;
 }
@@ -1731,7 +1931,7 @@ MEqq2gZ2ffPowhegQED::realQEDME(const cPDVector & particles,
 	    Complex FSR = std::accumulate(diagF.begin(),diagF.end(),Complex(0.));
 	    output[0] += norm(ISR);
 	    output[1] += norm(FSR);
-	    output[2] += real(ISR*conj(FSR)+FSR*conj(ISR));
+	    output[2] += norm(ISR+FSR);
 	  }
 	}
       }
