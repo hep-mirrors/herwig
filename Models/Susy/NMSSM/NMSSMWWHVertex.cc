@@ -15,7 +15,10 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 NMSSMWWHVertex::NMSSMWWHVertex() 
-  : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
+  : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) 
+{}
+
+void NMSSMWWHVertex::doinit() {
   int id[3]={25,35,45};
   // PDG codes for the particles in the vertex
   for(unsigned int ix=0;ix<3;++ix) {
@@ -24,9 +27,6 @@ NMSSMWWHVertex::NMSSMWWHVertex()
     //Higgs ZZ
     addToList( 23, 23, id[ix] );
   }
-}
-
-void NMSSMWWHVertex::doinit() {
   // SM parameters
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
   double sw = sin2ThetaW();

@@ -274,6 +274,11 @@ private:
   unsigned int scaleChoice_;
 
   /**
+   *  Prefactor for the scale calculation
+   */
+  double scaleFactor_;
+
+  /**
    *  Option to exclude certain intermediates
    */
   vector<PDPtr> excluded_;

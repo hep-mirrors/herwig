@@ -15,7 +15,20 @@ using namespace ThePEG::Helicity;
 
 NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 				       _cosb(0.), _sw(0.), _cw(0.),
-				       _q2last(0.*MeV2), _couplast(0.) {
+				       _q2last(0.*MeV2), _couplast(0.) 
+{}
+
+void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {
+   os << _mixV << _mixU << _mixN << _mixS << _mixP << _lambda << _kappa << _sinb
+      << _cosb << _sw << _cw;
+}
+
+void NMSSMGOGOHVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _mixV >> _mixU >> _mixN >> _mixS >> _mixP >> _lambda >> _kappa >> _sinb
+     >> _cosb >> _sw >> _cw;
+}
+
+void NMSSMGOGOHVertex::doinit() {
   int ieven[3]={25,35,45};
   int iodd [2]={36,46};
   long ichar[2]={1000024,1000037};
@@ -63,19 +76,6 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 
     }
   }
-}
-
-void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {
-   os << _mixV << _mixU << _mixN << _mixS << _mixP << _lambda << _kappa << _sinb
-      << _cosb << _sw << _cw;
-}
-
-void NMSSMGOGOHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _mixV >> _mixU >> _mixN >> _mixS >> _mixP >> _lambda >> _kappa >> _sinb
-     >> _cosb >> _sw >> _cw;
-}
-
-void NMSSMGOGOHVertex::doinit() {
 
    tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
      // SM parameters

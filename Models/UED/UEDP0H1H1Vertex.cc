@@ -20,11 +20,11 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
-  addToList(22, 5100037, -5100037);
-}
+UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) 
+{}
 
 void UEDP0H1H1Vertex::doinit() {
+  addToList(22, 5100037, -5100037);
   VSSVertex::doinit();
   orderInGs(0);
   orderInGem(1);

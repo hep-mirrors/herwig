@@ -24,7 +24,10 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    _q2last(0.*GeV2), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0),
-			    yukawa_(true) {
+			    yukawa_(true) 
+{}
+
+void SSCFSVertex::doinit() {
   long chargino[2] = {1000024, 1000037};
   for(unsigned int ic = 0; ic < 2; ++ic) {
     //quarks 
@@ -66,10 +69,6 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
       }
     }
   } 
-  //chargino loop
-}
-
-void SSCFSVertex::doinit() {
   FFSVertex::doinit();
   _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   //mixing matrices

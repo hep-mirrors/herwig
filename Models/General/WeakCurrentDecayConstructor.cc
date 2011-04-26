@@ -148,10 +148,7 @@ void WeakCurrentDecayConstructor::Init() {
 
 void WeakCurrentDecayConstructor::DecayList(const set<PDPtr> & part) {
   if( part.empty() ) return;
-  _theModel->init();
   unsigned int nv(_theModel->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) _theModel->vertex(i)->init();
   // resize the vectors
   _theExistingDecayers.
     resize(nv,vector<map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> >

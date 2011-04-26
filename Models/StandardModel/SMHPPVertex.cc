@@ -200,8 +200,6 @@ Complex SMHPPVertex::W2(double lambda) const {
 SMHPPVertex::SMHPPVertex() 
   :_couplast(0.),_q2last(),_mw(),massopt(1),
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
-  //PDG codes for particles at vertices
-  addToList(22,22,25);
 }
 
 
@@ -247,6 +245,8 @@ SMHPPVertex::SMHPPVertex()
 
 
 void SMHPPVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(22,22,25);
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) 
     throw InitException() 

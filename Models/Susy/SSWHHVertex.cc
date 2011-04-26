@@ -23,7 +23,10 @@ using namespace Herwig;
 
 SSWHHVertex::SSWHHVertex() : 
   theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
-  theq2last(ZERO), theElast(0.) {
+  theq2last(ZERO), theElast(0.) 
+{}
+
+void SSWHHVertex::doinit() {
   addToList(22,37,-37);
   addToList(23,36,25);
   addToList(23,36,35);
@@ -36,9 +39,6 @@ SSWHHVertex::SSWHHVertex() :
   addToList(-24,37,25);
   addToList(-24,37,35);
   addToList(-24,37,36);
-}
-
-void SSWHHVertex::doinit() {
   VSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

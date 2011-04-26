@@ -13,7 +13,37 @@
 using namespace Herwig;
 
 NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
-				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) {
+				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) 
+{}
+
+IBPtr NMSSMWWHHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr NMSSMWWHHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+void NMSSMWWHHVertex::persistentOutput(PersistentOStream & os) const {
+  os << sw_ << cw_ << sb_ << cb_ << mixS_ << mixP_;
+}
+
+void NMSSMWWHHVertex::persistentInput(PersistentIStream & is, int) {
+  is >> sw_ >> cw_ >> sb_ >> cb_ >> mixS_ >> mixP_;
+}
+
+ClassDescription<NMSSMWWHHVertex> NMSSMWWHHVertex::initNMSSMWWHHVertex;
+// Definition of the static class description member.
+
+void NMSSMWWHHVertex::Init() {
+
+  static ClassDocumentation<NMSSMWWHHVertex> documentation
+    ("The NMSSMWWHHVertex class implements the coupling of"
+     " two electroweak and two Higgs bosons in the NMSSM.");
+
+}
+
+void NMSSMWWHHVertex::doinit() {
   int scalar[3]={25,35,45};
   int pseudo[2]={36,46};
   // scalar higgs bosons
@@ -45,36 +75,6 @@ NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
   addToList( 23, 23, 37,-37);
   addToList( 22, 23, 37,-37);
   addToList( 22, 22, 37,-37);
-}
-
-IBPtr NMSSMWWHHVertex::clone() const {
-  return new_ptr(*this);
-}
-
-IBPtr NMSSMWWHHVertex::fullclone() const {
-  return new_ptr(*this);
-}
-
-void NMSSMWWHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << sw_ << cw_ << sb_ << cb_ << mixS_ << mixP_;
-}
-
-void NMSSMWWHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> sw_ >> cw_ >> sb_ >> cb_ >> mixS_ >> mixP_;
-}
-
-ClassDescription<NMSSMWWHHVertex> NMSSMWWHHVertex::initNMSSMWWHHVertex;
-// Definition of the static class description member.
-
-void NMSSMWWHHVertex::Init() {
-
-  static ClassDocumentation<NMSSMWWHHVertex> documentation
-    ("The NMSSMWWHHVertex class implements the coupling of"
-     " two electroweak and two Higgs bosons in the NMSSM.");
-
-}
-
-void NMSSMWWHHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

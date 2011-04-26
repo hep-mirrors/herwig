@@ -24,14 +24,14 @@ using namespace Herwig;
 
 SSGNGVertex::SSGNGVertex() : _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
-			     _leftlast(ZERO), _rightlast(ZERO) {
+			     _leftlast(ZERO), _rightlast(ZERO) 
+{}
+
+void SSGNGVertex::doinit() {
   int ineu[5] = {1000022,1000023,1000025,1000035,1000045};
   for(unsigned int i = 0; i < 5; ++i) {
     addToList(1000021, ineu[i], 21);
   }
-}
-
-void SSGNGVertex::doinit() {
   GeneralFFVVertex::doinit();
   tMSSMPtr theSS = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if(!theSS)

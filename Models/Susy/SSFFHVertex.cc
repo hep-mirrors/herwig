@@ -25,7 +25,10 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0),
 			     theFLast(make_pair(0,0)), theGlast(0.),
-			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) {
+			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) 
+{}
+
+void SSFFHVertex::doinit() {
   int higgs[] = { 25, 35, 36 };
   for ( long h = 0; h < 3; ++h ) {
     //neutral higgs
@@ -48,9 +51,6 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
     //outgoing H-
     addToList(-ix  ,ix+1,-37);
   }
-}
-
-void SSFFHVertex::doinit() {
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 

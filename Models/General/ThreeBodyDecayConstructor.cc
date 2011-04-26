@@ -196,10 +196,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
   // cast the StandardModel to the Hw++ one to get the vertices
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
-  model->init();
   unsigned int nv(model->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the decayers
   for(set<PDPtr>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {

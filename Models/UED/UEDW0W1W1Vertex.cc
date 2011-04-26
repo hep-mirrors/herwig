@@ -22,7 +22,10 @@ using namespace Herwig;
 UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 				     theSinThetaOne(0.), theCosThetaOne(0.),
 				     theq2last(), theElast(0.), theCouplast(0.),
-				     theSMlast(0), theKKlast(0) {
+				     theSMlast(0), theKKlast(0) 
+{}
+
+void UEDW0W1W1Vertex::doinit() {
   addToList( 22, -5100024, 5100024);
   addToList( 23, -5100024, 5100024);
 
@@ -31,9 +34,6 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 
   addToList(-24,  5100024, 5100022);
   addToList(-24,  5100024, 5100023);
-}
-
-void UEDW0W1W1Vertex::doinit() {
   VVVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)

@@ -14,16 +14,8 @@
 using namespace Herwig;
 
 SSGVNHVertex::SSGVNHVertex() : sa_(0.), sb_(0.), ca_(0.), cb_(0.),
-			       MPlanck_(2.4e18*GeV) {
-  long neu[4] = {ParticleID::SUSY_chi_10, ParticleID::SUSY_chi_20,
-		 ParticleID::SUSY_chi_30, ParticleID::SUSY_chi_40};
-  long higgs[3] =  {25, 35, 36};
-  for(unsigned int i = 0; i < 3; ++i) {
-    for(unsigned int j = 0; j < 4; ++j) {
-      addToList(ParticleID::SUSY_Gravitino, neu[j], higgs[i]);
-    }
-  }
-}
+			       MPlanck_(2.4e18*GeV) 
+{}
 
 IBPtr SSGVNHVertex::clone() const {
   return new_ptr(*this);
@@ -53,6 +45,14 @@ void SSGVNHVertex::Init() {
 }
 
 void SSGVNHVertex::doinit() {
+  long neu[4] = {ParticleID::SUSY_chi_10, ParticleID::SUSY_chi_20,
+		 ParticleID::SUSY_chi_30, ParticleID::SUSY_chi_40};
+  long higgs[3] =  {25, 35, 36};
+  for(unsigned int i = 0; i < 3; ++i) {
+    for(unsigned int j = 0; j < 4; ++j) {
+      addToList(ParticleID::SUSY_Gravitino, neu[j], higgs[i]);
+    }
+  }
   RFSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !model )

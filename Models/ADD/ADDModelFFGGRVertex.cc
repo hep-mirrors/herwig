@@ -21,13 +21,13 @@ using namespace Herwig;
 using namespace ThePEG;
 
 ADDModelFFGGRVertex::ADDModelFFGGRVertex() 
-  : couplast_(0.), q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
+  : couplast_(0.), q2last_(ZERO), kappa_(ZERO), r_(ZERO) 
+{}
+
+void ADDModelFFGGRVertex::doinit() {
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,21,39);
   }
-}
-
-void ADDModelFFGGRVertex::doinit() {
   orderInGem(1);
   orderInGs (1);
   FFVTVertex::doinit();

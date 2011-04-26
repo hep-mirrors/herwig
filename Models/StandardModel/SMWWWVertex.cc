@@ -72,12 +72,12 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
 }
 
 SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.), 
-			     _q2last(sqr(Constants::MaxEnergy)) {
-  addToList(24, -24, 22);
-  addToList(24, -24, 23);
-}
+			     _q2last(sqr(Constants::MaxEnergy)) 
+{}
 
 void SMWWWVertex::doinit() {
+  addToList(24, -24, 22);
+  addToList(24, -24, 23);
   orderInGem(1);
   orderInGs(0);
   VVVVertex::doinit();

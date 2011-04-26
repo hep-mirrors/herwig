@@ -20,13 +20,13 @@ using namespace Herwig;
 using namespace ThePEG;
 
 RSModelFFGGRVertex::RSModelFFGGRVertex() 
-  : couplast_(0.), q2last_(ZERO), kappa_(ZERO) {
+  : couplast_(0.), q2last_(ZERO), kappa_(ZERO) 
+{}
+
+void RSModelFFGGRVertex::doinit() {
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,21,39);
   }
-}
-
-void RSModelFFGGRVertex::doinit() {
   orderInGem(1);
   orderInGs (1);
   FFVTVertex::doinit();

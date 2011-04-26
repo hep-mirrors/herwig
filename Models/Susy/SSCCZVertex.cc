@@ -22,7 +22,10 @@ using namespace Herwig;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _q2last(), _id1last(0), _id2last(0),
-			     _leftlast(0.), _rightlast(0.), _gblast(0){
+			     _leftlast(0.), _rightlast(0.), _gblast(0)
+{}
+
+void SSCCZVertex::doinit() {
   addToList(-1000024, 1000024, 23);
   addToList(-1000024, 1000037, 23);
 
@@ -32,9 +35,6 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
   //photon
   addToList(-1000024, 1000024, 22);
   addToList(-1000037, 1000037, 22);
-}
-
-void SSCCZVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS) 

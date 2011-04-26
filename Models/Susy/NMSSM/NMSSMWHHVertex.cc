@@ -15,7 +15,10 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
-				   _q2last(0.*MeV2), _couplast(0.) {
+				   _q2last(0.*MeV2), _couplast(0.) 
+{}
+
+void NMSSMWHHVertex::doinit() {
   // codes for the neutral higgs
   //CP even
   int ieven[3]={25,35,45};
@@ -45,9 +48,6 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
   // Charged higgs Z/gamma
   addToList( 22, 37, -37 );
   addToList( 23, 37, -37 );
-}
-
-void NMSSMWHHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

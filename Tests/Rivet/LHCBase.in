@@ -1,13 +1,4 @@
 ##################################################
-# Example generator based on Tevatron parameters
-# usage: Herwig++ read TVT.in
-#
-# Since most parameters are identical to LHC,
-# we use the default LHCGenerator and adapt only
-# for the differences
-##################################################
-
-##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
@@ -25,3 +16,6 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 set /Herwig/Analysis/RivetAnalysis:Debug No
+
+set /Herwig/Decays/DecayHandler:LifeTimeOption 0
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
