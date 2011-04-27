@@ -644,6 +644,11 @@ private:
   double preFFQED_;
 
   /**
+   *  The prefactor for initial- and final-state QED interference
+   */
+  double preIFQED_;
+
+  /**
    *  The prefactors as a vector for easy use
    */
   vector<double> prefactorQCD_;

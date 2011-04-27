@@ -37,6 +37,7 @@ MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED()
     preqgQCD_(10.),pregqbarQCD_(10.),
     preqqbarqQED_(50.), preqqbarqbarQED_(50.),
     preqgQED_(10.),pregqbarQED_(10.), preFFQED_(6.),
+    preIFQED_(50.),
     minpTQCD_(2.*GeV),minpTQED_(2.*GeV),
     process_(2), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
@@ -308,7 +309,7 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << supressionFunction_ << ounit(lambda2_,GeV2)
      << preqqbarqQCD_ << preqqbarqbarQCD_ << preqgQCD_ << pregqbarQCD_
      << preqqbarqQED_ << preqqbarqbarQED_ << preqgQED_ << pregqbarQED_
-     << preFFQED_ << prefactorQCD_ << prefactorQED_ 
+     << preFFQED_ << preIFQED_ << prefactorQCD_ << prefactorQED_ 
      << ounit(minpTQCD_,GeV) << ounit(minpTQED_,GeV) << alphaQCD_ << alphaQED_
      << FFZVertex_ << FFPVertex_ << FFGVertex_ 
      << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
@@ -320,7 +321,7 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> supressionFunction_ >> iunit(lambda2_,GeV2)
      >> preqqbarqQCD_ >> preqqbarqbarQCD_ >> preqgQCD_ >> pregqbarQCD_
      >> preqqbarqQED_ >> preqqbarqbarQED_ >> preqgQED_ >> pregqbarQED_
-     >> preFFQED_ >> prefactorQCD_ >> prefactorQED_ 
+     >> preFFQED_ >> preIFQED_ >> prefactorQCD_ >> prefactorQED_ 
      >> iunit(minpTQCD_,GeV) >> iunit(minpTQED_,GeV) >> alphaQCD_ >> alphaQED_
      >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ 
      >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
@@ -540,6 +541,12 @@ void MEqq2gZ2ffPowhegQED::Init() {
     ("FinalStatePreFactorQED",
      "The prefactor for final-state QED radiation",
      &MEqq2gZ2ffPowhegQED::preFFQED_, 6.0, 0.0, 100.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEqq2gZ2ffPowhegQED,double> interfaceInitialFinalStatePreFactorQED
+    ("InitialFinalStatePreFactorQED",
+     "The prefactor for inital- and final-state QED interference",
+     &MEqq2gZ2ffPowhegQED::preIFQED_, 1.0, 0.0, 100.0,
      false, false, Interface::limited);
 
   static Parameter<MEqq2gZ2ffPowhegQED,Energy> interfaceMinimumpTQCD
@@ -2285,9 +2292,167 @@ void MEqq2gZ2ffPowhegQED::hardQEDIIEmission(vector<ShowerProgenitorPtr> & partic
 
 void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
 					    int & emission_type, Energy & pTmax) {
+  if(QEDContributions_!=0) return;
   emission_type = -1;
   pTmax = -GeV;
-  if(QEDContributions_!=0) return;
+  // extract the particles
+  cPDVector particles;
+  for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
+    particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
+  }
+  particles.push_back(gamma_);
+  // momentum fractions of the incoming particles
+  pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
+				    particlesToShower[1]->progenitor()->x());
+  // loop over the possible dipoles
+  for(unsigned int idipole=0;idipole<4;++idipole) {
+    // which dipole are we doing
+    DipoleType dipole;
+    if(idipole==0)      dipole = IF13;
+    else if(idipole==1) dipole = IF14;
+    else if(idipole==2) dipole = IF23;
+    else if(idipole==3) dipole = IF24;
+    // storage of the real emission momenta
+    vector<Lorentz5Momentum> realMomenta(5);
+    // incoming and outgoing particles in the dipole
+    unsigned int iin  = idipole<2 ? 0 :1;
+    unsigned int iout = idipole%2 == 0 ? 2 : 3;
+    Lorentz5Momentum q = 
+      particlesToShower[iout]->progenitor()->momentum() - 
+      particlesToShower[iin ]->progenitor()->momentum();
+    q.rescaleMass();
+    Energy  Q  = -q.mass();
+    Energy2 Q2 = sqr(Q);
+    double xB = iin==0 ? x.first : x.second;
+    // reduced mass
+    Energy mj = particlesToShower[iout]->progenitor()->momentum().mass();
+    double mu2 = sqr(mj)/Q2;
+    // work out LT to the Breit-Frame
+    Lorentz5Momentum pb     = particlesToShower[iin ]->progenitor()->momentum();
+    Axis axis(q.vect().unit());
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    LorentzRotation rot;
+    if(axis.perp2()>1e-20) {
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+    }
+    if(abs(1.-q.e()/q.vect().mag())>1e-6) 
+      rot.boostZ( q.e()/q.vect().mag());
+    pb *= rot;
+    if(pb.perp2()/GeV2>1e-20) {
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+    }
+    for(unsigned int ix=0;ix<4;++ix) {
+      Lorentz5Momentum ptest = particlesToShower[ix]->progenitor()->momentum();
+      ptest *=rot;
+    }
+    rot.invert();
+    // momenta not effected by the emission
+    for(unsigned int iy=0;iy<4;++iy) {
+      if(iy==iin||iy==iout) continue;
+      realMomenta[iy] = particlesToShower[iy]->progenitor()->momentum();
+    }
+    // maximum value of the xT
+    double xT = sqrt((1.-xB)/xB);
+    double xTMin = 2.*minpTQED_/sqrt(Q2);
+    double wgt(0.);
+    // prefactor
+    double charge = abs(particlesToShower[iin ]->progenitor()->dataPtr()->iCharge()*
+			particlesToShower[iout]->progenitor()->dataPtr()->iCharge())/9.;
+    double a = charge*alphaQED_->overestimateValue()*preIFQED_/Constants::twopi;
+    // loop to generate kinematics
+    double xp,zp;
+    do {
+      wgt = 0.;
+      // intergration variables dxT/xT^3
+      xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+      // zp
+      zp = UseRandom::rnd();
+      // massless result
+      xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
+      double diff;
+      // include masses by solving using Newton-Raphson
+      do {
+	double corr1 = -mu2/(1-zp)/(1.-xp)/zp/sqr(1.+mu2)*
+	  (3.*mu2*mu2*xp*zp + 6.*xp*zp*mu2 + zp*zp*mu2*mu2 - zp 
+	   - 2.*zp*mu2 + zp*zp + 2.*zp*zp*mu2 - mu2*mu2*zp - 
+	   4.*zp*xp*xp - 4.*zp*mu2*xp*xp - 2.*mu2*mu2*xp - 2.*xp 
+	   - 4.*mu2*xp + 2.*mu2*mu2*xp*xp - 4.*mu2*xp*xp*xp 
+	   + 4.*mu2*xp*xp + 3.*xp*zp + 2.*xp*xp);
+	double corr3 = mu2/sqr(1.+mu2)/(1.-zp)/zp* 
+	  (-zp*zp*mu2*mu2 - 4.*mu2*xp*xp*xp + 2.*mu2*mu2*xp*xp + zp 
+	   + 2.*zp*mu2 - zp*zp - 2.*zp*zp*mu2 + mu2*mu2*zp - 4.*zp*xp*xp
+	   - 4.*zp*mu2*xp*xp + 4.*mu2*xp*xp + 2.*xp*xp);
+	diff = -xp*(1.-xp)*(sqr(xT)*xp/(4.*zp*(1.-zp)*(1.-xp))-1.-corr1)/(1.+corr3);
+	xp += diff;
+      }
+      while(abs(diff)>1e-12);
+      // check allowed
+      if(xp<xB||xp>1.) continue;
+      // azimuth
+      double phi = Constants::twopi*UseRandom::rnd();
+      double x1 = -(1.+mu2)/xp;
+      double x2 = 1.-mu2-zp*(1.+mu2)/xp;
+      double x3 = 2.+x1-x2;
+      // now compute the momenta
+      realMomenta[iin] = 
+	Lorentz5Momentum(ZERO,ZERO,-0.5*x1*Q,-0.5*x1*Q,ZERO);
+      realMomenta[iout] = 
+	Lorentz5Momentum( 0.5*Q*xT*cos(phi), 0.5*Q*xT*sin(phi),
+			 -0.5*Q*x2,0.5*Q*sqrt(sqr(x2)+sqr(xT)+4.*mu2),mj);
+      realMomenta[4] = 
+	Lorentz5Momentum(-0.5*Q*xT*cos(phi),-0.5*Q*xT*sin(phi),
+			 -0.5*Q*x3,0.5*Q*sqrt(sqr(x3)+sqr(xT)),ZERO);
+      realMomenta[iin]  *= rot;
+      realMomenta[iout] *= rot;
+      realMomenta[4]    *= rot;
+      // phase-space piece of the weight
+      double corr1 = -mu2/(1-zp)/(1.-xp)/zp/sqr(1.+mu2)*
+	(3.*mu2*mu2*xp*zp + 6.*xp*zp*mu2 + zp*zp*mu2*mu2 - zp 
+	 - 2.*zp*mu2 + zp*zp + 2.*zp*zp*mu2 - mu2*mu2*zp
+	 - 4.*zp*xp*xp - 4.*zp*mu2*xp*xp - 2.*mu2*mu2*xp - 2.*xp 
+	 - 4.*mu2*xp + 2.*mu2*mu2*xp*xp - 4.*mu2*xp*xp*xp
+	 + 4.*mu2*xp*xp + 3.*xp*zp + 2.*xp*xp);
+      double corr2 = mu2/sqr(1.+mu2)/(1.-zp)/zp*
+	(- zp*zp*mu2*mu2 - 8.*mu2*xp*xp*xp + 2.*mu2*mu2*xp*xp + zp 
+	 + 2.*zp*mu2 - zp*zp - 2.*zp*zp*mu2 + mu2*mu2*zp - 4.*zp*xp*xp 
+	 - 4.*zp*mu2*xp*xp + 4.*mu2*xp*xp + 2.*xp*xp);
+      wgt = 8.*zp*(1.-zp)*sqr(1.-xp)/xp/preIFQED_*(1.+mu2)/xp*sqr(1+corr1)/(1.+corr2);
+      wgt *= alphaQED_->ratio(0.25*Q2*sqr(xT));
+      // PDF piece
+      double pdf[2]={_beams[iin]->pdf()->xfx(_beams[iin],_partons [iin],
+					     scale(),xB)  /xB,
+		     _beams[iin]->pdf()->xfx(_beams[iin],particles[iin],
+					     0.5*xT*Q2,xB/zp)*zp/xB};
+      
+      if(pdf[0]<=0.||pdf[1]<=0.) {
+	wgt =0.;
+	continue;
+      }
+      wgt *= pdf[1]/pdf[0];
+      // matrix element piece
+      wgt *= subtractedQEDMEqqbar(realMomenta,dipole,false).first/charge/loME_;
+      if(wgt>1.)
+	cerr << "problem with IF weight " << wgt << "\n";
+    }
+    while(xT>xTMin&&UseRandom::rnd()>wgt);
+    if(xT<=xTMin) continue;
+    Energy pT = xT*0.5*Q;
+    if(pT<pTmax) continue;
+    pTmax = pT;
+    double isif = zp>xp ? 4 : 0;
+    emission_type = 11+idipole+isif;
+    if(idipole==0) 
+      realEmissionQEDIF13_ = realMomenta;
+    else if(idipole==1)
+      realEmissionQEDIF14_ = realMomenta;
+    else if(idipole==2)
+      realEmissionQEDIF23_ = realMomenta;
+    else if(idipole==3)
+      realEmissionQEDIF24_ = realMomenta;
+  }
 }
 
 void MEqq2gZ2ffPowhegQED::
@@ -2600,6 +2765,15 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
     if(emission_type ==9) pnew = realEmissionQEDFFLepton3_;
     else                  pnew = realEmissionQEDFFLepton4_;
   }
+  else if(emission_type>10&&emission_type<=18) {
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
+    newparticles.push_back(new_ptr(ShowerParticle(gamma_           , true)));
+    if     (emission_type==11||emission_type==15) pnew =realEmissionQEDIF13_;
+    else if(emission_type==12||emission_type==16) pnew =realEmissionQEDIF14_;
+    else if(emission_type==13||emission_type==17) pnew =realEmissionQEDIF23_;
+    else if(emission_type==14||emission_type==18) pnew =realEmissionQEDIF24_;
+  }
   else {
     assert(false);
   }
@@ -2636,6 +2810,13 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
   else if(emission_type==10) {
     iemit  = 4;
     ispect = 3;
+  }
+  else if(emission_type>10&&emission_type<=18) {
+    iemit  = (emission_type==11||emission_type==15||
+	      emission_type==12||emission_type==16) ? 0 : 1;
+    ispect = (emission_type==11||emission_type==15||
+	      emission_type==13||emission_type==17) ? 3 : 4;
+    if(emission_type>14) swap(iemit,ispect);
   }
   assert(iemit>=0&&ispect>=0);
   // work out which interaction
@@ -2685,7 +2866,7 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
 						    inBranch[iemit],
 						    HardBranching::Outgoing)));
     // add other particle
-    hardBranch.push_back(inBranch[ispect]);
+    hardBranch.push_back(inBranch[iemit==0 ? 1 : 0]);
     // outgoing particles
     for(unsigned int ix=4;ix<newparticles.size();++ix) {
       hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
@@ -2737,6 +2918,19 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
     hardBranch[3]->colourPartner(hardBranch[2]);
     hardBranch[2]->colourPartner(hardBranch[3]);
     hardBranch[3]->colourPartner(hardBranch[2]);
+  }
+  else if(emission_type<=18) {
+    if(iemit>2) {
+      hardBranch[iemit -1]->colourPartner(hardBranch[ispect  ]);
+      hardBranch[ispect  ]->colourPartner(hardBranch[iemit -1]);
+    }
+    else {
+      hardBranch[iemit   ]->colourPartner(hardBranch[ispect-1]);
+      hardBranch[ispect-1]->colourPartner(hardBranch[iemit   ]);
+    }
+  }
+  else {
+    assert(false);
   }
   // make the tree
   HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,interaction));
