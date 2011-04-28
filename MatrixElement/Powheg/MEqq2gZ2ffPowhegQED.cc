@@ -37,7 +37,7 @@ MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED()
     preqgQCD_(10.),pregqbarQCD_(10.),
     preqqbarqQED_(50.), preqqbarqbarQED_(50.),
     preqgQED_(10.),pregqbarQED_(10.), preFFQED_(6.),
-    preIFQED_(50.),
+    preIFQED_(200.),
     minpTQCD_(2.*GeV),minpTQED_(2.*GeV),
     process_(2), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
@@ -874,28 +874,79 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     }
     // ISR/FSR interference
     if(QEDContributions_==0) {
-      realQED5 = subtractedRealQED(x,z. first,zJac. first,
-				   oldqPDF. first,newqPDF. first,
-				   newpPDF. first, IF13);
-      realQED6 = subtractedRealQED(x,z. first,zJac. first,
-				   oldqPDF. first,newqPDF. first,
-				   newpPDF. first, IF14);
-      realQED7 = subtractedRealQED(x,z.second,zJac.second, 
-				   oldqPDF.second,newqPDF.second,
-				   newpPDF.second, IF23);
-      realQED8 = subtractedRealQED(x,z.second,zJac.second, 
-				   oldqPDF.second,newqPDF.second,
-				   newpPDF.second, IF24);
+      if(mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
+	realQED5 = subtractedRealQED(x,z. first,zJac. first,
+				     oldqPDF. first,newqPDF. first,
+				     newpPDF. first, IF13);
+      if(mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
+	realQED6 = subtractedRealQED(x,z. first,zJac. first,
+				     oldqPDF. first,newqPDF. first,
+				     newpPDF. first, IF14);
+      if(mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
+	realQED7 = subtractedRealQED(x,z.second,zJac.second, 
+				     oldqPDF.second,newqPDF.second,
+				     newpPDF.second, IF23);
+      if(mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
+	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
+				     oldqPDF.second,newqPDF.second,
+				     newpPDF.second, IF24);
       wgt += realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0];
     }
   }
   if(isnan(wgt)||isinf(wgt)) {
     generator()->log() << "testing bad weight "
-		       << virt << " " << coll << " "
-		       << realQCD1[0] << " " << realQCD1[2] << " "
-		       << realQCD2[0] << " " << realQCD2[2] << "\n";
+		       << virt << " " << coll << "\n";
+    generator()->log() << "QCD1 ";
+    for(unsigned int ix=0;ix<realQCD1.size();++ix)
+      generator()->log() << realQCD1[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QCD2 ";
+    for(unsigned int ix=0;ix<realQCD2.size();++ix)
+      generator()->log() << realQCD2[ix] << " ";
+    generator()->log() << "\n";
+
+
+    generator()->log() << "QED1 ";
+    for(unsigned int ix=0;ix<realQED1.size();++ix)
+      generator()->log() << realQED1[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED2 ";
+    for(unsigned int ix=0;ix<realQED2.size();++ix)
+      generator()->log() << realQED2[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED3 ";
+    for(unsigned int ix=0;ix<realQED3.size();++ix)
+      generator()->log() << realQED3[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED4 ";
+    for(unsigned int ix=0;ix<realQED4.size();++ix)
+      generator()->log() << realQED4[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED5 ";
+    for(unsigned int ix=0;ix<realQED5.size();++ix)
+      generator()->log() << realQED5[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED6 ";
+    for(unsigned int ix=0;ix<realQED6.size();++ix)
+      generator()->log() << realQED6[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED7 ";
+    for(unsigned int ix=0;ix<realQED7.size();++ix)
+      generator()->log() << realQED7[ix] << " ";
+    generator()->log() << "\n";
+    generator()->log() << "QED8 ";
+    for(unsigned int ix=0;ix<realQED8.size();++ix)
+      generator()->log() << realQED8[ix] << " ";
+    generator()->log() << "\n";
+
+
+
+
+
+
     generator()->log() << "testing z " << z.first << " " << z.second << "\n";
     generator()->log() << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
+    generator()->log() << flush;
     assert(false);
   }
   weights_.resize(15,0.);
@@ -1386,6 +1437,7 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
 			    0.5*M*sqrt(max(sqr(x1)-sqr(xT)-4.*mu2,0.)),0.5*M*x1,M*mu);
     Lorentz5Momentum pphoton( 0.5*M*xT*cos(phi_), 0.5*M*xT*sin(phi_),
 			      0.5*M*sqrt(max(sqr(x3)-sqr(xT),0.)),0.5*M*x3,ZERO);
+    pphoton.rescaleEnergy();
     if(abs(pspect.z()+pemit.z()-pphoton.z())/M<1e-6) 
       pphoton.setZ(-pphoton.z());
     else if(abs(pspect.z()-pemit.z()+pphoton.z())/M<1e-6) 
@@ -1428,9 +1480,7 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
 	   dipole == IF23 || dipole == IF24) {
     // particles making up the dipole
     int iin    = dipole == IF13 || dipole == IF14 ? 0 : 1;
-    int iother = iin == 0 ? 1 : 0;
     int iout  = dipole == IF13 || dipole == IF23 ? 2 : 3;
-    double xB = iin==0 ? x.first : x.second;
     // momentum of system
     Lorentz5Momentum q = meMomenta()[iout]-meMomenta()[iin];
     q.rescaleMass();
@@ -1443,15 +1493,22 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
     double vJac = (1.-mu2*z/(1.+mu2-z));
     double vt = vTilde_*vJac;
     // work out LT to Breit-Frame
-    Lorentz5Momentum pcmf = meMomenta()[iin]/xB+0.5/xB*q;
-    pcmf.rescaleMass();
-    LorentzRotation rot(-pcmf.boostVector());
-    Lorentz5Momentum pbeam = rot*meMomenta()[iin];
-    Axis axis(pbeam.vect().unit());
+    Lorentz5Momentum pb     = meMomenta()[iin ];
+    Axis axis(q.vect().unit());
     double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-    rot.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-    Lorentz5Momentum pl    = rot*meMomenta()[iother];
-    rot.rotateZ(-atan2(pl.y(),pl.x()));
+    LorentzRotation rot;
+    if(axis.perp2()>1e-20) {
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+    }
+    if(abs(1.-q.e()/q.vect().mag())>1e-6) 
+      rot.boostZ( q.e()/q.vect().mag());
+    pb *= rot;
+    if(pb.perp2()/GeV2>1e-20) {
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+    }
     // born incoming and outgoing momenta
     Lorentz5Momentum pij = rot*meMomenta()[iout];
     Lorentz5Momentum pat = rot*meMomenta()[iin ];
@@ -1639,6 +1696,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   /////////// ISR/FSR interference ////////////////////////////
   InvEnergy2 DIF[4]={ZERO,ZERO,ZERO,ZERO};
   Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
+  InvEnergy2 negativeDipoles(ZERO);
   if(QEDContributions_==0) {
     for(unsigned int ix=0;ix<4;++ix) {
       // incoming and outgoing particles in the dipole
@@ -1670,12 +1728,18 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr1);
       // LO matrix element
       double lo = loME(mePartonData(),pa,false);
-      DIF[ix] = 
-	0.5/(p[iin ]*p[4])/x*(2./(1.-x-z)-1.-x) +
-	0.5/(p[iout]*p[4])/x*(2./(1.-x-z)-2.+z-sqr(mj)/(p[iout]*p[4]));
+      Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
+      Energy2 dot2 = max(p[iout]*p[4],1e-30*MeV2);
+      InvEnergy2 split = 
+	0.5/dot1/x*(2./(1.-x+z)-1.-x) +
+	0.5/dot2/x*(2./(1.-x+z)-2.+z-sqr(mj)/dot2);
       // lo piece and charge factors
-      DIF[ix] *= -lo*double(mePartonData()[iin]->iCharge())*
-	double(mePartonData()[iout]->iCharge())/9.;
+      double charge = double(mePartonData()[iin]->iCharge()*
+			     mePartonData()[iout]->iCharge())/9.;
+      if(charge<0)
+	DIF[ix]          = -lo*charge*split;
+      else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
+	negativeDipoles += -lo*charge*split;
       if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
     }
   }
@@ -1756,14 +1820,16 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   // return the answer
   pair<double,double> output = make_pair(0.,0.);
   if(den>ZERO) {
-    meout *= abs(num)/den;
     if(subtract) {
-      output.first  = scale*(UnitRemoval::InvE2*meout*supressionFactor.first -num);
+      output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
+			     abs(num)/den*supressionFactor.first -num);
     }
     else {
-      output.first  = scale* UnitRemoval::InvE2*meout*supressionFactor.first;
+      output.first  = scale* UnitRemoval::InvE2*meout*
+	abs(num)/den*supressionFactor.first;
     }
-    output.second   = scale* UnitRemoval::InvE2*meout*supressionFactor.second;
+    output.second   = scale* UnitRemoval::InvE2*meout*
+      abs(num)/den*supressionFactor.second;
   }
   return output;
 }
@@ -2306,17 +2372,22 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
 				    particlesToShower[1]->progenitor()->x());
   // loop over the possible dipoles
   for(unsigned int idipole=0;idipole<4;++idipole) {
+    // incoming and outgoing particles in the dipole
+    unsigned int iin  = idipole<2 ? 0 :1;
+    unsigned int iout = idipole%2 == 0 ? 2 : 3;
+    // charge of the dipole
+    double charge = -
+      particlesToShower[iin ]->progenitor()->dataPtr()->iCharge()*
+      particlesToShower[iout]->progenitor()->dataPtr()->iCharge()/9.;
+    if(charge<0.) continue;
     // which dipole are we doing
     DipoleType dipole;
-    if(idipole==0)      dipole = IF13;
+    if     (idipole==0) dipole = IF13;
     else if(idipole==1) dipole = IF14;
     else if(idipole==2) dipole = IF23;
     else if(idipole==3) dipole = IF24;
     // storage of the real emission momenta
     vector<Lorentz5Momentum> realMomenta(5);
-    // incoming and outgoing particles in the dipole
-    unsigned int iin  = idipole<2 ? 0 :1;
-    unsigned int iout = idipole%2 == 0 ? 2 : 3;
     Lorentz5Momentum q = 
       particlesToShower[iout]->progenitor()->momentum() - 
       particlesToShower[iin ]->progenitor()->momentum();
@@ -2344,10 +2415,6 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
       trans.setZ(0.);
       rot.boost(trans);
     }
-    for(unsigned int ix=0;ix<4;++ix) {
-      Lorentz5Momentum ptest = particlesToShower[ix]->progenitor()->momentum();
-      ptest *=rot;
-    }
     rot.invert();
     // momenta not effected by the emission
     for(unsigned int iy=0;iy<4;++iy) {
@@ -2359,15 +2426,15 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
     double xTMin = 2.*minpTQED_/sqrt(Q2);
     double wgt(0.);
     // prefactor
-    double charge = abs(particlesToShower[iin ]->progenitor()->dataPtr()->iCharge()*
-			particlesToShower[iout]->progenitor()->dataPtr()->iCharge())/9.;
     double a = charge*alphaQED_->overestimateValue()*preIFQED_/Constants::twopi;
     // loop to generate kinematics
     double xp,zp;
+    double n=0.;
     do {
       wgt = 0.;
       // intergration variables dxT/xT^3
-      xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+      xT *= pow(1.-(n+2.)*log(UseRandom::rnd())/a*pow(xT,n+2.),-1./(n+2));
+//       xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
       // zp
       zp = UseRandom::rnd();
       // massless result
@@ -2419,13 +2486,13 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
 	(- zp*zp*mu2*mu2 - 8.*mu2*xp*xp*xp + 2.*mu2*mu2*xp*xp + zp 
 	 + 2.*zp*mu2 - zp*zp - 2.*zp*zp*mu2 + mu2*mu2*zp - 4.*zp*xp*xp 
 	 - 4.*zp*mu2*xp*xp + 4.*mu2*xp*xp + 2.*xp*xp);
-      wgt = 8.*zp*(1.-zp)*sqr(1.-xp)/xp/preIFQED_*(1.+mu2)/xp*sqr(1+corr1)/(1.+corr2);
+      wgt = pow(xT,n)*8.*zp*(1.-zp)*sqr(1.-xp)/xp/preIFQED_*(1.+mu2)/xp*sqr(1+corr1)/(1.+corr2);
       wgt *= alphaQED_->ratio(0.25*Q2*sqr(xT));
       // PDF piece
       double pdf[2]={_beams[iin]->pdf()->xfx(_beams[iin],_partons [iin],
 					     scale(),xB)  /xB,
 		     _beams[iin]->pdf()->xfx(_beams[iin],particles[iin],
-					     0.5*xT*Q2,xB/zp)*zp/xB};
+					     0.5*xT*Q2,xB/xp)*xp/xB};
       
       if(pdf[0]<=0.||pdf[1]<=0.) {
 	wgt =0.;
@@ -2434,8 +2501,17 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
       wgt *= pdf[1]/pdf[0];
       // matrix element piece
       wgt *= subtractedQEDMEqqbar(realMomenta,dipole,false).first/charge/loME_;
-      if(wgt>1.)
-	cerr << "problem with IF weight " << wgt << "\n";
+      if(wgt>1.) {
+	generator()->log() << "problem with IF weight " << wgt << " " << idipole << " "
+			   << xT << " " << zp << " " << xp << "\n";
+	for(unsigned int ix=0;ix<realMomenta.size();++ix)
+	  generator()->log() << ix << " " << realMomenta[ix]/GeV << "\n";
+	generator()->log() << "testing masses "
+			   << (realMomenta[0]+realMomenta[1]).m()/GeV << " "
+			   << (realMomenta[2]+realMomenta[3]).m()/GeV << "\n";
+	generator()->log() << "sum "
+			   << (realMomenta[0]+realMomenta[1]-realMomenta[2]-realMomenta[3]-realMomenta[4])/GeV << "\n";
+      }
     }
     while(xT>xTMin&&UseRandom::rnd()>wgt);
     if(xT<=xTMin) continue;
