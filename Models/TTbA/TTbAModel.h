@@ -1,0 +1,190 @@
+// -*- C++ -*-
+#ifndef HERWIG_TTbAModel_H
+#define HERWIG_TTbAModel_H
+//
+// This is the declaration of the TTbAModel class.
+//
+
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "TTbAModel.fh"
+
+namespace Herwig {
+
+using namespace ThePEG;
+using namespace ThePEG::Helicity;
+
+/**
+ * Here is the documentation of the TTbAModel class.
+ *
+ * @see \ref TTbAModelInterfaces "The interfaces"
+ * defined for TTbAModel.
+ */
+class TTbAModel: public StandardModel {
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  TTbAModel();
+ 
+  /** @name Vertices */
+  //@{
+ /**
+   * Pointer to the object handling vertex.
+   */
+  tAbstractFFVVertexPtr vertexWPTD() const {return _theWPTDVertex;}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+  
+  /**
+   * Return the W prime top-down left-handed coupling
+   */
+  double _cWPTD_left() const {return _gWPTD_L;}
+
+  /**
+   * Return the W prime top-down right-handed coupling
+   */
+  double _cWPTD_right() const {return _gWPTD_R;}
+
+  
+
+
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+
+  
+    
+  
+  //@}
+
+
+// If needed, insert declarations of virtual function defined in the
+// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<TTbAModel> initTTbAModel;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  TTbAModel & operator=(const TTbAModel &);
+
+  
+  /**
+   * Pointer to the object handling the Wp to Top Down vertex.
+   */
+  AbstractFFVVertexPtr  _theWPTDVertex;
+
+
+ /**
+   *  W prime coupling to top-down (left-handed)
+   */
+  double _gWPTD_L;
+  
+
+  /**
+   *  W prime coupling to top-down (right-handed)
+   */
+  double _gWPTD_R;
+
+
+};
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of TTbAModel. */
+template <>
+struct BaseClassTrait<Herwig::TTbAModel,1> {
+  /** Typedef of the first base class of TTbAModel. */
+  typedef Herwig::StandardModel NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the TTbAModel class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::TTbAModel>
+  : public ClassTraitsBase<Herwig::TTbAModel> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig::TTbAModel"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * TTbAModel is implemented. It may also include several, space-separated,
+   * libraries if the class TTbAModel depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwTTbAModel.so"; }
+};
+
+/** @endcond */
+
+}
+
+#endif /* HERWIG_TTbAModel_H */
