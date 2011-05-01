@@ -229,6 +229,17 @@ protected:
   double subtractedVirtual() const;
 
   /**
+   * useful function to express gamma/Z boxes
+   */
+  Complex gZboxesF(Energy2 s, Energy2 t, Energy zmass, Energy zwidth) const;
+
+//   /**
+//    * useful function to express gamma/gamma boxes
+//    */
+//   double ggboxesF(Energy2 s,Energy2 t) const;
+  
+
+  /**
    *  Subtracted real contribution
    */
   vector<double> 

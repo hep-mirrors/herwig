@@ -720,10 +720,62 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   }
   // ISR/FSR interference
   if((corrections_==2||corrections_==3) && QEDContributions_==0 ) {
-    // TODO add these
+//     Complex ii(0.,1.);
+//     // Mandelstams and Z complex mass
+//     Energy zmass=91.*GeV,zwidth=2.*GeV;
+//     complex<Energy2> m2zc=sqr(zmass) - ii*zmass*zwidth;
+//     Energy2 s=sHat(),t=-2.*meMomenta()[0].dot(meMomenta()[2]),u=-(s+t);
+
+//     // couplings
+//     //    Complex gq_L=,gq_R=,gl_L,gl_R=;
+//     double qq=double(mePartonData()[0]->iCharge())/3.,ql=double(mePartonData()[2]->iCharge())/3.;
+
+//     /////////// gamma/gamma ///////////////
+//     // logarithms
+//     double ltos=log(-t/s),ltou=log(t/u),luos=log(-u/s),luot=log(u/t);
+//     // gamma/gamma boxes helicity amplitudes, WITHOUT the 1/s prefactor !!
+//     double REcgg_LL=1.
+//       *4. *( -s/(2*u)*ltos - s*(s+2*t)/4./sqr(u)*sqr(ltos) );
+//     double IMcgg_LL=1. *Constants::pi
+//       *4. *( -s/(2*u) + ltou - s*(s+2*t)/2./sqr(u)*ltos );
+//     Complex cgg_LL=REcgg_LL + ii*IMcgg_LL;
+//     double REcgg_LR=1.
+//       *4. *( -s/(2*t)*luos - s*(s+2*u)/4./sqr(t)*sqr(luos) );
+//     double IMcgg_LR=1. *Constants::pi
+//       *4. *( -s/(2*t) + luot - s*(s+2*u)/2./sqr(t)*luos );
+//     Complex cgg_LR=REcgg_LR + ii*IMcgg_LR;
+    
+//     /////////// gamma/Z /////////////////
+//     // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-m2zc) prefactor !!
+//     Complex cgZ_LL=4. * gZboxesF(s,t,zmass,zwidth);
+//     Complex cgZ_LR=4. * gZboxesF(s,u,zmass,zwidth);
+
+//     // here add the gamma/gamma and gamma/Z boxes interfered with the tree-level
+// 			   // TODO
+//     // subtract integrated dipoles
+// 			   // TODO
+//     // divide by the tree-level squared
+// 			   // TODO
   }
   // return the total
   return output;
+}
+
+// double MEqq2gZ2ffPowhegQED::ggboxesF(Energy2 s,Energy2 t) const {
+//   return 1.;
+// }
+
+Complex MEqq2gZ2ffPowhegQED::gZboxesF(Energy2 s, Energy2 t, Energy zmass, Energy zwidth) const {
+  // this returns the F function, TIMES (s-m2zc), with m2zc being the complex mass!
+  Complex F,ii(0.,1.);
+  complex<Energy2> m2zc=sqr(zmass) - ii*zmass*zwidth;
+  Energy2 u=-(s+t);
+  Complex luot=log(u/t),ltos=log(-t/s),luos=log(-u/s),lm2ot=log(-m2zc/t),lomsom2=log((m2zc-s)/m2zc);
+  Complex lis=Herwig::Math::Li2(1.-s/m2zc),lit=Herwig::Math::Li2(1.+t/m2zc),liu=Herwig::Math::Li2(1.+u/m2zc);
+  F= ( 2.*lomsom2*luot - lit + liu - 0.5*sqr(ltos) + 0.5*sqr(luos) ) +
+    (s-m2zc)*(u-t-m2zc)/sqr(u) * ( -lomsom2*ltos - lit + lis ) +
+    (s-m2zc)/u * ( (1.-m2zc/s)*lomsom2 + lm2ot );
+  return F;
 }
 
 double MEqq2gZ2ffPowhegQED::NLOWeight() const {
