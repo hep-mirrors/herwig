@@ -32,9 +32,14 @@ public:
   /** @name Vertices */
   //@{
  /**
-   * Pointer to the object handling vertex.
+   * Pointer to the object handling W prime vertex.
    */
   tAbstractFFVVertexPtr vertexWPTD() const {return _theWPTDVertex;}
+
+  /**
+   * Pointer to the object handling Z prime vertex.
+   */
+  tAbstractFFVVertexPtr vertexZPQQ() const {return _theZPQQVertex;}
 
 public:
 
@@ -73,7 +78,35 @@ public:
    */
   double _cWPTD_right() const {return _gWPTD_R;}
 
-  
+  /**
+   * Return the Z prime top-up left-handed coupling
+   */
+  double _cZPTU_left() const {return _gZPTU_L;}
+
+  /**
+   * Return the Z prime top-up right-handed coupling
+   */
+  double _cZPTU_right() const {return _gZPTU_R;}
+
+  /**
+   * Return the Z prime up-upbar left-handed coupling
+   */
+  double _cZPUU_left() const {return _gZPUU_L;}
+
+  /**
+   * Return the Z prime up-upbar right-handed coupling
+   */
+  double _cZPUU_right() const {return _gZPUU_R;}
+
+    /**
+   * Return the Z prime charm-charmbar left-handed coupling
+   */
+  double _cZPCC_left() const {return _gZPCC_L;}
+
+  /**
+   * Return the Z prime charm-charmbar right-handed coupling
+   */
+  double _cZPCC_right() const {return _gZPCC_R;}
 
 
 
@@ -135,6 +168,13 @@ private:
    */
   AbstractFFVVertexPtr  _theWPTDVertex;
 
+  
+  /**
+   * Pointer to the object handling the Zp to Quark-antiQuark vertex.
+   */
+  AbstractFFVVertexPtr  _theZPQQVertex;
+
+
 
  /**
    *  W prime coupling to top-down (left-handed)
@@ -146,6 +186,45 @@ private:
    *  W prime coupling to top-down (right-handed)
    */
   double _gWPTD_R;
+
+
+   /**
+   *  Z prime coupling to top-up (left-handed)
+   */
+  double _gZPTU_L;
+  
+
+  /**
+   *  Z prime coupling to top-up (right-handed)
+   */
+  double _gZPTU_R;
+
+
+   /**
+   *  Z prime coupling to up-upbar (left-handed)
+   */
+  double _gZPUU_L;
+  
+
+  /**
+   *  Z prime coupling to up-upbar (right-handed)
+   */
+  double _gZPUU_R;
+
+
+   /**
+   *  Z prime coupling to charm-charmbar (left-handed)
+   */
+  double _gZPCC_L;
+  
+
+  /**
+   *  Z prime coupling to charm-charmbar (right-handed)
+   */
+  double _gZPCC_R;
+
+
+
 
 
 };

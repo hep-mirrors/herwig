@@ -58,7 +58,8 @@ am__installdirs = "$(DESTDIR)$(pkglibdir)"
 pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 HwTTbAModel_la_LIBADD =
-am_HwTTbAModel_la_OBJECTS = TTbAModel.lo TTbAModelWPTDVertex.lo
+am_HwTTbAModel_la_OBJECTS = TTbAModel.lo TTbAModelWPTDVertex.lo \
+	TTbAModelZPQQVertex.lo
 HwTTbAModel_la_OBJECTS = $(am_HwTTbAModel_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/Config
 depcomp = $(SHELL) $(top_srcdir)/Config/depcomp
@@ -270,7 +271,8 @@ target_alias =
 pkglib_LTLIBRARIES = HwTTbAModel.la
 HwTTbAModel_la_SOURCES = \
 TTbAModel.cc  TTbAModel.h \
-TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc 
+TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \
+TTbAModelZPQQVertex.h TTbAModelZPQQVertex.cc 
 
 HwTTbAModel_la_LDFLAGS = -module -version-info 1:0:0
 all: all-am
@@ -344,6 +346,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/TTbAModel.Plo
 include ./$(DEPDIR)/TTbAModelWPTDVertex.Plo
+include ./$(DEPDIR)/TTbAModelZPQQVertex.Plo
 
 .cc.o:
 	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

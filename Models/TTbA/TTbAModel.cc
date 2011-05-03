@@ -16,13 +16,14 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
+
 void TTbAModel::doinit()  {
   addVertex(_theWPTDVertex);
-
+  addVertex(_theZPQQVertex);
   StandardModel::doinit();
 }
 
-TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0) {}
+TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0),_gZPTU_L(1.0), _gZPTU_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0),_gZPCC_L(1.0), _gZPCC_R(1.0) {}
 
 IBPtr TTbAModel::clone() const {
   return new_ptr(*this);
@@ -38,15 +39,30 @@ IBPtr TTbAModel::fullclone() const {
 
 void TTbAModel::persistentOutput(PersistentOStream & os) const {
   os << _theWPTDVertex
+     << _theZPQQVertex
      << _gWPTD_L
-     << _gWPTD_R;
+     << _gWPTD_R
+     << _gZPTU_L
+     << _gZPTU_R
+     << _gZPUU_L
+     << _gZPUU_R
+     << _gZPCC_L
+     << _gZPCC_R;
+  
 }
 
 void TTbAModel::persistentInput(PersistentIStream & is, int) {
   is >> _theWPTDVertex
+     >> _theZPQQVertex
      >> _gWPTD_L
-     >> _gWPTD_R;
-    
+     >> _gWPTD_R
+     >> _gZPTU_L
+     >> _gZPTU_R
+     >> _gZPUU_L
+     >> _gZPUU_R
+     >> _gZPCC_L
+     >> _gZPCC_R;
+
   
 }
 
@@ -60,6 +76,11 @@ void TTbAModel::Init() {
    "Reference to the W prime Top Down vertex",
    &TTbAModel::_theWPTDVertex, false, false, true, false, false);
 
+ static Reference<TTbAModel,ThePEG::Helicity::AbstractFFVVertex> interfaceVertexZPQQ
+  ("Vertex/ZPQQ",
+   "Reference to the Z prime Quark-Antiquark vertex",
+   &TTbAModel::_theZPQQVertex, false, false, true, false, false);
+
   static Parameter<TTbAModel, double> interfaceWPTDLCoupling
     ("WPTDLCoupling",
      "The left-handed W prime coupling to top down",
@@ -72,7 +93,42 @@ void TTbAModel::Init() {
      &TTbAModel::_gWPTD_R, 1.0, 0., 10.0,
      false, false, Interface::limited);
 
- 
+  static Parameter<TTbAModel, double> interfaceZPTULCoupling
+    ("ZPTULCoupling",
+     "The left-handed Z prime coupling to top up",
+     &TTbAModel::_gZPTU_L, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceZPTURCoupling
+    ("ZPTURCoupling",
+     "The right-handed Z prime coupling to top up",
+     &TTbAModel::_gZPTU_R, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceZPUULCoupling
+    ("ZPUULCoupling",
+     "The left-handed Z prime coupling to up upbar",
+     &TTbAModel::_gZPUU_L, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceZPUURCoupling
+    ("ZPUURCoupling",
+     "The right-handed Z prime coupling to up upbar",
+     &TTbAModel::_gZPUU_R, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceZPCCLCoupling
+    ("ZPCCLCoupling",
+     "The left-handed Z prime coupling to char charmbar",
+     &TTbAModel::_gZPCC_L, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceZPCCRCoupling
+    ("ZPCCRCoupling",
+     "The right-handed Z prime coupling to charm charmbar",
+     &TTbAModel::_gZPCC_R, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
   static ClassDocumentation<TTbAModel> documentation
     ("There is no documentation for the TTbAModel class");
 

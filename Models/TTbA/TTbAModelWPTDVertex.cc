@@ -69,13 +69,16 @@ void TTbAModelWPTDVertex::Init() {
 
 
 void TTbAModelWPTDVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc) {
- 
-  double _cR = _cWPTD_R; 
-  double _cL = _cWPTD_L; 
+  
+  double _cL = 0, _cR = 0;
+  
+  if(fabs(aa->id()) == 34 || fabs(bb->id()) == 34 || fabs(cc->id()) == 34) {
+    _cR = _cWPTD_R; 
+    _cL = _cWPTD_L; 
+  }
     
   left(_cL);
   right(_cR);
-
   
   norm(1.0);
 }
