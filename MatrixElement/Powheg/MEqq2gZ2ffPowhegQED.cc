@@ -721,70 +721,91 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   }
   // ISR/FSR interference
   if((corrections_==2||corrections_==3) && QEDContributions_==0 ) {
-//      Complex ii(0.,1.);
-//      // Mandelstams and Z complex mass
-//      Energy zmass=91.*GeV,zwidth=2.*GeV;
-//      complex<Energy2> m2zc=sqr(zmass) - ii*zmass*zwidth;
-//      Energy2 s=sHat(),t=-2.*meMomenta()[0].dot(meMomenta()[2]),
-//        u=-2.*meMomenta()[0].dot(meMomenta()[3]);
-//      // couplings
-//      vector<Complex> gq(2),gl(2);
-//      gq[0]=1.,gq[1]=ii,gl[0]=1.,gl[1]=ii;
-//      double qq=double(mePartonData()[0]->iCharge())/3.,ql=double(mePartonData()[2]->iCharge())/3.;
-//      /////////// gamma/gamma, for q qbar->lep lepbar ///////////////
-//      // logarithms
-//      double ltos=log(-t/s),ltou=log(t/u),luos=log(-u/s),luot=log(u/t);
-//      // gamma/gamma boxes helicity amplitudes, WITHOUT the 1/s prefactor !!
-//      double REcgg_LL=1.
-//        *4. *( -s/(2*u)*ltos - s*(s+2*t)/4./sqr(u)*sqr(ltos) );
-//      double IMcgg_LL=1. *Constants::pi
-//        *4. *( -s/(2*u) + ltou - s*(s+2*t)/2./sqr(u)*ltos );
-//      Complex cgg_LL=REcgg_LL + ii*IMcgg_LL;
-//      double REcgg_LR=1.
-//        *4. *( -s/(2*t)*luos - s*(s+2*u)/4./sqr(t)*sqr(luos) );
-//      double IMcgg_LR=1. *Constants::pi
-//        *4. *( -s/(2*t) + luot - s*(s+2*u)/2./sqr(t)*luos );
-//      Complex cgg_LR=REcgg_LR + ii*IMcgg_LR;
+    //here I assume that we always have q qbar -> lep lepbar
+    if(mePartonData()[0]->id()<0 || mePartonData()[2]->id()<0){
+      cout<<"WARNING: virtual called with crossing "<<endl;
+      //Otherwise Mandelstams, charges and couplings should change!!!
+    }
+    Complex ii(0.,1.);
+    // Mandelstams and Z complex mass
+    Energy zmass=Z0_->mass(),zwidth=Z0_->width();
+    complex<Energy2> m2zc=sqr(zmass) - ii*zmass*zwidth;
+    Energy2 s=sHat(),t=-2.*meMomenta()[0].dot(meMomenta()[2]),
+      u=-2.*meMomenta()[0].dot(meMomenta()[3]);
+    // charges and couplings
+    double qq=double(mePartonData()[0]->iCharge())/3.,ql=double(mePartonData()[2]->iCharge())/3.;
+    vector<Complex> gq(2),gl(2);
+    //isospin (assign it to 1/2 - up-type - and change if we have a down)
+    //    cout<<mePartonData()[0]->PDGName()<<" "<<mePartonData()[0]->id()%2<<endl;
+    double T3q;
+    T3q= + 0.5;
+    if(mePartonData()[0]->id()%2==1) T3q=-0.5;
+    double T3l= - 0.5;
+    // TODO: NEED TO COMPLEXIFY COUPLINGS AND ASSIGN STHETA PROPERLY
+    double sw2_ = generator()->standardModel()->sin2ThetaW();
+    double stheta=sqrt(sw2_),ctheta=sqrt(1.-sqr(stheta));
+    //left
+    gq[0]=(T3q-sqr(stheta)*qq)/(stheta*ctheta),gl[0]=(T3l-sqr(stheta)*ql)/(stheta*ctheta);
+    //righ
+    gq[1]=-stheta/ctheta*qq,gl[1]=-stheta/ctheta*ql;
+    /////////// gamma/gamma, for q qbar->lep lepbar ///////////////
+    // logarithms
+    double ltos=log(-t/s),ltou=log(t/u),luos=log(-u/s),luot=log(u/t);
+    // gamma/gamma boxes helicity amplitudes, WITHOUT the 1/s prefactor !!
+    double REcgg_LL=1.
+      *4. *( -s/(2*u)*ltos - s*(s+2*t)/4./sqr(u)*sqr(ltos) );
+    double IMcgg_LL=1. *Constants::pi
+      *4. *( -s/(2*u) + ltou - s*(s+2*t)/2./sqr(u)*ltos );
+    Complex cgg_LL=REcgg_LL + ii*IMcgg_LL;
+     double REcgg_LR=1.
+       *4. *( -s/(2*t)*luos - s*(s+2*u)/4./sqr(t)*sqr(luos) );
+     double IMcgg_LR=1. *Constants::pi
+       *4. *( -s/(2*t) + luot - s*(s+2*u)/2./sqr(t)*luos );
+     Complex cgg_LR=REcgg_LR + ii*IMcgg_LR;
   
-//      /////////// gamma/Z, for q qbar->lep lepbar /////////////////
-//      // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-m2zc) prefactor !!
-//      Complex cgZ_LL=4. * gZboxesF(s,t,zmass,zwidth);
-//      Complex cgZ_LR=4. * gZboxesF(s,u,zmass,zwidth);
+     /////////// gamma/Z, for q qbar->lep lepbar /////////////////
+     // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-m2zc) prefactor !!
+     Complex cgZ_LL=4. * gZboxesF(s,t,zmass,zwidth);
+     Complex cgZ_LR=4. * gZboxesF(s,u,zmass,zwidth);
      
-//      // tree-level helicity amplitudes
-//      // 4 pi is needed in trees to factor out alphaEM
-//      Complex tree[2][2];
-//      tree[0][0]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[0]*gl[0]/(s-m2zc));
-//      tree[1][1]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[1]*gl[1]/(s-m2zc));
-//      tree[0][1]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[0]*gl[1]/(s-m2zc));
-//      tree[1][0]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[1]*gl[0]/(s-m2zc));
-//      // virtual helicity amplitudes (adding gamma/gamma and gamma/Z)
-//      Complex virt[2][2];
-//      virt[0][0]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
-// 		       +qq*ql*gq[0]*gl[0] *cgZ_LL/(s-m2zc));
-//      virt[1][1]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
-//  		       +qq*ql*gq[1]*gl[1] *cgZ_LL/(s-m2zc));
-//      virt[0][1]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
-//  		       +qq*ql*gq[0]*gl[1] *cgZ_LR/(s-m2zc));
-//      virt[1][0]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
-//  		       +qq*ql*gq[1]*gl[0] *cgZ_LR/(s-m2zc));
-//      // interfere with the tree-level
-//      Complex total=0.,treesq=0.;
-//      for(unsigned int helq=0;helq<1;++helq) {
-//        for(unsigned int hell=0;hell<1;++hell) {
-// 	 total+= (virt[helq][hell]*conj(tree[helq][hell])+
-// 		    conj(virt[helq][hell])*tree[helq][hell]);
-// 	 treesq+=norm(tree[helq][hell]);
-//        }
-//      }
-//      total=total *alphaEM_;
-//      // now total is the virtual, with prefactor
-//      // (4pi)^ep/Gamma(1-ep) in front.
+     // tree-level helicity amplitudes
+     // 4 pi is needed in trees to factor out alphaEM
+     // following amplitudes valid only if qqbar -> leplepbar
+     Complex tree[2][2];
+     tree[0][0]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[0]*gl[0]/(s-m2zc));
+     tree[1][1]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[1]*gl[1]/(s-m2zc));
+     tree[0][1]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[0]*gl[1]/(s-m2zc));
+     tree[1][0]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[1]*gl[0]/(s-m2zc));
+     // virtual helicity amplitudes (adding gamma/gamma and gamma/Z)
+     // following amplitudes valid only if qqbar -> leplepbar
+     Complex virt[2][2];
+     virt[0][0]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
+		       +qq*ql*gq[0]*gl[0] *cgZ_LL/(s-m2zc));
+     virt[1][1]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
+ 		       +qq*ql*gq[1]*gl[1] *cgZ_LL/(s-m2zc));
+     virt[0][1]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
+ 		       +qq*ql*gq[0]*gl[1] *cgZ_LR/(s-m2zc));
+     virt[1][0]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
+ 		       +qq*ql*gq[1]*gl[0] *cgZ_LR/(s-m2zc));
+     // interfere with the tree-level
+     Complex total(0.,0.),treesq(0.,0.);
+     for(unsigned int helq=0;helq<2;++helq) {
+       for(unsigned int hell=0;hell<2;++hell) {
+	 total+= (virt[helq][hell]*conj(tree[helq][hell])+
+		    conj(virt[helq][hell])*tree[helq][hell]);
+	 treesq+=norm(tree[helq][hell]);
+       }
+     }
+     treesq=treesq*sqr(alphaEM_)/12.;
+     total=total *alphaEM_;
+     // now treesq is exactly equal to loME_
+     // now total is the virtual, with prefactor
+     // (4pi)^ep/Gamma(1-ep) in front.
 
-//      // subtract integrated dipoles
-//  			   // TODO
-//      // divide by the tree-level squared
-//  			   // TODO
+     // subtract integrated dipoles
+ 			   // TODO
+     // divide by the tree-level squared
+ 			   // TODO
   }
   // return the total
   return output;
