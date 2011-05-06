@@ -14,6 +14,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -349,12 +350,12 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
   vector<Complex> diag(5, 0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin1Half, PDT::Spin1Half);
-//   unsigned int propopt;
-//   if(status()==RealQG || status()==RealQBarG){
-//     propopt = 7;
-//   }
-//   else propopt = 3;
-  unsigned int propopt = 3;
+  unsigned int propopt;
+  if(status()==RealQG || status()==RealQBarG){
+    propopt = 7;
+  }
+  else propopt = 3;
+  //unsigned int propopt = 3;
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
@@ -526,45 +527,54 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 	    // second W diagram (emission from anti-quark)
 	    diag[1] = CNWVertex_->evaluate(q2, spout[ohel2],  sbarout[ohel3], interW[1]);
 	    // t and u channels
-	  for(unsigned int iq=0;iq<2;++iq) {
-	    // t-channel
-	    // emission from quark
-	    intersq = CFSVertex_->
-	      evaluate(q2, propopt, squark [iq], inters, spoutconj[ohel2]);
-	    diag[6*iq+2] = -NFSVertex_->
-	      evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
-	    // emission from anti-quark
-	    intersq = CFSVertex_->
-	      evaluate(q2, propopt, squark [iq], sp[ihel1], spoutconj[ohel2]);
-	    diag[6*iq+3] = -NFSVertex_->
-	      evaluate(q2, sbaroutconj[ohel3], interb, intersq);
-	    // emission from intermediate
-	    intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
-	    diag[6*iq+4] = -NFSVertex_->
-	      evaluate(q2,sbaroutconj[ohel3], sbar[ihel2], intersq2);
-
-	    // u-channel
-	    // emission from quark
-	    intersq = NFSVertex_->
-	      evaluate(q2, propopt, squark [iq+2], inters, sbarout[ohel3]);
-	    diag[6*iq+5] = CFSVertex_->
-	      evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
-	    // emission from anti-quark
-	    intersq = NFSVertex_->
-	      evaluate(q2, propopt, squark [iq+2], sp[ihel1], sbarout[ohel3]);
-	    diag[6*iq+6] = CFSVertex_->
-	      evaluate(q2, spout[ohel2], interb, intersq);
-	    // emission from intermediate
-	    intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq+2],gluon[ohel1],intersq);
-	    diag[6*iq+7] = CFSVertex_->
-	      evaluate(q2,spout[ohel2], sbar[ihel2], intersq2);
-	  }
-
-
+	    for(unsigned int iq=0;iq<2;++iq) {
+	      if(   (2.*squark[iq]->mass())/(momenta[2].mass()+momenta[3].mass()) > 20.){
+		diag[6*iq+2]=0.;
+		diag[6*iq+3]=0.;
+		diag[6*iq+4]=0.;
+		diag[6*iq+5]=0.;
+		diag[6*iq+6]=0.;
+		diag[6*iq+7]=0.;
+	      } else{
+		// t-channel
+		// emission from quark
+		intersq = CFSVertex_->
+		  evaluate(q2, propopt, squark [iq], inters, spoutconj[ohel2]);
+		diag[6*iq+2] = -NFSVertex_->
+		  evaluate(q2, sbaroutconj[ohel3], sbar[ihel2], intersq);
+		// emission from anti-quark
+		intersq = CFSVertex_->
+		  evaluate(q2, propopt, squark [iq], sp[ihel1], spoutconj[ohel2]);
+		diag[6*iq+3] = -NFSVertex_->
+		  evaluate(q2, sbaroutconj[ohel3], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq],gluon[ohel1],intersq);
+		diag[6*iq+4] = -NFSVertex_->
+		  evaluate(q2,sbaroutconj[ohel3], sbar[ihel2], intersq2);
+		
+		// u-channel
+		// emission from quark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark [iq+2], inters, sbarout[ohel3]);
+		diag[6*iq+5] = CFSVertex_->
+		  evaluate(q2, spout[ohel2], sbar[ihel2], intersq);
+		// emission from anti-quark
+		intersq = NFSVertex_->
+		  evaluate(q2, propopt, squark [iq+2], sp[ihel1], sbarout[ohel3]);
+		diag[6*iq+6] = CFSVertex_->
+		  evaluate(q2, spout[ohel2], interb, intersq);
+		// emission from intermediate
+		intersq2 = GSSVertex_->evaluate(q2,propopt,squark[iq+2],gluon[ohel1],intersq);
+		diag[6*iq+7] = CFSVertex_->
+		  evaluate(q2,spout[ohel2], sbar[ihel2], intersq2);
+	      }
+	    }
+	    
+	    
 	    // add them up
 	    Complex total = std::accumulate(diag.begin(),diag.end(),Complex(0.));
 	    output += norm(total);
-
+	    
 	    // Gauge invariance check
 // 	    double all = 0.;
 // 	    for(unsigned int ix=0;ix<14;++ix){
@@ -578,6 +588,213 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
       }
     }
   }
+
+
+
+
+
+  // strong coupling
+  double gs2 = norm(FFGVertex_->norm());
+  
+  
+  double totcount = 0.;
+  Energy sqmom,sqmass;
+
+//   bool first = false;
+//   bool second = false;
+
+
+  // subtract the on-shell squark decay if neccessary
+  if(abs(particles[4]->id())<=6) {
+    Energy roots = (momenta[0]+momenta[1]).m();
+    // off-shell masses of the squarks
+    Energy2 msq1 = (momenta[2]+momenta[4]).m2();
+    Energy2 msq2 = (momenta[3]+momenta[4]).m2();
+    Lorentz5Momentum pgluon = 
+      particles[0]->id() == ParticleID::g ? momenta[0] : momenta[1];
+    tcPDPtr quark = particles[0]->id() == ParticleID::g ? particles[1] : particles[0];
+
+    FFSVertexPtr vertex,vertexd;
+    double Cf = 4./3.;
+    double Nc = 3.;
+    Energy2 sh = (momenta[0]+momenta[1]).m2();
+
+
+
+    for(unsigned int ix=0;ix<2;++ix) {
+      Energy2 sqwidth2 = sqr(squark[ix]->width());
+      // is on-shell mass allowed for first neutralino and squark
+      if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
+	   && (squark[ix]->mass() > momenta[3].mass())){
+
+	sqmom = (momenta[3]+momenta[4]).m();
+	sqmass = squark[ix]->mass();
+
+
+// 	first = true;
+// 	cout << "1st CT:" << endl;
+// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
+// 	cout << "Born: " << particles[2]->id() << "\t" << "Decay: " << particles[3]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
+      
+
+
+// 	if((quark->iCharge() > 0. && particles[2]->iCharge() > 0.) ||
+// 	   (quark->iCharge() < 0. && particles[2]->iCharge() < 0.)){
+// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+// 	}
+// 	else if((quark->iCharge() > 0. && particles[2]->iCharge() < 0.) ||
+// 		(quark->iCharge() < 0. && particles[2]->iCharge() > 0.)){
+// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+// 	}
+// 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+// 	vertexd->setCoupling(q2,particles[4],particles[3],squark[ix]); 
+	
+
+
+	// Create a counterterm for the squark decay pole.
+	Energy2 mneut2 = sqr(momenta[2].mass()); 
+	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
+	Energy2 u4 = (pgluon-momenta[2]).m2()-mneut2;
+
+
+	if (particles[2]->id()==ParticleID::SUSY_chi_10 ||
+	    particles[2]->id()==ParticleID::SUSY_chi_20 ||
+	    particles[2]->id()==ParticleID::SUSY_chi_30 ||
+	    particles[2]->id()==ParticleID::SUSY_chi_40){
+	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);}
+	else if (particles[2]->id()==ParticleID::SUSY_chi_1plus ||
+	    particles[2]->id()==ParticleID::SUSY_chi_1minus ||
+	    particles[2]->id()==ParticleID::SUSY_chi_2plus ||
+	    particles[2]->id()==ParticleID::SUSY_chi_2minus){
+	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);}
+	else cout << "Ahhhhhhhhh!!!" << endl;
+	
+	
+	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
+ 	double a2 = norm(vertex->norm())*
+ 	  (norm(vertex->left())+norm(vertex->right()));
+	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
+	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
+
+
+
+ 	vertexd->setCoupling(q2,particles[4],particles[3],squark[ix]);
+ 	a2 = norm(vertexd->norm())*
+ 	  (norm(vertexd->left())+norm(vertexd->right()));
+	Energy2 sqdecay2 = 4. * a2 * (msq2-sqr(particles[3]->mass()));
+	Energy4 denom = sqr(msq2-sqr(squark[ix]->mass())) + 
+	  sqr(squark[ix]->mass())*sqwidth2;
+	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
+
+	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
+	    && (squark[ix]->mass()>1.e4*GeV))
+	  sqcounter = 0;
+
+	totcount += sqcounter;
+      }
+
+      // is on-shell mass allowed for second neutralino and squark
+      if((roots >= squark[ix]->mass() + momenta[3].mass() )
+	 && (squark[ix]->mass() > momenta[2].mass())){
+
+
+	sqmom = (momenta[2]+momenta[4]).m();
+	sqmass = squark[ix]->mass();
+
+
+// 	second = true;
+// 	cout << "2nd CT:" << endl;
+// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
+// 	cout << "Born: " << particles[3]->id() << "\t" << "Decay: " << particles[2]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
+
+
+// 	if((quark->iCharge() > 0. && particles[3]->iCharge() > 0.) ||
+// 	   (quark->iCharge() < 0. && particles[3]->iCharge() < 0.)){
+// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+// 	}
+// 	else if((quark->iCharge() > 0. && particles[3]->iCharge() < 0.) ||
+// 		(quark->iCharge() < 0. && particles[3]->iCharge() > 0.)){
+// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+// 	}
+// 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+// 	vertexd->setCoupling(q2,particles[4],particles[2],squark[ix]); 
+
+
+
+
+	Energy2 mneut2 = sqr(momenta[3].mass());
+	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
+	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
+
+
+
+	if (particles[3]->id()==ParticleID::SUSY_chi_10 ||
+	    particles[3]->id()==ParticleID::SUSY_chi_20 ||
+	    particles[3]->id()==ParticleID::SUSY_chi_30 ||
+	    particles[3]->id()==ParticleID::SUSY_chi_40){
+	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);}
+	else if (particles[3]->id()==ParticleID::SUSY_chi_1plus ||
+	    particles[3]->id()==ParticleID::SUSY_chi_1minus ||
+	    particles[3]->id()==ParticleID::SUSY_chi_2plus ||
+	    particles[3]->id()==ParticleID::SUSY_chi_2minus){
+	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);}
+	else cout << "Ahhhhhhhhh!!!" << endl;
+
+
+
+
+	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
+ 	double a2 = norm(vertex->norm())*
+ 	  (norm(vertex->left())+norm(vertex->right()));
+	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
+	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
+
+
+	vertexd->setCoupling(q2,particles[4],particles[2],squark[ix]);
+	a2 = norm(vertexd->norm())*
+	  (norm(vertexd->left())+norm(vertexd->right()));
+	Energy2 sqdecay2 = 4. * a2 * (msq1-sqr(particles[2]->mass()));
+	Energy4 denom = sqr(msq1-sqr(squark[ix]->mass())) + 
+	  sqr(squark[ix]->mass())*sqwidth2;
+	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
+
+	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
+	    && (squark[ix]->mass()>1.e4*GeV))
+	  sqcounter = 0;
+
+	totcount += sqcounter;
+      }
+    }
+  }
+
+
+
+
+  if(abs(1.-abs(sqmom/sqmass)) < 1.e-4){
+    //    cout << "Counterterms used:\t" << first << "\t" << second << endl;
+    cout << particles[0]->id() << "\t" << particles[1]->id() << endl;
+    cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id()<< endl;
+    cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << "\n\n" << endl;}
+  
+
+
+
+  output -= totcount;
+
+
+
+
+
+
+
   // colour and spin factors
   if(particles[0]->id()==ParticleID::g ||
      particles[1]->id()==ParticleID::g){
