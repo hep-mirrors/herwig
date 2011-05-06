@@ -757,63 +757,84 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
     double IMcgg_LL=1. *Constants::pi
       *4. *( -s/(2*u) + ltou - s*(s+2*t)/2./sqr(u)*ltos );
     Complex cgg_LL=REcgg_LL + ii*IMcgg_LL;
-     double REcgg_LR=1.
-       *4. *( -s/(2*t)*luos - s*(s+2*u)/4./sqr(t)*sqr(luos) );
-     double IMcgg_LR=1. *Constants::pi
-       *4. *( -s/(2*t) + luot - s*(s+2*u)/2./sqr(t)*luos );
-     Complex cgg_LR=REcgg_LR + ii*IMcgg_LR;
-  
-     /////////// gamma/Z, for q qbar->lep lepbar /////////////////
-     // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-m2zc) prefactor !!
-     Complex cgZ_LL=4. * gZboxesF(s,t,zmass,zwidth);
-     Complex cgZ_LR=4. * gZboxesF(s,u,zmass,zwidth);
-     
-     // tree-level helicity amplitudes
-     // 4 pi is needed in trees to factor out alphaEM
-     // following amplitudes valid only if qqbar -> leplepbar
-     Complex tree[2][2];
-     tree[0][0]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[0]*gl[0]/(s-m2zc));
-     tree[1][1]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[1]*gl[1]/(s-m2zc));
-     tree[0][1]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[0]*gl[1]/(s-m2zc));
-     tree[1][0]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[1]*gl[0]/(s-m2zc));
-     // virtual helicity amplitudes (adding gamma/gamma and gamma/Z)
-     // following amplitudes valid only if qqbar -> leplepbar
-     Complex virt[2][2];
-     virt[0][0]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
-		       +qq*ql*gq[0]*gl[0] *cgZ_LL/(s-m2zc));
-     virt[1][1]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
- 		       +qq*ql*gq[1]*gl[1] *cgZ_LL/(s-m2zc));
-     virt[0][1]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
- 		       +qq*ql*gq[0]*gl[1] *cgZ_LR/(s-m2zc));
-     virt[1][0]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
- 		       +qq*ql*gq[1]*gl[0] *cgZ_LR/(s-m2zc));
-     // interfere with the tree-level
-     Complex total(0.,0.),treesq(0.,0.);
-     for(unsigned int helq=0;helq<2;++helq) {
-       for(unsigned int hell=0;hell<2;++hell) {
-	 total+= (virt[helq][hell]*conj(tree[helq][hell])+
-		    conj(virt[helq][hell])*tree[helq][hell]);
-	 treesq+=norm(tree[helq][hell]);
-       }
-     }
-     treesq=treesq*sqr(alphaEM_)/12.;
-     total=total *alphaEM_;
-     // now treesq is exactly equal to loME_
-     // now total is the virtual, with prefactor
-     // (4pi)^ep/Gamma(1-ep) in front.
-
-     // subtract integrated dipoles
- 			   // TODO
-     // divide by the tree-level squared
- 			   // TODO
+    double REcgg_LR=1.
+      *4. *( -s/(2*t)*luos - s*(s+2*u)/4./sqr(t)*sqr(luos) );
+    double IMcgg_LR=1. *Constants::pi
+      *4. *( -s/(2*t) + luot - s*(s+2*u)/2./sqr(t)*luos );
+    Complex cgg_LR=REcgg_LR + ii*IMcgg_LR;
+    Complex cgg_LL_eps=4.*ltou;
+    Complex cgg_LR_eps=4.*ltou;
+    /////////// gamma/Z, for q qbar->lep lepbar /////////////////
+    // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-m2zc) prefactor !!
+    Complex cgZ_LL=4. * gZboxesF(s,t,zmass,zwidth);
+    Complex cgZ_LR=4. * gZboxesF(s,u,zmass,zwidth);
+    Complex cgZ_LL_eps=4.*ltou;
+    Complex cgZ_LR_eps=4.*ltou;
+    // tree-level helicity amplitudes
+    // 4 pi is needed in trees to factor out alphaEM
+    // following amplitudes valid only if qqbar -> leplepbar
+    Complex tree[2][2];
+    tree[0][0]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[0]*gl[0]/(s-m2zc));
+    tree[1][1]=(4.*Constants::pi)* 2.*u*(qq*ql/s + gq[1]*gl[1]/(s-m2zc));
+    tree[0][1]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[0]*gl[1]/(s-m2zc));
+    tree[1][0]=(4.*Constants::pi)* 2.*t*(qq*ql/s + gq[1]*gl[0]/(s-m2zc));
+    // virtual helicity amplitudes (adding gamma/gamma and gamma/Z)
+    // following amplitudes valid only if qqbar -> leplepbar
+    Complex virt[2][2],virt_eps[2][2];
+    virt[0][0]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
+		      +qq*ql*gq[0]*gl[0] *cgZ_LL/(s-m2zc));
+    virt[1][1]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL/s 
+		      +qq*ql*gq[1]*gl[1] *cgZ_LL/(s-m2zc));
+    virt[0][1]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
+		      +qq*ql*gq[0]*gl[1] *cgZ_LR/(s-m2zc));
+    virt[1][0]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR/s 
+		      +qq*ql*gq[1]*gl[0] *cgZ_LR/(s-m2zc));
+    
+    virt_eps[0][0]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL_eps/s 
+			  +qq*ql*gq[0]*gl[0] *cgZ_LL_eps/(s-m2zc));
+    virt_eps[1][1]=-2.*u*(sqr(qq)*sqr(ql)    *cgg_LL_eps/s 
+			  +qq*ql*gq[1]*gl[1] *cgZ_LL_eps/(s-m2zc));
+    virt_eps[0][1]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR_eps/s 
+			  +qq*ql*gq[0]*gl[1] *cgZ_LR_eps/(s-m2zc));
+    virt_eps[1][0]=-2.*t*(sqr(qq)*sqr(ql)    *cgg_LR_eps/s 
+			  +qq*ql*gq[1]*gl[0] *cgZ_LR_eps/(s-m2zc));
+    
+    // interfere with the tree-level
+    Complex total_fin(0.,0.),total_eps(0.,0.);
+    double treesq=0.;
+    for(unsigned int helq=0;helq<2;++helq) {
+      for(unsigned int hell=0;hell<2;++hell) {
+	total_fin+= (virt[helq][hell]*conj(tree[helq][hell])+
+		 conj(virt[helq][hell])*tree[helq][hell]);
+	total_eps+= (virt_eps[helq][hell]*conj(tree[helq][hell])+
+		 conj(virt_eps[helq][hell])*tree[helq][hell]);
+	treesq+=norm(tree[helq][hell]);
+      }
+    }
+    treesq=treesq *sqr(alphaEM_)/12.;
+    total_fin=total_fin   *pow(alphaEM_,3)/12.;
+    total_eps=total_eps *pow(alphaEM_,3)/12.;
+    // now treesq is exactly equal to loME_
+    // now total_fin is the virtual, with prefactor (4pi)^ep/Gamma(1-ep) in front.
+    // integrated dipoles
+    double Int_eps,Int_fin;
+    Int_eps= - alphaEM_/(2*Constants::pi)*qq*ql
+      *(-4.*ltou) *treesq;
+    Int_fin= - alphaEM_/(2*Constants::pi)*qq*ql
+      *(2.*sqr(ltos)-2.*sqr(luos)+6.*luot) *treesq;
+    // now Int_fin is the integrated IF dipoles, and Int_eps the
+    // corresponding pole
+    // subtract integrated dipoles, first checking numerical cancellation of single pole
+    if(abs(Int_eps+total_eps)>0.0001) {
+      cout<<"WARNING: pole doesn't cancel "<<endl;
+    }
+    double vfin=abs(total_fin)+Int_fin;
+    // divide by the tree-level squared, and add the result to the output
+    output += vfin/treesq;
   }
   // return the total
   return output;
 }
-
-// double MEqq2gZ2ffPowhegQED::ggboxesF(Energy2 s,Energy2 t) const {
-//   return 1.;
-// }
 
 Complex MEqq2gZ2ffPowhegQED::gZboxesF(Energy2 s, Energy2 t, Energy zmass, Energy zwidth) const {
   // this returns the F function, TIMES (s-m2zc), with m2zc being the complex mass!
