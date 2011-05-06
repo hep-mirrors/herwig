@@ -15,6 +15,7 @@
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -198,8 +199,112 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   Singular output;
   output.eps2 = -2;
   output.eps1 = -3;
-  output.finite =-8.+sqr(Constants::pi);
-  output.finite *= loWeight();
+  //output.finite =-8.+sqr(Constants::pi);
+  //output.finite *= loWeight();
+
+
+  // average of left/right squark masses
+  tcPDPtr squarkL, squarkR;
+  if (abs(mePartonData()[0]->id())%2==0) {
+    squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+    squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+  }
+  else {
+    squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+    squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+  }
+  //tcPDPtr squarkL = getParticleData(1000000+mePartonData()[0]->id());
+  //tcPDPtr squarkR = getParticleData(2000000+mePartonData()[0]->id());
+  Energy  ms = 0.5*(squarkL->mass()+squarkR->mass());
+  // boson mass
+  Energy2 mz2 = sqr(Z0_->mass());
+  // mandelstam variables
+  Energy2 sz = sHat()-mz2;
+  // I
+  Complex ii(0.,1.); 
+  // couplings of the vector boson
+  FFVVertexPtr vertex = dynamic_ptr_cast<FFVVertexPtr>(FFPVertex_);
+  vertex->setCoupling(scale(),mePartonData()[0]->CC(),
+		      mePartonData()[1]->CC(),gamma_);
+  double ee = vertex->electroMagneticCoupling(scale());
+  double v1 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
+  vertex = dynamic_ptr_cast<FFVVertexPtr>(FFZVertex_);
+  vertex->setCoupling(scale(),mePartonData()[0]->CC(),
+		      mePartonData()[1]->CC(),Z0_);
+  ee = vertex->electroMagneticCoupling(scale());
+  double v2 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
+  double a2 = 0.5*real((vertex->left()-vertex->right())*vertex->norm())/ee;
+  vertex = dynamic_ptr_cast<FFVVertexPtr>(CCZVertex_);
+  vertex->setCoupling(scale(),mePartonData()[2],
+		      mePartonData()[3],Z0_);
+  ee = vertex->electroMagneticCoupling(scale());
+  int v1w;
+  Complex v2w;
+
+  if(mePartonData()[2]->id() == -mePartonData()[3]->id()){
+    v1w = -1.;
+    v2w = 0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;}
+  else {
+    v1w = 0.;
+    v2w = 0.;
+  }
+  Complex a2w = 0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
+  // left squark couplings
+  vector<Complex> Cl(4,0.);
+  FFSVertexPtr vertex2=dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+  vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkL);
+  ee = vertex2->electroMagneticCoupling(scale());
+  Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
+  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL->CC());
+  Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
+
+  // Not sure what these two couplings are for...
+  Cl[2] = Cl[0];
+  Cl[3] = Cl[1];
+
+  // right squark couplings
+  vector<Complex> Cr(4,0.);
+  for(unsigned int ix=0.;ix<4;++ix)
+    Cr[ix] = 0.;
+
+  // s-channel
+  vector<double> Cs(4,0.);
+  Cs[0] = sqr(v1*v1w) + 2.*sHat() * real( v1*v1w*v2*v2w )/sz +
+    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) + norm(a2w) );
+  Cs[1] = sqr(v1*v1w) + 2.0 * sHat() * real( v1*v1w*v2*v2w )/sz +
+    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) - norm(a2w) );
+  Cs[2] = real( v1*v1w*a2*a2w ) +
+    sHat()/sz*2.*a2*v2*real(a2w*conj(v2w));
+  Cs[3] = 0.;
+  // t-channel
+  vector<Complex> Ct(4,0.);
+//   Ct[0] = v1*v1w + sHat()/sz*( v2+a2 )*( v2w-a2w );
+//   Ct[1] = v1*v1w + sHat()/sz*( v2+a2 )*( v2w+a2w );
+//   Ct[2] = v1*v1w + sHat()/sz*( v2-a2 )*( v2w+a2w );
+//   Ct[3] = v1*v1w + sHat()/sz*( v2-a2 )*( v2w-a2w );
+
+
+  Ct[0] = sHat()/sz*( v2+a2 )*( v2w-a2w );
+  Ct[1] = sHat()/sz*( v2+a2 )*( v2w+a2w );
+  Ct[2] = sHat()/sz*( v2-a2 )*( v2w+a2w );
+  Ct[3] = sHat()/sz*( v2-a2 )*( v2w-a2w );
+  Ct[0] += v1*v1w;
+  Ct[1] += v1*v1w;
+  Ct[2] += v1*v1w;
+  Ct[3] += v1*v1w;
+
+
+  // weird rescaling factors
+  for(unsigned int ix=0;ix<4;++ix) {
+    Cs[ix] *= sqr(4.*Constants::pi);
+    Ct[ix] *=     4.*Constants::pi ;
+    Cl[ix] *= 2.0 * sqrt(Constants::pi);
+    Cr[ix] *= 2.0 * sqrt(Constants::pi);
+  }
+  // finite piece
+  output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct);
+
+
   return output;
 }
 
@@ -426,13 +531,6 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 		diag[3*iq+6]=0.;
 	      }
 	      else{
-
-
-
-// 		cout << iq << "\t" << mePartonData()[0]->id() << "\t" << mePartonData()[1]->id() << "\t" << norm(CFSVertex_->norm())*(norm(CFSVertex_->left())+norm(CFSVertex_->right())) << endl;
-
-
-
 		// u-type
 		if(abs(mePartonData()[0]->id())%2==0) {
 		  // emission from quark
@@ -479,20 +577,14 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
   }
 
 
-
-
-
-
-
-
-
   // strong coupling
   double gs2 = norm(FFGVertex_->norm());
   
   
   double totcount = 0.;
-  //Energy sqmom,sqmass;
-  //int sqid;
+//   Energy sqmom,sqmass;
+//   bool first = false;
+//   bool second = false;
 
 
   // subtract the on-shell squark decay if neccessary
@@ -506,18 +598,23 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
     tcPDPtr quark = particles[0]->id() == ParticleID::g ?
       particles[1] : particles[0];
     FFSVertexPtr vertex = dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
+    //FFSVertexPtr vertexd = dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
     double Cf = 4./3.;
     double Nc = 3.;
     Energy2 sh = (momenta[0]+momenta[1]).m2();
     for(unsigned int ix=0;ix<2;++ix) {
       Energy2 sqwidth2 = sqr(squark[ix]->width());
+
       // is on-shell mass allowed for first chargino and squark
       if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
-	   && (squark[ix]->mass() > momenta[3].mass())){
+	   && (squark[ix]->mass() > momenta[3].mass())
+	   && ((quark->iCharge() > 0. && particles[2]->iCharge() > 0.) || 
+	       (quark->iCharge() < 0. && particles[2]->iCharge() < 0.))){
 
-	//sqmom = (momenta[3]+momenta[4]).m();
-	//sqmass = squark[ix]->mass();
-	//sqid = squark[ix]->id();
+// 	first = true;
+
+// 	sqmom = (momenta[3]+momenta[4]).m();
+// 	sqmass = squark[ix]->mass();
 
 
 	// Create a counterterm for the squark decay pole.
@@ -531,6 +628,14 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 	  (-u4/sh - (2*(msq2-mcharg2)*u4)/sh/t3 * (1+mcharg2/u4+msq2/t3));
 	//vertex->setCoupling(q2,quark,particles[3],squark[ix]);
 	vertex->setCoupling(q2,particles[4],particles[3],squark[ix]);
+
+// 	if ((quark->iCharge() > 0. && particles[2]->iCharge() < 0.) || 
+// 	    (quark->iCharge() < 0. && particles[2]->iCharge() > 0.)){
+// 	  cout << "1st CT:" << endl;
+// 	  cout << "Incoming partons: " << particles[0]->id() << " " << particles[1]->id() << endl;
+// 	  cout << "Outgoing Charginos: " << particles[2]->id() << "\t" << particles[3]->id() << endl;
+// 	  cout << "Born Chargino: " << particles[2]->id() << " " << "Decay Chargino " << particles[3]->id() << "\n" << endl;}
+
  	a2 = norm(vertex->norm())*
  	  (norm(vertex->left())+norm(vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq2-sqr(particles[3]->mass()));
@@ -546,13 +651,16 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
       }
 
       // is on-shell mass allowed for second chargino and squark
-      //else if( roots >= squark[ix]->mass() + momenta[3].mass() ) {
       if((roots >= squark[ix]->mass() + momenta[3].mass() )
-	 && (squark[ix]->mass() > momenta[2].mass())){
+	 && (squark[ix]->mass() > momenta[2].mass())
+	 && ((quark->iCharge() > 0. && particles[3]->iCharge() > 0.) || 
+	     (quark->iCharge() < 0. && particles[3]->iCharge() < 0.))){
+	
+	
+// 	second = true;
 
-	//sqmom = (momenta[2]+momenta[4]).m();
-	//sqmass = squark[ix]->mass();
-	//sqid = squark[ix]->id();
+// 	sqmom = (momenta[2]+momenta[4]).m();
+// 	sqmass = squark[ix]->mass();
 
 
 	Energy2 mcharg2 = sqr(momenta[3].mass());
@@ -565,6 +673,14 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 	  (-u4/sh - (2*(msq1-mcharg2)*u4)/sh/t3 * (1+mcharg2/u4+msq1/t3));
 	//vertex->setCoupling(q2,quark,particles[2],squark[ix]);
 	vertex->setCoupling(q2,particles[4],particles[2],squark[ix]);
+
+// 	if ((quark->iCharge() > 0. && particles[3]->iCharge() < 0.) || 
+// 	    (quark->iCharge() < 0. && particles[3]->iCharge() > 0.)){
+// 	cout << "2nd CT:" << endl;
+// 	cout << "Incoming partons: " << particles[0]->id() << " " << particles[1]->id() << endl;
+// 	cout << "Outgoing Charginos: " << particles[2]->id() << "\t" << particles[3]->id() << endl;
+// 	cout << "Born Chargino: " << particles[3]->id() << " " << "Decay Chargino: " << particles[2]->id() << "\n" << endl;}
+
 	a2 = norm(vertex->norm())*
 	  (norm(vertex->left())+norm(vertex->right()));
 	Energy2 sqdecay2 = 4. * a2 * (msq1-sqr(particles[2]->mass()));
@@ -584,24 +700,14 @@ double MEPP2CharginoCharginoPowheg::realME(const cPDVector & particles,
 
 
 //   if(abs(1.-abs(sqmom/sqmass)) < 1.e-4){
-//      cout << particles[0]->id() << "\t" << particles[1]->id() << endl;
-//      cout << sqid << endl;
-//      cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id() << endl;
-//      cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << "\n" << endl;
+//     cout << "Counterterms on:\t" << first << "\t" << second << endl;
+//     cout << particles[0]->id() << "\t" << particles[1]->id() << endl;
+//     cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id() << endl;
+//     cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << "\n" << endl;
 //  }
-
-
+  
 
   output -= totcount;
-
-
-
-
-
-
-
-
-
 
 
   // colour and spin factors
