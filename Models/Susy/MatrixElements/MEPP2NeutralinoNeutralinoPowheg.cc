@@ -213,6 +213,11 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   Singular output;
   output.eps2 = -2;
   output.eps1 = -3;
+
+  // This gives the QCD-only virtual bit.
+  //output.finite =-8.+sqr(Constants::pi);
+  //output.finite *= loWeight();
+
   // average of left/right squark masses
   tcPDPtr squarkL = getParticleData(1000000+mePartonData()[0]->id());
   tcPDPtr squarkR = getParticleData(2000000+mePartonData()[0]->id());
@@ -275,8 +280,12 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   }
   // finite piece
   output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct);
+
+
   return output;
 }
+
+
 
 // ofstream myfile ("Our_MSSM_scale.txt");
 // if (myfile.is_open())
@@ -455,7 +464,7 @@ realME(const cPDVector & particles,
   if(status()==RealQG || status()==RealQBarG){
     propopt = 7;
   }
-  else propopt = 3; 
+  else propopt = 3;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
@@ -530,13 +539,13 @@ realME(const cPDVector & particles,
   
   
   double totcount = 0.;
-  //   bool first = 0.;
-  //   bool second = 0.;
-  Energy sqmom2,sqmass;
 
 
   // subtract the on-shell squark decay if neccessary
   if(abs(particles[4]->id())<=6) {
+
+    //Energy sqmom,sqmass;
+
     Energy roots = (momenta[0]+momenta[1]).m();
     // off-shell masses of the squarks
     Energy2 msq1 = (momenta[2]+momenta[4]).m2();
@@ -554,6 +563,11 @@ realME(const cPDVector & particles,
       //      if( roots >= squark[ix]->mass() + momenta[2].mass() ) {
       if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
 	   && (squark[ix]->mass() > momenta[3].mass())){
+
+	//sqmom = (momenta[3]+momenta[4]).m();
+	//sqmass = squark[ix]->mass();
+
+
 	// Create a counterterm for the squark decay pole.
 	Energy2 mneut2 = sqr(momenta[2].mass()); 
 	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
@@ -582,6 +596,11 @@ realME(const cPDVector & particles,
       //else if( roots >= squark[ix]->mass() + momenta[3].mass() ) {
       if((roots >= squark[ix]->mass() + momenta[3].mass() )
 	 && (squark[ix]->mass() > momenta[2].mass())){
+
+	//sqmom = (momenta[2]+momenta[4]).m();
+	//sqmass = squark[ix]->mass();
+
+
 	Energy2 mneut2 = sqr(momenta[3].mass());
 	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
 	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
@@ -605,15 +624,17 @@ realME(const cPDVector & particles,
 	totcount += sqcounter;
       }
     }
+
+
+    //cout << roots/GeV << "\t" << sqmom/GeV << "\t" << sqmass/GeV << endl;
+
+
+//   if(abs(1.-abs(sqmom/sqmass)) < 1.e-4)
+//     cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << endl;
+
+
   }
 
-
-//   if( first == 1. || second == 1.){
-//     cout << "\n \n" << particles[0]->id() << "\t" << particles[1]->id() << endl;
-//     cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id() << endl;
-//     cout << sqmom2/GeV << "\t" << sqmass/GeV << endl;
-//     cout << "ratios: " << output << "\t" << totcount << "\t" << output/totcount << "\t" << (output-totcount)/totcount << "\n \n" << endl;
-//   }
 
 
   output -= totcount;
