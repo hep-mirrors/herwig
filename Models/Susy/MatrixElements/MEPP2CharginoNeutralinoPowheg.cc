@@ -96,19 +96,19 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
 	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
 			 3, chab[ix], 3, neu[jx], -1)));
 	    
-	    // ~qL mediated t-channel
+	    // ~qL mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
 			 3, chab[ix], 1, neu[jx], -2)));
-	    // ~qR mediated t-channel
+	    // ~qR mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
 			 3, chab[ix], 1, neu[jx], -3)));
 	    
-	    // ~qL mediated u-channel
+	    // ~qL mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
-			 3, neu[jx], 1, chab[ix], -4)));
-	    // ~qR mediated u-channel
+			 1, chab[ix], 3, neu[jx], -4)));
+	    // ~qR mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
-			 3, neu[jx], 1, chab[ix], -5)));
+			 1, chab[ix], 3, neu[jx], -5)));
 	  }
 	}
 	// Wplus mediated processes
@@ -119,19 +119,19 @@ void MEPP2CharginoNeutralinoPowheg::getDiagrams() const {
 	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
 			 3, cha[ix], 3, neu[jx], -1)));
 
-	    // ~qL mediated t-channel
+	    // ~qL mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLt, qb,
 			 3, cha[ix], 1, neu[jx], -2)));
-	    // ~qR mediated t-channel
+	    // ~qR mediated u-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRt, qb,
 			 3, cha[ix], 1, neu[jx], -3)));
 
-	    // ~qL mediated u-channel
+	    // ~qL mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qLu, qb,
-			 3, neu[jx], 1, cha[ix], -4)));
-	    // ~qR mediated u-channel
+			 1, cha[ix], 3, neu[jx], -4)));
+	    // ~qR mediated t-channel
 	    add(new_ptr((Tree2toNDiagram(3), q, qRu, qb,
-			 3, neu[jx], 1, cha[ix], -5)));
+			 1, cha[ix], 3, neu[jx], -5)));
 	  }
 	}
       }
