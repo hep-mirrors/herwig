@@ -278,8 +278,11 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
     Cl[ix] *= 2.0 * sqrt(Constants::pi);
     Cr[ix] *= 2.0 * sqrt(Constants::pi);
   }
+  // vector coupling
+  vector<Complex> Cv(4,0.);
+  for(unsigned int ix=0;ix<4;++ix) Cv[ix] = conj(Cl[ix])/Cl[ix];
   // finite piece
-  output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct);
+  output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct,Cv);
 
 
   return output;

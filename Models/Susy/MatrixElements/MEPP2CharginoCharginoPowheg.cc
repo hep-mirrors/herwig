@@ -216,6 +216,7 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   //tcPDPtr squarkL = getParticleData(1000000+mePartonData()[0]->id());
   //tcPDPtr squarkR = getParticleData(2000000+mePartonData()[0]->id());
   Energy  ms = 0.5*(squarkL->mass()+squarkR->mass());
+       <<squarkL->PDGName() << "\n";
   // boson mass
   Energy2 mz2 = sqr(Z0_->mass());
   // mandelstam variables
@@ -243,7 +244,7 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
 
   if(mePartonData()[2]->id() == -mePartonData()[3]->id()){
     v1w = -1.;
-    v2w = 0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;}
+    v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;}
   else {
     v1w = 0.;
     v2w = 0.;
@@ -258,14 +259,28 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL->CC());
   Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
 
-  // Not sure what these two couplings are for...
-  Cl[2] = Cl[0];
-  Cl[3] = Cl[1];
+  tcPDPtr ccQuark;
+  tcPDPtr ccSquark=getParticleData(1000000+abs(mePartonData()[0]->id()));
+  if (abs(mePartonData()[0]->id())%2==0) {
+    ccQuark = getParticleData(mePartonData()[0]->id()-1);
+  }
+  else {
+    ccQuark = getParticleData(mePartonData()[0]->id()+1);
+  }
+  vertex2->setCoupling(scale(),ccQuark->CC(),mePartonData()[2],ccSquark);
+  ee = vertex2->electroMagneticCoupling(scale());
+  Cl[2] = -0.5*vertex2->left() *vertex2->norm()/ee;
+  vertex2->setCoupling(scale(),ccQuark,mePartonData()[3],ccSquark->CC());
+  Cl[3] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
+
+
+  if(mePartonData()[0]->id()%2!=0) {
+    swap(Cl[2],Cl[0]);
+    swap(Cl[3],Cl[1]);
+  }
 
   // right squark couplings
   vector<Complex> Cr(4,0.);
-  for(unsigned int ix=0.;ix<4;++ix)
-    Cr[ix] = 0.;
 
   // s-channel
   vector<double> Cs(4,0.);
@@ -293,6 +308,11 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   Ct[2] += v1*v1w;
   Ct[3] += v1*v1w;
 
+  vector<Complex> Cv(4,0.);
+  Cv[0] = Cl[2] / Cl[0];
+  Cv[1] = Cl[3] / Cl[1];
+  Cv[2] = Cl[0] / Cl[2];
+  Cv[3] = Cl[1] / Cl[3];
 
   // weird rescaling factors
   for(unsigned int ix=0;ix<4;++ix) {
@@ -302,7 +322,7 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
     Cr[ix] *= 2.0 * sqrt(Constants::pi);
   }
   // finite piece
-  output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct);
+  output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct,Cv);
 
 
   return output;
