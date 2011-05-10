@@ -40,7 +40,8 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   ggPow_(1.6), qgPow_(1.6), enhance_(1.1),
 			   nover_(0), ntry_(0), ngen_(0), maxwgt_(0.),
 			   power_(2.0), pregg_(7.), preqg_(3.),
-			   pregqbar_(3.), minpT_(2.*GeV)
+			   pregqbar_(3.), minpT_(2.*GeV),
+                           mu_R_opt_(1),mu_F_opt_(1)
 {}
 
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
@@ -52,7 +53,8 @@ void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
      << ounit(wh_,GeV) << minLoop_ << maxLoop_ << massOption_ 
      << alpha_ << prefactor_ << power_ << pregg_ << preqg_
      << pregqbar_ << ounit( minpT_, GeV ) << ggPow_ << qgPow_ 
-     << enhance_ << channelwgtA_ << channelwgtB_ << channelWeights_;
+     << enhance_ << channelwgtA_ << channelwgtB_ << channelWeights_
+     << mu_R_opt_ << mu_F_opt_;
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
@@ -61,7 +63,8 @@ void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
      >> iunit(wh_,GeV) >> minLoop_ >> maxLoop_ >> massOption_ 
      >> alpha_ >> prefactor_ >> power_ >> pregg_ >> preqg_
      >> pregqbar_ >> iunit( minpT_, GeV ) >> ggPow_ >> qgPow_ 
-     >> enhance_ >> channelwgtA_ >> channelwgtB_ >> channelWeights_;
+     >> enhance_ >> channelwgtA_ >> channelwgtB_ >> channelWeights_
+     >> mu_R_opt_ >> mu_F_opt_;
 }
 
 void MEPP2Higgs::Init() {
@@ -248,6 +251,36 @@ void MEPP2Higgs::Init() {
      "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
      &MEPP2Higgs::minpT_, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
+
+   static Switch<MEPP2Higgs,unsigned int> interface_mu_R_Option
+     ("mu_R_Option",
+      "Option to use pT or mT as the scale in alphaS",
+      &MEPP2Higgs::mu_R_opt_, 1, false, false);
+   static SwitchOption interface_mu_R_Option_mT
+     (interface_mu_R_Option,
+      "mT",
+      "Use mT as the scale in alpha_S",
+      0);
+   static SwitchOption interface_mu_R_Option_pT
+     (interface_mu_R_Option,
+      "pT",
+      "Use pT as the scale in alpha_S",
+      1);
+
+   static Switch<MEPP2Higgs,unsigned int> interface_mu_F_Option
+     ("mu_F_Option",
+      "Option to use pT or mT as the factorization scale in the PDFs",
+      &MEPP2Higgs::mu_F_opt_, 1, false, false);
+   static SwitchOption interface_mu_F_Option_mT
+     (interface_mu_F_Option,
+      "mT",
+      "Use mT as the scale in the PDFs",
+      0);
+   static SwitchOption interface_mu_F_Option_pT
+     (interface_mu_F_Option,
+      "pT",
+      "Use pT as the scale in the PDFs",
+      1);
 }
 
 void MEPP2Higgs::doinit() {
@@ -1481,7 +1514,8 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   Energy2 s=sqr(generator()->maximumCMEnergy());
   Energy2 scale = mh2_+sqr(pt);
   Energy  et=sqrt(scale);
-  // longitudinal real correction fractions
+  scale = mu_F_opt_==0 ? mh2_+sqr(pt) : sqr(pt) ;
+   // longitudinal real correction fractions
   double x  = pt*exp( yj)/sqrt(s)+et*exp( yh_)/sqrt(s);
   double y  = pt*exp(-yj)/sqrt(s)+et*exp(-yh_)/sqrt(s);
   // reject if outside region
@@ -1496,8 +1530,13 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   InvEnergy2 res = InvEnergy2();
   // pdf part of the cross section
   double pdf[4];
-  pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],mh2_,x1);
-  pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],mh2_,y1);
+  if(mu_F_opt_==0) {  // As in original version ...
+    pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],mh2_,x1);
+    pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],mh2_,y1);
+  } else {            // As in Nason and Ridolfi paper ...
+    pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x1);
+    pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y1);
+  }
   // g g -> H g
   if(emis_type==0) {
     outParton = partons_[1];
@@ -1536,5 +1575,6 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   else {
     res *= pdf[2]*pdf[3]/pdf[0]/pdf[1]*mh2_/sh;
   }
+  scale = mu_R_opt_==0 ? mh2_+sqr(pt) : sqr(pt) ;
   return alpha_->ratio(scale)/8./sqr(Constants::pi)*mh2_/sh*GeV*pt*res;
 }
