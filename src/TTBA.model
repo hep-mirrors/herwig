@@ -1,0 +1,127 @@
+##################################################
+# Common setup for Leptoquark models
+#
+# See LHC-LQ.in or ILC-TTBA.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-TTBA.in
+#
+###################################################
+#
+#  Particle Data object for the new resonances
+#
+###################################################
+cd /Herwig/Particles
+
+create /ThePEG/ParticleData Wp
+setup Wp 34 Wp 400.0 0.0 0.0 0.0 3 0 3 0
+create /ThePEG/ParticleData Wpbar
+setup Wpbar -34 Wpbar 400.0 0.0 0.0 0.0 -3 0 3 0
+makeanti Wp Wpbar
+
+create /ThePEG/ParticleData Zp
+setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 0
+
+create /ThePEG/ParticleData Ag
+setup Ag 63 Ag 1600.0 0.0 0.0 0.0 0 8 3 0
+
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/TTbA
+cd /Herwig/NewPhysics/TTbA
+create Herwig::TTbAModel Model HwTTbAModel.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+
+# W prime couplings 
+set Model:WPTDLCoupling 0.0
+set Model:WPTDRCoupling 0.0
+
+# Z prime couplings 
+set Model:ZPTULCoupling 0.0
+set Model:ZPTURCoupling 0.0
+set Model:ZPUULCoupling 0.0
+set Model:ZPUURCoupling 0.0
+set Model:ZPCCLCoupling 0.0
+set Model:ZPCCRCoupling 0.0
+
+# Axigluon couplings
+
+set Model:AGQQLCoupling -2.2
+set Model:AGQQRCoupling 2.2
+set Model:AGTTLCoupling 3.2
+set Model:AGTTRCoupling -3.2
+
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create model vertices
+mkdir /Herwig/Vertices/TTbA
+cd /Herwig/Vertices/TTbA
+library HwTTbAModel.so
+create Herwig::TTbAModelWPTDVertex TTbA_WPTDVertex
+create Herwig::TTbAModelZPQQVertex TTbA_ZPQQVertex
+create Herwig::TTbAModelAGQQVertex TTbA_AGQQVertex
+
+cd /Herwig/NewPhysics/TTbA
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# model vertices
+set Model:Vertex/WPTD  /Herwig/Vertices/TTbA/TTbA_WPTDVertex
+set Model:Vertex/ZPQQ  /Herwig/Vertices/TTbA/TTbA_ZPQQVertex
+set Model:Vertex/AGQQ  /Herwig/Vertices/TTbA/TTbA_AGQQVertex
+
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/Wp
+insert NewModel:DecayParticles 1 /Herwig/Particles/Zp
+insert NewModel:DecayParticles 2 /Herwig/Particles/Ag
+
+
+###################################################
+# Set up the model framework
+###################################################
+set TTbA/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose Model over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/TTbA/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/TTbA/Model
+
