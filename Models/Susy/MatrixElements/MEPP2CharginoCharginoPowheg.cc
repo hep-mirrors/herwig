@@ -216,7 +216,6 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   //tcPDPtr squarkL = getParticleData(1000000+mePartonData()[0]->id());
   //tcPDPtr squarkR = getParticleData(2000000+mePartonData()[0]->id());
   Energy  ms = 0.5*(squarkL->mass()+squarkR->mass());
-       <<squarkL->PDGName() << "\n";
   // boson mass
   Energy2 mz2 = sqr(Z0_->mass());
   // mandelstam variables

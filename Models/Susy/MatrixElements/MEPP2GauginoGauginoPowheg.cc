@@ -99,12 +99,10 @@ finiteVirtual(Energy ms, Energy2 mb2,
     b_tx4(0.),b_tm4(0.),b_ux2(0.),b_um2(0.); 
   if(!mePartonData()[2]->charged()&&!mePartonData()[3]->charged()) {
     b_s  = 3.*real( QBB_ss  + QBB_st   + QBB_su );
-    b_tx = 3.*real( QBB_txs + QBB_txt );
-    b_tm = 3.*real( QBB_tmu + QBB_tms );
-    b_ux = 3.*real( QBB_uxs + QBB_uxu );
-    b_um = 3.*real( QBB_umt + QBB_ums );
-    b_t  = b_tx  + b_tm;
-    b_u  = b_ux  + b_um; 
+    b_tx4 = b_tx = 3.*real( QBB_txs + QBB_txt );
+    b_tm4 = b_tm = 3.*real( QBB_tmu + QBB_tms );
+    b_ux2 = b_ux = 3.*real( QBB_uxs + QBB_uxu );
+    b_um2 = b_um = 3.*real( QBB_umt + QBB_ums );
   }
   else if(mePartonData()[2]->charged()&&mePartonData()[3]->charged()) {
     double only_u = mePartonData()[0]->id()%2==0 ? 1. : 0.;
