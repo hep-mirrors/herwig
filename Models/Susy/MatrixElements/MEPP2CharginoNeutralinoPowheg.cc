@@ -500,10 +500,10 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
   vector<Complex> diag(14,0.);
   Energy2 q2 = scale();
   unsigned int propopt = 3;
-//   if(status()==RealQG || status()==RealQBarG){
-//     propopt = 7;
-//   }
-//   else propopt = 3;
+  if(status()==RealQG || status()==RealQBarG){
+    propopt = 7;
+  }
+  else propopt = 3;
   ScalarWaveFunction intersq,intersq2;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
@@ -589,19 +589,12 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
     }
   }
 
-
-
-
-
   // strong coupling
   double gs2 = norm(FFGVertex_->norm());
   
   
   double totcount = 0.;
-  Energy sqmom,sqmass;
-
-//   bool first = false;
-//   bool second = false;
+  //Energy sqmom,sqmass;
 
 
   // subtract the on-shell squark decay if neccessary
@@ -618,47 +611,41 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
     double Cf = 4./3.;
     double Nc = 3.;
     Energy2 sh = (momenta[0]+momenta[1]).m2();
-
-
-
+    
+    
+    if (abs(quark->id())%2==0) {
+      squark[0] = getParticleData(1000000+abs(quark->id()-1)  );
+      squark[1] = getParticleData(2000000+abs(quark->id()-1)  );
+    } else {
+      squark[0] = getParticleData(1000000+abs(quark->id()+1)  );
+      squark[1] = getParticleData(2000000+abs(quark->id()+1)  );
+    }
+    
+    Energy2 sqwidth2;
+    
     for(unsigned int ix=0;ix<2;++ix) {
-      Energy2 sqwidth2 = sqr(squark[ix]->width());
+      
       // is on-shell mass allowed for first neutralino and squark
       if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
 	   && (squark[ix]->mass() > momenta[3].mass())){
-
-	sqmom = (momenta[3]+momenta[4]).m();
-	sqmass = squark[ix]->mass();
-
-
-// 	first = true;
-// 	cout << "1st CT:" << endl;
-// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
-// 	cout << "Born: " << particles[2]->id() << "\t" << "Decay: " << particles[3]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
-      
-
-
-// 	if((quark->iCharge() > 0. && particles[2]->iCharge() > 0.) ||
-// 	   (quark->iCharge() < 0. && particles[2]->iCharge() < 0.)){
-// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
-// 	}
-// 	else if((quark->iCharge() > 0. && particles[2]->iCharge() < 0.) ||
-// 		(quark->iCharge() < 0. && particles[2]->iCharge() > 0.)){
-// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
-// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-// 	}
-// 	vertex->setCoupling(q2,quark,particles[2],squark[ix]);
-// 	vertexd->setCoupling(q2,particles[4],particles[3],squark[ix]); 
 	
+	sqwidth2 = sqr(squark[ix]->width());
+	
+	//sqmom = (momenta[3]+momenta[4]).m();
+	//sqmass = squark[ix]->mass();
 
-
+	// 	cout << "1st CT:" << endl;
+	// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
+	// 	cout << squark[ix]->id() << endl;
+	// 	cout << "Born: " << particles[2]->id() << "\t" << "Decay: " << particles[3]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
+	
+	
 	// Create a counterterm for the squark decay pole.
 	Energy2 mneut2 = sqr(momenta[2].mass()); 
 	Energy2 t3 = (pgluon-momenta[3]-momenta[4]).m2()-msq2;
 	Energy2 u4 = (pgluon-momenta[2]).m2()-mneut2;
-
-
+	
+	
 	if (particles[2]->id()==ParticleID::SUSY_chi_10 ||
 	    particles[2]->id()==ParticleID::SUSY_chi_20 ||
 	    particles[2]->id()==ParticleID::SUSY_chi_30 ||
@@ -666,9 +653,9 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);}
 	else if (particles[2]->id()==ParticleID::SUSY_chi_1plus ||
-	    particles[2]->id()==ParticleID::SUSY_chi_1minus ||
-	    particles[2]->id()==ParticleID::SUSY_chi_2plus ||
-	    particles[2]->id()==ParticleID::SUSY_chi_2minus){
+		 particles[2]->id()==ParticleID::SUSY_chi_1minus ||
+		 particles[2]->id()==ParticleID::SUSY_chi_2plus ||
+		 particles[2]->id()==ParticleID::SUSY_chi_2minus){
 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);}
 	else cout << "Ahhhhhhhhh!!!" << endl;
@@ -679,9 +666,9 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
  	  (norm(vertex->left())+norm(vertex->right()));
 	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq2-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq2/t3));
-
-
-
+	
+	
+	
  	vertexd->setCoupling(q2,particles[4],particles[3],squark[ix]);
  	a2 = norm(vertexd->norm())*
  	  (norm(vertexd->left())+norm(vertexd->right()));
@@ -689,51 +676,46 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 	Energy4 denom = sqr(msq2-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
-
+	
 	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
 	    && (squark[ix]->mass()>1.e4*GeV))
 	  sqcounter = 0;
-
+	
 	totcount += sqcounter;
       }
-
+    }
+    
+    
+    
+    squark[0] = getParticleData(1000000+abs(quark->id())  );
+    squark[1] = getParticleData(2000000+abs(quark->id())  );
+    
+    
+    for(unsigned int ix=0;ix<2;++ix) {
+      
       // is on-shell mass allowed for second neutralino and squark
       if((roots >= squark[ix]->mass() + momenta[3].mass() )
 	 && (squark[ix]->mass() > momenta[2].mass())){
-
-
-	sqmom = (momenta[2]+momenta[4]).m();
-	sqmass = squark[ix]->mass();
-
-
-// 	second = true;
-// 	cout << "2nd CT:" << endl;
-// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
-// 	cout << "Born: " << particles[3]->id() << "\t" << "Decay: " << particles[2]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
-
-
-// 	if((quark->iCharge() > 0. && particles[3]->iCharge() > 0.) ||
-// 	   (quark->iCharge() < 0. && particles[3]->iCharge() < 0.)){
-// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
-// 	}
-// 	else if((quark->iCharge() > 0. && particles[3]->iCharge() < 0.) ||
-// 		(quark->iCharge() < 0. && particles[3]->iCharge() > 0.)){
-// 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
-// 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-// 	}
-// 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
-// 	vertexd->setCoupling(q2,particles[4],particles[2],squark[ix]); 
-
-
-
-
+	
+	sqwidth2 = sqr(squark[ix]->width());
+	
+	
+	//sqmom = (momenta[2]+momenta[4]).m();
+	//sqmass = squark[ix]->mass();
+	
+	
+	// 	cout << "2nd CT:" << endl;
+	// 	cout << "Incoming partons:\t" << particles[0]->id() << "\t" << particles[1]->id() << endl;
+	// 	cout << squark[ix]->id() << endl;
+	// 	cout << "Born: " << particles[3]->id() << "\t" << "Decay: " << particles[2]->id() << "\t" << "Quark: " << particles[4]->id() << "\n" << endl;
+	
+	
 	Energy2 mneut2 = sqr(momenta[3].mass());
 	Energy2 t3 = (pgluon-momenta[2]-momenta[4]).m2()-msq1;
 	Energy2 u4 = (pgluon-momenta[3]).m2()-mneut2;
-
-
-
+	
+	
+	
 	if (particles[3]->id()==ParticleID::SUSY_chi_10 ||
 	    particles[3]->id()==ParticleID::SUSY_chi_20 ||
 	    particles[3]->id()==ParticleID::SUSY_chi_30 ||
@@ -741,23 +723,23 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);}
 	else if (particles[3]->id()==ParticleID::SUSY_chi_1plus ||
-	    particles[3]->id()==ParticleID::SUSY_chi_1minus ||
-	    particles[3]->id()==ParticleID::SUSY_chi_2plus ||
-	    particles[3]->id()==ParticleID::SUSY_chi_2minus){
+		 particles[3]->id()==ParticleID::SUSY_chi_1minus ||
+		 particles[3]->id()==ParticleID::SUSY_chi_2plus ||
+		 particles[3]->id()==ParticleID::SUSY_chi_2minus){
 	  vertex =dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
 	  vertexd =dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);}
 	else cout << "Ahhhhhhhhh!!!" << endl;
-
-
-
-
+	
+	
+	
+	
 	vertex->setCoupling(q2,quark,particles[3],squark[ix]);
  	double a2 = norm(vertex->norm())*
  	  (norm(vertex->left())+norm(vertex->right()));
 	double sqprod2 = (1./8.) * gs2 * Cf * Nc * a2 *
 	  (-u4/sh - (2*(msq1-mneut2)*u4)/sh/t3 * (1+mneut2/u4+msq1/t3));
-
-
+	
+	
 	vertexd->setCoupling(q2,particles[4],particles[2],squark[ix]);
 	a2 = norm(vertexd->norm())*
 	  (norm(vertexd->left())+norm(vertexd->right()));
@@ -765,7 +747,7 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
 	Energy4 denom = sqr(msq1-sqr(squark[ix]->mass())) + 
 	  sqr(squark[ix]->mass())*sqwidth2;
 	double sqcounter = sqprod2 * sqdecay2 * UnitRemoval::E2 / denom;
-
+	
 	if( ((2.*squark[ix]->mass())/(momenta[2].mass()+momenta[3].mass()) > 100.)
 	    && (squark[ix]->mass()>1.e4*GeV))
 	  sqcounter = 0;
@@ -774,27 +756,27 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
       }
     }
   }
-
-
-
-
-  if(abs(1.-abs(sqmom/sqmass)) < 1.e-4){
-    //    cout << "Counterterms used:\t" << first << "\t" << second << endl;
-    cout << particles[0]->id() << "\t" << particles[1]->id() << endl;
-    cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id()<< endl;
-    cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << "\n\n" << endl;}
   
 
-
+  
+  
+//   if(abs(1.-abs(sqmom/sqmass)) < 1.e-4){
+//     //    cout << "Counterterms used:\t" << first << "\t" << second << endl;
+//     cout << particles[0]->id() << "\t" << particles[1]->id() << endl;
+//     cout << particles[2]->id() << "\t" << particles[3]->id() << "\t" << particles[4]->id()<< endl;
+//     cout << sqmom/GeV << "\t" << sqmass/GeV << "\t" << "\t ratio: " << output << "\t" << totcount << "\t" << output/totcount << "\n\n" << endl;}
+  
+  
+  
 
   output -= totcount;
+  
+  
+  
 
-
-
-
-
-
-
+  
+  
+  
   // colour and spin factors
   if(particles[0]->id()==ParticleID::g ||
      particles[1]->id()==ParticleID::g){
