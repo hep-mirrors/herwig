@@ -12,7 +12,7 @@
 // This is the declaration of the TTbAModelZPQQVertex class.
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/TTbA/TTbAModel.h"
+#include "Herwig++/Models/TTbAsymm/TTbAModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
@@ -152,7 +152,10 @@ private:
   double _cZPCC_R;
 
 
-
+  /**
+   * Model selector
+   */
+  int _models;
 
 
   //@}

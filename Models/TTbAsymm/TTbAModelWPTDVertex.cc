@@ -42,6 +42,7 @@ void TTbAModelWPTDVertex::doinit() {
   if(hwTTbA) {
     _cWPTD_R =hwTTbA->_cWPTD_right();
     _cWPTD_L =hwTTbA->_cWPTD_left();
+    _models =hwTTbA->_model();
   }
   FFVVertex::doinit();
 }
@@ -76,7 +77,7 @@ void TTbAModelWPTDVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
     _cR = _cWPTD_R; 
     _cL = _cWPTD_L; 
   }
-    
+  if(_models!=0) { _cL = 0; _cR = 0; }
   left(_cL);
   right(_cR);
   

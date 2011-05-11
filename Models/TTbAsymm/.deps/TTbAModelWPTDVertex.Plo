@@ -334,7 +334,7 @@ TTbAModelWPTDVertex.lo .libs/TTbAModelWPTDVertex.o:  \
   /usera/andreas/thepeg/include/ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h \
   /usera/andreas/thepeg/include/ThePEG/Helicity/Vertex/Vector/FFVVertex.fh \
   /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h \
-  ../../include/Herwig++/Models/TTbA/TTbAModel.h \
+  ../../include/Herwig++/Models/TTbAsymm/TTbAModel.h \
   ../../include/Herwig++/Models/StandardModel/StandardModel.h \
   /usera/andreas/thepeg/include/ThePEG/StandardModel/StandardModelBase.h \
   ../../include/Herwig++/Models/StandardModel/RunningMassBase.h \
@@ -359,7 +359,7 @@ TTbAModelWPTDVertex.lo .libs/TTbAModelWPTDVertex.o:  \
   /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h \
   ../../include/Herwig++/Models/StandardModel/StandardModel.fh \
   /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h \
-  ../../include/Herwig++/Models/TTbA/TTbAModel.fh \
+  ../../include/Herwig++/Models/TTbAsymm/TTbAModel.fh \
   /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h \
   /usera/andreas/thepeg/include/ThePEG/Utilities/ClassTraits.h \
   /usera/andreas/thepeg/include/ThePEG/PDT/EnumParticles.h \
@@ -1118,7 +1118,7 @@ TTbAModelWPTDVertex.h:
 
 /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h:
 
-../../include/Herwig++/Models/TTbA/TTbAModel.h:
+../../include/Herwig++/Models/TTbAsymm/TTbAModel.h:
 
 ../../include/Herwig++/Models/StandardModel/StandardModel.h:
 
@@ -1168,7 +1168,7 @@ TTbAModelWPTDVertex.h:
 
 /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h:
 
-../../include/Herwig++/Models/TTbA/TTbAModel.fh:
+../../include/Herwig++/Models/TTbAsymm/TTbAModel.fh:
 
 /usera/andreas/thepeg/include/ThePEG/Config/Pointers.h:
 

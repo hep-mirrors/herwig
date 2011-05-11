@@ -48,6 +48,8 @@ void TTbAModelZPQQVertex::doinit() {
     _cZPUU_L =hwTTbA->_cZPUU_left();  
     _cZPCC_R =hwTTbA->_cZPCC_right();
     _cZPCC_L =hwTTbA->_cZPCC_left();
+    _models =hwTTbA->_model();
+
   }
   FFVVertex::doinit();
 }
@@ -89,7 +91,7 @@ void TTbAModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
     }
 
   }
-  
+  if(_models!=1) { _cL = 0; _cR = 0; }
   right(_cR);
   left(_cL);
 

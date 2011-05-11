@@ -129,6 +129,12 @@ public:
    */
   double _cAGTT_right() const {return _gAGTT_R;}
 
+  /**
+   * Return the selected model id
+   */
+  int _model() const {return _modelselect;}
+
+
 
 protected:
 
@@ -272,7 +278,11 @@ private:
    *  Axigluon coupling to t-tbar (right-handed)
    */
   double _gAGTT_R;
-
+  
+  /** 
+   * Model selector
+   */
+  int _modelselect;
 
 
 };

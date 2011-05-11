@@ -49,6 +49,7 @@ void TTbAModelAGQQVertex::doinit() {
     _cAGQQ_L =hwTTbA->_cAGQQ_left();
     _cAGTT_R =hwTTbA->_cAGTT_right();
     _cAGTT_L =hwTTbA->_cAGTT_left();
+    _models = hwTTbA->_model();
   }
   FFVVertex::doinit();
 }
@@ -91,6 +92,8 @@ void TTbAModelAGQQVertex::setCoupling(Energy2 q2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr
     }
     
   }
+
+  if(_models!=2) { _cL = 0; _cR = 0; }
   left(_cL);
   right(_cR);
   

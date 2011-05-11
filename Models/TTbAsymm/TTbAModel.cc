@@ -24,7 +24,7 @@ void TTbAModel::doinit()  {
   StandardModel::doinit();
 }
 
-TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0),_gZPTU_L(1.0), _gZPTU_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0),_gZPCC_L(1.0), _gZPCC_R(1.0),_gAGQQ_L(1.0), _gAGQQ_R(1.0),_gAGTT_L(1.0), _gAGTT_R(1.0) {}
+TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0),_gZPTU_L(1.0), _gZPTU_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0),_gZPCC_L(1.0), _gZPCC_R(1.0),_gAGQQ_L(1.0), _gAGQQ_R(1.0),_gAGTT_L(1.0), _gAGTT_R(1.0), _modelselect(1) {}
 
 IBPtr TTbAModel::clone() const {
   return new_ptr(*this);
@@ -53,7 +53,8 @@ void TTbAModel::persistentOutput(PersistentOStream & os) const {
      << _gAGQQ_L
      << _gAGQQ_R
      << _gAGTT_L
-     << _gAGTT_R;
+     << _gAGTT_R
+     << _modelselect;
 }
 
 void TTbAModel::persistentInput(PersistentIStream & is, int) {
@@ -71,7 +72,8 @@ void TTbAModel::persistentInput(PersistentIStream & is, int) {
      >> _gAGQQ_L
      >> _gAGQQ_R
      >> _gAGTT_L
-     >> _gAGTT_R;
+     >> _gAGTT_R
+     >> _modelselect;
 }
 
 ClassDescription<TTbAModel> TTbAModel::initTTbAModel;
@@ -167,6 +169,13 @@ static Parameter<TTbAModel, double> interfaceAGTTRCoupling
      "The right-handed Z prime coupling to charm charmbar",
      &TTbAModel::_gZPCC_R, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
+
+  static Parameter<TTbAModel, int> interfacemodelselect
+    ("modelselect",
+     "Selet which model to run",
+     &TTbAModel::_modelselect, 0, 0, 4,
+     false, false, Interface::limited);
+
 
   static ClassDocumentation<TTbAModel> documentation
     ("There is no documentation for the TTbAModel class");
