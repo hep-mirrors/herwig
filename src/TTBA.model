@@ -24,7 +24,7 @@ create /ThePEG/ParticleData Zp
 setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 0
 
 create /ThePEG/ParticleData Ag
-setup Ag 63 Ag 1600.0 0.0 0.0 0.0 0 8 3 0
+setup Ag 63 Ag 2000.0 0.0 0.0 0.0 0 8 3 0
 
 
 ###################################################
@@ -41,24 +41,27 @@ set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 
+# Select the active model (0: W', 1: Z', 2: Axigluon, 3: non-Abelian symm.)
+set Model:modelselect 2
+
 # W prime couplings 
 set Model:WPTDLCoupling 0.0
-set Model:WPTDRCoupling 0.0
+set Model:WPTDRCoupling 2.0
 
 # Z prime couplings 
 set Model:ZPTULCoupling 0.0
-set Model:ZPTURCoupling 0.0
+set Model:ZPTURCoupling 1.8
 set Model:ZPUULCoupling 0.0
-set Model:ZPUURCoupling 0.0
+set Model:ZPUURCoupling 0.1
 set Model:ZPCCLCoupling 0.0
-set Model:ZPCCRCoupling 0.0
+set Model:ZPCCRCoupling 0.1
 
 # Axigluon couplings
 
-set Model:AGQQLCoupling -2.2
-set Model:AGQQRCoupling 2.2
-set Model:AGTTLCoupling 3.2
-set Model:AGTTRCoupling -3.2
+set Model:AGQQLCoupling -3.0
+set Model:AGQQRCoupling 3.0
+set Model:AGTTLCoupling 3.0
+set Model:AGTTRCoupling -3.0
 
 ###################################################
 #
