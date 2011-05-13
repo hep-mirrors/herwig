@@ -238,17 +238,10 @@ NLODrellYanBase::Singular MEPP2CharginoCharginoPowheg::virtualME() const {
   vertex->setCoupling(scale(),mePartonData()[2],
 		      mePartonData()[3],Z0_);
   ee = vertex->electroMagneticCoupling(scale());
-  int v1w;
-  Complex v2w;
+  double  v1w = mePartonData()[2]->id() == -mePartonData()[3]->id() ? -1. : 0.;
+  Complex v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;
+  Complex a2w =  0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
 
-  if(mePartonData()[2]->id() == -mePartonData()[3]->id()){
-    v1w = -1.;
-    v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;}
-  else {
-    v1w = 0.;
-    v2w = 0.;
-  }
-  Complex a2w = 0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
   // left squark couplings
   vector<Complex> Cl(4,0.);
   FFSVertexPtr vertex2=dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
