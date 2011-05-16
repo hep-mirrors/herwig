@@ -97,8 +97,8 @@ bool MEqq2ZPrime2ZGamma2ffGamma::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   _mz2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mz=sqrt(_mz2);
   InvEnergy2 emjac = MG/(rhomax-rhomin)/(sqr(_mz2-M2)+sqr(MG));

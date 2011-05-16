@@ -222,8 +222,8 @@ protected:
 		      double r=UseRandom::rnd()) const {
     // calculate the mass square using fixed width BW
     Energy  lo=max(low,lowerMass_),up=min(upp,upperMass_);
-    double  rhomin=atan((lo*lo-mass2_)/mWidth_);
-    double  rhomax=atan((up*up-mass2_)/mWidth_)-rhomin;
+    double  rhomin=atan2((lo*lo-mass2_),mWidth_);
+    double  rhomax=atan2((up*up-mass2_),mWidth_)-rhomin;
     double  rho=rhomin+rhomax*r;
     Energy2 q2 = mass2_+mWidth_*tan(rho);
     Energy  q = sqrt(q2);  

@@ -392,8 +392,8 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   if(r[1]<_pprob) {
     double rand=r[1]/_pprob;
     _mz2=minMass2*maxMass2/(minMass2+rand*(maxMass2-minMass2));

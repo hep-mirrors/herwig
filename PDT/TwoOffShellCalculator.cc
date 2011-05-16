@@ -28,7 +28,7 @@ Energy TwoOffShellCalculator::partialWidth(Energy2 q2) const {
   // transform the limits of BW smoothing
   Energy2 mass2  =_massptr->nominalMass()*_massptr->nominalMass();
   Energy2 mwidth =_massptr->nominalMass()*_massptr->nominalWidth();
-  double  rhomin=atan((low*low-mass2)/mwidth);
-  double  rhomax=atan((upp*upp-mass2)/mwidth);
+  double  rhomin=atan2((low*low-mass2),mwidth);
+  double  rhomax=atan2((upp*upp-mass2),mwidth);
   return _integrator.value(integrand,rhomin,rhomax);
 }

@@ -420,8 +420,8 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(wdata->mass()),Gamma(wdata->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   _mw2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mw=sqrt(_mw2);
   // jacobian

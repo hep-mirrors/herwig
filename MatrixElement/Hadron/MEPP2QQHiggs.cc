@@ -186,8 +186,8 @@ bool MEPP2QQHiggs::generateKinematics(const double * r) {
     Energy mhmax = min(rs-2.*mq,higgs_->massMax());
     Energy mhmin = max(ZERO    ,higgs_->massMin());
     if(mhmax<=mhmin) return false;
-    double rhomin = atan((sqr(mhmin)-sqr(mh_))/mh_/wh_);
-    double rhomax = atan((sqr(mhmax)-sqr(mh_))/mh_/wh_);
+    double rhomin = atan2((sqr(mhmin)-sqr(mh_)), mh_*wh_);
+    double rhomax = atan2((sqr(mhmax)-sqr(mh_)), mh_*wh_);
     mh = sqrt(mh_*wh_*tan(rhomin+r[4]*(rhomax-rhomin))+sqr(mh_));
     jacobian(jacobian()*(rhomax-rhomin));
   }
