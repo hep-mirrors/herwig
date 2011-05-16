@@ -36,12 +36,12 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   minFlavour_(4), maxFlavour_(5),
 			   mh_(ZERO), wh_(ZERO),
 			   minLoop_(6),maxLoop_(6),massOption_(0),  
+                           mu_R_opt_(1),mu_F_opt_(1),
 			   channelwgtA_(0.45),channelwgtB_(0.15),
 			   ggPow_(1.6), qgPow_(1.6), enhance_(1.1),
 			   nover_(0), ntry_(0), ngen_(0), maxwgt_(0.),
 			   power_(2.0), pregg_(7.), preqg_(3.),
-			   pregqbar_(3.), minpT_(2.*GeV),
-                           mu_R_opt_(1),mu_F_opt_(1)
+			   pregqbar_(3.), minpT_(2.*GeV)
 {}
 
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
