@@ -64,7 +64,8 @@ public:
   VectorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
 			      const VectorWaveFunction & vec2,
 			      const VectorWaveFunction & vec3,
-			      Energy mass=-GeV, Energy width=-GeV);
+			      complex<Energy> mass=-GeV,
+			      complex<Energy> width=-GeV);
   //@}
 
 protected:
