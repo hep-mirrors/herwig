@@ -432,9 +432,6 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
     // extract the born variables
     xB_[ix] = first.first->x();
     Lorentz5Momentum pb     = first.first->momentum();
-    Lorentz5Momentum pbasis = hadrons.first->momentum();
-    pbasis.setMass(0.*GeV);
-    pbasis.rescaleRho();
     Axis axis(q_[ix].vect().unit());
     double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
     rot_[ix] = LorentzRotation();
