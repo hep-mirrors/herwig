@@ -887,3 +887,7 @@ void OneLoopFFAWZVertex::neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
   cerr << "TEST OF EW CORRECTION LO: " << loSum/12. << " NLO :" << EWSum/12. << "\n";
   if(abs(EWSum/loSum)>0.01) cerr << "testing ratio " << EWSum/loSum << "\n";
 }
+
+void OneLoopFFAWZVertex::clearCache() {
+  LT::clearcache();
+}

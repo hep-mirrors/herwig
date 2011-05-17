@@ -161,6 +161,11 @@ public:
   void neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
 			tcPDPtr l1, tcPDPtr l2,
 			Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  /**
+   *  Call the Looptools cache
+   */
+  void clearCache();
   
 public:
   
