@@ -130,6 +130,16 @@ public:
   double _cAGTT_right() const {return _gAGTT_R;}
 
   /**
+   * Return the alphaX value of the SU(2)_X model
+   */
+  double _alphaX_value() const {return _alphaXparam;}
+
+  /**
+   * Return the costheta misalignment value of the SU(2)_X model
+   */
+  double _costhetaX_value() const {return _costhetaXparam;}
+
+  /**
    * Return the selected model id
    */
   int _model() const {return _modelselect;}
@@ -205,6 +215,12 @@ private:
    */
   AbstractFFVVertexPtr  _theAGQQVertex;
 
+  /**
+   * Pointer to the object handling the SU(2)_X vertex.
+   */
+  AbstractFFVVertexPtr  _theSU2XVertex;
+
+
 
 
  /**
@@ -278,7 +294,18 @@ private:
    *  Axigluon coupling to t-tbar (right-handed)
    */
   double _gAGTT_R;
+
+ /**
+   *  SU(2)_X alpha_X parameter
+   */
+  double _alphaXparam;
   
+ /**
+   *  SU(2)_X costheta misalignment angle
+   */
+  double _costhetaXparam;
+  
+ 
   /** 
    * Model selector
    */

@@ -59,7 +59,8 @@ pkglibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 HwTTbAModel_la_LIBADD =
 am_HwTTbAModel_la_OBJECTS = TTbAModel.lo TTbAModelWPTDVertex.lo \
-	TTbAModelZPQQVertex.lo TTbAModelAGQQVertex.lo
+	TTbAModelZPQQVertex.lo TTbAModelAGQQVertex.lo \
+	TTbAModelSU2XVertex.lo
 HwTTbAModel_la_OBJECTS = $(am_HwTTbAModel_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/Config
 depcomp = $(SHELL) $(top_srcdir)/Config/depcomp
@@ -273,7 +274,8 @@ HwTTbAModel_la_SOURCES = \
 TTbAModel.cc  TTbAModel.h \
 TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \
 TTbAModelZPQQVertex.h TTbAModelZPQQVertex.cc \
-TTbAModelAGQQVertex.h TTbAModelAGQQVertex.cc 
+TTbAModelAGQQVertex.h TTbAModelAGQQVertex.cc \
+TTbAModelSU2XVertex.h TTbAModelSU2XVertex.cc 
 
 HwTTbAModel_la_LDFLAGS = -module -version-info 1:0:0
 all: all-am
@@ -347,6 +349,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TTbAModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TTbAModelAGQQVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TTbAModelSU2XVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TTbAModelWPTDVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TTbAModelZPQQVertex.Plo@am__quote@
 

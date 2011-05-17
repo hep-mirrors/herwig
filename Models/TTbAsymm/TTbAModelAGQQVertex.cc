@@ -55,11 +55,11 @@ void TTbAModelAGQQVertex::doinit() {
 }
 
 void TTbAModelAGQQVertex::persistentOutput(PersistentOStream & os) const {
-  os << _cAGQQ_R << _cAGQQ_L << _cAGTT_R << _cAGTT_L;
+  os << _cAGQQ_R << _cAGQQ_L << _cAGTT_R << _cAGTT_L << _models;
 }
 
 void TTbAModelAGQQVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _cAGQQ_R >> _cAGQQ_L >>_cAGTT_R >> _cAGTT_L;
+  is >> _cAGQQ_R >> _cAGQQ_L >>_cAGTT_R >> _cAGTT_L >> _models;
 }
 
 ClassDescription<TTbAModelAGQQVertex> 

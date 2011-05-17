@@ -21,10 +21,11 @@ void TTbAModel::doinit()  {
   addVertex(_theWPTDVertex);
   addVertex(_theZPQQVertex);
   addVertex(_theAGQQVertex);
+  addVertex(_theSU2XVertex);
   StandardModel::doinit();
 }
 
-TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0),_gZPTU_L(1.0), _gZPTU_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0),_gZPCC_L(1.0), _gZPCC_R(1.0),_gAGQQ_L(1.0), _gAGQQ_R(1.0),_gAGTT_L(1.0), _gAGTT_R(1.0), _modelselect(1) {}
+TTbAModel::TTbAModel(): _gWPTD_L(1.0), _gWPTD_R(1.0),_gZPTU_L(1.0), _gZPTU_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0),_gZPCC_L(1.0), _gZPCC_R(1.0),_gAGQQ_L(1.0), _gAGQQ_R(1.0),_gAGTT_L(1.0), _gAGTT_R(1.0), _alphaXparam(0.060), _costhetaXparam(0.95), _modelselect(1) {}
 
 IBPtr TTbAModel::clone() const {
   return new_ptr(*this);
@@ -42,6 +43,7 @@ void TTbAModel::persistentOutput(PersistentOStream & os) const {
   os << _theWPTDVertex
      << _theZPQQVertex
      << _theAGQQVertex
+     << _theSU2XVertex
      << _gWPTD_L
      << _gWPTD_R
      << _gZPTU_L
@@ -61,6 +63,7 @@ void TTbAModel::persistentInput(PersistentIStream & is, int) {
   is >> _theWPTDVertex
      >> _theZPQQVertex
      >> _theAGQQVertex
+     >> _theSU2XVertex
      >> _gWPTD_L
      >> _gWPTD_R
      >> _gZPTU_L
@@ -95,6 +98,13 @@ void TTbAModel::Init() {
   ("Vertex/AGQQ",
    "Reference to the Axigluon Quark-Antiquark vertex",
    &TTbAModel::_theAGQQVertex, false, false, true, false, false);
+
+ static Reference<TTbAModel,ThePEG::Helicity::AbstractFFVVertex> interfaceVertexSU2X
+  ("Vertex/SU2X",
+   "Reference to the non-Abelian SU(2)_X vertex",
+   &TTbAModel::_theSU2XVertex, false, false, true, false, false);
+
+
 
 
   static Parameter<TTbAModel, double> interfaceWPTDLCoupling
@@ -168,6 +178,19 @@ static Parameter<TTbAModel, double> interfaceAGTTRCoupling
     ("ZPCCRCoupling",
      "The right-handed Z prime coupling to charm charmbar",
      &TTbAModel::_gZPCC_R, 1.0, -10.0, 10.0,
+     false, false, Interface::limited);
+
+
+  static Parameter<TTbAModel, double> interfaceSU2Xcostheta
+    ("SU2Xcostheta",
+     "Misalignment parameter of SU(2)_X model",
+     &TTbAModel::_costhetaXparam, 0.95, -1.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<TTbAModel, double> interfaceSU2Xalpha
+    ("SU2Xalpha",
+     "alphaX coupling constant",
+     &TTbAModel::_alphaXparam, 0.060, 0.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<TTbAModel, int> interfacemodelselect

@@ -55,11 +55,11 @@ void TTbAModelZPQQVertex::doinit() {
 }
 
 void TTbAModelZPQQVertex::persistentOutput(PersistentOStream & os) const {
-  os << _cZPTU_R << _cZPTU_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L;
+  os << _cZPTU_R << _cZPTU_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L << _models;
 }
 
 void TTbAModelZPQQVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _cZPTU_R >> _cZPTU_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L;
+  is >> _cZPTU_R >> _cZPTU_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _models;
 }
 
 ClassDescription<TTbAModelZPQQVertex> 
@@ -81,16 +81,16 @@ void TTbAModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
     _cR = _cZPTU_R; 
     _cL = _cZPTU_L; 
   } else {
-    
     if( fabs(aa->id()) != 4 && fabs(bb->id()) != 4 && fabs(cc->id()) != 4) { 
       _cR = _cZPUU_R; 
       _cL = _cZPUU_L;
-    } else {
+    }
+    if( fabs(aa->id()) == 4 || fabs(bb->id()) == 4 || fabs(cc->id()) == 4) { 
       _cR = _cZPCC_R; 
       _cL = _cZPCC_L;
     }
-
   }
+  
   if(_models!=1) { _cL = 0; _cR = 0; }
   right(_cR);
   left(_cL);

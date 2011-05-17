@@ -48,11 +48,11 @@ void TTbAModelWPTDVertex::doinit() {
 }
 
 void TTbAModelWPTDVertex::persistentOutput(PersistentOStream & os) const {
-  os << _cWPTD_R << _cWPTD_L;
+  os << _cWPTD_R << _cWPTD_L << _models;
 }
 
 void TTbAModelWPTDVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _cWPTD_R >> _cWPTD_L; 
+  is >> _cWPTD_R >> _cWPTD_L >> _models; 
 }
 
 ClassDescription<TTbAModelWPTDVertex> 
