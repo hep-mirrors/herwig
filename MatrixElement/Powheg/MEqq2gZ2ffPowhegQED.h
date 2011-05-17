@@ -190,11 +190,6 @@ protected:
   double loME(const cPDVector & particles,
 	      const vector<Lorentz5Momentum> & momenta,
 	      bool first=false) const;
-  
-  /**
-   *  The electroweak correction
-   */
-  double EWCorrection() const;
 
   /**
    * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
@@ -505,6 +500,11 @@ private:
   mutable double f2term_;
 
   /**
+   *  EW correction
+   */
+  mutable double EWterm_;
+
+  /**
    *  Choice of the supression function
    */
   unsigned int supressionFunction_;
@@ -730,16 +730,6 @@ private:
    *  Pointers to the vertices for the helicity calculations
    */
   //@{
-  /**
-   *  Pointer to the Z fermions vertex
-   */
-  AbstractFFVVertexPtr FFZVertex_;
-  
-  /**
-   *  Pointer to the photon fermions vertex
-   */
-  AbstractFFVVertexPtr FFPVertex_;
-  
   /**
    *  Pointer to the gluon fermions vertex
    */

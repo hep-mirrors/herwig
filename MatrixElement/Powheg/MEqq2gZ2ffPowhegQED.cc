@@ -172,133 +172,6 @@ double MEqq2gZ2ffPowhegQED::qqbarME(vector<SpinorWaveFunction>    & fin ,
   return me[0];
 }
 
-double MEqq2gZ2ffPowhegQED::EWCorrection() const {
-  oneLoopVertex_->clearCache();
-  // calculate the matrix elements
-  vector<SpinorWaveFunction>    fin,aout;
-  vector<SpinorBarWaveFunction> ain,fout;
-  SpinorWaveFunction       q(meMomenta()[0],mePartonData()[0],incoming);
-  SpinorBarWaveFunction qbar(meMomenta()[1],mePartonData()[1],incoming);
-  SpinorBarWaveFunction    f(meMomenta()[2],mePartonData()[2],outgoing);
-  SpinorWaveFunction    fbar(meMomenta()[3],mePartonData()[3],outgoing);
-  for(unsigned int ix=0;ix<2;++ix) {
-    q.reset(ix)   ; fin.push_back(q);
-    qbar.reset(ix); ain.push_back(qbar);
-    f.reset(ix)   ;fout.push_back(f);
-    fbar.reset(ix);aout.push_back(fbar);
-  }
-  // scale for the process
-  const Energy2 q2(scale());
-  // compute final-state vertex correction
-  oneLoopVertex_->setOrder(1);
-  VectorWaveFunction FS_Z[2][2],FS_A[2][2];
-  for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-      FS_Z[ohel1][ohel2] = oneLoopVertex_->
-	evaluate(q2,1,Z0_   ,aout[ohel2],fout[ohel1]);
-      FS_A[ohel1][ohel2] = oneLoopVertex_->
-	evaluate(q2,1,gamma_,aout[ohel2],fout[ohel1]);
-    }
-  }
-  // compute initial-state vertex correction
-  VectorWaveFunction IS_Z[2][2],IS_A[2][2];
-  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      IS_Z[ihel1][ihel2] = oneLoopVertex_->
-	evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
-      IS_A[ihel1][ihel2] = oneLoopVertex_->
-	evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
-    }
-  }
-  oneLoopVertex_->setOrder(0);
-  // coefficients for the box diagrams
-  vector<vector<complex<InvEnergy2 > > > boxCoeff = 
-    oneLoopVertex_->neutralCurrentFBox(mePartonData()[0],mePartonData()[1],
-				       mePartonData()[2],mePartonData()[3],
-				       sHat(),tHat(),uHat());
-  // sum over helicities to get the matrix element
-  VectorWaveFunction inter_LO_AA ,inter_LO_ZZ ;
-  VectorWaveFunction inter_NLO_AA,inter_NLO_AZ,inter_NLO_ZA,inter_NLO_ZZ;
-  Complex loSum(0.),EWSum(0.);
-  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      // LO intermediates
-      // intermediate for Z
-      inter_LO_ZZ  = oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
-      // intermediate for photon
-      inter_LO_AA  = oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
-      // intermediates including self energy corrections 
-      inter_NLO_AA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_AA);
-      inter_NLO_AZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_AA);
-      inter_NLO_ZA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_ZZ);
-      inter_NLO_ZZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_ZZ);
-      // currents for the box diagrams
-      LorentzPolarizationVectorE leftQuark = 
-	fin[ihel1].dimensionedWave().leftCurrent(ain[ihel2].dimensionedWave());
-      LorentzPolarizationVectorE rightQuark = 
-	fin[ihel1].dimensionedWave().rightCurrent(ain[ihel2].dimensionedWave());
-      // final-state loop
-      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
- 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	  // LO piece
- 	  // first the Z exchange diagram
- 	  Complex diag1  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_ZZ);
-	  // first the photon exchange diagram
-	  Complex diag2  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_AA);
-	  Complex lo = diag1 + diag2;
-	  loSum += norm(lo);
-	  // self energy piece
-	  Complex diag3  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AA);
-	  Complex diag4  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AZ);
-	  Complex diag5  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZA);
-	  Complex diag6  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZZ);
- 	  Complex self   = diag3 + diag4 + diag5 + diag6;
-	  // vertex corrections
-	  Complex diag7  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],IS_Z[ihel1][ihel2]);
-	  Complex diag8  = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],IS_A[ihel1][ihel2]);
-	  Complex diag9  = oneLoopVertex_->
-	    evaluate(q2,fin [ihel1],ain [ihel2],FS_Z[ohel1][ohel2]);
-	  Complex diag10 = oneLoopVertex_->
-	    evaluate(q2,fin [ihel1],ain [ihel2],FS_A[ohel1][ohel2]);
- 	  Complex vertex = diag7 + diag8 + diag9 + diag10;
-	  // box diagrams
-	  // currents
-	  LorentzPolarizationVectorE leftLepton  = 
-	    aout[ohel2].dimensionedWave().leftCurrent (fout[ohel1].dimensionedWave());
-	  LorentzPolarizationVectorE rightLepton = 
-	    aout[ohel2].dimensionedWave().rightCurrent(fout[ohel1].dimensionedWave());
-	  Complex box = -Complex(0.,1.)*
-	    ( leftQuark.dot( leftLepton)*boxCoeff[0][0] + 
-	      leftQuark.dot(rightLepton)*boxCoeff[0][1] +
-	     rightQuark.dot( leftLepton)*boxCoeff[1][0] + 
-	     rightQuark.dot(rightLepton)*boxCoeff[1][1]);
-	  // sum of the corrections
- 	  Complex loop = vertex + self + box; 
-	  EWSum += loop*conj(lo)+lo*conj(loop);
- 	}
-      }
-    }
-  }
-  // spin and colour factor
-  double colSpin=1./12.;
-  if(abs(mePartonData()[2]->id())<=6) colSpin *= 3.;
-  loSum *= colSpin;
-  EWSum *= colSpin;
-//   cerr << "testing in EW " << loME_ << " " << loSum << " " << EWSum << "\n";
-//   oneLoopVertex_->neutralCurrentME(mePartonData()[0],mePartonData()[1],
-// 				   mePartonData()[2],mePartonData()[3],
-// 				   sHat(),tHat(),uHat());
-  return real(EWSum/loSum);
-}
-
 Selector<const ColourLines *>
 MEqq2gZ2ffPowhegQED::colourGeometries(tcDiagPtr) const {
   static const ColourLines c1("1 -2");
@@ -339,9 +212,9 @@ MEqq2gZ2ffPowhegQED::diagrams(const DiagramVector & diags) const {
 }
 
 double MEqq2gZ2ffPowhegQED::me2() const {
-  // cast the vertices
-  tcFFVVertexPtr Zvertex = dynamic_ptr_cast<tcFFVVertexPtr>(oneLoopVertex_);
-  tcFFVVertexPtr Pvertex = dynamic_ptr_cast<tcFFVVertexPtr>(oneLoopVertex_);
+  // clear looptools cache if needed
+  if(contrib_!=0&&(corrections_==3||corrections_==5))
+    oneLoopVertex_->clearCache();
   // compute the spinors
   vector<SpinorWaveFunction>     fin,aout;
   vector<SpinorBarWaveFunction>  ain,fout;
@@ -361,75 +234,181 @@ double MEqq2gZ2ffPowhegQED::me2() const {
   }
   // scale for the process
   const Energy2 q2(scale());
-  ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
-				PDT::Spin1Half,PDT::Spin1Half);
-  // wavefunctions for the intermediate particles
-  VectorWaveFunction interZ,interP;
-  // momentum difference for genuine NLO structure
+  // wavefunctions and box corrections
+  // for EW correction if needed
+  VectorWaveFunction FS_Z[2][2],FS_A[2][2];
+  VectorWaveFunction IS_Z[2][2],IS_A[2][2];
+  vector<vector<complex<InvEnergy2 > > > boxCoeff;
+  if(contrib_!=0&&(corrections_==3||corrections_==5)) {
+    // compute final-state vertex correction
+    oneLoopVertex_->setOrder(1);
+    for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+      for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	FS_Z[ohel1][ohel2] = oneLoopVertex_->
+	  evaluate(q2,1,Z0_   ,aout[ohel2],fout[ohel1]);
+	FS_A[ohel1][ohel2] = oneLoopVertex_->
+	  evaluate(q2,1,gamma_,aout[ohel2],fout[ohel1]);
+      }
+    }
+    // compute initial-state vertex correction
+    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	IS_Z[ihel1][ihel2] = oneLoopVertex_->
+	  evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+	IS_A[ihel1][ihel2] = oneLoopVertex_->
+	  evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+      }
+    }
+    oneLoopVertex_->setOrder(0);
+    // coefficients for the box diagrams
+    boxCoeff = oneLoopVertex_->
+      neutralCurrentFBox(mePartonData()[0],mePartonData()[1],
+			 mePartonData()[2],mePartonData()[3],
+			 sHat(),tHat(),uHat());
+  }
+  // momentum difference for genuine NLO QED FS structure
   LorentzPolarizationVector momDiff = 
     (rescaledMomenta()[2]-rescaledMomenta()[3])/2./
     (rescaledMomenta()[2].mass()+rescaledMomenta()[3].mass());
+  // storage of ME
+  ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin1Half,PDT::Spin1Half);
+  // intermediate wavefunctions
+  VectorWaveFunction inter_LO_AA ,inter_LO_ZZ ;
+  VectorWaveFunction inter_NLO_AA,inter_NLO_AZ,
+    inter_NLO_ZA,inter_NLO_ZZ;
   // sum over helicities to get the matrix element
-  double total[4]={0.,0.,0.,0.};
+  double loSum(0.),EWSum(0.),QEDSum(0.);
+  double  dsum[2]={0.,0.};
   // incoming helicities
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      // LO intermediates
       // intermediate for Z
-      interZ = oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+      inter_LO_ZZ  = oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
       // intermediate for photon
-      interP = oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
-      // scalars
-      Complex scalar1 = interZ.wave().dot(momDiff);
-      Complex scalar2 = interP.wave().dot(momDiff);
+      inter_LO_AA  = oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+      // stuff for EW correction if needed
+      LorentzPolarizationVectorE leftQuark,rightQuark;
+      if(contrib_!=0&&(corrections_==3||corrections_==5)) {
+	// intermediates including self energy corrections 
+	inter_NLO_AA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_AA);
+	inter_NLO_AZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_AA);
+	inter_NLO_ZA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_ZZ);
+	inter_NLO_ZZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_ZZ);
+	// currents for the box diagrams
+	leftQuark  = fin[ihel1].dimensionedWave().
+	   leftCurrent(ain[ihel2].dimensionedWave());
+	rightQuark = fin[ihel1].dimensionedWave().
+	  rightCurrent(ain[ihel2].dimensionedWave());
+      }
+      // scalars for QED correction if needed
+      Complex scalar1(0.),scalar2(0.);
+      if(contrib_!=0&&(corrections_==2||corrections_==5)) {
+	scalar1 = inter_LO_ZZ.wave().dot(momDiff);
+	scalar2 = inter_LO_AA.wave().dot(momDiff);
+      }
       // outgoing helicities
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // LO piece
  	  // first the Z exchange diagram
  	  Complex diag1 = oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],interZ);
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_ZZ);
 	  // first the photon exchange diagram
 	  Complex diag2 =  oneLoopVertex_->
-	    evaluate(q2,aout[ohel2],fout[ohel1],interP);
- 	  // extra stuff for NLO
- 	  LorentzPolarizationVector left  = 
- 	    aout[ohel2].wave(). leftCurrent(fout[ohel1].wave());
- 	  LorentzPolarizationVector right = 
- 	    aout[ohel2].wave().rightCurrent(fout[ohel1].wave());
- 	  Complex scalar = 
- 	    aout[ohel2].wave().scalar(fout[ohel1].wave());
- 	  // nlo specific pieces
- 	  Complex diag3 =
-	    Complex(0.,1.)*Zvertex->norm()*
- 	    (Zvertex->right()*( left.dot(interZ.wave())) +
- 	     Zvertex-> left()*(right.dot(interZ.wave())) -
- 	     ( Zvertex-> left()+Zvertex->right())*scalar1*scalar);
- 	  diag3 += Complex(0.,1.)*Pvertex->norm()*
- 	    (Pvertex->right()*( left.dot(interP.wave())) +
- 	     Pvertex-> left()*(right.dot(interP.wave())) -
- 	     ( Pvertex-> left()+Pvertex->right())*scalar2*scalar);
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_AA);
+	  Complex lo = diag1 + diag2;
+	  loSum += norm(lo);
  	  // add up squares of individual terms
- 	  total[1] += norm(diag1);
- 	  total[2] += norm(diag2);
- 	  // the full thing including interference
- 	  diag1 += diag2;
- 	  total[0] += norm(diag1);
-	  menew(ihel1,ihel2,ohel1,ohel2) = diag1;
- 	  // nlo piece
- 	  total[3] += real(diag1*conj(diag3) + diag3*conj(diag1));
+ 	  dsum[0] += norm(diag1);
+ 	  dsum[1] += norm(diag2);
+	  menew(ihel1,ihel2,ohel1,ohel2) = lo;
+	  // genuine EW piece
+	  if(contrib_!=0&&(corrections_==3||corrections_==5)) {
+	    // self energy piece
+	    Complex diag3  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AA);
+	    Complex diag4  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AZ);
+	    Complex diag5  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZA);
+	    Complex diag6  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZZ);
+	    Complex self   = diag3 + diag4 + diag5 + diag6;
+	    // vertex corrections
+	    Complex diag7  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],IS_Z[ihel1][ihel2]);
+	    Complex diag8  = oneLoopVertex_->
+	      evaluate(q2,aout[ohel2],fout[ohel1],IS_A[ihel1][ihel2]);
+	    Complex diag9  = oneLoopVertex_->
+	      evaluate(q2,fin [ihel1],ain [ihel2],FS_Z[ohel1][ohel2]);
+	    Complex diag10 = oneLoopVertex_->
+	      evaluate(q2,fin [ihel1],ain [ihel2],FS_A[ohel1][ohel2]);
+	    Complex vertex = diag7 + diag8 + diag9 + diag10;
+	    // box diagrams
+	    // currents
+	    LorentzPolarizationVectorE leftLepton  = 
+	      aout[ohel2].dimensionedWave().leftCurrent (fout[ohel1].dimensionedWave());
+	    LorentzPolarizationVectorE rightLepton = 
+	      aout[ohel2].dimensionedWave().rightCurrent(fout[ohel1].dimensionedWave());
+	    Complex box = -Complex(0.,1.)*
+	      ( leftQuark.dot( leftLepton)*boxCoeff[0][0] + 
+		leftQuark.dot(rightLepton)*boxCoeff[0][1] +
+		rightQuark.dot( leftLepton)*boxCoeff[1][0] + 
+		rightQuark.dot(rightLepton)*boxCoeff[1][1]);
+	    // sum of the corrections
+	    Complex loop = vertex + self + box; 
+	    EWSum += real(loop*conj(lo)+lo*conj(loop));
+	  }
+	  // QED FS corrections
+	  if(contrib_!=0&&(corrections_==2||corrections_==5)) {
+	    LorentzPolarizationVector left  = 
+	      aout[ohel2].wave(). leftCurrent(fout[ohel1].wave());
+	    LorentzPolarizationVector right = 
+	      aout[ohel2].wave().rightCurrent(fout[ohel1].wave());
+	    Complex scalar = 
+	      aout[ohel2].wave().scalar(fout[ohel1].wave());
+	    // nlo specific pieces
+	    Complex diag3 =
+	      Complex(0.,1.)*oneLoopVertex_->norm()*
+	      (oneLoopVertex_->right()*( left.dot(inter_LO_ZZ.wave())) +
+	       oneLoopVertex_-> left()*(right.dot(inter_LO_ZZ.wave())) -
+	       ( oneLoopVertex_-> left()+oneLoopVertex_->right())*scalar1*scalar);
+	    diag3 += Complex(0.,1.)*oneLoopVertex_->norm()*
+	      (oneLoopVertex_->right()*( left.dot(inter_LO_AA.wave())) +
+	       oneLoopVertex_-> left()*(right.dot(inter_LO_AA.wave())) -
+	       ( oneLoopVertex_-> left()+oneLoopVertex_->right())*scalar2*scalar);
+	    // nlo piece
+	    QEDSum += real(diag1*conj(diag3) + diag3*conj(diag1));
+	  }
 	}
       }
     }
   }
-  // spin and colour average
-  for(int ix=0;ix<4;++ix) total[ix] *= 1./12.;
+  // spin and colour factor
+  double colSpin=1./12.;
+  if(abs(mePartonData()[2]->id())<=6) colSpin *= 3.;
+  loSum  *= colSpin;
+  EWSum  *= colSpin;
+  QEDSum *= colSpin;
+  for(unsigned int ix=0;ix<2;++ix) dsum[ix] *= colSpin;
+  // test of EW correction (if needed)
+//   cerr << "testing in EW " << loME_ << " " << loSum << " " << EWSum << "\n";
+//   oneLoopVertex_->neutralCurrentME(mePartonData()[0],mePartonData()[1],
+// 				   mePartonData()[2],mePartonData()[3],
+// 				   sHat(),tHat(),uHat());
   // save the stuff for diagram selection
   DVector save;
-  save.push_back(total[1]);
-  save.push_back(total[2]);
-  f2term_ = total[3];
+  save.push_back(dsum[0]);
+  save.push_back(dsum[1]);
   meInfo(save);
   me_.reset(menew);
-  return total[0];
+  // save the higher order pieces
+  f2term_ = QEDSum;
+  EWterm_ = EWSum/loSum;
+  // return LO result
+  return loSum;
 }
 
 void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
@@ -440,7 +419,7 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << preqqbarqQED_ << preqqbarqbarQED_ << preqgQED_ << pregqbarQED_
      << preFFQED_ << preIFQED_ << prefactorQCD_ << prefactorQED_ 
      << ounit(minpTQCD_,GeV) << ounit(minpTQED_,GeV) << alphaQCD_ << alphaQED_
-     << FFZVertex_ << oneLoopVertex_ << FFGVertex_ << oneLoopVertex_
+     << FFGVertex_ << oneLoopVertex_
      << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
 }
 
@@ -452,7 +431,7 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> preqqbarqQED_ >> preqqbarqbarQED_ >> preqgQED_ >> pregqbarQED_
      >> preFFQED_ >> preIFQED_ >> prefactorQCD_ >> prefactorQED_ 
      >> iunit(minpTQCD_,GeV) >> iunit(minpTQED_,GeV) >> alphaQCD_ >> alphaQED_
-     >> FFZVertex_ >> oneLoopVertex_ >> FFGVertex_ >> oneLoopVertex_
+     >> FFGVertex_ >> oneLoopVertex_
      >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
 }
 
@@ -480,8 +459,6 @@ void MEqq2gZ2ffPowhegQED::doinit() {
 			  << "MEqq2gZ2ffPowhegQED::doinit" 
 			  << Exception::abortnow;
   // extract the vertices
-  FFZVertex_ = hwsm->vertexFFZ();
-  FFPVertex_ = hwsm->vertexFFP();
   FFGVertex_ = hwsm->vertexFFG();
 }
 
@@ -980,9 +957,7 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
     output += vfin/treesq;
   }
   // genuine EW corrections
-  if(corrections_==3||corrections_==5) {
-    output += EWCorrection();
-  }
+  if(corrections_==3||corrections_==5) output += EWterm_;
   // return the total
   return output;
 }
