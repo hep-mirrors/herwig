@@ -8,6 +8,7 @@
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/Models/StandardModel/OneLoopFFAWZVertex.h"
 
 namespace Herwig {
 
@@ -190,6 +191,11 @@ protected:
 	      const vector<Lorentz5Momentum> & momenta,
 	      bool first=false) const;
   
+  /**
+   *  The electroweak correction
+   */
+  double EWCorrection() const;
+
   /**
    * The real matrix element divided by \f$2 g_S^2\f$, to be implemented in the
    * inheriting classes. 
@@ -374,6 +380,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -473,7 +485,7 @@ private:
   mutable double alphaS_;
 
   /**
-   *  Strong coupling
+   *  EM coupling
    */
   mutable double alphaEM_;
 
@@ -732,8 +744,12 @@ private:
    *  Pointer to the gluon fermions vertex
    */
   AbstractFFVVertexPtr FFGVertex_;
-  //@}
 
+  /**
+   *  Pointer to the vertex include one-loop EW corrections
+   */
+  OneLoopFFAWZVertexPtr oneLoopVertex_;
+  //@}
 };
 }
 

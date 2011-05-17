@@ -62,7 +62,8 @@ IBPtr MEqq2gZ2ffPowhegQED::fullclone() const {
 }
 
 Energy2 MEqq2gZ2ffPowhegQED::scale() const {
-  return sHat();
+  return sqr(Z0_->mass());
+  //return sHat();
 }
 
 int MEqq2gZ2ffPowhegQED::nDim() const {
@@ -134,16 +135,16 @@ double MEqq2gZ2ffPowhegQED::qqbarME(vector<SpinorWaveFunction>    & fin ,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       // intermediate for Z
-      inter[0]=FFZVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+      inter[0]=oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
       // intermediate for photon
-      inter[1]=FFPVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+      inter[1]=oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
  	  // first the Z exchange diagram
- 	  Complex diag1 = FFZVertex_->
+ 	  Complex diag1 = oneLoopVertex_->
 	    evaluate(q2,aout[ohel2],fout[ohel1],inter[0]);
 	  // first the photon exchange diagram
-	  Complex diag2 =  FFPVertex_->
+	  Complex diag2 =  oneLoopVertex_->
 	    evaluate(q2,aout[ohel2],fout[ohel1],inter[1]);
 	  // add up squares of individual terms
 	  me[1] += norm(diag1);
@@ -169,6 +170,133 @@ double MEqq2gZ2ffPowhegQED::qqbarME(vector<SpinorWaveFunction>    & fin ,
     me_.reset(menew);
   }
   return me[0];
+}
+
+double MEqq2gZ2ffPowhegQED::EWCorrection() const {
+  oneLoopVertex_->clearCache();
+  // calculate the matrix elements
+  vector<SpinorWaveFunction>    fin,aout;
+  vector<SpinorBarWaveFunction> ain,fout;
+  SpinorWaveFunction       q(meMomenta()[0],mePartonData()[0],incoming);
+  SpinorBarWaveFunction qbar(meMomenta()[1],mePartonData()[1],incoming);
+  SpinorBarWaveFunction    f(meMomenta()[2],mePartonData()[2],outgoing);
+  SpinorWaveFunction    fbar(meMomenta()[3],mePartonData()[3],outgoing);
+  for(unsigned int ix=0;ix<2;++ix) {
+    q.reset(ix)   ; fin.push_back(q);
+    qbar.reset(ix); ain.push_back(qbar);
+    f.reset(ix)   ;fout.push_back(f);
+    fbar.reset(ix);aout.push_back(fbar);
+  }
+  // scale for the process
+  const Energy2 q2(scale());
+  // compute final-state vertex correction
+  oneLoopVertex_->setOrder(1);
+  VectorWaveFunction FS_Z[2][2],FS_A[2][2];
+  for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+    for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+      FS_Z[ohel1][ohel2] = oneLoopVertex_->
+	evaluate(q2,1,Z0_   ,aout[ohel2],fout[ohel1]);
+      FS_A[ohel1][ohel2] = oneLoopVertex_->
+	evaluate(q2,1,gamma_,aout[ohel2],fout[ohel1]);
+    }
+  }
+  // compute initial-state vertex correction
+  VectorWaveFunction IS_Z[2][2],IS_A[2][2];
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      IS_Z[ihel1][ihel2] = oneLoopVertex_->
+	evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+      IS_A[ihel1][ihel2] = oneLoopVertex_->
+	evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+    }
+  }
+  oneLoopVertex_->setOrder(0);
+  // coefficients for the box diagrams
+  vector<vector<complex<InvEnergy2 > > > boxCoeff = 
+    oneLoopVertex_->neutralCurrentFBox(mePartonData()[0],mePartonData()[1],
+				       mePartonData()[2],mePartonData()[3],
+				       sHat(),tHat(),uHat());
+  // sum over helicities to get the matrix element
+  VectorWaveFunction inter_LO_AA ,inter_LO_ZZ ;
+  VectorWaveFunction inter_NLO_AA,inter_NLO_AZ,inter_NLO_ZA,inter_NLO_ZZ;
+  Complex loSum(0.),EWSum(0.);
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      // LO intermediates
+      // intermediate for Z
+      inter_LO_ZZ  = oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+      // intermediate for photon
+      inter_LO_AA  = oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+      // intermediates including self energy corrections 
+      inter_NLO_AA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_AA);
+      inter_NLO_AZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_AA);
+      inter_NLO_ZA = oneLoopVertex_->selfEnergyCorrection(gamma_,inter_LO_ZZ);
+      inter_NLO_ZZ = oneLoopVertex_->selfEnergyCorrection(Z0_   ,inter_LO_ZZ);
+      // currents for the box diagrams
+      LorentzPolarizationVectorE leftQuark = 
+	fin[ihel1].dimensionedWave().leftCurrent(ain[ihel2].dimensionedWave());
+      LorentzPolarizationVectorE rightQuark = 
+	fin[ihel1].dimensionedWave().rightCurrent(ain[ihel2].dimensionedWave());
+      // final-state loop
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+ 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // LO piece
+ 	  // first the Z exchange diagram
+ 	  Complex diag1  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_ZZ);
+	  // first the photon exchange diagram
+	  Complex diag2  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_LO_AA);
+	  Complex lo = diag1 + diag2;
+	  loSum += norm(lo);
+	  // self energy piece
+	  Complex diag3  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AA);
+	  Complex diag4  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_AZ);
+	  Complex diag5  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZA);
+	  Complex diag6  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],inter_NLO_ZZ);
+ 	  Complex self   = diag3 + diag4 + diag5 + diag6;
+	  // vertex corrections
+	  Complex diag7  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],IS_Z[ihel1][ihel2]);
+	  Complex diag8  = oneLoopVertex_->
+	    evaluate(q2,aout[ohel2],fout[ohel1],IS_A[ihel1][ihel2]);
+	  Complex diag9  = oneLoopVertex_->
+	    evaluate(q2,fin [ihel1],ain [ihel2],FS_Z[ohel1][ohel2]);
+	  Complex diag10 = oneLoopVertex_->
+	    evaluate(q2,fin [ihel1],ain [ihel2],FS_A[ohel1][ohel2]);
+ 	  Complex vertex = diag7 + diag8 + diag9 + diag10;
+	  // box diagrams
+	  // currents
+	  LorentzPolarizationVectorE leftLepton  = 
+	    aout[ohel2].dimensionedWave().leftCurrent (fout[ohel1].dimensionedWave());
+	  LorentzPolarizationVectorE rightLepton = 
+	    aout[ohel2].dimensionedWave().rightCurrent(fout[ohel1].dimensionedWave());
+	  Complex box = -Complex(0.,1.)*
+	    ( leftQuark.dot( leftLepton)*boxCoeff[0][0] + 
+	      leftQuark.dot(rightLepton)*boxCoeff[0][1] +
+	     rightQuark.dot( leftLepton)*boxCoeff[1][0] + 
+	     rightQuark.dot(rightLepton)*boxCoeff[1][1]);
+	  // sum of the corrections
+ 	  Complex loop = vertex + self + box; 
+	  EWSum += loop*conj(lo)+lo*conj(loop);
+ 	}
+      }
+    }
+  }
+  // spin and colour factor
+  double colSpin=1./12.;
+  if(abs(mePartonData()[2]->id())<=6) colSpin *= 3.;
+  loSum *= colSpin;
+  EWSum *= colSpin;
+//   cerr << "testing in EW " << loME_ << " " << loSum << " " << EWSum << "\n";
+//   oneLoopVertex_->neutralCurrentME(mePartonData()[0],mePartonData()[1],
+// 				   mePartonData()[2],mePartonData()[3],
+// 				   sHat(),tHat(),uHat());
+  return real(EWSum/loSum);
 }
 
 Selector<const ColourLines *>
@@ -212,8 +340,8 @@ MEqq2gZ2ffPowhegQED::diagrams(const DiagramVector & diags) const {
 
 double MEqq2gZ2ffPowhegQED::me2() const {
   // cast the vertices
-  tcFFVVertexPtr Zvertex = dynamic_ptr_cast<tcFFVVertexPtr>(FFZVertex_);
-  tcFFVVertexPtr Pvertex = dynamic_ptr_cast<tcFFVVertexPtr>(FFPVertex_);
+  tcFFVVertexPtr Zvertex = dynamic_ptr_cast<tcFFVVertexPtr>(oneLoopVertex_);
+  tcFFVVertexPtr Pvertex = dynamic_ptr_cast<tcFFVVertexPtr>(oneLoopVertex_);
   // compute the spinors
   vector<SpinorWaveFunction>     fin,aout;
   vector<SpinorBarWaveFunction>  ain,fout;
@@ -247,9 +375,9 @@ double MEqq2gZ2ffPowhegQED::me2() const {
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       // intermediate for Z
-      interZ = FFZVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
+      interZ = oneLoopVertex_->evaluate(q2,1,Z0_   ,fin[ihel1],ain[ihel2]);
       // intermediate for photon
-      interP = FFPVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
+      interP = oneLoopVertex_->evaluate(q2,1,gamma_,fin[ihel1],ain[ihel2]);
       // scalars
       Complex scalar1 = interZ.wave().dot(momDiff);
       Complex scalar2 = interP.wave().dot(momDiff);
@@ -257,10 +385,10 @@ double MEqq2gZ2ffPowhegQED::me2() const {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
  	  // first the Z exchange diagram
- 	  Complex diag1 = FFZVertex_->
+ 	  Complex diag1 = oneLoopVertex_->
 	    evaluate(q2,aout[ohel2],fout[ohel1],interZ);
 	  // first the photon exchange diagram
-	  Complex diag2 =  FFPVertex_->
+	  Complex diag2 =  oneLoopVertex_->
 	    evaluate(q2,aout[ohel2],fout[ohel1],interP);
  	  // extra stuff for NLO
  	  LorentzPolarizationVector left  = 
@@ -312,7 +440,7 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << preqqbarqQED_ << preqqbarqbarQED_ << preqgQED_ << pregqbarQED_
      << preFFQED_ << preIFQED_ << prefactorQCD_ << prefactorQED_ 
      << ounit(minpTQCD_,GeV) << ounit(minpTQED_,GeV) << alphaQCD_ << alphaQED_
-     << FFZVertex_ << FFPVertex_ << FFGVertex_ 
+     << FFZVertex_ << oneLoopVertex_ << FFGVertex_ << oneLoopVertex_
      << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
 }
 
@@ -324,7 +452,7 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> preqqbarqQED_ >> preqqbarqbarQED_ >> preqgQED_ >> pregqbarQED_
      >> preFFQED_ >> preIFQED_ >> prefactorQCD_ >> prefactorQED_ 
      >> iunit(minpTQCD_,GeV) >> iunit(minpTQED_,GeV) >> alphaQCD_ >> alphaQED_
-     >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ 
+     >> FFZVertex_ >> oneLoopVertex_ >> FFGVertex_ >> oneLoopVertex_
      >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
 }
 
@@ -357,6 +485,11 @@ void MEqq2gZ2ffPowhegQED::doinit() {
   FFGVertex_ = hwsm->vertexFFG();
 }
 
+void MEqq2gZ2ffPowhegQED::doinitrun() {
+  oneLoopVertex_->initrun();
+  HwMEBase::doinitrun();
+}
+
 ClassDescription<MEqq2gZ2ffPowhegQED> MEqq2gZ2ffPowhegQED::initMEqq2gZ2ffPowhegQED;
 // Definition of the static class description member.
 
@@ -380,11 +513,21 @@ void MEqq2gZ2ffPowhegQED::Init() {
      "QED",
      "Only include the QED corrections",
      2);
+  static SwitchOption interfaceCorrectionsEW
+    (interfaceCorrections,
+     "EW",
+     "Only include the EW corrections",
+     3);
   static SwitchOption interfaceCorrectionsQCDandQED
     (interfaceCorrections,
      "QCDandQED",
      "Include both QED and QCD corrections",
-     3);
+     4);
+  static SwitchOption interfaceCorrectionsAll
+    (interfaceCorrections,
+     "All",
+     "Include QED, QCD and EW corrections",
+     5);
 
   static Switch<MEqq2gZ2ffPowhegQED,bool> interfaceIncomingPhotons
     ("IncomingPhotons",
@@ -642,7 +785,6 @@ void MEqq2gZ2ffPowhegQED::Init() {
      &MEqq2gZ2ffPowhegQED::yPow_, 0.9, 0.0, 1.0,
      false, false, Interface::limited);
 
-
   static Switch<MEqq2gZ2ffPowhegQED,unsigned int> interfaceQEDContributions
     ("QEDContributions",
      "Which QED corrections to include",
@@ -668,18 +810,23 @@ void MEqq2gZ2ffPowhegQED::Init() {
      "Only include inital- and final-state QED radiation, no intereference",
      3);
 
+  static Reference<MEqq2gZ2ffPowhegQED,OneLoopFFAWZVertex> interfaceOneLoopVertex
+    ("OneLoopVertex",
+     "The vertex include the one-loop corrections",
+     &MEqq2gZ2ffPowhegQED::oneLoopVertex_, false, false, true, false, false);
+
 }
 
 double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   double output(0.);
   // ISR QCD correction
-  if(corrections_==1||corrections_==3)
+  if(corrections_==1||corrections_==4||corrections_==5)
     output += CFfact_*2.;
   // ISR QED correction
-  if((corrections_==2||corrections_==3) && QEDContributions_ != 2)
+  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_ != 2)
     output += sqr(double(mePartonData()[0]->iCharge())/3.)*EMfact_*2.;
   // FSR QED correction
-  if((corrections_==2||corrections_==3) && QEDContributions_ != 1) {
+  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_ != 1) {
     double mu2 = sqr(mePartonData()[2]->mass())/sHat();
     double mu = sqrt(mu2), mu4 = sqr(mu2), lmu = log(mu);
     double v = sqrt(1.-4.*mu2),v2 = sqr(v),omv = 4.*mu2/(1.+v);
@@ -720,7 +867,7 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
       2.*EMfact_*(f1+fNS+VNS + f2*f2term_/loME_);
   }
   // ISR/FSR interference
-  if((corrections_==2||corrections_==3) && QEDContributions_==0 ) {
+  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_==0 ) {
     //here I assume that we always have q qbar -> lep lepbar
     if(mePartonData()[0]->id()<0 || mePartonData()[2]->id()<0){
       cout<<"WARNING: virtual called with crossing "<<endl;
@@ -832,6 +979,10 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
     // divide by the tree-level squared, and add the result to the output
     output += vfin/treesq;
   }
+  // genuine EW corrections
+  if(corrections_==3||corrections_==5) {
+    output += EWCorrection();
+  }
   // return the total
   return output;
 }
@@ -935,7 +1086,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
   double collQbarQbar = collinearQuark(x.second,mu2,zJac.second,z.second,
 				       oldqPDF.second,newqPDF.second);
   // QCD
-  if(corrections_==1||corrections_==3) {
+  if(corrections_==1||corrections_==4||corrections_==5) {
     // g -> q
     double collGQ       = collinearBoson(mu2,zJac.first ,z.first ,
 					 oldqPDF.first ,newgPDF.first );
@@ -946,7 +1097,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     coll += CFfact_*(collQQ+collQbarQbar)+TRfact_*(collGQ+collGQbar);
   }
   // QED
-  if((corrections_==2||corrections_==3) &&
+  if((corrections_==2||corrections_==4||corrections_==5) &&
      QEDContributions_!=2 ) {
     // gamma -> q
     double collPQ       = newpPDF.first  < 0. ? 0. : 
@@ -962,7 +1113,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
   double wgt = loME_*( 1. + virt + coll );
   // real QCD emission
   vector<double> realQCD1,realQCD2;
-  if(corrections_==1||corrections_==3) {
+  if(corrections_==1||corrections_==4||corrections_==5) {
     realQCD1 = subtractedRealQCD(x,z. first,zJac. first,
 				 oldqPDF. first,newqPDF. first,
 				 newgPDF. first, II12);
@@ -976,7 +1127,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     realQED3(2,0.),realQED4(2,0.),
     realQED5(2,0.),realQED6(2,0.),
     realQED7(2,0.),realQED8(2,0.);
-  if(corrections_==2||corrections_==3) {
+  if(corrections_==2||corrections_==4||corrections_==5) {
     // ISR
     if(QEDContributions_!=2) {
       realQED1 = subtractedRealQED(x,z. first,zJac. first,
@@ -1061,25 +1212,19 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     for(unsigned int ix=0;ix<realQED8.size();++ix)
       generator()->log() << realQED8[ix] << " ";
     generator()->log() << "\n";
-
-
-
-
-
-
     generator()->log() << "testing z " << z.first << " " << z.second << "\n";
     generator()->log() << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
     generator()->log() << flush;
     assert(false);
   }
   weights_.resize(15,0.);
-  if(corrections_==1||corrections_==3) {
+  if(corrections_==1||corrections_==4||corrections_==5) {
     weights_[ 1] = realQCD1[1];
     weights_[ 2] = realQCD1[3];
     weights_[ 3] = realQCD2[1];
     weights_[ 4] = realQCD2[3];
   }
-  if(corrections_==2||corrections_==3) {
+  if(corrections_==2||corrections_==4||corrections_==5) {
     weights_[ 5] = realQED1[1];
     weights_[ 6] = realQED1[3];
     weights_[ 7] = realQED2[1];
@@ -1393,10 +1538,10 @@ double MEqq2gZ2ffPowhegQED::realQCDME(const cPDVector & particles,
   Energy2 q2 = scale();
   for(unsigned int lhel1=0;lhel1<2;++lhel1) {
     for(unsigned int lhel2=0;lhel2<2;++lhel2) {
-      VectorWaveFunction Zwave = FFZVertex_->evaluate(q2, 1, Z0_,
-						      aout[lhel2],fout[lhel1]);
-      VectorWaveFunction Pwave = FFPVertex_->evaluate(q2, 1, gamma_,
-						      aout[lhel2],fout[lhel1]);
+      VectorWaveFunction Zwave = oneLoopVertex_->evaluate(q2, 1, Z0_,
+							  aout[lhel2],fout[lhel1]);
+      VectorWaveFunction Pwave = oneLoopVertex_->evaluate(q2, 1, gamma_,
+							  aout[lhel2],fout[lhel1]);
       for(unsigned int ihel1=0;ihel1<2;++ihel1) {
 	for(unsigned int ihel2=0;ihel2<2;++ihel2) {
 	  for(unsigned int ohel1=0;ohel1<2;++ohel1) {
@@ -1404,18 +1549,18 @@ double MEqq2gZ2ffPowhegQED::realQCDME(const cPDVector & particles,
 	    // first Z diagram
 	    SpinorWaveFunction inters = FFGVertex_->
 	      evaluate(q2,5,fin[ihel1].particle(),fin[ihel1],gluon[ohel1]);
- 	    diag[0] = FFZVertex_->evaluate(q2, inters, ain[ihel2], Zwave);
+ 	    diag[0] = oneLoopVertex_->evaluate(q2, inters, ain[ihel2], Zwave);
 	    // second Z diagram
 	    SpinorBarWaveFunction interb = FFGVertex_->
 	      evaluate(q2,5,ain[ihel1].particle(),ain[ihel2],gluon[ohel1]);
-	    diag[1] = FFZVertex_->evaluate(q2, fin[ihel1], interb, Zwave);
+	    diag[1] = oneLoopVertex_->evaluate(q2, fin[ihel1], interb, Zwave);
 	    //////// photon diagrams //////////
 	    if(particles[2]->id()==-particles[3]->id()&&
 	       particles[2]->charged()) {
 	      // first photon diagram
-	      diag[2] = FFPVertex_->evaluate(q2, inters, ain[ihel2], Pwave);
+	      diag[2] = oneLoopVertex_->evaluate(q2, inters, ain[ihel2], Pwave);
 	      // second photon diagram
-	      diag[3] = FFPVertex_->evaluate(q2, fin[ihel1], interb, Pwave);
+	      diag[3] = oneLoopVertex_->evaluate(q2, fin[ihel1], interb, Pwave);
 	    }
 	    // add them up
 	    output += norm(std::accumulate(diag.begin(),diag.end(),Complex(0.)));
@@ -2071,14 +2216,14 @@ MEqq2gZ2ffPowhegQED::realQEDME(const cPDVector & particles,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       // intermediate Z
       ZwaveIn [ihel1][ihel2] = 
-	FFZVertex_->evaluate(q2,1,Z0_   ,fin [ihel1],ain [ihel2]);
+	oneLoopVertex_->evaluate(q2,1,Z0_   ,fin [ihel1],ain [ihel2]);
       ZwaveOut[ihel1][ihel2] = 
-	FFZVertex_->evaluate(q2,1,Z0_   ,aout[ihel2],fout[ihel1]);
+	oneLoopVertex_->evaluate(q2,1,Z0_   ,aout[ihel2],fout[ihel1]);
       // intermediate photon
       PwaveIn [ihel1][ihel2] = 
- 	FFPVertex_->evaluate(q2,1,gamma_,fin [ihel1],ain [ihel2]);
+	oneLoopVertex_->evaluate(q2,1,gamma_,fin [ihel1],ain [ihel2]);
       PwaveOut[ihel1][ihel2] =
-	FFPVertex_->evaluate(q2,1,gamma_,aout[ihel2],fout[ihel1]);
+	oneLoopVertex_->evaluate(q2,1,gamma_,aout[ihel2],fout[ihel1]);
     }
   }
   vector<double> output(3,0.);
@@ -2090,36 +2235,36 @@ MEqq2gZ2ffPowhegQED::realQEDME(const cPDVector & particles,
 	  for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	    // ISR diagrams
  	    // first Z diagram
- 	    SpinorWaveFunction inters = FFPVertex_->
+ 	    SpinorWaveFunction inters = oneLoopVertex_->
  	      evaluate(q2,5,fin[ihel1].particle(),fin[ihel1],photon[ohel1]);
-  	    diagI[0] = FFZVertex_->
+  	    diagI[0] = oneLoopVertex_->
 	      evaluate(q2, inters, ain[ihel2], ZwaveOut[lhel1][lhel2]);
  	    // second Z diagram
- 	    SpinorBarWaveFunction interb = FFPVertex_->
+ 	    SpinorBarWaveFunction interb = oneLoopVertex_->
  	      evaluate(q2,5,ain[ihel2].particle(),ain[ihel2],photon[ohel1]);
- 	    diagI[1] = FFZVertex_->
+ 	    diagI[1] = oneLoopVertex_->
 	      evaluate(q2, fin[ihel1], interb, ZwaveOut[lhel1][lhel2]);
 	    if(particles[2]->charged()) {
  	      // first photon diagram
-	      diagI[2] = FFPVertex_->
+	      diagI[2] = oneLoopVertex_->
 		evaluate(q2, inters, ain[ihel2], PwaveOut[lhel1][lhel2]);
 	      // second photon diagram
-	      diagI[3] = FFPVertex_->
+	      diagI[3] = oneLoopVertex_->
 		evaluate(q2, fin[ihel1], interb, PwaveOut[lhel1][lhel2]);
 	    }
 	    // FSR diagrams
 	    if(particles[2]->charged()) {
-	      SpinorBarWaveFunction off1 = FFPVertex_->
+	      SpinorBarWaveFunction off1 = oneLoopVertex_->
 		evaluate(q2,3,fout[lhel1].particle(),fout[lhel1],photon[ohel1]);
-	      diagF[0] = FFZVertex_->
+	      diagF[0] = oneLoopVertex_->
 		evaluate(q2,aout[lhel2],off1,ZwaveIn[ihel1][ihel2]);
-	      diagF[1] = FFPVertex_->
+	      diagF[1] = oneLoopVertex_->
 		evaluate(q2,aout[lhel2],off1,PwaveIn[ihel1][ihel2]);
-	      SpinorWaveFunction    off2 = FFPVertex_->
+	      SpinorWaveFunction    off2 = oneLoopVertex_->
 		evaluate(q2,3,aout[lhel2].particle(),aout[lhel2],photon[ohel1]);
-	      diagF[2] = FFZVertex_->
+	      diagF[2] = oneLoopVertex_->
 		evaluate(q2,off2,fout[lhel1],ZwaveIn[ihel1][ihel2]);
-	      diagF[3] = FFPVertex_->
+	      diagF[3] = oneLoopVertex_->
 		evaluate(q2,off2,fout[lhel1],PwaveIn[ihel1][ihel2]);
 	    }
 	    // totals
@@ -2144,7 +2289,7 @@ MEqq2gZ2ffPowhegQED::realQEDME(const cPDVector & particles,
   }
   // divided by 2 e^2
   for(unsigned int ix=0;ix<output.size();++ix)
-    output[ix] *= 0.5/norm(FFPVertex_->norm());
+    output[ix] *= 0.5/norm(oneLoopVertex_->norm());
   return output;
 }
 
