@@ -19,12 +19,13 @@ using namespace Herwig;
 namespace LT = Looptools;
 
 OneLoopFFAWZVertex::OneLoopFFAWZVertex() :
-  EWscheme_(2), mZ_(ZERO), mW_(ZERO),muZ2_(ZERO),
+  order_(0), EWscheme_(2), mZ_(ZERO), mW_(ZERO),muZ2_(ZERO),
   muZ_(ZERO),muW2_(ZERO),muW_(ZERO),mH_(ZERO),mH2_(ZERO),
   cw2_(0.),cw_(0.),sw2_(0.),sw_(0.),alphaEW_(0.),e_(0.),
   dZ_AA_(0.),dZ_ZA_(0.),dZ_W_(0.),dZ_AZ_(0.),dZ_ZZ_(0.),
-  dmuW2_(ZERO),dmuZ2_(ZERO),de_(0.),dsw_(0.)
-{}
+  dmuW2_(ZERO),dmuZ2_(ZERO),de_(0.),dsw_(0.) {
+  kinematics(true);
+}
 
 IBPtr OneLoopFFAWZVertex::clone() const {
   return new_ptr(*this);
@@ -34,14 +35,14 @@ IBPtr OneLoopFFAWZVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void OneLoopFFAWZVertex::setCoupling(Energy2,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
+void OneLoopFFAWZVertex::setCoupling(Energy2,tcPDPtr aa,tcPDPtr bb,tcPDPtr cc) {
   int iferm=abs(aa->id());
   assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
   // photon
   if(cc->id()==ParticleID::gamma) {
     norm(e_);
-    left (ef_[iferm]);
-    right(ef_[iferm]);
+    left (-ef_[iferm]);
+    right(-ef_[iferm]);
   }
   // Z boson
   else if(cc->id()==ParticleID::Z0) {
@@ -51,9 +52,17 @@ void OneLoopFFAWZVertex::setCoupling(Energy2,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
   }
   else
     assert(false);
+  // higher order piece if needed
+  if(order_!=0) {
+    pair<Complex,Complex> vertexCorrection = 
+      renormalisedVertex(invariant(2,2),aa,bb,cc);
+    left ( left()*vertexCorrection.first );
+    right(right()*vertexCorrection.second);
+  }
 }
 
 void OneLoopFFAWZVertex::doinit() {
+  Looptools::ltini();
   // PDG codes for the particles
   // the quarks
   for(int ix=1;ix<7;++ix) {
@@ -533,7 +542,6 @@ complex<Energy2> OneLoopFFAWZVertex::Sigma_T_W_Fermion(Energy2 k2) {
 			 +md2*B0dd+mu2*B0uu+0.5*sqr(mu2-md2)/k2*(Bkud-B0ud));
     }
     else {
-
       complex<InvEnergy2> DBkud = LT::DB0(0.,mu2/GeV2,md2/GeV2)/GeV2;
       output += 1./sw2_*(+0.5*(mu2+md2)*B0ud
 			 +md2*B0dd+mu2*B0uu+0.5*sqr(mu2-md2)*DBkud);
@@ -574,6 +582,7 @@ pair<Complex,Complex> OneLoopFFAWZVertex::
 renormalisedVertex(Energy2 sHat,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
   // get the gauge boson and the fermion
   int iferm = abs(aa->id());
+  assert((iferm>=1&&iferm<=5) || (iferm>=11&&iferm<=16));
   Complex Qf  = ef_[iferm];
   double I3f = iferm % 2 == 0 ? 0.5 : -0.5;
   int ibos  = cc->id();
@@ -607,12 +616,12 @@ renormalisedVertex(Energy2 sHat,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
     // first the unrenormalised vertex
     output.second = -0.25*alphaEW_*sqr(ef_[iferm])*sw2_/cw2_/Constants::pi*
       (2.-2./sHat*(muZ2_+2.*sHat)*B00Z+(3.*sHat+2.*muZ2_)/sHat*BS00
-       +2.*Complex(sqr(complex<Energy2>(muZ2_)+sHat)/sHat*C0Z0));
+       +2.*Complex(sqr(muZ2_+sHat)/sHat*C0Z0));
     output.first = 0.125*alphaEW_/Constants::pi/sHat/sw2_*
       (1./Qf*(2.*Qf*(2.*sHat+muW2_)*B00W
-			+(2.*I3f-Qf)*(2.*sHat+(3.*sHat+2.*muW2_)*BS00
-				      +2.*sqr(sHat+muW2_)*C0W0)
-			-2.*I3f*((sHat+2.*muW2_)*BSWW-2.*muW2_*(2.*sHat+muW2_)*CW0W))
+	      +(2.*I3f-Qf)*(2.*sHat+(3.*sHat+2.*muW2_)*BS00
+			    +2.*sqr(sHat+muW2_)*C0W0)
+	      -2.*I3f*((sHat+2.*muW2_)*BSWW-2.*muW2_*(2.*sHat+muW2_)*CW0W))
        +sqr(I3f-Qf*sw2_)/cw2_*
        (-4.*sHat+4.*(2.*sHat+muZ2_)*B00Z-2.*(3.*sHat+2.*muZ2_)*BS00
 	-4.*sqr(sHat+muZ2_)*C0Z0));
@@ -627,7 +636,7 @@ renormalisedVertex(Energy2 sHat,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
       output.first += 0.125*alphaEW_/Constants::pi/sHat/sw2_*
 	(-2.*((2.*sHat+muW2_)*(B00W-B0tW)+(3.*sHat+2.*muW2_)*(BS00-BStt)
 	      +2.*sqr(sHat+muW2_)*(C0W0-CtWt)
-	      +3.*muW2_*(2.*sHat+muW2_)*(C0W0-CWtW))
+	      +3.*muW2_*(2.*sHat+muW2_)*(CW0W-CWtW))
 	 -mt2/muW2_*((mt2+muW2_)*(B0tW+2.*BStt-3.*BSWW)
 		     +sHat*(BStt-1.5*BSWW-2.5)
 		     +(muW2_*(2.*sHat+3.*muW2_)-mt2*(mt2+sHat))*(2.*CtWt+3.*CWtW)));
@@ -638,9 +647,9 @@ renormalisedVertex(Energy2 sHat,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
   }
   // Z0
   else if(ibos==ParticleID::Z0) {    
-    output.second = -alphaEW_*sqr(ef_[iferm])*sw2_/cw2_/4./Constants::pi*
+    output.second = -0.25*alphaEW_*sqr(ef_[iferm])*sw2_/cw2_/Constants::pi*
       (2.-2./sHat*(muZ2_+2.*sHat)*B00Z+(3.*sHat+2.*muZ2_)/sHat*BS00
-       +2.*Complex(sqr(complex<Energy2>(muZ2_)+sHat)/sHat*C0Z0));
+       +2.*Complex(sqr(muZ2_+sHat)/sHat*C0Z0));
     output.first = 0.125*alphaEW_/Constants::pi/sHat/sw2_*
       (2.*(2.*sHat+muW2_)*B00W
        +1./(I3f-Qf*sw2_)*((I3f*cw2_-I3f*sw2_+Qf*sw2_)*(2.*sHat+(3.*sHat+2.*muW2_)*BS00
@@ -674,6 +683,8 @@ renormalisedVertex(Energy2 sHat,tcPDPtr aa,tcPDPtr,tcPDPtr cc) {
       - 2.*I3f*dsw_/sw_/cw_/gl_[iferm] ;
     output.second += de_ + dsw_/cw2_ + dZ_F_R + 0.5*dZ_ZZ_ + 0.5*dZ_AZ_/sw_*cw_;
   }
+  else
+    assert(false);
   return output;
 }
 
@@ -695,4 +706,184 @@ Complex OneLoopFFAWZVertex::deltaAlphaMZ() {
   }
   // multiply by prefactor and return
   return -alphaEW_/3./Constants::pi*(Pi0-real(PiMZ));
+}
+
+VectorWaveFunction 
+OneLoopFFAWZVertex::selfEnergyCorrection(tcPDPtr particle,
+					 const VectorWaveFunction & old) {
+  assert(old.direction()==intermediate);
+  long oldId = old.particle()->id();
+  long newId = particle->id();
+  Energy2 scale = old.m2();
+  Complex fact(0.);
+  if(abs(oldId)==ParticleID::Wplus) {
+    assert(oldId==newId);
+    fact = -SigmaHat_T_W(old.m2())/(old.m2()-muW2_);
+    particle = particle->CC();
+  }
+  else if(oldId==ParticleID::gamma&&
+	  newId==ParticleID::gamma) {
+    fact = -SigmaHat_T_AA(old.m2())/old.m2();
+  }
+  else if(oldId==ParticleID::gamma&&
+	  newId==ParticleID::Z0) {
+    fact = -SigmaHat_T_AZ(old.m2())/(old.m2()-muZ2_);
+  }
+  else if(oldId==ParticleID::Z0&&
+	  newId==ParticleID::gamma) {
+    fact = -SigmaHat_T_AZ(old.m2())/old.m2();
+  }
+  else if(oldId==ParticleID::Z0&&
+	  newId==ParticleID::Z0) {
+    fact = -SigmaHat_T_ZZ(old.m2())/(old.m2()-muZ2_);
+  }
+  else 
+    assert(false);
+  return VectorWaveFunction(old.momentum(),particle,
+			    fact*old.wave(),old.direction());
+}
+
+complex<InvEnergy2> 
+OneLoopFFAWZVertex::neutralCurrentBT(int hel1, int hel2,
+				     complex<Energy2> mV2,
+				     complex<Energy2> mVp2, 
+				     Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+				     Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+  assert(abs(hel1)==1&&abs(hel2)==1);
+  if(hel1==-hel2) {
+    complex<InvEnergy2> Cl = LT::C0C(double(ml2/GeV2),double(ml2/GeV2),double(sHat/GeV2),
+				     mV2/GeV2,double(ml2/GeV2),mVp2/GeV2)/GeV2;
+    complex<InvEnergy2> Cq = LT::C0C(double(mq2/GeV2),double(mq2/GeV2),double(sHat/GeV2),
+				     mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2)/GeV2;
+    complex<InvEnergy4> D = LT::D0C(double(mq2/GeV2),double(mq2/GeV2),
+				    double(ml2/GeV2),double(ml2/GeV2),
+				    double(sHat/GeV2),double(tHat/GeV2),
+				    mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2,
+				    double(ml2/GeV2))/GeV2/GeV2;
+    return -2.*(Cl+Cq-(tHat-mQ2)*D);
+  }
+  else {
+    return 1./sqr(uHat)*
+      (2.*uHat*(LT::B0C(double(sHat/GeV2),       mV2/GeV2 ,mVp2/GeV2)-
+		LT::B0C(double(tHat/GeV2),double(mQ2/GeV2),0.))
+       -tHat*(mQ2-mV2-mVp2-tHat+uHat)*
+       (LT::C0C(double(ml2/GeV2),double(mq2/GeV2),double(tHat/GeV2),
+		0.,mV2 /GeV2,double(mQ2/GeV2))+
+	LT::C0C(double(ml2/GeV2),double(mq2/GeV2),double(tHat/GeV2),
+		0.,mVp2/GeV2,double(mQ2/GeV2)))/GeV2
+       -(sqr(tHat)+sqr(uHat)+sHat*(mQ2-mV2-mVp2))*
+       (LT::C0C(double(ml2/GeV2),double(ml2/GeV2),double(sHat/GeV2),
+		mV2/GeV2,double(ml2/GeV2),mVp2/GeV2)+
+	LT::C0C(double(mq2/GeV2),double(mq2/GeV2),double(sHat/GeV2),
+		mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2))/GeV2
+       +(tHat*sqr(mV2+mVp2-mQ2-2.*sHat)
+	 +(uHat*(2.*uHat-mQ2)-2.*sqr(sHat))*(mV2+mVp2-mQ2-2.*sHat)
+	 -2.*uHat*(complex<Energy4>(sqr(uHat))-mV2*mVp2)
+	 + uHat*sHat*(complex<Energy2>(sHat)-mQ2)
+	 - sHat*sqr(sHat) )*
+       LT::D0C(double(mq2/GeV2),double(mq2/GeV2),
+	       double(ml2/GeV2),double(ml2/GeV2),
+	       double(sHat/GeV2),double(tHat/GeV2),
+	       mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2,double(ml2/GeV2))/GeV2/GeV2
+       );
+  }
+}
+
+vector<vector<complex<InvEnergy2> > > 
+OneLoopFFAWZVertex::neutralCurrentFBox(tcPDPtr q1, tcPDPtr q2,
+				       tcPDPtr l1, tcPDPtr l2,
+				       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+  assert(q1->id()==-q2->id());
+  int iq = abs(q1->id());
+  assert(iq<=5);
+  assert(l1->id()==-l2->id());
+  int il = abs(l1->id());
+  assert(il>=11 && il<=16);
+vector<vector<complex<InvEnergy2> > > output(2,vector<complex<InvEnergy2> >());
+  // B functions for the ZZ boxes 
+  complex<InvEnergy2> btZs = neutralCurrentBT(1, 1,muZ2_,muZ2_,ZERO,ZERO,ZERO,
+					      sHat,tHat,uHat);
+  complex<InvEnergy2> btZo = neutralCurrentBT(1,-1,muZ2_,muZ2_,ZERO,ZERO,ZERO,
+					      sHat,tHat,uHat);
+  complex<InvEnergy2> buZs = neutralCurrentBU(1, 1,muZ2_,muZ2_,ZERO,ZERO,ZERO,
+					      sHat,tHat,uHat);
+  complex<InvEnergy2> buZo = neutralCurrentBU(1,-1,muZ2_,muZ2_,ZERO,ZERO,ZERO,
+					      sHat,tHat,uHat);
+  // and for WW
+  complex<InvEnergy2> bW;
+  if(iq%2==0)
+    bW = neutralCurrentBU(1,1,muW2_,muW2_,ZERO,ZERO,ZERO,sHat,tHat,uHat);
+  else if(iq!=5)
+    bW = neutralCurrentBT(1,1,muW2_,muW2_,ZERO,ZERO,ZERO,sHat,tHat,uHat);
+  else
+    bW = neutralCurrentBT(1,1,muW2_,muW2_,sqr(fermionMasses_[6]),ZERO,ZERO,
+			  sHat,tHat,uHat);
+  // loop to calculate the coefficients 
+  for(int sigma=0;sigma<2;++sigma) {
+    Complex gq = sigma==0 ? gl_[iq] : gr_[iq];
+    for(int tau=0;tau<2;++tau) {
+      Complex gl = tau==0 ? gl_[il] : gr_[il];
+      // Z component
+      complex<InvEnergy2> value = sigma==tau ? btZs + buZs : btZo + buZo;   
+      value *= sqr(alphaEW_*gq*gl);
+      // W component
+      if(sigma==0&&tau==0)
+	value += 0.25*sqr(alphaEW_/sw2_)*bW;
+      // store the total
+      output[sigma].push_back(value);
+    }
+  }
+  return output;
+}
+
+void OneLoopFFAWZVertex::neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
+					  tcPDPtr l1, tcPDPtr l2,
+					  Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+  assert(q1->id()==-q2->id());
+  int iq = abs(q1->id());
+  assert(iq<=5);
+  assert(l1->id()==-l2->id());
+  int il = abs(l1->id());
+  assert(il>=11 && il<=16);
+  // vertex correction factors
+  tcPDPtr gamma = getParticleData(ParticleID::gamma);
+  tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+  pair<Complex,Complex> dlGamma = renormalisedVertex(sHat,l1,l2,gamma);
+  pair<Complex,Complex> dqGamma = renormalisedVertex(sHat,q1,q2,gamma);
+  pair<Complex,Complex> dlZ0    = renormalisedVertex(sHat,l1,l2,Z0   );
+  pair<Complex,Complex> dqZ0    = renormalisedVertex(sHat,q1,q2,Z0   );
+  Complex dlg[2] = {dlGamma.first,dlGamma.second};
+  Complex dlZ[2] = {dlZ0   .first,dlZ0   .second};
+  Complex dqg[2] = {dqGamma.first,dqGamma.second};
+  Complex dqZ[2] = {dqZ0   .first,dqZ0   .second};
+  // box pieces
+  vector<vector<complex<InvEnergy2> > > boxCoeff = 
+    neutralCurrentFBox(q1,q2,l1,l2,sHat,tHat,uHat);
+  // full result
+  Complex loSum(0.),EWSum(0.);
+  for(int sigma=0;sigma<2;++sigma) {
+    Complex gq = sigma==0 ? gl_[iq] : gr_[iq];
+    for(int tau=0;tau<2;++tau) {
+      Complex gl = tau==0 ? gl_[il] : gr_[il];
+      // helicity amplitude
+      Energy2 amp = sigma==tau ? 2.*uHat : 2.*tHat; 
+      Complex lo = ef_[iq]*ef_[il]+Complex(sHat/(sHat-muZ2_))*gq*gl;
+      // LO piece
+      Complex loAmp = -sqr(e_)*lo*amp/sHat;
+      // self energy piece
+      Complex self = sqr(e_)*amp*(ef_[iq]*ef_[il]        /sqr(  sHat      )*SigmaHat_T_AA(sHat)+
+				  gq     *gl             /sqr(  sHat-muZ2_)*SigmaHat_T_ZZ(sHat)-
+				  (ef_[il]*gq+ef_[iq]*gl)/sHat/(sHat-muZ2_)*SigmaHat_T_AZ(sHat));
+      // vertex piece
+      Complex vertex = -sqr(e_)*amp*(ef_[iq]*ef_[il]*(dqg[sigma]+dlg[tau])/sHat +
+				     gq     *gl     *(dqZ[sigma]+dlZ[tau])/(sHat-muZ2_));
+      // box
+      Complex box = boxCoeff[sigma][tau]*amp;
+      Complex loop = self+vertex+box;
+      EWSum += loAmp*conj(loop)+loop*conj(loAmp);
+      loSum += std::norm(loAmp);
+    }
+  }
+  cerr << "TEST OF EW CORRECTION LO: " << loSum/12. << " NLO :" << EWSum/12. << "\n";
+  if(abs(EWSum/loSum)>0.01) cerr << "testing ratio " << EWSum/loSum << "\n";
 }

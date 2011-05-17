@@ -29,6 +29,93 @@ public:
    */
   OneLoopFFAWZVertex();
   
+public:
+
+  /**
+   * Evaluate the off-shell vector coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell vector.
+   * @param out The ParticleData pointer for the off-shell vector.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param mass The mass of the off-shell particle if not taken from the ParticleData
+   * object
+   * @param width The width of the off-shell particle if not taken from the ParticleData
+   * object
+   */
+  virtual VectorWaveFunction evaluate(Energy2 q2,int iopt,tcPDPtr out,
+				      const SpinorWaveFunction & sp1,
+				      const SpinorBarWaveFunction & sbar2,
+				      complex<Energy> mass=-GeV, complex<Energy> width=-GeV) {
+    if(mass.real()<ZERO) {
+      long id = abs(out->id());
+      if(id==ParticleID::gamma)             mass = ZERO;
+      else if(out->id()==ParticleID::Z0)    mass = muZ_;
+      else if(out->id()==ParticleID::Wplus) mass = muW_;
+      else assert(false);
+      width = ZERO;
+    }
+    return FFVVertex::evaluate(q2,iopt,out,sp1,sbar2,mass,width);
+  }
+
+  /**
+   * Members to calculate the helicity amplitude expressions for vertices
+   * and off-shell particles.
+   */
+  //@{
+  /**
+   * Evalulate the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param vec3  The wavefunction for the vector.
+   */
+  virtual Complex evaluate(Energy2 q2,const SpinorWaveFunction & sp1,
+			   const SpinorBarWaveFunction & sbar2,
+			   const VectorWaveFunction & vec3) {
+    return FFVVertex::evaluate(q2,sp1,sbar2,vec3);
+  }
+
+  /**
+   * Evaluate the off-shell barred spinor coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell barred spinor.
+   * @param out The ParticleData pointer for the off-shell barred spinor.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param vec3  The wavefunction for the vector.
+   * @param mass The mass of the off-shell particle if not taken from the ParticleData
+   * object
+   * @param width The width of the off-shell particle if not taken from the ParticleData
+   * object
+   */
+  virtual SpinorBarWaveFunction evaluate(Energy2 q2,int iopt,tcPDPtr out,
+					 const SpinorBarWaveFunction & sbar2,
+					 const VectorWaveFunction & vec3,
+					 complex<Energy> mass=-GeV,
+					 complex<Energy> width=-GeV) {
+    return FFVVertex::evaluate(q2,iopt,out,sbar2,vec3,mass,width);
+  }
+
+  /**
+   * Evaluate the off-shell spinor coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell spinor.
+   * @param out The ParticleData pointer for the off-shell spinor.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param vec3  The wavefunction for the vector.
+   * @param mass The mass of the off-shell particle if not taken from the ParticleData
+   * object
+   * @param width The width of the off-shell particle if not taken from the ParticleData
+   * object
+   */
+  virtual SpinorWaveFunction evaluate(Energy2 q2,int iopt,tcPDPtr out,
+				      const SpinorWaveFunction & sp1,
+				      const VectorWaveFunction & vec3,
+				      complex<Energy> mass=-GeV,
+				      complex<Energy> width=-GeV) {
+    return FFVVertex::evaluate(q2,iopt,out,sp1,vec3,mass,width);
+  }
+
   /**
    * Calculate the couplings. 
    * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
@@ -38,9 +125,46 @@ public:
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
-public:
+  /**
+   *  Whether to return the LO result or vertex correction
+   */
+  void setOrder(unsigned int order) {
+    assert(order<=1);
+    order_ = order;
+  }
+
+  VectorWaveFunction selfEnergyCorrection(tcPDPtr particle,
+					  const VectorWaveFunction & old);
+
+  complex<InvEnergy2> neutralCurrentBT(int hel1, int hel2,
+				       complex<Energy2> mV2,
+				       complex<Energy2> mVp2, 
+				       Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+				       Energy2 sHat, Energy2 tHat, Energy2 uHat);
+  
+  complex<InvEnergy2> neutralCurrentBU(int hel1, int hel2,
+				       complex<Energy2> mV2,
+				       complex<Energy2> mVp2, 
+				       Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+				       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+    return -neutralCurrentBT(hel1,-hel2,mV2,mVp2,mQ2,mq2,ml2,sHat,uHat,tHat);
+  }
+
+  vector<vector<complex<InvEnergy2> > > 
+  neutralCurrentFBox(tcPDPtr q1, tcPDPtr q2,
+		     tcPDPtr l1, tcPDPtr l2,
+		     Energy2 sHat, Energy2 tHat, Energy2 uHat);
 
   /**
+   *  Test of the matrix element for Drell-Yan
+   */
+  void neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
+			tcPDPtr l1, tcPDPtr l2,
+			Energy2 sHat, Energy2 tHat, Energy2 uHat);
+  
+public:
+  
+    /**
    * Renormalisated self energies
    */
   //@{
@@ -331,6 +455,11 @@ private:
   OneLoopFFAWZVertex & operator=(const OneLoopFFAWZVertex &);
 
 private:
+
+  /**
+   *  The order to return
+   */
+  unsigned int order_;
 
   /**
    * Parameters for the EW corrections
