@@ -15,6 +15,7 @@
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -299,8 +300,230 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   Singular output;
   output.eps2 = -2;
   output.eps1 = -3;
-  output.finite =-8.+sqr(Constants::pi);
-  output.finite *= loWeight();
+
+  // Finite bit for QCD-only virtual corrections
+  //output.finite =-8.+sqr(Constants::pi);
+  //output.finite *= loWeight();
+
+
+
+  // average of left/right squark masses
+  tcPDPtr squarkL, squarkR;
+  if(((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.
+      && mePartonData()[0]->iCharge()>0.) ||
+     ((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())<0.
+      && mePartonData()[0]->iCharge()<0.)){
+    squarkL = getParticleData(1000000+abs(mePartonData()[0]->id()));
+    squarkR = getParticleData(2000000+abs(mePartonData()[0]->id()));
+  }
+  else {if(((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.
+      && mePartonData()[1]->iCharge()>0.) ||
+     ((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())<0.
+      && mePartonData()[1]->iCharge()<0.)){
+    squarkL = getParticleData(1000000+abs(mePartonData()[1]->id()));
+    squarkR = getParticleData(2000000+abs(mePartonData()[1]->id()));
+  }
+//   else {if (abs(mePartonData()[0]->id())%2==0) {
+//       squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
+//       squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
+//     } else {
+//       squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
+//       squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
+//     }
+  }
+  Energy  ms = 0.5*(squarkL->mass()+squarkR->mass());
+     // boson mass
+  Energy2 mw2 = sqr(Wplus_->mass());
+  // mandelstam variables
+  Energy2 sz = sHat()-mw2;
+  // I
+  Complex ii(0.,1.); 
+  // couplings of the vector boson
+//   FFVVertexPtr vertex = dynamic_ptr_cast<FFVVertexPtr>(FFPVertex_);
+//   vertex->setCoupling(scale(),mePartonData()[0]->CC(),
+// 		      mePartonData()[1]->CC(),gamma_);
+//   double ee = vertex->electroMagneticCoupling(scale());
+//   double v1 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
+  double v1 = 0.;
+  FFVVertexPtr vertex = dynamic_ptr_cast<FFVVertexPtr>(FFWVertex_);
+  tcPDPtr Wboson;
+  if(mePartonData()[2]->positive() || mePartonData()[3]->positive())
+    Wboson = Wplus_;
+  else Wboson = Wminus_;
+  vertex->setCoupling(scale(),mePartonData()[0]->CC(),
+		      mePartonData()[1]->CC(),Wboson);
+  double ee = vertex->electroMagneticCoupling(scale());
+  double v2 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
+  double a2 = 0.5*real((vertex->left()-vertex->right())*vertex->norm())/ee;
+  vertex = dynamic_ptr_cast<FFVVertexPtr>(CNWVertex_);
+  vertex->setCoupling(scale(),mePartonData()[2],
+		      mePartonData()[3],Wboson);
+  ee = vertex->electroMagneticCoupling(scale());
+  //  double  v1w = mePartonData()[2]->id() == -mePartonData()[3]->id() ? -1. : 0.;
+  double v1w = 0.;
+  Complex v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;
+  Complex a2w =  0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
+
+  // left squark couplings
+  vector<Complex> Cl(4,0.);
+  FFSVertexPtr vertex2;
+  vertex2 = mePartonData()[2]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkL);
+  ee = vertex2->electroMagneticCoupling(scale());
+  Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
+  vertex2 = mePartonData()[3]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL->CC());
+  Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
+  
+  tcPDPtr ccQuark;
+  tcPDPtr ccSquark=getParticleData(1000000+abs(mePartonData()[0]->id()));
+  if (abs(mePartonData()[0]->id())%2==0) {
+    ccQuark = getParticleData(mePartonData()[0]->id()-1);
+  }
+  else {
+    ccQuark = getParticleData(mePartonData()[0]->id()+1);
+  }
+  vertex2 = mePartonData()[2]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),ccQuark->CC(),mePartonData()[2],ccSquark);
+  ee = vertex2->electroMagneticCoupling(scale());
+  Cl[2] = -0.5*vertex2->left() *vertex2->norm()/ee;
+  vertex2 = mePartonData()[3]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),ccQuark,mePartonData()[3],ccSquark->CC());
+  Cl[3] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
+
+
+//   if(mePartonData()[0]->id()%2!=0) {
+//     swap(Cl[2],Cl[0]);
+//     swap(Cl[3],Cl[1]);
+//   }
+
+  // right squark couplings
+  vector<Complex> Cr(4,0.);
+  vertex2 = mePartonData()[3]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+
+  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkR->CC());
+  Cr[1] =  -0.5*conj(vertex2->left()*vertex2->norm())/ee;
+
+  ccSquark=getParticleData(2000000+abs(mePartonData()[0]->id()));
+  vertex2->setCoupling(scale(),ccQuark,mePartonData()[3],ccSquark->CC());
+  Cr[3] =  -0.5*conj(vertex2->left()*vertex2->norm())/ee;
+
+  // s-channel
+  vector<double> Cs(4,0.);
+  Cs[0] = sqr(v1*v1w) + 2.*sHat() * real( v1*v1w*v2*v2w )/sz +
+    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) + norm(a2w) );
+  Cs[1] = sqr(v1*v1w) + 2.0 * sHat() * real( v1*v1w*v2*v2w )/sz +
+    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) - norm(a2w) );
+  Cs[2] = real( v1*v1w*a2*a2w ) +
+    sHat()/sz*2.*a2*v2*real(a2w*conj(v2w));
+  Cs[3] = 0.;
+  // t-channel
+  vector<Complex> Ct(4,0.);
+  Ct[0] = sHat()/sz*( v2+a2 )*( v2w-a2w );
+  Ct[1] = sHat()/sz*( v2+a2 )*( v2w+a2w );
+  Ct[2] = sHat()/sz*( v2-a2 )*( v2w+a2w );
+  Ct[3] = sHat()/sz*( v2-a2 )*( v2w-a2w );
+  Ct[0] += v1*v1w;
+  Ct[1] += v1*v1w;
+  Ct[2] += v1*v1w;
+  Ct[3] += v1*v1w;
+
+  // CC case
+//   Cvx(1) = vv(ic1,1) / uu(ic1,1)                   ! set {Clot,Cupt,Cupu,Clou}
+//   Cvx(2) = vv(ic2,1) / uu(ic2,1)
+//   Cvx(3) = uu(ic1,1) / vv(ic1,1)
+//   Cvx(4) = uu(ic2,1) / vv(ic2,1) 
+ 
+//   vector<Complex> Cv(4,0.);
+//   Cv[0] = Cl[2] / Cl[0];
+//   Cv[1] = Cl[3] / Cl[1];
+//   Cv[2] = Cl[0] / Cl[2];
+//   Cv[3] = Cl[1] / Cl[3];
+
+// NC case
+//        Cvx(1) = vv(ic,1) / uu(ic,1) 
+//        Cvx(2) = conjg(Clx(2)) / Clx(2)
+//        Cvx(3) = uu(ic,1) / vv(ic,1)
+//        Cvx(4) = conjg(Clx(4)) / Clx(4)        
+
+
+  vector<Complex> Cv(4,0.);
+  Cv[0] = Cl[2] / Cl[0];
+  Cv[1] = conj(Cl[1]) / Cl[1];
+  Cv[2] = Cl[0] / Cl[2];
+  Cv[3] = conj(Cl[3]) / Cl[3];
+
+
+  cout << "\n" << endl;
+  cout <<   Cl[0] << "\t" << Cl[1] << "\t" << Cl[2] << "\t" << Cl[3] << endl;
+  cout <<   Cr[0] << "\t" << Cr[1] << "\t" << Cr[2] << "\t" << Cr[3] << endl;
+  cout <<   Cs[0] << "\t" << Cs[1] << "\t" << Cs[2] << "\t" << Cs[3] << endl;
+  cout <<   Ct[0] << "\t" << Ct[1] << "\t" << Ct[2] << "\t" << Ct[3] << endl;
+  cout <<   Cv[0] << "\t" << Cv[1] << "\t" << Cv[2] << "\t" << Cv[3] << endl;
+  cout << "\n" << endl;
+
+
+
+
+//     if (iout==3) then                                                          ! NC+
+//        Cl(1:4) = Clx(1:4)
+//        Cr(1:4) = Crx(1:4)
+//        Ct(1:4) = Ctx(1:4)
+//        Cv(1:2) = Cvx(2:1:-1)
+//        Cv(3:4) = Cvx(4:3:-1) 
+//     else if (iout==4) then                                                     ! NC-
+//        Cl(1:3:2) = Clx(3:1:-2)
+//        Cl(2:4:2) = Clx(4:2:-2)
+//        Cr(1:3:2) = Crx(3:1:-2)
+//        Cr(2:4:2) = Crx(4:2:-2)
+//        Ct(1:2:1) =-Ctx(2:1:-1)
+//        Ct(3:4:1) =-Ctx(4:3:-1)
+//        Cv(1:2) = Cvx(2:1:-1)
+//        Cv(3:4) = Cvx(4:3:-1) 
+
+
+  if((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.) {
+    swap(Cv[0],Cv[1]);
+    swap(Cv[2],Cv[3]);
+  } else {
+    swap(Cl[0],Cl[2]);
+    swap(Cl[1],Cl[3]);
+
+    swap(Cr[0],Cr[2]);
+    swap(Cr[1],Cr[3]);
+
+    swap(Ct[0],Ct[1]);
+    swap(Ct[2],Ct[3]);
+    Ct[0] *= -1.;
+    Ct[1] *= -1.;
+    Ct[2] *= -1.;
+    Ct[3] *= -1.;
+
+    swap(Cv[0],Cv[1]);
+    swap(Cv[2],Cv[3]);
+
+  }
+
+  // weird rescaling factors
+  for(unsigned int ix=0;ix<4;++ix) {
+    Cs[ix] *= sqr(4.*Constants::pi);
+    Ct[ix] *=     4.*Constants::pi ;
+    Cl[ix] *= 2.0 * sqrt(Constants::pi);
+    Cr[ix] *= 2.0 * sqrt(Constants::pi);
+  }
+  // finite piece
+  output.finite = finiteVirtual(ms,mw2,Cl,Cr,Cs,Ct,Cv);
+
   return output;
 }
 
