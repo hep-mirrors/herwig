@@ -155,12 +155,22 @@ public:
 		     tcPDPtr l1, tcPDPtr l2,
 		     Energy2 sHat, Energy2 tHat, Energy2 uHat);
 
+  Complex gZboxesF(Energy2 sHat, Energy2 tHat,
+		   Energy2 uHat) const;
+
   /**
    *  Test of the matrix element for Drell-Yan
    */
-  void neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
+  void neutralCurrentEWME(tcPDPtr q1, tcPDPtr q2,
 			tcPDPtr l1, tcPDPtr l2,
 			Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  /**
+   *  Test of the matrix element for Drell-Yan
+   */
+  double neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
+			     tcPDPtr l1, tcPDPtr l2,
+			     Energy2 sHat, Energy2 tHat, Energy2 uHat);
 
   /**
    *  Call the Looptools cache

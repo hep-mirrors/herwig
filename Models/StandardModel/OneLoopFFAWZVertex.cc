@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Looptools/clooptools.h"
+#include "Herwig++/Utilities/Maths.h"
 
 using namespace Herwig;
 namespace LT = Looptools;
@@ -794,12 +795,13 @@ OneLoopFFAWZVertex::neutralCurrentFBox(tcPDPtr q1, tcPDPtr q2,
 				       tcPDPtr l1, tcPDPtr l2,
 				       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
   assert(q1->id()==-q2->id());
-  int iq = abs(q1->id());
+  int iq = q1->id();
   assert(iq<=5);
   assert(l1->id()==-l2->id());
-  int il = abs(l1->id());
+  int il = l1->id();
   assert(il>=11 && il<=16);
-vector<vector<complex<InvEnergy2> > > output(2,vector<complex<InvEnergy2> >());
+  assert(iq>0&&il>0);
+  vector<vector<complex<InvEnergy2> > > output(2,vector<complex<InvEnergy2> >());
   // B functions for the ZZ boxes 
   complex<InvEnergy2> btZs = neutralCurrentBT(1, 1,muZ2_,muZ2_,ZERO,ZERO,ZERO,
 					      sHat,tHat,uHat);
@@ -836,15 +838,16 @@ vector<vector<complex<InvEnergy2> > > output(2,vector<complex<InvEnergy2> >());
   return output;
 }
 
-void OneLoopFFAWZVertex::neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
+void OneLoopFFAWZVertex::neutralCurrentEWME(tcPDPtr q1, tcPDPtr q2,
 					  tcPDPtr l1, tcPDPtr l2,
 					  Energy2 sHat, Energy2 tHat, Energy2 uHat) {
   assert(q1->id()==-q2->id());
-  int iq = abs(q1->id());
+  int iq = q1->id();
   assert(iq<=5);
   assert(l1->id()==-l2->id());
-  int il = abs(l1->id());
+  int il = l1->id();
   assert(il>=11 && il<=16);
+  assert(iq>0&&il>0);
   // vertex correction factors
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   tcPDPtr Z0    = getParticleData(ParticleID::Z0);
@@ -871,9 +874,10 @@ void OneLoopFFAWZVertex::neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
       // LO piece
       Complex loAmp = -sqr(e_)*lo*amp/sHat;
       // self energy piece
-      Complex self = sqr(e_)*amp*(ef_[iq]*ef_[il]        /sqr(  sHat      )*SigmaHat_T_AA(sHat)+
-				  gq     *gl             /sqr(  sHat-muZ2_)*SigmaHat_T_ZZ(sHat)-
-				  (ef_[il]*gq+ef_[iq]*gl)/sHat/(sHat-muZ2_)*SigmaHat_T_AZ(sHat));
+      Complex self = sqr(e_)*amp*
+	(ef_[iq]*ef_[il]        /sqr(  sHat      )*SigmaHat_T_AA(sHat)+
+	 gq     *gl             /sqr(  sHat-muZ2_)*SigmaHat_T_ZZ(sHat)-
+	 (ef_[il]*gq+ef_[iq]*gl)/sHat/(sHat-muZ2_)*SigmaHat_T_AZ(sHat));
       // vertex piece
       Complex vertex = -sqr(e_)*amp*(ef_[iq]*ef_[il]*(dqg[sigma]+dlg[tau])/sHat +
 				     gq     *gl     *(dqZ[sigma]+dlZ[tau])/(sHat-muZ2_));
@@ -890,4 +894,111 @@ void OneLoopFFAWZVertex::neutralCurrentME(tcPDPtr q1, tcPDPtr q2,
 
 void OneLoopFFAWZVertex::clearCache() {
   LT::clearcache();
+}
+
+// this returns the F function, TIMES (s-m2zc), with m2zc being the complex mass!
+Complex OneLoopFFAWZVertex::gZboxesF(Energy2 sHat, Energy2 tHat,
+				     Energy2 uHat) const {
+  Complex luot = log( uHat/tHat), ltos  = log(-tHat/sHat);
+  Complex luos = log(-uHat/sHat), lm2ot = log(-muZ2_/tHat);
+  Complex lomsom2 = log((muZ2_-sHat)/muZ2_);
+  Complex lis = Math::Li2(1.-sHat/muZ2_);
+  Complex lit = Math::Li2(1.+tHat/muZ2_);
+  Complex liu = Math::Li2(1.+uHat/muZ2_);
+  return ( 2.*lomsom2*luot - lit + liu - 0.5*sqr(ltos) + 0.5*sqr(luos) ) +
+    (sHat-muZ2_)*(uHat-tHat-muZ2_)/sqr(uHat) * ( -lomsom2*ltos - lit + lis ) +
+    (sHat-muZ2_)/uHat * ( (1.-muZ2_/sHat)*lomsom2 + lm2ot );
+}
+
+double OneLoopFFAWZVertex::neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
+					       tcPDPtr l1, tcPDPtr l2,
+					       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+  // extract quark and lepton id
+  assert(q1->id()==-q2->id());
+  int iq = q1->id();
+  assert(iq<=5);
+  assert(l1->id()==-l2->id());
+  int il = l1->id();
+  assert(il>=11 && il<=16);
+  assert(iq>0&&il>0);
+  // logarithms
+  double ltos = log(-tHat/sHat), ltou = log(tHat/uHat);
+  double luos = log(-uHat/sHat), luot = log(uHat/tHat);
+  /////////// gamma/gamma, for q qbar->lep lepbar ///////////////
+  // gamma/gamma boxes helicity amplitudes, WITHOUT the 1/s prefactor !!
+  double REcgg_LL = -sHat/uHat*ltos*( 2. + (sHat+2.*tHat)/uHat*ltos );
+  double IMcgg_LL = Constants::twopi/uHat*( - sHat + 2.*ltou*uHat
+					    - sHat*(sHat+2*tHat)/uHat*ltos );
+  Complex cgg_LL(REcgg_LL,IMcgg_LL);
+  double REcgg_LR = -sHat/tHat*luos*( 2. + (sHat+2.*uHat)/tHat*luos );
+  double IMcgg_LR = Constants::twopi/tHat*( - sHat + 2.*luot*tHat 
+					    - sHat*(sHat+2*uHat)/tHat*luos );
+  Complex cgg_LR(REcgg_LR,IMcgg_LR);
+  Complex cgg_LL_eps=4.*ltou;
+  Complex cgg_LR_eps=4.*ltou;
+  /////////// gamma/Z, for q qbar->lep lepbar /////////////////
+  // gamma/Z boxes helicity amplitudes, WITHOUT the 1/(s-muZ2_) prefactor !!
+  Complex cgZ_LL     = 4.*gZboxesF(sHat,tHat,uHat);
+  Complex cgZ_LR     = 4.*gZboxesF(sHat,uHat,tHat);
+  Complex cgZ_LL_eps = 4.*ltou;
+  Complex cgZ_LR_eps = 4.*ltou;
+  // tree-level helicity amplitudes
+  // 4 pi is needed in trees to factor out alphaEM
+  // following amplitudes valid only if qqbar -> leplepbar
+  complex<InvEnergy2> prop(1./(sHat-muZ2_));
+  Complex tree[2][2];
+  tree[0][0]= 2.*sqr(e_)*uHat*(ef_[iq]*ef_[il]/sHat + gl_[iq]*gl_[il]*prop);
+  tree[1][1]= 2.*sqr(e_)*uHat*(ef_[iq]*ef_[il]/sHat + gr_[iq]*gr_[il]*prop);
+  tree[0][1]= 2.*sqr(e_)*tHat*(ef_[iq]*ef_[il]/sHat + gl_[iq]*gr_[il]*prop);
+  tree[1][0]= 2.*sqr(e_)*tHat*(ef_[iq]*ef_[il]/sHat + gr_[iq]*gl_[il]*prop);
+  // virtual helicity amplitudes (adding gamma/gamma and gamma/Z)
+  // following amplitudes valid only if qqbar -> leplepbar
+  Complex virt[2][2],virt_eps[2][2];
+  virt[0][0]=-2.*uHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LL/sHat 
+		       +ef_[iq]*ef_[il]*gl_[iq]*gl_[il] *cgZ_LL*prop);
+  virt[1][1]=-2.*uHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LL/sHat 
+		       +ef_[iq]*ef_[il]*gr_[iq]*gr_[il] *cgZ_LL*prop);
+  virt[0][1]=-2.*tHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LR/sHat 
+		       +ef_[iq]*ef_[il]*gl_[iq]*gr_[il] *cgZ_LR*prop);
+  virt[1][0]=-2.*tHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LR/sHat 
+		       +ef_[iq]*ef_[il]*gr_[iq]*gl_[il] *cgZ_LR*prop);
+  virt_eps[0][0]=-2.*uHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LL_eps/sHat 
+			   +ef_[iq]*ef_[il]*gl_[iq]*gl_[il] *cgZ_LL_eps*prop);
+  virt_eps[1][1]=-2.*uHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LL_eps/sHat 
+			   +ef_[iq]*ef_[il]*gr_[iq]*gr_[il] *cgZ_LL_eps*prop);
+  virt_eps[0][1]=-2.*tHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LR_eps/sHat 
+			   +ef_[iq]*ef_[il]*gl_[iq]*gr_[il] *cgZ_LR_eps*prop);
+  virt_eps[1][0]=-2.*tHat*(sqr(ef_[iq])*sqr(ef_[il])    *cgg_LR_eps/sHat 
+			   +ef_[iq]*ef_[il]*gr_[iq]*gl_[il] *cgZ_LR_eps*prop);
+  // interfere with the tree-level
+  Complex total_fin(0.),total_eps(0.);
+  double treesq=0.;
+  for(unsigned int helq=0;helq<2;++helq) {
+    for(unsigned int hell=0;hell<2;++hell) {
+      total_fin += (virt[helq][hell]*conj(tree[helq][hell])+
+		    conj(virt[helq][hell])*tree[helq][hell]);
+      total_eps += (virt_eps[helq][hell]*conj(tree[helq][hell])+
+		    conj(virt_eps[helq][hell])*tree[helq][hell]);
+      treesq    += std::norm(tree[helq][hell]);
+    }
+  }
+  // need to think about the right alpha here
+  treesq /= 12.;
+  total_fin  = total_fin * sqr(alphaEW_)/12.;
+  total_eps  = total_eps * sqr(alphaEW_)/12.;
+  // now treesq is exactly equal to loME_
+  // now total_fin is the virtual, with prefactor (4pi)^ep/Gamma(1-ep) in front.
+  // integrated dipoles
+  double Int_eps = + 4.*alphaEW_/Constants::twopi*real(ef_[iq]*ef_[il])*
+    ltou*treesq;
+  double Int_fin = - 2.*alphaEW_/Constants::twopi*real(ef_[iq]*ef_[il])*
+    (sqr(ltos)-sqr(luos)+3.*luot)*treesq;
+  // now Int_fin is the integrated IF dipoles, and Int_eps the corresponding pole
+  // subtract integrated dipoles, first checking numerical cancellation of single pole
+  if(abs(Int_eps+total_eps)>0.0001) {
+    cout<<"WARNING: pole doesn't cancel "<<endl;
+  }
+  double vfin=abs(total_fin)+Int_fin;
+  // divide by the tree-level squared, and add the result to the output
+  return vfin/treesq/alphaEW_;
 }
