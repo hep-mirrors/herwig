@@ -117,6 +117,31 @@ finiteVirtual(Energy ms, Energy2 mb2,
     b_ux2 = only_u*3.*real( QBB_uxs + only_d*QBB_uxu );
     b_um2 = only_u*3.*real( QBB_umt + QBB_ums );
   }
+  else {
+    // up-type incoming +ve chargino production
+    if(mePartonData()[0]->id()%2==0) {
+      b_s   = 3.*real( QBB_ss  + QBB_st   + QBB_su );
+      b_tx  = 3.*real( QBB_txs + QBB_txt );
+      b_tm  = 3.*real( QBB_tmu + QBB_tms );
+      b_ux  = 3.*real( QBB_uxs + QBB_uxu );
+      b_um  = 3.*real( QBB_umt + QBB_ums );
+      b_tx4 = 3.*real( Cl[3]/Cl[1]   * (QBB_txs + QBB_txt) );
+      b_tm4 = 3.*real( Cl[3]/Cl[1]   * (QBB_tmu + QBB_tms) );
+      b_ux2 = 3.*real( conj(Cl[1]/Cl[3]) * (QBB_uxs + QBB_uxu) );
+      b_um2 = 3.*real( conj(Cl[1]/Cl[3]) * (QBB_umt + QBB_ums) );
+    }
+    else {
+      b_s   = 3.*real( QBB_ss  + QBB_st   + QBB_su );
+      b_tx  = 3.*real( QBB_txs + QBB_txt );
+      b_tm  = 3.*real( QBB_tmu + QBB_tms );
+      b_ux  = 3.*real( QBB_uxs + QBB_uxu );
+      b_um  = 3.*real( QBB_umt + QBB_ums );
+      b_tx4 = 3.*real( conj(Cl[3]/Cl[1]) * (QBB_txs + QBB_txt) );
+      b_tm4 = 3.*real( conj(Cl[3]/Cl[1]) * (QBB_tmu + QBB_tms) );
+      b_ux2 = 3.*real( Cl[1]/Cl[3]   * (QBB_uxs + QBB_uxu) );
+      b_um2 = 3.*real( Cl[1]/Cl[3]   * (QBB_umt + QBB_ums) );
+    }
+  }
   b_t  = b_tx  + b_tm;
   b_u  = b_ux  + b_um; 
 
