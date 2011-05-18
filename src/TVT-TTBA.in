@@ -15,41 +15,39 @@ set /Herwig/Particles/t:Synchronized Not_synchronized
 set /Herwig/Particles/tbar:Synchronized Not_synchronized
 
 
-set /Herwig/Particles/t/t->b,bbar,c;:OnOff On
-set /Herwig/Particles/t/t->b,c,dbar;:OnOff On
-set /Herwig/Particles/t/t->b,c,sbar;:OnOff On
-set /Herwig/Particles/t/t->b,sbar,u;:OnOff On
-set /Herwig/Particles/t/t->b,u,dbar;:OnOff On
-set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff Off
-set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff Off
-set /Herwig/Particles/t/t->nu_tau,tau+,b;:OnOff Off
-
-set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff Off
-set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff Off
-set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff Off
-set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff On
-set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff On
-set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
-
-#set /Herwig/Particles/t/t->b,bbar,c;:OnOff Off
-#set /Herwig/Particles/t/t->b,c,dbar;:OnOff Off
-#set /Herwig/Particles/t/t->b,c,sbar;:OnOff Off
-#set /Herwig/Particles/t/t->b,sbar,u;:OnOff Off
-#set /Herwig/Particles/t/t->b,u,dbar;:OnOff Off
-#set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff On
-#set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff On
+#set /Herwig/Particles/t/t->b,bbar,c;:OnOff On
+#set /Herwig/Particles/t/t->b,c,dbar;:OnOff On
+#set /Herwig/Particles/t/t->b,c,sbar;:OnOff On
+#set /Herwig/Particles/t/t->b,sbar,u;:OnOff On
+#set /Herwig/Particles/t/t->b,u,dbar;:OnOff On
+#set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff Off
+#set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff Off
 #set /Herwig/Particles/t/t->nu_tau,tau+,b;:OnOff Off
-
-#set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff On
-#set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff On
-#set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff On
-#set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff On
-#set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff On
-#set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff Off
-#set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff Off
+#set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff On
+#set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff On
 #set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
+
+set /Herwig/Particles/t/t->b,bbar,c;:OnOff Off
+set /Herwig/Particles/t/t->b,c,dbar;:OnOff Off
+set /Herwig/Particles/t/t->b,c,sbar;:OnOff Off
+set /Herwig/Particles/t/t->b,sbar,u;:OnOff Off
+set /Herwig/Particles/t/t->b,u,dbar;:OnOff Off
+set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff On
+set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff On
+set /Herwig/Particles/t/t->nu_tau,tau+,b;:OnOff Off
+set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff On
+set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff On
+set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff On
+set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff On
+set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff On
+set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff Off
+set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff Off
+set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
 
 
 cd /Herwig/Generators
@@ -64,6 +62,8 @@ set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 # Example hard process: Incoming proton, outgoing leptoquarks
 cd /Herwig/NewPhysics
 
+set HPConstructor:Processes Exclusive
+
 
 insert HPConstructor:Incoming 0 /Herwig/Particles/u
 insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
@@ -75,9 +75,9 @@ insert HPConstructor:Incoming 6 /Herwig/Particles/c
 insert HPConstructor:Incoming 7 /Herwig/Particles/cbar
 insert HPConstructor:Incoming 8 /Herwig/Particles/g
 
-insert HPConstructor:ExcludedExternal 0 /Herwig/Particles/Wp
-insert HPConstructor:ExcludedExternal 1 /Herwig/Particles/Wpbar
-insert HPConstructor:ExcludedExternal 1 /Herwig/Particles/Zp
+# Comment out the following line if Axigluon model is selected
+insert /Herwig/NewPhysics/HPConstructor:Excluded 0 /Herwig/Particles/Ag
+
 
 insert HPConstructor:Outgoing 0 /Herwig/Particles/t
 insert HPConstructor:Outgoing 1 /Herwig/Particles/tbar

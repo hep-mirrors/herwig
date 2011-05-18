@@ -14,17 +14,36 @@
 ###################################################
 cd /Herwig/Particles
 
+# W prime model
+
 create /ThePEG/ParticleData Wp
 setup Wp 34 Wp 400.0 0.0 0.0 0.0 3 0 3 0
 create /ThePEG/ParticleData Wpbar
 setup Wpbar -34 Wpbar 400.0 0.0 0.0 0.0 -3 0 3 0
 makeanti Wp Wpbar
 
+# Abelian Z prime model
+
 create /ThePEG/ParticleData Zp
 setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 0
 
+# Axigluon model
+
 create /ThePEG/ParticleData Ag
-setup Ag 63 Ag 2000.0 0.0 0.0 0.0 0 8 3 0
+setup Ag 63 Ag 2000.0 0.0 0 0.0 0 8 3 0
+
+
+# Non-Abelian SU(2)_X model
+
+create /ThePEG/ParticleData Vz
+setup Vz 70 Vz 80.0 0.0 0.0 0.0 0 0 3 0
+
+create /ThePEG/ParticleData Yp
+setup Yp 71 Yp 200.0 0.0 0.0 0.0 0 0 3 0
+create /ThePEG/ParticleData Ym
+setup Ym -71 Ym 200.0 0.0 0.0 0.0 0 0 3 0
+makeanti Yp Ym
+
 
 
 ###################################################
@@ -41,8 +60,8 @@ set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 
-# Select the active model (0: W', 1: Z', 2: Axigluon, 3: non-Abelian symm.)
-set Model:modelselect 2
+# Select the active model (0: W', 1: Z', 2: Axigluon, 3: non-Abelian SU(2)_X)
+set Model:modelselect 3
 
 # W prime couplings 
 set Model:WPTDLCoupling 0.0
@@ -57,11 +76,14 @@ set Model:ZPCCLCoupling 0.0
 set Model:ZPCCRCoupling 0.1
 
 # Axigluon couplings
-
 set Model:AGQQLCoupling -3.0
 set Model:AGQQRCoupling 3.0
 set Model:AGTTLCoupling 3.0
 set Model:AGTTRCoupling -3.0
+
+# SU(2)_X parameters
+set Model:SU2Xcostheta 0.95
+set Model:SU2Xalpha 0.060
 
 ###################################################
 #
@@ -75,6 +97,8 @@ library HwTTbAModel.so
 create Herwig::TTbAModelWPTDVertex TTbA_WPTDVertex
 create Herwig::TTbAModelZPQQVertex TTbA_ZPQQVertex
 create Herwig::TTbAModelAGQQVertex TTbA_AGQQVertex
+create Herwig::TTbAModelSU2XVertex TTbA_SU2XVertex
+
 
 cd /Herwig/NewPhysics/TTbA
 # SM vertices
@@ -98,6 +122,8 @@ set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 set Model:Vertex/WPTD  /Herwig/Vertices/TTbA/TTbA_WPTDVertex
 set Model:Vertex/ZPQQ  /Herwig/Vertices/TTbA/TTbA_ZPQQVertex
 set Model:Vertex/AGQQ  /Herwig/Vertices/TTbA/TTbA_AGQQVertex
+set Model:Vertex/SU2X  /Herwig/Vertices/TTbA/TTbA_SU2XVertex
+
 
 
 ###################################################
@@ -113,6 +139,9 @@ set ThreeBodyDC:CreateDecayModes No
 insert NewModel:DecayParticles 0 /Herwig/Particles/Wp
 insert NewModel:DecayParticles 1 /Herwig/Particles/Zp
 insert NewModel:DecayParticles 2 /Herwig/Particles/Ag
+insert NewModel:DecayParticles 3 /Herwig/Particles/Yp
+insert NewModel:DecayParticles 4 /Herwig/Particles/Ym
+insert NewModel:DecayParticles 5 /Herwig/Particles/Vz
 
 
 ###################################################
