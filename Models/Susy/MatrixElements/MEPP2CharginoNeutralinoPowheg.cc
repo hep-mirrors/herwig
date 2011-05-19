@@ -307,31 +307,12 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
 
 
-  // average of left/right squark masses
-  tcPDPtr squarkL, squarkR;
-  if(((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.
-      && mePartonData()[0]->iCharge()>0.) ||
-     ((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())<0.
-      && mePartonData()[0]->iCharge()<0.)){
-    squarkL = getParticleData(1000000+abs(mePartonData()[0]->id()));
-    squarkR = getParticleData(2000000+abs(mePartonData()[0]->id()));
-  }
-  else {if(((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.
-      && mePartonData()[1]->iCharge()>0.) ||
-     ((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())<0.
-      && mePartonData()[1]->iCharge()<0.)){
-    squarkL = getParticleData(1000000+abs(mePartonData()[1]->id()));
-    squarkR = getParticleData(2000000+abs(mePartonData()[1]->id()));
-  }
-//   else {if (abs(mePartonData()[0]->id())%2==0) {
-//       squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())-1);
-//       squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())-1);
-//     } else {
-//       squarkL = getParticleData(1000000+abs(mePartonData()[0]->id())+1);
-//       squarkR = getParticleData(2000000+abs(mePartonData()[0]->id())+1);
-//     }
-  }
-  Energy  ms = 0.5*(squarkL->mass()+squarkR->mass());
+  // average of left masses
+  tcPDPtr squarkL1 = getParticleData(1000000+abs(mePartonData()[0]->id()));
+  tcPDPtr squarkL2 = getParticleData(1000000+abs(mePartonData()[1]->id()));
+  tcPDPtr squarkR1 = getParticleData(2000000+abs(mePartonData()[0]->id()));
+  tcPDPtr squarkR2 = getParticleData(2000000+abs(mePartonData()[1]->id()));
+  Energy  ms = 0.5*(squarkL1->mass()+squarkL2->mass());
      // boson mass
   Energy2 mw2 = sqr(Wplus_->mass());
   // mandelstam variables
@@ -339,30 +320,27 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   // I
   Complex ii(0.,1.); 
   // couplings of the vector boson
-//   FFVVertexPtr vertex = dynamic_ptr_cast<FFVVertexPtr>(FFPVertex_);
-//   vertex->setCoupling(scale(),mePartonData()[0]->CC(),
-// 		      mePartonData()[1]->CC(),gamma_);
-//   double ee = vertex->electroMagneticCoupling(scale());
-//   double v1 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
   double v1 = 0.;
   FFVVertexPtr vertex = dynamic_ptr_cast<FFVVertexPtr>(FFWVertex_);
-  tcPDPtr Wboson;
-  if(mePartonData()[2]->positive() || mePartonData()[3]->positive())
-    Wboson = Wplus_;
-  else Wboson = Wminus_;
+  tcPDPtr Wboson = (mePartonData()[2]->positive() || mePartonData()[3]->positive()) ?
+    Wplus_ : Wminus_;
+
   vertex->setCoupling(scale(),mePartonData()[0]->CC(),
 		      mePartonData()[1]->CC(),Wboson);
+
   double ee = vertex->electroMagneticCoupling(scale());
+
   double v2 = 0.5*real((vertex->left()+vertex->right())*vertex->norm())/ee;
   double a2 = 0.5*real((vertex->left()-vertex->right())*vertex->norm())/ee;
+
   vertex = dynamic_ptr_cast<FFVVertexPtr>(CNWVertex_);
   vertex->setCoupling(scale(),mePartonData()[2],
 		      mePartonData()[3],Wboson);
   ee = vertex->electroMagneticCoupling(scale());
-  //  double  v1w = mePartonData()[2]->id() == -mePartonData()[3]->id() ? -1. : 0.;
   double v1w = 0.;
   Complex v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;
   Complex a2w =  0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
+
 
   // left squark couplings
   vector<Complex> Cl(4,0.);
@@ -370,40 +348,27 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   vertex2 = mePartonData()[2]->charged() ? 
     dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
     dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-  vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkL);
-  ee = vertex2->electroMagneticCoupling(scale());
-  Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
-  vertex2 = mePartonData()[3]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL->CC());
-  Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
-  
-  tcPDPtr ccQuark;
-  tcPDPtr ccSquark=getParticleData(1000000+abs(mePartonData()[0]->id()));
-  if (abs(mePartonData()[0]->id())%2==0) {
-    ccQuark = getParticleData(mePartonData()[0]->id()-1);
-  }
-  else {
-    ccQuark = getParticleData(mePartonData()[0]->id()+1);
-  }
-  vertex2 = mePartonData()[2]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-  vertex2->setCoupling(scale(),ccQuark->CC(),mePartonData()[2],ccSquark);
+  vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkL2);
   ee = vertex2->electroMagneticCoupling(scale());
   Cl[2] = -0.5*vertex2->left() *vertex2->norm()/ee;
   vertex2 = mePartonData()[3]->charged() ? 
     dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
     dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
-  vertex2->setCoupling(scale(),ccQuark,mePartonData()[3],ccSquark->CC());
+  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL2->CC());
   Cl[3] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
 
 
-//   if(mePartonData()[0]->id()%2!=0) {
-//     swap(Cl[2],Cl[0]);
-//     swap(Cl[3],Cl[1]);
-//   }
+  vertex2 = mePartonData()[2]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),mePartonData()[1],mePartonData()[2],squarkL1);
+  ee = vertex2->electroMagneticCoupling(scale());
+  Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
+  vertex2 = mePartonData()[3]->charged() ? 
+    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
+    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2->setCoupling(scale(),mePartonData()[0],mePartonData()[3],squarkL1->CC());
+  Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
 
   // right squark couplings
   vector<Complex> Cr(4,0.);
@@ -411,12 +376,10 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
     dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
     dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
 
-  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkR->CC());
-  Cr[1] =  -0.5*conj(vertex2->left()*vertex2->norm())/ee;
-
-  ccSquark=getParticleData(2000000+abs(mePartonData()[0]->id()));
-  vertex2->setCoupling(scale(),ccQuark,mePartonData()[3],ccSquark->CC());
-  Cr[3] =  -0.5*conj(vertex2->left()*vertex2->norm())/ee;
+  vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkR1->CC());
+  Cr[3] = 0.5*conj(vertex2->left()*vertex2->norm())/ee;
+  vertex2->setCoupling(scale(),mePartonData()[0]      ,mePartonData()[3],squarkR2->CC());
+  Cr[1] = 0.5*conj(vertex2->left()*vertex2->norm())/ee;
 
   // s-channel
   vector<double> Cs(4,0.);
@@ -427,16 +390,22 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   Cs[2] = real( v1*v1w*a2*a2w ) +
     sHat()/sz*2.*a2*v2*real(a2w*conj(v2w));
   Cs[3] = 0.;
+
+//   cerr << "testing CS " << Cs[0] << "\n";
+//   cerr << "testing CS " << Cs[1] << "\n";
+//   cerr << "testing CS " << Cs[2] << "\n";
+//   cerr << "testing CS " << Cs[3] << "\n";
+
   // t-channel
   vector<Complex> Ct(4,0.);
-  Ct[0] = sHat()/sz*( v2+a2 )*( v2w-a2w );
-  Ct[1] = sHat()/sz*( v2+a2 )*( v2w+a2w );
-  Ct[2] = sHat()/sz*( v2-a2 )*( v2w+a2w );
-  Ct[3] = sHat()/sz*( v2-a2 )*( v2w-a2w );
-  Ct[0] += v1*v1w;
-  Ct[1] += v1*v1w;
-  Ct[2] += v1*v1w;
-  Ct[3] += v1*v1w;
+  Ct[1] =-sHat()/sz*( v2+a2 )*( v2w-a2w );
+  Ct[0] =-sHat()/sz*( v2+a2 )*( v2w+a2w );
+  Ct[2] =-sHat()/sz*( v2-a2 )*( v2w+a2w );
+  Ct[3] =-sHat()/sz*( v2-a2 )*( v2w-a2w );
+  Ct[0] -= v1*v1w;
+  Ct[1] -= v1*v1w;
+  Ct[2] -= v1*v1w;
+  Ct[3] -= v1*v1w;
 
   // CC case
 //   Cvx(1) = vv(ic1,1) / uu(ic1,1)                   ! set {Clot,Cupt,Cupu,Clou}
@@ -458,19 +427,10 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
 
   vector<Complex> Cv(4,0.);
-  Cv[0] = Cl[2] / Cl[0];
-  Cv[1] = conj(Cl[1]) / Cl[1];
-  Cv[2] = Cl[0] / Cl[2];
-  Cv[3] = conj(Cl[3]) / Cl[3];
-
-
-  cout << "\n" << endl;
-  cout <<   Cl[0] << "\t" << Cl[1] << "\t" << Cl[2] << "\t" << Cl[3] << endl;
-  cout <<   Cr[0] << "\t" << Cr[1] << "\t" << Cr[2] << "\t" << Cr[3] << endl;
-  cout <<   Cs[0] << "\t" << Cs[1] << "\t" << Cs[2] << "\t" << Cs[3] << endl;
-  cout <<   Ct[0] << "\t" << Ct[1] << "\t" << Ct[2] << "\t" << Ct[3] << endl;
-  cout <<   Cv[0] << "\t" << Cv[1] << "\t" << Cv[2] << "\t" << Cv[3] << endl;
-  cout << "\n" << endl;
+  Cv[2] = Cl[2] / Cl[0];
+  Cv[3] = conj(Cl[1]) / Cl[1];
+  Cv[0] = Cl[0] / Cl[2];
+  Cv[1] = conj(Cl[3]) / Cl[3];
 
 
 
@@ -495,7 +455,8 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
   if((mePartonData()[2]->iCharge()+mePartonData()[3]->iCharge())>0.) {
     swap(Cv[0],Cv[1]);
     swap(Cv[2],Cv[3]);
-  } else {
+  } 
+  else {
     swap(Cl[0],Cl[2]);
     swap(Cl[1],Cl[3]);
 
@@ -514,6 +475,8 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
   }
 
+
+
   // weird rescaling factors
   for(unsigned int ix=0;ix<4;++ix) {
     Cs[ix] *= sqr(4.*Constants::pi);
@@ -521,8 +484,17 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
     Cl[ix] *= 2.0 * sqrt(Constants::pi);
     Cr[ix] *= 2.0 * sqrt(Constants::pi);
   }
+//   cerr << "\n" << endl;
+//   cerr << "CL " <<    Cl[0] << "\t" << Cl[1] << "\t" << Cl[2] << "\t" << Cl[3] << endl;
+//   cerr << "CR " <<    Cr[0] << "\t" << Cr[1] << "\t" << Cr[2] << "\t" << Cr[3] << endl;
+//   cerr << "CS " <<    Cs[0] << "\t" << Cs[1] << "\t" << Cs[2] << "\t" << Cs[3] << endl;
+//   cerr << "CT " <<    Ct[0] << "\t" << Ct[1] << "\t" << Ct[2] << "\t" << Ct[3] << endl;
+//   cerr << "CV " <<    Cv[0] << "\t" << Cv[1] << "\t" << Cv[2] << "\t" << Cv[3] << endl;
+//   cerr << "\n" << endl;
+
+
   // finite piece
-  output.finite = finiteVirtual(ms,mw2,Cl,Cr,Cs,Ct,Cv);
+  output.finite = finiteVirtual(ms,mw2,Cl,Cr,Cs,Ct,Cv,true);
 
   return output;
 }
@@ -835,19 +807,16 @@ double MEPP2CharginoNeutralinoPowheg::realME(const cPDVector & particles,
     double Nc = 3.;
     Energy2 sh = (momenta[0]+momenta[1]).m2();
     
-    
     if (abs(quark->id())%2==0) {
-      squark[0] = getParticleData(1000000+abs(quark->id()-1)  );
-      squark[1] = getParticleData(2000000+abs(quark->id()-1)  );
+      squark[0] = getParticleData(1000000+abs(quark->id())-1  );
+      squark[1] = getParticleData(2000000+abs(quark->id())-1  );
     } else {
-      squark[0] = getParticleData(1000000+abs(quark->id()+1)  );
-      squark[1] = getParticleData(2000000+abs(quark->id()+1)  );
+      squark[0] = getParticleData(1000000+abs(quark->id())+1  );
+      squark[1] = getParticleData(2000000+abs(quark->id())+1  );
     }
-    
     Energy2 sqwidth2;
     
     for(unsigned int ix=0;ix<2;++ix) {
-      
       // is on-shell mass allowed for first neutralino and squark
       if(  (roots >= squark[ix]->mass() + momenta[2].mass() )
 	   && (squark[ix]->mass() > momenta[3].mass())){

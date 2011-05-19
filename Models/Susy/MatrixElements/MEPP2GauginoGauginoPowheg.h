@@ -44,7 +44,7 @@ protected:
   double finiteVirtual(Energy ms, Energy2 mb2,
 		       vector<Complex> Cl, vector<Complex> Cr,
 		       vector<double > Cs, vector<Complex> Ct,
-		       vector<Complex> Cv) const;
+		       vector<Complex> Cv, bool flip=false) const;
 
 private:
 
