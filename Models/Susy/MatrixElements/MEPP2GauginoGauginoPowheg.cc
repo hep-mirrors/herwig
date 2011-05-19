@@ -56,7 +56,7 @@ finiteVirtual(Energy ms, Energy2 mb2,
   Energy2 ms2(sqr(ms));
   // mandelstam variables
   Energy2 th(tHat()),uh(uHat());
-  if(flip) swap(th,uh);
+  //if(flip) swap(th,uh);
   Energy2 t1 = th-m12, t2 = th-m22;
   Energy2 u1 = uh-m12, u2 = uh-m22;
   Energy2 ts = th-ms2, us = uh-ms2;
