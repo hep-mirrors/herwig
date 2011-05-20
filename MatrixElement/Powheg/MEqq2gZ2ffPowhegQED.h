@@ -613,6 +613,11 @@ private:
   bool _quarkplus;
 
   /**
+   *  QCD emmision type
+   */
+  int QCDRadiationType_;
+
+  /**
    *  Constants for the sampling. The distribution is assumed to have the
    *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
    */

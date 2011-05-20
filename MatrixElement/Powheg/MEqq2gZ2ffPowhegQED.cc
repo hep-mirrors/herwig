@@ -33,7 +33,7 @@ MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED()
     contrib_(1), power_(0.6), zPow_(0.5), yPow_(0.9),
     alphaS_(0.118), alphaEM_(1./137.), fixedCouplings_(false),
     supressionFunction_(0), 
-    lambda2_(10000.*GeV2),
+    lambda2_(10000.*GeV2),QCDRadiationType_(-1),
     preqqbarqQCD_(10.), preqqbarqbarQCD_(10.),
     preqgQCD_(10.),pregqbarQCD_(10.),
     preqqbarqQED_(50.), preqqbarqbarQED_(50.),
@@ -419,7 +419,7 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << preqqbarqQED_ << preqqbarqbarQED_ << preqgQED_ << pregqbarQED_
      << preFFQED_ << preIFQED_ << prefactorQCD_ << prefactorQED_ 
      << ounit(minpTQCD_,GeV) << ounit(minpTQED_,GeV) << alphaQCD_ << alphaQED_
-     << FFGVertex_ << oneLoopVertex_
+     << FFGVertex_ << oneLoopVertex_ << QCDRadiationType_
      << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
 }
 
@@ -431,7 +431,7 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> preqqbarqQED_ >> preqqbarqbarQED_ >> preqgQED_ >> pregqbarQED_
      >> preFFQED_ >> preIFQED_ >> prefactorQCD_ >> prefactorQED_ 
      >> iunit(minpTQCD_,GeV) >> iunit(minpTQED_,GeV) >> alphaQCD_ >> alphaQED_
-     >> FFGVertex_ >> oneLoopVertex_
+     >> FFGVertex_ >> oneLoopVertex_ >> QCDRadiationType_
      >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
 }
 
@@ -791,6 +791,37 @@ void MEqq2gZ2ffPowhegQED::Init() {
     ("OneLoopVertex",
      "The vertex include the one-loop corrections",
      &MEqq2gZ2ffPowhegQED::oneLoopVertex_, false, false, true, false, false);
+
+
+  static Switch<MEqq2gZ2ffPowhegQED,int> interfaceQCDRadiationType
+    ("QCDRadiationType",
+     "Whic types of QCD radiation ot include",
+     &MEqq2gZ2ffPowhegQED::QCDRadiationType_, -1, false, false);
+  static SwitchOption interfaceQCDRadiationTypeAll
+    (interfaceQCDRadiationType,
+     "All",
+     "All type",
+     -1);
+  static SwitchOption interfaceQCDRadiationTypeQuarkAntiQuark
+    (interfaceQCDRadiationType,
+     "QuarkAntiQuark",
+     "quark radiates gluon",
+     0);
+  static SwitchOption interfaceQCDRadiationTypeAntiQuarkQuark
+    (interfaceQCDRadiationType,
+     "AntiQuarkQuark",
+     "antiquark radaites gluon",
+     1);
+  static SwitchOption interfaceQCDRadiationTypeGluonAntiquark
+    (interfaceQCDRadiationType,
+     "GluonAntiquark",
+     "gluon splits radiation antiquark",
+     2);
+  static SwitchOption interfaceQCDRadiationTypeQuarkGluon
+    (interfaceQCDRadiationType,
+     "QuarkGluon",
+     "Gluon splits radiating quark",
+     3);
 
 }
 
@@ -2201,9 +2232,13 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
   pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
 				    particlesToShower[1]->progenitor()->x());
   // loop over the possible emissions
-  vector<Energy> pT;
-  for(unsigned int ix=0;ix<4;++ix) {
-    pT.push_back(0.5*generator()->maximumCMEnergy());
+  unsigned int imin(0),imax(4);
+  if(QCDRadiationType_>=0) {
+    imin = QCDRadiationType_;
+    imax = imin+1;
+  }
+  for(unsigned int ix=imin;ix<imax;++ix) {
+    Energy pT = 0.5*generator()->maximumCMEnergy();
     // particles for the hard process
     cPDVector particles;
     for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
@@ -2223,18 +2258,18 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
       prefactorQCD_[ix]*(maxyj-minyj);
     pTmax = -GeV;
     do {
-      pT[ix] *= pow(UseRandom::rnd(),1./a);
-      if(pT[ix]<=minpTQCD_) break;
+      pT *= pow(UseRandom::rnd(),1./a);
+      if(pT<=minpTQCD_) break;
       double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
       double vt,z;
       if(ix%2==0) {
-	vt = pT[ix]*exp(-y)/rootS/x.second;
-	z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
+	vt = pT*exp(-y)/rootS/x.second;
+	z  = (1.-pT*exp(-y)/rootS/x.second)/(1.+pT*exp( y)/rootS/x.first );
 	if(z>1.||z<x.first) continue;
       }
       else {
-	vt = pT[ix]*exp( y)/rootS/x.first ;
-	z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
+	vt = pT*exp( y)/rootS/x.first ;
+	z  = (1.-pT*exp( y)/rootS/x.first )/(1.+pT*exp(-y)/rootS/x.second );
 	if(z>1.||z<x.second) continue;
       }
       if(vt>1.-z || vt<0.) continue;
@@ -2250,8 +2285,8 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
       momenta[2] = particlesToShower[2]->progenitor()->momentum();
       momenta[3] = particlesToShower[3]->progenitor()->momentum();
       if(!_quarkplus) y *= -1.;
-      momenta[4] = Lorentz5Momentum(pT[ix]*cos(phi),pT[ix]*sin(phi),
-				    pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
+      momenta[4] = Lorentz5Momentum(pT*cos(phi),pT*sin(phi),
+				    pT*sinh(y),pT*cosh(y), ZERO);
       Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
       Lorentz5Momentum Kt = momenta[2]+momenta[3];
       Lorentz5Momentum Ksum = K+Kt;
@@ -2261,37 +2296,37 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
 	  +2.*K*(Kt*momenta [iy])/K2;
       }
       // matrix element piece
-      double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactorQCD_[ix]/loME_;
+      double wgt = alphaQCD_->ratio(sqr(pT))*z/(1.-vt)/prefactorQCD_[ix]/loME_;
       // compute me piece here
       if(ix==0)
-	wgt *= 8./3.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II12,false).first;
+	wgt *= 8./3.*sqr(pT)/sHat()*subtractedQCDMEqqbar(momenta,II12,false).first;
       else if(ix==1)
-	wgt *= 8./3.*sqr(pT[ix])/sHat()*subtractedQCDMEqqbar(momenta,II21,false).first;
+	wgt *= 8./3.*sqr(pT)/sHat()*subtractedQCDMEqqbar(momenta,II21,false).first;
       else if(ix==2)
-	wgt *=       sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II12,false).first;
+	wgt *=       sqr(pT)/sHat()*subtractedQCDMEgqbar(momenta,II12,false).first;
       else if(ix==3)
- 	wgt *=       sqr(pT[ix])/sHat()*subtractedQCDMEgqbar(momenta,II21,false).first;
+ 	wgt *=       sqr(pT)/sHat()*subtractedQCDMEgqbar(momenta,II21,false).first;
       // pdf piece
       double pdf[4];
       if(ix%2==0) {
 	pdf[0] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
 				       scale(),            x.first   )  /x.first;
 	pdf[1] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
-				       scale()+sqr(pT[ix]),x.first /z)*z/x.first;
+				       scale()+sqr(pT),x.first /z)*z/x.first;
 	pdf[2] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
 				       scale()            ,x.second  )  /x.second;
 	pdf[3] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
-				       scale()+sqr(pT[ix]),x.second  )  /x.second;
+				       scale()+sqr(pT),x.second  )  /x.second;
       }
       else {
 	pdf[0] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
 				       scale()            ,x.second  )  /x.second;
 	pdf[1] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
-				       scale()+sqr(pT[ix]),x.second/z)*z/x.second;
+				       scale()+sqr(pT),x.second/z)*z/x.second;
 	pdf[2] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
 				       scale(),            x.first   )  /x.first;
 	pdf[3] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
-				       scale()+sqr(pT[ix]),x.first   )  /x.first;
+				       scale()+sqr(pT),x.first   )  /x.first;
       }
       if(pdf[0]<=0.||pdf[1]<=0.) continue;
       if(pdf[2]<=0.||pdf[3]<=0.) continue;
@@ -2306,9 +2341,9 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
       // break if select emission
       if(UseRandom::rnd()<wgt) break;
     }
-    while(pT[ix]>minpTQCD_);
-    if(pT[ix]>minpTQCD_ && pT[ix]>pTmax) {
-      pTmax = pT[ix];
+    while(pT>minpTQCD_);
+    if(pT>minpTQCD_ && pT>pTmax) {
+      pTmax = pT;
       if(ix==0) {
 	realEmissionQCDGluon1_=momenta;
 	emission_type=1;
