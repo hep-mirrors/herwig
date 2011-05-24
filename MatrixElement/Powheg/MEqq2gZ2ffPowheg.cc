@@ -157,12 +157,14 @@ void MEqq2gZ2ffPowheg::Init() {
 }
 
 int MEqq2gZ2ffPowheg::nDim() const {
-  return 3;
+  return HwMEBase::nDim() + ( _contrib>=1 ? 2 : 0 );
 }
 
 bool MEqq2gZ2ffPowheg::generateKinematics(const double * r) {
-  _xt=*(r+1);
-  _v =*(r+2);
+  if(_contrib>=1) {
+    _xt=*(r+1);
+    _v =*(r+2);
+  }
   return MEqq2gZ2ff::generateKinematics(r);
 }
 
