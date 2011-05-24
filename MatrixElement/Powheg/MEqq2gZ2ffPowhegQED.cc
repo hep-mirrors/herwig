@@ -2226,6 +2226,7 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
 					  particlesToShower, int & emission_type,
 					  Energy & pTmax) {
   emission_type = -1;
+  pTmax = -GeV;
   Energy rootS = sqrt(lastS());
   // limits on the rapidity of the jet
   double minyj = -10.0,maxyj = 10.0;
@@ -2256,7 +2257,6 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
     vector<Lorentz5Momentum> momenta(5);
     double a = alphaQCD_->overestimateValue()/Constants::twopi*
       prefactorQCD_[ix]*(maxyj-minyj);
-    pTmax = -GeV;
     do {
       pT *= pow(UseRandom::rnd(),1./a);
       if(pT<=minpTQCD_) break;
@@ -2310,21 +2310,21 @@ void MEqq2gZ2ffPowhegQED::hardQCDEmission(vector<ShowerProgenitorPtr> &
       double pdf[4];
       if(ix%2==0) {
 	pdf[0] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
-				       scale(),            x.first   )  /x.first;
+				       scale()        ,x.first   )  /x.first;
 	pdf[1] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
 				       scale()+sqr(pT),x.first /z)*z/x.first;
 	pdf[2] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
-				       scale()            ,x.second  )  /x.second;
+				       scale()        ,x.second  )  /x.second;
 	pdf[3] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
 				       scale()+sqr(pT),x.second  )  /x.second;
       }
       else {
 	pdf[0] = _beams[1]->pdf()->xfx(_beams[1],_partons [1],
-				       scale()            ,x.second  )  /x.second;
+				       scale()        ,x.second  )  /x.second;
 	pdf[1] = _beams[1]->pdf()->xfx(_beams[1],particles[1],
 				       scale()+sqr(pT),x.second/z)*z/x.second;
 	pdf[2] = _beams[0]->pdf()->xfx(_beams[0],_partons [0],
-				       scale(),            x.first   )  /x.first;
+				       scale()        ,x.first   )  /x.first;
 	pdf[3] = _beams[0]->pdf()->xfx(_beams[0],particles[0],
 				       scale()+sqr(pT),x.first   )  /x.first;
       }
@@ -2408,7 +2408,6 @@ void MEqq2gZ2ffPowhegQED::hardQEDIIEmission(vector<ShowerProgenitorPtr> & partic
   // loop over the possible emissions
   vector<Energy> pT;
   double charge = sqr(double(particlesToShower[0]->progenitor()->dataPtr()->iCharge())/3.);
-  pTmax = -GeV;
   for(unsigned int ix=0;ix<4;++ix) {
     // skip incoming photons if not required
     if(!incomingPhotons_&&(ix==2||ix==3)) continue;
