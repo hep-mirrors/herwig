@@ -283,8 +283,6 @@ NLODrellYanBase::Singular MEPP2NeutralinoNeutralinoPowheg::virtualME() const {
   for(unsigned int ix=0;ix<4;++ix) Cv[ix] = conj(Cl[ix])/Cl[ix];
   // finite piece
   output.finite = finiteVirtual(ms,mz2,Cl,Cr,Cs,Ct,Cv);
-
-
   return output;
 }
 
