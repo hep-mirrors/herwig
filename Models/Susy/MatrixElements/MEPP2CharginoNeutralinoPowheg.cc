@@ -338,35 +338,25 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 		      mePartonData()[3],Wboson);
   ee = vertex->electroMagneticCoupling(scale());
   double v1w = 0.;
-  Complex v2w = -0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;
-  Complex a2w =  0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
-
-
+  Complex v2w = 0.5*(vertex->left()+vertex->right())*vertex->norm()/ee;
+  Complex a2w = 0.5*(vertex->left()-vertex->right())*vertex->norm()/ee;
   // left squark couplings
   vector<Complex> Cl(4,0.);
+  // u-channel
   FFSVertexPtr vertex2;
-  vertex2 = mePartonData()[2]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2 = dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
   vertex2->setCoupling(scale(),mePartonData()[0]->CC(),mePartonData()[2],squarkL2);
   ee = vertex2->electroMagneticCoupling(scale());
   Cl[2] = -0.5*vertex2->left() *vertex2->norm()/ee;
-  vertex2 = mePartonData()[3]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2 = dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
   vertex2->setCoupling(scale(),mePartonData()[1]->CC(),mePartonData()[3],squarkL2->CC());
   Cl[3] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
-
-
-  vertex2 = mePartonData()[2]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  // t-channel
+  vertex2 = dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_);
   vertex2->setCoupling(scale(),mePartonData()[1],mePartonData()[2],squarkL1);
   ee = vertex2->electroMagneticCoupling(scale());
   Cl[0] = -0.5*vertex2->left() *vertex2->norm()/ee;
-  vertex2 = mePartonData()[3]->charged() ? 
-    dynamic_ptr_cast<FFSVertexPtr>(CFSVertex_) :
-    dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
+  vertex2 = dynamic_ptr_cast<FFSVertexPtr>(NFSVertex_);
   vertex2->setCoupling(scale(),mePartonData()[0],mePartonData()[3],squarkL1->CC());
   Cl[1] =  -0.5*conj(vertex2->right()*vertex2->norm())/ee;
 
@@ -383,12 +373,9 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
   // s-channel
   vector<double> Cs(4,0.);
-  Cs[0] = sqr(v1*v1w) + 2.*sHat() * real( v1*v1w*v2*v2w )/sz +
-    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) + norm(a2w) );
-  Cs[1] = sqr(v1*v1w) + 2.0 * sHat() * real( v1*v1w*v2*v2w )/sz +
-    sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) - norm(a2w) );
-  Cs[2] = real( v1*v1w*a2*a2w ) +
-    sHat()/sz*2.*a2*v2*real(a2w*conj(v2w));
+  Cs[0] = sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) + norm(a2w) );
+  Cs[1] = sqr(sHat()/sz)*( sqr(v2)+sqr(a2) )*( norm(v2w) - norm(a2w) );
+  Cs[2] =     sHat()/sz*2.*a2*v2*real(a2w*conj(v2w));
   Cs[3] = 0.;
 
 //   cerr << "testing CS " << Cs[0] << "\n";
@@ -398,15 +385,10 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
   // t-channel
   vector<Complex> Ct(4,0.);
-  Ct[1] =-sHat()/sz*( v2+a2 )*( v2w-a2w );
-  Ct[0] =-sHat()/sz*( v2+a2 )*( v2w+a2w );
-  Ct[2] =-sHat()/sz*( v2-a2 )*( v2w+a2w );
-  Ct[3] =-sHat()/sz*( v2-a2 )*( v2w-a2w );
-  Ct[0] -= v1*v1w;
-  Ct[1] -= v1*v1w;
-  Ct[2] -= v1*v1w;
-  Ct[3] -= v1*v1w;
-
+  Ct[0] =  sHat()/sz*( v2+a2 )*( v2w-a2w );
+  Ct[1] =  sHat()/sz*( v2+a2 )*( v2w+a2w );
+  Ct[2] =  sHat()/sz*( v2-a2 )*( v2w+a2w );
+  Ct[3] =  sHat()/sz*( v2-a2 )*( v2w-a2w );
   // CC case
 //   Cvx(1) = vv(ic1,1) / uu(ic1,1)                   ! set {Clot,Cupt,Cupu,Clou}
 //   Cvx(2) = vv(ic2,1) / uu(ic2,1)
@@ -427,13 +409,10 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
 
   vector<Complex> Cv(4,0.);
-  Cv[2] = Cl[2] / Cl[0];
-  Cv[3] = conj(Cl[1]) / Cl[1];
-  Cv[0] = Cl[0] / Cl[2];
+  Cv[0] = Cl[2] / Cl[0];
   Cv[1] = conj(Cl[3]) / Cl[3];
-
-
-
+  Cv[2] = Cl[0] / Cl[2];
+  Cv[3] = conj(Cl[1]) / Cl[1];
 
 //     if (iout==3) then                                                          ! NC+
 //        Cl(1:4) = Clx(1:4)
@@ -465,14 +444,10 @@ NLODrellYanBase::Singular MEPP2CharginoNeutralinoPowheg::virtualME() const {
 
     swap(Ct[0],Ct[1]);
     swap(Ct[2],Ct[3]);
-    Ct[0] *= -1.;
-    Ct[1] *= -1.;
-    Ct[2] *= -1.;
-    Ct[3] *= -1.;
+    for(unsigned int ix=0;ix<4;++ix) Ct[ix] *= -1.;
 
     swap(Cv[0],Cv[1]);
     swap(Cv[2],Cv[3]);
-
   }
 
 
