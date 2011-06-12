@@ -8,7 +8,7 @@ set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
 set LHCGenerator:EventHandler:StatLevel Full
 
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
 
 ##################################################
 #  Create the Herwig analysis

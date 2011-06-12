@@ -3,6 +3,11 @@
 ##################################################
 read LHCBase.in
 
+# override the beam energy
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 2360.0
+
+
 ##################################################
 #  Use the q qbar matrix element
 ##################################################
@@ -23,24 +28,16 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 # select the analyses
 ##################################################
 
-# ATLAS jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
-# ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
-# ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8994773
-# ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
-# ATLAS fragmentation function
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_CONF_2010_049
 # ATLAS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
 # ALICE charged particles
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
 
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-UE LHCGenerator
+saverun LHC-2360-UE LHCGenerator

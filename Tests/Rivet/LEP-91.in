@@ -19,9 +19,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
 # ALEPH main LEP I QCD summary paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
 # ALEPH photon analysis
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3196992
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3196992
 # OPAL photon analysis
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198
 # OPAL flavour specific charged multiplicities etc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3780481
 # OPAL event shapes and multiplicities at different energies
