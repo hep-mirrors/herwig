@@ -31,9 +31,6 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 # Override default MPI parameters
 ##################################################
 
-# Read ColourReconnection LEP tune settings
-read ColourRec.LEPtune
-
 # Colour reconnection settings
 set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
 set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.6165547
@@ -81,5 +78,5 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
-saverun LHC-UE7-1_without_cutoff LHCGenerator
+saverun LHC-UE7-2 LHCGenerator
 
