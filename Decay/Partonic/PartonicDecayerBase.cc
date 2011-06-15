@@ -59,9 +59,6 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
     // form the clusters
     ClusterVector clusters = _clusterFinder->formClusters(currentlist);
     _clusterFinder->reduceToTwoComponents(clusters);
-    // perform colour reconnection if needed and then
-    // decay the clusters into one hadron
-    _colourReconnector->rearrange(*generator()->eventHandler(),clusters);
     tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
     bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
     // abandon child here so alwasy done
@@ -97,15 +94,15 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 }
 
 void PartonicDecayerBase::persistentOutput(PersistentOStream & os) const {
-  os << _partonSplitter << _clusterFinder << _colourReconnector
-     << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive
-     << _partontries << _inter;
+  os << _partonSplitter << _clusterFinder << _clusterFissioner
+    << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
+    << _inter;
 }
 
 void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
-  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
-     >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
-     >> _partontries >> _inter;
+  is >> _partonSplitter >> _clusterFinder >> _clusterFissioner
+    >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
+    >> _inter;
 }
 
 AbstractClassDescription<PartonicDecayerBase> 
@@ -128,12 +125,6 @@ void PartonicDecayerBase::Init() {
     interfaceClusterFinder("ClusterFinder", 
 		      "A reference to the ClusterFinder object", 
 		      &Herwig::PartonicDecayerBase::_clusterFinder,
-		      false, false, true, false);
-
-  static Reference<PartonicDecayerBase,ColourReconnector> 
-    interfaceColourReconnector("ColourReconnector", 
-		      "A reference to the ColourReconnector object", 
-		      &Herwig::PartonicDecayerBase::_colourReconnector,
 		      false, false, true, false);
 
   static Reference<PartonicDecayerBase,ClusterFissioner> 
@@ -234,8 +225,6 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
 	 << _partonSplitter->name() << " \n";
   output << "newdef  " << name() << ":ClusterFinder " 
 	 << _clusterFinder->name() << " \n";
-  output << "newdef  " << name() << ":ColourReconnector " 
-	 << _colourReconnector->name() << " \n";
   output << "newdef  " << name() << ":ClusterFissioner " 
 	 << _clusterFissioner->name() << " \n";
   output << "newdef  " << name() << ":LightClusterDecayer " 
