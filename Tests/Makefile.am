@@ -1,10 +1,12 @@
 AUTOMAKE_OPTIONS = -Wno-portability
 AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
-EXTRA_DIST = Inputs
+EXTRA_DIST = Inputs python Rivet 
 
 dist-hook:
 	rm -rf $(distdir)/Inputs/.svn
+	rm -rf $(distdir)/python/.svn
+	rm -rf $(distdir)/Rivet/.svn
 
 EXTRA_LTLIBRARIES = LeptonTest.la GammaTest.la HadronTest.la DISTest.la
 
