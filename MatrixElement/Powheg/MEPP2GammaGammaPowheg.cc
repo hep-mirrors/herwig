@@ -1251,7 +1251,7 @@ InvEnergy2 MEPP2GammaGammaPowheg::realGammaGammaqME(const cPDVector & particles,
   cPDVector part(particles.begin(),--particles.end());
   part[1] = particles[4]->CC();
   double lo1 = loGammaGammaME(part,pa);
-  InvEnergy2 D1 = 0.25/(momenta[1]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
+  InvEnergy2 D1 = 0.5/(momenta[1]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
   // initial-final QED dipole
   vector<Lorentz5Momentum> pb(4);
   x = 1.-(momenta[3]*momenta[4])/(momenta[4]*momenta[0]+momenta[0]*momenta[3]);
@@ -1264,8 +1264,8 @@ InvEnergy2 MEPP2GammaGammaPowheg::realGammaGammaqME(const cPDVector & particles,
   part[3] = particles[4];
   double lo2 = loGammaqME(part,pb);
   Energy pT = sqrt(-(pb[0]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
-  InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
-  InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
+  InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(1./(1.-x+z)-2.+z)*lo2;
+  InvEnergy2 DI = 1./(momenta[0]*momenta[3])/x*(1./(1.-x+z)-1.-x)*lo2;
   DI *= sqr(double(particles[0]->iCharge())/3.);  
   DF *= sqr(double(particles[0]->iCharge())/3.);
   InvEnergy2 denom = abs(D1)+abs(DI)+abs(DF);
@@ -1325,7 +1325,7 @@ realGammaGammaqbarME(const cPDVector & particles,
   cPDVector part(particles.begin(),--particles.end());
   part[0] = particles[4]->CC();
   double lo1 = loGammaGammaME(part,pa);
-  InvEnergy2 D1 = 0.25/(momenta[0]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
+  InvEnergy2 D1 = 0.5/(momenta[0]*momenta[4])/x*(1.-2.*x*(1.-x))*lo1;
   // initial-final QED dipole
   vector<Lorentz5Momentum> pb(4);
   x = 1.-(momenta[3]*momenta[4])/(momenta[4]*momenta[1]+momenta[1]*momenta[3]);
@@ -1338,8 +1338,8 @@ realGammaGammaqbarME(const cPDVector & particles,
   part[3] = particles[4];
   double lo2 = loGammaqbarME(part,pb);
   Energy pT = sqrt(-(pb[1]-pb[3]).m2()*(1.-x)*(1.-z)*z/x);
-  InvEnergy2 DF = 0.5/(momenta[4]*momenta[3])/x*(2./(2.-x-z)-(1.+z))*lo2;
-  InvEnergy2 DI = 0.5/(momenta[0]*momenta[3])/x*(2./(1.-x+z)-(1.+z))*lo2;
+  InvEnergy2 DF = 1./(momenta[4]*momenta[3])/x*(2./(1.-x+z)-2.+z)*lo2;
+  InvEnergy2 DI = 1./(momenta[0]*momenta[3])/x*(2./(1.-x+z)-1.-x)*lo2;
   InvEnergy2 term;
   DI *= sqr(double(particles[1]->iCharge())/3.);
   DF *= sqr(double(particles[1]->iCharge())/3.);
