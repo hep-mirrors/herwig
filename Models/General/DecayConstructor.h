@@ -38,7 +38,7 @@ public:
   /**
    * The default constructor.
    */
-  DecayConstructor() : _theNBodyDecayConstructors(0), 
+  DecayConstructor() : NBodyDecayConstructors_(0), 
 		       _disableDMTags(0) {}
 
 public:
@@ -85,6 +85,14 @@ public:
    *  QED Generator
    */
   DecayRadiationGeneratorPtr QEDGenerator() {return QEDGenerator_;}
+
+  /**
+   * Vector of references to the objects that will construct the N-Body
+   * decays.
+   */
+  const vector<NBodyDecayConstructorBasePtr> & decayConstructors() {
+    return NBodyDecayConstructors_;
+  }
 
 protected:
 
@@ -135,7 +143,7 @@ private:
    * Vector of references to the objects that will construct the N-Body
    * decays.
    */
-   vector<NBodyDecayConstructorBasePtr> _theNBodyDecayConstructors;
+   vector<NBodyDecayConstructorBasePtr> NBodyDecayConstructors_;
 
   /**
    * A list of DecayMode tags that are not to be created 

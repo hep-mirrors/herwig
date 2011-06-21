@@ -38,7 +38,7 @@ CLEANFILES = HerwigDefaults.rpo \
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D --exitonerror
+	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D
 
 check_BSM_Full=
 check_BSM=
@@ -76,8 +76,8 @@ link-helper-files:
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read $< -D --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D --exitonerror
+	./Herwig++ read $< -D
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
 
 ## valgrind targets ##
 
@@ -98,7 +98,7 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository
-	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo --exitonerror
+	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
@@ -111,7 +111,7 @@ register-with-thepeg-repo:
 		"$(SETUPTHEPEG)" --init \
 		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
-		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 
 
@@ -121,7 +121,7 @@ unregister-from-thepeg-repo:
 		then echo Unregistering with ThePEG; \
 		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
-		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 
 EXTRA_DIST = herwigopts.ggo

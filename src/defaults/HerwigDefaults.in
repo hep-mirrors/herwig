@@ -75,6 +75,7 @@ read Shower.in
 read MatrixElements.in
 read Hadronization.in
 read Decays.in
+read BSM.in
 
 #######################################################################
 # The EventHandler is the most important object in a run. It 

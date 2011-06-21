@@ -128,7 +128,6 @@ protected:
   virtual IVector getReferences();
   //@}
 
-
 private:
 
   /**
