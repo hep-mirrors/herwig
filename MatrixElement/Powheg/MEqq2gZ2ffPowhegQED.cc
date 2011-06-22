@@ -876,9 +876,10 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   }
   // ISR/FSR interference
   if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_==0 ) {
-    output += oneLoopVertex_->neutralCurrentQEDME(mePartonData()[0],mePartonData()[1],
-						  mePartonData()[2],mePartonData()[3],
-						  sHat(),tHat(),uHat());
+    output += alphaEM_*oneLoopVertex_->
+      neutralCurrentQEDME(mePartonData()[0],mePartonData()[1],
+			  mePartonData()[2],mePartonData()[3],
+			  sHat(),tHat(),uHat());
   }
   // genuine EW corrections
   if(corrections_==3||corrections_==5) output += EWterm_;
@@ -1646,7 +1647,7 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
   else if (dipole == IF13 || dipole == IF14 ||
 	   dipole == IF23 || dipole == IF24) {
     // particles making up the dipole
-    int iin    = dipole == IF13 || dipole == IF14 ? 0 : 1;
+    int iin   = dipole == IF13 || dipole == IF14 ? 0 : 1;
     int iout  = dipole == IF13 || dipole == IF23 ? 2 : 3;
     // momentum of system
     Lorentz5Momentum q = meMomenta()[iout]-meMomenta()[iin];
@@ -1683,14 +1684,8 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
     double x1 = -(1.+mu2)/z;
     double x2 = 1-mu2-vt*(1.+mu2)/z;
     double x3 = 2.+x1-x2;
-    double z2=sqr(z);
-    double corr1 = -mu2/sqr(1+mu2)/vt/(1.-vt)/(1.-z)*
-      (-4.*vt*z2 + vt*vt*mu2*mu2 - 2*mu2*mu2*z
-       - 4 * mu2 * z2*z + 2 * z2 * mu2 * mu2 - mu2 * mu2 * vt
-       - 2 * z - 4 * vt * z2 * mu2 + 3 * vt * z - vt + 2 * z2
-       - 4 * z * mu2 - 2 * vt * mu2 + 4 * z2 * mu2 + vt * vt 
-       + 2 * vt * vt * mu2 + 6 * z * vt * mu2 + 3 * mu2 * mu2 * z * vt);
-    double xT = sqrt(4.*(1.-z)/z*vt*(1.-vt)*(1.+corr1));
+    double corr = (1.-z-vt)*mu2/((1.-vt)*(1.-z));
+    double xT = sqrt(4.*(1.-z)/z*vt*(1.-vt)*(1.+corr));
     // incoming momentum
     Lorentz5Momentum pa(ZERO,ZERO,-0.5*x1*Q,-0.5*x1*Q,ZERO);
     // outgoing momentum
@@ -1883,16 +1878,13 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       }
       // pT
       Energy mj = p[iout].mass();
-      Energy2 Q2 = -(pjt-pat).m2();
+      Lorentz5Momentum q = pjt-pat;
+      q.rescaleMass();
+      Energy  Q  = -q.mass();
+      Energy2 Q2 = sqr(Q);
       double mu2 = sqr(mj)/Q2;
-      double x2 = sqr(x);
-      double corr1 = -mu2/sqr(1+mu2)/z/(1.-z)/(1.-x)*
-	(-4.*z*x2 + z*z*mu2*mu2 - 2*mu2*mu2*x
-	 - 4 * mu2 * x2*x + 2 * x2 * mu2 * mu2 - mu2 * mu2 * z
-	 - 2 * x - 4 * z * x2 * mu2 + 3 * z * x - z + 2 * x2
-	 - 4 * x * mu2 - 2 * z * mu2 + 4 * x2 * mu2 + z * z 
-	 + 2 * z * z * mu2 + 6 * x * z * mu2 + 3 * mu2 * mu2 * x * z);
-      pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr1);
+      double corr = (1.-x-z)*mu2/((1.-z)*(1.-x));
+      pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr);
       // LO matrix element
       double lo = loME(mePartonData(),pa,false);
       Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
@@ -2607,25 +2599,8 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
 //       xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
       // zp
       zp = UseRandom::rnd();
-      // massless result
-      xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
-      double diff;
-      // include masses by solving using Newton-Raphson
-      do {
-	double corr1 = -mu2/(1-zp)/(1.-xp)/zp/sqr(1.+mu2)*
-	  (3.*mu2*mu2*xp*zp + 6.*xp*zp*mu2 + zp*zp*mu2*mu2 - zp 
-	   - 2.*zp*mu2 + zp*zp + 2.*zp*zp*mu2 - mu2*mu2*zp - 
-	   4.*zp*xp*xp - 4.*zp*mu2*xp*xp - 2.*mu2*mu2*xp - 2.*xp 
-	   - 4.*mu2*xp + 2.*mu2*mu2*xp*xp - 4.*mu2*xp*xp*xp 
-	   + 4.*mu2*xp*xp + 3.*xp*zp + 2.*xp*xp);
-	double corr3 = mu2/sqr(1.+mu2)/(1.-zp)/zp* 
-	  (-zp*zp*mu2*mu2 - 4.*mu2*xp*xp*xp + 2.*mu2*mu2*xp*xp + zp 
-	   + 2.*zp*mu2 - zp*zp - 2.*zp*zp*mu2 + mu2*mu2*zp - 4.*zp*xp*xp
-	   - 4.*zp*mu2*xp*xp + 4.*mu2*xp*xp + 2.*xp*xp);
-	diff = -xp*(1.-xp)*(sqr(xT)*xp/(4.*zp*(1.-zp)*(1.-xp))-1.-corr1)/(1.+corr3);
-	xp += diff;
-      }
-      while(abs(diff)>1e-12);
+      // xp
+      xp = (1-zp*mu2/(1.-zp+mu2))/(1.+0.25*sqr(xT)/zp/(1.-zp+mu2));
       // check allowed
       if(xp<xB||xp>1.) continue;
       // azimuth
@@ -2646,17 +2621,9 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
       realMomenta[iout] *= rot;
       realMomenta[4]    *= rot;
       // phase-space piece of the weight
-      double corr1 = -mu2/(1-zp)/(1.-xp)/zp/sqr(1.+mu2)*
-	(3.*mu2*mu2*xp*zp + 6.*xp*zp*mu2 + zp*zp*mu2*mu2 - zp 
-	 - 2.*zp*mu2 + zp*zp + 2.*zp*zp*mu2 - mu2*mu2*zp
-	 - 4.*zp*xp*xp - 4.*zp*mu2*xp*xp - 2.*mu2*mu2*xp - 2.*xp 
-	 - 4.*mu2*xp + 2.*mu2*mu2*xp*xp - 4.*mu2*xp*xp*xp
-	 + 4.*mu2*xp*xp + 3.*xp*zp + 2.*xp*xp);
-      double corr2 = mu2/sqr(1.+mu2)/(1.-zp)/zp*
-	(- zp*zp*mu2*mu2 - 8.*mu2*xp*xp*xp + 2.*mu2*mu2*xp*xp + zp 
-	 + 2.*zp*mu2 - zp*zp - 2.*zp*zp*mu2 + mu2*mu2*zp - 4.*zp*xp*xp 
-	 - 4.*zp*mu2*xp*xp + 4.*mu2*xp*xp + 2.*xp*xp);
-      wgt = pow(xT,n)*8.*zp*(1.-zp)*sqr(1.-xp)/xp/preIFQED_*(1.+mu2)/xp*sqr(1+corr1)/(1.+corr2);
+      double corr =(1.-xp-zp)*mu2/(1.-xp)/(1.-zp);
+      wgt = pow(xT,n)*8.*zp*(1.-zp)*sqr(1.-xp)/xp/preIFQED_*(1.+mu2)/xp*
+	sqr(1.+corr)/(1.+mu2);
       wgt *= alphaQED_->ratio(0.25*Q2*sqr(xT));
       // PDF piece
       double pdf[2]={_beams[iin]->pdf()->xfx(_beams[iin],_partons [iin],
