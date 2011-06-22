@@ -996,7 +996,10 @@ double OneLoopFFAWZVertex::neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
   // now Int_fin is the integrated IF dipoles, and Int_eps the corresponding pole
   // subtract integrated dipoles, first checking numerical cancellation of single pole
   if(abs(Int_eps+total_eps)>0.0001) {
-    cout<<"WARNING: pole doesn't cancel "<<endl;
+    ostringstream message;
+    message << "Poles don't cancel in OneLoopFFAWZVertex::gZboxesF "
+	    << Int_eps+total_eps << "\n";
+    generator()->logWarning(Exception(message.str(),Exception::warning));
   }
   double vfin=abs(total_fin)+Int_fin;
   // divide by the tree-level squared, and add the result to the output
