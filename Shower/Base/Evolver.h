@@ -431,6 +431,11 @@ protected:
   virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
+   *  Update of the time-like stuff
+   */
+  void updateHistory(tShowerParticlePtr particle);
+
+  /**
    *  Start the shower of a spacelike particle
    */
   virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);

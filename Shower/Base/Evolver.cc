@@ -458,21 +458,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     }
   }
   while(particle->virtualMass()==ZERO);
-  if(first) {
-//     cerr << "testing before reset " << *particle << "\n";
-//     cerr << "testing before reset " << particle->showerKinematics() << "\n";
+  if(first)
     particle->showerKinematics()->resetChildren(particle,theChildren);
-//     cerr << "testing after  reset " << *particle << "\n";
-  }
-  // needs sorting out
-//   // update the history if needed
-//   if(particle==_currenttree->getFinalStateShowerProduct(_progenitor))
-//     _currenttree->updateFinalStateShowerProduct(_progenitor,
-// 						particle,theChildren);
-//   _currenttree->addFinalStateBranching(particle,theChildren);
-
-
-
   return true;
 }
 
@@ -758,17 +745,40 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type ) {
     setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_hardtree);
 }
 
+void Evolver::updateHistory(tShowerParticlePtr particle) {
+  if(!particle->children().empty()) {
+    ShowerParticleVector theChildren;
+    for(unsigned int ix=0;ix<particle->children().size();++ix) {
+      ShowerParticlePtr part = dynamic_ptr_cast<ShowerParticlePtr>
+	(particle->children()[ix]);
+      theChildren.push_back(part);
+    }
+    // update the history if needed
+    if(particle==_currenttree->getFinalStateShowerProduct(_progenitor))
+      _currenttree->updateFinalStateShowerProduct(_progenitor,
+						  particle,theChildren);
+    _currenttree->addFinalStateBranching(particle,theChildren);
+    for(unsigned int ix=0;ix<theChildren.size();++ix)
+      updateHistory(theChildren[ix]);
+  }
+}
+
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
       mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && !mit->second->children().empty() ) {
-      return truncatedTimeLikeShower(progenitor()->progenitor(), mit->second ,type);
+      bool output=truncatedTimeLikeShower(progenitor()->progenitor(),
+					  mit->second ,type);
+      if(output) updateHistory(progenitor()->progenitor());
+      return output;
     }
   }
-  return  hardOnly() ? false :
+  bool output = hardOnly() ? false :
     timeLikeShower(progenitor()->progenitor() ,type,true) ;
+  if(output) updateHistory(progenitor()->progenitor());
+  return output;
 }
 
 bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
@@ -1020,11 +1030,6 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 						 branchingParticle()->dataPtr(),true)));
     particle->showerKinematics()->
       updateChildren(particle, theChildren,type==branch->sudakov()->interactionType());
-    // update the history if needed
-    if(particle==currentTree()->getFinalStateShowerProduct(progenitor()))
-      currentTree()->updateFinalStateShowerProduct(progenitor(),
-						   particle,theChildren);
-    currentTree()->addFinalStateBranching(particle,theChildren);
     // shower the first  particle
     if( branch->children()[0]->children().empty() ) {
       if( ! hardOnly() )
@@ -1056,11 +1061,6 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   theChildren.push_back( new_ptr( ShowerParticle( pdata[1], true ) ) );
   particle->showerKinematics()->
     updateChildren( particle, theChildren , true);
-  // update the history if needed
-  if( particle == currentTree()->getFinalStateShowerProduct( progenitor() ) )
-    currentTree()->updateFinalStateShowerProduct( progenitor(),
-						  particle, theChildren );
-  currentTree()->addFinalStateBranching( particle, theChildren );
   // shower the first  particle
   if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
   else            timeLikeShower( theChildren[0]  , type,false);
