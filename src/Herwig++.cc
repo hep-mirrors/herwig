@@ -22,7 +22,7 @@ void printUsageAndExit();
 
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname);
-void HerwigRun(string runname, int seed, long N, 
+void HerwigRun(string runname, int seed, string tag, long N, 
 	       bool tics, bool resume, bool keepid);
 
 
@@ -79,6 +79,9 @@ int main(int argc, char * argv[]) {
     if ( args_info.seed_given )
       seed = args_info.seed_arg;
 
+    // run name tag (default given in ggo file)
+    string tag = args_info.tag_arg;
+
     // Library search path for dlopen()
     for ( size_t i = 0; i < args_info.append_given; ++i )
       DynamicLoader::appendPath( args_info.append_arg[i] );
@@ -94,7 +97,7 @@ int main(int argc, char * argv[]) {
       Debug::unmaskFpuErrors();
 
     // Exit-on-error flag
-    if ( args_info.exitonerror_flag )
+    if ( ! args_info.noexitonerror_flag )
       Repository::exitOnError() = 1;
 
     // Tics
@@ -118,7 +121,7 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:  HerwigInit( infile, reponame ); break;
     case READ:  HerwigRead( reponame, runname ); break;
-    case RUN:   HerwigRun( runname, seed, N, 
+    case RUN:   HerwigRun( runname, seed, tag, N, 
 			   tics, resume, keepid );  break;
     default:    printUsageAndExit();
     }
@@ -167,7 +170,8 @@ void HerwigInit(string infile, string reponame) {
     DynamicLoader::appendPath(THEPEG_PKGLIBDIR);
 #   endif
     HoldFlag<> setup(InterfaceBase::NoReadOnly);
-    Repository::read(infile, cout);
+    string msg = Repository::read(infile, cout);
+    if ( ! msg.empty() ) cerr << msg << '\n';
     Repository::update();
   }
   Repository::save(reponame);
@@ -183,17 +187,20 @@ void HerwigRead(string reponame, string runname) {
   }
   test.close();
 #endif
-  Repository::load(reponame);
+  string msg = Repository::load(reponame);
+  if ( ! msg.empty() ) cerr << msg << '\n';
   breakThePEG();
-  if ( !runname.empty() && runname != "-" )
-    Repository::read(runname, std::cout);
+  if ( !runname.empty() && runname != "-" ) {
+    string msg = Repository::read(runname, std::cout);
+    if ( ! msg.empty() ) cerr << msg << '\n';
+  }
   else
     Repository::read(std::cin, std::cout, "Herwig++> ");
 }
 
 
 
-void HerwigRun(string runname, int seed, long N, 
+void HerwigRun(string runname, int seed, string tag, long N, 
 	       bool tics, bool resume, bool keepid) {
   PersistentIStream is(runname, keepid);
   ThePEG::EGPtr eg;
@@ -210,6 +217,7 @@ void HerwigRun(string runname, int seed, long N,
   }
 
   if ( seed > 0 ) eg->setSeed(seed);
+  if ( !tag.empty() ) eg->addTag(tag);
 
   eg->go( resume ? -1 : 1, N, tics );
 

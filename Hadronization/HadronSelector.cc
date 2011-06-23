@@ -187,7 +187,7 @@ void HadronSelector::Init() {
   // mixing angles
   //
   // the ideal mixing angle
-  const double idealAngleMix = atan( 1.0 / sqrt(2.0) ) * 180.0 / Constants::pi;
+  const double idealAngleMix = atan( sqrt(0.5) ) * 180.0 / Constants::pi;
 
   static Parameter<HadronSelector,double> interface11S0Mixing
     ("11S0Mixing",

@@ -521,43 +521,42 @@ void FourPionNovosibirskCurrent::Init() {
 
 // initialisation of the a_1 running width 
 void FourPionNovosibirskCurrent::inita1width(int iopt) {
-  if(iopt==-1) {
-    _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==ZERO) return;
-    // parameters for the table of values
-    Energy2 step(sqr(_maxmass)/200.);
-    // function to be integrated to give the matrix element
-    // integrator to perform the integral
-    // weights for the integration channels
-    vector<double> inweights;
-    inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
-    vector<double> inpower(3, 0.0);
-    // types of integration channels
-    vector<int> intype;
-    intype.push_back(2);intype.push_back(3);intype.push_back(1);
-    // masses for the integration channels
-    vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
-    // widths for the integration channels
-    vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
-      widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
-      widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
-    // normalisation constant to give physical width if on shell
-    double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
-			     widthgen2.partialWidth(sqr(_a1mass))));
-    // loop to give the values
-    Energy2 moff2(ZERO);
-    _a1runwidth.clear();_a1runq2.clear();
-    for(;moff2<=sqr(_maxmass);moff2+=step) {
-      Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
-      _a1runwidth.push_back(total);
-      _a1runq2.push_back(moff2);
-    }
-  }
   // set up the interpolator
-  else if(iopt==0) {
+  if(iopt==0||!_initializea1) {
     _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
+    return;
+  }
+  _maxcalc=_maxmass;
+  if(_maxmass==ZERO) return;
+  // parameters for the table of values
+  Energy2 step(sqr(_maxmass)/200.);
+  // function to be integrated to give the matrix element
+  // integrator to perform the integral
+  // weights for the integration channels
+  vector<double> inweights;
+  inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
+  vector<double> inpower(3, 0.0);
+  // types of integration channels
+  vector<int> intype;
+  intype.push_back(2);intype.push_back(3);intype.push_back(1);
+  // masses for the integration channels
+  vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
+  // widths for the integration channels
+  vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
+    widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
+    widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
+  // normalisation constant to give physical width if on shell
+  double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
+			   widthgen2.partialWidth(sqr(_a1mass))));
+  // loop to give the values
+  Energy2 moff2(ZERO);
+  _a1runwidth.clear();_a1runq2.clear();
+  for(;moff2<=sqr(_maxmass);moff2+=step) {
+    Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
+    _a1runwidth.push_back(total);
+    _a1runq2.push_back(moff2);
   }
 }
 

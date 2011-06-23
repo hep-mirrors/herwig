@@ -515,6 +515,18 @@ private:
    *  Option for treatment of the fermion loops
    */
   unsigned int massOption_;
+
+  /**
+   *  Option for dynamic scale choice in alpha_S (0=mT,>0=pT)
+   */
+  unsigned int mu_R_opt_;
+
+  /**
+   *  Option for dynamic scale choice in PDFs    (0=mT,>0=pT)
+   */
+  unsigned int mu_F_opt_;
+  //@}
+
   //@}
 
   /**

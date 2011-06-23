@@ -20,9 +20,11 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # general analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WJETS
+# ATLAS W+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-W LHCGenerator
+saverun LHC-W-e LHCGenerator

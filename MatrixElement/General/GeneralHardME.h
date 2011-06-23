@@ -98,14 +98,14 @@ public:
    */
   virtual Energy2 scale() const {
     if(scaleChoice_==0) {
-      return sHat();
+      return scaleFactor_*sHat();
     }
     else {
       assert( scaleChoice_== 1 );
       Energy2 t = 0.5*(tHat()-meMomenta()[2].mass2());
       Energy2 u = 0.5*(uHat()-meMomenta()[3].mass2());
       Energy2 s = 0.5*sHat();
-      return 4.*s*t*u/(s*s+t*t+u*u);
+      return scaleFactor_*4.*s*t*u/(s*s+t*t+u*u);
     }
   }
 
@@ -145,10 +145,12 @@ public:
    * formula (This is only stored for certain processes. It is intended
    * for quick checks of the matrix elements).
    * @param scaleOption The option of what scale to use
+   * @param scaleFactor The prefactor for the scale
    */
   void setProcessInfo(const vector<HPDiagram> & process,
 		      ColourStructure colour, bool debug, 
-		      unsigned int scaleOption);
+		      unsigned int scaleOption,
+		      double scaleFactor);
 
 public:
 
@@ -425,6 +427,11 @@ private:
    * The scale chocie
    */
   unsigned int scaleChoice_;
+
+  /**
+   *  The scale factor
+   */
+  double scaleFactor_;
 
   /**
    *  Info on the selected diagram and colour flow

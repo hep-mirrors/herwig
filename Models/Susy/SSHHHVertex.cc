@@ -25,7 +25,10 @@ SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
 			     theSbpa(0.), theCbpa(0.), theSbma(0.),
 			     theCbma(0.), theS2a(0.), theC2a(0.),
 			     theS2b(0.), theC2b(0.), theElast(0.),
-			     theq2last(ZERO) {
+			     theq2last(ZERO) 
+{}
+
+void SSHHHVertex::doinit() {
   long sec = 35;
   for(long h = 25; h < 36; h += 10) {
     //self-coupling
@@ -39,9 +42,6 @@ SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
     
     sec = 25;
   }
-}
-
-void SSHHHVertex::doinit() {
   SSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

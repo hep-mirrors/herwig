@@ -342,6 +342,12 @@ private:
    */
   vector< vector<int> > _intext;
   
+  /**
+   * Helper function for the weight calculation.
+   * @param ires The resonance to be generated.
+   * @param limit The limit on the particle's mass. 
+   */
+  double atanhelper_(int ires, Energy limit);
 };
 
 

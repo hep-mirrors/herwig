@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last(0.*GeV2) {
-  // the particles
-  addToList(21,21,21);
 }
 
 void SMGGGVertex::doinit() {
+  // the particles
+  addToList(21,21,21);
   orderInGs(1);
   orderInGem(0);
   VVVVertex::doinit();

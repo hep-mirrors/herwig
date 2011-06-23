@@ -211,7 +211,16 @@ private:
 
   /** An Exception class that can be used by all inheriting classes to
    * indicate a setup problem. */
-  class NBodyDecayConstructorError : public Exception {};
+  class NBodyDecayConstructorError : public Exception {
+
+  public:
+
+    NBodyDecayConstructorError() : Exception() {}
+    
+    NBodyDecayConstructorError(const string & str,
+			       Severity sev) : Exception(str,sev)
+    {}
+  };
 
 }
 

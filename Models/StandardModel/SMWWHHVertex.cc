@@ -11,10 +11,8 @@
 
 using namespace Herwig;
 
-SMWWHHVertex::SMWWHHVertex() : ratio_(0.), couplast_(0.), q2last_(ZERO) {
-  addToList( 23, 23, 25, 25);
-  addToList( 24,-24, 25, 25);
-}
+SMWWHHVertex::SMWWHHVertex() : ratio_(0.), couplast_(0.), q2last_(ZERO) 
+{}
 
 IBPtr SMWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -44,6 +42,8 @@ void SMWWHHVertex::Init() {
 }
 
 void SMWWHHVertex::doinit() {
+  addToList( 23, 23, 25, 25);
+  addToList( 24,-24, 25, 25);
   VVSSVertex::doinit();
   ratio_ = 1./(1.-sin2ThetaW());
   orderInGem(2);

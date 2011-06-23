@@ -5,6 +5,7 @@
 //
 
 #include "ThreeBodyDecayConstructor.h"
+#include "ThePEG/Utilities/Debug.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -18,6 +19,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "DecayConstructor.h"
+#include "WeakCurrentDecayConstructor.h"
 
 using namespace Herwig;
 
@@ -194,12 +196,17 @@ void ThreeBodyDecayConstructor::Init() {
 
 void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
+  // special for weak decays
+  for(unsigned int ix=0;ix<decayConstructor()->decayConstructors().size();++ix) {
+    Ptr<Herwig::WeakCurrentDecayConstructor>::pointer 
+      weak = dynamic_ptr_cast<Ptr<Herwig::WeakCurrentDecayConstructor>::pointer >
+      (decayConstructor()->decayConstructors()[ix]);
+    if(!weak) continue;
+    weakMassCut_ = max(weakMassCut_,weak->massCut());
+  }
   // cast the StandardModel to the Hw++ one to get the vertices
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
-  model->init();
   unsigned int nv(model->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the decayers
   for(set<PDPtr>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
@@ -252,7 +259,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	{outgoing[0]->constituentMass(),outgoing[1]->constituentMass(),
 	 outgoing[2]->constituentMass()};
       // remove processes which aren't kinematically allowed within
-      if( min - mout[0] - mout[1] - mout[2] < _minReleaseFraction * min )
+      if( min - mout[0] - mout[1] - mout[2] <= _minReleaseFraction * min )
 	continue;
       // remove QED and QCD radiation diagrams
       // radiation from intermediate
@@ -352,26 +359,38 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       if(!added) modes.push_back(vector<TBDiagram>(1,*dit));
     }
     // print out info on the potential modes
-    // cerr << "testing there are " << modes.size() << " modes\n";
-    // for(unsigned int ix=0;ix<modes.size();++ix) {
-    //   cerr << "testing mode " << ix << "\n";
-    //   cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
-    //   cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
-    // 	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
-    // 	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
-    //   cerr << "testing there are " << modes[ix].size() << " diagrams\n";
-    //   for(unsigned int iy=0;iy<modes[ix].size();++iy) {
-    // 	cerr << "testing diagram " << iy << "\n";
-    // 	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
-    // 	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
-    // 	     << modes[ix][iy].outgoingPair.first  << " "
-    // 	     << modes[ix][iy].outgoingPair.second << "\n";
-    // 	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
-    // 	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
-    // 	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
-    // 	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
-    //   }
-    // }
+    if( Debug::level > 1 ) {
+      generator()->log() << "There are " << modes.size() << " modes for "
+			 << (**ip).PDGName() << "\n";
+      for(unsigned int ix=0;ix<modes.size();++ix) {
+	generator()->log() << "Mode: " << ix << "\n";
+	generator()->log() 
+	  << "incoming = " 
+	  << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
+	generator()->log() 
+	  << "outgoing = " 
+	  << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
+	  << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
+	  << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
+	generator()->log() 
+	  << "There are " << modes[ix].size() << " diagrams\n";
+	for(unsigned int iy=0;iy<modes[ix].size();++iy) {
+	  generator()->log() << "Diagram: " << iy << "\n";
+	  generator()->log() 
+	    << "incoming = " << modes[ix][iy].incoming << "\n";
+	  generator()->log() 
+	    << "outgoing = " << modes[ix][iy].outgoing << " "
+	    << modes[ix][iy].outgoingPair.first  << " "
+	    << modes[ix][iy].outgoingPair.second << "\n";
+	  generator()->log() 
+	    << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
+	    << "\t" << modes[ix][iy].intermediate->id() << "\n";
+	  generator()->log() 
+	    << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
+	    << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
+	}
+      }
+    }
     // now we need to create the decayers for the mode
     bool inter(false);
     if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
@@ -397,9 +416,16 @@ createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
     tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
     if( pb->id() == id ) swap(pa, pb);
     if( pc->id() == id ) swap(pa, pc);
-    //vertices are defined with all particles incoming
+    // vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
+    // remove weak processes simulated using the current
+    if(weakMassCut_>ZERO) {
+      if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
+	 pa->mass()-pc->mass()<weakMassCut_) continue;
+      if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
+	 pa->mass()-pb->mass()<weakMassCut_) continue;
+    }
     decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
   }
   return decays;
@@ -548,8 +574,8 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
     // create the decayer
     GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
     if(!decayer) {
-      //cerr << "Can't create the decayer for " << tag 
-      //<< " so mode not created\n";
+      if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
+					       << tag << " so mode not created\n";
       return;
     }
     tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
@@ -579,8 +605,8 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
       // create the decayer
       GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
       if(!decayer) {
-	cerr << "Can't create the decayer for " << dm->tag() 
-	     << " so decays by phase-space\n";
+	if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
+						 << tag << " so mode not created\n";
 	return;
       }
       generator()->preinitInterface(dm, "Decayer", "set", 

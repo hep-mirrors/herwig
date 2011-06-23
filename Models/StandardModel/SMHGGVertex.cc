@@ -25,11 +25,11 @@ using namespace ThePEG;
 SMHGGVertex::SMHGGVertex()
   :_couplast(0.),_q2last(ZERO),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
-  //PDG codes for particles at vertices
-  addToList(21,21,25);
 }
 
 void SMHGGVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(21,21,25);
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if(!_theSM) 
     throw InitException();

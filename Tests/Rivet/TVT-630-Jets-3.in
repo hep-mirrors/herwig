@@ -1,4 +1,4 @@
-###################################################
+####################################################
 # Rivet analyses at the Z pole
 ##################################################
 read TVTBase.in
@@ -7,7 +7,7 @@ read TVTBase.in
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 630.0
 
 ##################################################
 #  Use the q qbar matrix element

@@ -31,10 +31,10 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
             newb = h.getBin(i)
             if newb.xlow >= ptmin:
-                b.yval =  newb.yval
-                b.yerrplus =  newb.yerrplus
-                b.yerrminus =  newb.yerrminus
-                b.focus= newb.focus
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
+                b._focus= newb._focus
 
 def mergeByPt(hpath, sqrts):
     global inhistos
@@ -106,7 +106,7 @@ for f in aidafiles:
         ptmin=0.
     elif(file.find("Run-II-Jets-1")>0) :
         sqrts=1960
-        ptmin=37.
+        ptmin=36.
     elif(file.find("Run-II-Jets-2")>0) :
         sqrts=1960
         ptmin=55.
@@ -175,7 +175,8 @@ for f in aidafiles:
            h.fullPath().find("7057202")>0 or h.fullPath().find("6450792")>0 or
            h.fullPath().find("7828950")>0 or h.fullPath().find("4751469")>0 or
            h.fullPath().find("5839831")>0 or h.fullPath().find("4563131")>0 or
-           h.fullPath().find("4517016")>0 or h.fullPath().find("3618439")>0) :
+           h.fullPath().find("4517016")>0 or h.fullPath().find("3618439")>0 or
+           h.fullPath().find("8591881")>0) :
            if not inhistos.has_key(h.fullPath()):
                inhistos[h.fullPath()] = {}
            tmpE = inhistos[h.fullPath()]
@@ -194,7 +195,7 @@ for f in aidafiles:
              h.fullPath().find("3214044")>0 or h.fullPath().find("2952106")>0 ) :
             outhistos[h.fullPath()] = h
 
-aidafiles=["-Run-II-Jets-8.aida","-Run-II-Jets-9.aida","-Run-II-Jets-10.aida",\
+aidafiles=["-Run-II-Jets-8.aida","-Run-II-Jets-9.aida","-Run-II-Jets-10.aida","-Run-II-Jets-11.aida",\
            "-Run-I-Jets-6.aida","-Run-I-Jets-7.aida","-Run-I-Jets-8.aida"]
 
 for f in aidafiles:
@@ -204,8 +205,11 @@ for f in aidafiles:
         ptmin=0.150
     elif(file.find("Run-II-Jets-9")>0) :
         sqrts=1960
-        ptmin=0.600
+        ptmin=0.400
     elif(file.find("Run-II-Jets-10")>0) :
+        sqrts=1960
+        ptmin=0.600
+    elif(file.find("Run-II-Jets-11")>0) :
         sqrts=1960
         ptmin=1.000
     elif(file.find("Run-I-Jets-6")>0) :
@@ -263,15 +267,15 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4751469")>0 or hpath.find("5839831")>0 or
         hpath.find("4563131")>0 or hpath.find("4517016")>0 or
         hpath.find("3618439")>0 or hpath.find("4266730")>0 or
-        hpath.find("3418421")>0 ) :
+        hpath.find("3418421")>0 or hpath.find("8591881")>0) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
         for b in outhistos[hpath]:
-            b.yval = 0
-            b.yerrplus = 0
-            b.yerrminus = 0
-            b.focus= None
+            b.val = 0
+            b.errplus = 0
+            b.errminus = 0
+            b._focus= None
 
 
 ## Field analysis
@@ -339,8 +343,8 @@ useOnePt("/CDF_2004_S5839831/d11-x01-y01", "630", "0")
 
 ## CDF jet shape analysis
 logging.info("Processing CDF_2005_S6217184")
-useOnePt("/CDF_2005_S6217184/d01-x01-y01", "1960", "37" )
-useOnePt("/CDF_2005_S6217184/d01-x01-y02", "1960", "37" )
+useOnePt("/CDF_2005_S6217184/d01-x01-y01", "1960", "36" )
+useOnePt("/CDF_2005_S6217184/d01-x01-y02", "1960", "36" )
 useOnePt("/CDF_2005_S6217184/d01-x01-y03", "1960", "55" )
 useOnePt("/CDF_2005_S6217184/d02-x01-y01", "1960", "55" )
 useOnePt("/CDF_2005_S6217184/d02-x01-y02", "1960", "55" )
@@ -357,8 +361,8 @@ useOnePt("/CDF_2005_S6217184/d05-x01-y03", "1960", "175")
 useOnePt("/CDF_2005_S6217184/d06-x01-y01", "1960", "265")
 useOnePt("/CDF_2005_S6217184/d06-x01-y02", "1960", "265")
 useOnePt("/CDF_2005_S6217184/d06-x01-y03", "1960", "265")
-useOnePt("/CDF_2005_S6217184/d07-x01-y01", "1960", "37" )
-useOnePt("/CDF_2005_S6217184/d07-x01-y02", "1960", "37" )
+useOnePt("/CDF_2005_S6217184/d07-x01-y01", "1960", "36" )
+useOnePt("/CDF_2005_S6217184/d07-x01-y02", "1960", "36" )
 useOnePt("/CDF_2005_S6217184/d07-x01-y03", "1960", "55" )
 useOnePt("/CDF_2005_S6217184/d08-x01-y01", "1960", "55" )
 useOnePt("/CDF_2005_S6217184/d08-x01-y02", "1960", "55" )
@@ -394,6 +398,25 @@ mergeByPt("/CDF_2008_LEADINGJETS/d07-x01-y01", "1960")
 mergeByPt("/CDF_2008_LEADINGJETS/d08-x01-y01", "1960")
 ## mean pT
 mergeByPt("/CDF_2008_LEADINGJETS/d09-x01-y01", "1960")
+
+## newer version
+logging.info("Processing CDF_2010_S8591881_QCD")
+mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y01", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y02", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d10-x01-y03", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y01", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y02", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d11-x01-y03", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y01", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y02", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d12-x01-y03", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y01", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y02", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y03", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d14-x01-y01", "1960")
+mergeByPt("/CDF_2010_S8591881_QCD/d15-x01-y01", "1960")
+
+
 
 ## D0 dijet correlation analysis
 logging.info("Processing D0_2004_S5992206")
@@ -459,8 +482,8 @@ mergeByPt("/CDF_1996_S3418421/d02-x01-y01","1800")
 
 useOnePt("/D0_2009_S8320160/d01-x01-y01", "1960", "0.15" )
 useOnePt("/D0_2009_S8320160/d02-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d03-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d04-x01-y01", "1960", "0.15" )
+useOnePt("/D0_2009_S8320160/d03-x01-y01", "1960", "0.4" )
+useOnePt("/D0_2009_S8320160/d04-x01-y01", "1960", "0.4" )
 useOnePt("/D0_2009_S8320160/d05-x01-y01", "1960", "0.6" )
 useOnePt("/D0_2009_S8320160/d06-x01-y01", "1960", "0.6" )
 useOnePt("/D0_2009_S8320160/d07-x01-y01", "1960", "0.6" )

@@ -8,7 +8,7 @@ bosons.in Cuts.in decayers.in \
 Decays.in DiffractiveParticles.in diquarks.in \
 Hadronization.in HerwigDefaults.in HerwigCleanup.in \
 lepton_decays.in leptons.in \
-masses.in MatrixElements.in meson_decays.in mesons.in Model.in \
+masses.in MatrixElements.in meson_decays.in mesons.in Model.in BSM.in \
 Particles.in QEDRadiation.in quark_decays.in quarks.in \
 Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in
 

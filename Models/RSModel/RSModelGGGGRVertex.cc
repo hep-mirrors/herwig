@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 RSModelGGGGRVertex::RSModelGGGGRVertex() 
-  : kappa_(ZERO), _couplast(0.), _q2last(ZERO) {
-  addToList(21, 21, 21, 39);
-}
+  : kappa_(ZERO), _couplast(0.), _q2last(ZERO) 
+{}
 
 void RSModelGGGGRVertex::doinit() {
+  addToList(21, 21, 21, 39);
   VVVTVertex::doinit();
   orderInGem(1);
   orderInGs (1);

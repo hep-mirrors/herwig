@@ -49,4 +49,6 @@ src/versionstring.h
 src/tune
 src/tests/.*\.(time|mult|Bmult|chisq)
 Tests/.*/.*\.(top|ps|pyc|info)
+src/herwigopts.c
+src/herwigopts.h
 

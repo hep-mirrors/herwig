@@ -31,14 +31,14 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theTanB(0.),theSinA(0.), 
 			     theCosA(0.), theSinB(0.), theCosB(0.), 
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
-			     theq2last(), theHaveCoeff(false), theLastID(0) {
+			     theq2last(), theHaveCoeff(false), theLastID(0)
+{}
+
+void SSHGGVertex::doinit() {
   //PDG codes for particles at vertices
   addToList(21,21,25);
   addToList(21,21,35);
   addToList(21,21,36);
-}
-
-void SSHGGVertex::doinit() {
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM ) 
     throw InitException()

@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
@@ -43,7 +44,7 @@ namespace {
 
 TwoToTwoProcessConstructor::TwoToTwoProcessConstructor() : 
   Nout_(0), nv_(0), allDiagrams_(true),
-  processOption_(0), scaleChoice_(0) 
+  processOption_(0), scaleChoice_(0), scaleFactor_(1.) 
 {}
 
 IBPtr TwoToTwoProcessConstructor::clone() const {
@@ -91,14 +92,14 @@ void TwoToTwoProcessConstructor::doinit() {
 void TwoToTwoProcessConstructor::persistentOutput(PersistentOStream & os) const {
   os << vertices_ << incoming_ << outgoing_
      << allDiagrams_ << processOption_
-     << scaleChoice_ << excluded_ << excludedExternal_
+     << scaleChoice_ << scaleFactor_ << excluded_ << excludedExternal_
      << excludedVertexVector_ << excludedVertexSet_;
 }
 
 void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> vertices_ >> incoming_ >> outgoing_
      >> allDiagrams_ >> processOption_
-     >> scaleChoice_ >> excluded_ >> excludedExternal_
+     >> scaleChoice_ >> scaleFactor_ >> excluded_ >> excludedExternal_
      >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
@@ -180,6 +181,13 @@ void TwoToTwoProcessConstructor::Init() {
      "Always use the transverse mass",
      2);
 
+  static Parameter<TwoToTwoProcessConstructor,double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The prefactor used in the scale calculation. The scale used is"
+     " that defined by scaleChoice multiplied by this prefactor",
+     &TwoToTwoProcessConstructor::scaleFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
   static RefVector<TwoToTwoProcessConstructor,ThePEG::ParticleData> interfaceExcluded
     ("Excluded",
      "Particles which are not allowed as intermediates",
@@ -213,12 +221,10 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
+    VertexBasePtr vertex = model()->vertex(ix);
     if(excludedVertexSet_.find(vertex) != 
        excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);
@@ -607,7 +613,7 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   }
   // set the information
   matrixElement->setProcessInfo(process, colourFlow(extpart),
-				debug(), scale);
+				debug(), scale, scaleFactor_);
   // insert it
   generator()->preinitInterface(subProcess(), "MatrixElements", 
 				subProcess()->MEs().size(),

@@ -19,7 +19,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) {
+SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) 
+{}
+
+void SMFFPVertex::doinit() {
   // PDG codes for the particles
   // the quarks
   for(int ix=1;ix<7;++ix) {
@@ -29,9 +32,6 @@ SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) {
   for(int ix=11;ix<17;ix+=2) {
     addToList(-ix, ix, 22);
   }
-}
-
-void SMFFPVertex::doinit() {
   for(int ix=1;ix<4;++ix) {
     _charge[2*ix-1]  = generator()->standardModel()->ed();
     _charge[2*ix ]   = generator()->standardModel()->eu();

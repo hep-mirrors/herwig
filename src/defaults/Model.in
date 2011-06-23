@@ -33,38 +33,4 @@ newdef Model:RunningMass RunningMass
 #####################################
 mkdir /Herwig/Vertices
 cd /Herwig/Vertices
-read StandardModelVertices.in 
-
-#################################################
-# Create the BSM machinery
-# This only gets switched on in read if it is
-# requested by the user
-################################################
-mkdir /Herwig/NewPhysics
-cd /Herwig/NewPhysics
-create Herwig::ModelGenerator NewModel
-create Herwig::ResonantProcessConstructor ResConstructor
-create Herwig::TwoToTwoProcessConstructor HPConstructor
-create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
-create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
-create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
-create Herwig::DecayConstructor DecayConstructor
-newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
-create Herwig::TwoBodyDecayConstructor TwoBodyDC
-create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
-
-insert NewModel:HardProcessConstructors[0] HPConstructor
-insert NewModel:HardProcessConstructors[1] ResConstructor
-insert NewModel:HardProcessConstructors[2] HVConstructor
-insert NewModel:HardProcessConstructors[3] HiggsVBFConstructor
-insert NewModel:HardProcessConstructors[4] QQHiggsConstructor
-newdef NewModel:DecayConstructor DecayConstructor
-insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
-insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
-
-# Required to decay the particles before showering so as to keep
-# the spin correlations in the decay
-create Herwig::HwDecayHandler DecayHandler
-newdef DecayHandler:NewStep No
-insert DecayHandler:Excluded 0 /Herwig/Particles/tau-
-insert DecayHandler:Excluded 1 /Herwig/Particles/tau+
+read StandardModelVertices.in

@@ -70,7 +70,9 @@ public:
   /**
    * Overloaded function from Interfaced
    */
-  virtual bool preInitialize() const;
+  virtual bool preInitialize() const {
+    return true;
+  }
 
 protected:
 

@@ -4,12 +4,6 @@
 read LHCBase.in
 
 ##################################################
-# LEP physics parameters (override defaults) 
-##################################################
-cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
-
-##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements

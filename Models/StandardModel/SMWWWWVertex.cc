@@ -22,14 +22,14 @@ using namespace ThePEG;
 SMWWWWVertex::SMWWWWVertex() 
   : _couplast(0.0), _q2last(sqr(Constants::MaxEnergy)), 
     _vfact(4,0.0), _sw2(0.), _cw2(0.) {
+}
+
+void SMWWWWVertex::doinit() {
   // particles
   addToList(24, -24, 24, -24);
   addToList(23,  24, 23, -24);
   addToList(22,  24, 22, -24);
   addToList(22,  24, 23, -24);
-}
-
-void SMWWWWVertex::doinit() {
   orderInGem(2);
   orderInGs(0);
   VVVVVertex::doinit();

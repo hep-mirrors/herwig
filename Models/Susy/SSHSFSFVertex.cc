@@ -28,7 +28,10 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theMw(ZERO), theMz(ZERO), theMu(ZERO), 
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
-				 theSF2Last(0) {
+				 theSF2Last(0) 
+{}
+
+void SSHSFSFVertex::doinit() {
   int higgs = 25;
   //h0,H0
   for(unsigned int i = 0; i < 2; ++i) {
@@ -104,9 +107,6 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
     addToList(-37, 1000001 + ii, -1000000 - ii);
     addToList(-37, 1000001 + ii, -2000000 - ii);
   }
-}
-
-void SSHSFSFVertex::doinit() {
   SSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
@@ -187,8 +187,11 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   assert( higgs == 25 || higgs == 35 || 
 	  higgs == 36 || abs(higgs) == 37 );
   // abs of antisquark and check
-  sq2 *=-1;
-  assert(sq1>0&&sq2>0);
+  // \todo workaround for labelling problem from scalar decays
+  sq1 = abs(sq1); 
+  sq2 = abs(sq2);
+  // assert(sq1>0&&sq2>0);
+  
   // running coupling
   if( q2 != theq2Last || thegLast==0.) {
     thegLast = weakCoupling(q2);

@@ -1,10 +1,12 @@
 AUTOMAKE_OPTIONS = -Wno-portability
 AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
-EXTRA_DIST = Inputs
+EXTRA_DIST = Inputs python Rivet 
 
 dist-hook:
 	rm -rf $(distdir)/Inputs/.svn
+	rm -rf $(distdir)/python/.svn
+	rm -rf $(distdir)/Rivet/.svn
 
 EXTRA_LTLIBRARIES = LeptonTest.la GammaTest.la HadronTest.la DISTest.la
 
@@ -110,26 +112,25 @@ Rivet-Star-% : Rivet/Star-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-LEP: Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  Rivet-LEP-133 \
-           Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 \
-           Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
-           Rivet-LEP-206 \
+Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
+           Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
+           Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
+           Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14 \
+           Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \  
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
            Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-133 \
            Rivet-LEP-Powheg-161 Rivet-LEP-Powheg-172 \
            Rivet-LEP-Powheg-177 Rivet-LEP-Powheg-183 \
            Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-196 \
            Rivet-LEP-Powheg-197 Rivet-LEP-Powheg-200 \
-           Rivet-LEP-Powheg-206  
-	export DPATH=`rivet-config --datadir`; \
-	for i in LEP-*.aida; do echo $$i; \
-	rivet-rmgaps $$DPATH/ALEPH_2004_S5765862.aida $$i; done; \
-	rivet-rmgaps $$DPATH/ALEPH_1996_S3486095 LEP-91.aida; \
-	rivet-rmgaps $$DPATH/ALEPH_1996_S3486095 LEP-Powheg-91.aida
+           Rivet-LEP-Powheg-206 
+	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
+	rivet-rmgaps LEP-91.aida;
+	rivet-rmgaps LEP-Powheg-91.aida
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
-	rivet-mkhtml --no-mc-errs -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
+	rivet-mkhtml -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \
@@ -137,41 +138,40 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-II-Z-e  Rivet-TVT-Powheg-Run-II-Z-e  \
               Rivet-TVT-Run-II-Z-mu Rivet-TVT-Powheg-Run-II-Z-mu \
               Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W
-	export DPATH=`rivet-config --datadir`; \
-	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Run-II-Z-e.aida; \
-	rivet-rmgaps $$DPATH/CDF_2008_S8095620 TVT-Powheg-Run-II-Z-e.aida; 
+	rivet-rmgaps TVT-Run-II-Z-e.aida;
+	rivet-rmgaps TVT-Powheg-Run-II-Z-e.aida; 
 	rm -rf Rivet-TVT-WZ
-	python/merge-aida TVT-Run-II-W.aida TVT-Run-II-Z-{e,mu}.aida\
-                          TVT-Run-I-{W,Z,WZ}.aida -o TVT-WZ.aida
-	python/merge-aida TVT-Powheg-Run-II-W.aida   TVT-Powheg-Run-II-Z-{e,mu}.aida\
-                          TVT-Powheg-Run-I-{W,Z,WZ}.aida -o TVT-Powheg-WZ.aida
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
+	python/merge-TVT-EW TVT-Run-II-W.aida TVT-Run-II-Z-{e,mu}.aida\
+                            TVT-Run-I-{W,Z,WZ}.aida -o TVT-WZ.aida
+	python/merge-TVT-EW TVT-Powheg-Run-II-W.aida   TVT-Powheg-Run-II-Z-{e,mu}.aida\
+                            TVT-Powheg-Run-I-{W,Z,WZ}.aida -o TVT-Powheg-WZ.aida
+	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton Rivet-TVT-Run-II-PromptPhoton
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
-	python/merge-aida TVT-Run-II-DiPhoton.aida TVT-Run-II-PromptPhoton.aida -o TVT-Photon.aida
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Photon TVT-Photon.aida:Hw++
+	python/merge-aida TVT-Run-II-DiPhoton.aida TVT-Run-II-PromptPhoton.aida\
+                           -o TVT-Photon.aida
+	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.aida:Hw++
 
 
-Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
-                Rivet-TVT-Run-II-Jets-3 Rivet-TVT-Run-II-Jets-4 \
-                Rivet-TVT-Run-II-Jets-5 Rivet-TVT-Run-II-Jets-6 \
-                Rivet-TVT-Run-II-Jets-7 Rivet-TVT-Run-II-Jets-8 \
-                Rivet-TVT-Run-II-Jets-9 Rivet-TVT-Run-II-Jets-10\
-                Rivet-TVT-Run-II-UE \
-                Rivet-TVT-Run-I-Jets-1  Rivet-TVT-Run-I-Jets-2 \
-                Rivet-TVT-Run-I-Jets-3  Rivet-TVT-Run-I-Jets-4 \
-                Rivet-TVT-Run-I-Jets-5  Rivet-TVT-Run-I-Jets-6 \
-                Rivet-TVT-Run-I-Jets-7  Rivet-TVT-Run-I-Jets-8\
+Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
+                Rivet-TVT-Run-II-Jets-3  Rivet-TVT-Run-II-Jets-4 \
+                Rivet-TVT-Run-II-Jets-5  Rivet-TVT-Run-II-Jets-6 \
+                Rivet-TVT-Run-II-Jets-7  Rivet-TVT-Run-II-Jets-8 \
+                Rivet-TVT-Run-II-Jets-9  Rivet-TVT-Run-II-Jets-10\
+                Rivet-TVT-Run-II-Jets-11 Rivet-TVT-Run-II-UE \
+                Rivet-TVT-Run-I-Jets-1   Rivet-TVT-Run-I-Jets-2 \
+                Rivet-TVT-Run-I-Jets-3   Rivet-TVT-Run-I-Jets-4 \
+                Rivet-TVT-Run-I-Jets-5   Rivet-TVT-Run-I-Jets-6 \
+                Rivet-TVT-Run-I-Jets-7   Rivet-TVT-Run-I-Jets-8\
                 Rivet-TVT-Run-I-UE\
                 Rivet-TVT-630-UE        Rivet-TVT-630-Jets-1 \
                 Rivet-TVT-630-Jets-2    Rivet-TVT-630-Jets-3
-	export DPATH=`rivet-config --datadir`; \
-	rivet-rmgaps $$DPATH/CDF_1994_S2952106 TVT-Run-I-Jets-4.aida	
+	rivet-rmgaps TVT-Run-I-Jets-4.aida	
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
-	rivet-mkhtml --no-mc-errs -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
+	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
 Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
@@ -179,28 +179,34 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
-                Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE	
+                Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE	
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
-	rivet-mkhtml --no-mc-errs -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
+	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
 
 Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
             Rivet-Star-Jets-2 Rivet-Star-Jets-3 \
             Rivet-Star-Jets-4
 	rm -rf Rivet-Star
-	export DPATH=`rivet-config --datadir`; \
-	rivet-rmgaps $$DPATH/STAR_2006_S6860818 Star-UE.aida
+	rivet-rmgaps Star-UE.aida
 	python/merge-Star Star
-	rivet-mkhtml --no-mc-errs -o Rivet-Star Star.aida
+	rivet-mkhtml -o Rivet-Star Star.aida
 
-Rivet-LHC-EW: Rivet-LHC-W  Rivet-LHC-Powheg-W \
-              Rivet-LHC-Z  Rivet-LHC-Powheg-Z \
-              Rivet-LHC-WW Rivet-LHC-Powheg-WW\
-              Rivet-LHC-ZZ Rivet-LHC-Powheg-ZZ
-	rm -rf Rivet-LHC-EW
-	python/merge-aida LHC-{W,Z,WW,ZZ}.aida -o LHC-EW.aida
-	python/merge-aida LHC-Powheg-{W,Z,WW,ZZ}.aida -o LHC-Powheg-EW.aida
-	rivet-mkhtml --no-mc-errs -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg
+Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
+              Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
+              Rivet-LHC-Z    Rivet-LHC-Powheg-Z \
+              Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
+              Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ
+	rm -rf Rivet-LHC-EW;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-EW.aida;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
+	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
+
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton
+	rm -rf Rivet-LHC-Photon 
+	python/merge-aida LHC-7-PromptPhoton.aida -o LHC-Photon.aida
+	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<

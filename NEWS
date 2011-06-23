@@ -1,5 +1,17 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.5.1 release: 2011-06-?? (tagged at SVN r????)
+
+** Run name tags
+   Aded possibility to add a tag to the run name when running with the
+   '-t' option. One run file can thus be run with different seeds and
+   results stored in different output files.
+
+** Ticket #349: Stop by default on input file errors
+   The '--exitonerror' flag is now the default behaviour for the
+   Herwig++ binary. To switch back to the old behaviour,
+   '--noexitonerror' is required.
+
 * Herwig++-2.5.0 release: 2011-02-08 (tagged at SVN r6274)
 
 ** Uses ThePEG-1.7.0

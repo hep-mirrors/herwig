@@ -181,6 +181,43 @@ public:
    * Set the partner
    */
   void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
+
+
+  /**
+   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
+   */
+  Energy evolutionScale2() const { return _evolutionScale2; }
+
+  /**
+   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
+   */
+  void setEvolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
+  
+  /**
+   *  Return the radiation line of a gluon
+   *  This is 0 for a particle with random radiation choice, 1 for the colour
+   *  line and 2 for the anti-colour line.
+   */
+  int radiationLine() { return _radiationLine; }
+
+  /**
+   *  Set the radiation line of a gluon
+   */   
+  void setRadiationLine(int radiationLine) { _radiationLine = radiationLine; }
+  
+  
+  /** 
+   * Return the progenitor of the shower
+   */
+  tShowerParticlePtr progenitor() const { return _progenitor; }
+
+
+  /**
+   * Set the progenitor of the shower
+   */
+  void setProgenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
+    
+
   //@}
 
   /**
@@ -315,6 +352,22 @@ private:
    *  Pointer to ThePEG Particle this ShowerParticle was created from
    */
   const tcPPtr _thePEGBase;
+  
+  /**
+   *  Second evolution scale
+   */  
+  Energy _evolutionScale2; 
+  
+  /**
+   *  Radiation Line
+   */
+  int _radiationLine;
+  
+  /**
+   *  Progenitor
+   */   
+  tShowerParticlePtr _progenitor;
+    
 };
 
 }
