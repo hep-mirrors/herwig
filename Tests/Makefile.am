@@ -176,7 +176,10 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1 Rivet-TVT-Run-II-Jets-2 \
 Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
                 Rivet-LHC-7-Jets-5  Rivet-LHC-7-Jets-6 \
-                Rivet-LHC-7-Jets-7  Rivet-LHC-7-UE	
+                Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
+                Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
+                Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
+                Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE	
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml --no-mc-errs -o Rivet-LHC-Jets LHC-Jets.aida:Hw++

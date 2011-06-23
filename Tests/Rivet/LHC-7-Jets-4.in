@@ -26,6 +26,10 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # ATLAS jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
+# ATLAS di-jet decorrelation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8971293
+# ATLAS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

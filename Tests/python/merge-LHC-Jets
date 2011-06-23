@@ -31,25 +31,33 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
             newb = h.getBin(i)
             if newb.xlow >= ptmin:
-                b.yval =  newb.yval
-                b.yerrplus =  newb.yerrplus
-                b.yerrminus =  newb.yerrminus
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
                 b.focus= newb.focus
 
 def mergeByPt(hpath, sqrts):
-    global inhistos
+    global inhistos_pt
     global outhistos
     try:
-        fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
+        fillAbove(outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
+    except:
+        pass
+
+def mergeByMass(hpath, sqrts):
+    global inhistos_mass
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
     except:
         pass
 
 def useOnePt(hpath, sqrts, ptmin):
-    global inhistos
+    global inhistos_pt
     global outhistos
     try:
        ## Find best pT_min match
-        ptmins = inhistos[hpath][float(sqrts)].keys()
+        ptmins = inhistos_pt[hpath][float(sqrts)].keys()
         closest_ptmin = None
         for ptm in ptmins:
             if closest_ptmin is None or \
@@ -58,7 +66,25 @@ def useOnePt(hpath, sqrts, ptmin):
         if closest_ptmin != float(ptmin):
             logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
                                 "using pTmin=%e instead" % closest_ptmin)
-        outhistos[hpath] =  inhistos[hpath][float(sqrts)][closest_ptmin]
+        outhistos[hpath] =  inhistos_pt[hpath][float(sqrts)][closest_ptmin]
+    except:
+        pass
+
+def useOneMass(hpath, sqrts, ptmin):
+    global inhistos_pt
+    global outhistos
+    try:
+       ## Find best pT_min match
+        ptmins = inhistos_mass[hpath][float(sqrts)].keys()
+        closest_ptmin = None
+        for ptm in ptmins:
+            if closest_ptmin is None or \
+                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+                closest_ptmin = ptm
+        if closest_ptmin != float(ptmin):
+            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
+                                "using pTmin=%e instead" % closest_ptmin)
+        outhistos[hpath] =  inhistos_mass[hpath][float(sqrts)][closest_ptmin]
     except:
         pass
 
@@ -81,12 +107,13 @@ if __name__ == "__main__":
     ## Prefix used in dat file headers
     headerprefix = "# "
 
-aidafiles=["-7-UE.aida"    ,"-7-Jets-1.aida","-7-Jets-2.aida",\
-           "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",\
-           "-7-Jets-6.aida","-7-Jets-7.aida"]
+aidafiles=["-7-UE.aida"    ,"-7-Jets-1.aida","-7-Jets-2.aida",
+           "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
+           "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida"]
 
 ## Get histos
-inhistos = {}
+inhistos_pt   = {}
+inhistos_mass = {}
 outhistos={}
 weights = {}
 for f in aidafiles:
@@ -115,6 +142,9 @@ for f in aidafiles:
     elif(file.find("-7-Jets-7")>0) :
         sqrts=7000
         ptmin=400.
+    elif(file.find("-7-Jets-8")>0) :
+        sqrts=7000
+        ptmin=600.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -129,10 +159,12 @@ for f in aidafiles:
         h = lighthisto.Histo.fromDPS(dps)
         # di-jet decorrelations
         # jet shapes
-        if(h.fullPath().find("8924791")>0) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
+        if(h.fullPath().find("8924791")>0 or 
+           h.fullPath().find("8971293")>0 or 
+           h.fullPath().find("8817804")>0) :
+           if not inhistos_pt.has_key(h.fullPath()):
+               inhistos_pt[h.fullPath()] = {}
+           tmpE = inhistos_pt[h.fullPath()]
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
@@ -142,9 +174,57 @@ for f in aidafiles:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
         else :
             outhistos[h.fullPath()] = h
+
+aidafiles=["-7-Jets-9.aida" ,"-7-Jets-10.aida",
+           "-7-Jets-11.aida","-7-Jets-12.aida","-7-Jets-13.aida"]
+
+for f in aidafiles:
+    file="LHC"+f
+    if(file.find("-7-Jets-9.aida")>0) :
+        sqrts=7000
+        mass=110
+    elif(file.find("-7-Jets-10.aida")>0) :
+        sqrts=7000
+        mass=300
+    elif(file.find("-7-Jets-11.aida")>0) :
+        sqrts=7000
+        mass=800
+    elif(file.find("-7-Jets-12.aida")>0) :
+        sqrts=7000
+        mass=1200
+    elif(file.find("-7-Jets-13.aida")>0) :
+        sqrts=7000
+        mass=2000
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        tree = ET.parse(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    tree = ET.parse(file)
+    ## Get histos from this AIDA file
+    for dps in tree.findall("dataPointSet"):
+        h = lighthisto.Histo.fromDPS(dps)
+        if(h.fullPath().find("8817804")>0 ) :
+           if not inhistos_mass.has_key(h.fullPath()):
+               inhistos_mass[h.fullPath()] = {}
+           tmpE = inhistos_mass[h.fullPath()]
+           if not tmpE.has_key(sqrts):
+               tmpE[sqrts] = {}
+           tmpP = tmpE[sqrts]
+           if not tmpP.has_key(mass):
+               tmpP[mass] = h
+           else:
+                raise Exception("A set with mass = %s already exists" % ( mass))
+
+
 ## Make empty output histos if needed
-for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("8924791")>0 ) :
+for hpath,hsets in inhistos_pt.iteritems():
+    if( hpath.find("8924791")>0  or 
+        h.fullPath().find("8971293")>0 or 
+        h.fullPath().find("8817804")>0 ) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -154,6 +234,16 @@ for hpath,hsets in inhistos.iteritems():
             b.errminus = 0
             b.focus= None
 ## CDF jet shape analysis
+logging.info("Processing ATLAS_2011_S8971293")
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y03", "7000", "210" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y04", "7000", "260" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y05", "7000", "260" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y06", "7000", "400" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y07", "7000", "400" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y08", "7000", "600" )
+useOnePt("/ATLAS_2011_S8971293/d01-x01-y09", "7000", "600" )
 logging.info("Processing ATLAS_2011_S8924791")
 useOnePt("/ATLAS_2011_S8924791/d01-x01-y01", "7000", "30" )
 useOnePt("/ATLAS_2011_S8924791/d01-x01-y02", "7000", "30" )
@@ -287,6 +377,38 @@ useOnePt("/ATLAS_2011_S8924791/d11-x05-y01", "7000", "400" )
 useOnePt("/ATLAS_2011_S8924791/d11-x05-y02", "7000", "400" )
 useOnePt("/ATLAS_2011_S8924791/d11-x06-y01", "7000", "400" )
 useOnePt("/ATLAS_2011_S8924791/d11-x06-y02", "7000", "400" )
+logging.info("Processing ATLAS_2010_S8817804")
+mergeByPt("/ATLAS_2010_S8817804/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d06-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d07-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d08-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d09-x01-y01", "7000")
+mergeByPt("/ATLAS_2010_S8817804/d10-x01-y01", "7000")
+
+mergeByMass("/ATLAS_2010_S8817804/d11-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d12-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d13-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d14-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d15-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d16-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d17-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d18-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d19-x01-y01", "7000")
+mergeByMass("/ATLAS_2010_S8817804/d20-x01-y01", "7000")
+
+useOneMass("/ATLAS_2010_S8817804/d21-x01-y01", "7000", "300" )
+useOneMass("/ATLAS_2010_S8817804/d22-x01-y01", "7000", "300" )
+useOneMass("/ATLAS_2010_S8817804/d23-x01-y01", "7000", "800" )
+useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "300" )
+useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "300" )
+useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "800" )
+
+# Generated at Monday, 11. April 2011 08:52PM
+
 # Choose output file
 name = "LHC"+"-Jets.aida"
 out = open(name, "w")

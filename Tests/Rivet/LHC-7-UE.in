@@ -31,6 +31,8 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 
 # ATLAS jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
+# ATLAS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
 
 
 ##################################################
