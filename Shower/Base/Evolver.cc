@@ -224,6 +224,22 @@ void Evolver::Init() {
      "Powheg style hard emission",
      1);
 
+  static Switch<Evolver,unsigned int> interfaceReconstructionOption
+    ("ReconstructionOption",
+     "Treatment of the reconstruction of the transverse momentum of "
+     "a branching from the evolution scale.",
+     &Evolver::_reconOpt, 0, false, false);
+  static SwitchOption interfaceReconstructionOptionCutOff
+    (interfaceReconstructionOption,
+     "CutOff",
+     "Use the cut-off masses in the calculation",
+     0);
+  static SwitchOption interfaceReconstructionOptionOffShell
+    (interfaceReconstructionOption,
+     "OffShell",
+     "Use the off-shell masses in the calculation",
+     1);
+
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -448,7 +464,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // shower the second particle
     timeLikeShower(theChildren[1],type,false);
     // branching has happened
-    particle->showerKinematics()->updateParent(particle, theChildren,true);
+    if(_reconOpt!=0)
+      particle->showerKinematics()->updateParent(particle, theChildren,true);
     // clean up the vetoed emission
     if(particle->virtualMass()==ZERO) {
       particle->setShowerKinematics(ShoKinPtr());
@@ -1046,6 +1063,9 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     else {
       truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
     }
+    // branching has happened
+    if(_reconOpt!=0)
+      particle->showerKinematics()->updateParent(particle, theChildren,true);
     return true;
   }
   // has emitted
@@ -1068,6 +1088,8 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type );
   else            timeLikeShower( theChildren[1]  , type,false);
   // branching has happened
+  if(_reconOpt!=0)
+    particle->showerKinematics()->updateParent(particle, theChildren,true);
   return true;
 }
 

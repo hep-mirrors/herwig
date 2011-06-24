@@ -58,7 +58,7 @@ public:
    *  Default Constructor
    */
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-	      _hardVetoRead(0),
+	      _hardVetoRead(0), _reconOpt(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
@@ -533,6 +533,11 @@ private:
    * Hard veto to be read switch
    */
   unsigned int _hardVetoRead; 
+
+  /**
+   *  Control of the reconstruction option
+   */
+  unsigned int _reconOpt;
 
   /**
    * rms intrinsic pT of Gaussian distribution

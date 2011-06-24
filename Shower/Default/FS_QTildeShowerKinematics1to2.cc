@@ -166,8 +166,6 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     - sqr(children[0]->virtualMass())*(1.-z())
     - sqr(children[1]->virtualMass())*    z() ;
   if(ids[0]!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
-
-//   cerr << "Result = " << pt2/GeV2 << "\n";
   Energy2 q2 = 
     sqr(children[0]->virtualMass())/z() + 
     sqr(children[1]->virtualMass())/(1.-z()) +
@@ -179,17 +177,6 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     parent->setVirtualMass(sqrt(q2));
     pT(sqrt(pt2));
   }
-// cerr << "NEGATIVE!!!\n";
-
-//   cerr << "testing branching " << pt2/GeV2 << " " << sqr(pT()/GeV) << " " << q2/GeV2
-//        << "\n";
-
-//   cerr << "testing got here ??? PARENT: " 
-//        << *parent << " " << virtualMasses[0]/GeV << "\n"
-//        << "CHILD : " << *children[0] << " " << children[0]->virtualMass()/GeV << "\n"
-//        << "CHILD : " << *children[1] << " " << children[1]->virtualMass()/GeV << "\n";
-
-
 }
 
 void FS_QTildeShowerKinematics1to2::
