@@ -174,11 +174,10 @@ handle(EventHandler & ch, const tPVector & tagged,
   // decay the clusters into one hadron
   bool lightOK = false;
   short tried = 0;
+  _colourReconnector->rearrange(ch,clusters);
   const ClusterVector savedclusters = clusters;
   tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
-
-    _colourReconnector->rearrange(ch,clusters);
 
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
 

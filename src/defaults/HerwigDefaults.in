@@ -114,7 +114,7 @@ insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHand
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
 create ThePEG::FixedCMSLuminosity FixedLHCLuminosity
-newdef FixedLHCLuminosity:Energy 14000.0
+newdef FixedLHCLuminosity:Energy 7000.0
 newdef LHCHandler:LuminosityFunction FixedLHCLuminosity
 insert LHCHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleQCD
 newdef LHCHandler:BeamA /Herwig/Particles/p+
