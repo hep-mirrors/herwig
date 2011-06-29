@@ -25,7 +25,8 @@ create ThePEG::SubProcessHandler FastQCD
 
 create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
 insert FastQCD:MatrixElements 0 MEQCD2to2Fast
-newdef FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
+cp /Herwig/Partons/QCDExtractor /Herwig/Partons/MPIExtractor
+newdef FastQCD:PartonExtractor /Herwig/Partons/MPIExtractor
 
 ######## MPI Handler ##########################################
 library HwMPI.so
