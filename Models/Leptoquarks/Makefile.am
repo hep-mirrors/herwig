@@ -7,4 +7,4 @@ LeptoquarkModelSLQSLQGGVertex.h LeptoquarkModelSLQSLQGGVertex.cc \
 LeptoquarkModelSLQFFVertex.h	LeptoquarkModelSLQFFVertex.cc   \
 LeptoquarkModelSLQSLQGVertex.h 	LeptoquarkModelSLQSLQGVertex.cc 
 
-HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:1:0

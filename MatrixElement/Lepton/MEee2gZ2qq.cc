@@ -775,6 +775,8 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
   Energy pTmax = 0.5*sqrt(M2)*
     (1.-sqr(loMomenta_[2].mass()+loMomenta_[3].mass())/M2);
   // max y
+  if ( pTmax < pTmin_ ) 
+    return HardTreePtr();
   double ymax = acosh(pTmax/pTmin_);
   // prefactor for the overestimate of the Sudakov
   double a = 4./3.*alpha_->overestimateValue()/Constants::twopi*

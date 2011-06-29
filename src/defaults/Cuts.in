@@ -72,7 +72,6 @@ newdef HiggsBosonKtCut:MinKT 0.0*GeV
 
 # create a cut on the invariant mass of lepton pairs
 create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so
-newdef MassCut:MaxM 14000.*GeV
 newdef MassCut:Families All
 newdef MassCut:CComb All
 newdef MassCut:MinM 20.*GeV
