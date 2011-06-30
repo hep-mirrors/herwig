@@ -73,7 +73,7 @@ public:
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-      _scale(ZERO), _thePEGBase() {}
+      _scale(ZERO), _thePEGBase(), _evolutionScale2(), _radiationLine() {}
 
   /**
    * Copy constructor from a ThePEG Particle
@@ -85,7 +85,7 @@ public:
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-    _scale(ZERO), _thePEGBase(&x) {}
+    _scale(ZERO), _thePEGBase(&x), _evolutionScale2(), _radiationLine() {}
   //@}
 
 public:
