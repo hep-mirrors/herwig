@@ -521,7 +521,7 @@ void MEqq2gZ2ffPowhegQED::Init() {
      "Don't include them",
      false);
 
-   static Switch<MEqq2gZ2ffPowhegQED,unsigned int> interfaceContribution
+  static Switch<MEqq2gZ2ffPowhegQED,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
      &MEqq2gZ2ffPowhegQED::contrib_, 1, false, false);
@@ -581,7 +581,7 @@ void MEqq2gZ2ffPowhegQED::Init() {
   static Parameter<MEqq2gZ2ffPowhegQED,double> interfaceAlphaEM
     ("AlphaEM",
      "The fixed value of alpha_EM to use",
-     &MEqq2gZ2ffPowhegQED::alphaS_, 1./137., 0., 1.,
+     &MEqq2gZ2ffPowhegQED::alphaEM_, 1./137., 0., 1.,
      false, false, Interface::limited);
 
   static Switch<MEqq2gZ2ffPowhegQED,unsigned int> interfaceSupressionFunction
@@ -885,19 +885,6 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   if(corrections_==3||corrections_==5) output += EWterm_;
   // return the total
   return output;
-}
-
-Complex MEqq2gZ2ffPowhegQED::gZboxesF(Energy2 s, Energy2 t, Energy zmass, Energy zwidth) const {
-  // this returns the F function, TIMES (s-m2zc), with m2zc being the complex mass!
-  Complex F,ii(0.,1.);
-  complex<Energy2> m2zc=sqr(zmass) - ii*zmass*zwidth;
-  Energy2 u=-(s+t);
-  Complex luot=log(u/t),ltos=log(-t/s),luos=log(-u/s),lm2ot=log(-m2zc/t),lomsom2=log((m2zc-s)/m2zc);
-  Complex lis=Math::Li2(1.-s/m2zc),lit=Math::Li2(1.+t/m2zc),liu=Math::Li2(1.+u/m2zc);
-  F= ( 2.*lomsom2*luot - lit + liu - 0.5*sqr(ltos) + 0.5*sqr(luos) ) +
-    (s-m2zc)*(u-t-m2zc)/sqr(u) * ( -lomsom2*ltos - lit + lis ) +
-    (s-m2zc)/u * ( (1.-m2zc/s)*lomsom2 + lm2ot );
-  return F;
 }
 
 double MEqq2gZ2ffPowhegQED::NLOWeight() const {
