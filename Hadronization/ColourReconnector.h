@@ -128,18 +128,6 @@ private:
   ClusterPtr _findRecoPartner(ClusterPtr cl, ClusterVector cv) const;
 
   /**
-   * @return 	the anticoloured constituent of a cluster, i.e. an antiquark or
-   * 		a diquark
-   */
-  tPPtr _getAnti3(ClusterPtr cl) const;
-
-  /**
-   * @return 	the coloured constituent of a cluster, i.e. a quark or an
-   * 		antidiquark
-   */
-  tPPtr _get3(ClusterPtr cl) const;
-
-  /**
    * @return	true, if the two partons are splitting products of the same
    * 		gluon
    */
