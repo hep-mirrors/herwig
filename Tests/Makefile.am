@@ -116,7 +116,7 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
            Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
            Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14 \
-           Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \  
+           Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
            Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-133 \
            Rivet-LEP-Powheg-161 Rivet-LEP-Powheg-172 \
