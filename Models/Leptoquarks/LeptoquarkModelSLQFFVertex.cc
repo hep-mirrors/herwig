@@ -32,92 +32,92 @@ LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()
 
 void LeptoquarkModelSLQFFVertex::doinit() {
   //S0
-  addToList(15,6,-9911561);
-  addToList(-15,-6,9911561);
+  addToList( 15, 6,-9911561);
+  addToList(-15,-6, 9911561);
   
-  addToList(-16,-5,9911561);
-  addToList(16,5,-9911561);
+  addToList(-16,-5, 9911561);
+  addToList( 16, 5,-9911561);
 
   //~S0
-  addToList(-15,-5,9921551);
-  addToList(15,5,-9921551);
+  addToList(-15,-5, 9921551);
+  addToList( 15, 5,-9921551);
 
   //S1 triplet
   //S1p
-  addToList(-15,-5,9931551);
-  addToList(15,5,-9931551);
+  addToList(-15,-5, 9931551);
+  addToList( 15, 5,-9931551);
   //S1z
-  addToList(-15,-6,9931561);
-  addToList(15,6,-9931561);
-  addToList(-16,-5,9931561);
-  addToList(16,5,-9931561);
+  addToList(-15,-6, 9931561);
+  addToList( 15, 6,-9931561);
+  addToList(-16,-5, 9931561);
+  addToList( 16, 5,-9931561);
   //S1m
-  addToList(-16,-6,9931661);
-  addToList(16,6,-9931661);
+  addToList(-16,-6, 9931661);
+  addToList( 16, 6,-9931661);
 
   //S1/2 doublet
-  addToList(15,-6,9941561);
-  addToList(-15,6,-9941561);
+  addToList( 15,-6, 9941561);
+  addToList(-15, 6,-9941561);
   
-  addToList(-15,5,-9941551);
-  addToList(-16,-6,-9941551);
-  addToList(15,-5,9941551);
-  addToList(16,-6,9941551);
+  addToList(-15, 5,-9941551);
+  addToList(-16, 6,-9941551);
+  addToList( 15,-5, 9941551);
+  addToList( 16,-6, 9941551);
 
 
   //S1/2 tilde doublet
-  addToList(5,-16,-9951651);
-  addToList(-5, 16,9951651);
+  addToList( 5,-16,-9951651);
+  addToList(-5, 16, 9951651);
 
-  addToList(-5, 15,9951551);
-  addToList(5,-15,-9951551);
+  addToList(-5, 15, 9951551);
+  addToList( 5,-15,-9951551);
 
 
   //dS0
-  addToList(15,-5,9961551);
-  addToList(-15,5,-9961551);
+  addToList( 15,-5, 9961551);
+  addToList(-15, 5,-9961551);
 
-  addToList(16,-6,9961551);
-  addToList(-16,6,-9961551);
+  addToList( 16,-6, 9961551);
+  addToList(-16, 6,-9961551);
 
   //~dS0
-  addToList(15,-6,9971561);
-  addToList(-15,6,-9971561);
+  addToList( 15,-6, 9971561);
+  addToList(-15, 6,-9971561);
 
 
   //dS1 triplet
 
   //dS1p
-  addToList(15,-6,9981561);
-  addToList(-15,6,-9981561);
+  addToList( 15,-6, 9981561);
+  addToList(-15, 6,-9981561);
 
   //dS1z
-  addToList(16,-6,9981551);
-  addToList(-16,6,-9981551);
+  addToList( 16,-6, 9981551);
+  addToList(-16, 6,-9981551);
 
-  addToList(15,-5,9981551);
-  addToList(-15,5,-9981551);
+  addToList( 15,-5, 9981551);
+  addToList(-15, 5,-9981551);
 
   //dS1m
-  addToList(16,-5,9981651);
-  addToList(-16,5,-9981651);
+  addToList( 16,-5, 9981651);
+  addToList(-16, 5,-9981651);
 
   //dS1/2 doublet
-  addToList(-15,-5,9991551);
-  addToList(15,5,-9991551);
+  addToList(-15,-5, 9991551);
+  addToList( 15, 5,-9991551);
 
-  addToList(-15,-6,9991561);
-  addToList(15,6,-9991561);
+  addToList(-15,-6, 9991561);
+  addToList( 15, 6,-9991561);
 
-  addToList(-16,-5,9991561);
-  addToList(16,5,-9991561);
+  addToList(-16,-5, 9991561);
+  addToList( 16, 5,-9991561);
 
   //dS1/2 tilde doublet
-  addToList(-15,-6,9901561);
-  addToList(15,6,-9901561);
+  addToList(-15,-6, 9901561);
+  addToList( 15, 6,-9901561);
 
-  addToList(-16,-6,9901661);
-  addToList(16,6,-9901661);
+  addToList(-16,-6, 9901661);
+  addToList( 16, 6,-9901661);
 
 
   orderInGem(0);

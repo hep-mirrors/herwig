@@ -35,7 +35,7 @@ void UEDF1F1W0Vertex::doinit() {
     }
   }
   addToList(-6100006, 5100005, 24);
-  addToList(-5100005, 6100006, 24);
+  addToList(-5100006, 6100005, 24);
   //outgoing W-
   for( long i = 1; i < 16; i += 2 ) {
     if( i == 6 ) i += 5;
