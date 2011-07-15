@@ -995,6 +995,33 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     // add to sum
     coll += sqr(double(mePartonData()[0]->iCharge())/3.)*EMfact_*
       (collQQ+collQbarQbar+collPQ+collPQbar);
+    
+    // q -> q (QED IF piece)
+    double collQIF       = collinearQuarkIF(x.first,zJac.first ,z.first ,
+					    oldqPDF.first ,newqPDF.first );
+    // qbar -> qbar (QED IF piece)
+    double collQbarIF    = collinearQuarkIF(x.second,zJac.second,z.second,
+					    oldqPDF.second,newqPDF.second);
+    // SumKop_IF corresponds to CS, eq. 10.25 (Ti*Tap terms of the K operator), 
+    // for the QED case.
+    // Notice that for Z production the analogous terms in the P operator (CS, eq. 10.24)
+    // vanish when the sum is performed.
+    double SumKop_IF=0.;
+    for (unsigned int iin=0; iin<2; ++iin) {
+      double collIF = iin==0 ? collQIF : collQbarIF ;
+      for(unsigned int iout=2; iout<4; ++iout) {
+	int QiQo=mePartonData()[iin]->iCharge()*mePartonData()[iout]->iCharge();
+	if( QiQo != 0) {  
+	  Energy2 sioHat = 2.*meMomenta()[iin].dot(meMomenta()[iout]) ;
+	  //cout<<iin<<iout<<"  "<<collIF/collQIF<<" "<<collIF/collQbarIF<<endl;
+	  //Energy2 sioHat2 = ((iin+iout) %2 ==0 ) ? -tHat() : -uHat(); 
+	  //cout << sioHat/sioHat2 << endl;
+	  SumKop_IF += double(QiQo)/9. * log(mu2/sioHat) * collIF;
+	}
+      }
+    }
+    // add to sum
+    coll += SumKop_IF*EMfact_;
   }
   // add up the virtual and remnant terms
   double wgt = loME_*( 1. + virt + coll );
@@ -1162,6 +1189,19 @@ MEqq2gZ2ffPowhegQED::collinearBoson(Energy2 mu2, double jac, double z,
     ((sqr(z)+sqr(1.-z))*log(sqr(1.-z)*sHat()/z/mu2)
      +2.*z*(1.-z));
 }
+
+double 
+MEqq2gZ2ffPowhegQED::collinearQuarkIF(double x, double jac, double z,
+				    double oldPDF, double newPDF) const {
+  if(1.-z < 1.e-8) return 0.;
+  return 
+    // this bit is multiplied by LO PDF
+    1.5+2*log(1.-x)
+    // plus distribution bit
+    +jac /(1.-z) * 
+    (newPDF /oldPDF *(1+z*z) /z - 2) ;
+}
+
 
 vector<double> 
 MEqq2gZ2ffPowhegQED::subtractedRealQCD(pair<double,double> x, double z,

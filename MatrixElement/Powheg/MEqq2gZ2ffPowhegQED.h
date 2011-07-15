@@ -229,10 +229,6 @@ protected:
    */
   double subtractedVirtual() const;
 
-  /**
-   * useful function to express gamma/Z boxes
-   */
-  Complex gZboxesF(Energy2 s, Energy2 t, Energy zmass, Energy zwidth) const;
 
   /**
    *  Subtracted real contribution
@@ -267,6 +263,13 @@ protected:
    */
   double collinearBoson(Energy2 mu2, double jac, double z,
 			double oldPDF, double newPDF) const;
+
+  /**
+   *  Quark collinear counter term (IF piece, for QED)
+   */
+  double collinearQuarkIF(double x, double jac, double z,
+			double oldPDF, double newPDF) const;
+
   //@}
 
   /**
