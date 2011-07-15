@@ -35,7 +35,7 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Cuts
 #set JetKtCut:MinKT 100.0*GeV
-set QCDCuts:MHatMin 9000*GeV
+set QCDCuts:MHatMin 4500*GeV
                                         
 
 ##################################################
