@@ -1002,11 +1002,11 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     // qbar -> qbar (QED IF piece)
     double collQbarIF    = collinearQuarkIF(x.second,zJac.second,z.second,
 					    oldqPDF.second,newqPDF.second);
-    // SumKop_IF corresponds to CS, eq. 10.25 (Ti*Tap terms of the K operator), 
+    // SumPop_IF corresponds to CS, eq. 10.25 (Ti*Tap terms of the P operator), 
     // for the QED case.
-    // Notice that for Z production the analogous terms in the P operator (CS, eq. 10.24)
+    // Notice that for Z production the analogous terms in the K operator (CS, eq. 10.24)
     // vanish when the sum is performed.
-    double SumKop_IF=0.;
+    double SumPop_IF=0.;
     for (unsigned int iin=0; iin<2; ++iin) {
       double collIF = iin==0 ? collQIF : collQbarIF ;
       for(unsigned int iout=2; iout<4; ++iout) {
@@ -1016,12 +1016,12 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 	  //cout<<iin<<iout<<"  "<<collIF/collQIF<<" "<<collIF/collQbarIF<<endl;
 	  //Energy2 sioHat2 = ((iin+iout) %2 ==0 ) ? -tHat() : -uHat(); 
 	  //cout << sioHat/sioHat2 << endl;
-	  SumKop_IF += double(QiQo)/9. * log(mu2/sioHat) * collIF;
+	  SumPop_IF += double(QiQo)/9. * log(mu2/sioHat) * collIF;
 	}
       }
     }
     // add to sum
-    coll += SumKop_IF*EMfact_;
+    coll += SumPop_IF*EMfact_;
   }
   // add up the virtual and remnant terms
   double wgt = loME_*( 1. + virt + coll );
