@@ -31,10 +31,10 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
             newb = h.getBin(i)
             if newb.xlow >= ptmin:
-                b.yval =  newb.yval
-                b.yerrplus =  newb.yerrplus
-                b.yerrminus =  newb.yerrminus
-                b.focus= newb.focus
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
+                b._focus= newb._focus
 
 def mergeByPt(hpath, sqrts):
     global inhistos
@@ -208,10 +208,10 @@ for hpath,hsets in inhistos.iteritems():
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
         for b in outhistos[hpath]:
-            b.yval = 0
-            b.yerrplus = 0
-            b.yerrminus = 0
-            b.focus= None
+            b.val = 0
+            b.errplus = 0
+            b.errminus = 0
+            b._focus= None
 
 
 useOnePt("/STAR_2006_S6870392/d01-x01-y01","200","2")

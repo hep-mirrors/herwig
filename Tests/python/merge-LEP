@@ -33,9 +33,9 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
             newb = h.getBin(i)
             if newb.xlow <= float(ptmin) and newb.xhigh >=float(ptmin):
-                b.yval =  newb.yval
-                b.yerrplus =  newb.yerrplus
-                b.yerrminus =  newb.yerrminus
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
                 b.focus= newb.focus
 
 def merge(hpath):
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
 aidafiles=["-133.aida","-177.aida","-196.aida","-206.aida","-91.aida" ,\
            "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
-           "-189.aida","-200.aida","-44.aida" ]
+           "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida" ]
 
 ## Get histos
 inhistos = {}
@@ -88,7 +88,11 @@ outhistos={}
 weights = {}
 for f in aidafiles:
     file = args[0]+f
-    if(file.find("35")>0) :
+    if(file.find("14")>0) :
+        sqrts=14
+    elif(file.find("22")>0) :
+        sqrts=22
+    elif(file.find("35")>0) :
         sqrts=35
     elif(file.find("44")>0) :
         sqrts=44
@@ -129,7 +133,9 @@ for f in aidafiles:
         h = lighthisto.Histo.fromDPS(dps)
         # di-jet decorrelations
         # jet shapes
-        if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or h.fullPath().find("5765862")>0) :
+        if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or
+           h.fullPath().find("5765862")>0 or h.fullPath().find("3612880")>0 or
+           h.fullPath().find("2148048")>0 ) :
            if not inhistos.has_key(h.fullPath()):
                inhistos[h.fullPath()] = {}
            tmpE = inhistos[h.fullPath()]
@@ -141,8 +147,10 @@ for f in aidafiles:
              h.fullPath().find("2435284")>0 or h.fullPath().find("3486095")>0 or
              h.fullPath().find("3430090")>0 or h.fullPath().find("3137023")>0 or
              h.fullPath().find("3780481")>0 or h.fullPath().find("WUD_03_11")>0 or
-             h.fullPath().find("CONF-603")>0) :
+             h.fullPath().find("CONF_603")>0 ) :
             outhistos[h.fullPath()] = h
+        else :
+            print '!!!!! DIDNT FIND',h.fullPath()
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
@@ -151,11 +159,35 @@ for hpath,hsets in inhistos.iteritems():
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
         for b in outhistos[hpath]:
-            b.yval = 0
-            b.yerrplus = 0
-            b.yerrminus = 0
-            b.focus= None
-
+            b.val = 0
+            b.errplus = 0
+            b.errminus = 0
+            b._focus= None
+# tasso
+useOne("/TASSO_1990_S2148048/d06-x01-y01","14")
+useOne("/TASSO_1990_S2148048/d07-x01-y01","14")
+useOne("/TASSO_1990_S2148048/d08-x01-y01","14")
+useOne("/TASSO_1990_S2148048/d06-x01-y02","22")
+useOne("/TASSO_1990_S2148048/d07-x01-y02","22")
+useOne("/TASSO_1990_S2148048/d08-x01-y02","22")
+useOne("/TASSO_1990_S2148048/d06-x01-y03","35")
+useOne("/TASSO_1990_S2148048/d07-x01-y03","35")
+useOne("/TASSO_1990_S2148048/d08-x01-y03","35")
+useOne("/TASSO_1990_S2148048/d06-x01-y04","44")
+useOne("/TASSO_1990_S2148048/d07-x01-y04","44")
+useOne("/TASSO_1990_S2148048/d08-x01-y04","44")
+# jade
+useOne("/JADE_1998_S3612880/d02-x01-y01","44")
+useOne("/JADE_1998_S3612880/d03-x01-y01","44")
+useOne("/JADE_1998_S3612880/d04-x01-y01","44")
+useOne("/JADE_1998_S3612880/d05-x01-y01","44")
+useOne("/JADE_1998_S3612880/d06-x01-y01","35")
+useOne("/JADE_1998_S3612880/d07-x01-y01","35")
+useOne("/JADE_1998_S3612880/d08-x01-y01","35")
+useOne("/JADE_1998_S3612880/d09-x01-y01","35")
+useOne("/JADE_1998_S3612880/d10-x01-y01","44")
+useOne("/JADE_1998_S3612880/d11-x01-y01","22")
+# opal/jade
 useOne("/JADE_OPAL_2000_S4300807/d07-x01-y01","35")
 useOne("/JADE_OPAL_2000_S4300807/d07-x01-y02","35")
 useOne("/JADE_OPAL_2000_S4300807/d07-x01-y03","35")

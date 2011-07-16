@@ -217,6 +217,17 @@ tPPtr Cluster::particle(int i) const {
   return (i < _numComp) ? _component[i] : PPtr(); 
 }
 
+tPPtr Cluster::colParticle(bool anti) const {
+  if ( _numComp != 2 ) return PPtr();
+  if ( _original[0]->hasColour(anti) ) return _original[0];
+  else if ( _original[1]->hasColour(anti) ) return _original[1];
+  else return PPtr();
+}
+
+tPPtr Cluster::antiColParticle() const {
+  return colParticle(true);
+}
+
 bool Cluster::isPerturbative(int i) const { 
   return _isPerturbative[i]; 
 }

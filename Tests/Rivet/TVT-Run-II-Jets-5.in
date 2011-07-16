@@ -35,6 +35,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_S6450792
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7828950
 # run II UE analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
 # dijet decorrelations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2004_S5992206
 # inclusive jet cross section

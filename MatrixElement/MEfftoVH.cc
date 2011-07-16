@@ -276,8 +276,8 @@ bool MEfftoVH::generateKinematics(const double * r) {
       Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
       Energy mhmin = max(ZERO               ,mePartonData()[2]->massMin());
       if(mhmax<=mhmin) return false;
-      rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-      rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+      rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+      rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
       mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
       jac *= rhomax-rhomin;
     }
@@ -285,8 +285,8 @@ bool MEfftoVH::generateKinematics(const double * r) {
     Energy2 mvmax2 = sqr(min(2.*e-mh,vec->massMax()));
     Energy2 mvmin2 = sqr(vec->massMin());
     if(mvmax2<=mvmin2) return false; 
-    rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
-    rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
+    rhomin = atan2((mvmin2-sqr(vec->mass())), vec->mass()*vec->width());
+    rhomax = atan2((mvmax2-sqr(vec->mass())), vec->mass()*vec->width());
     mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
@@ -296,8 +296,8 @@ bool MEfftoVH::generateKinematics(const double * r) {
     Energy2 mvmax2 = sqr(min(2.*e,vec->massMax()));
     Energy2 mvmin2 = sqr(vec->massMin());
     if(mvmax2<=mvmin2) return false; 
-    double rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
-    double rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
+    double rhomin = atan2((mvmin2-sqr(vec->mass())), vec->mass()*vec->width());
+    double rhomax = atan2((mvmax2-sqr(vec->mass())), vec->mass()*vec->width());
     mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
@@ -306,8 +306,8 @@ bool MEfftoVH::generateKinematics(const double * r) {
       Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
       Energy mhmin = max(ZERO ,mePartonData()[2]->massMin());
       if(mhmax<=mhmin) return false;
-      rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-      rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+      rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+      rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
       mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
       jac *= rhomax-rhomin;
     }

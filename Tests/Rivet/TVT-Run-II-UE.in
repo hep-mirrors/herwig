@@ -28,6 +28,7 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 ##################################################
 # run II UE analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
 # run II charged multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_NOTE_9936
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8233977

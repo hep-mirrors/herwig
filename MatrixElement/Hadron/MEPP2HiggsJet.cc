@@ -159,8 +159,8 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
   Energy2 mhmax2 = sHat()-4.*ptmin*e;
   Energy2 mhmin2 =ZERO;
   if(mhmax2<=mhmin2) return false;
-  double rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
-  double rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
+  double rhomin = atan2((mhmin2-sqr(_mh)), _mh*_wh);
+  double rhomax = atan2((mhmax2-sqr(_mh)), _mh*_wh);
   Energy mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
   // assign masses
   if(mePartonData()[2]->id()!=ParticleID::h0) {

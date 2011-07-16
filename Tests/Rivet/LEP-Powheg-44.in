@@ -15,6 +15,11 @@ set LEPGenerator:EventHandler:LuminosityFunction:Energy 44.
 
 # OPAL/JADE jet rates at many energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
+# tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
+
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

@@ -9,6 +9,7 @@ create ThePEG::UnResolvedRemnant LeptonRemnants UnResolvedRemnant.so
 
 create Herwig::HwRemDecayer RemnantDecayer HwShower.so
 newdef RemnantDecayer:PomeronStructure Gluon
+newdef RemnantDecayer:colourDisrupt 0.15
 
 create ThePEG::SoftRemnantHandler HadronRemnants
 newdef HadronRemnants:RemnantDecayer RemnantDecayer

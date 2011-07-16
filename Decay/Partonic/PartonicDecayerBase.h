@@ -15,7 +15,6 @@
 #include "Herwig++/Decay/HwDecayerBase.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
 #include "Herwig++/Hadronization/ClusterFinder.h"
-#include "Herwig++/Hadronization/ColourReconnector.h"
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/LightClusterDecayer.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
@@ -143,11 +142,6 @@ private:
    * This is a pointer to a Herwig::ClusterFinder object.
    */
   ClusterFinderPtr       _clusterFinder;
-
-  /**
-   * This is a pointer to a Herwig::ColourReconnector object.
-   */
-  ColourReconnectorPtr   _colourReconnector;
 
   /**
    * This is a pointer to a Herwig::ClusterFissioner object.

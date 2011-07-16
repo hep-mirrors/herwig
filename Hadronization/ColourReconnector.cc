@@ -44,25 +44,13 @@ void ColourReconnector::rearrange(EventHandler &,
     ClusterPtr candidate = _findRecoPartner(*currentCl, newClusters);
 
     // skip this cluster if no possible reshuffling partner can be found
-    if (candidate == *currentCl) {
-      continue;
-    }
+    if (candidate == *currentCl) continue;
 
     // accept the reconnection with probability _preco.
     if (UseRandom::rnd() < _preco) {
 
       pair <ClusterPtr,ClusterPtr> reconnected =
 	_reconnect(*currentCl, candidate);
-
-      // reset children-parents relations: 
-      _get3(*currentCl)->abandonChild(*currentCl);
-      _get3(*currentCl)->addChild(reconnected.first);
-      _getAnti3(*currentCl)->abandonChild(*currentCl);
-      _getAnti3(*currentCl)->addChild(reconnected.second);
-      _get3(candidate)->abandonChild(candidate);
-      _get3(candidate)->addChild(reconnected.second);
-      _getAnti3(candidate)->abandonChild(candidate);
-      _getAnti3(candidate)->addChild(reconnected.first);
 
       // Replace the clusters in the ClusterVector. The order of the partons in
       // the cluster vector carrying colour (i.e. not anticolour) is preserved.
@@ -90,24 +78,24 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
   for (ClusterVector::const_iterator cit=cv.begin(); cit != cv.end(); ++cit) {
 
     // don't allow colour octet clusters
-    if ( _isColour8( _get3(cl),
-	             _getAnti3(*cit) )  ||
-         _isColour8( _get3(*cit),
-	             _getAnti3(cl) ) ) {
+    if ( _isColour8( cl->colParticle(),
+	             (*cit)->antiColParticle() )  ||
+         _isColour8( (*cit)->colParticle(),
+	             cl->antiColParticle() ) ) {
       continue;
     }
 
     // momenta of the old clusters
-    Lorentz5Momentum p1 = _get3(cl)->momentum() + 
-                          _getAnti3(cl)->momentum();
-    Lorentz5Momentum p2 = _get3(*cit)->momentum() + 
-                          _getAnti3(*cit)->momentum();
+    Lorentz5Momentum p1 = cl->colParticle()->momentum() + 
+                          cl->antiColParticle()->momentum();
+    Lorentz5Momentum p2 = (*cit)->colParticle()->momentum() + 
+                          (*cit)->antiColParticle()->momentum();
 
     // momenta of the new clusters
-    Lorentz5Momentum p3 = _get3(cl)->momentum() + 
-                          _getAnti3(*cit)->momentum();
-    Lorentz5Momentum p4 = _get3(*cit)->momentum() + 
-                          _getAnti3(cl)->momentum();
+    Lorentz5Momentum p3 = cl->colParticle()->momentum() + 
+                          (*cit)->antiColParticle()->momentum();
+    Lorentz5Momentum p4 = (*cit)->colParticle()->momentum() + 
+                          cl->antiColParticle()->momentum();
 
     Energy oldMass = abs( p1.m() ) + abs( p2.m() );
     Energy newMass = abs( p3.m() ) + abs( p4.m() );
@@ -118,28 +106,6 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
     }
   }
   return candidate;
-}
-
-
-tPPtr ColourReconnector::_getAnti3(ClusterPtr cl) const {
-  if ( cl->_original[0]->hasAntiColour() ) {
-    return cl->_original[0];
-  } else if ( cl->_original[1]->hasAntiColour() ) {
-    return cl->_original[1];
-  } else {
-    return tPPtr();
-  }
-}
-
-
-tPPtr ColourReconnector::_get3(ClusterPtr cl) const {
-  if ( cl->_original[0]->hasColour() ) {
-    return cl->_original[0];
-  } else if ( cl->_original[1]->hasColour() ) {
-    return cl->_original[1];
-  } else {
-    return tPPtr();
-  }
 }
 
 
@@ -162,10 +128,10 @@ pair <ClusterPtr,ClusterPtr> ColourReconnector::_reconnect(ClusterPtr c1,
     ClusterPtr c2) const {
   // choose the other possibility to form two clusters, that have no netto
   // colour
-  ClusterPtr newCluster1 = new_ptr( Cluster( _get3(c1),
-                                             _getAnti3(c2) ) );
-  ClusterPtr newCluster2 = new_ptr( Cluster( _get3(c2),
-                                             _getAnti3(c1) ) );
+  ClusterPtr newCluster1 = new_ptr( Cluster( c1->colParticle(),
+                                             c2->antiColParticle() ) );
+  ClusterPtr newCluster2 = new_ptr( Cluster( c2->colParticle(),
+                                             c1->antiColParticle() ) );
   return pair <ClusterPtr,ClusterPtr> (newCluster1,newCluster2);
 }
 

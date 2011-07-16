@@ -327,8 +327,8 @@ bool MEfftoffH::generateKinematics(const double * r) {
     Energy mhmax = min(roots ,mePartonData()[4]->massMax());
     Energy mhmin = max(ZERO,mePartonData()[4]->massMin());
     if(mhmax<=mhmin) return false;
-    double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+    double rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+    double rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
     mh = sqrt(_mh*_wh*tan(rhomin+r[4]*(rhomax-rhomin))+sqr(_mh));
     jacobian(jacobian()*(rhomax-rhomin));
   }

@@ -50,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0) {}
+  PartnerFinder() : _approach(0), _partnerMethod(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -183,9 +183,14 @@ private:
 private:
 
   /**
-   *  Approach to use for setting the colour partners
+   *  Approach to use for setting the colour partners in the random approach
    */
   int _approach;
+
+  /**
+   *  Method for choosing colour partner
+   */
+   int _partnerMethod;
 
 };
 

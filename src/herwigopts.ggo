@@ -23,6 +23,10 @@ option  "numevents" N "Number of events to generate."
 option  "seed" s "The random number generator seed."  
   int  optional
 
+option "tag" t "A tag to append to the run name."
+  typestr="TAG"
+  string optional default=""
+
 option "debug" d "Set the ThePEG debug level."
   int  optional
 
@@ -56,7 +60,7 @@ option "repo" r "Repository file to use."
   typestr="FILE"
   string optional default="HerwigDefaults.rpo" hidden
 
-option "exitonerror" - "If set, ThePEG will not try to recover from \
+option "noexitonerror" - "If set, ThePEG will not try to recover from \
 failures, but will exit with a non-zero return code."
   flag off hidden
 

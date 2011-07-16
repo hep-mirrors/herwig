@@ -2762,7 +2762,6 @@ newdef Vector2Leptons:MaxWeight 41 1.59998
 create Herwig::WeakPartonicDecayer  WeakPartonic0
 newdef  WeakPartonic0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  WeakPartonic0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  WeakPartonic0:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  WeakPartonic0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  WeakPartonic0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  WeakPartonic0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -2775,7 +2774,6 @@ newdef WeakPartonic0:MECode 0
 create Herwig::WeakPartonicDecayer  WeakPartonic100
 newdef  WeakPartonic100:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  WeakPartonic100:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  WeakPartonic100:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  WeakPartonic100:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  WeakPartonic100:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  WeakPartonic100:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -12196,7 +12194,6 @@ newdef PPVDecayer:MaxWeight 18 3.28207
 create Herwig::QuarkoniumDecayer  QDecayME0
 newdef  QDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  QDecayME0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  QDecayME0:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  QDecayME0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  QDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -12209,7 +12206,6 @@ newdef QDecayME0:MECode 0
 create Herwig::QuarkoniumDecayer  QDecayME130
 newdef  QDecayME130:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  QDecayME130:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  QDecayME130:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  QDecayME130:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  QDecayME130:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  QDecayME130:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -12421,7 +12417,6 @@ newdef VAPDecayer:MaxWeight 20 1.86135
 create Herwig::HeavyDecayer  HvyDecayME0
 newdef  HvyDecayME0:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  HvyDecayME0:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  HvyDecayME0:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  HvyDecayME0:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  HvyDecayME0:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  HvyDecayME0:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -12434,7 +12429,6 @@ newdef HvyDecayME0:MECode 0
 create Herwig::HeavyDecayer  HvyDecayME100
 newdef  HvyDecayME100:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  HvyDecayME100:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  HvyDecayME100:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  HvyDecayME100:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  HvyDecayME100:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  HvyDecayME100:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 
@@ -23824,7 +23818,6 @@ newdef TauKPi:WeakCurrent TauKPiCurrent
 create Herwig::BtoSGammaDecayer  BtosgammaKagan
 newdef  BtosgammaKagan:PartonSplitter /Herwig/Hadronization/PartonSplitter 
 newdef  BtosgammaKagan:ClusterFinder /Herwig/Hadronization/ClusterFinder 
-newdef  BtosgammaKagan:ColourReconnector /Herwig/Hadronization/ColourReconnector 
 newdef  BtosgammaKagan:ClusterFissioner /Herwig/Hadronization/ClusterFissioner 
 newdef  BtosgammaKagan:LightClusterDecayer /Herwig/Hadronization/LightClusterDecayer 
 newdef  BtosgammaKagan:ClusterDecayer /Herwig/Hadronization/ClusterDecayer 

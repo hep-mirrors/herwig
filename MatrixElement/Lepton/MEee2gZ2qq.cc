@@ -595,6 +595,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   Energy pTmax = 0.5*sqrt(M2)*
     (1.-sqr(loMomenta_[2].mass()+loMomenta_[3].mass())/M2);
   // max y
+  if ( pTmax < pTmin_ ) return make_pair(ZERO,ShowerInteraction::QCD);
   double ymax = acosh(pTmax/pTmin_);
   vector<Energy> pTemit;
   vector<vector<Lorentz5Momentum> > emittedMomenta;;

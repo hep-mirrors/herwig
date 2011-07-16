@@ -198,6 +198,12 @@ private:
    * The pointer to the Underlying Event handler. 
    */
   StepHdlPtr _underlyingEventHandler;
+
+  /**
+   * Tag the constituents of the clusters as their parents
+   */
+  void _setChildren(ClusterVector clusters) const;
+  
 };
 
 

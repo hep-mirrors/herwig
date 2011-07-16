@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
@@ -44,11 +45,11 @@ ACL(const ShowerParticleVector::const_iterator & a) {
 }
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  os << _approach;
+  os << _approach << _partnerMethod;
 }
 
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _approach;
+  is >> _approach >> _partnerMethod;
 }
 
 AbstractClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;
@@ -67,6 +68,20 @@ void PartnerFinder::Init() {
      "which colour dipoles of a hard process will shower.",
      &PartnerFinder::_approach, 0, 1, 0,false,false,false);
 
+  static Switch<PartnerFinder,int> interfacePartnerMethod
+    ("PartnerMethod",
+     "Choice of partner finding method for gluon evolution.",
+     &PartnerFinder::_partnerMethod, 0, false, false);
+  static SwitchOption interfacePartnerMethodRandom
+    (interfacePartnerMethod,
+     "Random",
+     "Choose partners of a gluon randomly.",
+     0);
+  static SwitchOption interfacePartnerMethodMaximum
+    (interfacePartnerMethod,
+     "Maximum",
+     "Choose partner of gluon with largest angle.",
+     1);
 }
 
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
@@ -110,10 +125,22 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
     // without candidate colour partners, and that we will be treated a part later
     // (this means that no modifications of the following loop is needed!)
     ShowerParticleVector::const_iterator cit, cjt;
+    // Define variables needed for angular and radiation line analysis
+    double angle[2] = { 0.0, 0.0 }; 	
+    int radiationLine[2] = { 0, 0 };    
+    int ait = 0;    
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if(!(*cit)->data().coloured()) continue;
       // We now have a coloured particle
       tShowerParticleVector partners;
+      if (_partnerMethod == 1){
+ 	// Angular analysis need to be reset for each particle     
+	angle[0] = 0;
+	angle[1] = 0;	
+	radiationLine[0] = 0;
+	radiationLine[1] = 0;
+	ait = 0;	
+      }
       for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
 	if(!(*cjt)->data().coloured()||cit==cjt) continue;
 	bool isPartner = false;
@@ -122,7 +149,18 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	  isPartner = true;
 	else if((CL(cit) && CL(cit)==ACL(cjt)) || (ACL(cit) && ACL(cit)==CL(cjt)))
 	  isPartner = true;
-	if(isPartner) partners.push_back(*cjt);
+	if(isPartner){
+	  if (_partnerMethod == 1){
+	    // Find the angle to the potential partner
+	    angle[ait] = (*cit)->momentum().vect().angle((*cjt)->momentum().vect());	 
+	    // Find out which colour line is connected to the partner
+	    // Colour line has value 1, anti-colour line has value 2
+	    if( CL(cit) == CL(cjt) ||  CL(cit) == ACL(cjt)) radiationLine[ait] = 1;
+	    if(ACL(cit) == CL(cjt) || ACL(cit) == ACL(cjt)) radiationLine[ait] = 2;	
+	    ait++;
+	  }
+	partners.push_back(*cjt);
+	}
       }
       if (partners.empty()) {
 	// special for RPV
@@ -172,7 +210,8 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	}
       }
       // In the case of more than one candidate colour partners,
-      //               our treatment is based on two assumptions:
+      //	       there are now two approaches to choosing the partner. The
+      //	       first method is based on two assumptions:
       //               1) the choice of which is the colour partner is done
       //                  *randomly* between the available candidates.
       //               2) the choice of which is the colour partner is done
@@ -180,12 +219,68 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       //                  if for a particle "i" its selected colour partner is  
       //                  the particle "j", then the colour partner of "j" 
       //                  does not have to be necessarily "i".
-      int position = UseRandom::irnd(partners.size());
+      // 	      The second method always chooses the furthest partner
+      //	      for hard gluons and gluinos.
+      
+      // First make a random choice of partner
+      int position = UseRandom::irnd(partners.size());   
+      // Set the scale from the random partner
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position]),
 					isDecayCase);
+      pair<Energy,Energy> pairScales2;
+      if (_partnerMethod == 1){
+        // Override choice of partner  
+      	if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){     
+          // Parton is a hard octet
+	  // Determine largest angle
+      	  if (angle[1]>0 && angle[0]<angle[1]) position=1;
+          else position=0;
+	}      
+        // Override scale for hard octet
+        if (position==1){
+	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1]),
+					isDecayCase);
+	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){
+	    // Set the second scale for hard octets			
+	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0]),
+						isDecayCase);  
+	  }
+	}
+   	else {
+	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0]),
+					isDecayCase);
+	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){	
+	    // Set the second scale for hard octets
+	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1]),
+						isDecayCase);	
+	  }				
+        }
+        if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){
+        // Set radiation lines for hard octets
+	  (*cit)->setRadiationLine(radiationLine[position]);
+	  if( !(*cit)->progenitor() ){
+	    // Set the hard partons to be the progenitors of the shower
+	    (*cit)->setProgenitor(*cit);
+	    // Set the second evolution scale of the progenitor
+	    (*cit)->setEvolutionScale2(pairScales2.first);
+	 }		
+       }
+       else if ((*cit)->perturbative() == 1 && (getParticleData((*cit)->id())->iColour()==PDT::Colour3 ||
+       						getParticleData((*cit)->id())->iColour()==PDT::Colour3bar)){
+       // Set radiation lines for hard triplets
+	  if( !(*cit)->progenitor() ){
+	    // Set the hard partons to be the progenitors of the shower
+	    (*cit)->setProgenitor(*cit);
+	    // Set the second evolution scale of the progenitor
+	    (*cit)->setEvolutionScale2(pairScales2.first);
+	    // Set the radiation line
+	    (*cit)->setRadiationLine(0);
+	 }		         
+       }
+     }
       switch(_approach) {
-      case 0: // Totally random
+      case 0: // Totally random (unless chosen above)
 	(*cit)->setEvolutionScale(pairScales.first);
 	(*cit)->setPartner(partners[position]);
 	break;
