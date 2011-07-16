@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffcb0.f,v 1.11 1996/07/18 10:49:04 gj Exp $
 *###[ ffcb0:
 	subroutine ffcb0(cb0,cp,cma,cmb,ier)
@@ -34,7 +37,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -198,7 +201,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -726,7 +729,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -794,7 +797,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

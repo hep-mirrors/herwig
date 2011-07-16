@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDF1F1Z0Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,7 +23,10 @@ using namespace Herwig;
 UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
 				     theq2Last(ZERO), theCoupLast(0.), 
-				     theLeftLast(0.), theRightLast(0.) {
+				     theLeftLast(0.), theRightLast(0.) 
+{}
+
+void UEDF1F1Z0Vertex::doinit() {
   long boson = 23;
   //QQ, uu, dd
   for(long i = 5100001; i < 6100007; ++i) {
@@ -42,9 +45,6 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(
   for(long i = 6100011; i < 6100017; i +=2) {
     addToList(-i, i, boson);
   }
-}
-
-void UEDF1F1Z0Vertex::doinit() {
   FFVVertex::doinit();
   UEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)

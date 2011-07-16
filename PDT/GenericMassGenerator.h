@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GenericMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -222,8 +222,8 @@ protected:
 		      double r=UseRandom::rnd()) const {
     // calculate the mass square using fixed width BW
     Energy  lo=max(low,lowerMass_),up=min(upp,upperMass_);
-    double  rhomin=atan((lo*lo-mass2_)/mWidth_);
-    double  rhomax=atan((up*up-mass2_)/mWidth_)-rhomin;
+    double  rhomin=atan2((lo*lo-mass2_),mWidth_);
+    double  rhomax=atan2((up*up-mass2_),mWidth_)-rhomin;
     double  rho=rhomin+rhomax*r;
     Energy2 q2 = mass2_+mWidth_*tan(rho);
     Energy  q = sqrt(q2);  

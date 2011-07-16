@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TwoBodyDecayConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -68,11 +68,7 @@ void TwoBodyDecayConstructor::Init() {
 void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
-  model->init();
   unsigned int nv(model->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) 
-     model->vertex(i)->init();
 
   _theExistingDecayers.resize(nv,
      vector<GeneralTwoBodyDecayerPtr>(3,GeneralTwoBodyDecayerPtr()));

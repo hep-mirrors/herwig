@@ -47,7 +47,6 @@ void MEPP2ZHPowheg::Init() {
   static ClassDocumentation<MEPP2ZHPowheg> documentation
     ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H",
      "The PP$\\to$Z Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
-     "%\\cite{Hamilton:2009za}\n"
      "\\bibitem{Hamilton:2009za}\n"
      "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
      "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"

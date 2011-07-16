@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSModelVVGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -41,14 +41,14 @@ void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(UnitRemoval::E * kappa_));
 }
 
-RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO) {
+RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO)
+{}
+
+void RSModelVVGRVertex::doinit() {
   addToList(23,23,39);
   addToList(22,22,39);
   addToList(24,-24,39);
   addToList(21,21,39);
-}
-
-void RSModelVVGRVertex::doinit() {
   VVTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(!hwRS)

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DtoKPiPiE691.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -645,63 +645,63 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << name() << ":KmPipPipNonResonantMagnitude " 
+  output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " 
 	 << _a1NR      << "\n";
-  output << "set " << name() << ":KmPipPipNonResonantPhase     " 
+  output << "newdef " << name() << ":KmPipPipNonResonantPhase     " 
 	 << _phi1NR    << "\n";
-  output << "set " << name() << ":KmPipPipK892Magnitude        " 
+  output << "newdef " << name() << ":KmPipPipK892Magnitude        " 
 	 << _a1K892    << "\n";
-  output << "set " << name() << ":KmPipPipK892Phase            " 
+  output << "newdef " << name() << ":KmPipPipK892Phase            " 
 	 << _phi1K892  << "\n";
-  output << "set " << name() << ":KmPipPipK1430Magnitude       " 
+  output << "newdef " << name() << ":KmPipPipK1430Magnitude       " 
 	 << _a1K1430   << "\n";
-  output << "set " << name() << ":KmPipPipK1430Phase           " 
+  output << "newdef " << name() << ":KmPipPipK1430Phase           " 
 	 << _phi1K1430 << "\n";
-  output << "set " << name() << ":KmPipPipK1680Magnitude       " 
+  output << "newdef " << name() << ":KmPipPipK1680Magnitude       " 
 	 << _a1K1680   << "\n";
-  output << "set " << name() << ":KmPipPipK1680Phase           " 
+  output << "newdef " << name() << ":KmPipPipK1680Phase           " 
 	 << _phi1K1680 << "\n";
-  output << "set " << name() << ":KmPipPi0NonResonantMagnitude " 
+  output << "newdef " << name() << ":KmPipPi0NonResonantMagnitude " 
 	 << _a2NR      << "\n";
-  output << "set " << name() << ":KmPipPi0NonResonantPhase     " 
+  output << "newdef " << name() << ":KmPipPi0NonResonantPhase     " 
 	 << _phi2NR    << "\n";
-  output << "set " << name() << ":KmPipPi0K8920Magnitude       " 
+  output << "newdef " << name() << ":KmPipPi0K8920Magnitude       " 
 	 << _a2K8920   << "\n";
-  output << "set " << name() << ":KmPipPi0K8920Phase           " 
+  output << "newdef " << name() << ":KmPipPi0K8920Phase           " 
 	 << _phi2K8920 << "\n";
-  output << "set " << name() << ":KmPipPi0K892mMagnitude       " 
+  output << "newdef " << name() << ":KmPipPi0K892mMagnitude       " 
 	 << _a2K892m   << "\n";
-  output << "set " << name() << ":KmPipPi0K892mPhase           " 
+  output << "newdef " << name() << ":KmPipPi0K892mPhase           " 
 	 << _phi2K892m << "\n";
-  output << "set " << name() << ":KmPipPi0RhoMagnitude         " 
+  output << "newdef " << name() << ":KmPipPi0RhoMagnitude         " 
 	 << _a2rho     << "\n";
-  output << "set " << name() << ":KmPipPi0RhoPhase             " 
+  output << "newdef " << name() << ":KmPipPi0RhoPhase             " 
 	 << _phi2rho   << "\n";
-  output << "set " << name() << ":K0PipPimNonResonantMagnitude " 
+  output << "newdef " << name() << ":K0PipPimNonResonantMagnitude " 
 	 << _a3NR      << "\n";
-  output << "set " << name() << ":K0PipPimNonResonantPhase     " 
+  output << "newdef " << name() << ":K0PipPimNonResonantPhase     " 
 	 << _phi3NR    << "\n";
-  output << "set " << name() << ":K0PipPimK892Magnitude        " 
+  output << "newdef " << name() << ":K0PipPimK892Magnitude        " 
 	 << _a3K892    << "\n";
-  output << "set " << name() << ":K0PipPimK892Phase            " 
+  output << "newdef " << name() << ":K0PipPimK892Phase            " 
 	 << _phi3K892  << "\n";
-  output << "set " << name() << ":K0PipPimRhoMagnitude         " 
+  output << "newdef " << name() << ":K0PipPimRhoMagnitude         " 
 	 << _a3rho     << "\n";
-  output << "set " << name() << ":K0PipPimRhoPhase             " 
+  output << "newdef " << name() << ":K0PipPimRhoPhase             " 
 	 << _phi3rho   << "\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":K8920Mass      " << _mK8920/GeV << "\n";
-  output << "set " << name() << ":K8920Width     " << _wK8920/GeV << "\n";
-  output << "set " << name() << ":K892MinusMass  " << _mK892m/GeV << "\n";
-  output << "set " << name() << ":K892MinusWidth " << _wK892m/GeV << "\n";
-  output << "set " << name() << ":K1680Mass      " << _mK1680/GeV << "\n";
-  output << "set " << name() << ":K1680Width     " << _wK1680/GeV << "\n";
-  output << "set " << name() << ":K1430Mass      " << _mK1430/GeV << "\n";
-  output << "set " << name() << ":K1430Width     " << _wK1430/GeV << "\n";
-  output << "set " << name() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
-  output << "set " << name() << ":Rho0Width      " << _wrho0 /GeV << "\n";
-  output << "set " << name() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
-  output << "set " << name() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":K8920Mass      " << _mK8920/GeV << "\n";
+  output << "newdef " << name() << ":K8920Width     " << _wK8920/GeV << "\n";
+  output << "newdef " << name() << ":K892MinusMass  " << _mK892m/GeV << "\n";
+  output << "newdef " << name() << ":K892MinusWidth " << _wK892m/GeV << "\n";
+  output << "newdef " << name() << ":K1680Mass      " << _mK1680/GeV << "\n";
+  output << "newdef " << name() << ":K1680Width     " << _wK1680/GeV << "\n";
+  output << "newdef " << name() << ":K1430Mass      " << _mK1430/GeV << "\n";
+  output << "newdef " << name() << ":K1430Width     " << _wK1430/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
+  output << "newdef " << name() << ":Rho0Width      " << _wrho0 /GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSCNWVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,7 +22,11 @@ using namespace Herwig;
 
 SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
-			     _rightlast(0.) {
+			     _rightlast(0.) 
+{}
+
+
+void SSCNWVertex::doinit() {
   long neu[] = { 1000022, 1000023, 1000025, 1000035, 1000045 };
   long cha[] = { 1000024, 1000037 };
   // sign == -1 outgoing W-, sign == +1 outgoing W+
@@ -30,10 +34,6 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO),
     for(unsigned int ine = 0; ine < 5; ++ine)
       for(unsigned int ic = 0; ic < 2; ++ic)
 	addToList(-sign*cha[ic], neu[ine], sign*24);
-}
-
-
-void SSCNWVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS)
@@ -74,7 +74,11 @@ void SSCNWVertex::Init() {
 }
 
 void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+#ifndef NDEBUG
 			      tcPDPtr part3) {
+#else
+			      tcPDPtr) {
+#endif
   assert(abs(part3->id()) == ParticleID::Wplus);
   long neu, cha;
   if(part1->charged()) {
@@ -91,7 +95,7 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
      neu == 1000045) );
   if(q2 != _q2last||_couplast==0.) {
     _q2last = q2;
-    _couplast = weakCoupling(q2);;
+    _couplast = weakCoupling(q2);
   }
   norm(_couplast);
   if(cha != _id1last || neu != _id2last) {

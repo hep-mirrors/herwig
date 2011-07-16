@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Cluster.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -215,6 +215,17 @@ bool Cluster::isStatusFinal() const {
 
 tPPtr Cluster::particle(int i) const { 
   return (i < _numComp) ? _component[i] : PPtr(); 
+}
+
+tPPtr Cluster::colParticle(bool anti) const {
+  if ( _numComp != 2 ) return PPtr();
+  if ( _original[0]->hasColour(anti) ) return _original[0];
+  else if ( _original[1]->hasColour(anti) ) return _original[1];
+  else return PPtr();
+}
+
+tPPtr Cluster::antiColParticle() const {
+  return colParticle(true);
 }
 
 bool Cluster::isPerturbative(int i) const { 

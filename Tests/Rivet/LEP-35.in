@@ -10,18 +10,15 @@ cd /Herwig/Generators
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 35.
 
 ##################################################
-#  Use the q qbar matrix element
-##################################################
-cd /Herwig/MatrixElements
-# default e+e- > q qbar (5 flavours d,u,s,c,b)
-insert SimpleEE:MatrixElements 0 MEee2gZ2qq
-
-##################################################
 # select the analyses 
 ##################################################
 
 # OPAL/JADE jet rates at many energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
+# tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // StandardModel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -53,10 +53,10 @@ void StandardModel::doinit() {
     runningMass_->init();
   }
   //add Standard Model vertices
-  addVertex(FFZVertex_);
-  addVertex(FFPVertex_);
-  addVertex(FFGVertex_);
-  addVertex(FFWVertex_);
+  addVertex(vertexFFZ());
+  addVertex(vertexFFP());
+  addVertex(vertexFFG());
+  addVertex(vertexFFW());
   addVertex(vertexFFH());
   addVertex(vertexWWH());
   addVertex(GGGVertex_);
@@ -170,7 +170,7 @@ void StandardModel::Init() {
     ("ModelGenerator",
      "Pointer to ModelGenerator class",
      &StandardModel::modelGenerator_, false, false, true, true);
-  
+
   static ClassDocumentation<StandardModel> documentation
     ("The StandardModel class inherits from StandardModelBase"
      "and supplies additional couplings and access to the StandardModel"

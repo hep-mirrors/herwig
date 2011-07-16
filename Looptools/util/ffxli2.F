@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxli2:
 	subroutine ffxli2(xdilog,xlog,x,ier)
 ***#[*comment:***********************************************************
@@ -34,7 +37,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -146,7 +149,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -298,7 +301,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	if ( abs(x) .lt. xalogm ) then
@@ -342,7 +345,7 @@
 	DOUBLE COMPLEX zxfflg
 	external ffbnd,zxfflg
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn19
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ initialisation:
 	data xprec /-1D0/
@@ -399,7 +402,7 @@
      +		xa,ffbnd,dfflo1
 	external ffbnd,dfflo1
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn18
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ initialisation:
 	data xprec /-1D0/
@@ -456,7 +459,7 @@
      +		xa,ffbnd,dfflo2
 	external ffbnd,dfflo2
 	save xprec,bdn01,bdn05,bdn10,bdn15
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ initialisation:
 	data xprec /-1D0/
@@ -508,7 +511,7 @@
      +		xprec,xa,ffbnd,dilog2(29)
 	external ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn20,bdn25,init,dilog2
-	include 'ff.h'
+#include "ff.h"
 	data xprec /-1D0/
 	data init /0/
 	if ( init .eq. 0 ) then

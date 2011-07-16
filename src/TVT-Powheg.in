@@ -15,7 +15,6 @@
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
@@ -29,7 +28,7 @@ set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 #  and strong coupling
 ##################################################
 create Herwig::O2AlphaS O2AlphaS 
-set Model:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 
 ##################################################
 #  Setup the POWHEG shower

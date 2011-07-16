@@ -17,13 +17,8 @@ SSNCTVertex::SSNCTVertex() : MX_(2.e16*GeV),
 			     sw_(0.), cw_(0.), mw_(ZERO), 
 			     sb_(0.), cb_(0.), q2last_(), couplast_(0.),
 			     leftlast_(0.), rightlast_(0.), idlast_(0),
-			     epsilon_(0.) {
-  long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
-  for(unsigned int nl = 0; nl < 5; ++nl) {
-    addToList( neut[nl],  4, -1000006 );
-    addToList( neut[nl], -4,  1000006 );
-  }
-}
+			     epsilon_(0.) 
+{}
 
 IBPtr SSNCTVertex::clone() const {
   return new_ptr(*this);
@@ -63,6 +58,11 @@ void SSNCTVertex::Init() {
 }
 
 void SSNCTVertex::doinit() {
+  long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
+  for(unsigned int nl = 0; nl < 5; ++nl) {
+    addToList( neut[nl],  4, -1000006 );
+    addToList( neut[nl], -4,  1000006 );
+  }
   FFSVertex::doinit();
   // get the MSSM
   MSSMPtr model = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
@@ -152,7 +152,7 @@ void SSNCTVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     Complex n1prime = (*nmix_)(nl,0)*cw_ + (*nmix_)(nl,1)*sw_;
     tcPDPtr smf = getParticleData(ism);
     double qf = smf->charge()/eplus;
-    Complex bracketl = qf*sw_*( conj(n1prime) - sw_*conj(n2prime)/cw_ );
+    //Complex bracketl = qf*sw_*( conj(n1prime) - sw_*conj(n2prime)/cw_ );
     double lambda(0.);
     //neutralino mixing element
     Complex nlf(0.);

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffxc0.f,v 1.5 1996/08/15 09:36:47 gj Exp $
 *###[ ffxc0:
 	subroutine ffxc0(cc0,xpi,ier)
@@ -45,12 +48,12 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ special case: all momenta^2 = 0
 *
 	if (abs(xpi(4)) + abs(xpi(5)) + abs(xpi(6)) .lt. 1D-10) then
-	  call ffxc0p0(cc0,xpi,ier)
+	  call ffxc0p0(cc0, xpi)
 	  return
 	endif
 *  #[ convert input:
@@ -99,7 +102,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	memory
 *
@@ -253,7 +256,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function:
 *
@@ -346,8 +349,8 @@
   106	continue
 	if ( abs(isgnal).ne.1 ) then
 	    print *,'ffxc0b: error: isgnal should be +/-1, not ',isgnal
-	    print *,'        forgot to call ffini?'
-	    call ffini
+	    print *,'        forgot to call ltini?'
+	    call ltini
 	endif
 	sdel2 = isgnal*sqrt(-del2)
 *
@@ -431,7 +434,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -577,7 +580,7 @@
 *
 *	rest
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -705,7 +708,7 @@
 	DOUBLE COMPLEX cc0,cc0p
 	integer inew(6,2),irota,ier1,i,j,ialsav
 	save inew
-	include 'ff.h'
+#include "ff.h"
 	data inew /1,2,3,4,5,6,
      +		   1,3,2,6,5,4/
 *  #] declarations:

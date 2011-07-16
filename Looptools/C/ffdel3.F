@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffdel3:
 	subroutine ffdel3(del3,piDpj)
 ***#[*comment:***********************************************************
@@ -32,7 +35,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ data:
 	data memind /0/
@@ -153,7 +156,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ data:
 	data memind /0/

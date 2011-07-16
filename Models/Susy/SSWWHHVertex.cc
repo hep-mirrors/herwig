@@ -12,21 +12,8 @@
 
 using namespace Herwig;
 
-SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) {
-  int id[3]={25,35,36};
-  for(unsigned int ix=0;ix<3;++ix) {
-    addToList( 24,-24,id[ix],id[ix]);
-    addToList( 23, 23,id[ix],id[ix]);
-    addToList( 22, 24,id[ix], 37);
-    addToList( 22,-24,id[ix],-37);
-    addToList( 23, 24,id[ix], 37);
-    addToList( 23,-24,id[ix],-37);
-  }
-  addToList( 24,-24, 37,-37);
-  addToList( 23, 23, 37,-37);
-  addToList( 22, 23, 37,-37);
-  addToList( 22, 22, 37,-37);
-}
+SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) 
+{}
 
 IBPtr SSWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -56,6 +43,19 @@ void SSWWHHVertex::Init() {
 }
 
 void SSWWHHVertex::doinit() {
+  int id[3]={25,35,36};
+  for(unsigned int ix=0;ix<3;++ix) {
+    addToList( 24,-24,id[ix],id[ix]);
+    addToList( 23, 23,id[ix],id[ix]);
+    addToList( 22, 24,id[ix],-37);
+    addToList( 22,-24,id[ix], 37);
+    addToList( 23, 24,id[ix],-37);
+    addToList( 23,-24,id[ix], 37);
+  }
+  addToList( 24,-24, 37,-37);
+  addToList( 23, 23, 37,-37);
+  addToList( 22, 23, 37,-37);
+  addToList( 22, 22, 37,-37);
   VVSSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !model )

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EtaPiGammaGammaDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -355,16 +355,16 @@ void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":grhoomega " << _grhoomega*GeV << "\n";
-  output << "set " << name() << ":Fpi " << _fpi/MeV  << "\n";
-  output << "set " << name() << ":grho " << _grho << "\n";
-  output << "set " << name() << ":RhoMass " << _rhomass/MeV << "\n";
-  output << "set " << name() << ":RhoWidth " << _rhowidth/MeV << "\n";
-  output << "set " << name() << ":RatioFpiF8 " << _ratiofpif8 << "\n";
-  output << "set " << name() << ":RatioFpiF0 " << _ratiofpif0 << "\n";
-  output << "set " << name() << ":Theta " << _theta  << "\n";
-  output << "set " << name() << ":EtaMax " << _etamax << "\n";
-  output << "set " << name() << ":EtaPrimeMax " << _etapmax << "\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":grhoomega " << _grhoomega*GeV << "\n";
+  output << "newdef " << name() << ":Fpi " << _fpi/MeV  << "\n";
+  output << "newdef " << name() << ":grho " << _grho << "\n";
+  output << "newdef " << name() << ":RhoMass " << _rhomass/MeV << "\n";
+  output << "newdef " << name() << ":RhoWidth " << _rhowidth/MeV << "\n";
+  output << "newdef " << name() << ":RatioFpiF8 " << _ratiofpif8 << "\n";
+  output << "newdef " << name() << ":RatioFpiF0 " << _ratiofpif0 << "\n";
+  output << "newdef " << name() << ":Theta " << _theta  << "\n";
+  output << "newdef " << name() << ":EtaMax " << _etamax << "\n";
+  output << "newdef " << name() << ":EtaPrimeMax " << _etapmax << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

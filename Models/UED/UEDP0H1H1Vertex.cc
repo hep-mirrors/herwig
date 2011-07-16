@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDP0H1H1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,11 +20,11 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
-  addToList(22, 5100037, -5100037);
-}
+UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) 
+{}
 
 void UEDP0H1H1Vertex::doinit() {
+  addToList(22, 5100037, -5100037);
   VSSVertex::doinit();
   orderInGs(0);
   orderInGem(1);

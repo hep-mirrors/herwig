@@ -18,15 +18,15 @@ NMSSMGGHVertex::NMSSMGGHVertex() : _sw(0.), _cw(0.), _mw(0.*MeV),
 	_v2(0.*MeV), _triTp(0.*MeV), _triBt(0.*MeV),
 	_sb(0.), _cb(0.), _masslast(make_pair(0.*MeV,0.*MeV)),
 	_q2last(0.*MeV2), _couplast(0.), _coup(0.),
-    _hlast(0), _recalc(true) {
+    _hlast(0), _recalc(true) 
+{}
+
+void NMSSMGGHVertex::doinit()  {
   addToList(21,21,25);
   addToList(21,21,35);
   addToList(21,21,36);
   addToList(21,21,45);
   addToList(21,21,46);
-}
-
-void NMSSMGGHVertex::doinit()  {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) {
     throw InitException() << "NMSSMGGHVertex::doinit - The SM pointer is null!"
@@ -82,6 +82,7 @@ void NMSSMGGHVertex::doinit()  {
   orderInGs(2);
 
   VVSLoopVertex::doinit();
+  Looptools::ltexi();
 }
 
 void NMSSMGGHVertex::persistentOutput(PersistentOStream & os) const {
@@ -114,7 +115,7 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 				 tcPDPtr p3) {			 
   long hid(p3->id());
   if( q2 != _q2last ) {
-    clearcache();
+    Looptools::clearcache();
     _couplast = sqr(strongCoupling(q2));
     _coup = weakCoupling(q2);
     _q2last = q2;

@@ -24,12 +24,14 @@
 using namespace RadiativeZPrime;
 
 MEqq2ZPrime2ZGamma::MEqq2ZPrime2ZGamma()  : _maxflavour(5) {
-  massOption(true ,2);
-  massOption(false,1);
+  vector<unsigned int> mopt(2,1);
+  mopt[0]=2;
+  massOption(mopt);
+  rescalingOption(2);
 }
 
 void MEqq2ZPrime2ZGamma::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   _zPrime = getParticleData(32); 
   tcSMPtr sm = generator()->standardModel();
   tcRadiativeZPrimeModelPtr model = 

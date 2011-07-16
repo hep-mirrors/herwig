@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelWWWGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,12 +21,12 @@ using namespace ThePEG;
 
 ADDModelWWWGRVertex::ADDModelWWWGRVertex() 
   : kappa_(ZERO), r_(ZERO), couplast_(0.),
-    q2last_(ZERO), zfact_(0.) {
-  addToList(24,-24, 22, 39);
-  addToList(24,-24, 23, 39);
-}
+    q2last_(ZERO), zfact_(0.) 
+{}
 
 void ADDModelWWWGRVertex::doinit() {
+  addToList(24,-24, 22, 39);
+  addToList(24,-24, 23, 39);
   VVVTVertex::doinit();
   zfact_ = sqrt((1.-sin2ThetaW())/sin2ThetaW());
   // set the graviton coupling 

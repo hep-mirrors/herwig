@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDW0A1H1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,6 +21,8 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 void UEDW0A1H1Vertex::doinit() {
+  addToList( 24, 5100036, -5100037);
+  addToList(-24, 5100036,  5100037);
   VSSVertex::doinit();
   tUEDBasePtr UEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!UEDBase) throw InitException() 
@@ -34,10 +36,8 @@ void UEDW0A1H1Vertex::doinit() {
 }
 
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
-				     theq2Last(), theCoupLast(0.) {
-  addToList( 24, 5100036, -5100037);
-  addToList(-24, 5100036,  5100037);
-}
+				     theq2Last(), theCoupLast(0.) 
+{}
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(theMw2,GeV2) << ounit(theMz2,GeV2) << ounit(theR2,1/GeV2);  

@@ -1,0 +1,54 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Powheg.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+# ALEPH charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
+# ALEPH main LEP I QCD summary paper
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
+# ALEPH photon analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3196992
+# OPAL photon analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198
+# OPAL flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3780481
+# OPAL event shapes and multiplicities at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+# ALEPH jet and event shapes at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
+# OPAL/JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# DELPHI strange baryon production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_S3137023
+# DELPHI tuning paper
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
+# DELPHI b quark
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2002_069_CONF_603
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+##################################################
+# unvalidated 
+##################################################
+# OPAL 4 jet angles 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
+# DELPHI 4 jet angles 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_WUD_03_11
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LEP-Powheg-91 LEPGenerator

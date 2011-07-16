@@ -2,7 +2,7 @@
 * the two-point tensor coefficients from Ansgar Denner's bcanew.f,
 * adapted to the conventions of LoopTools
 * this file is part of LoopTools
-* last modified 5 Dec 06 th
+* last modified 22 Dec 10 th
 
 #include "defs.h"
 
@@ -19,7 +19,7 @@
 	external fpv, yfpv, fth, xlogx, A0b
 
 	double precision p, m1, m2
-	double precision minacc, dm
+	double precision minacc, dm, la
 	double complex x1, x2, y1, y2, r
 	double complex mu, f1, f2, g1, g2
 	integer sel
@@ -127,7 +127,9 @@
 	  if( m1*m2 .eq. 0 .and.
      &        abs(p - m1 - m2) .lt. acc ) then
 * IR divergent case
-            B(dbb0) = -(1 + .5D0*log(lambda/p))/p
+	    la = lambda
+	    if( la .le. 0 ) la = mudim
+	    B(dbb0) = -(1 + .5D0*log(la/p))/p
 	  else if( sel .eq. 1 ) then
 	    B(dbb0) = (yfpv(1, x2, y2) - yfpv(1, x1, y1))/r
 	  else if( sel .eq. 2 ) then
@@ -141,7 +143,7 @@
 
           if( m2 .eq. 0 .and. abs(p - m1) .lt. acc ) then
 * IR divergent case
-	    B(dbb1) = .5D0*(3 + log(lambda/p))/p
+	    B(dbb1) = .5D0*(3 + log(la/p))/p
 	  else if( sel .eq. 1 ) then
 	    B(dbb1) = (yfpv(2, x1, y1) - yfpv(2, x2, y2))/r
 	  else if( sel .eq. 2 ) then

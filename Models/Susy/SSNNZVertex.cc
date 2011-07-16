@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSNNZVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,14 +23,14 @@ using namespace Herwig;
 
 SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(), _couplast(0.),
-			     _leftlast(0.), _rightlast(0.) {
+			     _leftlast(0.), _rightlast(0.) 
+{}
+
+void SSNNZVertex::doinit() {
   long neu[] = { 1000022, 1000023, 1000025, 1000035, 1000045 };
   for(unsigned int i = 0; i < 5; ++i)
     for(unsigned int j = 0; j < 5; ++j)
       addToList(neu[i], neu[j], 23);
-}
-
-void SSNNZVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS)
@@ -74,7 +74,11 @@ void SSNNZVertex::Init() {
 }
 
 void SSNNZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
+#ifndef NDEBUG
 			      tcPDPtr part2,tcPDPtr part3) {
+#else
+			      tcPDPtr part2,tcPDPtr) {
+#endif
   assert(part3->id() == ParticleID::Z0);
   long ic1 = part2->id();
   long ic2 = part1->id();

@@ -58,7 +58,7 @@ create ThePEG::ACDCSampler /Herwig/ACDCSampler ACDCSampler.so
 # objects before you can use them in a 'set' command
 #####################################################################
 
-set /Herwig/ACDCSampler:Margin  1.1
+newdef /Herwig/ACDCSampler:Margin  1.1
 
 ###################################################################
 # The 'read' command includes external files in place, to reduce
@@ -75,6 +75,7 @@ read Shower.in
 read MatrixElements.in
 read Hadronization.in
 read Decays.in
+read BSM.in
 
 #######################################################################
 # The EventHandler is the most important object in a run. It 
@@ -96,15 +97,15 @@ cd /Herwig/EventHandlers
 # Create LEPHandler
 create ThePEG::StandardEventHandler LEPHandler 
 create ThePEG::FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
-set FixedLEPLuminosity:Energy 91.2
-set LEPHandler:LuminosityFunction FixedLEPLuminosity
+newdef FixedLEPLuminosity:Energy 91.2
+newdef LEPHandler:LuminosityFunction FixedLEPLuminosity
 insert LEPHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleEE
-set LEPHandler:BeamA /Herwig/Particles/e-
-set LEPHandler:BeamB /Herwig/Particles/e+
-set LEPHandler:Sampler /Herwig/ACDCSampler
-set LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
+newdef LEPHandler:BeamA /Herwig/Particles/e-
+newdef LEPHandler:BeamB /Herwig/Particles/e+
+newdef LEPHandler:Sampler /Herwig/ACDCSampler
+newdef LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
 # spin correlations for perturbative decays (in same step so shower works)
 insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 # QED radiation off Z decay products in hard process
@@ -113,16 +114,16 @@ insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHand
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
 create ThePEG::FixedCMSLuminosity FixedLHCLuminosity
-set FixedLHCLuminosity:Energy 14000.0
-set LHCHandler:LuminosityFunction FixedLHCLuminosity
+newdef FixedLHCLuminosity:Energy 7000.0
+newdef LHCHandler:LuminosityFunction FixedLHCLuminosity
 insert LHCHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleQCD
-set LHCHandler:BeamA /Herwig/Particles/p+
-set LHCHandler:BeamB /Herwig/Particles/p+
-set LHCHandler:Sampler /Herwig/ACDCSampler
-set LHCHandler:BinStrategy 2
-set LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
+newdef LHCHandler:BeamA /Herwig/Particles/p+
+newdef LHCHandler:BeamB /Herwig/Particles/p+
+newdef LHCHandler:Sampler /Herwig/ACDCSampler
+newdef LHCHandler:BinStrategy 2
+newdef LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
 # spin correlations for perturbative decays (in same step so shower works)
 insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 # QED radiation off W/Z decay products in hard process
@@ -131,17 +132,17 @@ insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHan
 # Create DISHandler
 create ThePEG::StandardEventHandler DISHandler 
 create ThePEG::LuminosityFunction DISLuminosity
-set DISHandler:BeamA /Herwig/Particles/p+
-set DISLuminosity:BeamEMaxA 920.*GeV
-set DISHandler:BeamB /Herwig/Particles/e-
-set DISLuminosity:BeamEMaxB 30.*GeV
-set DISHandler:LuminosityFunction DISLuminosity
+newdef DISHandler:BeamA /Herwig/Particles/p+
+newdef DISLuminosity:BeamEMaxA 920.*GeV
+newdef DISHandler:BeamB /Herwig/Particles/e-
+newdef DISLuminosity:BeamEMaxB 30.*GeV
+newdef DISHandler:LuminosityFunction DISLuminosity
 insert DISHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
-set DISHandler:Sampler /Herwig/ACDCSampler
-set DISHandler:BinStrategy 2
-set DISHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set DISHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set DISHandler:DecayHandler /Herwig/Decays/DecayHandler
+newdef DISHandler:Sampler /Herwig/ACDCSampler
+newdef DISHandler:BinStrategy 2
+newdef DISHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef DISHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef DISHandler:DecayHandler /Herwig/Decays/DecayHandler
 
 mkdir /Herwig/Generators 
 cd /Herwig/Generators 
@@ -166,27 +167,27 @@ insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Particles
 
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator
-set LEPGenerator:RandomNumberGenerator /Herwig/Random
-set LEPGenerator:StandardModelParameters /Herwig/Model
-set LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
-set LEPGenerator:Strategy DefaultStrategy
-set LEPGenerator:DumpPeriod -1
+newdef LEPGenerator:RandomNumberGenerator /Herwig/Random
+newdef LEPGenerator:StandardModelParameters /Herwig/Model
+newdef LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
+newdef LEPGenerator:Strategy DefaultStrategy
+newdef LEPGenerator:DumpPeriod -1
 
 # And the LHCGenerator
 create ThePEG::EventGenerator LHCGenerator
-set LHCGenerator:RandomNumberGenerator /Herwig/Random
-set LHCGenerator:StandardModelParameters /Herwig/Model
-set LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
-set LHCGenerator:Strategy DefaultStrategy
-set LHCGenerator:DumpPeriod -1
+newdef LHCGenerator:RandomNumberGenerator /Herwig/Random
+newdef LHCGenerator:StandardModelParameters /Herwig/Model
+newdef LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
+newdef LHCGenerator:Strategy DefaultStrategy
+newdef LHCGenerator:DumpPeriod -1
 
 # And the DISGenerator
 create ThePEG::EventGenerator DISGenerator
-set DISGenerator:RandomNumberGenerator /Herwig/Random
-set DISGenerator:StandardModelParameters /Herwig/Model
-set DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
-set DISGenerator:Strategy DefaultStrategy
-set DISGenerator:DumpPeriod -1
+newdef DISGenerator:RandomNumberGenerator /Herwig/Random
+newdef DISGenerator:StandardModelParameters /Herwig/Model
+newdef DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
+newdef DISGenerator:Strategy DefaultStrategy
+newdef DISGenerator:DumpPeriod -1
 
 ############################################
 # The default cuts
@@ -194,9 +195,9 @@ set DISGenerator:DumpPeriod -1
 read Cuts.in
 
 cd /Herwig/Generators
-set LEPGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
-set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
-set DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
+newdef LEPGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
+newdef LHCGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+newdef DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 
 ##########################################
 # include some default analysis handlers

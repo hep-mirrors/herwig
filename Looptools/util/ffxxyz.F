@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxxyz:
 	subroutine ffxxyz(y,z,dyz,d2yzz,dy2z,ivert,sdel2p,sdel2s,etalam,
      +		etami,delps,xpi,dpipj,piDpj,isoort,ldel2s,ns,ier)
@@ -53,7 +56,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ set up pointers:
 	if ( ldel2s .and. ivert .ne. 1 ) goto 100
@@ -671,7 +674,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	if ( l .eq. 1 ) then

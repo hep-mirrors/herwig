@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelVVGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -41,14 +41,14 @@ void ADDModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(UnitRemoval::E * kappa_));
 }
 
-ADDModelVVGRVertex::ADDModelVVGRVertex() : kappa_(ZERO), r_(ZERO) {
+ADDModelVVGRVertex::ADDModelVVGRVertex() : kappa_(ZERO), r_(ZERO) 
+{}
+
+void ADDModelVVGRVertex::doinit() {
   addToList(23,23,39);
   addToList(22,22,39);
   addToList(24,-24,39);
   addToList(21,21,39);
-}
-
-void ADDModelVVGRVertex::doinit() {
   VVTVertex::doinit();
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD)

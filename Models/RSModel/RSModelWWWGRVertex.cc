@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSModelVVVGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,12 +21,12 @@ using namespace ThePEG;
 
 RSModelWWWGRVertex::RSModelWWWGRVertex() 
   : kappa_(ZERO), _couplast(0.), 
-    _q2last(ZERO), _zfact(0.) {
-  addToList(24,-24, 22, 39);
-  addToList(24,-24, 23, 39);
-}
+    _q2last(ZERO), _zfact(0.) 
+{}
 
 void RSModelWWWGRVertex::doinit() {
+  addToList(24,-24, 22, 39);
+  addToList(24,-24, 23, 39);
   VVVTVertex::doinit();
   _zfact = sqrt((1.-sin2ThetaW())/sin2ThetaW());
   // set the graviton coupling 

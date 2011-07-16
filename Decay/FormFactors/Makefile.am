@@ -9,7 +9,7 @@ ScalarFormFactor.h \
 BtoSGammaHadronicMass.h \
 BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
 
-HwFormFactors_la_LDFLAGS = -module -version-info 5:0:0
+HwFormFactors_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
 HwFormFactors_la_SOURCES = \
 BallZwickyScalarFormFactor.cc BallZwickyScalarFormFactor.h \
 BallZwickyVectorFormFactor.cc BallZwickyVectorFormFactor.h \

@@ -38,6 +38,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S6879055
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7554427
 # D0 Run II
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8202443
+# D0 run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8821313
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

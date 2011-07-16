@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayIntegrator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -105,7 +105,6 @@ void DecayIntegrator::Init() {
      "Yes",
      "include the intermediates",
      true);
-  
 }
 
 // output info on the integrator
@@ -309,11 +308,11 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
 void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
-  output << "set " << name() << ":Iteration " << _niter << "\n";
-  output << "set " << name() << ":Ntry " << _ntry << "\n";
-  output << "set " << name() << ":Points " << _npoint << "\n";
+  output << "newdef " << name() << ":Iteration " << _niter << "\n";
+  output << "newdef " << name() << ":Ntry " << _ntry << "\n";
+  output << "newdef " << name() << ":Points " << _npoint << "\n";
   //if(_photongen){;}
-  output << "set " << name() << ":GenerateIntermediates " << _generateinter << " \n";
+  output << "newdef " << name() << ":GenerateIntermediates " << _generateinter << " \n";
   // footer for MySQL
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";

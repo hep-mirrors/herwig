@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffzli2:
 	subroutine ffzli2(zdilog,zlog,cx,ier)
 ***#[*comment:***********************************************************
@@ -34,7 +37,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -146,7 +149,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -331,7 +334,7 @@
 *
 *	common blocks, statement function
 *
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *  #] declarations: 
 *  #[ calculations:
@@ -386,7 +389,7 @@
      +		absc,xa,ffbnd
 	external zfflog,ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn19
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *  #] declarations: 
 *  #[ initialisations:
@@ -451,7 +454,7 @@
      +		ffbnd,absc
 	external ffbnd,zfflo1
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn18
-	include 'ff.h'
+#include "ff.h"
 	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
 *  #] declarations: 
 *  #[ initialisation:
@@ -515,7 +518,7 @@
      +		absc
 	external zfflo2,ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15
-	include 'ff.h'
+#include "ff.h"
 	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
 *  #] declarations: 
 *  #[ initialisation:

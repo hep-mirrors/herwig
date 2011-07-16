@@ -30,4 +30,4 @@ SSNCTVertex.h SSNCTVertex.cc \
 SSGVNHVertex.h SSGVNHVertex.cc\
 SSGVNVVertex.h SSGVNVVertex.cc\
 SSGVFSVertex.h SSGVFSVertex.cc
-HwSusy_la_LDFLAGS = -module -version-info 6:0:0
+HwSusy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0

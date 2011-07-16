@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerKinematics.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -66,6 +66,7 @@ public:
    * of the parent kinematics. 
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
 			      const ShowerParticleVector & theChildren,
@@ -76,6 +77,7 @@ public:
    * of the children. This method will be used by the KinematicsReconstructor.
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateParent(const tShowerParticlePtr theParent,
 			    const ShowerParticleVector & theChildren,
@@ -165,7 +167,7 @@ public:
    * Virtual function to return a set of basis vectors, specific to
    * the type of evolution. This function will be used by the
    * ForwardShowerEvolver in order to access \f$p\f$ and \f$n\f$, 
-   * which in turn are members of the concrete class QtildaShowerKinematics1to2.
+   * which in turn are members of the concrete class QTildeShowerKinematics1to2.
    */
   virtual vector<Lorentz5Momentum> getBasis() const = 0;
 

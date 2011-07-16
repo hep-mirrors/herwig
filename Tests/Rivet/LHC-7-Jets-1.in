@@ -1,0 +1,30 @@
+###################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase.in
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+set /Herwig/Cuts/JetKtCut:MinKT 10.
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS jet shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
+# ATLAS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-7-Jets-1 LHCGenerator

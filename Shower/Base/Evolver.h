@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Evolver.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -61,7 +61,8 @@ public:
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
-	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0)
+	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
+	      _colourEvolutionMethod(0)
   {}
 
   /**
@@ -347,12 +348,12 @@ protected:
   /**
    *  The HardTree currently being showered
    */
-  tHardTreePtr hardTree() {return _nasontree;}
+  tHardTreePtr hardTree() {return _hardtree;}
 
   /**
    *  The HardTree currently being showered
    */
-  void hardTree(tHardTreePtr in) {_nasontree = in;}
+  void hardTree(tHardTreePtr in) {_hardtree = in;}
   //@}
 
   /**
@@ -479,6 +480,11 @@ protected:
 private:
 
   /**
+   * Get the octet -> octet octet reduction factor.
+   */
+  double getReductionFactor(tShowerParticlePtr particle);
+
+  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
@@ -570,7 +576,7 @@ private:
   /**
    *  The HardTree currently being showered
    */
-  HardTreePtr _nasontree;
+  HardTreePtr _hardtree;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm
@@ -633,6 +639,11 @@ private:
    *  Mode for the hard emissions
    */
   unsigned int _hardEmissionMode;
+
+  /**
+   * Colour evolution method
+   */
+  int _colourEvolutionMethod;
 };
 
 }

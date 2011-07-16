@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelGGGGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 ADDModelGGGGRVertex::ADDModelGGGGRVertex() 
-  : kappa_(ZERO), r_(ZERO), couplast_(0.), q2last_(ZERO) {
-  addToList(21, 21, 21, 39);
-}
+  : kappa_(ZERO), r_(ZERO), couplast_(0.), q2last_(ZERO) 
+{}
 
 void ADDModelGGGGRVertex::doinit() {
+  addToList(21, 21, 21, 39);
   VVVTVertex::doinit();
   orderInGem(1);
   orderInGs (1);
@@ -56,8 +56,13 @@ void ADDModelGGGGRVertex::Init() {
   
 }
 
+#ifndef NDEBUG
 void ADDModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 				     tcPDPtr c, tcPDPtr) {
+#else
+void ADDModelGGGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				     tcPDPtr, tcPDPtr) {
+#endif
   assert(a->id() == ParticleID::g && b->id() ==  ParticleID::g &&
 	 c->id() == ParticleID::g);
   if(q2!=q2last_||couplast_==0.) {

@@ -25,7 +25,6 @@ insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 

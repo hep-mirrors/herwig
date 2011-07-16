@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSModelSSGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,11 +19,11 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) {
-  addToList(25,25,39);
-}
+RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) 
+{}
 
 void RSModelSSGRVertex::doinit() {
+  addToList(25,25,39);
   SSTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(!hwRS) 

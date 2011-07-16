@@ -59,8 +59,6 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
-   * @param ioff An integer referring to which particle in the list is 
-   * offshell if applicable.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 			   tcPDPtr part3);

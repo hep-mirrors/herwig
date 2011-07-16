@@ -1,0 +1,353 @@
+// -*- C++ -*-
+
+// (C) 2007-2009 Simon Plaetzer -- sp@particle.uni-karlsruhe.de
+
+// workaround for OS X bug where isnan() and isinf() are hidden
+// when <iostream> is included
+extern "C" int isnan(double) throw();
+extern "C" int isinf(double) throw();
+
+namespace Analysis2 {
+
+inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator >> (PersistentIStream& is, HistogramChannel& h) {
+  h.persistentInput(is);
+  return is;
+}
+
+inline string getNextTag (istream& is) {
+  string line = "";
+  while (line == "") {
+    if (!is) return "";
+    getline(is,line);
+    line = StringUtils::stripws(line);
+    if (line.length() && line[0] != '<') {
+      line = ""; continue;
+    }
+    if (line.length() && line[0] == '<') {
+      string::size_type a = 
+	line.find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/");
+      if (a != 1) {
+	line = "";
+	continue;
+      }
+    }
+  }
+  return line;
+}
+
+inline HistogramChannel::HistogramChannel ()
+  : _isCountingChannel(true),
+    _bins(vector<pair<double,double> >()),
+    _binEntries(vector<unsigned long>()),
+    _outOfRange(make_pair(0.,0.)),
+    _visible(0), _total(0), _nanEvents(0),
+    _nanWeights(vector<unsigned long>()),
+    _finished(false)
+{}
+
+inline HistogramChannel::HistogramChannel (unsigned int bins, bool counting)
+  : _isCountingChannel(counting),
+    _bins(bins,make_pair(0.,0.)),
+    _binEntries(bins,0),
+    _outOfRange(make_pair(0.,0.)),
+    _visible(0), _total(0), _nanEvents(0),
+    _nanWeights(bins,0),
+    _finished(false)
+{}
+
+inline HistogramChannel::HistogramChannel (const vector<pair<double,double> >& bins,
+					   double underflow, double overflow)
+  : _isCountingChannel(false),
+    _bins(bins),
+    _binEntries(bins.size(),0),
+    _outOfRange(make_pair(underflow,overflow)),
+    _visible(0), _total(0), _nanEvents(0),
+    _nanWeights(bins.size(),0),
+    _finished(false)
+{}
+
+inline void HistogramChannel::book (unsigned int bin, double weight) {
+  if (isnan(weight) || isinf(weight)) {
+    ++_nanWeights[bin];
+    return;
+  }
+  _bins[bin].first += weight;
+  _bins[bin].second += sqr(weight);
+  ++_binEntries[bin];
+  ++_visible; ++_total;
+}
+
+inline void HistogramChannel::bookUnderflow (double weight) {
+  _outOfRange.first += weight;
+  ++_total;
+}
+
+inline void HistogramChannel::bookOverflow (double weight) {
+  _outOfRange.second += weight;
+  ++_total;
+}
+
+inline void HistogramChannel::nanEvent () {
+  ++_nanEvents;
+}
+
+inline HistogramChannel& HistogramChannel::operator /= (double a) {
+  return this->operator *= (1/a);
+}
+
+inline bool HistogramChannel::isCountingChannel () const {
+  return _isCountingChannel;
+}
+
+inline vector<pair<double,double> > HistogramChannel::bins () const {
+  return _bins;
+}
+
+inline pair<double,double> HistogramChannel::bin (unsigned int bin) const {
+  return _bins[bin];
+}
+
+inline void HistogramChannel::bin (unsigned int bin,
+				   pair<double,double> val,
+				   unsigned long entries) {
+  _bins[bin] = val;
+  if (entries > 0) {
+    _visible = _visible - _binEntries[bin] + entries;
+  _binEntries[bin] = entries;
+  }
+}
+
+inline vector<unsigned long> HistogramChannel::binEntries () const {
+  return _binEntries;
+}
+
+inline unsigned long HistogramChannel::binEntries (unsigned int bin) const {
+  return _binEntries[bin];
+}
+
+inline pair<double,double> HistogramChannel::outOfRange () const {
+  return _outOfRange;
+}
+
+inline unsigned long HistogramChannel::visible () const {
+  return _visible;
+}
+
+inline unsigned long HistogramChannel::total () const {
+  return _total;
+}
+
+inline vector<unsigned long> HistogramChannel::nanWeights () const {
+  return _nanWeights;
+}
+
+inline unsigned long HistogramChannel::nanEvents () const {
+  return _nanEvents;
+}
+
+inline void HistogramChannel::finish () {
+  if (_finished) return;
+  _finished = true;
+}
+
+inline double HistogramChannel::binVariance (unsigned int bin) const {
+  return _bins[bin].second;
+}
+
+inline double HistogramChannel::weightMean (unsigned int bin) const {
+  return _binEntries[bin] > 0 ? _bins[bin].first/_binEntries[bin] : 0.;
+}
+
+inline double HistogramChannel::weightVariance (unsigned int bin) const {
+  return _binEntries[bin] > 1 ?
+    (_bins[bin].second-sqr(_bins[bin].first)/_binEntries[bin])/(_binEntries[bin] - 1) : 0.; 
+}
+
+inline pair<double,double> HistogramChannel::binAverage () const {
+  return make_pair(binSum().first/_bins.size(),binSum().second/(_bins.size()*_bins.size()));
+}
+
+inline HistogramChannel operator + (const HistogramChannel& a, const HistogramChannel& b) {
+  HistogramChannel c(a); c += b; return c;
+}
+
+inline HistogramChannel operator - (const HistogramChannel& a, const HistogramChannel& b) {
+  HistogramChannel c(a); c -= b; return c;
+}
+
+inline HistogramChannel operator * (const HistogramChannel& a, const HistogramChannel& b) {
+  HistogramChannel c(a); c *= b; return c;
+}
+
+inline HistogramChannel operator / (const HistogramChannel& a, const HistogramChannel& b) {
+  HistogramChannel c(a); c /= b; return c;
+}
+
+inline Histogram2::Histogram2 ()
+  : _binning(), _binhash(), _channels(), _xSec(0.*nanobarn) { }
+
+inline void Histogram2::setName (const string& name) {
+  Named::name(name);
+}
+
+inline bool Histogram2::haveChannel (const string& name) const {
+  return _channels.find(name) != _channels.end();
+}
+
+inline HistogramChannel& Histogram2::channel (const string& name) {
+  return _channels.find(name)->second;
+}
+
+inline HistogramChannel Histogram2::channel (const string& name) const {
+  map<string,HistogramChannel>::const_iterator c = _channels.find(name);
+  if (c != _channels.end()) return c->second;
+  return HistogramChannel (0);
+}
+
+inline void Histogram2::insertChannel (const string& name, const HistogramChannel& c) {
+  _channels.insert(make_pair(name,c));
+}
+
+inline void Histogram2::insertChannel (const string& name) {
+  _channels.insert(make_pair(name,HistogramChannel(_binning.size())));
+}
+
+inline HistogramChannel Histogram2::removeChannel (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    HistogramChannel rem (c->second);
+    _channels.erase(c);
+    return rem;
+  }
+  return HistogramChannel(0);
+}
+
+inline const vector<pair<double,double> >& Histogram2::binning () const {
+  return _binning;
+}
+
+inline const map<double,unsigned int>& Histogram2::binhash () const {
+  return _binhash;
+}
+
+inline pair<double,double> Histogram2::range () const {
+  return _range;
+}
+
+inline CrossSection Histogram2::xSec () const {
+  return _xSec;
+}
+
+inline void Histogram2::xSec (CrossSection xs) {
+  _xSec = xs;
+}
+
+inline void Histogram2::finish (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second.finish();
+  }
+}
+
+inline void Histogram2::differential (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second.differential(_binning);
+  }
+}
+
+inline pair<double,double> Histogram2::integrate (const string& name) const {
+  pair<double,double> integral = make_pair(0.,0.);
+  map<string,HistogramChannel>::const_iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    integral = c->second.integrate(_binning);
+  }
+  return integral;
+}
+
+inline void Histogram2::normalise (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second /= integrate(name);
+  }
+}
+
+  inline void Histogram2::rescale (const string& name, double x) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second *= x;
+  }
+}
+
+  inline void Histogram2::rescale (double x) {
+    for (map<string,HistogramChannel>::iterator c = _channels.begin();
+	 c != _channels.end(); ++c) {
+      c->second *= x;
+    }
+  }
+
+inline void Histogram2::normalise (const string& name, const string& data) {
+  pair<double,double> norm = integrate(data);
+  map<string,HistogramChannel>::iterator c = _channels.find(name);  
+  if (norm.first == 0. || c == _channels.end()) return;
+  c->second /= c->second.integrate(_binning);
+  c->second *= norm;
+}
+
+
+inline pair<double,double> Histogram2::chi2perDOF (const string& hyp, const string& dat, double minfrac) const {
+  map<string,HistogramChannel>::const_iterator hypothesis = _channels.find(hyp);
+  map<string,HistogramChannel>::const_iterator data = _channels.find(dat);
+  pair<double,double> chi2 = make_pair(0.,0.);
+  if (hypothesis != _channels.end() && data != _channels.end()) {
+    chi2 = hypothesis->second.chi2(data->second,minfrac).average(_binning);
+  }
+  return chi2;
+}
+
+inline void Histogram2::operator+=(double event) {
+  book("mc",event);
+}
+
+inline void Histogram2::addWeighted(double event, double weight) {
+  book("mc",event,weight);
+}
+
+inline unsigned int Histogram2::numberOfBins() const {
+  return _binning.size();
+}
+
+inline void Histogram2::normaliseToData() {
+  normalise("mc","data");
+}
+
+inline void Histogram2::normaliseToCrossSection(const string& name) {
+  normalise(name);
+  channel(name) *= _xSec/nanobarn;
+}
+
+inline void Histogram2::chiSquared(double & chisq, 
+				   unsigned int & ndegrees,
+				   double minfrac) const {
+  ndegrees = _binning.size();
+  chisq = chi2perDOF("mc","data",minfrac).first;
+}
+
+inline IBPtr Histogram2::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr Histogram2::fullclone() const {
+  return new_ptr(*this);
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+}

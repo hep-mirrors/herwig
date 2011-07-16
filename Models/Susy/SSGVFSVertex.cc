@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGVFSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,7 +20,18 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGVFSVertex::SSGVFSVertex() : MPlanck_(2.4e18*GeV) {
+SSGVFSVertex::SSGVFSVertex() : MPlanck_(2.4e18*GeV) 
+{}
+
+void SSGVFSVertex::persistentOutput(PersistentOStream & os) const {
+  os << stop_ << sbot_ << stau_ << ounit(MPlanck_,GeV);
+}
+
+void SSGVFSVertex::persistentInput(PersistentIStream & is, int) {
+  is >> stop_ >> sbot_ >> stau_ >> iunit(MPlanck_,GeV);
+}
+
+void SSGVFSVertex::doinit() {
   //quarks
   for(long ix=1;ix<7;++ix){
     addToList( ParticleID::SUSY_Gravitino,  ix, -(1000000+ix) );
@@ -38,17 +49,6 @@ SSGVFSVertex::SSGVFSVertex() : MPlanck_(2.4e18*GeV) {
       addToList( ParticleID::SUSY_Gravitino, -ix,  (2000000+ix) );
     }
   }
-}
-
-void SSGVFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << stop_ << sbot_ << stau_ << ounit(MPlanck_,GeV);
-}
-
-void SSGVFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> stop_ >> sbot_ >> stau_ >> iunit(MPlanck_,GeV);
-}
-
-void SSGVFSVertex::doinit() {
   RFSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !model )
@@ -73,7 +73,12 @@ void SSGVFSVertex::Init() {
      "a fermion-sfermion");
 }
 
-void SSGVFSVertex::setCoupling(Energy2 ,tcPDPtr part1,
+void SSGVFSVertex::setCoupling(Energy2 ,
+#ifndef NDEBUG
+			       tcPDPtr part1,
+#else
+			       tcPDPtr,
+#endif
 			       tcPDPtr part2,tcPDPtr part3) {
   assert(part1->id()==ParticleID::SUSY_Gravitino);
   assert(part3->iSpin()==PDT::Spin0);

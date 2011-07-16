@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeSudakov.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,9 +17,9 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/Decay_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 #include "Herwig++/Shower/Base/ShowerVertex.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 
@@ -269,7 +269,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
@@ -307,7 +307,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
@@ -449,7 +449,7 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 
 ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
 						   double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
@@ -460,7 +460,7 @@ ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
 
 ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(IS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
@@ -471,7 +471,7 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 
 ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+  ShoKinPtr  showerKin = new_ptr(Decay_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);

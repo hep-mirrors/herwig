@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // NBodyDecayConstructorBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -211,7 +211,16 @@ private:
 
   /** An Exception class that can be used by all inheriting classes to
    * indicate a setup problem. */
-  class NBodyDecayConstructorError : public Exception {};
+  class NBodyDecayConstructorError : public Exception {
+
+  public:
+
+    NBodyDecayConstructorError() : Exception() {}
+    
+    NBodyDecayConstructorError(const string & str,
+			       Severity sev) : Exception(str,sev)
+    {}
+  };
 
 }
 

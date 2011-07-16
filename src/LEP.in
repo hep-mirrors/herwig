@@ -14,7 +14,9 @@
 ##################################################
 
 ##################################################
-# Selected the hard process
+# Selected the hard process 
+##################################################
+# leading-order processes
 ##################################################
 cd /Herwig/MatrixElements
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
@@ -27,6 +29,15 @@ insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 # insert SimpleEE:MatrixElements[0] MEee2ZH
 # higgs+e+e-/nu_enu_ebar via VBF
 # insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
+##################################################
+# NLO powheg processes
+##################################################
+#create Herwig::O2AlphaS O2AlphaS 
+#set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+#set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+#set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
+#insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
+
 
 ##################################################
 # Technical parameters for this run
@@ -34,7 +45,6 @@ insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 

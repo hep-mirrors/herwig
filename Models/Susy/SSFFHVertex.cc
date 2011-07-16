@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSFFHVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -25,7 +25,10 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0),
 			     theFLast(make_pair(0,0)), theGlast(0.),
-			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) {
+			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) 
+{}
+
+void SSFFHVertex::doinit() {
   int higgs[] = { 25, 35, 36 };
   for ( long h = 0; h < 3; ++h ) {
     //neutral higgs
@@ -48,9 +51,6 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
     //outgoing H-
     addToList(-ix  ,ix+1,-37);
   }
-}
-
-void SSFFHVertex::doinit() {
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
@@ -148,7 +148,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       rcoup = theMassLast.first *thetanb/theMw;
     }
     coup = sqrt(0.5);
-    if( higgsID < 0 ) swap(lcoup,rcoup);
+    if( higgsID > 0 ) swap(lcoup,rcoup);
   }
   norm(theGlast*coup);
   left (lcoup);

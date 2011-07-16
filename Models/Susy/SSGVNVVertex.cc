@@ -15,15 +15,8 @@
 using namespace Herwig;
 
 SSGVNVVertex::SSGVNVVertex() : sw_(0.), cw_(0.), sb_(0.), cb_(0.),
-			       mz_(91.1876*GeV), MPlanck_(2.4e18*GeV) {
-  long neu[4] = {ParticleID::SUSY_chi_10, ParticleID::SUSY_chi_20,
-		 ParticleID::SUSY_chi_30, ParticleID::SUSY_chi_40};
-  for(unsigned int j = 0; j < 4; ++j) {
-    addToList(ParticleID::SUSY_Gravitino, neu[j], ParticleID::gamma);
-    addToList(ParticleID::SUSY_Gravitino, neu[j], ParticleID::Z0);
-  }
-  addToList(ParticleID::SUSY_Gravitino, ParticleID::SUSY_g, ParticleID::g);
-}
+			       mz_(91.1876*GeV), MPlanck_(2.4e18*GeV)
+{}
 
 IBPtr SSGVNVVertex::clone() const {
   return new_ptr(*this);
@@ -53,6 +46,13 @@ void SSGVNVVertex::Init() {
 }
 
 void SSGVNVVertex::doinit() {
+  long neu[4] = {ParticleID::SUSY_chi_10, ParticleID::SUSY_chi_20,
+		 ParticleID::SUSY_chi_30, ParticleID::SUSY_chi_40};
+  for(unsigned int j = 0; j < 4; ++j) {
+    addToList(ParticleID::SUSY_Gravitino, neu[j], ParticleID::gamma);
+    addToList(ParticleID::SUSY_Gravitino, neu[j], ParticleID::Z0);
+  }
+  addToList(ParticleID::SUSY_Gravitino, ParticleID::SUSY_g, ParticleID::g);
   RFVVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !model )
@@ -70,7 +70,12 @@ void SSGVNVVertex::doinit() {
   orderInGs(0);
 }
 
-void SSGVNVVertex::setCoupling(Energy2 ,tcPDPtr part1,
+void SSGVNVVertex::setCoupling(Energy2 ,
+#ifndef NDEBUG
+			       tcPDPtr part1,
+#else
+			       tcPDPtr,
+#endif
 			       tcPDPtr part2,tcPDPtr part3) {
   assert(part1->id()==ParticleID::SUSY_Gravitino);
   assert(part3->iSpin()==PDT::Spin1);

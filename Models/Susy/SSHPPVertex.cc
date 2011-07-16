@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSHPPVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -35,12 +35,8 @@ SSHPPVertex::SSHPPVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), 
 			     theSinBmA(0.), theCosBmA(0.), 
 			     theCouplast(0.), 
-			     theq2last(), theHaveCoeff(false), theLastID(0) {
-  //PDG codes for particles at vertices
-  addToList(22,22,25);
-  addToList(22,22,35);
-  addToList(22,22,36);
-}
+			     theq2last(), theHaveCoeff(false), theLastID(0) 
+{}
 
 void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
   os << theMSSM << theSw << ounit(theMw,GeV) << ounit(theZfact,GeV) 
@@ -86,7 +82,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	 particle3->id() == ParticleID::gamma );
   // couplings
   if( q2 != theq2last || theCouplast == 0. || higgs != theLastID ) {
-    clearcache();
+    Looptools::clearcache();
     theCouplast = sqr(electroMagneticCoupling(q2))*weakCoupling(q2);
     Energy mt   = theMSSM->mass(q2, thetop);    
     Energy mb   = theMSSM->mass(q2, thebot);
@@ -325,6 +321,10 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 // }
 
 void SSHPPVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(22,22,25);
+  addToList(22,22,35);
+  addToList(22,22,36);
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM ) 
     throw InitException()
@@ -574,5 +574,6 @@ void SSHPPVertex::doinit() {
 // 	 << pre*std::norm(Isb1+Isb2+Ist1+Ist2+Istau1+Istau2+
 // 			  Itop+Ibot+Itau+Ih+IW+IC[0]+IC[1])/GeV << "\n";
 //   }
+  Looptools::ltexi();
 }
  

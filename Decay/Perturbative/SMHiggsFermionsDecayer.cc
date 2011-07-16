@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsFermionsDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -186,7 +186,7 @@ void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    os << "set " << name() << ":MaxWeights " << ix << " "
+    os << "newdef " << name() << ":MaxWeights " << ix << " "
 	   << _maxwgt[ix] << "\n";
   }
   DecayIntegrator::dataBaseOutput(os,false);

@@ -41,15 +41,10 @@ public:
    * @param particle The particle which is branching
    * @param sudakov  The Sudakov form factor for the branching
    * @param parent   The parent for the branching
-   * @param incoming Whether the particle is incoming or outgoing
+   * @param status Whether the particle is incoming or outgoing
    */
   HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
 		tHardBranchingPtr parent,Status status);
-
-  /**
-   * Destructor
-   */
-  ~HardBranching();
 
   /**
    * Add a child of the branching
@@ -61,21 +56,6 @@ public:
    *  Clear the children
    */
   void clearChildren() { _children.clear(); }
-
-  /**
-   *  Add a backward child
-   */
-  void addBackChild(HardBranchingPtr child) {
-    _back_children.push_back(child);
-  }
-
-  /**
-   *  Clear the backward children
-   */
-  void clearBackChildren() { 
-    _back_children.clear(); 
-    _backSudakov = SudakovPtr();
-  }
 
   /**
    *  Set the momenta of the particles
@@ -203,16 +183,6 @@ public:
   void sudakov(SudakovPtr in) {_sudakov=in;}
 
   /**
-   *  set the Sudakov for backward branching
-   */
-  void backSudakov(SudakovPtr in) {_backSudakov=in;}
-
-  /**
-   *  The Sudakov for backwards branching
-   */
-  SudakovPtr backSudakov() const {return _backSudakov;}
-
-  /**
    *  Get the beam particle
    */
   PPtr beam() const {return _beam;}
@@ -226,13 +196,6 @@ public:
    * The children
    */
   vector<HardBranchingPtr> & children() {return _children;}
-
-  /**
-   *  The children for backward evolution
-   */
-  vector<HardBranchingPtr> & backChildren() {
-    return _back_children;
-  }
   //@}
 
   /**
@@ -364,19 +327,9 @@ private:
   SudakovPtr _sudakov;
 
   /**
-   *  The Sudakov form-factor for backward branching
-   */
-  SudakovPtr _backSudakov;
-
-  /**
    * The children
    */
   vector<HardBranchingPtr> _children;
-
-  /**
-   * The backward shower children
-   */
-  vector<HardBranchingPtr> _back_children;
 
   /**
    *  The beam particle

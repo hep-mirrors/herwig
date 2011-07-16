@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Evolver.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -46,14 +46,16 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode;
+     << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
+     << _colourEvolutionMethod;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
-     >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode;
+     >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
+     >> _colourEvolutionMethod;
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -223,6 +225,21 @@ void Evolver::Init() {
      "POWHEG",
      "Powheg style hard emission",
      1);
+  static Switch<Evolver,int> interfaceColourEvolutionMethod
+    ("ColourEvolutionMethod",
+     "Choice of method for choosing the colour factor in gluon evolution",
+     &Evolver::_colourEvolutionMethod, 0, false, false);
+  static SwitchOption interfaceColourEvolutionMethodDefault
+    (interfaceColourEvolutionMethod,
+     "Default",
+     "Colour factor is CA for all scales",
+     0);
+  static SwitchOption interfaceColourEvolutionMethodHalfCA
+    (interfaceColourEvolutionMethod,
+     "HalfCA",
+     "Only use half the normal radiation until second scale is reached",
+     1);
+
 
 }
 
@@ -368,7 +385,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 	reconstructHardJets(hard,intrinsicpT())&&
 	maximumTries()>++ntry);
   _hardme=HwMEBasePtr();
-  _nasontree=HardTreePtr();
+  _hardtree=HardTreePtr();
   if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
   
   // the tree has now showered
@@ -401,15 +418,45 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   }
 }
 
+double Evolver::getReductionFactor(tShowerParticlePtr particle) {
+  // octet -> octet octet reduction factor 
+  if ( _colourEvolutionMethod == 1 ) {
+    // Determine which colour factor to use for octet->octet octet
+    // There are three possibilities.
+    // 1) Radiation is emitted from a hard parton, or the primary emission
+    //    of a hard parton, at a scale above the progenitor's second
+    //    scale, and we have half as much radiation.
+    // 2) Radiation is emitted from a hard parton, or the primary emission
+    //    of a hard parton, at a scale below the progenitor's second
+    //    scale, and we have the normal amount of radiation
+    // 3) Radiation is emitted from a secondary emission of a hard parton,
+    //    and we have the normal amount of radiation
+    if (getParticleData(particle->id())->iColour()==PDT::Colour8) {
+      // Particle is an octet
+      if (particle->radiationLine() == 1 || particle->radiationLine() == 2) {
+	// Particle is connected along hard progenitor's radiation line
+	if (particle->evolutionScale() > particle->progenitor()->evolutionScale2() ) {
+	  // Particle radiaties with half strength
+	  return 0.5;
+	}			
+      }	       
+    }
+  }
+  return 1.0;
+}
+
+
 bool Evolver::timeLikeShower(tShowerParticlePtr particle, 
 			     ShowerInteraction::Type type) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || _limitEmissions == 3 || 
-     ( _limitEmissions == 2 && _nfs != 0) ) return false;
+     ( _limitEmissions == 2 && _nfs != 0) ) return false;  
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   // generate the emission
   Branching fb;
   while (true) {
-    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
+    fb=_splittingGenerator->chooseForwardBranching(*particle,reduction*_finalenhance,type);
     // no emission return
     if(!fb.kinematics) return false;
     // if emission OK break
@@ -469,11 +516,13 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   // don't do anything if not needed
   if(_limitEmissions == 2  || _limitEmissions == 3  ||
      ( _limitEmissions == 1 && _nis != 0 ) ) return false;
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   Branching bb;
   // generate branching
   while (true) {
     bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
-						    _initialenhance,
+						    reduction*_initialenhance,
 						    _beam,type,
 						    pdf,freeze);
     // return if no emission
@@ -554,6 +603,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
   currentTree(decay);
+  decay->applyTransforms();
   // extract particles to be shower, set scales and 
   // perform hard matrix element correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
@@ -621,10 +671,12 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   Energy maxscale,
 				   Energy minmass,ShowerInteraction::Type type) {
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   Branching fb;
   while (true) {
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
-						 _initialenhance,type);
+						 reduction*_initialenhance,type);
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break
@@ -699,7 +751,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type ) {
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerParticlePtr> particles;
-  // match the particles in the ShowerTree and NasonTree
+  // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
 		      << "Evolver::setEvolutionPartners()"
@@ -732,7 +784,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type ) {
   }
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_nasontree);
+    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_hardtree);
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
@@ -892,15 +944,15 @@ void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme)
-      _nasontree =  _hardme->generateHardest( currentTree() );
+      _hardtree =  _hardme->generateHardest( currentTree() );
     else
-      _nasontree = _decayme->generateHardest( currentTree() );
-    if(!_nasontree) return;
+      _hardtree = _decayme->generateHardest( currentTree() );
+    if(!_hardtree) return;
     // join up the two tree
-    connectTrees(currentTree(),_nasontree,hard);
+    connectTrees(currentTree(),_hardtree,hard);
   }
   else {
-    _nasontree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
   }
 }
 
@@ -1424,7 +1476,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
 	}
       }
       if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-				     << "Evolver::generateHardest()" 
+				     << "Evolver::connectTrees()" 
 				     << Exception::runerror;
       (**cit).sudakov(sudakov);
     }
@@ -1437,9 +1489,14 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
   showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,!hard,hardTree->interaction(),true);
   // inverse reconstruction
-  showerModel()->kinematicsReconstructor()->
-    deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
-			hardTree->interaction());
+  if(hard)
+    showerModel()->kinematicsReconstructor()->
+      deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			  hardTree->interaction());
+  else
+    showerModel()->kinematicsReconstructor()->
+      deconstructDecayJets(hardTree,ShowerHandler::currentHandler()->evolver(),
+			   hardTree->interaction());
   // now reset the momenta of the showering particles
   vector<ShowerProgenitorPtr> particlesToShower;
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
@@ -1467,6 +1524,9 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
 	sqr( particlesToShower[ix]->progenitor()->momentum().y() - (**cit).showerMomentum().y() ) +
 	sqr( particlesToShower[ix]->progenitor()->momentum().z() - (**cit).showerMomentum().z() ) +
 	sqr( particlesToShower[ix]->progenitor()->momentum().t() - (**cit).showerMomentum().t() );
+      // add mass difference for identical particles (e.g. Z0 Z0 production)
+      dtest += 1e10*sqr(particlesToShower[ix]->progenitor()->momentum().m()-
+			(**cit).showerMomentum().m());
       if( dtest < dmin ) {
 	iloc = ix;
 	dmin = dtest;
@@ -1489,6 +1549,6 @@ void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool 
     Lorentz5Momentum newMomentum = tit->second.second->momentum();
     LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
     boost.boost          (-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
-    decayTree->transform(boost);
+    decayTree->transform(boost,true);
   }
 }

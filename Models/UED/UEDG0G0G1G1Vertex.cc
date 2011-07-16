@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDG0G0G1G1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,12 +20,12 @@
 using namespace Herwig;
 
 UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
-  theq2Last(ZERO), theCoupLast(0.) {
-  long kk1g = 5100021, smgl = 21;
-  addToList(smgl, smgl, kk1g, kk1g);
-}
+  theq2Last(ZERO), theCoupLast(0.) 
+{}
 
 void UEDG0G0G1G1Vertex::doinit() {
+  long kk1g = 5100021, smgl = 21;
+  addToList(smgl, smgl, kk1g, kk1g);
   VVVVVertex::doinit();
   orderInGs(2);
   orderInGem(0);

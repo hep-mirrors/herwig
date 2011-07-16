@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelFFWGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,6 +24,9 @@ ADDModelFFWGRVertex::ADDModelFFWGRVertex()
   : charge_(17,0.), gl_(17,0.), gr_(17,0.),
     ckm_(3,vector<Complex>(3,0.0)), couplast_(0.),
     q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
+}
+
+void ADDModelFFWGRVertex::doinit() {
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,22,39);
     addToList(-ix,ix,23,39);
@@ -54,9 +57,6 @@ ADDModelFFWGRVertex::ADDModelFFWGRVertex()
   for(int ix=11;ix<17;ix+=2) {
     addToList(-ix-1, ix, 24,39);
   }
-}
-
-void ADDModelFFWGRVertex::doinit() {
   orderInGem(2);
   orderInGs (0);
   FFVTVertex::doinit();

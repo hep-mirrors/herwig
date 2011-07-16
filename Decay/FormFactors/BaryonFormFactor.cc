@@ -115,21 +115,21 @@ void BaryonFormFactor::dataBaseOutput(ofstream & output,bool header,bool create)
   if(create) output << "create Herwig::BaryonFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<_incomingid.size();++ix) {
     if(ix<_numbermodes) {
-      output << "set " << name() << ":Incoming "  << ix << " " 
+      output << "newdef " << name() << ":Incoming "  << ix << " " 
 	     << _incomingid[ix] << endl;
-      output << "set " << name() << ":Outgoing "  << ix << " " 
+      output << "newdef " << name() << ":Outgoing "  << ix << " " 
 	     << _outgoingid[ix] << endl;
-      output << "set " << name() << ":InSpin "      << ix << " " 
+      output << "newdef " << name() << ":InSpin "      << ix << " " 
 	     << _incomingJ[ix] << endl;
-      output << "set " << name() << ":OutSpin "      << ix << " " 
+      output << "newdef " << name() << ":OutSpin "      << ix << " " 
 	     << _outgoingJ[ix] << endl;
-      output << "set " << name() << ":Spectator1 " << ix << " " 
+      output << "newdef " << name() << ":Spectator1 " << ix << " " 
 	     << _spectator1[ix] << endl;
-      output << "set " << name() << ":Spectator2 " << ix << " " 
+      output << "newdef " << name() << ":Spectator2 " << ix << " " 
 	     << _spectator2[ix] << endl;
-      output << "set " << name() << ":InQuark "   << ix << " " 
+      output << "newdef " << name() << ":InQuark "   << ix << " " 
 	     << _inquark[ix] << endl;
-      output << "set " << name() << ":OutQuark "  << ix << " " 
+      output << "newdef " << name() << ":OutQuark "  << ix << " " 
 	     << _outquark[ix]<< endl;
     }
     else {

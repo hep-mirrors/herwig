@@ -10,11 +10,6 @@
 
 using namespace Herwig;
 
-HardBranching::~HardBranching(){
-  clearChildren();
-  clearBackChildren();
-}
-
 void HardBranching::setMomenta(LorentzRotation R,double aparent,
 			       Lorentz5Momentum ptparent,
 			       bool setMomentum) {

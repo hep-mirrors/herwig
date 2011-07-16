@@ -115,12 +115,7 @@ void QQHiggsProcessConstructor::Init() {
 
 void QQHiggsProcessConstructor::constructDiagrams() {
   if(_higgs.empty()) return;
-  //make sure  vertices are initialised
-  model()->init();
-  for(unsigned int ix = 0; ix <  model()->numberOfVertices(); ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
-  }
+  // initialize the Higgs bosons
   for(unsigned int ix=0;ix<_higgs.size();++ix)
     _higgs[ix]->init();
   long qmin = _quarkFlavour == 0 ? 5 : _quarkFlavour;

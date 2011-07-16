@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSCCZVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,7 +22,10 @@ using namespace Herwig;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _q2last(), _id1last(0), _id2last(0),
-			     _leftlast(0.), _rightlast(0.), _gblast(0){
+			     _leftlast(0.), _rightlast(0.), _gblast(0)
+{}
+
+void SSCCZVertex::doinit() {
   addToList(-1000024, 1000024, 23);
   addToList(-1000024, 1000037, 23);
 
@@ -32,9 +35,6 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
   //photon
   addToList(-1000024, 1000024, 22);
   addToList(-1000037, 1000037, 22);
-}
-
-void SSCCZVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS) 

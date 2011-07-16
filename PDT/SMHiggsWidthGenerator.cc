@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsWidthGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -285,15 +285,15 @@ double SMHiggsWidthGenerator::HwDoubleBW(double x, double y) const {
   } 
   else {
     // Integration using tan theta substitution
-    double th1low = atan ((0.0-x)/y);
-    double th1high = atan ((1.0-x)/y);
+    double th1low = atan2 ((0.0-x),y);
+    double th1high = atan2 ((1.0-x),y);
     double fac1 = (th1high-th1low)/nbin;
     for (unsigned int i = 0; i < nbin; ++i) {
       double th1 = (i+0.5)*fac1+th1low;
       double x1 = y*tan(th1)+x;
       double x2max = min(x1,sqr(1-sqrt(x1)));
-      double th2low = atan ((0-x)/y);
-      double th2high = atan ((x2max-x)/y);
+      double th2low = atan2 ((0-x),y);
+      double th2high = atan2 ((x2max-x),y);
       double fac2 = (th2high-th2low)/nbin;
       double sq = 1.0;
       int j = 0;

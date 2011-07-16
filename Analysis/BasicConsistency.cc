@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BasicConsistency.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -40,6 +40,7 @@ IBPtr BasicConsistency::fullclone() const {
 }
 
 void BasicConsistency::analyze(tEventPtr event, long, int, int) {
+  bool writeEvent=false;
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
     
@@ -59,18 +60,16 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	   << event->number()  
 	   << '\n';
       generator()->log() << "Had quarks in final state in event " 
-			 << event->number()  
-			 << '\n'
-			 << *event;
+			 << event->number() << '\n';
+      writeEvent = true;
     }
     else if( _checkcluster && (**it).id()==ExtraParticleID::Cluster) {
       cerr << "Had clusters in final state in event " 
 	   << event->number()  
 	   << '\n';
       generator()->log() << "Had clusters in final state in event " 
-			 << event->number()  
-			 << '\n'
-			 << *event;
+			 << event->number()  << '\n';
+      writeEvent = true;
     }
     charge += (*it)->dataPtr()->iCharge();
     ptotal += (*it)->momentum();
@@ -119,9 +118,8 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     generator()->log() << "Charge imbalance by " 
 		       << charge 
 		       << "in event " 
-		       << event->number()  
-		       << '\n' 
-		       << *event;
+		       << event->number() << '\n';
+    writeEvent = true;
   }
 
   Energy mag = ptotal.m();
@@ -131,8 +129,8 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     cerr << "\nMomentum is 'nan'; " << ptotal/MeV 
 	 << " MeV in event " << event->number() << '\n';
     generator()->log() <<"\nMomentum is 'nan'; " << ptotal/MeV 
-		       << " MeV in event " << event->number() << '\n' 
-		       << *event;
+		       << " MeV in event " << event->number() << '\n';
+    writeEvent = true;
   }
 
   const Energy epsilonmax = max( _absolutemomentumtolerance,
@@ -142,8 +140,8 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     cerr << "\nMomentum imbalance by " << ptotal/MeV 
 	 << " MeV in event " << event->number() << '\n';
     generator()->log() <<"\nMomentum imbalance by " << ptotal/MeV 
-		       << " MeV in event " << event->number() << '\n' 
-		       << *event;
+		       << " MeV in event " << event->number() << '\n';
+    writeEvent = true;
   }
 
   if (abs(mag) > _epsmom)
@@ -164,7 +162,6 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   particles.clear();
 
   event->select(inserter(particles), ThePEG::AllSelector());
-  bool output=false;
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     bool problem=false;
@@ -196,10 +193,10 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 			 << (*it)->decayVertex()/mm << "\n"
 			 << (*it)->labDecayVertex()/mm << "\n"
 			 << (*it)->lifeLength()/mm << "\n"; 
-      output=true;
+      writeEvent=true;
     }
   }
-  if(output) generator()->log() << *event;
+  if(writeEvent) generator()->log() << *event;
 }
 
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {

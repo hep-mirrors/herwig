@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMesonVectorPScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -437,15 +437,15 @@ void VectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming " << ix << " "
+      output << "newdef " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "set " << name() << ":OutgoingVector " << ix << " "
+      output << "newdef " << name() << ":OutgoingVector " << ix << " "
 	     << _outgoingV[ix] << "\n";
-      output << "set " << name() << ":OutgoingPScalar " << ix << " "
+      output << "newdef " << name() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
-      output << "set " << name() << ":Coupling " << ix << " "
+      output << "newdef " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix]*MeV << "\n";
-      output << "set " << name() << ":MaxWeight " << ix << " "
+      output << "newdef " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
     else {

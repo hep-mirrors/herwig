@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ModelGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -45,10 +45,6 @@ void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
      >> offshell_ >> Offsel_ >> BRnorm_
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
-}
-
-bool ModelGenerator::preInitialize() const {
-  return true;
 }
 
 ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
@@ -203,6 +199,13 @@ namespace {
 void ModelGenerator::doinit() {
   useMe();
   Interfaced::doinit();
+  // make sure the model is initialized
+  Ptr<Herwig::StandardModel>::pointer model 
+    = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>(generator()->standardModel());
+  model->init();
+  // and the vertices
+  for(size_t iv = 0; iv < model->numberOfVertices(); ++iv)
+    model->vertex(iv)->init();
   // sort DecayParticles list by mass
   sort(particles_.begin(),particles_.end(),
        massIsLess);

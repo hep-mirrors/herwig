@@ -5,7 +5,7 @@
 // This is the declaration of the MEqq2ZPrime2ZGamma class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -25,7 +25,7 @@ using namespace Herwig;
  * @see \ref MEqq2ZPrime2ZGammaInterfaces "The interfaces"
  * defined for MEqq2ZPrime2ZGamma.
  */
-class MEqq2ZPrime2ZGamma: public HwME2to2Base {
+class MEqq2ZPrime2ZGamma: public HwMEBase {
 
 public:
 
@@ -231,7 +231,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<RadiativeZPrime::MEqq2ZPrime2ZGamma,1> {
   /** Typedef of the first base class of MEqq2ZPrime2ZGamma. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

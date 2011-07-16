@@ -1,0 +1,81 @@
+// -*- C++ -*-
+
+// (C) 2007-2009 Simon Plaetzer -- sp@particle.uni-karlsruhe.de
+
+namespace Analysis2 {
+
+inline KtJetFinder::KtJetFinder()
+ : _collisionType(1), _distanceScheme(1), _recombinationScheme(1),
+   _lastKtEvent () {}
+
+inline KtJetFinder::KtJetFinder(const KtJetFinder & x)
+  : JetFinder(x), _collisionType(x._collisionType), _distanceScheme(x._distanceScheme),
+    _recombinationScheme(x._recombinationScheme),
+    _lastKtEvent () {}
+
+inline IBPtr KtJetFinder::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr KtJetFinder::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void KtJetFinder::findJets () {
+  convert(_lastKtEvent->getJets());
+}
+
+inline void KtJetFinder::findJetsN (unsigned int nJets) {
+  int inJets = (int)nJets;
+  _lastKtEvent->findJetsN(inJets);
+  convert(_lastKtEvent->getJets());
+}
+
+inline void KtJetFinder::findJetsD () {
+  _lastKtEvent->findJetsD(sqr(dCut()/GeV));
+  convert(_lastKtEvent->getJets());
+}
+
+inline void KtJetFinder::findJetsY (double y) {
+  if (y < 0.)
+    _lastKtEvent->findJetsY(yCut());
+  else
+    _lastKtEvent->findJetsY(y);
+  convert(_lastKtEvent->getJets());
+}
+
+inline Energy KtJetFinder::getDMerge (unsigned int nJets) const {
+  int inJets = (int)nJets;
+  return sqrt(_lastKtEvent->getDMerge(inJets))*GeV;
+}
+
+inline double KtJetFinder::getYMerge (unsigned int nJets) const {
+  int inJets = (int)nJets;
+  return _lastKtEvent->getYMerge(inJets);
+}
+
+inline int KtJetFinder::collisionType () const {
+  return _collisionType;
+}
+
+inline int KtJetFinder::distanceScheme () const {
+  return _distanceScheme;
+}
+
+inline int KtJetFinder::recombinationScheme () const {
+  return _recombinationScheme;
+}
+
+inline const vector<KtJet::KtLorentzVector>& KtJetFinder::lastMomenta () const {
+  return _lastMomenta;
+}
+
+inline const KtJet::KtEvent& KtJetFinder::lastKtEvent () const {
+  return *_lastKtEvent;
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+}

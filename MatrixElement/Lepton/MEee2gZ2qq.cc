@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2qq.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -775,6 +775,8 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
   Energy pTmax = 0.5*sqrt(M2)*
     (1.-sqr(loMomenta_[2].mass()+loMomenta_[3].mass())/M2);
   // max y
+  if ( pTmax < pTmin_ ) 
+    return HardTreePtr();
   double ymax = acosh(pTmax/pTmin_);
   // prefactor for the overestimate of the Sudakov
   double a = 4./3.*alpha_->overestimateValue()/Constants::twopi*
@@ -846,7 +848,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
 	double z3 =  pT[ix]*sinh(y[ix])*2./M;
 	if(ix==1) z3 *=-1.;
 	if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
-	if(abs(z1+z2+z3)>1e-3) continue;
+	if(abs(z1+z2+z3)>1e-5) continue;
 	// construct the momenta
 	realMomenta[ix][iy][4] =
 	  Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
@@ -879,9 +881,13 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
 	contrib[ix][iy] *= alpha_->ratio(sqr(pT[ix]))*
 	  meRatio(partons_,realMomenta[ix][iy],ix,false);
       }
-      if(contrib[ix][0]+contrib[ix][1]>1.)
-	cerr << "testing weight greater than one " 
-	     << contrib[ix][0]+contrib[ix][1] << "\n";
+      if(contrib[ix][0]+contrib[ix][1]>1.) {
+	ostringstream s;
+	s << "MEee2gZ2qq::generateHardest weight for channel " << ix
+	  << "is " << contrib[ix][0]+contrib[ix][1] 
+	  << " which is greater than 1";
+	generator()->logWarning( Exception(s.str(), Exception::warning) );
+      }
       reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
     }
     while (reject);
@@ -956,25 +962,25 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree) {
     allBranchings.push_back( emitterBranch );
   }
   // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
   qkProgenitor->maximumpT(pTveto);
   qbProgenitor->maximumpT(pTveto);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect( qkProgenitor->progenitor(), allBranchings[2] );
-  nasontree->connect( qbProgenitor->progenitor(), allBranchings[3] );
+  hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
+  hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
   // colour flow
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // Return the HardTree
-  return nasontree;
+  return hardtree;
 }
 
 double MEee2gZ2qq::meRatio(vector<cPDPtr> partons, 

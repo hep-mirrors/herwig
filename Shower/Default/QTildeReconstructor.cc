@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeReconstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -703,7 +703,7 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay, EvolverPtr,
+deconstructDecayJets(HardTreePtr decay, cEvolverPtr,
 		     ShowerInteraction::Type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
@@ -1006,7 +1006,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 
 bool QTildeReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
-			 EvolverPtr evolver,
+			 cEvolverPtr evolver,
 			 ShowerInteraction::Type type) const {
   // extract incoming and outgoing particles
   ColourSingletShower in,out;
@@ -1039,7 +1039,7 @@ deconstructGeneralSystem(HardTreePtr tree,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      EvolverPtr evolver,
+					      cEvolverPtr evolver,
 					      ShowerInteraction::Type type) const {
   // inverse of old recon method
   if(_reconopt==0) {
@@ -1120,6 +1120,15 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     // e+e- type
     else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
       // only FS needed
+      // but need to boost to rest frame if QED ISR
+      Lorentz5Momentum ptotal;
+      for(unsigned int ix=0;ix<systems.size();++ix) {
+	if(systems[ix].type==I) 
+	  ptotal += systems[ix].jets[0]->branchingParticle()->momentum();
+      }
+      toRest = LorentzRotation(ptotal.findBoostToCM());
+      fromRest = toRest;
+      fromRest.invert();
     }
     // general type
     else {
@@ -1138,9 +1147,6 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       }
     return true;
   }
-
-
-
 }
 
 vector<unsigned int> QTildeReconstructor::
@@ -1166,6 +1172,43 @@ findPartners(unsigned int iloc ,
       if(jets[iloc]->progenitor()->antiColourLine() &&
 	 jets[iloc]->progenitor()->antiColourLine() == jets[iy]->progenitor()->colourLine())
 	isPartner = true;
+    }
+    // special for sources/sinks
+    if(jets[iloc]->progenitor()->colourLine()) {
+      if(jets[iloc]->progenitor()->colourLine()->sourceNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sourceNeighbours();
+	if(lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+	   lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine()) 
+	  isPartner = true;
+      }
+      if(jets[iloc]->progenitor()->colourLine()->sinkNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sinkNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
+    }
+    if(jets[iloc]->progenitor()->antiColourLine()) {
+      if(jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
+      if(jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours().first) {
+	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours();
+	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
+	   lines.second == jets[iy]->progenitor()->antiColourLine())
+	  isPartner = true;
+      }
     }
     if(isPartner) output.push_back(iy);
   }
@@ -1387,7 +1430,7 @@ reconstructFinalStateSystem(bool applyBoost,
       for(tit  = _currentTree->treelinks().begin();
 	  tit != _currentTree->treelinks().end();++tit) {
 	if(tit->second.first && tit->second.second==tempJetKin.parent)
-	  tit->first->transform(LorentzRotation(beta_cm));
+	  tit->first->transform(LorentzRotation(beta_cm),false);
       }
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
@@ -1601,7 +1644,7 @@ void QTildeReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    EvolverPtr evolver,
+			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
   if(jets.size()==1) {
     LorentzRotation R(toRest);
@@ -1702,7 +1745,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     particles.push_back((**cjt).branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true,type,false);
+    ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
   set<HardBranchingPtr>::iterator clt;
@@ -1920,7 +1963,7 @@ findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
 
 void QTildeReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
-			      EvolverPtr evolver,
+			      cEvolverPtr evolver,
 			      ShowerInteraction::Type type) const {
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;
@@ -2127,12 +2170,13 @@ void QTildeReconstructor::deepTransform(PPtr particle,
     if(tit->second.first && tit->second.second==original) {
       Lorentz5Momentum pnew = tit->first->incomingLines().begin()
 	->first->progenitor()->momentum();
+      pnew *=  tit->first->transform();
       Lorentz5Momentum pdiff = porig-pnew;
       Energy2 test = sqr(pdiff.x()) + sqr(pdiff.y()) + 
 	sqr(pdiff.z()) + sqr(pdiff.t());
       LorentzRotation rot;
       if(test>1e-6*GeV2) rot = solveBoost(porig,pnew);
-      tit->first->transform(r*rot);
+      tit->first->transform(r*rot,false);
     }
   }
 }

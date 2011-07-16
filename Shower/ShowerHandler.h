@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -226,7 +226,7 @@ protected:
   /**
    *  Reset the PDF's after the hard collision has been showered
    */
-  void setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf);
+  void setMPIPDFs();
 
   /**
    *  Test for decay products
@@ -238,6 +238,11 @@ protected:
    * in the rest frame with the incoming particles along the z axis
    */
   void boostCollision(bool boost);
+
+  /**
+   *  Is a beam particle where hadronic structure is resolved
+   */
+  bool isResolvedHadron(tPPtr);
 
 protected:
 
@@ -389,6 +394,11 @@ private:
    *  Boost to get back to the lab
    */
   LorentzRotation boost_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> mpipdfs_;
 
 public:
 

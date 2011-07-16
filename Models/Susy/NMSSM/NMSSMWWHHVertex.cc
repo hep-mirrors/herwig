@@ -13,39 +13,8 @@
 using namespace Herwig;
 
 NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
-				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) {
-  int scalar[3]={25,35,45};
-  int pseudo[2]={36,46};
-  // scalar higgs bosons
-  for(unsigned int i=0;i<3;++i) {
-    // pair of scalars
-    for(unsigned int j=0;j<3;++j) {
-      addToList( 24,-24,scalar[i],scalar[j]);
-      addToList( 23, 23,scalar[i],scalar[j]);
-    }
-    // scalar charged
-    addToList( 22, 24,scalar[i], 37);
-    addToList( 22,-24,scalar[i],-37);
-    addToList( 23, 24,scalar[i], 37);
-    addToList( 23,-24,scalar[i],-37);
-  }
-  // pair of pseudoscalars
-  for(unsigned int i=0;i<2;++i) {
-    for(unsigned int j=0;j<2;++j) {
-      addToList( 24,-24,pseudo[i],pseudo[j]);
-      addToList( 23, 23,pseudo[i],pseudo[j]);
-    }
-    // pseudo charged
-    addToList( 22, 24,pseudo[i], 37);
-    addToList( 22,-24,pseudo[i],-37);
-    addToList( 23, 24,pseudo[i], 37);
-    addToList( 23,-24,pseudo[i],-37);
-  }
-  addToList( 24,-24, 37,-37);
-  addToList( 23, 23, 37,-37);
-  addToList( 22, 23, 37,-37);
-  addToList( 22, 22, 37,-37);
-}
+				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) 
+{}
 
 IBPtr NMSSMWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -75,6 +44,37 @@ void NMSSMWWHHVertex::Init() {
 }
 
 void NMSSMWWHHVertex::doinit() {
+  int scalar[3]={25,35,45};
+  int pseudo[2]={36,46};
+  // scalar higgs bosons
+  for(unsigned int i=0;i<3;++i) {
+    // pair of scalars
+    for(unsigned int j=0;j<3;++j) {
+      addToList( 24,-24,scalar[i],scalar[j]);
+      addToList( 23, 23,scalar[i],scalar[j]);
+    }
+    // scalar charged
+    addToList( 22, 24,scalar[i],-37);
+    addToList( 22,-24,scalar[i], 37);
+    addToList( 23, 24,scalar[i],-37);
+    addToList( 23,-24,scalar[i], 37);
+  }
+  // pair of pseudoscalars
+  for(unsigned int i=0;i<2;++i) {
+    for(unsigned int j=0;j<2;++j) {
+      addToList( 24,-24,pseudo[i],pseudo[j]);
+      addToList( 23, 23,pseudo[i],pseudo[j]);
+    }
+    // pseudo charged
+    addToList( 22, 24,pseudo[i],-37);
+    addToList( 22,-24,pseudo[i], 37);
+    addToList( 23, 24,pseudo[i],-37);
+    addToList( 23,-24,pseudo[i], 37);
+  }
+  addToList( 24,-24, 37,-37);
+  addToList( 23, 23, 37,-37);
+  addToList( 22, 23, 37,-37);
+  addToList( 22, 22, 37,-37);
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

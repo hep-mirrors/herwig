@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelFFGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -41,15 +41,15 @@ void ADDModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) {
+ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) 
+{}
+
+void ADDModelFFGRVertex::doinit() {
   // PDG codes for the particles
   // the quarks
   for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
   // the leptons
   for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
-}
-
-void ADDModelFFGRVertex::doinit() {
   FFTVertex::doinit();
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD)

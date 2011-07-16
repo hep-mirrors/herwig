@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHPPVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -133,7 +133,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   }
   case 2: {
     if(q2 != _q2last||_couplast==0.) {
-      clearcache();
+      Looptools::clearcache();
       double e = electroMagneticCoupling(q2);
       _couplast = pow(e,3)/sqrt(sin2ThetaW());
       _q2last = q2;
@@ -200,8 +200,6 @@ Complex SMHPPVertex::W2(double lambda) const {
 SMHPPVertex::SMHPPVertex() 
   :_couplast(0.),_q2last(),_mw(),massopt(1),
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
-  //PDG codes for particles at vertices
-  addToList(22,22,25);
 }
 
 
@@ -247,6 +245,8 @@ SMHPPVertex::SMHPPVertex()
 
 
 void SMHPPVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(22,22,25);
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) 
     throw InitException() 
@@ -276,5 +276,6 @@ void SMHPPVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(electroMagneticCoupling(sqr(mh))))
 //     /1024./pow(Constants::pi,5)/16.*sqr(mh/_mw)*mh*std::norm(I);
 //   cerr << "testing anal " << width/GeV << "\n";
+  Looptools::ltexi();
 }
 

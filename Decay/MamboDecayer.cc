@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MamboDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -254,47 +254,96 @@ void MamboDecayer::colourConnections(const Particle & parent,
   else if(parent.data().iColour() == PDT::Colour3 || 
 	  parent.data().iColour() == PDT::Colour3bar) {          
     PPtr pparent = const_ptr_cast<PPtr>(&parent);
-    if(N==2) {
-      if(out[0]->data().iColour() == parent.data().iColour()) {
-	out[0]->incomingColour(pparent,out[0]->id() < 0);
+    // find outgoing coloured particles
+    tParticleVector trip,anti,oct;
+    for(int i=0;i < N;++i) {
+      if(out[i]->data().iColour() == PDT::Colour3)
+	trip.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour3bar)
+	anti.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour8)
+	oct .push_back(out[i]);
+    }
+    // 3 -> 3 + neutral
+    if(parent.data().iColour() == PDT::Colour3&&trip.size()==1&&
+       oct.size()==0&&anti.size()==0) {
+      trip[0]->incomingColour(pparent);
+    }
+    // 3bar -> 3bar + neutral
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==0&&
+	    oct.size()==0&&anti.size()==1) {
+      anti[0]->incomingColour(pparent,true);
+    }
+    // sink
+    else if(parent.data().iColour() == PDT::Colour3 &&
+	    anti.size()==2 && oct.size()==0 && trip.size()==0) {
+      tColinePtr col[2] = {ColourLine::create(anti[0],true),
+			   ColourLine::create(anti[1],true)};
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+    }
+    // source
+    else if(parent.data().iColour() == PDT::Colour3bar &&
+	    trip.size()==2 && oct.size()==0 && anti.size()==0) {
+      tColinePtr col[2] = {ColourLine::create(trip[0]),
+			   ColourLine::create(trip[1])};
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
+    // 3 -> 3 + 8 + neutral
+    else if(parent.data().iColour() == PDT::Colour3&&trip.size()==1&&
+	    oct.size()==1&&anti.size()==0) {
+      oct [0]->incomingColour(pparent);
+      oct [0]->    colourNeighbour(trip[0]);
+      trip[0]->antiColourNeighbour(oct[0]);
+    }
+    // 3bar -> 3bar + 8 + neutral
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==0&&
+	    oct.size()==1&&anti.size()==1) {
+      oct [0]->incomingColour(pparent,true);
+      oct [0]->antiColourNeighbour(anti[0]);
+      anti[0]->    colourNeighbour(oct[0]);
+    }
+    // 3 -> 3 + 3 + 3bar
+    else if(parent.data().iColour() == PDT::Colour3&&trip.size()==2&&
+	    oct.size()==0&&anti.size()==1) {
+      int id1 = abs(pparent->id())%10;
+      int ip(0),io(1);
+      for(unsigned int ix=0;ix<trip.size();++ix) {
+	int id2 = abs(trip[ix]->id())%10;
+	if(id1==id2 || (id1%2==0&&id1==id2+1) ||
+	   (id1%2==1&&id2==id1+1)) {
+	  ip =   ix;
+	  io = 1-int(ix);
+	  break;
+	}
       }
-      else if(out[1]->data().iColour() == parent.data().iColour()) {
-	out[1]->incomingColour(pparent,out[1]->id() < 0);
+      trip[io]->antiColourNeighbour(anti[ 0]);
+      anti[0 ]->colourNeighbour(trip[io]);
+      trip[ip]->incomingColour(pparent);
+    }
+    // 3bar -> 3bar + 3 + 3bar
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==1&&
+	    oct.size()==0&&anti.size()==2) {
+      int id1 = abs(pparent->id())%10;
+      int ip(0),io(1);
+      for(unsigned int ix=0;ix<anti.size();++ix) {
+	int id2 = abs(anti[ix]->id())%10;
+	if(id1==id2 || (id1%2==0&&id1==id2+1) ||
+	   (id1%2==1&&id2==id1+1)) {
+	  ip =   ix;
+	  io = 1-int(ix);
+	  break;
+	}
       }
-      else if(parent.data().iColour() == PDT::Colour3 &&
-	      out[0]->data().iColour() == PDT::Colour3bar &&
-	      out[1]->data().iColour() == PDT::Colour3bar) {
-	tColinePtr col[2] = {ColourLine::create(out[0],true),
-			     ColourLine::create(out[1],true)};
-	parent.colourLine()->setSinkNeighbours(col[0],col[1]);
-      }
-      else if(parent.data().iColour() == PDT::Colour3bar &&
-	      out[0]->data().iColour() == PDT::Colour3 &&
-	      out[1]->data().iColour() == PDT::Colour3) {
-	tColinePtr col[2] = {ColourLine::create(out[0]),
-			     ColourLine::create(out[1])};
-	parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
-      }
-      else {
-	throw Exception() << "MamboDecayer::decay() can't make colour connections for "
-			  << "the two-body decay of the coloured particle " 
-			  << parent << Exception::eventerror;
-      }
+      anti[io]->    colourNeighbour(trip[ 0]);
+      trip[0 ]->antiColourNeighbour(anti[io]);
+      anti[ip]->incomingColour(pparent,true);
     }
     else {
-      for(int i=0;i < N;++i){ 
-	if(out[i]->data().iColour() == PDT::Colour3 ||
-	   out[i]->data().iColour() == PDT::Colour3bar) {
-	  out[i]->incomingColour(pparent,out[i]->id() < 0);
-	}
-	else {
-	  if(out[i]->hasColour())
-	    out[i]->antiColourNeighbour(out[i + 1]);
-	  if ( out[i]->hasAntiColour() )
-	    out[i]->colourNeighbour(out[i + 1]);
-	  ++i;
-	}
-      }
+      ostringstream dec;
+      for(unsigned int ix=0;ix<out.size();++ix) dec << out[ix]->PDGName() << " ";
+      throw Exception() << "Unknown colour for 3/3bar decay in MamboDecayer"
+			<< pparent->PDGName() << " -> " << dec.str()
+			<< Exception::runerror;
     }
   }
   //incoming octet
@@ -353,7 +402,7 @@ void MamboDecayer::colourConnections(const Particle & parent,
 void MamboDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
-  output << "set " << name() << ":MaxWeight "  << _maxweight << " \n";
+  output << "newdef " << name() << ":MaxWeight "  << _maxweight << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

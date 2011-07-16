@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KinematicsReconstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -101,7 +101,7 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool deconstructDecayJets(HardTreePtr decay,EvolverPtr,
+  virtual bool deconstructDecayJets(HardTreePtr decay,cEvolverPtr,
 				    ShowerInteraction::Type) const=0;
 
   /**
@@ -109,7 +109,7 @@ public:
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr hard,EvolverPtr,
+  virtual bool deconstructHardJets(HardTreePtr hard,cEvolverPtr,
 				   ShowerInteraction::Type) const=0;
   //@}
 

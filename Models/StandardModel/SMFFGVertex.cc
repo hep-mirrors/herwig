@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMFFGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -33,7 +33,11 @@ void SMFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
+#ifndef NDEBUG
 void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
+#else
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,tcPDPtr) {
+#endif
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -strongCoupling(q2);
@@ -41,21 +45,19 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   }
   norm(_couplast);
   // the left and right couplings
-  int iferm=abs(aa->id());
-  assert(iferm>=1 && iferm<=6);
+  assert( abs(aa->id()) >= 1 && abs(aa->id()) <= 6 );
   left(1.);
   right(1.);
 }
 
-SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
+SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) 
+{}
+  
+void SMFFGVertex::doinit() {
   // PDG codes for the particles
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,21);
   }
-
-}
-  
-void SMFFGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

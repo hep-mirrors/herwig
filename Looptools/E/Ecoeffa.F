@@ -2,7 +2,7 @@
 * the five-point tensor coefficients
 * this file is part of LoopTools
 * written by M. Rauch
-* last modified 7 Dec 05 th
+* last modified 29 Sep 10 th
 
 #include "defs.h"
 
@@ -17,8 +17,7 @@
 
 	integer XDget
 	double complex XE0
-	QVAR XDet
-	external XDget, XE0, XDet
+	external XDget, XE0
 
 	DVAR p1, p2, p3, p4, p5
 	DVAR p1p2, p2p3, p3p4, p4p5, p5p1
@@ -55,6 +54,28 @@
 	double complex dabbr53, dabbr11, dabbr18, dabbr15, dabbr12
 	double complex dabbr2, dabbr40
 
+#ifdef COMPLEXPARA
+	if( abs(DIMAG(para(1,1))) +
+     &      abs(DIMAG(para(1,2))) +
+     &      abs(DIMAG(para(1,3))) +
+     &      abs(DIMAG(para(1,4))) +
+     &      abs(DIMAG(para(1,5))) +
+     &      abs(DIMAG(para(1,6))) +
+     &      abs(DIMAG(para(1,7))) +
+     &      abs(DIMAG(para(1,8))) +
+     &      abs(DIMAG(para(1,9))) +
+     &      abs(DIMAG(para(1,10))) .gt. 0 )
+     &    print *, "Warning: complex momenta not implemented"
+	if( abs(DIMAG(para(1,11))) +
+     &      abs(DIMAG(para(1,12))) +
+     &      abs(DIMAG(para(1,13))) +
+     &      abs(DIMAG(para(1,14))) +
+     &      abs(DIMAG(para(1,15))) .eq. 0 ) then
+	  call Ecoeffa(para, E, 2)
+	  return
+	endif
+#endif
+
 	p1 = para(1,1)
 	p2 = para(1,2)
 	p3 = para(1,3)
@@ -71,27 +92,6 @@
 	m4 = para(1,14)
 	m5 = para(1,15)
 
-#ifdef COMPLEXPARA
-	if( DIMAG(p1) .eq. 0 .and.
-     &      DIMAG(p2) .eq. 0 .and.
-     &      DIMAG(p3) .eq. 0 .and.
-     &      DIMAG(p4) .eq. 0 .and.
-     &      DIMAG(p5) .eq. 0 .and.
-     &      DIMAG(p1p2) .eq. 0 .and.
-     &      DIMAG(p2p3) .eq. 0 .and.
-     &      DIMAG(p3p4) .eq. 0 .and.
-     &      DIMAG(p4p5) .eq. 0 .and.
-     &      DIMAG(p5p1) .eq. 0 .and.
-     &      DIMAG(m1) .eq. 0 .and.
-     &      DIMAG(m2) .eq. 0 .and.
-     &      DIMAG(m3) .eq. 0 .and.
-     &      DIMAG(m4) .eq. 0 .and.
-     &      DIMAG(m5) .eq. 0 ) then
-	  call Ecoeffa(para, E, 2)
-	  return
-	endif
-#endif
-
 	Di1 = XDget(p2, p3, p4, p5p1, p2p3, p3p4, m2, m3, m4, m5)
 	Di1 = XDget(p2, p3, p4, p5p1, p2p3, p3p4, m2, m3, m4, m5)
 	Di2 = XDget(p1p2, p3, p4, p5, p4p5, p3p4, m1, m3, m4, m5)
@@ -104,30 +104,30 @@
      &    serial .ge. debugfrom .and. serial .le. debugto
 	if( dump ) call XDumpPara(5, para, ldpara, "Ecoeffa")
 
-	Y(1,1) = 2*QEXT(m1)
-	Y(2,2) = 2*QEXT(m2)
-	Y(3,3) = 2*QEXT(m3)
-	Y(4,4) = 2*QEXT(m4)
-	Y(5,5) = 2*QEXT(m5)
-	Y(1,2) = QEXT(m1) + QEXT(m2) - QEXT(p1)
+	Y(1,1) = 2*QPREC(m1)
+	Y(2,2) = 2*QPREC(m2)
+	Y(3,3) = 2*QPREC(m3)
+	Y(4,4) = 2*QPREC(m4)
+	Y(5,5) = 2*QPREC(m5)
+	Y(1,2) = QPREC(m1) + QPREC(m2) - QPREC(p1)
 	Y(2,1) = Y(1,2)
-	Y(1,3) = QEXT(m1) + QEXT(m3) - QEXT(p1p2)
+	Y(1,3) = QPREC(m1) + QPREC(m3) - QPREC(p1p2)
 	Y(3,1) = Y(1,3)
-	Y(1,4) = QEXT(m1) + QEXT(m4) - QEXT(p4p5)
+	Y(1,4) = QPREC(m1) + QPREC(m4) - QPREC(p4p5)
 	Y(4,1) = Y(1,4)
-	Y(1,5) = QEXT(m1) + QEXT(m5) - QEXT(p5)
+	Y(1,5) = QPREC(m1) + QPREC(m5) - QPREC(p5)
 	Y(5,1) = Y(1,5)
-	Y(2,3) = QEXT(m2) + QEXT(m3) - QEXT(p2)
+	Y(2,3) = QPREC(m2) + QPREC(m3) - QPREC(p2)
 	Y(3,2) = Y(2,3)
-	Y(2,4) = QEXT(m2) + QEXT(m4) - QEXT(p2p3)
+	Y(2,4) = QPREC(m2) + QPREC(m4) - QPREC(p2p3)
 	Y(4,2) = Y(2,4)
-	Y(2,5) = QEXT(m2) + QEXT(m5) - QEXT(p5p1)
+	Y(2,5) = QPREC(m2) + QPREC(m5) - QPREC(p5p1)
 	Y(5,2) = Y(2,5)
-	Y(3,4) = QEXT(m3) + QEXT(m4) - QEXT(p3)
+	Y(3,4) = QPREC(m3) + QPREC(m4) - QPREC(p3)
 	Y(4,3) = Y(3,4)
-	Y(3,5) = QEXT(m3) + QEXT(m5) - QEXT(p3p4)
+	Y(3,5) = QPREC(m3) + QPREC(m5) - QPREC(p3p4)
 	Y(5,3) = Y(3,5)
-	Y(4,5) = QEXT(m4) + QEXT(m5) - QEXT(p4)
+	Y(4,5) = QPREC(m4) + QPREC(m5) - QPREC(p4)
 	Y(5,4) = Y(4,5)
 
 * calculate the Y(i), their determinants, and eta(i)
@@ -138,50 +138,51 @@
 	  do j = 1, 5
 	    Yi(j,i) = 1
 	  enddo
-	  eta(i) = XDet(Yi, 5)
+	  call XDet(5, Yi,5, eta(i))
 	enddo
 
 * Y is no longer needed, now calculate its determinant and
 * add the missing factor 1/detY to eta
-	detY = XDet(Y, 5)
+	call XDet(5, Y,5, detY)
 	do i = 1, 5
 	  eta(i) = eta(i)/detY
 	enddo
 
-	Z(1,1) = 2*QEXT(p1)
-	Z(2,2) = 2*QEXT(p1p2)
-	Z(3,3) = 2*QEXT(p4p5)
-	Z(4,4) = 2*QEXT(p5)
-	Z(1,2) = QEXT(p1) + QEXT(p1p2) - QEXT(p2)
+	Z(1,1) = 2*QPREC(p1)
+	Z(2,2) = 2*QPREC(p1p2)
+	Z(3,3) = 2*QPREC(p4p5)
+	Z(4,4) = 2*QPREC(p5)
+	Z(1,2) = QPREC(p1) + QPREC(p1p2) - QPREC(p2)
 	Z(2,1) = Z(1,2)
-	Z(1,3) = QEXT(p1) - QEXT(p2p3) + QEXT(p4p5)
+	Z(1,3) = QPREC(p1) - QPREC(p2p3) + QPREC(p4p5)
 	Z(3,1) = Z(1,3)
-	Z(1,4) = QEXT(p1) - QEXT(p5p1) + QEXT(p5)
+	Z(1,4) = QPREC(p1) - QPREC(p5p1) + QPREC(p5)
 	Z(4,1) = Z(1,4)
-	Z(2,3) = QEXT(p1p2) - QEXT(p3) + QEXT(p4p5)
+	Z(2,3) = QPREC(p1p2) - QPREC(p3) + QPREC(p4p5)
 	Z(3,2) = Z(2,3)
-	Z(2,4) = QEXT(p1p2) - QEXT(p3p4) + QEXT(p5)
+	Z(2,4) = QPREC(p1p2) - QPREC(p3p4) + QPREC(p5)
 	Z(4,2) = Z(2,4)
-	Z(3,4) = QEXT(p5) + QEXT(p4p5) - QEXT(p4)
+	Z(3,4) = QPREC(p5) + QPREC(p4p5) - QPREC(p4)
 	Z(4,3) = Z(3,4)
 
 * calculate the zeta(i,j)
 	do i = 1, 4
 	  do j = i, 4
 * generate the submatrix Z_ij
-	    do k = 1, 3
-	      do l = 1, 3
+	    do l = 1, 3
+	      do k = 1, 3
 	        Zij(k,l) = Z(k + ibits(not(k - i), 3, 1),
      &                       l + ibits(not(l - j), 3, 1))
 	      enddo
 	    enddo
-	    zeta(i,j) = Sgn(i + j)*XDet(Zij, 3)/detY
+	    call XDet(3, Zij,3, detZ)
+	    zeta(i,j) = Sgn(i + j)*detZ/detY
 	    zeta(j,i) = zeta(i,j)
 	  enddo
 	enddo
-	detZ = XDet(Z, 4)
+	call XDet(4, Z,4, detZ)
 
-	del = (delta + log(mudim))/6D0
+	del = (delta + log(mudim))/24D0
 	del4 = .25D0*del
 
 	help1 = Dval(dd003,Di1) + 2*Dval(dd0033,Di1) + 

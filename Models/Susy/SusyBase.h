@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SusyBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,6 +14,7 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "MixingMatrix.h"
+#include "ThePEG/Utilities/CFileLineReader.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
@@ -246,8 +247,9 @@ private:
    * Read block from LHA file
    * @param ifs input stream containg data
    * @param name The name of the block
+   * @param line The line defining the block
    */
-  void readBlock(ifstream & ifs,string name,string line);
+  void readBlock(CFileLineReader & ifs,string name,string line);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -255,7 +257,7 @@ private:
    * @param row Number of rows
    * @param col Number of columns
    */
-  const MixingVector readMatrix(ifstream & ifs, unsigned int & row,
+  const MixingVector readMatrix(CFileLineReader & ifs, unsigned int & row,
 				unsigned int & col);
 
   /**
@@ -263,7 +265,7 @@ private:
    * @param ifs input stream containg data
    * @param decay string containing name of parent and value of total width
    */
-  void readDecay(ifstream & ifs, string decay) const;
+  void readDecay(CFileLineReader & ifs, string decay) const;
 
   /**
    * Create a DecayMode object in the repository

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2qq.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -78,8 +78,9 @@ public:
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
-				     ShowerParticlePtr,Branching);
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
+				     ShowerParticlePtr parent,
+				     Branching br);
 
   /**
    *  Apply the POWHEG style correction
@@ -224,9 +225,10 @@ protected:
 protected:
 
   /**
-   *  Calculate the matrix element for \f$e^-e^-\to q \bar q$.
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q\f$.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
+   * @param first Whether or not to calculate the spin correlations
    */  
   double loME(const vector<cPDPtr> & partons, 
 	      const vector<Lorentz5Momentum> & momenta,
@@ -253,8 +255,8 @@ protected:
   /**
    *  The ratio of the matrix element for one additional jet over the
    * leading order result. In practice
-   * \[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
-   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * \f[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}|\right)}\f]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2\f$ is 
    * the spin and colour summed/averaged matrix element.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
@@ -263,11 +265,11 @@ protected:
    */
   double meRatio(vector<cPDPtr> partons, 
 		 vector<Lorentz5Momentum> momenta,
-		 unsigned int iemittor,
+		 unsigned int iemitter,
 		 bool subtract =false) const;
 
   /**
-   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g$.
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g\f$.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
    */ 

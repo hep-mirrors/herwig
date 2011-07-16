@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGSSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,16 +20,16 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
+SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) 
+{}
+
+void SSGSSVertex::doinit() {
   for(long ix=1000001;ix<1000007;++ix) {
     addToList(21,ix,-ix);
   }
   for(long ix=2000001;ix<2000007;++ix) {
     addToList(21,ix,-ix);
   }
-}
-
-void SSGSSVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   VSSVertex::doinit();

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SusyBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -275,13 +275,13 @@ void SusyBase::readSetup(istream & is) {
       << "This is probably unintended and as it can cause crashes"
       << " and other unpredictable behaviour it is not allowed."
       << Exception::runerror;
-  ifstream file(filename.c_str());
-  if( !file ) throw SetupException() 
-    << "SusyBase::readSetup - An error occurred in opening the "
-    << "spectrum file \"" << filename << "\". A SUSY model cannot be "
-    << "run without this."
-    << Exception::runerror; 
-
+  CFileLineReader cfile;
+  cfile.open(filename);
+  if( !cfile ) throw SetupException() 
+		 << "SusyBase::readSetup - An error occurred in opening the "
+		 << "spectrum file \"" << filename << "\". A SUSY model cannot be "
+		 << "run without this."
+		 << Exception::runerror;
   useMe();
   //Before reading the spectrum/decay files the SM higgs 
   //decay modes, mass and width generators need to be turned off.
@@ -311,73 +311,100 @@ void SusyBase::readSetup(istream & is) {
       ifb->exec(**dit, "set", "0.0");
       ifb = BaseRepository::FindInterface(*dit, "OnOff");
       ifb->exec(**dit, "set", "Off");
-    }
-    
+    }    
   }
-  string line;
+  // read first line and chjeck if this is a Les Houches event file
+  cfile.readline();
+  bool lesHouches = cfile.find("<LesHouchesEvents");
+  bool reading = !lesHouches;
+  if(lesHouches) cfile.readline();
   //function pointer for putting all characters to lower case.
   int (*pf)(int) = tolower;
-   //Start to read in the file
-   while(getline(file, line)) {
-     // ignore comment lines
-     if(line[0] == '#') continue;
-     // make everything lower case
-     transform(line.begin(), line.end(), line.begin(), pf);
-     // start of a block
-     if(line.find("block") == 0) {
-       string name = StringUtils::car(StringUtils::cdr(line), " #");
-       // mixing matrix
-       if((name.find("mix")  != string::npos && 
-	   name.find("hmix") != 0)) {
-	 unsigned int row(0),col(0);
-	 MixingVector vals = readMatrix(file,row,col);
-	 mixings_[name] = make_pair(make_pair(row,col),vals);
-       }
-       else if(name.find("au") == 0||name.find("ad") == 0||
-	       name.find("ae") == 0 ) {
-	 string test = StringUtils::car(line, "#");
-	 while (test.find("=")!= string::npos) {
-	   test = StringUtils::cdr(test, "=");
-	 }
-	 istringstream is(test);
-	 double scale;
-	 is >> scale;
-	 if(scale>1e10) continue;
-	 unsigned int row(0),col(0);
-	 MixingVector vals = readMatrix(file,row,col);
-	 mixings_[name] = make_pair(make_pair(row,col),vals);
-       }
-       else if( name.find("info") == string::npos)
-	 readBlock(file,name,line);
-     }
-     // decays
-     else if( line.find("decay") == 0 )
-       readDecay(file, line);
-   }
-   // extract the relevant parameters
-   extractParameters();
-   // create the mixing matrices we need
-   createMixingMatrices();
-   // set the masses, this has to be done after the 
-   // mixing matrices have been created
-   resetRepositoryMasses();
-   // have now read the file
-   readFile_=true;
+  do {
+    string line = cfile.getline();
+    // check for start of slha block in SLHA files
+    if(lesHouches && !reading) {
+      if(line.find("<slha")==0) reading = true;
+      if(!cfile.readline()) break;
+      continue;
+    }
+    // ignore comment lines
+    if(line[0] == '#') {
+      if(!cfile.readline()) break;
+      continue;
+    }
+    // make everything lower case
+    transform(line.begin(), line.end(), line.begin(), pf);
+    // start of a block
+    if(line.find("block") == 0) {
+      string name = StringUtils::car(StringUtils::cdr(line), " #");
+      name = StringUtils::stripws(name);
+      // mixing matrix
+      if((name.find("mix")  != string::npos && 
+	  name.find("hmix") != 0)) {
+	unsigned int row(0),col(0);
+	MixingVector vals = readMatrix(cfile,row,col);
+	mixings_[name] = make_pair(make_pair(row,col),vals);
+      }
+      else if(name.find("au") == 0 || name.find("ad") == 0 ||
+	      name.find("ae") == 0 ) {
+	string test = StringUtils::car(line, "#");
+	while (test.find("=")!= string::npos) {
+	  test = StringUtils::cdr(test, "=");
+	}
+	istringstream is(test);
+	double scale;
+	is >> scale;
+	unsigned int row(0),col(0);
+	MixingVector vals = readMatrix(cfile,row,col);
+	if(scale>1e10) continue;
+	mixings_[name] = make_pair(make_pair(row,col),vals);
+      }
+      else if( name.find("info") == string::npos) {
+	readBlock(cfile,name,line);
+      }
+      else {
+	if(!cfile.readline()) break;
+      }
+      continue;
+    }
+    // decays
+    else if( line.find("decay") == 0 ) {
+      readDecay(cfile, line);
+      continue;
+    }
+    else if( lesHouches && line.find("</slha") == 0 ) {
+      reading = false;
+      break;
+    }
+    if(!cfile.readline()) break;
+  }
+  while(true);
+  // extract the relevant parameters
+  extractParameters();
+  // create the mixing matrices we need
+  createMixingMatrices();
+  // set the masses, this has to be done after the 
+  // mixing matrices have been created
+  resetRepositoryMasses();
+  // have now read the file
+  readFile_=true;
 }
 
-void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
-  if(!ifs)
+void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
+  if(!cfile)
     throw SetupException() 
       << "SusyBase::readBlock() - The input stream is in a bad state"
       << Exception::runerror;
-  string line;
+  // storage or the parameters
+  string test = StringUtils::car(linein, "#");
   ParamMap store;
   bool set = true;
-  string test = StringUtils::car(linein, "#");
   // special for the alpha block
   if(name.find("alpha") == 0 ) {
     double alpha;
-    getline(ifs, line);
+    cfile.readline();
+    string line = cfile.getline();
     istringstream iss(line);
     iss >> alpha;
     store.insert(make_pair(1,alpha));
@@ -398,59 +425,67 @@ void SusyBase::readBlock(ifstream & ifs,string name,string linein) {
 	store.insert(make_pair(-1,scale));
       }
     }
-    while(getline(ifs, line)) {
-      if(line[0] == '#') {
-	if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-	    ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
-	else continue;
+    while(cfile.readline()) {
+      string line = cfile.getline();
+      // skip comments
+      if(line[0] == '#') continue;
+      // reached the end
+      if( line[0] == 'B' || line[0] == 'b' ||
+	  line[0] == 'D' || line[0] == 'd' ||
+	  line[0] == '<' ) {
+	cfile.resetline();
+	break;
       }
       istringstream is(line);
       long index;
       double value;   
       is >> index >> value;
       store.insert(make_pair(index, value));
-      if(ifs.peek() == 'B' || ifs.peek() == 'D' ||
-	 ifs.peek() == 'b' || ifs.peek() == 'd' ||
-	 ifs.peek() == '#') break;
     }
   }
   if(set) parameters_[name]=store;
 }
 
-void SusyBase::readDecay(ifstream & ifs, 
+void SusyBase::readDecay(CFileLineReader & cfile, 
 			 string decay) const{
-  if(!ifs)
+  if(!cfile)
     throw SetupException() 
       <<"SusyBase::readDecay - The input stream is in a bad state";
-  //if the particle is stable then next line will be the start of a 
-  //new decaymode or a new block so just return if this is found
-  if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-      ifs.peek() == 'd' || ifs.peek() == 'b' ) return;
-  istringstream iss(decay);
-  string dummy;
+  // extract parent PDG code and width
   long parent(0);
   Energy width(ZERO);
+  istringstream iss(decay);
+  string dummy;
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getParticleData(parent);
-  if(!topModesFromFile_&&abs(parent)==ParticleID::t) return;
-  if(!inpart)  {
-    throw SetupException() 
-    << "SusyBase::readDecay() - A ParticleData object with the PDG code "
-    << parent << " does not exist. " << Exception::runerror;
+  if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
+    cfile.readline();
     return;
   }
+  if(!inpart)  throw SetupException() 
+		 << "SusyBase::readDecay() - "
+		 << "A ParticleData object with the PDG code "
+		 << parent << " does not exist. " 
+		 << Exception::runerror;
   inpart->width(width);
   if( width > ZERO ) inpart->cTau(hbarc/width);
   inpart->widthCut(5.*width);
-  string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
+  string prefix("decaymode " + inpart->name() + "->");
   double brsum(0.);
   unsigned int nmode = 0;
-  while(getline(ifs, line)) {
-    if(line[0] == '#') {
-      if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-	  ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
-      else continue;
+  while(cfile.readline()) {
+    string line = cfile.getline();
+    // skip comments
+    if(line[0] == '#') continue;
+    // reached the end
+    if( line[0] == 'B' || line[0] == 'b' ||
+	line[0] == 'D' || line[0] == 'd' ||
+	line[0] == '<' ) {
+      cfile.resetline();
+      break;
     }
+    // read the mode
+    string tag = prefix;
     istringstream is(line);
     double brat(0.);
     unsigned int nda(0),npr(0);
@@ -492,11 +527,8 @@ void SusyBase::readDecay(ifstream & ifs,
     if( npr > 1 ) {
       inpart->stable(false);
       tag.replace(tag.size() - 1, 1, ";");
-      createDecayMode(prefix + tag, brat);
-      tag.clear();
+      createDecayMode(tag, brat);
     }
-    if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
   if( abs(brsum - 1.) > tolerance_ && nmode!=0 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
@@ -507,30 +539,33 @@ void SusyBase::readDecay(ifstream & ifs,
 }
 
 const MixingVector
-SusyBase::readMatrix(ifstream & ifs, 
+SusyBase::readMatrix(CFileLineReader & cfile, 
 		     unsigned int & row, unsigned int & col) {
-  if(!ifs)
+  if(!cfile)
     throw SetupException() 
       << "SusyBase::readMatrix() - The input stream is in a bad state."
       << Exception::runerror;
-  string line;
   unsigned int rowmax(0), colmax(0);
   MixingVector values;
-  while(getline(ifs, line)) {
-    if(line[0] == '#') {
-      if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-	  ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
-      else continue;
+  while(cfile.readline()) {
+    string line = cfile.getline();
+    // skip comments
+    if(line[0] == '#') continue;
+    // reached the end
+    if( line[0] == 'B' || line[0] == 'b' ||
+	line[0] == 'D' || line[0] == 'd' ||
+	line[0] == '<' ) {
+      cfile.resetline();
+      break;
     }
     istringstream is(line);
     unsigned int index1, index2;
     double real(0.), imag(0.);   
     is >> index1 >> index2 >> real >> imag;
     values.push_back(MixingElement(index1,index2,Complex(real, imag)));
-    if(index1 > rowmax) rowmax = index1; 
-    if(index2 > colmax) colmax = index2; 
-    if( ifs.peek() == 'B' || ifs.peek() == 'D' ||
-        ifs.peek() == 'b' || ifs.peek() == 'd' ) break;
+    if(index1 > rowmax) rowmax = index1;
+    if(index2 > colmax) colmax = index2;
+
   }
   col=colmax;
   row=rowmax;

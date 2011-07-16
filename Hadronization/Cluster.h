@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Cluster.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -63,7 +63,7 @@ using namespace ThePEG;
 class Cluster : public Particle {
   
 public:
-  
+
   /** @name Standard constructors and destructors. */
   //@{
   /**
@@ -112,6 +112,16 @@ public:
    * Returns the ith constituent.
    */
   tPPtr particle(int i) const;
+
+  /**
+   * Returns the original constituent carrying colour
+   */
+  tPPtr colParticle(bool anti = false) const;
+
+  /**
+   * Returns the original constituent carrying anticolour
+   */
+  tPPtr antiColParticle() const;
   
   /**
    * Returns whether the ith constituent is from a perturbative process.

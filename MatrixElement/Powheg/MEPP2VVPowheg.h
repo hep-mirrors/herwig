@@ -193,42 +193,77 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_V_regular(realVVKinematics S) const;
+
+  /**
+   *  Member variable to store the
+   * regular part of the virtual correction matrix element(s).
+   * For WZ production this is given by Equation B.2 in NPB 383 (1992) 
+   * 3-44 *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element.
+   */
   mutable double M_V_regular_;
 
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
   Energy2 t_u_M_R_qqb(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the matrix element q + qb -> n + g times tk*uk 
+   */
   mutable Energy2 t_u_M_R_qqb_;
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
    */
   Energy2 t_u_M_R_qg(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the matrix element q + g  -> n + q times tk*uk 
+   */
   mutable Energy2 t_u_M_R_qg_;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
   Energy2 t_u_M_R_gqb(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the matrix element g + qb -> n + q times tk*uk 
+   */
   mutable Energy2 t_u_M_R_gqb_;
 
   /**
    * The matrix element q + qb -> n + g times (tk*uk)^2 - using helicity amplitudes
    */
   Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the
+   * matrix element q + qb -> n + g times (tk*uk)^2 - using helicity amplitudes
+   */
   mutable Energy2 t_u_M_R_qqb_hel_amp_;
 
   /**
    * The matrix element q + g -> n + q times (tk*uk)^2 - using helicity amplitudes
    */
   Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the
+   * matrix element q + g -> n + q times (tk*uk)^2 - using helicity amplitudes
+   */
   mutable Energy2 t_u_M_R_qg_hel_amp_;
 
   /**
    * The matrix element g + qb -> n + qb times (tk*uk)^2 - using helicity amplitudes
    */
   Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R) const;
+
+  /**
+   *  Member variable to store the
+   * matrix element g + qb -> n + qb times (tk*uk)^2 - using helicity amplitudes
+   */
   mutable Energy2 t_u_M_R_gqb_hel_amp_;
 
   /**
@@ -242,6 +277,13 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_Born_WZ(bornVVKinematics B) const;
+
+  /**
+   *  Member variable to store the 
+   * Born matrix element as given in Equation 3.1 - 3.3 in NPB 383 
+   * (1992) *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
   mutable double M_Born_;
 
   /**
@@ -534,11 +576,32 @@ private:
   /**
    *  The vertices
    */
+  //@{
+  /**
+   *  The photon fermion-antifermion vertex
+   */
   AbstractFFVVertexPtr FFPvertex_;
+
+  /**
+   *  The W fermion-antifermion vertex
+   */
   AbstractFFVVertexPtr FFWvertex_;
+
+  /**
+   *  The Z fermion-antifermionvertex
+   */
   AbstractFFVVertexPtr FFZvertex_;
+
+  /**
+   *  The triple electroweak gauge boson vertex
+   */
   AbstractVVVVertexPtr WWWvertex_;
+
+  /**
+   *  The quark-antiquark gluon vertex
+   */
   AbstractFFVVertexPtr FFGvertex_;
+  //@}
 
   /**
    *  The value of \f$\alpha_S\f$ used for the calculation
@@ -553,7 +616,7 @@ protected:
    * @param emis_type the type of emission,
    * (0 is \f$q\bar{q}\to Vg\f$, 1 is \f$qg\to Vq\f$ and 2 is \f$g\bar{q}\to V\bar{q}\f$)
    * @param pT The transverse momentum of the jet
-   * @param yj The rapidity of the jet
+   * @param R The object containing the kinematics
    */
   double getResult(int emis_type, realVVKinematics R, Energy pT);
  

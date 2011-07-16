@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSNFSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,7 +24,20 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
 			     _id2last(0),
-			      yukawa_(true) {
+			      yukawa_(true) 
+{}
+
+void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
+  os << _stop << _sbot << _stau << _nmix << _theSS  << _sw << _cw 
+     << ounit(_mw,GeV) << _sb << _cb << yukawa_;
+}
+
+void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _stop >> _sbot >> _stau >> _nmix >> _theSS >> _sw >> _cw 
+     >> iunit(_mw,GeV) >> _sb >> _cb >> yukawa_;
+}
+
+void SSNFSVertex::doinit() {
   long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
   for(unsigned int nl = 0; nl < 5; ++nl) {
     //quarks
@@ -46,19 +59,6 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
     }
     
   }
-}
-
-void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _stop << _sbot << _stau << _nmix << _theSS  << _sw << _cw 
-     << ounit(_mw,GeV) << _sb << _cb << yukawa_;
-}
-
-void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _stop >> _sbot >> _stau >> _nmix >> _theSS >> _sw >> _cw 
-     >> iunit(_mw,GeV) >> _sb >> _cb >> yukawa_;
-}
-
-void SSNFSVertex::doinit() {
   FFSVertex::doinit();
   _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)

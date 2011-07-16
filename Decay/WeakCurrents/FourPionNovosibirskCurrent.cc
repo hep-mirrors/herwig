@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FourPionNovosibirskCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -521,43 +521,42 @@ void FourPionNovosibirskCurrent::Init() {
 
 // initialisation of the a_1 running width 
 void FourPionNovosibirskCurrent::inita1width(int iopt) {
-  if(iopt==-1) {
-    _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==ZERO) return;
-    // parameters for the table of values
-    Energy2 step(sqr(_maxmass)/200.);
-    // function to be integrated to give the matrix element
-    // integrator to perform the integral
-    // weights for the integration channels
-    vector<double> inweights;
-    inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
-    vector<double> inpower(3, 0.0);
-    // types of integration channels
-    vector<int> intype;
-    intype.push_back(2);intype.push_back(3);intype.push_back(1);
-    // masses for the integration channels
-    vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
-    // widths for the integration channels
-    vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
-      widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
-      widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
-    // normalisation constant to give physical width if on shell
-    double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
-			     widthgen2.partialWidth(sqr(_a1mass))));
-    // loop to give the values
-    Energy2 moff2(ZERO);
-    _a1runwidth.clear();_a1runq2.clear();
-    for(;moff2<=sqr(_maxmass);moff2+=step) {
-      Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
-      _a1runwidth.push_back(total);
-      _a1runq2.push_back(moff2);
-    }
-  }
   // set up the interpolator
-  else if(iopt==0) {
+  if(iopt==0||!_initializea1) {
     _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
+    return;
+  }
+  _maxcalc=_maxmass;
+  if(_maxmass==ZERO) return;
+  // parameters for the table of values
+  Energy2 step(sqr(_maxmass)/200.);
+  // function to be integrated to give the matrix element
+  // integrator to perform the integral
+  // weights for the integration channels
+  vector<double> inweights;
+  inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
+  vector<double> inpower(3, 0.0);
+  // types of integration channels
+  vector<int> intype;
+  intype.push_back(2);intype.push_back(3);intype.push_back(1);
+  // masses for the integration channels
+  vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
+  // widths for the integration channels
+  vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
+    widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
+    widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
+  // normalisation constant to give physical width if on shell
+  double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
+			   widthgen2.partialWidth(sqr(_a1mass))));
+  // loop to give the values
+  Energy2 moff2(ZERO);
+  _a1runwidth.clear();_a1runq2.clear();
+  for(;moff2<=sqr(_maxmass);moff2+=step) {
+    Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
+    _a1runwidth.push_back(total);
+    _a1runq2.push_back(moff2);
   }
 }
 
@@ -930,29 +929,29 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::FourPionNovosibirskCurrent " 
 		    << name() << " HwWeakCurrents.so\n";
-  output << "set " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
-  output << "set " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
-  output << "set " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
-  output << "set " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
-  output << "set " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
-  output << "set " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
-  output << "set " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
-  output << "set " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
-  output << "set " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
-  output << "set " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
-  output << "set " << name() << ":SigmaPhase " << _zphase  << "\n";
-  output << "set " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
-  output << "set " << name() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << name() << ":Initializea1 " <<  _initializea1 << "\n";
+  output << "newdef " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
+  output << "newdef " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
+  output << "newdef " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
+  output << "newdef " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
+  output << "newdef " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "newdef " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
+  output << "newdef " << name() << ":SigmaPhase " << _zphase  << "\n";
+  output << "newdef " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
+  output << "newdef " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "newdef " << name() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
     output << name() << ":a1RunningWidth " << ix << " " 
 	   << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
     output << name() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
   }

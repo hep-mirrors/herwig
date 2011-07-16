@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ColourReconnector.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,7 +21,7 @@ using namespace ThePEG;
 /** \ingroup Hadronization
  *  \class ColourReconnector
  *  \brief Class for changing colour reconnections of partons.
- *  \author Alberto Ribon
+ *  \author Alberto Ribon, Christian Roehr
  * 
  *  This class does the nonperturbative colour rearrangement, after the 
  *  nonperturbative gluon splitting and the "normal" cluster formation. 
@@ -30,8 +30,6 @@ using namespace ThePEG;
  *  reconnection is actually accepted, then the previous collections of "usual"
  *  clusters is first deleted and then the new one is created.
  *
- *  Note: by default this class does nothing. It can be inherited and overridden
- *  in future hadronization models.
  * * @see \ref ColourReconnectorInterfaces "The interfaces"
  * defined for ColourReconnector.
  */
@@ -48,12 +46,10 @@ public:
   //@}
 
   /**
-   * Does the colour rearrangment.
-   *
-   * Does the colour rearrangement, starting from the list of particles
-   * in the event record, and the collection of "usual" clusters passed
-   * in input. If the actual rearrangement is accepted, the new collection 
-   * of clusters is overriden to the intial one.
+   * Does the colour rearrangement, starting out from the list of particles in
+   * the event record and the collection of "usual" clusters passed as
+   * arguments. If the actual rearrangement is accepted, the initial collection of
+   * clusters is overridden by the old ones.
    */
   void rearrange(EventHandler & ch,
                  ClusterVector & clusters);
@@ -114,6 +110,35 @@ private:
    * Do we do colour reconnections?
    */
   int _clreco;
+
+  /**
+   * Probability that a found reconnection possibility is actually accepted.
+   */
+  double _preco;
+
+
+private:
+
+  /**
+   * Returns the Cluster (within the ClusterVector cv) where the sum of the
+   * invariant Cluster masses becomes minimal in the case of a colour
+   * reconnection with cl. If no reconnection partner can be found, a pointer to
+   * the original Cluster cl is returned.
+   */
+  ClusterPtr _findRecoPartner(ClusterPtr cl, ClusterVector cv) const;
+
+  /**
+   * @return	true, if the two partons are splitting products of the same
+   * 		gluon
+   */
+  bool _isColour8(tPPtr p1, tPPtr p2) const;
+
+  /**
+   * Reconnects the constituents of the given clusters to the (only) other
+   * possible cluster combination.
+   */
+  pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr c1, ClusterPtr c2) const;
+
 };
 
 

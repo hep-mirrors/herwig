@@ -111,12 +111,6 @@ void HiggsVBFProcessConstructor::constructDiagrams() {
   tPDPtr Wplus  = getParticleData(ParticleID::Wplus);
   tPDPtr Wminus = getParticleData(ParticleID::Wminus);
   tPDPtr Z0     = getParticleData(ParticleID::Z0);
-  //make sure  vertices are initialised
-  model()->init();
-  for(unsigned int ix = 0; ix <  model()->numberOfVertices(); ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
-  }
   for(unsigned int ix=0;ix<_higgs.size();++ix)
     _higgs[ix]->init();
   for(unsigned int ix=0;ix<2;++ix) {

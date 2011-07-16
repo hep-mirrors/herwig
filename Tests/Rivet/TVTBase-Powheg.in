@@ -13,7 +13,6 @@
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
 
@@ -38,23 +37,8 @@ set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-# use the general recon for now
-set KinematicsReconstructor:ReconstructionOption General
-# create the Powheg evolver and use it instead of the default one
-create Herwig::PowhegEvolver PowhegEvolver HwPowhegShower.so
-set ShowerHandler:Evolver PowhegEvolver
-set PowhegEvolver:ShowerModel ShowerModel
-set PowhegEvolver:SplittingGenerator SplittingGenerator
-set PowhegEvolver:MECorrMode 0
-# create and use the Drell-yan hard emission generator
-create Herwig::DrellYanHardGenerator DrellYanHardGenerator
-set DrellYanHardGenerator:ShowerAlpha AlphaQCD
-insert PowhegEvolver:HardGenerator 0 DrellYanHardGenerator
-# create and use the gg->H hard emission generator
-create Herwig::GGtoHHardGenerator GGtoHHardGenerator
-set GGtoHHardGenerator:ShowerAlpha AlphaQCD
-insert PowhegEvolver:HardGenerator 0 GGtoHHardGenerator
-set PowhegEvolver:IntrinsicPtGaussian 1.9*GeV
+set Evolver:IntrinsicPtGaussian 1.9*GeV
+set Evolver:HardEmissionMode POWHEG
 
 ##################################################
 #  Create the Herwig analysis

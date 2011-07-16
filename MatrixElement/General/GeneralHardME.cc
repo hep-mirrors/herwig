@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralHardME.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,13 +23,15 @@ using namespace Herwig;
 GeneralHardME::GeneralHardME() : incoming_(0, 0), outgoing_(0, 0),
 				 diagrams_(0), numberOfDiagrams_(0), 
 				 colour_(0), numberOfFlows_(0) , 
-				 debug_(false), scaleChoice_(0) {
+				 debug_(false), scaleChoice_(0),
+				 scaleFactor_(1.) {
   massOption(vector<unsigned int>(2,1));
 }
   
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
 				   ColourStructure colour,
-				   bool debug, unsigned int scaleOption) {
+				   bool debug, unsigned int scaleOption,
+				   double scaleFactor) {
   // external particles
   incoming_ = alldiagrams.at(0).incoming;
   outgoing_ = alldiagrams.at(0).outgoing;
@@ -39,6 +41,7 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   debug_ = debug;
   // scale choice
   scaleChoice_ = scaleOption; 
+  scaleFactor_ = scaleFactor; 
   // OffShell options
   pair<bool, bool> offshell(make_pair(false, false));
   vector<unsigned int> mopt(2,1);
@@ -205,12 +208,14 @@ GeneralHardME::diagrams(const DiagramVector & diags) const {
 
 void GeneralHardME::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << outgoing_ << diagrams_ << colour_ << oenum(colourStructure_)
-     << numberOfDiagrams_ << numberOfFlows_ << debug_ << scaleChoice_;
+     << numberOfDiagrams_ << numberOfFlows_ << debug_ 
+     << scaleChoice_ << scaleFactor_;
 }
 
 void GeneralHardME::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> outgoing_ >> diagrams_ >> colour_ >> ienum(colourStructure_)
-     >> numberOfDiagrams_ >> numberOfFlows_ >> debug_ >> scaleChoice_;
+     >> numberOfDiagrams_ >> numberOfFlows_ >> debug_ 
+     >> scaleChoice_ >> scaleFactor_;
 }
 
 AbstractClassDescription<GeneralHardME> GeneralHardME::initGeneralHardME;

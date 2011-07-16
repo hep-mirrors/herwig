@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDF1F1W0Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,7 +22,10 @@ using namespace Herwig;
 
 UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
-				    thefermALast(0), thefermBLast(0) {
+				    thefermALast(0), thefermBLast(0) 
+{}
+
+void UEDF1F1W0Vertex::doinit() {
   //outgoing W+
   for( long i = 2; i < 17; i += 2 ) {
     if( i == 7 ) i += 5;
@@ -32,7 +35,7 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO),
     }
   }
   addToList(-6100006, 5100005, 24);
-  addToList(-5100005, 6100006, 24);
+  addToList(-5100006, 6100005, 24);
   //outgoing W-
   for( long i = 1; i < 16; i += 2 ) {
     if( i == 6 ) i += 5;
@@ -43,9 +46,6 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO),
   }
   addToList(-6100005, 5100006, -24);
   addToList(-5100005, 6100006, -24);
-}
-
-void UEDF1F1W0Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)
@@ -77,7 +77,11 @@ void UEDF1F1W0Vertex::Init() {
 }
 
 void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+#ifndef NDEBUG
 				  tcPDPtr part3) {
+#else
+				  tcPDPtr) {
+#endif
   long ianti(abs(part1->id())), iferm(abs(part2->id()));
   assert( abs(part3->id()) == 24 );
   bool ferma = (iferm >= 5100001 && iferm <= 5100006) ||

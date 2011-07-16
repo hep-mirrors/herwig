@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WeakCurrentDecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,6 +19,7 @@
 #include "Herwig++/Decay/General/GeneralCurrentDecayer.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig++/Decay/General/GeneralCurrentDecayer.h"
 
 namespace Herwig {
 
@@ -49,9 +50,14 @@ public:
   virtual void DecayList(const set<PDPtr> & part);
 
   /**
-   * Number of outgoing lines. Required for correct ordering.
+   * Number of outgoing lines. Required for correct ordering (do this one last)
    */
-  virtual unsigned int numBodies() const { return 2; }
+  virtual unsigned int numBodies() const { return 1000; }
+
+  /**
+   *  Cut off
+   */
+  Energy massCut() const { return _masscut;}
 
 public:
 
@@ -132,7 +138,7 @@ private:
    * @param ivert Integer referring to the row in _theExistingDecayers
    * member variable
    */
-  void createDecayer(const VertexBasePtr vert, unsigned int icol,
+  bool createDecayer(const VertexBasePtr vert, unsigned int icol,
 		     unsigned int ivert);
 
   /**
@@ -200,36 +206,15 @@ private:
    */
   Energy _masscut;
 
+  /**
+   *  Tags for the modes
+   */
+  vector<string> decayTags_;
 
   /**
    *  Particles for the mode
    */
-  //@{
-  /**
-   *  First decay product
-   */
-  vector<long> _part1;
-
-  /**
-   *  Second decay product
-   */
-  vector<long> _part2;
-
-  /**
-   *  Third  decay product
-   */
-  vector<long> _part3;
-
-  /**
-   *  Fourth decay product
-   */
-  vector<long> _part4;
-
-  /**
-   *  Fifth  decay product
-   */
-  vector<long> _part5;
-  //@}
+  vector<vector<tPDPtr> > particles_;
 
   /**
    *  Normalisation

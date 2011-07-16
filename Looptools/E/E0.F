@@ -2,12 +2,13 @@
 * the scalar four-point function
 * this file is part of LoopTools
 * written by M. Rauch
-* last modified 24 Jan 06 th
+* last modified 8 Dec 10 th
 
 #include "defs.h"
 
 
 #ifdef COMPLEXPARA
+#undef E0b
 #define E0b E0C
 #else
 	double complex function E0(p1, p2, p3, p4, p5, 
@@ -109,43 +110,42 @@
 
 #include "lt.h"
 
-	QVAR Y(5,5), Yi(5,5), detYi(5)
+	QVAR Y(5,5), Yi(5,5), eta(5), detY
 	integer i, j
 
 	QVAR Yflat(25), Yiflat(25)
 	equivalence (Y, Yflat)
 	equivalence (Yi, Yiflat)
 
-	QVAR XDet
 	double complex XD0
-	external XDet, XD0
+	external XD0
 
-	Y(1,1) = 2*QEXT(m1)
-	Y(1,2) = QEXT(m1) + QEXT(m2) - QEXT(p1)
+	Y(1,1) = 2*QPREC(m1)
+	Y(2,2) = 2*QPREC(m2)
+	Y(3,3) = 2*QPREC(m3)
+	Y(4,4) = 2*QPREC(m4)
+	Y(5,5) = 2*QPREC(m5)
+	Y(1,2) = QPREC(m1) + QPREC(m2) - QPREC(p1)
 	Y(2,1) = Y(1,2)
-	Y(1,3) = QEXT(m1) + QEXT(m3) - QEXT(p1p2)
+	Y(1,3) = QPREC(m1) + QPREC(m3) - QPREC(p1p2)
 	Y(3,1) = Y(1,3)
-	Y(1,4) = QEXT(m1) + QEXT(m4) - QEXT(p4p5)
+	Y(1,4) = QPREC(m1) + QPREC(m4) - QPREC(p4p5)
 	Y(4,1) = Y(1,4)
-	Y(1,5) = QEXT(m1) + QEXT(m5) - QEXT(p5)
+	Y(1,5) = QPREC(m1) + QPREC(m5) - QPREC(p5)
 	Y(5,1) = Y(1,5)
-	Y(2,2) = 2*QEXT(m2)
-	Y(2,3) = QEXT(m2) + QEXT(m3) - QEXT(p2)
+	Y(2,3) = QPREC(m2) + QPREC(m3) - QPREC(p2)
 	Y(3,2) = Y(2,3)
-	Y(2,4) = QEXT(m2) + QEXT(m4) - QEXT(p2p3)
+	Y(2,4) = QPREC(m2) + QPREC(m4) - QPREC(p2p3)
 	Y(4,2) = Y(2,4)
-	Y(2,5) = QEXT(m2) + QEXT(m5) - QEXT(p5p1)
+	Y(2,5) = QPREC(m2) + QPREC(m5) - QPREC(p5p1)
 	Y(5,2) = Y(2,5)
-	Y(3,3) = 2*QEXT(m3)
-	Y(3,4) = QEXT(m3) + QEXT(m4) - QEXT(p3)
+	Y(3,4) = QPREC(m3) + QPREC(m4) - QPREC(p3)
 	Y(4,3) = Y(3,4)
-	Y(3,5) = QEXT(m3) + QEXT(m5) - QEXT(p3p4)
+	Y(3,5) = QPREC(m3) + QPREC(m5) - QPREC(p3p4)
 	Y(5,3) = Y(3,5)
-	Y(4,4) = 2*QEXT(m4)
-	Y(4,5) = QEXT(m4) + QEXT(m5) - QEXT(p4)
+	Y(4,5) = QPREC(m4) + QPREC(m5) - QPREC(p4)
 	Y(5,4) = Y(4,5)
-	Y(5,5) = 2*QEXT(m5)
-	
+
 	do i = 1, 5
 	  do j = 1, 25
 	    Yiflat(j) = Yflat(j)
@@ -153,15 +153,17 @@
 	  do j = 1, 5
 	    Yi(j,i) = 1
 	  enddo
-	  detYi(i) = XDet(Yi, 5)
+	  call XDet(5, Yi,5, eta(i))
 	enddo
 
+	call XDet(5, Y,5, detY)
+
 	E0b = -(
-     &    detYi(1)*XD0(p2, p3, p4, p5p1, p2p3, p3p4, m2, m3, m4, m5) +
-     &    detYi(2)*XD0(p1p2, p3, p4, p5, p4p5, p3p4, m1, m3, m4, m5) +
-     &    detYi(3)*XD0(p1, p2p3, p4, p5, p4p5, p5p1, m1, m2, m4, m5) +
-     &    detYi(4)*XD0(p1, p2, p3p4, p5, p1p2, p5p1, m1, m2, m3, m5) +
-     &    detYi(5)*XD0(p1, p2, p3, p4p5, p1p2, p2p3, m1, m2, m3, m4)
-     &  )/XDet(Y,5)
+     &    eta(1)*XD0(p2, p3, p4, p5p1, p2p3, p3p4, m2, m3, m4, m5) +
+     &    eta(2)*XD0(p1p2, p3, p4, p5, p4p5, p3p4, m1, m3, m4, m5) +
+     &    eta(3)*XD0(p1, p2p3, p4, p5, p4p5, p5p1, m1, m2, m4, m5) +
+     &    eta(4)*XD0(p1, p2, p3p4, p5, p1p2, p5p1, m1, m2, m3, m5) +
+     &    eta(5)*XD0(p1, p2, p3, p4p5, p1p2, p2p3, m1, m2, m3, m4)
+     &  )/detY
 	end
 

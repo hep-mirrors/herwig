@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralCurrentDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -72,11 +72,16 @@ void GeneralCurrentDecayer::Init() {
 }
 
 int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent, 
-			 const tPDVector & children) const {
+				      const tPDVector & children) const {
   vector<long> id;
   id.push_back(parent->id());
   for(unsigned int ix=0;ix<children.size();++ix) id.push_back(children[ix]->id());
   return modeNumber(cc,id);
+}
+
+void GeneralCurrentDecayer::doinitrun() {
+  _current->initrun();
+  DecayIntegrator::doinitrun();
 }
 
 void GeneralCurrentDecayer::doinit() {
@@ -86,11 +91,11 @@ void GeneralCurrentDecayer::doinit() {
   _modemap.clear();
   _modestart.clear();
   // extract the possible particles for the modes
-  //  vector<tPDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
-  vector<long> particles = _theVertex->search(1,ParticleID::Wplus);
-  //  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
-  particles =_theVertex->search(2,ParticleID::Wplus);
-  //  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
+  vector<long> particles;
+  for(unsigned int ix=0;ix<3;++ix) {
+    vector<long>   temp      = _theVertex->search(ix,ParticleID::Wplus);
+    particles.insert(particles.end(),temp.begin(),temp.end());
+  }
   _inpart.clear();
   _outpart.clear();
   while(!particles.empty()) {
@@ -159,31 +164,41 @@ void GeneralCurrentDecayer::doinit() {
 }
 
 int GeneralCurrentDecayer::modeNumber(bool & cc, vector<long> id) const {
-  vector<int> idother;
-  for(unsigned int ix=2;ix<id.size();++ix) idother.push_back(id[ix]);
-  unsigned int icurr=_current->decayMode(idother);
+  // incoming particle
   int idtemp[2];
   tPDPtr p0=getParticleData(id[0]);
   idtemp[0] = p0->CC() ? -id[0] : id[0];
-  tPDPtr p1=getParticleData(id[1]);
-  idtemp[1] = p1->CC() ? -id[1] : id[1];
-  unsigned int ipart;
-  for(ipart=0;ipart<_inpart.size();++ipart) {
-    if(id    [0]==_inpart[ipart]&&id    [1]==_outpart[ipart]) {
+  // loop over possible particles
+  for(unsigned int ipart=0;ipart<_inpart.size();++ipart) {
+    if(id    [0]==_inpart[ipart]) {
       cc=false;
-      break;
     }
-    else if(idtemp[0]==_inpart[ipart]&&idtemp[1]==_outpart[ipart]) {
+    else if(idtemp[0]==_inpart[ipart]) {
       cc=true;
-      break;
     }
+    else
+      continue;
+    tPDPtr p1 = getParticleData(_outpart[ipart]);
+    if(cc) p1 = p1->CC() ? p1->CC() : p1;
+    // if this in the particles
+    vector<long>::iterator iloc = std::find(++id.begin(), id.end(), p1->id());
+    if(idtemp[0]==id[0]&&iloc==id.end()) {
+      iloc = std::find(++id.begin(), id.end(), p1->CC()->id());
+    }
+    if(iloc==id.end()) continue;
+    vector<int> idother;
+    for(vector<long>::iterator it=++id.begin();it!=id.end();++it) {
+      if(it!=iloc) idother.push_back(*it);
+    }
+    unsigned int icurr=_current->decayMode(idother);
+    int imode,imax;
+    if(ipart+1<_modestart.size()) imax=_modestart[ipart+1];
+    else imax=_modemap.size();
+    for(imode=_modestart[ipart];imode<imax;++imode) {
+      if(_modemap[imode]==icurr) break;
+    }
+    if(imode>=imax) imode=-1;
+    if(imode>=0) return imode;
   }
-  int imode,imax;
-  if(ipart+1<_modestart.size()) imax=_modestart[ipart+1];
-  else imax=_modemap.size();
-  for(imode=_modestart[ipart];imode<imax;++imode) {
-    if(_modemap[imode]==icurr) break;
-  }
-  if(imode>=imax) imode=-1;
-  return imode;
+  return -1;
 }

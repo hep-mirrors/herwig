@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TwoToTwoProcessConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
@@ -43,7 +44,7 @@ namespace {
 
 TwoToTwoProcessConstructor::TwoToTwoProcessConstructor() : 
   Nout_(0), nv_(0), allDiagrams_(true),
-  processOption_(0), scaleChoice_(0) 
+  processOption_(0), scaleChoice_(0), scaleFactor_(1.) 
 {}
 
 IBPtr TwoToTwoProcessConstructor::clone() const {
@@ -91,14 +92,14 @@ void TwoToTwoProcessConstructor::doinit() {
 void TwoToTwoProcessConstructor::persistentOutput(PersistentOStream & os) const {
   os << vertices_ << incoming_ << outgoing_
      << allDiagrams_ << processOption_
-     << scaleChoice_ << excluded_ << excludedExternal_
+     << scaleChoice_ << scaleFactor_ << excluded_ << excludedExternal_
      << excludedVertexVector_ << excludedVertexSet_;
 }
 
 void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> vertices_ >> incoming_ >> outgoing_
      >> allDiagrams_ >> processOption_
-     >> scaleChoice_ >> excluded_ >> excludedExternal_
+     >> scaleChoice_ >> scaleFactor_ >> excluded_ >> excludedExternal_
      >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
@@ -180,6 +181,13 @@ void TwoToTwoProcessConstructor::Init() {
      "Always use the transverse mass",
      2);
 
+  static Parameter<TwoToTwoProcessConstructor,double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The prefactor used in the scale calculation. The scale used is"
+     " that defined by scaleChoice multiplied by this prefactor",
+     &TwoToTwoProcessConstructor::scaleFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
   static RefVector<TwoToTwoProcessConstructor,ThePEG::ParticleData> interfaceExcluded
     ("Excluded",
      "Particles which are not allowed as intermediates",
@@ -213,17 +221,10 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  // delete the matrix elements we already have
-  int nme = subProcess()->MEs().size();
-  for(int ix = nme - 1; ix >= 0; --ix)
-    generator()->preinitInterface(subProcess(), "MatrixElements", 
-				  ix, "erase", "");
-  model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
+    VertexBasePtr vertex = model()->vertex(ix);
     if(excludedVertexSet_.find(vertex) != 
        excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);
@@ -262,23 +263,45 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
   //need to find all of the diagrams that relate to the same process
   //first insert them into a map which uses the '<' operator 
   //to sort the diagrams 
-  multimap<HPDiagram,HPDiagram > grouped;
+  multiset<HPDiagram> grouped;
   HPDVector::iterator dit = processes_.begin();
   HPDVector::iterator dend = processes_.end();
+  bool abort=false;
   for( ; dit != dend; ++dit) {
-    grouped.insert(make_pair(*dit, *dit));
+    // check for on-shell s-channel
+    tPDPtr out1 = getParticleData(dit->outgoing.first );
+    tPDPtr out2 = getParticleData(dit->outgoing.second);
+    if(dit->channelType == HPDiagram::sChannel && 
+       dit->intermediate->width()==ZERO &&
+       dit->intermediate->mass() > out1->mass()+ out2->mass()) {
+      tPDPtr in1 = getParticleData(dit->incoming.first );
+      tPDPtr in2 = getParticleData(dit->incoming.second);
+      generator()->log() << dit->intermediate->PDGName() 
+			 << " can be on-shell in the process "
+			 << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
+			 << out1->PDGName() << " " << out2->PDGName() 
+			 << " but has zero width.\nEither set the width, enable "
+			 << "calculation of its decays, and hence the width,\n"
+			 << "or disable it as a potential intermediate using\n"
+			 << "insert " << fullName() << ":Excluded 0 "
+			 << dit->intermediate->fullName() << "\n---\n";
+      abort = true;
+    }
+    grouped.insert(*dit);
   }
+  if(abort) throw Exception() << "One or more processes with zero width"
+			      << " resonant intermediates"
+			      << Exception::runerror;
   assert( processes_.size() == grouped.size() );
   processes_.clear();
-  typedef multimap<HPDiagram, HPDiagram>::const_iterator map_iter;
-  map_iter it = grouped.begin();
-  map_iter iend = grouped.end();
+  typedef multiset<HPDiagram>::const_iterator set_iter;
+  set_iter it = grouped.begin(), iend = grouped.end();
   while( it != iend ) {
-    pair< map_iter, map_iter> range = grouped.equal_range(it->first);
-    map_iter itb = range.first;
+    pair<set_iter,set_iter> range = grouped.equal_range(*it);
+    set_iter itb = range.first;
     HPDVector process;
     for( ; itb != range.second; ++itb ) {
-      process.push_back(itb->second);
+      process.push_back(*itb);
     }
     // if inclusive enforce the exclusivity
     if(processOption_==2) {
@@ -550,7 +573,7 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
       (generator()->preinitCreate(classname, objectname));
   if( !matrixElement ) {
-    stringstream message;
+    std::stringstream message;
     message << "TwoToTwoProcessConstructor::createMatrixElement "
 	    << "- No matrix element object could be created for "
 	    << "the process " 
@@ -590,7 +613,7 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   }
   // set the information
   matrixElement->setProcessInfo(process, colourFlow(extpart),
-				debug(), scale);
+				debug(), scale, scaleFactor_);
   // insert it
   generator()->preinitInterface(subProcess(), "MatrixElements", 
 				subProcess()->MEs().size(),
@@ -607,7 +630,7 @@ string TwoToTwoProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else {
-      stringstream message;
+      std::stringstream message;
       message << "MEClassname() : Encountered an unknown spin for "
 	      << extpart[ix]->PDGName() << " while constructing MatrixElement "
 	      << "classname " << extpart[ix]->iSpin();

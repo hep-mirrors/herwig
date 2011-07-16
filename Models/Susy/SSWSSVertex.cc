@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSWSSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,7 +22,10 @@ using namespace Herwig;
 
 SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
 				  _ulast(0), _dlast(0), _gblast(0),
-				  _factlast(0.) {
+				  _factlast(0.) 
+{}
+
+void SSWSSVertex::doinit() {
   //W-
   //LL-squarks
   for(long ix=1000001;ix<1000006;ix+=2) {
@@ -107,9 +110,6 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   for(long ix=2000001;ix<2000007;++ix) {
     addToList(22,ix,-ix);
   }
-}
-
-void SSWSSVertex::doinit() {
   VSSVertex::doinit();
   tMSSMPtr theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!theSS)

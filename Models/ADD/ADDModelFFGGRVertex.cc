@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelFFGGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,13 +21,13 @@ using namespace Herwig;
 using namespace ThePEG;
 
 ADDModelFFGGRVertex::ADDModelFFGGRVertex() 
-  : couplast_(0.), q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
+  : couplast_(0.), q2last_(ZERO), kappa_(ZERO), r_(ZERO) 
+{}
+
+void ADDModelFFGGRVertex::doinit() {
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,21,39);
   }
-}
-
-void ADDModelFFGGRVertex::doinit() {
   orderInGem(1);
   orderInGs (1);
   FFVTVertex::doinit();
@@ -57,8 +57,13 @@ void ADDModelFFGGRVertex::Init() {
   
 }
 
+#ifndef NDEBUG
 void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,
 				      tcPDPtr cc, tcPDPtr) {
+#else
+void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+				      tcPDPtr, tcPDPtr) {
+#endif
   // work out the particles
   assert(cc->id()==ParticleID::g && abs(aa->id()) <= 6);
   Complex coup;

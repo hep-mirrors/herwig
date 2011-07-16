@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GenericMassGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -173,10 +173,10 @@ void GenericMassGenerator::doinit() {
   
 void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << fullName() << ":BreitWignerShape "   << BWShape_ << "\n";
-  output << "set " << fullName() << ":MaximumWeight " << maxWgt_    << "\n";
-  output << "set " << fullName() << ":NGenerate "   << nGenerate_ << "\n";
-  output << "set " << fullName() << ":WidthOption " << widthOpt_ << "\n";
+  output << "newdef " << fullName() << ":BreitWignerShape "   << BWShape_ << "\n";
+  output << "newdef " << fullName() << ":MaximumWeight " << maxWgt_    << "\n";
+  output << "newdef " << fullName() << ":NGenerate "   << nGenerate_ << "\n";
+  output << "newdef " << fullName() << ":WidthOption " << widthOpt_ << "\n";
   if(header) output << "\n\" where BINARY ThePEGFullName=\"" 
 		    << fullName() << "\";" << endl;
 }

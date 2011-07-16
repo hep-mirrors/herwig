@@ -67,6 +67,7 @@ generateHardest(ShowerTreePtr tree) {
   partons_.resize(2);
   partons_[0] = QProgenitor->progenitor()   ->dataPtr();
   partons_[1] = QbarProgenitor->progenitor()->dataPtr();
+  if(!partons_[0]->coloured()) return HardTreePtr();
   // momentum of the partons
   quark_.resize(2);
   quark_[0] = QProgenitor   ->copy()->momentum();
@@ -109,12 +110,6 @@ generateHardest(ShowerTreePtr tree) {
   spectator->set5Momentum(quark_[ispectator]);  
   gauge    ->set5Momentum(gauge_); 
   hboson->set5Momentum(higgs_->momentum());  
-  // generator()->log() << "testing momenta quark " 
-  //   	     << quark_[0]/GeV << " " << quark_[0].m()/GeV << "\n";
-  // generator()->log() << "testing momenta qbar  " 
-  //   	     << quark_[1]/GeV << " " << quark_[1].m()/GeV << "\n";
-  // generator()->log() << "testing momenta gluon " 
-  //   	     << gauge_/GeV    << " " << gauge_.m()/GeV    << "\n";
   Lorentz5Momentum parentMomentum(quark_[iemitter]+gauge_);
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
@@ -143,27 +138,26 @@ generateHardest(ShowerTreePtr tree) {
   // Add incoming boson to allBranchings
   allBranchings.push_back( spaceBranchings.back() );
   // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
   Energy ptveto(pT_);
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect( QProgenitor->progenitor(), allBranchings[0] );
-  nasontree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
+  hardtree->connect( QProgenitor->progenitor(), allBranchings[0] );
+  hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
   // colour flow
   ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
-  //  generator()->log() << *nasontree << "\n";
-  return nasontree;
+  return hardtree;
 }
 
 double SMHiggsFermionsPOWHEGDecayer::
@@ -409,11 +403,10 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   // no emission
   if(pT[0]<ZERO&&pT[1]<ZERO) return false;
   //pick the spectator and x1 x2 values
-  double x1,x2,x3,y;
+  double x1,x2,y;
   //particle 1 emits, particle 2 spectates
   unsigned int iemit=0;
   if(pT[0]>pT[1]){ 
-    x3  = x3Solution[0];
     pT_ = pT[0];
     y=yTemp[0];
     if(probTemp[0][0]>UseRandom::rnd()*(probTemp[0][0]+probTemp[0][1])) {
@@ -428,7 +421,6 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   //particle 2 emits, particle 1 spectates
   else {
     iemit=1;
-    x3  = x3Solution[1];
     pT_ = pT[1];
     y=yTemp[1];
     if(probTemp[1][0]>UseRandom::rnd()*(probTemp[1][0]+probTemp[1][1])) {

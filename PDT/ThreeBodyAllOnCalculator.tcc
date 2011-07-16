@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreeBodyAllOnCalculator.tcc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -154,10 +154,10 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     // transform them
     if(_channelmass[ix] > ZERO) {
       if(_channelwidth[ix] > 1e-8*MeV) {
-	rupp = atan((upp-_channelmass[ix]*_channelmass[ix])/
-		    _channelmass[ix]/_channelwidth[ix]);
-	rlow =  atan((low-_channelmass[ix]*_channelmass[ix])/
-		     _channelmass[ix]/_channelwidth[ix]);
+	rupp = atan2((upp-_channelmass[ix]*_channelmass[ix]),
+		    _channelmass[ix]*_channelwidth[ix]);
+	rlow =  atan2((low-_channelmass[ix]*_channelmass[ix]),
+		     _channelmass[ix]*_channelwidth[ix]);
 	_mapping = 0;
 	if(rupp/rlow>0.&&_channelwidth[ix]/_channelmass[ix]<1e-6) {
 	  _mapping = 1;

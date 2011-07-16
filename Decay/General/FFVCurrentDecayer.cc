@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FFVCurrentDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -136,7 +136,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   vector<LorentzPolarizationVectorE> 
     hadron(weakCurrent()->current(mode,ichan,q,hadpart,meopt));
   // prefactor
-  double pre(pow(inpart.mass()/q,int(hadpart.size()-2)));pre*=pre;
+  double pre = sqr(pow(inpart.mass()/q,int(hadpart.size()-2)));
   // work out the mapping for the hadron vector
   vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
   vector<PDT::Spin> ispin(decay.size());
@@ -161,12 +161,12 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   for(hhel=0;hhel<hadron.size();++hhel) {
     // map the index for the hadrons to a helicity state
     for(ix=decay.size();ix>1;--ix) ihel[ix]=(hhel%constants[ix-1])/constants[ix];
+    vWave=VectorWaveFunction(vmom,vec,hadron[hhel]*UnitRemoval::InvE,outgoing);
     for(unsigned int if1 = 0; if1 < 2; ++if1) {
       for(unsigned int if2 = 0; if2 < 2; ++if2) {
 	ihel[0]=if1;
 	ihel[1]=if2;
 	if(!ferm) swap(ihel[0],ihel[1]);
-	vWave=VectorWaveFunction(vmom,vec,hadron[hhel]*UnitRemoval::InvE,outgoing);
 	newME(ihel) = _theFFVPtr->evaluate(scale,_wave[if1],_wavebar[if2],vWave);
       }
     }
@@ -178,12 +178,10 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   weakCurrent()->decayModeInfo(mode,iq,ia);
   double ckm(1.);
   if(iq<=6) {
-    if(iq%2==0){ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);}
-    else{ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);}
+    if(iq%2==0) ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);
+    else        ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);
   }
-  pre /= 4.*Constants::pi
-    *SM().alphaEM(sqr(getParticleData(ParticleID::tauminus)->mass()))
-    /2./SM().sin2ThetaW();
+  pre /= 0.125*sqr(_theFFVPtr->weakCoupling(scale));
   double output(0.5*pre*ckm*(ME().contract(_rho)).real()*
 		sqr(SM().fermiConstant()*UnitRemoval::E2));
   return output;

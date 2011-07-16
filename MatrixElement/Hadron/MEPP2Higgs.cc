@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2Higgs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -36,10 +36,11 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   minFlavour_(4), maxFlavour_(5),
 			   mh_(ZERO), wh_(ZERO),
 			   minLoop_(6),maxLoop_(6),massOption_(0),  
+                           mu_R_opt_(1),mu_F_opt_(1),
 			   channelwgtA_(0.45),channelwgtB_(0.15),
 			   ggPow_(1.6), qgPow_(1.6), enhance_(1.1),
 			   nover_(0), ntry_(0), ngen_(0), maxwgt_(0.),
-			   power_(2.0), pregg_(5.), preqg_(3.),
+			   power_(2.0), pregg_(7.), preqg_(3.),
 			   pregqbar_(3.), minpT_(2.*GeV)
 {}
 
@@ -52,7 +53,8 @@ void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
      << ounit(wh_,GeV) << minLoop_ << maxLoop_ << massOption_ 
      << alpha_ << prefactor_ << power_ << pregg_ << preqg_
      << pregqbar_ << ounit( minpT_, GeV ) << ggPow_ << qgPow_ 
-     << enhance_ << channelwgtA_ << channelwgtB_ << channelWeights_;
+     << enhance_ << channelwgtA_ << channelwgtB_ << channelWeights_
+     << mu_R_opt_ << mu_F_opt_;
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
@@ -61,7 +63,8 @@ void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
      >> iunit(wh_,GeV) >> minLoop_ >> maxLoop_ >> massOption_ 
      >> alpha_ >> prefactor_ >> power_ >> pregg_ >> preqg_
      >> pregqbar_ >> iunit( minpT_, GeV ) >> ggPow_ >> qgPow_ 
-     >> enhance_ >> channelwgtA_ >> channelwgtB_ >> channelWeights_;
+     >> enhance_ >> channelwgtA_ >> channelwgtB_ >> channelWeights_
+     >> mu_R_opt_ >> mu_F_opt_;
 }
 
 void MEPP2Higgs::Init() {
@@ -227,7 +230,7 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,double> interfacePrefactorgg
     ("Prefactorgg",
      "The prefactor for the sampling of the q qbar channel",
-     &MEPP2Higgs::pregg_, 5.0, 0.0, 1000.0,
+     &MEPP2Higgs::pregg_, 7.0, 0.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<MEPP2Higgs,double> interfacePrefactorqg
@@ -248,6 +251,36 @@ void MEPP2Higgs::Init() {
      "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
      &MEPP2Higgs::minpT_, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
+
+   static Switch<MEPP2Higgs,unsigned int> interface_mu_R_Option
+     ("mu_R_Option",
+      "Option to use pT or mT as the scale in alphaS",
+      &MEPP2Higgs::mu_R_opt_, 1, false, false);
+   static SwitchOption interface_mu_R_Option_mT
+     (interface_mu_R_Option,
+      "mT",
+      "Use mT as the scale in alpha_S",
+      0);
+   static SwitchOption interface_mu_R_Option_pT
+     (interface_mu_R_Option,
+      "pT",
+      "Use pT as the scale in alpha_S",
+      1);
+
+   static Switch<MEPP2Higgs,unsigned int> interface_mu_F_Option
+     ("mu_F_Option",
+      "Option to use pT or mT as the factorization scale in the PDFs",
+      &MEPP2Higgs::mu_F_opt_, 1, false, false);
+   static SwitchOption interface_mu_F_Option_mT
+     (interface_mu_F_Option,
+      "mT",
+      "Use mT as the scale in the PDFs",
+      0);
+   static SwitchOption interface_mu_F_Option_pT
+     (interface_mu_F_Option,
+      "pT",
+      "Use pT as the scale in the PDFs",
+      1);
 }
 
 void MEPP2Higgs::doinit() {
@@ -909,31 +942,31 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit],false)));
   newparticles.back()->set5Momentum(poff);
-  vector<HardBranchingPtr> nasonin,nasonhard; // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
+  vector<HardBranchingPtr> inBranch,hardBranch; // create the branchings for the incoming particles
+  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
-  nasonin.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
+  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
   // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-						 nasonin[iemit],HardBranching::Outgoing)));
+  inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+						 inBranch[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					    nasonin[iemit],HardBranching::Incoming)));
-  nasonin[iemit]->addChild(nasonhard.back());
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
+					    inBranch[iemit],HardBranching::Incoming)));
+  inBranch[iemit]->addChild(hardBranch.back());
   // set the colour partners
-  nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
-  nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());
+  hardBranch.back()->colourPartner(inBranch[iemit==0 ? 1 : 0]);
+  inBranch[iemit==0 ? 1 : 0]->colourPartner(hardBranch.back());
   // add other particle
-  nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
+  hardBranch.push_back(inBranch[iemit==0 ? 1 : 0]);
   // outgoing Higgs boson
-  nasonhard.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 					    HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
+  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if( pt_ < minpT_ ) particlesToShower[ix]->maximumpT(minpT_);
     else particlesToShower[ix]->maximumpT(pt_);
@@ -946,7 +979,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
 	   (**mit).status()==HardBranching::Incoming))) {
 	if(particlesToShower[ix]->progenitor()->momentum().z()/
 	   (*mit)->branchingParticle()->momentum().z()<0.) continue;
- 	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+ 	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
  	if((**mit).status()==HardBranching::Incoming) {
  	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
@@ -961,8 +994,8 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   ColinePtr cline1 = new_ptr(ColourLine());
   ColinePtr cline2 = new_ptr(ColourLine());
   unsigned int ng(0);
-  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
-      cit!=nasontree->branchings().end();++cit) {
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()!=PDT::Colour8) continue;
     if(ng==0) {
       cline1->addColoured    ((**cit).branchingParticle());
@@ -975,7 +1008,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
     }
   }
   // return the answer
-  return nasontree;
+  return hardtree;
 }
 
 bool MEPP2Higgs::applyHard(ShowerParticleVector gluons, 
@@ -1481,7 +1514,8 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   Energy2 s=sqr(generator()->maximumCMEnergy());
   Energy2 scale = mh2_+sqr(pt);
   Energy  et=sqrt(scale);
-  // longitudinal real correction fractions
+  scale = mu_F_opt_==0 ? mh2_+sqr(pt) : sqr(pt) ;
+   // longitudinal real correction fractions
   double x  = pt*exp( yj)/sqrt(s)+et*exp( yh_)/sqrt(s);
   double y  = pt*exp(-yj)/sqrt(s)+et*exp(-yh_)/sqrt(s);
   // reject if outside region
@@ -1496,8 +1530,13 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   InvEnergy2 res = InvEnergy2();
   // pdf part of the cross section
   double pdf[4];
-  pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],mh2_,x1);
-  pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],mh2_,y1);
+  if(mu_F_opt_==0) {  // As in original version ...
+    pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],mh2_,x1);
+    pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],mh2_,y1);
+  } else {            // As in Nason and Ridolfi paper ...
+    pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x1);
+    pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y1);
+  }
   // g g -> H g
   if(emis_type==0) {
     outParton = partons_[1];
@@ -1536,5 +1575,6 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   else {
     res *= pdf[2]*pdf[3]/pdf[0]/pdf[1]*mh2_/sh;
   }
+  scale = mu_R_opt_==0 ? mh2_+sqr(pt) : sqr(pt) ;
   return alpha_->ratio(scale)/8./sqr(Constants::pi)*mh2_/sh*GeV*pt*res;
 }
