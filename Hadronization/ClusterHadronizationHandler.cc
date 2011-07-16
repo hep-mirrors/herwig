@@ -174,15 +174,25 @@ handle(EventHandler & ch, const tPVector & tagged,
   // decay the clusters into one hadron
   bool lightOK = false;
   short tried = 0;
-  _colourReconnector->rearrange(ch,clusters);
   const ClusterVector savedclusters = clusters;
   tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
 
+    // colour reconnection
+    _colourReconnector->rearrange(ch,clusters);
+
+    // tag new clusters as children of the partons to hadronize
+    _setChildren(clusters);
+    
+    // fission of heavy clusters
+    // NB: during cluster fission, light hadrons might be produced straight away
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
 
     lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
 
+    // if the decay of the light clusters was not successful, undo the cluster
+    // fission and decay steps and revert to the original state of the event
+    // record
     if (!lightOK) {
       clusters = savedclusters;
       for_each(clusters.begin(), 
@@ -193,7 +203,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   if (!lightOK)
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
-
 
 
   // decay the remaining clusters
@@ -253,3 +262,24 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
   }
 }
+
+void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
+
+  // erase existing information about the partons' children
+  tPVector partons;
+  for (ClusterVector::const_iterator cl = clusters.begin();
+       cl != clusters.end(); cl++) {
+    partons.push_back( (*cl)->colParticle() );
+    partons.push_back( (*cl)->antiColParticle() );
+  }
+  for_each(partons.begin(), partons.end(), mem_fun(&Particle::undecay));
+
+  // give new parents to the clusters: their constituents
+  for (ClusterVector::iterator cl = clusters.begin();
+       cl != clusters.end(); cl++) {
+    (*cl)->colParticle()->addChild(*cl);
+    (*cl)->antiColParticle()->addChild(*cl);
+  }
+
+}
+
