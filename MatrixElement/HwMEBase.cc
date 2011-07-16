@@ -95,8 +95,8 @@ bool HwMEBase::generateMasses(vector<Energy> & masses, double & mjac,
     else {
       Energy mon(mePartonData()[ix+2]->mass());
       Energy width(mePartonData()[ix+2]->width());
-      double rhomin = atan((sqr(mmin)-sqr(mon))/mon/width);
-      double rhomax = atan((sqr(mmax)-sqr(mon))/mon/width);
+      double rhomin = atan2((sqr(mmin)-sqr(mon)), mon*width);
+      double rhomax = atan2((sqr(mmax)-sqr(mon)), mon*width);
       masses[ix] = sqrt(mon*width*tan(rhomin+r[iloc]*(rhomax-rhomin))+sqr(mon));
       mjac *= (rhomax-rhomin)/Constants::pi;
     }

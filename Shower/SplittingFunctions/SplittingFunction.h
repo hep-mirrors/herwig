@@ -69,7 +69,8 @@ public:
   SplittingFunction(unsigned int b)
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _interactionorder(b), 
-      _colourStructure(Undefined), _colourFactor(-1.) {}
+      _colourStructure(Undefined), _colourFactor(-1.),
+      _splittingColourMethod(0) {}
 public:
 
   /**
@@ -268,6 +269,17 @@ private:
    *  The colour factor
    */
   double _colourFactor;
+  
+  /**
+   *  The method for assigning colour
+   *  The default, 0, will assign colour lines for octets
+   *  randomly without keeping a record of which lines radiate.
+   *  For option 1 only the "correct" lines will radiate until
+   *  the lowest scale is reached.
+   *  For option 2 there will be random radiation, but the
+   *  line which radiates is recorded
+   */
+   int _splittingColourMethod;
 };
 
 }

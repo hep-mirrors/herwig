@@ -173,28 +173,28 @@ public:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  tAbstractFFVVertexPtr  vertexFFZ() const {
+  virtual tAbstractFFVVertexPtr  vertexFFZ() const {
     return FFZVertex_;
   }
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  tAbstractFFVVertexPtr  vertexFFP() const {
+  virtual tAbstractFFVVertexPtr  vertexFFP() const {
     return FFPVertex_;
   }
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  tAbstractFFVVertexPtr  vertexFFG() const {
+  virtual tAbstractFFVVertexPtr  vertexFFG() const {
     return FFGVertex_;
   }
   
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  tAbstractFFVVertexPtr  vertexFFW() const {
+  virtual tAbstractFFVVertexPtr  vertexFFW() const {
     return FFWVertex_;
   }
 
@@ -208,14 +208,14 @@ public:
   /**
    * Pointer to the triple gluon vertex
    */
-  tAbstractVVVVertexPtr  vertexGGG() const {
+  virtual tAbstractVVVVertexPtr  vertexGGG() const {
     return GGGVertex_;
   }
   
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  tAbstractVVVVertexPtr  vertexWWW() const {
+  virtual tAbstractVVVVertexPtr  vertexWWW() const {
     return WWWVertex_;
   }
 
@@ -229,14 +229,14 @@ public:
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  tAbstractVVVVVertexPtr vertexWWWW() const {
+  virtual tAbstractVVVVVertexPtr vertexWWWW() const {
     return WWWWVertex_;
   }
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  tAbstractVVVVVertexPtr vertexGGGG() const {
+  virtual tAbstractVVVVVertexPtr vertexGGGG() const {
     return GGGGVertex_;
   }
   
@@ -250,21 +250,21 @@ public:
   /**
    * Pointer to the quartic gluon vertex
    */
-  tAbstractVVSVertexPtr vertexHPP() const {
+  virtual tAbstractVVSVertexPtr vertexHPP() const {
     return HPPVertex_;
   }
 
   /**
    * Pointer to the triple Higgs vertex
    */
-  tAbstractSSSVertexPtr vertexHHH() const {
+  virtual tAbstractSSSVertexPtr vertexHHH() const {
     return HHHVertex_;
   }
 
   /**
    * Pointer to the WWHH vertex
    */
-  tAbstractVVSSVertexPtr vertexWWHH() const {
+  virtual tAbstractVVSSVertexPtr vertexWWHH() const {
     return WWHHVertex_;
   }
 
@@ -449,6 +449,7 @@ private:
    * Pointer to ModelGenerator Class
    */
   ModelGeneratorPtr modelGenerator_;
+
 };
 
 }

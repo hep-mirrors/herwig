@@ -206,7 +206,7 @@ private:
     }
     else {
       root=sqrt(4.*mpi2/s-1.);
-      f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
+      f=2.*(1.-0.25*s/mpi2)*root*atan2(1.,root)-2.;
       f *=pre;
     }
     return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;

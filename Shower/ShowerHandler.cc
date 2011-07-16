@@ -90,13 +90,13 @@ void ShowerHandler::dofinish(){
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
-     << particlesDecayInShower_ << MPIHandler_;
+     << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
-     >> particlesDecayInShower_ >> MPIHandler_;  
+     >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_;  
 }
 
 ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;

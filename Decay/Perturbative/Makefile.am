@@ -11,5 +11,5 @@ HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsFermionsPOWHEGDecayer.cc SMHiggsFermionsPOWHEGDecayer.h \
  SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.h\
  SMHiggsWWDecayer.cc SMHiggsWWDecayer.h 
-HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 

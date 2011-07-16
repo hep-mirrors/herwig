@@ -68,11 +68,7 @@ void TwoBodyDecayConstructor::Init() {
 void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
-  model->init();
   unsigned int nv(model->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) 
-     model->vertex(i)->init();
 
   _theExistingDecayers.resize(nv,
      vector<GeneralTwoBodyDecayerPtr>(3,GeneralTwoBodyDecayerPtr()));

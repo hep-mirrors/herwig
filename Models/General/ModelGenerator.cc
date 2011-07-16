@@ -47,10 +47,6 @@ void ModelGenerator::persistentInput(PersistentIStream & is, int) {
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
-bool ModelGenerator::preInitialize() const {
-  return true;
-}
-
 ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
 // Definition of the static class description member.
 
@@ -203,6 +199,13 @@ namespace {
 void ModelGenerator::doinit() {
   useMe();
   Interfaced::doinit();
+  // make sure the model is initialized
+  Ptr<Herwig::StandardModel>::pointer model 
+    = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>(generator()->standardModel());
+  model->init();
+  // and the vertices
+  for(size_t iv = 0; iv < model->numberOfVertices(); ++iv)
+    model->vertex(iv)->init();
   // sort DecayParticles list by mass
   sort(particles_.begin(),particles_.end(),
        massIsLess);

@@ -54,10 +54,10 @@ void NMSSMWWHHVertex::doinit() {
       addToList( 23, 23,scalar[i],scalar[j]);
     }
     // scalar charged
-    addToList( 22, 24,scalar[i], 37);
-    addToList( 22,-24,scalar[i],-37);
-    addToList( 23, 24,scalar[i], 37);
-    addToList( 23,-24,scalar[i],-37);
+    addToList( 22, 24,scalar[i],-37);
+    addToList( 22,-24,scalar[i], 37);
+    addToList( 23, 24,scalar[i],-37);
+    addToList( 23,-24,scalar[i], 37);
   }
   // pair of pseudoscalars
   for(unsigned int i=0;i<2;++i) {
@@ -66,10 +66,10 @@ void NMSSMWWHHVertex::doinit() {
       addToList( 23, 23,pseudo[i],pseudo[j]);
     }
     // pseudo charged
-    addToList( 22, 24,pseudo[i], 37);
-    addToList( 22,-24,pseudo[i],-37);
-    addToList( 23, 24,pseudo[i], 37);
-    addToList( 23,-24,pseudo[i],-37);
+    addToList( 22, 24,pseudo[i],-37);
+    addToList( 22,-24,pseudo[i], 37);
+    addToList( 23, 24,pseudo[i],-37);
+    addToList( 23,-24,pseudo[i], 37);
   }
   addToList( 24,-24, 37,-37);
   addToList( 23, 23, 37,-37);

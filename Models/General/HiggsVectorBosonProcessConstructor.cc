@@ -93,12 +93,7 @@ void HiggsVectorBosonProcessConstructor::Init() {
 
 void HiggsVectorBosonProcessConstructor::constructDiagrams() {
   if(_vector.empty()||_higgs.empty()) return;
-  //make sure  vertices are initialised
-  model()->init();
-  for(unsigned int ix = 0; ix <  model()->numberOfVertices(); ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
-  }
+  // initialise the particles
   for(unsigned int ix=0;ix<_vector.size();++ix)
     _vector[ix]->init();
   for(unsigned int ix=0;ix<_higgs.size();++ix)

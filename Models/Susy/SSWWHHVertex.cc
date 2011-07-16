@@ -47,10 +47,10 @@ void SSWWHHVertex::doinit() {
   for(unsigned int ix=0;ix<3;++ix) {
     addToList( 24,-24,id[ix],id[ix]);
     addToList( 23, 23,id[ix],id[ix]);
-    addToList( 22, 24,id[ix], 37);
-    addToList( 22,-24,id[ix],-37);
-    addToList( 23, 24,id[ix], 37);
-    addToList( 23,-24,id[ix],-37);
+    addToList( 22, 24,id[ix],-37);
+    addToList( 22,-24,id[ix], 37);
+    addToList( 23, 24,id[ix],-37);
+    addToList( 23,-24,id[ix], 37);
   }
   addToList( 24,-24, 37,-37);
   addToList( 23, 23, 37,-37);

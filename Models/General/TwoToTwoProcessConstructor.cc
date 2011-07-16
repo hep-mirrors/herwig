@@ -221,12 +221,10 @@ namespace {
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
   if(incPairs_.empty() || outgoing_.empty()) return;
-  model()->init();
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
   for(unsigned int ix = 0; ix < nv_; ++ix ) {
-    VertexBasePtr vertex = model()->vertex(ix); 
-    vertex->init();
+    VertexBasePtr vertex = model()->vertex(ix);
     if(excludedVertexSet_.find(vertex) != 
        excludedVertexSet_.end()) continue;
     vertices_.push_back(vertex);
@@ -575,7 +573,7 @@ TwoToTwoProcessConstructor::createMatrixElement(const HPDVector & process) const
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
       (generator()->preinitCreate(classname, objectname));
   if( !matrixElement ) {
-    stringstream message;
+    std::stringstream message;
     message << "TwoToTwoProcessConstructor::createMatrixElement "
 	    << "- No matrix element object could be created for "
 	    << "the process " 
@@ -632,7 +630,7 @@ string TwoToTwoProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else {
-      stringstream message;
+      std::stringstream message;
       message << "MEClassname() : Encountered an unknown spin for "
 	      << extpart[ix]->PDGName() << " while constructing MatrixElement "
 	      << "classname " << extpart[ix]->iSpin();

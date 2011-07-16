@@ -33,11 +33,11 @@ IBPtr DecayConstructor::fullclone() const {
 }
   
 void DecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _theNBodyDecayConstructors << QEDGenerator_;
+  os << NBodyDecayConstructors_ << QEDGenerator_;
 }
 
 void DecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _theNBodyDecayConstructors >> QEDGenerator_;
+  is >> NBodyDecayConstructors_ >> QEDGenerator_;
 }
 
 ClassDescription<DecayConstructor> DecayConstructor::initDecayConstructor;
@@ -52,7 +52,7 @@ void DecayConstructor::Init() {
     interfaceNBodyDecayConstructors
     ("NBodyDecayConstructors",
      "Vector of references to NBodyDecayConstructors",
-     &DecayConstructor::_theNBodyDecayConstructors, -1, false, false, true,
+     &DecayConstructor::NBodyDecayConstructors_, -1, false, false, true,
      false, false);
 
   static ParVector<DecayConstructor,string> interfaceDisableModes
@@ -120,17 +120,17 @@ void DecayConstructor::doinit() {
   //Need to check that the stored decay mode tags have the
   //products in the standard order
   for_each( _disableDMTags.begin(), _disableDMTags.end(), adjustFSOrder );
-  sort(_theNBodyDecayConstructors.begin(), _theNBodyDecayConstructors.end(),
+  sort(NBodyDecayConstructors_.begin(), NBodyDecayConstructors_.end(),
        orderNBodyConstructors);
 }
 
 void DecayConstructor::createDecayers(const PDVector & particles) {
-  if ( particles.empty() || _theNBodyDecayConstructors.empty() ) return;
+  if ( particles.empty() || NBodyDecayConstructors_.empty() ) return;
   // turn the vector into a set to avoid duplicates
   set<PDPtr> particleSet(particles.begin(),particles.end());
   typedef vector<NBodyDecayConstructorBasePtr>::iterator NBDecayIterator;
-  NBDecayIterator it =  _theNBodyDecayConstructors.begin();
-  NBDecayIterator iend = _theNBodyDecayConstructors.end();
+  NBDecayIterator it =  NBodyDecayConstructors_.begin();
+  NBDecayIterator iend = NBodyDecayConstructors_.end();
   for( ; it != iend; ++it ) {
     (**it).init();
     (**it).decayConstructor(this);

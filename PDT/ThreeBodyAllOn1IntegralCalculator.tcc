@@ -57,8 +57,8 @@ Energy ThreeBodyAllOn1IntegralCalculator<T>::partialWidth(Energy2 scale) const {
   double rupp, rlow;
   // transform them
   if(_intmass>ZERO) {
-    rupp = atan((upp-_intmass*_intmass)/_intmass/_intwidth);
-    rlow = atan((low-_intmass*_intmass)/_intmass/_intwidth);
+    rupp = atan2((upp-_intmass*_intmass), _intmass*_intwidth);
+    rlow = atan2((low-_intmass*_intmass), _intmass*_intwidth);
   }
   else {
     rupp = pow(upp * UnitRemoval::InvE2, _intpower+1.);

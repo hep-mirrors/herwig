@@ -178,7 +178,7 @@ void StandardModel::Init() {
     ("ModelGenerator",
      "Pointer to ModelGenerator class",
      &StandardModel::modelGenerator_, false, false, true, true);
-  
+
   static ClassDocumentation<StandardModel> documentation
     ("The StandardModel class inherits from StandardModelBase"
      "and supplies additional couplings and access to the StandardModel"

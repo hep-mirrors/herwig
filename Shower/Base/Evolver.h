@@ -61,7 +61,8 @@ public:
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
-	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0)
+	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
+	      _colourEvolutionMethod(0)
   {}
 
   /**
@@ -479,6 +480,11 @@ protected:
 private:
 
   /**
+   * Get the octet -> octet octet reduction factor.
+   */
+  double getReductionFactor(tShowerParticlePtr particle);
+
+  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
@@ -633,6 +639,11 @@ private:
    *  Mode for the hard emissions
    */
   unsigned int _hardEmissionMode;
+
+  /**
+   * Colour evolution method
+   */
+  int _colourEvolutionMethod;
 };
 
 }

@@ -64,11 +64,6 @@ class Cluster : public Particle {
   
 public:
 
-  /**
-   * ColourReconnector needs access to the _original constituents.
-   */
-  friend class ColourReconnector;
-  
   /** @name Standard constructors and destructors. */
   //@{
   /**
@@ -117,6 +112,16 @@ public:
    * Returns the ith constituent.
    */
   tPPtr particle(int i) const;
+
+  /**
+   * Returns the original constituent carrying colour
+   */
+  tPPtr colParticle(bool anti = false) const;
+
+  /**
+   * Returns the original constituent carrying anticolour
+   */
+  tPPtr antiColParticle() const;
   
   /**
    * Returns whether the ith constituent is from a perturbative process.

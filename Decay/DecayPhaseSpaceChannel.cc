@@ -460,20 +460,24 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   out.push_back( _intdau2[0]>0 ? external[_intdau2[0]] : resonance[-_intdau2[0]]);
 }
  
+double DecayPhaseSpaceChannel::atanhelper_(int ires, Energy limit) {
+  return atan2( limit*limit-_intmass2[ires], _intmwidth[ires] );
+}
+
 // return the weight for a given resonance
 InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
-						     Energy lower,Energy upper) {
-  InvEnergy2 wgt=InvEnergy2();
+					      Energy lower,Energy upper) {
+  InvEnergy2 wgt = ZERO;
   if(lower>upper) {
     throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
 				 << moff/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
-  if(_jactype[ires]==0) {
-    if(_intmwidth[ires]!=ZERO) {
-      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
-      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+  if ( _jactype[ires] == 0 ) {
+    double rhomin  = atanhelper_(ires,lower);
+    double rhomax  = atanhelper_(ires,upper) - rhomin;
+    if ( rhomax != 0.0 ) {
       Energy2 moff2=moff*moff-_intmass2[ires];
       wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
     }
@@ -518,8 +522,8 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
       Energy2 lower2 = sqr(lower);
       Energy2 upper2 = sqr(upper);
 
-      double rhomin = atan((lower2 - _intmass2[ires])/_intmwidth[ires]);
-      double rhomax = atan((upper2 - _intmass2[ires])/_intmwidth[ires])-rhomin;
+      double rhomin = atan2((lower2 - _intmass2[ires]),_intmwidth[ires]);
+      double rhomax = atan2((upper2 - _intmass2[ires]),_intmwidth[ires])-rhomin;
       double rho = rhomin+rhomax*UseRandom::rnd();
       Energy2 mass2 = max(lower2,min(upper2,_intmass2[ires]+_intmwidth[ires]*tan(rho)));
       if(mass2<ZERO) mass2 = ZERO;

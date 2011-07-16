@@ -1,5 +1,66 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.5.1 release: 2011-06-24 (tagged at SVN r6609)
+
+** Example input files at 7 TeV
+   All our example input files for LHC now have their beam energy set
+   to 7 TeV instead of 14 TeV.
+
+** Colour reconnection on by default
+   The colour reconnection tunes are now the default setup. Version 2
+   of the tunes replaces the *-1 tunes, which had a problem with LEP
+   event shapes.
+
+** Run name tags
+   Aded possibility to add a tag to the run name when running with the
+   '-t' option. One run file can thus be run with different seeds and
+   results stored in different output files.
+
+** Floating point exceptions
+   The new command line option -D enables floating point error checking.
+
+** General improvements to WeakCurrent decays
+
+** Remnant decayer
+   Hardwired gluon mass was removed.
+
+** WeakCurrentDecayConstructor
+   Instead of specifying separate Particle1...Particle5 vectors for
+   the decay modes, the new interface DecayModes can be filled with
+   decay tags in the standard syntax.
+
+** BSM: improvements to handling of vertex and model initialisation
+
+** Powheg Higgs
+   Option to use pT or mT as the scale in alphaS and for the
+   factorization scale in the PDFs
+
+** Ticket #337: Tau polarization wrong in charged Higgs decay
+
+** Ticket #339: Colour flows in GeneralThreeBody Decayers for 3bar -> 8 3bar 1
+
+** Ticket #340: Crash for resonant zero-width particles
+
+** Ticket #341: Varying scale for BSM processes
+   The scale used is now ResonantProcessConstructor:ScaleFactor or
+   TwoToTwoProcessConstructor:ScaleFactor multiplied by sHat.
+
+** Ticket #346: Chargino decays
+   Chargino decayers now automatically switch between the mesonic
+   decays for mass differences less than 2 GeV and the normal partonic
+   decays above 2 GeV.
+
+** Ticket #349: Stop by default on input file errors
+   The '--exitonerror' flag is now the default behaviour for the
+   Herwig++ binary. To switch back to the old behaviour,
+   '--noexitonerror' is required.
+
+** Ticket #351: Four-body stop decays
+
+** Tested with gcc-4.6
+
+
+
 * Herwig++-2.5.0 release: 2011-02-08 (tagged at SVN r6274)
 
 ** Uses ThePEG-1.7.0
