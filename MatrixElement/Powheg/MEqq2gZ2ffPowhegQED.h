@@ -265,6 +265,18 @@ protected:
 			double oldPDF, double newPDF) const;
 
   /**
+   *  Quark collinear counter term (needed for PDF in the DIS scheme)
+   */
+  double collinearQuarkKDIS(double x, double jac, double z,
+			double oldPDF, double newPDF) const;
+
+  /**
+   *  Gluon or photon collinear counter term (needed for PDF in the DIS scheme)
+   */
+  double collinearBosonKDIS(double jac, double z,
+			double oldPDF, double newPDF) const;
+
+  /**
    *  Quark collinear counter term (IF piece, for QED)
    */
   double collinearQuarkIF(double x, double jac, double z,

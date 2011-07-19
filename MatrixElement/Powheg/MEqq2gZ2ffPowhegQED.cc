@@ -994,8 +994,24 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
       collinearBoson(mu2,zJac.second,z.second,oldqPDF.second,newpPDF.second);
     // add to sum
     coll += sqr(double(mePartonData()[0]->iCharge())/3.)*EMfact_*
-      (collQQ+collQbarQbar+collPQ+collPQbar);
-    
+      (collQQ+collQbarQbar+3.*(collPQ+collPQbar));
+
+    // q -> q (DIS factorization scheme)
+    double collQQDIS       = collinearQuarkKDIS(x.first,zJac.first ,z.first ,
+					   oldqPDF.first ,newqPDF.first );
+    // qbar -> qbar (DIS factorization scheme)
+    double collQbarQbarDIS = collinearQuarkKDIS(x.second,zJac.second,z.second,
+				       oldqPDF.second,newqPDF.second );
+    // gamma -> q (DIS factorization scheme)
+    double collPQDIS       = newpPDF.first  < 0. ? 0. : 
+      collinearBosonKDIS(zJac.first ,z.first ,oldqPDF.first ,newpPDF.first );
+    // gamma -> qbar (DIS factorization scheme)
+    double collPQbarDIS    = newpPDF.second < 0. ? 0. : 
+      collinearBosonKDIS(zJac.second,z.second,oldqPDF.second,newpPDF.second);
+    // add to sum
+    coll+= sqr(double(mePartonData()[0]->iCharge())/3.)*EMfact_*
+      (collQQDIS+collQbarQbarDIS+3.*(collPQDIS+collPQbarDIS));
+
     // q -> q (QED IF piece)
     double collQIF       = collinearQuarkIF(x.first,zJac.first ,z.first ,
 					    oldqPDF.first ,newqPDF.first );
@@ -1201,6 +1217,37 @@ MEqq2gZ2ffPowhegQED::collinearQuarkIF(double x, double jac, double z,
     +jac /(1.-z) * 
     (newPDF /oldPDF *(1+z*z) /z - 2) ;
 }
+
+double 
+MEqq2gZ2ffPowhegQED::collinearQuarkKDIS(double x, double jac, double z,
+				    double oldPDF, double newPDF) const {
+  // this is the function defined in eq. C.25 of CS
+  double fun=(1+z*z)/(1-z)*(log((1.-z)/z)-0.75) + (9+5*z)/4.;
+  // this is artanh(1-2x)
+  double atanhom2x=0.5*log((1.-x)/x);
+  // this is \int_0^x (fun(z) dz)
+  double intfun0x=0.5*(4*Math::ReLi2(x)
+		       + x *(2*x+7) 
+		       -2 *log(1.-x) *(log(1.-x) -2*log(x) -3)
+		       -2 *x*(x+2)*atanhom2x) ;
+  if(1.-z < 1.e-8) return 0.;
+  return 
+    // this bit is multiplied by LO PDF
+    intfun0x
+    // plus distribution bit
+    - jac * fun *
+    (newPDF /oldPDF /z -1);
+}
+
+double 
+MEqq2gZ2ffPowhegQED::collinearBosonKDIS(double jac, double z,
+				    double oldPDF, double newPDF) const {
+  if(1.-z < 1.e-8) return 0.;
+  return jac/z*newPDF/oldPDF*
+    ((sqr(z)+sqr(1.-z))*log((1.-z)/z) + 8*z*(1.-z) -1.);
+}
+
+
 
 
 vector<double> 
