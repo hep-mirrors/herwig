@@ -114,10 +114,10 @@ void LQDVertex::setCoupling(Energy2, tcPDPtr part1,
       abs(islep) == ParticleID::SUSY_nu_muL || 
       abs(islep) == ParticleID::SUSY_nu_tauL) {
     i = (abs(islep)-1000012)/2;
-    j = (abs(part2->id())-1)/2;
-    k = (abs(part1->id())-1)/2;
-    if(part1->id()*islep>0) {
-      swap(j,k);
+    j = (abs(part1->id())-1)/2;
+    k = (abs(part2->id())-1)/2;
+    if( islep*part1->id() <0 ) swap(j,k);
+    if(islep>0) {
       left ( 0.);
       right(-1.);
     }
@@ -200,12 +200,12 @@ void LQDVertex::setCoupling(Energy2, tcPDPtr part1,
 	  i = (abs(part2->id())-12)/2;
 	  j = (abs(part1->id())-1 )/2;
 	  mix *= -1.;
-	  if(i<0) cerr << "problem 1\n";
+	  assert(i>=0);
 	}
 	else {
 	  i = (abs(part2->id())-11)/2;
 	  j = (abs(part1->id())-2 )/2;
-	  if(i<0) cerr << "problem 2\n";
+	  assert(i>=0);
 	}
       }
       else {
@@ -213,21 +213,21 @@ void LQDVertex::setCoupling(Energy2, tcPDPtr part1,
 	  i = (abs(part1->id())-12)/2;
 	  j = (abs(part2->id())-1 )/2;
 	  mix *= -1.;
-	  if(i<0) cerr << "problem 3\n";
+	  assert(i>=0);
 	}
 	else {
 	  i = (abs(part1->id())-11)/2;
 	  j = (abs(part2->id())-2 )/2;
-	  if(i<0) cerr << "problem 4\n";
+	  assert(i>=0);
 	}
       }
       if(abs(islep)>2000000) {
 	k = (abs(islep)-2000001)/2;
-	if(k==2) mix = (*sbot_)(1,1);
+	if(k==2) mix *= (*sbot_)(1,1);
       }
       else {
 	k = 2;
-	mix = (*sbot_)(0,1);
+	mix *= (*sbot_)(0,1);
 	assert(abs(islep)==ParticleID::SUSY_b_1);
       }
       if(islep<0) {
@@ -266,18 +266,11 @@ void LQDVertex::setCoupling(Energy2, tcPDPtr part1,
 	left ( 0.);
 	right(-1.);
       }
-      if(i<0) cerr << "problem 6\n";
+      assert(i>=0);
     }
   }
   else
     assert(false);
-  if(!( i>=0 && i<=2 &&  j>=0 && j<=2 &&  k>=0 && k<=2)) {
-    cerr << "testing " 
-	 << part1->PDGName() << " "
-	 << part2->PDGName() << " "
-	 << part3->PDGName() << "\n";
-    cerr << "testing " << i << " " << j << " " << k << "\n";
-  }
   assert( i>=0 && i<=2 &&  j>=0 && j<=2 &&  k>=0 && k<=2 );
   norm(mix*lambda_[i][j][k]);
 }

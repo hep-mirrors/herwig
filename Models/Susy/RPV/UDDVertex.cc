@@ -63,8 +63,10 @@ void UDDVertex::doinit() {
  	if(lambda_[i][j][k]==0.) continue;
  	// particles in the vertex
  	// right up squark
- 	addToList( -2*j-1 , -2*k-1 , -2000002-2*i );
-	addToList(  2*j+1 ,  2*k+1 , +2000002+2*i );
+	if(k<j) {
+	  addToList( -2*j-1 , -2*k-1 , -2000002-2*i );
+	  addToList(  2*j+1 ,  2*k+1 , +2000002+2*i );
+	}
 	if(i==2) {
 	  addToList( -2*j-1 , -2*k-1 , -1000002-2*i );
 	  addToList(  2*j+1 ,  2*k+1 , +1000002+2*i );
@@ -99,15 +101,13 @@ void UDDVertex::setCoupling(Energy2, tcPDPtr part1,
     else {
       i = 2;
       mix = (*stop_)(0,1);
-      if(abs(islep)!=ParticleID::SUSY_t_1)
-	cerr << "testing " 
-	     << part1->PDGName() << " "
-	     << part2->PDGName() << " "
-	     << part3->PDGName() << "\n";
       assert(abs(islep)==ParticleID::SUSY_t_1);
     }
     j = (abs(part1->id())- 1)/2;
     k = (abs(part2->id())- 1)/2;
+//     if(j<k) {
+//       mix *=-1.;
+//     }
   }
   else if(abs(islep) == ParticleID::SUSY_d_R || 
 	  abs(islep) == ParticleID::SUSY_s_R || 
@@ -125,16 +125,15 @@ void UDDVertex::setCoupling(Energy2, tcPDPtr part1,
     if(abs(part1->id())%2==0) {
       i = (abs(part1->id())- 2)/2;
       j = (abs(part2->id())- 1)/2;
+      //       mix *= -1.;
     }
     else {
       i = (abs(part2->id())- 2)/2;
       j = (abs(part1->id())- 1)/2;
     }
   }
-  else {
-    cerr << part3->PDGName() << "\n";
+  else 
     assert(false);
-  }
   assert( i>=0 && i<=2 &&  j>=0 && j<=2 &&  k>=0 && k<=2 );
   if(islep>0) {
     left (1.);
@@ -144,5 +143,6 @@ void UDDVertex::setCoupling(Energy2, tcPDPtr part1,
     left (0.);
     right(1.);
   }
+  if(j<k) swap(j,k);
   norm(mix*lambda_[i][j][k]);
 }
