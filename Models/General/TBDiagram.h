@@ -15,6 +15,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -125,6 +126,23 @@ inline bool operator==(const TBDiagram & x, const TBDiagram & y) {
   else return false;
 }
 
+/**
+ * Output to a stream 
+ */
+inline ostream & operator<<(ostream & os, const TBDiagram & diag) {
+  os << diag.incoming << " -> ";
+  os << diag.outgoing << " + ( ";
+  if(diag.intermediate) os << diag.intermediate->id();
+  os << " ) -> ";
+  os << diag.outgoingPair.first << " " << diag.outgoingPair.second
+     << "  channel: " << diag.channelType << "  ";
+  for(size_t cf = 0; cf < diag.colourFlow.size(); ++cf) 
+    os << "(" << diag.colourFlow[cf].first << "," 
+       <<diag.colourFlow[cf].second << ")";
+  os << '\n';
+  return os;
+}
+
 /** 
  * Output operator to allow the structure to be persistently written
  * @param os The output stream
@@ -133,8 +151,8 @@ inline bool operator==(const TBDiagram & x, const TBDiagram & y) {
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const TBDiagram  & x) {
   os << x.incoming << x.outgoing << x.outgoingPair << x.intermediate
-     << x.vertices << x.channelType << x.colourFlow << x.largeNcColourFlow
-     << x.ids;
+     << x.vertices << oenum(x.channelType) << x.colourFlow 
+     << x.largeNcColourFlow << x.ids;
   return os;
 }
   
@@ -144,11 +162,10 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
  * @param x The TBDiagram 
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
-			       TBDiagram & x) {
-  int chan;
+				      TBDiagram & x) {
   is >> x.incoming >> x.outgoing >> x.outgoingPair >> x.intermediate
-     >> x.vertices >> chan >> x.colourFlow >> x.largeNcColourFlow >> x.ids;
-  x.channelType = TBDiagram::Channel(chan);
+     >> x.vertices >> ienum(x.channelType) >> x.colourFlow 
+     >> x.largeNcColourFlow >> x.ids;
   return is;
 }
 
