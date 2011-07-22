@@ -196,7 +196,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      w3 = _outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    tcPDPtr offshell = dit->intermediate;
-	    Complex diag;
+	    Complex diag(0.);
 	    // intermediate scalar
 	    if     (offshell->iSpin() == PDT::Spin0) { 
 	      ScalarWaveFunction inters = _sca[idiag].first->
