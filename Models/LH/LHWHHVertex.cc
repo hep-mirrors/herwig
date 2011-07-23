@@ -42,11 +42,11 @@ LHWHHVertex::LHWHHVertex() :
   addToList(-24, 25, 37);
   addToList(-24, 35, 37);
   addToList(-24, 36, 37);
-  addToList(-24, 37, 38);
+  addToList(-24,-37, 38);
   addToList(-34, 25, 37);
   addToList(-34, 35, 37);
   addToList(-34, 36, 37);
-  addToList(-34, 37, 38);
+  addToList(-34,-37, 38);
 }
 
 IBPtr LHWHHVertex::clone() const {
