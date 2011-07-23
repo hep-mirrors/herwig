@@ -186,11 +186,8 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   if(sq1<0) swap(sq1,sq2);
   assert( higgs == 25 || higgs == 35 || 
 	  higgs == 36 || abs(higgs) == 37 );
-  // abs of antisquark and check
-  // \todo workaround for labelling problem from scalar decays
-  sq1 = abs(sq1); 
-  sq2 = abs(sq2);
-  // assert(sq1>0&&sq2>0);
+  sq2 *=-1; 
+  assert(sq1>0&&sq2>0);
   
   // running coupling
   if( q2 != theq2Last || thegLast==0.) {
