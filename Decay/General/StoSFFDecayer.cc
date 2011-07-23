@@ -110,6 +110,9 @@ void StoSFFDecayer::doinit() {
 double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 			  const ParticleVector & decay,
 			  MEOption meopt) const {
+  // particle or CC of particle
+  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  // special handling or first/last call
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),
@@ -188,6 +191,7 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 	  continue;
 	}
 	tcPDPtr offshell = dit->intermediate;
+	if(cc&&offshell->CC()) offshell=offshell->CC();
 	Complex diag;
 	double sign = out3[dit->channelType] < out2[dit->channelType] ? 1. : -1.;
 	// intermediate scalar
