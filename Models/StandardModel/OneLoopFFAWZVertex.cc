@@ -108,9 +108,6 @@ void OneLoopFFAWZVertex::doinit() {
   Energy gamW = Wplus->width()/sqrt(1.+sqr(Wplus->width()/Wplus->mass()));
   // complex paramters
   muZ2_ = complex<Energy2>(sqr(mZ_),-gamZ*mZ_);
-  ///////////////////////////////
-  //muZ2_ = complex<Energy2>(sqr(mZ_),ZERO);  //ER
-  ////////////////////////////////
   muZ_  = sqrt(Complex(muZ2_/GeV2))*GeV;
   muW2_ = complex<Energy2>(sqr(mW_),-gamW*mW_);
   muW_  = sqrt(Complex(muW2_/GeV2))*GeV;
@@ -906,8 +903,6 @@ Complex OneLoopFFAWZVertex::gZboxesF(Energy2 sHat, Energy2 tHat,
   complex<Energy2> mmuZ2_;
   mmuZ2_=sqr(mZ_);
   if(complexarg) mmuZ2_=muZ2_;
-  //cout<<"-->test-->"<<mmuZ2_/GeV2<<endl;
-
   Complex luot = log( uHat/tHat), ltos  = log(-tHat/sHat);
   Complex luos = log(-uHat/sHat), lm2ot = log(-mmuZ2_/tHat);
   Complex lis = Math::Li2(1.-sHat/mmuZ2_);
@@ -942,7 +937,7 @@ Complex OneLoopFFAWZVertex::ggboxesF(Energy2 sHat, Energy2 tHat,
 double OneLoopFFAWZVertex::neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
 					       tcPDPtr l1, tcPDPtr l2,
 					       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
-  bool LTcheck=false,ACcheck=false,verb=true;
+  bool LTcheck=false,ACcheck=false,verb=false;
   double epsilon=0.001;
   // extract quark and lepton id
   assert(q1->id()==-q2->id());
@@ -972,12 +967,12 @@ double OneLoopFFAWZVertex::neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
       Complex LTres     = hel==0 ? boxcoeff_LL : boxcoeff_LR;
       Complex myres     = hel==0 ? cgg_LL      : cgg_LR;
       if(abs(real(LTres)/real(myres)-1.)>epsilon) {
-	cout<<"gg:: "<<hel<<" Re "<<real(LTres)<<" "<<real(myres)<<" "<<real(myres)/real(LTres)<<endl;
-	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<endl;
+ 	cout<<"gg:: "<<hel<<" Re "<<real(LTres)<<" "<<real(myres)<<" "<<real(myres)/real(LTres)<<endl;
+ 	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<endl;
       }
       if(abs(imag(LTres)/imag(myres)-1.)>epsilon) {
-	cout<<"gg:: "<<hel<<" Im "<<imag(LTres)<<" "<<imag(myres)<<" "<<imag(myres)/imag(LTres)<<endl;
-	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<endl;
+ 	cout<<"gg:: "<<hel<<" Im "<<imag(LTres)<<" "<<imag(myres)<<" "<<imag(myres)/imag(LTres)<<endl;
+ 	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<endl;
       }
     }
   }
@@ -1010,17 +1005,15 @@ double OneLoopFFAWZVertex::neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
 	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<" "
 		     <<real(muZ2_/GeV2)<<" "<<imag(muZ2_/GeV2)<<endl;
       }
-      // if(abs(imag(LTres)/imag(myres)-1.)>epsilon) {
-      // 	cout<<"gZ:: "<<hel<<" Im "<<imag(LTres)<<" "<<imag(myres)<<" "<<imag(myres)/imag(LTres)<<endl;
-      // 	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<" "
-      // 		     <<real(muZ2_/GeV2)<<" "<<imag(muZ2_/GeV2)<<endl;
-      //}
+      if(abs(imag(LTres)/imag(myres)-1.)>epsilon) {
+       	cout<<"gZ:: "<<hel<<" Im "<<imag(LTres)<<" "<<imag(myres)<<" "<<imag(myres)/imag(LTres)<<endl;
+       	if(verb) cout<<"     "<<sHat/GeV2<<" "<<tHat/GeV2<<" "<<uHat/GeV2<<" "
+       		     <<real(muZ2_/GeV2)<<" "<<imag(muZ2_/GeV2)<<endl;
+      }
     }
   }
-  
-  /////////////////////////
-  ///////// NEW
-  // build result (sign conventions of Dittmaier-Huber for amplitudes)
+  //////////// build result //////////////
+  // (sign conventions of Dittmaier-Huber for amplitudes)
   Complex QEDSum_fin(0.),QEDSum_eps(0.);
   double loSum(0.);
   for(int sigma=0;sigma<2;++sigma) {
@@ -1317,139 +1310,3 @@ OneLoopFFAWZVertex::neutralCurrentBTgZ(int hel1, int hel2,
        );
   }
 }
-
-
- ////////////////// new stuff with complex aruments///////////////////
- // Try to use B0C,C0C,D0C also for IR-divergent integrals, but it produces
- // a lot of errors. Just commit this piece once for reference.
- //////////////////////////////////////////////////
- // Dittmaier-Huber, B21 and B22, massless quarks and leptons, massless photon.
- // Complex value for Z mass.
- // contrib=0 -> B21, contrib=1 -> B22
- vector<vector<complex<InvEnergy2> > > 
- OneLoopFFAWZVertex::neutralCurrentDBoxC(int contrib, tcPDPtr q1, tcPDPtr q2,
- 				       tcPDPtr l1, tcPDPtr l2,
- 				       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
-   assert(q1->id()==-q2->id());
-   int iq = q1->id();
-   assert(iq<=5);
-   assert(l1->id()==-l2->id());
-   int il = l1->id();
-   assert(il>=11 && il<=16);
-   assert(iq>0&&il>0);
-   vector<vector<complex<InvEnergy2> > > output(2,vector<complex<InvEnergy2> >());
-
-   complex<InvEnergy2> bts,bto,bus,buo;
-   Energy2 m2q,m2l;
-   LT::setlambda(0.);
-   //  LT::setlambda(-2.);
-   LT::setmudim(sHat/GeV2);
-   //  cout<<LT::getlambda()<<LT::getmudim()<<endl; 
-   if(contrib == 0) {
-     Energy2 Lambda2ph = ZERO;
-     m2q=ZERO,m2l=ZERO;
-     // B functions for the gamma/gamma boxes 
-     bts = neutralCurrentBTgg(1, 1,Lambda2ph,Lambda2ph,ZERO,
-			      m2q,
-			      m2l,
-			      sHat,tHat,uHat);
-     bto = neutralCurrentBTgg(1,-1,Lambda2ph,Lambda2ph,ZERO,
-			      m2q,
-			      m2l,
-			      sHat,tHat,uHat);
-     bus = neutralCurrentBUgg(1, 1,Lambda2ph,Lambda2ph,ZERO,
-			      m2q,
-			      m2l,
-			      sHat,tHat,uHat);
-     buo = neutralCurrentBUgg(1,-1,Lambda2ph,Lambda2ph,ZERO,
-			      m2q,
-			      m2l,
-			      sHat,tHat,uHat);
-   }
-   else if (contrib == 1) {
-     // B functions for the gamma/Z boxes 
-     complex<Energy2> mmuZ2_;
-     //mmuZ2_=muZ2_ - Complex(0.,0.00001)*GeV2;
-     complex<Energy2> Lambda2ph(ZERO,ZERO);
-     //Lambda2ph=Lambda2ph - Complex(0.,0.00001)*GeV2;
-     m2q=ZERO,m2l=ZERO;
-     //m2q=sqr(fermionMasses_[iq]),m2l=sqr(fermionMasses_[il]);
-     bts = neutralCurrentBTgZC(1, 1,mmuZ2_,Lambda2ph,ZERO,
-			       m2q,
-			       m2l,
-			       sHat,tHat,uHat);
-     bto = neutralCurrentBTgZC(1,-1,mmuZ2_,Lambda2ph,ZERO,
-			       m2q,
-			       m2l,
-			       sHat,tHat,uHat);
-     bus = neutralCurrentBUgZC(1, 1,mmuZ2_,Lambda2ph,ZERO,
-			       m2q,
-			       m2l,
-			       sHat,tHat,uHat);
-     buo = neutralCurrentBUgZC(1,-1,mmuZ2_,Lambda2ph,ZERO,
-			       m2q,
-			       m2l,
-			       sHat,tHat,uHat);
-   }
-   else {
-     cout<<"Error in neutralCurrentDBox"<<endl;
-   }
-
-   // loop to calculate the coefficients 
-   for(int sigma=0;sigma<2;++sigma) {
-     for(int tau=0;tau<2;++tau) {
-       complex<InvEnergy2> value = sigma==tau ? bts + bus : bto + buo;
-       if(contrib==1) value = value * 2.; // see eq. B22
-       // store the total
-       output[sigma].push_back(value);
-     }
-   }
-
-   return output;
- }
-
- complex<InvEnergy2> 
- OneLoopFFAWZVertex::neutralCurrentBTgZC(int hel1, int hel2,
- 				     complex<Energy2> mV2,
- 				     complex<Energy2> mVp2, 
- 				     Energy2 mQ2, Energy2 mq2, Energy2 ml2,
- 				     Energy2 sHat, Energy2 tHat, Energy2 uHat) {
-   assert(abs(hel1)==1&&abs(hel2)==1);
-   if(hel1==-hel2) {
-     complex<InvEnergy2> Cl = LT::C0C(double(ml2/GeV2),double(ml2/GeV2),double(sHat/GeV2),
- 				     mV2/GeV2,double(ml2/GeV2),mVp2/GeV2)/GeV2;
-     complex<InvEnergy2> Cq = LT::C0C(double(mq2/GeV2),double(mq2/GeV2),double(sHat/GeV2),
- 				     mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2)/GeV2;
-     complex<InvEnergy4> D = LT::D0C(double(mq2/GeV2),double(mq2/GeV2),
- 				    double(ml2/GeV2),double(ml2/GeV2),
- 				    double(sHat/GeV2),double(tHat/GeV2),
- 				    mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2,
- 				    double(ml2/GeV2))/GeV2/GeV2;
-     return -2.*(Cl+Cq-(tHat-mQ2)*D);
-   }
-   else {
-     return 1./sqr(uHat)*
-       (2.*uHat*(LT::B0C(double(sHat/GeV2),       mV2/GeV2 ,mVp2/GeV2)-
- 		LT::B0C(double(tHat/GeV2),double(mQ2/GeV2),0.))
-        -tHat*(mQ2-mV2-mVp2-tHat+uHat)*
-        (LT::C0C(double(ml2/GeV2),double(mq2/GeV2),double(tHat/GeV2),
- 		0.,mV2/GeV2,double(mQ2/GeV2))+
- 	LT::C0C(double(ml2/GeV2),double(mq2/GeV2),double(tHat/GeV2),
- 		0.,mVp2/GeV2,double(mQ2/GeV2)))/GeV2
-        -(sqr(tHat)+sqr(uHat)+sHat*(mQ2-mV2-mVp2))*
-        (LT::C0C(double(ml2/GeV2),double(ml2/GeV2),double(sHat/GeV2),
- 		mV2/GeV2,double(ml2/GeV2),mVp2/GeV2)+
- 	LT::C0C(double(mq2/GeV2),double(mq2/GeV2),double(sHat/GeV2),
- 		mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2))/GeV2
-        +(tHat*sqr(mV2+mVp2-mQ2-2.*sHat)
- 	 +(uHat*(2.*uHat-mQ2)-2.*sqr(sHat))*(mV2+mVp2-mQ2-2.*sHat)
- 	 -2.*uHat*(complex<Energy4>(sqr(uHat))-mV2*mVp2)
- 	 + uHat*sHat*(complex<Energy2>(sHat)-mQ2)
- 	 - sHat*sqr(sHat) )*
-        LT::D0C(double(mq2/GeV2),double(mq2/GeV2),
- 	       double(ml2/GeV2),double(ml2/GeV2),
- 	       double(sHat/GeV2),double(tHat/GeV2),
- 	       mV2/GeV2,double(mQ2/GeV2),mVp2/GeV2,double(ml2/GeV2))/GeV2/GeV2
-        );
-   }
- }
