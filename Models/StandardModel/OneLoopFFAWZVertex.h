@@ -150,10 +150,67 @@ public:
     return -neutralCurrentBT(hel1,-hel2,mV2,mVp2,mQ2,mq2,ml2,sHat,uHat,tHat);
   }
 
+  complex<InvEnergy2> neutralCurrentBTgg(int hel1, int hel2,
+				       Energy2 mV2,
+				       Energy2 mVp2, 
+				       Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+				       Energy2 sHat, Energy2 tHat, Energy2 uHat);
+  
+  complex<InvEnergy2> neutralCurrentBUgg(int hel1, int hel2,
+				       Energy2 mV2,
+				       Energy2 mVp2, 
+				       Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+				       Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+    return -neutralCurrentBTgg(hel1,-hel2,mV2,mVp2,mQ2,mq2,ml2,sHat,uHat,tHat);
+  }
+
+
+
+  complex<InvEnergy2> neutralCurrentBTgZ(int hel1, int hel2,
+					 Energy2 mV2,
+					 Energy2 mVp2,
+					 Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+					 Energy2 sHat, Energy2 tHat, Energy2 uHat);
+  
+  complex<InvEnergy2> neutralCurrentBUgZ(int hel1, int hel2,
+					 Energy2 mV2,
+					 Energy2 mVp2, 
+					 Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+					 Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+    return -neutralCurrentBTgZ(hel1,-hel2,mV2,mVp2,mQ2,mq2,ml2,sHat,uHat,tHat);
+  }
+
+  complex<InvEnergy2> neutralCurrentBTgZC(int hel1, int hel2,
+					 complex<Energy2> mV2, //ER
+					 complex<Energy2> mVp2, //ER
+					 Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+					 Energy2 sHat, Energy2 tHat, Energy2 uHat);
+  
+  complex<InvEnergy2> neutralCurrentBUgZC(int hel1, int hel2,
+					 complex<Energy2> mV2, //ER
+					 complex<Energy2> mVp2, //ER 
+					 Energy2 mQ2, Energy2 mq2, Energy2 ml2,
+					 Energy2 sHat, Energy2 tHat, Energy2 uHat) {
+    return -neutralCurrentBTgZC(hel1,-hel2,mV2,mVp2,mQ2,mq2,ml2,sHat,uHat,tHat);
+  }
+
   vector<vector<complex<InvEnergy2> > > 
   neutralCurrentFBox(tcPDPtr q1, tcPDPtr q2,
 		     tcPDPtr l1, tcPDPtr l2,
 		     Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  vector<vector<complex<InvEnergy2> > > 
+  neutralCurrentDBox(int contrib, tcPDPtr q1, tcPDPtr q2,
+		     tcPDPtr l1, tcPDPtr l2,
+		     Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  vector<vector<complex<InvEnergy2> > > 
+  neutralCurrentDBoxC(int contrib, tcPDPtr q1, tcPDPtr q2,
+		      tcPDPtr l1, tcPDPtr l2,
+		      Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  Complex ggboxesF(Energy2 sHat, Energy2 tHat,
+		   Energy2 uHat) const;
 
   Complex gZboxesF(Energy2 sHat, Energy2 tHat,
 		   Energy2 uHat) const;
@@ -171,6 +228,15 @@ public:
   double neutralCurrentQEDME(tcPDPtr q1, tcPDPtr q2,
 			     tcPDPtr l1, tcPDPtr l2,
 			     Energy2 sHat, Energy2 tHat, Energy2 uHat);
+
+  ////////////////////////////////// //ER
+  Complex gZboxesFnew(Energy2 sHat, Energy2 tHat,
+		      Energy2 uHat) const;
+  Complex logAC(Complex a, Complex b) const;
+  Complex Li2AC(Complex a, Complex b) const;
+  Complex eta(Complex a, Complex b) const;
+  Complex li2AC(Complex a, Complex b) const;
+  //////////////////////////////////////
 
   /**
    *  Call the Looptools cache
