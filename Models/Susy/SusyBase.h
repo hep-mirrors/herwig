@@ -397,6 +397,29 @@ protected:
    *  Reset the V-type chargino mixing matrix
    */
   void charginoVMix(MixingMatrixPtr vm) { VMix_ = vm; }
+
+  /**
+   *  Read a parameter from a block, checking that the
+   *  entry exists
+   */
+  double findValue(const map<string,ParamMap>::const_iterator pit,
+		   int iloc, const string & block,
+		   const string & name) {
+    ParamMap::const_iterator it = pit->second.find(iloc);
+    if(it!=pit->second.end()) {
+      return it->second;
+    }
+    else {
+      ostringstream message;
+      message << "SusyBase::findValue() Parameter " << name << " = " << iloc 
+      	      << " not found in BLOCK " << block << "\n"; 
+      if(generator()) 
+	generator()->logWarning( Exception(message.str(), Exception::warning) );
+      else
+	cerr << message.str();
+      return 0.;
+    }
+  }
   
 protected:
 
