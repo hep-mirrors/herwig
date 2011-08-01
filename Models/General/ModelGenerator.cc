@@ -231,7 +231,7 @@ void ModelGenerator::doinit() {
   // write out decays with spin correlations
   ostream & os = CurrentGenerator::current().misc();
   ofstream ofs;
-  if ( decayOutput_ !=0 ) {
+  if ( decayOutput_ >1 ) {
     string filename 
       = CurrentGenerator::current().filename() + "-BR.spc";
     ofs.open(filename.c_str());
