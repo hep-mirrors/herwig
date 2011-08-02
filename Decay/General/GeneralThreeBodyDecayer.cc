@@ -343,6 +343,18 @@ colourConnections(const Particle & parent,
 	}
       }
     }
+    else if(triplet.size()==3) {
+      tColinePtr col[3] = {ColourLine::create(outgoing[0]),
+			   ColourLine::create(outgoing[1]),
+			   ColourLine::create(outgoing[2])};
+      col[0]->setSourceNeighbours(col[1],col[2]);
+    }
+    else if(antitriplet.size()==3) {
+      tColinePtr col[3] = {ColourLine::create(outgoing[0],true),
+			   ColourLine::create(outgoing[1],true),
+			   ColourLine::create(outgoing[2],true)};
+      col[0]->setSinkNeighbours(col[1],col[2]);
+    }
     else {
       string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
 	+ out[1]->PDGName() + " " + out[2]->PDGName();
@@ -633,6 +645,42 @@ bool GeneralThreeBodyDecayer::setColourFactors() {
       _nflow = 1;
       _colour         = vector<DVector>(1,DVector(1,4.));
       _colourLargeNC  = vector<DVector>(1,DVector(1,4.));
+    }
+    else if( trip.size() == 3 || atrip.size() == 3 ) {
+      _nflow = 1;
+      _colour         = vector<DVector>(1,DVector(1,6.));
+      _colourLargeNC  = vector<DVector>(1,DVector(1,6.));
+      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+	tPDPtr inter = _diagrams[ix].intermediate;
+	if(inter->CC()) inter = inter->CC();
+	unsigned int io[2]={1,2};
+	double sign = _diagrams[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
+	for(unsigned int iy=0;iy<3;++iy) {
+	  if     (iy==1) io[0]=0;
+	  else if(iy==2) io[1]=1;
+	  tPDVector decaylist = _diagrams[ix].vertices.second->search(iy, inter);
+	  if(decaylist.empty()) continue;
+	  bool found=false;
+	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
+	    if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.first &&
+	       decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.second) {
+	      sign *= 1.;
+	      found = true;
+	    }
+	    else if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.second &&
+		    decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.first ) {
+	      sign *= -1.;
+	      found = true;
+	    }
+	  }
+	  if(found) {
+	    if(iy==1) sign *=-1.;
+	    break;
+	  }
+	}
+	_diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,sign));
+	_diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,sign));
+      }
     }
     else {
       generator()->log() << "Unknown colour flow structure for "
