@@ -16,34 +16,12 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "NBodyDecayConstructorBase.fh"
+#include "TwoBodyPrototype.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-
-
-/**
- *  A struct to order the particles in the same way as in the DecayMode's
- */
-struct ParticleOrdering {
-  /**
-   *  Operator for the ordering
-   * @param p1 The first ParticleData object
-   * @param p2 The second ParticleData object
-   */
-  bool operator()(PDPtr p1, PDPtr p2) {
-    return abs(p1->id()) > abs(p2->id()) ||
-      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
-      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
-  }
-};
-
-/**
- * A set of ParticleData objects ordered as for the DecayMode's
- */
-typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 /**
  * This is the base class for NBodyDecayConstructors. An N-body 

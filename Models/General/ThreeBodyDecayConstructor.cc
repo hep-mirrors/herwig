@@ -222,7 +222,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	continue;
       for(unsigned int il = 0; il < 3; ++il) { 
 	vector<TwoBodyPrototype> temp = 
-	  createPrototypes(parent, vertex, il);
+	  TwoBodyPrototype::createPrototypes(parent, vertex, il,weakMassCut_);
 	if(!temp.empty()) prototypes.insert(prototypes.end(),
 					    temp.begin(),temp.end());
       }
@@ -401,33 +401,6 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     }
   }// end of particle loop
 
-}
-
-vector<TwoBodyPrototype> ThreeBodyDecayConstructor::
-createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
-  int id = inpart->id();
-  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
-    return vector<TwoBodyPrototype>();
-  tPDVector decaylist = vertex->search(list, inpart);
-  vector<TwoBodyPrototype> decays;
-  tPDVector::size_type nd = decaylist.size();
-  for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
-    tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
-    if( pb->id() == id ) swap(pa, pb);
-    if( pc->id() == id ) swap(pa, pc);
-    // vertices are defined with all particles incoming
-    if( pb->CC() ) pb = pb->CC();
-    if( pc->CC() ) pc = pc->CC();
-    // remove weak processes simulated using the current
-    if(weakMassCut_>ZERO) {
-      if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
-	 pa->mass()-pc->mass()<weakMassCut_) continue;
-      if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
-	 pa->mass()-pb->mass()<weakMassCut_) continue;
-    }
-    decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
-  }
-  return decays;
 }
 
 vector<TBDiagram> ThreeBodyDecayConstructor::

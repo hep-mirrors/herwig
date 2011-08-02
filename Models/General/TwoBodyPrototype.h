@@ -96,7 +96,8 @@ struct TwoBodyPrototype {
   VertexBasePtr vertex;
 
   static  vector<TwoBodyPrototype> 
-  createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
+  createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list,
+		   Energy weakCut) {
     int id = inpart->id();
     if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
       return vector<TwoBodyPrototype>();
@@ -110,6 +111,13 @@ struct TwoBodyPrototype {
       //vertices are defined with all particles incoming
       if( pb->CC() ) pb = pb->CC();
       if( pc->CC() ) pc = pc->CC();
+      // remove weak processes simulated using the current
+      if(weakCut>ZERO) {
+	if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
+	   pa->mass()-pc->mass()<weakCut) continue;
+	if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
+	   pa->mass()-pb->mass()<weakCut) continue;
+      }
       decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
     }
     return decays;
@@ -222,7 +230,8 @@ public:
   }
 
   static  void createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				std::queue<PrototypeVertexPtr> & prototypes);
+				std::queue<PrototypeVertexPtr> & prototypes,
+				Energy weakCut);
 
   static void expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
 			       std::queue<PrototypeVertexPtr> & prototypes);

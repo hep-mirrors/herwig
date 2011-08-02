@@ -8,40 +8,13 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
+#include "TwoBodyPrototype.h"
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 using Helicity::VertexBasePtr;
-
-/**
- * A two body decay mode which is a prototype for the 
- * three body mode
- */
-struct TwoBodyPrototype {
-
-  /**
-   *  Constructor
-   */
-  TwoBodyPrototype(tPDPtr in, tPDPair out, VertexBasePtr v) :
-    incoming(in), outgoing(out), vertex(v) {}
-
-  /**
-   *  Incoming particle
-   */
-  tPDPtr incoming;
-
-  /**
-   *  Outgoing particles
-   */
-  tPDPair outgoing;
-
-  /**
-   *  The vertex for the interaction
-   */
-  VertexBasePtr vertex;
-};
 
 /**
  * The ThreeBodyDecayConstructor class inherits from the dummy base class
@@ -78,17 +51,6 @@ public:
 
 protected:
 
-
-  /**
-   * Create the two body prototypes for the decays
-   * @param inpart Incoming particle 
-   * @param vert The vertex to create decays for
-   * @param ilist Which list to search
-   * @return A vector a decay modes
-   */
-  vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
-					    unsigned int ilist);
-
   /**
    * Expand the two body prototype to get the possible
    * threebody diagrams
@@ -122,18 +84,6 @@ protected:
    * @param inter Option for intermediates
    */
   void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
-
-  /**
-   * Get the correct colour factor matrix.
-   * @param incoming The incoming particle
-   * @param outgoing The outgoing particles
-   * @param diagrams The diagrams
-   * @param ncf Set the number of colourflows.
-   */
-  pair<vector<DVector>,vector<DVector> >
-  getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
-		   const vector<TBDiagram> & diagrams,
-		   unsigned int & ncf) const;
 
 public:
 
