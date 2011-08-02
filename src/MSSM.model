@@ -255,9 +255,9 @@ set Model:Vertex/GVNV   /Herwig/Vertices/MSSM/MSSM_GVNV
 ###################################################
 cd /Herwig/NewPhysics
 
-set TwoBodyDC:CreateDecayModes No
-set ThreeBodyDC:CreateDecayModes No
-set WeakDecayConstructor:CreateDecayModes No
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes Yes
+set WeakDecayConstructor:CreateDecayModes Yes
 # switch on decays via weak current
 insert DecayConstructor:NBodyDecayConstructors 0 WeakDecayConstructor
 # exclude gravitino and effective vertices from three body decays

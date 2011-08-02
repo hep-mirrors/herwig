@@ -53,7 +53,7 @@ setup MSSM/Model SPhenoSPS1a.spc
 # etc ...
 
 # To set a minimum allowed branching fraction (the default is shown)
-#set NewModel:MinimumBR 1e-6
+set NewModel:MinimumBR 1e-20
 
 
 # Intrinsic pT tune extrapolated to LHC energy

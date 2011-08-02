@@ -113,19 +113,13 @@ modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
   else return -1;
 }
 
-void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
+bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 					   vector<PDPtr> outgoing,
-					   const vector<TBDiagram> & process,
-					   const vector<DVector> & factors,
-					   const vector<DVector> & Ncfactors,
-					   const unsigned int ncf) {
+					   const vector<TBDiagram> & process) {
   // set the member variables from the info supplied
   _incoming        = incoming;
   _outgoing        = outgoing;
   _diagrams        = process;
-  _colour          = factors;
-  _colourLargeNC   = Ncfactors;
-  _nflow           = ncf;
   assert( _outgoing.size() == 3 );
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
@@ -149,6 +143,8 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
     _reftagcc += (**dit).name();
     if( i != 3 ) _reftagcc += string(",");
   }
+  // set the colour factors and return the answer
+  return setColourFactors();
 }
 
 void GeneralThreeBodyDecayer::doinit() {
@@ -605,4 +601,198 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     }
   }
   inweights = vector<double>(nchannel,1./double(nchannel));
+}
+
+bool GeneralThreeBodyDecayer::setColourFactors() {
+  string name = _incoming->PDGName() + "->";
+  vector<int> sng,trip,atrip,oct;
+  unsigned int iloc(0);
+  for(vector<PDPtr>::const_iterator it = _outgoing.begin();
+      it != _outgoing.end();++it) {
+    name += (**it).PDGName() + " ";
+    if     ((**it).iColour() == PDT::Colour0    ) sng.push_back(iloc) ;
+    else if((**it).iColour() == PDT::Colour3    ) trip.push_back(iloc) ;
+    else if((**it).iColour() == PDT::Colour3bar ) atrip.push_back(iloc);
+    else if((**it).iColour() == PDT::Colour8    ) oct.push_back(iloc) ;
+    ++iloc;
+  }
+  // colour neutral decaying particle
+  if     ( _incoming->iColour() == PDT::Colour0) {
+    // options are all neutral or triplet/antitriplet+ neutral
+    if(sng.size()==3) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,1.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+    }
+    else if(sng.size()==1&&trip.size()==1&&atrip.size()==1) {
+      _nflow = 1;
+      _colour         = vector<DVector>(1,DVector(1,3.));
+      _colourLargeNC  = vector<DVector>(1,DVector(1,3.));
+    }
+    else if(trip.size()==1&&atrip.size()==1&&oct.size()==1) {
+      _nflow = 1;
+      _colour         = vector<DVector>(1,DVector(1,4.));
+      _colourLargeNC  = vector<DVector>(1,DVector(1,4.));
+    }
+    else {
+      generator()->log() << "Unknown colour flow structure for "
+			 << "colour neutral decay " 
+			 << name 
+			 << " in getColourFactors(), omitting decay\n";
+      return false;
+    }
+  }
+  // colour triplet decaying particle
+  else if( _incoming->iColour() == PDT::Colour3) {
+    if(sng.size()==2&&trip.size()==1) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,1.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+    }
+    else if(trip.size()==2&&atrip.size()==1) {
+      _nflow = 2;
+      _colour.resize(2,DVector(2,0.));
+      _colour[0][0] = 3.; _colour[0][1] = 1.;
+      _colour[1][0] = 1.; _colour[1][1] = 3.;
+      _colourLargeNC.resize(2,DVector(2,0.));
+      _colourLargeNC[0][0] = 3.; _colourLargeNC[1][1] = 3.;
+      // sort out the contribution of the different diagrams to the colour
+      // flows
+      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+	// colour singlet intermediate
+	if(_diagrams[ix].intermediate->iColour()==PDT::Colour0) {
+	  if(_diagrams[ix].channelType==trip[0]) {
+	    _diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
+	  }
+	  else {
+	    _diagrams[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
+	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
+	  }
+	}
+	// colour octet intermediate
+	else if(_diagrams[ix].intermediate->iColour()==PDT::Colour8) {
+	  if(_diagrams[ix].channelType==trip[0]) {
+	    vector<CFPair> flow(1,make_pair(2, 0.5  ));
+	    _diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(1,-1./6.));
+	    _diagrams[ix].colourFlow=flow;
+	  }
+	  else {
+	    vector<CFPair> flow(1,make_pair(1, 0.5  ));
+	    _diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(2,-1./6.));
+	    _diagrams[ix].colourFlow=flow;
+	  }
+	}
+	else {
+	  generator()->log() << "Unknown colour for the intermediate in "
+			     << "triplet -> triplet triplet antitriplet in "
+			     << "ThreeBodyDecayConstructor::getColourFactors()"
+			     << " for " << name << " omitting decay\n";
+	  return false;
+	}
+      }
+    }
+    else if(trip.size()==1&&oct.size()==1&&sng.size()==1) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,4./3.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
+    }
+    else {
+      generator()->log() << "Unknown colour structure for "
+			 << "triplet decay in "
+			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << " for " << name << " omitting decay\n";
+      return false;
+    }
+  }
+  // colour antitriplet decaying particle
+  else if( _incoming->iColour() == PDT::Colour3bar) {
+    if(sng.size()==2&&atrip.size()==1) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,1.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+    }
+    else if(atrip.size()==2&&trip.size()==1) {
+      _nflow = 2;
+      _colour.resize(2,DVector(2,0.));
+      _colour[0][0] = 3.; _colour[0][1] = 1.;
+      _colour[1][0] = 1.; _colour[1][1] = 3.;
+      _colourLargeNC.resize(2,DVector(2,0.));
+      _colourLargeNC[0][0] = 3.; _colourLargeNC[1][1] = 3.;
+      // sort out the contribution of the different diagrams to the colour
+      // flows
+      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+	// colour singlet intermediate
+	if(_diagrams[ix].intermediate->iColour()==PDT::Colour0) {
+	  if(_diagrams[ix].channelType==atrip[0]) {
+	    _diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
+	  }
+	  else {
+	    _diagrams[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
+	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
+	  }
+	}
+	// colour octet intermediate
+	else if(_diagrams[ix].intermediate->iColour()==PDT::Colour8) {
+	  if(_diagrams[ix].channelType==atrip[0]) {
+	    vector<CFPair> flow(1,make_pair(2, 0.5  ));
+	    _diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(1,-1./6.));
+	    _diagrams[ix].colourFlow=flow;
+	  }
+	  else {
+	    vector<CFPair> flow(1,make_pair(1, 0.5  ));
+	    _diagrams[ix].largeNcColourFlow = flow;
+	    flow.push_back(       make_pair(2,-1./6.));
+	    _diagrams[ix].colourFlow=flow;
+	  }
+	}
+	else {
+	  generator()->log() << "Unknown colour for the intermediate in "
+			     << "antitriplet -> antitriplet antitriplet triplet in "
+			     << "ThreeBodyDecayConstructor::getColourFactors()"
+			     << " for " << name << " omitting decay\n";
+	  return false;
+	}
+      }
+    }
+    else if(atrip.size()==1&&oct.size()==1&&sng.size()==1) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,4./3.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
+    }
+    else {
+      generator()->log() << "Unknown colour antitriplet decay in "
+			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << " for " << name << " omitting decay\n";
+      return false;
+    }
+  }
+  else if( _incoming->iColour() == PDT::Colour8) {
+    // triplet antitriplet
+    if(trip.size() == 1 && atrip.size() == 1 && sng.size() == 1) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,0.5));
+      _colourLargeNC = vector<DVector>(1,DVector(1,0.5));
+    }
+    else {
+      generator()->log() << "Unknown colour octet decay in "
+			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << " for " << name << " omitting decay\n";
+      return false;
+    }
+  }
+  if( Debug::level > 1 ) {
+    generator()->log() << "Mode: " << name << " has colour factors\n";
+    for(unsigned int ix=0;ix<_nflow;++ix) {
+      for(unsigned int iy=0;iy<_nflow;++iy) {
+	generator()->log() << _colour[ix][iy] << " ";
+      }
+      generator()->log() << "\n";
+    }
+  }
+  return true;
 }
