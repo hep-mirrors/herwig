@@ -349,16 +349,15 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
        << parent->width()/GeV << endl;
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
-       << "BR\n"; 
+       << "BR" << endl; 
 	   
     Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
     Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
     for(; dit != dend; ++dit)
       os << std::left << std::setw(40) << (*dit).second->tag() 
 	 << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
-// 	 << (*dit).second->brat() << '\n';
-	 << '\n';
-    os << "#\n#";
+	 << (*dit).second->brat() << '\n';
+    os << endl;
   }
   else if(decayOutput_==2) {
     os << "#    \t PDG \t Width\n";
@@ -373,7 +372,7 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
 	os << std::right << std::setw(10)
 	   << (*dit).second->orderedProducts()[ix]->id() ;
       for(unsigned int ix=(*dit).second->orderedProducts().size();ix<4;++ix)
-	os << "\t";
+	os << "          ";
       os << "# " << (*dit).second->tag() << "\n";
     }
   }
