@@ -17,9 +17,11 @@ QQHiggsProcessConstructor.h \
 QQHiggsProcessConstructor.cc \
 HPDiagram.h \
 ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
+FourBodyDecayConstructor.h  FourBodyDecayConstructor.cc \
 WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h VVSLoopVertex.cc \
 BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
+TwoBodyPrototype.h TwoBodyPrototype.cc \
 TBDiagram.h
