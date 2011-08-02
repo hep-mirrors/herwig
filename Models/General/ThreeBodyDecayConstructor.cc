@@ -395,9 +395,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     bool inter(false);
     if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
       inter = true;
-    vector< vector<TBDiagram> >::const_iterator mend = modes.end();
-    for( vector< vector<TBDiagram> >::const_iterator mit = modes.begin();
-	 mit != mend; ++mit ) {
+    for( vector< vector<TBDiagram> >::iterator mit = modes.begin();
+	 mit != modes.end(); ++mit ) {
       createDecayMode(*mit, inter);
     }
   }// end of particle loop
@@ -465,7 +464,7 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::
-createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
+createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
   if(diagrams.empty()) return GeneralThreeBodyDecayerPtr();
   // extract the external particles for the process
   PDPtr incoming = getParticleData(diagrams[0].incoming);
@@ -474,6 +473,20 @@ createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
   outgoing.insert(getParticleData(diagrams[0].outgoing           ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
+  // sort out ordering and labeling of diagrams
+  vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
+  for(unsigned int ix=0;ix<diagrams.size();++ix) {
+    unsigned int iy=0;
+    for(;iy<3;++iy) 
+      if(diagrams[ix].outgoing == outVector[iy]->id()) break;
+    if(diagrams[ix].channelType == TBDiagram::UNDEFINED) {
+      diagrams[ix].channelType = TBDiagram::Channel(iy);
+      if( ( iy == 0 && outVector[1]->id() != diagrams[ix].outgoingPair.first)||
+	  ( iy == 1 && outVector[0]->id() != diagrams[ix].outgoingPair.first)|| 
+	  ( iy == 2 && outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
+	swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
+    }
+  }
   // create the object
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, outgoing, objectname);
@@ -484,7 +497,7 @@ createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
   unsigned int ncf(0);
   pair<vector<DVector>, vector<DVector> >
     cfactors = getColourFactors(incoming,outgoing,diagrams,ncf);
-  decayer->setDecayInfo(incoming,vector<PDPtr>(outgoing.begin(),outgoing.end()),
+  decayer->setDecayInfo(incoming,outVector,
 			diagrams,cfactors.first,cfactors.second,ncf);
   // set decayer options from base class
   setDecayerInterfaces(objectname);
@@ -539,7 +552,7 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 }
 
 void ThreeBodyDecayConstructor::
-createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
+createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles
