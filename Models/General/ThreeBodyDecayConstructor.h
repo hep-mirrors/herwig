@@ -35,7 +35,8 @@ public:
    */
   ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV) {}
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), 
+    excludeEffective_(true), weakMassCut_(-GeV) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -201,6 +202,11 @@ private:
    *  Excluded Vertices
    */
   set<VertexBasePtr> excludedSet_;
+
+  /**
+   *  Whether or not to exclude effective vertices
+   */
+  bool excludeEffective_;
 
   /**
    *  Cut off or decays via the weak current

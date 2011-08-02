@@ -34,13 +34,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
      << _includeTopOnShell << _maxBoson << _maxList 
-     << excludedVector_ << excludedSet_;
+     << excludedVector_ << excludedSet_ << excludeEffective_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
      >> _includeTopOnShell >> _maxBoson >> _maxList 
-     >> excludedVector_ >> excludedSet_;
+     >> excludedVector_ >> excludedSet_ >> excludeEffective_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -192,6 +192,21 @@ void ThreeBodyDecayConstructor::Init() {
      "Vertices which are not included in the three-body decayers",
      &ThreeBodyDecayConstructor::excludedVector_, -1, false, false, true, true, false);
 
+  static Switch<ThreeBodyDecayConstructor,bool> interfaceExcludeEffectiveVertices
+    ("ExcludeEffectiveVertices",
+     "Exclude effectice vertices",
+     &ThreeBodyDecayConstructor::excludeEffective_, true, false, false);
+  static SwitchOption interfaceExcludeEffectiveVerticesYes
+    (interfaceExcludeEffectiveVertices,
+     "Yes",
+     "Exclude the effective vertices",
+     true);
+  static SwitchOption interfaceExcludeEffectiveVerticesNo
+    (interfaceExcludeEffectiveVertices,
+     "No",
+     "Don't exclude the effective vertices",
+     false);
+
 }
 
 void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
@@ -216,10 +231,12 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     vector<TwoBodyPrototype> prototypes;
     for(unsigned int iv = 0; iv < nv; ++iv) {
       VertexBasePtr vertex = model->vertex(iv);
+      // skip excluded vertices
       if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
-      //skip an effective vertex
-      if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
-	continue;
+      // skip an effective vertex
+      if( excludeEffective_ &&
+	  vertex->orderInGs() + vertex->orderInGem() == 3 ) continue;
+      // create the prototypes
       for(unsigned int il = 0; il < 3; ++il) { 
 	vector<TwoBodyPrototype> temp = 
 	  TwoBodyPrototype::createPrototypes(parent, vertex, il,weakMassCut_);
@@ -233,10 +250,13 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     for(unsigned int ix=0;ix<prototypes.size();++ix) {
       for(unsigned int iv = 0; iv < nv; ++iv) {
 	VertexBasePtr vertex = model->vertex(iv);
+	// skip excluded vertices
 	if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
 	//skip an effective vertex
-	if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
+	if( excludeEffective_ &&
+	    vertex->orderInGs() + vertex->orderInGem() == 3 ) 
 	  continue;
+	// expand the prototypes
 	for(unsigned int il = 0; il < 3; ++il) { 
 	  vector<TBDiagram> temp = expandPrototype(prototypes[ix],
 						   vertex, il);
@@ -460,10 +480,11 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
 	swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
     }
   }
-  // create the object
+  // get the object name
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, outgoing, objectname);
   if(classname=="") return GeneralThreeBodyDecayerPtr();
+  // create the object
   GeneralThreeBodyDecayerPtr decayer = 
     dynamic_ptr_cast<GeneralThreeBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
