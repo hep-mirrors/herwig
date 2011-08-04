@@ -52,7 +52,7 @@ void UEDF1F1P0Vertex::doinit() {
   theCharges[1] = UEDBase->ed();
   theCharges[2] = UEDBase->eu();
   orderInGs(0);
-  orderInGem(0);
+  orderInGem(1);
 }
 
 NoPIOClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;

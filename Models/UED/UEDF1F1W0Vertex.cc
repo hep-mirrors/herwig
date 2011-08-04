@@ -54,7 +54,7 @@ void UEDF1F1W0Vertex::doinit() {
 			  << Exception::runerror;
   theRadius = model->compactRadius();
   orderInGs(0);
-  orderInGem(0);
+  orderInGem(1);
 }
 
 void UEDF1F1W0Vertex::persistentOutput(PersistentOStream & os) const {
