@@ -305,6 +305,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	   outgoing[ix]->id()==ParticleID::Z0 ||
 	   abs(outgoing[ix]->id())==ParticleID::Wplus) ++nbos;
 	if(particles.find(outgoing[ix])!=particles.end()) ++nnew;
+ 	if(outgoing[ix]->CC() && 
+ 	   particles.find(outgoing[ix]->CC())!=particles.end()) ++nnew;
       }
       if(nbos>_maxBoson || nnew>_maxList) continue;
       // if needed remove intermediate diagrams where intermediate can be
