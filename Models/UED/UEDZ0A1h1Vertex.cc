@@ -39,7 +39,7 @@ void UEDZ0A1h1Vertex::doinit() {
   InvEnergy2 rad2 = sqr(UEDBase->compactRadius());
   theKappa = 1./sqrt(1. + mz2*rad2);
   orderInGs(0);
-  orderInGem(0);
+  orderInGem(1);
 }
 
 void UEDZ0A1h1Vertex::persistentOutput(PersistentOStream & os) const {

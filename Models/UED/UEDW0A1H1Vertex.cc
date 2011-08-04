@@ -32,7 +32,7 @@ void UEDW0A1H1Vertex::doinit() {
   theMz2 = sqr(getParticleData(23)->mass());
   theR2 = sqr(UEDBase->compactRadius());
   orderInGs(0);
-  orderInGem(0);
+  orderInGem(1);
 }
 
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
