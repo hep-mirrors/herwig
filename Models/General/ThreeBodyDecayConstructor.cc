@@ -338,7 +338,6 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	  possibleOnShell = true;
 	}
       }
-
       // check if should be added to an existing decaymode
       bool added = false;
       for(unsigned int iy = 0; iy < modes.size(); ++iy) {
@@ -418,13 +417,6 @@ createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
     // vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
-    // remove weak processes simulated using the current
-    if(weakMassCut_>ZERO) {
-      if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
-	 pa->mass()-pc->mass()<weakMassCut_) continue;
-      if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
-	 pa->mass()-pb->mass()<weakMassCut_) continue;
-    }
     decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
   }
   return decays;
@@ -440,6 +432,10 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
     tPDPtr other = proto.outgoing.second;
     if(ix==1) swap(dec,other);
     int id = dec->id();
+    // remove weak processes simulated using the current
+    if(weakMassCut_>ZERO && abs(dec->id())==ParticleID::Wplus &&
+       proto.incoming->mass()-other->mass()<weakMassCut_) continue;
+    // check allowed incoming in vertex
     if( !vertex->isIncoming(dec) ) continue;
     tPDVector decaylist = vertex->search(list, dec);
     tPDVector::size_type nd = decaylist.size();
