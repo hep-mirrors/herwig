@@ -288,6 +288,7 @@ void SusyBase::readSetup(istream & is) {
   PDPtr h0 = getParticleData(ParticleID::h0);
   h0->widthGenerator(WidthGeneratorPtr());
   h0->massGenerator(MassGenPtr());
+  h0->width(ZERO);
   DecaySet::const_iterator dit = h0->decayModes().begin();
   DecaySet::const_iterator dend = h0->decayModes().end();
   for( ; dit != dend; ++dit ) {
