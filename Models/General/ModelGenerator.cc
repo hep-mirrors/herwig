@@ -343,7 +343,41 @@ void ModelGenerator::checkDecays(PDPtr parent) {
   
 }
 
+namespace {
+  struct DecayModeOrdering {
+    bool operator()(tcDMPtr m1, tcDMPtr m2) {
+      if(m1->brat()!=m2->brat()) {
+	return m1->brat()>m2->brat();
+      }
+      else {
+	if(m1->products().size()==m2->products().size()) {
+	  ParticleMSet::const_iterator it1=m1->products().begin();
+	  ParticleMSet::const_iterator it2=m2->products().begin();
+	  do {
+	    if((**it1).id()!=(**it2).id()) {
+	      return (**it1).id()>(**it2).id();
+	    }
+	    ++it1;
+	    ++it2;
+	  }
+	  while(it1!=m1->products().end()&&
+		it2!=m2->products().end());
+	  assert(false);
+	}
+	else
+	  return m1->products().size()<m2->products().size();
+      }
+    }
+  };
+}
+
 void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
+  if(decayOutput_==0) return;
+  set<tcDMPtr,DecayModeOrdering> modes;
+  for(Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
+      dit != parent->decaySelector().end(); ++dit) {
+    modes.insert((*dit).second);
+  }
   if(decayOutput_==1) {
     os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
        << parent->mass()/GeV << "  Total Width (GeV): " 
@@ -351,29 +385,27 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
        << "BR\n"; 
-    Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-    Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
-    for(; dit != dend; ++dit)
-      os << std::left << std::setw(40) << (*dit).second->tag() 
-	 << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
-	 << (*dit).second->brat() << '\n';
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit)
+      os << std::left << std::setw(40) << (**dit).tag() 
+	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
+	 << (**dit).brat() << '\n';
     os << "#\n#";
   }
   else if(decayOutput_==2) {
     os << "#    \t PDG \t Width\n";
     os << "DECAY\t" << parent->id() << "\t" << parent->width()/GeV << "\t # " << parent->PDGName() << "\n";
-    Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-    Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
-    for(; dit != dend; ++dit) {
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit) {
       os << "\t" << std::left << std::setw(10) 
-	 << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
+	 << (**dit).brat() << "\t" << (**dit).orderedProducts().size() 
 	 << "\t";
-      for(unsigned int ix=0;ix<(*dit).second->orderedProducts().size();++ix)
+      for(unsigned int ix=0;ix<(**dit).orderedProducts().size();++ix)
 	os << std::right << std::setw(10)
-	   << (*dit).second->orderedProducts()[ix]->id() ;
-      for(unsigned int ix=(*dit).second->orderedProducts().size();ix<4;++ix)
+	   << (**dit).orderedProducts()[ix]->id() ;
+      for(unsigned int ix=(**dit).orderedProducts().size();ix<4;++ix)
 	os << "\t";
-      os << "# " << (*dit).second->tag() << "\n";
+      os << "# " << (**dit).tag() << "\n";
     }
   }
 }
