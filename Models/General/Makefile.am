@@ -23,5 +23,5 @@ ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h VVSLoopVertex.cc \
 BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
-TwoBodyPrototype.h TwoBodyPrototype.cc \
+PrototypeVertex.h PrototypeVertex.cc \
 TBDiagram.h

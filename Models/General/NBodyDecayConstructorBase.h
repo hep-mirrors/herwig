@@ -16,7 +16,7 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "NBodyDecayConstructorBase.fh"
-#include "TwoBodyPrototype.h"
+#include "PrototypeVertex.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
@@ -39,8 +39,10 @@ public:
    * The default constructor.
    */
   NBodyDecayConstructorBase() : 
-    _init(true),_iteration(1), _points(1000), _info(false), 
-    _createmodes(true) {}
+    init_(true),iteration_(1), points_(1000), info_(false), 
+    createModes_(true), removeOnShell_(1), excludeEffective_(true), 
+    minReleaseFraction_(1e-3), maxBoson_(1), maxList_(1),
+    includeTopOnShell_(false) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -59,7 +61,7 @@ public:
    * Set the pointer to the DecayConstrcutor
    */
   void decayConstructor(tDecayConstructorPtr d) { 
-    _decayConstructor = d;
+    decayConstructor_ = d;
   }
 
 protected:
@@ -83,35 +85,70 @@ protected:
   /**
    * Whether to initialize decayers or not
    */
-  bool initialize() const { return _init; }
+  bool initialize() const { return init_; }
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  int iteration() const { return _iteration; }
+  int iteration() const { return iteration_; }
 
   /**
    * Number of points to do in initialization
    */
-  int points() const { return _points; }
+  int points() const { return points_; }
 
   /**
    * Whether to output information on the decayers 
    */
-  bool info() const { return _info; }
+  bool info() const { return info_; }
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  bool createDecayModes() const { return _createmodes; }
+  bool createDecayModes() const { return createModes_; }
+
+  /**
+   *  Maximum number of electroweak gauge bosons
+   */
+  unsigned int maximumGaugeBosons() const { return maxBoson_;}
+
+  /**
+   *  Maximum number of particles from the list whose decays we are calculating
+   */
+  unsigned int maximumList() const { return maxList_;}
+
+  /**
+   *  Minimum energy release fraction
+   */ 
+  double minimumReleaseFraction() const {return minReleaseFraction_;}
 
   /**
    * Get the pointer to the DecayConstructor object
    */
   tDecayConstructorPtr decayConstructor() const { 
-    return _decayConstructor;
+    return decayConstructor_;
   }
 
+  /**
+   *  Option for on-shell particles
+   */
+  unsigned int removeOnShell() const { return removeOnShell_; }
+
+  /**
+   *  Check if a vertex is excluded
+   */
+  bool excluded(VertexBasePtr vertex) const {
+    // skip an effective vertex
+    if( excludeEffective_ &&
+	int(vertex->orderInGs() + vertex->orderInGem()) != int(vertex->getNpoint())-2)
+      return true;
+    // check if explicitly forbidden
+    return excludedSet_.find(vertex)!=excludedSet_.end();
+  }
+
+protected:
+
+  vector<vector<PrototypeVertexPtr> > potentialModes(const set<PDPtr> & particles);
 
 public:
 
@@ -139,6 +176,18 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -159,32 +208,73 @@ private:
   /**
    * Whether to initialize decayers or not
    */
-  bool _init;
+  bool init_;
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  int _iteration;
+  int iteration_;
 
   /**
    * Number of points to do in initialization
    */
-  int _points;
+  int points_;
 
   /**
    * Whether to output information on the decayers 
    */
-  bool _info;
+  bool info_;
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  bool _createmodes;
+  bool createModes_;
+
+  /**
+   *  Whether or not to remove on-shell diagrams
+   */
+  unsigned int removeOnShell_;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedSet_;
+
+  /**
+   *  Whether or not to exclude effective vertices
+   */
+  bool excludeEffective_;
   
   /**
    * A pointer to the DecayConstructor object 
    */
-  tDecayConstructorPtr _decayConstructor;
+  tDecayConstructorPtr decayConstructor_;
+
+  /**
+   * The minimum energy release for a three-body decay as a 
+   * fraction of the parent mass
+   */
+  double minReleaseFraction_;
+
+  /**
+   *  Maximum number of EW gauge bosons
+   */
+  unsigned int maxBoson_;
+
+  /**
+   *  Maximum number of particles from the decaying particle list
+   */
+  unsigned int maxList_;
+
+  /**
+   *  Include on-shell for \f$t\to b W\f$
+   */
+  bool includeTopOnShell_;
 };
 
   /** An Exception class that can be used by all inheriting classes to

@@ -8,7 +8,7 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
-#include "TwoBodyPrototype.h"
+#include "PrototypeVertex.h"
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {
@@ -34,9 +34,7 @@ public:
    * The default constructor.
    */
   ThreeBodyDecayConstructor() : 
-    _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), 
-    excludeEffective_(true), weakMassCut_(-GeV) {}
+    interOpt_(0), widthOpt_(1), weakMassCut_(-GeV) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -51,16 +49,6 @@ public:
   virtual unsigned int numBodies() const { return 3; }
 
 protected:
-
-  /**
-   * Expand the two body prototype to get the possible
-   * threebody diagrams
-   * @param proto The two body prototype
-   * @param vert The vertex to create decays for
-   * @param ilist Which list to search
-   */
-  vector<TBDiagram> expandPrototype(TwoBodyPrototype proto, VertexBasePtr vert,
-				    unsigned int ilist);
 
   /**
    * Create the decayer
@@ -84,7 +72,7 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
+  void createDecayMode(vector<PrototypeVertexPtr> & mode);
 
 public:
 
@@ -129,18 +117,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
 
   /**
@@ -158,55 +134,14 @@ private:
 private:
 
   /**
-   *  Whether or not to remove on-shell diagrams
-   */
-  unsigned int _removeOnShell;
-
-  /**
-   *  Include on-shell for \f$t\to b W\f$
-   */
-  bool _includeTopOnShell;
-
-  /**
    *  Option for the inclusion of intermediates
    */
-  unsigned int _interopt;
+  unsigned int interOpt_;
 
   /**
    *  How to treat the widths of the intermediate particles
    */
-  unsigned int _widthopt;
-
-  /**
-   * The minimum energy release for a three-body decay as a 
-   * fraction of the parent mass
-   */
-  double _minReleaseFraction;
-
-  /**
-   *  Maximum number of EW gauge bosons
-   */
-  unsigned int _maxBoson;
-
-  /**
-   *  Maximum number of particles from the decaying particle list
-   */
-  unsigned int _maxList;
-
-  /**
-   *  Excluded Vertices
-   */
-  vector<VertexBasePtr> excludedVector_;
-
-  /**
-   *  Excluded Vertices
-   */
-  set<VertexBasePtr> excludedSet_;
-
-  /**
-   *  Whether or not to exclude effective vertices
-   */
-  bool excludeEffective_;
+  unsigned int widthOpt_;
 
   /**
    *  Cut off or decays via the weak current

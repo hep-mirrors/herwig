@@ -16,19 +16,26 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "DecayConstructor.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+
 using namespace Herwig; 
 using namespace ThePEG;
 
 void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const {
-  os << _init << _iteration << _points << _info << _decayConstructor;
+  os << init_ << iteration_ << points_ << info_ << decayConstructor_
+     << removeOnShell_ << excludedVector_ << excludedSet_ 
+     << excludeEffective_ << includeTopOnShell_;
 }
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
-  is >> _init >> _iteration >> _points >> _info >> _decayConstructor;
+  is >> init_ >> iteration_ >> points_ >> info_ >> decayConstructor_
+     >> removeOnShell_ >> excludedVector_ >> excludedSet_ 
+     >> excludeEffective_ >> includeTopOnShell_;
 }
 
 AbstractClassDescription<NBodyDecayConstructorBase> 
@@ -44,7 +51,7 @@ void NBodyDecayConstructorBase::Init() {
   static Switch<NBodyDecayConstructorBase,bool> interfaceInitializeDecayers
     ("InitializeDecayers",
      "Initialize new decayers",
-     &NBodyDecayConstructorBase::_init, true, false, false);
+     &NBodyDecayConstructorBase::init_, true, false, false);
   static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
     (interfaceInitializeDecayers,
      "Yes",
@@ -59,19 +66,19 @@ void NBodyDecayConstructorBase::Init() {
   static Parameter<NBodyDecayConstructorBase,int> interfaceInitIteration
     ("InitIteration",
      "Number of iterations to optimise integration weights",
-     &NBodyDecayConstructorBase::_iteration, 1, 0, 10,
+     &NBodyDecayConstructorBase::iteration_, 1, 0, 10,
      false, false, true);
 
   static Parameter<NBodyDecayConstructorBase,int> interfaceInitPoints
     ("InitPoints",
      "Number of points to generate when optimising integration",
-     &NBodyDecayConstructorBase::_points, 1000, 100, 100000000,
+     &NBodyDecayConstructorBase::points_, 1000, 100, 100000000,
      false, false, true);
 
   static Switch<NBodyDecayConstructorBase,bool> interfaceOutputInfo
     ("OutputInfo",
      "Whether to output information about the decayers",
-     &NBodyDecayConstructorBase::_info, false, false, false);
+     &NBodyDecayConstructorBase::info_, false, false, false);
   static SwitchOption interfaceOutputInfoOff
     (interfaceOutputInfo,
      "No",
@@ -86,7 +93,7 @@ void NBodyDecayConstructorBase::Init() {
   static Switch<NBodyDecayConstructorBase,bool> interfaceCreateDecayModes
     ("CreateDecayModes",
      "Whether to create the ThePEG::DecayMode objects as well as the decayers",
-     &NBodyDecayConstructorBase::_createmodes, true, false, false);
+     &NBodyDecayConstructorBase::createModes_, true, false, false);
   static SwitchOption interfaceCreateDecayModesOn
     (interfaceCreateDecayModes,
      "Yes",
@@ -97,6 +104,121 @@ void NBodyDecayConstructorBase::Init() {
      "No",
      "Only create the Decayer objects",
      false);
+
+  static Switch<NBodyDecayConstructorBase,unsigned int> interfaceRemoveOnShell
+    ("RemoveOnShell",
+     "Remove on-shell diagrams as should be treated as a sequence of 1->2 decays",
+     &NBodyDecayConstructorBase::removeOnShell_, 1, false, false);
+  static SwitchOption interfaceRemoveOnShellYes
+    (interfaceRemoveOnShell,
+     "Yes",
+     "Remove the diagrams if neither the production of decay or the intermediate"
+     " can happen",
+     1);
+  static SwitchOption interfaceRemoveOnShellNo
+    (interfaceRemoveOnShell,
+     "No",
+     "Never remove the intermediate",
+     0);
+  static SwitchOption interfaceRemoveOnShellProduction
+    (interfaceRemoveOnShell,
+     "Production",
+     "Remove the diagram if the on-shell production of the intermediate is allowed",
+     2);
+
+  static RefVector<NBodyDecayConstructorBase,VertexBase> interfaceExcludedVertices
+    ("ExcludedVertices",
+     "Vertices which are not included in the three-body decayers",
+     &NBodyDecayConstructorBase::excludedVector_, -1, false, false, true, true, false);
+
+  static Switch<NBodyDecayConstructorBase,bool> interfaceExcludeEffectiveVertices
+    ("ExcludeEffectiveVertices",
+     "Exclude effectice vertices",
+     &NBodyDecayConstructorBase::excludeEffective_, true, false, false);
+  static SwitchOption interfaceExcludeEffectiveVerticesYes
+    (interfaceExcludeEffectiveVertices,
+     "Yes",
+     "Exclude the effective vertices",
+     true);
+  static SwitchOption interfaceExcludeEffectiveVerticesNo
+    (interfaceExcludeEffectiveVertices,
+     "No",
+     "Don't exclude the effective vertices",
+     false);
+  
+  static Parameter<NBodyDecayConstructorBase,double> interfaceMinReleaseFraction
+    ("MinReleaseFraction",
+     "The minimum energy release for a three-body decay, as a "
+     "fraction of the parent mass.",
+     &NBodyDecayConstructorBase::minReleaseFraction_, 1e-3, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Switch<NBodyDecayConstructorBase,unsigned int> interfaceMaximumGaugeBosons
+    ("MaximumGaugeBosons",
+     "Maximum number of electroweak gauge bosons"
+     " to be produced as decay products",
+     &NBodyDecayConstructorBase::maxBoson_, 1, false, false);
+  static SwitchOption interfaceMaximumGaugeBosonsNone
+    (interfaceMaximumGaugeBosons,
+     "None",
+     "Produce no W/Zs",
+     0);
+  static SwitchOption interfaceMaximumGaugeBosonsSingle
+    (interfaceMaximumGaugeBosons,
+     "Single",
+     "Produce at most one W/Zs",
+     1);
+  static SwitchOption interfaceMaximumGaugeBosonsDouble
+    (interfaceMaximumGaugeBosons,
+     "Double",
+     "Produce at most two W/Zs",
+     2);
+  static SwitchOption interfaceMaximumGaugeBosonsTriple
+    (interfaceMaximumGaugeBosons,
+     "Triple",
+     "Produce at most three W/Zs",
+     3);
+
+  static Switch<NBodyDecayConstructorBase,unsigned int> interfaceMaximumNewParticles
+    ("MaximumNewParticles",
+     "Maximum number of particles from the list of "
+     "decaying particles to be allowed as decay products",
+     &NBodyDecayConstructorBase::maxList_, 0, false, false);
+  static SwitchOption interfaceMaximumNewParticlesNone
+    (interfaceMaximumNewParticles,
+     "None",
+     "No particles from the list",
+     0);
+  static SwitchOption interfaceMaximumNewParticlesSingle
+    (interfaceMaximumNewParticles,
+     "Single",
+     "A single particle from the list",
+     1);
+  static SwitchOption interfaceMaximumNewParticlesDouble
+    (interfaceMaximumNewParticles,
+     "Double",
+     "Two particles from the list",
+     2);
+  static SwitchOption interfaceMaximumNewParticlesTriple
+    (interfaceMaximumNewParticles,
+     "Triple",
+     "Four particles from the list",
+     3);
+
+  static Switch<NBodyDecayConstructorBase,bool> interfaceIncludeOnShellTop
+    ("IncludeOnShellTop",
+     "Include the on-shell diagrams involving t -> bW",
+     &NBodyDecayConstructorBase::includeTopOnShell_, false, false, false);
+  static SwitchOption interfaceIncludeOnShellTopYes
+    (interfaceIncludeOnShellTop,
+     "Yes",
+     "Inlude them",
+     true);
+  static SwitchOption interfaceIncludeOnShellTopNo
+    (interfaceIncludeOnShellTop,
+     "No",
+     "Don't include them",
+     true);
 }
 
 void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
@@ -159,4 +281,137 @@ void NBodyDecayConstructorBase::setDecayerInterfaces(string fullname) const {
   else outputmodes = string("NoOutput");
   generator()->preinitInterface(fullname, "OutputModes", "set",
 				outputmodes);
+}
+
+void NBodyDecayConstructorBase::doinit() {
+  Interfaced::doinit();
+  excludedSet_ = set<VertexBasePtr>(excludedVector_.begin(),
+				    excludedVector_.end());
+  if(removeOnShell_==0&&numBodies()>2) 
+    generator()->log() << "Warning: Including diagrams with on-shell "
+		       << "intermediates in " << numBodies() << "-body BSM decays, this"
+		       << " can lead to double counting and is not"
+		       << " recommended unless you really know what you are doing\n"
+		       << "This can be switched off using\n set "
+		       << fullName() << ":RemoveOnShell Yes\n"; 
+}
+
+vector<vector<PrototypeVertexPtr> > 
+NBodyDecayConstructorBase::potentialModes(const set<PDPtr> & particles) {
+  // potential modes for output
+  vector<vector<PrototypeVertexPtr> > allModes;
+  // cast the StandardModel to the Hw++ one to get the vertices
+  tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
+  unsigned int nv(model->numberOfVertices());
+  // make sure vertices are initialized
+  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
+  // loop over the particles and create the modes
+  for(set<PDPtr>::const_iterator ip=particles.begin();
+      ip!=particles.end();++ip) {
+    list<vector<PrototypeVertexPtr> > modes;
+    // get the decaying particle
+    tPDPtr parent = *ip;
+    // first create prototype 1->2 decays
+    std::queue<PrototypeVertexPtr> prototypes;
+    for(unsigned int iv = 0; iv < nv; ++iv) {
+      VertexBasePtr vertex = model->vertex(iv);
+      if(excluded(vertex)) continue;
+      PrototypeVertex::createPrototypes(parent, vertex, prototypes);
+    }
+    // now expand them into potential decay modes
+    while(!prototypes.empty()) {
+      // get the first prototype from the queue
+      PrototypeVertexPtr proto = prototypes.front();
+      prototypes.pop();
+      // multiplcity too low
+      if(proto->npart<numBodies()) {
+	// loop over all vertices and expand
+	for(unsigned int iv = 0; iv < nv; ++iv) {
+	  VertexBasePtr vertex = model->vertex(iv);
+	  if(excluded(vertex)) continue;
+	  PrototypeVertex::expandPrototypes(proto,vertex,prototypes);
+	}
+      }
+      // multiplcity too high disgard
+      else if(proto->npart>numBodies()) {
+	continue;
+      }
+      // right multiplicity
+      else {
+	// check it's kinematical allowed for physical masses
+	if( proto->incomingMass() < proto->outgoingMass() ) continue;
+	// and for constituent masses
+	Energy outgoingMass = proto->outgoingConstituentMass();
+	if( proto->incomingMass() < proto->outgoingConstituentMass() ) continue;
+	// remove processes which aren't kinematically allowed within
+	// the release fraction
+	if( proto->incomingMass() - outgoingMass <=
+	    minReleaseFraction_ * proto->incomingMass() ) continue;
+	// check the external particles
+	if(!proto->checkExternal()) continue;
+	// check if first piece on-shell
+	bool onShell = proto->canBeOnShell(removeOnShell(),proto->incomingMass(),true);
+	// special treatment for three-body top decays
+	if(onShell) {
+	  if(includeTopOnShell_ &&
+	     abs(proto->incoming->id())==ParticleID::t && proto->npart==3) {
+	    unsigned int nprimary=0;
+	    bool foundW=false, foundQ=false;
+	    for(OrderedVertices::const_iterator it = proto->outgoing.begin();
+		it!=proto->outgoing.end();++it) {
+	      if(abs(it->first->id())==ParticleID::Wplus)
+		foundW = true;
+	      if(abs(it->first->id())==ParticleID::b ||
+		 abs(it->first->id())==ParticleID::s ||
+		 abs(it->first->id())==ParticleID::d)
+		foundQ = true;
+	      ++nprimary;
+	    }
+	    if(!(foundW&&foundQ&&nprimary==2)) continue;
+	  }
+	  else continue;
+	}
+	// check if should be added to an existing decaymode
+	bool added = false;
+	for(list<vector<PrototypeVertexPtr> >::iterator it=modes.begin();
+	    it!=modes.end();++it) {
+	  // is the same ?
+ 	  if(!(*it)[0]->sameDecay(*proto)) continue;
+	  // it is the same
+	  added = true;
+	  // check if it is a duplicate
+	  bool already = false;
+	  for(unsigned int iz = 0; iz < (*it).size(); ++iz) {
+	    if( *(*it)[iz] == *proto) {
+	      already = true;
+	      break;
+	    }
+	  }
+	  if(!already) (*it).push_back(proto);
+	  break;
+	}
+	if(!added) modes.push_back(vector<PrototypeVertexPtr>(1,proto));
+      }
+    }
+    // now look at the decay modes
+    for(list<vector<PrototypeVertexPtr> >::iterator mit = modes.begin();
+	mit!=modes.end();++mit) {
+      // count the number of gauge bosons and particles from the list
+      unsigned int nlist(0),nbos(0);
+      for(OrderedParticles::const_iterator it=(*mit)[0]->outPart.begin();
+	  it!=(*mit)[0]->outPart.end();++it) {
+	if(abs((**it).id()) == ParticleID::Wplus ||
+	   abs((**it).id()) == ParticleID::Z0) ++nbos;
+	if(particles.find(*it)!=particles.end()) ++nlist;
+	if((**it).CC() && particles.find((**it).CC())!=particles.end()) ++nlist;
+      }
+      // if too many ignore the mode
+      if(nbos > maxBoson_ || nlist > maxList_) {
+	mit=modes.erase(mit);
+	--mit;
+      }
+    }
+    if(!modes.empty()) allModes.insert(allModes.end(),modes.begin(),modes.end());
+  }
+  return allModes;
 }

@@ -1,20 +1,20 @@
 // -*- C++ -*-
 //
-// TwoBodyPrototype.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PrototypeVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_TwoBodyPrototype_H
-#define HERWIG_TwoBodyPrototype_H
+#ifndef HERWIG_PrototypeVertex_H
+#define HERWIG_PrototypeVertex_H
 #include <queue>
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
 //
-// This is the declaration of the TwoBodyPrototype struct.
+// This is the declaration of the PrototypeVertex class.
 //
 
 namespace Herwig {
@@ -69,62 +69,8 @@ typedef multiset<pair< tPDPtr, PrototypeVertexPtr >,VertexOrdering > OrderedVert
 typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 /**
- * A two body decay mode which is a prototype for the 
- * three body mode
+ *  Storage of a potenital n-body decay
  */
-struct TwoBodyPrototype {
-
-  /**
-   *  Constructor
-   */
-  TwoBodyPrototype(tPDPtr in, tPDPair out, VertexBasePtr v) :
-    incoming(in), outgoing(out), vertex(v) {}
-
-  /**
-   *  Incoming particle
-   */
-  tPDPtr incoming;
-
-  /**
-   *  Outgoing particles
-   */
-  tPDPair outgoing;
-
-  /**
-   *  The vertex for the interaction
-   */
-  VertexBasePtr vertex;
-
-  static  vector<TwoBodyPrototype> 
-  createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list,
-		   Energy weakCut) {
-    int id = inpart->id();
-    if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
-      return vector<TwoBodyPrototype>();
-    tPDVector decaylist = vertex->search(list, inpart);
-    vector<TwoBodyPrototype> decays;
-    tPDVector::size_type nd = decaylist.size();
-    for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
-      tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
-      if( pb->id() == id ) swap(pa, pb);
-      if( pc->id() == id ) swap(pa, pc);
-      //vertices are defined with all particles incoming
-      if( pb->CC() ) pb = pb->CC();
-      if( pc->CC() ) pc = pc->CC();
-      // remove weak processes simulated using the current
-      if(weakCut>ZERO) {
-	if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
-	   pa->mass()-pc->mass()<weakCut) continue;
-	if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
-	   pa->mass()-pb->mass()<weakCut) continue;
-      }
-      decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
-    }
-    return decays;
-  }
-
-};
-
 class PrototypeVertex : public Base {
   
 public:
@@ -132,14 +78,15 @@ public:
   /**
    *  Default Constructor
    */
-  PrototypeVertex() {}
+  PrototypeVertex() : npart(0), possibleOnShell(false) {}
 
   /**
    *  Constructor
    */
   PrototypeVertex(tPDPtr in, OrderedVertices out,
 		  VertexBasePtr v, int n) :
-  incoming(in), outgoing(out), vertex(v), npart(n) {}
+  incoming(in), outgoing(out), vertex(v), npart(n),
+  possibleOnShell(false) {}
 
   /**
    *  Incoming particle
@@ -164,22 +111,36 @@ public:
   /**
    *  Number of particles
    */
-  int npart;
+  unsigned int npart;
 
   /**
    *  Outgoing particles
    */
   mutable OrderedParticles outPart;
 
+  /**
+   *  Can have on-shell intermediates
+   */
+  bool possibleOnShell;
+
+  /**
+   *  Increment the number of particles
+   */
   void incrementN(int in) {
     npart += in;
     if(parent) parent->incrementN(in);
   }
 
+  /**
+   *  Mass of the incoming particle
+   */
   Energy incomingMass() {
     return incoming->mass();
   }
 
+  /**
+   *  Total mass of all the outgoing particles
+   */
   Energy outgoingMass() {
     Energy mass(ZERO);
     for(OrderedVertices::const_iterator it = outgoing.begin();
@@ -190,17 +151,36 @@ public:
     return mass;
   }
 
-  bool checkExternal() {
+  /**
+   * Total constituent mass of all the outgoing particles
+   */
+  Energy outgoingConstituentMass() {
+    Energy mass(ZERO);
+    for(OrderedVertices::const_iterator it = outgoing.begin();
+	it!=outgoing.end();++it) {
+      mass += it->second ? 
+	it->second->outgoingConstituentMass() : it->first->constituentMass();
+    }
+    return mass;
+  }
+
+  /**
+   * Check the external particles
+   */
+  bool checkExternal(bool first=true) {
     if(outPart.empty())     setOutgoing();
-    if(outPart.find(incoming)!=outPart.end()) return false;
+    if(first&&outPart.find(incoming)!=outPart.end()) return false;
     bool output = true;
     for(OrderedVertices::const_iterator it = outgoing.begin();
 	it!=outgoing.end();++it) {
-      if(it->second&& !it->second->checkExternal()) output = false;
+      if(it->second&& !it->second->checkExternal(false)) output = false;
     }
     return output;
   }
   
+  /**
+   * Set the outgoing particles
+   */
   void setOutgoing() const {
     assert(outPart.empty());
     for(OrderedVertices::const_iterator it = outgoing.begin();
@@ -215,7 +195,14 @@ public:
     }
   }
 
+  /**
+   *  Are there potential on-shell intermediates?
+   */
+  bool canBeOnShell(unsigned int opt,Energy maxMass,bool first);
 
+  /**
+   *  Check if same external particles
+   */
   bool sameDecay(const PrototypeVertex & x) const {
     if(incoming != x.incoming) return false;
     if(outPart.empty())     setOutgoing();
@@ -229,13 +216,21 @@ public:
     return true;
   }
 
+  /**
+   *  Create a \f$1\to2\f$ prototype
+   */
   static  void createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				std::queue<PrototypeVertexPtr> & prototypes,
-				Energy weakCut);
+				std::queue<PrototypeVertexPtr> & prototypes);
 
+  /**
+   *  Expand the prototypes by adding more legs
+   */
   static void expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
 			       std::queue<PrototypeVertexPtr> & prototypes);
 
+  /**
+   *  Copy the whole structure with a new branching
+   */
   static PrototypeVertexPtr replicateTree(PrototypeVertexPtr parent,
 					  PrototypeVertexPtr oldChild,
 					  PrototypeVertexPtr & newChild);
@@ -257,7 +252,7 @@ inline ostream & operator<<(ostream & os, const PrototypeVertex & diag) {
      << diag.vertex->fullName() << " in a " 
      << diag.npart << "-body decay\n";
   if(!seq) return os;
-  os << "\n Followed by\n";
+  os << "Followed by\n";
   for(OrderedVertices::const_iterator it = diag.outgoing.begin();
       it!=diag.outgoing.end();++it) {
     if(it->second) os << *it->second;
@@ -441,4 +436,4 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 
 }
 
-#endif /* HERWIG_TwoBodyPrototype_H */
+#endif /* HERWIG_PrototypeVertex_H */

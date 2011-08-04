@@ -6,13 +6,14 @@
 
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "ThePEG/PDT/StandardMatchers.h"
-#include "TwoBodyPrototype.h"
+#include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/Exception.h"
+#include "PrototypeVertex.h"
 
 using namespace Herwig;
 
 void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				       std::queue<PrototypeVertexPtr> & prototypes,
-				       Energy weakCut) {
+				       std::queue<PrototypeVertexPtr> & prototypes) {
   int id = inpart->id();
   if(!vertex->isIncoming(inpart)) return;
   for(unsigned int list=0;list<vertex->getNpoint();++list) {
@@ -36,22 +37,7 @@ void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
 				 pout[1]->id()==ParticleID::g||
 				 pout[1]->id()==ParticleID::Z0)))
 	  continue;
-	// remove weak processes simulated using the weak current
-	if(weakCut>ZERO) {
-	  if(abs(pout[1]->id())==ParticleID::Wplus && pout[2]->mass() < pout[0]->mass() &&
-	     pout[0]->mass()-pout[2]->mass()<weakCut) continue;
-	  if(abs(pout[2]->id())==ParticleID::Wplus && pout[1]->mass() < pout[0]->mass() &&
-	     pout[0]->mass()-pout[1]->mass()<weakCut) continue;
-	}
       }
-      bool same=false;
-      for(unsigned int iy=1;iy<pout.size();++iy) {
-	if(pout[0]==pout[iy]) {
-	  same = true;
-	  break;
-	}
-      }
-      if(same) continue;
       prototypes.push(new_ptr(PrototypeVertex(inpart,out,vertex,
 					      int(vertex->getNpoint())-1)));
     }
@@ -122,14 +108,6 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 		((abs(pout[2]->id())>=11&&abs(pout[2]->id())<=16)&&
 		 abs(pout[1]->id())==ParticleID::Wplus))) continue;
 	  }
-	  bool same=false;
-	  for(unsigned int iy=1;iy<pout.size();++iy) {
-	    if(pout[0]==pout[iy]) {
-	      same = true;
-	      break;
-	    }
-	  }
-	  if(same) continue;
 	  PrototypeVertexPtr newBranch = 
 	    new_ptr(PrototypeVertex(it->first,
 				    outgoing,vertex,int(vertex->getNpoint())-1));
@@ -148,6 +126,48 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
       }
     }
   }
+}
+
+bool PrototypeVertex::canBeOnShell(unsigned int opt,Energy maxMass,bool first) {
+  Energy outMass = outgoingMass();
+  if(!first) { 
+    bool in  = maxMass>incomingMass();
+    bool out = incomingMass()>outMass;
+    if(opt!=0) {
+      if( in && ( out || opt==2 ) ) return true;
+    }
+    else if (incoming->width() == ZERO) {
+      tPrototypeVertexPtr original = this;
+      while(original->parent) {
+	original=original->parent;
+      };
+      ostringstream name;
+      name << original->incoming->PDGName() << " -> ";
+      for(OrderedParticles::const_iterator it = original->outPart.begin();
+	  it!= original->outPart.end();++it)
+	name << (**it).PDGName() << " ";
+      Throw<InitException>() 
+	<< "Trying to include on-shell diagram in decay"
+	<< name.str() << "including on-shell "
+	<< incoming->PDGName() << " with zero width.\n"
+	<< "You should make sure that the width for the intermediate is either"
+	<< " read from an SLHA file or the intermediate is included in the "
+	<< "DecayParticles list of the ModelGenerator.\n"
+	<< Exception::runerror;
+    }
+  }
+  else maxMass = incomingMass();
+  // check the decay products
+  for(OrderedVertices::const_iterator it = outgoing.begin();
+      it!=outgoing.end();++it) {
+    if(!it->second) continue;
+    Energy newMax = maxMass-outMass+it->second->outgoingMass();
+    if(it->second->canBeOnShell(opt,newMax,false)) {
+      if(first) possibleOnShell = true;
+      return true;
+    }
+  }
+  return false;
 }
 
 NBDiagram::NBDiagram(PrototypeVertexPtr proto) 

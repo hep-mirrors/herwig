@@ -8,7 +8,7 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/General/GeneralFourBodyDecayer.fh"
-#include "TwoBodyPrototype.h"
+#include "PrototypeVertex.h"
 
 namespace Herwig {
 
@@ -29,8 +29,7 @@ public:
    * The default constructor.
    */
   FourBodyDecayConstructor() :
-    removeOnShell_(1), interopt_(0), widthopt_(1), 
-    minReleaseFraction_(1e-3), maxBoson_(0), maxList_(0) {}
+    interopt_(0), widthopt_(1) {}
 
   /**
    *  Destructor
@@ -116,18 +115,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
 
   /**
@@ -139,11 +126,6 @@ private:
 private:
 
   /**
-   *  Whether or not to remove on-shell diagrams
-   */
-  unsigned int removeOnShell_;
-
-  /**
    *  Option for the inclusion of intermediates
    */
   unsigned int interopt_;
@@ -152,32 +134,6 @@ private:
    *  How to treat the widths of the intermediate particles
    */
   unsigned int widthopt_;
-
-  /**
-   * The minimum energy release for a three-body decay as a 
-   * fraction of the parent mass
-   */
-  double minReleaseFraction_;
-
-  /**
-   *  Maximum number of EW gauge bosons
-   */
-  unsigned int maxBoson_;
-
-  /**
-   *  Maximum number of particles from the decaying particle list
-   */
-  unsigned int maxList_;
-
-  /**
-   *  Excluded Vertices
-   */
-  vector<VertexBasePtr> excludedVector_;
-
-  /**
-   *  Excluded Vertices
-   */
-  set<VertexBasePtr> excludedSet_;
 
 };
 

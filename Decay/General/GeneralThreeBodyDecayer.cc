@@ -14,22 +14,6 @@
 
 using namespace Herwig;
 
-/**
- *  A struct to order the particles in the same way as in the DecayMode's
- */
-struct ParticleOrdering {
-  bool operator()(PDPtr p1, PDPtr p2) {
-    return abs(p1->id()) > abs(p2->id()) ||
-      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
-      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
-  }
-};
-
-/**
- * A set of ParticleData objects ordered as for the DecayMode's
- */
-typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
-
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incoming << _outgoing << _diagrams << _diagmap << _colour << _colourLargeNC
      << _nflow << _widthopt << _reftag << _reftagcc;

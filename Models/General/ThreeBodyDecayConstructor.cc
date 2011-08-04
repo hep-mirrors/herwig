@@ -32,15 +32,11 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 }
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
-     << _includeTopOnShell << _maxBoson << _maxList 
-     << excludedVector_ << excludedSet_ << excludeEffective_;
+  os << interOpt_ << widthOpt_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
-     >> _includeTopOnShell >> _maxBoson >> _maxList 
-     >> excludedVector_ >> excludedSet_ >> excludeEffective_;
+  is  >> interOpt_ >> widthOpt_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -52,46 +48,10 @@ void ThreeBodyDecayConstructor::Init() {
   static ClassDocumentation<ThreeBodyDecayConstructor> documentation
     ("The ThreeBodyDecayConstructor class constructs the three body decay modes");
 
-  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceRemoveOnShell
-    ("RemoveOnShell",
-     "Remove on-shell diagrams as should be treated as a sequence of 1->2 decays",
-     &ThreeBodyDecayConstructor::_removeOnShell, 1, false, false);
-  static SwitchOption interfaceRemoveOnShellYes
-    (interfaceRemoveOnShell,
-     "Yes",
-     "Remove the diagrams if neither the production of decay or the intermediate"
-     " can happen",
-     1);
-  static SwitchOption interfaceRemoveOnShellNo
-    (interfaceRemoveOnShell,
-     "No",
-     "Never remove the intermediate",
-     0);
-  static SwitchOption interfaceRemoveOnShellProduction
-    (interfaceRemoveOnShell,
-     "Production",
-     "Remove the diagram if the on-shell production of the intermediate is allowed",
-     2);
-
-  static Switch<ThreeBodyDecayConstructor,bool> interfaceIncludeOnShellTop
-    ("IncludeOnShellTop",
-     "Include the on-shell diagrams involving t -> bW",
-     &ThreeBodyDecayConstructor::_includeTopOnShell, false, false, false);
-  static SwitchOption interfaceIncludeOnShellTopYes
-    (interfaceIncludeOnShellTop,
-     "Yes",
-     "Inlude them",
-     true);
-  static SwitchOption interfaceIncludeOnShellTopNo
-    (interfaceIncludeOnShellTop,
-     "No",
-     "Don't include them",
-     true);
-
   static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceWidthOption
     ("WidthOption",
      "Option for the treatment of the widths of the intermediates",
-     &ThreeBodyDecayConstructor::_widthopt, 1, false, false);
+     &ThreeBodyDecayConstructor::widthOpt_, 1, false, false);
   static SwitchOption interfaceWidthOptionFixed
     (interfaceWidthOption,
      "Fixed",
@@ -111,7 +71,7 @@ void ThreeBodyDecayConstructor::Init() {
   static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceIntermediateOption
     ("IntermediateOption",
      "Option for the inclusion of intermediates in the event",
-     &ThreeBodyDecayConstructor::_interopt, 0, false, false);
+     &ThreeBodyDecayConstructor::interOpt_, 0, false, false);
   static SwitchOption interfaceIntermediateOptionAlways
     (interfaceIntermediateOption,
      "Always",
@@ -127,85 +87,6 @@ void ThreeBodyDecayConstructor::Init() {
      "OnlyIfOnShell",
      "Only if there are on-shell diagrams",
      0);
-  
-  static Parameter<ThreeBodyDecayConstructor,double> interfaceMinReleaseFraction
-    ("MinReleaseFraction",
-     "The minimum energy release for a three-body decay, as a "
-     "fraction of the parent mass.",
-     &ThreeBodyDecayConstructor::_minReleaseFraction, 1e-3, 0.0, 1.0,
-     false, false, Interface::limited);
-
-  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceMaximumGaugeBosons
-    ("MaximumGaugeBosons",
-     "Maximum number of electroweak gauge bosons"
-     " to be produced as decay products",
-     &ThreeBodyDecayConstructor::_maxBoson, 1, false, false);
-  static SwitchOption interfaceMaximumGaugeBosonsNone
-    (interfaceMaximumGaugeBosons,
-     "None",
-     "Produce no W/Zs",
-     0);
-  static SwitchOption interfaceMaximumGaugeBosonsSingle
-    (interfaceMaximumGaugeBosons,
-     "Single",
-     "Produce at most one W/Zs",
-     1);
-  static SwitchOption interfaceMaximumGaugeBosonsDouble
-    (interfaceMaximumGaugeBosons,
-     "Double",
-     "Produce at most two W/Zs",
-     2);
-  static SwitchOption interfaceMaximumGaugeBosonsTriple
-    (interfaceMaximumGaugeBosons,
-     "Triple",
-     "Produce at most three W/Zs",
-     3);
-
-  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceMaximumNewParticles
-    ("MaximumNewParticles",
-     "Maximum number of particles from the list of "
-     "decaying particles to be allowed as decay products",
-     &ThreeBodyDecayConstructor::_maxList, 1, false, false);
-  static SwitchOption interfaceMaximumNewParticlesNone
-    (interfaceMaximumNewParticles,
-     "None",
-     "No particles from the list",
-     0);
-  static SwitchOption interfaceMaximumNewParticlesSingle
-    (interfaceMaximumNewParticles,
-     "Single",
-     "A single particle from the list",
-     1);
-  static SwitchOption interfaceMaximumNewParticlesDouble
-    (interfaceMaximumNewParticles,
-     "Double",
-     "Two particles from the list",
-     2);
-  static SwitchOption interfaceMaximumNewParticlesTriple
-    (interfaceMaximumNewParticles,
-     "Triple",
-     "Three particles from the list",
-     3);
-
-  static RefVector<ThreeBodyDecayConstructor,VertexBase> interfaceExcludedVertices
-    ("ExcludedVertices",
-     "Vertices which are not included in the three-body decayers",
-     &ThreeBodyDecayConstructor::excludedVector_, -1, false, false, true, true, false);
-
-  static Switch<ThreeBodyDecayConstructor,bool> interfaceExcludeEffectiveVertices
-    ("ExcludeEffectiveVertices",
-     "Exclude effectice vertices",
-     &ThreeBodyDecayConstructor::excludeEffective_, true, false, false);
-  static SwitchOption interfaceExcludeEffectiveVerticesYes
-    (interfaceExcludeEffectiveVertices,
-     "Yes",
-     "Exclude the effective vertices",
-     true);
-  static SwitchOption interfaceExcludeEffectiveVerticesNo
-    (interfaceExcludeEffectiveVertices,
-     "No",
-     "Don't exclude the effective vertices",
-     false);
 
 }
 
@@ -219,241 +100,12 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     if(!weak) continue;
     weakMassCut_ = max(weakMassCut_,weak->massCut());
   }
-  // cast the StandardModel to the Hw++ one to get the vertices
-  tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
-  unsigned int nv(model->numberOfVertices());
-  // loop over the particles and create the decayers
-  for(set<PDPtr>::const_iterator ip=particles.begin();
-      ip!=particles.end();++ip) {
-    tPDPtr parent = *ip;
-    // create the prototype 1->2 decays which will be turned into
-    // 1 -> 3 decays
-    vector<TwoBodyPrototype> prototypes;
-    for(unsigned int iv = 0; iv < nv; ++iv) {
-      VertexBasePtr vertex = model->vertex(iv);
-      // skip excluded vertices
-      if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
-      // skip an effective vertex
-      if( excludeEffective_ &&
-	  vertex->orderInGs() + vertex->orderInGem() == 3 ) continue;
-      // create the prototypes
-      for(unsigned int il = 0; il < 3; ++il) { 
-	vector<TwoBodyPrototype> temp = 
-	  TwoBodyPrototype::createPrototypes(parent, vertex, il,weakMassCut_);
-	if(!temp.empty()) prototypes.insert(prototypes.end(),
-					    temp.begin(),temp.end());
-      }
-    }
-    // now expand the prototypes by decaying the outgoing particles
-    // in the prototypes
-    vector<TBDiagram> diagrams;
-    for(unsigned int ix=0;ix<prototypes.size();++ix) {
-      for(unsigned int iv = 0; iv < nv; ++iv) {
-	VertexBasePtr vertex = model->vertex(iv);
-	// skip excluded vertices
-	if(excludedSet_.find(vertex)!=excludedSet_.end()) continue;
-	//skip an effective vertex
-	if( excludeEffective_ &&
-	    vertex->orderInGs() + vertex->orderInGem() == 3 ) 
-	  continue;
-	// expand the prototypes
-	for(unsigned int il = 0; il < 3; ++il) { 
-	  vector<TBDiagram> temp = expandPrototype(prototypes[ix],
-						   vertex, il);
-	  if(!temp.empty()) diagrams.insert(diagrams.end(),temp.begin(),
-					    temp.end());
-	}
-      }
-    }
-    // now we have the potential diagrams we need to do some sorting
-    // into decay modes
-    vector< vector<TBDiagram> > modes;
-    Energy min = parent->mass();
-    bool possibleOnShell(false);
-    for(vector<TBDiagram>::const_iterator dit = diagrams.begin();
-	dit != diagrams.end(); ++dit) {
-      tPDPtr outgoing[3]={getParticleData(dit->outgoing),
-			  getParticleData(dit->outgoingPair.first),
-			  getParticleData(dit->outgoingPair.second)};
-      Energy mout[3] = 
-	{outgoing[0]->constituentMass(),outgoing[1]->constituentMass(),
-	 outgoing[2]->constituentMass()};
-      // remove processes which aren't kinematically allowed within
-      if( min - mout[0] - mout[1] - mout[2] <= _minReleaseFraction * min )
-	continue;
-      // remove QED and QCD radiation diagrams
-      // radiation from intermediate
-      long interID = dit->intermediate->id();
-      if((dit->outgoingPair.first ==interID &&
-	  (dit->outgoingPair.second==ParticleID::g ||
-	   dit->outgoingPair.second==ParticleID::gamma ||
-	   dit->outgoingPair.second==ParticleID::Z0 ))||
-	 (dit->outgoingPair.second==interID &&
-	  (dit->outgoingPair.first ==ParticleID::g ||
-	   dit->outgoingPair.first ==ParticleID::gamma ||
-	   dit->outgoingPair.first ==ParticleID::Z0 ))) continue;
-      // radiation from the parent
-      if((dit->outgoing ==dit->incoming&&
-	  (interID==ParticleID::g ||
-	   interID==ParticleID::gamma ||
-	   interID==ParticleID::Z0 ))||
-	 (interID==dit->incoming &&
-	  (dit->outgoing ==ParticleID::g ||
-	   dit->outgoing ==ParticleID::gamma ||
-	   dit->outgoing ==ParticleID::Z0 ))) continue;
-      // remove weak decays of quarks other than top
-      if(StandardQCDPartonMatcher::Check(interID) &&
-	 ((StandardQCDPartonMatcher::Check(dit->outgoingPair.first)&&
-	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
-	  (StandardQCDPartonMatcher::Check(dit->outgoingPair.second)&&
-	   abs(dit->outgoingPair.first)==ParticleID::Wplus))) continue;
-      // remove weak lepton decays
-      if((abs(interID)>=11&&abs(interID)<=16) && (
-	 ((abs(dit->outgoingPair.first)>=11&&abs(dit->outgoingPair.first)<=16)&&
-	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
-	  ((abs(dit->outgoingPair.second)>=11&&abs(dit->outgoingPair.second)<=16)&&
-	   abs(dit->outgoingPair.first)==ParticleID::Wplus)) )  continue;
-      // remove processes where one of the outgoing particles has the 
-      //same id as the incoming particles
-      if(abs(parent->id()) == abs(dit->outgoing           ) ||
-	 abs(parent->id()) == abs(dit->outgoingPair.first ) ||
-	 abs(parent->id()) == abs(dit->outgoingPair.second) ) continue;
-      // check the number of new particles and gauge bosons
-      unsigned int nbos(0),nnew(0);
-      for(unsigned int ix=0;ix<3;++ix) {
-	if(outgoing[ix]->id()==ParticleID::gamma || 
-	   outgoing[ix]->id()==ParticleID::Z0 ||
-	   abs(outgoing[ix]->id())==ParticleID::Wplus) ++nbos;
-	if(particles.find(outgoing[ix])!=particles.end()) ++nnew;
-      }
-      if(nbos>_maxBoson || nnew>_maxList) continue;
-      // if needed remove intermediate diagrams where intermediate can be
-      // on shell
-      Energy mint = dit->intermediate->mass();
-      if( min> mout[0] + mint ) {
-	if(_removeOnShell==2) continue;
-	if(mint > mout[1] + mout[2] ) {
-	  // special for top
-	  if(abs(dit->incoming)==ParticleID::t&&
-	     abs(interID)==ParticleID::Wplus) {
-	    if(!_includeTopOnShell) continue;
-	  }
-	  // general
-	  else if(_removeOnShell==1) {
-	    continue;
-	  }
-	  if(dit->intermediate->width()==0.*GeV) {
-	    Throw<InitException>() 
-	      << "Trying to include on-shell diagram for "
-	      << getParticleData(dit->incoming)->PDGName() << " -> "
-	      << outgoing[0]->PDGName() << " "
-	      << outgoing[1]->PDGName() << " " << outgoing[2]->PDGName()
-	      << " with intermediate " << dit->intermediate->PDGName()
-	      << " with zero width.\n"
-	      << "You should make sure that the width for the intermediate is either"
-	      << " read from an SLHA file or the intermediate is included in the "
-	      << "DecayParticles list of the ModelGenerator.\n"
-	      << Exception::runerror;
-	  }
-	  possibleOnShell = true;
-	}
-      }
-
-      // check if should be added to an existing decaymode
-      bool added = false;
-      for(unsigned int iy = 0; iy < modes.size(); ++iy) {
-	if(modes[iy][0].sameDecay(*dit)) {
-	  added = true;
-	  bool already = false;
-	  for(unsigned int iz = 0; iz < modes[iy].size(); ++iz) {
-	    if( modes[iy][iz] == *dit) {
-	      already = true;
-	      break;
-	    }
-	  }
-	  if(!already) modes[iy].push_back(*dit);
-	  break;
-	}
-      }
-      // otherwise create a new decay mode
-      if(!added) modes.push_back(vector<TBDiagram>(1,*dit));
-    }
-    // print out info on the potential modes
-    if( Debug::level > 1 ) {
-      generator()->log() << "There are " << modes.size() << " modes for "
-			 << (**ip).PDGName() << "\n";
-      for(unsigned int ix=0;ix<modes.size();++ix) {
-	generator()->log() << "Mode: " << ix << "\n";
-	generator()->log() 
-	  << "incoming = " 
-	  << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
-	generator()->log() 
-	  << "outgoing = " 
-	  << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
-	  << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
-	  << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
-	generator()->log() 
-	  << "There are " << modes[ix].size() << " diagrams\n";
-	for(unsigned int iy=0;iy<modes[ix].size();++iy) {
-	  generator()->log() << "Diagram: " << iy << "\n";
-	  generator()->log() 
-	    << "incoming = " << modes[ix][iy].incoming << "\n";
-	  generator()->log() 
-	    << "outgoing = " << modes[ix][iy].outgoing << " "
-	    << modes[ix][iy].outgoingPair.first  << " "
-	    << modes[ix][iy].outgoingPair.second << "\n";
-	  generator()->log() 
-	    << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
-	    << "\t" << modes[ix][iy].intermediate->id() << "\n";
-	  generator()->log() 
-	    << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
-	    << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
-	}
-      }
-    }
-    // now we need to create the decayers for the mode
-    bool inter(false);
-    if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
-      inter = true;
-    for( vector< vector<TBDiagram> >::iterator mit = modes.begin();
-	 mit != modes.end(); ++mit ) {
-      createDecayMode(*mit, inter);
-    }
-  }// end of particle loop
-
-}
-
-vector<TBDiagram> ThreeBodyDecayConstructor::
-expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) {
-  vector<TBDiagram> decays;
-  if( vertex->getNpoint() != 3 ) return decays;
-  // loop over the outgoing particles
-  for(unsigned int ix=0;ix<2;++ix) {
-    tPDPtr dec   = proto.outgoing.first ;
-    tPDPtr other = proto.outgoing.second;
-    if(ix==1) swap(dec,other);
-    int id = dec->id();
-    if( !vertex->isIncoming(dec) ) continue;
-    tPDVector decaylist = vertex->search(list, dec);
-    tPDVector::size_type nd = decaylist.size();
-    for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
-      tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
-      if( pb->id() == id ) swap(pa, pb);
-      if( pc->id() == id ) swap(pa, pc);
-      //vertices are defined with all particles incoming
-      if( pb->CC() ) pb = pb->CC();
-      if( pc->CC() ) pc = pc->CC();
-      // create the three body diagram
-      TBDiagram diag(proto.incoming->id(), other->id(), 
-		     make_pair(pb->id(),pc->id()));
-      diag.intermediate = pa;
-      diag.vertices   = make_pair(proto.vertex,vertex);
-      diag.colourFlow = vector<CFPair>(1,make_pair(1,1.));
-      diag.largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
-      decays.push_back(diag);
-    }
+  // get the potential modes
+  vector<vector<PrototypeVertexPtr> > newModes = potentialModes(particles);
+  // now create the decaters and decay modes
+  for(unsigned int imode=0;imode<newModes.size();++imode) {
+    createDecayMode(newModes[imode]);
   }
-  return decays; 
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::
@@ -495,7 +147,7 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
   setDecayerInterfaces(objectname);
   // set the width option
   ostringstream value;
-  value << _widthopt;
+  value << widthOpt_;
   generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
   // set the intermediates option
   ostringstream value2;
@@ -544,7 +196,25 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 }
 
 void ThreeBodyDecayConstructor::
-createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
+createDecayMode(vector<PrototypeVertexPtr> & mode) {
+  // convert the diagrams from the general to the three body structure
+  vector<TBDiagram> diagrams;
+  bool possibleOnShell=false;
+  for(unsigned int iy=0;iy<mode.size();++iy) {
+    diagrams.push_back(TBDiagram(mode[iy]));
+    // remove weak processes simulated using the weak current
+    if(weakMassCut_>ZERO && diagrams.back().intermediate &&
+       abs(diagrams.back().intermediate->id())==ParticleID::Wplus) {
+      Energy deltaM = 
+	getParticleData(diagrams.back().incoming)->mass() - 
+	getParticleData(diagrams.back().outgoing)->mass();
+      if(deltaM<weakMassCut_) diagrams.pop_back();
+    }
+    possibleOnShell |= mode[iy]->possibleOnShell;
+  }
+  if(diagrams.empty()) return;
+  // check if possible on-shell internal particles
+  bool inter = interOpt_ == 1 || (interOpt_ == 0 && possibleOnShell);
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles
@@ -619,19 +289,5 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
     }
   }
   //update CC mode if it exists
-  if( inpart->CC() )
-    inpart->CC()->synchronize();
-}
-
-void ThreeBodyDecayConstructor::doinit() {
-  NBodyDecayConstructorBase::doinit();
-  excludedSet_ = set<VertexBasePtr>(excludedVector_.begin(),
-				    excludedVector_.end());
-  if(_removeOnShell==0) 
-    generator()->log() << "Warning: Including diagrams with on-shell "
-		       << "intermediates in three-body BSM decays, this"
-		       << " can lead to double counting and is not"
-		       << " recommended unless you really know what you are doing\n"
-		       << "This can be switched off using\n set "
-		       << fullName() << ":RemoveOnShell Yes\n"; 
+  if( inpart->CC() ) inpart->CC()->synchronize();
 }

@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Models/General/TwoBodyPrototype.h"
+#include "Herwig++/Models/General/PrototypeVertex.h"
 
 namespace Herwig {
 
