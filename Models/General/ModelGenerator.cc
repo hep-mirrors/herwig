@@ -261,7 +261,7 @@ void ModelGenerator::doinit() {
     parent->reset();
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
-    
+
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(ZERO);
@@ -289,6 +289,7 @@ void ModelGenerator::doinit() {
     hardProcessConstructors_[ix]->init();
     hardProcessConstructors_[ix]->constructDiagrams();
   }
+
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
@@ -383,14 +384,13 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
        << parent->width()/GeV << endl;
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
-       << "BR" << endl; 
-	   
+       << "BR\n"; 
     for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
 	dit!=modes.end();++dit)
       os << std::left << std::setw(40) << (**dit).tag() 
 	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
 	 << (**dit).brat() << '\n';
-    os << endl;
+    os << "#\n#";
   }
   else if(decayOutput_==2) {
     os << "#    \t PDG \t Width\n";
@@ -404,7 +404,7 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
 	os << std::right << std::setw(10)
 	   << (**dit).orderedProducts()[ix]->id() ;
       for(unsigned int ix=(**dit).orderedProducts().size();ix<4;++ix)
-	os << "          ";
+	os << "\t";
       os << "# " << (**dit).tag() << "\n";
     }
   }
