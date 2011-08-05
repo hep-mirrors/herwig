@@ -12,8 +12,10 @@
 
 using namespace Herwig;
 
-SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) 
-{}
+SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) {
+  orderInGs(0);
+  orderInGem(2);
+}
 
 IBPtr SSWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -97,8 +99,6 @@ void SSWWHHVertex::doinit() {
   coup_[9] =-0.5*sinbma/sw;
   // A W A0 H+
   coup_[10] = Complex(0.,0.5)/sw;
-  orderInGs(0);
-  orderInGem(2);
 }
 
 void SSWWHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,

@@ -17,8 +17,10 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _triTp(0.*MeV), _triBt(0.*MeV), _triTa(0.*MeV), _lambda(0.),
   _lambdaVEV(0.*MeV), _v1(0.*MeV), _v2(0.*MeV), _sw(0.), _cw(0.), 
   _mw(0.*MeV), _mz(0.*MeV), _sb(0.), _cb(0.), _tb(0.), _q2last(0.*MeV2), 
-  _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) 
-{}
+  _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _mixS << _mixP << _mixTp << _mixBt << _mixTa
@@ -168,9 +170,6 @@ void NMSSMHSFSFVertex::doinit() {
   
   _v1 = sqrt(2.)*_mw*_cb;
   _v2 = sqrt(2.)*_mw*_sb;
-
-  orderInGem(1);
-  orderInGs(0);
   SSSVertex::doinit();
 
 }

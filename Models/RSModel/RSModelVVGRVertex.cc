@@ -41,8 +41,10 @@ void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(UnitRemoval::E * kappa_));
 }
 
-RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO)
-{}
+RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void RSModelVVGRVertex::doinit() {
   addToList(23,23,39);
@@ -55,6 +57,4 @@ void RSModelVVGRVertex::doinit() {
     throw Exception() << "Must be RSModel in RSModelVVGRVertex::doinit()"
 		      << Exception::runerror;
   kappa_=2./hwRS->lambda_pi();
-  orderInGem(1);
-  orderInGs (0);
 }

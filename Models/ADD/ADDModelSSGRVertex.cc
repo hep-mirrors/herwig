@@ -19,8 +19,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-ADDModelSSGRVertex::ADDModelSSGRVertex() : kappa_(ZERO), r_(ZERO) 
-{}
+ADDModelSSGRVertex::ADDModelSSGRVertex() : kappa_(ZERO), r_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void ADDModelSSGRVertex::doinit() {
   addToList(25,25,39);
@@ -31,8 +33,6 @@ void ADDModelSSGRVertex::doinit() {
 		      << Exception::runerror;
   kappa_=2./hwADD->MPlanckBar();
   r_ = sqr(hwADD->LambdaT())/hwADD->MPlanckBar();
-  orderInGem(1);
-  orderInGs (0);
 }
 
 void ADDModelSSGRVertex::persistentOutput(PersistentOStream & os) const {

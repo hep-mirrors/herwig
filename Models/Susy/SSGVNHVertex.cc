@@ -14,8 +14,10 @@
 using namespace Herwig;
 
 SSGVNHVertex::SSGVNHVertex() : sa_(0.), sb_(0.), ca_(0.), cb_(0.),
-			       MPlanck_(2.4e18*GeV) 
-{}
+			       MPlanck_(2.4e18*GeV) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 IBPtr SSGVNHVertex::clone() const {
   return new_ptr(*this);
@@ -66,8 +68,6 @@ void SSGVNHVertex::doinit() {
   ca_ = sqrt(1. - sqr(sa_));
   nmix_ = model->neutralinoMix();
   MPlanck_ = model->MPlanck();
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSGVNHVertex::setCoupling(Energy2 ,

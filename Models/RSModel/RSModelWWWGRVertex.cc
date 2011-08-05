@@ -21,8 +21,11 @@ using namespace ThePEG;
 
 RSModelWWWGRVertex::RSModelWWWGRVertex() 
   : kappa_(ZERO), _couplast(0.), 
-    _q2last(ZERO), _zfact(0.) 
-{}
+    _q2last(ZERO), _zfact(0.) {
+  // order in the couplings
+  orderInGem(2);
+  orderInGs (0);
+}
 
 void RSModelWWWGRVertex::doinit() {
   addToList(24,-24, 22, 39);
@@ -36,9 +39,6 @@ void RSModelWWWGRVertex::doinit() {
       << "Must have RSModel in RSModelWWWGRVertex::doinit()"
       << Exception::runerror;
   kappa_=2./hwRS->lambda_pi();
-  // order in the couplings
-  orderInGem(2);
-  orderInGs (0);
 }
 
 void RSModelWWWGRVertex::persistentOutput(PersistentOStream & os) const {

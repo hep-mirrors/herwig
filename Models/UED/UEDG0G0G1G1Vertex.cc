@@ -20,15 +20,15 @@
 using namespace Herwig;
 
 UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
-  theq2Last(ZERO), theCoupLast(0.) 
-{}
+  theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(2);
+  orderInGem(0);
+}
 
 void UEDG0G0G1G1Vertex::doinit() {
   long kk1g = 5100021, smgl = 21;
   addToList(smgl, smgl, kk1g, kk1g);
   VVVVVertex::doinit();
-  orderInGs(2);
-  orderInGem(0);
 }
 
 NoPIOClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;

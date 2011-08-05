@@ -20,8 +20,10 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) 
-{}
+SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 void SSGSSVertex::doinit() {
   for(long ix=1000001;ix<1000007;++ix) {
@@ -30,8 +32,6 @@ void SSGSSVertex::doinit() {
   for(long ix=2000001;ix<2000007;++ix) {
     addToList(21,ix,-ix);
   }
-  orderInGs(1);
-  orderInGem(0);
   VSSVertex::doinit();
 }
 

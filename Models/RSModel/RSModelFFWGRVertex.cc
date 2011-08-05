@@ -23,8 +23,10 @@ using namespace ThePEG;
 RSModelFFWGRVertex::RSModelFFWGRVertex() 
   : charge_(17,0.), gl_(17,0.), gr_(17,0.),
     ckm_(3,vector<Complex>(3,0.0)),
-    couplast_(0.), q2last_(ZERO), kappa_(ZERO) 
-{}
+    couplast_(0.), q2last_(ZERO), kappa_(ZERO) {
+  orderInGem(2);
+  orderInGs (0);
+}
 
 void RSModelFFWGRVertex::doinit() {
   for(int ix=11;ix<17;++ix) {
@@ -57,8 +59,6 @@ void RSModelFFWGRVertex::doinit() {
   for(int ix=11;ix<17;ix+=2) {
     addToList(-ix-1, ix, 24,39);
   }
-  orderInGem(2);
-  orderInGs (0);
   FFVTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(!hwRS) throw Exception() 

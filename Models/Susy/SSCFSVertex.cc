@@ -24,8 +24,10 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    _q2last(0.*GeV2), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0),
-			    yukawa_(true) 
-{}
+			    yukawa_(true) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSCFSVertex::doinit() {
   long chargino[2] = {1000024, 1000037};
@@ -90,8 +92,6 @@ void SSCFSVertex::doinit() {
   double tb = _theSS->tanBeta();
   _sb = tb/sqrt(1 + sqr(tb));
   _cb = sqrt(1.- sqr(_sb));
-  orderInGem(1);
-  orderInGs(0);
 }
 
 

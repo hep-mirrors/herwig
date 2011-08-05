@@ -25,6 +25,8 @@ using namespace ThePEG;
 SMHGGVertex::SMHGGVertex()
   :_couplast(0.),_q2last(ZERO),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
+  orderInGs(2);
+  orderInGem(1);
 }
 
 void SMHGGVertex::doinit() {
@@ -34,8 +36,6 @@ void SMHGGVertex::doinit() {
   if(!_theSM) 
     throw InitException();
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  orderInGs(2);
-  orderInGem(1);
   VVSLoopVertex::doinit();
   // code to test the partial width
 //   Energy mh = getParticleData(25)->mass();

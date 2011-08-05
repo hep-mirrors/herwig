@@ -24,8 +24,10 @@ using namespace Herwig;
 
 SSNNPVertex::SSNNPVertex() : _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(ZERO), _couplast(0.),
-			     _leftlast(ZERO), _rightlast(ZERO) 
-{}
+			     _leftlast(ZERO), _rightlast(ZERO) {
+  orderInGem(3);
+  orderInGs(0);
+}
 
 void SSNNPVertex::doinit() {
   int ineu[5] = {1000022,1000023,1000025,1000035,1000045};
@@ -57,8 +59,6 @@ void SSNNPVertex::doinit() {
   _stop = theSS->stopMix();
   _sbot = theSS->sbottomMix();
   _stau = theSS->stauMix();
-  orderInGem(3);
-  orderInGs(0);
 }
 
 void SSNNPVertex::persistentOutput(PersistentOStream & os) const {

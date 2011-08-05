@@ -22,8 +22,10 @@ using namespace Herwig;
 
 UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
-				    thefermALast(0), thefermBLast(0) 
-{}
+				    thefermALast(0), thefermBLast(0) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDF1F1W0Vertex::doinit() {
   //outgoing W+
@@ -53,8 +55,6 @@ void UEDF1F1W0Vertex::doinit() {
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
   theRadius = model->compactRadius();
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void UEDF1F1W0Vertex::persistentOutput(PersistentOStream & os) const {
