@@ -50,7 +50,7 @@ public:
    * @param particles vector of ParticleData pointers containing 
    * particles in model
    */
-  virtual void DecayList(const set<PDPtr> & particles) = 0;
+  virtual void DecayList(const set<PDPtr> & particles);
 
   /**
    * Number of outgoing lines. Required for correct ordering.
@@ -66,6 +66,12 @@ public:
 
 protected:
   
+  /**
+   *  Method to set up the decay mode, should be overidden in inheriting class
+   */
+  virtual void createDecayMode(vector<PrototypeVertexPtr> & mode);
+  
+
   /**
    * Set the branching ratio of this mode. This requires 
    * calculating a new width for the decaying particle and reweighting
@@ -145,10 +151,6 @@ protected:
     // check if explicitly forbidden
     return excludedSet_.find(vertex)!=excludedSet_.end();
   }
-
-protected:
-
-  vector<vector<PrototypeVertexPtr> > potentialModes(const set<PDPtr> & particles);
 
 public:
 

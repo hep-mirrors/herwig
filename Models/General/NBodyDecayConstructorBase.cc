@@ -296,19 +296,14 @@ void NBodyDecayConstructorBase::doinit() {
 		       << fullName() << ":RemoveOnShell Yes\n"; 
 }
 
-vector<vector<PrototypeVertexPtr> > 
-NBodyDecayConstructorBase::potentialModes(const set<PDPtr> & particles) {
-  // potential modes for output
-  vector<vector<PrototypeVertexPtr> > allModes;
+void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
+  if( particles.empty() ) return;
   // cast the StandardModel to the Hw++ one to get the vertices
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
   unsigned int nv(model->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the modes
   for(set<PDPtr>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
-    list<vector<PrototypeVertexPtr> > modes;
     // get the decaying particle
     tPDPtr parent = *ip;
     // first create prototype 1->2 decays
@@ -319,6 +314,7 @@ NBodyDecayConstructorBase::potentialModes(const set<PDPtr> & particles) {
       PrototypeVertex::createPrototypes(parent, vertex, prototypes);
     }
     // now expand them into potential decay modes
+    list<vector<PrototypeVertexPtr> > modes;
     while(!prototypes.empty()) {
       // get the first prototype from the queue
       PrototypeVertexPtr proto = prototypes.front();
@@ -406,12 +402,15 @@ NBodyDecayConstructorBase::potentialModes(const set<PDPtr> & particles) {
 	if((**it).CC() && particles.find((**it).CC())!=particles.end()) ++nlist;
       }
       // if too many ignore the mode
-      if(nbos > maxBoson_ || nlist > maxList_) {
-	mit=modes.erase(mit);
-	--mit;
-      }
+      if(nbos > maxBoson_ || nlist > maxList_) continue;
+      // create the decay
+      createDecayMode(*mit);
     }
-    if(!modes.empty()) allModes.insert(allModes.end(),modes.begin(),modes.end());
   }
-  return allModes;
+}
+
+void NBodyDecayConstructorBase::createDecayMode(vector<PrototypeVertexPtr> &) {
+  throw Exception() << "In NBodyDecayConstructorBase::createDecayMode() which"
+		    << " should have be overridden in an inheriting class"
+		    << Exception::abortnow; 
 }

@@ -100,12 +100,7 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     if(!weak) continue;
     weakMassCut_ = max(weakMassCut_,weak->massCut());
   }
-  // get the potential modes
-  vector<vector<PrototypeVertexPtr> > newModes = potentialModes(particles);
-  // now create the decaters and decay modes
-  for(unsigned int imode=0;imode<newModes.size();++imode) {
-    createDecayMode(newModes[imode]);
-  }
+  NBodyDecayConstructorBase::DecayList(particles);
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::

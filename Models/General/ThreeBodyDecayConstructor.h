@@ -72,7 +72,7 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  void createDecayMode(vector<PrototypeVertexPtr> & mode);
+  virtual void createDecayMode(vector<PrototypeVertexPtr> & mode);
 
 public:
 

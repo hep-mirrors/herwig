@@ -52,8 +52,7 @@ public:
   /**
    *  Create a decay mode
    */
-  void createDecayMode(vector<PrototypeVertexPtr> & diagrams,
-		       bool inter);
+  void createDecayMode(vector<PrototypeVertexPtr> &);
 
   /**
    * Create the decayer
