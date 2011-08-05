@@ -329,6 +329,16 @@ private:
    */
   void createDecayMode(string tag, double brat) const;
 
+  /**
+   * Create a DecayMode object in the repository
+   * @param tag The tag identifying the decay mode including the prefix
+   * 'decaymode'
+   * @param brat Branching ratio of this mode 
+   */
+  vector<pair<double,string> > createWZDecayModes(string tag, double brat,
+						  tcPDPtr boson,
+						  Energy maxMass) const;
+
 protected:
 
   /**

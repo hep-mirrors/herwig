@@ -314,7 +314,7 @@ void SusyBase::readSetup(istream & is) {
       ifb->exec(**dit, "set", "Off");
     }    
   }
-  // read first line and chjeck if this is a Les Houches event file
+  // read first line and check if this is a Les Houches event file
   cfile.readline();
   bool lesHouches = cfile.find("<LesHouchesEvents");
   bool reading = !lesHouches;
@@ -457,6 +457,13 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
 
 void SusyBase::readDecay(CFileLineReader & cfile, 
 			 string decay) const{
+  map<string,ParamMap>::const_iterator fit=parameters_.find("mass");
+  if(fit==parameters_.end()) 
+    throw Exception() << "SusyBase::readDecay() "
+		      << "BLOCK MASS not found in input file"
+		      << "it must be before the decays so the kinematics can be checked"
+		      << Exception::runerror;
+  ParamMap theMasses = fit->second;
   if(!cfile)
     throw SetupException() 
       <<"SusyBase::readDecay - The input stream is in a bad state";
@@ -479,6 +486,8 @@ void SusyBase::readDecay(CFileLineReader & cfile,
   inpart->width(width);
   if( width > ZERO ) inpart->cTau(hbarc/width);
   inpart->widthCut(5.*width);
+  ParamMap::iterator it = theMasses.find(abs(inpart->id()));
+  Energy inMass = it!=theMasses.end() ? abs(it->second*GeV) : inpart->mass();
   string prefix("decaymode " + inpart->name() + "->");
   double brsum(0.);
   unsigned int nmode = 0;
@@ -494,13 +503,14 @@ void SusyBase::readDecay(CFileLineReader & cfile,
       break;
     }
     // read the mode
-    string tag = prefix;
+    // get the branching ratio and no of decay products
     istringstream is(line);
     double brat(0.);
     unsigned int nda(0),npr(0);
     is >> brat >> nda;
-    brsum += brat;
-    ++nmode;
+    vector<tcPDPtr> products,bosons;
+    Energy mout(ZERO),moutnoWZ(ZERO);
+    string tag = prefix;
     while( true ) {
       long t;
       is >> t;
@@ -519,9 +529,17 @@ void SusyBase::readDecay(CFileLineReader & cfile,
 	  << "while reading a decay mode. ID: " << t
 	  << Exception::runerror;
       }
+      ++npr;
+      tag += p->name() + ",";
+      ParamMap::iterator it = theMasses.find(abs(p->id()));
+      Energy mass = it!=theMasses.end() ? abs(it->second*GeV) : p->mass();
+      mout += mass;
+      if(abs(p->id())==ParticleID::Wplus||p->id()==ParticleID::Z0) {
+	bosons.push_back(p);
+      }
       else {
-	++npr;
-	tag += p->name() + ",";
+	products.push_back(p);
+	moutnoWZ += mass;
       }
     }
     if( npr != nda ) {
@@ -534,9 +552,70 @@ void SusyBase::readDecay(CFileLineReader & cfile,
 	<< Exception::warning;
     }
     if( npr > 1 ) {
-      inpart->stable(false);
       tag.replace(tag.size() - 1, 1, ";");
-      createDecayMode(tag, brat);
+      // normal option
+      if(mout<=inMass) {
+	inpart->stable(false);
+	brsum += brat;
+	createDecayMode(tag, brat);
+      }
+      // no possible off-shell gauge bosons throw it away
+      else if(bosons.empty() || bosons.size()>2 ||
+	      moutnoWZ>=inMass) {
+	cerr << "SusyBase::readDecay() "
+	     << "The decay " << tag << " cannot proceed for on-shell "
+	     << "particles, skipping it.\n";
+      }
+      else {
+	Energy maxMass = inMass - moutnoWZ;
+	string newTag = prefix;
+	for(unsigned int ix=0;ix<products.size();++ix)
+	  newTag += products[ix]->name() + ",";
+	if(bosons.size()==1) {
+	  cerr << "SusyBase::readDecay() "
+	       << "The decay " << tag << " cannot proceed for on-shell\n"
+	       << "particles, replacing gauge boson with its decay products\n";
+	  vector<pair<double,string> > modes = 
+	    createWZDecayModes(newTag,brat,bosons[0],maxMass);
+	  for(unsigned int ix=0;ix<modes.size();++ix) {
+	    modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
+	    createDecayMode(modes[ix].second,modes[ix].first);
+	    brsum += modes[ix].first;
+	  }
+	}
+ 	else if(bosons.size()==2) {
+ 	  bool identical = bosons[0]->id()==bosons[1]->id();
+ 	  if(maxMass>bosons[0]->mass()&&maxMass>bosons[1]->mass()) {
+ 	    cerr << "SusyBase::readDecay() "
+ 		 << "The decay " << tag << " cannot proceed for on-shell\n"
+ 		 << "particles, replacing one of the gauge bosons"
+ 		 << " with its decay products\n";
+ 	    unsigned int imax = identical ? 1 : 2;
+ 	    if(imax==2) brat *= 0.5;
+ 	    for(unsigned int ix=0;ix<imax;++ix) {
+ 	      string newTag2 = newTag+bosons[ix]->name()+',';
+	      vector<pair<double,string> > modes = 
+	        createWZDecayModes(newTag2,brat,bosons[ix],maxMass);
+	      for(unsigned int ix=0;ix<modes.size();++ix) {
+		modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
+		createDecayMode(modes[ix].second,modes[ix].first);
+		brsum += modes[ix].first;
+	      }
+	    }
+	  }
+ 	  else {
+	    cerr << "SusyBase::readDecay() "
+		 << "The decay " << tag << " cannot proceed for on-shell\n"
+		 << "particles, and has too many off-shell gauge bosons,"
+		 << " skipping it.\n";
+	  }
+ 	}
+	else {
+	  cerr << "SusyBase::readDecay() "
+	       << "The decay " << tag << " cannot proceed for on-shell\n"
+	       << "particles, and has too many outgoing gauge bosons skipping it.\n";
+	}
+      }
     }
   }
   if( abs(brsum - 1.) > tolerance_ && nmode!=0 ) {
@@ -804,4 +883,30 @@ void SusyBase::extractParameters(bool checkmodel) {
 		      << "Model class, use one of the models which inherit"
 		      << " from it" << Exception::runerror;
   }
+}
+
+vector<pair<double,string> > 
+SusyBase::createWZDecayModes(string tag, double brat,
+			     tcPDPtr boson, Energy maxMass) const {
+  vector<pair<double,string> > modes;
+  double sum(0.);
+  for(DecaySet::const_iterator dit=boson->decayModes().begin();
+      dit!=boson->decayModes().end();++dit) {
+    tcDMPtr mode = *dit;
+    if(!mode->on()) continue;
+    string extra;
+    Energy outMass(ZERO);
+    for(ParticleMSet::const_iterator pit=mode->products().begin();
+	pit!=mode->products().end();++pit) {
+      extra += (**pit).name() + ",";
+      outMass += (**pit).mass();
+    }
+    if(outMass<maxMass) {
+      sum += mode->brat();
+      modes.push_back(make_pair(mode->brat(),tag+extra));
+    }
+  }
+  for(unsigned int ix=0;ix<modes.size();++ix) 
+    modes[ix].first *= brat/sum;
+  return modes;
 }
