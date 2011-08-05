@@ -41,8 +41,10 @@ void ADDModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(UnitRemoval::E * kappa_));
 }
 
-ADDModelVVGRVertex::ADDModelVVGRVertex() : kappa_(ZERO), r_(ZERO) 
-{}
+ADDModelVVGRVertex::ADDModelVVGRVertex() : kappa_(ZERO), r_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void ADDModelVVGRVertex::doinit() {
   addToList(23,23,39);
@@ -56,8 +58,6 @@ void ADDModelVVGRVertex::doinit() {
 		      << Exception::runerror;
   kappa_=2./hwADD->MPlanckBar();
   r_ = sqr(hwADD->LambdaT())/hwADD->MPlanckBar();
-  orderInGem(1);
-  orderInGs (0);
 }
 
 Complex ADDModelVVGRVertex::propagator(int iopt, Energy2 q2,tcPDPtr part,

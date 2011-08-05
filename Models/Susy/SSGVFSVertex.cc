@@ -20,8 +20,10 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGVFSVertex::SSGVFSVertex() : MPlanck_(2.4e18*GeV) 
-{}
+SSGVFSVertex::SSGVFSVertex() : MPlanck_(2.4e18*GeV) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSGVFSVertex::persistentOutput(PersistentOStream & os) const {
   os << stop_ << sbot_ << stau_ << ounit(MPlanck_,GeV);
@@ -59,8 +61,6 @@ void SSGVFSVertex::doinit() {
   stop_ = model->stopMix();
   sbot_ = model->sbottomMix();
   stau_ = model->stauMix();
-  orderInGem(1);
-  orderInGs(0);
 }
 
 ClassDescription<SSGVFSVertex> SSGVFSVertex::initSSGVFSVertex;

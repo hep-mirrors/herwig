@@ -27,8 +27,10 @@ IBPtr LeptoquarkModelSLQFFVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex()  
-{}
+LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex() {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void LeptoquarkModelSLQFFVertex::doinit() {
   //S0
@@ -120,8 +122,6 @@ void LeptoquarkModelSLQFFVertex::doinit() {
   addToList( 16, 6,-9901661);
 
 
-  orderInGem(0);
-  orderInGs(0);
   _theModel = generator()->standardModel();
   tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
   if(hwLeptoquark){

@@ -19,8 +19,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) 
-{}
+RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void RSModelSSGRVertex::doinit() {
   addToList(25,25,39);
@@ -30,8 +32,6 @@ void RSModelSSGRVertex::doinit() {
     throw Exception() << "Must have RSModel in RSModelSSGRVertex::doinit()"
 		      << Exception::runerror;
   kappa_=2./hwRS->lambda_pi();
-  orderInGem(1);
-  orderInGs (0);
 }
 
 void RSModelSSGRVertex::persistentOutput(PersistentOStream & os) const {

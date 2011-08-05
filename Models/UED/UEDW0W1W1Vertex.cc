@@ -22,8 +22,10 @@ using namespace Herwig;
 UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 				     theSinThetaOne(0.), theCosThetaOne(0.),
 				     theq2last(), theElast(0.), theCouplast(0.),
-				     theSMlast(0), theKKlast(0) 
-{}
+				     theSMlast(0), theKKlast(0) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDW0W1W1Vertex::doinit() {
   addToList( 22, -5100024, 5100024);
@@ -44,8 +46,6 @@ void UEDW0W1W1Vertex::doinit() {
   theCosW = sqrt( 1. - sqr(theSinW) );
   theSinThetaOne = model->sinThetaOne();
   theCosThetaOne = sqrt( 1. - sqr(theSinThetaOne));
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void UEDW0W1W1Vertex::persistentOutput(PersistentOStream & os) const {

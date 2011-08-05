@@ -21,8 +21,10 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
-				     theq2Last(ZERO), theCoupLast(0.) 
-{}
+				     theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDZ0A1h1Vertex::doinit() {
   addToList(23, 5100036, 5100025);
@@ -38,8 +40,6 @@ void UEDZ0A1h1Vertex::doinit() {
   Energy2 mz2 = sqr(getParticleData(23)->mass());
   InvEnergy2 rad2 = sqr(UEDBase->compactRadius());
   theKappa = 1./sqrt(1. + mz2*rad2);
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void UEDZ0A1h1Vertex::persistentOutput(PersistentOStream & os) const {

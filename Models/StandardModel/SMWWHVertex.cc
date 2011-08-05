@@ -19,8 +19,10 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
-  : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) 
-{}
+  : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SMWWHVertex::doinit() {
   addToList(24,-24, 25);
@@ -28,9 +30,6 @@ void SMWWHVertex::doinit() {
   // parameters
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
   _zfact = 1./(1.-sin2ThetaW());
-  // order in the couplings
-  orderInGem(1);
-  orderInGs(0);
   // base class
   VVSVertex::doinit();
 }

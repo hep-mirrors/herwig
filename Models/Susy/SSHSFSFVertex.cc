@@ -28,8 +28,10 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theMw(ZERO), theMz(ZERO), theMu(ZERO), 
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
-				 theSF2Last(0) 
-{}
+				 theSF2Last(0) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSHSFSFVertex::doinit() {
   int higgs = 25;
@@ -145,9 +147,6 @@ void SSHSFSFVertex::doinit() {
 
   theSw = sqrt(sin2ThetaW());
   theCw = sqrt(1. - sin2ThetaW());
-
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSHSFSFVertex::persistentOutput(PersistentOStream & os) const {

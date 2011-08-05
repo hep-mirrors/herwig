@@ -15,8 +15,10 @@ using namespace ThePEG::Helicity;
 
 NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 				       _cosb(0.), _sw(0.), _cw(0.),
-				       _q2last(0.*MeV2), _couplast(0.) 
-{}
+				       _q2last(0.*MeV2), _couplast(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {
    os << _mixV << _mixU << _mixN << _mixS << _mixP << _lambda << _kappa << _sinb
@@ -121,9 +123,6 @@ void NMSSMGOGOHVertex::doinit() {
   double beta = atan(model->tanBeta());
   _sinb=sin(beta);
   _cosb=cos(beta);
-  // order in the couplings
-  orderInGem(1);
-  orderInGs(0);
   FFSVertex::doinit();
 }
 

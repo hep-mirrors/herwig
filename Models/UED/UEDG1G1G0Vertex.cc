@@ -21,15 +21,15 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDG1G1G0Vertex::UEDG1G1G0Vertex() 
-  : theq2Last(ZERO), theCoupLast(0.) 
-{}
+  : theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 void UEDG1G1G0Vertex::doinit() {
   long kkg1 = 5100021;
   addToList(kkg1, kkg1, 21);
   VVVVertex::doinit();
-  orderInGs(1);
-  orderInGem(0);
 }
 
 NoPIOClassDescription<UEDG1G1G0Vertex> UEDG1G1G0Vertex::initUEDG1G1G0Vertex;

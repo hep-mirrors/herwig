@@ -24,8 +24,10 @@ using namespace Herwig;
 
 SSGNGVertex::SSGNGVertex() : _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
-			     _leftlast(ZERO), _rightlast(ZERO) 
-{}
+			     _leftlast(ZERO), _rightlast(ZERO) {
+  orderInGem(1);
+  orderInGs(2);
+}
 
 void SSGNGVertex::doinit() {
   int ineu[5] = {1000022,1000023,1000025,1000035,1000045};
@@ -52,8 +54,6 @@ void SSGNGVertex::doinit() {
   _cb = sqrt(1 - sqr(_sb));
   _stop = theSS->stopMix();
   _sbot = theSS->sbottomMix();
-  orderInGem(1);
-  orderInGs(2);
 }
 
 void SSGNGVertex::persistentOutput(PersistentOStream & os) const {

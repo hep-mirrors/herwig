@@ -200,6 +200,8 @@ Complex SMHPPVertex::W2(double lambda) const {
 SMHPPVertex::SMHPPVertex() 
   :_couplast(0.),_q2last(),_mw(),massopt(1),
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
+  orderInGs(0);
+  orderInGem(3);
 }
 
 
@@ -253,8 +255,6 @@ void SMHPPVertex::doinit() {
       << "SMHGGVertex::doinit() - The pointer to the SM object is null."
       << Exception::abortnow;
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  orderInGs(0);
-  orderInGem(3);
   VVSLoopVertex::doinit();
 //   // code to test the partial width
 //   Energy mh = getParticleData(25)->mass();

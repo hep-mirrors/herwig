@@ -35,8 +35,10 @@ SSHPPVertex::SSHPPVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), 
 			     theSinBmA(0.), theCosBmA(0.), 
 			     theCouplast(0.), 
-			     theq2last(), theHaveCoeff(false), theLastID(0) 
-{}
+			     theq2last(), theHaveCoeff(false), theLastID(0) {
+  orderInGs(0);
+  orderInGem(3);
+}
 
 void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
   os << theMSSM << theSw << ounit(theMw,GeV) << ounit(theZfact,GeV) 
@@ -379,8 +381,6 @@ void SSHPPVertex::doinit() {
   theSfmass[4] = getParticleData(ParticleID::SUSY_t_2)->mass();
   theSfmass[5] = getParticleData(ParticleID::SUSY_tau_2minus)->mass();
 
-  orderInGs(0);
-  orderInGem(3);
   VVSLoopVertex::doinit();
   // test calc of the width
 //   for(unsigned int ix=0;ix<2;++ix) {
