@@ -226,7 +226,8 @@ public:
    *  Expand the prototypes by adding more legs
    */
   static void expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
-			       std::queue<PrototypeVertexPtr> & prototypes);
+			       std::queue<PrototypeVertexPtr> & prototypes,
+			       const set<PDPtr> & excluded);
 
   /**
    *  Copy the whole structure with a new branching

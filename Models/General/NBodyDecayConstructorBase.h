@@ -149,7 +149,7 @@ protected:
 	int(vertex->orderInGs() + vertex->orderInGem()) != int(vertex->getNpoint())-2)
       return true;
     // check if explicitly forbidden
-    return excludedSet_.find(vertex)!=excludedSet_.end();
+    return excludedVerticesSet_.find(vertex)!=excludedVerticesSet_.end();
   }
 
 public:
@@ -240,12 +240,22 @@ private:
   /**
    *  Excluded Vertices
    */
-  vector<VertexBasePtr> excludedVector_;
+  vector<VertexBasePtr> excludedVerticesVector_;
 
   /**
    *  Excluded Vertices
    */
-  set<VertexBasePtr> excludedSet_;
+  set<VertexBasePtr> excludedVerticesSet_;
+
+  /**
+   *  Excluded Particles
+   */
+  vector<PDPtr> excludedParticlesVector_;
+
+  /**
+   *  Excluded Particles
+   */
+  set<PDPtr> excludedParticlesSet_;
 
   /**
    *  Whether or not to exclude effective vertices

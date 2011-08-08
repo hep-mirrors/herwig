@@ -64,14 +64,18 @@ PrototypeVertexPtr PrototypeVertex::replicateTree(PrototypeVertexPtr parent,
 }
 
 void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
-				       std::queue<PrototypeVertexPtr> & prototypes) {
+				       std::queue<PrototypeVertexPtr> & prototypes,
+				       const set<PDPtr> & excluded) {
   for(OrderedVertices::const_iterator it = proto->outgoing.begin();
       it!=proto->outgoing.end();++it) {
     if(it->second) {
-      expandPrototypes(it->second,vertex,prototypes);
+      expandPrototypes(it->second,vertex,prototypes,excluded);
     }
     else {
       if(!vertex->isIncoming(it->first)) continue;
+      if(excluded.find(it->first)!=excluded.end()) continue;
+      if(it->first->CC() && 
+	 excluded.find(it->first->CC())!=excluded.end()) continue;
       int id = it->first->id();
       PrototypeVertexPtr parent=proto;
       while(parent->parent) parent=parent->parent;

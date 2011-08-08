@@ -28,14 +28,16 @@ using namespace ThePEG;
 
 void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const {
   os << init_ << iteration_ << points_ << info_ << decayConstructor_
-     << removeOnShell_ << excludedVector_ << excludedSet_ 
-     << excludeEffective_ << includeTopOnShell_;
+     << removeOnShell_ << excludeEffective_ << includeTopOnShell_
+     << excludedVerticesVector_ << excludedVerticesSet_ 
+     << excludedParticlesVector_ << excludedParticlesSet_;
 }
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
   is >> init_ >> iteration_ >> points_ >> info_ >> decayConstructor_
-     >> removeOnShell_ >> excludedVector_ >> excludedSet_ 
-     >> excludeEffective_ >> includeTopOnShell_;
+     >> removeOnShell_ >> excludeEffective_ >> includeTopOnShell_
+     >> excludedVerticesVector_ >> excludedVerticesSet_
+     >> excludedParticlesVector_ >> excludedParticlesSet_;
 }
 
 AbstractClassDescription<NBodyDecayConstructorBase> 
@@ -129,7 +131,14 @@ void NBodyDecayConstructorBase::Init() {
   static RefVector<NBodyDecayConstructorBase,VertexBase> interfaceExcludedVertices
     ("ExcludedVertices",
      "Vertices which are not included in the three-body decayers",
-     &NBodyDecayConstructorBase::excludedVector_, -1, false, false, true, true, false);
+     &NBodyDecayConstructorBase::excludedVerticesVector_,
+     -1, false, false, true, true, false);
+
+  static RefVector<NBodyDecayConstructorBase,ParticleData> interfaceExcludedIntermediates
+    ("ExcludedIntermediates",
+     "Excluded intermediate particles",
+     &NBodyDecayConstructorBase::excludedParticlesVector_,
+     -1, false, false, true, true, false);
 
   static Switch<NBodyDecayConstructorBase,bool> interfaceExcludeEffectiveVertices
     ("ExcludeEffectiveVertices",
@@ -285,8 +294,10 @@ void NBodyDecayConstructorBase::setDecayerInterfaces(string fullname) const {
 
 void NBodyDecayConstructorBase::doinit() {
   Interfaced::doinit();
-  excludedSet_ = set<VertexBasePtr>(excludedVector_.begin(),
-				    excludedVector_.end());
+  excludedVerticesSet_ = set<VertexBasePtr>(excludedVerticesVector_.begin(),
+					    excludedVerticesVector_.end());
+  excludedParticlesSet_ = set<PDPtr>(excludedParticlesVector_.begin(),
+				     excludedParticlesVector_.end());
   if(removeOnShell_==0&&numBodies()>2) 
     generator()->log() << "Warning: Including diagrams with on-shell "
 		       << "intermediates in " << numBodies() << "-body BSM decays, this"
@@ -325,7 +336,8 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 	for(unsigned int iv = 0; iv < nv; ++iv) {
 	  VertexBasePtr vertex = model->vertex(iv);
 	  if(excluded(vertex)) continue;
-	  PrototypeVertex::expandPrototypes(proto,vertex,prototypes);
+	  PrototypeVertex::expandPrototypes(proto,vertex,prototypes,
+					    excludedParticlesSet_);
 	}
       }
       // multiplcity too high disgard
