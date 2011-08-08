@@ -30,13 +30,11 @@ IBPtr TTbAModelWPTDVertex::fullclone() const {
 TTbAModelWPTDVertex::TTbAModelWPTDVertex()  {
   addToList(-1,6,34);
   addToList(-6,1,-34);
-  
-
+  orderInGem(0);
+  orderInGs(0);
 }
 
 void TTbAModelWPTDVertex::doinit() {
-  orderInGem(0);
-  orderInGs(0);
   _theModel = generator()->standardModel();
   tcHwTTbAPtr hwTTbA=dynamic_ptr_cast<tcHwTTbAPtr>(_theModel);
   if(hwTTbA) {

@@ -21,11 +21,11 @@ AnomalousWWWVertex::AnomalousWWWVertex() :
   _q2last(sqr(Constants::MaxEnergy)) {
   addToList(24, -24, 22);
   addToList(24, -24, 23);
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void AnomalousWWWVertex::doinit() {
-  orderInGem(1);
-  orderInGs(0);
   AbstractVVVVertex::doinit();
   // factor for the Z vertex
   double sw2=sin2ThetaW();

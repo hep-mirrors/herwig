@@ -16,6 +16,9 @@ using namespace Herwig;
 LHFFWVertex::LHFFWVertex() 
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.), _q2last(0.*GeV2),
     _corrL(0.),_corrH(0.),_tcorrL(0.),_tcorrH(0.),_tHcorrL(0.), _tHcorrH(0.) {
+  // order of vertex in couplings
+  orderInGem(1);
+  orderInGs(0);
   // particles for outgoing W-
   // quarks
   for(int ix=1;ix<6;ix+=2) {
@@ -97,9 +100,6 @@ void LHFFWVertex::doinit() {
   _tcorrH  = -model->cosTheta()/model->sinTheta();
   _tHcorrL = -vf*xL;
   _tHcorrH =  vf*xL*model->cosTheta()/model->sinTheta();
-  // order of vertex in couplings
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, 

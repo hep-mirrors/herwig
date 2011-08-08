@@ -14,6 +14,9 @@ using namespace Herwig;
 
 LHWWWWVertex::LHWWWWVertex() : 
   _couplast(0.0), _q2last(sqr(Constants::MaxEnergy)), _coup(36,0.) {
+  // order in the couplings
+  orderInGem(2);
+  orderInGs(0);
   // all charge W's
   addToList(24, -24, 24, -24);
   addToList(34, -34, 34, -34);

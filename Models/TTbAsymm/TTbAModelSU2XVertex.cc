@@ -30,6 +30,8 @@ IBPtr TTbAModelSU2XVertex::fullclone() const {
 }
 
 TTbAModelSU2XVertex::TTbAModelSU2XVertex()  {
+  orderInGem(0);
+  orderInGs(0);
   
   addToList(-6,6,70);
   addToList(-2,2,70);
@@ -51,8 +53,6 @@ TTbAModelSU2XVertex::TTbAModelSU2XVertex()  {
 }
 
 void TTbAModelSU2XVertex::doinit() {
-  orderInGem(0);
-  orderInGs(0);
   _theModel = generator()->standardModel();
   tcHwTTbAPtr hwTTbA=dynamic_ptr_cast<tcHwTTbAPtr>(_theModel);
   if(hwTTbA) {

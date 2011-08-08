@@ -34,11 +34,11 @@ TTbAModelZPQQVertex::TTbAModelZPQQVertex()  {
   addToList(-6,2,32);
   addToList(-2,2,32);
   addToList(-4,4,32);
+  orderInGem(0);
+  orderInGs(0);
 }
 
 void TTbAModelZPQQVertex::doinit() {
-  orderInGem(0);
-  orderInGs(0);
   _theModel = generator()->standardModel();
   tcHwTTbAPtr hwTTbA=dynamic_ptr_cast<tcHwTTbAPtr>(_theModel);
   if(hwTTbA) {

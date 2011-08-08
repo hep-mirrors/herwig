@@ -32,6 +32,8 @@ void LHFFHVertex::Init() {
 
 LHFFHVertex::LHFFHVertex() 
   : _q2last(0.*GeV2) {
+  orderInGem(1);
+  orderInGs(0);
   _masslast[0] = 0.*GeV; 
   _masslast[1] = 0.*GeV;
   _idlast[0] = 0;
@@ -97,8 +99,6 @@ void LHFFHVertex::doinit() {
   // phi +/-
   _coup[9] = -sqrt(0.5)/v*(vf-2.*sPlus);
   _coup[9] = -sqrt(0.5)/v*(vf-2.*sPlus)*_model->lambda1()/_model->lambda2();
-  orderInGem(1);
-  orderInGs(0);
   FFSVertex::doinit();
 }
 

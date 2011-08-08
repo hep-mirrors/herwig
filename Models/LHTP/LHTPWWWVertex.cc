@@ -14,6 +14,8 @@ using namespace Herwig;
 
 LHTPWWWVertex::LHTPWWWVertex() : couplast_(0.), q2last_(0.*MeV2),
 				 couplings_(3 ,0.) {
+  orderInGem(1);
+  orderInGs(0);
   //SM interactions
   addToList(24,  -24,    22);
   addToList(24,  -24,  23);
@@ -52,8 +54,6 @@ void LHTPWWWVertex::Init() {
 
 void LHTPWWWVertex::doinit() {
   VVVVertex::doinit();
-  orderInGem(1);
-  orderInGs(0);
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
   if( !model )

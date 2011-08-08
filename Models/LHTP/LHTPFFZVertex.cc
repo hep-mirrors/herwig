@@ -44,6 +44,8 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
 				 _coupd(0.), _coupu(0.),
 				 _coupe(0.), _coupnu(0.),
 				 _couplast(0.0), _q2last(0.*GeV2) {
+  orderInGem(1);
+  orderInGs(0);
   // Z
   // the quarks
   for(int ix = 1; ix < 7; ++ix) {
@@ -134,8 +136,6 @@ void LHTPFFZVertex::doinit() {
   _tr[3] = 0.4*sH*model->sinAlpha()/cw;
   _tl[4] = 0.4*sH*model->cosBeta ()/cw;
   _tr[4] = 0.4*sH*model->cosAlpha()/cw;
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }
 

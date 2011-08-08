@@ -28,6 +28,8 @@ IBPtr TTbAModelAGQQVertex::fullclone() const {
 }
 
 TTbAModelAGQQVertex::TTbAModelAGQQVertex()  {
+  orderInGem(0);
+  orderInGs(0);
   addToList(-1,1,63);
   addToList(-2,2,63);
   addToList(-3,3,63);
@@ -40,8 +42,6 @@ TTbAModelAGQQVertex::TTbAModelAGQQVertex()  {
 }
 
 void TTbAModelAGQQVertex::doinit() {
-  orderInGem(0);
-  orderInGs(0);
   _theModel = generator()->standardModel();
   tcHwTTbAPtr hwTTbA=dynamic_ptr_cast<tcHwTTbAPtr>(_theModel);
   if(hwTTbA) {

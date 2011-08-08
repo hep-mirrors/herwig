@@ -45,10 +45,6 @@ LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
     if(ix==7) ++ix;
     addToList(-ix, ix, 21);
   }
-}
-  
-void LHFFGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
-  FFVVertex::doinit();
 }

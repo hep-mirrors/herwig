@@ -32,6 +32,8 @@ void LHTPFFGVertex::Init() {
 
 LHTPFFGVertex::LHTPFFGVertex() 
   : _couplast(0.), _q2last(0.*GeV2) {
+  orderInGs(1);
+  orderInGem(0);
   // SM quarks
   for(int ix = 1; ix < 7; ++ix) {
     addToList(-ix,    ix, 21);
@@ -43,12 +45,6 @@ LHTPFFGVertex::LHTPFFGVertex()
     addToList(-ix,     ix, 21);
   }
   addToList(-4000008,   4000008, 21);
-}
-  
-void LHTPFFGVertex::doinit() {
-  orderInGs(1);
-  orderInGem(0);
-  FFVVertex::doinit();
 }
 
 // coupling for FFG vertex

@@ -48,6 +48,9 @@ LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
     addToList(-ix,    ix,    23);
     addToList(-ix,    ix,    33);
   }
+  // set order in the couplings
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void LHFFZVertex::doinit() {
@@ -141,9 +144,6 @@ void LHFFZVertex::doinit() {
   _grH[7] = vtm + atm;
   _glH[8] = vth - ath;
   _grH[8] = vth + ath;
-  // set order in the couplings
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void LHFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {

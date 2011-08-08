@@ -50,6 +50,8 @@ void HiddenValleyFFZPrimeVertex::setCoupling(Energy2, tcPDPtr a,tcPDPtr,tcPDPtr)
 }
 
 HiddenValleyFFZPrimeVertex::HiddenValleyFFZPrimeVertex() : _gl(17,0.0), _gr(17,0.0) {
+  orderInGem(1);
+  orderInGs(0);
   // PDG codes for the particles
   vector<long int> first,second,third;
   // the quarks
@@ -81,8 +83,6 @@ void HiddenValleyFFZPrimeVertex::doinit() {
     _gr[2*ix+9 ] = model->lR();
     _gr[2*ix+10] = 0.  ;
   }
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
   _gql.resize(model->NF()+1,0.);
   _gqr.resize(model->NF()+1,0.);

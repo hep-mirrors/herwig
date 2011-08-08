@@ -43,6 +43,9 @@ void LHTPWWHVertex::Init() {
 }
 
 LHTPWWHVertex::LHTPWWHVertex() : _couplast(0.), _q2last(0.*GeV2) {
+  // order in the couplings
+  orderInGem(1);
+  orderInGs(0);
   // W_L W_L H
   addToList(  24,  -24,    25);
   // Z_L Z_L H
@@ -115,9 +118,6 @@ void LHTPWWHVertex::doinit() {
     throw InitException() << "Must be using the LHTPModel "
 			  << " in LHTPWWHVertex::doinit()"
 			  << Exception::runerror;
-  // order in the couplings
-  orderInGem(1);
-  orderInGs(0);
   // base class
   VVSVertex::doinit();
   // calculate the couplings for the different combinations of particles

@@ -74,13 +74,13 @@ void LHTPFFWVertex::doinit() {
   _calpha = model->cosAlpha();
   _sbeta  = model->sinBeta();
   _cbeta  = model->cosBeta();
-  orderInGem(1);
-  orderInGs(0);
   //  cerr << *this;
 }
 
 LHTPFFWVertex::LHTPFFWVertex()
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),_q2last(0.*sqr(MeV))  {
+  orderInGem(1);
+  orderInGs(0);
   // particles for the vertex
   vector<long> first,second,third;
   // particles for outgoing W-

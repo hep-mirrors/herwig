@@ -31,6 +31,8 @@ void LHWWWVertex::Init() {
 }
 
 LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(ZERO) {
+  orderInGem(1);
+  orderInGs(0);
   // particles
   addToList(24,  -24,  22);
   addToList(24,  -24,  23);
@@ -93,8 +95,6 @@ void LHWWWVertex::doinit() {
   _corr[10] = -cw/sw;
   // W_H W_H Z_H
   _corr[11] = (sqr(c)-sqr(s))/s/c/sw;
-  orderInGem(1);
-  orderInGs(0);
   VVVVertex::doinit();
 }
 

@@ -48,6 +48,8 @@ LHTPFFPVertex::LHTPFFPVertex() :
   _charge(37,0.0), _couplast(0.), _q2last(-1.*GeV2),
   _coupd(0.), _coupu(0.), _coupe(0.), _coupnu(0.),
   _tmtpL(0.), _tmtpR(0.), _tmtL(0.), _tmtR(0.) {
+  orderInGem(1);
+  orderInGs(0);
   // interactions with the photon
   // the quarks
   for(unsigned int ix = 1; ix < 7; ++ix) {
@@ -121,8 +123,6 @@ void LHTPFFPVertex::doinit() {
   // couplings of T-t A_H
   _tmtL  = 0.4*cH/cw*model->sinBeta();
   _tmtR  = 0.4*cH/cw*model->sinAlpha();
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }
 

@@ -14,6 +14,8 @@ using namespace Herwig;
 
 LHWHHVertex::LHWHHVertex() : 
   couplast_(0.), q2last_(ZERO), coup_(24) {
+  orderInGs(0);
+  orderInGem(1);
   // neutral
   addToList( 22, 37,-37);
   addToList( 22, 38,-38);
@@ -115,8 +117,6 @@ void LHWHHVertex::doinit() {
   coup_[21] = Complex(0.,1.)/sw*0.5*(sqr(c)-sqr(s))/s/c;
   coup_[22] = 0.;
   coup_[23] =-0.5/sw*(sqr(c)-sqr(s))/s/c;
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void LHWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,

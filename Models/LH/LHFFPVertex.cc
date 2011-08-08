@@ -14,6 +14,9 @@ using namespace Herwig;
 
 LHFFPVertex::LHFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
+  // order in strong and em coupling
+  orderInGem(1);
+  orderInGs(0);
   // the quarks
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,    ix,    22);
@@ -117,9 +120,6 @@ void LHFFPVertex::doinit() {
   // heavy top
   _gr[8] = gvthh+gathh;
   _gl[8] = gvthh-gathh;
-  // order in strong and em coupling
-  orderInGem(1);
-  orderInGs(0);
 }
 
 // coupling for FFP vertex

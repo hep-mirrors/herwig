@@ -14,6 +14,8 @@ using namespace Herwig;
 
 LHWWHHVertex::LHWWHHVertex() : 
   couplast_(0.), q2last_(ZERO), coup_(107) {
+  orderInGs(0);
+  orderInGem(2);
   // VVHH
   addToList(  24,  -24,  25,  25);
   addToList(  23,   23,  25,  25);
@@ -341,8 +343,6 @@ void LHWWHHVertex::doinit() {
   coup_[104] = Complex(0.,1.)*sqrt(2.)/sw2;
   coup_[105] =-Complex(0.,1.)*sqrt(2.)/sw2*0.5*(sqr(c)-sqr(s))/s/c;
   coup_[106] = Complex(0.,1.)*sqrt(2.)/sw2*0.5*(pow(c,4)+pow(s,4))/sqr(s*c);
-  orderInGs(0);
-  orderInGem(2);
 }
 
 void LHWWHHVertex::setCoupling(Energy2 q2,
