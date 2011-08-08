@@ -335,7 +335,8 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 	// loop over all vertices and expand
 	for(unsigned int iv = 0; iv < nv; ++iv) {
 	  VertexBasePtr vertex = model->vertex(iv);
-	  if(excluded(vertex)) continue;
+	  if(excluded(vertex) ||
+	     proto->npart+vertex->getNpoint()>numBodies()+2) continue;
 	  PrototypeVertex::expandPrototypes(proto,vertex,prototypes,
 					    excludedParticlesSet_);
 	}
