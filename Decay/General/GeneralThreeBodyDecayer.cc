@@ -21,7 +21,7 @@ void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _incoming >> _outgoing >> _diagrams >> _diagmap >> _colour >> _colourLargeNC
-     >> _nflow >> _widthopt >> _reftag >> _reftagcc;;
+     >> _nflow >> _widthopt >> _reftag >> _reftagcc;
 }
 
 AbstractClassDescription<GeneralThreeBodyDecayer> 
