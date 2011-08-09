@@ -29,7 +29,7 @@ public:
    * The default constructor.
    */
   FourBodyDecayConstructor() :
-    interopt_(0), widthopt_(1) {}
+    interOpt_(0), widthOpt_(1) {}
 
   /**
    *  Destructor
@@ -127,12 +127,12 @@ private:
   /**
    *  Option for the inclusion of intermediates
    */
-  unsigned int interopt_;
+  unsigned int interOpt_;
 
   /**
    *  How to treat the widths of the intermediate particles
    */
-  unsigned int widthopt_;
+  unsigned int widthOpt_;
 
 };
 

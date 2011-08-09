@@ -37,7 +37,7 @@ struct ParticleOrdering {
    * @param p1 The first ParticleData object
    * @param p2 The second ParticleData object
    */
-  bool operator()(PDPtr p1, PDPtr p2) {
+  bool operator() (PDPtr p1, PDPtr p2) {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
       ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
@@ -321,20 +321,8 @@ struct NBVertex {
 struct NBDiagram {
 
   /**
-   * Enumeration for the channel type
-   */
-  enum Channel {UNDEFINED = -1, 
-		TBchannel23=0, TBchannel13=1, 
-		TBchannel12=2, TBfourPoint=3};
-
-  /**
-   * Standard Constructor
-   */
-  NBDiagram() : channelType(UNDEFINED) {}
-
-  /**
    * Constructor taking a prototype vertex as the arguments*/
-  NBDiagram(PrototypeVertexPtr proto);
+  NBDiagram(PrototypeVertexPtr proto=PrototypeVertexPtr());
   
   /**
    * Incoming particle
@@ -344,7 +332,7 @@ struct NBDiagram {
   /**
    *  The type of channel
    */
-  Channel channelType;
+  unsigned int channelType;
 
   /**
    *  Outgoing particles
@@ -367,32 +355,11 @@ struct NBDiagram {
   /** Store colour flow at \f$N_c=\infty\f$ information */
   mutable vector<CFPair> largeNcColourFlow;
 };
-//   /**
-//    * Test whether this and x are the same decay
-//    * @param x The other process to check
-//    */
-//   bool sameDecay(const TBDiagram & x) const {
-//     if(ids[0] != x.ids[0]) return false;
-//     bool used[4]={false,false,false,false};
-//     for(unsigned int ix=1;ix<4;++ix) {
-//       bool found=false;
-//       for(unsigned int iy=1;iy<4;++iy) {
-// 	if(used[iy]) continue;
-// 	if(ids[ix]==x.ids[iy]) {
-// 	  used[iy]=true;
-// 	  found=true;
-// 	  break;
-// 	}
-//       }
-//       if(!found) return false;
-//     }
-//     return true;
-//   }
 
 /** 
  * Output operator to allow the structure to be persistently written
  * @param os The output stream
- * @param x The TBVertex 
+ * @param x The NBVertex 
  */
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const NBVertex  & x) {
@@ -403,7 +370,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 /** 
  * Input operator to allow persistently written data to be read in
  * @param is The input stream
- * @param x The TBVertex 
+ * @param x The NBVertex 
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
 				      NBVertex & x) {
@@ -414,7 +381,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 /** 
  * Output operator to allow the structure to be persistently written
  * @param os The output stream
- * @param x The TBDiagram 
+ * @param x The NBDiagram 
  */
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const NBDiagram  & x) {
@@ -426,13 +393,61 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 /** 
  * Input operator to allow persistently written data to be read in
  * @param is The input stream
- * @param x The TBDiagram 
+ * @param x The NBDiagram 
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
 				      NBDiagram & x) {
   is >> x.incoming >> ienum(x.channelType) >> x.outgoing >> x.vertices >> x.vertex
      >> x.colourFlow >> x.largeNcColourFlow;
   return is;
+}
+
+/**
+ * Output a NBVertex to a stream 
+ */
+inline ostream & operator<<(ostream & os, const NBVertex & vertex) {
+  os << vertex.incoming->PDGName() << " -> ";
+  bool seq=false;
+  for(list<pair<PDPtr,NBVertex> >::const_iterator it=vertex.vertices.begin();
+      it!=vertex.vertices.end();++it) {
+    os << it->first->PDGName() << " ";
+    if(it->second.incoming) seq = true;
+  }
+  os << "via vertex " << vertex.vertex->fullName() << "\n";
+  if(!seq) return os;
+  os << "Followed by\n";
+  for(list<pair<PDPtr,NBVertex> >::const_iterator it=vertex.vertices.begin();
+      it!=vertex.vertices.end();++it) {
+    if(it->second.incoming) os << it->second;
+  }
+  return os;
+}
+
+/**
+ * Output a NBDiagram to a stream 
+ */
+inline ostream & operator<<(ostream & os, const NBDiagram & diag) {
+  os << diag.incoming->PDGName() << " -> ";
+  for(OrderedParticles::const_iterator it=diag.outgoing.begin();
+      it!=diag.outgoing.end();++it) {
+    os << (**it).PDGName() << " ";
+  }
+  os << " has order " << diag.channelType << "\n";
+  os << "First decay " << diag.incoming->PDGName() << " -> ";
+  bool seq=false;
+  for(list<pair<PDPtr,NBVertex> >::const_iterator it=diag.vertices.begin();
+      it!=diag.vertices.end();++it) {
+    os << it->first->PDGName() << " ";
+    if(it->second.incoming) seq = true;
+  }
+  os << "via vertex " << diag.vertex->fullName() << "\n";
+  if(!seq) return os;
+  os << "Followed by\n";
+  for(list<pair<PDPtr,NBVertex> >::const_iterator it=diag.vertices.begin();
+      it!=diag.vertices.end();++it) {
+    if(it->second.incoming) os << it->second;
+  }
+  return os;
 }
 
 }

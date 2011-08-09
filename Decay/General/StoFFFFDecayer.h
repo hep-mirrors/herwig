@@ -6,6 +6,11 @@
 //
 
 #include "GeneralFourBodyDecayer.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 
 namespace Herwig {
 
@@ -20,11 +25,6 @@ using namespace ThePEG;
 class StoFFFFDecayer: public GeneralFourBodyDecayer {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  StoFFFFDecayer();
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
@@ -80,10 +80,17 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 private:
 
@@ -92,6 +99,83 @@ private:
    * In fact, it should not even be implemented.
    */
   StoFFFFDecayer & operator=(const StoFFFFDecayer &);
+
+private:
+
+  /**
+   *  Signs for NO
+   */
+  vector<double> sign_; 
+  
+  /**
+   *  Potential vertices for the first step
+   */
+  //@{
+  /**
+   *   VVS Vertex
+   */
+  vector<AbstractVVSVertexPtr> firstVVS_;
+
+  /**
+   *   VSS Vertex
+   */
+  vector<AbstractVSSVertexPtr> firstVSS_;
+
+  /**
+   *   SSS Vertex
+   */
+  vector<AbstractSSSVertexPtr> firstSSS_;
+
+  /**
+   *   FFS Vertex
+   */
+  vector<AbstractFFSVertexPtr> firstFFS_;
+  //@}
+
+  /**
+   *  Potential vertices for the second step
+   */
+  //@{
+  /**
+   *   FFV Vertex
+   */
+  vector<AbstractFFVVertexPtr> secondFFV_;
+
+  /**
+   *   FFS Vertex
+   */
+  vector<AbstractFFSVertexPtr> secondFFS_;  
+  //@}
+
+  /**
+   *  Potential vertices for the third step
+   */
+  //@{
+  /**
+   *   FFV Vertex
+   */
+  vector<AbstractFFVVertexPtr> thirdFFV_;
+
+  /**
+   *   FFS Vertex
+   */
+  vector<AbstractFFSVertexPtr> thirdFFS_;  
+  //@}
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix rho_;
+
+  /**
+   *  Scalar wavefunction
+   */
+  mutable ScalarWaveFunction swave_;
+
+  /**
+   *  Spinors for outgoing particles
+   */
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outwave_[4];
 
 };
 

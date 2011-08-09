@@ -174,9 +174,42 @@ bool PrototypeVertex::canBeOnShell(unsigned int opt,Energy maxMass,bool first) {
   return false;
 }
 
+namespace {
+  void constructTag(unsigned int & loc,unsigned int & order,NBVertex & vertex,
+		    const OrderedParticles & outgoing,
+		    vector<bool> & matched) {
+    for(list<pair<PDPtr,NBVertex> >::iterator it=vertex.vertices.begin();
+	it!=vertex.vertices.end();++it) {
+      // search down the tree
+      if(it->second.vertex) {
+	constructTag(loc,order,it->second,outgoing,matched);
+      }
+      // identify this particle
+      else {
+	unsigned int ix=0;
+	for(OrderedParticles::const_iterator pit=outgoing.begin();
+	    pit!=outgoing.end();++pit) {
+	  if(*pit==it->first&&!matched[ix]) {
+	    matched[ix] = true;
+	    order += (ix+1)*pow(10,loc);
+	    --loc;
+	    break;
+	  }
+	  ++ix;
+	}
+      }
+    }
+  }
+}
+
 NBDiagram::NBDiagram(PrototypeVertexPtr proto) 
-  : incoming(proto->incoming), outgoing(proto->outPart),
-    vertex(proto->vertex) {
+  : channelType(0),
+    colourFlow       (vector<CFPair>(1,make_pair(1,1.))),
+    largeNcColourFlow(vector<CFPair>(1,make_pair(1,1.))) {
+  if(!proto) return;
+  incoming = proto->incoming;
+  outgoing = proto->outPart;
+  vertex   = proto->vertex;
   // create the vertices
   for(OrderedVertices::const_iterator it=proto->outgoing.begin();
       it!=proto->outgoing.end();++it) {
@@ -204,18 +237,31 @@ NBDiagram::NBDiagram(PrototypeVertexPtr proto)
     }
   }
   // finally work out the channel and the ordering
-  unsigned int loc(outgoing.size());
+  unsigned int order(0);
+  unsigned int loc(outgoing.size()-1);
+  vector<bool> matched(outgoing.size(),false);
   for(list<pair<PDPtr,NBVertex> >::iterator it=vertices.begin();
       it!=vertices.end();++it) {
-    unsigned int ipart(0);
-    for( ; ipart<outgoing.size(); ++ipart) {
+    // search down the tree
+    if(it->second.vertex) {
+      constructTag(loc,order,it->second,outgoing,matched);
     }
-
-
-    --loc;
+    // identify this particle
+    else {
+      unsigned int ix=0;
+      for(OrderedParticles::const_iterator pit=outgoing.begin();
+	  pit!=outgoing.end();++pit) {
+	if(*pit==it->first&&!matched[ix]) {
+	  matched[ix] = true;
+	  order += (ix+1)*pow(10,loc);
+	  --loc;
+	  break;
+	}
+	++ix;
+      }
+    }
   }
-
-  exit(0);
+  channelType=order;
 }
 
 NBVertex::NBVertex(PrototypeVertexPtr proto) { 

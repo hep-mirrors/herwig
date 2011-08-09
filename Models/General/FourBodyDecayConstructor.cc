@@ -35,11 +35,11 @@ IBPtr FourBodyDecayConstructor::fullclone() const {
 }
 
 void FourBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << interopt_ << widthopt_;
+  os << interOpt_ << widthOpt_;
 }
 
 void FourBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> interopt_ >> widthopt_;
+  is >> interOpt_ >> widthOpt_;
 }
 
 DescribeClass<FourBodyDecayConstructor,NBodyDecayConstructorBase>
@@ -54,7 +54,7 @@ void FourBodyDecayConstructor::Init() {
   static Switch<FourBodyDecayConstructor,unsigned int> interfaceWidthOption
     ("WidthOption",
      "Option for the treatment of the widths of the intermediates",
-     &FourBodyDecayConstructor::widthopt_, 1, false, false);
+     &FourBodyDecayConstructor::widthOpt_, 1, false, false);
   static SwitchOption interfaceWidthOptionFixed
     (interfaceWidthOption,
      "Fixed",
@@ -74,7 +74,7 @@ void FourBodyDecayConstructor::Init() {
   static Switch<FourBodyDecayConstructor,unsigned int> interfaceIntermediateOption
     ("IntermediateOption",
      "Option for the inclusion of intermediates in the event",
-     &FourBodyDecayConstructor::interopt_, 0, false, false);
+     &FourBodyDecayConstructor::interOpt_, 0, false, false);
   static SwitchOption interfaceIntermediateOptionAlways
     (interfaceIntermediateOption,
      "Always",
@@ -100,8 +100,6 @@ void FourBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 
 void FourBodyDecayConstructor::
 createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
-  // incoming particle  
-  tPDPtr inpart = diagrams[0]->incoming;
   // some basic checks for the modes we are interested in
   // only looking at scalars
   if(diagrams[0]->incoming->iSpin()!=PDT::Spin0) return;
@@ -112,49 +110,76 @@ createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
     if((**it).iSpin()==PDT::Spin1Half) ++nferm;
   }
   if(nferm!=4) return;
-  cerr << "!!!!!!!!!!!!!!!!!! MODE !!!!!!!!!!!\n";
-  cerr << "Number of diagrams " << diagrams.size() << "\n";
-  cerr << diagrams[0]->incoming->PDGName() << " -> ";
-  for(OrderedParticles::const_iterator it=diagrams[0]->outPart.begin();
-      it!=diagrams[0]->outPart.end();++it)
-    cerr << (**it).PDGName() << " ";
-  cerr << "\n";
+  // check for on-shell intermediates
+  bool possibleOnShell=false;
   for(unsigned int iy=0;iy<diagrams.size();++iy)
-    cerr << "DIAGRAM " << iy << "\n" << *diagrams[iy] << "\n";
-//   // outgoing particles
-//   OrderedParticles outgoing=diagrams[0]->outPart;
-//   // incoming particle is now unstable
-//   inpart->stable(false);
-//   // construct the tag for the decay mode
-//   string tag = inpart->name() + "->";
-//   for(OrderedParticles::const_iterator it = outgoing.begin();
-//       it != outgoing.end(); ++it) {
-//     if(it!=outgoing.begin()) tag += ",";
-//     tag += (**it).name();
-//   }
-//   tag += ";";
-//   tDMPtr dm = generator()->findDecayMode(tag);
-//   if( decayConstructor()->disableDecayMode(tag) ) {
-//     // If mode alread exists, ie has been read from file, 
-//     // disable it
-//     if( dm ) {
-//       generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
-//       generator()->preinitInterface(dm, "OnOff", "set", "Off");
-//     }
-//     return;
-//   }
-//   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
-//     cerr << "testing calling create " << tag << "\n";
-//     // create the decayer
-//     GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter);
-//     if(!decayer) return;
-//   }
-//   else if (dm) {
-//     assert(false);
-//   }
-//   //update CC mode if it exists
-//   if( inpart->CC() )
-//     inpart->CC()->synchronize();
+    possibleOnShell |= diagrams[iy]->possibleOnShell;
+  bool inter = interOpt_ == 1 || (interOpt_ == 0 && possibleOnShell);
+  // incoming particle  
+  tPDPtr inpart = diagrams[0]->incoming;
+  // outgoing particles
+  OrderedParticles outgoing=diagrams[0]->outPart;
+  // incoming particle is now unstable
+  inpart->stable(false);
+  // construct the tag for the decay mode
+  string tag = inpart->name() + "->";
+  for(OrderedParticles::const_iterator it = outgoing.begin();
+      it != outgoing.end(); ++it) {
+    if(it!=outgoing.begin()) tag += ",";
+    tag += (**it).name();
+  }
+  tag += ";";
+  tDMPtr dm = generator()->findDecayMode(tag);
+  // if mode disabled zero BR and return
+  if( decayConstructor()->disableDecayMode(tag) ) {
+    // If mode alread exists, ie has been read from file, 
+    // disable it
+    if( dm ) {
+      generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
+      generator()->preinitInterface(dm, "OnOff", "set", "Off");
+    }
+    return;
+  }
+  // create mode if needed
+  if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
+    // create the decayer
+    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+    if(!decayer) {
+      if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
+					       << tag << " so mode not created\n";
+      return;
+    }
+    // create the decay mode
+    tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
+    if(ndm) {
+      generator()->preinitInterface(ndm, "Decayer", "set",
+ 				    decayer->fullName());
+      generator()->preinitInterface(ndm, "OnOff", "set", "On");
+      Energy width = 
+	decayer->partialWidth(inpart,outgoing);
+      setBranchingRatio(ndm, width);
+    }
+    else 
+      throw NBodyDecayConstructorError() 
+	<< "FourBodyDecayConstructor::createDecayMode - Needed to create "
+	<< "new decaymode but one could not be created for the tag " 
+	<< tag << Exception::warning;
+  }
+  // otherwise 
+  else if (dm && (dm->decayer()->fullName()).find("Mambo") != string::npos) {
+    // create the decayer
+    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+    if(!decayer) {
+      if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
+					       << tag << " so mode not created\n";
+      return;
+    }
+    generator()->preinitInterface(dm, "Decayer", "set", 
+				  decayer->fullName());
+  }
+  //update CC mode if it exists
+  if( inpart->CC() )
+    inpart->CC()->synchronize();
 }
 
 GeneralFourBodyDecayerPtr 
@@ -166,6 +191,19 @@ FourBodyDecayConstructor::createDecayer(vector<PrototypeVertexPtr> & diagrams,
   // outgoing particles
   vector<PDPtr> outgoing(diagrams[0]->outPart.begin(),
 			 diagrams[0]->outPart.end());
+  vector<NBDiagram> newDiagrams;
+  cerr << "!!!!!!!!!!!!!!!!!! MODE !!!!!!!!!!!\n";
+  cerr << "Number of diagrams " << diagrams.size() << "\n";
+  cerr << diagrams[0]->incoming->PDGName() << " -> ";
+  for(OrderedParticles::const_iterator it=diagrams[0]->outPart.begin();
+      it!=diagrams[0]->outPart.end();++it)
+    cerr << (**it).PDGName() << " ";
+  cerr << "\n";
+  // convert the diagrams
+  for(unsigned int ix=0;ix<diagrams.size();++ix) {
+    cerr << "DIAGRAM " << ix << "\n" << *diagrams[ix] << "\n";
+    newDiagrams.push_back(NBDiagram(diagrams[ix]));
+  }
   // get the name for the object
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, diagrams[0]->outPart, objectname);
@@ -174,36 +212,24 @@ FourBodyDecayConstructor::createDecayer(vector<PrototypeVertexPtr> & diagrams,
   GeneralFourBodyDecayerPtr decayer = 
     dynamic_ptr_cast<GeneralFourBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
-  // set up the decayer 
-  cerr << "testing made the decayer\n";
-  decayer->setDecayInfo(incoming,outgoing,diagrams);
-
-
-//   // get the colour flows
-//   unsigned int ncf(0);
-//   pair<vector<DVector>, vector<DVector> > cfactors;
-//   try {
-//     cfactors = getColourFactors(incoming,outgoing,diagrams,ncf);
-//   }
-//   catch ( Veto ) { return GeneralThreeBodyDecayerPtr(); }
-//   // set decayer options from base class
-//   setDecayerInterfaces(objectname);
-//   // set the width option
-//   ostringstream value;
-//   value << _widthopt;
-//   generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
-//   // set the intermediates option
-//   ostringstream value2;
-//   value2 << inter;
-//   generator()->preinitInterface(objectname, "GenerateIntermediates", "set", 
-// 				value2.str());
-//   // initialize the decayer
-//   decayer->init();
-//   // return the decayer
-//   return decayer;
-
-
-  assert(false);
+  // set up the decayer and return if doesn't work
+  if(!decayer->setDecayInfo(incoming,outgoing,newDiagrams))
+    return GeneralFourBodyDecayerPtr();
+  // set decayer options from base class
+  setDecayerInterfaces(objectname);
+  // set the width option
+  ostringstream value;
+  value << widthOpt_;
+  generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
+  // set the intermediates option
+  ostringstream value2;
+  value2 << inter;
+  generator()->preinitInterface(objectname, "GenerateIntermediates", "set", 
+ 				value2.str());
+  // initialize the decayer
+  decayer->init();
+  // return the decayer
+  return decayer;
 }
 
 string  FourBodyDecayConstructor::DecayerClassName(tcPDPtr incoming,
