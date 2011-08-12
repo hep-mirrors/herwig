@@ -101,7 +101,7 @@ void WeakCurrentDecayConstructor::Init() {
   static Parameter<WeakCurrentDecayConstructor,int> interfaceInitIteration
     ("InitIteration",
      "Number of iterations to optimise integration weights",
-     &WeakCurrentDecayConstructor::_iteration, 5, 0, 5,
+     &WeakCurrentDecayConstructor::_iteration, 1, 0, 5,
      false, false, true);
 
   static Parameter<WeakCurrentDecayConstructor,int> interfaceInitPoints
