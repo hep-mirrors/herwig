@@ -198,21 +198,26 @@ void NBodyDecayConstructorBase::Init() {
      "None",
      "No particles from the list",
      0);
-  static SwitchOption interfaceMaximumNewParticlesSingle
+  static SwitchOption interfaceMaximumNewParticlesOne
     (interfaceMaximumNewParticles,
-     "Single",
+     "One",
      "A single particle from the list",
      1);
-  static SwitchOption interfaceMaximumNewParticlesDouble
+  static SwitchOption interfaceMaximumNewParticlesTwo
     (interfaceMaximumNewParticles,
-     "Double",
+     "Two",
      "Two particles from the list",
      2);
-  static SwitchOption interfaceMaximumNewParticlesTriple
+  static SwitchOption interfaceMaximumNewParticlesThree
     (interfaceMaximumNewParticles,
-     "Triple",
-     "Four particles from the list",
+     "Three",
+     "Three particles from the list",
      3);
+  static SwitchOption interfaceMaximumNewParticlesFour
+    (interfaceMaximumNewParticles,
+     "Four",
+     "Four particles from the list",
+     4);
 
   static Switch<NBodyDecayConstructorBase,bool> interfaceIncludeOnShellTop
     ("IncludeOnShellTop",
@@ -251,7 +256,7 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
     for(DecaySet::const_iterator dit = modes.begin(); 
 	dit != modes.end(); ++dit) {
       if( **dit == *dm || !(**dit).on() ) continue; 
-      double newbrat = ((**dit).brat())*factor;
+      double newbrat = (**dit).brat()*factor;
       ostringstream brf;
       brf << setprecision(13)<< newbrat;
       generator()->preinitInterface(*dit, "BranchingRatio",
@@ -418,6 +423,19 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
       if(nbos > maxBoson_ || nlist > maxList_) continue;
       // create the decay
       createDecayMode(*mit);
+      if( Debug::level > 1 ) {
+	generator()->log() << "Mode: ";
+	generator()->log() << (*mit)[0]->incoming->PDGName() << " -> ";
+	for(OrderedParticles::const_iterator it=(*mit)[0]->outPart.begin();
+	    it!=(*mit)[0]->outPart.end();++it)
+	  generator()->log() << (**it).PDGName() << " ";
+	generator()->log() << "\n";
+	generator()->log() << "There are " << (*mit).size() << " diagrams\n";
+	for(unsigned int iy=0;iy<(*mit).size();++iy) {
+	  generator()->log() << "Diagram: " << iy << "\n";
+	  generator()->log() << *(*mit)[iy] << "\n";
+	}
+      }
     }
   }
 }

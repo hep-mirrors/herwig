@@ -174,15 +174,28 @@ bool PrototypeVertex::canBeOnShell(unsigned int opt,Energy maxMass,bool first) {
   return false;
 }
 
+bool PrototypeVertex::sameDecay(const PrototypeVertex & x) const {
+  if(incoming != x.incoming) return false;
+  if(outPart.empty())     setOutgoing();
+  if(x.outPart.empty()) x.setOutgoing();
+  OrderedParticles::const_iterator cit =   outPart.begin();
+  OrderedParticles::const_iterator cjt = x.outPart.begin();
+  if(x.npart!=npart) return false;
+  for(;cit!=outPart.end();++cit,++cjt) {
+    if(*cit!=*cjt) return false;
+  }
+  return true;
+}
+
 namespace {
-  void constructTag(unsigned int & loc,unsigned int & order,NBVertex & vertex,
+  void constructTag(vector<unsigned int> & order,NBVertex & vertex,
 		    const OrderedParticles & outgoing,
 		    vector<bool> & matched) {
     for(list<pair<PDPtr,NBVertex> >::iterator it=vertex.vertices.begin();
 	it!=vertex.vertices.end();++it) {
       // search down the tree
       if(it->second.vertex) {
-	constructTag(loc,order,it->second,outgoing,matched);
+	constructTag(order,it->second,outgoing,matched);
       }
       // identify this particle
       else {
@@ -191,8 +204,7 @@ namespace {
 	    pit!=outgoing.end();++pit) {
 	  if(*pit==it->first&&!matched[ix]) {
 	    matched[ix] = true;
-	    order += (ix+1)*pow(10,loc);
-	    --loc;
+	    order.push_back(ix+1);
 	    break;
 	  }
 	  ++ix;
@@ -203,48 +215,17 @@ namespace {
 }
 
 NBDiagram::NBDiagram(PrototypeVertexPtr proto) 
-  : channelType(0),
+  : NBVertex(proto),
     colourFlow       (vector<CFPair>(1,make_pair(1,1.))),
     largeNcColourFlow(vector<CFPair>(1,make_pair(1,1.))) {
   if(!proto) return;
-  incoming = proto->incoming;
-  outgoing = proto->outPart;
-  vertex   = proto->vertex;
-  // create the vertices
-  for(OrderedVertices::const_iterator it=proto->outgoing.begin();
-      it!=proto->outgoing.end();++it) {
-    vertices.push_back(make_pair(it->first,NBVertex(it->second)));
-  }
-  // now let's re-order so that branchings are at the end
-  for(list<pair<PDPtr,NBVertex> >::iterator it=vertices.begin();
-      it!=vertices.end();++it) {
-    if(!it->second.incoming) continue;
-    list<pair<PDPtr,NBVertex> >::iterator jt=it;
-    for( ; jt!=vertices.end();++jt) {
-      if(jt==it) continue;
-      if(!jt->second.incoming) {
-	break;
-      }
-    }
-    if(jt!=vertices.end()) {
-      list<pair<PDPtr,NBVertex> >::iterator kt = it;
-      while(kt!=jt) {
-	list<pair<PDPtr,NBVertex> >::iterator lt = kt;
-	++lt;
-	swap(*kt,*lt);
-	kt=lt;
-      }
-    }
-  }
   // finally work out the channel and the ordering
-  unsigned int order(0);
-  unsigned int loc(outgoing.size()-1);
   vector<bool> matched(outgoing.size(),false);
   for(list<pair<PDPtr,NBVertex> >::iterator it=vertices.begin();
       it!=vertices.end();++it) {
     // search down the tree
     if(it->second.vertex) {
-      constructTag(loc,order,it->second,outgoing,matched);
+      constructTag(channelType,it->second,outgoing,matched);
     }
     // identify this particle
     else {
@@ -253,22 +234,21 @@ NBDiagram::NBDiagram(PrototypeVertexPtr proto)
 	  pit!=outgoing.end();++pit) {
 	if(*pit==it->first&&!matched[ix]) {
 	  matched[ix] = true;
-	  order += (ix+1)*pow(10,loc);
-	  --loc;
+	  channelType.push_back(ix+1);
 	  break;
 	}
 	++ix;
       }
     }
   }
-  channelType=order;
 }
 
 NBVertex::NBVertex(PrototypeVertexPtr proto) { 
   if(!proto) return;
   incoming = proto->incoming;
   outgoing = proto->outPart;
-  vertex   = proto->vertex; 
+  vertex   = proto->vertex;
+  // create the vertices
   for(OrderedVertices::const_iterator it=proto->outgoing.begin();
       it!=proto->outgoing.end();++it) {
     vertices.push_back(make_pair(it->first,NBVertex(it->second)));

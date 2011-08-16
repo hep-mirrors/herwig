@@ -53,8 +53,8 @@ struct VertexOrdering {
    * @param p1 The first ParticleData object
    * @param p2 The second ParticleData object
    */
-  bool operator()(pair< tPDPtr, PrototypeVertexPtr > p1,
-		  pair< tPDPtr, PrototypeVertexPtr > p2) {
+  bool operator() (const pair< tPDPtr, PrototypeVertexPtr > & p1,
+		   const pair< tPDPtr, PrototypeVertexPtr > & p2) const  {
     return  abs(p1.first->id()) > abs(p2.first->id()) ||
       ( abs(p1.first->id()) == abs(p2.first->id()) && p1.first->id() > p2.first->id() ) ||
       ( p1.first->id() == p2.first->id() && p1.first->fullName() > p2.first->fullName() );
@@ -85,8 +85,8 @@ public:
    */
   PrototypeVertex(tPDPtr in, OrderedVertices out,
 		  VertexBasePtr v, int n) :
-  incoming(in), outgoing(out), vertex(v), npart(n),
-  possibleOnShell(false) {}
+    incoming(in), outgoing(out), vertex(v), npart(n),
+    possibleOnShell(false) {}
 
   /**
    *  Incoming particle
@@ -203,18 +203,7 @@ public:
   /**
    *  Check if same external particles
    */
-  bool sameDecay(const PrototypeVertex & x) const {
-    if(incoming != x.incoming) return false;
-    if(outPart.empty())     setOutgoing();
-    if(x.outPart.empty()) x.setOutgoing();
-    OrderedParticles::const_iterator cit =   outPart.begin();
-    OrderedParticles::const_iterator cjt = x.outPart.begin();
-    if(x.npart!=npart) return false;
-    for(;cit!=outPart.end();++cit,++cjt) {
-      if(*cit!=*cjt) return false;
-    }
-    return true;
-  }
+  bool sameDecay(const PrototypeVertex & x) const;
 
   /**
    *  Create a \f$1\to2\f$ prototype
@@ -268,17 +257,64 @@ inline bool operator==(const PrototypeVertex & x, const PrototypeVertex & y) {
   if(x.incoming != y.incoming) return false;
   if(x.vertex != y.vertex) return false;
   if(x.npart != y.npart) return false;
+  if(x.outgoing.empty()&&y.outgoing.empty()) return true;
   if(x.outgoing.size() != y.outgoing.size()) return false;
   OrderedVertices::const_iterator xt = x.outgoing.begin();
   OrderedVertices::const_iterator yt = y.outgoing.begin();
-  for(;xt!=x.outgoing.end();++xt,++yt) {
+  while(xt!=x.outgoing.end()) {
     if(xt->first != yt->first) return false;
-    if(xt->second && yt->second) {
-      if(*(xt->second)==*(yt->second)) continue;
-      else return false;
+    // special for identical particles
+    OrderedVertices::const_iterator lxt = x.outgoing.lower_bound(*xt);
+    OrderedVertices::const_iterator uxt = x.outgoing.upper_bound(*xt);
+    --uxt;
+    // just one particle
+    if(lxt==uxt) {
+      if(xt->second && yt->second) {
+	if(*(xt->second)==*(yt->second)) {
+	  ++xt;
+	  ++yt;
+	  continue;
+	}
+	else return false;
+      }
+      else if(xt->second || yt->second)
+	return false;
+      ++xt;
+      ++yt;
     }
-    else if(xt->second || yt->second)
-      return false;
+    // identical particles
+    else {
+      ++uxt;
+      OrderedVertices::const_iterator lyt = y.outgoing.lower_bound(*xt);
+      OrderedVertices::const_iterator uyt = y.outgoing.upper_bound(*xt);
+      unsigned int nx=0;
+      for(OrderedVertices::const_iterator ixt=lxt;ixt!=uxt;++ixt) {++nx;}
+      unsigned int ny=0;
+      for(OrderedVertices::const_iterator iyt=lyt;iyt!=uyt;++iyt) {++ny;}
+      if(nx!=ny) return false;
+      vector<bool> matched(ny,false);
+      for(OrderedVertices::const_iterator ixt=lxt;ixt!=uxt;++ixt) {
+	bool found = false;
+	unsigned int iy=0;
+	for(OrderedVertices::const_iterator iyt=lyt;iyt!=uyt;++iyt) {
+	  if(matched[iy]) {
+	    ++iy;
+	    continue;
+	  }
+	  if( (!ixt->second &&!iyt->second)  ||
+	      ( ixt->second&&iyt->second &&
+		*(ixt->second)==*(iyt->second)) ) {
+	    matched[iy] = true;
+	    found = true;
+	    break;
+	  }
+	  ++iy;
+	}
+	if(!found) return false;
+      }
+      xt=uxt;
+      yt=uyt;
+    }
   }
   return true;
 }
@@ -318,36 +354,16 @@ struct NBVertex {
  * The NBDiagram struct contains information about a \f$1\ton\f$ decay
  * that has been automatically generated.
  */
-struct NBDiagram {
+  struct NBDiagram : public NBVertex {
 
   /**
    * Constructor taking a prototype vertex as the arguments*/
   NBDiagram(PrototypeVertexPtr proto=PrototypeVertexPtr());
-  
-  /**
-   * Incoming particle
-   */
-  tPDPtr incoming;
 
   /**
    *  The type of channel
    */
-  unsigned int channelType;
-
-  /**
-   *  Outgoing particles
-   */
-  mutable OrderedParticles outgoing;
-
-  /**
-   *  The vertices
-   */
-  list<pair<PDPtr,NBVertex> > vertices;
-
-  /**
-   *  The vertex for the parent branching
-   */
-  VertexBasePtr vertex;
+  vector<unsigned int> channelType;
 
   /** Store colour flow at \f$N_c=3\f$ information */
   mutable vector<CFPair> colourFlow;
@@ -385,7 +401,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
  */
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const NBDiagram  & x) {
-  os << x.incoming << oenum(x.channelType) << x.outgoing << x.vertices << x.vertex
+  os << x.incoming << x.channelType << x.outgoing << x.vertices << x.vertex
      << x.colourFlow << x.largeNcColourFlow;
   return os;
 }
@@ -397,7 +413,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
 				      NBDiagram & x) {
-  is >> x.incoming >> ienum(x.channelType) >> x.outgoing >> x.vertices >> x.vertex
+  is >> x.incoming >> x.channelType >> x.outgoing >> x.vertices >> x.vertex
      >> x.colourFlow >> x.largeNcColourFlow;
   return is;
 }
@@ -432,7 +448,10 @@ inline ostream & operator<<(ostream & os, const NBDiagram & diag) {
       it!=diag.outgoing.end();++it) {
     os << (**it).PDGName() << " ";
   }
-  os << " has order " << diag.channelType << "\n";
+  os << " has order ";
+  for(unsigned int ix=0;ix<diag.channelType.size();++ix)
+    os << diag.channelType[ix] << " ";
+  os << "\n";
   os << "First decay " << diag.incoming->PDGName() << " -> ";
   bool seq=false;
   for(list<pair<PDPtr,NBVertex> >::const_iterator it=diag.vertices.begin();

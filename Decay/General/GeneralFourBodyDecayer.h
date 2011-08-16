@@ -53,7 +53,8 @@ public:
    *  Set the diagrams
    */
   bool setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
-		    const vector<NBDiagram> & process);
+		    const vector<NBDiagram> & process,
+		    double symfac);
   //@}
   
   /**
@@ -110,7 +111,7 @@ protected:
   /**
    * Set up the colour factors
    */
-  bool setColourFactors();
+  bool setColourFactors(double symfac);
   
   /**
    * Return the matrix of colour factors 

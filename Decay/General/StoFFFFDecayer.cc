@@ -84,7 +84,10 @@ void StoFFFFDecayer::doinit() {
 	    (secondFFV_[ix] || secondFFS_[ix] ) &&
 	    ( thirdFFV_[ix] ||  thirdFFS_[ix] ));
     // NO sign
-    switch(current.channelType) {
+    int order = 
+      current.channelType[0]*1000+current.channelType[1]*100+
+      current.channelType[2]*10  +current.channelType[3];
+    switch(order) {
     case 1234: case 1342: case 1423: 
     case 2143: case 2314: case 2431:
     case 3124: case 3241: case 3412:
@@ -172,10 +175,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      continue;
 	    }
 	    // location of the particles
-	    int iloc[4]={ dit->channelType/1000     -1,
-			 (dit->channelType%1000)/100-1,
-			 (dit->channelType%100)/10  -1,
-			  dit->channelType%10       -1};
+	    int iloc[4];
+	    for(unsigned int ix=0;ix<4;++ix) iloc[ix] = dit->channelType[ix]-1;
 	    // NO sign
 	    double sign = sign_[idiag];
 	    // work out the type of topology
@@ -188,23 +189,23 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      (++(second.vertices.begin()))->second;
 	    // extract the intermediates
 	    tPDPair inter = make_pair(second.incoming,
-				      third .incoming->CC());
+				      third .incoming);
+	    if(    inter.second->CC()) inter.second = inter.second->CC();
 	    if(cc&&inter.first ->CC()) inter.first  = inter.first ->CC();
 	    if(cc&&inter.second->CC()) inter.second = inter.second->CC();
 
-// 	    //\todo remove testing
+	    //\todo remove testing
 // 	    if(abs(inter.first ->id())!=ParticleID::t||
 // 	       abs(inter.second->id())!=ParticleID::Wplus) {
 // 	      ++idiag;
 // 	      continue;
 // 	    }
-
 	    // value for the diagram
 	    Complex diag(0.);
 	    // first compute the last part of the diagram
 	    VectorWaveFunction offVector2;
 	    ScalarWaveFunction offScalar2;
-	    // intermeidate scalar
+	    // intermediate scalar
 	    if(inter.second->iSpin()==PDT::Spin0) {
 	      if(decay[iloc[2]]->id()<0&&
 		 decay[iloc[3]]->id()>0) {
