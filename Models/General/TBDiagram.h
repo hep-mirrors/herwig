@@ -111,40 +111,36 @@ struct TBDiagram {
     return true;
   }
 
-  /** Constructor from PrototypeVertex */
-  TBDiagram(PrototypeVertexPtr vertex) 
+  /** Constructor from NBDiagram */
+  TBDiagram(const NBDiagram & diagram) 
     : channelType(UNDEFINED),
-      colourFlow       (vector<CFPair>(1,make_pair(1,1.))),
-      largeNcColourFlow(vector<CFPair>(1,make_pair(1,1.))), ids(4,0) {
-    incoming = vertex->incoming->id();
-    PrototypeVertexPtr child;
-    if(vertex->outgoing.size()==2) {
-      for(OrderedVertices::const_iterator it = vertex->outgoing.begin();
-	  it!=vertex->outgoing.end();++it) {
-	if(it->second) child=it->second;
-	else outgoing = it->first->id();
-      }
+      colourFlow       (diagram.colourFlow),
+      largeNcColourFlow(diagram.largeNcColourFlow), ids(4,0) {
+    incoming = diagram.incoming->id();
+    if(diagram.vertices.size()==2) {
+      const NBVertex & child = (++diagram.vertices.begin())->second;
+      outgoing = diagram.vertices.begin()->first->id();
       unsigned int iloc=0;
-      for(OrderedVertices::const_iterator it = child->outgoing.begin();
-	  it!=child->outgoing.end();++it) {
-	if (iloc==0)      outgoingPair.first  = it->first->id();
-	else if (iloc==1) outgoingPair.second = it->first->id();
+      for(OrderedParticles::const_iterator it = child.outgoing.begin();
+	  it!=child.outgoing.end();++it) {
+	if (iloc==0)      outgoingPair.first  = (**it).id();
+	else if (iloc==1) outgoingPair.second = (**it).id();
 	++iloc;
       }
-      intermediate = child->incoming;
-      vertices.second = child->vertex;
+      intermediate = child.incoming;
+      vertices.second = child.vertex;
     }
     else {
       unsigned int iloc=0;
-      for(OrderedVertices::const_iterator it = vertex->outgoing.begin();
-	  it!=vertex->outgoing.end();++it) {
-	if(iloc==0)       outgoing            = it->first->id();
-	else if (iloc==1) outgoingPair.first  = it->first->id();
-	else if (iloc==2) outgoingPair.second = it->first->id();
+      for(OrderedParticles::const_iterator it = diagram.outgoing.begin();
+	  it!=diagram.outgoing.end();++it) {
+	if(iloc==0)       outgoing            = (**it).id();
+	else if (iloc==1) outgoingPair.first  = (**it).id();
+	else if (iloc==2) outgoingPair.second = (**it).id();
 	++iloc;
       }
     }
-    vertices.first = vertex->vertex;
+    vertices.first = diagram.vertex;
     ids[0] = incoming;
     ids[1] = outgoing;
     ids[2] = outgoingPair.first;

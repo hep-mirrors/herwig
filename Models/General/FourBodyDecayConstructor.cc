@@ -99,26 +99,24 @@ void FourBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 }
 
 void FourBodyDecayConstructor::
-createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
+createDecayMode(vector<NBDiagram> & diagrams,
+		bool possibleOnShell, double symfac) {
   // some basic checks for the modes we are interested in
   // only looking at scalars
-  if(diagrams[0]->incoming->iSpin()!=PDT::Spin0) return;
+  if(diagrams[0].incoming->iSpin()!=PDT::Spin0) return;
   // which decay to 4 fermions
   unsigned int nferm=0;
-  for(OrderedParticles::const_iterator it=diagrams[0]->outPart.begin();
-      it!=diagrams[0]->outPart.end();++it) {
+  for(OrderedParticles::const_iterator it=diagrams[0].outgoing.begin();
+      it!=diagrams[0].outgoing.end();++it) {
     if((**it).iSpin()==PDT::Spin1Half) ++nferm;
   }
   if(nferm!=4) return;
   // check for on-shell intermediates
-  bool possibleOnShell=false;
-  for(unsigned int iy=0;iy<diagrams.size();++iy)
-    possibleOnShell |= diagrams[iy]->possibleOnShell;
   bool inter = interOpt_ == 1 || (interOpt_ == 0 && possibleOnShell);
   // incoming particle  
-  tPDPtr inpart = diagrams[0]->incoming;
+  tPDPtr inpart = diagrams[0].incoming;
   // outgoing particles
-  OrderedParticles outgoing=diagrams[0]->outPart;
+  OrderedParticles outgoing=diagrams[0].outgoing;
   // incoming particle is now unstable
   inpart->stable(false);
   // construct the tag for the decay mode
@@ -143,7 +141,7 @@ createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
     // create the decayer
-    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter,symfac);
     if(!decayer) {
       if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
 					       << tag << " so mode not created\n";
@@ -168,7 +166,7 @@ createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
   // otherwise 
   else if (dm && (dm->decayer()->fullName()).find("Mambo") != string::npos) {
     // create the decayer
-    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+    GeneralFourBodyDecayerPtr decayer = createDecayer(diagrams,inter,symfac);
     if(!decayer) {
       if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
 					       << tag << " so mode not created\n";
@@ -182,198 +180,25 @@ createDecayMode(vector<PrototypeVertexPtr> & diagrams) {
     inpart->CC()->synchronize();
 }
 
-
-namespace {
-
-double factorial(const int i) {
-  if(i>1) return i*factorial(i-1);
-  else    return 1.;
-}
-
-void constructIdenticalSwaps(unsigned int depth,
-			     vector<vector<unsigned int> > identical,
-			     vector<unsigned int> channelType,
-			     list<vector<unsigned int> > & swaps) {
-  if(depth==0) {
-    unsigned int size = identical.size();
-    for(unsigned ix=0;ix<size;++ix) {
-      for(unsigned int iy=2;iy<identical[ix].size();++iy)
-	identical.push_back(identical[ix]);
-    }
-  }
-  if(depth+1!=identical.size()) {
-    constructIdenticalSwaps(depth+1,identical,channelType,swaps);
-  }
-  else {
-    swaps.push_back(channelType);
-  }
-  for(unsigned int ix=0;ix<identical[depth].size();++ix) {
-    for(unsigned int iy=ix+1;iy<identical[depth].size();++iy) {
-      vector<unsigned int> newType=channelType;
-      swap(newType[identical[depth][ix]],newType[identical[depth][iy]]);
-      // at bottom of chain
-      if(depth+1==identical.size()) {
-	swaps.push_back(newType);
-      }
-      else {
-	constructIdenticalSwaps(depth+1,identical,newType,swaps);
-      }
-    }
-  }
-}
-
-void identicalFromSameDecay(unsigned int & loc, const NBVertex & vertex,
-			    vector<vector<unsigned int> > & sameDecay) {
-  list<pair<PDPtr,NBVertex> >::const_iterator it = vertex.vertices.begin();
-  while(it!=vertex.vertices.end()) {
-    if(it->second.incoming) {
-      identicalFromSameDecay(loc,it->second,sameDecay);
-      ++it;
-      continue;
-    }
-    ++loc;
-    long id = it->first->id();
-    ++it;
-    if(it->second.incoming) continue;
-    if(it->first->id()!=id) continue;
-    sameDecay.push_back(vector<unsigned int>());
-    sameDecay.back().push_back(loc-1);
-    while(!it->second.incoming&&it->first->id()==id) {
-      ++loc;
-      ++it;
-      sameDecay.back().push_back(loc-1);
-    }
-  };
-}
-
-}
-
 GeneralFourBodyDecayerPtr 
-FourBodyDecayConstructor::createDecayer(vector<PrototypeVertexPtr> & diagrams, 
-					bool inter) const {
+FourBodyDecayConstructor::createDecayer(vector<NBDiagram> & diagrams, 
+					bool inter, double symfac) const {
   if(diagrams.empty()) return GeneralFourBodyDecayerPtr();
   // extract the external particles for the process
-  PDPtr incoming = diagrams[0]->incoming;
+  PDPtr incoming = diagrams[0].incoming;
   // outgoing particles
-  vector<PDPtr> outgoing(diagrams[0]->outPart.begin(),
-			 diagrams[0]->outPart.end());
-  vector<NBDiagram> newDiagrams;
-  double symfac(1.);
-  // convert the diagrams
-  for(unsigned int ix=0;ix<diagrams.size();++ix) {
-    symfac = 1.;
-    NBDiagram templateDiagram = NBDiagram(diagrams[ix]);
-    // extract the ordering
-    vector<int> order(templateDiagram.channelType.size());
-    for(unsigned int iz=0;iz<order.size();++iz) {
-      order[templateDiagram.channelType[iz]-1]=iz;
-    }
-    // find any identical particles
-    vector<vector<unsigned int> > identical;
-    OrderedParticles::const_iterator it=templateDiagram.outgoing.begin();
-    unsigned int iloc=0;
-    while(it!=templateDiagram.outgoing.end()) {
-      OrderedParticles::const_iterator lt = templateDiagram.outgoing.lower_bound(*it);
-      OrderedParticles::const_iterator ut = templateDiagram.outgoing.upper_bound(*it);
-      unsigned int nx=0;
-      for(OrderedParticles::const_iterator jt=lt;jt!=ut;++jt) {++nx;}
-      if(nx==1) {
-	++it;
-	++iloc;
-      }
-      else {
-	symfac *= factorial(nx);
-	identical.push_back(vector<unsigned int>());
-	for(OrderedParticles::const_iterator jt=lt;jt!=ut;++jt) {
-	  identical.back().push_back(order[iloc]);
-	  ++iloc;
- 	}
-	it = ut;
-      }
-    }
-    // that's it if there outgoing are unqiue
-    if(identical.empty()) {
-      newDiagrams.push_back(templateDiagram);
-    }
-    else {
-      // find any identical particles which shouldn't be swapped
-      unsigned int loc=0;
-      vector<vector<unsigned int> > sameDecay;
-      identicalFromSameDecay(loc,templateDiagram,sameDecay);
-      // compute the swaps
-      list<vector<unsigned int> > swaps;
-      constructIdenticalSwaps(0,identical,templateDiagram.channelType,swaps);
-      // special if identical from same decay
-      if(!sameDecay.empty()) {
-	for(vector<vector<unsigned int> >::const_iterator st=sameDecay.begin();
-	    st!=sameDecay.end();++st) {
-	  for(list<vector<unsigned int> >::iterator it=swaps.begin();
-	      it!=swaps.end();++it) {
-	    for(unsigned int iy=0;iy<(*st).size();++iy) {
-	      for(unsigned int iz=iy+1;iz<(*st).size();++iz) {
-		if((*it)[(*st)[iy]]>(*it)[(*st)[iz]])
-		  swap((*it)[(*st)[iy]],(*it)[(*st)[iz]]);
-	      }
-	    }
-	  }
-	}
-      }
-      // remove any dupliciates
-      for(list<vector<unsigned int> >::iterator it=swaps.begin();
-	  it!=swaps.end();++it) {
-	for(list<vector<unsigned int> >::iterator jt=it;
-	    jt!=swaps.end();++jt) {
-	  if(it==jt) continue;
-	  bool different=false;
-	  for(unsigned int iz=0;iz<(*it).size();++iz) {
-	    if((*it)[iz]!=(*jt)[iz]) {
-	      different = true;
-	      break;
-	    }
-	  }
-	  if(!different) {
-	    jt = swaps.erase(jt);
-	    --jt;
-	  }
-	}
-      }
-      // special for identical decay products
-      if(templateDiagram.vertices.begin()->second.incoming) {
-	if(   templateDiagram.vertices.begin() ->first ==
-	   (++templateDiagram.vertices.begin())->first) {
-	  if(*(   diagrams[ix]->outgoing.begin() ->second) ==
-	     *((++diagrams[ix]->outgoing.begin())->second)) {
-	    for(list<vector<unsigned int> >::iterator it=swaps.begin();
-		it!=swaps.end();++it) {
-	      for(list<vector<unsigned int> >::iterator jt=it;
-		  jt!=swaps.end();++jt) {
-		if(it==jt) continue;
-		if((*it)[0]==(*jt)[2]&&(*it)[1]==(*jt)[3]) {
-		  jt = swaps.erase(jt);
-		  --jt;
-		}
-	      }
-	    }
-	  }
-	}
-      }
-      for(list<vector<unsigned int> >::iterator it=swaps.begin();
-	  it!=swaps.end();++it) {
-	newDiagrams.push_back(templateDiagram);
-	newDiagrams.back().channelType = *it;
-      }
-    }
-  }
+  vector<PDPtr> outgoing(diagrams[0].outgoing.begin(),
+			 diagrams[0].outgoing.end());
   // get the name for the object
   string objectname ("/Herwig/Decays/");
-  string classname = DecayerClassName(incoming, diagrams[0]->outPart, objectname);
+  string classname = DecayerClassName(incoming, diagrams[0].outgoing, objectname);
   if(classname=="") return GeneralFourBodyDecayerPtr();
   // create the object
   GeneralFourBodyDecayerPtr decayer = 
     dynamic_ptr_cast<GeneralFourBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
   // set up the decayer and return if doesn't work
-  if(!decayer->setDecayInfo(incoming,outgoing,newDiagrams,symfac))
+  if(!decayer->setDecayInfo(incoming,outgoing,diagrams,symfac))
     return GeneralFourBodyDecayerPtr();
   // set decayer options from base class
   setDecayerInterfaces(objectname);

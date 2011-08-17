@@ -823,9 +823,19 @@ void SusyBase::extractParameters(bool checkmodel) {
   pit=parameters_.find("extpar");
   // extract tan beta
   tanBeta_ = -1.;
-  if(pit!=parameters_.end()) {
-    it = pit->second.find(25);
-    if(it!=pit->second.end()) tanBeta_ = it->second;
+  if(tanBeta_<0.) {
+    pit=parameters_.find("hmix");
+    if(pit!=parameters_.end()) {
+      it = pit->second.find(2);
+      if(it!=pit->second.end()) tanBeta_ = it->second;
+    }
+  }
+  if(tanBeta_<0.) {
+    pit=parameters_.find("extpar");
+    if(pit!=parameters_.end()) {
+      it = pit->second.find(25);
+      if(it!=pit->second.end()) tanBeta_ = it->second;
+    }
   }
   // otherwise from minpar
   if(tanBeta_<0.) {

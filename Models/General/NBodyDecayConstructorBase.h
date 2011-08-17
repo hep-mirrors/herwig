@@ -69,7 +69,9 @@ protected:
   /**
    *  Method to set up the decay mode, should be overidden in inheriting class
    */
-  virtual void createDecayMode(vector<PrototypeVertexPtr> & mode);
+  virtual void createDecayMode(vector<NBDiagram> & mode,
+			       bool possibleOnShell,
+			       double symfac);
   
 
   /**

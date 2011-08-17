@@ -52,15 +52,15 @@ public:
   /**
    *  Create a decay mode
    */
-  void createDecayMode(vector<PrototypeVertexPtr> &);
+  void createDecayMode(vector<NBDiagram> &,bool,double);
 
   /**
    * Create the decayer
    * @param diagrams The diagrams for the decay
    * @param inter Option for intermediates
    */
-  GeneralFourBodyDecayerPtr createDecayer(vector<PrototypeVertexPtr> & diagrams,
-					  bool inter) const;
+  GeneralFourBodyDecayerPtr createDecayer(vector<NBDiagram> & diagrams,
+					  bool inter, double symfac) const;
 
   /**
    * Contruct the classname and object name for the Decayer

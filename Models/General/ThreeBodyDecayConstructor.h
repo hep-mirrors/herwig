@@ -56,7 +56,7 @@ protected:
    * @param inter Option for intermediates
    */
   GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
-					   bool inter) const;
+					   bool inter,double symfac) const;
 
   /**
    * Contruct the classname and object name for the Decayer
@@ -72,7 +72,9 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  virtual void createDecayMode(vector<PrototypeVertexPtr> & mode);
+  virtual void createDecayMode(vector<NBDiagram> & mode,
+			       bool possibleOnShell,
+			       double symfac);
 
 public:
 

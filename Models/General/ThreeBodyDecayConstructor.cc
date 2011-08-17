@@ -104,7 +104,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::
-createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
+createDecayer(vector<TBDiagram> & diagrams, bool inter,
+	      double symfac) const {
   if(diagrams.empty()) return GeneralThreeBodyDecayerPtr();
   // extract the external particles for the process
   PDPtr incoming = getParticleData(diagrams[0].incoming);
@@ -136,7 +137,7 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
     dynamic_ptr_cast<GeneralThreeBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
   // set up the decayer and return if doesn't work
-  if(!decayer->setDecayInfo(incoming,outVector,diagrams))
+  if(!decayer->setDecayInfo(incoming,outVector,diagrams,symfac))
     return GeneralThreeBodyDecayerPtr();
   // set decayer options from base class
   setDecayerInterfaces(objectname);
@@ -191,10 +192,11 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 }
 
 void ThreeBodyDecayConstructor::
-createDecayMode(vector<PrototypeVertexPtr> & mode) {
+createDecayMode(vector<NBDiagram> & mode,
+		bool possibleOnShell,
+		double symfac) {
   // convert the diagrams from the general to the three body structure
   vector<TBDiagram> diagrams;
-  bool possibleOnShell=false;
   for(unsigned int iy=0;iy<mode.size();++iy) {
     diagrams.push_back(TBDiagram(mode[iy]));
     // remove weak processes simulated using the weak current
@@ -205,7 +207,6 @@ createDecayMode(vector<PrototypeVertexPtr> & mode) {
 	getParticleData(diagrams.back().outgoing)->mass();
       if(deltaM<weakMassCut_) diagrams.pop_back();
     }
-    possibleOnShell |= mode[iy]->possibleOnShell;
   }
   if(diagrams.empty()) return;
   // check if possible on-shell internal particles
@@ -242,7 +243,7 @@ createDecayMode(vector<PrototypeVertexPtr> & mode) {
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
     // create the decayer
-    GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+    GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter,symfac);
     if(!decayer) {
       if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
 					       << tag << " so mode not created\n";
@@ -273,7 +274,7 @@ createDecayMode(vector<PrototypeVertexPtr> & mode) {
   else if( dm ) {
     if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
       // create the decayer
-      GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
+      GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter,symfac);
       if(!decayer) {
 	if(Debug::level > 1 ) generator()->log() << "Can't create the decayer for " 
 						 << tag << " so mode not created\n";

@@ -99,7 +99,8 @@ modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
 
 bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 					   vector<PDPtr> outgoing,
-					   const vector<TBDiagram> & process) {
+					   const vector<TBDiagram> & process,
+					   double symfac) {
   // set the member variables from the info supplied
   _incoming        = incoming;
   _outgoing        = outgoing;
@@ -128,7 +129,7 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
     if( i != 3 ) _reftagcc += string(",");
   }
   // set the colour factors and return the answer
-  return setColourFactors();
+  return setColourFactors(symfac);
 }
 
 void GeneralThreeBodyDecayer::doinit() {
@@ -599,7 +600,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
   inweights = vector<double>(nchannel,1./double(nchannel));
 }
 
-bool GeneralThreeBodyDecayer::setColourFactors() {
+bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
   string name = _incoming->PDGName() + "->";
   vector<int> sng,trip,atrip,oct;
   unsigned int iloc(0);
@@ -815,6 +816,12 @@ bool GeneralThreeBodyDecayer::setColourFactors() {
 			 << "ThreeBodyDecayConstructor::getColourFactors()"
 			 << " for " << name << " omitting decay\n";
       return false;
+    }
+  }
+  for(unsigned int ix=0;ix<_nflow;++ix) {
+    for(unsigned int iy=0;iy<_nflow;++iy) {
+      _colour       [ix][iy] /= symfac;
+      _colourLargeNC[ix][iy] /= symfac;
     }
   }
   if( Debug::level > 1 ) {
