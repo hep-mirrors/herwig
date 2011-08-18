@@ -878,8 +878,8 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_==0 ) {
     output += alphaEM_*oneLoopVertex_->
       neutralCurrentQEDME(mePartonData()[0],mePartonData()[1],
-			  mePartonData()[2],mePartonData()[3],
-			  sHat(),tHat(),uHat());
+       			  mePartonData()[2],mePartonData()[3],
+      			  sHat(),tHat(),uHat());
   }
   // genuine EW corrections
   if(corrections_==3||corrections_==5) output += EWterm_;
@@ -998,10 +998,10 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 
     // q -> q (DIS factorization scheme)
     double collQQDIS       = collinearQuarkKDIS(x.first,zJac.first ,z.first ,
-					   oldqPDF.first ,newqPDF.first );
+						oldqPDF.first ,newqPDF.first );
     // qbar -> qbar (DIS factorization scheme)
     double collQbarQbarDIS = collinearQuarkKDIS(x.second,zJac.second,z.second,
-				       oldqPDF.second,newqPDF.second );
+						oldqPDF.second,newqPDF.second );
     // gamma -> q (DIS factorization scheme)
     double collPQDIS       = newpPDF.first  < 0. ? 0. : 
       collinearBosonKDIS(zJac.first ,z.first ,oldqPDF.first ,newpPDF.first );
@@ -1014,10 +1014,10 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 
     // q -> q (QED IF piece)
     double collQIF       = collinearQuarkIF(x.first,zJac.first ,z.first ,
-					    oldqPDF.first ,newqPDF.first );
+					    oldqPDF.first ,newqPDF.first ) ;
     // qbar -> qbar (QED IF piece)
     double collQbarIF    = collinearQuarkIF(x.second,zJac.second,z.second,
-					    oldqPDF.second,newqPDF.second);
+					    oldqPDF.second,newqPDF.second) ;
     // SumPop_IF corresponds to CS, eq. 10.25 (Ti*Tap terms of the P operator), 
     // for the QED case.
     // Notice that for Z production the analogous terms in the K operator (CS, eq. 10.24)
@@ -1026,7 +1026,8 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     for (unsigned int iin=0; iin<2; ++iin) {
       double collIF = iin==0 ? collQIF : collQbarIF ;
       for(unsigned int iout=2; iout<4; ++iout) {
-	int QiQo=mePartonData()[iin]->iCharge()*mePartonData()[iout]->iCharge();
+	// - sign because outgoing particles should be counted with a minus //ER
+	int QiQo= - mePartonData()[iin]->iCharge()*mePartonData()[iout]->iCharge(); 
 	if( QiQo != 0) {  
 	  Energy2 sioHat = 2.*meMomenta()[iin].dot(meMomenta()[iout]) ;
 	  //cout<<iin<<iout<<"  "<<collIF/collQIF<<" "<<collIF/collQbarIF<<endl;
@@ -1037,7 +1038,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
       }
     }
     // add to sum
-    coll += SumPop_IF*EMfact_;
+    coll += SumPop_IF*EMfact_ ;
   }
   // add up the virtual and remnant terms
   double wgt = loME_*( 1. + virt + coll );
@@ -1094,8 +1095,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
 				     oldqPDF.second,newqPDF.second,
 				     newpPDF.second, IF24);
-      wgt += realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0];
-    }
+      wgt += (realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0] );
   }
   if(isnan(wgt)||isinf(wgt)) {
     generator()->log() << "testing bad weight "
@@ -1969,10 +1969,15 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       // lo piece and charge factors
       double charge = double(mePartonData()[iin]->iCharge()*
 			     mePartonData()[iout]->iCharge())/9.;
-      if(charge<0)
-	DIF[ix]          = -lo*charge*split;
+      //new //ER
+      // with the + sign because one of the 2 partons is outgoing,
+      // so revert the sign of the
+      // 'color' operator of the outgoing parton
+      InvEnergy2 Dipole= + lo*charge*split; 
+      if(charge>0)
+	DIF[ix]          = Dipole;
       else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
-	negativeDipoles += -lo*charge*split;
+	negativeDipoles += Dipole;
       if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
     }
   }
@@ -2043,7 +2048,6 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   }
   // full result
   else if(QEDContributions_==0) {
-    // for the moment matrix element is only IFS+FSR (no interference)
     meout = me[2];
     den = abs(DII[0])+abs(DII[1])+abs(DFF[0])+abs(DFF[1]);
     for(unsigned int ix=0;ix<4;++ix) den += abs(DIF[ix]);
