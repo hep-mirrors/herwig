@@ -23,8 +23,10 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO),
 				     theSinThetaW(0.), theq2Last(ZERO),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theAntiLast(0),
-				     theFermLast(0), theHLast(0) 
-{}
+				     theFermLast(0), theHLast(0) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDF1F0H1Vertex::doinit() {
   long heavy[3] = {5, 6, 15};
@@ -84,9 +86,6 @@ void UEDF1F0H1Vertex::doinit() {
   theCosThetaW = sqrt(1. - sin2ThetaW());
   theMw = getParticleData(24)->mass();
   theMz = getParticleData(23)->mass();
-
-  orderInGs(0);
-  orderInGem(1);
 }
 
 

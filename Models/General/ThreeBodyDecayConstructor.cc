@@ -305,6 +305,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	   outgoing[ix]->id()==ParticleID::Z0 ||
 	   abs(outgoing[ix]->id())==ParticleID::Wplus) ++nbos;
 	if(particles.find(outgoing[ix])!=particles.end()) ++nnew;
+ 	if(outgoing[ix]->CC() && 
+ 	   particles.find(outgoing[ix]->CC())!=particles.end()) ++nnew;
       }
       if(nbos>_maxBoson || nnew>_maxList) continue;
       // if needed remove intermediate diagrams where intermediate can be
@@ -338,7 +340,6 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	  possibleOnShell = true;
 	}
       }
-
       // check if should be added to an existing decaymode
       bool added = false;
       for(unsigned int iy = 0; iy < modes.size(); ++iy) {
@@ -395,9 +396,8 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     bool inter(false);
     if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
       inter = true;
-    vector< vector<TBDiagram> >::const_iterator mend = modes.end();
-    for( vector< vector<TBDiagram> >::const_iterator mit = modes.begin();
-	 mit != mend; ++mit ) {
+    for( vector< vector<TBDiagram> >::iterator mit = modes.begin();
+	 mit != modes.end(); ++mit ) {
       createDecayMode(*mit, inter);
     }
   }// end of particle loop
@@ -419,13 +419,6 @@ createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
     // vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
-    // remove weak processes simulated using the current
-    if(weakMassCut_>ZERO) {
-      if(abs(pb->id())==ParticleID::Wplus && pc->mass() < pa->mass() &&
-	 pa->mass()-pc->mass()<weakMassCut_) continue;
-      if(abs(pc->id())==ParticleID::Wplus && pb->mass() < pa->mass() &&
-	 pa->mass()-pb->mass()<weakMassCut_) continue;
-    }
     decays.push_back(TwoBodyPrototype(inpart,make_pair(pb,pc),vertex));
   }
   return decays;
@@ -441,6 +434,10 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
     tPDPtr other = proto.outgoing.second;
     if(ix==1) swap(dec,other);
     int id = dec->id();
+    // remove weak processes simulated using the current
+    if(weakMassCut_>ZERO && abs(dec->id())==ParticleID::Wplus &&
+       proto.incoming->mass()-other->mass()<weakMassCut_) continue;
+    // check allowed incoming in vertex
     if( !vertex->isIncoming(dec) ) continue;
     tPDVector decaylist = vertex->search(list, dec);
     tPDVector::size_type nd = decaylist.size();
@@ -465,7 +462,7 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::
-createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
+createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
   if(diagrams.empty()) return GeneralThreeBodyDecayerPtr();
   // extract the external particles for the process
   PDPtr incoming = getParticleData(diagrams[0].incoming);
@@ -474,6 +471,20 @@ createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
   outgoing.insert(getParticleData(diagrams[0].outgoing           ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
+  // sort out ordering and labeling of diagrams
+  vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
+  for(unsigned int ix=0;ix<diagrams.size();++ix) {
+    unsigned int iy=0;
+    for(;iy<3;++iy) 
+      if(diagrams[ix].outgoing == outVector[iy]->id()) break;
+    if(diagrams[ix].channelType == TBDiagram::UNDEFINED) {
+      diagrams[ix].channelType = TBDiagram::Channel(iy);
+      if( ( iy == 0 && outVector[1]->id() != diagrams[ix].outgoingPair.first)||
+	  ( iy == 1 && outVector[0]->id() != diagrams[ix].outgoingPair.first)|| 
+	  ( iy == 2 && outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
+	swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
+    }
+  }
   // create the object
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, outgoing, objectname);
@@ -484,7 +495,7 @@ createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
   unsigned int ncf(0);
   pair<vector<DVector>, vector<DVector> >
     cfactors = getColourFactors(incoming,outgoing,diagrams,ncf);
-  decayer->setDecayInfo(incoming,vector<PDPtr>(outgoing.begin(),outgoing.end()),
+  decayer->setDecayInfo(incoming,outVector,
 			diagrams,cfactors.first,cfactors.second,ncf);
   // set decayer options from base class
   setDecayerInterfaces(objectname);
@@ -539,7 +550,7 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 }
 
 void ThreeBodyDecayConstructor::
-createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
+createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles

@@ -23,8 +23,10 @@ using namespace Herwig;
 UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
 				     theq2Last(ZERO), theCoupLast(0.), 
-				     theLeftLast(0.), theRightLast(0.) 
-{}
+				     theLeftLast(0.), theRightLast(0.) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDF1F1Z0Vertex::doinit() {
   long boson = 23;
@@ -55,8 +57,6 @@ void UEDF1F1Z0Vertex::doinit() {
   theSin2ThW = sin2ThetaW();
   theCosThW = sqrt(1. - theSin2ThW); 
   theRadius = model->compactRadius();
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void UEDF1F1Z0Vertex::persistentOutput(PersistentOStream & os) const {

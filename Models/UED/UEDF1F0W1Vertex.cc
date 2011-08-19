@@ -27,8 +27,10 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
 				     theq2last(),
 				     theCouplast(0.), theLlast(0.),
 				     theRlast(0.), theGBlast(0), 
-				     theKKlast(0), theSMlast(0) 
-{}
+				     theKKlast(0), theSMlast(0) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDF1F0W1Vertex::doinit() {
   //outgoing W+
@@ -88,8 +90,6 @@ void UEDF1F0W1Vertex::doinit() {
   theCosWmO = theCosW*theCosOne + theSinW*theSinOne;
   theCKM = dynamic_ptr_cast<Ptr<StandardCKM>::transient_pointer>
     (UEDBase->CKM())->getUnsquaredMatrix(UEDBase->families());
-  orderInGs(0);
-  orderInGem(1);
 }
 
 

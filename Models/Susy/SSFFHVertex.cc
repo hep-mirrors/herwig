@@ -25,8 +25,10 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0),
 			     theFLast(make_pair(0,0)), theGlast(0.),
-			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) 
-{}
+			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSFFHVertex::doinit() {
   int higgs[] = { 25, 35, 36 };
@@ -64,8 +66,6 @@ void SSFFHVertex::doinit() {
   theSa = sin(theMSSM->higgsMixingAngle());
   theCa = sqrt(1. - sqr(theSa));
   
-  orderInGem(1);
-  orderInGs(0);
   FFSVertex::doinit();
 }
 

@@ -68,7 +68,8 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
   for(set<HardBranchingPtr>::const_iterator it=x.branchings_.begin();
       it!=x.branchings_.end();++it) {
     os << "Hard Particle: " << *(**it).branchingParticle() << " has Sudakov " 
-       << (**it).sudakov() << "\n";
+       << (**it).sudakov() << " pT = " << (**it).pT()/GeV
+       << " scale = " << (**it).scale()/GeV << "\n";
     os << "Its colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
        <<  (**it).branchingParticle()->antiColourLine() << "\n";
     os << "Its basis vectors are " << (**it).pVector()/GeV 
@@ -84,7 +85,8 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
   for(set<HardBranchingPtr>::const_iterator it=x.spacelike_.begin();
       it!=x.spacelike_.end();++it) {
     os << "SpaceLike: " << *(**it).branchingParticle() << " has Sudakov" 
-       << (**it).sudakov() << "\n";
+       << (**it).sudakov() << " pT = " << (**it).pT()/GeV
+       << " scale = " << (**it).scale()/GeV << "\n";
     os << "It's colour lines are " 
        << (**it).branchingParticle()->colourLine() << "\t" 
        << (**it).branchingParticle()->antiColourLine() << "\n";

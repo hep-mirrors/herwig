@@ -23,8 +23,10 @@ using namespace Herwig;
 
 SSWHHVertex::SSWHHVertex() : 
   theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
-  theq2last(ZERO), theElast(0.) 
-{}
+  theq2last(ZERO), theElast(0.) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void SSWHHVertex::doinit() {
   addToList(22,37,-37);
@@ -57,8 +59,6 @@ void SSWHHVertex::doinit() {
   double cosb = sqrt( 1. - sqr(sinb) );
   thesbma = sinb*cosa - sina*cosb;
   thecbma = cosa*cosb + sina*sinb;
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void SSWHHVertex::persistentOutput(PersistentOStream & os) const {

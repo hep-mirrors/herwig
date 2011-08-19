@@ -41,8 +41,10 @@ void ADDModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) 
-{}
+ADDModelFFGRVertex::ADDModelFFGRVertex() : kappa_(ZERO), r_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void ADDModelFFGRVertex::doinit() {
   // PDG codes for the particles
@@ -57,8 +59,6 @@ void ADDModelFFGRVertex::doinit() {
 		      << Exception::runerror;
   kappa_=2./hwADD->MPlanckBar();
   r_ = sqr(hwADD->LambdaT())/hwADD->MPlanckBar();
-  orderInGem(1);
-  orderInGs (0);
 }
 
 Complex ADDModelFFGRVertex::propagator(int iopt, Energy2 q2,tcPDPtr part,

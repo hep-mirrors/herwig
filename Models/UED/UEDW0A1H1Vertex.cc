@@ -31,13 +31,13 @@ void UEDW0A1H1Vertex::doinit() {
   theMw2 = sqr(getParticleData(24)->mass());
   theMz2 = sqr(getParticleData(23)->mass());
   theR2 = sqr(UEDBase->compactRadius());
-  orderInGs(0);
-  orderInGem(0);
 }
 
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
-				     theq2Last(), theCoupLast(0.) 
-{}
+				     theq2Last(), theCoupLast(0.) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(theMw2,GeV2) << ounit(theMz2,GeV2) << ounit(theR2,1/GeV2);  

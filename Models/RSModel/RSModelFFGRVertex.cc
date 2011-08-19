@@ -41,8 +41,10 @@ void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
   norm(Complex(kappa_ * UnitRemoval::E));
 }
 
-RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) 
-{}
+RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
 
 void RSModelFFGRVertex::doinit() {
   // PDG codes for the particles
@@ -56,6 +58,4 @@ void RSModelFFGRVertex::doinit() {
     throw Exception() << "Must have RSModel in RSModelFFGRVertex::doinit()"
 		      << Exception::runerror;
   kappa_=2./hwRS->lambda_pi();
-  orderInGem(1);
-  orderInGs (0);
 }

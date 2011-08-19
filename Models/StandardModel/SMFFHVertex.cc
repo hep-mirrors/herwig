@@ -35,6 +35,8 @@ SMFFHVertex::SMFFHVertex()  {
   _q2last=ZERO;
   _masslast=ZERO;
   _mw=ZERO;
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void SMFFHVertex::doinit() {
@@ -51,8 +53,6 @@ void SMFFHVertex::doinit() {
   if (!_theSM) 
     throw InitException();
   _mw= getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  orderInGem(1);
-  orderInGs(0);
   FFSVertex::doinit();
 }
 

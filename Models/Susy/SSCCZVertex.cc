@@ -22,8 +22,10 @@ using namespace Herwig;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _q2last(), _id1last(0), _id2last(0),
-			     _leftlast(0.), _rightlast(0.), _gblast(0)
-{}
+			     _leftlast(0.), _rightlast(0.), _gblast(0) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void SSCCZVertex::doinit() {
   addToList(-1000024, 1000024, 23);
@@ -50,8 +52,6 @@ void SSCCZVertex::doinit() {
 			  << "A mixing matrix pointer is null.  U: " 
 			  << _theU << "  V: " << _theV
 			  << Exception::abortnow;
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void SSCCZVertex::persistentOutput(PersistentOStream & os) const {

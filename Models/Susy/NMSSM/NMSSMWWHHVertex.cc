@@ -13,8 +13,10 @@
 using namespace Herwig;
 
 NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
-				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) 
-{}
+				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) {
+  orderInGem(2);
+  orderInGs (0);
+}
 
 IBPtr NMSSMWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -96,9 +98,6 @@ void NMSSMWWHHVertex::doinit() {
   double beta = atan(model->tanBeta());
   sb_ = sin(beta);
   cb_ = cos(beta);
-  // order in couplings
-  orderInGem(2);
-  orderInGs (0);
   // base class
   VVSSVertex::doinit();
 }

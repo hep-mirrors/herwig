@@ -19,8 +19,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) 
-{}
+SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SMFFPVertex::doinit() {
   // PDG codes for the particles
@@ -38,8 +40,6 @@ void SMFFPVertex::doinit() {
     _charge[2*ix+9 ] = generator()->standardModel()->ee();
     _charge[2*ix+10] = generator()->standardModel()->enu();
   }
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }
 

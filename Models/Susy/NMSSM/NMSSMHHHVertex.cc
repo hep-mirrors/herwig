@@ -22,8 +22,10 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _s2b(0.), _c2b(0.), _vu(0.*MeV),
 				   _vd(0.*MeV), _s(0.*MeV), _q2last(0.*MeV2),
 				   _glast(0.), _MQ3(0.*MeV), _MU2(0.*MeV),
-				   _includeRadiative(false) 
-{}
+				   _includeRadiative(false) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void NMSSMHHHVertex::doinit() {
   // PDG codes for the particles in vertex _vd
@@ -72,9 +74,6 @@ void NMSSMHHHVertex::doinit() {
   _vd = sqrt(2)*_mw*_cb;
   _vu = sqrt(2)*_mw*_sb;
   _s  = _lambdaVEV/_lambda;
-  // order in couplings
-  orderInGem(1);
-  orderInGs(0);
   SSSVertex::doinit();
 }
 

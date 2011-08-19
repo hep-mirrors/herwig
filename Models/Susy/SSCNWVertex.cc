@@ -22,9 +22,10 @@ using namespace Herwig;
 
 SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
-			     _rightlast(0.) 
-{}
-
+			     _rightlast(0.) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void SSCNWVertex::doinit() {
   long neu[] = { 1000022, 1000023, 1000025, 1000035, 1000045 };
@@ -50,8 +51,6 @@ void SSCNWVertex::doinit() {
 			  << "A mixing matrix pointer is null."
 			  << " N: " << _theN << " U: " << _theU << " V: "
 			  << _theV << Exception::abortnow;
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void SSCNWVertex::persistentOutput(PersistentOStream & os) const {

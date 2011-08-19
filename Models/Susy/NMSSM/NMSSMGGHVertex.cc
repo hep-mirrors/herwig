@@ -18,8 +18,10 @@ NMSSMGGHVertex::NMSSMGGHVertex() : _sw(0.), _cw(0.), _mw(0.*MeV),
 	_v2(0.*MeV), _triTp(0.*MeV), _triBt(0.*MeV),
 	_sb(0.), _cb(0.), _masslast(make_pair(0.*MeV,0.*MeV)),
 	_q2last(0.*MeV2), _couplast(0.), _coup(0.),
-    _hlast(0), _recalc(true) 
-{}
+    _hlast(0), _recalc(true) {
+  orderInGem(1);
+  orderInGs(2);
+}
 
 void NMSSMGGHVertex::doinit()  {
   addToList(21,21,25);
@@ -77,9 +79,6 @@ void NMSSMGGHVertex::doinit()  {
   type[0] = PDT::Spin1Half;
   type[1] = PDT::Spin1Half;
   couplings.resize(6);
-
-  orderInGem(1);
-  orderInGs(2);
 
   VVSLoopVertex::doinit();
   Looptools::ltexi();

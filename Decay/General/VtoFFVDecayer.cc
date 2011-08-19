@@ -111,6 +111,9 @@ void VtoFFVDecayer::doinit() {
 double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			  const ParticleVector & decay,
 			  MEOption meopt) const {
+  // particle or CC of particle
+  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  // special handling or first/last call
   if(meopt==Initialize) {
     VectorWaveFunction::
       calculateWaveFunctions(_inVector,_rho,const_ptr_cast<tPPtr>(&inpart),
@@ -192,6 +195,7 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	      continue;
 	    }
 	    tcPDPtr offshell = dit->intermediate;
+	    if(cc&&offshell->CC()) offshell=offshell->CC();
 	    Complex diag;
 	    unsigned int o2(out2[dit->channelType]), o3(out3[dit->channelType]);
 	    double sign = (o3 < o2) ? 1. : -1.;
