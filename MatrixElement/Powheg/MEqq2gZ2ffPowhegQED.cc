@@ -1096,6 +1096,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 				     oldqPDF.second,newqPDF.second,
 				     newpPDF.second, IF24);
       wgt += (realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0] );
+    }
   }
   if(isnan(wgt)||isinf(wgt)) {
     generator()->log() << "testing bad weight "
