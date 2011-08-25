@@ -38,7 +38,7 @@ MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED()
     preqgQCD_(10.),pregqbarQCD_(10.),
     preqqbarqQED_(50.), preqqbarqbarQED_(50.),
     preqgQED_(10.),pregqbarQED_(10.), preFFQED_(6.),
-    preIFQED_(200.),
+    preIFQED_(10.),
     minpTQCD_(2.*GeV),minpTQED_(2.*GeV),
     process_(2), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
@@ -2617,7 +2617,7 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
     unsigned int iin  = idipole<2 ? 0 :1;
     unsigned int iout = idipole%2 == 0 ? 2 : 3;
     // charge of the dipole
-    double charge = -
+    double charge = +
       particlesToShower[iin ]->progenitor()->dataPtr()->iCharge()*
       particlesToShower[iout]->progenitor()->dataPtr()->iCharge()/9.;
     if(charge<0.) continue;
