@@ -87,7 +87,7 @@ protected:
    * @return A vector a decay modes
    */
   vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
-					unsigned int ilist);
+					    unsigned int ilist);
 
   /**
    * Expand the two body prototype to get the possible
@@ -104,7 +104,7 @@ protected:
    * @param diagrams The diagrams for the decay
    * @param inter Option for intermediates
    */
-  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
+  GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
 					   bool inter) const;
 
   /**
@@ -121,7 +121,7 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
+  void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
 
   /**
    * Get the correct colour factor matrix.

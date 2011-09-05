@@ -25,8 +25,10 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO),
 			     theh0Zfact(ZERO), theH0Zfact(ZERO),
 			     theCoupLast(ZERO), theElast(0.0),
 			     theq2last(ZERO), theHlast(0), 
-			     theGBlast(0) 
-{}
+			     theGBlast(0) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSWWHVertex::doinit() {
   addToList(23,23,25);
@@ -55,9 +57,6 @@ void SSWWHVertex::doinit() {
   theH0Wfact = mw*cosbma/sw;
   theh0Zfact = mz*sinbma/sw/sqrt(1. - sw*sw);
   theH0Zfact = mz*cosbma/sw/sqrt(1. - sw*sw);
-
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSWWHVertex::persistentOutput(PersistentOStream & os) const {

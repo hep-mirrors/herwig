@@ -12,8 +12,10 @@
 
 using namespace Herwig;
 
-SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) 
-{}
+SSWWHHVertex::SSWWHHVertex()  : couplast_(0.), q2last_(ZERO) {
+  orderInGs(0);
+  orderInGem(2);
+}
 
 IBPtr SSWWHHVertex::clone() const {
   return new_ptr(*this);

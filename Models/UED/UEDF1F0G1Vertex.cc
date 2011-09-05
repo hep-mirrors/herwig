@@ -19,8 +19,10 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(ZERO), theCoupLast(0.) 
-{}
+UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 NoPIOClassDescription<UEDF1F0G1Vertex> UEDF1F0G1Vertex::initUEDF1F0G1Vertex;
 // Definition of the static class description member.
@@ -92,6 +94,4 @@ void UEDF1F0G1Vertex::doinit() {
     addToList(-(i + 6100000), i, boson);
   }
   FFVVertex::doinit();
-  orderInGs(1);
-  orderInGem(0);
 }

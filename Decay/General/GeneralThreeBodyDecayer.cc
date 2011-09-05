@@ -127,18 +127,6 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   _colourLargeNC   = Ncfactors;
   _nflow           = ncf;
   assert( _outgoing.size() == 3 );
-  for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-    unsigned int iy=0;
-    for(;iy<3;++iy) 
-      if(_diagrams[ix].outgoing == _outgoing[iy]->id()) break;
-    if(_diagrams[ix].channelType == TBDiagram::UNDEFINED) {
-      _diagrams[ix].channelType = TBDiagram::Channel(iy);
-      if( ( iy == 0 && outgoing[1]->id() != _diagrams[ix].outgoingPair.first)||
-	  ( iy == 1 && outgoing[0]->id() != _diagrams[ix].outgoingPair.first)|| 
-	  ( iy == 2 && outgoing[0]->id() != _diagrams[ix].outgoingPair.first) ) 
-	swap(_diagrams[ix].outgoingPair.first, _diagrams[ix].outgoingPair.second);
-    }
-  }
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
   OrderedParticles::const_iterator dit = refmode.begin();

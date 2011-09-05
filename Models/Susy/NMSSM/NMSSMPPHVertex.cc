@@ -21,8 +21,10 @@ NMSSMPPHVertex::NMSSMPPHVertex()
     _sb(0.), _cb(0.), 
     _kappa(0.),_vu(ZERO),_vd(ZERO),_s(ZERO),_theAl(ZERO),
     _masslast(make_pair(0.*MeV,0.*MeV)),_q2last(0.*MeV2),
-    _couplast(0.), _coup(0.), _hlast(0), _recalc(true) 
-{}
+    _couplast(0.), _coup(0.), _hlast(0), _recalc(true) {
+  orderInGem(3);
+  orderInGs(0);
+}
 
 void NMSSMPPHVertex::doinit()  {
   addToList(22,22,25);
@@ -97,8 +99,6 @@ void NMSSMPPHVertex::doinit()  {
   type[4] = PDT::Spin1Half;
   type[5] = PDT::Spin1;
   couplings.resize(13);
-  orderInGem(3);
-  orderInGs(0);
   VVSLoopVertex::doinit();
   Looptools::ltexi();
 }

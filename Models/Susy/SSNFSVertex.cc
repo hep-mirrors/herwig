@@ -24,8 +24,10 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
 			     _id2last(0),
-			      yukawa_(true) 
-{}
+			      yukawa_(true) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _stop << _sbot << _stau << _nmix << _theSS  << _sw << _cw 
@@ -83,8 +85,6 @@ void SSNFSVertex::doinit() {
   _cw = sqrt(1. - sqr(_sw));
   _sb = tb/sqrt(1 + sqr(tb));
   _cb = sqrt(1 - sqr(_sb));
-  orderInGem(1);
-  orderInGs(0);
 }
 
 ClassDescription<SSNFSVertex> SSNFSVertex::initSSNFSVertex;

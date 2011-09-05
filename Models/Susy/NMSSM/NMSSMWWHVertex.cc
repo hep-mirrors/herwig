@@ -15,8 +15,10 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 NMSSMWWHVertex::NMSSMWWHVertex() 
-  : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) 
-{}
+  : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void NMSSMWWHVertex::doinit() {
   int id[3]={25,35,45};
@@ -46,9 +48,6 @@ void NMSSMWWHVertex::doinit() {
   double beta = atan(model->tanBeta());
   _sinb=sin(beta);
   _cosb=cos(beta);
-  // order in the couplings
-  orderInGem(1);
-  orderInGs(0);
   // base class
   VVSVertex::doinit();
 }

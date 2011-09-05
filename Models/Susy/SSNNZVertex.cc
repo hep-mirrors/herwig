@@ -23,8 +23,10 @@ using namespace Herwig;
 
 SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(), _couplast(0.),
-			     _leftlast(0.), _rightlast(0.) 
-{}
+			     _leftlast(0.), _rightlast(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSNNZVertex::doinit() {
   long neu[] = { 1000022, 1000023, 1000025, 1000035, 1000045 };
@@ -45,8 +47,6 @@ void SSNNZVertex::doinit() {
 			  << Exception::abortnow;
   _sw = sqrt(sin2ThetaW());
   _cw = sqrt(1 - _sw*_sw);
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSNNZVertex::persistentOutput(PersistentOStream & os) const {

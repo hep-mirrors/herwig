@@ -21,8 +21,11 @@ using namespace ThePEG;
 
 ADDModelWWWGRVertex::ADDModelWWWGRVertex() 
   : kappa_(ZERO), r_(ZERO), couplast_(0.),
-    q2last_(ZERO), zfact_(0.) 
-{}
+    q2last_(ZERO), zfact_(0.) {
+  // order in the couplings
+  orderInGem(2);
+  orderInGs (0);
+}
 
 void ADDModelWWWGRVertex::doinit() {
   addToList(24,-24, 22, 39);
@@ -37,9 +40,6 @@ void ADDModelWWWGRVertex::doinit() {
       << Exception::runerror;
   kappa_=2./hwADD->MPlanckBar();
   r_ = sqr(hwADD->LambdaT())/hwADD->MPlanckBar();
-  // order in the couplings
-  orderInGem(2);
-  orderInGs (0);
 }
 
 void ADDModelWWWGRVertex::persistentOutput(PersistentOStream & os) const {

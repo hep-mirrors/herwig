@@ -20,14 +20,14 @@ using namespace Herwig;
 using namespace ThePEG;
 
 ADDModelGGGGRVertex::ADDModelGGGGRVertex() 
-  : kappa_(ZERO), r_(ZERO), couplast_(0.), q2last_(ZERO) 
-{}
+  : kappa_(ZERO), r_(ZERO), couplast_(0.), q2last_(ZERO) {
+  orderInGem(1);
+  orderInGs (1);
+}
 
 void ADDModelGGGGRVertex::doinit() {
   addToList(21, 21, 21, 39);
   VVVTVertex::doinit();
-  orderInGem(1);
-  orderInGs (1);
   // set the graviton coupling 
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD) 

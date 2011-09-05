@@ -23,7 +23,7 @@ INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
 	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-diffractive.in \
              LHC-GammaGamma.in LHC-LQ.in LHC-MU900-2.in LHC-UE7-2.in \
-	     LHC-UE-EE-2.in
+	     LHC-UE-EE-2.in LHC-UE-EE-3-CTEQ6L1.in LHC-UE-EE-3.in
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 

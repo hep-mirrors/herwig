@@ -20,8 +20,10 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSGFSVertex::SSGFSVertex() :_q2last(0.*GeV2),_couplast(0.), 
-			    _id1last(0), _id2last(0) 
-{}
+			    _id1last(0), _id2last(0) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _stop << _sbottom << gluinoPhase_;
@@ -140,7 +142,4 @@ void SSGFSVertex::doinit() {
 			  << "There is a null mixing matrix pointer. "
 			  << "stop: " << _stop << " sbottom: " << _sbottom 
 			  << Exception::abortnow;
-
-  orderInGs(1);
-  orderInGem(0);
 }

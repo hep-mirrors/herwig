@@ -326,6 +326,9 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       it = range.second;
       continue;
     }
+    // finally if the process is allow assign the colour flows
+    for(unsigned int ix=0;ix<process.size();++ix) assignToCF(process[ix]);
+    // create the matrix element
     createMatrixElement(process);
     process.clear();
     it = range.second;
@@ -426,10 +429,7 @@ void TwoToTwoProcessConstructor::makeFourPointDiagrams(long parta, long partb,
     nhp.vertices = make_pair(vert, vert);
     nhp.channelType = HPDiagram::fourPoint;
     fixFSOrder(nhp);
-    if( !duplicate(nhp, processes_) ) {
-      assignToCF(nhp);
-      processes_.push_back(nhp);
-    }
+    if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }
 
@@ -454,10 +454,7 @@ TwoToTwoProcessConstructor::makeDiagrams(IDPair in, long out1, const tPDSet & ou
     nhp.channelType = chan;
     nhp.ordered = cross;
     fixFSOrder(nhp);
-    if( !duplicate(nhp, processes_) ) {
-      assignToCF(nhp);
-      processes_.push_back(nhp);
-    }
+    if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }
 
