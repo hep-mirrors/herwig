@@ -1,0 +1,107 @@
+##################################################
+# Common setup for Zprime models
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-ZP.in
+#
+###################################################
+#
+#  Particle Data object for the new resonances
+#
+###################################################
+cd /Herwig/Particles
+
+# Z prime model
+
+create /ThePEG/ParticleData Zp
+setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 0
+
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/Zprime
+cd /Herwig/NewPhysics/Zprime
+create Herwig::ZprimeModel Model HwZprimeModel.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+
+# Z prime couplings 
+set Model:ZPTTLCoupling 1.0
+set Model:ZPTTRCoupling 0.0
+set Model:ZPUULCoupling 1.0
+set Model:ZPUURCoupling 1.0
+set Model:ZPCCLCoupling 0.0
+set Model:ZPCCRCoupling 0.0
+set Model:ZPDDLCoupling 0.0
+set Model:ZPDDRCoupling 0.0
+set Model:ZPSSLCoupling 0.0
+set Model:ZPSSRCoupling 0.0
+set Model:ZPBBLCoupling 0.0
+set Model:ZPBBRCoupling 0.0
+set Model:ZPOverallCoupling 1.0
+
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create model vertices
+mkdir /Herwig/Vertices/Zprime
+cd /Herwig/Vertices/Zprime
+library HwZprimeModel.so
+create Herwig::ZprimeModelZPQQVertex Zprime_ZPQQVertex
+
+cd /Herwig/NewPhysics/Zprime
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# model vertices
+set Model:Vertex/ZPQQ  /Herwig/Vertices/Zprime/Zprime_ZPQQVertex
+
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/Zp
+
+###################################################
+# Set up the model framework
+###################################################
+set Zprime/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose Model over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Zprime/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Zprime/Model
+
