@@ -42,6 +42,14 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8706239
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
 # ALICE charged particles
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+# ALICE particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
+# CMS particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+# CMS charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+# CMS charged particle pT and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8547297
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
