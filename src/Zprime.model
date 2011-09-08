@@ -33,8 +33,9 @@ set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 
 # Z prime couplings 
+# quark-anti-quark
 set Model:ZPTTLCoupling 1.0
-set Model:ZPTTRCoupling 0.0
+set Model:ZPTTRCoupling 1.0
 set Model:ZPUULCoupling 1.0
 set Model:ZPUURCoupling 1.0
 set Model:ZPCCLCoupling 0.0
@@ -45,6 +46,23 @@ set Model:ZPSSLCoupling 0.0
 set Model:ZPSSRCoupling 0.0
 set Model:ZPBBLCoupling 0.0
 set Model:ZPBBRCoupling 0.0
+
+# lepton-anti-lepton
+set Model:ZPeeLCoupling 0.0
+set Model:ZPeeRCoupling 0.0
+set Model:ZPmmLCoupling 0.0
+set Model:ZPmmRCoupling 0.0
+set Model:ZPttLCoupling 0.0
+set Model:ZPttRCoupling 0.0
+
+# neutrino-anti-neutrino
+set Model:ZPnuenueLCoupling 0.0
+set Model:ZPnuenueRCoupling 0.0
+set Model:ZPnumnumLCoupling 0.0
+set Model:ZPnumnumRCoupling 0.0
+set Model:ZPnutnutLCoupling 0.0
+set Model:ZPnutnutRCoupling 0.0
+
 set Model:ZPOverallCoupling 1.0
 
 ###################################################
