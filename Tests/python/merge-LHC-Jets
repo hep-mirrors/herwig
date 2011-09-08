@@ -220,7 +220,8 @@ for f in aidafiles:
     ## Get histos from this AIDA file
     for dps in tree.findall("dataPointSet"):
         h = lighthisto.Histo.fromDPS(dps)
-        if(h.fullPath().find("8817804")>0 ) :
+        if(h.fullPath().find("8817804")>0 or
+           h.fullPath().find("8968497")>0) :
            if not inhistos_mass.has_key(h.fullPath()):
                inhistos_mass[h.fullPath()] = {}
            tmpE = inhistos_mass[h.fullPath()]
@@ -237,7 +238,8 @@ for f in aidafiles:
 for hpath,hsets in inhistos_pt.iteritems():
     if( hpath.find("8924791")>0  or 
         h.fullPath().find("8971293")>0 or 
-        h.fullPath().find("8817804")>0 ) :
+        h.fullPath().find("8817804")>0 or 
+        h.fullPath().find("8968497")>0 ) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -559,7 +561,17 @@ useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "800" )
 
-# Generated at Monday, 11. April 2011 08:52PM
+logging.info("Processing CMS_2011_S8968497")
+
+useOneMass("/CMS_2011_S8968497/d01-x01-y01", "7000", "2000" )
+useOneMass("/CMS_2011_S8968497/d02-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2011_S8968497/d03-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2011_S8968497/d04-x01-y01", "7000", "800" )
+useOneMass("/CMS_2011_S8968497/d05-x01-y01", "7000", "800" )
+useOneMass("/CMS_2011_S8968497/d06-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d07-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d08-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d09-x01-y01", "7000", "110" )
 
 # Choose output file
 name = "LHC"+"-Jets.aida"
