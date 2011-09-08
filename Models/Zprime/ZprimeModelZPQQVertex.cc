@@ -36,7 +36,7 @@ ZprimeModelZPQQVertex::ZprimeModelZPQQVertex()  {
   addToList(-3,3,32);
   addToList(-2,2,32);
   addToList(-1,1,32);
-  orderInGem(0);
+  orderInGem(1);
   orderInGs(0);
 }
 
@@ -88,6 +88,35 @@ void ZprimeModelZPQQVertex::Init() {
 void ZprimeModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc) {
   double _cR = 1.0, _cL = 1.0;
 
+  long ccc(cc->id()), aaa(aa->id()), bbb(bb->id());
+
+  if( fabs(aaa) == 6 || fabs(bbb) == 6  || fabs(ccc) == 6 ) {
+    _cL = _cZPTT_L; _cR = _cZPTT_R;
+  }
+  
+  if( fabs(aaa) == 5 || fabs(bbb) == 5  || fabs(ccc) == 5 ) {
+    _cL = _cZPBB_L; _cR = _cZPBB_R;
+  }
+    
+  if( fabs(aaa) == 4 || fabs(bbb) == 4  || fabs(ccc) == 4 ) {
+    _cL = _cZPCC_L; _cR = _cZPCC_R;
+  }
+  
+  
+  if( fabs(aaa) == 3 || fabs(bbb) == 3  || fabs(ccc) == 3 ) {
+    _cL = _cZPSS_L; _cR = _cZPSS_R;
+  }
+  
+  
+  if( fabs(aaa) == 2 || fabs(bbb) == 2  || fabs(ccc) == 2 ) {
+    _cL = _cZPUU_L; _cR = _cZPUU_R;
+  }
+
+ 
+  if( fabs(aaa) == 1 || fabs(bbb) == 1  || fabs(ccc) == 1 ) {
+    _cL = _cZPDD_L; _cR = _cZPDD_R;
+  }
+  
   right(_cR);
   left(_cL);
 

@@ -128,7 +128,7 @@ public:
   /**
    * Return the overall coupling of the Z prime to quark-anti-quark
    */
-  double _ZPoverallCoup() const {return _ZPoverall;}
+  double _cZPoverallCoup() const {return _ZPoverall;}
 
 
 
@@ -190,9 +190,16 @@ private:
    */
   AbstractFFVVertexPtr  _theZPQQVertex;
 
+    /**
+   *  Z prime coupling to u-ubar (left-handed)
+   */
+  double _gZPUU_L;
+  
 
-
-
+  /**
+   *  Z prime coupling to u-ubar (right-handed)
+   */
+  double _gZPUU_R;
  /**
    *  Z prime coupling to d-dbar (left-handed)
    */
@@ -205,28 +212,18 @@ private:
   double _gZPDD_R;
 
 
-   /**
-   *  Z prime coupling to top-anti-top (left-handed)
+ 
+ /**
+   *  Z prime coupling to s-sbar (left-handed)
    */
-  double _gZPTT_L;
+  double _gZPSS_L;
   
 
   /**
-   *  Z prime coupling to top-anti-top (right-handed)
+   *  Z prime coupling to s-sbar (right-handed)
    */
-  double _gZPTT_R;
+  double _gZPSS_R;
 
-
-   /**
-   *  Z prime coupling to u-ubar (left-handed)
-   */
-  double _gZPUU_L;
-  
-
-  /**
-   *  Z prime coupling to u-ubar (right-handed)
-   */
-  double _gZPUU_R;
 
 
    /**
@@ -240,17 +237,28 @@ private:
    */
   double _gZPCC_R;
 
-  /**
-   *  Z prime coupling to s-sbar (left-handed)
+ 
+/**
+   *  Z prime coupling to b-bbar (left-handed)
    */
-  double _gZPSS_L;
+  double _gZPBB_L;
   
 
   /**
-   *  Z prime coupling to s-sbar (right-handed)
+   *  Z prime coupling to b-bbar (right-handed)
    */
-  double _gZPSS_R;
+  double _gZPBB_R;
 
+ /**
+   *  Z prime coupling to top-anti-top (left-handed)
+   */
+  double _gZPTT_L;
+  
+
+  /**
+   *  Z prime coupling to top-anti-top (right-handed)
+   */
+  double _gZPTT_R;
 
  /**
    *  SU(2)_X costheta misalignment angle

@@ -22,7 +22,7 @@ void ZprimeModel::doinit()  {
   StandardModel::doinit();
 }
 
-ZprimeModel::ZprimeModel(): _gZPTT_L(1.0), _gZPTT_R(1.0), _gZPBB_L(1.0), _gZPBB_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0),_gZPSS_L(1.0), _gZPSS_R(1.0),_gZPUU_L(1.0), _gZPUU_R(1.0), _gZPDD_L(1.0), _gZPDD_R(1.0), _ZPoverall {}
+ZprimeModel::ZprimeModel():_gZPUU_L(1.0), _gZPUU_R(1.0), _gZPDD_L(1.0), _gZPDD_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0), _gZPSS_L(1.0),  _gZPSS_R(1.0), ,_gZPBB_L(1.0), _gZPBB_R(1.0),_gZPTT_L(1.0), _gZPTT_R(1.0),_ZPoverall(1.0) {}
 
 IBPtr ZprimeModel::clone() const {
   return new_ptr(*this);
@@ -67,7 +67,7 @@ void ZprimeModel::persistentInput(PersistentIStream & is, int) {
      >> _gZPUU_R
      >> _gZPDD_L
      >> _gZPDD_R
-     >> ZPoverall;
+     >> _ZPoverall;
 }
 
 ClassDescription<ZprimeModel> ZprimeModel::initZprimeModel;
@@ -119,38 +119,38 @@ void ZprimeModel::Init() {
      false, false, Interface::limited);
 
   
-  static Parameter<ZprimeModel, double> interfaceZPCCLCoupling
+  static Parameter<ZprimeModel, double> interfaceZPBBCoupling
     ("ZPBBLCoupling",
      "The left-handed Z prime coupling to b bbar",
      &ZprimeModel::_gZPBB_L, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<ZprimeModel, double> interfaceZPCCRCoupling
+  static Parameter<ZprimeModel, double> interfaceZPBBRCoupling
     ("ZPBBRCoupling",
      "The right-handed Z prime coupling to b bbar",
-     &ZprimeModel::_gZPbb_R, 1.0, -10.0, 10.0,
+     &ZprimeModel::_gZPBB_R, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
 
-  static Parameter<ZprimeModel, double> interfaceZPCCLCoupling
+  static Parameter<ZprimeModel, double> interfaceZPDDLCoupling
     ("ZPDDLCoupling",
      "The left-handed Z prime coupling to d dbar",
      &ZprimeModel::_gZPDD_L, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<ZprimeModel, double> interfaceZPCCRCoupling
+  static Parameter<ZprimeModel, double> interfaceZPDDRCoupling
     ("ZPDDRCoupling",
      "The right-handed Z prime coupling to d dbar",
      &ZprimeModel::_gZPDD_R, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
- static Parameter<ZprimeModel, double> interfaceZPCCLCoupling
+ static Parameter<ZprimeModel, double> interfaceZPSSLCoupling
     ("ZPSSLCoupling",
      "The left-handed Z prime coupling to s sbar",
      &ZprimeModel::_gZPSS_L, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<ZprimeModel, double> interfaceZPCCRCoupling
+  static Parameter<ZprimeModel, double> interfaceZPSSRCoupling
     ("ZPSSRCoupling",
      "The right-handed Z prime coupling to s sbar",
      &ZprimeModel::_gZPSS_R, 1.0, -10.0, 10.0,

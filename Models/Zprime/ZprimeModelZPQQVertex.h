@@ -12,7 +12,7 @@
 // This is the declaration of the ZprimeModelZPQQVertex class.
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/Zprimesymm/ZprimeModel.h"
+#include "Herwig++/Models/Zprime/ZprimeModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
