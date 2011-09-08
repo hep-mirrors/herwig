@@ -182,6 +182,66 @@ private:
    */
   double _cZPBB_R;
 
+    /**
+   *  Z prime coupling to e+e- (left-handed)
+   */
+  double _cZPee_L;
+  
+  /**
+   *  Z prime coupling to e+e- (right-handed)
+   */
+  double _cZPee_R;
+  
+ /**
+   *  Z prime coupling to mu+mu- (left-handed)
+   */
+  double _cZPmm_L;
+
+  /**
+   *  Z prime coupling to mu+mu- (right-handed)
+   */
+  double _cZPmm_R;
+
+  /**
+   *  Z prime coupling to tau+tau- (left-handed)
+   */
+  double _cZPtt_L;
+  
+  /**
+   *  Z prime coupling to tau+tau- (right-handed)
+   */
+  double _cZPtt_R;
+
+
+    /**
+   *  Z prime coupling to nu_e nu_ebar (left-handed)
+   */
+  double _cZPnuenue_L;
+  
+  /**
+   *  Z prime coupling to nu_e nu_ebar (right-handed)
+   */
+  double _cZPnuenue_R;
+  
+ /**
+   *  Z prime coupling to nu_mu nu_mubar (left-handed)
+   */
+  double _cZPnumnum_L;
+
+  /**
+   *  Z prime coupling to nu_mu nu_mubar (right-handed)
+   */
+  double _cZPnumnum_R;
+
+  /**
+   *  Z prime coupling to nu_tau nu_taubar (left-handed)
+   */
+  double _cZPnutnut_L;
+  
+  /**
+   *  Z prime coupling to nu_tau nu_taubar (right-handed)
+   */
+  double _cZPnutnut_R;
    
   /**
    *  Z prime overall coupling

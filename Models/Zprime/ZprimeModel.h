@@ -126,6 +126,68 @@ public:
 
 
   /**
+   * Return the Z prime e+e- left-handed coupling
+   */
+  double _cZPee_left() const {return _gZPee_L;}
+
+  /**
+   * Return the Z prime e+e- right-handed coupling
+   */
+  double _cZPee_right() const {return _gZPee_R;}
+
+  /**
+   * Return the Z prime mu+mu- left-handed coupling
+   */
+  double _cZPmm_left() const {return _gZPmm_L;}
+
+  /**
+   * Return the Z prime mu+mu- right-handed coupling
+   */
+  double _cZPmm_right() const {return _gZPmm_R;}
+  
+    /**
+   * Return the Z prime tau+tau- left-handed coupling
+   */
+  double _cZPtt_left() const {return _gZPtt_L;}
+
+  /**
+   * Return the Z prime tau+tau- right-handed coupling
+   */
+  double _cZPtt_right() const {return _gZPtt_R;}
+
+  /**
+   * Return the Z prime nu_e nu_ebar left-handed coupling
+   */
+  double _cZPnuenue_left() const {return _gZPnuenue_L;}
+
+  /**
+   * Return the Z prime nu_e nu_ebar right-handed coupling
+   */
+  double _cZPnuenue_right() const {return _gZPnuenue_R;}
+
+  /**
+   * Return the Z prime nu_mu nu_mubar left-handed coupling
+   */
+  double _cZPnumnum_left() const {return _gZPnumnum_L;}
+
+  /**
+   * Return the Z prime nu_mu nu_mubar right-handed coupling
+   */
+  double _cZPnumnum_right() const {return _gZPnumnum_R;}
+  
+    /**
+   * Return the Z prime nu_tau nu_taubar left-handed coupling
+   */
+  double _cZPnutnut_left() const {return _gZPnutnut_L;}
+
+  /**
+   * Return the Z prime nu_tau nu_taubar right-handed coupling
+   */
+  double _cZPnutnut_right() const {return _gZPnutnut_R;}
+
+
+
+  /**
    * Return the overall coupling of the Z prime to quark-anti-quark
    */
   double _cZPoverallCoup() const {return _ZPoverall;}
@@ -211,6 +273,16 @@ private:
    */
   double _gZPDD_R;
 
+ /**
+   *  Z prime coupling to c-cbar (left-handed)
+   */
+  double _gZPCC_L;
+  
+
+  /**
+   *  Z prime coupling to c-cbar (right-handed)
+   */
+  double _gZPCC_R;
 
  
  /**
@@ -226,17 +298,7 @@ private:
 
 
 
-   /**
-   *  Z prime coupling to c-cbar (left-handed)
-   */
-  double _gZPCC_L;
   
-
-  /**
-   *  Z prime coupling to c-cbar (right-handed)
-   */
-  double _gZPCC_R;
-
  
 /**
    *  Z prime coupling to b-bbar (left-handed)
@@ -260,8 +322,80 @@ private:
    */
   double _gZPTT_R;
 
+
+
+   /**
+   *  Z prime coupling to e+e- (left-handed)
+   */
+  double _gZPee_L;
+  
+
+  /**
+   *  Z prime coupling to e+e- (right-handed)
+   */
+  double _gZPee_R;
+
+ 
+/**
+   *  Z prime coupling to mu+mu- (left-handed)
+   */
+  double _gZPmm_L;
+  
+
+  /**
+   *  Z prime coupling to mu+mu- (right-handed)
+   */
+  double _gZPmm_R;
+
  /**
-   *  SU(2)_X costheta misalignment angle
+   *  Z prime coupling to tau+tau- (left-handed)
+   */
+  double _gZPtt_L;
+  
+
+  /**
+   *  Z prime coupling to tau+tau- (right-handed)
+   */
+  double _gZPtt_R;
+
+
+   /**
+   *  Z prime coupling to nu_e nu_ebar (left-handed)
+   */
+  double _gZPnuenue_L;
+  
+
+  /**
+   *  Z prime coupling to nu_e nu_ebar (right-handed)
+   */
+  double _gZPnuenue_R;
+
+ 
+/**
+   *  Z prime coupling to nu_mu nu_mubar (left-handed)
+   */
+  double _gZPnumnum_L;
+  
+
+  /**
+   *  Z prime coupling to nu_mu nu_mubar (right-handed)
+   */
+  double _gZPnumnum_R;
+
+ /**
+   *  Z prime coupling to nu_tau nu_taubar (left-handed)
+   */
+  double _gZPnutnut_L;
+  
+
+  /**
+   *  Z prime coupling to nu_tau nu_taubar (right-handed)
+   */
+  double _gZPnutnut_R;
+
+
+ /**
+   *  Z prime overall coupling
    */
   double _ZPoverall;
   

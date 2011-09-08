@@ -36,6 +36,12 @@ ZprimeModelZPQQVertex::ZprimeModelZPQQVertex()  {
   addToList(-3,3,32);
   addToList(-2,2,32);
   addToList(-1,1,32);
+  addToList(-11,11,32);
+  addToList(-13,13,32);
+  addToList(-15,15,32);
+  addToList(-12,12,32);
+  addToList(-14,14,32);
+  addToList(-16,16,32);
   orderInGem(1);
   orderInGs(0);
 }
@@ -56,6 +62,21 @@ void ZprimeModelZPQQVertex::doinit() {
     _cZPBB_L =hwZprime->_cZPBB_left();  
     _cZPSS_R =hwZprime->_cZPSS_right();
     _cZPSS_L =hwZprime->_cZPSS_left();
+
+    _cZPee_R =hwZprime->_cZPee_right();
+    _cZPee_L =hwZprime->_cZPee_left();
+    _cZPee_R =hwZprime->_cZPmm_right();
+    _cZPmm_L =hwZprime->_cZPmm_left();  
+    _cZPtt_R =hwZprime->_cZPtt_right();
+    _cZPtt_L =hwZprime->_cZPtt_left();
+
+    _cZPnuenue_R =hwZprime->_cZPnuenue_right();
+    _cZPnuenue_L =hwZprime->_cZPnuenue_left();
+    _cZPnuenue_R =hwZprime->_cZPnumnum_right();
+    _cZPnumnum_L =hwZprime->_cZPnumnum_left();  
+    _cZPnutnut_R =hwZprime->_cZPnutnut_right();
+    _cZPnutnut_L =hwZprime->_cZPnutnut_left();
+
     _cZP_o =hwZprime->_cZPoverallCoup();
 
   }
@@ -63,12 +84,12 @@ void ZprimeModelZPQQVertex::doinit() {
 }
 
 void ZprimeModelZPQQVertex::persistentOutput(PersistentOStream & os) const {
-  os << _cZPTT_R << _cZPTT_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L << _cZPDD_R << _cZPDD_L << _cZPSS_R << _cZPSS_L  << _cZPBB_R << _cZPBB_L << _cZP_o;
+  os << _cZPTT_R << _cZPTT_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L << _cZPDD_R << _cZPDD_L << _cZPSS_R << _cZPSS_L  << _cZPBB_R << _cZPBB_L << _cZPee_R << _cZPee_L << _cZPmm_R << _cZPmm_L  << _cZPtt_R << _cZPtt_L << _cZPnuenue_R << _cZPnuenue_L << _cZPnumnum_R << _cZPnumnum_L  << _cZPnutnut_R << _cZPnutnut_L <<  _cZP_o;
 }
 
 void ZprimeModelZPQQVertex::persistentInput(PersistentIStream & is, int) {
 
-is >> _cZPTT_R >> _cZPTT_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _cZPDD_R >> _cZPDD_L >> _cZPSS_R >> _cZPSS_L  >> _cZPBB_R >> _cZPBB_L >> _cZP_o;
+  is >> _cZPTT_R >> _cZPTT_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _cZPDD_R >> _cZPDD_L >> _cZPSS_R >> _cZPSS_L  >> _cZPBB_R >> _cZPBB_L >> _cZPee_R >> _cZPee_L >> _cZPmm_R >> _cZPmm_L >> _cZPtt_R >> _cZPtt_L >> _cZPnuenue_R >> _cZPnuenue_L >> _cZPnumnum_R >> _cZPnumnum_L >> _cZPnutnut_R >> _cZPnutnut_L >> _cZP_o;
 
 }
 
@@ -117,6 +138,35 @@ void ZprimeModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr 
     _cL = _cZPDD_L; _cR = _cZPDD_R;
   }
   
+   if( fabs(aaa) == 11 || fabs(bbb) == 11  || fabs(ccc) == 11 ) {
+    _cL = _cZPee_L; _cR = _cZPee_R;
+  }
+  
+  
+  if( fabs(aaa) == 13 || fabs(bbb) == 13  || fabs(ccc) == 13 ) {
+    _cL = _cZPmm_L; _cR = _cZPmm_R;
+  }
+
+ 
+  if( fabs(aaa) == 15 || fabs(bbb) == 15  || fabs(ccc) == 15 ) {
+    _cL = _cZPtt_L; _cR = _cZPtt_R;
+  }
+
+
+   if( fabs(aaa) == 12 || fabs(bbb) == 12  || fabs(ccc) == 12 ) {
+    _cL = _cZPnuenue_L; _cR = _cZPnuenue_R;
+  }
+  
+  
+  if( fabs(aaa) == 14 || fabs(bbb) == 14 || fabs(ccc) == 14 ) {
+    _cL = _cZPnumnum_L; _cR = _cZPnumnum_R;
+  }
+
+ 
+  if( fabs(aaa) == 16 || fabs(bbb) == 16  || fabs(ccc) == 16 ) {
+    _cL = _cZPnutnut_L; _cR = _cZPnutnut_R;
+  }
+
   right(_cR);
   left(_cL);
 
