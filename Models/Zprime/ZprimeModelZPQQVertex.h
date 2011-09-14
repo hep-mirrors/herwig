@@ -119,6 +119,17 @@ private:
   //@{
 
   /**
+   *  Z prime coupling to top-up (left-handed)
+   */
+  double _cZPTU_L;
+  
+
+  /**
+   *  Z prime coupling to top-up (right-handed)
+   */
+  double _cZPTU_R;
+
+  /**
    *  Z prime coupling to top-anti-top (left-handed)
    */
   double _cZPTT_L;

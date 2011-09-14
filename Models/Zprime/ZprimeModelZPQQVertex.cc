@@ -30,6 +30,8 @@ IBPtr ZprimeModelZPQQVertex::fullclone() const {
 }
 
 ZprimeModelZPQQVertex::ZprimeModelZPQQVertex()  {
+  addToList(-2,6,32);
+  addToList(-6,2,32);
   addToList(-6,6,32);
   addToList(-5,5,32);
   addToList(-4,4,32);
@@ -50,6 +52,10 @@ void ZprimeModelZPQQVertex::doinit() {
   _theModel = generator()->standardModel();
   tcHwZprimePtr hwZprime=dynamic_ptr_cast<tcHwZprimePtr>(_theModel);
   if(hwZprime) {
+
+    _cZPTU_R =hwZprime->_cZPTU_right();
+    _cZPTU_L =hwZprime->_cZPTU_left();
+
     _cZPTT_R =hwZprime->_cZPTT_right();
     _cZPTT_L =hwZprime->_cZPTT_left();
     _cZPUU_R =hwZprime->_cZPUU_right();
@@ -84,12 +90,12 @@ void ZprimeModelZPQQVertex::doinit() {
 }
 
 void ZprimeModelZPQQVertex::persistentOutput(PersistentOStream & os) const {
-  os << _cZPTT_R << _cZPTT_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L << _cZPDD_R << _cZPDD_L << _cZPSS_R << _cZPSS_L  << _cZPBB_R << _cZPBB_L << _cZPee_R << _cZPee_L << _cZPmm_R << _cZPmm_L  << _cZPtt_R << _cZPtt_L << _cZPnuenue_R << _cZPnuenue_L << _cZPnumnum_R << _cZPnumnum_L  << _cZPnutnut_R << _cZPnutnut_L <<  _cZP_o;
+  os << _cZPTU_R << _cZPTU_L  << _cZPTT_R << _cZPTT_L << _cZPUU_R << _cZPUU_L << _cZPCC_R << _cZPCC_L << _cZPDD_R << _cZPDD_L << _cZPSS_R << _cZPSS_L  << _cZPBB_R << _cZPBB_L << _cZPee_R << _cZPee_L << _cZPmm_R << _cZPmm_L  << _cZPtt_R << _cZPtt_L << _cZPnuenue_R << _cZPnuenue_L << _cZPnumnum_R << _cZPnumnum_L  << _cZPnutnut_R << _cZPnutnut_L <<  _cZP_o;
 }
 
 void ZprimeModelZPQQVertex::persistentInput(PersistentIStream & is, int) {
 
-  is >> _cZPTT_R >> _cZPTT_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _cZPDD_R >> _cZPDD_L >> _cZPSS_R >> _cZPSS_L  >> _cZPBB_R >> _cZPBB_L >> _cZPee_R >> _cZPee_L >> _cZPmm_R >> _cZPmm_L >> _cZPtt_R >> _cZPtt_L >> _cZPnuenue_R >> _cZPnuenue_L >> _cZPnumnum_R >> _cZPnumnum_L >> _cZPnutnut_R >> _cZPnutnut_L >> _cZP_o;
+  is  >> _cZPTU_R >> _cZPTU_L  >> _cZPTT_R >> _cZPTT_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _cZPDD_R >> _cZPDD_L >> _cZPSS_R >> _cZPSS_L  >> _cZPBB_R >> _cZPBB_L >> _cZPee_R >> _cZPee_L >> _cZPmm_R >> _cZPmm_L >> _cZPtt_R >> _cZPtt_L >> _cZPnuenue_R >> _cZPnuenue_L >> _cZPnumnum_R >> _cZPnumnum_L >> _cZPnutnut_R >> _cZPnutnut_L >> _cZP_o;
 
 }
 
@@ -112,7 +118,11 @@ void ZprimeModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr 
   long ccc(cc->id()), aaa(aa->id()), bbb(bb->id());
 
   if( fabs(aaa) == 6 || fabs(bbb) == 6  || fabs(ccc) == 6 ) {
+    if( fabs(aaa) !=2 && fabs(bbb) !=2  && fabs(ccc) != 2 ) {
     _cL = _cZPTT_L; _cR = _cZPTT_R;
+    } else if( fabs(aaa) ==2 || fabs(bbb) ==2  || fabs(ccc) == 2 ) {
+      _cL = _cZPTU_L; _cR = _cZPTU_R;
+    }
   }
   
   if( fabs(aaa) == 5 || fabs(bbb) == 5  || fabs(ccc) == 5 ) {
@@ -129,7 +139,7 @@ void ZprimeModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr 
   }
   
   
-  if( fabs(aaa) == 2 || fabs(bbb) == 2  || fabs(ccc) == 2 ) {
+  if( (fabs(aaa) == 2 || fabs(bbb) == 2  || fabs(ccc) == 2) &&  (fabs(aaa) !=6 && fabs(bbb) !=6  && fabs(ccc) != 6)) {
     _cL = _cZPUU_L; _cR = _cZPUU_R;
   }
 

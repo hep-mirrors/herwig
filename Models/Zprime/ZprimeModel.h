@@ -65,6 +65,16 @@ public:
 
   
   /**
+   * Return the Z prime top-up left-handed coupling
+   */
+  double _cZPTU_left() const {return _gZPTU_L;}
+
+  /**
+   * Return the Z prime top-up right-handed coupling
+   */
+  double _cZPTU_right() const {return _gZPTU_R;}
+
+  /**
    * Return the Z prime d-dbar left-handed coupling
    */
   double _cZPDD_left() const {return _gZPDD_L;}
@@ -310,6 +320,17 @@ private:
    *  Z prime coupling to b-bbar (right-handed)
    */
   double _gZPBB_R;
+
+ /**
+   *  Z prime coupling to top-up (left-handed)
+   */
+  double _gZPTU_L;
+  
+
+  /**
+   *  Z prime coupling to top-up (right-handed)
+   */
+  double _gZPTU_R;
 
  /**
    *  Z prime coupling to top-anti-top (left-handed)

@@ -22,7 +22,7 @@ void ZprimeModel::doinit()  {
   StandardModel::doinit();
 }
 
-ZprimeModel::ZprimeModel():_gZPUU_L(1.0), _gZPUU_R(1.0), _gZPDD_L(1.0), _gZPDD_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0), _gZPSS_L(1.0),  _gZPSS_R(1.0) ,_gZPBB_L(1.0), _gZPBB_R(1.0),_gZPTT_L(1.0), _gZPTT_R(1.0),  _gZPee_L(1.0),  _gZPee_R(1.0), _gZPmm_L(1.0), _gZPmm_R(1.0),_gZPtt_L(1.0), _gZPtt_R(1.0), _gZPnuenue_L(1.0),  _gZPnuenue_R(1.0) ,_gZPnumnum_L(1.0), _gZPnumnum_R(1.0),_gZPnutnut_L(1.0), _gZPnutnut_R(1.0), _ZPoverall(1.0) {}
+ZprimeModel::ZprimeModel():_gZPTU_L(1.0), _gZPTU_R(1.0), _gZPUU_L(1.0), _gZPUU_R(1.0), _gZPDD_L(1.0), _gZPDD_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0), _gZPSS_L(1.0),  _gZPSS_R(1.0) ,_gZPBB_L(1.0), _gZPBB_R(1.0),_gZPTT_L(1.0), _gZPTT_R(1.0),  _gZPee_L(1.0),  _gZPee_R(1.0), _gZPmm_L(1.0), _gZPmm_R(1.0),_gZPtt_L(1.0), _gZPtt_R(1.0), _gZPnuenue_L(1.0),  _gZPnuenue_R(1.0) ,_gZPnumnum_L(1.0), _gZPnumnum_R(1.0),_gZPnutnut_L(1.0), _gZPnutnut_R(1.0), _ZPoverall(1.0) {}
 
 IBPtr ZprimeModel::clone() const {
   return new_ptr(*this);
@@ -37,7 +37,9 @@ IBPtr ZprimeModel::fullclone() const {
 
 
 void ZprimeModel::persistentOutput(PersistentOStream & os) const {
-  os  << _theZPQQVertex    
+  os  << _theZPQQVertex
+      << _gZPTU_L
+      << _gZPTU_R
       << _gZPTT_L
       << _gZPTT_R
       << _gZPBB_L
@@ -67,6 +69,8 @@ void ZprimeModel::persistentOutput(PersistentOStream & os) const {
 
 void ZprimeModel::persistentInput(PersistentIStream & is, int) {
   is  >> _theZPQQVertex    
+      >> _gZPTU_L
+      >> _gZPTU_R
       >> _gZPTT_L
       >> _gZPTT_R
       >> _gZPBB_L
@@ -105,8 +109,19 @@ void ZprimeModel::Init() {
    &ZprimeModel::_theZPQQVertex, false, false, true, false, false);
 
 
+  static Parameter<ZprimeModel, double> interfaceZPTULCoupling
+    ("ZPTULCoupling",
+     "The left-handed Z prime coupling to top-up",
+     &ZprimeModel::_gZPTU_L, 1.0, -10.0, 10.0,
+     false, false, Interface::limited);
 
-  static Parameter<ZprimeModel, double> interfaceZPTTCoupling
+  static Parameter<ZprimeModel, double> interfaceZPTURCoupling
+    ("ZPTURCoupling",
+     "The right-handed Z prime coupling to top-up",
+     &ZprimeModel::_gZPTU_R, 1.0, 0., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<ZprimeModel, double> interfaceZPTTLCoupling
     ("ZPTTLCoupling",
      "The left-handed Z prime coupling to top anti-top",
      &ZprimeModel::_gZPTT_L, 1.0, -10.0, 10.0,
@@ -143,7 +158,7 @@ void ZprimeModel::Init() {
      false, false, Interface::limited);
 
   
-  static Parameter<ZprimeModel, double> interfaceZPBBCoupling
+  static Parameter<ZprimeModel, double> interfaceZPBBLCoupling
     ("ZPBBLCoupling",
      "The left-handed Z prime coupling to b bbar",
      &ZprimeModel::_gZPBB_L, 1.0, -10.0, 10.0,
