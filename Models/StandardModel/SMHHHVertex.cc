@@ -13,7 +13,7 @@
 
 using namespace Herwig;
 
-SMHHHVertex::SMHHHVertex() : couplast_(0.), q2last_(ZERO) {
+SMHHHVertex::SMHHHVertex() : ratio_(ZERO), couplast_(0.), q2last_(ZERO) {
   orderInGem(1);
   orderInGs (0);
 }
