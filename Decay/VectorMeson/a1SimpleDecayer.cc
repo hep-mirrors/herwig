@@ -95,12 +95,12 @@ void a1SimpleDecayer::doinit() {
     // first rho channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,2);
-    newchannel->addIntermediate(rhom[ix],0,0.0,1,3);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
     mode->addChannel(newchannel);
     // second channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,1);
-    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
+    newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
   }
   if(_twowgts.size()!=mode->numberChannels()) 

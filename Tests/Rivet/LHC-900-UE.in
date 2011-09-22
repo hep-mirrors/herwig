@@ -29,7 +29,7 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 ##################################################
 
 # ATLAS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8994773
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
 # ATLAS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
 # ATLAS UE
@@ -42,6 +42,16 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8706239
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
 # ALICE charged particles
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+# ALICE particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
+# CMS particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+# CMS charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+# CMS charged particle pT and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297
+# LHCB k_s0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_S8758301
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

@@ -594,8 +594,9 @@ void SusyBase::readDecay(CFileLineReader & cfile,
  	    if(imax==2) brat *= 0.5;
  	    for(unsigned int ix=0;ix<imax;++ix) {
  	      string newTag2 = newTag+bosons[ix]->name()+',';
+	      unsigned int iother = ix==0 ? 1 : 0;
 	      vector<pair<double,string> > modes = 
-	        createWZDecayModes(newTag2,brat,bosons[ix],maxMass);
+	        createWZDecayModes(newTag2,brat,bosons[iother],maxMass);
 	      for(unsigned int ix=0;ix<modes.size();++ix) {
 		modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
 		createDecayMode(modes[ix].second,modes[ix].first);
