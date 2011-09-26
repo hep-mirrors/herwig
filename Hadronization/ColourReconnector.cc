@@ -20,11 +20,21 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/UseRandom.h>
-
 #include <algorithm>
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
+DescribeClass<ColourReconnector,Interfaced>
+describeColourReconnector("Herwig::ColourReconnector","");
+
+IBPtr ColourReconnector::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ColourReconnector::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ColourReconnector::rearrange(EventHandler &, 
 				  ClusterVector & clusters) {
@@ -143,9 +153,6 @@ void ColourReconnector::persistentOutput(PersistentOStream & os) const {
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
   is >> _clreco >> _preco;
 }
-
-ClassDescription<ColourReconnector> ColourReconnector::initColourReconnector;
-// Definition of the static class description member.
 
 
 void ColourReconnector::Init() {
