@@ -39,7 +39,7 @@ public:
    * The default constructor.
    */
   WeakCurrentDecayConstructor() :
-    _theExistingDecayers(0),_init(true),_iteration(5),_points(10000),
+    _theExistingDecayers(0),_init(true),_iteration(1),_points(10000),
     _masscut(5.*GeV) {}
 
   /**

@@ -225,7 +225,7 @@ void ModelGenerator::doinit() {
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
-    _theDecayConstructor->createDecayers(particles_);
+    _theDecayConstructor->createDecayers(particles_,brMin_);
   }
 
   // write out decays with spin correlations
