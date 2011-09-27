@@ -613,7 +613,6 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
   }
   else if( dm ) {
     if(dm->brat()<decayConstructor()->minimumBR()) {
-      cerr << "testing not initilizaing for " << dm->tag() << "\n";
       return;
     }
     if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
