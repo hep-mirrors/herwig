@@ -260,6 +260,9 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 	  << tag << Exception::warning;
     }
     else if( dm ) {
+      if(dm->brat()<decayConstructor()->minimumBR()) {
+	return;
+      }
       if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	eg->preinitInterface(dm, "Decayer", "set", 
