@@ -28,7 +28,7 @@ UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV),
 		     theVeV(246.*GeV) {}
 
 void UEDBase::doinit() {
-  StandardModel::doinit();
+  BSMModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
   writeSpectrum();

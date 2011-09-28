@@ -6,12 +6,12 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
  * The NMSSMWHHVertex class implements the coupling of an electroweak"

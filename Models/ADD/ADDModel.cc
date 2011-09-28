@@ -30,7 +30,7 @@ void ADDModel::doinit() {
   addVertex(FFWGRVertex_);
   addVertex(GGGGRVertex_);
   addVertex(WWWGRVertex_);
-  StandardModel::doinit();
+  BSMModel::doinit();
 }
 
 void ADDModel::persistentOutput(PersistentOStream & os) const {

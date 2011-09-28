@@ -7,10 +7,10 @@
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Helicity
  * 
