@@ -36,7 +36,6 @@ void SVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
   _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
   _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr        >(getVertex());
-  GeneralTwoBodyDecayer::doinit();
 }
 
 void SVVDecayer::doinitrun() {

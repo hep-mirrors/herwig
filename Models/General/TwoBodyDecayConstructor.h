@@ -20,6 +20,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 using Helicity::VertexBasePtr;
+using Helicity::tVertexBasePtr;
 
 //typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
 
@@ -36,7 +37,8 @@ using Helicity::VertexBasePtr;
      * @param pb First  decay product
      * @param pc Second decay product
      */    
-    TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc) : parent_(pa) {
+    TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc,
+		 tVertexBasePtr vertex) : parent_(pa), vertex_(vertex) {
       ParticleOrdering order;
       if( order(pb, pc) ) {
 	children_.first = pb;
@@ -57,6 +59,11 @@ using Helicity::VertexBasePtr;
      *  The children
      */
     tPDPair children_;
+
+    /**
+     *  Vertex
+     */
+    tVertexBasePtr vertex_;
     
   private:
     
@@ -80,7 +87,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
+  TwoBodyDecayConstructor() {}
 
   /**
    * Function used to determine allowed decaymodes
@@ -95,22 +102,6 @@ public:
 
   
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -143,7 +134,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<TwoBodyDecayConstructor> initTwoBodyDecayConstructor;
+  static NoPIOClassDescription<TwoBodyDecayConstructor> initTwoBodyDecayConstructor;
 
   /**
    * The assignment operator is private and must never be called.
@@ -164,34 +155,22 @@ private:
    * @return A vector a decay modes
    */
   vector<TwoBodyDecay> createModes(tPDPtr inpart, VertexBasePtr vert,
-				   unsigned int ilist,
-				   unsigned int iv);
+				   unsigned int ilist);
 
   /**
    * Function to create decayer for specific vertex
-   * @param vert Pointer to vertex 
-   * @param icol Integer referring to the colmun in _theExistingDecayers
-   * @param ivert Integer referring to the row in _theExistingDecayers
+   * @param decay decay mode for this decay
    * member variable
    */
-  void createDecayer(VertexBasePtr vert, unsigned int icol,
-		     unsigned int ivert);
+  GeneralTwoBodyDecayerPtr createDecayer(TwoBodyDecay & decay);
 
   /**
    * Create decay mode(s) from given part and decay modes
    * @param decays The vector of decay modes
    * @param decayer The decayer responsible for this decay
    */
-  void createDecayMode(const vector<TwoBodyDecay> & decays,
-		       GeneralTwoBodyDecayerPtr decayer);
+  void createDecayMode(vector<TwoBodyDecay> & decays);
   //@}
-
-private:
-  
-  /**
-   * Existing decayers
-   */
-   vector<vector<GeneralTwoBodyDecayerPtr> > _theExistingDecayers;
 };
   
 }

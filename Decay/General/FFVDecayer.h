@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  FFVDecayer();
+  FFVDecayer() {}
   
 public:
 

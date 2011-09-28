@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  TVVDecayer() { addToSearchList(2); }
+  TVVDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
