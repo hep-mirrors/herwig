@@ -22,16 +22,17 @@
 
 using namespace Herwig;
 
-BSMModel::BSMModel() : decayFile_(), topModesFromFile_(false),
+BSMModel::BSMModel() : decayFile_(), readDecays_(true),
+		       topModesFromFile_(false),
 		       tolerance_(1e-6)
 {}
 
 void BSMModel::persistentOutput(PersistentOStream & os) const {
-  os << decayFile_ << topModesFromFile_ << tolerance_ ;
+  os << decayFile_ << topModesFromFile_ << tolerance_;
 }
 
 void BSMModel::persistentInput(PersistentIStream & is, int) {
-  is >> decayFile_ >> topModesFromFile_ >> tolerance_ ;
+  is >> decayFile_ >> topModesFromFile_ >> tolerance_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -79,7 +80,11 @@ void BSMModel::Init() {
 void BSMModel::doinit() {
   StandardModel::doinit();
   // check if need to read decays
-  if(decayFile()=="") return;
+  if(decayFile()==""||!readDecays_) return;
+  decayRead();
+}
+
+void BSMModel::decayRead() {
   // read decays
   CFileLineReader cfile;
   cfile.open(decayFile_);

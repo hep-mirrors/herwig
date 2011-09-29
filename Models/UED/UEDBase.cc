@@ -28,6 +28,7 @@ UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV),
 		     theVeV(246.*GeV) {}
 
 void UEDBase::doinit() {
+  readDecays(false);
   BSMModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
@@ -47,6 +48,9 @@ void UEDBase::doinit() {
   addVertex(theW0A1H1Vertex);
   addVertex(theZ0A1h1Vertex);
   addVertex(theW0W1W1Vertex);
+  readDecays(true);
+  if(decayFile()=="") return;
+  decayRead();
 }
 
 void UEDBase::persistentOutput(PersistentOStream & os) const {

@@ -66,6 +66,11 @@ protected:
   void decayFile(string in) {decayFile_ = in;}
 
   /**
+   *  Read the decays
+   */
+  void decayRead();
+
+  /**
    * Read decaymodes from LHA file
    * @param ifs input stream containg data
    * @param decay string containing name of parent and value of total width
@@ -89,6 +94,16 @@ protected:
   vector<pair<double,string> > createWZDecayModes(string tag, double brat,
 						  tcPDPtr boson,
 						  Energy maxMass) const;
+
+  /**
+   *  read the decays
+   */
+  bool readDecays() const {return readDecays_;}
+
+  /**
+   *  set the reading of the decays
+   */ 
+  void readDecays(bool in) {readDecays_=in;}
 
 protected:
 
@@ -123,6 +138,11 @@ private:
    *  Name of the decay file
    */
   string decayFile_;
+
+  /**
+   *  Read the decays from the file
+   */
+  bool readDecays_;
 
   /**
    * Whether or not to replace the top decay modes with those from
