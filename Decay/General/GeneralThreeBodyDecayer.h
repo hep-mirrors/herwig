@@ -32,7 +32,8 @@ public:
    * The default constructor.
    */
   GeneralThreeBodyDecayer() : _nflow(999), _widthopt(1), 
-			      _reftag(), _reftagcc(), _iflow(999) 
+			      _reftag(), _reftagcc(), _iflow(999),
+			      _intOpt(0)
   {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -312,6 +313,11 @@ private:
    *  The colour flow
    */
   mutable unsigned int _iflow;
+
+  /**
+   *  Option for the construction of the gaussian integrator
+   */
+  unsigned int _intOpt;
 };
 
 }

@@ -34,13 +34,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
      << _includeTopOnShell << _maxBoson << _maxList 
-     << excludedVector_ << excludedSet_;
+     << excludedVector_ << excludedSet_ << intOpt_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
      >> _includeTopOnShell >> _maxBoson >> _maxList 
-     >> excludedVector_ >> excludedSet_;
+     >> excludedVector_ >> excludedSet_ >> intOpt_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -191,6 +191,22 @@ void ThreeBodyDecayConstructor::Init() {
     ("ExcludedVertices",
      "Vertices which are not included in the three-body decayers",
      &ThreeBodyDecayConstructor::excludedVector_, -1, false, false, true, true, false);
+
+
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceIntegrationOption
+    ("IntegrationOption",
+     "Option for the integration of the partial width",
+     &ThreeBodyDecayConstructor::intOpt_, 1, false, false);
+  static SwitchOption interfaceIntegrationOptionAllPoles
+    (interfaceIntegrationOption,
+     "AllPoles",
+     "Include all potential poles",
+     0);
+  static SwitchOption interfaceIntegrationOptionShallowestPole
+    (interfaceIntegrationOption,
+     "ShallowestPole",
+     "Onlt include the  shallowest pole",
+     1);
 
 }
 
@@ -499,15 +515,19 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
 			diagrams,cfactors.first,cfactors.second,ncf);
   // set decayer options from base class
   setDecayerInterfaces(objectname);
-  // set the width option
   ostringstream value;
+  value << intOpt_;
+  generator()->preinitInterface(objectname, "PartialWidthIntegration", "set",
+				value.str());
+  // set the width option
+  value.str("");
   value << _widthopt;
   generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
   // set the intermediates option
-  ostringstream value2;
-  value2 << inter;
+  value.str("");
+  value << inter;
   generator()->preinitInterface(objectname, "GenerateIntermediates", "set", 
-				value2.str());
+				value.str());
   // initialize the decayer
   decayer->init();
   // return the decayer

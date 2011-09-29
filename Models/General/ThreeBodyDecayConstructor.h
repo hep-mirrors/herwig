@@ -62,7 +62,8 @@ public:
    */
   ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV) {}
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV),
+    intOpt_(1) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -256,6 +257,11 @@ private:
    *  Cut off or decays via the weak current
    */
   Energy weakMassCut_;
+
+  /**
+   *  Option for the integration to get the partial width
+   */
+  unsigned int intOpt_;
 };
 
 }
