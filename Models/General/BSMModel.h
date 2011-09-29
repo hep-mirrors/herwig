@@ -102,6 +102,13 @@ protected:
   virtual void doinit();
   //@}
 
+  /**
+   * Overloaded function from Interfaced
+   */
+  virtual bool preInitialize() const {
+    return true;
+  }
+
 private:
 
   /**

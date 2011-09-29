@@ -137,6 +137,7 @@ void BSMModel::doinit() {
     // start of a block
     if(line.find("decay") == 0) {
       readDecay(cfile, line);
+      continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
       reading = false;
@@ -168,7 +169,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   if( width > ZERO ) inpart->cTau(hbarc/width);
   inpart->widthCut(5.*width);
   Energy inMass = inpart->mass();
-  string prefix("decaymode " + inpart->name() + "->");
+  string prefix(inpart->name() + "->");
   double brsum(0.);
   unsigned int nmode = 0;
   while(cfile.readline()) {
@@ -307,10 +308,15 @@ void BSMModel::readDecay(CFileLineReader & cfile,
 }
 
 void BSMModel::createDecayMode(string tag, double brat) const {
-  ostringstream cmd;
-  cmd << tag << string(" ") 
-      << setprecision(13) << brat << string(" 1 /Herwig/Decays/Mambo");
-  Repository::exec(cmd.str(), cerr);
+  tDMPtr dm = generator()->findDecayMode(tag);
+  if(!dm) {
+    dm = generator()->preinitCreateDecayMode(tag);
+  }
+  generator()->preinitInterface(dm, "OnOff", "set", "On");
+  generator()->preinitInterface(dm, "Decayer", "set","/Herwig/Decays/Mambo");
+  ostringstream brf;
+  brf << setprecision(13)<< brat;
+  generator()->preinitInterface(dm, "BranchingRatio","set", brf.str());
 }
 
 
