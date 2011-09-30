@@ -34,13 +34,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
      << _includeTopOnShell << _maxBoson << _maxList 
-     << excludedVector_ << excludedSet_ << intOpt_;
+     << excludedVector_ << excludedSet_ << intOpt_ << relErr_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
      >> _includeTopOnShell >> _maxBoson >> _maxList 
-     >> excludedVector_ >> excludedSet_ >> intOpt_;
+     >> excludedVector_ >> excludedSet_ >> intOpt_ >> relErr_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -207,6 +207,12 @@ void ThreeBodyDecayConstructor::Init() {
      "ShallowestPole",
      "Onlt include the  shallowest pole",
      1);
+
+  static Parameter<ThreeBodyDecayConstructor,double> interfaceRelativeError
+    ("RelativeError",
+     "The relative error for the GQ integration",
+     &ThreeBodyDecayConstructor::relErr_, 1e-2, 1e-10, 1.,
+     false, false, Interface::limited);
 
 }
 
@@ -515,9 +521,14 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
 			diagrams,cfactors.first,cfactors.second,ncf);
   // set decayer options from base class
   setDecayerInterfaces(objectname);
+  // options for partial width integration
   ostringstream value;
   value << intOpt_;
   generator()->preinitInterface(objectname, "PartialWidthIntegration", "set",
+				value.str());
+  value.str("");
+  value << relErr_;
+  generator()->preinitInterface(objectname, "RelativeError", "set",
 				value.str());
   // set the width option
   value.str("");

@@ -63,7 +63,7 @@ public:
   ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
     _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV),
-    intOpt_(1) {}
+    intOpt_(1), relErr_(1e-2) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -262,6 +262,11 @@ private:
    *  Option for the integration to get the partial width
    */
   unsigned int intOpt_;
+
+  /**
+   *  Relative error for partial width integration
+   */
+  double relErr_;
 };
 
 }

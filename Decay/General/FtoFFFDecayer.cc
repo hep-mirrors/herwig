@@ -299,5 +299,6 @@ threeBodyMEIntegrator(const DecayMode & ) const {
   constructIntegratorChannels(intype,inmass,inwidth,inpow,inweights);
   return new_ptr(ThreeBodyAllOnCalculator<FtoFFFDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
-		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass()));
+		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass(),
+		 relativeError()));
 }

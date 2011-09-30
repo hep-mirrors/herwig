@@ -33,7 +33,7 @@ public:
    */
   GeneralThreeBodyDecayer() : _nflow(999), _widthopt(1), 
 			      _reftag(), _reftagcc(), _iflow(999),
-			      _intOpt(0)
+			      _intOpt(0), _relerr(1e-2)
   {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -234,6 +234,11 @@ protected:
    */
   unsigned int const & colourFlow() const { return _iflow; }
 
+  /**
+   *  Relative error for GQ integration
+   */
+  double relativeError() const {return _relerr;}
+
 private:
 
   /**
@@ -318,6 +323,11 @@ private:
    *  Option for the construction of the gaussian integrator
    */
   unsigned int _intOpt;
+
+  /**
+   *  Relative error for GQ integration of partial width
+   */
+  double _relerr;
 };
 
 }

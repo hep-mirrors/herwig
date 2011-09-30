@@ -32,12 +32,12 @@ typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incoming << _outgoing << _diagrams << _diagmap << _colour << _colourLargeNC
-     << _nflow << _widthopt << _reftag << _reftagcc << _intOpt;
+     << _nflow << _widthopt << _reftag << _reftagcc << _intOpt << _relerr;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _incoming >> _outgoing >> _diagrams >> _diagmap >> _colour >> _colourLargeNC
-     >> _nflow >> _widthopt >> _reftag >> _reftagcc >> _intOpt;
+     >> _nflow >> _widthopt >> _reftag >> _reftagcc >> _intOpt >> _relerr;
 }
 
 AbstractClassDescription<GeneralThreeBodyDecayer> 
@@ -84,6 +84,12 @@ void GeneralThreeBodyDecayer::Init() {
      "ShallowestPole",
      "Only include the shallowest pole",
      1);
+
+  static Parameter<GeneralThreeBodyDecayer,double> interfaceRelativeError
+    ("RelativeError",
+     "The relative error for the GQ integration of the partial width",
+     &GeneralThreeBodyDecayer::_relerr, 1e-2, 1e-10, 1.,
+     false, false, Interface::limited);
 
 }
 
