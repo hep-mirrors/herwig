@@ -214,7 +214,7 @@ bool WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
     default :
       ostringstream message;
       message << "Invalid vertex for decays via weak current "
-	      << vert->fullName() << "\n";;
+	      << vert->fullName() << "\n";
       generator()->logWarning(NBodyDecayConstructorError(message.str(),
 							 Exception::warning));
       return false;
