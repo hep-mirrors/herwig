@@ -124,7 +124,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
 // calculate the width for a given mass
 template <class T>
 Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
-  Outer outer(this);
+  Outer outer(this,_relerr);
   _m[0] = sqrt(q2);
   _m2[0]=q2;
   // check the decay is kinematically allowed
@@ -180,7 +180,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     }
     // perform the integral using GSLIntegrator class
     _thechannel=ix;
-    GSLIntegrator intb;
+    GSLIntegrator intb(1e-35,_relerr,1000);
     sum +=  _channelweights[ix] * intb.value(outer,rlow,rupp);
   }
   // final factors

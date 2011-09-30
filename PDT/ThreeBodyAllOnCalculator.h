@@ -45,14 +45,14 @@ class ThreeBodyAllOnCalculator: public WidthCalculatorBase {
  *
  * @see ThreeBodyAllOnCalculator
  * @see ThreeBodyAllOnInner
- */
-struct Outer {
+ */ struct Outer {
  
   /**
    * Constructor with a pointer to the ThreeBodyAllOnCalculator
    */
-  Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer in)
-    : _integrand(in)
+   Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer in,
+	 double relerr)
+    : _integrand(in), _integrator(1e-35,relerr,1000)
   {}
   
   /**
@@ -108,10 +108,12 @@ public:
 			   vector<Energy> inwidth,
 			   vector<double> inpow,
 			   T inme, int mode,
-			   Energy m1,Energy m2,Energy m3)
+			   Energy m1,Energy m2,Energy m3,
+			   double relerr=1e-3)
     : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
       _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
-      _thechannel(0),_souter(ZERO) {
+      _thechannel(0),_souter(ZERO), _integrator(1e-35,relerr,1000),
+      _relerr(relerr) {
     _m.resize(4);
     _m[1]=m1;_m[2]=m2;_m[3]=m3;
     _m2.resize(4);
@@ -262,6 +264,11 @@ private:
    * member to do the integration
    */
   GSLIntegrator _integrator;
+
+  /**
+   *  Relative error for the integration
+   */
+  double _relerr;
 };
 }
 
