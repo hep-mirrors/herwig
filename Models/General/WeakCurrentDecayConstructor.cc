@@ -273,7 +273,6 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
   // the partial widths
   PDVector particles(3);
   if(inpart->CC()) inpart = inpart->CC();
-  inpart->stable(false);
   particles[0] = inpart;
   bool Wplus;
   for(unsigned int ix = 0; ix < decays.size(); ix += 3) {
@@ -340,6 +339,7 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
 				      decayer->fullName());
 	generator()->preinitInterface(ndm, "OnOff", "set", "On");
 	setBranchingRatio(ndm, pWidth);
+	inpart->stable(false);
       }
       else if (dm) {
 	if(_init) initializeDecayers(decayer->fullName());
@@ -352,6 +352,7 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
 	  generator()->preinitInterface(dm, "OnOff", "set", "On");
 	  particles[0]->width(particles[0]->width()*(1.-dm->brat()));
 	  setBranchingRatio(dm, pWidth);
+	  inpart->stable(false);
 	}
       }
     }

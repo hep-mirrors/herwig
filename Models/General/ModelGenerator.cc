@@ -294,7 +294,19 @@ void ModelGenerator::doinit() {
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
-  if( parent->stable() ) return;
+  if( parent->stable() ) {
+    if(parent->coloured())
+      cerr << "Warning: No decays for coloured particle " << parent->PDGName() << "\n\n" 
+	   << "have been calcluated in BSM model.\n"
+	   << "This may cause problems in the hadronization phase.\n"
+	   << "You may have forgotten to switch on the decay mode calculation using\n"
+	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
+	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
+	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
+	   << "or the decays of this particle are missing from your\n"
+	   << "input spectrum and decay file in the SLHA format.\n\n";
+    return;
+  }
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
   Energy oldwidth(parent->width()), newwidth(ZERO);

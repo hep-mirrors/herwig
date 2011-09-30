@@ -98,6 +98,7 @@ void BSMModel::decayRead() {
   h0->widthGenerator(WidthGeneratorPtr());
   h0->massGenerator(MassGenPtr());
   h0->width(ZERO);
+  h0->stable(true);
   DecaySet::const_iterator dit = h0->decayModes().begin();
   DecaySet::const_iterator dend = h0->decayModes().end();
   for( ; dit != dend; ++dit ) {

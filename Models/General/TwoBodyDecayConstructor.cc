@@ -219,7 +219,6 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay & d
 void TwoBodyDecayConstructor::
 createDecayMode(vector<TwoBodyDecay> & decays) {
   tPDPtr inpart = decays[0].parent_;
-  inpart->stable(false);
   tEGPtr eg = generator();
   vector<TwoBodyDecay>::iterator dend = decays.end();
   for( vector<TwoBodyDecay>::iterator dit = decays.begin();
@@ -243,6 +242,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = eg->preinitCreateDecayMode(tag);
       if(ndm) {
+	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
@@ -268,6 +268,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 	return;
       }
       if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
+	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	eg->preinitInterface(dm, "Decayer", "set", 
 			     decayer->fullName());

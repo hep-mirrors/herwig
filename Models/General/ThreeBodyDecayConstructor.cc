@@ -589,8 +589,6 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
   outgoing.insert(getParticleData(diagrams[0].outgoing));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
-  // incoming particle is now unstable
-  inpart->stable(false);
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
@@ -639,6 +637,8 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
 	generator()->preinitInterface(decayer->fullName(),
 				      "Initialize", "set","0");
       }
+      // incoming particle is now unstable
+      inpart->stable(false);
     }
     else
       throw NBodyDecayConstructorError() 
@@ -660,6 +660,8 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
       }
       generator()->preinitInterface(dm, "Decayer", "set", 
 				    decayer->fullName());
+      // incoming particle is now unstable
+      inpart->stable(false);
     }
   }
   //update CC mode if it exists
