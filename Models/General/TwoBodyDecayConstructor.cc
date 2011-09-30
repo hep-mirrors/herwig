@@ -252,6 +252,10 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 				make_pair(pb,pb->mass()) , 
 				make_pair(pc,pc->mass()));
 	setBranchingRatio(ndm, width);
+	if(ndm->brat()<decayConstructor()->minimumBR()) {
+	  generator()->preinitInterface(decayer->fullName(),
+					"Initialize", "set","0");
+	}
       }
       else
 	throw NBodyDecayConstructorError() 

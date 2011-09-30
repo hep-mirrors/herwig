@@ -23,6 +23,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -317,6 +318,10 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
+      DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());
+      if(decayer) {
+      	generator()->preinitInterface(decayer->fullName(), "Initialize", "set","0");
+      }
     }
     else {
       brsum += (**dit).brat();
