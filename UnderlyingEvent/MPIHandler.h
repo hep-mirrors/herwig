@@ -52,11 +52,11 @@ class MPIHandler: public UEBase {
   /**
    * Class for the integration is a friend to access private members
    */
-  friend class Eikonalization;
-  friend class TotalXSecBisection;
-  friend class slopeAndTotalXSec;
-  friend class slopeInt;
-  friend class slopeBisection;
+  friend struct Eikonalization;
+  friend struct TotalXSecBisection;
+  friend struct slopeAndTotalXSec;
+  friend struct slopeInt;
+  friend struct slopeBisection;
 
 public:
 

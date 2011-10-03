@@ -51,7 +51,7 @@ ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthG
 // Definition of the static class description member.
 
 void GenericWidthGenerator::setParticle(string p) {
-  if ( particle_ = Repository::GetPtr<tPDPtr>(p) ) return;
+  if ( (particle_ = Repository::GetPtr<tPDPtr>(p)) ) return;
   particle_ = Repository::findParticle(StringUtils::basename(p));
   if ( ! particle_ ) 
     Throw<InterfaceException>() 

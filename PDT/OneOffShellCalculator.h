@@ -40,7 +40,7 @@ public:
    *  The OneOffShellIntegrand is a friend to allow access to the members needed
    *  for the integration without making the members public.
    */
-  friend class OneOffShellIntegrand;
+  friend struct OneOffShellIntegrand;
 
 public:
 
