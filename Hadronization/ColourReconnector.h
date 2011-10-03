@@ -42,7 +42,8 @@ public:
   /**
    * Default constructor.
    */
-  inline ColourReconnector();
+  ColourReconnector() : _clreco( 0 ), _preco( 0.5 )
+  {}
   //@}
 
   /**
@@ -97,11 +98,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ColourReconnector> initColourReconnector;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ColourReconnector & operator=(const ColourReconnector &);
@@ -143,37 +139,5 @@ private:
 
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of ColourReconnector.
- */
-struct BaseClassTrait<Herwig::ColourReconnector,1> {
-  /** Typedef of the base class of ColourReconnector. */
-  typedef Interfaced NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ColourReconnector>
-  : public ClassTraitsBase<Herwig::ColourReconnector> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::ColourReconnector"; }
-};
-
-/** @endcond */
-
-}
-
-
-#include "ColourReconnector.icc"
 
 #endif /* HERWIG_ColourReconnector_H */

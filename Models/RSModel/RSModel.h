@@ -10,7 +10,7 @@
 #define HERWIG_RSModel_H
 // This is the declaration of the RSModel class.
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
@@ -33,7 +33,7 @@ using namespace ThePEG::Helicity;
  * @see StandardModelBase
  * 
  */
-class RSModel: public StandardModel {
+class RSModel: public BSMModel {
 
 public:
 
@@ -208,7 +208,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::RSModel,1> {
   /** Typedef of the base class of RSModel. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /**

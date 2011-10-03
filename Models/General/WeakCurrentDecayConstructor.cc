@@ -101,7 +101,7 @@ void WeakCurrentDecayConstructor::Init() {
   static Parameter<WeakCurrentDecayConstructor,int> interfaceInitIteration
     ("InitIteration",
      "Number of iterations to optimise integration weights",
-     &WeakCurrentDecayConstructor::_iteration, 5, 0, 5,
+     &WeakCurrentDecayConstructor::_iteration, 1, 0, 5,
      false, false, true);
 
   static Parameter<WeakCurrentDecayConstructor,int> interfaceInitPoints
@@ -214,7 +214,7 @@ bool WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
     default :
       ostringstream message;
       message << "Invalid vertex for decays via weak current "
-	      << vert->fullName() << "\n";;
+	      << vert->fullName() << "\n";
       generator()->logWarning(NBodyDecayConstructorError(message.str(),
 							 Exception::warning));
       return false;
@@ -255,8 +255,6 @@ bool WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
 	    << "setting the cut-off for " << decayer->fullName()
 	    << " - " << msg
 	    << Exception::abortnow;
-	if(_init) initializeDecayers(fullname2.str());
-	decayer->init();
 	_theExistingDecayers[ivert][icol][_current[ix]]=decayer;
       }
     }
@@ -275,7 +273,6 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
   // the partial widths
   PDVector particles(3);
   if(inpart->CC()) inpart = inpart->CC();
-  inpart->stable(false);
   particles[0] = inpart;
   bool Wplus;
   for(unsigned int ix = 0; ix < decays.size(); ix += 3) {
@@ -324,12 +321,14 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
       GeneralCurrentDecayerPtr decayer = decayers.find(_current[iy])->second;
       // check outgoing particles initialised
       for(unsigned int iz=0;iz<wprod.size();++iz) wprod[iz]->init();
-      // calculate the width
-      Energy pWidth = _norm[iy]*decayer->partialWidth(inpart,particles[1],wprod);
-      if(pWidth<=ZERO) continue;
       // find the decay mode
       tDMPtr dm= generator()->findDecayMode(tag);
       if( !dm && createDecayModes() ) {
+	if(_init) initializeDecayers(decayer->fullName());
+	decayer->init();
+	// calculate the width
+	Energy pWidth = _norm[iy]*decayer->partialWidth(inpart,particles[1],wprod);
+	if(pWidth<=ZERO) continue;
 	tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
 	if(!ndm) throw NBodyDecayConstructorError() 
 		   << "WeakCurrentDecayConstructor::createDecayMode - Needed to create "
@@ -340,13 +339,20 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
 				      decayer->fullName());
 	generator()->preinitInterface(ndm, "OnOff", "set", "On");
 	setBranchingRatio(ndm, pWidth);
+	inpart->stable(false);
       }
-      else {
+      else if (dm) {
+	if(_init) initializeDecayers(decayer->fullName());
+	decayer->init();
 	generator()->preinitInterface(dm, "Decayer", "set", decayer->fullName());
 	if(createDecayModes()) {
+	  // calculate the width
+	  Energy pWidth = _norm[iy]*decayer->partialWidth(inpart,particles[1],wprod);
+	  if(pWidth<=ZERO) continue;
 	  generator()->preinitInterface(dm, "OnOff", "set", "On");
 	  particles[0]->width(particles[0]->width()*(1.-dm->brat()));
 	  setBranchingRatio(dm, pWidth);
+	  inpart->stable(false);
 	}
       }
     }

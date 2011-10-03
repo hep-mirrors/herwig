@@ -28,8 +28,7 @@
 
 using namespace Herwig;
 
-SusyBase::SusyBase() : readFile_(false), topModesFromFile_(false),
-		       tolerance_(1e-6), MPlanck_(2.4e18*GeV),
+SusyBase::SusyBase() : readFile_(false), MPlanck_(2.4e18*GeV),
 		       gravitino_(false),
 		       tanBeta_(0), mu_(ZERO), 
 		       M1_(ZERO), M2_(ZERO), M3_(ZERO),
@@ -72,11 +71,11 @@ void SusyBase::doinit() {
     if(GVNVVertex_) addVertex(GVNVVertex_);
     if(GVFSVertex_) addVertex(GVFSVertex_);
   }
-  StandardModel::doinit();
+  BSMModel::doinit();
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << readFile_ << topModesFromFile_ << gravitino_
+  os << readFile_ << gravitino_
      << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
      << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
@@ -91,11 +90,11 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << ounit(mq1L_,GeV) << ounit(mq2L_,GeV) << ounit(mq3L_,GeV) 
      << ounit(mdR_,GeV)  << ounit(muR_,GeV)  << ounit(msR_,GeV) 
      << ounit(mcR_,GeV)  << ounit(mbR_,GeV)  << ounit(mtR_,GeV)
-     << gluinoPhase_ << tolerance_ << ounit(MPlanck_,GeV);
+     << gluinoPhase_ << ounit(MPlanck_,GeV);
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> readFile_ >> topModesFromFile_ >> gravitino_
+  is >> readFile_  >> gravitino_
      >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
      >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
@@ -110,7 +109,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> iunit(mq1L_,GeV) >> iunit(mq2L_,GeV) >> iunit(mq3L_,GeV) 
      >> iunit(mdR_,GeV)  >> iunit(muR_,GeV)  >> iunit(msR_,GeV) 
      >> iunit(mcR_,GeV)  >> iunit(mbR_,GeV)  >> iunit(mtR_,GeV)
-     >> gluinoPhase_ >> tolerance_ >> iunit(MPlanck_,GeV);
+     >> gluinoPhase_ >> iunit(MPlanck_,GeV);
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -139,20 +138,6 @@ void SusyBase::Init() {
      "  %%CITATION = CPHCB,180,8;%%\n"
      );
 
-  static Switch<SusyBase,bool> interfaceTopModes
-    ("TopModes",
-     "Whether ro use the Herwig++ SM top decays or those from the SLHA file",
-     &SusyBase::topModesFromFile_, false, false, false);
-  static SwitchOption interfaceTopModesFile
-    (interfaceTopModes,
-     "File",
-     "Take the modes from the files",
-     true);
-  static SwitchOption interfaceTopModesHerwig
-    (interfaceTopModes,
-     "Herwig",
-     "Use the SM ones",
-     false);
 
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
@@ -253,12 +238,6 @@ void SusyBase::Init() {
      " and sfermion",
      &SusyBase::GVFSVertex_, false, false, true, true, false);
 
-  static Parameter<SusyBase,double> interfaceBRTolerance
-    ("BRTolerance",
-     "Tolerance for the sum of branching ratios to be difference from one.",
-     &SusyBase::tolerance_, 1e-6, 1e-8, 0.01,
-     false, false, Interface::limited);
-
   static Parameter<SusyBase,Energy> interfaceMPlanck
     ("MPlanck",
      "The Planck mass for GMSB models",
@@ -283,37 +262,6 @@ void SusyBase::readSetup(istream & is) {
 		 << "run without this."
 		 << Exception::runerror;
   useMe();
-  //Before reading the spectrum/decay files the SM higgs 
-  //decay modes, mass and width generators need to be turned off.
-  PDPtr h0 = getParticleData(ParticleID::h0);
-  h0->widthGenerator(WidthGeneratorPtr());
-  h0->massGenerator(MassGenPtr());
-  h0->width(ZERO);
-  DecaySet::const_iterator dit = h0->decayModes().begin();
-  DecaySet::const_iterator dend = h0->decayModes().end();
-  for( ; dit != dend; ++dit ) {
-    const InterfaceBase * ifb = 
-      BaseRepository::FindInterface(*dit, "BranchingRatio");
-    ifb->exec(**dit, "set", "0.0");
-    ifb = BaseRepository::FindInterface(*dit, "OnOff");
-    ifb->exec(**dit, "set", "Off");
-  }
-  // if taking the top modes from the file
-  // delete the SM stuff
-  if(topModesFromFile_) {
-    PDPtr top = getParticleData(ParticleID::t);
-    top->widthGenerator(WidthGeneratorPtr());
-    top->massGenerator(MassGenPtr());
-    DecaySet::const_iterator dit = top->decayModes().begin();
-    DecaySet::const_iterator dend = top->decayModes().end();
-    for( ; dit != dend; ++dit ) {
-      const InterfaceBase * ifb = 
-	BaseRepository::FindInterface(*dit, "BranchingRatio");
-      ifb->exec(**dit, "set", "0.0");
-      ifb = BaseRepository::FindInterface(*dit, "OnOff");
-      ifb->exec(**dit, "set", "Off");
-    }    
-  }
   // read first line and check if this is a Les Houches event file
   cfile.readline();
   bool lesHouches = cfile.find("<LesHouchesEvents");
@@ -369,11 +317,6 @@ void SusyBase::readSetup(istream & is) {
       }
       continue;
     }
-    // decays
-    else if( line.find("decay") == 0 ) {
-      readDecay(cfile, line);
-      continue;
-    }
     else if( lesHouches && line.find("</slha") == 0 ) {
       reading = false;
       break;
@@ -389,6 +332,7 @@ void SusyBase::readSetup(istream & is) {
   // mixing matrices have been created
   resetRepositoryMasses();
   // have now read the file
+  if(decayFile()=="") decayFile(filename);
   readFile_=true;
 }
 
@@ -447,177 +391,6 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
   if(set) parameters_[name]=store;
 }
 
-void SusyBase::readDecay(CFileLineReader & cfile, 
-			 string decay) const{
-  map<string,ParamMap>::const_iterator fit=parameters_.find("mass");
-  if(fit==parameters_.end()) 
-    throw Exception() << "SusyBase::readDecay() "
-		      << "BLOCK MASS not found in input file"
-		      << "it must be before the decays so the kinematics can be checked"
-		      << Exception::runerror;
-  ParamMap theMasses = fit->second;
-  if(!cfile)
-    throw SetupException() 
-      <<"SusyBase::readDecay - The input stream is in a bad state";
-  // extract parent PDG code and width
-  long parent(0);
-  Energy width(ZERO);
-  istringstream iss(decay);
-  string dummy;
-  iss >> dummy >> parent >> iunit(width, GeV);
-  PDPtr inpart = getParticleData(parent);
-  if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
-    cfile.readline();
-    return;
-  }
-  if(!inpart)  throw SetupException() 
-		 << "SusyBase::readDecay() - "
-		 << "A ParticleData object with the PDG code "
-		 << parent << " does not exist. " 
-		 << Exception::runerror;
-  inpart->width(width);
-  if( width > ZERO ) inpart->cTau(hbarc/width);
-  inpart->widthCut(5.*width);
-  ParamMap::iterator it = theMasses.find(abs(inpart->id()));
-  Energy inMass = it!=theMasses.end() ? abs(it->second*GeV) : inpart->mass();
-  string prefix("decaymode " + inpart->name() + "->");
-  double brsum(0.);
-  unsigned int nmode = 0;
-  while(cfile.readline()) {
-    string line = cfile.getline();
-    // skip comments
-    if(line[0] == '#') continue;
-    // reached the end
-    if( line[0] == 'B' || line[0] == 'b' ||
-	line[0] == 'D' || line[0] == 'd' ||
-	line[0] == '<' ) {
-      cfile.resetline();
-      break;
-    }
-    // read the mode
-    // get the branching ratio and no of decay products
-    istringstream is(line);
-    double brat(0.);
-    unsigned int nda(0),npr(0);
-    is >> brat >> nda;
-    vector<tcPDPtr> products,bosons;
-    Energy mout(ZERO),moutnoWZ(ZERO);
-    string tag = prefix;
-    while( true ) {
-      long t;
-      is >> t;
-      if( is.fail() ) break; 
-      if( t == abs(parent) ) {
-	throw SetupException() 
-	  << "An error occurred while read a decay of the " 
-	  << inpart->PDGName() << ". One of its products has the same PDG code "
-	  << "as the parent particle. Please check the SLHA file.\n"
-	  << Exception::runerror;
-      }
-      tcPDPtr p = getParticleData(t);
-      if( !p ) {
-	throw SetupException()
-	  << "SusyBase::readDecay() - An unknown PDG code has been encounterd "
-	  << "while reading a decay mode. ID: " << t
-	  << Exception::runerror;
-      }
-      ++npr;
-      tag += p->name() + ",";
-      ParamMap::iterator it = theMasses.find(abs(p->id()));
-      Energy mass = it!=theMasses.end() ? abs(it->second*GeV) : p->mass();
-      mout += mass;
-      if(abs(p->id())==ParticleID::Wplus||p->id()==ParticleID::Z0) {
-	bosons.push_back(p);
-      }
-      else {
-	products.push_back(p);
-	moutnoWZ += mass;
-      }
-    }
-    if( npr != nda ) {
-      throw SetupException()
-	<< "SusyBase::readDecay - While reading a decay of the " 
-	<< inpart->PDGName() << " from an SLHA file, an inconsistency "
-	<< "between the number of decay products and the value in "
-	<< "the 'NDA' column was found. Please check if the spectrum "
-	<< "file is correct.\n"
-	<< Exception::warning;
-    }
-    if( npr > 1 ) {
-      tag.replace(tag.size() - 1, 1, ";");
-      // normal option
-      if(mout<=inMass) {
-	inpart->stable(false);
-	brsum += brat;
-	createDecayMode(tag, brat);
-      }
-      // no possible off-shell gauge bosons throw it away
-      else if(bosons.empty() || bosons.size()>2 ||
-	      moutnoWZ>=inMass) {
-	cerr << "SusyBase::readDecay() "
-	     << "The decay " << tag << " cannot proceed for on-shell "
-	     << "particles, skipping it.\n";
-      }
-      else {
-	Energy maxMass = inMass - moutnoWZ;
-	string newTag = prefix;
-	for(unsigned int ix=0;ix<products.size();++ix)
-	  newTag += products[ix]->name() + ",";
-	if(bosons.size()==1) {
-	  cerr << "SusyBase::readDecay() "
-	       << "The decay " << tag << " cannot proceed for on-shell\n"
-	       << "particles, replacing gauge boson with its decay products\n";
-	  vector<pair<double,string> > modes = 
-	    createWZDecayModes(newTag,brat,bosons[0],maxMass);
-	  for(unsigned int ix=0;ix<modes.size();++ix) {
-	    modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
-	    createDecayMode(modes[ix].second,modes[ix].first);
-	    brsum += modes[ix].first;
-	  }
-	}
- 	else if(bosons.size()==2) {
- 	  bool identical = bosons[0]->id()==bosons[1]->id();
- 	  if(maxMass>bosons[0]->mass()&&maxMass>bosons[1]->mass()) {
- 	    cerr << "SusyBase::readDecay() "
- 		 << "The decay " << tag << " cannot proceed for on-shell\n"
- 		 << "particles, replacing one of the gauge bosons"
- 		 << " with its decay products\n";
- 	    unsigned int imax = identical ? 1 : 2;
- 	    if(imax==2) brat *= 0.5;
- 	    for(unsigned int ix=0;ix<imax;++ix) {
- 	      string newTag2 = newTag+bosons[ix]->name()+',';
-	      vector<pair<double,string> > modes = 
-	        createWZDecayModes(newTag2,brat,bosons[ix],maxMass);
-	      for(unsigned int ix=0;ix<modes.size();++ix) {
-		modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
-		createDecayMode(modes[ix].second,modes[ix].first);
-		brsum += modes[ix].first;
-	      }
-	    }
-	  }
- 	  else {
-	    cerr << "SusyBase::readDecay() "
-		 << "The decay " << tag << " cannot proceed for on-shell\n"
-		 << "particles, and has too many off-shell gauge bosons,"
-		 << " skipping it.\n";
-	  }
- 	}
-	else {
-	  cerr << "SusyBase::readDecay() "
-	       << "The decay " << tag << " cannot proceed for on-shell\n"
-	       << "particles, and has too many outgoing gauge bosons skipping it.\n";
-	}
-      }
-    }
-  }
-  if( abs(brsum - 1.) > tolerance_ && nmode!=0 ) {
-    cerr << "Warning: The total branching ratio for " << inpart->PDGName()
-	 << " from the spectrum file does not sum to 1. The branching fractions"
-	 << " will be rescaled.\n";
-    cerr << setprecision(13) << abs(brsum - 1.) << "\n";
-  }
-}
-
 const MixingVector
 SusyBase::readMatrix(CFileLineReader & cfile, 
 		     unsigned int & row, unsigned int & col) {
@@ -650,13 +423,6 @@ SusyBase::readMatrix(CFileLineReader & cfile,
   col=colmax;
   row=rowmax;
   return values;
-}
-
-void SusyBase::createDecayMode(string tag, double brat) const {
-  ostringstream cmd;
-  cmd << tag << string(" ") 
-      << setprecision(13) << brat << string(" 1 /Herwig/Decays/Mambo");
-  Repository::exec(cmd.str(), cerr);
 }
 
 void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
@@ -875,30 +641,4 @@ void SusyBase::extractParameters(bool checkmodel) {
 		      << "Model class, use one of the models which inherit"
 		      << " from it" << Exception::runerror;
   }
-}
-
-vector<pair<double,string> > 
-SusyBase::createWZDecayModes(string tag, double brat,
-			     tcPDPtr boson, Energy maxMass) const {
-  vector<pair<double,string> > modes;
-  double sum(0.);
-  for(DecaySet::const_iterator dit=boson->decayModes().begin();
-      dit!=boson->decayModes().end();++dit) {
-    tcDMPtr mode = *dit;
-    if(!mode->on()) continue;
-    string extra;
-    Energy outMass(ZERO);
-    for(ParticleMSet::const_iterator pit=mode->products().begin();
-	pit!=mode->products().end();++pit) {
-      extra += (**pit).name() + ",";
-      outMass += (**pit).mass();
-    }
-    if(outMass<maxMass) {
-      sum += mode->brat();
-      modes.push_back(make_pair(mode->brat(),tag+extra));
-    }
-  }
-  for(unsigned int ix=0;ix<modes.size();++ix) 
-    modes[ix].first *= brat/sum;
-  return modes;
 }

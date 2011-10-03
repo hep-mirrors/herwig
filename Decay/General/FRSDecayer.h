@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  FRSDecayer();
+  FRSDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

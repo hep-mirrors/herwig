@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  SSSDecayer();
+  SSSDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

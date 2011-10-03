@@ -34,13 +34,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
      << _includeTopOnShell << _maxBoson << _maxList 
-     << excludedVector_ << excludedSet_;
+     << excludedVector_ << excludedSet_ << intOpt_ << relErr_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
      >> _includeTopOnShell >> _maxBoson >> _maxList 
-     >> excludedVector_ >> excludedSet_;
+     >> excludedVector_ >> excludedSet_ >> intOpt_ >> relErr_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -191,6 +191,28 @@ void ThreeBodyDecayConstructor::Init() {
     ("ExcludedVertices",
      "Vertices which are not included in the three-body decayers",
      &ThreeBodyDecayConstructor::excludedVector_, -1, false, false, true, true, false);
+
+
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceIntegrationOption
+    ("IntegrationOption",
+     "Option for the integration of the partial width",
+     &ThreeBodyDecayConstructor::intOpt_, 1, false, false);
+  static SwitchOption interfaceIntegrationOptionAllPoles
+    (interfaceIntegrationOption,
+     "AllPoles",
+     "Include all potential poles",
+     0);
+  static SwitchOption interfaceIntegrationOptionShallowestPole
+    (interfaceIntegrationOption,
+     "ShallowestPole",
+     "Onlt include the  shallowest pole",
+     1);
+
+  static Parameter<ThreeBodyDecayConstructor,double> interfaceRelativeError
+    ("RelativeError",
+     "The relative error for the GQ integration",
+     &ThreeBodyDecayConstructor::relErr_, 1e-2, 1e-10, 1.,
+     false, false, Interface::limited);
 
 }
 
@@ -499,15 +521,24 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter) const {
 			diagrams,cfactors.first,cfactors.second,ncf);
   // set decayer options from base class
   setDecayerInterfaces(objectname);
-  // set the width option
+  // options for partial width integration
   ostringstream value;
+  value << intOpt_;
+  generator()->preinitInterface(objectname, "PartialWidthIntegration", "set",
+				value.str());
+  value.str("");
+  value << relErr_;
+  generator()->preinitInterface(objectname, "RelativeError", "set",
+				value.str());
+  // set the width option
+  value.str("");
   value << _widthopt;
   generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
   // set the intermediates option
-  ostringstream value2;
-  value2 << inter;
+  value.str("");
+  value << inter;
   generator()->preinitInterface(objectname, "GenerateIntermediates", "set", 
-				value2.str());
+				value.str());
   // initialize the decayer
   decayer->init();
   // return the decayer
@@ -558,8 +589,6 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
   outgoing.insert(getParticleData(diagrams[0].outgoing));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
-  // incoming particle is now unstable
-  inpart->stable(false);
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
@@ -604,6 +633,12 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
 			      make_pair(pb,pb->mass()) , 
 			      make_pair(pc,pc->mass()));
       setBranchingRatio(ndm, width);
+      if(ndm->brat()<decayConstructor()->minimumBR()) {
+	generator()->preinitInterface(decayer->fullName(),
+				      "Initialize", "set","0");
+      }
+      // incoming particle is now unstable
+      inpart->stable(false);
     }
     else
       throw NBodyDecayConstructorError() 
@@ -612,6 +647,9 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
 	<< tag << Exception::warning;
   }
   else if( dm ) {
+    if(dm->brat()<decayConstructor()->minimumBR()) {
+      return;
+    }
     if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
       // create the decayer
       GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
@@ -622,6 +660,8 @@ createDecayMode(vector<TBDiagram> & diagrams, bool inter) {
       }
       generator()->preinitInterface(dm, "Decayer", "set", 
 				    decayer->fullName());
+      // incoming particle is now unstable
+      inpart->stable(false);
     }
   }
   //update CC mode if it exists

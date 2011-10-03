@@ -45,8 +45,8 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy -1
 ## sqrt(s) = 900 GeV ##
 #######################
 #set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
-#set /Herwig/UnderlyingEvent/KtCut:MinKT 1.855
-#set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.71
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
 
 ########################
 ## sqrt(s) = 1800 GeV ##

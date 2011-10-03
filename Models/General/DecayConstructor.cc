@@ -124,7 +124,9 @@ void DecayConstructor::doinit() {
        orderNBodyConstructors);
 }
 
-void DecayConstructor::createDecayers(const PDVector & particles) {
+void DecayConstructor::createDecayers(const PDVector & particles,
+				      double minBR) {
+  _minBR = minBR;
   if ( particles.empty() || NBodyDecayConstructors_.empty() ) return;
   // turn the vector into a set to avoid duplicates
   set<PDPtr> particleSet(particles.begin(),particles.end());

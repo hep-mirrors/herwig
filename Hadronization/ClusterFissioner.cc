@@ -24,8 +24,38 @@
 #include "Cluster.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterFissioner,Interfaced>
+describeClusterFissioner("Herwig::ClusterFissioner","");
+
+ClusterFissioner::ClusterFissioner() :
+  _clMaxLight(3.35*GeV),
+  _clMaxBottom(3.35*GeV),
+  _clMaxCharm(3.35*GeV),
+  _clMaxExotic(3.35*GeV),
+  _clPowLight(2.0),
+  _clPowBottom(2.0),
+  _clPowCharm(2.0),
+  _clPowExotic(2.0),
+  _pSplitLight(1.0),
+  _pSplitBottom(1.0),
+  _pSplitCharm(1.0),
+  _pSplitExotic(1.0),
+  _btClM(1.0*GeV),
+  _iopRem(1),
+  _kappa(1.0e15*GeV/meter)
+{}
+
+IBPtr ClusterFissioner::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterFissioner::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
   os << _hadronsSelector << ounit(_clMaxLight,GeV)
@@ -45,10 +75,6 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> iunit(_btClM,GeV) >> _iopRem
      >> iunit(_kappa, GeV/meter);
 }
-
-ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
-// Definition of the static class description member.
-
 
 void ClusterFissioner::Init() {
 
@@ -246,7 +272,7 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
 }
 
 namespace {
-  inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+   bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
     return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
   }
 }

@@ -77,7 +77,7 @@ public:
   /**
    * Default constructor.
    */
-  inline ClusterFissioner();
+   ClusterFissioner();
   //@}
 
   /** Splits the clusters which are too heavy.
@@ -140,11 +140,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ClusterFissioner> initClusterFissioner;
 
   /**
    * Private and non-existent assignment operator.
@@ -352,39 +347,6 @@ private:
 
 };
 
-  // class ClusterSplittingMaxTries : public ThePEG::Exception {};
-
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of ClusterFissioner.
- */
-struct BaseClassTrait<Herwig::ClusterFissioner,1> {
-  /** Typedef of the base class of ClusterFissioner. */
-  typedef Interfaced NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ClusterFissioner>
-  : public ClassTraitsBase<Herwig::ClusterFissioner> {
-  /** Return the class name. */
-  static string className() { return "Herwig::ClusterFissioner"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ClusterFissioner.icc"
 
 #endif /* HERWIG_ClusterFissioner_H */
