@@ -25,8 +25,10 @@ SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
 			     theSbpa(0.), theCbpa(0.), theSbma(0.),
 			     theCbma(0.), theS2a(0.), theC2a(0.),
 			     theS2b(0.), theC2b(0.), theElast(0.),
-			     theq2last(ZERO) 
-{}
+			     theq2last(ZERO) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSHHHVertex::doinit() {
   long sec = 35;
@@ -69,8 +71,6 @@ void SSHHHVertex::doinit() {
   theSbma = sinbeta*cosalpha - sinalpha*cosbeta;
   theCbma = cosbeta*cosalpha + sinbeta*sinalpha;
 
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSHHHVertex::persistentOutput(PersistentOStream & os) const {

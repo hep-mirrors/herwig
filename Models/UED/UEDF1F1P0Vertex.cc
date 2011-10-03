@@ -22,8 +22,10 @@ using namespace Herwig;
 
 UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
 				     thefermLast(0), theLRLast(0.0), 
-				     theCharges(3) 
-{}
+				     theCharges(3) {
+  orderInGs(0);
+  orderInGem(1);
+}
 
 void UEDF1F1P0Vertex::doinit() {
   long photon = 22;
@@ -51,8 +53,6 @@ void UEDF1F1P0Vertex::doinit() {
   theCharges[0] = UEDBase->ee();
   theCharges[1] = UEDBase->ed();
   theCharges[2] = UEDBase->eu();
-  orderInGs(0);
-  orderInGem(0);
 }
 
 NoPIOClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;

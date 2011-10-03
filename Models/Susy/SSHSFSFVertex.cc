@@ -28,8 +28,10 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theMw(ZERO), theMz(ZERO), theMu(ZERO), 
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
-				 theSF2Last(0) 
-{}
+				 theSF2Last(0) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSHSFSFVertex::doinit() {
   int higgs = 25;
@@ -145,9 +147,6 @@ void SSHSFSFVertex::doinit() {
 
   theSw = sqrt(sin2ThetaW());
   theCw = sqrt(1. - sin2ThetaW());
-
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSHSFSFVertex::persistentOutput(PersistentOStream & os) const {
@@ -186,11 +185,8 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   if(sq1<0) swap(sq1,sq2);
   assert( higgs == 25 || higgs == 35 || 
 	  higgs == 36 || abs(higgs) == 37 );
-  // abs of antisquark and check
-  // \todo workaround for labelling problem from scalar decays
-  sq1 = abs(sq1); 
-  sq2 = abs(sq2);
-  // assert(sq1>0&&sq2>0);
+  sq2 *=-1; 
+  assert(sq1>0&&sq2>0);
   
   // running coupling
   if( q2 != theq2Last || thegLast==0.) {

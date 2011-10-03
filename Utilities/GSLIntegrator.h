@@ -71,6 +71,22 @@ public:
 	const typename T::ArgType lower,
 	const typename T::ArgType upper) const;
 
+  /**
+   * The value of the integral
+   * @param function The integrand class that defines operator()
+   * @param lower The lower limit of integration.
+   * @param upper The upper limit of integration.
+   * @param error Returns the estimated error of the integral
+   */
+  template <class T>
+  inline typename BinaryOpTraits<typename T::ValType,
+				 typename T::ArgType>::MulT
+  value(const T & function, 
+	const typename T::ArgType lower,
+	const typename T::ArgType upper,
+	typename BinaryOpTraits<typename T::ValType,
+	typename T::ArgType>::MulT & error) const;
+
 private:
 
   /**

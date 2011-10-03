@@ -19,8 +19,10 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) 
-{}
+SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
+  orderInGs(2);
+  orderInGem(0);
+}
 
 NoPIOClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
 // Definition of the static class description member.
@@ -50,8 +52,6 @@ void SSGGSQSQVertex::doinit() {
   for(long ix=2000001;ix<2000007;++ix) {
     addToList(21,21,ix,-ix);
   }
-  orderInGs(2);
-  orderInGem(0);
   VVSSVertex::doinit();
 }
 

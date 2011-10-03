@@ -11,8 +11,10 @@
 
 using namespace Herwig;
 
-SMWWHHVertex::SMWWHHVertex() : ratio_(0.), couplast_(0.), q2last_(ZERO) 
-{}
+SMWWHHVertex::SMWWHHVertex() : ratio_(0.), couplast_(0.), q2last_(ZERO) {
+  orderInGem(2);
+  orderInGs (0);
+}
 
 IBPtr SMWWHHVertex::clone() const {
   return new_ptr(*this);
@@ -46,8 +48,6 @@ void SMWWHHVertex::doinit() {
   addToList( 24,-24, 25, 25);
   VVSSVertex::doinit();
   ratio_ = 1./(1.-sin2ThetaW());
-  orderInGem(2);
-  orderInGs (0);
 }
 
 void SMWWHHVertex::setCoupling(Energy2 q2,

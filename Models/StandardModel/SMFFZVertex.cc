@@ -57,8 +57,10 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 }
 
 SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
-			     _couplast(0.0), _q2last(ZERO) 
-{}
+			     _couplast(0.0), _q2last(ZERO) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SMFFZVertex::doinit() {
   // PDG codes for the particles
@@ -83,7 +85,5 @@ void SMFFZVertex::doinit() {
     _gr[2*ix+9 ] = fact*(sm->ve()  - sm->ae() );
     _gr[2*ix+10] = fact*(sm->vnu() - sm->anu());
   }
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }

@@ -18,8 +18,10 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
 				   _tanb(0.), _idlast(make_pair(0,0)),
 				   _q2last(0.*MeV2), 
 				   _masslast(make_pair(0.*MeV,0*MeV)),
-				   _couplast(0.) 
-{}
+				   _couplast(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {
   os << _mixS << _mixP << ounit(_mw,GeV)
@@ -85,9 +87,6 @@ void NMSSMFFHVertex::doinit() {
   double beta = atan(_tanb);
   _sinb=sin(beta);
   _cosb=cos(beta);
-  // order in couplings
-  orderInGem(1);
-  orderInGs(0);
   // base class
   FFSVertex::doinit();
 }

@@ -10,7 +10,7 @@
 #define HERWIG_ADDModel_H
 // This is the declaration of the ADDModel class.
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
@@ -33,7 +33,7 @@ using namespace ThePEG::Helicity;
  * @see StandardModelBase
  * 
  */
-class ADDModel: public StandardModel {
+class ADDModel: public BSMModel {
 
 public:
 
@@ -238,7 +238,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::ADDModel,1> {
   /** Typedef of the base class of ADDModel. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /**

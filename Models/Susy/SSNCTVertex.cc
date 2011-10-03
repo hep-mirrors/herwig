@@ -17,8 +17,10 @@ SSNCTVertex::SSNCTVertex() : MX_(2.e16*GeV),
 			     sw_(0.), cw_(0.), mw_(ZERO), 
 			     sb_(0.), cb_(0.), q2last_(), couplast_(0.),
 			     leftlast_(0.), rightlast_(0.), idlast_(0),
-			     epsilon_(0.) 
-{}
+			     epsilon_(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 IBPtr SSNCTVertex::clone() const {
   return new_ptr(*this);
@@ -112,8 +114,6 @@ void SSNCTVertex::doinit() {
   complex<Energy2> deltaR =  pre*mt*conj(model->bottomTrilinear());
   epsilon_ = (deltaL*(*model->stopMix())(0,0)-
 	      deltaR*(*model->stopMix())(0,1))/(sqr(mt1)-sqr(mcL));
-  orderInGem(1);
-  orderInGs(0);
 }
 
 

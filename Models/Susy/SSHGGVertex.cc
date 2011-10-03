@@ -31,8 +31,10 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theTanB(0.),theSinA(0.), 
 			     theCosA(0.), theSinB(0.), theCosB(0.), 
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
-			     theq2last(), theHaveCoeff(false), theLastID(0)
-{}
+			     theq2last(), theHaveCoeff(false), theLastID(0) {
+  orderInGs(2);
+  orderInGem(1);
+}
 
 void SSHGGVertex::doinit() {
   //PDG codes for particles at vertices
@@ -79,8 +81,6 @@ void SSHGGVertex::doinit() {
   theSqmass[2] = getParticleData(ParticleID::SUSY_b_2)->mass();
   theSqmass[3] = getParticleData(ParticleID::SUSY_t_2)->mass();
 
-  orderInGs(2);
-  orderInGem(1);
   VVSLoopVertex::doinit();
   Looptools::ltexi();
 }

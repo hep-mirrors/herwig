@@ -30,7 +30,7 @@ public:
   /**
    * The default constructor.
    */
-  VVSDecayer();
+  VVSDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

@@ -5,7 +5,6 @@
 // This is the declaration of the NMSSMHHHVertex class.
 //
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 

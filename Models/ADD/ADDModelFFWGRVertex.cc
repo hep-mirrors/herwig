@@ -24,6 +24,8 @@ ADDModelFFWGRVertex::ADDModelFFWGRVertex()
   : charge_(17,0.), gl_(17,0.), gr_(17,0.),
     ckm_(3,vector<Complex>(3,0.0)), couplast_(0.),
     q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
+  orderInGem(2);
+  orderInGs (0);
 }
 
 void ADDModelFFWGRVertex::doinit() {
@@ -57,8 +59,6 @@ void ADDModelFFWGRVertex::doinit() {
   for(int ix=11;ix<17;ix+=2) {
     addToList(-ix-1, ix, 24,39);
   }
-  orderInGem(2);
-  orderInGs (0);
   FFVTVertex::doinit();
   tcHwADDPtr hwADD=dynamic_ptr_cast<tcHwADDPtr>(generator()->standardModel());
   if(!hwADD) throw Exception() 

@@ -22,8 +22,10 @@ using namespace Herwig;
 using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
-			     _q2last(0.*sqr(MeV)) 
-{}
+			     _q2last(0.*sqr(MeV)) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
   os << _ckm;
@@ -76,8 +78,6 @@ void SMFFWVertex::doinit() {
 		      << "for the CKM matrix in SMFFWVertex::doinit()"
 		      << Exception::runerror;
   }
-  orderInGem(1);
-  orderInGs(0);
 }
 
 ClassDescription<SMFFWVertex>SMFFWVertex::initSMFFWVertex;

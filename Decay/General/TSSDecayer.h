@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  TSSDecayer() { addToSearchList(2); }
+  TSSDecayer() {}
 
 public:
 

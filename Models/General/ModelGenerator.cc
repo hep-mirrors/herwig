@@ -23,6 +23,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -225,13 +226,13 @@ void ModelGenerator::doinit() {
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
-    _theDecayConstructor->createDecayers(particles_);
+    _theDecayConstructor->createDecayers(particles_,brMin_);
   }
 
   // write out decays with spin correlations
   ostream & os = CurrentGenerator::current().misc();
   ofstream ofs;
-  if ( decayOutput_ !=0 ) {
+  if ( decayOutput_ >1 ) {
     string filename 
       = CurrentGenerator::current().filename() + "-BR.spc";
     ofs.open(filename.c_str());
@@ -293,7 +294,19 @@ void ModelGenerator::doinit() {
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
-  if( parent->stable() ) return;
+  if( parent->stable() ) {
+    if(parent->coloured())
+      cerr << "Warning: No decays for coloured particle " << parent->PDGName() << "\n\n" 
+	   << "have been calcluated in BSM model.\n"
+	   << "This may cause problems in the hadronization phase.\n"
+	   << "You may have forgotten to switch on the decay mode calculation using\n"
+	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
+	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
+	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
+	   << "or the decays of this particle are missing from your\n"
+	   << "input spectrum and decay file in the SLHA format.\n\n";
+    return;
+  }
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
   Energy oldwidth(parent->width()), newwidth(ZERO);
@@ -317,6 +330,10 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
+      DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());
+      if(decayer) {
+      	generator()->preinitInterface(decayer->fullName(), "Initialize", "set","0");
+      }
     }
     else {
       brsum += (**dit).brat();
@@ -343,7 +360,41 @@ void ModelGenerator::checkDecays(PDPtr parent) {
   
 }
 
+namespace {
+  struct DecayModeOrdering {
+    bool operator()(tcDMPtr m1, tcDMPtr m2) {
+      if(m1->brat()!=m2->brat()) {
+	return m1->brat()>m2->brat();
+      }
+      else {
+	if(m1->products().size()==m2->products().size()) {
+	  ParticleMSet::const_iterator it1=m1->products().begin();
+	  ParticleMSet::const_iterator it2=m2->products().begin();
+	  do {
+	    if((**it1).id()!=(**it2).id()) {
+	      return (**it1).id()>(**it2).id();
+	    }
+	    ++it1;
+	    ++it2;
+	  }
+	  while(it1!=m1->products().end()&&
+		it2!=m2->products().end());
+	  assert(false);
+	}
+	else
+	  return m1->products().size()<m2->products().size();
+      }
+    }
+  };
+}
+
 void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
+  if(decayOutput_==0) return;
+  set<tcDMPtr,DecayModeOrdering> modes;
+  for(Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
+      dit != parent->decaySelector().end(); ++dit) {
+    modes.insert((*dit).second);
+  }
   if(decayOutput_==1) {
     os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
        << parent->mass()/GeV << "  Total Width (GeV): " 
@@ -351,29 +402,27 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
        << "BR\n"; 
-    Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-    Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
-    for(; dit != dend; ++dit)
-      os << std::left << std::setw(40) << (*dit).second->tag() 
-	 << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
-	 << (*dit).second->brat() << '\n';
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit)
+      os << std::left << std::setw(40) << (**dit).tag() 
+	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
+	 << (**dit).brat() << '\n';
     os << "#\n#";
   }
   else if(decayOutput_==2) {
     os << "#    \t PDG \t Width\n";
     os << "DECAY\t" << parent->id() << "\t" << parent->width()/GeV << "\t # " << parent->PDGName() << "\n";
-    Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-    Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
-    for(; dit != dend; ++dit) {
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit) {
       os << "\t" << std::left << std::setw(10) 
-	 << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
+	 << (**dit).brat() << "\t" << (**dit).orderedProducts().size() 
 	 << "\t";
-      for(unsigned int ix=0;ix<(*dit).second->orderedProducts().size();++ix)
+      for(unsigned int ix=0;ix<(**dit).orderedProducts().size();++ix)
 	os << std::right << std::setw(10)
-	   << (*dit).second->orderedProducts()[ix]->id() ;
-      for(unsigned int ix=(*dit).second->orderedProducts().size();ix<4;++ix)
+	   << (**dit).orderedProducts()[ix]->id() ;
+      for(unsigned int ix=(**dit).orderedProducts().size();ix<4;++ix)
 	os << "\t";
-      os << "# " << (*dit).second->tag() << "\n";
+      os << "# " << (**dit).tag() << "\n";
     }
   }
 }

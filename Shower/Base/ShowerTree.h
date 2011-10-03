@@ -36,11 +36,6 @@ using namespace ThePEG;
  */
 class ShowerTree : public Base {
 
-  /**
-   *  ShowerHandler is a friend
-   */
-  friend class ShowerHandler;
-
 public:
 
   /**

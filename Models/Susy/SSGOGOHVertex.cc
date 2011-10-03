@@ -30,8 +30,10 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theSa(0.0), theSb(0.0),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
 				 theLLast(0.0), theRLast(0.0), theHLast(0),
-				 theID1Last(0), theID2Last(0), theq2last() 
-{}
+				 theID1Last(0), theID2Last(0), theq2last() {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSGOGOHVertex::doinit() {
   long neu[4] = {1000022, 1000023, 1000025, 1000035};
@@ -94,9 +96,6 @@ void SSGOGOHVertex::doinit() {
 			     + nmix(j,3)*( nmix(i,1) - tw*nmix(i,0) ) );
     }
   }
-  
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSGOGOHVertex::persistentOutput(PersistentOStream & os) const {

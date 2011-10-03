@@ -62,7 +62,8 @@ public:
    */
   ThreeBodyDecayConstructor() : 
     _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV) {}
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV),
+    intOpt_(1), relErr_(1e-2) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -87,7 +88,7 @@ protected:
    * @return A vector a decay modes
    */
   vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
-					unsigned int ilist);
+					    unsigned int ilist);
 
   /**
    * Expand the two body prototype to get the possible
@@ -104,7 +105,7 @@ protected:
    * @param diagrams The diagrams for the decay
    * @param inter Option for intermediates
    */
-  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
+  GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
 					   bool inter) const;
 
   /**
@@ -121,7 +122,7 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
+  void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
 
   /**
    * Get the correct colour factor matrix.
@@ -256,6 +257,16 @@ private:
    *  Cut off or decays via the weak current
    */
   Energy weakMassCut_;
+
+  /**
+   *  Option for the integration to get the partial width
+   */
+  unsigned int intOpt_;
+
+  /**
+   *  Relative error for partial width integration
+   */
+  double relErr_;
 };
 
 }

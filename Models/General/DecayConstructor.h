@@ -39,7 +39,7 @@ public:
    * The default constructor.
    */
   DecayConstructor() : NBodyDecayConstructors_(0), 
-		       _disableDMTags(0) {}
+		       _disableDMTags(0), _minBR(0.) {}
 
 public:
 
@@ -71,8 +71,9 @@ public:
    * Function to create decayers
    * @param particles vector of ParticleData pointers to particles contained
    * in model
+   * @param minBR minimum branching ratio for modes
    */
-  void createDecayers(const vector<PDPtr> & particles);
+  void createDecayers(const vector<PDPtr> & particles, double minBR);
 
   /**
    * Check whether the decay mode given is one that should not be
@@ -93,6 +94,11 @@ public:
   const vector<NBodyDecayConstructorBasePtr> & decayConstructors() {
     return NBodyDecayConstructors_;
   }
+
+  /**
+   *  Get minimum branching ratio
+   */
+  double minimumBR() const { return _minBR;}
 
 protected:
 
@@ -154,6 +160,11 @@ private:
    *  The decay radiation generator to use for QED radiation
    */
   DecayRadiationGeneratorPtr QEDGenerator_;
+
+  /**
+   *  Minimum allowed branching ratio
+   */
+  double _minBR;
 };
 
 }

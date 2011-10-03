@@ -32,12 +32,12 @@ typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incoming << _outgoing << _diagrams << _diagmap << _colour << _colourLargeNC
-     << _nflow << _widthopt << _reftag << _reftagcc;
+     << _nflow << _widthopt << _reftag << _reftagcc << _intOpt << _relerr;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _incoming >> _outgoing >> _diagrams >> _diagmap >> _colour >> _colourLargeNC
-     >> _nflow >> _widthopt >> _reftag >> _reftagcc;;
+     >> _nflow >> _widthopt >> _reftag >> _reftagcc >> _intOpt >> _relerr;
 }
 
 AbstractClassDescription<GeneralThreeBodyDecayer> 
@@ -69,6 +69,27 @@ void GeneralThreeBodyDecayer::Init() {
      "Zero",
      "Set the widths to zero",
      3);
+
+  static Switch<GeneralThreeBodyDecayer,unsigned int> interfacePartialWidthIntegration
+    ("PartialWidthIntegration",
+     "Switch to control the partial width integration",
+     &GeneralThreeBodyDecayer::_intOpt, 0, false, false);
+  static SwitchOption interfacePartialWidthIntegrationAllPoles
+    (interfacePartialWidthIntegration,
+     "AllPoles",
+     "Include all potential poles",
+     0);
+  static SwitchOption interfacePartialWidthIntegrationShallowestPole
+    (interfacePartialWidthIntegration,
+     "ShallowestPole",
+     "Only include the shallowest pole",
+     1);
+
+  static Parameter<GeneralThreeBodyDecayer,double> interfaceRelativeError
+    ("RelativeError",
+     "The relative error for the GQ integration of the partial width",
+     &GeneralThreeBodyDecayer::_relerr, 1e-2, 1e-10, 1.,
+     false, false, Interface::limited);
 
 }
 
@@ -127,18 +148,6 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   _colourLargeNC   = Ncfactors;
   _nflow           = ncf;
   assert( _outgoing.size() == 3 );
-  for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-    unsigned int iy=0;
-    for(;iy<3;++iy) 
-      if(_diagrams[ix].outgoing == _outgoing[iy]->id()) break;
-    if(_diagrams[ix].channelType == TBDiagram::UNDEFINED) {
-      _diagrams[ix].channelType = TBDiagram::Channel(iy);
-      if( ( iy == 0 && outgoing[1]->id() != _diagrams[ix].outgoingPair.first)||
-	  ( iy == 1 && outgoing[0]->id() != _diagrams[ix].outgoingPair.first)|| 
-	  ( iy == 2 && outgoing[0]->id() != _diagrams[ix].outgoingPair.first) ) 
-	swap(_diagrams[ix].outgoingPair.first, _diagrams[ix].outgoingPair.second);
-    }
-  }
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
   OrderedParticles::const_iterator dit = refmode.begin();
@@ -561,30 +570,40 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
   int nchannel(0);
   pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
 			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
+  Energy absmin = -1e20*GeV;
+  int minType   = -1;
   for(unsigned int iy=0;iy<_diagmap.size();++iy) {
     unsigned int ix=_diagmap[iy];
-    Energy deltam(min);
     if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
+    Energy dm1(min-getProcessInfo()[ix].intermediate->mass());
+    Energy dm2(getProcessInfo()[ix].intermediate->mass());
     int itype(0);
     if     (getProcessInfo()[ix].channelType==TBDiagram::channel23) {
-      deltam -= outgoing()[0]->mass();
+      dm1 -= outgoing()[0]->mass();
+      dm2 -= outgoing()[1]->mass()+outgoing()[2]->mass();
       itype = 3;
     }
     else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) {
-      deltam -= outgoing()[1]->mass();
+      dm1 -= outgoing()[1]->mass();
+      dm2 -= outgoing()[0]->mass()+outgoing()[2]->mass();
       itype = 2;
     }
     else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) {
-      deltam -= outgoing()[2]->mass();
+      dm1 -= outgoing()[2]->mass();
+      dm2 -= outgoing()[0]->mass()+outgoing()[1]->mass();
       itype = 1;
     }
-    deltam -= getProcessInfo()[ix].intermediate->mass();
-    //    if(deltam<ZERO&&getProcessInfo()[ix].intermediate->width()>ZERO) {
-    if(deltam<ZERO) {
-      if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
-      else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
+    if(dm1<ZERO||dm2<ZERO) {
+      if (imin[itype].first < 0  ||
+	  (dm1<ZERO && imin[itype].second < dm1)  ) {
+	imin[itype] = make_pair(ix,dm1);
+	if(dm1<ZERO&&absmin<dm1) {
+	  absmin = dm1;
+	  minType = itype;
+	}
+      }
+      continue;
     }
-    if(deltam<ZERO) continue;
     if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
       intype.push_back(itype);
       inpow.push_back(0.);
@@ -599,6 +618,27 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       inwidth.push_back(-1.*GeV);
       ++nchannel;
     }
+  }
+  // physical poles, use them and return
+  if(nchannel>0) {
+    inweights = vector<double>(nchannel,1./double(nchannel));
+    return;
+  }
+  // use shallowest pole
+  else if(_intOpt==1&&minType>0) {
+    intype.push_back(minType);
+    if(getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
+      inpow.push_back(0.);
+      inmass.push_back(getProcessInfo()[imin[minType].first].intermediate->mass());
+      inwidth.push_back(getProcessInfo()[imin[minType].first].intermediate->width());
+    }
+    else {
+      inpow.push_back(-2.);
+      inmass.push_back(-1.*GeV);
+      inwidth.push_back(-1.*GeV);
+    }
+    inweights = vector<double>(1,1.);
+    return;
   }
   for(unsigned int ix=1;ix<4;++ix) {
     if(imin[ix].first>=0) {

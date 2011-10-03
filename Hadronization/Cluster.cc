@@ -14,33 +14,32 @@
 #include "Cluster.h"
 #include <ThePEG/Repository/UseRandom.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
-#include <cassert>
-#include <ThePEG/EventRecord/Step.h>
-#include <ThePEG/EventRecord/Event.h>
-#include <ThePEG/EventRecord/ColourLine.h>
-#include <ThePEG/Utilities/Rebinder.h>
-#include <ThePEG/Config/algorithm.h>
-#include <ThePEG/EventRecord/ParticleTraits.h>
-#include <ThePEG/Persistency/PersistentOStream.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include "ClusterHadronizationHandler.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
-// using namespace ThePEG;
+
+DescribeNoPIOClass<Cluster,Particle>
+describeCluster("Herwig::Cluster","");
+
+PPtr Cluster::clone() const {
+  return new_ptr(*this);
+}
+  
+PPtr Cluster::fullclone() const {
+  return clone();
+}
 
 tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
 Energy2 Cluster::_mg2 = ZERO;
 
-ClassDescription<Cluster> Cluster::initCluster;
-
 Cluster::Cluster() 
   : Particle(CurrentGenerator::current().
 	     getParticleData(long(ExtraParticleID::Cluster))), 
     _isAvailable(true),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -51,7 +50,7 @@ Cluster::Cluster()
 Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   : Particle(CurrentGenerator::current().
 	     getParticleData(long(ExtraParticleID::Cluster))),
-    _isAvailable(true) 
+    _isAvailable(true), _hasReshuffled(false)
 {
   if(!dataPtr()) {
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "
@@ -90,7 +89,7 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
 Cluster::Cluster(tcEventPDPtr x) 
   : Particle(x),
     _isAvailable(false),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -101,7 +100,7 @@ Cluster::Cluster(tcEventPDPtr x)
 Cluster::Cluster(const Particle &x) 
   : Particle(x),
     _isAvailable(false),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -230,11 +229,6 @@ tPPtr Cluster::antiColParticle() const {
 
 bool Cluster::isPerturbative(int i) const { 
   return _isPerturbative[i]; 
-}
-
-void Cluster::setPerturbative(int i, bool b) { 
-  if(i < _numComp)
-    _isPerturbative[i] = b; 
 }
 
 bool Cluster::isBeamRemnant(int i) const { 

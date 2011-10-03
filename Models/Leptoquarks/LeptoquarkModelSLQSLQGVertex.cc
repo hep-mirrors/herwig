@@ -20,8 +20,10 @@ using namespace Herwig;
 using namespace ThePEG;
 
 LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() : _q2last(ZERO),
-							       _couplast(0.) 
-{}
+							       _couplast(0.) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 void LeptoquarkModelSLQSLQGVertex::doinit() {
   addToList(21,9941551,-9941551);
@@ -42,8 +44,6 @@ void LeptoquarkModelSLQSLQGVertex::doinit() {
   addToList(21,9991561,-9991561);
   addToList(21,9901561,-9901561);
   addToList(21,9901661,-9901661);
-  orderInGs(1);
-  orderInGem(0);
   VSSVertex::doinit();
 }
 

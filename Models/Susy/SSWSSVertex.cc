@@ -22,8 +22,10 @@ using namespace Herwig;
 
 SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
 				  _ulast(0), _dlast(0), _gblast(0),
-				  _factlast(0.) 
-{}
+				  _factlast(0.) {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 void SSWSSVertex::doinit() {
   //W-
@@ -126,8 +128,6 @@ void SSWSSVertex::doinit() {
 			  << "A mixing matrix pointer is null."
 			  << " stop: " << _stop << " sbottom: " << _sbottom
 			  << " stau: " << _stau << Exception::abortnow;
-  orderInGem(1);
-  orderInGs(0);
 }
 
 void SSWSSVertex::persistentOutput(PersistentOStream & os) const {

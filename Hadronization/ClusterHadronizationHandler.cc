@@ -18,7 +18,6 @@
 #include <ThePEG/Interface/Parameter.h> 
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Handlers/EventHandler.h>
-#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Handlers/Hint.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
@@ -29,10 +28,20 @@
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
 #include "Cluster.h"  
-#include <iostream>
-#include <cassert>
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
+describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
+
+IBPtr ClusterHadronizationHandler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterHadronizationHandler::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
   const {
@@ -59,9 +68,6 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(_maxDisplacement,mm)
      >> _underlyingEventHandler;
 }
-
-ClassDescription<ClusterHadronizationHandler> ClusterHadronizationHandler::initClusterHadronizationHandler;
-// Definition of the static class description member.
 
 
 void ClusterHadronizationHandler::Init() {

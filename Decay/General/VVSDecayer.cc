@@ -12,11 +12,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-VVSDecayer::VVSDecayer() {
-  addToSearchList(0);
-  addToSearchList(1);
-}
-
 IBPtr VVSDecayer::clone() const {
   return new_ptr(*this);
 }

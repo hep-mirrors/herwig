@@ -97,6 +97,9 @@ void FtoFVVDecayer::doinit() {
 double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 			   const ParticleVector & decay,
 			   MEOption meopt) const {
+  // particle or CC of particle
+  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  // special handling or first/last call
   //Set up wave-functions
   bool ferm( inpart.id() > 0 );
   if(meopt==Initialize) {
@@ -226,6 +229,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	    continue;
 	  }
 	  tcPDPtr offshell = (*dit).intermediate;
+	  if(cc&&offshell->CC()) offshell=offshell->CC();
 	  Complex diag;
 	  if( offshell->iSpin() == PDT::Spin1Half ) {
 	    // Make sure we connect the correct particles 
@@ -382,5 +386,5 @@ threeBodyMEIntegrator(const DecayMode & ) const {
   return new_ptr(ThreeBodyAllOnCalculator<FtoFVVDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
 		  outgoing()[0]->mass(),outgoing()[1]->mass(),
-		  outgoing()[2]->mass()));
+		  outgoing()[2]->mass(),relativeError()));
 }

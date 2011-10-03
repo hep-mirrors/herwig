@@ -12,7 +12,7 @@
 // This is the declaration of the SusyBase class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "MixingMatrix.h"
 #include "ThePEG/Utilities/CFileLineReader.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
@@ -43,7 +43,7 @@ using namespace ThePEG;
    * @see StandardModel
    */  
 
-class SusyBase: public StandardModel {
+class SusyBase: public BSMModel {
   
 public:
 
@@ -260,21 +260,6 @@ private:
   const MixingVector readMatrix(CFileLineReader & ifs, unsigned int & row,
 				unsigned int & col);
 
-  /**
-   * Read decaymodes from LHA file
-   * @param ifs input stream containg data
-   * @param decay string containing name of parent and value of total width
-   */
-  void readDecay(CFileLineReader & ifs, string decay) const;
-
-  /**
-   * Create a DecayMode object in the repository
-   * @param tag The tag identifying the decay mode including the prefix
-   * 'decaymode'
-   * @param brat Branching ratio of this mode 
-   */
-  void createDecayMode(string tag, double brat) const;
-
 protected:
 
   /**
@@ -393,17 +378,6 @@ private:
    *  Whether or not the SLHA fiel has been read
    */
   bool readFile_;
-
-  /**
-   * Whether or not to replace the top decay modes with those from
-   * the SLHA files
-   */
-  bool topModesFromFile_;
-
-  /**
-   *  Tolerance for branching ratios
-   */
-  double tolerance_;
 
   /**
    *  Planck mass needed in GMSB models
@@ -686,7 +660,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SusyBase,1> {
   /** Typedef of the first base class of SusyBase. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

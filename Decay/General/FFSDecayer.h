@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  FFSDecayer();
+  FFSDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

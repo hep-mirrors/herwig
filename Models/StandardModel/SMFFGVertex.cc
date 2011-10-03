@@ -50,15 +50,15 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,tcPDPtr) {
   right(1.);
 }
 
-SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) 
-{}
+SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
+  orderInGs(1);
+  orderInGem(0);
+}
   
 void SMFFGVertex::doinit() {
   // PDG codes for the particles
   for(int ix=1;ix<7;++ix) {
     addToList(-ix,ix,21);
   }
-  orderInGs(1);
-  orderInGem(0);
   FFVVertex::doinit();
 }

@@ -203,9 +203,9 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
 	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
-Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
 	rm -rf Rivet-LHC-Photon 
-	python/merge-aida LHC-7-PromptPhoton.aida -o LHC-Photon.aida
+	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
