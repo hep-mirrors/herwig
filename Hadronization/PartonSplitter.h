@@ -83,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+   virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+   virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -105,11 +105,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<PartonSplitter> initPartonSplitter;
 
   /**
    * Private and non-existent assignment operator.
@@ -135,36 +130,5 @@ private:
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of PartonSplitter.
- */
-template <>
-struct BaseClassTrait<Herwig::PartonSplitter,1> {
-  /** Typedef of the first base class of PartonSplitter. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::PartonSplitter>:
-    public ClassTraitsBase<Herwig::PartonSplitter> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::PartonSplitter"; }
-};
-
-/** @endcond */
-
-}
-
-#include "PartonSplitter.icc"
 
 #endif /* HERWIG_PartonSplitter_H */

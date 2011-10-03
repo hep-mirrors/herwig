@@ -6,12 +6,12 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
  * Here is the documentation of the NMSSMGOGOHVertex class.

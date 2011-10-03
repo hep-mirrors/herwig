@@ -386,5 +386,5 @@ threeBodyMEIntegrator(const DecayMode & ) const {
   return new_ptr(ThreeBodyAllOnCalculator<FtoFVVDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
 		  outgoing()[0]->mass(),outgoing()[1]->mass(),
-		  outgoing()[2]->mass()));
+		  outgoing()[2]->mass(),relativeError()));
 }

@@ -24,10 +24,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-FRSDecayer::FRSDecayer() {
-  addToSearchList(1);
-}
-
 IBPtr FRSDecayer::clone() const {
   return new_ptr(*this);
 }

@@ -23,11 +23,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-SSVDecayer::SSVDecayer() {
-  addToSearchList(1);
-  addToSearchList(2);
-}
-
 IBPtr SSVDecayer::clone() const {
   return new_ptr(*this);
 }

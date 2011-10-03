@@ -5,7 +5,7 @@
 // This is the declaration of the LeptoquarkModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "LeptoquarkModel.fh"
@@ -21,7 +21,7 @@ using namespace ThePEG::Helicity;
  * @see \ref LeptoquarkModelInterfaces "The interfaces"
  * defined for LeptoquarkModel.
  */
-class LeptoquarkModel: public StandardModel {
+class LeptoquarkModel: public BSMModel {
 
 public:
 
@@ -329,7 +329,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::LeptoquarkModel,1> {
   /** Typedef of the first base class of LeptoquarkModel. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

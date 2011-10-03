@@ -34,7 +34,8 @@ public:
    * The default constructor.
    */
   ThreeBodyDecayConstructor() : 
-    interOpt_(0), widthOpt_(1), weakMassCut_(-GeV) {}
+    interOpt_(0), widthOpt_(1), weakMassCut_(-GeV),
+    intOpt_(1), relErr_(1e-2) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -149,6 +150,16 @@ private:
    *  Cut off or decays via the weak current
    */
   Energy weakMassCut_;
+
+  /**
+   *  Option for the integration to get the partial width
+   */
+  unsigned int intOpt_;
+
+  /**
+   *  Relative error for partial width integration
+   */
+  double relErr_;
 };
 
 }

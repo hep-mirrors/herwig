@@ -238,9 +238,12 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     t=-1.0*GeV2;
     return false;
   }
+  Energy2 tm2 = tmax-masssquared_[0];
+  Energy tm  = sqrt(tm2); 
   pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
-				       1.-masses_[2]/sqrt(tmax-masssquared_[0])
-				       +0.5*masssquared_[2]/(tmax-masssquared_[0]));
+				       1.-sqrt(masssquared_[2]+pT2min()+
+					       0.25*sqr(masssquared_[2])/tm2)/tm
+				       +0.5*masssquared_[2]/tm2);
   zLimits(limits);
   if(zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
@@ -254,9 +257,12 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     t=-1.0*GeV2;
     return false;
   }
+  tm2 = t-masssquared_[0];
+  tm  = sqrt(tm2); 
   limits=make_pair(sqr(minmass/masses_[0]),
-		   1.-masses_[2]/sqrt(t-masssquared_[0])
-		   +0.5*masssquared_[2]/(t-masssquared_[0]));
+		   1.-sqrt(masssquared_[2]+pT2min()+
+			   0.25*sqr(masssquared_[2])/tm2)/tm
+		   +0.5*masssquared_[2]/tm2);
   zLimits(limits);
   if(t>tmax||zLimits().second<zLimits().first) {
     t=-1.0*GeV2;

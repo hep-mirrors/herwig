@@ -20,6 +20,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/General/GeneralCurrentDecayer.h"
+#include "TwoBodyDecay.h"
 
 namespace Herwig {
 
@@ -38,9 +39,7 @@ public:
   /**
    * The default constructor.
    */
-  WeakCurrentDecayConstructor() :
-    _theExistingDecayers(0),_init(true),_iteration(1),_points(10000),
-    _masscut(5.*GeV) {}
+  WeakCurrentDecayConstructor() : _masscut(5.*GeV) {}
   
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -126,10 +125,9 @@ private:
    * @param iv Row number in _theExistingDecayers member
    * @return vector of ParticleData ptrs
    */
-  vector<tPDPtr> createModes(const PDPtr inpart,
-			    const VertexBasePtr vert,
-			    unsigned int ilist,
-			    unsigned int iv);
+  vector<TwoBodyDecay>
+  createModes(const PDPtr inpart,const VertexBasePtr vert,
+	      unsigned int ilist);
 
   /**
    * Function to create decayer for specific vertex
@@ -138,8 +136,10 @@ private:
    * @param ivert Integer referring to the row in _theExistingDecayers
    * member variable
    */
-  bool createDecayer(const VertexBasePtr vert, unsigned int icol,
-		     unsigned int ivert);
+  GeneralCurrentDecayerPtr createDecayer(PDPtr in, PDPtr out1,
+					 vector<tPDPtr> outCurrent,
+					 VertexBasePtr vertex,
+					 WeakDecayCurrentPtr current);
 
   /**
    * Create decay mode(s) from given part and decay modes
@@ -147,16 +147,7 @@ private:
    * @param decays list of allowed interactions
    * @param decayer The decayer responsible for this decay
    */
-  void createDecayMode(PDPtr inpart,
-		       const tPDVector & decays,
-		       map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> decayer);
-
-  /**
-   * Set the interfaces on the decayers to initialise them
-   * @param name Fullname of the decayer in the EventGenerator
-   * including the path
-   */
-  void initializeDecayers(string name) const;
+  void createDecayMode(vector<TwoBodyDecay> & decays);
   //@}
 
 private:
@@ -176,30 +167,9 @@ private:
 private:
 
   /**
-   *  Existing decayers
-   */
-  vector<vector<map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> > >
-  _theExistingDecayers;
-
-  /**
    * Model Pointer
    */
   Ptr<Herwig::StandardModel>::pointer _theModel;
-
-  /**
-   * Whether to initialize the decayers or not
-   */
-  bool _init;
-  
-  /**
-   * Number of iterations if initializing (default 1)
-   */
-  int _iteration;
-
-  /**
-   * Number of points to do in initialization
-   */
-  int _points;
 
   /**
    *  Cut-off on the mass difference

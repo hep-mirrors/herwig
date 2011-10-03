@@ -51,7 +51,9 @@ void ShowerHandler::doinit() {
   // set used in the simulation
   particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
 				 inputparticlesDecayInShower_.end());
-  ShowerTree::_decayInShower = particlesDecayInShower_;
+
+  // \todo DG: Disabled here because of momentum-violation problems
+  //  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 
 IBPtr ShowerHandler::clone() const {
@@ -79,7 +81,8 @@ void ShowerHandler::doinitrun(){
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
-  ShowerTree::_decayInShower = particlesDecayInShower_;
+  // \todo DG: Disabled here because of momentum-violation problems
+  //  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 
 void ShowerHandler::dofinish(){

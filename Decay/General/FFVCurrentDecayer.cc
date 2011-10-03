@@ -78,8 +78,6 @@ void FFVCurrentDecayer::Init() {
 double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
 			      const ParticleVector & decay,
 			      MEOption meopt) const {
-  // map the mode to those in the current
-  int mode(modeMap()[imode()]);
   // get the particles for the hadronic curret
   Energy q;
   ParticleVector hadpart(decay.begin()+1,decay.end());
@@ -122,7 +120,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
 	constructSpinInfo(_wavebar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
       SpinorWaveFunction::constructSpinInfo(_wave,decay[0],outgoing,true);
     }
-    weakCurrent()->current(mode,ichan,q,hadpart,meopt);
+    weakCurrent()->current(mode(),ichan,q,hadpart,meopt);
     return 0.;
   }
   Energy2 scale(sqr(inpart.mass()));
@@ -134,7 +132,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
       calculateWaveFunctions(_wave   ,decay[0],outgoing);
   // calculate the hadron current
   vector<LorentzPolarizationVectorE> 
-    hadron(weakCurrent()->current(mode,ichan,q,hadpart,meopt));
+    hadron(weakCurrent()->current(mode(),ichan,q,hadpart,meopt));
   // prefactor
   double pre = sqr(pow(inpart.mass()/q,int(hadpart.size()-2)));
   // work out the mapping for the hadron vector
@@ -175,7 +173,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   ME(newME);
   // multiply by the CKM element
   int iq,ia;
-  weakCurrent()->decayModeInfo(mode,iq,ia);
+  weakCurrent()->decayModeInfo(mode(),iq,ia);
   double ckm(1.);
   if(iq<=6) {
     if(iq%2==0) ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);
