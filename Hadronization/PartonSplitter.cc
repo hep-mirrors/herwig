@@ -21,8 +21,17 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include "Herwig++/Utilities/Kinematics.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+IBPtr PartonSplitter::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr PartonSplitter::fullclone() const {
+  return new_ptr(*this);
+}
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _quarkSelector;
@@ -32,8 +41,8 @@ void PartonSplitter::persistentInput(PersistentIStream & is, int) {
   is >> _quarkSelector;
 }
 
-ClassDescription<PartonSplitter> PartonSplitter::initPartonSplitter;
-// Definition of the static class description member.
+DescribeClass<PartonSplitter,Interfaced> 
+describePartonSplitter("Herwig::PartonSplitter","");
 
 void PartonSplitter::Init() {
 

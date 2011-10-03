@@ -24,8 +24,12 @@
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/Repository/Repository.h>
 #include "CheckId.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeAbstractClass<HadronSelector,Interfaced>
+describeHadronSelector("Herwig::HadronSelector","");
 
 namespace {
   int abs(PDT::Colour c) {
@@ -124,9 +128,6 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _forbidden >> _sngWt >> _decWt >> _repwt >> _pwt
      >> _table;
 }
-
-AbstractClassDescription<HadronSelector> HadronSelector::initHadronSelector;
-// Definition of the static class description member.
 
 void HadronSelector::Init() {
 

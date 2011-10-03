@@ -95,11 +95,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<ClusterFinder> initClusterFinder;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ClusterFinder & operator=(const ClusterFinder &);
@@ -107,35 +102,5 @@ private:
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of ClusterFinder.
- */
-struct BaseClassTrait<Herwig::ClusterFinder,1> {
-  /** Typedef of the base class of ClusterFinder. */
-  typedef Interfaced NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ClusterFinder>: public ClassTraitsBase<Herwig::ClusterFinder> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::ClusterFinder"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ClusterFinder.icc"
 
 #endif /* HERWIG_ClusterFinder_H */

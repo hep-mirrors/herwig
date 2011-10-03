@@ -21,8 +21,22 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "CheckId.h"
 #include <cassert>
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<HwppSelector,HadronSelector>
+describeHwppSelector("Herwig::HwppSelector","");
+
+IBPtr HwppSelector::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr HwppSelector::fullclone() const {
+  return new_ptr(*this);
+}
+
+
 
 namespace {
   int abs(PDT::Colour c) {
@@ -41,9 +55,6 @@ void HwppSelector::persistentOutput(PersistentOStream & os) const {
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
   is >> _mode;
 }
-
-ClassDescription<HwppSelector> HwppSelector::initHwppSelector;
-// Definition of the static class description member.
 
 void HwppSelector::Init() {
 

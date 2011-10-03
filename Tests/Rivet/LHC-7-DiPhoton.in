@@ -1,4 +1,4 @@
-###################################################
+##################################################
 # Rivet analyses at the Z pole
 ##################################################
 read LHCBase.in
@@ -7,9 +7,11 @@ read LHCBase.in
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
-insert SimpleQCD:MatrixElements[0] MEQCD2to2
-set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/Cuts/JetKtCut:MinKT 40.
+# diphoton
+insert SimpleQCD:MatrixElements[0] MEGammaGamma
+
+# photon cuts
+set /Herwig/Cuts/PhotonKtCut:MinKT 5.
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -18,17 +20,11 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 # select the analyses
 ##################################################
 
-# ATLAS jet shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
-# ATLAS jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
-# CMS event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8957746
-# ATLAS dijet with veto
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9126244
+# ATLAS diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9120807
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-Jets-3 LHCGenerator
+saverun LHC-7-DiPhoton LHCGenerator

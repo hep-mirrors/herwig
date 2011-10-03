@@ -24,8 +24,33 @@
 #include "CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterDecayer,Interfaced>
+describeClusterDecayer("Herwig::ClusterDecayer","");
+
+ClusterDecayer::ClusterDecayer() :
+  _clDirLight(1),	     
+  _clDirBottom(1),
+  _clDirCharm(1),
+  _clDirExotic(1),	     
+  _clSmrLight(0.0),	     
+  _clSmrBottom(0.0),
+  _clSmrCharm(0.0),
+  _clSmrExotic(0.0),
+  _onshell(false),
+  _masstry(20)
+{}
+
+IBPtr ClusterDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterDecayer::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
@@ -39,9 +64,6 @@ void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
      >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom 
      >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
 }
-
-ClassDescription<ClusterDecayer> ClusterDecayer::initClusterDecayer;
-// Definition of the static class description member.
 
 
 void ClusterDecayer::Init() {

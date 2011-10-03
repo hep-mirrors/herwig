@@ -20,11 +20,20 @@
 #include "CheckId.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Cluster.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-NoPIOClassDescription<ClusterFinder> ClusterFinder::initClusterFinder;
-// Definition of the static class description member.
+DescribeNoPIOClass<ClusterFinder,Interfaced>
+describeClusterFinder("Herwig::ClusterFinder","");
+
+IBPtr ClusterFinder::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterFinder::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterFinder::Init() {
 

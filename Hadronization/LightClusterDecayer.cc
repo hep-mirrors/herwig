@@ -22,8 +22,21 @@
 #include "Cluster.h"
 #include "CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<LightClusterDecayer,Interfaced>
+describeLightClusterDecayer("Herwig::LightClusterDecayer","");
+
+IBPtr LightClusterDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LightClusterDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
   os << _hadronSelector << _limBottom << _limCharm << _limExotic;
@@ -32,11 +45,6 @@ void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
 void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hadronSelector >> _limBottom >> _limCharm >> _limExotic ;
 }
-
-
-ClassDescription<LightClusterDecayer> LightClusterDecayer::initLightClusterDecayer;
-// Definition of the static class description member.
-
 
 void LightClusterDecayer::Init() {
 
@@ -276,8 +284,9 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
                                                 // parent cluster position.
   cluPtr1->addChild(ptrhad1);
   finalhadrons.push_back(ptrhad1);
-  cluPtr1->reshufflingPartnerCluster( cluPtr2 );
-  cluPtr2->reshufflingPartnerCluster( cluPtr1 );
+  cluPtr1->flagAsReshuffled();
+  cluPtr2->flagAsReshuffled();
+
 
   if(singleHadron) {  
 

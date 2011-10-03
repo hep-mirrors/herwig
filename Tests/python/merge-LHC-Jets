@@ -174,7 +174,8 @@ for f in aidafiles:
            h.fullPath().find("8624100")>0 or 
            h.fullPath().find("8625980")>0 or 
            h.fullPath().find("8894728")>0 or 
-           h.fullPath().find("8957746")>0) :
+           h.fullPath().find("8957746")>0 or 
+           h.fullPath().find("9126244")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
            tmpE = inhistos_pt[h.fullPath()]
@@ -220,7 +221,8 @@ for f in aidafiles:
     ## Get histos from this AIDA file
     for dps in tree.findall("dataPointSet"):
         h = lighthisto.Histo.fromDPS(dps)
-        if(h.fullPath().find("8817804")>0 ) :
+        if(h.fullPath().find("8817804")>0 or
+           h.fullPath().find("8968497")>0) :
            if not inhistos_mass.has_key(h.fullPath()):
                inhistos_mass[h.fullPath()] = {}
            tmpE = inhistos_mass[h.fullPath()]
@@ -237,7 +239,9 @@ for f in aidafiles:
 for hpath,hsets in inhistos_pt.iteritems():
     if( hpath.find("8924791")>0  or 
         h.fullPath().find("8971293")>0 or 
-        h.fullPath().find("8817804")>0 ) :
+        h.fullPath().find("8817804")>0 or 
+        h.fullPath().find("8968497")>0 or 
+        h.fullPath().find("9126244")>0 ) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -249,11 +253,11 @@ for hpath,hsets in inhistos_pt.iteritems():
 
 logging.info("Processing CMS_2011_S8957746")
 useOnePt("/CMS_2011_S8957746/d01-x01-y01", "7000", "80" )
-useOnePt("/CMS_2011_S8957746/d01-x02-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8957746/d01-x03-y01", "7000", "210" )
 useOnePt("/CMS_2011_S8957746/d02-x01-y01", "7000", "80" )
-useOnePt("/CMS_2011_S8957746/d02-x02-y01", "7000", "110" )
-useOnePt("/CMS_2011_S8957746/d02-x03-y01", "7000", "210" )
+useOnePt("/CMS_2011_S8957746/d03-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_S8957746/d04-x01-y01", "7000", "110" )
+useOnePt("/CMS_2011_S8957746/d05-x01-y01", "7000", "210" )
+useOnePt("/CMS_2011_S8957746/d06-x01-y01", "7000", "210" )
 
 logging.info("Processing ATLAS_2010_S8894728")
 useOnePt("/ATLAS_2010_S8894728/d01-x01-y01",  "900", "0" )
@@ -315,17 +319,17 @@ useOnePt("/ATLAS_2010_S8894728/d20-x01-y03", "7000", "0" )
 useOnePt("/ATLAS_2010_S8894728/d21-x01-y01", "7000", "0" )
 useOnePt("/ATLAS_2010_S8894728/d22-x01-y01", "7000", "0" )
 
-logging.info("Processing ATLAS_2010_S8994773")
-useOnePt("/ATLAS_2010_S8994773/d01-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2010_S8994773/d02-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8994773/d03-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2010_S8994773/d04-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8994773/d13-x01-y01", "900", "0" )
-useOnePt("/ATLAS_2010_S8994773/d13-x01-y02", "900", "0" )
-useOnePt("/ATLAS_2010_S8994773/d13-x01-y03", "900", "0" )
-useOnePt("/ATLAS_2010_S8994773/d14-x01-y01", "7000", "0" )
-useOnePt("/ATLAS_2010_S8994773/d14-x01-y02", "7000", "0" )
-useOnePt("/ATLAS_2010_S8994773/d14-x01-y03", "7000", "0" )
+logging.info("Processing ATLAS_2011_S8994773")
+useOnePt("/ATLAS_2011_S8994773/d01-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_S8994773/d02-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_S8994773/d03-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_S8994773/d04-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_S8994773/d13-x01-y01", "900", "0" )
+useOnePt("/ATLAS_2011_S8994773/d13-x01-y02", "900", "0" )
+useOnePt("/ATLAS_2011_S8994773/d13-x01-y03", "900", "0" )
+useOnePt("/ATLAS_2011_S8994773/d14-x01-y01", "7000", "0" )
+useOnePt("/ATLAS_2011_S8994773/d14-x01-y02", "7000", "0" )
+useOnePt("/ATLAS_2011_S8994773/d14-x01-y03", "7000", "0" )
 
 logging.info("Processing ALICE_2010_S8624100")
 useOnePt("/ALICE_2010_S8624100/d11-x01-y01", "900", "0" )
@@ -559,7 +563,114 @@ useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "800" )
 
-# Generated at Monday, 11. April 2011 08:52PM
+logging.info("Processing CMS_2011_S8968497")
+
+useOneMass("/CMS_2011_S8968497/d01-x01-y01", "7000", "2000" )
+useOneMass("/CMS_2011_S8968497/d02-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2011_S8968497/d03-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2011_S8968497/d04-x01-y01", "7000", "800" )
+useOneMass("/CMS_2011_S8968497/d05-x01-y01", "7000", "800" )
+useOneMass("/CMS_2011_S8968497/d06-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d07-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d08-x01-y01", "7000", "300" )
+useOneMass("/CMS_2011_S8968497/d09-x01-y01", "7000", "110" )
+
+
+logging.info("Processing ATLAS_2011_S9126244")
+mergeByPt("/ATLAS_2011_S9126244/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d01-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d02-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d03-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d04-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d05-x01-y02", "7000")
+
+
+useOnePt("/ATLAS_2011_S9126244/d06-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d06-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d07-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d07-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d08-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d08-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d09-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d09-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d10-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d10-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d11-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d11-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d12-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d12-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d13-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d13-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d14-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d14-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d15-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d15-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d16-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d16-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d17-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d17-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d18-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d18-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d19-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d20-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d21-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d22-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d23-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d24-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d25-x01-y01", "7000", "210" )
+mergeByPt("/ATLAS_2011_S9126244/d26-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d26-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d27-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d27-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d28-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d28-x01-y02", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d29-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_S9126244/d29-x01-y02", "7000")
+useOnePt("/ATLAS_2011_S9126244/d30-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d31-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d32-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d33-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d34-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d35-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d36-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d37-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d37-x01-y02", "7000", "40" )
+useOnePt("/ATLAS_2011_S9126244/d38-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d38-x01-y02", "7000", "80" )
+useOnePt("/ATLAS_2011_S9126244/d39-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d39-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d40-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d40-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d41-x01-y01", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d41-x01-y02", "7000", "110" )
+useOnePt("/ATLAS_2011_S9126244/d42-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d42-x01-y02", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d43-x01-y01", "7000", "210" )
+useOnePt("/ATLAS_2011_S9126244/d43-x01-y02", "7000", "210" )
+
+#     elif(file.find("-7-Jets-3")>0) :
+#         sqrts=7000
+#         ptmin=80.
+#     elif(file.find("-7-Jets-4")>0) :
+#         sqrts=7000
+#         ptmin=110.
+#     elif(file.find("-7-Jets-5")>0) :
+#         sqrts=7000
+#         ptmin=210.
+#     elif(file.find("-7-Jets-6")>0) :
+#         sqrts=7000
+#         ptmin=260.
+#     elif(file.find("-7-Jets-7")>0) :
+#         sqrts=7000
+#         ptmin=400.
+#     elif(file.find("-7-Jets-8")>0) :
+#         sqrts=7000
+#         ptmin=600.
+
 
 # Choose output file
 name = "LHC"+"-Jets.aida"
