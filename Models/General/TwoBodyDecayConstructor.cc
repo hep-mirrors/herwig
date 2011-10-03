@@ -265,7 +265,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
     }
     else if( dm ) {
       if(dm->brat()<decayConstructor()->minimumBR()) {
-	return;
+	continue;
       }
       if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
 	inpart->stable(false);
