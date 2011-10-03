@@ -25,15 +25,13 @@ INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
              LHC-GammaGamma.in LHC-LQ.in LHC-MU900-2.in LHC-UE7-2.in \
 	     LHC-UE-EE-2.in LHC-UE-EE-3-CTEQ6L1.in LHC-UE-EE-3.in
 
-## provide -no3body for faster 'make check'
-dist_noinst_DATA = LHC-MUED-no3body.in 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
   multi.test *.output probs.test chisq.value \
-  LHC-RS-BR.spc LHC-MUED-no3body-BR.spc LHC-MSSM-BR.spc
+  LHC-RS-BR.spc LHC-MSSM-BR.spc
 
 ## checking targets ##
 
@@ -50,7 +48,7 @@ if WANT_NMSSM
 check_BSM_Full += check-LHC-NMSSM
 endif
 if WANT_UED
-check_BSM += check-LHC-MUED-no3body
+check_BSM += check-LHC-MUED
 check_BSM_Full += check-LHC-MUED
 endif
 if WANT_RS
