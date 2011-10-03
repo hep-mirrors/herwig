@@ -30,7 +30,7 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
   // now the limits of the inner integral
   Energy ea(ZERO),eb(ZERO);
   Energy rs=sqrt(_souter);
-  Energy2 eam2,ebm2;
+  Energy2 eam2(ZERO),ebm2(ZERO);
   switch(_channeltype[_thechannel]) {
   case 1:
     ea   = 0.5*(_souter-_m2[1]+_m2[2])/rs; 
@@ -50,6 +50,8 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
     eb   = 0.5*(_m2[0]-_souter-_m2[1])/rs; 
     ebm2 = sqr(eb)-_m2[1];
     break;
+  default:
+    assert(false);
   }
   Energy eam = sqrt(max(ZERO,eam2));
   Energy ebm = sqrt(max(ZERO,ebm2));

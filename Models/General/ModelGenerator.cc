@@ -384,6 +384,7 @@ namespace {
 	else
 	  return m1->products().size()<m2->products().size();
       }
+      return false;
     }
   };
 }
