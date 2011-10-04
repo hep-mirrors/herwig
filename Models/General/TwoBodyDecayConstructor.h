@@ -15,60 +15,13 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
+#include "TwoBodyDecay.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
 using Helicity::VertexBasePtr;
 using Helicity::tVertexBasePtr;
-
-//typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
-
-  /**
-   * A two body decay mode 
-   */
-  struct TwoBodyDecay {
-    
-  public:
-
-    /**
-     *  Constructor
-     * @param pa Decaying particle
-     * @param pb First  decay product
-     * @param pc Second decay product
-     */    
-    TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc,
-		 tVertexBasePtr vertex) : parent_(pa), vertex_(vertex) {
-      ParticleOrdering order;
-      if( order(pb, pc) ) {
-	children_.first = pb;
-	children_.second = pc;
-      }
-      else {
-	children_.first = pc;
-	children_.second = pb;
-      }
-    }
-
-    /**
-     *  The parent
-     */    
-    tPDPtr parent_;
-
-    /**
-     *  The children
-     */
-    tPDPair children_;
-
-    /**
-     *  Vertex
-     */
-    tVertexBasePtr vertex_;
-    
-  private:
-    
-    TwoBodyDecay();
-  };
 
 /**
  * The TwoBodyDecayConstructor class inherits from the dummy base class

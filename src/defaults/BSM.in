@@ -17,6 +17,7 @@ create Herwig::TwoBodyDecayConstructor TwoBodyDC
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 
 create Herwig::WeakCurrentDecayConstructor WeakDecayConstructor
+set  WeakDecayConstructor:InitPoints 10000
 set  WeakDecayConstructor:MassCut 2.
 # pi-
 insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent

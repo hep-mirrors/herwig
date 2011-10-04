@@ -717,7 +717,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     the other one is a (anti-) diquark the sign is negative when both
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
-    if(abs(idQ1->iColour())== 3 && abs(idQ2->iColour()) == 3 &&
+    if(abs(int(idQ1->iColour()))== 3 && abs(int(idQ2->iColour())) == 3 &&
       !DiquarkMatcher::Check(idQ1->id()) && !DiquarkMatcher::Check(idQ2->id()))
     {
       int idQa = abs(idQ1->id());

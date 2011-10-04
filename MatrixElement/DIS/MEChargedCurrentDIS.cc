@@ -30,7 +30,7 @@ MEChargedCurrentDIS::MEChargedCurrentDIS()
 }
 
 void MEChargedCurrentDIS::doinit() {
-  HwMEBase::doinit();
+  DISBase::doinit();
   _wp = getParticleData(ThePEG::ParticleID::Wplus );
   _wm = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -92,10 +92,6 @@ void MEChargedCurrentDIS::getDiagrams() const {
       }
     }
   }
-}
-
-Energy2 MEChargedCurrentDIS::scale() const {
-  return -tHat();
 }
 
 unsigned int MEChargedCurrentDIS::orderInAlphaS() const {
@@ -294,4 +290,12 @@ void MEChargedCurrentDIS::constructVertex(tSubProPtr sub) {
     }
     spin->productionVertex(hardvertex);
   }
+}
+
+double MEChargedCurrentDIS::A(tcPDPtr lin, tcPDPtr,
+			      tcPDPtr qin, tcPDPtr, Energy2) const {
+  double output = 2.;
+  if(qin->id()<0) output *= -1.;
+  if(lin->id()<0) output *= -1;
+  return output;
 }

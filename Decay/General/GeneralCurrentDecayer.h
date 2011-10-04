@@ -36,7 +36,7 @@ public:
    * The default constructor.
    */
   GeneralCurrentDecayer() : 
-    _maxmass(5.*GeV) {}
+    _maxmass(5.*GeV), _wgtmax(0.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -68,6 +68,13 @@ public:
   virtual Energy partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout) = 0;
   //@}
+
+  /**
+   *  set up the decay
+   */
+  void setDecayInfo(PDPtr in, PDPtr out, const vector<tPDPtr> & outCurrent,
+		    VertexBasePtr vertex, WeakDecayCurrentPtr current,
+		    Energy maxmass);
 
 public:
 
@@ -126,7 +133,7 @@ protected:
    *  Access to the map between the number of the mode and the modes in
    *  the current
    */
-  vector<unsigned int> modeMap() const {  return _modemap; }
+  unsigned int mode() const { return _mode; }
 
   /**
    *  Access to the weak current
@@ -161,14 +168,19 @@ private:
   VertexBasePtr _theVertex;
   
   /**
-   * PDG codes for all incoming particles
+   * Incoming particle
    **/
-  vector<int> _inpart;
+  PDPtr _inpart;
 
   /**
-   * PDG codes for the first outgoing particle
+   * First outgoing particle
    */
-  vector<int> _outpart;
+  PDPtr _outpart;
+
+  /**
+   *  Outgoing particles from the current
+   */
+  vector<tPDPtr> _currentOut; 
 
   /**
    * Pointer to the current
@@ -183,22 +195,17 @@ private:
   /**
    * mapping of the modes to the currents
    */
-  vector<unsigned int> _modemap;
+  unsigned int _mode;
 
   /**
    * location of the weights
    */
-  vector<int> _wgtloc;
-
-  /**
-   *  location in the map
-   */
-  vector<unsigned int> _modestart;
+  int _wgtloc;
 
   /**
    * the maximum weight
    */
-  vector<double> _wgtmax;
+  double _wgtmax;
 
   /**
    *  The weights for the different channels

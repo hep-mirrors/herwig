@@ -18,11 +18,11 @@ OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()  {
   idin_  = 3334;
   idout_ = 3324;
   // the couplings from the paper
-  Acomm_ = 20.91e-8;
-  AP_    =- 9.20e-8;
-  AS_    =- 6.32e-8;
-  BP_    = 230.1e-8;
-  BS_    =-100.8e-8;
+  Acomm_ =  20.91e-8;
+  AP_    =  -9.20e-8;
+  AS_    =  -6.32e-8;
+  BP_    =  230.1e-8;
+  BS_    = -100.8e-8;
   // maximum weight for the decay
   wgtmax_=0.0032;
   // intermediates
