@@ -239,6 +239,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 	GeneralCurrentDecayerPtr decayer = createDecayer(particles[0],particles[1],
 							 wprod,decays[ix].vertex_,
 							 _current[iy]);
+	if(!decayer) continue;
 	// calculate the width
 	Energy pWidth = _norm[iy]*decayer->partialWidth(particles[0],particles[1],wprod);
 	if(pWidth<=ZERO) {
@@ -267,6 +268,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 	GeneralCurrentDecayerPtr decayer = createDecayer(particles[0],particles[1],
 							 wprod,decays[ix].vertex_,
 							 _current[iy]);
+	if(!decayer) continue;
 	generator()->preinitInterface(dm, "Decayer", "set", decayer->fullName());
 	particles[0]->stable(false);
 	if(createDecayModes()) {
