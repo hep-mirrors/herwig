@@ -115,9 +115,9 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   vector<Kupco> hadrons;
   for(unsigned int ix=0;ix<partons().size();++ix) {
     tcPDPtr quarktopick  = partons()[ix];
-    if(!quark  &&  abs(quarktopick->iColour()) == 3
+    if(!quark  &&  abs(int(quarktopick->iColour())) == 3
        && !DiquarkMatcher::Check(quarktopick->id())) continue;
-    if(!diquark && abs(quarktopick->iColour()) == 3
+    if(!diquark && abs(int(quarktopick->iColour())) == 3
        && DiquarkMatcher::Check(quarktopick->id())) continue;
     HadronTable::const_iterator 
       tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));

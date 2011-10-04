@@ -24,11 +24,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-FFVDecayer::FFVDecayer() {
-  addToSearchList(0);
-  addToSearchList(1);
-}
-
 IBPtr FFVDecayer::clone() const {
   return new_ptr(*this);
 }

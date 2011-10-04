@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  SSVDecayer();
+  SSVDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

@@ -30,7 +30,7 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
   // now the limits of the inner integral
   Energy ea(ZERO),eb(ZERO);
   Energy rs=sqrt(_souter);
-  Energy2 eam2,ebm2;
+  Energy2 eam2(ZERO),ebm2(ZERO);
   switch(_channeltype[_thechannel]) {
   case 1:
     ea   = 0.5*(_souter-_m2[1]+_m2[2])/rs; 
@@ -50,6 +50,8 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
     eb   = 0.5*(_m2[0]-_souter-_m2[1])/rs; 
     ebm2 = sqr(eb)-_m2[1];
     break;
+  default:
+    assert(false);
   }
   Energy eam = sqrt(max(ZERO,eam2));
   Energy ebm = sqrt(max(ZERO,ebm2));
@@ -124,7 +126,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
 // calculate the width for a given mass
 template <class T>
 Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
-  Outer outer(this);
+  Outer outer(this,_relerr);
   _m[0] = sqrt(q2);
   _m2[0]=q2;
   // check the decay is kinematically allowed
@@ -180,7 +182,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     }
     // perform the integral using GSLIntegrator class
     _thechannel=ix;
-    GSLIntegrator intb;
+    GSLIntegrator intb(1e-35,_relerr,1000);
     sum +=  _channelweights[ix] * intb.value(outer,rlow,rupp);
   }
   // final factors

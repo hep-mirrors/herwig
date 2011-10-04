@@ -12,7 +12,7 @@
 // This is the declaration of the UEDBase class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -35,7 +35,7 @@ using namespace ThePEG;
  * @see \ref UEDBaseInterfaces "The interfaces"
  * defined for UEDBase.
  */
-class UEDBase: public StandardModel {
+class UEDBase: public BSMModel {
 
 public:
 
@@ -340,7 +340,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::UEDBase,1> {
   /** Typedef of the first base class of UEDBase. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

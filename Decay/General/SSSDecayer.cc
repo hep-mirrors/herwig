@@ -21,12 +21,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-SSSDecayer::SSSDecayer() {
-  addToSearchList(0);
-  addToSearchList(1);
-  addToSearchList(2);
-}
-
 IBPtr SSSDecayer::clone() const {
   return new_ptr(*this);
 }

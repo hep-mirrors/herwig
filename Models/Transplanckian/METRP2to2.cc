@@ -27,6 +27,13 @@
 #include "Herwig++/Utilities/Interpolator.h"
 #include <fstream>
 
+namespace Herwig {
+
+// Need to init the interpolator instance here
+HERWIG_INTERPOLATOR_CLASSDESC(double,double)
+
+}
+
 using namespace Herwig;
 
 
@@ -100,9 +107,6 @@ Energy2 METRP2to2::scale() const {
 
 // Definition of the static class description member.
 ClassDescription<METRP2to2> METRP2to2::initMETRP2to2;
-
-// Need to init the interpolator instance here
-HERWIG_INTERPOLATOR_CLASSDESC(double,double)
 
 void METRP2to2::Init() {
 

@@ -23,6 +23,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -225,7 +226,7 @@ void ModelGenerator::doinit() {
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
-    _theDecayConstructor->createDecayers(particles_);
+    _theDecayConstructor->createDecayers(particles_,brMin_);
   }
 
   // write out decays with spin correlations
@@ -293,7 +294,19 @@ void ModelGenerator::doinit() {
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
-  if( parent->stable() ) return;
+  if( parent->stable() ) {
+    if(parent->coloured())
+      cerr << "Warning: No decays for coloured particle " << parent->PDGName() << "\n\n" 
+	   << "have been calcluated in BSM model.\n"
+	   << "This may cause problems in the hadronization phase.\n"
+	   << "You may have forgotten to switch on the decay mode calculation using\n"
+	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
+	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
+	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
+	   << "or the decays of this particle are missing from your\n"
+	   << "input spectrum and decay file in the SLHA format.\n\n";
+    return;
+  }
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
   Energy oldwidth(parent->width()), newwidth(ZERO);
@@ -317,6 +330,10 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
+      DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());
+      if(decayer) {
+      	generator()->preinitInterface(decayer->fullName(), "Initialize", "set","0");
+      }
     }
     else {
       brsum += (**dit).brat();
@@ -367,6 +384,7 @@ namespace {
 	else
 	  return m1->products().size()<m2->products().size();
       }
+      return false;
     }
   };
 }
