@@ -25,6 +25,42 @@ cd /Herwig/MatrixElements/
 
 # Neutral current DIS
 insert SimpleDIS:MatrixElements[0] MEDISNC
+# Charged current matrix element
+insert SimpleDIS:MatrixElements[0] MEDISCC
+
+##################################################
+# NLO IN POWHEG SCHEME
+##################################################
+
+###################################################
+##  Need to use an NLO PDF
+###################################################
+#set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+#set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+#
+###################################################
+##  Setup the POWHEG shower
+###################################################
+#cd /Herwig/Shower
+#set Evolver:HardEmissionMode POWHEG
+#
+##################################################
+#  and strong coupling
+##################################################
+#create Herwig::O2AlphaS O2AlphaS 
+#set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
+#
+###################################################
+## NLO Matrix Elements for lepton-hadron collisions 
+## in the POWHEG approach
+###################################################
+#
+#cd /Herwig/MatrixElements/
+#
+## Neutral current DIS
+#insert SimpleDIS:MatrixElements[0] PowhegMEDISNC
+## Charged current matrix element
+#insert SimpleDIS:MatrixElements[0] PowhegMEDISCC
 
 cd /Herwig/Generators
 

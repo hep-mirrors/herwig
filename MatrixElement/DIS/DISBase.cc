@@ -820,14 +820,7 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
   return output;
 }
 
-HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
-				     vector<ShowerInteraction::Type> inter) {
-  bool found = false;
-  // check if generating QCD radiation
-  for(unsigned int ix=0;ix<inter.size();++ix) {
-    found |= inter[ix]==ShowerInteraction::QCD;
-  }
-  if(!found) return HardTreePtr();
+HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
   // incoming particles
