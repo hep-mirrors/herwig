@@ -102,7 +102,8 @@ Rivet-LEP-% : Rivet/LEP-%.in
 Rivet-TVT-% : Rivet/TVT-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
-Rivet-TVT-% : Rivet/TVT-%.in
+
+Rivet-DIS-% : Rivet/DIS-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
@@ -133,6 +134,14 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
 	rivet-mkhtml -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
+
+Rivet-DIS: Rivet-DIS-e--LowQ2 \
+	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2
+	rivet-rmgaps DIS-e+-LowQ2.aida
+	rivet-rmgaps DIS-e--LowQ2.aida
+	rivet-rmgaps DIS-e--HighQ2.aida
+	python/merge-DIS DIS
+	rivet-mkhtml -o Rivet-DIS DIS.aida
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \

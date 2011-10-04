@@ -208,12 +208,11 @@ colourConnections(const Particle & parent,
 
 bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 					  double & coupling) const {
-  long parent = dm.parent()->id();
+  assert(dm.parent()->id() == _incoming->id());
   ParticleMSet::const_iterator pit = dm.products().begin();
   long id1 = (*pit)->id();
   ++pit;
   long id2 = (*pit)->id();
-  assert(parent == _incoming->id());
   long id1t(_outgoing[0]->id()), id2t(_outgoing[1]->id());
   mecode = -1;
   coupling = 1.;

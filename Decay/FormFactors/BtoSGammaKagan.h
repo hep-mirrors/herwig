@@ -32,7 +32,7 @@ class BtoSGammaKagan: public BtoSGammaHadronicMass {
   /**
    * Class for the integration is a friend to access private members
    */
-  friend class KaganIntegrand;
+  friend struct KaganIntegrand;
 
 public:
 

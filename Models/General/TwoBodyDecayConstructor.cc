@@ -246,6 +246,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
       if(ndm) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
+	if(!decayer) continue;
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
 	eg->preinitInterface(ndm, "OnOff", "set", "On");
@@ -272,6 +273,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
       if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
+	if(!decayer) continue;
 	eg->preinitInterface(dm, "Decayer", "set", 
 			     decayer->fullName());
       }
