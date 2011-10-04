@@ -174,8 +174,21 @@ newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 
 # neutral current
 create Herwig::MENeutralCurrentDIS MEDISNC
+set MEDISNC:Coupling /Herwig/Shower/AlphaQCD
+set MEDISNC:Contribution 0
 # charged current
 create Herwig::MEChargedCurrentDIS MEDISCC
+set MEDISCC:Coupling /Herwig/Shower/AlphaQCD
+set MEDISCC:Contribution 0
+
+# neutral current (POWHEG)
+create Herwig::MENeutralCurrentDIS PowhegMEDISNC
+set PowhegMEDISNC:Coupling /Herwig/Shower/AlphaQCD
+set PowhegMEDISNC:Contribution 1
+# charged current (POWHEG)
+create Herwig::MEChargedCurrentDIS PowhegMEDISCC
+set PowhegMEDISCC:Coupling /Herwig/Shower/AlphaQCD
+set PowhegMEDISCC:Contribution 1
 
 ##########################################################
 # Gamma-Gamma matrix elements

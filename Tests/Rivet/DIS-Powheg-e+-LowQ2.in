@@ -1,0 +1,24 @@
+##################################################
+# Rivet analyses at HERA
+##################################################
+read DISBase-Powheg.in
+
+##################################################
+# DIS parameters
+##################################################
+cd /Herwig/Generators
+set /Herwig/EventHandlers/DISHandler:BeamB /Herwig/Particles/p+
+set /Herwig/EventHandlers/DISLuminosity:BeamEMaxB 820.*GeV
+set /Herwig/EventHandlers/DISHandler:BeamA /Herwig/Particles/e+
+set /Herwig/EventHandlers/DISLuminosity:BeamEMaxA 27.5*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 1000.
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1000000.
+set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 60.
+set /Herwig/Cuts/NeutralCurrentCut:MinQ2 2.5
+set /Herwig/Cuts/DISCuts:MHatMin 0.
+
+# H1 energy flow analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2000_S4129130
+
+cd /Herwig/Generators
+saverun DIS-Powheg-e+-LowQ2 DISGenerator
