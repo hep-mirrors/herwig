@@ -12,8 +12,13 @@ cd /Herwig/NewPhysics
 insert HPConstructor:Incoming 0 /Herwig/Particles/u
 insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/bla
-insert HPConstructor:Outgoing 1 /Herwig/Particles/blabar
+insert HPConstructor:Outgoing 0 /Herwig/Feynrules/Particles/trip1
+insert HPConstructor:Outgoing 1 /Herwig/Feynrules/Particles/trip1~
+
+#insert HPConstructor:Excluded 0 /Herwig/Particles/gamma
+#insert HPConstructor:Excluded 0 /Herwig/Particles/Z0
+
+set HPConstructor:Processes Exclusive
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
@@ -24,7 +29,7 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:EventHandler:StatLevel Full
-set LHCGenerator:PrintEvent 10
+set LHCGenerator:PrintEvent 100
 set LHCGenerator:MaxErrors 10000
 set /Herwig/EventHandlers/LHCHandler:CascadeHandler:MPIHandler NULL
 set /Herwig/EventHandlers/LHCHandler:HadronizationHandler NULL
@@ -32,6 +37,8 @@ set /Herwig/EventHandlers/LHCHandler:DecayHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark No
 
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
 
+#set /Herwig/Cuts/QCDCuts:MHatMin 300*GeV
 
 saverun LHC-FR LHCGenerator

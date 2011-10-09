@@ -1,25 +1,31 @@
+#! /usr/bin/env python
+from __future__ import with_statement
 import Model as FR
-import cmath
+import cmath, string
 
 def getTemplate(basename):
-    import string
-    f = open('../%s.template' % basename, 'r')
-    templateText = f.read()
-    f.close()
+    with open('../%s.template' % basename, 'r') as f:
+        templateText = f.read()
     return string.Template( templateText )
 
 def writeFile(filename, text):
-    f = open(filename,'w')
-    f.write(text)
-    f.close()
+    with open(filename,'w') as f:
+        f.write(text)
 
+class CheckUnique:
+    def __init__(self):
+        self.val = None
+
+    def __call__(self,val):
+        if self.val is None:
+            self.val = val
+        else:
+            assert( val == self.val )
 
 
 ##################################################
 ##################################################
 ##################################################
-
-
 
 MODEL_H  = getTemplate('Model.h')
 MODEL_CC = getTemplate('Model.cc')
@@ -31,14 +37,33 @@ parmconstr = []
 parmsubs = dict( [ (p.name, float(p.value)) 
                    for p in FR.all_parameters 
                    if p.nature == 'external' ] ) 
-parmsubs.update( { 'ZERO' : 0 } )
 
-internal = [ p for p in FR.all_parameters 
+
+print parmsubs
+print
+
+
+def evaluate(x):
+    return eval(x, 
+                {'cmath':cmath,
+                 'complexconjugate':FR.function_library.complexconjugate}, 
+                parmsubs)
+
+
+internal = [ p 
+             for p in FR.all_parameters 
              if p.nature == 'internal' ] 
 
+print internal
+print
+
 for p in internal:
-    newval = eval(p.value, { 'cmath' : cmath }, parmsubs)
+    print p.name,'=',p.value
+    newval = evaluate(p.value)
     parmsubs.update( { p.name : newval } )
+
+print parmsubs
+print
 
 for p in FR.all_parameters:
     value = parmsubs[p.name]
@@ -48,15 +73,20 @@ for p in FR.all_parameters:
             value = value.real
         except:
             pass
+        parmsubs[p.name] = value
         decl = '  double %s_;' % p.name
         constr = '%s_(%s)' % (p.name, value)
         getter = '  double %s() { return %s_; }' % (p.name, p.name)
     elif p.type == 'complex':
+        value = complex(value)
+        parmsubs[p.name] = value
         decl = '  Complex %s_;' % p.name
         constr = '%s_(%s,%s)' % (p.name, value.real, value.imag)
         getter = '  Complex %s() { return %s_; }' % (p.name, p.name)
     else:
         raise Exception('Unknown data type "%s".' % p.type)
+
+    # do calc in C++, add interfaces for externals
 
     parmdecls.append(decl)
     parmgetters.append(getter)
@@ -72,6 +102,10 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'istream' : '',
                  'refs' : ''
                  }
+for k,v in parmtextsubs.iteritems():
+    print k
+    print v
+    print
 
 writeFile( 'FeynRulesModel.h', MODEL_H.substitute(parmtextsubs) )
 writeFile( 'FeynRulesModel.cc', MODEL_CC.substitute(parmtextsubs) )
@@ -81,7 +115,47 @@ writeFile( 'FeynRulesModel.cc', MODEL_CC.substitute(parmtextsubs) )
 ##################################################
 ##################################################
 ##################################################
-import string
+
+# ignore these, they're in Hw++ already # TODO reset Hw++ settings instead
+SMPARTICLES = {
+
+1:'d',
+2:'u',
+3:'s',
+4:'c',
+5:'b',
+6:'t',
+
+11:'e-',
+12:'nu_e',
+13:'mu-',
+14:'nu_mu',
+15:'tau-',
+16:'nu_tau',
+
+21:'g',
+22:'gamma',
+23:'Z0',
+24:'W+',
+
+-1:'dbar',
+-2:'ubar',
+-3:'sbar',
+-4:'cbar',
+-5:'bbar',
+-6:'tbar',
+
+-11:'e+',
+-12:'nu_ebar',
+-13:'mu+',
+-14:'nu_mubar',
+-15:'tau+',
+-16:'nu_taubar',
+
+-24:'W-',
+
+}
+
 
 
 
@@ -89,16 +163,20 @@ particleT = string.Template(
 """
 create ThePEG::ParticleData $name
 setup $name $pdg_code $name $mass $width $wcut $ctau $charge $color $spin 0
+insert /Herwig/NewPhysics/NewModel:DecayParticles 0 $name
 """
 )
 class ParticleConverter:
+    'Convert a FR particle to extract the information ThePEG needs.'
     def __init__(self,p):
         self.name = p.name
         self.pdg_code = p.pdg_code
         self.spin = p.spin
         self.color = p.color
-        self.mass = parmsubs[p.mass]
-        self.width = parmsubs[p.width]
+        if self.color == 1:
+            self.color = 0
+        self.mass = parmsubs[str(p.mass)]
+        self.width = parmsubs[str(p.width)]
         try:
             self.mass = self.mass.real
         except:
@@ -112,27 +190,53 @@ class ParticleConverter:
     def subs(self):
         return self.__dict__
 
-def get_table():
+def get_all_thepeg_particles():
     plist = ''
     antis = {}
     for p in FR.all_particles:
         if p.spin == -1 or p.goldstoneboson:
             continue
 
-        subs = ParticleConverter(p).subs()
-        plist += particleT.substitute(subs)
-
-        pdg, name = subs['pdg_code'],  subs['name']
-        if -pdg in antis:
-            plist += 'makeanti %s %s\n' % (antis[-pdg], name)
+        if p.pdg_code in SMPARTICLES:
+            #add stuff to plist to set params
+            pass
         else:
-            antis[pdg] = name
+            if p.pdg_code == 25:
+                plist += """
+set /Herwig/Particles/h0:Mass_generator NULL
+set /Herwig/Particles/h0:Width_generator NULL
+rm /Herwig/Masses/HiggsMass
+rm /Herwig/Widths/HiggsWidth
+"""
+            subs = ParticleConverter(p).subs()
+            plist += particleT.substitute(subs)
+
+            pdg, name = subs['pdg_code'],  subs['name']
+            if -pdg in antis:
+                plist += 'makeanti %s %s\n' % (antis[-pdg], name)
+            else:
+                antis[pdg] = name
 
     return plist
 
-modelfilesubs = { 'plist' : get_table() }
+vertexline = string.Template("""\
+create $classname $name
+insert FRModel:ExtraVertices 0 $name
+""")
 
-print get_table()
+def get_vertices():
+    vlist = 'library FeynrulesModel.so\n'
+    for v in FR.all_vertices:
+        vlist += vertexline.substitute(
+            { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
+              'name' : '/Herwig/Feynrules/%s'%v.name } )
+    return vlist
+
+
+modelfilesubs = { 'plist' : get_all_thepeg_particles(),
+                  'vlist' : get_vertices() }
+
+print get_all_thepeg_particles()
 
 MODELINFILE = getTemplate('FR.model')
 
@@ -150,10 +254,12 @@ def produce_vertex_file(subs):
     writeFile( newname, VERTEX.substitute(subs) )
 
 def get_lorentztag(spin):
+    'Produce a ThePEG spin tag for the given numeric FR spins.'
     spins = { 1 : 'S', 2 : 'F', 3 : 'V', 5 : 'T' }
     result = [ spins[s] for s in spin ]
 
     def spinsort(a,b):
+        "Helper function for ThePEG's FVST spin tag ordering."
         if a == b: return 0
         for letter in 'FVST':
             if a == letter: return -1
@@ -169,31 +275,13 @@ for v in FR.all_vertices:
     print v.name
     print map(str,v.particles)
     print '---------------'
-    for (col,lor),C in v.couplings.iteritems():
-        L = v.lorentz[lor]
-        print 'Colour  :',v.color[col]
-        print 'Lorentz :',L.name, L.spins, L.structure
-        print 'Coupling:',C.name, C.value, C.order
-        print '---------------'
-    print '============================================================'
-
-
-
-
-
-
 
 
     ### Spin structure
-    lt = None
+    unique = CheckUnique()
     for l in v.lorentz:
-        newLt = get_lorentztag(l.spins)
-        if lt is None:
-            lt = newLt
-        else:
-            # multiple lorentz structures must still refer to the same
-            # spin content
-            assert( newLt == lt )
+        lt = get_lorentztag(l.spins)
+        unique( lt )
 
     if 'T' in lt:   spind = 'Tensor'
     elif 'S' in lt: spind = 'Scalar'
@@ -211,38 +299,98 @@ for v in FR.all_vertices:
     classname = 'V_%03d' % int(v.name[2:])
 
     ### parse couplings
+    unique_qcd = CheckUnique()
+    unique_qed = CheckUnique()
+    
+    coup_left  = []
+    coup_right = []
+
+    coup_norm = []
+ 
+    for (ci,li),C in v.couplings.iteritems():
+        qed = C.order.get('QED',0)
+        qcd = C.order.get('QCD',0)
+        unique_qcd( qed )
+        unique_qed( qcd )
+        L = v.lorentz[li]
+
+        if lt in ['FFS','FFV']:
+            print L.structure
+            for lor in map(string.strip, L.structure.split('+')):
+                breakdown = lor.split('*')
+                prefactor='1'
+                if len(breakdown) == 3:
+                    prefactor = breakdown[0]
+                    breakdown = breakdown[1:]
+
+                if len(breakdown) == 2:
+                    assert(breakdown[0][:5] == 'Gamma')
+                    if breakdown[1][:5] == 'ProjM':
+                        coup_left.append(prefactor+' * '+C.value)
+                    elif breakdown[1][:5] == 'ProjP':
+                        coup_right.append(prefactor+' * '+C.value)
+                else:
+                    coup_left.append(C.value)
+                    coup_right.append(C.value)
+        else:
+            coup_norm.append(C.value)
+                
+
+        print 'Colour  :',v.color[ci]
+        print 'Lorentz %s:'%L.name, L.spins, L.structure
+        print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
+        print '---------------'
 
 
-    leftcontent = 1.
-    rightcontent = 1.
+    leftcontent = ' + '.join(coup_left) if len(coup_left)!=0 else '0j'
+    rightcontent = ' + '.join(coup_right) if len(coup_right)!=0 else '0j'
+    normcontent = ' + '.join(coup_norm) if len(coup_norm)!=0 else '1.'
+
+    print 'Left:',leftcontent
+    print 'Right:',rightcontent
+    print 'Norm:',normcontent
+    print '---------------'
+  
+    leftcontent = complex(evaluate(leftcontent))
+    rightcontent = complex(evaluate(rightcontent))
+    normcontent = complex(evaluate(normcontent))
+
+    print 'Left:',leftcontent
+    print 'Right:',rightcontent
+    print 'Norm:',normcontent
 
     ### do we need left/right?
     if 'FF' in lt:
-        left  = 'left(%s);'  % leftcontent
-        right = 'right(%s);' % rightcontent
+        left  = 'left(Complex(%s,%s));'  % (leftcontent.real,leftcontent.imag)
+        right = 'right(Complex(%s,%s));' % (rightcontent.real,rightcontent.imag)
     else:
         left = ''
         right = ''
+
+    norm = 'norm(Complex(%s,%s));' % (normcontent.real,normcontent.imag)
+
 
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lt,                   # ok
              'classname'  : classname,            # ok
              'left'       : left,                 # doesn't always exist in base
              'right'      : right,                 # doesn't always exist in base 
-              'norm'      : '1.',                 # needs norm, too
+              'norm'      : norm,                 # needs norm, too
 
              #################### need survey which different setter methods exist in base classes
 
              'addToPlist' : 'addToList(%s);' % plist, # ok
-             'parameters' : '{}',
-             'setCouplings' : '{}',
-             'qedorder'   : '',
-             'qcdorder' : qcdord,
+             'parameters' : '',
+             'setCouplings' : '',
+             'qedorder'   : qed,
+             'qcdorder' : qcd,
              'q2'        :  '',
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
              'spindirectory' : spind}             # ok
     
     produce_vertex_file(subs)
+
+    print '============================================================'
 
 print len(FR.all_vertices)
 

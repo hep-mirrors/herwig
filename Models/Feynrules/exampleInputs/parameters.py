@@ -1,13 +1,13 @@
-# This file was automatically created by FeynRules $Revision: 189 $
-# Mathematica version: 7.0 for Linux x86 (32-bit) (November 11, 2008)
-# Date: Thu 10 Jun 2010 10:33:50
+# This file was automatically created by FeynRules $Revision: 364 $
+# Mathematica version: 7.0 for Mac OS X x86 (64-bit) (November 11, 2008)
+# Date: Wed 10 Nov 2010 10:19:46
 
 
 
 from object_library import all_parameters, Parameter
 
 
-from function_library import complexconjugate
+from function_library import complexconjugate, re, im, csc, sec, acsc, asec
 
 cabi = Parameter(name = 'cabi',
                  nature = 'external',
@@ -68,7 +68,7 @@ aEWM1 = Parameter(name = 'aEWM1',
 Gf = Parameter(name = 'Gf',
                nature = 'external',
                type = 'real',
-               value = 0.0000116639,
+               value = 0.000011663900000000002,
                texname = '\\text{Gf}',
                lhablock = 'SMINPUTS',
                lhacode = [ 2 ])
@@ -172,7 +172,7 @@ MW = Parameter(name = 'MW',
 WT = Parameter(name = 'WT',
                nature = 'external',
                type = 'real',
-               value = 1.50834,
+               value = 1.50833649,
                texname = '\\text{WT}',
                lhablock = 'DECAY',
                lhacode = [ 6 ])
@@ -180,7 +180,7 @@ WT = Parameter(name = 'WT',
 WZ = Parameter(name = 'WZ',
                nature = 'external',
                type = 'real',
-               value = 2.4414,
+               value = 2.44140351,
                texname = '\\text{WZ}',
                lhablock = 'DECAY',
                lhacode = [ 23 ])
@@ -196,7 +196,7 @@ WZp = Parameter(name = 'WZp',
 WW = Parameter(name = 'WW',
                nature = 'external',
                type = 'real',
-               value = 2.0476,
+               value = 2.04759951,
                texname = '\\text{WW}',
                lhablock = 'DECAY',
                lhacode = [ 24 ])

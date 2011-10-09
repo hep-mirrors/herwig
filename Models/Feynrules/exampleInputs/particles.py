@@ -1,6 +1,6 @@
-# This file was automatically created by FeynRules $Revision: 189 $
-# Mathematica version: 7.0 for Linux x86 (32-bit) (November 11, 2008)
-# Date: Thu 10 Jun 2010 10:33:50
+# This file was automatically created by FeynRules $Revision: 364 $
+# Mathematica version: 7.0 for Mac OS X x86 (64-bit) (November 11, 2008)
+# Date: Wed 10 Nov 2010 10:19:46
 
 
 from __future__ import division
@@ -281,7 +281,7 @@ G = Particle(pdg_code = 21,
              width = 'ZERO',
              texname = 'G',
              antitexname = 'G',
-             line = 'Curly',
+             line = 'curly',
              charge = 0,
              LeptonNumber = 0,
              GhostNumber = 0)

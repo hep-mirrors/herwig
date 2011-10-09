@@ -65,7 +65,7 @@ void FR${classname}::Init() {
 
   void FR${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
   // first the overall normalisation
-  norm(${norm});
+  ${norm}
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ${left}
   ${right}
@@ -81,7 +81,6 @@ void FR${classname}::doinit() {
   ${setCouplings}
   orderInGem(${qedorder});
   orderInGs(${qcdorder});
-  cerr << "HERE IS ${classname}\n";
   ${lorentztag}Vertex::doinit();
 }
 

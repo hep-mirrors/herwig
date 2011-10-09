@@ -1,11 +1,11 @@
-# This file was automatically created by FeynRules $Revision: 189 $
-# Mathematica version: 7.0 for Linux x86 (32-bit) (November 11, 2008)
-# Date: Thu 10 Jun 2010 10:33:50
+# This file was automatically created by FeynRules $Revision: 364 $
+# Mathematica version: 7.0 for Mac OS X x86 (64-bit) (November 11, 2008)
+# Date: Wed 10 Nov 2010 10:19:46
 
 
 from object_library import all_couplings, Coupling
 
-from function_library import complexconjugate
+from function_library import complexconjugate, re, im, csc, sec, acsc, asec
 
 
 
@@ -22,11 +22,11 @@ GC_3 = Coupling(name = 'GC_3',
                 order = {'QED':1})
 
 GC_4 = Coupling(name = 'GC_4',
-                value = 'complex(0,1)*G',
+                value = '-G',
                 order = {'QCD':1})
 
 GC_5 = Coupling(name = 'GC_5',
-                value = 'G',
+                value = 'complex(0,1)*G',
                 order = {'QCD':1})
 
 GC_6 = Coupling(name = 'GC_6',
@@ -34,7 +34,7 @@ GC_6 = Coupling(name = 'GC_6',
                 order = {'QCD':2})
 
 GC_7 = Coupling(name = 'GC_7',
-                value = '-(ca*cw*complex(0,1)*gw)',
+                value = 'ca*cw*complex(0,1)*gw',
                 order = {'QED':1})
 
 GC_8 = Coupling(name = 'GC_8',
@@ -46,7 +46,7 @@ GC_9 = Coupling(name = 'GC_9',
                 order = {'QED':2})
 
 GC_10 = Coupling(name = 'GC_10',
-                 value = 'cw*complex(0,1)*gw*sa',
+                 value = '-(cw*complex(0,1)*gw*sa)',
                  order = {'QED':1})
 
 GC_11 = Coupling(name = 'GC_11',
@@ -126,7 +126,7 @@ GC_29 = Coupling(name = 'GC_29',
                  order = {'QED':1})
 
 GC_30 = Coupling(name = 'GC_30',
-                 value = '-(complex(0,1)*gw*sw)',
+                 value = 'complex(0,1)*gw*sw',
                  order = {'QED':1})
 
 GC_31 = Coupling(name = 'GC_31',

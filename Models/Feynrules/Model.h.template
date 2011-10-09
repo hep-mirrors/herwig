@@ -53,6 +53,9 @@ public:
    */
   static void Init();
 
+protected:
+  virtual bool registerDefaultVertices() const { return false; }
+
 public:
 
   /**
