@@ -116,75 +116,6 @@ fi
 AC_SUBST([CREATE_HEPMC])
 ])
 
-dnl ##### FastJet #####
-AC_DEFUN([HERWIG_CHECK_FASTJET],[
-
-FASTJETPATH=""
-FASTJETLIBS=""
-FASTJETINCLUDE=""
-LOAD_FASTJET=""
-CREATE_FASTJET="#create"
-
-AC_MSG_CHECKING([for FastJet location])
-
-AC_ARG_WITH(fastjet,
-        AC_HELP_STRING([--with-fastjet=DIR],[Location of FastJet installation @<:@default=system libs@:>@]),
-        [],
-	[with_fastjet=system])
-
-if test "x$with_fastjet" = "xno"; then
-   	AC_MSG_RESULT([FastJet support disabled.])
-elif test "x$with_fastjet" = "xsystem"; then
-     	AC_MSG_RESULT([in system libraries])
-	oldlibs="$LIBS"
-	AC_CHECK_LIB(fastjet,main,
-		[],
-		[with_fastjet=no
-		 AC_MSG_WARN([
-FastJet not found in system libraries])
-		])
-	FASTJETLIBS="$LIBS"
-	LIBS=$oldlibs
-else
-	AC_MSG_RESULT([$with_fastjet])
-	FASTJETPATH="$with_fastjet"
-	FASTJETINCLUDE="-I$with_fastjet/include"
-	FASTJETLIBS="-L$with_fastjet/lib -R$with_fastjet/lib -lfastjet"
-fi
-
-if test "x$with_fastjet" != "xno"; then
-   	# Now lets see if the libraries work properly
-	oldLIBS="$LIBS"
-	oldLDFLAGS="$LDFLAGS"
-	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS `echo $FASTJETLIBS | sed -e 's!-R.* ! !'`"
-	LDFLAGS="$LDFLAGS"
-	CPPFLAGS="$CPPFLAGS $FASTJETINCLUDE"
-
-	AC_MSG_CHECKING([that FastJet works])
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fastjet/ClusterSequence.hh>
-]],[[fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, fastjet::E_scheme, fastjet::Best); ]])],
-			    [AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-	AC_MSG_ERROR([Use '--with-fastjet=' to set a path or use '--without-fastjet'.])
-	])
-
-	AC_CHECK_HEADERS([fastjet/ClusterSequence.hh])
-
-	LIBS="$oldLIBS"
-	LDFLAGS="$oldLDFLAGS"
-	CPPFLAGS="$oldCPPFLAGS"
-
-	CREATE_FASTJET="create"
-	LOAD_FASTJET="library HwLEPJetAnalysis.so"		
-fi
-AC_SUBST(FASTJETINCLUDE)
-AC_SUBST(CREATE_FASTJET)
-AC_SUBST(LOAD_FASTJET)
-AC_SUBST(FASTJETLIBS)
-
-AM_CONDITIONAL(WANT_LIBFASTJET,[test "x$CREATE_FASTJET" = "xcreate"])
-])
-
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [
@@ -457,7 +388,7 @@ cat << _HW_EOF_ > config.herwig
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
-*** Fastjet:		$with_fastjet
+*** Fastjet:		${fjconfig}
 ***
 *** Host:		$host
 *** CXX:		$CXXSTRING

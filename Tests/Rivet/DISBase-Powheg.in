@@ -1,0 +1,43 @@
+##################################################
+# Example generator based on DIS parameters
+# usage: Herwig++ read DIS.in
+##################################################
+
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+##################################################
+#  Need to use an NLO PDF
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+
+##################################################
+#  Setup the POWHEG shower
+##################################################
+cd /Herwig/Shower
+set Evolver:IntrinsicPtGaussian 1.9*GeV
+set Evolver:HardEmissionMode POWHEG
+
+##################################################
+#  and strong coupling
+##################################################
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
+
+cd /Herwig/MatrixElements/
+# Neutral current DIS
+
+insert SimpleDIS:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNC
+
+cd /Herwig/Generators
+set DISGenerator:NumberOfEvents 10000000
+set DISGenerator:RandomNumberGenerator:Seed 31122001
+set DISGenerator:DebugLevel 0
+set DISGenerator:PrintEvent 10
+set DISGenerator:MaxErrors 1000000
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+cd /Herwig/Generators
+
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis

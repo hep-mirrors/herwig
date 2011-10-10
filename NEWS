@@ -1,5 +1,16 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.5.2 release: 2011-mm-dd (tagged at SVN r....)
+
+** Optional new jet vetoing model
+   The jet vetoing model by Schofield and Seymour (arXiv:1103.4811) is
+   available via Evolver:ColourEvolutionMethod,
+   PartnerFinder:PartnerMethod and SplittingFunction:SplittingColourMethod.
+   The default behaviour is unchanged.
+
+** Ticket #353: Improved numerical stability in chargino decays
+
+
 * Herwig++-2.5.1 release: 2011-06-24 (tagged at SVN r6609)
 
 ** Example input files at 7 TeV

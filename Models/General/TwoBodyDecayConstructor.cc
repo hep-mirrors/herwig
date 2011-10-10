@@ -68,7 +68,7 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       if(excluded(model->vertex(iv)) || 
 	 model->vertex(iv)->getNpoint()>3) continue;
       for(unsigned int il = 0; il < 3; ++il) { 
-	vector<TwoBodyDecay> decays = 
+	set<TwoBodyDecay> decays = 
 	  createModes(parent, model->vertex(iv), il);
 	if( !decays.empty() ) createDecayMode(decays);
       }
@@ -76,15 +76,15 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   }
 }
   
-vector<TwoBodyDecay> TwoBodyDecayConstructor::
+set<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list) {
   int id = inpart->id();
   if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
-    return vector<TwoBodyDecay>();
+    return set<TwoBodyDecay>();
   Energy m1(inpart->mass());
   tPDVector decaylist = vertex->search(list, inpart);
-  vector<TwoBodyDecay> decays;
+  set<TwoBodyDecay> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
@@ -95,12 +95,12 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
     //vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
-    decays.push_back( TwoBodyDecay(inpart,pb, pc, vertex) );
+    decays.insert( TwoBodyDecay(inpart,pb, pc, vertex) );
   }
   return decays;
 } 
 
-GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay & decay) {
+GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay) {
   string name;
   using namespace Helicity::VertexType;
   PDT::Spin in   = decay.parent_->iSpin();
@@ -219,11 +219,11 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay & d
 }
 
 void TwoBodyDecayConstructor::
-createDecayMode(vector<TwoBodyDecay> & decays) {
-  tPDPtr inpart = decays[0].parent_;
+createDecayMode(set<TwoBodyDecay> & decays) {
+  tPDPtr inpart = decays.begin()->parent_;
   tEGPtr eg = generator();
-  vector<TwoBodyDecay>::iterator dend = decays.end();
-  for( vector<TwoBodyDecay>::iterator dit = decays.begin();
+  set<TwoBodyDecay>::iterator dend = decays.end();
+  for( set<TwoBodyDecay>::iterator dit = decays.begin();
        dit != dend; ++dit ) {
     tPDPtr pb((*dit).children_.first), pc((*dit).children_.second);
     string tag = inpart->name() + "->" + pb->name() + "," + 
