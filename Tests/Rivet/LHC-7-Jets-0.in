@@ -27,4 +27,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-Jets-1 LHCGenerator
+saverun LHC-7-Jets-0 LHCGenerator
