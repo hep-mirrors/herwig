@@ -36,11 +36,31 @@ def fillAbove(desthisto, sourcehistosbyptmin):
                 b.errminus =  newb.errminus
                 b._focus= newb._focus
 
+def fillAboveTeV(desthisto, sourcehistosbyptmin):
+    for i,b in enumerate(desthisto.getBins()):
+        ## Fill bins with pT-ordered histos (so that 'highest always wins')
+        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
+            newb = h.getBin(i)
+            if newb.xlow*500. >= ptmin:
+                print 'filling',newb.xlow,ptmin
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
+                b._focus= newb._focus
+
 def mergeByPt(hpath, sqrts):
     global inhistos_pt
     global outhistos
     try:
         fillAbove(outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
+    except:
+        pass
+
+def mergeByPtTeV(hpath, sqrts):
+    global inhistos_pt
+    global outhistos
+    try:
+        fillAboveTeV(outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
     except:
         pass
 
@@ -108,7 +128,8 @@ if __name__ == "__main__":
     headerprefix = "# "
 
 aidafiles=["-900-UE.aida","-2360-UE.aida",
-           "-7-UE.aida"    ,"-7-Jets-1.aida","-7-Jets-2.aida",
+           "-7-UE.aida"    ,"-7-Jets-0.aida",
+           "-7-Jets-1.aida","-7-Jets-2.aida",
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
            "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida"]
 
@@ -128,6 +149,9 @@ for f in aidafiles:
     elif(file.find("-7-UE")>0) :
         sqrts=7000
         ptmin=0.
+    elif(file.find("-7-Jets-0")>0) :
+        sqrts=7000
+        ptmin=4.
     elif(file.find("-7-Jets-1")>0) :
         sqrts=7000
         ptmin=30.
@@ -659,18 +683,18 @@ useOnePt("/ATLAS_2011_S9126244/d43-x01-y02", "7000", "210" )
 
 # CMS_2011_S9120041 UE analysis
 logging.info("Processing CMS_2011_S9120041")
-useOnePt("/CMS_2011_S9120041/d01-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d02-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d03-x01-y01", "7000", "0" )
-useOnePt("/CMS_2011_S9120041/d04-x01-y01", "7000", "0" )
-useOnePt("/CMS_2011_S9120041/d05-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d06-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d07-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d08-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d09-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d10-x01-y01",  "900", "0" )
-useOnePt("/CMS_2011_S9120041/d11-x01-y01", "7000", "0" )
-useOnePt("/CMS_2011_S9120041/d12-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d01-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d02-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d03-x01-y01",  "900", "0" )
+useOnePt("/CMS_2011_S9120041/d04-x01-y01",  "900", "0" )
+useOnePt("/CMS_2011_S9120041/d05-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d06-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d07-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d08-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d09-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d10-x01-y01", "7000", "0" )
+useOnePt("/CMS_2011_S9120041/d11-x01-y01",  "900", "0" )
+useOnePt("/CMS_2011_S9120041/d12-x01-y01",  "900", "0" )
 
 # CMS dijet decorrelation
 logging.info("Processing CMS_2011_S8950903")
@@ -691,7 +715,7 @@ mergeByPt("/CMS_2011_S9086218/d06-x01-y01", "7000")
 
 # CMS 2/3 jet cross section ratio
 logging.info("Processing CMS_2011_S9086218")
-mergeByPt("/CMS_2011_S9088458/d01-x01-y01", "7000")
+mergeByPtTeV("/CMS_2011_S9088458/d01-x01-y01", "7000")
 
 # ATLAS track jet
 logging.info("Processing ATLAS_2011_I919017")
