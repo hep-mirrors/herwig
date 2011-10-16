@@ -73,6 +73,11 @@ if __name__ == "__main__":
                 elif((h.fullPath().find("d02")>0 or h.fullPath().find("d06")>0 or 
                       h.fullPath().find("d08")>0) and file.find("-mu")>0) : 
                     outhistos[h.fullPath()] = h
+            elif (h.fullPath().find("ATLAS_2011_S9131140")>0) :
+                if(h.fullPath().find("d01")>0 and file.find("-e")>0) : 
+                    outhistos[h.fullPath()] = h
+                elif(h.fullPath().find("d02")>0 and file.find("-mu")>0) : 
+                    outhistos[h.fullPath()] = h
             else :
                 outhistos[h.fullPath()] = h
 

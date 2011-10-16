@@ -1,22 +1,23 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LHCBase-Powheg.in
+read LHCBase.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
+
 ##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
-set PowhegMEqq2gZ2ff:Process Electron
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+set MEqq2gZ2ff:Process Electron
 
 # No QED radiation
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+#erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 ##################################################
 # select the analyses
@@ -24,9 +25,11 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # General analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
+# ATLAS pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Powheg-Z LHCGenerator
+saverun LHC-Z-e LHCGenerator

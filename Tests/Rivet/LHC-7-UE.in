@@ -43,6 +43,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
 # CMS charged particle pT and rapidity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8656010
+# CMS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
+# ATLAS track jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 
 
 ##################################################
