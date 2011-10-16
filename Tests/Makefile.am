@@ -194,7 +194,7 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
-Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
+Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
                 Rivet-LHC-7-Jets-5  Rivet-LHC-7-Jets-6 \
                 Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
