@@ -275,6 +275,15 @@ void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
   tPVector partons;
   for (ClusterVector::const_iterator cl = clusters.begin();
        cl != clusters.end(); cl++) {
+    if((**cl). numComponents()!=2) continue;
+    bool hasClusterParent = false;
+    for(unsigned int ix=0;ix<(**cl).parents().size();++ix) {
+      if((**cl).parents()[ix]->id()==ExtraParticleID::Cluster) {
+	hasClusterParent = true;
+	break;
+      }
+    }
+    if(hasClusterParent) continue;
     partons.push_back( (*cl)->colParticle() );
     partons.push_back( (*cl)->antiColParticle() );
   }
@@ -283,6 +292,15 @@ void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
   // give new parents to the clusters: their constituents
   for (ClusterVector::iterator cl = clusters.begin();
        cl != clusters.end(); cl++) {
+    if((**cl).numComponents()!=2) continue;
+    bool hasClusterParent = false;
+    for(unsigned int ix=0;ix<(**cl).parents().size();++ix) {
+      if((**cl).parents()[ix]->id()==ExtraParticleID::Cluster) {
+	hasClusterParent = true;
+	break;
+      }
+    }
+    if(hasClusterParent) continue;
     (*cl)->colParticle()->addChild(*cl);
     (*cl)->antiColParticle()->addChild(*cl);
   }

@@ -43,8 +43,8 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # If a decay table is in a separate file
 # then add another 'setup' line with that
 # file as the argument. The provided
-# spectrum file is an example using SPheno 2.2.3
-setup MSSM/Model CMSSM40.1.1.slha
+# spectrum file is an example using ISAJET
+setup MSSM/Model RPV3.1.slha
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
@@ -66,4 +66,4 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
-saverun LHC-MSSM LHCGenerator
+saverun LHC-RPV LHCGenerator

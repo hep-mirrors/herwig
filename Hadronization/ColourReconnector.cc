@@ -82,11 +82,30 @@ void ColourReconnector::rearrange(EventHandler &,
 
 ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
     ClusterVector cv) const {
-
   ClusterPtr candidate = cl;
+  // check not a BV cluster
+  if(cl->numComponents()>2) return candidate;
+  bool hasClusterParent = false;
+  for(unsigned int ix=0;ix<candidate->parents().size();++ix) {
+    if(candidate->parents()[ix]->id()==ExtraParticleID::Cluster) {
+      hasClusterParent = true;
+      break;
+    }
+  }
+  if(hasClusterParent) return candidate;
+  // loop over other clusters
   Energy minMass = 1*TeV;
   for (ClusterVector::const_iterator cit=cv.begin(); cit != cv.end(); ++cit) {
-
+    // check not a BV cluster
+    if((**cit).numComponents()>2) continue;
+    bool hasClusterParent = false;
+    for(unsigned int ix=0;ix<(**cit).parents().size();++ix) {
+      if((**cit).parents()[ix]->id()==ExtraParticleID::Cluster) {
+	hasClusterParent = true;
+	break;
+      }
+    }
+    if(hasClusterParent) continue;
     // don't allow colour octet clusters
     if ( _isColour8( cl->colParticle(),
 	             (*cit)->antiColParticle() )  ||
@@ -122,9 +141,10 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
 bool ColourReconnector::_isColour8(tPPtr p1, tPPtr p2) const {
   bool octet = false;
   // make sure we have a triplet and an anti-triplet
+
   if ( ( p1->hasColour() && p2->hasAntiColour() ) ||
        ( p1->hasAntiColour() && p2->hasColour() ) ) {
-    if ( p1->parents().size()>0 && p2->parents().size()>0 ) {
+    if ( !p1->parents().empty()>0 && !p2->parents().empty() ) {
       // true if p1 and p2 are originated from the same gluon
       octet = ( p1->parents()[0] == p2->parents()[0] ) &&
               ( p1->parents()[0]->data().iColour() == PDT::Colour8 );

@@ -196,7 +196,7 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
-Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
+Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
                 Rivet-LHC-7-Jets-5  Rivet-LHC-7-Jets-6 \
                 Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
@@ -218,12 +218,13 @@ Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
 
 Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
               Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
-              Rivet-LHC-Z    Rivet-LHC-Powheg-Z \
+              Rivet-LHC-Z-e  Rivet-LHC-Powheg-Z-e  \
+              Rivet-LHC-Z-mu Rivet-LHC-Powheg-Z-mu \
               Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
               Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-EW.aida;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-EW.aida;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
