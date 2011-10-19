@@ -14,7 +14,10 @@
 
 using namespace Herwig;
 
-LQDVertex::LQDVertex() {}
+LQDVertex::LQDVertex() {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 IBPtr LQDVertex::clone() const {
   return new_ptr(*this);

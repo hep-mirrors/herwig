@@ -14,7 +14,10 @@
 
 using namespace Herwig;
 
-LLEVertex::LLEVertex() {}
+LLEVertex::LLEVertex() {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 IBPtr LLEVertex::clone() const {
   return new_ptr(*this);

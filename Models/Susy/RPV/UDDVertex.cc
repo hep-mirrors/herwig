@@ -16,7 +16,10 @@
 
 using namespace Herwig;
 
-UDDVertex::UDDVertex() {}
+UDDVertex::UDDVertex() {
+  orderInGem(1);
+  orderInGs(0);
+}
 
 IBPtr UDDVertex::clone() const {
   return new_ptr(*this);

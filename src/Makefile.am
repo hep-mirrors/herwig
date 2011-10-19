@@ -15,7 +15,8 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
-HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc MUED.model MSSM.model NMSSM.model\
+HELPERFILES = CMSSM40.1.1.slha RPV-LLE.slha RPV-LQD.slha RPV-UDD.slha\
+              NMSSM.spc MUED.model MSSM.model NMSSM.model\
               RS.model ADD.model Leptoquark.model LH.model
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-RPV.in \
