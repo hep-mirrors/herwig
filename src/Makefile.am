@@ -59,6 +59,9 @@ endif
 if WANT_LH
 check_BSM_Full += check-LHC-LH
 endif
+if WANT_LHTP
+check_BSM_Full += check-LHC-LHTP
+endif
 if WANT_TRP
 check_BSM_Full += check-LHC-TRP
 endif
