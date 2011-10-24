@@ -702,9 +702,19 @@ private:
   Energy minpTQCD_;
 
   /**
-   *  Minimum transverse momentum of the QED radiation
+   *  Minimum transverse momentum of the QED radiation (initial-initial)
    */
-  Energy minpTQED_;
+  Energy minpTQEDII_;
+
+  /**
+   *  Minimum transverse momentum of the QED radiation (initial-final)
+   */
+  Energy minpTQEDIF_;
+
+  /**
+   *  Minimum transverse momentum of the QED radiation (final-final)
+   */
+  Energy minpTQEDFF_;
 
   /**
    *  Pointer to the object calculating the strong coupling

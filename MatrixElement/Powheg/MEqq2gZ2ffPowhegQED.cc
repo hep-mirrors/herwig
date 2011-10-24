@@ -39,7 +39,8 @@ MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED()
     preqqbarqQED_(50.), preqqbarqbarQED_(50.),
     preqgQED_(10.),pregqbarQED_(10.), preFFQED_(6.),
     preIFQED_(10.),
-    minpTQCD_(2.*GeV),minpTQED_(2.*GeV),
+    minpTQCD_(2.*GeV),
+    minpTQEDII_(1.*GeV),minpTQEDIF_(1.*GeV),minpTQEDFF_(1.*GeV),
     process_(2), maxFlavour_(5) {
   vector<unsigned int> mopt(2,1);
   massOption(mopt);
@@ -418,7 +419,9 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << preqqbarqQCD_ << preqqbarqbarQCD_ << preqgQCD_ << pregqbarQCD_
      << preqqbarqQED_ << preqqbarqbarQED_ << preqgQED_ << pregqbarQED_
      << preFFQED_ << preIFQED_ << prefactorQCD_ << prefactorQED_ 
-     << ounit(minpTQCD_,GeV) << ounit(minpTQED_,GeV) << alphaQCD_ << alphaQED_
+     << ounit(minpTQCD_,GeV) 
+     << ounit(minpTQEDII_,GeV) << ounit(minpTQEDIF_,GeV) << ounit(minpTQEDFF_,GeV) 
+     << alphaQCD_ << alphaQED_
      << FFGVertex_ << oneLoopVertex_ << QCDRadiationType_
      << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
 }
@@ -430,7 +433,9 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> preqqbarqQCD_ >> preqqbarqbarQCD_ >> preqgQCD_ >> pregqbarQCD_
      >> preqqbarqQED_ >> preqqbarqbarQED_ >> preqgQED_ >> pregqbarQED_
      >> preFFQED_ >> preIFQED_ >> prefactorQCD_ >> prefactorQED_ 
-     >> iunit(minpTQCD_,GeV) >> iunit(minpTQED_,GeV) >> alphaQCD_ >> alphaQED_
+     >> iunit(minpTQCD_,GeV)
+     >> iunit(minpTQEDII_,GeV) >> iunit(minpTQEDIF_,GeV) >> iunit(minpTQEDFF_,GeV) 
+     >> alphaQCD_ >> alphaQED_
      >> FFGVertex_ >> oneLoopVertex_ >> QCDRadiationType_
      >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
 }
@@ -676,10 +681,22 @@ void MEqq2gZ2ffPowhegQED::Init() {
      &MEqq2gZ2ffPowhegQED::minpTQCD_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<MEqq2gZ2ffPowhegQED,Energy> interfaceMinimumpTQED
-    ("MinimumpTQED",
-     "The minimum pT for the hard QED emission",
-     &MEqq2gZ2ffPowhegQED::minpTQED_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+  static Parameter<MEqq2gZ2ffPowhegQED,Energy> interfaceMinimumpTQEDII
+    ("MinimumpTQEDII",
+     "The minimum pT for the hard QED emission (initial-initial)",
+     &MEqq2gZ2ffPowhegQED::minpTQEDII_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MEqq2gZ2ffPowhegQED,Energy> interfaceMinimumpTQEDIF
+    ("MinimumpTQEDIF",
+     "The minimum pT for the hard QED emission (initial-final)",
+     &MEqq2gZ2ffPowhegQED::minpTQEDIF_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MEqq2gZ2ffPowhegQED,Energy> interfaceMinimumpTQEDFF
+    ("MinimumpTQEDFF",
+     "The minimum pT for the hard QED emission (final-final)",
+     &MEqq2gZ2ffPowhegQED::minpTQEDFF_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static Reference<MEqq2gZ2ffPowhegQED,ShowerAlpha> interfaceAlphaQCD
@@ -2502,7 +2519,7 @@ void MEqq2gZ2ffPowhegQED::hardQEDIIEmission(vector<ShowerProgenitorPtr> & partic
       prefactorQED_[ix]*(maxyj-minyj)*charge;
     do {
       pT[ix] *= pow(UseRandom::rnd(),1./a);
-      if(pT[ix]<=minpTQED_) break;
+      if(pT[ix]<=minpTQEDII_) break;
       double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
       double vt,z;
       if(ix%2==0) {
@@ -2574,8 +2591,8 @@ void MEqq2gZ2ffPowhegQED::hardQEDIIEmission(vector<ShowerProgenitorPtr> & partic
       // break if select emission
       if(UseRandom::rnd()<wgt) break;
     }
-    while(pT[ix]>minpTQED_);
-    if(pT[ix]>minpTQED_ && pT[ix]>pTmax) {
+    while(pT[ix]>minpTQEDII_);
+    if(pT[ix]>minpTQEDII_ && pT[ix]>pTmax) {
       pTmax = pT[ix];
       if(ix==0) {
 	realEmissionQEDPhoton1_ = momenta;
@@ -2664,7 +2681,7 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
     }
     // maximum value of the xT
     double xT = sqrt((1.-xB)/xB);
-    double xTMin = 2.*minpTQED_/sqrt(Q2);
+    double xTMin = 2.*minpTQEDIF_/sqrt(Q2);
     double wgt(0.);
     // prefactor
     double a = charge*alphaQED_->overestimateValue()*preIFQED_/Constants::twopi;
@@ -2778,7 +2795,7 @@ hardQEDFFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
   // max pT
   pTmax = 0.5*sqrt(M2)*(1.-sqr(mu1+mu2));
   // max y
-  double ymax = acosh(pTmax/minpTQED_);
+  double ymax = acosh(pTmax/minpTQEDFF_);
   if(!particlesToShower[2]->progenitor()->dataPtr()->charged())
     return;
   double charge = sqr(double(particlesToShower[2]->
@@ -2808,7 +2825,7 @@ hardQEDFFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
     do {
       // generate pT
       pT[ix] *= pow(UseRandom::rnd(),1./a);
-      if(pT[ix]<minpTQED_) {
+      if(pT[ix]<minpTQEDFF_) {
 	pT[ix] = -GeV;
 	break;
       }
@@ -2900,7 +2917,7 @@ hardQEDFFEmission(vector<ShowerProgenitorPtr> & particlesToShower,
       reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
     }
     while (reject);
-    if(pT[ix]<minpTQED_)
+    if(pT[ix]<minpTQEDFF_)
       pT[ix] = -GeV;
   }
   emission_type = -1;
@@ -3230,9 +3247,10 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
   // and set the maximum pt for the radiation
   Energy pt = pnew[4].perp();
   set<HardBranchingPtr> hard=hardtree->branchings();
+  Energy ptminQED= min(min(minpTQEDII_,minpTQEDIF_),minpTQEDFF_);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     particlesToShower[ix]->maximumpT(max(pt,minpTQCD_),ShowerInteraction::QCD);
-    particlesToShower[ix]->maximumpT(max(pt,minpTQED_),ShowerInteraction::QED);
+    particlesToShower[ix]->maximumpT(max(pt,ptminQED),ShowerInteraction::QED);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
