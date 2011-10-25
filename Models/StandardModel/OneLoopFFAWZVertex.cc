@@ -26,6 +26,8 @@ OneLoopFFAWZVertex::OneLoopFFAWZVertex() :
   dZ_AA_(0.),dZ_ZA_(0.),dZ_W_(0.),dZ_AZ_(0.),dZ_ZZ_(0.),
   dmuW2_(ZERO),dmuZ2_(ZERO),de_(0.),dsw_(0.) {
   kinematics(true);
+  orderInGem(1);
+  orderInGs(0);
 }
 
 IBPtr OneLoopFFAWZVertex::clone() const {
