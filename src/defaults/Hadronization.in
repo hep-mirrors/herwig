@@ -50,7 +50,7 @@ newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
 
 newdef ColourReconnector:ColourReconnection Yes
-newdef ColourReconnector:ReconnectionProbability 0.55
+newdef ColourReconnector:ReconnectionProbability 0.54
 
 # Clustering parameters for light quarks
 newdef ClusterFissioner:ClMaxLight  3.25*GeV

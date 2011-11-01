@@ -11,7 +11,7 @@ create Herwig::StandardModel Model
 ## Couplings
 
 # the strong coupling
-create ThePEG::O1AlphaS AlphaS O1AlphaS.so
+create Herwig::O2AlphaS AlphaS O2AlphaS.so
 newdef Model:QCD/RunningAlphaS AlphaS
 
 # the electromagetic coupling
