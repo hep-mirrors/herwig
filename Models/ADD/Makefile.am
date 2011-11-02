@@ -10,4 +10,4 @@ ADDModelVVGRVertex.cc  ADDModelVVGRVertex.h \
 ADDModelGGGGRVertex.cc ADDModelGGGGRVertex.h \
 ADDModelWWWGRVertex.cc ADDModelWWWGRVertex.h \
 GravitonMassGenerator.h GravitonMassGenerator.cc
-HwADDModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:1:0
+HwADDModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
