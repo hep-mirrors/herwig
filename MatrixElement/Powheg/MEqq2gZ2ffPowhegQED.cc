@@ -3004,6 +3004,11 @@ HardTreePtr MEqq2gZ2ffPowhegQED::generateHardest(ShowerTreePtr tree,
 	hardQEDEmission(particlesToShower,qed_type,qed_pT);
     }
     if(qcd_type<0&&qed_type<0) {
+      Energy ptminQED= min(min(minpTQEDII_,minpTQEDIF_),minpTQEDFF_);
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+	particlesToShower[ix]->maximumpT(minpTQCD_,ShowerInteraction::QCD);
+	particlesToShower[ix]->maximumpT(ptminQED ,ShowerInteraction::QED);
+      }
       return HardTreePtr();
     }
     else if(qcd_type>0&&qed_type>0) {
