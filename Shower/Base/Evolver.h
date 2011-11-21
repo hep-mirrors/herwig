@@ -120,7 +120,7 @@ public:
   /**
    *  Connect the Hard and Shower trees
    */
-  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
+  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
 
 public:
 

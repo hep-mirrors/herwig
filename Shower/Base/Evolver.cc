@@ -227,6 +227,11 @@ void Evolver::Init() {
      "HardOnly",
      "Only allow radiation from the hard ME correction",
      3);
+  static SwitchOption interfaceLimitEmissionsOneEmission
+    (interfaceLimitEmissions,
+     "OneEmission",
+     "Allow one emission in either the final state or initial state, but not both",
+     4);
 
   static Switch<Evolver,bool> interfaceHardOnly
     ("HardOnly",
@@ -546,7 +551,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 			     ShowerInteraction::Type type) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || _limitEmissions == 3 || 
-     ( _limitEmissions == 2 && _nfs != 0) ) return false;  
+     ( _limitEmissions == 2 && _nfs != 0) ||
+     ( _limitEmissions == 4 && _nfs + _nis != 0) ) return false;  
   // octet -> octet octet reduction factor 
   double reduction = getReductionFactor(particle);
   // generate the emission
@@ -611,7 +617,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
   // don't do anything if not needed
   if(_limitEmissions == 2  || _limitEmissions == 3  ||
-     ( _limitEmissions == 1 && _nis != 0 ) ) return false;
+     ( _limitEmissions == 1 && _nis != 0 ) ||
+     ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) return false;
   // octet -> octet octet reduction factor 
   double reduction = getReductionFactor(particle);
   Branching bb;
@@ -1820,13 +1827,14 @@ void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
 }
 
 void Evolver::connectTrees(ShowerTreePtr showerTree, 
-			   HardTreePtr hardTree, bool hard ) const {
+			   HardTreePtr hardTree, bool hard ) {
   ShowerParticleVector particles;
   // find the Sudakovs
   for(set<HardBranchingPtr>::iterator cit=hardTree->branchings().begin();
       cit!=hardTree->branchings().end();++cit) {
     // Sudakovs for ISR
     if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
+      ++_nis;
       IdList br(3);
       br[0] = (**cit).parent()->branchingParticle()->id();
       br[1] = (**cit).          branchingParticle()->id();
@@ -1859,6 +1867,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     }
     // Sudakovs for FSR
     else if(!(**cit).children().empty()) {
+      ++_nfs;
       IdList br(3);
       br[0] = (**cit)               .branchingParticle()->id();
       br[1] = (**cit).children()[0]->branchingParticle()->id();
