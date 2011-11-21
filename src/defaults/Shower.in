@@ -124,6 +124,8 @@ set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
 set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
+cp QtoQGammaSudakov LtoLGammaSudakov
+
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
 newdef GtoGGSudakov:PDFmax 2.0
@@ -196,9 +198,9 @@ do SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
 
-do SplittingGenerator:AddFinalSplitting e-->e-,gamma; QtoQGammaSudakov
-do SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; QtoQGammaSudakov
-do SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting e-->e-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; LtoLGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to
