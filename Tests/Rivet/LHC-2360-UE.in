@@ -6,6 +6,8 @@ read LHCBase.in
 # override the beam energy
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2360.0
+set /Herwig/UnderlyingEvent/KtCut:MinKT 2.62
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.24
 
 
 ##################################################

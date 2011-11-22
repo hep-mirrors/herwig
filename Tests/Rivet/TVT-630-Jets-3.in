@@ -8,6 +8,8 @@ read TVTBase.in
 ##################################################
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 630.0
+set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
 
 ##################################################
 #  Use the q qbar matrix element
