@@ -10,6 +10,7 @@
 #define HERWIG_Math_H
 
 #include <cmath>
+#include <vector>
 #include "ThePEG/Config/Complex.h"
 #include "ThePEG/Utilities/Maths.h"
 
@@ -48,6 +49,19 @@ namespace Math {
     if (ret > M_PI) ret -= 2 * M_PI;
     return ret;
   }
+
+  /**
+   * Calculates the (lower) median of a vector of T objects. T has to be
+   * comparable, i.e. T::operator< must be defined.
+   */
+  template <typename T>
+  inline T median(std::vector<T> v) {
+    if (v.empty()) return T();
+    sort ( v.begin(), v.end() );
+    const size_t N = v.size();
+    return (N % 2) ? v.at((N+1)/2 - 1) : v.at(N/2 - 1);
+  }
+
 }
 
 }

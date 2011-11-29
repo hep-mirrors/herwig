@@ -202,7 +202,7 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
 
     // colour reconnection
-    _colourReconnector->rearrange(ch,CRclusters);
+    _colourReconnector->rearrange(CRclusters);
 
     // tag new clusters as children of the partons to hadronize
     _setChildren(CRclusters);
@@ -305,7 +305,6 @@ void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
   // give new parents to the clusters: their constituents
   for (ClusterVector::iterator cl = clusters.begin();
        cl != clusters.end(); cl++) {
-    //if(hasClusterParent) continue;
     (*cl)->colParticle()->addChild(*cl);
     (*cl)->antiColParticle()->addChild(*cl);
   }
