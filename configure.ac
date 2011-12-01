@@ -113,6 +113,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Leptoquarks/Makefile
 		Models/AnomalousCouplings/Makefile
 		Models/Zprime/Makefile
+		Models/TTbAsymm/Makefile
 		Models/Feynrules/Makefile
 		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
