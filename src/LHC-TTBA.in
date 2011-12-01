@@ -34,11 +34,51 @@ set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff Off
 set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
 
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
-#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.55
-#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.1
 
-set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+##################################################
+# Energy-dependent MPI parameters
+##################################################
+
+################################################################################
+# NOTE: Set the correct parameters for the collision energy of your choice
+# here.
+################################################################################
+
+#######################
+## sqrt(s) = 900 GeV ##
+#######################
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
+
+########################
+## sqrt(s) = 2760 GeV ##
+########################
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 2760.0
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.62
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.24
+
+########################
+## sqrt(s) = 7000 GeV ##
+########################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+set /Herwig/UnderlyingEvent/KtCut:MinKT 3.06
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
+
+#########################
+## sqrt(s) = 14000 GeV ##
+#########################
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 3.53
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 7.06 
+
 
 ##################################################
 #
@@ -93,9 +133,10 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 100
 set LHCGenerator:MaxErrors 10000
 
+#HepMC analysis
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 #set /Herwig/Analysis/HepMCFile:PrintEvent 10000
 #set /Herwig/Analysis/HepMCFile:Format GenEvent
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
-saverun TVT-TTBA LHCGenerator
+saverun LHC-TTBA LHCGenerator

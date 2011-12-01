@@ -1,7 +1,7 @@
 ##################################################
 # Common setup for Leptoquark models
 #
-# See LHC-LQ.in or ILC-TTBA.in for example usage
+# See LHC-TTBA.in or ILC-TTBA.in for example usage
 #
 # This file does not contain anything that 
 # users need to touch. User settings are in 
@@ -61,7 +61,7 @@ set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 
 # Select the active model (0: W', 1: Z', 2: Axigluon, 3: non-Abelian SU(2)_X)
-set Model:modelselect 3
+set Model:modelselect 0
 
 # W prime couplings 
 set Model:WPTDLCoupling 0.0
@@ -81,7 +81,7 @@ set Model:AGQQRCoupling 3.0
 set Model:AGTTLCoupling 3.0
 set Model:AGTTRCoupling -3.0
 
-# SU(2)_X parameters
+# SU(2)_X parameters (see: arXiv:1103.4835)
 set Model:SU2Xcostheta 0.95
 set Model:SU2Xalpha 0.060
 
