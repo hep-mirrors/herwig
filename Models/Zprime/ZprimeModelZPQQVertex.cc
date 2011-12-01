@@ -71,7 +71,7 @@ void ZprimeModelZPQQVertex::doinit() {
 
     _cZPee_R =hwZprime->_cZPee_right();
     _cZPee_L =hwZprime->_cZPee_left();
-    _cZPee_R =hwZprime->_cZPmm_right();
+    _cZPmm_R =hwZprime->_cZPmm_right();
     _cZPmm_L =hwZprime->_cZPmm_left();  
     _cZPtt_R =hwZprime->_cZPtt_right();
     _cZPtt_L =hwZprime->_cZPtt_left();

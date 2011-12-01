@@ -22,7 +22,7 @@ void ZprimeModel::doinit()  {
   StandardModel::doinit();
 }
 
-ZprimeModel::ZprimeModel():_gZPTU_L(1.0), _gZPTU_R(1.0), _gZPUU_L(1.0), _gZPUU_R(1.0), _gZPDD_L(1.0), _gZPDD_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0), _gZPSS_L(1.0),  _gZPSS_R(1.0) ,_gZPBB_L(1.0), _gZPBB_R(1.0),_gZPTT_L(1.0), _gZPTT_R(1.0),  _gZPee_L(1.0),  _gZPee_R(1.0), _gZPmm_L(1.0), _gZPmm_R(1.0),_gZPtt_L(1.0), _gZPtt_R(1.0), _gZPnuenue_L(1.0),  _gZPnuenue_R(1.0) ,_gZPnumnum_L(1.0), _gZPnumnum_R(1.0),_gZPnutnut_L(1.0), _gZPnutnut_R(1.0), _ZPoverall(1.0) {}
+ZprimeModel::ZprimeModel():_gZPUU_L(1.0),_gZPUU_R(1.0), _gZPDD_L(1.0),   _gZPDD_R(1.0), _gZPCC_L(1.0), _gZPCC_R(1.0), _gZPSS_L(1.0),  _gZPSS_R(1.0) ,_gZPBB_L(1.0), _gZPBB_R(1.0),  _gZPTU_L(1.0), _gZPTU_R(1.0),_gZPTT_L(1.0), _gZPTT_R(1.0),  _gZPee_L(1.0),  _gZPee_R(1.0), _gZPmm_L(1.0), _gZPmm_R(1.0),_gZPtt_L(1.0), _gZPtt_R(1.0), _gZPnuenue_L(1.0),  _gZPnuenue_R(1.0) ,_gZPnumnum_L(1.0), _gZPnumnum_R(1.0),_gZPnutnut_L(1.0), _gZPnutnut_R(1.0), _ZPoverall(1.0) {}
 
 IBPtr ZprimeModel::clone() const {
   return new_ptr(*this);
@@ -118,7 +118,7 @@ void ZprimeModel::Init() {
   static Parameter<ZprimeModel, double> interfaceZPTURCoupling
     ("ZPTURCoupling",
      "The right-handed Z prime coupling to top-up",
-     &ZprimeModel::_gZPTU_R, 1.0, 0., 10.0,
+     &ZprimeModel::_gZPTU_R, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<ZprimeModel, double> interfaceZPTTLCoupling
@@ -130,7 +130,7 @@ void ZprimeModel::Init() {
   static Parameter<ZprimeModel, double> interfaceZPTTRCoupling
     ("ZPTTRCoupling",
      "The right-handed Z prime coupling to top anti-top",
-     &ZprimeModel::_gZPTT_R, 1.0, 0., 10.0,
+     &ZprimeModel::_gZPTT_R, 1.0, -10., 10.0,
      false, false, Interface::limited);
 
   static Parameter<ZprimeModel, double> interfaceZPUULCoupling
