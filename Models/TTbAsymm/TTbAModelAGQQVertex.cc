@@ -28,8 +28,8 @@ IBPtr TTbAModelAGQQVertex::fullclone() const {
 }
 
 TTbAModelAGQQVertex::TTbAModelAGQQVertex()  {
-  orderInGem(0);
-  orderInGs(0);
+  orderInGem(1);
+  orderInGs(1);
   addToList(-1,1,63);
   addToList(-2,2,63);
   addToList(-3,3,63);

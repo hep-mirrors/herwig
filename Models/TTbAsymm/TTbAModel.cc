@@ -153,7 +153,7 @@ static Parameter<TTbAModel, double> interfaceAGTTRCoupling
   static Parameter<TTbAModel, double> interfaceZPTURCoupling
     ("ZPTURCoupling",
      "The right-handed Z prime coupling to top up",
-     &TTbAModel::_gZPTU_R, 1.0, 0., 10.0,
+     &TTbAModel::_gZPTU_R, 1.0, -10.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<TTbAModel, double> interfaceZPUULCoupling

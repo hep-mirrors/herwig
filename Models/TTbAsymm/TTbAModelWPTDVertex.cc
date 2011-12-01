@@ -28,10 +28,10 @@ IBPtr TTbAModelWPTDVertex::fullclone() const {
 }
 
 TTbAModelWPTDVertex::TTbAModelWPTDVertex()  {
-  addToList(-1,6,34);
-  addToList(-6,1,-34);
-  orderInGem(0);
-  orderInGs(0);
+  addToList(-1,6,-34);
+  addToList(-6,1,34);
+  orderInGem(1);
+  orderInGs(1);
 }
 
 void TTbAModelWPTDVertex::doinit() {

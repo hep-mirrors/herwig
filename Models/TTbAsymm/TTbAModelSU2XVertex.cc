@@ -30,8 +30,8 @@ IBPtr TTbAModelSU2XVertex::fullclone() const {
 }
 
 TTbAModelSU2XVertex::TTbAModelSU2XVertex()  {
-  orderInGem(0);
-  orderInGs(0);
+  orderInGem(1);
+  orderInGs(1);
   
   addToList(-6,6,70);
   addToList(-2,2,70);

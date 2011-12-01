@@ -34,8 +34,8 @@ TTbAModelZPQQVertex::TTbAModelZPQQVertex()  {
   addToList(-6,2,32);
   addToList(-2,2,32);
   addToList(-4,4,32);
-  orderInGem(0);
-  orderInGs(0);
+  orderInGem(1);
+  orderInGs(1);
 }
 
 void TTbAModelZPQQVertex::doinit() {
