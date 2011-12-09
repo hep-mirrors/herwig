@@ -193,7 +193,7 @@ public:
    */
   bool isRedefined() const { 
     return ( children().size() == 1 
-	     && children()[0]->id() == ExtraParticleID::Cluster );
+	     && children()[0]->id() == ParticleID::Cluster );
   }
   
   /**

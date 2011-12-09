@@ -13,6 +13,7 @@
 
 #include "SSNNPVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
@@ -71,8 +72,13 @@ void SSNNPVertex::persistentInput(PersistentIStream & is, int) {
      >> _stop >> _sbot >> _stau >> _theU >> _theV;
 }
 
-ClassDescription<SSNNPVertex> SSNNPVertex::initSSNNPVertex;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<SSNNPVertex,Helicity::GeneralFFVVertex>
+describeSSNNPVertex("Herwig::SSNNPVertex", "HwSusy.so");
 
 void SSNNPVertex::Init() {
 

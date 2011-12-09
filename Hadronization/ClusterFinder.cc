@@ -52,7 +52,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
   ParticleSet inputParticles(partons.begin(),partons.end());
 
   ClusterVector clusters;
-
+  
   // Loop over all current particles.
   for(PVector::const_iterator pit=partons.begin();pit!=partons.end();++pit){
     // Skip to the next particle if it is not coloured or already examined.
@@ -192,7 +192,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
       // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
 	if(!connected[i]->parents().empty()&&
-	   connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
+	   connected[i]->parents()[0]->id()==ParticleID::Remnant&&
 	   DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }
@@ -277,6 +277,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
       swap(vec[0],vec[2]);
       break;
     }
+
     tcPDPtr temp1  = vec[1]->dataPtr();
     tcPDPtr temp2  = vec[2]->dataPtr();
 

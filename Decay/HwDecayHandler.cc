@@ -41,7 +41,7 @@ handle(EventHandler &, const tPVector & tagged,
     if(tagged[i]) {
       // add to parents if not stable
       if(!tagged[i]->data().stable() &&
-	 tagged[i]->data().id() != ExtraParticleID::Remnant &&
+	 tagged[i]->data().id() != ParticleID::Remnant &&
 	 _excluded.find( tagged[i]->dataPtr() ) == _excluded.end() ) {
 	parents.push_back(tagged[i]);
       }

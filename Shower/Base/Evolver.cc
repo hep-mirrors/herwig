@@ -1416,7 +1416,8 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   return true;
 }
 
-void Evolver::connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const {
+void Evolver::connectTrees(ShowerTreePtr showerTree,
+			   HardTreePtr hardTree, bool hard ) const {
   ShowerParticleVector particles;
   // find the Sudakovs
   for(set<HardBranchingPtr>::iterator cit=hardTree->branchings().begin();

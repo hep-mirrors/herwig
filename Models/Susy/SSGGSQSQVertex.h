@@ -34,16 +34,6 @@ public:
    */
   SSGGSQSQVertex();
 
-public:
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
   /**
    * Calculate the couplings.
    * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
@@ -54,6 +44,16 @@ public:
   */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,
  			   tcPDPtr part2,tcPDPtr part3,tcPDPtr part4);
+
+public:
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
 
 protected:
 
@@ -87,12 +87,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<SSGGSQSQVertex> initSSGGSQSQVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -101,55 +95,16 @@ private:
 private:
 
   /**
-   * A pointer to the SusyBase object
-   */
-  tSusyBasePtr _theSS;  
-
-  /**
    * The energy at which the coupling was last evaluated
    */
-  Energy2 _q2last;
+  Energy2 q2last_;
 
   /**
    * The coupling when it was last evaluated
    */
-  Complex _couplast;
+  Complex couplast_;
+
 };
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSGGSQSQVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSGGSQSQVertex,1> {
-  /** Typedef of the first base class of SSGGSQSQVertex. */
-  typedef ThePEG::Helicity::VVSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSGGSQSQVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSGGSQSQVertex>
-  : public ClassTraitsBase<Herwig::SSGGSQSQVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSGGSQSQVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSGGSQSQVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSGGSQSQVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSGGSQSQVertex_H */

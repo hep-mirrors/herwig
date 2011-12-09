@@ -295,9 +295,10 @@ LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
+LOAD_SEXTET=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -351,6 +352,11 @@ if test "$leptoquarks" -o "$all"; then
 fi
 AC_SUBST(LOAD_LEPTOQUARKS)
 
+if test "$sextet" -o "$all"; then
+   LOAD_SEXTET="library HwSextetModel.so"
+fi
+AC_SUBST(LOAD_SEXTET)
+
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
@@ -358,6 +364,7 @@ AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
+AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],

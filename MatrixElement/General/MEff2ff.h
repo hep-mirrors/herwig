@@ -49,7 +49,8 @@ public:
   /**
    * The default constructor.
    */
-  MEff2ff() : scalar_(0), vector_(0), tensor_(0) {}
+  MEff2ff() : scalar_(0), vector_(0), tensor_(0), spin_(4), sbar_(4) 
+  {}
 
 public:
 
@@ -71,10 +72,6 @@ private:
   //@{
   /**
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\Psi\bar{\Psi}\f$
-   * @param fin Spinors for first incoming particle
-   * @param fbin SpinorBar Wavefunctions for second incoming particle
-   * @param fbout SpinorBar Wavefunctions for outgoing particle
-   * @param fout Spinors for first outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
    * should be calculated
@@ -82,53 +79,30 @@ private:
    * helicity calculations
    */
   ProductionMatrixElement
-  ffb2ffbHeME(SpinorVector & fin, SpinorBarVector & fbin,
-	      SpinorBarVector & fbout, SpinorVector & fout,
-	      double & me2, bool first) const;
+  ffb2ffbHeME(double & me2, bool first) const;
 
   /**
    * Compute the matrix element for \f$\Psi\Psi\to\Psi\Psi\f$
-   * @param fin Spinors for first incoming particle
-   * @param fin2 Spinors  for second incoming particle
-   * @param fbout SpinorBar for first outgoing particle
-   * @param fbout2 SpinorBar Wavefunctions for outgoing particle
-   * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
    * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
-  ProductionMatrixElement
-  ff2ffHeME(SpinorVector & fin, SpinorVector & fin2,
-	    SpinorBarVector & fbout, SpinorBarVector & fbout2,
-	    double & me2, bool first) const;
+  ProductionMatrixElement ff2ffHeME(double & me2, bool first) const;
   
   /**
    * Compute the matrix element for 
    * \f$\bar{\Psi}\bar{\Psi}\to\bar{\Psi}\bar{\Psi}\f$
-   * @param fbin SpinorBars for first incoming particle
-   * @param fbin2 SpinorBars  for second incoming particle
-   * @param fout Spinors for first outgoing particle
-   * @param fout2 Spinors Wavefunctions for outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
    * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
-  ProductionMatrixElement
-  fbfb2fbfbHeME(SpinorBarVector & fbin, SpinorBarVector & fbin2,
-		SpinorVector & fout, SpinorVector & fout2,
-		double & me2, bool first) const;
+  ProductionMatrixElement fbfb2fbfbHeME(double & me2, bool first) const;
 
   /**
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\lambda\lambda\f$
-   * @param fin Spinors for first incoming particle
-   * @param fbin SpinorBar Wavefunctions for second incoming particle
-   * @param fbout SpinorBar Wavefunctions for first outgoing particle
-   * @param fout Spinors for second outgoing particle
-   * @param fout2 Spinor Wavefunctions for first outgoing particle
-   * @param fbout2 SpinorBar Wavefunctions for second outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
    * should be calculated
@@ -136,10 +110,7 @@ private:
    * helicity calculations
    */
   ProductionMatrixElement 
-  ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin, 
-	       SpinorBarVector & fbout, SpinorVector & fout,
-	       SpinorVector & fout2, SpinorBarVector & fbout2,
-	       double & me2, bool first) const;
+  ffb2mfmfHeME(double & me2, bool first) const;
   //@}
 
   /**
@@ -248,6 +219,16 @@ private:
    * Store the vector of FFTVertex pairs
    */
   vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > tensor_;
+
+  /**
+   *  Spinors
+   */
+  mutable vector<vector<SpinorWaveFunction> > spin_;
+
+  /**
+   *  Barred spinors
+   */
+  mutable vector<vector<SpinorBarWaveFunction> > sbar_;
 };
 
 }

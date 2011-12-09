@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED Transplanckian ADD Leptoquarks
+SUBDIRS = RSModel  StandardModel General Susy UED Transplanckian ADD Leptoquarks Sextet

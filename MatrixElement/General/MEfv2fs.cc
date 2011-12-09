@@ -154,12 +154,13 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, 2*ihel2, ohel1, 0) = diag;
 	  //Compute flows
-	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
 	    flows[current.colourFlow[iy].first] += 
 	      current.colourFlow[iy].second * diag;
+	  }
 	}
 	// MEs for the different colour flows
-	for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
+	for(unsigned int iy = 0; iy < numberOfFlows(); ++iy)
 	  flowME()[iy](ihel1, 2*ihel2, ohel1, 0) = flows[iy];
 	//Now add flows to me2 with appropriate colour factors
 	for(size_t ii = 0; ii < numberOfFlows(); ++ii)

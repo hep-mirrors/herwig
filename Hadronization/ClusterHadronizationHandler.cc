@@ -192,7 +192,7 @@ handle(EventHandler & ch, const tPVector & tagged,
       ClusterPtr cl = clusters.at(ic);
       bool hasClusterParent = false;
       for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
-        if (cl->parents()[ix]->id() == ExtraParticleID::Cluster) {
+        if (cl->parents()[ix]->id() == ParticleID::Cluster) {
           hasClusterParent = true;
           break;
         }

@@ -1140,11 +1140,11 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 	if(systems[ix].type==F) 
 	  deconstructFinalStateSystem(toRest,fromRest,tree,
 				      systems[ix].jets,evolver,type);
-	}
       }
-      else {
-	return deconstructGeneralSystem(tree,evolver,type);
-      }
+    }
+    else {
+      return deconstructGeneralSystem(tree,evolver,type);
+    }
     return true;
   }
 }
@@ -1158,59 +1158,80 @@ findPartners(unsigned int iloc ,
     bool isPartner = false;
     // both in either initial or final state
     if(jets[iloc]->progenitor()->isFinalState()!=jets[iy]->progenitor()->isFinalState()) {
-      if(jets[iloc]->progenitor()->colourLine() &&
-	 jets[iloc]->progenitor()->colourLine() == jets[iy]->progenitor()->colourLine())
-	isPartner = true;
-      if(jets[iloc]->progenitor()->antiColourLine() &&
-	 jets[iloc]->progenitor()->antiColourLine() == jets[iy]->progenitor()->antiColourLine())
-	isPartner = true;
+      //loop over all the colours of both
+      for(unsigned int ix=0; ix<CLSIZE(jets[iloc]); ++ix){
+        for(unsigned int jx=0; jx<CLSIZE(jets[iy]); ++jx){
+          if(CL(jets[iloc],ix) && CL(jets[iloc],ix)==CL(jets[iy],jx))
+            isPartner = true; 
+        }
+      }    
+      if(!isPartner){
+        //loop over anti colours of both
+        for(unsigned int ix=0; ix<ACLSIZE(jets[iloc]); ++ix){
+          for(unsigned int jx=0; jx<ACLSIZE(jets[iy]); ++jx){
+            if(ACL(jets[iloc],ix) && ACL(jets[iloc],ix)==ACL(jets[iy],jx))
+              isPartner = true; 
+          }
+        }
+      }
     }
-    else {
-      if(jets[iloc]->progenitor()->colourLine() &&
-	 jets[iloc]->progenitor()->colourLine() == jets[iy]->progenitor()->antiColourLine())
-	isPartner = true;
-      if(jets[iloc]->progenitor()->antiColourLine() &&
-	 jets[iloc]->progenitor()->antiColourLine() == jets[iy]->progenitor()->colourLine())
-	isPartner = true;
+    else{
+      //loop over the colours of the first and the anti-colours of the other
+      for(unsigned int ix=0; ix<CLSIZE(jets[iloc]); ++ix){
+        for(unsigned int jx=0; jx<ACLSIZE(jets[iy]); ++jx){
+          if(CL(jets[iloc],ix) && CL(jets[iloc],ix)==ACL(jets[iy],jx))
+            isPartner = true; 
+        }
+      }
+      if(!isPartner){
+        //loop over the anti-colours of the first and the colours of the other
+        for(unsigned int ix=0; ix<ACLSIZE(jets[iloc]); ++ix){
+          for(unsigned int jx=0; jx<CLSIZE(jets[iy]); jx++){
+            if(ACL(jets[iloc],ix) && ACL(jets[iloc],ix)==CL(jets[iy],jx))
+              isPartner = true;
+          }
+        }
+      }
     }
     // special for sources/sinks
     if(jets[iloc]->progenitor()->colourLine()) {
       if(jets[iloc]->progenitor()->colourLine()->sourceNeighbours().first) {
-	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sourceNeighbours();
-	if(lines.first ==  jets[iy]->progenitor()->    colourLine() || 
-	   lines.first ==  jets[iy]->progenitor()->    colourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine()) 
-	  isPartner = true;
+        tColinePair lines = jets[iloc]->progenitor()->colourLine()->sourceNeighbours();
+        if(lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+           lines.first ==  jets[iy]->progenitor()->    colourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine()) 
+          isPartner = true;
       }
       if(jets[iloc]->progenitor()->colourLine()->sinkNeighbours().first) {
-	tColinePair lines = jets[iloc]->progenitor()->colourLine()->sinkNeighbours();
-	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine())
-	  isPartner = true;
+        tColinePair lines = jets[iloc]->progenitor()->colourLine()->sinkNeighbours();
+        if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine())
+          isPartner = true;
       }
     }
     if(jets[iloc]->progenitor()->antiColourLine()) {
       if(jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours().first) {
-	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours();
-	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine())
-	  isPartner = true;
+        tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sourceNeighbours();
+        if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine())
+          isPartner = true;
       }
       if(jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours().first) {
-	tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours();
-	if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.first  == jets[iy]->progenitor()->    colourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine() || 
-	   lines.second == jets[iy]->progenitor()->antiColourLine())
-	  isPartner = true;
+        tColinePair lines = jets[iloc]->progenitor()->antiColourLine()->sinkNeighbours();
+        if(lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.first  == jets[iy]->progenitor()->    colourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine() || 
+           lines.second == jets[iy]->progenitor()->antiColourLine())
+          isPartner = true;
       }
     }
-    if(isPartner) output.push_back(iy);
+    if(isPartner)
+      output.push_back(iy);
   }
   return output;
 }
@@ -1927,9 +1948,13 @@ inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 
 void QTildeReconstructor::
 findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
-	     const set<HardBranchingPtr> & branchings,
-	     vector<HardBranchingPtr> & jets) const {
+             const set<HardBranchingPtr> & branchings,
+             vector<HardBranchingPtr> & jets) const {
   tShowerParticlePtr part=branch->branchingParticle();
+  unsigned int partNumColourLines  = 
+    branch->branchingParticle()->colourInfo()->    colourLines().size();
+  unsigned int partNumAColourLines =
+    branch->branchingParticle()->colourInfo()->antiColourLines().size();
   for(set<HardBranchingPtr>::const_iterator cit=branchings.begin();
       cit!=branchings.end();++cit) {
     if(done.find(*cit)!=done.end()||!(**cit).branchingParticle()->coloured())
@@ -1937,21 +1962,53 @@ findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
     bool isPartner = false;
     // one initial and one final
     if(branch->status()!=(**cit).status()) {
-      if(part->colourLine() &&
-	 part->colourLine() == (**cit).branchingParticle()->colourLine())
-	isPartner = true;
-      if(part->antiColourLine() &&
-	 part->antiColourLine() == (**cit).branchingParticle()->antiColourLine())
-	isPartner = true;
+      if(part->colourLine()) {
+        for(unsigned int ix=0; ix<partNumColourLines; ++ix){
+          for(unsigned int jx=0; jx<CLSIZE(cit); ++jx){
+            if(part->colourInfo()->colourLines()[ix] == 
+               (**cit).branchingParticle()->colourInfo()->colourLines()[jx]){
+              isPartner = true;
+              break;
+            }
+          }
+        }
+      }
+      if(part->antiColourLine()) {
+        for(unsigned int ix=0; ix<partNumAColourLines; ++ix){
+          for(unsigned int jx=0; jx<ACLSIZE(cit); ++jx){
+            if(part->colourInfo()->antiColourLines()[ix] == 
+               (**cit).branchingParticle()->colourInfo()->antiColourLines()[jx]){
+              isPartner = true;
+              break;
+            }
+          }
+        }
+      }
     }
     // both in either initial or final state
     else {
-      if(part->colourLine() &&
-	 part->colourLine() == (**cit).branchingParticle()->antiColourLine())
-	isPartner = true;
-      if(part->antiColourLine() &&
-	 part->antiColourLine() == (**cit).branchingParticle()->colourLine())
-	isPartner = true;
+      if(part->colourLine()) {
+        for(unsigned int ix=0; ix<partNumColourLines; ++ix) {
+          for(unsigned int jx=0; jx<ACLSIZE(cit); ++jx) {
+            if(part->colourInfo()->colourLines()[ix] == 
+               (**cit).branchingParticle()->colourInfo()->antiColourLines()[jx]){
+              isPartner = true;
+              break;
+            }
+          }
+        }
+      }
+      if(part->antiColourLine()) {
+        for(unsigned int ix=0; ix<partNumAColourLines; ++ix){
+          for(unsigned int jx=0; jx<CLSIZE(cit); ++jx){
+            if(part->colourInfo()->antiColourLines()[ix] == 
+               (**cit).branchingParticle()->colourInfo()->colourLines()[jx]){
+            isPartner = true;
+            break;
+            }
+          }
+        }
+      }
     }
     if(isPartner) {
       jets.push_back(*cit);
@@ -2180,3 +2237,5 @@ void QTildeReconstructor::deepTransform(PPtr particle,
     }
   }
 }
+
+

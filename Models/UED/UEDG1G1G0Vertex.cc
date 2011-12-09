@@ -13,6 +13,7 @@
 
 #include "UEDG1G1G0Vertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -32,13 +33,19 @@ void UEDG1G1G0Vertex::doinit() {
   VVVVertex::doinit();
 }
 
-NoPIOClassDescription<UEDG1G1G0Vertex> UEDG1G1G0Vertex::initUEDG1G1G0Vertex;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<UEDG1G1G0Vertex,Helicity::VVVVertex>
+describeUEDG1G1G0Vertex("Herwig::UEDG1G1G0Vertex", "HwUED.so");
 
 void UEDG1G1G0Vertex::Init() {
 
   static ClassDocumentation<UEDG1G1G0Vertex> documentation
-    ("There is no documentation for the UEDG1G1G0Vertex class");
+    ("The UEDG1G1G0Vertex class implements the coupling of the "
+     "gluon to two KK excitations of the gluon in the UED model.");
 
 }
 
