@@ -1,0 +1,108 @@
+##################################################
+# Example generator for the Sextet model
+# in hadron collisions.
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read Sextet.model
+cd /Herwig/NewPhysics
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# Example hard process: Incoming proton, gravition + jet
+#insert HPConstructor:Incoming 0 /Herwig/Particles/g
+#insert HPConstructor:Incoming 0 /Herwig/Particles/u
+#insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+#insert HPConstructor:Incoming 0 /Herwig/Particles/d
+#insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
+#insert HPConstructor:Incoming 0 /Herwig/Particles/s
+#insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
+#insert HPConstructor:Incoming 0 /Herwig/Particles/c
+#insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
+
+#### Scalar DQ Singlet Y=4/3 
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_1''
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Scalar Singlet Y=4/3
+#### Scalar DQ Singlet Y=1/3
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_1
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Scalar Singlet Y=1/3
+#### Scalar DQ Singlet Y=-2/3
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_1'
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Scalar Singlet Y=-2/3
+#### Scalar DQ Triplet Y=1/3 
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_3+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_30
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQPhi_3-
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Scalar Triplet Y=1/3
+#### Vector DQ Doublet Y=-1/6
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQV_1+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQV_1-
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Vector Doublet Y=-1/6
+#### Vector DQ Doublet Y=-5/6
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQV_2+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/DQV_2-
+do /Herwig/NewPhysics/Sextet/Model:EnableParticles Vector Doublet Y=5/6
+
+#set HPConstructor:DebugME Yes
+
+# Example hard process: Incoming proton,resonant sextet
+insert ResConstructor:Incoming 0 /Herwig/Particles/u
+insert ResConstructor:Outgoing 0 /Herwig/Particles/d
+insert ResConstructor:Intermediates 0 /Herwig/Particles/DQPhi_1''
+#insert ResConstructor:Intermediates 0 /Herwig/Particles/DQV_2+
+insert ResConstructor:Outgoing 0 /Herwig/Particles/u
+insert ResConstructor:Outgoing 0 /Herwig/Particles/d
+
+#couplings
+#1st generation
+set Sextet/Model:g1L 0 1.0
+set Sextet/Model:g1R 0 1.0
+set Sextet/Model:g1RDoublePrime 0 1.0
+set Sextet/Model:g1RPrime 0 1.0
+set Sextet/Model:g2 0 1.0
+set Sextet/Model:g2Prime 0 1.0
+set Sextet/Model:g3L 0 1.0
+#2nd generation
+set Sextet/Model:g1L 1 1.0
+set Sextet/Model:g1R 1 1.0
+set Sextet/Model:g1RDoublePrime 1 1.0
+set Sextet/Model:g1RPrime 1 1.0
+set Sextet/Model:g2 1 1.0
+set Sextet/Model:g2Prime 1 1.0
+set Sextet/Model:g3L 1 1.0
+#3rd generation
+set Sextet/Model:g1L 2 1.0
+set Sextet/Model:g1R 2 1.0
+set Sextet/Model:g1RDoublePrime 2 1.0
+set Sextet/Model:g1RPrime 2 1.0
+set Sextet/Model:g2 2 1.0
+set Sextet/Model:g2Prime 2 1.0
+set Sextet/Model:g3L 2 1.0
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+# Other parameters for run
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 1000
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:CascadeHandler NULL
+#set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set /Herwig/Analysis/Basics:CheckQuark 0
+
+#set /Herwig/Particles/DQPhi_1'':NominalMass 1000.*GeV
+
+saverun LHC-Sextet LHCGenerator
