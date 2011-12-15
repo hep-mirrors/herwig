@@ -219,6 +219,22 @@ rm /Herwig/Widths/HiggsWidth
 
     return plist
 
+
+def get_lorentztag(spin):
+    'Produce a ThePEG spin tag for the given numeric FR spins.'
+    spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
+    result = [ spins[s] for s in spin ]
+
+    def spinsort(a,b):
+        "Helper function for ThePEG's FVST spin tag ordering."
+        if a == b: return 0
+        for letter in 'FVST':
+            if a == letter: return -1
+            if b == letter: return  1
+
+    result = sorted(result, cmp=spinsort)
+    return ''.join(result)
+
 vertexline = string.Template("""\
 create $classname $name
 insert FRModel:ExtraVertices 0 $name
@@ -227,9 +243,13 @@ insert FRModel:ExtraVertices 0 $name
 def get_vertices():
     vlist = 'library FeynrulesModel.so\n'
     for v in FR.all_vertices:
-        vlist += vertexline.substitute(
-            { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
-              'name' : '/Herwig/Feynrules/%s'%v.name } )
+        for l in v.lorentz:
+            lt = get_lorentztag(l.spins)
+            print lt
+        if("U" not in lt):
+            vlist += vertexline.substitute(
+                { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
+                  'name' : '/Herwig/Feynrules/%s'%v.name } )
     return vlist
 
 
@@ -253,20 +273,7 @@ def produce_vertex_file(subs):
     newname = 'FR' + subs['classname'] + '.cc'
     writeFile( newname, VERTEX.substitute(subs) )
 
-def get_lorentztag(spin):
-    'Produce a ThePEG spin tag for the given numeric FR spins.'
-    spins = { 1 : 'S', 2 : 'F', 3 : 'V', 5 : 'T' }
-    result = [ spins[s] for s in spin ]
 
-    def spinsort(a,b):
-        "Helper function for ThePEG's FVST spin tag ordering."
-        if a == b: return 0
-        for letter in 'FVST':
-            if a == letter: return -1
-            if b == letter: return  1
-
-    result = sorted(result, cmp=spinsort)
-    return ''.join(result)
 
 
 
@@ -285,8 +292,9 @@ for v in FR.all_vertices:
 
     if 'T' in lt:   spind = 'Tensor'
     elif 'S' in lt: spind = 'Scalar'
-    else:           spind = 'Vector'
-
+    elif 'V' in lt: spind = 'Vector'
+    elif 'U' in lt: spind = 'Ghost'
+    
     ### Particle ids #################### sort order? ####################
     plist = ','.join([ str(p.pdg_code) for p in v.particles ])
     
@@ -388,7 +396,8 @@ for v in FR.all_vertices:
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
              'spindirectory' : spind}             # ok
     
-    produce_vertex_file(subs)
+     
+    if( L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1): produce_vertex_file(subs)
 
     print '============================================================'
 
