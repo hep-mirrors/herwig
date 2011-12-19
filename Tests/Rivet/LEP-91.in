@@ -20,6 +20,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
 # ALEPH photon analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3196992
+# ALEPH D*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1999_S4193598
 # OPAL photon analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198
 # OPAL flavour specific charged multiplicities etc
