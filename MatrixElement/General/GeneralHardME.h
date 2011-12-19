@@ -107,8 +107,9 @@ public:
     }
     else {
       assert( scaleChoice_== 1 );
-      Energy2 t = 0.5*(tHat()-meMomenta()[2].mass2());
-      Energy2 u = 0.5*(uHat()-meMomenta()[3].mass2());
+      Energy2 mbar = 0.5*(meMomenta()[2].mass2()+meMomenta()[3].mass2());
+      Energy2 t = 0.5*(tHat()-mbar);
+      Energy2 u = 0.5*(uHat()-mbar);
       Energy2 s = 0.5*sHat();
       return scaleFactor_*4.*s*t*u/(s*s+t*t+u*u);
     }
