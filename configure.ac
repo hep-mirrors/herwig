@@ -106,6 +106,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/UED/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
+		Models/Zprime/Makefile
+		Models/TTbAsymm/Makefile
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
 		Decay/Makefile

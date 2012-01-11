@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwTTbAModel class.
+//
+#ifndef HERWIG_HwTTbAModel_FH
+#define HERWIG_HwTTbAModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class TTbAModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::TTbAModel,HwTTbAPtr);
+
+}
+
+#endif
