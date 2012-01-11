@@ -91,7 +91,7 @@ void TTbAModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
     }
   }
   
-  if(_models!=1) { _cL = 0; _cR = 0; }
+  if(_models!=1) { _cL = 1E-10; _cR = 1E-10; }
   right(_cR);
   left(_cL);
 

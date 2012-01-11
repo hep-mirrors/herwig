@@ -75,7 +75,7 @@ void TTbAModelWPTDVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
     _cR = _cWPTD_R; 
     _cL = _cWPTD_L; 
   }
-  if(_models!=0) { _cL = 0; _cR = 0; }
+  if(_models!=0) { _cL = 1E-10; _cR = 1E-10; }
   left(_cL);
   right(_cR);
   
