@@ -95,8 +95,14 @@ endif
 if WANT_ADD
 check_BSM_Full += check-LHC-ADD
 endif
+if WANT_TTBA
+check_BSM_Full += check-LHC-TTBA
+endif
+if WANT_ZPRIME
+check_BSM_Full += check-LHC-ZPRIME
+endif
 
-check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg
+check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg 
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
