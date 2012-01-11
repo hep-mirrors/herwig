@@ -1,4 +1,6 @@
+if WANT_TTBA
 pkglib_LTLIBRARIES = HwTTbAModel.la
+endif
 HwTTbAModel_la_SOURCES = \
 TTbAModel.cc  TTbAModel.h \
 TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \

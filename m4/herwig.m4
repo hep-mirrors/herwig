@@ -296,6 +296,8 @@ LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
 LOAD_SEXTET=""
+LOAD_TTBA=""
+LOAD_ZPRIME=""
 
 AC_ARG_ENABLE(models,
         AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet) or --disable-models to turn them all off.]),
@@ -357,6 +359,16 @@ if test "$sextet" -o "$all"; then
 fi
 AC_SUBST(LOAD_SEXTET)
 
+if test "$ttba" -o "$all"; then
+   LOAD_TTBA="library HwTTbAModel.so"
+fi
+AC_SUBST(LOAD_TTBA)
+
+if test "$zprime" -o "$all"; then
+   LOAD_SEXTET="library HwZprimeModel.so"
+fi
+AC_SUBST(LOAD_ZPRIME)
+
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
@@ -365,6 +377,8 @@ AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
 AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
+AM_CONDITIONAL(WANT_TTBA,[test "$ttba" -o "$all"])
+AM_CONDITIONAL(WANT_ZPRIME,[test "$zprime" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],
