@@ -176,6 +176,7 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
 	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
 	    }
@@ -289,9 +290,11 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
-		current.colourFlow[iy].second * diag; 	    
+		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
@@ -401,9 +404,11 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
@@ -512,6 +517,7 @@ MEff2ff::ffb2mfmfHeME(double & me2, bool first) const {
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
 	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
 	    }

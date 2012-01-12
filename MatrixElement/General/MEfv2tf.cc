@@ -190,6 +190,7 @@ ProductionMatrixElement MEfv2tf::fv2tfHeME(const SpinorVector & sp,
   	    diagramME()[ix](if1,iv,it,if2) = diag;
   	    // contributions to the different colour flows
   	    for(unsigned int iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
   	      flows[current.colourFlow[iy].first] += 
   		current.colourFlow[iy].second * diag;
   	    }
@@ -266,6 +267,7 @@ ProductionMatrixElement MEfv2tf::fbv2tfbHeME(const SpinorBarVector & sb,
  	    diagramME()[ix](if1,iv,it,if2) = diag;
  	    // contributions to the different colour flows
  	    for(unsigned int iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
  	      flows[current.colourFlow[iy].first] += 
  		current.colourFlow[iy].second * diag;
  	    }

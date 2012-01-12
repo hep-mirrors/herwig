@@ -165,6 +165,7 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 	diagramME()[ix](2*iv1, 2*iv2, 0, 0) = diag;
 	//Compute flows
 	for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	  assert(current.colourFlow[iy].first<flows.size());
 	  flows[current.colourFlow[iy].first] += 
 	    current.colourFlow[iy].second * diag;
 	}

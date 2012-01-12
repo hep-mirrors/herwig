@@ -162,9 +162,11 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifh, 2*ivh, ovh, ofh) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
@@ -235,9 +237,11 @@ MEfv2vf::fbv2vfbHeME(const SpinorBarVector & spbIn, const VBVector & vecIn,
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifh, ivh, ovh, ofh) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 

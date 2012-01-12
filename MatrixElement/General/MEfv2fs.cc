@@ -155,6 +155,7 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 	  diagramME()[ix](ihel1, 2*ihel2, ohel1, 0) = diag;
 	  //Compute flows
 	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	    assert(current.colourFlow[iy].first<flows.size());
 	    flows[current.colourFlow[iy].first] += 
 	      current.colourFlow[iy].second * diag;
 	  }
@@ -226,9 +227,11 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, 2*ihel2, ohel1, 0) = diag;
 	  //Compute flows
-	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	    assert(current.colourFlow[iy].first<flows.size());
 	    flows[current.colourFlow[iy].first] += 
 	      current.colourFlow[iy].second * diag;
+	  }
 	}
 	// MEs for the different colour flows
 	for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
