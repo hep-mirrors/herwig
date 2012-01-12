@@ -300,7 +300,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	  diag.intermediate->iColour() == PDT::Colour3bar) {
     if(outa == PDT::Colour0 || outb == PDT::Colour0) {
       cfv[0] = make_pair(0,1.);
-      cfv.push_back(make_pair(1,1.));
+      // cfv.push_back(make_pair(1,1.));
     }
     else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
       cfv[0] = make_pair(4,1.);
@@ -372,7 +372,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
     if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
       if( outa == PDT::Colour0 || outb == PDT::Colour0 ) {
 	cfv[0] = make_pair(0,1.);
-	cfv.push_back(make_pair(1,1.));
+	// cfv.push_back(make_pair(1,1.));
       }
       else if(outa==PDT::Colour3bar && outb==PDT::Colour6) {
 	cfv[0] = make_pair(4,1.);
