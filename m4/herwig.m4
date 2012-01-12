@@ -65,6 +65,9 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+fi
 THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
