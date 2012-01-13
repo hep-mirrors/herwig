@@ -502,15 +502,15 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       }
     }
     else {
-      ColinePair csecond = ColinePair(second->colourLine(), 
-				      second->antiColourLine());
-      // q -> q g
-      if(csecond.first) {
-	csecond.first->addColoured(parent);
+      if (second->dataPtr()->iColour()==PDT::Colour3 ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addColoured(second);
+	newline->addColoured(parent);
       }
-      // qbar -> qbar g
-      else {
-	csecond.second->addAntiColoured(parent);
+      else if (second->dataPtr()->iColour()==PDT::Colour3bar ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);
       }
     }
   }
