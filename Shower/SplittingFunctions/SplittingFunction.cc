@@ -54,7 +54,13 @@ void SplittingFunction::Init() {
     (interfaceColourStructure,
      "TripletOctetTriplet",
      "3 -> 8 3",
-     TripletOctetTriplet);
+     TripletOctetTriplet); 
+  static SwitchOption interfaceColourStructureSextetSextetOctet
+    (interfaceColourStructure,
+     "SextetSextetOctet",
+     "6 -> 6 8",
+     SextetSextetOctet);
+  
 
   static Switch<SplittingFunction,ShowerInteraction::Type> 
     interfaceInteractionType
@@ -103,29 +109,29 @@ void SplittingFunction::persistentInput(PersistentIStream & is, int) {
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,
-					 tShowerParticlePtr first,
-					 tShowerParticlePtr second,
-					 const bool back) const {
+                                         tShowerParticlePtr first,
+                                         tShowerParticlePtr second,
+                                         const bool back) const {
   if(_colourStructure==TripletTripletOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
-				      parent->antiColourLine());
+                                      parent->antiColourLine());
       // ensure input consistency
       assert((!cparent.first &&  cparent.second) || 
-	     ( cparent.first && !cparent.second));
+             ( cparent.first && !cparent.second));
       // q -> q g
       if(cparent.first) {
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(second);
-	newline->addColoured     ( first);
-	newline->addAntiColoured (second);
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        newline->addColoured     ( first);
+        newline->addAntiColoured (second);
       }
       // qbar -> qbar g
       else {
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.second->addAntiColoured(second);
-	newline->addColoured(second);
-	newline->addAntiColoured(first);
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.second->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addAntiColoured(first);
       }
       // Set progenitor
       first->setProgenitor(parent->progenitor());
@@ -136,23 +142,23 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
-				     first->antiColourLine());
+                                     first->antiColourLine());
       // ensure input consistency
       assert(( cfirst.first && !cfirst.second) ||
-	     (!cfirst.first &&  cfirst.second)); 
+             (!cfirst.first &&  cfirst.second)); 
       // q -> q g
       if(cfirst.first) {
-	ColinePtr newline=new_ptr(ColourLine());
-	cfirst.first->addAntiColoured(second);
-	newline->addColoured(second);
-	newline->addColoured(parent);
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.first->addAntiColoured(second);
+        newline->addColoured(second);
+        newline->addColoured(parent);
       }
       // qbar -> qbar g
       else {
-	ColinePtr newline=new_ptr(ColourLine());
-	cfirst.second->addColoured(second);
-	newline->addAntiColoured(second);
-	newline->addAntiColoured(parent);
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.second->addColoured(second);
+        newline->addAntiColoured(second);
+        newline->addAntiColoured(parent);
       }
       // Set progenitor
       parent->setProgenitor(first->progenitor());
@@ -165,7 +171,7 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
   else if(_colourStructure==OctetOctetOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
-				      parent->antiColourLine());
+                                      parent->antiColourLine());
       // ensure input consistency
       assert(cparent.first&&cparent.second);
       // The choice of colour line is determined by the
@@ -257,7 +263,7 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
-				     first->antiColourLine());
+                                     first->antiColourLine());
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
       // The choice of colour line is determined by the
@@ -352,7 +358,7 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
   else if(_colourStructure == OctetTripletTriplet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
-				      parent->antiColourLine());
+                                      parent->antiColourLine());
       // ensure input consistency
       assert(cparent.first&&cparent.second);
       cparent.first ->addColoured    ( first);
@@ -366,10 +372,10 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
-				     first->antiColourLine());
+                                     first->antiColourLine());
       // ensure input consistency
       assert(( cfirst.first && !cfirst.second) ||
-	     (!cfirst.first &&  cfirst.second));
+             (!cfirst.first &&  cfirst.second));
       // g -> q qbar
       if(cfirst.first) {
 	ColinePtr newline=new_ptr(ColourLine());
@@ -379,10 +385,10 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       }
       // g -> qbar q
       else {
-	ColinePtr newline=new_ptr(ColourLine());
-	cfirst.second->addAntiColoured(parent);
-	newline->addColoured(second);
-	newline->addColoured(parent);
+        ColinePtr newline=new_ptr(ColourLine());
+        cfirst.second->addAntiColoured(parent);
+        newline->addColoured(second);
+        newline->addColoured(parent);
       }
       // Set progenitor
       parent->setProgenitor(first->progenitor());
@@ -395,16 +401,16 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
   else if(_colourStructure == TripletOctetTriplet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
-				      parent->antiColourLine());
+                                      parent->antiColourLine());
       // ensure input consistency
       assert(( cparent.first && !cparent.second) || 
-	     (!cparent.first &&  cparent.second));
+             (!cparent.first &&  cparent.second));
       // q -> g q
       if(cparent.first) {
-	ColinePtr newline=new_ptr(ColourLine());
-	cparent.first->addColoured(first);
-	newline->addColoured    (second);
-	newline->addAntiColoured( first);
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        newline->addColoured    (second);
+        newline->addAntiColoured( first);
       }
       // qbar -> g qbar
       else {
@@ -422,17 +428,17 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
-				     first->antiColourLine());
+                                     first->antiColourLine());
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
       // q -> g q
       if(parent->id()>0) {
-	cfirst.first ->addColoured(parent);
-	cfirst.second->addColoured(second);
+        cfirst.first ->addColoured(parent);
+        cfirst.second->addColoured(second);
       }
       else {
-	cfirst.first ->addAntiColoured(second);
-	cfirst.second->addAntiColoured(parent);
+        cfirst.first ->addAntiColoured(second);
+        cfirst.second->addAntiColoured(parent);
       }
       // Set progenitor
       parent->setProgenitor(first->progenitor());
@@ -441,6 +447,95 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       parent->setRadiationLine(0);
       second->setRadiationLine(0); 
     }
+  }
+  else if(_colourStructure==SextetSextetOctet) {
+    //make sure we're not doing backward evolution
+    assert(!back);
+
+    //make sure something sensible
+    assert(parent->colourLine() || parent->antiColourLine());
+   
+    //get the colour lines or anti-colour lines
+    bool isAntiColour=true;
+    ColinePair cparent;
+    if(parent->colourLine()) {
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[0]), 
+			   const_ptr_cast<tColinePtr>(parent->colourInfo()->colourLines()[1]));
+      isAntiColour=false;
+    }
+    else {
+      cparent = ColinePair(const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[0]), 
+			   const_ptr_cast<tColinePtr>(parent->colourInfo()->antiColourLines()[1]));
+    }
+    
+    //check for sensible input
+    //    assert(cparent.first && cparent.second);
+
+    // sextet has 2 colour lines
+    if(!isAntiColour) {
+      //pick at random which of the colour topolgies to take
+      double topology = UseRandom::rnd();
+      if(topology < 0.25) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addColoured(first);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
+      }
+      else if(topology >=0.25 && topology < 0.5) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addColoured(second);
+        newline->addColoured(first);
+        newline->addAntiColoured(second); 
+      }
+      else if(topology >= 0.5 && topology < 0.75) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(second);
+        cparent.second->addColoured(first); 
+        newline->addColoured(first); 
+        newline->addAntiColoured(second); 
+      }
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addColoured(first);
+        cparent.second->addColoured(second);
+        newline->addColoured(first);
+        newline->addAntiColoured(second);
+      }
+    }
+    // sextet has 2 anti-colour lines
+    else {
+      double topology = UseRandom::rnd();
+      if(topology < 0.25){
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addAntiColoured(first);
+        newline->addColoured(second);
+      }
+      else if(topology >=0.25 && topology < 0.5) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addAntiColoured(first);
+        newline->addColoured(second); 
+      }
+      else if(topology >= 0.5 && topology < 0.75) {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(second);
+        cparent.second->addAntiColoured(first);
+        newline->addAntiColoured(first);
+        newline->addColoured(second); 
+      }
+      else {
+        ColinePtr newline=new_ptr(ColourLine());
+        cparent.first->addAntiColoured(first);
+        cparent.second->addAntiColoured(second);
+        newline->addAntiColoured(first);
+        newline->addColoured(second);
+      }
+    }   
   }
   else {
     assert(false);
@@ -464,6 +559,9 @@ void SplittingFunction::doinit() {
   else if(_colourStructure==TripletOctetTriplet) {
     _colourFactor = 4./3.;
   }
+  else if(_colourStructure==SextetSextetOctet) {
+    _colourFactor = 10./3.;
+  }
   else {
     assert(false);
   }
@@ -471,8 +569,8 @@ void SplittingFunction::doinit() {
 
 bool SplittingFunction::checkColours(const IdList & ids) const {
   tcPDPtr pd[3]={getParticleData(ids[0]),
-		 getParticleData(ids[1]),
-		 getParticleData(ids[2])};
+                 getParticleData(ids[1]),
+                 getParticleData(ids[2])};
   if(_colourStructure==TripletTripletOctet) {
     if(ids[0]!=ids[1]) return false;
     if((pd[0]->iColour()==PDT::Colour3||pd[0]->iColour()==PDT::Colour3bar) &&
@@ -499,6 +597,12 @@ bool SplittingFunction::checkColours(const IdList & ids) const {
        pd[1]->iColour()==PDT::Colour8) return true;
     return false;
   }
+  else if(_colourStructure==SextetSextetOctet) {
+    if(ids[0]!=ids[1]) return false;
+    if((pd[0]->iColour()==PDT::Colour6 || pd[0]->iColour()==PDT::Colour6bar) &&
+       pd[2]->iColour()==PDT::Colour8) return true;
+    return false;
+  }    
   else {
     assert(false);
   }

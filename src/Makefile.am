@@ -15,15 +15,49 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
-HELPERFILES = SPhenoSPS1a.spc NMSSM.spc MUED.model MSSM.model NMSSM.model\
-              RS.model ADD.model Leptoquark.model
+HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
+ADD.model \
+Leptoquark.model \
+MSSM.model \
+MUED.model \
+NMSSM.model \
+RS.model \
+Sextet.model \
+TTBA.model \
+Zprime.model
 
-INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in \
-             LHC-MUED.in LHC-NMSSM.in LHC-RS.in LHC-ADD.in\
-             ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
-	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-diffractive.in \
-             LHC-GammaGamma.in LHC-LQ.in LHC-MU900-2.in LHC-UE7-2.in \
-	     LHC-UE-EE-2.in LHC-UE-EE-3-CTEQ6L1.in LHC-UE-EE-3.in
+INPUTFILES = \
+DIS.in \
+GammaGamma.in \
+ILC.in \
+ILC-MSSM.in \
+ILC-MUED.in \
+ILC-RS.in \
+LEP.in \
+LEP-sextet.in \
+LHC-ADD.in \
+LHC-diffractive.in \
+LHC-GammaGamma.in \
+LHC.in \
+LHC-LQ.in \
+LHC-MSSM.in \
+LHC-MU900-2.in \
+LHC-MUED.in \
+LHC-NMSSM.in \
+LHC-Powheg.in \
+LHC-RPV.in \
+LHC-RS.in \
+LHC-Sextet.in \
+LHC-TRP.in \
+LHC-TTBA.in \
+LHC-UE7-2.in \
+LHC-UE-EE-2.in \
+LHC-UE-EE-3-CTEQ6L1.in \
+LHC-UE-EE-3.in \
+LHC-ZP.in \
+TVT.in \
+TVT-Powheg.in \
+TVT-TTBA.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
@@ -31,7 +65,7 @@ pkgdata_DATA = Makefile-UserModules
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
   multi.test *.output probs.test chisq.value \
-  LHC-RS-BR.spc LHC-MSSM-BR.spc
+  LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc
 
 ## checking targets ##
 
@@ -41,8 +75,8 @@ HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/An
 check_BSM_Full=
 check_BSM=
 if WANT_MSSM
-check_BSM += check-LHC-MSSM 
-check_BSM_Full += check-LHC-MSSM
+check_BSM += check-LHC-RPV
+check_BSM_Full += check-LHC-RPV check-LHC-MSSM
 endif
 if WANT_NMSSM
 check_BSM_Full += check-LHC-NMSSM
@@ -61,8 +95,14 @@ endif
 if WANT_ADD
 check_BSM_Full += check-LHC-ADD
 endif
+if WANT_TTBA
+check_BSM_Full += check-LHC-TTBA
+endif
+if WANT_ZPRIME
+check_BSM_Full += check-LHC-ZPRIME
+endif
 
-check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg
+check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg 
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
 

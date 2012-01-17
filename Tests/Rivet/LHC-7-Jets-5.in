@@ -28,6 +28,14 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8957746
 # ATLAS dijet with veto
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9126244
+# CMS dijet decorrelation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8950903
+# CMS jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
+# CMS 3/2 jet cross section ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9088458
+# ATLAS track jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

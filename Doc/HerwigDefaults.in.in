@@ -45,5 +45,6 @@ library HwIncomingPhotonEvolver.so
 @LOAD_UED@
 @LOAD_ADD@
 @LOAD_LEPTOQUARKS@
+@LOAD_SEXTET@
 @LOAD_FASTJET@
 doxygendump Herwig:: AllInterfaces.h

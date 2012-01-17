@@ -159,9 +159,13 @@ void MPIHandler::initialize() {
 	softMu2_ = rootFinder.value(fs, 0.3*GeV2, 1.*GeV2);
 	softXSec_ = fs.softXSec();
       }catch(GSLBisection::IntervalError){
-	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
-			  << "the total cross section. Please check arXiv:0806.2949 "
-			  << "for the allowed parameter space."
+	throw Exception() <<
+        "\n**********************************************************\n"
+	  "* Inconsistent MPI parameter choice for this beam energy *\n"
+	  "**********************************************************\n"
+	  "MPIHandler parameter choice is unable to reproduce\n"
+	  "the total cross section. Please check arXiv:0806.2949\n"
+	  "for the allowed parameter space."
 			  << Exception::runerror;
       }
 
@@ -171,10 +175,14 @@ void MPIHandler::initialize() {
       try{
 	softXSec_ = rootFinder.value(fn, 0*millibarn, 5000*millibarn);
       }catch(GSLBisection::IntervalError){
-	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
-			  << "the total cross section. Please check arXiv:0806.2949 "
-			  << "for the allowed parameter space."
-			  << Exception::runerror;
+	throw Exception() <<
+	"\n**********************************************************\n"
+	  "* Inconsistent MPI parameter choice for this beam energy *\n"
+	  "**********************************************************\n"
+	  "MPIHandler parameter choice is unable to reproduce\n"
+	  "the total cross section. Please check arXiv:0806.2949\n"
+	  "for the allowed parameter space."
+			  << Exception::runerror;      
       }
     }
 

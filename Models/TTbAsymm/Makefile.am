@@ -1,0 +1,11 @@
+if WANT_TTBA
+pkglib_LTLIBRARIES = HwTTbAModel.la
+endif
+HwTTbAModel_la_SOURCES = \
+TTbAModel.cc  TTbAModel.h \
+TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \
+TTbAModelZPQQVertex.h TTbAModelZPQQVertex.cc \
+TTbAModelAGQQVertex.h TTbAModelAGQQVertex.cc \
+TTbAModelSU2XVertex.h TTbAModelSU2XVertex.cc 
+
+HwTTbAModel_la_LDFLAGS = -module -version-info 1:0:0

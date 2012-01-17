@@ -510,7 +510,7 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed" 
 					       << Exception::eventerror;
-  if(abs(lower-upper)/(lower+upper)>1e-10) {
+  if(abs(lower-upper)/(lower+upper)>2e-10) {
     lower +=1e-10*(lower+upper);
     upper -=1e-10*(lower+upper);
   }

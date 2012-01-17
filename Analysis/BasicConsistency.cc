@@ -63,7 +63,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 			 << event->number() << '\n';
       writeEvent = true;
     }
-    else if( _checkcluster && (**it).id()==ExtraParticleID::Cluster) {
+    else if( _checkcluster && (**it).id()==ParticleID::Cluster) {
       cerr << "Had clusters in final state in event " 
 	   << event->number()  
 	   << '\n';

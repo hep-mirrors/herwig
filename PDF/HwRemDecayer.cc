@@ -430,13 +430,20 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   // Q0 (Qmax/Q0)^R
   Energy q;
   double zmin,zmax,yy;
+  unsigned int ntry=0,maxtry=100;
   do {
     q = minQ*pow(lastQ/minQ,UseRandom::rnd());
     zmin = lastx;
     yy   = 1.+0.5*sqr(_kinCutoff/q);
     zmax = yy - sqrt(sqr(yy)-1.); 
+    ++ntry;
   }
-  while(zmax<zmin);
+  while(zmax<zmin&&ntry<maxtry);
+  if(ntry==maxtry) {
+    throw Exception() << "Can't set scale and z for forced splitting in " 
+		      << "HwRemDecayer::forceSplit() " 
+		      << Exception::eventerror;
+  }
   // now generate z as in FORTRAN HERWIG
   // use y = ln(z/(1-z)) as integration variable
   double ymin=log(zmin/(1.-zmin));

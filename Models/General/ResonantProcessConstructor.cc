@@ -63,7 +63,7 @@ void ResonantProcessConstructor::Init() {
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOutgoing
     ("Outgoing",
-     "A vector of outgoin particles for resonant diagrams",
+     "A vector of outgoing particles for resonant diagrams",
      &ResonantProcessConstructor::outgoing_, -1, false, false, true, 
      false);
 
@@ -194,7 +194,7 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
       for(size_t iv = 0; iv < nvertices; ++iv) {
 	VBPtr vertex2 = model()->vertex(iv);
 	if(vertex2->getNpoint() > 3) continue;
-	tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
+	tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing, 
 			     outgoing);
 	for(tPDSet::const_iterator ita = outb.begin(); ita != outb.end(); ++ita)
 	  makeResonantDiagram(in, partc, outa->id(),(**ita).id(), 

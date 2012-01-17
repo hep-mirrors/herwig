@@ -13,9 +13,9 @@
 
 #include "UEDG0G0G1G1Vertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "UEDBase.h"
 
 using namespace Herwig;
 
@@ -31,8 +31,13 @@ void UEDG0G0G1G1Vertex::doinit() {
   VVVVVertex::doinit();
 }
 
-NoPIOClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<UEDG0G0G1G1Vertex,Helicity::VVVVVertex>
+describeUEDG0G0G1G1Vertex("Herwig::UEDG0G0G1G1Vertex", "HwUED.so");
 
 void UEDG0G0G1G1Vertex::Init() {
 
@@ -58,7 +63,8 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theCoupLast = sqr(strongCoupling(q2));
     }
     norm(theCoupLast);
-    setType(1); setOrder(0,1,2,3);
+    setType(1);
+    setOrder(0,1,2,3);
   }
   else {
     throw HelicityLogicalError() << "UEDG0G0G1G1Vertex::setCoupling - "

@@ -65,6 +65,9 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+fi
 THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
@@ -114,75 +117,6 @@ else
 fi
 
 AC_SUBST([CREATE_HEPMC])
-])
-
-dnl ##### FastJet #####
-AC_DEFUN([HERWIG_CHECK_FASTJET],[
-
-FASTJETPATH=""
-FASTJETLIBS=""
-FASTJETINCLUDE=""
-LOAD_FASTJET=""
-CREATE_FASTJET="#create"
-
-AC_MSG_CHECKING([for FastJet location])
-
-AC_ARG_WITH(fastjet,
-        AC_HELP_STRING([--with-fastjet=DIR],[Location of FastJet installation @<:@default=system libs@:>@]),
-        [],
-	[with_fastjet=system])
-
-if test "x$with_fastjet" = "xno"; then
-   	AC_MSG_RESULT([FastJet support disabled.])
-elif test "x$with_fastjet" = "xsystem"; then
-     	AC_MSG_RESULT([in system libraries])
-	oldlibs="$LIBS"
-	AC_CHECK_LIB(fastjet,main,
-		[],
-		[with_fastjet=no
-		 AC_MSG_WARN([
-FastJet not found in system libraries])
-		])
-	FASTJETLIBS="$LIBS"
-	LIBS=$oldlibs
-else
-	AC_MSG_RESULT([$with_fastjet])
-	FASTJETPATH="$with_fastjet"
-	FASTJETINCLUDE="-I$with_fastjet/include"
-	FASTJETLIBS="-L$with_fastjet/lib -R$with_fastjet/lib -lfastjet"
-fi
-
-if test "x$with_fastjet" != "xno"; then
-   	# Now lets see if the libraries work properly
-	oldLIBS="$LIBS"
-	oldLDFLAGS="$LDFLAGS"
-	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS `echo $FASTJETLIBS | sed -e 's!-R.* ! !'`"
-	LDFLAGS="$LDFLAGS"
-	CPPFLAGS="$CPPFLAGS $FASTJETINCLUDE"
-
-	AC_MSG_CHECKING([that FastJet works])
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fastjet/ClusterSequence.hh>
-]],[[fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, fastjet::E_scheme, fastjet::Best); ]])],
-			    [AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-	AC_MSG_ERROR([Use '--with-fastjet=' to set a path or use '--without-fastjet'.])
-	])
-
-	AC_CHECK_HEADERS([fastjet/ClusterSequence.hh])
-
-	LIBS="$oldLIBS"
-	LDFLAGS="$oldLDFLAGS"
-	CPPFLAGS="$oldCPPFLAGS"
-
-	CREATE_FASTJET="create"
-	LOAD_FASTJET="library HwLEPJetAnalysis.so"		
-fi
-AC_SUBST(FASTJETINCLUDE)
-AC_SUBST(CREATE_FASTJET)
-AC_SUBST(LOAD_FASTJET)
-AC_SUBST(FASTJETLIBS)
-
-AM_CONDITIONAL(WANT_LIBFASTJET,[test "x$CREATE_FASTJET" = "xcreate"])
 ])
 
 dnl ##### LOOPTOOLS #####
@@ -364,9 +298,12 @@ LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
+LOAD_SEXTET=""
+LOAD_TTBA=""
+LOAD_ZPRIME=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -420,6 +357,21 @@ if test "$leptoquarks" -o "$all"; then
 fi
 AC_SUBST(LOAD_LEPTOQUARKS)
 
+if test "$sextet" -o "$all"; then
+   LOAD_SEXTET="library HwSextetModel.so"
+fi
+AC_SUBST(LOAD_SEXTET)
+
+if test "$ttba" -o "$all"; then
+   LOAD_TTBA="library HwTTbAModel.so"
+fi
+AC_SUBST(LOAD_TTBA)
+
+if test "$zprime" -o "$all"; then
+   LOAD_SEXTET="library HwZprimeModel.so"
+fi
+AC_SUBST(LOAD_ZPRIME)
+
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
@@ -427,6 +379,9 @@ AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
+AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
+AM_CONDITIONAL(WANT_TTBA,[test "$ttba" -o "$all"])
+AM_CONDITIONAL(WANT_ZPRIME,[test "$zprime" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],
@@ -449,7 +404,7 @@ cat << _HW_EOF_ > config.herwig
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
-*** Fastjet:		$with_fastjet
+*** Fastjet:		${fjconfig}
 ***
 *** Host:		$host
 *** CXX:		$CXXSTRING

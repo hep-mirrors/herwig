@@ -13,6 +13,7 @@
 
 #include "MixingMatrix.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -26,8 +27,13 @@ void MixingMatrix::persistentInput(PersistentIStream & is, int) {
   is >> _theMixingMatrix >> _theIds >> _theSize;
 }
 
-ClassDescription<MixingMatrix> MixingMatrix::initMixingMatrix;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<MixingMatrix,Interfaced>
+describeMixingMatrix("Herwig::MixingMatrix", "HwSusy.so");
 
 void MixingMatrix::Init() {
 

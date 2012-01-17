@@ -62,7 +62,6 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy -1
 #set /Herwig/UnderlyingEvent/KtCut:MinKT 2.62
 #set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.24
 
-
 ########################
 ## sqrt(s) = 7000 GeV ##
 ########################
@@ -71,6 +70,13 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy -1
 #set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
 #set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.37*GeV
 ## NOTE: This tune of the intrinsic pT is an extrapolation to 7 TeV.
+
+########################
+## sqrt(s) = 8000 GeV ##
+########################
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 3.21
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.42
 
 #########################
 ## sqrt(s) = 14000 GeV ##

@@ -22,6 +22,8 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9002537
 # ATLAS W+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
+# ATLAS W pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

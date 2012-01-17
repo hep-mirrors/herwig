@@ -25,7 +25,7 @@ using namespace ThePEG::Helicity;
 /** \ingroup Models
  *
  *  This is the class to be used instead of the Standard Model class for
- *  the Randell Sundrum model.
+ *  the ADD model.
  *
  * @see \ref ADDModelInterfaces "The interfaces"
  * defined for ADDModel.

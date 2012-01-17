@@ -380,7 +380,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   tPVector::const_iterator it;
   unsigned int i = 0;
   for(it = tagged.begin(); it!=tagged.end(); ++it) {
-    if((*it)->id() != ExtraParticleID::Cluster) continue;
+    if((*it)->id() != ParticleID::Cluster) continue;
     clu[i] = dynamic_ptr_cast<ClusterPtr>(*it);
     ++i;
     if(i>2) throw Exception() << "Must have at most two beam clusters in "

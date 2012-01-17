@@ -3,17 +3,17 @@
 
 #include <ThePEG/PDT/EnumParticles.h>
 
-namespace Herwig {
+namespace ThePEG {
 
 /**
  * The ParticleID namespace defines the ParticleCodes enumeration.
  */
-namespace ExtraParticleID {
+namespace ParticleID {
 
 /** \ingroup Utilities
  * Enumeration to give identifiers to PDG codes for special Herwig++ particles
  */  
-enum ParticleCodes {
+enum HerwigCodes {
   Cluster = 81, 
     /**< Herwig++ Cluster for Hadronization*/
   Remnant = 82

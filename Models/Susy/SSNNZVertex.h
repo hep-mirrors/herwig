@@ -104,12 +104,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSNNZVertex> initSSNNZVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -162,42 +156,6 @@ private:
    */
   Complex _rightlast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSNNZVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSNNZVertex,1> {
-  /** Typedef of the first base class of SSNNZVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSNNZVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSNNZVertex>
-  : public ClassTraitsBase<Herwig::SSNNZVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSNNZVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSNNZVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSNNZVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSNNZVertex_H */

@@ -69,6 +69,8 @@ insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
 # insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
 # set PowhegMEPP2VV:Process WpZ
 #
+# Higgs production via VBF
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF
 
 cd /Herwig/Generators
 ##################################################
