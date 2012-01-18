@@ -46,14 +46,16 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode;
+     << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
+     << _colourEvolutionMethod << _reconOpt;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
-     >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode;
+     >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
+     >> _colourEvolutionMethod >> _reconOpt;
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -222,6 +224,21 @@ void Evolver::Init() {
     (interfaceHardEmissionMode,
      "POWHEG",
      "Powheg style hard emission",
+     1);
+
+  static Switch<Evolver,int> interfaceColourEvolutionMethod
+    ("ColourEvolutionMethod",
+     "Choice of method for choosing the colour factor in gluon evolution",
+     &Evolver::_colourEvolutionMethod, 0, false, false);
+  static SwitchOption interfaceColourEvolutionMethodDefault
+    (interfaceColourEvolutionMethod,
+     "Default",
+     "Colour factor is CA for all scales",
+     0);
+  static SwitchOption interfaceColourEvolutionMethodHalfCA
+    (interfaceColourEvolutionMethod,
+     "HalfCA",
+     "Only use half the normal radiation until second scale is reached",
      1);
 
   static Switch<Evolver,unsigned int> interfaceReconstructionOption
@@ -417,12 +434,42 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   }
 }
 
+double Evolver::getReductionFactor(tShowerParticlePtr particle) {
+  // octet -> octet octet reduction factor 
+  if ( _colourEvolutionMethod == 1 ) {
+    // Determine which colour factor to use for octet->octet octet
+    // There are three possibilities.
+    // 1) Radiation is emitted from a hard parton, or the primary emission
+    //    of a hard parton, at a scale above the progenitor's second
+    //    scale, and we have half as much radiation.
+    // 2) Radiation is emitted from a hard parton, or the primary emission
+    //    of a hard parton, at a scale below the progenitor's second
+    //    scale, and we have the normal amount of radiation
+    // 3) Radiation is emitted from a secondary emission of a hard parton,
+    //    and we have the normal amount of radiation
+    if (getParticleData(particle->id())->iColour()==PDT::Colour8) {
+      // Particle is an octet
+      if (particle->radiationLine() == 1 || particle->radiationLine() == 2) {
+	// Particle is connected along hard progenitor's radiation line
+	if (particle->evolutionScale() > particle->progenitor()->evolutionScale2() ) {
+	  // Particle radiaties with half strength
+	  return 0.5;
+	}			
+      }	       
+    }
+  }
+  return 1.0;
+}
+
+
 bool Evolver::timeLikeShower(tShowerParticlePtr particle, 
 			     ShowerInteraction::Type type,
 			     bool first) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || _limitEmissions == 3 || 
-     ( _limitEmissions == 2 && _nfs != 0) ) return false;
+     ( _limitEmissions == 2 && _nfs != 0) ) return false;  
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   ShowerParticleVector theChildren; 
   int ntry=0;
   do {
@@ -430,7 +477,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // generate the emission
     Branching fb;
     while (true) {
-      fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
+      fb=_splittingGenerator->chooseForwardBranching(*particle,reduction*_finalenhance,type);
       // no emission return
       if(!fb.kinematics) return false;
       // if emission OK break
@@ -498,11 +545,13 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   // don't do anything if not needed
   if(_limitEmissions == 2  || _limitEmissions == 3  ||
      ( _limitEmissions == 1 && _nis != 0 ) ) return false;
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   Branching bb;
   // generate branching
   while (true) {
     bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
-						    _initialenhance,
+						    reduction*_initialenhance,
 						    _beam,type,
 						    pdf,freeze);
     // return if no emission
@@ -651,10 +700,12 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   Energy maxscale,
 				   Energy minmass,ShowerInteraction::Type type) {
+  // octet -> octet octet reduction factor 
+  double reduction = getReductionFactor(particle);
   Branching fb;
   while (true) {
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
-						 _initialenhance,type);
+						 reduction*_initialenhance,type);
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break

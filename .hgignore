@@ -38,6 +38,8 @@ conftest.c
 conftest.err
 include/done-all-links
 libtool
+src/herwigopts.h
+src/herwigopts.c
 src/defaults/Analysis.in
 src/herwig-config
 src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg)
@@ -50,6 +52,3 @@ src/tune
 src/tests/.*\.(time|mult|Bmult|chisq)
 Tests/.*/.*\.(top|ps|pyc|info)
 Tests/.*\.(top|run|tex|mult|Bmult)
-src/herwigopts.c
-src/herwigopts.h
-
