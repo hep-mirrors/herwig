@@ -87,7 +87,6 @@ cd /Herwig/Generators
 # Uncomment to turn off MPI
 #set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 100

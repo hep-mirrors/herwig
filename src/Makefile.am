@@ -99,7 +99,7 @@ if WANT_TTBA
 check_BSM_Full += check-LHC-TTBA
 endif
 if WANT_ZPRIME
-check_BSM_Full += check-LHC-ZPRIME
+check_BSM_Full += check-LHC-ZP
 endif
 
 check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg 
