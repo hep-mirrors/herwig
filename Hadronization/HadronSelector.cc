@@ -501,6 +501,8 @@ void HadronSelector::constructHadronTable() {
     if(_trial==3 && pspin >= 7) continue;
     // Only include pions
     if(_trial==1 && pid!=111 && pid!=211) continue;
+    // shouldn't be coloured
+    if(particle->coloured()) continue;
     // Get the flavours
     const int x4 = (pid/1000)%10; 
     const int x3 = (pid/100 )%10;

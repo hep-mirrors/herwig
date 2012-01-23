@@ -65,6 +65,9 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+fi
 THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
@@ -295,9 +298,12 @@ LOAD_NMSSM=""
 LOAD_TRP=""
 LOAD_UED=""
 LOAD_ADD=""
+LOAD_SEXTET=""
+LOAD_TTBA=""
+LOAD_ZPRIME=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs add lh lhtp rpv trp anomalous leptoquarks) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet lh lhtp rpv  leptoquarks) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -355,6 +361,21 @@ if test "$leptoquarks" -o "$all"; then
 fi
 AC_SUBST(LOAD_LEPTOQUARKS)
 
+if test "$sextet" -o "$all"; then
+   LOAD_SEXTET="library HwSextetModel.so"
+fi
+AC_SUBST(LOAD_SEXTET)
+
+if test "$ttba" -o "$all"; then
+   LOAD_TTBA="library HwTTbAModel.so"
+fi
+AC_SUBST(LOAD_TTBA)
+
+if test "$zprime" -o "$all"; then
+   LOAD_SEXTET="library HwZprimeModel.so"
+fi
+AC_SUBST(LOAD_ZPRIME)
+
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
 AM_CONDITIONAL(WANT_RPV,[test "$rpv" -o "$all"])
@@ -366,6 +387,9 @@ AM_CONDITIONAL(WANT_Anomalous,[test "$anomalous" -o "$all"])
 AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
+AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
+AM_CONDITIONAL(WANT_TTBA,[test "$ttba" -o "$all"])
+AM_CONDITIONAL(WANT_ZPRIME,[test "$zprime" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],

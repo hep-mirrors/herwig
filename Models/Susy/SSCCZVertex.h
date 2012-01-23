@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSCCZVertex> initSSCCZVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -171,42 +165,6 @@ private:
    */
   long _gblast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSCCZVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSCCZVertex,1> {
-  /** Typedef of the first base class of SSCCZVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSCCZVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSCCZVertex>
-  : public ClassTraitsBase<Herwig::SSCCZVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSCCZVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSCCZVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSCCZVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSCCZVertex_H */

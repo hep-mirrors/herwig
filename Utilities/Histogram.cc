@@ -39,6 +39,61 @@ void Histogram::Init() {
 
 }
 
+void Histogram::rivetOutput(ostream & out,
+                            string histogramname,
+                            string analysisname,
+                            string title,
+                            string xlabel,
+                            string ylabel,
+                            bool rawcount,
+                            double multiplicator) const {
+
+  // total number of histogram entries
+  double numPoints = static_cast<double>(_total);
+  if (numPoints == 0) numPoints += 1.0;
+
+
+  // collect y values and errors
+  vector<double> yvalues;
+  vector<double> yerrors;
+  const unsigned int lastBinIndex = _bins.size() - 2;
+  for (size_t ix = 1; ix <= lastBinIndex; ++ix) {
+    const double delta = _bins[ix+1].limit - _bins[ix].limit;
+    double factor = rawcount ? _prefactor * multiplicator
+                             : _prefactor * multiplicator / (numPoints * delta);
+    const double value = factor * _bins[ix].contents;
+    const double error = factor * sqrt(_bins[ix].contentsSq);
+    yvalues.push_back(value);
+    yerrors.push_back(error);
+  }
+
+  // file header
+  out << "## " << numPoints << " entries, mean +- sigma = "
+      << _globalStats.mean() << " +- " 
+      << _globalStats.stdDev() << "\n";
+  out << "## xlo xhi y yerr\n" ;
+  out << "##\n";
+  out << "# BEGIN HISTOGRAM /" << analysisname << "/" << histogramname << "\n";
+  out << "AidaPath=/" << analysisname << "/" << histogramname << "\n";
+  if ( title  != string() ) out << "Title=" << title << "\n";
+  if ( xlabel != string() ) out << "XLabel=" << xlabel << "\n";
+  if ( ylabel != string() ) out << "YLabel=" << ylabel << "\n";
+
+  // histogram data
+  for (size_t i = 0; i < yvalues.size(); ++i) {
+    out << _bins[i+1].limit << "\t"
+	<< _bins[i+2].limit << "\t" 
+	<< yvalues[i] << "\t"
+	<< yerrors[i] << "\n";
+  }
+
+  // footer
+  out << "# END HISTOGRAM\n";
+  out << "\n";
+
+}
+
+
 void Histogram::topdrawOutput(ostream & out,
 			      unsigned int flags,
 			      string colour,
@@ -445,5 +500,13 @@ void Histogram::topdrawOutputAverage(ostream & out,
       }
     out << "PLOT " << endl;
   }
+}
+
+
+vector<double> Histogram::LogBins(double xmin, unsigned nbins, double base) {
+  vector<double> limits;
+  for (unsigned e = 0; e <= nbins; e++)
+    limits.push_back(xmin * pow(base, (int)e));
+  return limits;
 }
 

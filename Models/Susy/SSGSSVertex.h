@@ -84,12 +84,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<SSGSSVertex> initSSGSSVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -107,41 +101,6 @@ private:
    */
   Energy2 _q2last;
 };
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSGSSVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSGSSVertex,1> {
-  /** Typedef of the first base class of SSGSSVertex. */
-  typedef ThePEG::Helicity::VSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSGSSVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSGSSVertex>
-  : public ClassTraitsBase<Herwig::SSGSSVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSGSSVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSGSSVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSGSSVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSGSSVertex_H */

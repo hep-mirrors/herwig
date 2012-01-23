@@ -160,9 +160,11 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 	    me[ix] += norm(diag);
 	    diagramME()[ix](if1, if2, vh1, vh2) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 

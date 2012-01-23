@@ -21,6 +21,8 @@ set LHCGenerator:EventHandler:StatLevel Full
 # Tevatron physics parameters (override defaults) 
 ##################################################
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
+set /Herwig/UnderlyingEvent/KtCut:MinKT 2.55
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.1
 
 ##################################################
 #  Create the Herwig analysis

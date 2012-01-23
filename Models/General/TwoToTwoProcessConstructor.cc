@@ -19,6 +19,9 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include <sstream>
+
+using std::stringstream;
 
 using namespace Herwig;
 
@@ -497,9 +500,11 @@ TwoToTwoProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 }
 
 set<tPDPtr>
-TwoToTwoProcessConstructor::search(VBPtr vertex, long part1, direction d1,
-			       long part2, direction d2, long part3, direction d3,
-			       direction d4) {
+TwoToTwoProcessConstructor::search(VBPtr vertex,
+				   long part1, direction d1,
+				   long part2, direction d2,
+				   long part3, direction d3,
+				   direction d4) {
   if(vertex->getNpoint() != 4) return tPDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;

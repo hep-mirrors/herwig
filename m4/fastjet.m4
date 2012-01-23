@@ -66,6 +66,21 @@ fastjet::PseudoJet pj=fastjet::PtYPhiM(10.0,0.5,1.0,0.0);
       AC_MSG_RESULT(no)
       $2
    fi
+
+   fjcheckver=`${fjconfig} --version | sed s/'\.'//g`
+   fjprefix=`${fjconfig} --prefix`
+   if test "${host_cpu}" == "x86_64" -a $fjcheckver -le 301 -a -e `${fjconfig} --prefix`/lib64 ; then
+     AC_MSG_WARN([
+     ***************************************************************************
+     FastJet <= 3.0.1 has been recognized. The FastJet libraries
+     are located in 
+       $fjprefix/lib64 which is not properly
+     communicated by fastjet-config. Consider to configure FastJet with
+       --libdir=$fjprefix/lib
+     ***************************************************************************
+     ])
+   fi
+
 fi
 
 

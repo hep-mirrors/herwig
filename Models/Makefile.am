@@ -1,3 +1,4 @@
-SUBDIRS = RSModel  StandardModel General Susy UED LH LHTP Zprime\
-          Transplanckian AnomalousCouplings Leptoquarks\
-          Feynrules ADD HiddenValley TTbAsymm
+SUBDIRS = RSModel  StandardModel General Susy UED Zprime \
+          Transplanckian ADD Leptoquarks Sextet TTbAsymm \
+          LH LHTP Zprime AnomalousCouplings \
+          Feynrules  HiddenValley

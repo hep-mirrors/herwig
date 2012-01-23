@@ -1,0 +1,43 @@
+##################################################
+# Example generator based on LEP parameters
+# usage: Herwig++ read LEP.in
+##################################################
+
+set /Herwig/Particles/t:Colour Sextet
+
+cd /Herwig/MatrixElements
+
+create Herwig::MEee2gZ2qqSextet MEee2gZ2qqSextet
+set MEee2gZ2qqSextet:MinimumFlavour 1
+set MEee2gZ2qqSextet:MaximumFlavour 5
+set MEee2gZ2qqSextet:Coupling /Herwig/Shower/AlphaQCD
+
+insert SimpleEE:MatrixElements 0 MEee2gZ2qqSextet
+set MEee2gZ2qqSextet:MinimumFlavour 6
+set MEee2gZ2qqSextet:MaximumFlavour 6
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+cd /Herwig/Generators
+
+#set LEPGenerator:EventHandler:CascadeHandler NULL
+set LEPGenerator:EventHandler:DecayHandler NULL
+set LEPGenerator:EventHandler:HadronizationHandler NULL
+
+###################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LEP-sextet LEPGenerator

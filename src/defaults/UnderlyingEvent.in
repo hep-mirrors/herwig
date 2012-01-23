@@ -11,12 +11,12 @@ library SimpleKTCut.so
 # cut on pt. Without a specific matcher object, it works on all
 # particles
 create ThePEG::SimpleKTCut KtCut
-newdef KtCut:MinKT 4.02
+newdef KtCut:MinKT 3.06
 
 # create the cuts object for the Underlying Event
 create ThePEG::Cuts UECuts
 # This should always be 2*MinKT!!
-newdef UECuts:MHatMin 8.04
+newdef UECuts:MHatMin 6.12
 
 insert UECuts:OneCuts 0 KtCut
 
@@ -37,7 +37,7 @@ insert MPIHandler:SubProcessHandlers 0 FastQCD
 insert MPIHandler:Cuts 0 UECuts
 
 # The inverse hadron radius
-newdef MPIHandler:InvRadius 1.1
+newdef MPIHandler:InvRadius 1.11
 
 # Set the details of the soft model
 
@@ -56,4 +56,4 @@ newdef MPIHandler:softInt Yes
 # described by adjusting InvRadius properly.
 
 newdef MPIHandler:twoComp Yes
-newdef MPIHandler:DLmode 3
+newdef MPIHandler:DLmode 2

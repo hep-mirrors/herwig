@@ -50,16 +50,21 @@ public:
    *  Enum for the possible colour structures
    */
   enum ColourStructure {UNDEFINED,
-			Colour11to11,Colour11to33bar,Colour11to88,
-			Colour33to33,Colour33barto11,Colour33barto33bar,
-			Colour33barto18,Colour33barto81,Colour33barto88,
-			Colour38to13,Colour38to31,
-			Colour38to83,Colour38to38,
-			Colour3bar3barto3bar3bar,
-			Colour3bar8to13bar,Colour3bar8to3bar1,
-			Colour3bar8to83bar,Colour3bar8to3bar8,
-			Colour88to11,Colour88to33bar,Colour88to88,
-			Colour88to18,Colour88to81};
+                        Colour11to11,Colour11to33bar,Colour11to88,
+                        Colour33to33,Colour33barto11,Colour33barto33bar,
+                        Colour33barto66bar, Colour33barto6bar6,
+			Colour33to61, Colour3bar3barto6bar1,
+                        Colour33to16, Colour3bar3barto16bar,
+			Colour38to3bar6, Colour38to63bar,
+                        Colour33barto18,Colour33barto81,Colour33barto88,
+                        Colour38to13,Colour38to31,
+                        Colour38to83,Colour38to38,
+                        Colour3bar3barto3bar3bar,
+                        Colour3bar8to13bar,Colour3bar8to3bar1,
+                        Colour3bar8to83bar,Colour3bar8to3bar8,
+                        Colour88to11,Colour88to33bar,
+                        Colour88to66bar,Colour88to88,
+                        Colour88to18,Colour88to81};
 
 public:
 
@@ -102,8 +107,9 @@ public:
     }
     else {
       assert( scaleChoice_== 1 );
-      Energy2 t = 0.5*(tHat()-meMomenta()[2].mass2());
-      Energy2 u = 0.5*(uHat()-meMomenta()[3].mass2());
+      Energy2 mbar = 0.5*(meMomenta()[2].mass2()+meMomenta()[3].mass2());
+      Energy2 t = 0.5*(tHat()-mbar);
+      Energy2 u = 0.5*(uHat()-mbar);
       Energy2 s = 0.5*sHat();
       return scaleFactor_*4.*s*t*u/(s*s+t*t+u*u);
     }

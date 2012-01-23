@@ -248,6 +248,7 @@ void SusyBase::Init() {
 
 void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  filename = StringUtils::stripws(filename);
   if(readFile_)
     throw SetupException() 
       << "A second SLHA file " << filename << " has been opened."

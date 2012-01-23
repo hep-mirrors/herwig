@@ -305,6 +305,11 @@ protected:
    * @param particle The particle for which the colour is updated.
    */
   void updateColour(PPtr particle);
+
+  /**
+   *  Map the colours for a given particle
+   */
+  void mapColour(PPtr original, PPtr copy);
   //@}
 
   /**
@@ -314,14 +319,22 @@ protected:
    * @param copy The colour isolated copies
    */
   void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
-
+ 
+  /**
+   *  Isolate a specific colour line
+   */
+  void isolateLine(vector<PPair>::const_iterator cit,
+		   vector<PPair> & particles,
+		   tcColinePtr oldline,
+		   tColinePtr newline);
+ 
   /**
    *  After the creatation of a ShowerParticle make sure it is properly attached 
    *  to its ColourLine
    * @param part The particle
    */
   void fixColour(tShowerParticlePtr part);
- 
+
 private:
 
   /**

@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSCNWVertex> initSSCNWVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -166,42 +160,6 @@ private:
    */
   Complex _rightlast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSCNWVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSCNWVertex,1> {
-  /** Typedef of the first base class of SSCNWVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSCNWVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSCNWVertex>
-  : public ClassTraitsBase<Herwig::SSCNWVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSCNWVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSCNWVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSCNWVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSCNWVertex_H */

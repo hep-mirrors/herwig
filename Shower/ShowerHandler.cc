@@ -717,7 +717,7 @@ void ShowerHandler::setMPIPDFs() {
 bool ShowerHandler::isResolvedHadron(tPPtr particle) {
   if(!HadronMatcher::Check(particle->data())) return false;
   for(unsigned int ix=0;ix<particle->children().size();++ix) {
-    if(particle->children()[ix]->id()==ExtraParticleID::Remnant) return true;
+    if(particle->children()[ix]->id()==ParticleID::Remnant) return true;
   }
   return false;
 }

@@ -342,7 +342,6 @@ void SMHiggsWidthGenerator::doinit() {
     // particle antiparticle
     long id=abs(mode->orderedProducts()[0]->id());
     if(mode->orderedProducts()[0]->id()==-mode->orderedProducts()[1]->id()) {
-      // do nothing for quarks.
       // leptons
       if(id>=11&&id<=15&&(id-9)%2==0) 
 	id = (id+3)/2;
@@ -350,7 +349,8 @@ void SMHiggsWidthGenerator::doinit() {
       else if(id==ParticleID::Wplus)       
 	id = 10;
       // unknown mode
-      else continue;
+      else if(id>6) 
+	continue;
     }
     else if(mode->orderedProducts()[0]->id()==mode->orderedProducts()[1]->id()) {
       // gamma gamma

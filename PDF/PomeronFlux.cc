@@ -21,6 +21,7 @@ using namespace Herwig;
 
 PomeronFlux::PomeronFlux() 
   : q2min_(ZERO)    , q2max_(10.*GeV2), 
+    xiMin_(1.0e-7)  , xiMax_(1.0), 
     alfa0P_(1.104)  , alfapP_(0.06/GeV2), 
     betaP_(5.5/GeV2), normP_(1./GeV2),
     alfa0R_(0.5)    , alfapR_(0.3/GeV2), 
@@ -70,14 +71,26 @@ void PomeronFlux::Init() {
 
   static Parameter<PomeronFlux,Energy2> interfaceQ2Min
     ("Q2Min",
-     "Minimum value of the magnitude of Q^2 for the photon",
+     "Minimum value of the magnitude of Q^2 for the pomeron/reggeon",
      &PomeronFlux::q2min_, GeV2, ZERO, ZERO, 100.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<PomeronFlux,Energy2> interfaceQ2Max
     ("Q2Max",
-     "Maximum value of the magnitude of Q^2 for the photon",
+     "Maximum value of the magnitude of Q^2 for the pomeron/reggeon",
      &PomeronFlux::q2max_, GeV2, 4.0*GeV2, ZERO, 100.0*GeV2,
+     false, false, Interface::limited);
+
+  static Parameter<PomeronFlux,double> interfaceXiMin
+    ("XiMin",
+     "Minimum value of the pomeron/reggeon xi",
+     &PomeronFlux::xiMin_,  1.0e-7 , 0., 1.,
+     false, false, Interface::limited);
+
+  static Parameter<PomeronFlux,double> interfaceXiMax
+    ("XiMax",
+     "Maximum value of the pomeron/reggeon xi",
+     &PomeronFlux::xiMax_, 1., 0., 1.,
      false, false, Interface::limited);
 
   static Parameter<PomeronFlux,double> interfaceAlpha0Pomeron
@@ -173,16 +186,22 @@ double PomeronFlux::flattenScale(tcPDPtr proton, tcPDPtr parton, const PDFCuts &
   return scale/c.scaleMaxL(l);
 }
 
-double PomeronFlux::flattenL(tcPDPtr, tcPDPtr parton, const PDFCuts & c,
+double PomeronFlux::flattenL(tcPDPtr, tcPDPtr parton, const PDFCuts&,
 			     double z, double & jacobian) const { 
+
+  const double lMax = -log(xiMin_);
+  const double lMin = -log(xiMax_);
+
+  //  cout<<"lMin "<<lMin<<" lMax "<<lMax<<endl;
+
   if(parton->id()==ParticleID::pomeron) {
-    jacobian *= c.lMax() - c.lMin();
-    return c.lMin() + z*(c.lMax() - c.lMin());
+    jacobian *= lMax - lMin;
+    return lMin + z*(lMax - lMin);
   }
   else if(parton->id()==ParticleID::reggeon) {
     double k = 2.*(alfa0R_ - 1.);
-    double rho =exp(k*c.lMin()) + z*(exp(k*c.lMax()) - exp(k*c.lMin()));
-    jacobian *= (exp(k*c.lMax()) - exp(k*c.lMin()))/(rho*k);
+    double rho =exp(k*lMin) + z*(exp(k*lMax) - exp(k*lMin));
+    jacobian *= (exp(k*lMax) - exp(k*lMin))/(rho*k);
     return log(rho)/k;
   }
   else {
@@ -198,14 +217,14 @@ Energy2 PomeronFlux::intxFx(double x, Energy2 qqmin, Energy2 qqmax,
 }
 
 void PomeronFlux::persistentOutput(PersistentOStream & os) const {
-  os << ounit(q2min_,GeV2) << ounit(q2max_,GeV2) << alfa0P_ 
+  os << ounit(q2min_,GeV2) << ounit(q2max_,GeV2) << xiMin_ << xiMax_ << alfa0P_ 
      << ounit(alfapP_,1./GeV2) << ounit(betaP_,1./GeV2) << ounit(normP_,1./GeV2)
      << alfa0R_ << ounit(alfapR_,1./GeV2) << ounit(betaR_,1./GeV2) 
      << ounit(normR_,1./GeV2) << nR_ << PDFFit_;
 }
 
 void PomeronFlux::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(q2min_,GeV2) >> iunit(q2max_,GeV2) >> alfa0P_ 
+  is >> iunit(q2min_,GeV2) >> iunit(q2max_,GeV2) >> xiMin_ >> xiMax_ >> alfa0P_ 
      >> iunit(alfapP_,1./GeV2) >> iunit(betaP_,1./GeV2) >> iunit(normP_,1./GeV2)
      >> alfa0R_ >> iunit(alfapR_,1./GeV2) >> iunit(betaR_,1./GeV2) 
      >> iunit(normR_,1./GeV2) >> nR_ >> PDFFit_;

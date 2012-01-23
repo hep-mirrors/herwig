@@ -111,12 +111,13 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/HiddenValley/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
-		Models/AnomalousCouplings/Makefile
 		Models/Zprime/Makefile
 		Models/TTbAsymm/Makefile
+		Models/AnomalousCouplings/Makefile
 		Models/Feynrules/Makefile
 		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
+		Models/Sextet/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile

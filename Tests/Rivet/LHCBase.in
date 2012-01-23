@@ -9,6 +9,8 @@ set LHCGenerator:MaxErrors 100000
 set LHCGenerator:EventHandler:StatLevel Full
 
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+set /Herwig/UnderlyingEvent/KtCut:MinKT 3.06
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
 
 ##################################################
 #  Create the Herwig analysis
