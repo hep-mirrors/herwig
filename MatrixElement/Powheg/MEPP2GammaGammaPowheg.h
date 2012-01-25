@@ -527,6 +527,11 @@ private:
    */
   ShowerAlphaPtr alphaQED_;
 
+  /**
+   *  Scale factor
+   */
+  double scalePreFactor_;
+
 };
 
 }

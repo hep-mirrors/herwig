@@ -42,7 +42,7 @@ MEPP2GammaGammaPowheg::MEPP2GammaGammaPowheg()
     supressionFunction_(0), supressionScale_(0), lambda_(20.*GeV),
     preQCDqqbarq_(5.), preQCDqqbarqbar_(0.5), preQCDqg_(50.), preQCDgqbar_(50.),
     preQEDqqbarq_(40.), preQEDqqbarqbar_(0.5), preQEDqgq_(1.), preQEDgqbarqbar_(1.),
-    minpT_(2.*GeV)
+    minpT_(2.*GeV), scalePreFactor_(1.)
 {}
 
 void MEPP2GammaGammaPowheg::getDiagrams() const {
@@ -123,7 +123,7 @@ Energy2 MEPP2GammaGammaPowheg::scale() const {
   //  if(pt1 >= pt2 ) return sqr(pt1);
   //else return sqr(pt2);
   //  return sHat();
-  return sqr(pt);
+  return scalePreFactor_*sqr(pt);
 }
 
 int MEPP2GammaGammaPowheg::nDim() const {
@@ -756,6 +756,12 @@ void MEPP2GammaGammaPowheg::Init() {
      "The constant for the Sudakov overestimate for the "
      "q qbar -> V Gamma +g with emission from the qbar",
      &MEPP2GammaGammaPowheg::preQCDqqbarqbar_, 23.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2GammaGammaPowheg,double> interfaceScalePreFactor
+    ("ScalePreFactor",
+     "Prefactor to change factorization/renormalisation scale",
+     &MEPP2GammaGammaPowheg::scalePreFactor_, 1.0, 0.1, 10.0,
      false, false, Interface::limited);
 
 //   prefactor_.push_back(preQCDqg_);
