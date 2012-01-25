@@ -28,7 +28,7 @@
 
 using namespace Herwig;
 
-MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
+MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0), scalePreFactor_(1.) {
   massOption(vector<unsigned int>(2,0));
 }
 
@@ -99,7 +99,7 @@ unsigned int MEPP2GammaJet::orderInAlphaEW() const {
 
 Energy2 MEPP2GammaJet::scale() const {
   Energy2 s(sHat()),u(uHat()),t(tHat());
-  return 2.*s*t*u/(s*s+t*t+u*u);
+  return scalePreFactor_*2.*s*t*u/(s*s+t*t+u*u);
 }
 
 Selector<MEBase::DiagramIndex>
@@ -118,11 +118,11 @@ MEPP2GammaJet::diagrams(const DiagramVector & diags) const {
 }
 
 void MEPP2GammaJet::persistentOutput(PersistentOStream & os) const {
-  os << _gluonvertex << _photonvertex << _maxflavour << _processopt;
+  os << _gluonvertex << _photonvertex << _maxflavour << _processopt << scalePreFactor_;
 }
 
 void MEPP2GammaJet::persistentInput(PersistentIStream & is, int) {
-  is >> _gluonvertex >> _photonvertex >> _maxflavour >> _processopt;
+  is >> _gluonvertex >> _photonvertex >> _maxflavour >> _processopt >> scalePreFactor_;
 }
 
 ClassDescription<MEPP2GammaJet> MEPP2GammaJet::initMEPP2GammaJet;
@@ -164,6 +164,12 @@ void MEPP2GammaJet::Init() {
      "qbarg",
      "Only include the incoming qbar g subprocess",
      3);
+
+  static Parameter<MEPP2GammaJet,double> interfaceScalePreFactor
+    ("ScalePreFactor",
+     "Prefactor for the scale",
+     &MEPP2GammaJet::scalePreFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 }
 
 Selector<const ColourLines *>

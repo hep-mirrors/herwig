@@ -574,7 +574,8 @@ void MEPP2GammaGammaPowheg::persistentOutput(PersistentOStream & os) const {
      << supressionFunction_ << supressionScale_ << ounit(lambda_,GeV)
      << alphaQCD_ << alphaQED_ << ounit(minpT_,GeV)
      << preQCDqqbarq_ << preQCDqqbarqbar_ << preQCDqg_ << preQCDgqbar_
-     << preQEDqqbarq_ << preQEDqqbarqbar_ << preQEDqgq_ << preQEDgqbarqbar_;
+     << preQEDqqbarq_ << preQEDqqbarqbar_ << preQEDqgq_ << preQEDgqbarqbar_
+     << scalePreFactor_;
 }
 
 void MEPP2GammaGammaPowheg::persistentInput(PersistentIStream & is, int) {
@@ -585,7 +586,8 @@ void MEPP2GammaGammaPowheg::persistentInput(PersistentIStream & is, int) {
      >> supressionFunction_ >> supressionScale_ >> iunit(lambda_,GeV)
      >> alphaQCD_ >> alphaQED_ >> iunit(minpT_,GeV)
      >> preQCDqqbarq_ >> preQCDqqbarqbar_ >> preQCDqg_ >> preQCDgqbar_
-     >> preQEDqqbarq_ >> preQEDqqbarqbar_ >> preQEDqgq_ >> preQEDgqbarqbar_;
+     >> preQEDqqbarq_ >> preQEDqqbarqbar_ >> preQEDqgq_ >> preQEDgqbarqbar_
+     >> scalePreFactor_;
 }
 
 ClassDescription<MEPP2GammaGammaPowheg> MEPP2GammaGammaPowheg::initMEPP2GammaGammaPowheg;
