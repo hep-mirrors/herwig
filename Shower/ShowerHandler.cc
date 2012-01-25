@@ -193,6 +193,7 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
+
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 
@@ -211,6 +212,7 @@ void ShowerHandler::cascade() {
   // and the incoming hadrons
   tPPair incomingHadrons = 
     eventHandler()->currentCollision()->incoming();
+  remDec_->setHadronContent(incomingHadrons);
   // check if incoming hadron == incoming parton
   // and get the incoming hadron if exists or parton otherwise
   incoming_ = make_pair(incomingBins.first  ? 
@@ -238,7 +240,7 @@ void ShowerHandler::cascade() {
   catch(ShowerTriesVeto &veto){
     throw Exception() << "Failed to generate the shower after "
                       << veto.tries
-                      << " attempts in Evolver::showerHardProcess()"
+                      << " attempts in ShowerHandler::cascade()"
                       << Exception::eventerror;
   }
   // if a non-hadron collision return (both incoming non-hadronic)
@@ -472,12 +474,14 @@ void ShowerHandler::findShoweringParticles() {
   hard_->setParents();
 }
 
+void ShowerHandler::prepareCascade(tSubProPtr sub) { 
+  current_ = currentStep(); 
+  subProcess_ = sub; 
+} 
+
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
-  // get the current step
-  current_ = currentStep();
-  // get the current subprocess
-  subProcess_ = sub;
+  prepareCascade(sub);
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {

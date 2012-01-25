@@ -223,7 +223,7 @@ private:
    */
   HwRemDecayer & operator=(const HwRemDecayer &);
 
-private:
+public:
   
   /**                                                                           
    * Simple struct to store info about baryon quark and di-quark                
@@ -278,6 +278,22 @@ private:
     }
 
     /**
+     * Method to determine whether \a parton is a quark from the sea.
+     * @return TRUE if \a parton is neither a valence quark nor a gluon.
+     */
+    bool isSeaQuarkData(tcPDPtr partonData) const {
+      return ((partonData->id() != ParticleID::g) && ( !isValenceQuarkData(partonData) ) );
+    }
+
+    /**
+     * Method to determine whether \a parton is a valence quark.
+     */
+    bool isValenceQuarkData(tcPDPtr partonData) const {
+      int id(sign*partonData->id());
+      return find(flav.begin(),flav.end(),id) != flav.end();
+    }
+
+    /**
      * Method to determine whether \a parton is a valence quark.
      */
     bool isValenceQuark(int id) const {
@@ -301,9 +317,26 @@ private:
   }; 
 
   /**
+   * Return the hadron content objects for the incoming particles.
+   */
+  const pair<HadronContent, HadronContent>& content() const {
+    return theContent;
+  }
+
+  /**
    * Return a HadronContent struct from a PPtr to a hadron.
    */
   HadronContent getHadronContent(tcPPtr hadron) const;
+
+  /**
+   * Set the hadron contents.
+   */
+  void setHadronContent(tPPair beam) {
+    theContent.first  = getHadronContent(beam.first);
+    theContent.second = getHadronContent(beam.second);
+  }
+
+private:
 
   /**
    * Do the forced Splitting of the Remnant with respect to the 

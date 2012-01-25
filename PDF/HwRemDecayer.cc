@@ -67,9 +67,7 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, tPPair beam, Step &
 			      Energy forcedSplitScale) {
   // the step
   thestep = &step;
-  // valence content of the hadrons
-  theContent.first  = getHadronContent(beam.first);
-  theContent.second = getHadronContent(beam.second);
+  // valence content of the hadrons done in shower handler through setHadronContent
   // momentum extracted from the hadrons
   theUsed.first  = Lorentz5Momentum();
   theUsed.second = Lorentz5Momentum();
