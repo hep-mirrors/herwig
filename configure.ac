@@ -145,7 +145,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		DipoleShower/Kinematics/Makefile
 		DipoleShower/Utility/Makefile
 		DipoleShower/AlphaS/Makefile
-		Exsample2/exsample/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		lib/Makefile

@@ -1,6 +1,6 @@
 SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
-	Shower DipoleShower Exsample2 Hadronization MatrixElement \
+	Shower DipoleShower Hadronization MatrixElement \
 	UnderlyingEvent Analysis Looptools \
 	lib src Doc Contrib Tests
 

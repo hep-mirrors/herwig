@@ -465,7 +465,6 @@ bool DipoleShowerHandler::realign() {
       (eventRecord().incoming().first->momentum() +
        eventRecord().incoming().second->momentum()).m2();
 
-    Energy q = inMomenta.first.z();
     pair<Energy,Energy> masses(eventRecord().incoming().first->mass(),
 			       eventRecord().incoming().second->mass());
     pair<Energy,Energy> qs;
