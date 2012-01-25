@@ -72,6 +72,8 @@ HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
 
+HERWIG_CHECK_BOOST
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -137,6 +139,13 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
                 Shower/Makefile
+		DipoleShower/Makefile
+		DipoleShower/Base/Makefile
+		DipoleShower/Kernels/Makefile
+		DipoleShower/Kinematics/Makefile
+		DipoleShower/Utility/Makefile
+		DipoleShower/AlphaS/Makefile
+		Exsample2/exsample/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		lib/Makefile
