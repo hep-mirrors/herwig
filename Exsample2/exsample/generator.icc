@@ -1,0 +1,178 @@
+// -*- C++ -*-
+//
+// generator.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+  template<class Function, class Random>
+  template<class SlaveStatistics>
+  void generator<Function,Random>::initialize(SlaveStatistics& opt) {
+    adaption_info_.dimension = function_->dimension();
+    adaption_info_.lower_left = function_->support().first;
+    adaption_info_.upper_right = function_->support().second;
+    if (adaption_info_.adapt.empty())
+      adaption_info_.adapt = std::vector<bool>(adaption_info_.dimension,true);
+    last_point_.resize(adaption_info_.dimension);
+    if (initialized_) return;
+    root_cell_ = 
+      binary_tree<cell>(cell(adaption_info_.lower_left,
+			     adaption_info_.upper_right,
+			     adaption_info_));
+    root_cell_.value().info().explore(rnd_gen_,adaption_info_,function_,&statistics_,opt);
+    root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
+    statistics_.reset();
+    check_events_ = adaption_info_.presampling_points;
+    initialized_ = true;
+  }
+
+  template<class Function, class Random>
+  bool generator<Function,Random>::split() {
+    if (adaption_info_.freeze_grid < statistics_.accepted() &&
+	adaption_info_.freeze_grid != 0)
+      return false;
+    if (compensating_) return false;
+    if (!(*last_cell_).info().bad(adaption_info_)) return false;
+    bool dosplit = false;
+    std::pair<std::size_t,double> sp =
+      (*last_cell_).info().get_split(adaption_info_,dosplit);
+    if (!dosplit || !adaption_info_.adapt[sp.first]) {
+      return false;
+    }
+    std::pair<binary_tree<cell>::iterator,binary_tree<cell>::iterator> spit = 
+      last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_));
+    integral_accessor iacc;
+    root_cell_.tree_accumulate(iacc,std::plus<double>());
+    did_split_ = true;
+    statistics_.reset();
+    return true;
+  }
+
+  template<class Function, class Random>
+  void generator<Function,Random>::compensate() {
+    if (!did_split_) {
+      root_cell_.value().info().overestimate(std::abs(last_value_),last_point_);
+      root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
+      return;
+    }
+    double old_norm = root_cell_.value().integral();
+    double new_norm = old_norm - (*last_cell_).integral() + std::abs(last_value_) * (*last_cell_).info().volume();
+    compensating_ = false;
+    last_cell_->missing_events() += 
+      static_cast<int>(round(((std::abs(last_value_) * old_norm)/(last_cell_->info().overestimate() * new_norm) - 1.) * 
+			     (last_cell_->info().attempted())));
+    if (last_cell_->missing_events() != 0)
+      compensating_ = true;
+    last_cell_->info().overestimate(std::abs(last_value_),last_point_);
+    last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
+    for (binary_tree<cell>::iterator it = root_cell_.begin();
+	 it != root_cell_.end(); ++it)
+      if (it != last_cell_) {
+	it->missing_events() += static_cast<int>(round((old_norm/new_norm - 1.) * (it->info().attempted())));
+	if (it->missing_events() != 0) {
+	  compensating_ = true;
+	}
+      }
+    integral_accessor iacc;
+    root_cell_.tree_accumulate(iacc,std::plus<double>());
+    statistics_.reset();
+    root_cell_.tree_accumulate(missing_accessor(),std::plus<int>());
+  }
+
+  template<class Function, class Random>
+  template<class SlaveStatistics>
+  double generator<Function,Random>::generate(SlaveStatistics& opt) {
+    unsigned long n_hit_miss = 0;
+    unsigned long n_select = 0;
+    sampling_selector<rnd_generator<Random> > sampler (rnd_gen_,compensating_);
+    missing_accessor macc;
+    if (compensating_) {
+      compensating_ = false;
+      for (binary_tree<cell>::iterator it = root_cell_.begin();
+	   it != root_cell_.end(); ++it)
+	if (it->missing_events() != 0) {
+	  compensating_ = true;
+	  break;
+	}
+    }
+    while (true) {
+      sampler.compensate = compensating_;
+      n_select = 0;
+      if (did_split_)
+	while ((last_cell_ = root_cell_.select(sampler)) == root_cell_.end()) {
+	  root_cell_.tree_accumulate(macc,std::plus<int>());
+	  if(++n_select > adaption_info_.maxtry)
+	    throw selection_maxtry();
+	}
+      else
+	last_cell_ = root_cell_.begin();
+      last_cell_->info().select(rnd_gen_,last_point_);
+      last_value_ = function_->evaluate(last_point_);
+      last_cell_->info().selected(last_point_,std::abs(last_value_),adaption_info_);
+      if (std::abs(last_value_) > last_cell_->info().overestimate()) {
+	if ( std::abs(last_value_)/last_cell_->info().overestimate() > 2. ) {
+	  last_value_ = 
+	    last_value_*(1.+exp(2.*(2.-std::abs(last_value_)/last_cell_->info().overestimate())));
+	}
+	compensate();
+	n_hit_miss = 0;
+	continue;
+      }
+      if (last_cell_->info().attempted() % check_events_ == 0) {
+	if (split()) {
+	  throw generator_update();
+	}
+      }
+      if (did_split_) {
+	statistics_.select(last_value_ * root_cell_.value().integral() /
+			   last_cell_->info().overestimate(), !compensating_);
+	opt.select(last_value_ * root_cell_.value().integral() /
+		   last_cell_->info().overestimate(), !compensating_);
+      } else {
+	statistics_.select(last_value_, !compensating_);
+	opt.select(last_value_, !compensating_);
+      }
+      if (std::abs(last_value_)/last_cell_->info().overestimate() > rnd_gen_())
+	break;
+      if(++n_hit_miss > adaption_info_.maxtry)
+	throw hit_and_miss_maxtry();
+    }
+    last_cell_->info().accept();
+    if (did_split_)
+      last_value_ *= root_cell_.value().integral() / last_cell_->info().overestimate();
+    statistics_.accept(last_value_);
+    ++check_events_;
+    if (last_value_ < 0.)
+      return -1.;
+    return 1.;
+  }
+
+  template<class Function, class Random>
+  template<class OStream>
+  void generator<Function,Random>::put (OStream& os) const {
+    adaption_info_.put(os);
+    root_cell_.put(os);
+    statistics_.put(os);
+    os << check_events_;
+    ostream_traits<OStream>::separator(os);
+    os << did_split_;
+    ostream_traits<OStream>::separator(os);
+    os << initialized_;
+    ostream_traits<OStream>::separator(os);
+  }
+
+  template<class Function, class Random>
+  template<class IStream>
+  void generator<Function,Random>::get (IStream& is) {
+    adaption_info_.get(is);
+    root_cell_.get(is);
+    statistics_.get(is);
+    is >> check_events_ >> did_split_ >> initialized_;
+  }
+
+}

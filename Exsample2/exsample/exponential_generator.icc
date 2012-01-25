@@ -1,0 +1,323 @@
+// -*- C++ -*-
+//
+// exponential_generator.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+  template<class Function, class Random>
+  void exponential_generator<Function,Random>::initialize() {
+    adaption_info_.dimension = function_->dimension();
+    adaption_info_.lower_left = function_->support().first;
+    adaption_info_.upper_right = function_->support().second;
+    if (adaption_info_.adapt.empty())
+      adaption_info_.adapt = std::vector<bool>(adaption_info_.dimension,true);
+    evolution_variable_ = function_->evolution_variable();
+    evolution_cutoff_ = function_->evolution_cutoff();
+    sample_variables_ = function_->variable_flags();
+    sample_other_variables_ = sample_variables_;
+    sample_other_variables_[evolution_variable_] = false;
+    last_point_.resize(adaption_info_.dimension);
+    parametric_selector_ = parametric_selector(&last_point_,sample_other_variables_);
+    exponent_selector_ = parametric_selector(&last_point_,sample_variables_);
+    missing_accessor_ = parametric_missing_accessor(&last_parameter_bin_);
+    parametric_sampler_ = parametric_sampling_selector<rnd_generator<Random> > 
+      (&last_point_,&last_parameter_bin_,sample_other_variables_,rnd_gen_);
+    if (initialized_) return;
+    splits_ = 0;
+    for ( std::size_t k = 0; k < adaption_info_.dimension; ++k ) {
+      if ( sample_other_variables_[k] )
+	continue;
+      parameter_splits_[k].push_back(adaption_info_.lower_left[k]);
+      parameter_splits_[k].push_back(adaption_info_.upper_right[k]);
+    }
+    root_cell_ = 
+      binary_tree<cell>(cell(adaption_info_.lower_left,
+			     adaption_info_.upper_right,
+			     sample_other_variables_,
+			     adaption_info_));
+    root_cell_.value().info().explore(rnd_gen_,adaption_info_,function_);
+    root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
+    last_exponent_integrand_.resize(1);
+    check_events_ = adaption_info_.presampling_points;
+    initialized_ = true;
+  }
+
+  template<class Function, class Random>
+  bool exponential_generator<Function,Random>::split () {
+    if (++splits_ > parameter_hash_bits/2)
+      return false;
+    if (adaption_info_.freeze_grid == accepts_)
+      return false;
+    if (compensating_)
+      return false;
+    if (!(*last_cell_).info().bad(adaption_info_)) return false;
+    bool dosplit = false;
+    std::pair<std::size_t,double> sp =
+      (*last_cell_).info().get_split(adaption_info_,dosplit);
+    if (!dosplit) return false;
+    if (!adaption_info_.adapt[sp.first]) return false;
+    last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_,sample_other_variables_));
+    if ( !sample_other_variables_[sp.first] ) {
+      if ( std::find(parameter_splits_[sp.first].begin(),parameter_splits_[sp.first].end(),sp.second)
+	   == parameter_splits_[sp.first].end() ) {
+	parameter_splits_[sp.first].push_back(sp.second);
+	std::sort(parameter_splits_[sp.first].begin(),parameter_splits_[sp.first].end());
+	if ( sp.first == evolution_variable_ ) {
+	  last_exponent_integrand_.push_back(0.);
+	}
+      }
+    }
+    did_split_ = true;
+    last_point_ = function_->parameter_point();
+    root_cell_.tree_accumulate(parametric_selector_,integral_accessor_,std::plus<double>());
+    exponents_.clear();
+    get_exponent();
+    return true;
+  }
+
+  template<class Function, class Random>
+  void exponential_generator<Function,Random>::get_exponent () {
+    last_parameter_bin_.reset();
+    root_cell_.subtree_hash (exponent_selector_,last_parameter_bin_);
+    last_exponent_ = exponents_.find(last_parameter_bin_);
+    if (last_exponent_ != exponents_.end())
+      return;
+    exponents_[last_parameter_bin_] = linear_interpolator();
+    last_exponent_ = exponents_.find(last_parameter_bin_);
+    double old_evo = last_point_[evolution_variable_];
+    std::vector<double>::iterator exp_it = last_exponent_integrand_.begin();
+    for (std::vector<double>::iterator esp = parameter_splits_[evolution_variable_].begin();
+	 esp < prior(parameter_splits_[evolution_variable_].end()); ++esp, ++exp_it) {
+      last_point_[evolution_variable_] = (*esp + *next(esp))/2.;
+      *exp_it = root_cell_.accumulate(parametric_selector_,integral_accessor_,std::plus<double>());
+    }
+    exp_it = prior(last_exponent_integrand_.end());
+    double total = 0.;
+    for (std::vector<double>::iterator esp = prior(parameter_splits_[evolution_variable_].end());
+	 esp > parameter_splits_[evolution_variable_].begin(); --esp, --exp_it) {
+      last_exponent_->second.set_interpolation(*esp,total);
+      total += (*exp_it) * ((*esp) - (*prior(esp)));
+    }
+    last_exponent_->second.set_interpolation(parameter_splits_[evolution_variable_].front(),total);
+    last_point_[evolution_variable_] = old_evo;
+  }
+
+  template<class Function, class Random>
+  std::set<std::vector<double> > 
+  exponential_generator<Function,Random>::parameter_points() {
+    std::set<std::vector<double> > res;
+    std::vector<double> pt(adaption_info_.dimension,0.);
+    recursive_parameter_points(res,pt,0);
+    return res;
+  }
+
+  template<class Function, class Random>
+  void exponential_generator<Function,Random>::
+  recursive_parameter_points(std::set<std::vector<double> >& res,
+			     std::vector<double>& pt,
+			     size_t current) {
+    if ( current == adaption_info_.dimension ) {
+      res.insert(pt);
+      return;
+    }
+    if ( sample_variables_[current] ) {
+      recursive_parameter_points(res,pt,current+1);
+      return;
+    }
+    for ( std::vector<double>::const_iterator sp =
+	    parameter_splits_[current].begin(); 
+	  sp != prior(parameter_splits_[current].end()); ++sp ) {
+      pt[current] = (*sp + *next(sp))/2.;
+      recursive_parameter_points(res,pt,current+1);
+    }
+  }
+
+  template<class Function, class Random>
+  void exponential_generator<Function,Random>::compensate() {
+    if (!did_split_) {
+      exponents_.clear();
+      root_cell_.value().info().overestimate(last_value_,last_point_);
+      root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
+      last_point_ = function_->parameter_point();
+      get_exponent();
+      return;
+    }
+    std::vector<double> themaxpoint = last_point_;
+    std::set<std::vector<double> > id_points
+      = parameter_points();
+    for ( std::set<std::vector<double> >::const_iterator id =
+	    id_points.begin(); id != id_points.end(); ++id ) {
+      last_point_ = *id;
+      get_exponent();
+    }
+    std::map<bit_container<parameter_hash_bits>,linear_interpolator >
+      old_exponents = exponents_;
+    double old_oe = last_cell_->info().overestimate();
+    last_cell_->info().overestimate(last_value_,themaxpoint);
+    last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
+    exponents_.clear();
+    for ( std::set<std::vector<double> >::const_iterator id =
+	    id_points.begin(); id != id_points.end(); ++id ) {
+      last_point_ = *id;
+      get_exponent();
+      std::map<bit_container<parameter_hash_bits>,linear_interpolator >::iterator
+	old_exp = old_exponents.find(last_parameter_bin_);
+      std::map<bit_container<parameter_hash_bits>,linear_interpolator >::iterator
+	new_exp = exponents_.find(last_parameter_bin_);
+      assert(old_exp != old_exponents.end() && new_exp != exponents_.end());
+      double old_norm = 1. - std::exp(-(old_exp->second)(adaption_info_.lower_left[evolution_variable_]));
+      double new_norm = 1. - std::exp(-(new_exp->second)(adaption_info_.lower_left[evolution_variable_]));
+      for (binary_tree<cell>::iterator it = root_cell_.begin();
+	   it != root_cell_.end(); ++it) {
+	if ( !it->info().contains_parameter(last_point_,sample_other_variables_) )
+	  continue;
+	double old_int = 0.;
+	double new_int = 0.;
+	for ( std::vector<double>::const_iterator sp = parameter_splits_[evolution_variable_].begin();
+	      sp != prior(parameter_splits_[evolution_variable_].end()); ++sp ) {
+	  if ( *sp >= it->info().lower_left()[evolution_variable_] &&
+	       *sp < it->info().upper_right()[evolution_variable_] ) {
+	    double xl = *sp;
+	    double xxl = *next(sp);
+	    double old_al = 
+	      (old_exp->second.interpolation()[xxl] - old_exp->second.interpolation()[xl]) /
+	      (xxl-xl);
+	    double old_bl = 
+	      (xxl * old_exp->second.interpolation()[xl] - 
+	       xl * old_exp->second.interpolation()[xxl]) /
+	      (xxl-xl);
+	    double new_al = 
+	      (new_exp->second.interpolation()[xxl] - new_exp->second.interpolation()[xl]) /
+	      (xxl-xl);
+	    double new_bl = 
+	      (xxl * new_exp->second.interpolation()[xl] - 
+	       xl * new_exp->second.interpolation()[xxl]) /
+	      (xxl-xl);
+	    if ( std::abs(old_al) > std::numeric_limits<double>::epsilon() ) {
+	      old_int += (exp(-(old_al*xl+old_bl)) - exp(-(old_al*xxl+old_bl)))/old_al;
+	    } else {
+	      old_int += (xxl-xl)*exp(-old_bl);
+	    }
+	    if ( std::abs(new_al) > std::numeric_limits<double>::epsilon() ) {
+	      new_int += (exp(-(new_al*xl+new_bl)) - exp(-(new_al*xxl+new_bl)))/new_al;
+	    } else {
+	      new_int += (xxl-xl)*exp(-new_bl);
+	    }
+	  }
+	}
+	double scaling;
+	if (it != last_cell_) {
+	  if (old_int > std::numeric_limits<double>::epsilon() &&							   
+	      new_int > std::numeric_limits<double>::epsilon())
+	    scaling = ((old_norm * new_int) /
+		       (new_norm * old_int)) - 1.;
+	  else
+	    scaling = 0.;
+	} else {
+	  if (old_int > std::numeric_limits<double>::epsilon() &&							   
+	      new_int > std::numeric_limits<double>::epsilon())
+	    scaling = ((last_value_ * old_norm * new_int) /
+		       (old_oe * new_norm * old_int)) - 1.;
+	  else
+	    scaling = 0.;
+	}
+	it->info().parametric_missing(last_parameter_bin_,
+				      it->info().parametric_missing(last_parameter_bin_) +
+				      static_cast<int>(round(scaling * it->info().attempted())));
+	if (it->info().parametric_missing(last_parameter_bin_) != 0) {
+	  compensating_ = true;
+	}
+      }
+    }
+    last_point_ = function_->parameter_point();
+  }
+
+  template<class Function, class Random>
+  double exponential_generator<Function,Random>::generate () {
+    if (compensating_) {
+      compensating_ = false;
+      for (binary_tree<cell>::iterator it = root_cell_.begin();
+	   it != root_cell_.end(); ++it)
+	if (it->info().parametric_compensating()) {
+	  compensating_ = true;
+	  break;
+	}
+      parametric_sampler_.compensate(compensating_);
+    }
+    last_point_ = function_->parameter_point();
+    if (last_point_[evolution_variable_] < evolution_cutoff_) {
+      return 0.;
+    }
+    unsigned long n_hit_miss = 0;
+    unsigned long n_select = 0;
+    double minus_log_r;
+    root_cell_.tree_accumulate(parametric_selector_,integral_accessor_,std::plus<double>());
+    get_exponent();
+    while (true) {
+      n_select = 0;
+      minus_log_r = -std::log(rnd_gen_()) + last_exponent_->second(last_point_[evolution_variable_]);
+      if (!last_exponent_->second.invertible(minus_log_r)) {
+	return 0.;
+      }
+      try {
+	last_point_[evolution_variable_] = last_exponent_->second.unique_inverse(minus_log_r);
+      } catch (constant_interpolation& c) {
+	last_point_[evolution_variable_] = rnd_gen_(c.range.first,c.range.second);
+      }
+      assert(!std::isnan(last_point_[evolution_variable_]) &&
+	     !std::isinf(last_point_[evolution_variable_]));
+      if (last_point_[evolution_variable_] < evolution_cutoff_) {
+	return 0.;
+      }
+      ++attempts_;
+      if (compensating_) {
+	root_cell_.tree_accumulate(missing_accessor_,std::plus<int>());
+      }
+      if (parameter_splits_[evolution_variable_].size() > 2)
+	root_cell_.tree_accumulate(parametric_selector_,integral_accessor_,std::plus<double>());
+      if (did_split_)
+	while ((last_cell_ = root_cell_.select(parametric_sampler_)) == root_cell_.end()) {
+	  root_cell_.tree_accumulate(missing_accessor_,std::plus<int>());
+	  if(++n_select > adaption_info_.maxtry)
+	    throw selection_maxtry();
+	}
+      else
+	last_cell_ = root_cell_.begin();
+      last_cell_->info().select(rnd_gen_,last_point_,sample_other_variables_);
+      last_value_ = function_->evaluate(last_point_);
+      assert(last_value_ >= 0.);
+      last_cell_->info().selected(last_point_,last_value_,adaption_info_);
+      if (last_value_ > last_cell_->info().overestimate()) {
+	if ( std::abs(last_value_)/last_cell_->info().overestimate() > 2. ) {
+	  last_value_ = 
+	    last_value_*(1.+exp(2.*(2.-std::abs(last_value_)/last_cell_->info().overestimate())));
+	}
+	compensate();
+	throw exponential_regenerate();
+      } 
+      if (last_cell_->info().attempted() % check_events_ == 0) {
+	if (split()) {
+	  throw exponential_regenerate();
+	}
+      }
+      if (last_value_/last_cell_->info().overestimate() > rnd_gen_())
+	break;
+      if(++n_hit_miss > adaption_info_.maxtry)
+	throw hit_and_miss_maxtry();
+    }
+    if (last_value_ == 0.)
+      return 0.;
+    ++accepts_;
+    ++check_events_;
+    last_cell_->info().accept();
+    return 1.;
+  }
+
+
+}
