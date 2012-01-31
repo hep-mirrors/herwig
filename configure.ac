@@ -135,6 +135,15 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
                 MatrixElement/Gamma/Makefile
+                MatrixElement/Matchbox/Makefile
+                MatrixElement/Matchbox/Base/Makefile
+                MatrixElement/Matchbox/Utility/Makefile
+                MatrixElement/Matchbox/Phasespace/Makefile
+                MatrixElement/Matchbox/Dipoles/Makefile
+                MatrixElement/Matchbox/InsertionOperators/Makefile
+                MatrixElement/Matchbox/Powheg/Makefile
+                MatrixElement/Matchbox/Builtin/Makefile
+                MatrixElement/Matchbox/Builtin/Processes/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile

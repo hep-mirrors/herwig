@@ -1,0 +1,140 @@
+################################################################################
+# Setup the dipole shower parameters
+################################################################################
+
+cd /Herwig/DipoleShower
+
+################################################################################
+# setup alphas
+################################################################################
+
+cp NLOAlphaS AlphaS
+set AlphaS:input_alpha_s 0.1175576
+set AlphaS:freezing_scale 0.0*GeV
+
+################################################################################
+# matching parameters
+################################################################################
+
+set /Herwig/Model:QCD/RunningAlphaS AlphaS
+
+set MECorrectionHandler:FFPtCut 1.245924*GeV
+set MECorrectionHandler:FFScreeningScale 0.0*GeV
+
+set MECorrectionHandler:FIPtCut 0.706986*GeV
+set MECorrectionHandler:FIScreeningScale 1.017780*GeV
+
+set MECorrectionHandler:IIPtCut 0.275894*GeV
+set MECorrectionHandler:IIScreeningScale 0.254028*GeV
+
+################################################################################
+# shower parameters
+################################################################################
+
+set DipoleShowerHandler:GlobalAlphaS AlphaS
+
+set DipoleShowerHandler:EvolutionOrdering ChainPtOrdering
+
+set IntrinsicPtGenerator:ValenceIntrinsicPtScale 1.26905*GeV
+set IntrinsicPtGenerator:SeaIntrinsicPtScale 1.1613*GeV
+
+cd /Herwig/DipoleShower/Kinematics
+
+set FFLightKinematics:IRCutoff  1.245924*GeV
+set FILightKinematics:IRCutoff  0.706986*GeV
+
+set IFLightKinematics:IRCutoff  0.706986*GeV
+set IILightKinematics:IRCutoff  0.275894*GeV
+
+################################################################################
+# shower parameters at boundary to non-perturbative domain
+################################################################################
+
+set /Herwig/Particles/g:ConstituentMass 1.006752*GeV
+
+cd /Herwig/DipoleShower/Kernels
+
+set FFgx2ggxDipoleKernel:ScreeningScale     0.0*GeV
+set FFqx2qgxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FFgx2uuxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2ddxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2ssxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FFgx2ccxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2bbxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FIgx2ggxDipoleKernel:ScreeningScale     1.017780*GeV
+set FIqx2qgxDipoleKernel:ScreeningScale     1.017780*GeV
+
+set FIgx2uuxDipoleKernel:ScreeningScale     1.017780*GeV
+set FIgx2ddxDipoleKernel:ScreeningScale     1.017780*GeV
+set FIgx2ssxDipoleKernel:ScreeningScale     1.017780*GeV
+
+set FIgx2ccxDipoleKernel:ScreeningScale     1.017780*GeV
+set FIgx2bbxDipoleKernel:ScreeningScale     1.017780*GeV
+
+set IFgx2ggxDipoleKernel:ScreeningScale     1.017780*GeV
+set IFqx2qgxDipoleKernel:ScreeningScale     1.017780*GeV
+set IFqx2gqxDipoleKernel:ScreeningScale     1.017780*GeV
+
+set IFgx2uubarxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2ubaruxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2ddbarxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2dbardxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2ssbarxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2sbarsxDipoleKernel:ScreeningScale  1.017780*GeV
+
+set IFgx2ccbarxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2cbarcxDipoleKernel:ScreeningScale  1.017780*GeV
+
+set IIgx2ggxDipoleKernel:ScreeningScale     0.254028*GeV
+set IIqx2qgxDipoleKernel:ScreeningScale     0.254028*GeV
+set IIqx2gqxDipoleKernel:ScreeningScale     0.254028*GeV
+
+set IIgx2uubarxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2ubaruxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2ddbarxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2dbardxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2ssbarxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2sbarsxDipoleKernel:ScreeningScale  0.254028*GeV
+
+set IIgx2ccbarxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2cbarcxDipoleKernel:ScreeningScale  0.254028*GeV
+
+################################################################################
+# hadronization parameters
+################################################################################
+
+cd /Herwig/Hadronization
+
+set ClusterFissioner:ClMaxLight                  3.66643*GeV
+set ClusterFissioner:ClPowLight                  5.682173
+set ClusterFissioner:PSplitLight                 0.7712919
+set ClusterDecayer:ClDirLight                    1
+set ClusterDecayer:ClSmrLight                    3.118342
+
+set ClusterFissioner:ClMaxCharm                  3.66643*GeV
+set ClusterFissioner:ClPowCharm                  5.682173
+set ClusterFissioner:PSplitCharm                 0.7712919
+set ClusterDecayer:ClDirCharm                    1
+set ClusterDecayer:ClSmrCharm                    3.118342
+set LightClusterDecayer:SingleHadronLimitCharm   0.0
+
+set ClusterFissioner:ClMaxBottom                 3.66643*GeV
+set ClusterFissioner:ClPowBottom                 5.682173
+set ClusterFissioner:PSplitBottom                0.7712919
+set ClusterDecayer:ClDirBottom                   1
+set ClusterDecayer:ClSmrBottom                   3.118342
+set LightClusterDecayer:SingleHadronLimitBottom  0.0
+
+set HadronSelector:PwtUquark                     1.0
+set HadronSelector:PwtDquark                     1.0
+set HadronSelector:PwtSquark                     1.0
+set HadronSelector:PwtCquark                     1.0
+set HadronSelector:PwtBquark                     1.0
+set HadronSelector:PwtDIquark                    1.0
+set HadronSelector:SngWt                         1.0
+set HadronSelector:DecWt                         1.0
+
+cd /

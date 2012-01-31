@@ -1,0 +1,324 @@
+################################################################################
+# Input file to setup Matchbox NLO matrix elements
+#
+# The Matchbox NLO matrix elements are provided as SubProcessHandlers
+# containing a complete and consistent NLO setup.
+#
+# Important notes on usage and matching issues:
+# -------------------------------------------------------------------------
+#
+# * Matrix elements with names ending in ...NLO can be directly run
+#   with the dipole shower in case of which a MC@NLO-type matching
+#   is carried out
+#
+# * Matrix elements with names ending in ...NLOInclusive serve
+#   as fixed order calculations for POWHEG Matching, where
+#   inserting /Herwig/DipoleShower/MECorrectionHandler as
+#   PostSubprocessHandler is mandatory to generate the real
+#   emission piece.
+#
+# * Be aware that any other usage will produce inconsistencies.
+#
+# * In addition, Matrix elements with names ending in ...NLO can be run
+#   as plain NLO using dedicated analysis handlers without any showering
+#   or hadronization. This featrue is currently not completely supported.
+#
+# Matrix elements currently provided are:
+# -------------------------------------------------------------------------
+#
+# * e+e- to two jets
+#
+#   /Herwig/MatrixElements/Matchbox/LeptonLepton/MEllbar2JetJetLO
+#   /Herwig/MatrixElements/Matchbox/LeptonLepton/MEllbar2JetJetNLO
+#   /Herwig/MatrixElements/Matchbox/LeptonLepton/MEllbar2JetJetNLOInclusive
+#
+# * DIS (charged lepton, neutral current)
+#
+#   /Herwig/MatrixElements/Matchbox/LeptonHadron/MElP2lJetLO
+#   /Herwig/MatrixElements/Matchbox/LeptonHadron/MElP2lJetNLO
+#   /Herwig/MatrixElements/Matchbox/LeptonHadron/MElP2lJetNLOInclusive
+#
+# * Drell-Yan (Z/gamma)
+#
+#   /Herwig/MatrixElements/Matchbox/HadronHadron/MEPP2llbarLO
+#   /Herwig/MatrixElements/Matchbox/HadronHadron/MEPP2llbarNLO
+#   /Herwig/MatrixElements/Matchbox/HadronHadron/MEPP2llbarNLOInclusive
+#   
+#
+################################################################################
+
+
+
+
+
+################################################################################
+#
+# /!\  Nothing to be done below here, except you exactly know
+#      what you're doing.
+#
+#      Really.
+#
+################################################################################
+
+# .....
+# ....
+# ...
+# ..
+# .
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+# For the moment, we can only deal with massless partons
+################################################################################
+
+set /Herwig/Particles/d:NominalMass 0*GeV
+set /Herwig/Particles/dbar:NominalMass 0*GeV
+set /Herwig/Particles/u:NominalMass 0*GeV
+set /Herwig/Particles/ubar:NominalMass 0*GeV
+set /Herwig/Particles/s:NominalMass 0*GeV
+set /Herwig/Particles/sbar:NominalMass 0*GeV
+set /Herwig/Particles/c:NominalMass 0*GeV
+set /Herwig/Particles/cbar:NominalMass 0*GeV
+set /Herwig/Particles/b:NominalMass 0*GeV
+set /Herwig/Particles/bbar:NominalMass 0*GeV
+
+library HwMatchbox.so
+
+mkdir /Herwig/MatrixElements/Matchbox
+cd /Herwig/MatrixElements/Matchbox
+
+################################################################################
+# Phasespace generators
+################################################################################
+mkdir Phasespace
+cd Phasespace
+
+create Herwig::MatchboxRambo Rambo
+create Herwig::TreePhasespace TreePhasespace
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir LeptonLepton
+cd LeptonLepton
+
+################################################################################
+# e+e- to jj
+################################################################################
+
+create Herwig::MatchboxMEllbar2qqbar MEllbar2qqbar
+set MEllbar2qqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+insert MEllbar2qqbar:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEllbar2qqbar:QuarkFlavours[0] /Herwig/Particles/d
+insert MEllbar2qqbar:QuarkFlavours[1] /Herwig/Particles/u
+insert MEllbar2qqbar:QuarkFlavours[2] /Herwig/Particles/s
+insert MEllbar2qqbar:QuarkFlavours[3] /Herwig/Particles/c
+insert MEllbar2qqbar:QuarkFlavours[4] /Herwig/Particles/b
+
+create Herwig::MatchboxMEllbar2qqbarg MEllbar2qqbarg
+insert MEllbar2qqbarg:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEllbar2qqbarg:QuarkFlavours[0] /Herwig/Particles/d
+insert MEllbar2qqbarg:QuarkFlavours[1] /Herwig/Particles/u
+insert MEllbar2qqbarg:QuarkFlavours[2] /Herwig/Particles/s
+insert MEllbar2qqbarg:QuarkFlavours[3] /Herwig/Particles/c
+insert MEllbar2qqbarg:QuarkFlavours[4] /Herwig/Particles/b
+
+#-------------------------------------------------------------------------------
+
+create ThePEG::SubProcessHandler MEllbar2JetJetLO
+set MEllbar2JetJetLO:PartonExtractor /Herwig/Partons/EEExtractor
+set MEllbar2JetJetLO:Cuts /Herwig/Cuts/EECuts
+insert MEllbar2JetJetLO:MatrixElements[0] MEllbar2qqbar
+
+create Herwig::MatchboxFactory MEllbar2JetJetNLO
+set MEllbar2JetJetNLO:PartonExtractor /Herwig/Partons/EEExtractor
+set MEllbar2JetJetNLO:Cuts /Herwig/Cuts/EECuts
+insert MEllbar2JetJetNLO:BornMEs[0] MEllbar2qqbar
+insert MEllbar2JetJetNLO:RealEmissionMEs[0] MEllbar2qqbarg
+
+create Herwig::PowhegFactory MEllbar2JetJetNLOInclusive
+set MEllbar2JetJetNLOInclusive:PartonExtractor /Herwig/Partons/EEExtractor
+set MEllbar2JetJetNLOInclusive:Cuts /Herwig/Cuts/EECuts
+set MEllbar2JetJetNLOInclusive:MatchboxFactory MEllbar2JetJetNLO
+set MEllbar2JetJetNLOInclusive:BornScreening Off
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir LeptonHadron
+cd LeptonHadron
+
+################################################################################
+# DIS
+################################################################################
+
+create Herwig::MatchboxMElP2lJet MElq2lq
+set MElq2lq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+insert MElq2lq:LeptonFlavours[0] /Herwig/Particles/e+
+insert MElq2lq:LeptonFlavours[1] /Herwig/Particles/e-
+insert MElq2lq:QuarkFlavours[0] /Herwig/Particles/d
+insert MElq2lq:QuarkFlavours[1] /Herwig/Particles/u
+insert MElq2lq:QuarkFlavours[2] /Herwig/Particles/s
+insert MElq2lq:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMElP2lJet MElqbar2lqbar
+set MElqbar2lqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+insert MElqbar2lqbar:LeptonFlavours[0] /Herwig/Particles/e+
+insert MElqbar2lqbar:LeptonFlavours[1] /Herwig/Particles/e-
+insert MElqbar2lqbar:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MElqbar2lqbar:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MElqbar2lqbar:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MElqbar2lqbar:QuarkFlavours[3] /Herwig/Particles/cbar
+
+create Herwig::MatchboxMElq2lqg MElq2lqg
+insert MElq2lqg:LeptonFlavours[0] /Herwig/Particles/e+
+insert MElq2lqg:LeptonFlavours[1] /Herwig/Particles/e-
+insert MElq2lqg:QuarkFlavours[0] /Herwig/Particles/d
+insert MElq2lqg:QuarkFlavours[1] /Herwig/Particles/u
+insert MElq2lqg:QuarkFlavours[2] /Herwig/Particles/s
+insert MElq2lqg:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMElq2lqg MElqbar2lqbarg
+insert MElqbar2lqbarg:LeptonFlavours[0] /Herwig/Particles/e+
+insert MElqbar2lqbarg:LeptonFlavours[1] /Herwig/Particles/e-
+insert MElqbar2lqbarg:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MElqbar2lqbarg:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MElqbar2lqbarg:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MElqbar2lqbarg:QuarkFlavours[3] /Herwig/Particles/cbar
+
+create Herwig::MatchboxMElg2lqqbar MElg2lqqbar
+insert MElg2lqqbar:LeptonFlavours[0] /Herwig/Particles/e+
+insert MElg2lqqbar:LeptonFlavours[1] /Herwig/Particles/e-
+insert MElg2lqqbar:QuarkFlavours[0] /Herwig/Particles/d
+insert MElg2lqqbar:QuarkFlavours[1] /Herwig/Particles/u
+insert MElg2lqqbar:QuarkFlavours[2] /Herwig/Particles/s
+insert MElg2lqqbar:QuarkFlavours[3] /Herwig/Particles/c
+
+#-------------------------------------------------------------------------------
+
+create ThePEG::SubProcessHandler MElP2lJetLO
+set MElP2lJetLO:PartonExtractor /Herwig/Partons/DISExtractor
+set MElP2lJetLO:Cuts /Herwig/Cuts/DISCuts
+insert MElP2lJetLO:MatrixElements[0] MElq2lq
+insert MElP2lJetLO:MatrixElements[1] MElqbar2lqbar
+
+create Herwig::MatchboxFactory MElP2lJetNLO
+set MElP2lJetNLO:PartonExtractor /Herwig/Partons/DISExtractor
+set MElP2lJetNLO:Cuts /Herwig/Cuts/DISCuts
+insert MElP2lJetNLO:BornMEs[0] MElq2lq
+insert MElP2lJetNLO:BornMEs[1] MElqbar2lqbar
+insert MElP2lJetNLO:RealEmissionMEs[0] MElq2lqg
+insert MElP2lJetNLO:RealEmissionMEs[1] MElqbar2lqbarg
+insert MElP2lJetNLO:RealEmissionMEs[2] MElg2lqqbar
+
+create Herwig::PowhegFactory MElP2lJetNLOInclusive
+set MElP2lJetNLOInclusive:PartonExtractor /Herwig/Partons/DISExtractor
+set MElP2lJetNLOInclusive:Cuts /Herwig/Cuts/DISCuts
+set MElP2lJetNLOInclusive:MatchboxFactory MElP2lJetNLO
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir HadronHadron
+cd HadronHadron
+
+################################################################################
+# DY
+################################################################################
+
+create Herwig::MatchboxMEPP2llbar MEqqbar2llbar
+set MEqqbar2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+insert MEqqbar2llbar:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqqbar2llbar:QuarkFlavours[0] /Herwig/Particles/d
+insert MEqqbar2llbar:QuarkFlavours[1] /Herwig/Particles/u
+insert MEqqbar2llbar:QuarkFlavours[2] /Herwig/Particles/s
+insert MEqqbar2llbar:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMEPP2llbar MEqbarq2llbar
+set MEqbarq2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+insert MEqbarq2llbar:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqbarq2llbar:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MEqbarq2llbar:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MEqbarq2llbar:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MEqbarq2llbar:QuarkFlavours[3] /Herwig/Particles/cbar
+
+create Herwig::MatchboxMEqqbar2llbarg MEqqbar2llbarg
+insert MEqqbar2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqqbar2llbarg:QuarkFlavours[0] /Herwig/Particles/d
+insert MEqqbar2llbarg:QuarkFlavours[1] /Herwig/Particles/u
+insert MEqqbar2llbarg:QuarkFlavours[2] /Herwig/Particles/s
+insert MEqqbar2llbarg:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMEqqbar2llbarg MEqbarq2llbarg
+insert MEqbarq2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqbarq2llbarg:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MEqbarq2llbarg:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MEqbarq2llbarg:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MEqbarq2llbarg:QuarkFlavours[3] /Herwig/Particles/cbar
+
+create Herwig::MatchboxMEqg2llbarq MEqg2llbarq
+set MEqg2llbarq:WhichGluon 1
+insert MEqg2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqg2llbarq:QuarkFlavours[0] /Herwig/Particles/d
+insert MEqg2llbarq:QuarkFlavours[1] /Herwig/Particles/u
+insert MEqg2llbarq:QuarkFlavours[2] /Herwig/Particles/s
+insert MEqg2llbarq:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMEqg2llbarq MEgq2llbarq
+set MEgq2llbarq:WhichGluon 0
+insert MEgq2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEgq2llbarq:QuarkFlavours[0] /Herwig/Particles/d
+insert MEgq2llbarq:QuarkFlavours[1] /Herwig/Particles/u
+insert MEgq2llbarq:QuarkFlavours[2] /Herwig/Particles/s
+insert MEgq2llbarq:QuarkFlavours[3] /Herwig/Particles/c
+
+create Herwig::MatchboxMEqg2llbarq MEqbarg2llbarqbar
+set MEqbarg2llbarqbar:WhichGluon 1
+insert MEqbarg2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEqbarg2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MEqbarg2llbarqbar:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MEqbarg2llbarqbar:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MEqbarg2llbarqbar:QuarkFlavours[3] /Herwig/Particles/cbar
+
+create Herwig::MatchboxMEqg2llbarq MEgqbar2llbarqbar
+set MEgqbar2llbarqbar:WhichGluon 0
+insert MEgqbar2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
+insert MEgqbar2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
+insert MEgqbar2llbarqbar:QuarkFlavours[1] /Herwig/Particles/ubar
+insert MEgqbar2llbarqbar:QuarkFlavours[2] /Herwig/Particles/sbar
+insert MEgqbar2llbarqbar:QuarkFlavours[3] /Herwig/Particles/cbar
+
+#-------------------------------------------------------------------------------
+
+create ThePEG::SubProcessHandler MEPP2llbarLO
+set MEPP2llbarLO:PartonExtractor /Herwig/Partons/QCDExtractor
+set MEPP2llbarLO:Cuts /Herwig/Cuts/QCDCuts
+insert MEPP2llbarLO:MatrixElements[0] MEqqbar2llbar
+insert MEPP2llbarLO:MatrixElements[1] MEqbarq2llbar
+
+create Herwig::MatchboxFactory MEPP2llbarNLO
+set MEPP2llbarNLO:PartonExtractor /Herwig/Partons/QCDExtractor
+set MEPP2llbarNLO:Cuts /Herwig/Cuts/QCDCuts
+insert MEPP2llbarNLO:BornMEs[0] MEqqbar2llbar
+insert MEPP2llbarNLO:BornMEs[1] MEqbarq2llbar
+insert MEPP2llbarNLO:RealEmissionMEs[0] MEqqbar2llbarg
+insert MEPP2llbarNLO:RealEmissionMEs[1] MEqbarq2llbarg
+insert MEPP2llbarNLO:RealEmissionMEs[2] MEqg2llbarq
+insert MEPP2llbarNLO:RealEmissionMEs[3] MEgq2llbarq
+insert MEPP2llbarNLO:RealEmissionMEs[4] MEqbarg2llbarqbar
+insert MEPP2llbarNLO:RealEmissionMEs[5] MEgqbar2llbarqbar
+
+create Herwig::PowhegFactory MEPP2llbarNLOInclusive
+set MEPP2llbarNLOInclusive:PartonExtractor /Herwig/Partons/QCDExtractor
+set MEPP2llbarNLOInclusive:Cuts /Herwig/Cuts/QCDCuts
+set MEPP2llbarNLOInclusive:MatchboxFactory MEPP2llbarNLO
+
+cd /
+
