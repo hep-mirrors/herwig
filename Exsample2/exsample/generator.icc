@@ -44,8 +44,7 @@ namespace exsample {
     if (!dosplit || !adaption_info_.adapt[sp.first]) {
       return false;
     }
-    std::pair<binary_tree<cell>::iterator,binary_tree<cell>::iterator> spit = 
-      last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_));
+    last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_));
     integral_accessor iacc;
     root_cell_.tree_accumulate(iacc,std::plus<double>());
     did_split_ = true;
@@ -123,7 +122,7 @@ namespace exsample {
 	n_hit_miss = 0;
 	continue;
       }
-      if (last_cell_->info().attempted() % check_events_ == 0) {
+      if (last_cell_->info().attempted() > check_events_) {
 	if (split()) {
 	  throw generator_update();
 	}

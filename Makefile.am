@@ -1,7 +1,7 @@
 SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower DipoleShower Hadronization MatrixElement \
-	UnderlyingEvent Analysis Looptools \
+	UnderlyingEvent Analysis Looptools Exsample2 \
 	lib src Doc Contrib Tests
 
 EXTRA_DIST = GUIDELINES

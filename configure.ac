@@ -144,6 +144,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Powheg/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Processes/Makefile
+		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
