@@ -2753,7 +2753,7 @@ void MEqq2gZ2ffPowhegQED::hardQEDIFEmission(vector<ShowerProgenitorPtr> & partic
     Energy pT = xT*0.5*Q;
     if(pT<pTmax) continue;
     pTmax = pT;
-    double isif = zp>xp ? 4 : 0;
+    int isif = zp>xp ? 4 : 0;
     emission_type = 11+idipole+isif;
     if(idipole==0) 
       realEmissionQEDIF13_ = realMomenta;
