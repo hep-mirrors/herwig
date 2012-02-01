@@ -851,7 +851,8 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
   if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_ != 2)
     output += sqr(double(mePartonData()[0]->iCharge())/3.)*EMfact_*2.;
   // FSR QED correction
-  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_ != 1) {
+  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_ != 1 &&
+     mePartonData()[2]->charged()) {
     double mu2 = sqr(mePartonData()[2]->mass())/sHat();
     double mu = sqrt(mu2), mu4 = sqr(mu2), lmu = log(mu);
     double v = sqrt(1.-4.*mu2),v2 = sqr(v),omv = 4.*mu2/(1.+v);
@@ -892,7 +893,8 @@ double MEqq2gZ2ffPowhegQED::subtractedVirtual() const {
       2.*EMfact_*(f1+fNS+VNS + f2*f2term_/loME_);
   }
   // ISR/FSR interference
-  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_==0 ) {
+  if((corrections_==2||corrections_==4||corrections_==5) && QEDContributions_==0 &&
+     mePartonData()[2]->charged()) {
     output += alphaEM_*oneLoopVertex_->
       neutralCurrentQEDME(mePartonData()[0],mePartonData()[1],
        			  mePartonData()[2],mePartonData()[3],
