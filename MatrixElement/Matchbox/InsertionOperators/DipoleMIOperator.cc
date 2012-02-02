@@ -135,7 +135,7 @@ double DipoleMIOperator::me2() const {
       // renormalization scale (should cancel with something)
       Energy2 mu2 = lastBorn()->renormalizationScale();
       
-      // ASSUMING INCOMING PARTICLES HAVE ARE AT 0 AND 1 IN mePartonData, OUTGOING >= 2
+      // outgoing partons start at id 2
       // this is the I operator in the case of no initial-state hadrons (6.16)
       if( idj>=2 && idk>=2 )
 	res +=
@@ -175,36 +175,6 @@ double DipoleMIOperator::me2() const {
   if( gsl_isnan(res) ) cout << "DipoleMIOperator::me2 nan" << endl;
   if( gsl_isinf(res) ) cout << "DipoleMIOperator::me2 inf" << endl;
   
-  // MAKE SURE lastScale() RETURNS (pi+pj)^2, NOT  2.*pi*pj !!!!
-  // check against e+ e- --> q qbar
-  
-//   Energy2 mj2 =  sqr(mePartonData()[appliedParton]->mass());
-//   Energy2 sjk = 2.*meMomenta()[2]*meMomenta()[3];
-//   Energy2 Qjk2 = sjk + 2.*mj2;
-//   
-//   double v = sqrt(1.-4.*mj2/Qjk2);
-//   double VS = (1.+v*v)/(2.*v)*log(2./(1.+v*v))*log((1.-v)/(1.+v)) - 
-//     (1.+v*v)/(4.*v)*sqr(log((1.-v)/(1.+v))) - (1.+v*v)/(2.*v)*sqr(pi)/6. +
-//     (1.+v*v)/(2.*v)*log(2./(1.+v*v))*log((1.-v)/(1.+v));
-//   double VNS = 3./2.*log((1.+v*v)/2.) +
-//     (1.+v*v)/(2.*v) * ( 2.*log((1.-v)/(1.+v))*log(2.*(1.+v*v)/sqr(1.+v)) +
-//       2.*gsl_sf_dilog(sqr((1.-v)/(1.+v))) - 2.*gsl_sf_dilog(2.*v/(1.+v)) - sqr(pi)/6. ) +
-//     log(1.-1./2.*sqrt(1.-v*v)) - 2.*log(1.-sqrt(1.-v*v)) -
-//       (1.-v*v)/(1.+v*v)*log(sqrt(1.-v*v)/(2.-sqrt(1.-v*v))) -
-//     sqrt(1.-v*v)/(2.-sqrt(1.-v*v)) + 2.*(1.-v*v-sqrt(1.-v*v))/(1.+v*v) + sqr(pi)/2.;
-//     
-//     
-//   double target = 2.*lastBorn()->lastAlphaS() / (2.*pi) * CF *
-//     ( VS + VNS + 1./2.*log((1.-v*v)/4.) - 2. + 3./2.*log(2./(1+v*v)) -
-//       sqr(pi)/3. + (gammaQuark+KQuark)/CF );
-//   
-//   target *= lastBorn()->me2();
-//    
-//   cout << "+++++++++++++++++++++++++++++MI diff resc " << (res-target)/(res+target) << endl;
-//   cout << "res " << res << "  target " << target << " @id " << mePartonData()[appliedParton]->id() << endl;
-//   cout << "VS+VNS part " << 2.*lastBorn()->lastAlphaS() / (2.*pi) * CF * ( VS + VNS ) <<
-//     "  while VS+VNS " << VS+VNS << endl;
-  
   return res;
 
 }
@@ -213,7 +183,6 @@ double DipoleMIOperator::GammaQuark(const ParticleData& j) const {
   // renormalization scale (should cancel with something)
   Energy2 mu2 = lastBorn()->renormalizationScale();
   // massless quark: only finite remainder
-  // MAKE SURE lastScale() RETURNS (pi+pj)^2, NOT  2.*pi*pj !!!!
   if( j.mass() == ZERO ) return gammaQuark * log(lastScale()/mu2);
   // massive quark
   return CF * ( log(lastScale()/mu2) + 0.5*log(sqr(j.mass())/mu2) - 2. );
@@ -230,7 +199,6 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   double res = 0.;
   
   Energy2 mj2 = sqr(j.mass()), mk2 = sqr(k.mass());
-//   Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
   Energy2 Qjk2 = sjk + mj2 + mk2;
   Energy Qjk = sqrt(Qjk2);
   Energy mj = j.mass(), mk = k.mass();
@@ -302,7 +270,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       if( j.id() == ParticleID::g ) {
 	// sum over all quark flavours
 	if( !mFSetEmpty )
-	  for( int f=1; f< 7; ++f ) {
+	  // TODO: make fmax depend on matrix element
+	  for( int f=1; f< 6; ++f ) {
 	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
 	    // only heavy quarks
 	    if( mF2 == ZERO ) continue;
@@ -310,7 +279,6 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;
 	    double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
-// 	    double rho2 = sqrt( 1. - 4.*mF2 / (Qjk2-mk2) );
 	    res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/Qjk2) );
 	  }
       }
@@ -319,7 +287,6 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
     else {
       assert( abs(k.id()) < 7);
       // part common to j massless quark or gluon
-//     if( mk > ZERO )
       res += sqr(pi)/6. - gsl_sf_dilog(sjk/Qjk2);
       // j is massless (incoming) quark
       if( abs(j.id()) < 7)
@@ -327,12 +294,12 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       // j is gluon
       else if( j.id() == ParticleID::g ) {
 	// part independent of other heavy quark flavours
-  //       if( mk > ZERO )
 	res += gammaGluon/CA * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) ) +
 	  (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLight()-1.) * log(2.*mk/(Qjk+mk));
 	// part containing other heavy quark flavours
 	if( !mFSetEmpty )
-	  for( int f=1; f< 7; ++f ) {
+	  // TODO: make fmax dependent on matrix element
+	  for( int f=1; f< 6; ++f ) {
 	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
 	    // only heavy quarks
 	    if( mF2 == ZERO ) continue;

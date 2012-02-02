@@ -24,10 +24,6 @@
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/FFMassiveTildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/FFMassiveInvertedTildeKinematics.h"
 
-// TODO: remove
-// only for checking for NaN or inf
-#include <gsl/gsl_math.h>
-
 using namespace Herwig;
 
 FFMqgxDipole::FFMqgxDipole() 
@@ -90,10 +86,7 @@ double FFMqgxDipole::me2() const {
 
   logME2();
   
-  if( gsl_isnan(res) ) cout << "FFMqgxDipole::me2() nan" << endl;
-  if( gsl_isinf(res)!=0 ) cout << "FFMqgxDipole::me2() inf" << endl;
-
-  return res > 0. ? res : 0.;
+  return res;
 
 }
 
