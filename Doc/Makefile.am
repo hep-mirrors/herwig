@@ -1,4 +1,4 @@
-CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo
+CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo tagfileThePEG.tag doxywarnings.log
 
 docdir = $(pkgdatadir)/Doc
 
@@ -10,12 +10,9 @@ doc_SCRIPTS = fixinterfaces.pl
 clean-local: html-clean
 
 html-clean:
-	rm -rf refman-html refman-latex Herwig++-refman.tag
+	rm -rf refman-html Herwig++-refman.tag tagfileThePEG.tag
 
 html-local: refman-html
-
-pdf-local: refman-html
-	if test -d refman-latex; then cd refman-latex; make refman.pdf; fi
 
 AllInterfaces.h: HerwigDefaults.in
 	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
@@ -31,11 +28,10 @@ install-data-local:
 	if test -d refman-html; then $(mkdir_p) $(DESTDIR)$(docdir);\
 	find refman-html -follow -name '*.*' \
           -exec $(install_sh_DATA) \{\} $(DESTDIR)$(docdir)/\{\} \;; \
-	$(install_sh_DATA) tagfileThePEG.tag $(DESTDIR)$(docdir)/tagfileThePEG.tag; fi
-	if test -d refman-latex -a -f refman-latex/refman.pdf; then \
-	$(install_sh_DATA) refman-latex/refman.pdf $(DESTDIR)$(docdir)/refman.pdf; fi
+	$(install_sh_DATA) tagfileThePEG.tag $(DESTDIR)$(docdir)/tagfileThePEG.tag; \
+	$(install_sh_DATA) Herwig++-refman.tag $(DESTDIR)$(docdir)/Herwig++-refman.tag;fi
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/refman-html \
 	$(DESTDIR)$(docdir)/tagfileThePEG.tag \
-	$(DESTDIR)$(docdir)/refman.pdf
+	$(DESTDIR)$(docdir)/Herwig++-refman.tag
