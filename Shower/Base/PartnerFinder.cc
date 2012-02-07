@@ -82,6 +82,28 @@ void PartnerFinder::Init() {
      "Maximum",
      "Choose partner of gluon with largest angle.",
      1);
+
+  static Switch<PartnerFinder,int> interfaceQEDPartner
+    ("QEDPartner",
+     "Control of which particles to use as the partner for QED radiation",
+     &PartnerFinder::QEDPartner_, 0, false, false);
+  static SwitchOption interfaceQEDPartnerAll
+    (interfaceQEDPartner,
+     "All",
+     "Consider all possible choices which give a positive contribution"
+     " in the soft limit.",
+     0);
+  static SwitchOption interfaceQEDPartnerIIandFF
+    (interfaceQEDPartner,
+     "IIandFF",
+     "Only allow initial-initial or final-final combinations",
+     1);
+  static SwitchOption interfaceQEDPartnerIF
+    (interfaceQEDPartner,
+     "IF",
+     "Only allow initial-final combinations",
+     2);
+
 }
 
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
@@ -330,6 +352,15 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 	if(!(*cjt)->data().charged()||cit==cjt) continue;
 	double charge = double((*cit)->data().iCharge()*(*cjt)->data().iCharge());
  	if( FS(*cit) != FS(*cjt) ) charge *=-1.;
+	if( QEDPartner_ != 0 ) {
+	  // only include II and FF is requested
+	  if( QEDPartner_ == 1 && FS(*cit) != FS(*cjt) )
+	    continue;
+	  // ony include IF is requested
+	  else if(QEDPartner_ == 2 && FS(*cit) == FS(*cjt) )
+	    continue;
+	}
+	// only keep positive dipoles
 	if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
       }
       if(partners.empty()) {

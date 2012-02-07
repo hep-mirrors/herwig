@@ -50,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0), _partnerMethod(0) {}
+  PartnerFinder() : _approach(0), _partnerMethod(0), QEDPartner_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -192,6 +192,10 @@ private:
    */
    int _partnerMethod;
 
+  /**
+   *  Choice for the QED radiation partner
+   */
+  int QEDPartner_;
 };
 
 }
