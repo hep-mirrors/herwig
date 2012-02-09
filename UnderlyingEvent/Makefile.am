@@ -8,6 +8,7 @@ HwMPI_la_SOURCES = MPISampler.cc MPISampler.h MPISampler.icc \
 	MPIHandler.fh MPIHandler.h \
 	ProcessHandler.cc ProcessHandler.icc \
 	ProcessHandler.fh ProcessHandler.h \
+	MPIXSecReweighter.h MPIXSecReweighter.cc \
 	stat.h
 HwMPI_la_LDFLAGS= $(AM_LDFLAGS) -module -version-info 9:0:0
 HwMPI_la_LIBADD= $(GSLLIBS)

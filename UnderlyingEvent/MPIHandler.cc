@@ -33,6 +33,8 @@
 
 using namespace Herwig;
 
+MPIHandler * MPIHandler::currentHandler_ = 0;
+
 bool MPIHandler::beamOK() const {
   return (HadronMatcher::Check(*eventHandler()->incoming().first)  &&
 	  HadronMatcher::Check(*eventHandler()->incoming().second) );
@@ -63,6 +65,7 @@ void MPIHandler::finalize() {
 }
 
 void MPIHandler::initialize() {
+  currentHandler_ = this;
   useMe();
   theHandler = generator()->currentEventHandler(); 
   //stop if the EventHandler is not present:
