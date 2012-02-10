@@ -49,6 +49,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # LHCB phi production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I919315
+# ATLAS rap gap
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
 
 
 ##################################################
