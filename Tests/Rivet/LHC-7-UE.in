@@ -55,4 +55,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I919315
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 saverun LHC-7-UE LHCGenerator
