@@ -181,6 +181,21 @@ public:
    */
   int statLevel() const {return eventHandler()->statLevel();}
 
+  /**
+   * Return the hard cross section above ptmin
+   */
+  CrossSection hardXSec() const { return hardXSec_; }
+
+  /**
+   * Return the soft cross section below ptmin
+   */
+  CrossSection softXSec() const { return softXSec_; }
+
+  /**
+   * Return the inelastic cross section
+   */
+  CrossSection inelasticXSec() const { return inelXSec_; }
+
   /** @name Simple access functions. */
   //@{
 
@@ -193,6 +208,13 @@ public:
    * to the ThePEG::EventHandler.
    */
   tEHPtr eventHandler() const {return theHandler;}
+
+  /**
+   * Return the current handler
+   */
+  static const MPIHandler * currentHandler() {
+    return currentHandler_;
+  }
 
   /**
    * Return theAlgorithm.
@@ -519,6 +541,11 @@ private:
    * Variable to store the average soft multiplicity.
    */
   double avgNsoft_;
+
+  /**
+   * The current handler
+   */
+  static MPIHandler * currentHandler_;
 
 protected:
 
