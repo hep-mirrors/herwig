@@ -31,4 +31,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2009_UE_HELEN
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 saverun Star-UE LHCGenerator
