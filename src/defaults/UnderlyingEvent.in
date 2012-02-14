@@ -36,6 +36,11 @@ create Herwig::MPIHandler MPIHandler
 insert MPIHandler:SubProcessHandlers 0 FastQCD
 insert MPIHandler:Cuts 0 UECuts
 
+# energy extrapolation for the MinKT cut
+newdef MPIHandler:EnergyExtrapolation No
+newdef MPIHandler:EEparamA 0.585*GeV
+newdef MPIHandler:EEparamB 37.45*GeV
+
 # The inverse hadron radius
 newdef MPIHandler:InvRadius 1.11
 

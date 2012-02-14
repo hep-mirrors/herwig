@@ -1,15 +1,20 @@
-##################################################
+###################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LHCBase-Powheg.in
+read LHCBase.in
 
 ##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
-# Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
-set PowhegMEqq2W2ff:Process Muon
+cp MEHeavyQuark MEBottom 
+set MEBottom:QuarkType Bottom
+cp MEHeavyQuark MECharm
+set MECharm:QuarkType Charm
+insert SimpleQCD:MatrixElements[0] MEBottom
+insert SimpleQCD:MatrixElements[0] MECharm
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+set /Herwig/Cuts/JetKtCut:MinKT 30.
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -18,17 +23,11 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 # select the analyses
 ##################################################
 
-# ATLAS W asymetry
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9002537
-# ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
-# ATLAS W pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
-# ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1083318
+# ATLAS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Powheg-W-mu LHCGenerator
+saverun LHC-7-Heavy-2 LHCGenerator

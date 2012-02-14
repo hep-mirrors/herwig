@@ -98,6 +98,12 @@ void MPIHandler::initialize() {
     throw Exception() << "MPIHandler:identicalToUE has disallowed value"
 		      << Exception::runerror;
 
+  // override the cuts for the additional scatters if energyExtrapolation_ is
+  // set
+  if (energyExtrapolation_) {
+    overrideUECuts();
+  }
+
   tcPDPtr gluon=getParticleData(ParticleID::g);
   //determine ptmin
   Ptmin_ = cuts()[0]->minKT(gluon);
@@ -567,6 +573,24 @@ InvEnergy2 MPIHandler::slopeExp() const{
   return b_0 + log(energy/e_0)/GeV2;
 }
 
+void MPIHandler::overrideUECuts() {
+  Ptmin_ = EEparamA_ * log(generator()->maximumCMEnergy() / EEparamB_);
+
+  // create a new SimpleKTCut object with the calculated ptmin value
+  Ptr<SimpleKTCut>::pointer newUEktCut = new_ptr(SimpleKTCut(Ptmin_));
+  newUEktCut->init();
+  newUEktCut->initrun();
+
+  // create a new Cuts object with MHatMin = 2 * Ptmin_
+  CutsPtr newUEcuts = new_ptr(Cuts(2*Ptmin_));
+  newUEcuts->add(dynamic_ptr_cast<tOneCutPtr>(newUEktCut));
+  newUEcuts->init();
+  newUEcuts->initrun();
+
+  // replace the old Cuts object
+  cuts()[0] = newUEcuts;
+}
+
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
   os << theMultiplicities << theHandler 
      << theSubProcesses << theCuts << theProcessHandlers
@@ -576,7 +600,8 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(beta_, 1/GeV2)
      << algorithm_ << ounit(invRadius_, GeV2)
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
-     << DLmode_ << ounit(totalXSecExp_, millibarn);
+     << DLmode_ << ounit(totalXSecExp_, millibarn)
+     << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV);
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -588,7 +613,8 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(beta_, 1/GeV2)
      >> algorithm_ >> iunit(invRadius_, GeV2)
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
-     >> DLmode_ >> iunit(totalXSecExp_, millibarn);
+     >> DLmode_ >> iunit(totalXSecExp_, millibarn)
+     >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV);
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -674,6 +700,38 @@ void MPIHandler::Init() {
      "disable the model",
      false);
 
+
+  static Switch<MPIHandler,bool> interEnergyExtrapolation
+    ("EnergyExtrapolation",
+     "Switch to ignore the cuts object at MPIHandler:Cuts[0]. "
+     "Instead, extrapolate the pt cut according to "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::energyExtrapolation_, true, false, false);
+  static SwitchOption interEnergyExtrapolationYes
+    (interEnergyExtrapolation,
+     "Yes",
+     "Use the energy extrapolation.",
+     true);
+  static SwitchOption interEnergyExtrapolationNo
+    (interEnergyExtrapolation,
+     "No",
+     "Use manually set value for the minimal pt, "
+     "specified in MPIHandler:Cuts[0]:OneCuts[0]:MinKT.",
+     false);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamA
+    ("EEparamA",
+     "Parameter A in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamA_, GeV, 0.6*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamB
+    ("EEparamB",
+     "Parameter B in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamB_, GeV, 39.0*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
 
   static Switch<MPIHandler,bool> interfacetwoComp
     ("twoComp",

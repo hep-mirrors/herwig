@@ -87,7 +87,9 @@ public:
 		softMu2_(ZERO), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
-		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0) {}
+		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0),
+                energyExtrapolation_(true), EEparamA_(0.6*GeV),
+                EEparamB_(37.5*GeV) {}
 
   /**
    * The destructor.
@@ -380,6 +382,12 @@ private:
   InvEnergy2 slopeExp() const;
 
 
+  /**
+   * Calculate the minimal transverse momentum from the extrapolation
+   */
+  void overrideUECuts();
+
+
 private:
 
   /**
@@ -546,6 +554,18 @@ private:
    * The current handler
    */
   static MPIHandler * currentHandler_;
+
+  /**
+   * Flag to store whether to calculate the minimal UE pt according to an
+   * extrapolation formula or whether to use MPIHandler:Cuts[0]:OneCuts[0]:MinKT
+   */
+  bool energyExtrapolation_;
+
+  /**
+   * Parameters for the energy extrapolation formula
+   */
+  Energy EEparamA_;
+  Energy EEparamB_;
 
 protected:
 
