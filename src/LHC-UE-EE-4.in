@@ -1,0 +1,128 @@
+################################################################################
+# LHC-UE-EE-4 is an underlying-event tune to UE data from CDF and ATLAS at 900
+# GeV, 1.8 TeV and 7.0 TeV.
+#
+# NEW: The formula for the center-of-mass energy extrapolation of the MinKT
+# parameter in the multi-parton interaction model is hard-coded now:
+#
+#     MinKT(sqrt(s)) = A * ln(sqrt(s) / B)
+#
+# The formula is not derived from first principles. It only extrapolates
+# between our best underlying-event tunes at 0.9, 1.8 and 7 TeV, with all other
+# parameters fixed.
+#
+# Usage: Just set the collision energy and run the generator.
+#
+# NOTE: For runs at 900 GeV, 1.8 TeV or 7.0 TeV you still have the option to
+# manually set MinKT to the tune value for that energy -- as was done in the
+# previous UE-EE tunes. You can do so by uncommenting the respective section
+# below. The differences in UE observables are small, though.
+# 
+# More information can be obtained from this Herwig++ wiki page:
+# http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+################################################################################
+
+##################################################
+# Center-of-mass energy
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+
+##################################################
+# Technical parameters for this run
+##################################################
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 1000000
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:DumpPeriod -1
+set LHCGenerator:DebugEvent 0
+
+##################################################
+# Running of alpha_s
+##################################################
+cd /Herwig
+create Herwig::O2AlphaS O2AlphaS
+set Model:QCD/RunningAlphaS O2AlphaS
+
+
+##################################################
+# MPI energy extrapolation settings
+##################################################
+set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation Yes
+set /Herwig/UnderlyingEvent/MPIHandler:EEparamA 0.56*GeV
+set /Herwig/UnderlyingEvent/MPIHandler:EEparamB 25.79*GeV
+
+
+################################################################################
+# Optional: override MinKT with the tune value. The parameters provided here
+# are identical to the UE-EE-3 tune.
+################################################################################
+
+########################
+## sqrt(s) = 900 GeV  ##
+########################
+#set /Herwig/Generators/LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
+#set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
+
+########################
+## sqrt(s) = 1800 GeV ##
+########################
+#set /Herwig/Generators/LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+#set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.55
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.1
+
+########################
+## sqrt(s) = 7000 GeV ##
+########################
+#set /Herwig/Generators/LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+#set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 3.06
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
+
+
+##################################################
+# Energy-independent MPI parameters
+##################################################
+
+# Colour reconnection settings
+set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.54 
+# Colour Disrupt settings
+set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.80
+# inverse hadron radius
+set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.11
+# MPI model settings
+set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes
+set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes
+set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2
+
+
+##################################################
+# Matrix element and cuts for soft-inclusive jet
+# production (minimum bias)
+##################################################
+
+# Matrix element
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] MEMinBias
+# tell the MPI handler that the primary subprocess is QCD jet production
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+
+# Cuts for soft-inclusive events
+cd /Herwig/Cuts
+set JetKtCut:MinKT 0.0*GeV
+set QCDCuts:MHatMin 0.0*GeV
+set QCDCuts:X1Min 0.01
+set QCDCuts:X2Min 0.01
+
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-UE-EE-4 LHCGenerator
