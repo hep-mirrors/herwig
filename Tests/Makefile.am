@@ -116,7 +116,7 @@ Rivet-Star-% : Rivet/Star-%.in
 Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
            Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
-           Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14 \
+           Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
            Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
            Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-133 \
@@ -124,7 +124,7 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-Powheg-177 Rivet-LEP-Powheg-183 \
            Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-196 \
            Rivet-LEP-Powheg-197 Rivet-LEP-Powheg-200 \
-           Rivet-LEP-Powheg-206 
+           Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10
 	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
 	rivet-rmgaps LEP-91.aida;
 	rivet-rmgaps LEP-Powheg-91.aida
@@ -201,7 +201,11 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
                 Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
-	        Rivet-LHC-2360-UE Rivet-LHC-900-UE	
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
+                Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
+                Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
+                Rivet-LHC-7-Heavy-5 \
+	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++

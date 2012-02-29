@@ -42,7 +42,6 @@ def fillAboveTeV(desthisto, sourcehistosbyptmin):
         for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
             newb = h.getBin(i)
             if newb.xlow*500. >= ptmin:
-                print 'filling',newb.xlow,ptmin
                 b.val =  newb.val
                 b.errplus =  newb.errplus
                 b.errminus =  newb.errminus
@@ -127,11 +126,13 @@ if __name__ == "__main__":
     ## Prefix used in dat file headers
     headerprefix = "# "
 
-aidafiles=["-900-UE.aida","-2360-UE.aida",
-           "-7-UE.aida"    ,"-7-Jets-0.aida",
+aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,
+           "-7-UE.aida"     ,"-900-UE-Long.aida",
+           "-7-UE.aida-Long","-7-Jets-0.aida",
            "-7-Jets-1.aida","-7-Jets-2.aida",
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
-           "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida"]
+           "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida",
+           "-7-Heavy-1.aida","-7-Heavy-2.aida","-7-Heavy-3.aida"]
 
 ## Get histos
 inhistos_pt   = {}
@@ -176,6 +177,15 @@ for f in aidafiles:
     elif(file.find("-7-Jets-8")>0) :
         sqrts=7000
         ptmin=600.
+    elif(file.find("-7-Heavy-1.aida")>0) :
+        sqrts=7000
+        ptmin=0.
+    elif(file.find("-7-Heavy-2.aida")>0) :
+        sqrts=7000
+        ptmin=20.
+    elif(file.find("-7-Heavy-3.aida")>0) :
+        sqrts=7000
+        ptmin=50.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -204,7 +214,8 @@ for f in aidafiles:
            h.fullPath().find("S8950903")>0 or 
            h.fullPath().find("S9086218")>0 or 
            h.fullPath().find("S9088458")>0 or 
-           h.fullPath().find("I919017")>0) :
+           h.fullPath().find("I919017")>0 or
+           h.fullPath().find("I926145")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
            tmpE = inhistos_pt[h.fullPath()]
@@ -928,6 +939,9 @@ useOnePt("/ATLAS_2011_I919017/d02-x05-y23",  "7000",  "4" )
 useOnePt("/ATLAS_2011_I919017/d02-x05-y24",  "7000",  "4" )
 useOnePt("/ATLAS_2011_I919017/d02-x05-y25",  "7000", "30" )
 
+mergeByPt("/ATLAS_2011_I926145/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000")
 # Choose output file
 name = "LHC"+"-Jets.aida"
 out = open(name, "w")

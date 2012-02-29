@@ -1,24 +1,20 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LEPBase.in
+read LEPBase-Powheg.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 35.
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 10.
+set /Herwig/Cuts/EECuts:MHatMin 9.99
+set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4
 
 ##################################################
 # select the analyses 
 ##################################################
 
-# OPAL/JADE jet rates at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
-# JADE jet rates at many energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
-# tasso event shapes at various low energies
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
 # PDG hadron multiplicities and ratios
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
@@ -27,4 +23,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIO
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LEP-35 LEPGenerator
+saverun LEP-Powheg-10 LEPGenerator

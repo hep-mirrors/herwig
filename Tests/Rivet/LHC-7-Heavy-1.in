@@ -25,6 +25,8 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # ATLAS inclusive lepton
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
+# CMS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

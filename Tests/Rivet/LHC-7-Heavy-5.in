@@ -14,7 +14,7 @@ set MECharm:QuarkType Charm
 insert SimpleQCD:MatrixElements[0] MEBottom
 insert SimpleQCD:MatrixElements[0] MECharm
 set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/Cuts/JetKtCut:MinKT 50.
+set /Herwig/Cuts/JetKtCut:MinKT 110.
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -23,14 +23,10 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 # select the analyses
 ##################################################
 
-# ATLAS inclusive lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
-# CMS inclusive lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262
 # CMS displaced vertex
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8973270
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-Heavy-3 LHCGenerator
+saverun LHC-7-Heavy-5 LHCGenerator
