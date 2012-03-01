@@ -128,11 +128,12 @@ if __name__ == "__main__":
 
 aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,
            "-7-UE.aida"     ,"-900-UE-Long.aida",
-           "-7-UE.aida-Long","-7-Jets-0.aida",
+           "-7-UE-Long.aida","-7-Jets-0.aida",
            "-7-Jets-1.aida","-7-Jets-2.aida",
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
            "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida",
-           "-7-Heavy-1.aida","-7-Heavy-2.aida","-7-Heavy-3.aida"]
+           "-7-Heavy-1.aida","-7-Heavy-2.aida","-7-Heavy-3.aida",
+           "-7-Heavy-4.aida","-7-Heavy-5.aida"]
 
 ## Get histos
 inhistos_pt   = {}
@@ -186,6 +187,12 @@ for f in aidafiles:
     elif(file.find("-7-Heavy-3.aida")>0) :
         sqrts=7000
         ptmin=50.
+    elif(file.find("-7-Heavy-4.aida")>0) :
+        sqrts=7000
+        ptmin=80.
+    elif(file.find("-7-Heavy-5.aida")>0) :
+        sqrts=7000
+        ptmin=110.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -214,8 +221,10 @@ for f in aidafiles:
            h.fullPath().find("S8950903")>0 or 
            h.fullPath().find("S9086218")>0 or 
            h.fullPath().find("S9088458")>0 or 
-           h.fullPath().find("I919017")>0 or
-           h.fullPath().find("I926145")>0) :
+           h.fullPath().find("I919017" )>0 or
+           h.fullPath().find("I926145" )>0 or
+           h.fullPath().find("S8941262")>0 or
+           h.fullPath().find("S8973270")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
            tmpE = inhistos_pt[h.fullPath()]
@@ -706,6 +715,7 @@ useOnePt("/CMS_2011_S9120041/d09-x01-y01", "7000", "0" )
 useOnePt("/CMS_2011_S9120041/d10-x01-y01", "7000", "0" )
 useOnePt("/CMS_2011_S9120041/d11-x01-y01",  "900", "0" )
 useOnePt("/CMS_2011_S9120041/d12-x01-y01",  "900", "0" )
+useOnePt("/CMS_2011_S9120041/d13-x01-y01",  "900", "0" )
 
 # CMS dijet decorrelation
 logging.info("Processing CMS_2011_S8950903")
@@ -939,9 +949,24 @@ useOnePt("/ATLAS_2011_I919017/d02-x05-y23",  "7000",  "4" )
 useOnePt("/ATLAS_2011_I919017/d02-x05-y24",  "7000",  "4" )
 useOnePt("/ATLAS_2011_I919017/d02-x05-y25",  "7000", "30" )
 
+logging.info("Processing ATLAS_2011_I926145")
 mergeByPt("/ATLAS_2011_I926145/d01-x01-y01", "7000")
 mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000")
 mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000")
+
+logging.info("Processing CMS_2011_S8941262")
+useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "0" )
+mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000")
+
+logging.info("Processing CMS_2011_S8973270")
+useOnePt("/CMS_2011_S8973270/d01-x01-y01",  "7000", "50" )
+useOnePt("/CMS_2011_S8973270/d02-x01-y01",  "7000", "80" )
+useOnePt("/CMS_2011_S8973270/d03-x01-y01",  "7000", "110" )
+useOnePt("/CMS_2011_S8973270/d04-x01-y01",  "7000", "50" )
+useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "80" )
+useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "110" )
+
 # Choose output file
 name = "LHC"+"-Jets.aida"
 out = open(name, "w")

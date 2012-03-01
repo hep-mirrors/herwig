@@ -30,6 +30,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9088458
 # ATLAS track jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
+# CMS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
