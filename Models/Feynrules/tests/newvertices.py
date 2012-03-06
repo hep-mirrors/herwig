@@ -30,6 +30,8 @@ class CheckUnique:
 MODEL_H  = getTemplate('Model.h')
 MODEL_CC = getTemplate('Model.cc')
 
+allplist = ""
+
 parmdecls = []
 parmgetters = []
 parmconstr = []
@@ -173,6 +175,7 @@ class ParticleConverter:
         self.pdg_code = p.pdg_code
         self.spin = p.spin
         self.color = p.color
+        self.selfconjugate = 0
         if self.color == 1:
             self.color = 0
         self.mass = parmsubs[str(p.mass)]
@@ -214,9 +217,10 @@ rm /Herwig/Widths/HiggsWidth
             pdg, name = subs['pdg_code'],  subs['name']
             if -pdg in antis:
                 plist += 'makeanti %s %s\n' % (antis[-pdg], name)
+                
             else:
                 antis[pdg] = name
-
+                selfconjugate = 1
     return plist
 
 
@@ -235,32 +239,8 @@ def get_lorentztag(spin):
     result = sorted(result, cmp=spinsort)
     return ''.join(result)
 
-vertexline = string.Template("""\
-create $classname $name
-insert FRModel:ExtraVertices 0 $name
-""")
-
-def get_vertices():
-    vlist = 'library FeynrulesModel.so\n'
-    for v in FR.all_vertices:
-        for l in v.lorentz:
-            lt = get_lorentztag(l.spins)
-            print lt
-        if("U" not in lt):
-            vlist += vertexline.substitute(
-                { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
-                  'name' : '/Herwig/Feynrules/%s'%v.name } )
-    return vlist
 
 
-modelfilesubs = { 'plist' : get_all_thepeg_particles(),
-                  'vlist' : get_vertices() }
-
-print get_all_thepeg_particles()
-
-MODELINFILE = getTemplate('FR.model')
-
-writeFile( 'FR.model', MODELINFILE.substitute(modelfilesubs) )
 
 ##################################################
 ##################################################
@@ -282,7 +262,7 @@ for v in FR.all_vertices:
     print v.name
     print map(str,v.particles)
     print '---------------'
-
+    v.include = 1
 
     ### Spin structure
     unique = CheckUnique()
@@ -296,9 +276,43 @@ for v in FR.all_vertices:
     elif 'U' in lt: spind = 'Ghost'
     
     ### Particle ids #################### sort order? ####################
+    plistarray = ['','']    
+    plistarray[0] = ','.join([ str(p.pdg_code) for p in v.particles ])
     plist = ','.join([ str(p.pdg_code) for p in v.particles ])
-    
+    print plist
 
+# Check if the Vertex is self-conjugate or not
+    pdgcode = [0,0,0,0]
+#    print 'printing particles in vertex'
+    for i in range(len(v.particles)):
+#       print v.particles[i].pdg_code
+        pdgcode[i] = v.particles[i].pdg_code
+
+    selfconjugate = 0
+    for j in range(len(pdgcode)):
+        for k in range(len(pdgcode)):
+               if( j != k and j != 0 and abs(pdgcode[j]) == abs(pdgcode[k])):
+                   selfconjugate = 1
+                   print 'self-conjugate vertex'
+#        print pdgcode[j]
+
+# if the Vertex is not self-conjugate, then add the conjugate vertex
+# WARNING:
+# TO DO: What if the coupling is complex? Need to add the complex conjugate of that coupling in that case
+    scfac = [1,1,1,1]
+    if(selfconjugate == 0):
+#first find the self-conjugate particles
+        for u in range(len(v.particles)):
+              if(v.particles[u].selfconjugate == 0):
+                  scfac[u] = -1
+#                  print 'particle ', v.particles[u].pdg_code, ' found not to be self-conjugate'
+                  
+    if(selfconjugate == 0):
+        plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
+        if(len(v.particles) is 4):                                                                                                                      
+            plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
+        print 'Conjugate vertex:', plistarray[1]
+    
     ### Colour structure
     if v.color == '1': qcdord = '0'
     else:              qcdord = ''
@@ -318,6 +332,8 @@ for v in FR.all_vertices:
     for (ci,li),C in v.couplings.iteritems():
         qed = C.order.get('QED',0)
         qcd = C.order.get('QCD',0)
+        # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
+        if(qed == 0 and qcd == 0): qed = 1
         unique_qcd( qed )
         unique_qed( qcd )
         L = v.lorentz[li]
@@ -375,6 +391,11 @@ for v in FR.all_vertices:
         left = ''
         right = ''
 
+    if(plistarray[1] is ''):
+        plist2 = ''
+    else:
+        plist2 = 'addToList(%s);' % plistarray[1]
+        
     norm = 'norm(Complex(%s,%s));' % (normcontent.real,normcontent.imag)
 
 
@@ -387,7 +408,8 @@ for v in FR.all_vertices:
 
              #################### need survey which different setter methods exist in base classes
 
-             'addToPlist' : 'addToList(%s);' % plist, # ok
+             'addToPlist' : 'addToList(%s);' % plistarray[0], # ok
+             'addToPlist2' : plist2, # ok
              'parameters' : '',
              'setCouplings' : '',
              'qedorder'   : qed,
@@ -395,12 +417,56 @@ for v in FR.all_vertices:
              'q2'        :  '',
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
              'spindirectory' : spind}             # ok
-    
-     
-    if( L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1): produce_vertex_file(subs)
 
+
+    print plistarray[0]
+#    if plist in allplist:
+#        print 'PLIST IN ALLPLIST'
+        
+        
+    if( L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and plistarray[0] not in allplist and plistarray[1] not in allplist):
+        produce_vertex_file(subs)
+        allplist += plistarray[0]
+        allplist += plistarray[1]
+    elif( L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and selfconjugate):
+        produce_vertex_file(subs)
+        allplist += plistarray[0]
+    else:
+        print 'VERTEX ALREADY INCLUDED'
+        v.include = 0
+        
     print '============================================================'
 
+##################################################
+##################################################
+##################################################
+
+vertexline = string.Template("""\
+create $classname $name
+insert FRModel:ExtraVertices 0 $name
+""")
+
+
+def get_vertices():
+    vlist = 'library FeynrulesModel.so\n'
+    for v in FR.all_vertices:
+        for l in v.lorentz:
+            lt = get_lorentztag(l.spins)
+            print lt
+        if("U" not in lt and v.include == 1):
+            vlist += vertexline.substitute(
+                { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
+                  'name' : '/Herwig/Feynrules/%s'%v.name } )
+    return vlist
+
+
+modelfilesubs = { 'plist' : get_all_thepeg_particles(),
+                  'vlist' : get_vertices() }
+
+print get_all_thepeg_particles()
+
+MODELINFILE = getTemplate('FR.model')
+
+writeFile( 'FR.model', MODELINFILE.substitute(modelfilesubs) )
+
 print len(FR.all_vertices)
-
-
