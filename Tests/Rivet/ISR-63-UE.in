@@ -1,0 +1,56 @@
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 100000
+set LHCGenerator:EventHandler:StatLevel Full
+
+# override the beam energy
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 62.2
+set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
+
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
+
+set /Herwig/Decays/DecayHandler:LifeTimeOption 0
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# min bias
+insert SimpleQCD:MatrixElements[0] MEMinBias
+# same as ue process
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+# min ibas cuts
+set /Herwig/Cuts/JetKtCut:MinKT  0.0*GeV
+set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/QCDCuts:X1Min 0.01
+set /Herwig/Cuts/QCDCuts:X2Min 0.01
+
+##################################################
+# select the analyses
+##################################################
+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SFM_1984_S1178091
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+saverun ISR-63-UE LHCGenerator

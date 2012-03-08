@@ -113,6 +113,14 @@ Rivet-Star-% : Rivet/Star-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
+Rivet-SppS-% : Rivet/SppS-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
+Rivet-ISR-% : Rivet/ISR-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
 Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
            Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
@@ -217,6 +225,17 @@ Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
 	rivet-rmgaps Star-UE.aida
 	python/merge-Star Star
 	rivet-mkhtml -o Rivet-Star Star.aida
+
+Rivet-SppS: Rivet-ISR-44-UE Rivet-ISR-63-UE \
+	    Rivet-SppS-63-UE  Rivet-ISR-30-UE \
+	    Rivet-ISR-53-UE   Rivet-SppS-200-UE \
+	    Rivet-SppS-500-UE Rivet-SppS-900-UE \
+	    Rivet-SppS-546-UE Rivet-SppS-53-UE
+	rm -rf Rivet-SppS
+	python/merge-aida  ISR-44-UE.aida ISR-63-UE.aida SppS-63-UE.aida  ISR-30-UE.aida \
+		           ISR-53-UE.aida SppS-200-UE.aida SppS-500-UE.aida SppS-900-UE.aida \
+	                   SppS-546-UE.aida SppS-53-UE.aida -o SppS.aida
+	rivet-mkhtml -o Rivet-SppS SppS.aida
 
 Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
               Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
