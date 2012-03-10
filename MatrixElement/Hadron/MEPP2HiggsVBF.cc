@@ -248,34 +248,34 @@ void MEPP2HiggsVBF::getDiagrams() const {
  	// q1 q2 -> q1' q2' h
 	if(parentpair[ix].first->id()<parentpair[iy].second->id()) {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first, WMinus(), WPlus(), 
-		       parentpair[iy].second, 1, parentpair[ix].second, 4, 
+		       parentpair[iy].second, 1, parentpair[ix].second, 3, 
 		       parentpair[iy].first, 2, higgs(),-1)));
 	}
 	else {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[iy].second, WPlus(), WMinus(), 
-		       parentpair[ix].first, 1, parentpair[iy].first, 4,
+		       parentpair[ix].first, 1, parentpair[iy].first, 3,
 		       parentpair[ix].second, 2, higgs(),-1)));
 	}
 	// q1 qbar2 -> q1' qbar2' h
 	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first, WMinus(), WPlus(), 
 		     parentpair[iy].first->CC(), 1,
-		     parentpair[ix].second, 4, parentpair[iy].second->CC(),
+		     parentpair[ix].second, 3, parentpair[iy].second->CC(),
 		     2, higgs(),-1)));
 	add(new_ptr((Tree2toNDiagram(4),parentpair[iy].second, WPlus(), WMinus(),
 		     parentpair[ix].second->CC(), 1, parentpair[iy].first,
-		     4, parentpair[ix].first->CC(), 
+		     3, parentpair[ix].first->CC(), 
 		     2, higgs(),-1)));
 	// qbar1 qbar2 -> qbar1' qbar2' h
 	if(parentpair[ix].first->id()<parentpair[ix].second->id()) {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first->CC(), WPlus(), WMinus(), 
 		       parentpair[iy].second->CC(), 1,
-		       parentpair[ix].second->CC(), 4, parentpair[iy].first->CC(),
+		       parentpair[ix].second->CC(), 3, parentpair[iy].first->CC(),
 		       2, higgs(),-1))); 
 	}
 	else {
 	  add(new_ptr((Tree2toNDiagram(4), parentpair[iy].second->CC(), WMinus(), WPlus(),
 		       parentpair[ix].first->CC(), 1, 
-		       parentpair[iy].first->CC(), 4, parentpair[ix].second->CC(),
+		       parentpair[iy].first->CC(), 3, parentpair[ix].second->CC(),
 		       2, higgs(),-1))); 
 	}
       }
@@ -287,15 +287,15 @@ void MEPP2HiggsVBF::getDiagrams() const {
       for(unsigned int iy=ix;iy<maxFlavour();++iy) {
 	// q    q    -> q    q    H
 	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), q[iy], 
-		     1, q[ix], 4, q[iy], 2, higgs(),-2))); 
+		     1, q[ix], 3, q[iy], 2, higgs(),-2))); 
 	// qbar qbar -> qbar qbar H
 	add(new_ptr((Tree2toNDiagram(4), qbar[ix], Z0(), Z0(), qbar[iy], 
-		     1, qbar[ix], 4, qbar[iy], 2, higgs(),-2)));
+		     1, qbar[ix], 3, qbar[iy], 2, higgs(),-2)));
       }
       // q    qbar -> q    qbar H
       for(unsigned int iy=minFlavour()-1;iy<maxFlavour();++iy) {
 	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), qbar[iy], 
-		     1, q[ix], 4, qbar[iy], 2, higgs(),-2))); 
+		     1, q[ix], 3, qbar[iy], 2, higgs(),-2))); 
       }
     }
   }
