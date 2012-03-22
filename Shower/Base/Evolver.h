@@ -58,7 +58,7 @@ public:
    *  Default Constructor
    */
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-	      _hardVetoRead(0),
+	      _hardVetoRead(0), _reconOpt(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
@@ -179,7 +179,8 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type,
+			      bool first); 
 
   /**
    * It does the backward evolution of the space-like input particle 
@@ -430,6 +431,11 @@ protected:
   virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
+   *  Update of the time-like stuff
+   */
+  void updateHistory(tShowerParticlePtr particle);
+
+  /**
    *  Start the shower of a spacelike particle
    */
   virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
@@ -527,6 +533,11 @@ private:
    * Hard veto to be read switch
    */
   unsigned int _hardVetoRead; 
+
+  /**
+   *  Control of the reconstruction option
+   */
+  unsigned int _reconOpt;
 
   /**
    * rms intrinsic pT of Gaussian distribution

@@ -159,33 +159,9 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
       if(getParticleData(ids[ix])->CC()) ids_[ix]*=-1;
     }
   }
-  masses_.clear();
+  tmin = cutOffOption() != 2 ? ZERO : 4.*pT2min();
+  masses_ = virtualMasses(ids);
   masssquared_.clear();
-  tmin=ZERO;
-  if(cutOffOption() == 0) {
-    for(unsigned int ix=0;ix<ids_.size();++ix)
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-    Energy kinCutoff=
-      kinematicCutOff(kinScale(),*std::max_element(masses_.begin(),masses_.end()));
-    for(unsigned int ix=0;ix<masses_.size();++ix)
-      masses_[ix]=max(kinCutoff,masses_[ix]);
-  }
-  else if(cutOffOption() == 1) {
-    for(unsigned int ix=0;ix<ids_.size();++ix) {
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-      masses_.back() += ids_[ix]==ParticleID::g ? vgCut() : vqCut();
-    }
-  }
-  else if(cutOffOption() == 2) {
-    for(unsigned int ix=0;ix<ids_.size();++ix) 
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-    tmin = 4.*pT2min();
-  }
-  else {
-    throw Exception() << "Unknown option for the cut-off"
-		      << " in QTildeSudakov::initialize()"
-		      << Exception::runerror;
-  }
   for(unsigned int ix=0;ix<masses_.size();++ix) {
     masssquared_.push_back(sqr(masses_[ix]));
     if(ix>0) tmin=max(masssquared_[ix],tmin);
