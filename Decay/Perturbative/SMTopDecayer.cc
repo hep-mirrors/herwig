@@ -742,7 +742,7 @@ double SMTopDecayer::getHard(double ktb, double ktc) {
 bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					 ShowerParticlePtr parent,Branching br) {
   // check if we need to apply the full correction
-  unsigned int id[2]={abs(initial->progenitor()->id()),abs(parent->id())};
+  long id[2]={abs(initial->progenitor()->id()),abs(parent->id())};
   // the initial-state correction
   if(id[0]==ParticleID::t&&id[1]==ParticleID::t)
     {

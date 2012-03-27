@@ -90,8 +90,8 @@ void SextetFFVVertex::doinit() {
 }
 
 
-void SextetFFVVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-			      tcPDPtr part2,tcPDPtr part3) {
+void SextetFFVVertex::setCoupling(Energy2, tcPDPtr part1,
+				  tcPDPtr part2,tcPDPtr part3) {
   long q1ID=(abs(part1->id())), q2ID=(abs(part2->id())),
     vDQID=(abs(part3->id()));
   //check scalar diquark
