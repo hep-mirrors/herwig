@@ -597,6 +597,9 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(tanBeta_<0.) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
 		      << " or BLOCK EXTPAR " << Exception::runerror;
+  if(tanBeta_==0.)
+    throw Exception() << "Tan(beta) = 0 in SusyBase::extractParameters()"
+		      << Exception::runerror;
   // extract parameters from hmix
   pit=parameters_.find("hmix");
   if(pit==parameters_.end()) {
