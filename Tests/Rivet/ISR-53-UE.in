@@ -11,8 +11,6 @@ set LHCGenerator:EventHandler:StatLevel Full
 # override the beam energy
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 53.0
-set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
-set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
 
 ##################################################
 #  Create the Herwig analysis

@@ -20,14 +20,11 @@ set LHCGenerator:MaxErrors 10000
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
-# Energy-dependent MPI parameters
+# Energy-dependent MPI parameters (if required)
+# default is now an energy-dependent extrapolation
+# uncomment for best fit at a particular energy
 ##################################################
-
-################################################################################
-# NOTE: Set the correct parameters for the collision energy of your choice
-# here.
-################################################################################
-
+#set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
 #######################
 ## sqrt(s) = 900 GeV ##
 #######################
@@ -46,8 +43,8 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 ## sqrt(s) = 7000 GeV ##
 ########################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
-set /Herwig/UnderlyingEvent/KtCut:MinKT 3.06
-set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
+#set /Herwig/UnderlyingEvent/KtCut:MinKT 3.06
+#set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
 
 #########################
 ## sqrt(s) = 14000 GeV ##
@@ -55,8 +52,6 @@ set /Herwig/UnderlyingEvent/UECuts:MHatMin 6.12
 #set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 #set /Herwig/UnderlyingEvent/KtCut:MinKT 3.53
 #set /Herwig/UnderlyingEvent/UECuts:MHatMin 7.06 
-
-
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
