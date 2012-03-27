@@ -34,7 +34,6 @@ ILC-MSSM.in \
 ILC-MUED.in \
 ILC-RS.in \
 LEP.in \
-LEP-sextet.in \
 LHC-ADD.in \
 LHC-diffractive.in \
 LHC-GammaGamma.in \
