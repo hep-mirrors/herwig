@@ -144,15 +144,8 @@ for f in aidafiles:
                tmpE[sqrts] = h
            else:
                 raise Exception("A set with sqrts = %s already exists" % ( sqrts))
-        elif(h.fullPath().find("4553896")>0 or
-             h.fullPath().find("2435284")>0 or h.fullPath().find("3486095")>0 or
-             h.fullPath().find("3430090")>0 or h.fullPath().find("3137023")>0 or
-             h.fullPath().find("3780481")>0 or h.fullPath().find("WUD_03_11")>0 or
-             h.fullPath().find("CONF_603")>0 or h.fullPath().find("3196992")>0 or
-             h.fullPath().find("2692198")>0 or h.fullPath().find("4193598")>0) :
-            outhistos[h.fullPath()] = h
         else :
-            print '!!!!! DIDNT FIND',h.fullPath()
+            outhistos[h.fullPath()] = h
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
