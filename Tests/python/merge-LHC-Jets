@@ -142,6 +142,7 @@ outhistos={}
 weights = {}
 for f in aidafiles:
     file="LHC"+f
+    sqrts=7000
     if(file.find("-900-UE")>0) :
         sqrts=900
         ptmin=0.
@@ -149,50 +150,37 @@ for f in aidafiles:
         sqrts=2360
         ptmin=0.
     elif(file.find("-7-UE")>0) :
-        sqrts=7000
         ptmin=0.
     elif(file.find("-7-Jets-0")>0) :
-        sqrts=7000
         ptmin=4.
     elif(file.find("-7-Jets-1")>0) :
-        sqrts=7000
         ptmin=30.
     elif(file.find("-7-Jets-2")>0) :
-        sqrts=7000
         ptmin=40.
     elif(file.find("-7-Jets-3")>0) :
-        sqrts=7000
         ptmin=80.
     elif(file.find("-7-Jets-4")>0) :
-        sqrts=7000
         ptmin=110.
     elif(file.find("-7-Jets-5")>0) :
-        sqrts=7000
         ptmin=210.
     elif(file.find("-7-Jets-6")>0) :
-        sqrts=7000
         ptmin=260.
     elif(file.find("-7-Jets-7")>0) :
-        sqrts=7000
         ptmin=400.
     elif(file.find("-7-Jets-8")>0) :
-        sqrts=7000
         ptmin=600.
     elif(file.find("-7-Heavy-1.aida")>0) :
-        sqrts=7000
         ptmin=0.
     elif(file.find("-7-Heavy-2.aida")>0) :
-        sqrts=7000
         ptmin=20.
     elif(file.find("-7-Heavy-3.aida")>0) :
-        sqrts=7000
         ptmin=50.
     elif(file.find("-7-Heavy-4.aida")>0) :
-        sqrts=7000
         ptmin=80.
     elif(file.find("-7-Heavy-5.aida")>0) :
-        sqrts=7000
         ptmin=110.
+    elif(file.find("-7-Top.aida")>0) :
+        ptmin=0.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break

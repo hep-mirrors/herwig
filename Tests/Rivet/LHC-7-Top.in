@@ -1,0 +1,28 @@
+###################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase.in
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+set MEHeavyQuark:QuarkType Top
+insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS top with jet veto
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094568
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-7-Top LHCGenerator
