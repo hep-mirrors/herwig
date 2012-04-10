@@ -226,7 +226,7 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
 	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
                 Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
                 Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
-                Rivet-LHC-7-Heavy-5 Rivet-LHCX-7-Top \
+                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top \
 	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
