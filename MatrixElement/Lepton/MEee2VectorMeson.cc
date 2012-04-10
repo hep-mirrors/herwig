@@ -41,14 +41,14 @@ Energy2 MEee2VectorMeson::scale() const {
 }
 
 int MEee2VectorMeson::nDim() const {
-  return 0;
+  return 1;
 }
 
 void MEee2VectorMeson::setKinematics() {
   MEBase::setKinematics(); // Always call the base class method first.
 }
 
-bool MEee2VectorMeson::generateKinematics(const double *) {
+bool MEee2VectorMeson::generateKinematics(const double *r) {
   Lorentz5Momentum pout=meMomenta()[0]+meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2] = pout;
@@ -56,6 +56,7 @@ bool MEee2VectorMeson::generateKinematics(const double *) {
   // check passes all the cuts
   vector<LorentzMomentum> out(1,meMomenta()[2]);
   tcPDVector tout(1,mePartonData()[2]);
+  jacobian(1.+0.002*(0.5-r[0]));
   // return true if passes the cuts
   return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }

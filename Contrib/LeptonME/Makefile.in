@@ -28,7 +28,7 @@ default : LeptonME.so
 %.o : %.cc %.h
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
 
-LeptonME.so: MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o
+LeptonME.so: MEee2Higgs2SM.o MEee2Z.o
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
 	MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o $(SHARED_FLAG) $(LDFLAGS) -o LeptonME.so
 
