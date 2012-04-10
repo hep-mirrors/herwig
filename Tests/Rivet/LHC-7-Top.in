@@ -20,6 +20,8 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # ATLAS top with jet veto
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094568
+# MC analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TTBAR
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
