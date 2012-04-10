@@ -97,6 +97,10 @@ Rivet-LEP-% : Rivet/LEP-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
+Rivet-BFactory-% : Rivet/BFactory-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
 Rivet-TVT-% : Rivet/TVT-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
@@ -134,12 +138,22 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-Powheg-197 Rivet-LEP-Powheg-200 \
            Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10
 	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
-	rivet-rmgaps LEP-91.aida;
-	rivet-rmgaps LEP-Powheg-91.aida
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
 	rivet-mkhtml -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
+
+Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
+                Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym \
+                Rivet-BFactory-10.54 Rivet-BFactory-Powheg-10.54 \
+                Rivet-BFactory-10.45 Rivet-BFactory-Powheg-10.45 \
+                Rivet-BFactory-10.58 Rivet-BFactory-Powheg-10.58 \
+                Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4
+	for i in BFactory-*.aida; do rivet-rmgaps $$i; done;
+	rm -rf Rivet-BFactory
+	python/merge-BFactory BFactory
+	python/merge-BFactory BFactory-Powheg
+	rivet-mkhtml -o Rivet-BFactory BFactory.aida:Hw++ BFactory-Powheg.aida:Hw++-Powheg
 
 Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\

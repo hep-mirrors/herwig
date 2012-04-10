@@ -1,0 +1,246 @@
+#! /usr/bin/env python
+import lighthisto
+import logging
+import sys
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+import os, copy, re
+from math import sqrt
+
+## Try to load faster but non-standard cElementTree module
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    try:
+        import cElementTree as ET
+    except ImportError:
+        try:
+            import xml.etree.ElementTree as ET
+        except:
+            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
+            sys.exit(1)
+
+
+
+# #############################################
+
+def fillAbove(desthisto, sourcehistosbyptmin):
+    for i,b in enumerate(desthisto.getBins()):
+        ## Fill bins with pT-ordered histos (so that 'highest always wins')
+        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
+            newb = h.getBin(i)
+            if newb.xlow <= float(ptmin) and newb.xhigh >=float(ptmin):
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
+                b._focus= newb._focus
+
+def merge(hpath):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos[hpath])
+    except:
+        pass
+
+def useOne(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)]
+    except:
+        pass
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+
+    ## Prefix used in dat file headers
+    headerprefix = "# "
+
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+# #######################################
+
+aidafiles=["-10.52.aida","-10.52-sym.aida","-10.54.aida","-10.58.aida","-Upsilon.aida",
+           "-Upsilon2.aida","-Upsilon4.aida","-10.45.aida"]
+
+## Get histos
+inhistos = {}
+outhistos={}
+weights = {}
+for f in aidafiles:
+    file = args[0]+f
+    if(file.find("10.45")>0) :
+        sqrts=10.45
+    elif(file.find("10.52")>0) :
+        sqrts=10.52
+    elif(file.find("10.54")>0) :
+        sqrts=10.54
+    elif(file.find("10.58")>0) :
+        sqrts=10.58
+    elif(file.find("Upsilon4")>0) :
+        sqrts=10.58
+    elif(file.find("Upsilon2")>0) :
+        sqrts=10.02
+    elif(file.find("Upsilon")>0) :
+        sqrts=9.46
+    if not os.access(file, os.R_OK):
+        if(file.find("Upsilon")) : continue
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        tree = ET.parse(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    tree = ET.parse(file)
+    ## Get histos from this AIDA file
+    for dps in tree.findall("dataPointSet"):
+        h = lighthisto.Histo.fromDPS(dps)
+        # jet shapes
+        if(h.fullPath().find("6265367")>0 or h.fullPath().find("6895344")>0 or
+           h.fullPath().find("6181155")>0 or h.fullPath().find("2789213")>0 or
+           h.fullPath().find("2669951")>0) :
+           if not inhistos.has_key(h.fullPath()):
+               inhistos[h.fullPath()] = {}
+           tmpE = inhistos[h.fullPath()]
+           sqrttemp=sqrts
+           if(h.fullPath().find("2669951")>0 and h.fullPath().find("d01")>0 and sqrts==10.45) :
+               sqrts=9.9
+           
+           if not tmpE.has_key(sqrts):
+               tmpE[sqrts] = h
+           else:
+                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+           sqrts=sqrttemp
+        else :
+            outhistos[h.fullPath()] = h
+
+## Make empty output histos if needed
+for hpath,hsets in inhistos.iteritems():
+    if( hpath.find("2669951")>0) :
+        workhisto = copy.deepcopy(hsets.values()[0])
+        outhistos[hpath] = workhisto
+        ## Empty the bin set for histos which we're going to merge
+        for b in outhistos[hpath]:
+            b.val = 0
+            b.errplus = 0
+            b.errminus = 0
+            b._focus= None
+
+# BELLE
+useOne("/BELLE_2006_S6265367/d01-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y03","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y04","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y05","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y06","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y07","10.52")
+useOne("/BELLE_2006_S6265367/d01-x01-y08","10.52")
+useOne("/BELLE_2006_S6265367/d02-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d02-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d03-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d03-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d04-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d04-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d05-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d05-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d06-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d06-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d07-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d07-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d08-x01-y01","10.52")
+useOne("/BELLE_2006_S6265367/d08-x01-y02","10.52")
+useOne("/BELLE_2006_S6265367/d09-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d09-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d10-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d10-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d11-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d11-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d12-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d12-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d13-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d13-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d14-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d14-x01-y02","10.58")
+useOne("/BELLE_2006_S6265367/d15-x01-y01","10.58")
+useOne("/BELLE_2006_S6265367/d15-x01-y02","10.58")
+# BABAR
+useOne("/BABAR_2007_S6895344/d01-x01-y01","10.54")
+useOne("/BABAR_2007_S6895344/d02-x01-y01","10.54")
+useOne("/BABAR_2007_S6895344/d03-x01-y01","10.58")
+useOne("/BABAR_2007_S6895344/d04-x01-y01","10.58")
+# BABAR
+useOne("/BABAR_2005_S6181155/d01-x01-y01","10.58")
+useOne("/BABAR_2005_S6181155/d02-x01-y01","10.58")
+useOne("/BABAR_2005_S6181155/d02-x01-y02","10.54")
+useOne("/BABAR_2005_S6181155/d03-x01-y01","10.54")
+useOne("/BABAR_2005_S6181155/d04-x01-y01","10.58")
+useOne("/BABAR_2005_S6181155/d05-x01-y01","10.58")
+useOne("/BABAR_2005_S6181155/d05-x01-y02","10.54")
+# ARGUS
+useOne("/ARGUS_1993_S2789213/d01-x01-y01","10.45")
+useOne("/ARGUS_1993_S2789213/d01-x01-y02","10.45")
+useOne("/ARGUS_1993_S2789213/d01-x01-y03","10.45")
+useOne("/ARGUS_1993_S2789213/d01-x01-y04","10.45")
+useOne("/ARGUS_1993_S2789213/d01-x01-y05","10.45")
+useOne("/ARGUS_1993_S2789213/d02-x01-y01", "9.46")
+useOne("/ARGUS_1993_S2789213/d02-x01-y02", "9.46")
+useOne("/ARGUS_1993_S2789213/d02-x01-y03", "9.46")
+useOne("/ARGUS_1993_S2789213/d02-x01-y04", "9.46")
+useOne("/ARGUS_1993_S2789213/d02-x01-y05", "9.46")
+useOne("/ARGUS_1993_S2789213/d03-x01-y01","10.58")
+useOne("/ARGUS_1993_S2789213/d03-x01-y02","10.58")
+useOne("/ARGUS_1993_S2789213/d03-x01-y03","10.58")
+useOne("/ARGUS_1993_S2789213/d03-x01-y04","10.58")
+useOne("/ARGUS_1993_S2789213/d03-x01-y05","10.58")
+useOne("/ARGUS_1993_S2789213/d04-x01-y01","10.45")
+useOne("/ARGUS_1993_S2789213/d05-x01-y01", "9.46")
+useOne("/ARGUS_1993_S2789213/d06-x01-y01","10.58")
+useOne("/ARGUS_1993_S2789213/d07-x01-y01","10.45")
+useOne("/ARGUS_1993_S2789213/d08-x01-y01", "9.46")
+useOne("/ARGUS_1993_S2789213/d09-x01-y01","10.58")
+useOne("/ARGUS_1993_S2789213/d10-x01-y01","10.45")
+useOne("/ARGUS_1993_S2789213/d11-x01-y01", "9.46")
+useOne("/ARGUS_1993_S2789213/d12-x01-y01","10.58")
+useOne("/ARGUS_1993_S2789213/d13-x01-y01","10.45")
+useOne("/ARGUS_1993_S2789213/d14-x01-y01", "9.46")
+useOne("/ARGUS_1993_S2789213/d15-x01-y01","10.58")
+
+useOne("/ARGUS_1993_S2669951/d02-x01-y01","10.45")
+useOne("/ARGUS_1993_S2669951/d03-x01-y01","9.46")
+useOne("/ARGUS_1993_S2669951/d04-x01-y01","10.02")
+merge("/ARGUS_1993_S2669951/d01-x01-y01")
+merge("/ARGUS_1993_S2669951/d01-x01-y02")
+merge("/ARGUS_1993_S2669951/d05-x01-y01")
+# Choose output file
+name = args[0]+".aida"
+out = open(name, "w")
+## Write out merged histos
+out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
+out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
+out.write('<aida version="3.3">\n')
+out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
+for hpath, h in sorted(outhistos.iteritems()):
+    logging.debug("hpath = %s" % hpath)
+    out.write(h.asAIDA() + "\n\n")
+out.write('</aida>\n')
+
+sys.exit(0)
