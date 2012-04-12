@@ -79,7 +79,7 @@ if __name__ == "__main__":
 # #######################################
 
 aidafiles=["-10.52.aida","-10.52-sym.aida","-10.54.aida","-10.58.aida","-Upsilon.aida",
-           "-Upsilon2.aida","-Upsilon4.aida","-10.45.aida"]
+           "-Upsilon2.aida","-Upsilon4.aida","-10.45.aida","-Tau.aida"]
 
 ## Get histos
 inhistos = {}
@@ -95,6 +95,8 @@ for f in aidafiles:
         sqrts=10.54
     elif(file.find("10.58")>0) :
         sqrts=10.58
+    elif(file.find("Tau")>0) :
+        sqrts=10.58
     elif(file.find("Upsilon4")>0) :
         sqrts=10.58
     elif(file.find("Upsilon2")>0) :
@@ -102,7 +104,7 @@ for f in aidafiles:
     elif(file.find("Upsilon")>0) :
         sqrts=9.46
     if not os.access(file, os.R_OK):
-        if(file.find("Upsilon")) : continue
+        if(file.find("Upsilon")>=0 or file.find("Tau")>=0) : continue
         logging.error("%s can not be read" % file)
         break
     try:

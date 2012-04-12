@@ -78,7 +78,8 @@ if __name__ == "__main__":
 
 # #######################################
 
-aidafiles=["-133.aida","-177.aida","-196.aida","-206.aida","-91.aida" ,\
+aidafiles=["-130.aida","-133.aida","-136.aida","-177.aida","-192.aida",
+           "-196.aida","-202.aida","-206.aida","-91.aida" ,\
            "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
            "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida","-10.aida" ]
 
@@ -100,8 +101,12 @@ for f in aidafiles:
         sqrts=44
     elif(file.find("91")>0) :
         sqrts=91
+    elif(file.find("130")>0) :
+        sqrts=130
     elif(file.find("133")>0) :
         sqrts=133
+    elif(file.find("136")>0) :
+        sqrts=136
     elif(file.find("161")>0) :
         sqrts=161
     elif(file.find("172")>0) :
@@ -112,12 +117,16 @@ for f in aidafiles:
         sqrts=183
     elif(file.find("189")>0) :
         sqrts=189
+    elif(file.find("192")>0) :
+        sqrts=192
     elif(file.find("196")>0) :
         sqrts=196
     elif(file.find("197")>0) :
         sqrts=197
     elif(file.find("200")>0) :
         sqrts=200
+    elif(file.find("202")>0) :
+        sqrts=202
     elif(file.find("206")>0) :
         sqrts=206
 
@@ -136,12 +145,12 @@ for f in aidafiles:
         # jet shapes
         if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or
            h.fullPath().find("5765862")>0 or h.fullPath().find("3612880")>0 or
+           h.fullPath().find("4328825")>0 or h.fullPath().find("5361494")>0 or
            h.fullPath().find("2148048")>0 or h.fullPath().find("MULTIPLICITIES")>0 ) :
            if not inhistos.has_key(h.fullPath()):
                inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
-           if not tmpE.has_key(sqrts):
-               tmpE[sqrts] = h
+           if not inhistos[h.fullPath()].has_key(sqrts):
+               inhistos[h.fullPath()][sqrts] = h
            else:
                 raise Exception("A set with sqrts = %s already exists" % ( sqrts))
         else :
@@ -149,7 +158,8 @@ for f in aidafiles:
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or hpath.find("5765862")>0) :
+    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or hpath.find("5765862")>0 or
+        hpath.find("4328825")>0 or hpath.find("5361494")>0) :
         workhisto = copy.deepcopy(hsets.values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -402,6 +412,14 @@ useOne("/OPAL_2004_S6132243/d26-x01-y02","133")
 useOne("/OPAL_2004_S6132243/d26-x01-y03","177")
 useOne("/OPAL_2004_S6132243/d26-x01-y04","197")
 
+merge(  "/OPAL_2002_S5361494/d01-x01-y01")
+merge(  "/OPAL_2002_S5361494/d01-x01-y02")
+merge(  "/OPAL_2002_S5361494/d01-x01-y03")
+merge(  "/OPAL_2002_S5361494/d01-x01-y04")
+merge("/DELPHI_2000_S4328825/d01-x01-y01")
+merge("/DELPHI_2000_S4328825/d01-x01-y02")
+merge("/DELPHI_2000_S4328825/d01-x01-y03")
+merge("/DELPHI_2000_S4328825/d01-x01-y04")
 merge("/ALEPH_2004_S5765862/d01-x01-y01")
 useOne("/ALEPH_2004_S5765862/d02-x01-y01","133")
 useOne("/ALEPH_2004_S5765862/d03-x01-y01","161")

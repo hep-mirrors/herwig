@@ -126,16 +126,19 @@ Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
-           Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
-           Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
-           Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
+           Rivet-LEP-130 Rivet-LEP-133 Rivet-LEP-136 Rivet-LEP-161 \
+           Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 Rivet-LEP-189 \
+           Rivet-LEP-192 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
+           Rivet-LEP-202 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
            Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
-           Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-133 \
+           Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-130 \
+           Rivet-LEP-Powheg-133 Rivet-LEP-Powheg-136 \
            Rivet-LEP-Powheg-161 Rivet-LEP-Powheg-172 \
            Rivet-LEP-Powheg-177 Rivet-LEP-Powheg-183 \
-           Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-196 \
-           Rivet-LEP-Powheg-197 Rivet-LEP-Powheg-200 \
+           Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-192 \
+           Rivet-LEP-Powheg-196 Rivet-LEP-Powheg-197 \
+           Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
            Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10
 	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
 	rm -rf Rivet-LEP
@@ -148,7 +151,8 @@ Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
                 Rivet-BFactory-10.54 Rivet-BFactory-Powheg-10.54 \
                 Rivet-BFactory-10.45 Rivet-BFactory-Powheg-10.45 \
                 Rivet-BFactory-10.58 Rivet-BFactory-Powheg-10.58 \
-                Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4
+                Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
+                Rivet-BFactory-Tau
 	for i in BFactory-*.aida; do rivet-rmgaps $$i; done;
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
