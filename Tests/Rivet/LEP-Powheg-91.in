@@ -39,7 +39,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3749908
 # OPAL K0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_S4418603
 # SLD flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1996_S3398250
+# SLD flavour specific charged multiplicities etc
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1999_S3743934
+# SLD flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2004_S5693039
 # OPAL event shapes and multiplicities at different energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
 # ALEPH jet and event shapes at many energies
