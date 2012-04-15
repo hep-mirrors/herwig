@@ -28,6 +28,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1994_S2927284
 # OPAL Delta++ analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_S3198391
+# OPAL J/Psi analysis analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_S3257789
+# ALEPH eta/omega analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2002_S4823664
 # OPAL K*0 analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3608263
 # OPAL flavour specific charged multiplicities etc
