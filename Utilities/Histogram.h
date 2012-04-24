@@ -218,6 +218,12 @@ public:
 		     string bottomcase = string()
 		     ) const;
 
+  void topdrawMCatNLO(ostream & out,
+		      unsigned int flags =0 ,
+		      string colour = string("BLACK"),
+		      string title = string()
+		      ) const;
+
   /**
    *  Output as a topdrawer file. A bin by bin average is taken.
    * @param out The output stream

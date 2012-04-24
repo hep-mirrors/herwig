@@ -510,3 +510,113 @@ vector<double> Histogram::LogBins(double xmin, unsigned nbins, double base) {
   return limits;
 }
 
+
+void Histogram::topdrawMCatNLO(ostream & out,
+			       unsigned int flags,
+			       string color,
+			       string title
+			       ) const {
+  
+  using namespace HistogramOptions;
+  bool frame     = ( flags & Frame )     == Frame;
+  bool errorbars = ( flags & Errorbars ) == Errorbars;
+  bool xlog      = ( flags & Xlog )      == Xlog;
+  bool ylog      = ( flags & Ylog )      == Ylog;
+  bool smooth    = ( flags & Smooth )    == Smooth;
+  bool rawcount  = ( flags & Rawcount )  == Rawcount;
+
+  double myFactor = _prefactor / _total * 1000.;
+
+
+  // output the title info if needed
+  out << "     ( 22-Apr-10 18:28\n\n";
+  out << "   NEW PLOT\n\n\n";
+  out << " ( SET FONT DUPLEX\n";
+  out << "  SET TITLE SIZE 2\n";
+  out << " TITLE 12.8 9 ANGLE -90 \" MLM   22-Apr-10 18:28\"\n";
+
+  out << "  ( SET FONT DUPLEX\n";
+  out << "  SET TITLE SIZE  -1.2247\n";
+  out << "  SET LABEL SIZE  -1.2247\n";
+  out << "  SET TICKS TOP OFF SIZE   0.0245\n";
+  out << "  SET WINDOW X   1.5000 TO   12.000\n";
+  out << "  SET WINDOW Y   1.0000 TO   8.7917\n";
+  out << "  TITLE   1.5000   8.9617 \" "<<title<<"\"\n";
+  out << "  TITLE   9.8719   8.6217 \" INT= "<<visibleEntries()*myFactor<<"\"\n";
+  out << "  TITLE   9.8719   8.4517 \" ENT= "<<visibleEntries()<<"\"\n";
+  out << "  TITLE   9.8719   8.2817 \" OFL= 2.258E+01\"\n";
+  out << "  SET ORD X Y \n";
+  out << "  9.8719   8.1117\n";
+  out << "  12.000   8.1117\n";
+  out << "  JOIN TEXT\n";
+  out << "    9.8719   8.1117\n";
+  out << "    9.8719   8.7917\n";
+  out << "  JOIN TEXT\n";
+  out << "  SET TITLE SIZE  -1.8371\n";
+  out << " TITLE BOTTOM \""<<title<<"\"\n";
+  out << "  TITLE    0.42188   7.37500 ANGLE 90 \" \"\n";
+  if (ylog) {
+    out << "  SET SCALE Y LOG\n"; }
+  else {
+    out << "  SET SCALE Y LIN\n"; }
+  out << "  SET TICKS TOP OFF\n";
+
+  // set the x limits
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+
+  out << "  SET LIMITS X " << _bins[1].limit << " " 
+      << _bins[lastDataBinIndx+1].limit << endl;
+  // work out the y points
+  vector<double> yout;
+  double ymax=-9.8765e34,ymin=9.8765e34;
+  double numPoints = _total;
+  if (numPoints == 0) numPoints += 1.;
+
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    
+    //double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
+
+    // no differential dist & in pb
+    double factor = _prefactor / numPoints *1000.;
+    double value = factor*_bins[ix].contents;
+
+    yout.push_back(value);
+    ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
+    if(yout.back()>0.) ymin=min(ymin,value);
+    if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
+  }
+  if (ymin > 1e34)  ymin = 1e-34;
+  if (ymax < 1e-33) ymax = 1e-33;
+  if (ymax < 10*ymin) ymin = 0.1*ymax;
+  // make the y range slightly larger
+  double fac=pow(ymax/ymin,0.1);
+  ymax *= fac;
+  ymin /= fac;
+  //if (ylog) {
+  //  out << "  SET LIMITS Y " << ymin << " " << ymax << endl;
+  //}  
+  out << "  SET LIMITS Y " << ymin << " " << ymax << endl;
+  out << "  SET ORDER X Y DY\n";
+  out << " (  "<<title<<"\n";
+
+  out << " ( INT= "<<visibleEntries()*myFactor<<"  ENTRIES=  "<<visibleEntries()*myFactor<<"\n";
+
+  // the histogram from the event generator
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+
+    //double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
+
+    // no differential distributions and in pb
+    double factor = _prefactor / numPoints * 1000.;
+    
+    out << "    "<<_bins[ix].limit+delta << "    " << yout[ix-1] << "    " << delta;
+    if (errorbars) {
+      out << "    " << factor*sqrt(_bins[ix].contentsSq);
+    }
+    out << '\n';
+  }
+  out << "  HIST SOLID\n";
+  out << "   PLOT\n"; 
+}
