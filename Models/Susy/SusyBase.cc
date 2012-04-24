@@ -507,6 +507,7 @@ void SusyBase::resetRepositoryMasses() {
     //Find interface nominal mass interface
     const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
     ostringstream os;
+    os.precision(12);
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
     // switch on gravitino interactions?
