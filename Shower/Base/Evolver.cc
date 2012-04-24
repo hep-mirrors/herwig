@@ -44,7 +44,8 @@ IBPtr Evolver::fullclone() const {
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
+     << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
+     << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt;
@@ -52,7 +53,8 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
+     >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt;
@@ -128,6 +130,21 @@ void Evolver::Init() {
     (ifaceHardVetoRead,"Calculate","Calculate from hard process", 0);
   static SwitchOption HVRread
     (ifaceHardVetoRead,"Read","Read from XComb->lastScale", 1);
+
+  static Switch<Evolver, bool> ifaceHardVetoReadOption
+    ("HardVetoReadOption",
+     "Apply read-in scale veto to all collisions or just the primary one?",
+     &Evolver::_hardVetoReadOption, false, false, false);
+  static SwitchOption AllCollisions
+    (ifaceHardVetoReadOption,
+     "AllCollisions",
+     "Read-in pT veto applied to primary and secondary collisions.",
+     false);
+  static SwitchOption PrimaryCollision
+    (ifaceHardVetoReadOption,
+     "PrimaryCollision",
+     "Read-in pT veto applied to primary but not secondary collisions.",
+     true);
 
   static Parameter<Evolver, Energy> ifaceiptrms
     ("IntrinsicPtGaussian",
@@ -298,7 +315,9 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // be transverse mass.
   Energy ptmax = -1.0*GeV;
   // general case calculate the scale  
-  if (!hardVetoXComb()) {
+  if (!hardVetoXComb()||
+      (hardVetoReadOption()&&
+       !ShowerHandler::currentHandler()->firstInteraction())) {
     // scattering process
     if(hard->isHard()) {
       // coloured incoming particles
@@ -311,6 +330,11 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	}
       }
       if (ptmax < ZERO) ptmax = pcm.m();
+      if(hardVetoXComb()&&hardVetoReadOption()&&
+	 !ShowerHandler::currentHandler()->firstInteraction()) {
+	ptmax=min(ptmax,sqrt(ShowerHandler::currentHandler()
+			     ->lastXCombPtr()->lastScale()));
+      }
     } 
     // decay, incoming() is the decaying particle.
     else { 

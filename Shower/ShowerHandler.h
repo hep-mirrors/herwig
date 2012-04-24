@@ -70,6 +70,12 @@ public:
   virtual void cascade();
 
   /**
+   * Hook to allow vetoing of event after showering hard sub-process
+   * as in e.g. MLM merging.
+   */
+  virtual bool showerHardProcessVeto() { return false; };
+
+  /**
    * It returns true if the particle with the specified id
    * is in the list of those that should be decayed during the showering
    * showering.

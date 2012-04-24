@@ -243,6 +243,7 @@ void ShowerHandler::cascade() {
                       << " attempts in ShowerHandler::cascade()"
                       << Exception::eventerror;
   }
+  if(showerHardProcessVeto()) throw Veto();
   // if a non-hadron collision return (both incoming non-hadronic)
   if( ( !incomingBins.first||
         !isResolvedHadron(incomingBins.first ->particle()))&&
