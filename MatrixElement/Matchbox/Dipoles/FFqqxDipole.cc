@@ -52,6 +52,34 @@ bool FFqqxDipole::canHandle(const cPDVector& partons,
     partons[spectator]->mass() == ZERO;
 }
 
+double FFqqxDipole::me2Avg(double ccme2) const {
+
+  if ( jacobian() == 0.0 )
+    return 0.0;
+
+  double z = subtractionParameters()[1];
+
+  Energy2 prop = 
+    2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
+	(realEmissionME()->lastXComb().meMomenta()[realEmission()]));
+
+  double res = 1.-2.*z*(1.-z);
+
+  res *= -ccme2;
+
+  res *= 4.*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
+    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+
+  res *=
+    realEmissionME()->finalStateSymmetry() /
+    underlyingBornME()->finalStateSymmetry();
+
+  lastME2(res);
+
+  return res;
+
+}
+
 double FFqqxDipole::me2() const {
 
   if ( jacobian() == 0.0 )

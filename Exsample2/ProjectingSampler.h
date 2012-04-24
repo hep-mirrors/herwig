@@ -177,6 +177,11 @@ private:
    */
   double theLastValue;
 
+  /**
+   * The weight threshold which governs the minimum bin weight.
+   */
+  double theWeightThreshold;
+
 };
 
 }

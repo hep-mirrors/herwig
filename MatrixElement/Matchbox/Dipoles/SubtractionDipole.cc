@@ -230,6 +230,37 @@ StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
 }
 
+StdDependentXCombPtr SubtractionDipole::makeRealXComb(tStdXCombPtr bornXC) {
+
+  const cPDVector& proc = const_cast<const StandardXComb&>(*bornXC).mePartonData();
+
+  if ( theSplittingMap.find(underlyingBornKey(proc,bornEmitter(),bornSpectator())) ==
+       theSplittingMap.end() )
+    return StdDependentXCombPtr();
+
+  PartonPairVec pbs = bornXC->pExtractor()->getPartons(bornXC->maxEnergy(), 
+						       bornXC->particles(),
+						       *(bornXC->cuts()));
+
+  DiagramVector realDiags = realEmissionDiagrams(proc);
+  assert(!realDiags.empty());
+
+  PartonPairVec::iterator ppit = pbs.begin();
+  for ( ; ppit != pbs.end(); ++ppit ) {
+    if ( ppit->first->parton() == realDiags.front()->partons()[0] &&
+	 ppit->second->parton() == realDiags.front()->partons()[1] )
+      break;
+  }
+
+  assert(ppit != pbs.end());
+
+  StdDependentXCombPtr res =
+    new_ptr(StdDependentXComb(bornXC,*ppit,this,realDiags));
+
+  return res;
+
+}
+
 const MEBase::DiagramVector& SubtractionDipole::underlyingBornDiagrams(const cPDVector& real) const {
   static DiagramVector empty;
   map<cPDVector,DiagramVector>::const_iterator k = theUnderlyingBornDiagrams.find(real);
@@ -476,6 +507,52 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
 
 void SubtractionDipole::ptCut(Energy cut) {
   theInvertedTildeKinematics->ptCut(cut);
+}
+
+CrossSection SubtractionDipole::dSigAvgDR(Energy2 factorizationScale) const {
+
+  assert(splitting());
+
+  double jac = jacobian();
+
+  if ( jac == 0.0 )
+    return ZERO;
+
+  jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
+	     realEmissionME()->lastXComb().mePartonData().size()-4.);
+
+  if ( havePDFWeight1() || havePDFWeight2() ) {
+    realEmissionME()->getPDFWeight(factorizationScale);
+  }
+
+  assert(lastHeadXComb().hasMeta(MatchboxMetaKeys::ColourCorrelatedMEs));
+
+  map<pair<int,int>,double>& ccmap = 
+    lastHeadXComb().meta<map<pair<int,int>,double> >(MatchboxMetaKeys::ColourCorrelatedMEs);
+
+  pair<int,int> cfg(bornEmitter(),bornSpectator());
+  if ( cfg.first > cfg.second )
+    swap(cfg.first,cfg.second);
+
+  assert(ccmap.find(cfg) != ccmap.end());
+
+  double ccme2 = ccmap[cfg];
+  double xme2 = me2Avg(ccme2);
+
+  if ( xme2 == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
+    return ZERO;
+  }
+
+  CrossSection res = 
+    sqr(hbarc) * jac * lastMEPDFWeight() * xme2 /
+    (2. * lastSHat());
+
+  lastMECrossSection(res);
+
+  return lastMECrossSection();
+
 }
 
 CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {

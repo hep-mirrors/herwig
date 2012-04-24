@@ -48,6 +48,13 @@ public:
 public:
 
   /**
+   * Clone this scale choice.
+   */
+  Ptr<MatchboxScaleChoice>::ptr cloneMe() const {
+    return dynamic_ptr_cast<Ptr<MatchboxScaleChoice>::ptr>(clone());
+  }
+
+  /**
    * Set the XComb object.
    */
   virtual void setXComb(tStdXCombPtr xc) { 
@@ -58,13 +65,17 @@ public:
    * Return the renormalization scale. This default version returns
    * shat.
    */
-  virtual Energy2 renormalizationScale() const { return lastSHat(); }
+  virtual Energy2 renormalizationScale() const { 
+    return theFixedScale == ZERO ? lastSHat() : sqr(theFixedScale); 
+  }
 
   /**
    * Return the factorization scale. This default version returns
    * shat.
    */
-  virtual Energy2 factorizationScale() const { return lastSHat(); }
+  virtual Energy2 factorizationScale() const { 
+    return theFixedScale == ZERO ? lastSHat() : sqr(theFixedScale);
+  }
 
 public:
 
@@ -115,6 +126,11 @@ protected:
 
 
 private:
+
+  /**
+   * A fixed scale choice. If zero, shat will be used.
+   */
+  Energy theFixedScale;
 
   /**
    * The assignment operator is private and must never be called.

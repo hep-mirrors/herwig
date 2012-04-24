@@ -14,6 +14,7 @@
 
 #include "ThePEG/MatrixElement/Amplitude.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 
@@ -98,16 +99,38 @@ public:
   void nLight(unsigned int n) { theNLight = n; }
 
   /**
+   * Set the (tree-level) order in \f$g_S\f$ in which this matrix
+   * element should be evaluated.
+   */
+  virtual void orderInGs(unsigned int) {}
+
+  /**
    * Return the (tree-level) order in \f$g_S\f$ in which this matrix
    * element is given.
    */
   virtual unsigned int orderInGs() const = 0;
 
   /**
+   * Set the (tree-level) order in \f$g_{EM}\f$ in which this matrix
+   * element should be evaluated.
+   */
+  virtual void orderInGem(unsigned int) {}
+
+  /**
    * Return the (tree-level) order in \f$g_{EM}\f$ in which this matrix
    * element is given.
    */
   virtual unsigned int orderInGem() const = 0;
+
+  /**
+   * Return the Herwig++ StandardModel object
+   */
+  Ptr<StandardModel>::tcptr standardModel() { 
+    if ( !theStandardModel )
+      theStandardModel = 
+	dynamic_ptr_cast<Ptr<StandardModel>::tcptr>(HandlerBase::standardModel());
+    return theStandardModel;
+  }
 
   //@}
 
@@ -152,6 +175,22 @@ public:
       theColourBasis->colourGeometries(diag,lastAmplitudes()) :
       Selector<const ColourLines *>();
   }
+
+  /**
+   * Return the colour crossing information as filled by the last call to
+   * fillCrossingMap(...), mapping amplitude ids to colour basis ids.
+   */
+  const map<size_t,size_t>& lastColourMap() const { return theLastColourMap->second; }
+
+  /**
+   * Access the colour crossing information.
+   */
+  map<size_t,size_t>& lastColourMap() { return theLastColourMap->second; }  
+
+  /**
+   * Access the colour crossing information.
+   */
+  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return theColourMap; }
 
   //@}
 
@@ -406,6 +445,11 @@ private:
 			    size_t pos) const;
 
   /**
+   * The Herwig++ StandardModel object
+   */
+  Ptr<StandardModel>::tcptr theStandardModel;
+
+  /**
    * The number of light flavours to be used.
    */
   unsigned int theNLight;
@@ -440,6 +484,12 @@ private:
   map<tStdXCombPtr,vector<int> > theCrossingMap;
 
   /**
+   * The colour crossing information as filled by the last call to
+   * fillCrossingMap()
+   */
+  map<tStdXCombPtr,map<size_t,size_t> > theColourMap;
+
+  /**
    * The crossing signs as filled by the last call to
    * fillCrossingMap()
    */
@@ -455,6 +505,12 @@ private:
    * fillCrossingMap()
    */
   map<tStdXCombPtr,vector<int> >::iterator theLastCrossingMap;
+
+  /**
+   * The colour crossing information as filled by the last call to
+   * fillCrossingMap()
+   */
+  map<tStdXCombPtr,map<size_t,size_t> >::iterator theLastColourMap;
 
   /**
    * The amplitude parton data.

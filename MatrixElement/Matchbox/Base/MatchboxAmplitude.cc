@@ -22,6 +22,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
 using namespace Herwig;
 
@@ -33,13 +34,13 @@ MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theColourBasis << theColourBasisDim
-     << theCrossingMap << theCrossingSigns 
+     << theCrossingMap << theColourMap << theCrossingSigns 
      << theAmplitudePartonData << theNLight;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theColourBasis >> theColourBasisDim
-     >> theCrossingMap >> theCrossingSigns
+     >> theCrossingMap >> theColourMap >> theCrossingSigns
      >> theAmplitudePartonData >> theNLight;
 }
 
@@ -98,15 +99,19 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
   if ( theLastCrossingMap != crossingMap().end() ) {
     assert(amplitudePartonData().find(lastXCombPtr()) != amplitudePartonData().end());
+    assert(colourMap().find(lastXCombPtr()) != colourMap().end());
     theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
+    theLastColourMap = colourMap().find(lastXCombPtr());
     assert(crossingSigns().find(lastXCombPtr()) != crossingSigns().end());
     theLastCrossingSign = crossingSigns().find(lastXCombPtr())->second;
     return;
   } else {
     crossingMap()[lastXCombPtr()] = vector<int>(mePartonData().size());
     amplitudePartonData()[lastXCombPtr()] = cPDVector(mePartonData().size());
+    colourMap()[lastXCombPtr()] = map<size_t,size_t>();
     theLastCrossingMap = crossingMap().find(lastXCombPtr());
     theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
+    theLastColourMap = colourMap().find(lastXCombPtr());
   }
 
   double csign = 1.;
@@ -135,10 +140,17 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
   // process legs are already sorted, we only need to arrange for
   // adjacent particles and anti-particles
   while ( !processLegs.empty() ) {
-    lastCrossingMap()[ampCount] = processLegs.begin()->second - shift;
-    amplitudeLegs.insert(make_pair(processLegs.begin()->first,ampCount));
-    tcPDPtr check = processLegs.begin()->first;
-    processLegs.erase(processLegs.begin());
+    set<pair<tcPDPtr,int>,orderPartonData >::iterator next
+      = processLegs.begin();
+    while ( next->first->id() < 0 ) {
+      if ( ++next == processLegs.end() )
+	break;
+    }
+    assert(next != processLegs.end());
+    lastCrossingMap()[ampCount] = next->second - shift;
+    amplitudeLegs.insert(make_pair(next->first,ampCount));
+    tcPDPtr check = next->first;
+    processLegs.erase(next);
     ++ampCount;
     if ( check->CC() ) {
       set<pair<tcPDPtr,int>,orderPartonData>::iterator checkcc
@@ -149,6 +161,14 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	  checkcc = c; break;
 	}
       }
+      if ( checkcc == processLegs.end() )
+	for ( set<pair<tcPDPtr,int>,orderPartonData>::iterator c = processLegs.begin();
+	      c != processLegs.end(); ++c ) {
+	  assert(SU2Helper::SU2CC(check)->CC());
+	  if ( c->first == SU2Helper::SU2CC(check)->CC() ) {
+	    checkcc = c; break;
+	  }
+	}
       assert(checkcc != processLegs.end());
       lastCrossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
@@ -160,6 +180,19 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
   for ( set<pair<tcPDPtr,int> >::const_iterator l = amplitudeLegs.begin();
 	l != amplitudeLegs.end(); ++l )
     lastAmplitudePartonData()[l->second] = l->first;
+
+  if ( colourBasis() ) {
+    assert(colourBasis()->indexMap().find(mePartonData()) !=
+	   colourBasis()->indexMap().end());
+    const map<size_t,size_t> colourCross = 
+      colourBasis()->indexMap().find(mePartonData())->second;
+    for ( size_t k = 0; k < lastCrossingMap().size(); ++k ) {
+      if ( colourCross.find(lastCrossingMap()[k]) !=
+	   colourCross.end() ) {
+	lastColourMap()[k] = colourCross.find(lastCrossingMap()[k])->second;
+      }
+    }
+  }
 
 }
 
@@ -325,7 +358,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   double Nc = generator()->standardModel()->Nc();
   double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
 
-  return avg/cfac + 2.*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
+  return avg + 2.*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
 
 }
 

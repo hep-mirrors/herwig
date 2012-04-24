@@ -98,15 +98,12 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 
   }
 
-  if ( !iterations().empty() )
-    chi2(iterations().back());
-
   if ( progress ) {
     cout << "integrated ( " 
 	 << averageWeight() << " +/- " << sqrt(averageWeightVariance())
 	 << " ) nb\nepsilon = "
-	 << averageAbsWeight()/abs(maxWeight());
-    if ( chi2() >= 0. )
+	 << (abs(maxWeight()) != 0. ? averageAbsWeight()/abs(maxWeight()) : 0.);
+    if ( !iterations().empty() )
       cout << " chi2 = " << chi2();
     cout << "\n";
     cout << "--------------------------------------------------------------------------------\n";

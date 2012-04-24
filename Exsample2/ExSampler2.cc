@@ -75,7 +75,7 @@ void ExSampler::initialize(bool progress) {
 
   if ( progress ) {
     cout << "initializing sampler for "
-	 << process() << "\n";
+	 << process() << "\n" << flush;
   }
 
   generator_.function(this);
@@ -91,7 +91,7 @@ void ExSampler::initialize(bool progress) {
   if ( progress ) {
     cout << "estimated cross section is ( "
 	 << averageWeight() << " +/- " << sqrt(averageWeightVariance())
-	 << " ) nb\n";
+	 << " ) nb\n" << flush;
   }
 
 }

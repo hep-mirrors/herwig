@@ -39,7 +39,7 @@ MatchboxMEBase::MatchboxMEBase()
     theRenormalizationScaleFactor(1.0),
     theVerbose(false),
     theFixedCouplings(false),
-    theNLight(0) {}
+    theNLight(0), theGetColourCorrelatedMEs(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -369,12 +369,41 @@ double MatchboxMEBase::finalStateSymmetry() const {
 
   map<long,int> counts;
 
-  for ( size_t k = 2; k < mePartonData().size(); ++k ) {
-    if ( counts.find(mePartonData()[k]->id()) != counts.end() ) {
-      counts[mePartonData()[k]->id()] += 1;
-    } else {
-      counts[mePartonData()[k]->id()] = 1;
-    }
+  cPDVector checkData;
+  copy(mePartonData().begin()+2,mePartonData().end(),back_inserter(checkData));
+
+  cPDVector::iterator p = checkData.begin();
+  while ( !checkData.empty() ) {
+    if ( (**p).iSpin() == PDT::Spin0 ||
+	 (**p).iSpin() == PDT::Spin1 ) {
+      if ( counts.find((**p).id()) != counts.end() ) {
+	counts[(**p).id()] += 1;
+      } else {
+	counts[(**p).id()] = 1;
+      }
+      checkData.erase(p);
+      p = checkData.begin();
+      continue;
+    } else if ( (**p).iSpin() == PDT::Spin1Half ) {
+      assert((**p).CC());
+      long fid = abs((**p).id());
+      cPDPtr findCC = (**p).CC();
+      checkData.erase(p);
+      p = checkData.begin();
+      for ( ; p != checkData.end(); ++p )
+	if ( (*p) == findCC )
+	  break;
+      if ( p != checkData.end() ) {
+	if ( counts.find(fid) != counts.end() ) {
+	  counts[fid] += 1;
+	} else {
+	  counts[fid] = 1;
+	}
+	checkData.erase(p);
+      }
+      p = checkData.begin();
+      continue;
+    } else assert(false);
   }
 
   for ( map<long,int>::const_iterator c = counts.begin();
@@ -422,6 +451,29 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
+void MatchboxMEBase::storeColourCorrelatedMEs(double xme2) const {
+
+  map<pair<int,int>,double>& ccs = 
+    colourCorrelatedMEs[lastXCombPtr()];
+  int n = meMomenta().size();
+  for ( int i = 0; i < n; ++i ) {
+    if ( !mePartonData()[i]->coloured() )
+      continue;
+    for ( int j = i+1; j < n; ++j ) {
+      if ( !mePartonData()[j]->coloured() )
+	continue;
+      if ( noDipole(i,j) )
+	continue;
+      ccs[make_pair(i,j)] = colourCorrelatedME2(make_pair(i,j));
+    }
+  }
+  lastXCombPtr()->meta(MatchboxMetaKeys::ColourCorrelatedMEs,ccs);
+  double& bme2 = bornMEs[lastXCombPtr()];
+  bme2 = xme2 >= 0. ? xme2 : me2();
+  lastXCombPtr()->meta(MatchboxMetaKeys::BornME,bme2);
+
+}
+
 CrossSection MatchboxMEBase::dSigHatDR() const {
 
   getPDFWeight();
@@ -437,6 +489,9 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
+
+  if ( getColourCorrelatedMEs() )
+    storeColourCorrelatedMEs(xme2);
 
   CrossSection res = 
     (sqr(hbarc)/(2.*lastSHat())) *
@@ -828,6 +883,17 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     myAmplitude->cloneDependencies(pname.str());
     matchboxAmplitude(myAmplitude);
     amplitude(myAmplitude);
+    matchboxAmplitude()->orderInGs(orderInAlphaS());
+    matchboxAmplitude()->orderInGem(orderInAlphaEW());
+  }
+
+  if ( scaleChoice() ) {
+    Ptr<MatchboxScaleChoice>::ptr myScaleChoice = scaleChoice()->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myScaleChoice->name();
+    if ( ! (generator()->preinitRegister(myScaleChoice,pname.str()) ) )
+      throw InitException() << "Scale choice " << pname.str() << " already existing.";
+    scaleChoice(myScaleChoice);
   }
 
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
@@ -848,7 +914,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theDiagramGenerator << theSubprocesses
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theVerbose << theCache << theFixedCouplings
-     << theNLight << symmetryFactors;
+     << theNLight << theGetColourCorrelatedMEs << symmetryFactors;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -856,7 +922,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theDiagramGenerator >> theSubprocesses
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theVerbose >> theCache >> theFixedCouplings
-     >> theNLight >> symmetryFactors;
+     >> theNLight >> theGetColourCorrelatedMEs >> symmetryFactors;
 }
 
 void MatchboxMEBase::Init() {

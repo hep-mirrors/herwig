@@ -64,6 +64,31 @@ public:
     return theIterations;
   }
 
+  /**
+   * Return the last calculated chi^2.
+   */
+  virtual double chi2() const;
+
+  /**
+   * Return the average weight.
+   */
+  virtual double averageWeight() const;
+
+  /**
+   * Return the average absolute weight.
+   */
+  virtual double averageAbsWeight() const;
+
+  /**
+   * Return the variance of the average weight.
+   */
+  virtual double averageWeightVariance() const;
+
+  /**
+   * Return the variance of the average absolute weight.
+   */
+  virtual double averageAbsWeightVariance() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

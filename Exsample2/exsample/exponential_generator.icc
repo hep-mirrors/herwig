@@ -50,8 +50,6 @@ namespace exsample {
 
   template<class Function, class Random>
   bool exponential_generator<Function,Random>::split () {
-    if (++splits_ > parameter_hash_bits/2)
-      return false;
     if (adaption_info_.freeze_grid == accepts_)
       return false;
     if (compensating_)
@@ -62,6 +60,9 @@ namespace exsample {
       (*last_cell_).info().get_split(adaption_info_,dosplit);
     if (!dosplit) return false;
     if (!adaption_info_.adapt[sp.first]) return false;
+    if (splits_ == parameter_hash_bits/2)
+      return false;
+    ++splits_;
     last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_,sample_other_variables_));
     if ( !sample_other_variables_[sp.first] ) {
       if ( std::find(parameter_splits_[sp.first].begin(),parameter_splits_[sp.first].end(),sp.second)

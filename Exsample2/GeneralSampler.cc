@@ -82,9 +82,10 @@ void GeneralSampler::initialize() {
 
   updateCrossSections(true);
 
-  cout << "total integrated cross section is ( "
-       << integratedXSec()/nanobarn << " +/- "
-       << integratedXSecErr()/nanobarn << " ) nb\n" << flush;
+  if ( theVerbose )
+    cout << "estimated total cross section is ( "
+	 << integratedXSec()/nanobarn << " +/- "
+	 << integratedXSecErr()/nanobarn << " ) nb\n" << flush;
 
   if ( progressBar )
     delete progressBar;
@@ -115,7 +116,7 @@ double GeneralSampler::generate() {
 	map<Ptr<BinSampler>::tptr,unsigned long>::iterator s = skipMap.find(lastSampler);
 	if ( s != skipMap.end() )
 	  s->second += skip;
-	else
+	else if ( skip != 0 )
 	  skipMap[lastSampler] = skip;
 	lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
 	tries = 0;
@@ -219,25 +220,8 @@ void GeneralSampler::currentCrossSections() const {
 
   for ( map<double,Ptr<BinSampler>::ptr>::const_iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
-    size_t n = nIterationsMap.find(s->second)->second;
-    if ( !s->second->selectedPoints() ) {
-      xsec += sumWeightsMap.find(s->second)->second.first/n;
-      var += sumWeightsMap.find(s->second)->second.second/n;
-      continue;
-    }
-    double trySum = 
-      ( sumWeightsMap.find(s->second)->second.first + s->second->averageWeight() )/
-      ( n + 1 );
-    double trySumVariance = 
-      ( sumWeightsMap.find(s->second)->second.second + s->second->averageWeightVariance() )/
-      ( n + 1 );
-    if ( trySumVariance < sumWeightsMap.find(s->second)->second.second/n ) {
-      xsec += trySum;
-      var += trySumVariance;
-    } else {
-      xsec += sumWeightsMap.find(s->second)->second.first/n;
-      var += sumWeightsMap.find(s->second)->second.second/n;
-    }
+    xsec += s->second->averageWeight();
+    var += s->second->averageWeightVariance();
   }
 
   theIntegratedXSec = xsec;
@@ -245,44 +229,7 @@ void GeneralSampler::currentCrossSections() const {
 
 }
 
-void GeneralSampler::updateCrossSections(bool firstTime) {
-
-  if ( isSampling ) {
-    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
-	  s != samplers.end(); ++s ) {
-      if ( !s->second->selectedPoints() )
-	continue;
-      double trySumVariance = 
-	( sumWeightsMap[s->second].second + s->second->averageWeightVariance() )/
-	( nIterationsMap[s->second] + 1 );
-      if ( trySumVariance < sumWeightsMap[s->second].second/nIterationsMap[s->second] ) {
-	sumWeightsMap[s->second].first += s->second->averageWeight();
-	sumWeightsMap[s->second].second += s->second->averageWeightVariance();
-	sumAbsWeightsMap[s->second].first += s->second->averageAbsWeight();
-	sumAbsWeightsMap[s->second].second += s->second->averageAbsWeightVariance();
-	nIterationsMap[s->second] += 1;
-      }
-    }
-  } else {
-    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
-	s != samplers.end(); ++s ) {
-      if ( !firstTime ) {
-	if ( s->second->averageWeightVariance() <
-	     sumWeightsMap[s->second].second && s->second->selectedPoints() ) {
-	  sumWeightsMap[s->second] =
-	    make_pair(s->second->averageWeight(),s->second->averageWeightVariance());
-	  sumAbsWeightsMap[s->second] =
-	    make_pair(s->second->averageAbsWeight(),s->second->averageAbsWeightVariance());
-	}
-      } else {
-	sumWeightsMap[s->second] =
-	  make_pair(s->second->averageWeight(),s->second->averageWeightVariance());
-	sumAbsWeightsMap[s->second] =
-	  make_pair(s->second->averageAbsWeight(),s->second->averageAbsWeightVariance());
-	nIterationsMap[s->second] = 1;
-      }
-    }
-  }
+void GeneralSampler::updateCrossSections(bool) {
 
   double xsec = 0.;
   double var = 0.;
@@ -290,9 +237,16 @@ void GeneralSampler::updateCrossSections(bool firstTime) {
 
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
-    xsec += sumWeightsMap[s->second].first/nIterationsMap[s->second];
-    var += sumWeightsMap[s->second].second/nIterationsMap[s->second];
-    sumbias += sumAbsWeightsMap[s->second].first/nIterationsMap[s->second];
+    if ( (isSampling && s->second == lastSampler) ||
+	 !isSampling )
+      s->second->nextIteration();
+    if ( isSampling && s->second == lastSampler ) {
+      s->second->maxWeight(s->second->iterations().back().maxWeight());
+      s->second->minWeight(s->second->iterations().back().minWeight());
+    }
+    xsec += s->second->averageWeight();
+    var += s->second->averageWeightVariance();
+    sumbias += s->second->averageAbsWeight();
   }
 
   theIntegratedXSec = xsec;
@@ -304,11 +258,7 @@ void GeneralSampler::updateCrossSections(bool firstTime) {
 
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
-    double abssw = 
-      sumAbsWeightsMap[s->second].first/nIterationsMap[s->second];
-    if ( (isSampling && s->second == lastSampler) ||
-	 !isSampling )
-      s->second->nextIteration();
+    double abssw = s->second->averageAbsWeight();
     s->second->bias(abssw/sumbias);
     current += abssw;
     newSamplers[current/sumbias] = s->second;
@@ -381,21 +331,6 @@ void GeneralSampler::rebind(const TranslationMap & trans) {
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = 
 	  samplers.begin(); s != samplers.end(); ++s )
     s->second = trans.translate(s->second);
-  map<Ptr<BinSampler>::tptr,pair<double,double> > nsummap;
-  for ( map<Ptr<BinSampler>::tptr,pair<double,double> >::const_iterator
-	  s = sumWeightsMap.begin(); s != sumWeightsMap.end(); ++s )
-    nsummap[trans.translate(s->first)] = s->second;
-  sumWeightsMap = nsummap;
-  nsummap.clear();
-  for ( map<Ptr<BinSampler>::tptr,pair<double,double> >::const_iterator
-	  s = sumAbsWeightsMap.begin(); s != sumAbsWeightsMap.end(); ++s )
-    nsummap[trans.translate(s->first)] = s->second;
-  sumAbsWeightsMap = nsummap;
-  map<Ptr<BinSampler>::tptr,size_t> nitmap;
-  for ( map<Ptr<BinSampler>::tptr,size_t>::const_iterator
-	  s = nIterationsMap.begin(); s != nIterationsMap.end(); ++s )
-    nitmap[trans.translate(s->first)] = s->second;
-  nIterationsMap = nitmap;
   SamplerBase::rebind(trans);
 }
 
@@ -409,14 +344,14 @@ IVector GeneralSampler::getReferences() {
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theVerbose << theFlatSubprocesses 
-     << samplers << sumWeightsMap << sumAbsWeightsMap << nIterationsMap << lastSampler
+     << samplers << lastSampler
      << theIntegratedXSec << theIntegratedXSecErr << theSumWeights
      << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theVerbose >> theFlatSubprocesses 
-     >> samplers >> sumWeightsMap >> sumAbsWeightsMap >> nIterationsMap >> lastSampler
+     >> samplers >> lastSampler
      >> theIntegratedXSec >> theIntegratedXSecErr >> theSumWeights
      >> norm;
 }

@@ -231,21 +231,6 @@ private:
   bool isSampling;
 
   /**
-   * The sum of weights per sampler.
-   */
-  map<Ptr<BinSampler>::tptr,pair<double,double> > sumWeightsMap;
-
-  /**
-   * The sum of absolute weights per sampler.
-   */
-  map<Ptr<BinSampler>::tptr,pair<double,double> > sumAbsWeightsMap;
-
-  /**
-   * The number of iterations per sampler after the adaption phase.
-   */
-  map<Ptr<BinSampler>::tptr,size_t> nIterationsMap;
-
-  /**
    * The selector map for the bin samplers.
    */
   map<double,Ptr<BinSampler>::ptr> samplers;

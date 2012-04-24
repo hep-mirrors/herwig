@@ -58,6 +58,11 @@ public:
    */
   virtual double me2() const;
 
+  /**
+   * Return the matrix element averaged over spin correlations.
+   */
+  virtual double me2Avg(double ccme2) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

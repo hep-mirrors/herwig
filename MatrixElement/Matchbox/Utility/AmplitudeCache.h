@@ -32,6 +32,11 @@ class AmplitudeCache {
   typedef map<AmplitudeKey,pair<bool,LorentzVector<Complex> > > CurrentCacheMap;
 
   /**
+   * The number of points
+   */
+  int theNPoints;
+
+  /**
    * The energy scale to obtain dimensionless
    * quantities.
    */
@@ -139,9 +144,22 @@ class AmplitudeCache {
 public:
 
   /**
+   * Constructor
+   */
+  AmplitudeCache()
+    : theNPoints(0) {}
+
+  /**
    * Prepare for n-point amplitude
    */
   void nPoints(int n);
+
+  /**
+   * Return the number of points
+   */
+  int nPoints() const {
+    return theNPoints;
+  }
 
   /**
    * Set the energy scale to obtain dimensionless
@@ -154,7 +172,7 @@ public:
    * and its associated mass.
    */
   void momentum(int k, const LorentzMomentum& p,
-		bool getSpinors,
+		bool getSpinors = true,
 		Energy mass = ZERO) const;
 
   /**

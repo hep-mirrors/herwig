@@ -98,6 +98,12 @@ public:
   StdDependentXCombPtr makeBornXComb(tStdXCombPtr realXC);
 
   /**
+   * Create a StdDependentXComb object for the real emission process,
+   * given a XComb driving the underlying Born
+   */
+  StdDependentXCombPtr makeRealXComb(tStdXCombPtr bornXC);
+
+  /**
    * Return true, if bookkeeping did not find a non-trivial setup.
    */
   bool empty() const { return theSplittingMap.empty(); }
@@ -565,6 +571,16 @@ public:
    * Set the underlying Born matrix element
    */
   void underlyingBornME(Ptr<MatchboxMEBase>::tptr me) { theUnderlyingBornME = me; }
+
+  /**
+   * Return the matrix element averaged over spin correlations.
+   */
+  virtual double me2Avg(double ccme2) const = 0;
+
+  /**
+   * Return the matrix element averaged over spin correlations.
+   */
+  virtual CrossSection dSigAvgDR(Energy2 factorizationScale) const;
 
   /**
    * Return the matrix element squared differential in the variables

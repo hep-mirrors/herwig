@@ -13,6 +13,8 @@ namespace SpinorHelicity {
 template<class AmplitudeKey>
 void AmplitudeCache<AmplitudeKey>::nPoints(int n) {
 
+  theNPoints = n;
+
   theMasses.clear();
   theMomenta.clear();
   theCrossingSigns.clear();

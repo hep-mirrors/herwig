@@ -43,7 +43,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 
     if ( mu < xlow || mu > xup ) {
       event =
-	generate(power(mu,-2.,xlow,xup),r);
+	generate(inverse(mu,xlow,xup),r);
     } else {
       pair<double,double> pLeft(xlow,xlow < mu-x0 ? mu-x0 : xlow);
       pair<double,double> pRight(xup > mu+x0 ? mu+x0 : xup,xup);
@@ -60,11 +60,11 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 	   pRight.first != pRight.second ) {
 	event = 
 	  generate((piecewise(),                                                                                   
-		    power(mu,-2.,pLeft.first,pLeft.second),
+		    inverse(mu,pLeft.first,pLeft.second),
 		    match(flat(fLeft.first,fLeft.second))) +
 		   match((piecewise(),
 			  flat(fRight.first,fRight.second),
-			  match(power(mu,-2.,pRight.first,pRight.second)))),
+			  match(inverse(mu,pRight.first,pRight.second)))),
 		   r);
       } else if ( pLeft.first == pLeft.second &&
 		  fLeft.first != fLeft.second &&
@@ -74,7 +74,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 	  generate(flat(fLeft.first,fLeft.second) +
 		   match((piecewise(),
 			  flat(fRight.first,fRight.second),
-			  match(power(mu,-2.,pRight.first,pRight.second)))),
+			  match(inverse(mu,pRight.first,pRight.second)))),
 		   r);
       } else if ( pLeft.first != pLeft.second &&
 		  fLeft.first != fLeft.second &&
@@ -82,7 +82,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 		  pRight.first == pRight.second ) {
 	event = 
 	  generate((piecewise(),                                                                                   
-		    power(mu,-2.,pLeft.first,pLeft.second),
+		    inverse(mu,pLeft.first,pLeft.second),
 		    match(flat(fLeft.first,fLeft.second))) +
 		   match(flat(fRight.first,fRight.second)),
 		   r);
@@ -93,7 +93,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 	event = 
 	  generate((piecewise(),
 		    flat(fRight.first,fRight.second),
-		    match(power(mu,-2.,pRight.first,pRight.second))),
+		    match(inverse(mu,pRight.first,pRight.second))),
 		   r);
       } else if ( pLeft.first != pLeft.second &&
 		  fLeft.first != fLeft.second &&
@@ -101,7 +101,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 		  pRight.first == pRight.second ) {
 	event = 
 	  generate((piecewise(),                                                                                   
-		    power(mu,-2.,pLeft.first,pLeft.second),
+		    inverse(mu,pLeft.first,pLeft.second),
 		    match(flat(fLeft.first,fLeft.second))),
 		   r);
       } else if ( pLeft.first == pLeft.second &&
@@ -166,13 +166,16 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
       
   double ct = p1c.vect().unit().z();
   double st = sqrt(1.-ct*ct);
-      
+  
   double phi = 2.*Constants::pi*rnd();
   weight *= 2.*Constants::pi;
   double cphi = cos(phi);
   double sphi = sqrt(1.-cphi*cphi);
   if (phi  > Constants::pi) sphi = -sphi;
-      
+  
+  // adding an output somewhere around here results in the correct behaviour
+  // when compiling with g++-4.6.1 -O3
+  // cerr << "bla\n" << flush;
   if (st > Constants::epsilon) {
     double cchi = p1c.vect().unit().x()/st;
     double schi = p1c.vect().unit().y()/st;
@@ -184,10 +187,10 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
     k.setY(pt*sphi);
     k.setZ(0.*GeV);
   }
-      
+  
   if (beta.mag2() > Constants::epsilon)
     k.boost(-beta);
-      
+    
   return k;
 
 }

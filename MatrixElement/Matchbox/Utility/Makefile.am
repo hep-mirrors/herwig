@@ -9,6 +9,8 @@ DiagramDrawer.cc \
 DiagramDrawer.h \
 MatchboxMECache.cc \
 MatchboxMECache.h \
+MatchboxPtScale.h \
+MatchboxPtScale.cc \
 MatchboxScaleChoice.cc \
 MatchboxScaleChoice.h \
 SimpleColourBasis.cc \

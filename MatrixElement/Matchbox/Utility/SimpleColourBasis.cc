@@ -76,7 +76,7 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
     if ( a == b ) {
       return sqr((SM().Nc()*SM().Nc()-1.)/2.)/SM().Nc();
     }
-    return 1./(4.*SM().Nc());
+    return (1.-SM().Nc()*SM().Nc())/(4.*SM().Nc());
   }
 
   if ( abBasis == id33bar33bar ) {
@@ -107,7 +107,7 @@ double SimpleColourBasis::tMatrixElement(size_t i, size_t a, size_t b,
       return a == 0 ? 1. : 0.;
     if ( i == 1 )
       return a == 1 ? -1. : 0.;
-    if ( i == 2 && a != 2 )
+    if ( i == 2 )
       return a == 0 ? -1. : 1.;
     return 0.;
   }

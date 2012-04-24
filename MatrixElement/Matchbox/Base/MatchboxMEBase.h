@@ -31,6 +31,21 @@ class SubtractionDipole;
  * \ingroup Matchbox
  * \author Simon Platzer
  *
+ * \brief Keys for XComb meta information
+ */
+struct MatchboxMetaKeys {
+
+  enum Keys {
+    BornME,
+    ColourCorrelatedMEs
+  };
+
+};
+
+/**
+ * \ingroup Matchbox
+ * \author Simon Platzer
+ *
  * \brief MatchboxMEBase is the base class for matrix elements
  * in the context of the matchbox NLO interface.
  *
@@ -461,6 +476,23 @@ public:
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
 
+  /**
+   * Return true, if colour correlated matrix elements should be calculated
+   * for later use
+   */
+  bool getColourCorrelatedMEs() const { return theGetColourCorrelatedMEs; }
+
+  /**
+   * Switch on calculation of colour correlated matrix elements for
+   * later use
+   */
+  void doColourCorrelatedMEs() { theGetColourCorrelatedMEs = true; }
+
+  /**
+   * Calculate colour correlated matrix elements for later use
+   */
+  void storeColourCorrelatedMEs(double xme2 = -1.) const;
+
   //@}
 
   /** @name Caching and diagnostic information */
@@ -494,6 +526,7 @@ public:
       xme2 = 0.;
       return true;
     }
+    cache()->setXComb(lastXCombPtr());
     return cache()->calculateME2(xme2,corr);
   }
 
@@ -660,6 +693,13 @@ protected:
   virtual void doinit();
   //@}
 
+protected:
+
+  /**
+   * The final state symmetry factors.
+   */
+  mutable map<tStdXCombPtr,double> symmetryFactors;
+
 private:
 
   /**
@@ -727,9 +767,20 @@ private:
   unsigned int theNLight;
 
   /**
-   * The final state symmetry factors.
+   * True, if colour correlated matrix elements should be calculated
+   * for later use
    */
-  mutable map<tStdXCombPtr,double> symmetryFactors;
+  bool theGetColourCorrelatedMEs;
+
+  /**
+   * Map xcomb's to storage of Born matrix elements squared.
+   */
+  mutable map<tStdXCombPtr,double> bornMEs;
+
+  /**
+   * Map xcomb's to storage of colour correlated matrix elements.
+   */
+  mutable map<tStdXCombPtr,map<pair<int,int>,double> > colourCorrelatedMEs;
 
 private:
 

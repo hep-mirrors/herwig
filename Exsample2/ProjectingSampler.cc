@@ -28,7 +28,8 @@ using namespace Herwig;
 ProjectingSampler::ProjectingSampler() 
   : theFirstIteration(true), theNIterations(4),
     theEnhancementFactor(2.0), theNBins(8),
-    theEpsilon(0.5), theLastNPoints(0) {}
+    theEpsilon(0.5), theLastNPoints(0),
+    theWeightThreshold(0.001) {}
 
 ProjectingSampler::~ProjectingSampler() {}
 
@@ -101,12 +102,16 @@ void ProjectingSampler::initialize(bool progress) {
   if ( initialized() )
     return;
   lastPoint().resize(dimension());
-  theProjections.resize(dimension(),BinnedStatistics(theNBins));
+  theProjections.resize(dimension(),BinnedStatistics(theNBins,theWeightThreshold));
   theLastNPoints = initialPoints();
   theFirstIteration = true;
   runIteration(theLastNPoints,progress);
   theLastNPoints = (unsigned long)(theLastNPoints*theEnhancementFactor);
   adapt();
+  if ( theNIterations == 1 ) {
+    isInitialized();
+    return;
+  }
   nextIteration();
   theFirstIteration = false;
   for ( unsigned long k = 1; k < theNIterations-1; ++k ) {
@@ -167,13 +172,13 @@ void ProjectingSampler::adapt() {
 void ProjectingSampler::persistentOutput(PersistentOStream & os) const {
   os << theFirstIteration << theNIterations << theEnhancementFactor 
      << theNBins << theEpsilon << theLastNPoints
-     << theProjections;
+     << theProjections << theWeightThreshold;
 }
 
 void ProjectingSampler::persistentInput(PersistentIStream & is, int) {
   is >> theFirstIteration >> theNIterations >> theEnhancementFactor 
      >> theNBins >> theEpsilon >> theLastNPoints
-     >> theProjections;
+     >> theProjections >> theWeightThreshold;
 }
 
 
@@ -218,6 +223,11 @@ void ProjectingSampler::Init() {
      &ProjectingSampler::theEpsilon, 0.5, 0.0, 0,
      false, false, Interface::lowerlim);
 
+  static Parameter<ProjectingSampler,double> interfaceWeightThreshold
+    ("WeightThreshold",
+     "The minimum weight per bin in units of the average weight.",
+     &ProjectingSampler::theWeightThreshold, 0.001, 0.0, 0,
+     false, false, Interface::lowerlim);
 
 }
 

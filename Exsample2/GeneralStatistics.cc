@@ -22,7 +22,7 @@ void GeneralStatistics::put(PersistentOStream & os) const {
      << theMinWeight << theSumWeights
      << theSumSquaredWeights << theSumAbsWeights 
      << theSelectedPoints << theAcceptedPoints
-     << theNanPoints << theAllPoints << theChi2 << theLastWeight;
+     << theNanPoints << theAllPoints << theLastWeight;
 }
 
 void GeneralStatistics::get(PersistentIStream & is) {
@@ -30,6 +30,6 @@ void GeneralStatistics::get(PersistentIStream & is) {
      >> theMinWeight >> theSumWeights
      >> theSumSquaredWeights >> theSumAbsWeights 
      >> theSelectedPoints >> theAcceptedPoints
-     >> theNanPoints >> theAllPoints >> theChi2 >> theLastWeight;
+     >> theNanPoints >> theAllPoints >> theLastWeight;
 }
 

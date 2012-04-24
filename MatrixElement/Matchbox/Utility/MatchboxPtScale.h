@@ -1,18 +1,18 @@
 // -*- C++ -*-
 //
-// FFMqqxDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxPtScale.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_FFMqqxDipole_H
-#define HERWIG_FFMqqxDipole_H
+#ifndef Herwig_MatchboxPtScale_H
+#define Herwig_MatchboxPtScale_H
 //
-// This is the declaration of the FFMqqxDipole class.
+// This is the declaration of the MatchboxPtScale class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 
 namespace Herwig {
 
@@ -20,12 +20,12 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer, Martin Stoll
+ * \author Simon Platzer
  *
- * \brief FFMqqxDipole implements the D_{q,qbar;k} subtraction dipole.
+ * \brief MatchboxPtScale implements scale choices related to transverse momenta.
  *
  */
-class FFMqqxDipole: public SubtractionDipole {
+class MatchboxPtScale: public MatchboxScaleChoice {
 
 public:
 
@@ -34,40 +34,27 @@ public:
   /**
    * The default constructor.
    */
-  FFMqqxDipole();
+  MatchboxPtScale();
 
   /**
    * The destructor.
    */
-  virtual ~FFMqqxDipole();
+  virtual ~MatchboxPtScale();
   //@}
 
 public:
 
   /**
-   * Return true, if this dipole applies to the selected
-   * configuration.
+   * Return the renormalization scale. This default version returns
+   * shat.
    */
-  virtual bool canHandle(const cPDVector& partons,
-			 int emitter, int emission, int spectator) const;
+  virtual Energy2 renormalizationScale() const;
 
   /**
-   * Return true, if this dipole is symmetric with respect to emitter
-   * and emission.
+   * Return the factorization scale. This default version returns
+   * shat.
    */
-  virtual bool isSymmetric() const { return true; }
-
-  /**
-   * Return the matrix element for the kinematical configuation
-   * previously provided by the last call to setKinematics(), suitably
-   * scaled by sHat() to give a dimension-less number.
-   */
-  virtual double me2() const;
-
-  /**
-   * Return the matrix element averaged over spin correlations.
-   */
-  virtual double me2Avg(double ccme2) const;
+  virtual Energy2 factorizationScale() const;
 
 public:
 
@@ -123,10 +110,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FFMqqxDipole & operator=(const FFMqqxDipole &);
+  MatchboxPtScale & operator=(const MatchboxPtScale &);
 
 };
 
 }
 
-#endif /* HERWIG_FFMqqxDipole_H */
+#endif /* Herwig_MatchboxPtScale_H */

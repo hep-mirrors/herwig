@@ -85,6 +85,11 @@ public:
   size_t prepare(const MEBase::DiagramVector&, bool);
 
   /**
+   * Return the index map.
+   */
+  const map<cPDVector,map<size_t,size_t> >& indexMap() const { return theIndexMap; }
+
+  /**
    * For the given subprocess and amplitude vectors
    * calculate the amplitude squared.
    */
@@ -289,11 +294,6 @@ protected:
    */
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >&
   colourLineMap();
-
-  /**
-   * Return the index map.
-   */
-  const map<cPDVector,map<size_t,size_t> >& indexMap() const { return theIndexMap; }
 
 public:
 

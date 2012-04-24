@@ -49,6 +49,11 @@ bool FFMggxDipole::canHandle(const cPDVector& partons,
     partons[spectator]->mass() != ZERO;
 }
 
+double FFMggxDipole::me2Avg(double) const {
+  assert(false && "implementation missing");
+  return 0.;
+}
+
 double FFMggxDipole::me2() const {
 
   if ( jacobian() == 0.0 )

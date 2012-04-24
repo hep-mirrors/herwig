@@ -49,6 +49,38 @@ bool IIggxDipole::canHandle(const cPDVector& partons,
     partons[spectator]->mass() == ZERO;
 }
 
+double IIggxDipole::me2Avg(double ccme2) const {
+
+  if ( jacobian() == 0.0 )
+    return 0.0;
+
+  double x = subtractionParameters()[0];
+
+  Energy2 prop = 
+    2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
+	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
+
+  double res = x/(1.-x) + (1.-x)/x + x*(1.-x);
+
+  res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
+    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+
+  res *= -ccme2;
+
+  res *= 
+    pow(realEmissionME()->lastXComb().lastSHat() / underlyingBornME()->lastXComb().lastSHat(),
+	underlyingBornME()->lastXComb().mePartonData().size()-4.);
+
+  res *=
+    realEmissionME()->finalStateSymmetry() /
+    underlyingBornME()->finalStateSymmetry();
+
+  lastME2(res);
+
+  return res;
+
+}
+
 double IIggxDipole::me2() const {
 
   if ( jacobian() == 0.0 )

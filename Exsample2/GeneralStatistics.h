@@ -41,7 +41,7 @@ public:
       theSumSquaredWeights(0.), theSumAbsWeights(0.), 
       theSelectedPoints(0), theAcceptedPoints(0),
       theNanPoints(0), theAllPoints(0),
-      theChi2(-1.), theLastWeight(0.) {}
+      theLastWeight(0.) {}
 
   /**
    * The destructor.
@@ -64,19 +64,9 @@ public:
   double bias() const { return theBias; }
 
   /**
-   * Calculate a chi^2 taking this statistics as hypothesis for the
-   * given statistics.
-   */
-  void chi2(const GeneralStatistics& x) {
-    theChi2 = 
-      sqr(averageWeight()-x.averageWeight())/
-      (averageWeightVariance()+x.averageWeightVariance());
-  }
-
-  /**
    * Return the last calculated chi^2.
    */
-  double chi2() const { return theChi2; }
+  virtual double chi2() const { return 0.; }
 
   /**
    * Reset these statistics.
@@ -151,14 +141,14 @@ public:
   /**
    * Return the average weight.
    */
-  double averageWeight() const {
+  virtual double averageWeight() const {
     return selectedPoints() > 0 ? sumWeights()/selectedPoints() : 0.;
   }
 
   /**
    * Return the average absolute weight.
    */
-  double averageAbsWeight() const {
+  virtual double averageAbsWeight() const {
     return selectedPoints() > 0 ? sumAbsWeights()/selectedPoints() : 0.;
   }
 
@@ -168,7 +158,7 @@ public:
   double weightVariance() const {
     return 
       selectedPoints() > 1 ? 
-      abs(sumSquaredWeights() - sqr(sumWeights()/selectedPoints()))/(selectedPoints()-1) : 0.;
+      abs(sumSquaredWeights() - sqr(sumWeights())/selectedPoints())/(selectedPoints()-1) : 0.;
   }
 
   /**
@@ -183,14 +173,14 @@ public:
   /**
    * Return the variance of the average weight.
    */
-  double averageWeightVariance() const {
+  virtual double averageWeightVariance() const {
     return selectedPoints() > 1 ? weightVariance()/selectedPoints() : 0.;
   }
 
   /**
    * Return the variance of the average absolute weight.
    */
-  double averageAbsWeightVariance() const {
+  virtual double averageAbsWeightVariance() const {
     return selectedPoints() > 1 ? absWeightVariance()/selectedPoints() : 0;
   }
 
@@ -310,11 +300,6 @@ private:
    * The number of all points.
    */
   unsigned long theAllPoints;
-
-  /**
-   * The last chi^2 calculated.
-   */
-  double theChi2;
 
   /**
    * The last weight encountered

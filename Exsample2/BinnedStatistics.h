@@ -40,14 +40,15 @@ public:
    * The default constructor.
    */
   BinnedStatistics() 
-    : lastPoint(0.), lastStatistics(0) {}
+    : lastPoint(0.), lastStatistics(0), theWeightThreshold(0.001) {}
 
   /**
    * The standard constructor.
    */
-  BinnedStatistics(unsigned int bins) 
+  BinnedStatistics(unsigned int bins, double threshold = 0.001) 
     : lastPoint(0.), lastStatistics(0) {
     initialize(bins);
+    theWeightThreshold = threshold;
   }
 
   /**
@@ -119,13 +120,21 @@ public:
    */
   template<class Adaptor>
   void update(const Adaptor& ap) {
+    double avgweight = 0.;
+    size_t bins = 0;
+    for ( map<double,GeneralStatistics>::const_iterator s =
+	    statisticsMap.begin(); s != statisticsMap.end(); ++s ) {
+      avgweight += ap.importanceMeasure(s->second);
+      ++bins;
+    }
+    avgweight /= bins;
     weightMap.clear();
     double norm = 0.;
     for ( map<double,GeneralStatistics>::const_iterator s =
 	    statisticsMap.begin(); s != statisticsMap.end(); ++s ) {
       double weight = ap.importanceMeasure(s->second);
-      if ( weight == 0.0 )
-	weight = 1000.*Constants::epsilon;
+      if ( weight < theWeightThreshold*avgweight )
+	weight = theWeightThreshold*avgweight;
       weightMap[s->first] = weight;
       norm += 
 	weight *
@@ -209,6 +218,11 @@ private:
    * The statistics relevant to the last sampled point.
    */
   GeneralStatistics* lastStatistics;
+
+  /**
+   * The weight threshold which governs the minimum bin weight.
+   */
+  double theWeightThreshold;
 
 };
 
