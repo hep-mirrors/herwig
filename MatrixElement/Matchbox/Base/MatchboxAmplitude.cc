@@ -243,12 +243,14 @@ void MatchboxAmplitude::prepareAmplitudes() {
     for ( set<vector<int> >::const_iterator h = helicities.begin();
 	  h != helicities.end(); ++h )
       lastAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+    lastLargeNAmplitudes() = lastAmplitudes();
   }
 
-  for ( AmplitudeIterator amp = lastAmplitudes().begin();
-	amp != lastAmplitudes().end(); ++amp ) {
+  AmplitudeIterator amp = lastAmplitudes().begin();
+  AmplitudeIterator lamp = lastLargeNAmplitudes().begin();
+  for ( ;amp != lastAmplitudes().end(); ++amp, ++lamp ) {
     for ( size_t k = 0; k < colourBasisDim(); ++k )
-      amp->second(k) = evaluate(k,amp->first);
+      amp->second(k) = evaluate(k,amp->first,lamp->second(k));
   }
 
   calculateTrees = false;

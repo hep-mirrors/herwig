@@ -172,7 +172,7 @@ public:
   virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const {
     return 
       haveColourFlows() ? 
-      theColourBasis->colourGeometries(diag,lastAmplitudes()) :
+      theColourBasis->colourGeometries(diag,lastLargeNAmplitudes()) :
       Selector<const ColourLines *>();
   }
 
@@ -276,6 +276,16 @@ public:
   AmplitudeMap& lastAmplitudes() { return theLastAmplitudes; }
 
   /**
+   * Return last evaluated, leading colour helicity amplitudes.
+   */
+  const AmplitudeMap& lastLargeNAmplitudes() const { return theLastLargeNAmplitudes; }
+
+  /**
+   * Access the last evaluated, leading colour helicity amplitudes.
+   */
+  AmplitudeMap& lastLargeNAmplitudes() { return theLastLargeNAmplitudes; }
+
+  /**
    * Return the matrix element squared.
    */
   virtual double me2() const {
@@ -298,7 +308,7 @@ public:
    * Evaluate the amplitude for the given colour tensor id and
    * helicity assignment
    */
-  virtual Complex evaluate(size_t, const vector<int>&) { return 0.; }
+  virtual Complex evaluate(size_t, const vector<int>&, Complex&) { return 0.; }
 
   //@}
 
@@ -470,6 +480,12 @@ private:
    * to the last call of prepareAmplitudes.
    */
   map<vector<int>,CVector> theLastAmplitudes;
+
+  /**
+   * References to the leading N amplitude values which have been
+   * contributing to the last call of prepareAmplitudes.
+   */
+  map<vector<int>,CVector> theLastLargeNAmplitudes;
 
   /**
    * References to the one-loop amplitude values which have been contributing
