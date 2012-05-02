@@ -204,6 +204,12 @@ public:
   virtual vector<PDT::Colour> normalOrder(const vector<PDT::Colour>&) const;
 
   /**
+   * Determine the mapping of process to colour indices and return the
+   * normal ordered vector of colour indices
+   */
+  vector<PDT::Colour> normalOrderMap(const cPDVector& sub);
+
+  /**
    * Convert the legs to a string.
    */
   string file(const vector<PDT::Colour>&) const;

@@ -11,6 +11,8 @@ MatchboxMECache.cc \
 MatchboxMECache.h \
 MatchboxPtScale.h \
 MatchboxPtScale.cc \
+MatchboxLeptonMassScale.h \
+MatchboxLeptonMassScale.cc \
 MatchboxScaleChoice.cc \
 MatchboxScaleChoice.h \
 SimpleColourBasis.cc \

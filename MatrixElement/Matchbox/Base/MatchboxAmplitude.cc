@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "MatchboxMEBase.h"
 
 using namespace Herwig;
 
@@ -45,6 +46,10 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
 }
 
 void MatchboxAmplitude::cloneDependencies(const std::string&) {
+}
+
+Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const vector<PDVector>&) const {
+  return new_ptr(MatchboxMEBase());
 }
 
 void MatchboxAmplitude::dumpInfo(const string& prefix) const {

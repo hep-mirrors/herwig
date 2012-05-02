@@ -22,6 +22,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+class MatchboxMEBase;
+
 /**
  * \ingroup Matchbox
  * \author Simon Platzer
@@ -72,6 +74,12 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector&) const { return false; }
+
+  /**
+   * Return a ME instance appropriate for this amplitude and the given
+   * subprocesses
+   */
+  Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
 
   /**
    * Return the amplitude parton data.

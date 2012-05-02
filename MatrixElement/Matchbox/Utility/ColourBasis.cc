@@ -54,8 +54,7 @@ ColourBasis::~ColourBasis() {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-size_t ColourBasis::prepare(const cPDVector& sub,
-			    bool noCorrelations) {
+vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
   vector<PDT::Colour> allLegs = projectColour(sub);
   vector<PDT::Colour> legs = normalOrder(allLegs);
@@ -68,14 +67,6 @@ size_t ColourBasis::prepare(const cPDVector& sub,
     allLegs[1] = PDT::Colour3bar;
   else if ( allLegs[1] == PDT::Colour3bar )
     allLegs[1] = PDT::Colour3;
-
-  bool doPrepare = false;
-
-  if ( theNormalOrderedLegs.find(sub) == theNormalOrderedLegs.end() )
-    theNormalOrderedLegs[sub] = legs;
-  
-  if ( theScalarProducts.find(legs) == theScalarProducts.end() )
-    doPrepare = true;
 
   if ( theIndexMap.find(sub) == theIndexMap.end() ) {
     map<size_t,size_t> trans;
@@ -94,6 +85,23 @@ size_t ColourBasis::prepare(const cPDVector& sub,
     theIndexMap[sub] = trans;
 
   }
+
+  return legs;
+
+}
+
+size_t ColourBasis::prepare(const cPDVector& sub,
+			    bool noCorrelations) {
+
+  vector<PDT::Colour> legs = normalOrderMap(sub);
+
+  bool doPrepare = false;
+
+  if ( theNormalOrderedLegs.find(sub) == theNormalOrderedLegs.end() )
+    theNormalOrderedLegs[sub] = legs;
+  
+  if ( theScalarProducts.find(legs) == theScalarProducts.end() )
+    doPrepare = true;
 
   if ( doPrepare )
     doPrepare = !readBasis(legs);
@@ -592,9 +600,8 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
     dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
   assert(dd && theFlowMap.find(dd) != theFlowMap.end());
   const vector<ColourLines*>& cl = colourLineMap()[dd];
-  const symmetric_matrix<double,upper>& sp = scalarProducts(dd->partons());
   Selector<const ColourLines *> sel;
-  size_t dim = sp.size1();
+  size_t dim = amps.begin()->second.size();
   double w = 0.;
   for ( size_t i = 0; i < dim; ++i ) {
     if ( !cl[i] )
