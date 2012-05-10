@@ -710,18 +710,17 @@ void MPIHandler::Init() {
   static Switch<MPIHandler,unsigned int> interEnergyExtrapolation
     ("EnergyExtrapolation",
      "Switch to ignore the cuts object at MPIHandler:Cuts[0]. "
-     "Instead, extrapolate the pt cut according to "
-     "ptmin = A * log (sqrt(s) / B)",
+     "Instead, extrapolate the pt cut.",
      &MPIHandler::energyExtrapolation_, 2, false, false);
   static SwitchOption interEnergyExtrapolationLog
     (interEnergyExtrapolation,
      "Log",
-     "Use energy extrapolation in ptmin = A * log (sqrt(s) / B).",
+     "Use logarithmic dependence, ptmin = A * log (sqrt(s) / B).",
      1);
   static SwitchOption interEnergyExtrapolationPower
     (interEnergyExtrapolation,
      "Power",
-     "Use energy extrapolation in ptmin = A * log (sqrt(s) / B).",
+     "Use power law, ptmin = pt_0 * (sqrt(s) / E_0)^b.",
      2);
   static SwitchOption interEnergyExtrapolationNo
     (interEnergyExtrapolation,

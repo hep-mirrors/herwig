@@ -40,6 +40,11 @@ set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.3493643
 
 # inverse hadron radius
 set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 0.81
+
+# IMPORTANT: Disable the automatic extrapolation of MinKT here. Otherwise the
+# settings in this section have no effect.
+set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+
 # Min KT parameter
 set /Herwig/UnderlyingEvent/KtCut:MinKT 3.36
 # This should always be 2*MinKT!!

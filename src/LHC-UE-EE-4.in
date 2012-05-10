@@ -5,7 +5,7 @@
 # NEW: The formula for the center-of-mass energy extrapolation of the MinKT
 # parameter in the multi-parton interaction model is hard-coded now:
 #
-#     MinKT(sqrt(s)) = A * ln(sqrt(s) / B)
+#     MinKT(sqrt(s)) = pt_0 * (sqrt(s) / E_0)^b
 #
 # The formula is not derived from first principles. It only extrapolates
 # between our best underlying-event tunes at 0.9, 1.8 and 7 TeV, with all other
@@ -50,9 +50,10 @@ set Model:QCD/RunningAlphaS O2AlphaS
 ##################################################
 # MPI energy extrapolation settings
 ##################################################
-set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation Yes
-set /Herwig/UnderlyingEvent/MPIHandler:EEparamA 0.56*GeV
-set /Herwig/UnderlyingEvent/MPIHandler:EEparamB 25.79*GeV
+set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation Power
+set /Herwig/UnderlyingEvent/MPIHandler:ReferenceScale 7000.*GeV
+set /Herwig/UnderlyingEvent/MPIHandler:Power 0.21
+set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.11*GeV
 
 
 ################################################################################

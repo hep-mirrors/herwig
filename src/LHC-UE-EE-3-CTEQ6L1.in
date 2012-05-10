@@ -46,6 +46,10 @@ set LHCGenerator:DebugEvent 0
 # Energy-dependent MPI parameters
 ##################################################
 
+# IMPORTANT: Disable the automatic extrapolation of MinKT here. Otherwise the
+# settings in this section have no effect.
+set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+
 ################################################################################
 # NOTE: Set the correct parameters for the collision energy of your choice
 # here. This line will cause an error, which is intentional. Remove this line

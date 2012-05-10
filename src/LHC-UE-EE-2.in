@@ -67,6 +67,10 @@ set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.1
 # given below, which match to the chosen collision energy.
 ################################################################################
 
+# IMPORTANT: Disable the automatic extrapolation of MinKT here. Otherwise the
+# settings in this section have no effect.
+set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
+
 # Min KT parameter
 set /Herwig/UnderlyingEvent/KtCut:MinKT -1
 # This should always be 2*MinKT!!
