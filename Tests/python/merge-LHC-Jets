@@ -71,6 +71,14 @@ def mergeByMass(hpath, sqrts):
     except:
         pass
 
+def mergeByMassTeV(hpath, sqrts):
+    global inhistos_mass
+    global outhistos
+    try:
+        fillAboveTeV(outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
+    except:
+        pass
+
 def useOnePt(hpath, sqrts, ptmin):
     global inhistos_pt
     global outhistos
@@ -198,6 +206,7 @@ for f in aidafiles:
         if(h.fullPath().find("S8924791")>0 or 
            h.fullPath().find("S8971293")>0 or 
            h.fullPath().find("S8817804")>0 or 
+           h.fullPath().find("I1082936")>0 or 
            h.fullPath().find("S8994773")>0 or 
            h.fullPath().find("S8918562")>0 or 
            h.fullPath().find("S8624100")>0 or 
@@ -259,6 +268,7 @@ for f in aidafiles:
     for dps in tree.findall("dataPointSet"):
         h = lighthisto.Histo.fromDPS(dps)
         if(h.fullPath().find("8817804")>0 or
+           h.fullPath().find("1082936")>0 or
            h.fullPath().find("8968497")>0) :
            if not inhistos_mass.has_key(h.fullPath()):
                inhistos_mass[h.fullPath()] = {}
@@ -278,7 +288,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         h.fullPath().find("8971293")>0 or 
         h.fullPath().find("8817804")>0 or 
         h.fullPath().find("8968497")>0 or 
-        h.fullPath().find("9126244")>0 ) :
+        h.fullPath().find("9126244")>0  or 
+        h.fullPath().find("1082936")>0 ) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -599,6 +610,42 @@ useOneMass("/ATLAS_2010_S8817804/d23-x01-y01", "7000", "800" )
 useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "800" )
+
+logging.info("Processing ATLAS_2012_I1082936")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y02", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y03", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y04", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y05", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y06", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d01-x01-y07", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y02", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y03", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y04", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y05", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y06", "7000")
+mergeByPt("/ATLAS_2012_I1082936/d02-x01-y07", "7000")
+
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y01", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y02", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y03", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y04", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y05", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y06", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y07", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y08", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y09", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y01", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y02", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y03", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y04", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y05", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y06", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y07", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y08", "7000")
+mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y09", "7000")
+
 
 logging.info("Processing CMS_2011_S8968497")
 

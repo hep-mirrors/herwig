@@ -22,6 +22,7 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8924791
 # ATLAS jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8817804
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082936
 # CMS event shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8957746
 # ATLAS dijet with veto
