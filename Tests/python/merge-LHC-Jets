@@ -137,6 +137,7 @@ if __name__ == "__main__":
 aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,
            "-7-UE.aida"     ,"-900-UE-Long.aida",
            "-7-UE-Long.aida","-7-Jets-0.aida",
+           "-7-Jets-All-1.aida","-7-Jets-All-2.aida",
            "-7-Jets-1.aida","-7-Jets-2.aida",
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
            "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida",
@@ -189,6 +190,10 @@ for f in aidafiles:
         ptmin=110.
     elif(file.find("-7-Top.aida")>0) :
         ptmin=0.
+    elif(file.find("-7-Jets-All-1")>0) :
+        ptmin=25.
+    elif(file.find("-7-Jets-All-2")>0) :
+        ptmin=50.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -221,7 +226,8 @@ for f in aidafiles:
            h.fullPath().find("I919017" )>0 or
            h.fullPath().find("I926145" )>0 or
            h.fullPath().find("S8941262")>0 or
-           h.fullPath().find("S8973270")>0) :
+           h.fullPath().find("S8973270")>0 or
+           h.fullPath().find("I1082009")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
            tmpE = inhistos_pt[h.fullPath()]
@@ -1001,6 +1007,14 @@ useOnePt("/CMS_2011_S8973270/d03-x01-y01",  "7000", "110" )
 useOnePt("/CMS_2011_S8973270/d04-x01-y01",  "7000", "50" )
 useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "80" )
 useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "110" )
+
+logging.info("Processing ATLAS_2012_I1082009")
+useOnePt("/ATLAS_2012_I1082009/d08-x01-y01", "7000", "25" )
+useOnePt("/ATLAS_2012_I1082009/d09-x01-y01", "7000", "25" )
+useOnePt("/ATLAS_2012_I1082009/d10-x01-y01", "7000", "25" )
+useOnePt("/ATLAS_2012_I1082009/d11-x01-y01", "7000", "50" )
+useOnePt("/ATLAS_2012_I1082009/d12-x01-y01", "7000", "50" )
+useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "25" )
 
 # Choose output file
 name = "LHC"+"-Jets.aida"
