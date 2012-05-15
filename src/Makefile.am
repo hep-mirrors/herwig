@@ -49,12 +49,7 @@ LHC-RS.in \
 LHC-Sextet.in \
 LHC-TRP.in \
 LHC-TTBA.in \
-LHC-UE7-2.in \
-LHC-UE-EE-2.in \
-LHC-UE-EE-3-CTEQ6L1.in \
-LHC-UE-EE-3.in \
-LHC-UE-EE-4-CTEQ6L1.in \
-LHC-UE-EE-4.in \
+LHC-MB.in \
 LHC-ZP.in \
 TVT.in \
 TVT-Powheg.in \
