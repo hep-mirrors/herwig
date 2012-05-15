@@ -28,30 +28,6 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
-# Override default MPI parameters
-##################################################
-
-# Colour reconnection settings
-set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
-set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.6165547
-
-# Colour Disrupt settings
-set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.3493643
-
-# inverse hadron radius
-set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 0.81
-
-# IMPORTANT: Disable the automatic extrapolation of MinKT here. Otherwise the
-# settings in this section have no effect.
-set /Herwig/UnderlyingEvent/MPIHandler:EnergyExtrapolation No
-
-# Min KT parameter
-set /Herwig/UnderlyingEvent/KtCut:MinKT 3.36
-# This should always be 2*MinKT!!
-set  /Herwig/UnderlyingEvent/UECuts:MHatMin 6.72
-
-
-##################################################
 # Matrix Elements for hadron-hadron collisions 
 ##################################################
 cd /Herwig/MatrixElements/
@@ -66,11 +42,6 @@ set QCDCuts:X2Min 0.055
 
 # MPI model settings
 set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes
-set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes
-set /Herwig/UnderlyingEvent/MPIHandler:DLmode 3
-
-
 
 cd /Herwig/Generators
 
@@ -83,5 +54,5 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
-saverun LHC-UE7-2 LHCGenerator
+saverun LHC-MB LHCGenerator
 
