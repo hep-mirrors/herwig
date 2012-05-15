@@ -297,7 +297,8 @@ public:
    * Return the matrix element squared.
    */
   virtual double me2() const {
-    return colourBasis()->me2(mePartonData(),lastAmplitudes());
+    return 
+      lastCrossingSign()*colourBasis()->me2(mePartonData(),lastAmplitudes());
   }
 
   /**
@@ -376,8 +377,9 @@ public:
    * Return the one-loop/tree interference.
    */
   virtual double oneLoopInterference() const {
-    return colourBasis()->interference(mePartonData(),
-				       lastOneLoopAmplitudes(),lastAmplitudes());
+    return 
+      lastCrossingSign()*colourBasis()->interference(mePartonData(),
+						     lastOneLoopAmplitudes(),lastAmplitudes());
   }
 
   /**

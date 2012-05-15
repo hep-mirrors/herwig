@@ -391,11 +391,9 @@ void DipoleSplittingGenerator::doGenerate() {
 
   if ( res == 0. ) {
     generatedSplitting.lastPt(0.0*GeV);
-    generatedSplitting.hardPt(0.0*GeV);
     generatedSplitting.didStopEvolving();
   } else {
 
-    generatedSplitting.hardPt(generatedSplitting.lastPt());
     generatedSplitting.continuesEvolving();
 
     if ( theMCCheck )

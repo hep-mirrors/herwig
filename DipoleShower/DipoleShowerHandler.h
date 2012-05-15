@@ -285,6 +285,11 @@ private:
    */
   int realignmentScheme;
 
+  /**
+   * True, if first emission should use the available phase space
+   */
+  bool hardFirstEmission;
+
 private:
 
   /**

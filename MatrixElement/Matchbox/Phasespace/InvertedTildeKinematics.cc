@@ -39,44 +39,70 @@ void InvertedTildeKinematics::dumpInfo(const string& prefix) const {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-Lorentz5Momentum InvertedTildeKinematics::getKt (const Lorentz5Momentum& p1,
-						 const Lorentz5Momentum& p2,
-						 Energy pt,
-						 double phi) const {
+Lorentz5Momentum InvertedTildeKinematics::getKt(const Lorentz5Momentum& p1,
+						const Lorentz5Momentum& p2,
+						Energy pt,
+						double phi,
+						bool spacelike) const {
 
-  Boost beta = (p1+p2).findBoostToCM();
-      
-  Lorentz5Momentum p1c = p1;
+  Lorentz5Momentum P;
+  if ( !spacelike )
+    P = p1 + p2;
+  else
+    P = p1 - p2;
 
-  if (beta.mag2() > Constants::epsilon) {
-    p1c.boost(beta);
-  }
-      
-  Lorentz5Momentum k (0.*GeV,0.*GeV,0.*GeV,0.*GeV);
-      
-  double ct = p1c.vect().unit().z();
-  double st = sqrt(1.-ct*ct);
-      
-  double cphi = cos(phi);
-  double sphi = sqrt(1.-cphi*cphi);
-  if (phi  > Constants::pi) sphi = -sphi;
-      
-  if (st > Constants::epsilon) {
-    double cchi = p1c.vect().unit().x()/st;
-    double schi = p1c.vect().unit().y()/st;
-    k.setX((cphi*cchi*ct-sphi*schi)*pt);
-    k.setY((cphi*schi*ct+sphi*cchi)*pt);
-    k.setZ(-cphi*st*pt);
+  Energy2 Q2 = abs(P.m2());
+
+  Lorentz5Momentum Q = 
+    !spacelike ? 
+    Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2)) :
+    Lorentz5Momentum(ZERO,ZERO,sqrt(Q2),ZERO,-sqrt(Q2));
+
+  if ( spacelike && Q.z() < P.z() )
+    Q.setZ(-Q.z());
+
+  bool boost =
+    abs((P-Q).vect().mag2()/GeV2) > 1e-10 ||
+    abs((P-Q).t()/GeV) > 1e-5;
+
+  Lorentz5Momentum inFrame1;
+  if ( boost )
+    inFrame1 = p1 + ((P*p1-Q*p1)/(P*Q-Q.mass2()))*(P-Q);
+  else
+    inFrame1 = p1;
+
+  Energy ptx = inFrame1.x();
+  Energy pty = inFrame1.y();
+  Energy q = 2.*inFrame1.z();
+
+  Energy Qp = sqrt(4.*(sqr(ptx)+sqr(pty))+sqr(q));
+  Energy Qy = sqrt(4.*sqr(pty)+sqr(q));
+
+  double cPhi = cos(phi);
+  double sPhi = sqrt(1.-sqr(cPhi));
+  if ( phi > Constants::pi )
+    sPhi = -sPhi;
+
+  Lorentz5Momentum kt;
+
+  if ( !spacelike ) {
+    kt.setT(ZERO);
+    kt.setX(pt*Qy*cPhi/Qp);
+    kt.setY(-pt*(4*ptx*pty*cPhi/Qp+q*sPhi)/Qy);
+    kt.setZ(2.*pt*(-ptx*q*cPhi/Qp + pty*sPhi)/Qy);
   } else {
-    k.setX(pt*cphi);
-    k.setY(pt*sphi);
-    k.setZ(0.*GeV);
+    kt.setT(2.*pt*(ptx*q*cPhi+pty*Qp*sPhi)/(q*Qy));
+    kt.setX(pt*(Qp*q*cPhi+4.*ptx*pty*sPhi)/(q*Qy));
+    kt.setY(pt*Qy*sPhi/q);
+    kt.setZ(ZERO);
   }
-      
-  if (beta.mag2() > Constants::epsilon)
-    k.boost(-beta);
-      
-  return k;
+
+  if ( boost )
+    kt = kt + ((P*kt-Q*kt)/(P*Q-Q.mass2()))*(P-Q);
+  kt.setMass(-pt);
+  kt.rescaleRho();
+
+  return kt;
 
 }
 

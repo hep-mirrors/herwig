@@ -30,6 +30,7 @@ bool FIgx2qqxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     ind.emitterData()->id() == ParticleID::g &&
     ind.spectatorData()->mass() == ZERO &&
+    flavour()->mass() == ZERO &&
     !ind.initialStateEmitter() && ind.initialStateSpectator();
 }
 
@@ -45,7 +46,7 @@ bool FIgx2qqxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
   return
     sk.emitter(b)->id() + sk.emission(b)->id() == 0 &&
     abs(sk.emitter(b)->id()) < 6 &&
-    sk.emitter(b)->mass() == ZERO &&
+    // sk.emitter(b)->mass() == ZERO &&
     a.spectatorPDF() == b.spectatorPDF();
 
 }
@@ -73,7 +74,7 @@ double FIgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   double z = split.lastZ();
 
-  ret *= .5 * (1.-z*(1.-z));
+  ret *= .25 * (1.-2.*z*(1.-z));
 
   return ret;
 

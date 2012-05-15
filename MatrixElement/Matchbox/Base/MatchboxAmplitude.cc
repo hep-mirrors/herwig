@@ -296,7 +296,8 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
   double Nc = generator()->standardModel()->Nc();
   double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
-  return colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
+  return 
+    lastCrossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
 }
 
 // compare int vectors modulo certain element
@@ -365,7 +366,8 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   double Nc = generator()->standardModel()->Nc();
   double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
 
-  return avg + 2.*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
+  return 
+    avg + 2.*lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
 
 }
 

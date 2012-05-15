@@ -12,6 +12,8 @@ cp LOAlphaS AlphaS
 set AlphaS:input_alpha_s 0.1131785
 set AlphaS:freezing_scale 0.0*GeV
 
+set /Herwig/Model:QCD/RunningAlphaS AlphaS
+
 ################################################################################
 # shower parameters
 ################################################################################
@@ -72,6 +74,8 @@ set IFgx2sbarsxDipoleKernel:ScreeningScale  1.355894*GeV
 
 set IFgx2ccbarxDipoleKernel:ScreeningScale  1.355894*GeV
 set IFgx2cbarcxDipoleKernel:ScreeningScale  1.355894*GeV
+set IFgx2bbbarxDipoleKernel:ScreeningScale  1.355894*GeV
+set IFgx2bbarbxDipoleKernel:ScreeningScale  1.355894*GeV
 
 set IIgx2ggxDipoleKernel:ScreeningScale     0.205854*GeV
 set IIqx2qgxDipoleKernel:ScreeningScale     0.205854*GeV
@@ -86,6 +90,8 @@ set IIgx2sbarsxDipoleKernel:ScreeningScale  0.205854*GeV
 
 set IIgx2ccbarxDipoleKernel:ScreeningScale  0.205854*GeV
 set IIgx2cbarcxDipoleKernel:ScreeningScale  0.205854*GeV
+set IIgx2bbbarxDipoleKernel:ScreeningScale  0.205854*GeV
+set IIgx2bbarbxDipoleKernel:ScreeningScale  0.205854*GeV
 
 ################################################################################
 # hadronization parameters

@@ -72,7 +72,7 @@ double IIgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ratio = sqr(split.lastPt()/split.scale());
   double x = ( z*(1.-z) - ratio ) / ( 1. - z );
 
-  ret *= 6. * ( x/(1.-x) + (1.-x)/x +x*(1.-x) );
+  ret *= 3. * ( x/(1.-x) + (1.-x)/x +x*(1.-x) );
 
   return ret;
 

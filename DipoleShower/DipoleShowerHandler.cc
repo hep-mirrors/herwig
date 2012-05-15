@@ -39,6 +39,7 @@ DipoleShowerHandler::DipoleShowerHandler()
   : ShowerHandler(), chainOrderVetoScales(true),
     nEmissions(0), discardNoEmissions(false),
     doFSR(true), doISR(true), realignmentScheme(0),
+    hardFirstEmission(false),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theFactorizationScaleFactor(1.0),
@@ -96,7 +97,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 	if ( !didRadiate )
 	  throw Veto();
 	if ( nEmissions )
-	  if ( nEmissions != nEmitted )
+	  if ( nEmissions < nEmitted )
 	    throw Veto();
       }
 
@@ -149,8 +150,9 @@ void DipoleShowerHandler::constituentReshuffle() {
 void DipoleShowerHandler::hardScales() {
 
   Energy maxPt = generator()->maximumCMEnergy();
-  if ( eventRecord().incoming().first->coloured() &&
-       eventRecord().incoming().second->coloured() ) {
+  if ( (eventRecord().incoming().first->coloured() ||
+	eventRecord().incoming().second->coloured()) &&
+       !hardFirstEmission ) {
     for ( PList::const_iterator p = eventRecord().outgoing().begin();
 	  p != eventRecord().outgoing().end(); ++p )
       maxPt = min(maxPt,(**p).momentum().perp());
@@ -465,6 +467,7 @@ bool DipoleShowerHandler::realign() {
       (eventRecord().incoming().first->momentum() +
        eventRecord().incoming().second->momentum()).m2();
 
+    Energy q = inMomenta.first.z();
     pair<Energy,Energy> masses(eventRecord().incoming().first->mass(),
 			       eventRecord().incoming().second->mass());
     pair<Energy,Energy> qs;
@@ -637,7 +640,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << constituentReshuffler << intrinsicPtGenerator
      << theGlobalAlphaS << chainOrderVetoScales
      << nEmissions << discardNoEmissions << doFSR << doISR
-     << realignmentScheme << verbosity << printEvent
+     << realignmentScheme << hardFirstEmission << verbosity << printEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor;
 }
 
@@ -646,7 +649,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> constituentReshuffler >> intrinsicPtGenerator
      >> theGlobalAlphaS >> chainOrderVetoScales
      >> nEmissions >> discardNoEmissions >> doFSR >> doISR
-     >> realignmentScheme >> verbosity >> printEvent
+     >> realignmentScheme >> hardFirstEmission >> verbosity >> printEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
 }
 
@@ -731,6 +734,21 @@ void DipoleShowerHandler::Init() {
     (interfaceDoISR,
      "Off",
      "Switch off initial state radiation.",
+     false);
+
+  static Switch<DipoleShowerHandler,bool> interfaceHardFirstEmission
+    ("HardFirstEmission",
+     "Switch on or off hard first emission.",
+     &DipoleShowerHandler::hardFirstEmission, false, false, false);
+  static SwitchOption interfaceHardFirstEmissionOn
+    (interfaceHardFirstEmission,
+     "On",
+     "Switch on hard first emission.",
+     true);
+  static SwitchOption interfaceHardFirstEmissionOff
+    (interfaceHardFirstEmission,
+     "Off",
+     "Switch off hard first emission.",
      false);
 
 

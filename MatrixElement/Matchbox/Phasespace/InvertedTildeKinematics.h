@@ -319,10 +319,11 @@ protected:
    * Calculate a transverse momentum for the given momenta,
    * invariant pt and azimuth.
    */
-  Lorentz5Momentum getKt (const Lorentz5Momentum& p1,
-			  const Lorentz5Momentum& p2,
-			  Energy pt,
-			  double phi) const;
+  Lorentz5Momentum getKt(const Lorentz5Momentum& p1,
+			 const Lorentz5Momentum& p2,
+			 Energy pt,
+			 double phi,
+			 bool spacelike = false) const;
 
 public:
 

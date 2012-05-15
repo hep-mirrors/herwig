@@ -64,7 +64,7 @@ bool FILightInvertedTildeKinematics::doMap(const double * r) {
 
   double phi = 2.*Constants::pi*r[2];
   Lorentz5Momentum kt
-    = getKt(emitter,spectator,pt,phi);
+    = getKt(spectator,emitter,pt,phi,true);
 
   subtractionParameters().resize(2);
   subtractionParameters()[0] = x;

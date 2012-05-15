@@ -28,16 +28,19 @@ Zprime.model
 
 INPUTFILES = \
 DIS.in \
+DIS-Matchbox.in \
 GammaGamma.in \
 ILC.in \
 ILC-MSSM.in \
 ILC-MUED.in \
 ILC-RS.in \
 LEP.in \
+LEP-Matchbox.in \
 LHC-ADD.in \
 LHC-diffractive.in \
 LHC-GammaGamma.in \
 LHC.in \
+LHC-Matchbox.in \
 LHC-LQ.in \
 LHC-MSSM.in \
 LHC-MU900-2.in \
@@ -52,6 +55,7 @@ LHC-TTBA.in \
 LHC-MB.in \
 LHC-ZP.in \
 TVT.in \
+TVT-Matchbox.in \
 TVT-Powheg.in \
 TVT-TTBA.in
 

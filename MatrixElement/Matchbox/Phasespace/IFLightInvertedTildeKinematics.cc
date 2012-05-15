@@ -67,7 +67,7 @@ bool IFLightInvertedTildeKinematics::doMap(const double * r) {
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   double phi = 2.*Constants::pi*r[2];
-  Lorentz5Momentum kt = getKt(emitter,spectator,pt,phi);
+  Lorentz5Momentum kt = getKt(emitter,spectator,pt,phi,true);
 
   subtractionParameters().resize(2);
   subtractionParameters()[0] = x;

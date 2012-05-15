@@ -12,20 +12,20 @@ cp NLOAlphaS AlphaS
 set AlphaS:input_alpha_s 0.1175576
 set AlphaS:freezing_scale 0.0*GeV
 
+set /Herwig/Model:QCD/RunningAlphaS AlphaS
+
 ################################################################################
 # matching parameters
 ################################################################################
 
-set /Herwig/Model:QCD/RunningAlphaS AlphaS
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FFPtCut 1.245924*GeV
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FFScreeningScale 0.0*GeV
 
-set MECorrectionHandler:FFPtCut 1.245924*GeV
-set MECorrectionHandler:FFScreeningScale 0.0*GeV
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FIPtCut 0.706986*GeV
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FIScreeningScale 1.017780*GeV
 
-set MECorrectionHandler:FIPtCut 0.706986*GeV
-set MECorrectionHandler:FIScreeningScale 1.017780*GeV
-
-set MECorrectionHandler:IIPtCut 0.275894*GeV
-set MECorrectionHandler:IIScreeningScale 0.254028*GeV
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:IIPtCut 0.275894*GeV
+set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:IIScreeningScale 0.254028*GeV
 
 ################################################################################
 # shower parameters
@@ -87,6 +87,8 @@ set IFgx2sbarsxDipoleKernel:ScreeningScale  1.017780*GeV
 
 set IFgx2ccbarxDipoleKernel:ScreeningScale  1.017780*GeV
 set IFgx2cbarcxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2bbbarxDipoleKernel:ScreeningScale  1.017780*GeV
+set IFgx2bbarbxDipoleKernel:ScreeningScale  1.017780*GeV
 
 set IIgx2ggxDipoleKernel:ScreeningScale     0.254028*GeV
 set IIqx2qgxDipoleKernel:ScreeningScale     0.254028*GeV
@@ -101,6 +103,8 @@ set IIgx2sbarsxDipoleKernel:ScreeningScale  0.254028*GeV
 
 set IIgx2ccbarxDipoleKernel:ScreeningScale  0.254028*GeV
 set IIgx2cbarcxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2bbbarxDipoleKernel:ScreeningScale  0.254028*GeV
+set IIgx2bbarbxDipoleKernel:ScreeningScale  0.254028*GeV
 
 ################################################################################
 # hadronization parameters

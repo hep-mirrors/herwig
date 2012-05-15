@@ -111,6 +111,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
   for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
 	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+    (**amp).orderInGs(orderas);
+    (**amp).orderInGem(orderInAlphaEW());
     if ( (**amp).orderInGs() != orderas ||
 	 (**amp).orderInGem() != orderInAlphaEW() )
       continue;
@@ -129,7 +131,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
     for ( map<QNKey,vector<PDVector> >::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
-      Ptr<MatchboxMEBase>::ptr me = new_ptr(MatchboxMEBase());
+      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
       me->subProcesses() = m->second;
       me->amplitude(ap->first);
       string pname = "ME" + ap->first->name() + pid(m->first);
@@ -162,12 +164,14 @@ void MatchboxFactory::setup() {
 
     nLight(particleGroups()["j"].size());
 
-    bornMEs() = makeMEs(process,orderInAlphaS());
+    vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
+    copy(ames.begin(),ames.end(),back_inserter(bornMEs()));
 
     if ( realContributions() ) {
       vector<string> rproc = process;
       rproc.push_back("j");
-      realEmissionMEs() = makeMEs(rproc,orderInAlphaS()+1);
+      ames = makeMEs(rproc,orderInAlphaS()+1);
+      copy(ames.begin(),ames.end(),back_inserter(realEmissionMEs()));
     }
 
   }
@@ -365,13 +369,35 @@ void MatchboxFactory::print(ostream& os) const {
     os << " generated Born matrix elements:\n";
     for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator m = bornMEs().begin();
 	  m != bornMEs().end(); ++m ) {
-      os << " '" << (**m).name() << "'\n";
+      os << " '" << (**m).name() << "' for subprocesses:\n";
+      for ( vector<PDVector>::const_iterator p = (**m).subProcesses().begin();
+	    p != (**m).subProcesses().end(); ++p ) {
+	os << "  ";
+	for ( PDVector::const_iterator pp = p->begin();
+	      pp != p->end(); ++pp ) {
+	  os << (**pp).PDGName() << " ";
+	  if ( pp == p->begin() + 1 )
+	    os << "-> ";
+	}
+	os << "\n";
+      }
     }
     os << flush;
     os << " generated real emission matrix elements:\n";
     for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator m = realEmissionMEs().begin();
 	  m != realEmissionMEs().end(); ++m ) {
-      os << " '" << (**m).name() << "'\n";
+      os << " '" << (**m).name() << "' for subprocesses:\n";
+      for ( vector<PDVector>::const_iterator p = (**m).subProcesses().begin();
+	    p != (**m).subProcesses().end(); ++p ) {
+	os << "  ";
+	for ( PDVector::const_iterator pp = p->begin();
+	      pp != p->end(); ++pp ) {
+	  os << (**pp).PDGName() << " ";
+	  if ( pp == p->begin() + 1 )
+	    os << "-> ";
+	}
+	os << "\n";
+      }
     }
     os << flush;
   }

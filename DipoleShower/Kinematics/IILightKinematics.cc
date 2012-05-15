@@ -73,7 +73,7 @@ Energy IILightKinematics::ptMax(Energy dScale,
 				const DipoleIndex&,
 				const DipoleSplittingKernel&) const {
   double tau = emX*specX;
-  return (1.-tau) * dScale / 2.;
+  return (1.-tau) * dScale / (2.*sqrt(tau));
 }
 
 Energy IILightKinematics::QMax(Energy, 
@@ -110,7 +110,8 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
 
   Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
 
-  if ( pt > info.hardPt() ) {
+  double r = sqr(info.hardPt()/info.scale());
+  if ( sqr(pt) > sqr(info.hardPt())*r*((2.+1./r)-2.*sqrt(1.+1./r)) ) {
     jacobian(0.0);
     return false;
   }
@@ -150,10 +151,20 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
 
   double tau = info.emitterX()*info.spectatorX();
 
-  double zp = 0.5*( 1.+ tau + 
-		    (1.-tau)*sqrt(1.-sqr(pt/info.hardPt()) ) );
-  double zm = 0.5*( 1.+ tau -
-		    (1.-tau)*sqrt(1.-sqr(pt/info.hardPt()) ) );
+  double zpx = 0.5*( 1.+ tau + 
+		     (1.-tau)*sqrt(1.-sqr(2.*pt/((1.-tau)*info.scale()))) );
+  double zmx = 0.5*( 1.+ tau - 
+		     (1.-tau)*sqrt(1.-sqr(2.*pt/((1.-tau)*info.scale()))) );
+
+  double xq = sqr(pt/info.hardPt());
+
+  double zpq = 0.5*( 1.+ xq + 
+		     (1.-xq)*sqrt(1.-sqr(2.*pt/((1.-xq)*info.scale()))) );
+  double zmq = 0.5*( 1.+ xq - 
+		     (1.-xq)*sqrt(1.-sqr(2.*pt/((1.-xq)*info.scale()))) );
+
+  double zp = min(zpx,zpq);
+  double zm = max(zmx,zmq);
 
   if ( pt < IRCutoff() ||
        pt > info.hardPt() || 
