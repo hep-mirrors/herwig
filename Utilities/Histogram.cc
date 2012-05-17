@@ -513,17 +513,17 @@ vector<double> Histogram::LogBins(double xmin, unsigned nbins, double base) {
 
 void Histogram::topdrawMCatNLO(ostream & out,
 			       unsigned int flags,
-			       string color,
+			       string,
 			       string title
 			       ) const {
   
   using namespace HistogramOptions;
-  bool frame     = ( flags & Frame )     == Frame;
+  //  bool frame     = ( flags & Frame )     == Frame;
   bool errorbars = ( flags & Errorbars ) == Errorbars;
-  bool xlog      = ( flags & Xlog )      == Xlog;
+  //  bool xlog      = ( flags & Xlog )      == Xlog;
   bool ylog      = ( flags & Ylog )      == Ylog;
-  bool smooth    = ( flags & Smooth )    == Smooth;
-  bool rawcount  = ( flags & Rawcount )  == Rawcount;
+  //  bool smooth    = ( flags & Smooth )    == Smooth;
+  //  bool rawcount  = ( flags & Rawcount )  == Rawcount;
 
   double myFactor = _prefactor / _total * 1000.;
 
@@ -573,10 +573,6 @@ void Histogram::topdrawMCatNLO(ostream & out,
   if (numPoints == 0) numPoints += 1.;
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
-    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-    
-    //double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
-
     // no differential dist & in pb
     double factor = _prefactor / numPoints *1000.;
     double value = factor*_bins[ix].contents;

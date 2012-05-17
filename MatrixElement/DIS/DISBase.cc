@@ -26,199 +26,199 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-namespace {
-using namespace Herwig;
-using namespace ThePEG::Helicity;
+// namespace {
+// using namespace Herwig;
+// using namespace ThePEG::Helicity;
 
-void debuggingMatrixElement(bool BGF,const Lorentz5Momentum & pin,
-			    const Lorentz5Momentum & p1,
-			    const Lorentz5Momentum & p2,
-			    tcPDPtr gluon,
-			    const Lorentz5Momentum & pl1,
-			    const Lorentz5Momentum & pl2,
-			    const Lorentz5Momentum & pq1,
-			    const Lorentz5Momentum & pq2,
-			    tcPDPtr lepton1,tcPDPtr lepton2,
-			    tcPDPtr quark1 ,tcPDPtr quark2,
-			    Energy2 Q2,double phi, double x2, double x3, 
-			    double xperp, double zp, double xp,
-			    const vector<double> & azicoeff, 
-			    bool normalize) {
-  tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
-    (CurrentGenerator::current().standardModel());
-  assert(hwsm);
-  vector<AbstractFFVVertexPtr> weakVertex;
-  vector<PDPtr> bosons;
-  AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
-  if(lepton1->id()==lepton2->id()) {
-    weakVertex.push_back(hwsm->vertexFFZ());
-    bosons.push_back(hwsm->getParticleData(ParticleID::Z0));
-    weakVertex.push_back(hwsm->vertexFFP());
-    bosons.push_back(hwsm->getParticleData(ParticleID::gamma));
-  }
-  else {
-    weakVertex.push_back(hwsm->vertexFFW());
-    bosons.push_back(hwsm->getParticleData(ParticleID::Wplus));
-  }
-  if(!BGF) {
-    SpinorWaveFunction    l1,q1,qp1;
-    SpinorBarWaveFunction l2,q2,qp2;
-    VectorWaveFunction    gl(p2,gluon,outgoing);
-    if(lepton1->id()>0) {
-      l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
-      l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
-    }
-    else {
-      l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
-      l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
-    }
-    if(quark1->id()>0) {
-      q1  = SpinorWaveFunction   (pq1,quark1,incoming);
-      q2  = SpinorBarWaveFunction(pq2,quark2,outgoing);
-      qp1 = SpinorWaveFunction   (pin,quark1,incoming);
-      qp2 = SpinorBarWaveFunction(p1 ,quark2,outgoing);
-    }
-    else {
-      q1  = SpinorWaveFunction   (pq2,quark2,outgoing);
-      q2  = SpinorBarWaveFunction(pq1,quark1,incoming);
-      qp1 = SpinorWaveFunction   (p1 ,quark2,outgoing);
-      qp2 = SpinorBarWaveFunction(pin,quark1,incoming);
-    }
-    double lome(0.),realme(0.);
-    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
-      l1.reset(lhel1);
-      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
-	l2.reset(lhel2);
-	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
-	  q1.reset(qhel1);
-	  qp1.reset(qhel1);
-	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
-	    q2.reset(qhel2);
-	    qp2.reset(qhel2);
-	    // leading order matrix element 
-	    Complex diagLO(0.);
-	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
-	      VectorWaveFunction inter = 
-		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
-	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
-	    }
-	    lome   += norm(diagLO);
-	    // real emission matrix element
-	    for(unsigned int ghel=0;ghel<2;++ghel) {
- 	      gl.reset(2*ghel);
-	      Complex diagReal(0.);
-	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
-		VectorWaveFunction inter = 
-		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
-		SpinorWaveFunction off1 = 
-		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
-		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
-		SpinorBarWaveFunction off2 = 
-		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
-		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
-		diagReal += diag1+diag2;
-	      }
-	      realme += norm(diagReal);
-	    }
-	  }
-	}
-      }
-    }
-    double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
-    double cphi(cos(phi));
-    double test2;
-    if(normalize) {
-      test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
-	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
-	(1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)));
-    }
-    else {
-      test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
-	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
-    }
-    cerr << "testing RATIO A  " << test1/test2 << "\n";
-  }
-  else {
-    SpinorWaveFunction    l1,q1,qp1;
-    SpinorBarWaveFunction l2,q2,qp2;
-    VectorWaveFunction    gl(pin,gluon,incoming);
-    if(lepton1->id()>0) {
-      l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
-      l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
-    }
-    else {
-      l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
-      l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
-    }
-    if(quark1->id()>0) {
-      q1  = SpinorWaveFunction   (pq1,quark1      ,incoming);
-      q2  = SpinorBarWaveFunction(pq2,quark2      ,outgoing);
-      qp2 = SpinorBarWaveFunction(p1    ,quark2      ,outgoing);
-      qp1 = SpinorWaveFunction   (p2    ,quark1->CC(),outgoing);
-    }
-    else {
-      q1  = SpinorWaveFunction   (pq2,quark2      ,outgoing);
-      q2  = SpinorBarWaveFunction(pq1,quark1      ,incoming);
-      qp2 = SpinorBarWaveFunction(p2    ,quark1->CC(),outgoing);
-      qp1 = SpinorWaveFunction   (p1    ,quark2      ,outgoing);
-    }
-    double lome(0.),realme(0.);
-    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
-      l1.reset(lhel1);
-      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
-	l2.reset(lhel2);
-	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
-	  q1.reset(qhel1);
-	  qp1.reset(qhel1);
-	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
-	    q2.reset(qhel2);
-	    qp2.reset(qhel2);
-	    // leading order matrix element 
-	    Complex diagLO(0.);
-	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
-	      VectorWaveFunction inter = 
-		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
-	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
-	    }
-	    lome   += norm(diagLO);
-	    // real emission matrix element
-	    for(unsigned int ghel=0;ghel<2;++ghel) {
-  	      gl.reset(2*ghel);
-	      Complex diagReal(0.);
-	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
-		VectorWaveFunction inter = 
-		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
-		SpinorWaveFunction off1 = 
-		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
-		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
-		SpinorBarWaveFunction off2 = 
-		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
-		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
-		diagReal += diag1+diag2;
-	      }
-	      realme += norm(diagReal);
-	    }
-	  }
-	}
-      }
-    }
-    double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
-    double cphi(cos(phi));
-    double test2;
-    if(normalize) {
-      test2 = 8.*Constants::pi/zp/(1.-zp)*
-	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
-	sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp));
-    }
-    else {
-      test2 = 8.*Constants::pi/zp/(1.-zp)*
-	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
-    }
-    cerr << "testing RATIO B " << test1/test2 << "\n";
-  }
-}
+// void debuggingMatrixElement(bool BGF,const Lorentz5Momentum & pin,
+// 			    const Lorentz5Momentum & p1,
+// 			    const Lorentz5Momentum & p2,
+// 			    tcPDPtr gluon,
+// 			    const Lorentz5Momentum & pl1,
+// 			    const Lorentz5Momentum & pl2,
+// 			    const Lorentz5Momentum & pq1,
+// 			    const Lorentz5Momentum & pq2,
+// 			    tcPDPtr lepton1,tcPDPtr lepton2,
+// 			    tcPDPtr quark1 ,tcPDPtr quark2,
+// 			    Energy2 Q2,double phi, double x2, double x3, 
+// 			    double xperp, double zp, double xp,
+// 			    const vector<double> & azicoeff, 
+// 			    bool normalize) {
+//   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
+//     (CurrentGenerator::current().standardModel());
+//   assert(hwsm);
+//   vector<AbstractFFVVertexPtr> weakVertex;
+//   vector<PDPtr> bosons;
+//   AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
+//   if(lepton1->id()==lepton2->id()) {
+//     weakVertex.push_back(hwsm->vertexFFZ());
+//     bosons.push_back(hwsm->getParticleData(ParticleID::Z0));
+//     weakVertex.push_back(hwsm->vertexFFP());
+//     bosons.push_back(hwsm->getParticleData(ParticleID::gamma));
+//   }
+//   else {
+//     weakVertex.push_back(hwsm->vertexFFW());
+//     bosons.push_back(hwsm->getParticleData(ParticleID::Wplus));
+//   }
+//   if(!BGF) {
+//     SpinorWaveFunction    l1,q1,qp1;
+//     SpinorBarWaveFunction l2,q2,qp2;
+//     VectorWaveFunction    gl(p2,gluon,outgoing);
+//     if(lepton1->id()>0) {
+//       l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
+//       l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
+//     }
+//     else {
+//       l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
+//       l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
+//     }
+//     if(quark1->id()>0) {
+//       q1  = SpinorWaveFunction   (pq1,quark1,incoming);
+//       q2  = SpinorBarWaveFunction(pq2,quark2,outgoing);
+//       qp1 = SpinorWaveFunction   (pin,quark1,incoming);
+//       qp2 = SpinorBarWaveFunction(p1 ,quark2,outgoing);
+//     }
+//     else {
+//       q1  = SpinorWaveFunction   (pq2,quark2,outgoing);
+//       q2  = SpinorBarWaveFunction(pq1,quark1,incoming);
+//       qp1 = SpinorWaveFunction   (p1 ,quark2,outgoing);
+//       qp2 = SpinorBarWaveFunction(pin,quark1,incoming);
+//     }
+//     double lome(0.),realme(0.);
+//     for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+//       l1.reset(lhel1);
+//       for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+// 	l2.reset(lhel2);
+// 	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+// 	  q1.reset(qhel1);
+// 	  qp1.reset(qhel1);
+// 	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+// 	    q2.reset(qhel2);
+// 	    qp2.reset(qhel2);
+// 	    // leading order matrix element 
+// 	    Complex diagLO(0.);
+// 	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+// 	      VectorWaveFunction inter = 
+// 		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+// 	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
+// 	    }
+// 	    lome   += norm(diagLO);
+// 	    // real emission matrix element
+// 	    for(unsigned int ghel=0;ghel<2;++ghel) {
+//  	      gl.reset(2*ghel);
+// 	      Complex diagReal(0.);
+// 	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+// 		VectorWaveFunction inter = 
+// 		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+// 		SpinorWaveFunction off1 = 
+// 		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
+// 		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
+// 		SpinorBarWaveFunction off2 = 
+// 		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
+// 		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
+// 		diagReal += diag1+diag2;
+// 	      }
+// 	      realme += norm(diagReal);
+// 	    }
+// 	  }
+// 	}
+//       }
+//     }
+//     double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
+//     double cphi(cos(phi));
+//     double test2;
+//     if(normalize) {
+//       test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
+// 	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
+// 	(1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)));
+//     }
+//     else {
+//       test2 = 8.*Constants::pi/(1.-xp)/(1.-zp)*
+// 	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
+//     }
+//     cerr << "testing RATIO A  " << test1/test2 << "\n";
+//   }
+//   else {
+//     SpinorWaveFunction    l1,q1,qp1;
+//     SpinorBarWaveFunction l2,q2,qp2;
+//     VectorWaveFunction    gl(pin,gluon,incoming);
+//     if(lepton1->id()>0) {
+//       l1  = SpinorWaveFunction   (pl1,lepton1,incoming);
+//       l2  = SpinorBarWaveFunction(pl2,lepton2,outgoing);
+//     }
+//     else {
+//       l1  = SpinorWaveFunction   (pl2,lepton2,outgoing);
+//       l2  = SpinorBarWaveFunction(pl1,lepton1,incoming);
+//     }
+//     if(quark1->id()>0) {
+//       q1  = SpinorWaveFunction   (pq1,quark1      ,incoming);
+//       q2  = SpinorBarWaveFunction(pq2,quark2      ,outgoing);
+//       qp2 = SpinorBarWaveFunction(p1    ,quark2      ,outgoing);
+//       qp1 = SpinorWaveFunction   (p2    ,quark1->CC(),outgoing);
+//     }
+//     else {
+//       q1  = SpinorWaveFunction   (pq2,quark2      ,outgoing);
+//       q2  = SpinorBarWaveFunction(pq1,quark1      ,incoming);
+//       qp2 = SpinorBarWaveFunction(p2    ,quark1->CC(),outgoing);
+//       qp1 = SpinorWaveFunction   (p1    ,quark2      ,outgoing);
+//     }
+//     double lome(0.),realme(0.);
+//     for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+//       l1.reset(lhel1);
+//       for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+// 	l2.reset(lhel2);
+// 	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+// 	  q1.reset(qhel1);
+// 	  qp1.reset(qhel1);
+// 	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+// 	    q2.reset(qhel2);
+// 	    qp2.reset(qhel2);
+// 	    // leading order matrix element 
+// 	    Complex diagLO(0.);
+// 	    for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+// 	      VectorWaveFunction inter = 
+// 		weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+// 	      diagLO += weakVertex[ix]->evaluate(Q2,q1,q2,inter);
+// 	    }
+// 	    lome   += norm(diagLO);
+// 	    // real emission matrix element
+// 	    for(unsigned int ghel=0;ghel<2;++ghel) {
+//   	      gl.reset(2*ghel);
+// 	      Complex diagReal(0.);
+// 	      for(unsigned int ix=0;ix<weakVertex.size();++ix) {
+// 		VectorWaveFunction inter = 
+// 		  weakVertex[ix]->evaluate(Q2,3,bosons[ix],l1,l2);
+// 		SpinorWaveFunction off1 = 
+// 		  strongVertex->evaluate(Q2,5,qp1.particle(),qp1,gl);
+// 		Complex diag1 = weakVertex[ix]->evaluate(Q2,off1,qp2,inter);
+// 		SpinorBarWaveFunction off2 = 
+// 		  strongVertex->evaluate(Q2,5,qp2.particle(),qp2,gl);
+// 		Complex diag2 = weakVertex[ix]->evaluate(Q2,qp1,off2,inter);
+// 		diagReal += diag1+diag2;
+// 	      }
+// 	      realme += norm(diagReal);
+// 	    }
+// 	  }
+// 	}
+//       }
+//     }
+//     double test1 = realme/lome/hwsm->alphaS(Q2)*Q2*UnitRemoval::InvE2;
+//     double cphi(cos(phi));
+//     double test2;
+//     if(normalize) {
+//       test2 = 8.*Constants::pi/zp/(1.-zp)*
+// 	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi))*
+// 	sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp));
+//     }
+//     else {
+//       test2 = 8.*Constants::pi/zp/(1.-zp)*
+// 	(azicoeff[0]+azicoeff[1]*cphi+azicoeff[2]*sqr(cphi));
+//     }
+//     cerr << "testing RATIO B " << test1/test2 << "\n";
+//   }
+// }
 
-}
+// }
  
 DISBase::DISBase()  : initial_(6.), final_(3.),
 		      procProb_(0.35),
