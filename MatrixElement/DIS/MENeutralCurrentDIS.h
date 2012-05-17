@@ -134,7 +134,7 @@ protected:
 
 
   /**
-   *  Option for treatment of $\gamma/Z\f$ terms
+   *  Option for treatment of \f$\gamma/Z\f$ terms
    */
   inline unsigned int gammaZOption() const {return _gammaZ;}
 

@@ -136,7 +136,7 @@ namespace {
 
 void ResonantProcessConstructor::constructDiagrams() {
   size_t ninc = incoming_.size() , ninter = intermediates_.size();
-  if(ninc == 0 || ninter == 0 ) return;
+  if(ninc == 0 || ninter == 0  || !subProcess() ) return;
   // find the incoming particle pairs
   vector<tPDPair> incPairs;
   for(PDVector::size_type i = 0; i < ninc; ++i) {
