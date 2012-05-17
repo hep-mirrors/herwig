@@ -54,22 +54,23 @@ void HardProcessConstructor::doinit() {
     throw InitException() << "HardProcessConstructor:: doinit() - "
 			  << "The model pointer is null!"
 			  << Exception::abortnow;
-  if(eg->eventHandler()) {
-    string subProcessName = 
-      eg->preinitInterface(eg->eventHandler(), "SubProcessHandlers", "get","");
-   subProcess_ = eg->getObject<SubProcessHandler>(subProcessName);
-   if(!subProcess_)
-     throw InitException() << "HardProcessConstructor:: doinit() - "
-			   << "There was an error getting the SubProcessHandler "
-			   << "from the current event handler. "
-			   << Exception::abortnow;
-  }
-  else
+  if(!eg->eventHandler()) {
     throw
       InitException() << "HardProcessConstructor:: doinit() - "
 		      << "The eventHandler pointer was null therefore "
 		      << "could not get SubProcessHandler pointer " 
 		      << Exception::abortnow;
+  }
+  string subProcessName = 
+    eg->preinitInterface(eg->eventHandler(), "SubProcessHandlers", "get","");
+  subProcess_ = eg->getObject<SubProcessHandler>(subProcessName);
+  if(!subProcess_) {
+    ostringstream s;
+    s << "HardProcessConstructor:: doinit() - "
+      << "There was an error getting the SubProcessHandler "
+      << "from the current event handler. ";
+    generator()->logWarning( Exception(s.str(), Exception::warning) );
+  }
 }
 
 GeneralHardME::ColourStructure HardProcessConstructor::

@@ -20,155 +20,155 @@
 
 using namespace Herwig;
 
-namespace {
-using namespace Herwig;
-using namespace ThePEG;
-using namespace ThePEG::Helicity;
+// namespace {
+// using namespace Herwig;
+// using namespace ThePEG;
+// using namespace ThePEG::Helicity;
 
-void debuggingMatrixElement(bool BGF,
-			    tcPDPtr partons1, tcPDPtr partons2,
-			    tcPDPtr partons3, tcPDPtr partons4,
-			    const Lorentz5Momentum & psystem0,
-			    const Lorentz5Momentum & psystem1,
-			    const Lorentz5Momentum & pother0,
-			    const Lorentz5Momentum & pother1,
-			    const Lorentz5Momentum & p0,
-			    const Lorentz5Momentum & p1,
-			    const Lorentz5Momentum & p2,
-			    const Lorentz5Momentum & phiggs,
-			    Energy2 Q12, Energy2 scale,
-			    double old) {
-  // get the vertex and the boson
-  tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
-    (CurrentGenerator::current().standardModel());
-  assert(hwsm);
-  tcPDPtr boson;
-  AbstractFFVVertexPtr weakVertex;
-  AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
-  AbstractVVSVertexPtr higgsVertex  = hwsm->vertexWWH();
-  if(partons1->id()==partons2->id()) {
-    weakVertex = hwsm->vertexFFZ();
-    boson = hwsm->getParticleData(ParticleID::Z0);
-  }
-  else {
-    weakVertex = hwsm->vertexFFW();
-    boson = hwsm->getParticleData(ParticleID::Wplus);
-  }
-  tcPDPtr hdata = hwsm->getParticleData(ParticleID::h0);
-  tcPDPtr gluon = hwsm->getParticleData(ParticleID::g);
-  SpinorWaveFunction q1,q2;
-  SpinorBarWaveFunction qbar1,qbar2;
-  if(partons1->id()>0) {
-    q1     = SpinorWaveFunction   (psystem0,partons1,incoming);
-    qbar1  = SpinorBarWaveFunction(psystem1,partons2,outgoing);
-  }
-  else {
-    q1     = SpinorWaveFunction   (psystem1,partons2,outgoing);
-    qbar1  = SpinorBarWaveFunction(psystem0,partons1,incoming);
-  }
-  if(partons3->id()>0) {
-    q2    = SpinorWaveFunction   (pother0,partons3,incoming);
-    qbar2 = SpinorBarWaveFunction(pother1,partons4,outgoing);
-  }
-  else {
-    q2    = SpinorWaveFunction   (pother1,partons4,outgoing);
-    qbar2 = SpinorBarWaveFunction(pother0,partons3,incoming);
-  }
-  ScalarWaveFunction higgs(phiggs,hdata,outgoing);
-  if(!BGF) {
-    SpinorWaveFunction q1p;
-    SpinorBarWaveFunction qbar1p;
-    if(partons1->id()>0) {
-      q1p    = SpinorWaveFunction   (p0         ,partons1,incoming);
-      qbar1p = SpinorBarWaveFunction(p1         ,partons2,outgoing);
-    }
-    else {
-      q1p    = SpinorWaveFunction   (p1         ,partons2,outgoing);
-      qbar1p = SpinorBarWaveFunction(p0         ,partons1,incoming);
-    }
-    VectorWaveFunction    gl(p2,gluon,outgoing);
-    double lome(0.),realme(0.);
-    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
-      q2.reset(lhel1);
-      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
-	qbar2.reset(lhel2);
-	VectorWaveFunction off1 
-	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
-	VectorWaveFunction off2
-	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
-	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
-	  q1.reset(qhel1);
-	  q1p.reset(qhel1);
-	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
-	    qbar1.reset(qhel2);
-	    qbar1p.reset(qhel2);
-	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
-	    lome += norm(diag);
-	    for(unsigned int ghel=0;ghel<2;++ghel) {
-	      gl.reset(2*ghel);
-	      SpinorWaveFunction inter1 = 
-		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
-	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
-	      SpinorBarWaveFunction inter2 = 
-		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
-	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
-	      realme += norm(diag1+diag2);
-	    }
-	  }
-	}
-      }
-    }
-    double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
-    cerr << "testing ratio A " << old/test1 << "\n";
-  }
-  else {
-    SpinorWaveFunction q1p;
-    SpinorBarWaveFunction qbar1p;
-    if(partons1->id()>0) {
-      q1p    = SpinorWaveFunction   (p2,partons1->CC(),outgoing);
-      qbar1p = SpinorBarWaveFunction(p1,partons2      ,outgoing);
-    }
-    else {
-      q1p    = SpinorWaveFunction   (p1,partons2      ,outgoing);
-      qbar1p = SpinorBarWaveFunction(p2,partons1->CC(),outgoing);
-    }
-    VectorWaveFunction    gl(p0,gluon,incoming);
-    double lome(0.),realme(0.);
-    for(unsigned int lhel1=0;lhel1<2;++lhel1) {
-      q2.reset(lhel1);
-      for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
-	qbar2.reset(lhel2);
-	VectorWaveFunction off1 
-	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
-	VectorWaveFunction off2
-	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
-	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
-	  q1.reset(qhel1);
-	  q1p.reset(qhel1);
-	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
-	    qbar1.reset(qhel2);
-	    qbar1p.reset(qhel2);
-	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
-	    lome += norm(diag);
-	    for(unsigned int ghel=0;ghel<2;++ghel) {
-	      gl.reset(2*ghel);
-	      SpinorWaveFunction inter1 = 
-		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
-	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
-	      SpinorBarWaveFunction inter2 = 
-		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
-	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
-	      realme += norm(diag1+diag2);
-	    }
-	  }
-	}
-      }
-    }
-    double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
-    cerr << "testing ratio B " << old/test1 << "\n";
-  }
-}
-}
+// void debuggingMatrixElement(bool BGF,
+// 			    tcPDPtr partons1, tcPDPtr partons2,
+// 			    tcPDPtr partons3, tcPDPtr partons4,
+// 			    const Lorentz5Momentum & psystem0,
+// 			    const Lorentz5Momentum & psystem1,
+// 			    const Lorentz5Momentum & pother0,
+// 			    const Lorentz5Momentum & pother1,
+// 			    const Lorentz5Momentum & p0,
+// 			    const Lorentz5Momentum & p1,
+// 			    const Lorentz5Momentum & p2,
+// 			    const Lorentz5Momentum & phiggs,
+// 			    Energy2 Q12, Energy2 scale,
+// 			    double old) {
+//   // get the vertex and the boson
+//   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>
+//     (CurrentGenerator::current().standardModel());
+//   assert(hwsm);
+//   tcPDPtr boson;
+//   AbstractFFVVertexPtr weakVertex;
+//   AbstractFFVVertexPtr strongVertex = hwsm->vertexFFG();
+//   AbstractVVSVertexPtr higgsVertex  = hwsm->vertexWWH();
+//   if(partons1->id()==partons2->id()) {
+//     weakVertex = hwsm->vertexFFZ();
+//     boson = hwsm->getParticleData(ParticleID::Z0);
+//   }
+//   else {
+//     weakVertex = hwsm->vertexFFW();
+//     boson = hwsm->getParticleData(ParticleID::Wplus);
+//   }
+//   tcPDPtr hdata = hwsm->getParticleData(ParticleID::h0);
+//   tcPDPtr gluon = hwsm->getParticleData(ParticleID::g);
+//   SpinorWaveFunction q1,q2;
+//   SpinorBarWaveFunction qbar1,qbar2;
+//   if(partons1->id()>0) {
+//     q1     = SpinorWaveFunction   (psystem0,partons1,incoming);
+//     qbar1  = SpinorBarWaveFunction(psystem1,partons2,outgoing);
+//   }
+//   else {
+//     q1     = SpinorWaveFunction   (psystem1,partons2,outgoing);
+//     qbar1  = SpinorBarWaveFunction(psystem0,partons1,incoming);
+//   }
+//   if(partons3->id()>0) {
+//     q2    = SpinorWaveFunction   (pother0,partons3,incoming);
+//     qbar2 = SpinorBarWaveFunction(pother1,partons4,outgoing);
+//   }
+//   else {
+//     q2    = SpinorWaveFunction   (pother1,partons4,outgoing);
+//     qbar2 = SpinorBarWaveFunction(pother0,partons3,incoming);
+//   }
+//   ScalarWaveFunction higgs(phiggs,hdata,outgoing);
+//   if(!BGF) {
+//     SpinorWaveFunction q1p;
+//     SpinorBarWaveFunction qbar1p;
+//     if(partons1->id()>0) {
+//       q1p    = SpinorWaveFunction   (p0         ,partons1,incoming);
+//       qbar1p = SpinorBarWaveFunction(p1         ,partons2,outgoing);
+//     }
+//     else {
+//       q1p    = SpinorWaveFunction   (p1         ,partons2,outgoing);
+//       qbar1p = SpinorBarWaveFunction(p0         ,partons1,incoming);
+//     }
+//     VectorWaveFunction    gl(p2,gluon,outgoing);
+//     double lome(0.),realme(0.);
+//     for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+//       q2.reset(lhel1);
+//       for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+// 	qbar2.reset(lhel2);
+// 	VectorWaveFunction off1 
+// 	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
+// 	VectorWaveFunction off2
+// 	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
+// 	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+// 	  q1.reset(qhel1);
+// 	  q1p.reset(qhel1);
+// 	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+// 	    qbar1.reset(qhel2);
+// 	    qbar1p.reset(qhel2);
+// 	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
+// 	    lome += norm(diag);
+// 	    for(unsigned int ghel=0;ghel<2;++ghel) {
+// 	      gl.reset(2*ghel);
+// 	      SpinorWaveFunction inter1 = 
+// 		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
+// 	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
+// 	      SpinorBarWaveFunction inter2 = 
+// 		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
+// 	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
+// 	      realme += norm(diag1+diag2);
+// 	    }
+// 	  }
+// 	}
+//       }
+//     }
+//     double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
+//     cerr << "testing ratio A " << old/test1 << "\n";
+//   }
+//   else {
+//     SpinorWaveFunction q1p;
+//     SpinorBarWaveFunction qbar1p;
+//     if(partons1->id()>0) {
+//       q1p    = SpinorWaveFunction   (p2,partons1->CC(),outgoing);
+//       qbar1p = SpinorBarWaveFunction(p1,partons2      ,outgoing);
+//     }
+//     else {
+//       q1p    = SpinorWaveFunction   (p1,partons2      ,outgoing);
+//       qbar1p = SpinorBarWaveFunction(p2,partons1->CC(),outgoing);
+//     }
+//     VectorWaveFunction    gl(p0,gluon,incoming);
+//     double lome(0.),realme(0.);
+//     for(unsigned int lhel1=0;lhel1<2;++lhel1) {
+//       q2.reset(lhel1);
+//       for(unsigned int lhel2=0;lhel2<2;++lhel2) { 
+// 	qbar2.reset(lhel2);
+// 	VectorWaveFunction off1 
+// 	  = weakVertex->evaluate(scale,3,boson,q2,qbar2);
+// 	VectorWaveFunction off2
+// 	  = higgsVertex->evaluate(scale,3,boson,off1,higgs);
+// 	for(unsigned int qhel1=0;qhel1<2;++qhel1) {
+// 	  q1.reset(qhel1);
+// 	  q1p.reset(qhel1);
+// 	  for(unsigned int qhel2=0;qhel2<2;++qhel2) {
+// 	    qbar1.reset(qhel2);
+// 	    qbar1p.reset(qhel2);
+// 	    Complex diag = weakVertex->evaluate(scale,q1,qbar1,off2);
+// 	    lome += norm(diag);
+// 	    for(unsigned int ghel=0;ghel<2;++ghel) {
+// 	      gl.reset(2*ghel);
+// 	      SpinorWaveFunction inter1 = 
+// 		strongVertex->evaluate(Q12,5,q1p.particle(),q1p,gl);
+// 	      Complex diag1 = weakVertex->evaluate(scale,inter1,qbar1p,off2);
+// 	      SpinorBarWaveFunction inter2 = 
+// 		strongVertex->evaluate(Q12,5,qbar1p.particle(),qbar1p,gl);
+// 	      Complex diag2 = weakVertex->evaluate(scale,q1p,inter2,off2);
+// 	      realme += norm(diag1+diag2);
+// 	    }
+// 	  }
+// 	}
+//       }
+//     }
+//     double test1 = realme/lome/hwsm->alphaS(Q12)*Q12*UnitRemoval::InvE2;
+//     cerr << "testing ratio B " << old/test1 << "\n";
+//   }
+// }
+//}
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : comptonWeight_(8.), BGFWeight_(30.), 
 				 pTmin_(1.*GeV),initial_(10.),final_(8.),

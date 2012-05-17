@@ -190,16 +190,14 @@ namespace exsample {
       }
 
       /// post-increment
-      template<typename Dummy>
-      iterator operator++(Dummy) {
+      iterator operator++(int) {
 	iterator tmp = *this;
 	++(*this);
 	return tmp;
       }
       
       /// post-decrement
-      template<typename Dummy>
-      iterator operator--(Dummy) {
+      iterator operator--(int) {
 	iterator tmp = *this;
 	--(*this);
 	return tmp;
@@ -341,16 +339,14 @@ namespace exsample {
       }
 
       /// post-increment
-      template<typename Dummy>
-      const_iterator operator++(Dummy) {
+      const_iterator operator++(int) {
 	const_iterator tmp = *this;
 	++(*this);
 	return tmp;
       }
       
       /// post-decrement
-      template<typename Dummy>
-      const_iterator operator--(Dummy) {
+      const_iterator operator--(int) {
 	const_iterator tmp = *this;
 	--(*this);
 	return tmp;

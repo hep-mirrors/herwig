@@ -223,7 +223,7 @@ namespace {
 }
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
-  if(incPairs_.empty() || outgoing_.empty()) return;
+  if(incPairs_.empty() || outgoing_.empty() || !subProcess() ) return;
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
   for(unsigned int ix = 0; ix < nv_; ++ix ) {

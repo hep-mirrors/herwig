@@ -36,14 +36,6 @@ IBPtr HwppSelector::fullclone() const {
   return new_ptr(*this);
 }
 
-
-
-namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
-}
-
 void HwppSelector::doinit() {
   HadronSelector::doinit();
 }
