@@ -1,5 +1,38 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.0 release: 2012-05-xx (tagged at SVN rNNNN)
+
+** NLO TODO
+
+*** Matchbox, Exsample, DipoleShower
+
+** New BSM models
+*** Sextet colour lines TODO
+*** TTbAsymm, Zprime TODO
+
+** AlpGen interface
+
+** Colour recon - annealing
+
+** Energy extrapolation in UE, removed .in files
+
+** MPIXsec reporting -> mention functions
+
+
+
+** boost dependency
+
+** HiggsVBF Powheg
+
+
+
+
+** Minor changes
+*** ExtraParticleID -> ParticleID
+*** MEee2VectorMeson moved
+*** SUSY numerics fixes
+*** YODA output for Rivet
+
 * Herwig++-2.5.2 release: 2011-11-01 (tagged at SVN r6928)
 
 ** Optional new jet vetoing model
