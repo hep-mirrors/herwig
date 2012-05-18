@@ -2,9 +2,21 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 * Herwig++-2.6.0 release: 2012-05-xx (tagged at SVN rNNNN)
 
-** NLO TODO
+** NLO
+   Matchbox, a flexible and very general framework for performing NLO
+   calculations at fixed order or matched to parton showers is
+   provided with this release.
 
-*** Matchbox, Exsample, DipoleShower
+** Dipole shower algorithm
+   A first implementation of the coherent dipole shower algorithm by
+   Plätzer and Gieseke (arXiv:0909.5593 and arXiv:1109.6256) is
+   available.
+
+** Alternative samplers and the ExSample library
+   The ExSample library by Plätzer (arXiv:1108.6182) is shipped along
+   with Herwig++ in an extented version. The extented version provides
+   SamplerBase objects which can be used alternatively to the default
+   ACDCSampler.
 
 ** New BSM models
 *** Sextet colour lines TODO
@@ -16,11 +28,20 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** Energy extrapolation in UE, removed .in files
 
-** MPIXsec reporting -> mention functions
-
-
+** MPIXsec reporting
+   When simulating minimum-bias events using the MEMinBias matrix
+   element, the correct unitarized cross section is now reported via
+   the standard facilities; it is no longer necessary to extract it
+   from the .log file of the run. The corresponding functionality is
+   enabled by inserting a MPIXSecReweighter object as a
+   post-subprocess handler:
+   create Herwig::MPIXSecReweighter MPIXSecReweighter
+   insert LHCHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 
 ** boost dependency
+   Herwig++ now requires the boost headers to build; if not detected
+   in standard locations, specify with the --with-boost configure
+   option.
 
 ** HiggsVBF Powheg
 
