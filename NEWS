@@ -14,7 +14,7 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** Alternative samplers and the ExSample library
    The ExSample library by Plätzer (arXiv:1108.6182) is shipped along
-   with Herwig++ in an extented version. The extented version provides
+   with Herwig++ in an extended version. The extended version provides
    SamplerBase objects which can be used alternatively to the default
    ACDCSampler.
 
