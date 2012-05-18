@@ -1,5 +1,5 @@
 pkglib_LTLIBRARIES = HwDipoleShowerAlphaS.la
-HwDipoleShowerAlphaS_la_LDFLAGS = -module -version-info 11:1:0
+HwDipoleShowerAlphaS_la_LDFLAGS = -module -version-info 1:0:0
 
 HwDipoleShowerAlphaS_la_SOURCES =  \
 alpha_s.h \
