@@ -1,6 +1,6 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN rNNNN)
+* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7406)
 
 ** New NLO framework
    Matchbox, a flexible and very general framework for performing NLO
@@ -109,10 +109,13 @@ Herwig++ News				(emacs -*- outline -*- format)
     The diagram structure of HiggsVBF LO matrix elements has been fixed.
 
 *** LEP thrust fix 
-    TODO TODO TODO    
-
-
-
+    The calculation of the transverse momentum of a branching from the
+    evolution variable in final-state radiation can now be
+    changed. While formally a sub-leading choice this enables a better
+    description of the thrust distribution in e+e- collisions at
+    small values of the thrust. Currently the default behaviour, where
+    the cut-off masses are used in the calculation, remains the same
+    as previous versions.
 
 
 
