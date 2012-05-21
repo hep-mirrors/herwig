@@ -43,7 +43,6 @@ LHC.in \
 LHC-Matchbox.in \
 LHC-LQ.in \
 LHC-MSSM.in \
-LHC-MU900-2.in \
 LHC-MUED.in \
 LHC-NMSSM.in \
 LHC-Powheg.in \

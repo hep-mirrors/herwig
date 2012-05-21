@@ -6,4 +6,4 @@ MEee2ZH.h MEee2ZH.cc\
 MEee2HiggsVBF.h MEee2HiggsVBF.cc \
 MEee2VV.h MEee2VV.cc \
 MEee2VectorMeson.h MEee2VectorMeson.cc
-HwMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:1:0
+HwMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:1

@@ -2,7 +2,7 @@ if WANT_TTBA
 pkglib_LTLIBRARIES = HwTTbAModel.la
 endif
 HwTTbAModel_la_SOURCES = \
-TTbAModel.cc  TTbAModel.h \
+TTbAModel.cc  TTbAModel.h TTbAModel.fh \
 TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \
 TTbAModelZPQQVertex.h TTbAModelZPQQVertex.cc \
 TTbAModelAGQQVertex.h TTbAModelAGQQVertex.cc \

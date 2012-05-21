@@ -89,7 +89,12 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
 
 }
 
-double SimpleColourBasis::tMatrixElement(size_t i, size_t a, size_t b,
+double SimpleColourBasis::tMatrixElement(size_t i, size_t a, 
+#ifndef NDEBUG
+					 size_t b,
+#else
+					 size_t,
+#endif
 					 const vector<PDT::Colour>&,
 					 const vector<PDT::Colour>& bBasis) const {
 

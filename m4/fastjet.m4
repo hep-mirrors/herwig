@@ -44,11 +44,11 @@ else
 
    AC_MSG_CHECKING([if FastJet is functional])
    AC_LANG_PUSH(C++)
-   AC_COMPILE_IFELSE(AC_LANG_PROGRAM([[
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <fastjet/ClusterSequence.hh>
    ]], [[
 fastjet::PseudoJet pj=fastjet::PtYPhiM(10.0,0.5,1.0,0.0);
-   ]]), [fjok='yes'], [fjok='no'])
+   ]])], [fjok='yes'], [fjok='no'])
    AC_MSG_RESULT([$fjok])
    AC_LANG_POP()
    CXXFLAGS="$save_CXXFLAGS"
