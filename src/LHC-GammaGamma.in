@@ -52,7 +52,7 @@ set /Herwig/MatrixElements/MEgg2ff:Process Muon
 # LHC physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.
 set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 
