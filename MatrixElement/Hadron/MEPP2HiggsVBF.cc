@@ -756,13 +756,13 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
   // electroweak parameters
-  Energy2 mz2 = sqr(Z0()->mass());
-  Energy2 mw2 = sqr(WPlus()->mass());
+  //Energy2 mz2 = sqr(Z0()->mass());
+  //Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
-  Energy2 mb2;
+  //Energy2 mb2;
   // W
   if(partons_[system][0]->id()!=partons_[system][1]->id()) {
-    mb2 = mw2;
+    //mb2 = mw2;
     c0L = sqrt(0.5);
     c0R = 0;
     c1L = sqrt(0.5);
@@ -770,7 +770,7 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   }
   // Z
   else {
-    mb2 = mz2;
+    //mb2 = mz2;
     if(abs(partons_[system][0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
@@ -811,7 +811,8 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  Energy4 term1,term2,term3,loME;
+  //Energy4 term1,term2,term3,loME;
+  Energy4 term1,term2,loME;
   if(partons_[system][0]->id()>0) {
     if(partons_[system][2]->id()>0) {
       term1 = loMatrixElement(r1                 ,pother_[system][0],
@@ -965,13 +966,13 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   Lorentz5Momentum r2 =  p1/x2;
   Lorentz5Momentum r3 = -p2/x3;
   // electroweak parameters
-  Energy2 mz2 = sqr(Z0()->mass());
-  Energy2 mw2 = sqr(WPlus()->mass());
+  //Energy2 mz2 = sqr(Z0()->mass());
+  //Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
-  Energy2 mb2;
+  //Energy2 mb2;
   // W
   if(partons_[system][0]->id()!=partons_[system][1]->id()) {
-    mb2 = mw2;
+    //mb2 = mw2;
     c0L = sqrt(0.5);
     c0R = 0;
     c1L = sqrt(0.5);
@@ -979,7 +980,7 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   }
   // Z
   else {
-    mb2 = mz2;
+    //mb2 = mz2;
     if(abs(partons_[system][0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
@@ -1020,7 +1021,8 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  Energy4 term1,term2,term3,loME;
+  //Energy4 term1,term2,term3,loME;
+  Energy4 term2,term3,loME;
   if(partons_[system][0]->id()>0) {
     if(partons_[system][2]->id()>0) {
       term2 = loMatrixElement(r2-qnlo,pother_[system][0],

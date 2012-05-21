@@ -308,10 +308,10 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
     log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
   // Electroweak coefficients
   double c0L,c1L,c0R,c1R;
-  Energy2 mb2;
+  //Energy2 mb2;
   // W
   if(_partons[0]->id()!=_partons[2]->id()) {
-    mb2 = _mw2;
+    //mb2 = _mw2;
     c0L = sqrt(0.5);
     c0R = 0;
     c1L = sqrt(0.5);
@@ -319,7 +319,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   }
   // Z
   else {
-    mb2 = _mz2;
+    //mb2 = _mz2;
     if(abs(_partons[0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+

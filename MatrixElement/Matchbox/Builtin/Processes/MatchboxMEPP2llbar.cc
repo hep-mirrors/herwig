@@ -136,7 +136,7 @@ void MatchboxMEPP2llbar::getDiagrams() const {
 }
 
 Selector<MEBase::DiagramIndex> 
-MatchboxMEPP2llbar::diagrams(const DiagramVector & diags) const {
+MatchboxMEPP2llbar::diagrams(const DiagramVector &) const {
   Selector<MEBase::DiagramIndex> sel;
   tcPDPtr Z0 = getParticleData(ParticleID::Z0);
   double wGamma = 
@@ -144,7 +144,6 @@ MatchboxMEPP2llbar::diagrams(const DiagramVector & diags) const {
   double wZ = 
     sqr( sqr(generator()->maximumCMEnergy()) ) /
     ( sqr(lastSHat()-sqr(Z0->mass())) + sqr(Z0->mass())*sqr(Z0->width()) );
-  assert(diags.size() == 2);
   sel.insert(wGamma,0);
   sel.insert(wZ,1);
   return sel;
