@@ -1,6 +1,6 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7406)
+* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
 
 ** New NLO framework
    Matchbox, a flexible and very general framework for performing NLO
@@ -74,6 +74,10 @@ Herwig++ News				(emacs -*- outline -*- format)
    analyses. A full comparison run can be initiated with 'make tests'.
 
 ** Minor changes
+*** Default LHC energy now 8 TeV
+    All LHC-based defaults have now been updated to use 8 TeV as the
+    center-of-mass energy.
+
 *** Herwig::ExtraParticleID -> ThePEG::ParticleID
     The namespace for additional particles has been unified into
     ThePEG::ParticleID
