@@ -9,8 +9,8 @@ setup graviton 39 graviton 0.0 0.0 0.0 0.0 0 0 0 1
 
 cd /Herwig/EventHandlers
 
-#set LHCHandler:CascadeHandler NULL                                                              
-#set LHCHandler:HadronizationHandler NULL                                                             
+#set LHCHandler:CascadeHandler NULL
+#set LHCHandler:HadronizationHandler NULL
 #set LHCHandler:DecayHandler NULL 
 
 ##################################################
