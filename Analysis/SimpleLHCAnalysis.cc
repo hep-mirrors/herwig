@@ -63,6 +63,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
       if((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma) {
 	pz=Lorentz5Momentum();
 	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
 	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptZ[1].addWeighted(pt,event->weight());
@@ -76,6 +77,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
       else if ((**iter).id()==ParticleID::Wplus) {
 	pz=Lorentz5Momentum();
 	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
 	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptWp[1].addWeighted(pt,event->weight());
@@ -89,6 +91,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
       else if ((**iter).id()==ParticleID::Wminus) {
 	pz=Lorentz5Momentum();
 	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
 	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        (_ptWm[1]).addWeighted(pt,event->weight());

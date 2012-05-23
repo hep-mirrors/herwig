@@ -72,6 +72,9 @@ public:
 			      const ShowerParticleVector & theChildren,
 			      bool angularOrder) const;
 
+  virtual void resetChildren( const tShowerParticlePtr theParent, 
+			      const ShowerParticleVector & theChildren) const;
+
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
@@ -214,7 +217,7 @@ public:
   /**
    *  Set the relative \f$p_T\f$ for the branching
    */
-  void pT(const Energy in) { _pt=in; }
+  void pT(const Energy in) const { _pt=in; }
   //@}
 
   /**
@@ -277,7 +280,7 @@ private:
   /**
    *  The relative \f$p_T\f$
    */
-  Energy _pt;
+  mutable Energy _pt;
 
   /**
    *  The splitting function for the branching of the particle

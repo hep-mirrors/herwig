@@ -29,9 +29,9 @@ using namespace ThePEG;
   enum ColourStructure {Undefined=0,
 			TripletTripletOctet  = 1,OctetOctetOctet    =2,
 			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
+			SextetSextetOctet    = 5,
 			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
 			NeutralChargedCharged=-3};
-
 
 /** \ingroup Shower
  *

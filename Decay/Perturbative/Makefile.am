@@ -5,7 +5,7 @@ HwPerturbativeDecay_la_SOURCES = \
  SMZDecayer.cc  SMZDecayer.h\
  SMZDecayerPOWHEG.h SMZDecayerPOWHEG.cc\
  SMTopDecayer.cc SMTopDecayer.h
-HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 
 HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsFermionsDecayer.cc SMHiggsFermionsDecayer.h \

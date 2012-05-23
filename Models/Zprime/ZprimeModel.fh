@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwZprimeModel class.
+//
+#ifndef HERWIG_HwZprimeModel_FH
+#define HERWIG_HwZprimeModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ZprimeModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ZprimeModel,HwZprimePtr);
+
+}
+
+#endif

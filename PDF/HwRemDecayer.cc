@@ -436,6 +436,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
 			      double &lastx, Lorentz5Momentum &pf, 
 			      Lorentz5Momentum &p, 
 			      HadronContent & content) const {
+  static const double eps=1e-6;
   // beam momentum
   Lorentz5Momentum beam = theBeam->momentum();
   // the last scale is minimum of last value and upper limit
@@ -445,14 +446,22 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
   // Q0 (Qmax/Q0)^R
   Energy q;
-  double zmin,zmax,yy;
+  unsigned int ntry=0,maxtry=100;
+  double zmin=  lastx ,zmax,yy;
+  if(1-lastx<eps) throw ShowerHandler::ExtraScatterVeto();
   do {
     q = minQ*pow(lastQ/minQ,UseRandom::rnd());
-    zmin = lastx;
     yy   = 1.+0.5*sqr(_kinCutoff/q);
     zmax = yy - sqrt(sqr(yy)-1.); 
+    ++ntry;
   }
-  while(zmax<zmin);
+  while(zmax<zmin&&ntry<maxtry);
+  if(ntry==maxtry) {
+    throw Exception() << "Can't set scale and z for forced splitting in " 
+		      << "HwRemDecayer::forceSplit() " 
+		      << Exception::eventerror;
+  }
+  if(zmax-zmin<eps) throw ShowerHandler::ExtraScatterVeto();
   // now generate z as in FORTRAN HERWIG
   // use y = ln(z/(1-z)) as integration variable
   double ymin=log(zmin/(1.-zmin));

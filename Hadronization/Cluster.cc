@@ -37,7 +37,7 @@ Energy2 Cluster::_mg2 = ZERO;
 
 Cluster::Cluster() 
   : Particle(CurrentGenerator::current().
-	     getParticleData(long(ExtraParticleID::Cluster))), 
+	     getParticleData(long(ParticleID::Cluster))), 
     _isAvailable(true),
     _hasReshuffled(false),
     _component(),
@@ -49,12 +49,12 @@ Cluster::Cluster()
 
 Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   : Particle(CurrentGenerator::current().
-	     getParticleData(long(ExtraParticleID::Cluster))),
+	     getParticleData(long(ParticleID::Cluster))),
     _isAvailable(true), _hasReshuffled(false)
 {
   if(!dataPtr()) {
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "
-	 << "without ParticleData for id " << ExtraParticleID::Cluster << '\n';
+	 << "without ParticleData for id " << ParticleID::Cluster << '\n';
   }
   _component.push_back(new_ptr(Particle(*p1))); 
   _component.push_back(new_ptr(Particle(*p2))); 

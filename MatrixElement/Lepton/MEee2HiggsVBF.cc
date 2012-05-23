@@ -20,12 +20,12 @@ void MEee2HiggsVBF::getDiagrams() const {
     tcPDPtr nue(getParticleData(ParticleID::nu_e));
     tcPDPtr nueb(nue->CC());
     add(new_ptr((Tree2toNDiagram(4), em, WMinus(), WPlus(), ep, 
-		 1, nue, 4, nueb, 2, higgs(),-1))); 
+		 1, nue, 3, nueb, 2, higgs(),-1))); 
   }
   // ZZ processes
   if(process()==0||process()==2) {
     add(new_ptr((Tree2toNDiagram(4), em, Z0(), Z0(), ep, 
-		 1, em, 4, ep, 2, higgs(),-2))); 
+		 1, em, 3, ep, 2, higgs(),-2))); 
   }
 }
 

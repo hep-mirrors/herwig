@@ -82,6 +82,7 @@ void ShowerHandler::doinitrun(){
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
   // \todo DG: Disabled here because of momentum-violation problems
+  // Must set pre-cascade-handler to NewPhysics/DecayHandler instead
   //  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 
@@ -193,6 +194,7 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
+
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 
@@ -211,6 +213,7 @@ void ShowerHandler::cascade() {
   // and the incoming hadrons
   tPPair incomingHadrons = 
     eventHandler()->currentCollision()->incoming();
+  remDec_->setHadronContent(incomingHadrons);
   // check if incoming hadron == incoming parton
   // and get the incoming hadron if exists or parton otherwise
   incoming_ = make_pair(incomingBins.first  ? 
@@ -238,9 +241,10 @@ void ShowerHandler::cascade() {
   catch(ShowerTriesVeto &veto){
     throw Exception() << "Failed to generate the shower after "
                       << veto.tries
-                      << " attempts in Evolver::showerHardProcess()"
+                      << " attempts in ShowerHandler::cascade()"
                       << Exception::eventerror;
   }
+  if(showerHardProcessVeto()) throw Veto();
   // if a non-hadron collision return (both incoming non-hadronic)
   if( ( !incomingBins.first||
         !isResolvedHadron(incomingBins.first ->particle()))&&
@@ -472,12 +476,14 @@ void ShowerHandler::findShoweringParticles() {
   hard_->setParents();
 }
 
+void ShowerHandler::prepareCascade(tSubProPtr sub) { 
+  current_ = currentStep(); 
+  subProcess_ = sub; 
+} 
+
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
-  // get the current step
-  current_ = currentStep();
-  // get the current subprocess
-  subProcess_ = sub;
+  prepareCascade(sub);
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {
@@ -717,7 +723,7 @@ void ShowerHandler::setMPIPDFs() {
 bool ShowerHandler::isResolvedHadron(tPPtr particle) {
   if(!HadronMatcher::Check(particle->data())) return false;
   for(unsigned int ix=0;ix<particle->children().size();++ix) {
-    if(particle->children()[ix]->id()==ExtraParticleID::Remnant) return true;
+    if(particle->children()[ix]->id()==ParticleID::Remnant) return true;
   }
   return false;
 }

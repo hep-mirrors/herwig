@@ -107,7 +107,7 @@ void HiggsVBFProcessConstructor::Init() {
 }
 
 void HiggsVBFProcessConstructor::constructDiagrams() {
-  if(_higgs.empty()) return;
+  if(_higgs.empty() || !subProcess() ) return;
   tPDPtr Wplus  = getParticleData(ParticleID::Wplus);
   tPDPtr Wminus = getParticleData(ParticleID::Wminus);
   tPDPtr Z0     = getParticleData(ParticleID::Z0);

@@ -15,6 +15,10 @@ set LEPGenerator:EventHandler:LuminosityFunction:Energy 177.
 
 # OPAL event shapes and multiplicities at different energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

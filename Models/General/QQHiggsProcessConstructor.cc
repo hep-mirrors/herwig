@@ -114,7 +114,7 @@ void QQHiggsProcessConstructor::Init() {
 
 
 void QQHiggsProcessConstructor::constructDiagrams() {
-  if(_higgs.empty()) return;
+  if(_higgs.empty() || !subProcess() ) return;
   // initialize the Higgs bosons
   for(unsigned int ix=0;ix<_higgs.size();++ix)
     _higgs[ix]->init();

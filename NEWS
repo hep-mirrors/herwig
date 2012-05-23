@@ -1,5 +1,196 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
+
+** New NLO framework
+   Matchbox, a flexible and very general framework for performing NLO
+   calculations at fixed order or matched to parton showers is
+   provided with this release.
+
+** Dipole shower algorithm
+   A first implementation of the coherent dipole shower algorithm by
+   Plätzer and Gieseke (arXiv:0909.5593 and arXiv:1109.6256) is
+   available.
+
+** Alternative samplers and the ExSample library
+   The ExSample library by Plätzer (arXiv:1108.6182) is shipped along
+   with Herwig++ in an extended version. The extended version provides
+   SamplerBase objects which can be used alternatively to the default
+   ACDCSampler.
+
+** New BSM models
+*** New colour sextet diquark model
+    A colour sextet diquark model has been included, as described in
+    Richardson and Winn (arXiv:1108.6154).
+
+*** Models reproducing the CDF t-tbar asymmetry
+    Four models that can reproduce the reported t-tbar asymmetry have
+    been included. 
+    
+*** Zprime
+    A simple standard model extension by one additional heavy neutral
+    vector boson.
+
+** Interface to AlpGen, with MLM merging
+   The Contrib directory contains a new interface to the AlpGen matrix
+   element generator. AlpGen events must be preprocessed with the
+   provided AlpGenToLH.exe tool before they can be used. More
+   information can be found in the Herwig++ 2.6 release note.
+
+** HiggsVBF Powheg
+   Higgs boson production by vector boson fusion is available at NLO
+   in the POWHEG scheme, as described in d'Errico, Richardson
+   (arXiv:1106.2983). The Powheg DIS processes were available in
+   Herwig++-2.5.2 already.
+   
+** Statistical colour reconnection
+   Alternative mechanisms to minimize the colour length Sum(m_clu)
+   before the hadronization stage, based on Metropolis and annealing
+   algorithms.
+
+** Energy extrapolation of underlying-event tunes
+   To describe underlying-event data at different c.m. energies, the
+   energy-dependent parameter pT_min will now be adjusted
+   automatically, following a power-law. The new tune parameters are
+   the value at 7000 GeV "MPIHandler:pTmin0", and MPIHandler:Power.
+
+** Ticket #239: Reporting of minimum-bias cross-section
+   When simulating minimum-bias events using the MEMinBias matrix
+   element, the correct unitarized cross section can now be reported
+   via the standard facilities; it is no longer necessary to extract
+   it from the .log file of the run. The corresponding functionality
+   is enabled by inserting a MPIXSecReweighter object as a
+   post-subprocess handler: 
+   create Herwig::MPIXSecReweighter MPIXSecReweighter 
+   insert LHCHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+
+** Dependency on 'boost'
+   Herwig++ now requires the boost headers to build; if not detected
+   in standard locations, specify with the --with-boost configure
+   option.
+
+** Tests directory
+   The Tests directory now contains input cards for almost all Rivet
+   analyses. A full comparison run can be initiated with 'make tests'.
+
+** Minor changes
+*** Default LHC energy now 8 TeV
+    All LHC-based defaults have now been updated to use 8 TeV as the
+    center-of-mass energy.
+
+*** Herwig::ExtraParticleID -> ThePEG::ParticleID
+    The namespace for additional particles has been unified into
+    ThePEG::ParticleID
+
+*** MEee2VectorMeson
+    The e+e- -> vector meson matrix element has moved from Contrib into
+    HwMELepton.so
+
+*** SUSY numerics fixes
+    Better handling of rare numerical instabilities.
+
+*** YODA output for Rivet
+    The built-in histogramming handler can now output data in the YODA
+    format used by Rivet.
+
+*** Consistency checks in SLHA file reader
+    Better warnings for inconsistent SusyLHA files
+
+*** better colour flow checking for development
+
+** Bug fixes
+*** Extremely offshell W from top decay
+    Numerical improvements for very off-shell W bosons coming from top
+    decays.
+
+*** Ticket #367: problems in using SUSY + LHE
+    Susy events from Les Houches event files are now handled better.
+
+*** Infinite loop in remnant decayer
+    The remnant decayer will now abort after 100 tries.
+
+*** Fix to HiggsVBF LO diagrams 
+    The diagram structure of HiggsVBF LO matrix elements has been fixed.
+
+*** LEP thrust fix 
+    The calculation of the transverse momentum of a branching from the
+    evolution variable in final-state radiation can now be
+    changed. While formally a sub-leading choice this enables a better
+    description of the thrust distribution in e+e- collisions at
+    small values of the thrust. Currently the default behaviour, where
+    the cut-off masses are used in the calculation, remains the same
+    as previous versions.
+
+
+
+
+* Herwig++-2.5.2 release: 2011-11-01 (tagged at SVN r6928)
+
+** Optional new jet vetoing model
+   The jet vetoing model by Schofield and Seymour (arXiv:1103.4811) is
+   available via Evolver:ColourEvolutionMethod,
+   PartnerFinder:PartnerMethod and SplittingFunction:SplittingColourMethod.
+   The default behaviour is unchanged.
+
+** MPI tune
+   Version 3 of the MPI tunes is now the default. Please note that the
+   pT parameter is energy-dependent and needs to be modified when an
+   LHC run is not at 7 TeV.
+   The latest tunes are always available at 
+     http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+
+** MPI PDFs
+   MPI PDFs can now be controlled independently.
+
+** Initialization time speedup
+   A new BSMModel base class was introduced between StandardModel and
+   the BSM model classes. Together with a restructured decay mode
+   initialization, this offers significantly faster startup times for
+   BSM runs. ThreeBodyDecays can now always be switched on without a
+   large speed penalty.
+
+** Decay mode file
+   Decay mode files in the SLHA format can now be read separately in
+   any BSM model with 'set Model:DecayFileName filename'
+
+** Powheg DIS
+   Charged- and neutral-current DIS processes implementing the POWHEG
+   method are now available.
+
+** Diffraction models
+   Xi cut implemented in PomeronFlux
+
+** Ticket #352: Colour reconnection fixed in DIS
+
+** Ticket #353: Improved numerical stability in chargino decays
+
+** Ticket #358: Infinite loop in top events with pT cut in shower
+
+** Ticket #361: Problem with duplicate 2-body modes in BSM
+
+** Tickets #362 / #363: Crashes with baryon number violating models
+   Particle decays in SUSY models with RPV now work correctly in the
+   colour 8 -> 3,3,3 case. Colour reshuffling now works for RPV
+   clusters.
+
+** Improved Fastjet detection
+   The configure step uses fastjet-config to make sure all header file
+   paths are seen.
+
+** Darwin 11 / OS X Lion
+   A configure bug was fixed which prevented 'make check' from
+   succeeding on OS X Lion.
+
+** Vertex classes
+   The specification of QED / QCD orders has been moved to the vertex
+   constructors, to allow ThePEG consistency checks. WWHH vertices in
+   MSSM and NMSSM were fixed. Some Leptoquark and UED vertices fixed.
+
+** Hadronization
+   Cleanup of obsolete code.
+
+
+
 * Herwig++-2.5.1 release: 2011-06-24 (tagged at SVN r6609)
 
 ** Example input files at 7 TeV

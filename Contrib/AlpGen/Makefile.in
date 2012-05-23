@@ -1,0 +1,54 @@
+# -*- Makefile -*- (for emacs)
+#
+# This Makefile is intended for compiling Herwig++ plugins
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+# Location of include files
+THEPEGINCLUDE  =
+HERWIGINCLUDE  =
+GSLINCLUDE     = 
+FASTJETINCLUDE = 
+# Messy hack, not guaranteed to work:
+FASTJETLIB = `echo $(FASTJETINCLUDE) | sed "s/-I//" | sed "s/ //"`/../lib/
+LDFLAGS = -L$(FASTJETLIB) -lfastjet
+SHARED_FLAG = 
+INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE) $(FASTJETINCLUDE)
+# C++ flags
+CXX =
+CXXFLAGS =
+
+ALLCCFILES=$(shell echo *.cc)
+
+default : BasicLesHouchesFileReader.so AlpGenHandler.so AlpGenToLH.exe MLMHistogram.so MLMAnalysis.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
+
+BasicLesHouchesFileReader.so : BasicLesHouchesFileReader.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	 -Wl,-undefined -Wl,dynamic_lookup \
+	BasicLesHouchesFileReader.o -o BasicLesHouchesFileReader.so
+
+AlpGenHandler.so : AlpGenHandler.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	 -Wl,-undefined -Wl,dynamic_lookup \
+	AlpGenHandler.o -o AlpGenHandler.so
+
+AlpGenToLH.exe : AlpGenToLH.o
+	$(CXX) AlpGenToLH.o -o AlpGenToLH.exe
+
+MLMHistogram.so : Validation/MLMHistogram.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	 -Wl,-undefined -Wl,dynamic_lookup \
+	Validation/MLMHistogram.o -o MLMHistogram.so
+
+MLMAnalysis.so : Validation/MLMAnalysis.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	 -Wl,-undefined -Wl,dynamic_lookup \
+	MLMHistogram.so Validation/MLMAnalysis.o -o MLMAnalysis.so
+
+clean:
+	rm -f $(ALLCCFILES:.cc=.o) \
+	BasicLesHouchesFileReader.so AlpGenHandler.so AlpGenToLH.exe MLMAnalysis.so MLMHistogram.so

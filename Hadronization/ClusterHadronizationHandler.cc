@@ -184,11 +184,33 @@ handle(EventHandler & ch, const tPVector & tagged,
   tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
 
+    // no colour reconnection with baryon-number-violating (BV) clusters
+    ClusterVector CRclusters, BVclusters;
+    CRclusters.reserve( clusters.size() );
+    BVclusters.reserve( clusters.size() );
+    for (size_t ic = 0; ic < clusters.size(); ++ic) {
+      ClusterPtr cl = clusters.at(ic);
+      bool hasClusterParent = false;
+      for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
+        if (cl->parents()[ix]->id() == ParticleID::Cluster) {
+          hasClusterParent = true;
+          break;
+        }
+      }
+      if (cl->numComponents() > 2 || hasClusterParent) BVclusters.push_back(cl);
+      else CRclusters.push_back(cl);
+    }
+
     // colour reconnection
-    _colourReconnector->rearrange(ch,clusters);
+    _colourReconnector->rearrange(CRclusters);
 
     // tag new clusters as children of the partons to hadronize
-    _setChildren(clusters);
+    _setChildren(CRclusters);
+
+    // recombine vectors of (possibly) reconnected and BV clusters
+    clusters.clear();
+    clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
+    clusters.insert( clusters.end(), BVclusters.begin(), BVclusters.end() );
     
     // fission of heavy clusters
     // NB: during cluster fission, light hadrons might be produced straight away

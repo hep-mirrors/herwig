@@ -112,8 +112,13 @@ void SSNCTVertex::doinit() {
 				      2.*real(     model->bottomTrilinear()*
 					      conj(model->bottomTrilinear())));
   complex<Energy2> deltaR =  pre*mt*conj(model->bottomTrilinear());
-  epsilon_ = (deltaL*(*model->stopMix())(0,0)-
-	      deltaR*(*model->stopMix())(0,1))/(sqr(mt1)-sqr(mcL));
+  if(abs(mt1-mcL)/abs(mt1+mcL)<1e-10) {
+    epsilon_ = 0.;
+  }
+  else {
+    epsilon_ = (deltaL*(*model->stopMix())(0,0)-
+		deltaR*(*model->stopMix())(0,1))/(sqr(mt1)-sqr(mcL));
+  }
 }
 
 

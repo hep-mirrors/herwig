@@ -132,7 +132,7 @@ newdef MEPP2WH:Coupling /Herwig/Shower/AlphaQCD
 
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
-set MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
+newdef MEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
 
 # PP -> t tbar Higgs
 create Herwig::MEPP2QQHiggs MEPP2ttbarH
@@ -175,27 +175,31 @@ newdef PowhegMEHiggs:Coupling /Herwig/Shower/AlphaQCD
 create Herwig::MEPP2VVPowheg PowhegMEPP2VV
 newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 
+# PP -> Higgs via VBF
+create Herwig::MEPP2HiggsVBFPowheg PowhegMEPP2HiggsVBF
+newdef PowhegMEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
+
 ##########################################################
 # DIS matrix elements
 ##########################################################
 
 # neutral current
 create Herwig::MENeutralCurrentDIS MEDISNC
-set MEDISNC:Coupling /Herwig/Shower/AlphaQCD
-set MEDISNC:Contribution 0
+newdef MEDISNC:Coupling /Herwig/Shower/AlphaQCD
+newdef MEDISNC:Contribution 0
 # charged current
 create Herwig::MEChargedCurrentDIS MEDISCC
-set MEDISCC:Coupling /Herwig/Shower/AlphaQCD
-set MEDISCC:Contribution 0
+newdef MEDISCC:Coupling /Herwig/Shower/AlphaQCD
+newdef MEDISCC:Contribution 0
 
 # neutral current (POWHEG)
 create Herwig::MENeutralCurrentDIS PowhegMEDISNC
-set PowhegMEDISNC:Coupling /Herwig/Shower/AlphaQCD
-set PowhegMEDISNC:Contribution 1
+newdef PowhegMEDISNC:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEDISNC:Contribution 1
 # charged current (POWHEG)
 create Herwig::MEChargedCurrentDIS PowhegMEDISCC
-set PowhegMEDISCC:Coupling /Herwig/Shower/AlphaQCD
-set PowhegMEDISCC:Contribution 1
+newdef PowhegMEDISCC:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEDISCC:Contribution 1
 
 ##########################################################
 # Gamma-Gamma matrix elements

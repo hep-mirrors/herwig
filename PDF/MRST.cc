@@ -113,6 +113,7 @@ double MRST::xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 
 double MRST::pdfValue(double x, Energy2 q2, 
 		      tcPDPtr particle, tcPDPtr parton, PDFType type) const {
+  assert(!isnan(x) && !isinf(x));
   // reset x  to min or max if outside range
   if(x<xmin)      x=xmin;
   else if(x>xmax) x=xmax;

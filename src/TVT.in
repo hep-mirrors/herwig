@@ -19,8 +19,13 @@ set LHCGenerator:MaxErrors 100000
 ##################################################
 # Tevatron physics parameters (override defaults) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
+
+########################
+## sqrt(s) = 1800 GeV ##
+########################
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0 - 1960.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -136,7 +141,7 @@ saverun TVT LHCGenerator
 # is not required
 ##################################################
 # set LHCGenerator:NumberOfEvents 10
-# run TVT-2000 LHCGenerator
+# run TVT-1960 LHCGenerator
 #
 # set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
 # run TVT-1800 LHCGenerator

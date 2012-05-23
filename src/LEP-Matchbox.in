@@ -1,0 +1,76 @@
+read Matchbox.in
+
+################################################################################
+# setup the sampler
+################################################################################
+
+set /Herwig/EventHandlers/LEPHandler:Sampler /Herwig/MatrixElements/Matchbox/Samplers/Sampler
+
+################################################################################
+# setup the shower
+#
+# use -LO.in or -NLO.in for LO/NLO simulations, respectively.
+#
+################################################################################
+
+read DipoleShower.in
+# read DipoleShowerParameters-LO.in
+# read DipoleShowerParameters-NLO.in
+
+################################################################################
+# setup matrix element and matching
+#
+# uncomment the desired calculation
+#
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox/Builtin
+cp /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler MECorrectionHandler
+
+################################################################################
+# leading order
+################################################################################
+
+# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] MEllbar2JetJetLO
+
+################################################################################
+# MC@NLO-type next-to-leading order
+################################################################################
+
+# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] MEllbar2JetJetNLO
+# uncomment to run plain NLO calculation (no consistent analysis yet)
+# set MEllbar2JetJetNLO:SubProcessGroups On
+
+################################################################################
+# POWHEG-type next-to-leading order
+################################################################################
+
+# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] MEllbar2JetJetNLOInclusive
+# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+
+################################################################################
+# setup generator and analysis
+################################################################################
+
+cd /Herwig/Generators
+
+set LEPGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+
+cd /Herwig/Generators
+
+#insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
+set /Herwig/Analysis/HepMCFile:Format GenEvent
+set /Herwig/Analysis/HepMCFile:Units GeV_mm
+set /Herwig/Analysis/HepMCFile:Filename events.fifo
+
+saverun LEP LEPGenerator

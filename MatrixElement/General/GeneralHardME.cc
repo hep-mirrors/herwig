@@ -87,7 +87,7 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   // or colour 33bar -> 33bar
   case Colour33to33: case Colour3bar3barto3bar3bar:
   case Colour33barto33bar:
-    colour_ = vector<DVector>(4, DVector(4, 0.));
+    colour_ = vector<DVector>(6, DVector(6, 0.));
     colour_[0][0] = colour_[1][1] = 2.; 
     colour_[2][2] = colour_[3][3] = 9.;
     colour_[0][1] = colour_[1][0] = -2./3.;
@@ -97,6 +97,50 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     colour_[1][3] = colour_[3][1] = 0.;
     colour_[2][3] = colour_[3][2] = 3.;
     numberOfFlows_ = 4;
+    break;
+  // colour 3 3bar -> 6 6bar
+  case Colour33barto66bar: case Colour33barto6bar6:
+    colour_ = vector<DVector>(8, DVector(8, 0.));
+    // diagonals
+    for(unsigned int ix=0;ix<4;++ix){
+      colour_[ix][ix]     = 1.5;
+      colour_[ix+4][ix+4] = 27./16.;
+    }
+    colour_[0][1] = colour_[1][0] = 0.5;
+    colour_[0][2] = colour_[2][0] = 0.5;
+    colour_[0][3] = colour_[3][0] = 0.;
+    colour_[0][4] = colour_[4][0] = 3./8.;
+    colour_[0][5] = colour_[5][0] = 1./8.;
+    colour_[0][6] = colour_[6][0] = 1./8.;
+    colour_[0][7] = colour_[7][0] = 0.;
+    // 1
+    colour_[1][2] = colour_[2][1] = 0.;
+    colour_[1][3] = colour_[3][1] = 0.5;
+    colour_[1][4] = colour_[4][1] = 1./8.;
+    colour_[1][5] = colour_[5][1] = 3./8.;
+    colour_[1][6] = colour_[6][1] = 0.;
+    colour_[1][7] = colour_[7][1] = 1./8.;
+    // 2
+    colour_[2][3] = colour_[3][2] = 0.5;
+    colour_[2][4] = colour_[4][2] = 1./8.;
+    colour_[2][5] = colour_[5][2] = 0.;
+    colour_[2][6] = colour_[6][2] = 3./8.;
+    colour_[2][7] = colour_[7][2] = 1./8.;
+    // 3
+    colour_[3][4] = colour_[4][3] = 0.;
+    colour_[3][5] = colour_[5][3] = 1./8.;
+    colour_[3][6] = colour_[6][3] = 1./8.;
+    colour_[3][7] = colour_[7][3] = 3./8.;
+    // 4
+    colour_[4][5] = colour_[5][4] = 9./16.;
+    colour_[4][6] = colour_[6][4] = 9./16.;
+    colour_[4][7] = colour_[7][4] = 3./16.;
+    // 5
+    colour_[5][6] = colour_[6][5] = 3./16.;
+    colour_[5][7] = colour_[7][5] = 9./16.;
+    //6
+    colour_[6][7] = colour_[7][6] = 9./16.;
+    numberOfFlows_ = 8;
     break;
   // colour 33bar -> 88, 88 -> 33bar
   case Colour33barto88: case Colour88to33bar:
@@ -140,6 +184,115 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   case Colour88to18 : case Colour88to81:
     colour_ = vector<DVector>(1,DVector(1,24.));
     numberOfFlows_ = 1;
+    break;
+  case Colour88to66bar:
+    colour_ = vector<DVector>(12, DVector(12, 0.));
+    // diagonals
+    for(unsigned int ix=0;ix<12;++ix) colour_[ix][ix] = 4.;
+    //  1 1 block
+    colour_[ 0][ 1] = colour_[ 1][ 0] =  4./3.;
+    colour_[ 0][ 2] = colour_[ 2][ 0] =  4./3.;
+    colour_[ 0][ 3] = colour_[ 3][ 0] =  0.5  ;
+    colour_[ 1][ 2] = colour_[ 2][ 1] =  0.5  ;
+    colour_[ 1][ 3] = colour_[ 3][ 1] =  4./3.;
+    colour_[ 2][ 3] = colour_[ 3][2] =   4./3.;
+    // 1 2 and 2 1 blocks
+    colour_[ 0][ 4] = colour_[ 4][ 0] =  4./3.;
+    colour_[ 1][ 5] = colour_[ 5][ 1] =  4./3.;
+    colour_[ 2][ 6] = colour_[ 6][ 2] =  4./3.;
+    colour_[ 3][ 7] = colour_[ 7][ 3] =  4./3.;
+    colour_[ 0][ 7] = colour_[ 7][ 0] = -1./6.;
+    colour_[ 1][ 6] = colour_[ 6][ 1] = -1./6.;
+    colour_[ 2][ 5] = colour_[ 5][ 2] = -1./6.;
+    colour_[ 3][ 4] = colour_[ 4][ 3] = -1./6.;
+    // 1 3 and 3 1 blocks
+    colour_[ 0][11] = colour_[11][ 0] =  4./3.;
+    colour_[ 1][10] = colour_[10][ 1] =  4./3.;
+    colour_[ 2][ 9] = colour_[ 9][ 2] =  4./3.;
+    colour_[ 3][ 8] = colour_[ 8][ 3] =  4./3.;
+    colour_[ 0][ 8] = colour_[ 8][ 0] = -1./6.;
+    colour_[ 1][ 9] = colour_[ 9][ 1] = -1./6.;
+    colour_[ 2][10] = colour_[10][ 2] = -1./6.;
+    colour_[ 3][11] = colour_[11][ 3] = -1./6.;
+    // 2 2 block
+    colour_[ 4][ 5] = colour_[ 5][ 4] =  4./3.;
+    colour_[ 4][ 6] = colour_[ 6][ 4] =  4./3.;
+    colour_[ 4][ 7] = colour_[ 7][ 4] =  0.5  ;
+    colour_[ 5][ 6] = colour_[ 6][ 5] =  0.5  ;
+    colour_[ 5][ 7] = colour_[ 7][ 5] =  4./3.;
+    colour_[ 6][ 7] = colour_[ 7][ 6] =  4./3.;
+    // 2 3 and 3 2 blocks
+    colour_[ 4][ 8] = colour_[ 8][ 4] = -0.5  ;
+    colour_[ 4][ 9] = colour_[ 9][ 4] = -1./6.;
+    colour_[ 4][10] = colour_[10][ 4] = -1./6.;
+    colour_[ 4][11] = colour_[11][ 4] =  0.5  ;
+    colour_[ 5][ 8] = colour_[ 8][ 5] = -1./6.;
+    colour_[ 5][ 9] = colour_[ 9][ 5] = -0.5  ;
+    colour_[ 5][10] = colour_[10][ 5] =  0.5  ;
+    colour_[ 5][11] = colour_[11][ 5] = -1./6.;
+    colour_[ 6][ 8] = colour_[ 8][ 6] = -1./6.;
+    colour_[ 6][ 9] = colour_[ 9][ 6] =  0.5  ;
+    colour_[ 6][10] = colour_[10][ 6] = -0.5  ;
+    colour_[ 6][11] = colour_[11][ 6] = -1./6.;
+    colour_[ 7][ 8] = colour_[ 8][ 7] =  0.5  ;
+    colour_[ 7][ 9] = colour_[ 9][ 7] = -1./6.;
+    colour_[ 7][10] = colour_[10][ 7] = -1./6.;
+    colour_[ 7][11] = colour_[11][ 7] = -0.5  ;
+    // 3 3 block
+    colour_[ 8][ 9] = colour_[ 9][ 8] =  4./3.;
+    colour_[ 8][10] = colour_[10][ 8] =  4./3.;
+    colour_[ 8][11] = colour_[11][ 8] =  0.5  ;
+    colour_[ 9][10] = colour_[10][ 9] =  0.5  ;
+    colour_[ 9][11] = colour_[11][ 9] =  4./3.;
+    colour_[10][11] = colour_[11][10] =  4./3.;
+    numberOfFlows_ = 12;
+    break;
+  case Colour33to61: case Colour33to16:
+  case Colour3bar3barto6bar1: case Colour3bar3barto16bar:
+    colour_ = vector<DVector>(2, DVector(2, 0.));
+    colour_[1][1] = colour_[0][0] = 9./4.;
+    colour_[0][1] = colour_[1][0] = 3./4.;
+    numberOfFlows_ = 2;
+    break;
+  case Colour38to3bar6: case Colour38to63bar:
+    colour_ = vector<DVector>(8, DVector(8, 0.));
+    // diagonals
+    for(unsigned int ix=0;ix<8;++ix) colour_[ix][ix] = 3.;
+    colour_[0][1] = colour_[1][0] = 1.;
+    colour_[0][2] = colour_[2][0] = 1.;
+    colour_[0][3] = colour_[3][0] = 0.;
+    colour_[0][4] = colour_[4][0] = 1.;
+    colour_[0][5] = colour_[5][0] = 3.;
+    colour_[0][6] = colour_[6][0] = 1.;
+    colour_[0][7] = colour_[7][0] = 0.;
+    // 1
+    colour_[1][2] = colour_[2][1] = 0.;
+    colour_[1][3] = colour_[3][1] = 1.;
+    colour_[1][4] = colour_[4][1] = 3.;
+    colour_[1][5] = colour_[5][1] = 1.;
+    colour_[1][6] = colour_[6][1] = 0.;
+    colour_[1][7] = colour_[7][1] = 1.;
+    // 2
+    colour_[2][3] = colour_[3][2] = 1.;
+    colour_[2][4] = colour_[4][2] = 0.;
+    colour_[2][5] = colour_[5][2] = 1.;
+    colour_[2][6] = colour_[6][2] = 3.;
+    colour_[2][7] = colour_[7][2] = 1.;
+    // 3
+    colour_[3][4] = colour_[4][3] = 1.;
+    colour_[3][5] = colour_[5][3] = 0.;
+    colour_[3][6] = colour_[6][3] = 1.;
+    colour_[3][7] = colour_[7][3] = 3.;
+    // 4
+    colour_[4][5] = colour_[5][4] = 1.;
+    colour_[4][6] = colour_[6][4] = 0.;
+    colour_[4][7] = colour_[7][4] = 1.;
+    // 5
+    colour_[5][6] = colour_[6][5] = 1.;
+    colour_[5][7] = colour_[7][5] = 0.;
+    //6
+    colour_[6][7] = colour_[7][6] = 1.;
+    numberOfFlows_ = 8;
     break;
   default:
     assert(false);
@@ -261,8 +414,15 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 				   ColourLines("1 2 4, 3 -2 5"),
 				   ColourLines("1 4, 3 5"),
 				   ColourLines("1 5, 3 4")};
+    static ColourLines f33to33s[4]={ColourLines("1 3:1 4, 2 3:2 5"),
+				    ColourLines("1 3:2 4, 2 3:1 5"),
+				    ColourLines("1 3:1 5, 2 3:2 4"),
+				    ColourLines("1 3:2 5, 2 3:1 4")};
     if(current.intermediate->iColour() == PDT::Colour8)
       sel.insert(1.,current.ordered.second ? &f33to33[0] : &f33to33[1]);
+    else if(current.intermediate->iColour() == PDT::Colour6) {
+      sel.insert(1., &f33to33s[2*(flow_-2)+UseRandom::irnd(0,2)]);
+    }
     else
       sel.insert(1.,current.ordered.second ? &f33to33[2] : &f33to33[3]);
     break;
@@ -272,9 +432,15 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 			      ColourLines("-1 -2 -4, -3 2 -5"),
 			      ColourLines("-1 -4, -3 -5"),
 			      ColourLines("-1 -5, -3 -4")};
+    static ColourLines f3bar3barto3bar3bars[2]
+      ={ColourLines("-1 -3:1 -4, -2 -3:2 -5"),
+	ColourLines("-1 -3:2 -4, -2 -3:1 -5")};
     if(current.intermediate->iColour() == PDT::Colour8)
       sel.insert(1.,current.ordered.second ? 
 		 &f3bar3barto3bar3bar[0] : &f3bar3barto3bar3bar[1]);
+    else if(current.intermediate->iColour() == PDT::Colour6bar) {
+      sel.insert(1., &f3bar3barto3bar3bars[flow_]);
+    }
     else
       sel.insert(1.,current.ordered.second ? 
 		 &f3bar3barto3bar3bar[2] : &f3bar3barto3bar3bar[3]);
@@ -527,10 +693,10 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
   case Colour88to81:
     static ColourLines f88to81[6]={ColourLines("  1  3  4, -1  2, -2 -3 -4"),
 				   ColourLines(" -1 -3 -4,  1 -2,  2  3  4"),
-				   ColourLines(" 1  4, -1  2  3, -3 -2 -4"),
-				   ColourLines("-1 -4,  1 -2 -3,  3  2  4"),
-				   ColourLines(" 1  2 -3, -1 -2 -4,  3  4"),
-				   ColourLines("-1 -2  3,  1  2  4, -3 -4")};
+				   ColourLines("  1  4, -1  2  3, -3 -2 -4"),
+				   ColourLines(" -1 -4,  1 -2 -3,  3  2  4"),
+				   ColourLines("  1  2 -3, -1 -2 -4,  3  4"),
+				   ColourLines(" -1 -2  3,  1  2  4, -3 -4")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1.,&f88to81[UseRandom::irnd(0,2)]);
     else if(current.channelType == HPDiagram::tChannel) {
@@ -538,6 +704,217 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 	sel.insert(1.,&f88to81[UseRandom::irnd(2,4)]);
       else 
 	sel.insert(1.,&f88to81[UseRandom::irnd(4,6)]);
+    }
+    break;
+  case Colour33barto66bar:
+    static ColourLines f33barto66bars[8]
+      ={ColourLines("1 3 4:1, -2 -3 -5:1, 4:2 -5:2"),
+	ColourLines("1 3 4:1, -2 -3 -5:2, 4:2 -5:1"),
+	ColourLines("1 3 4:2, -2 -3 -5:1, 4:1 -5:2"),
+	ColourLines("1 3 4:2, -2 -3 -5:2, 4:1 -5:1"),
+	ColourLines(""), ColourLines(""),
+	ColourLines(""), ColourLines(""),};
+    static ColourLines f33barto66bart[8]
+      ={ColourLines(""), ColourLines(""),
+	ColourLines(""), ColourLines(""),
+	ColourLines("1 4:1, 4:2 2 -5:1, -3 -5:2"),
+	ColourLines("1 4:1, 4:2 2 -5:2, -3 -5:1"),
+	ColourLines("1 4:2, 4:1 2 -5:1, -3 -5:2"),
+	ColourLines("1 4:2, 4:1 2 -5:2, -3 -5:1")};
+    if(current.channelType == HPDiagram::sChannel)
+      sel.insert(1.,&f33barto66bars[flow_]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+	sel.insert(1.,&f33barto66bart[flow_]);
+      else
+	assert(false);
+    }
+    break;
+  case Colour33barto6bar6:
+    static ColourLines f33barto6bar6s[8]
+      ={ColourLines("1 3 5:1, -2 -3 -4:1, -4:2 5:2"),
+	ColourLines("1 3 5:1, -2 -3 -4:2, -4:1 5:2"),
+	ColourLines("1 3 5:2, -2 -3 -4:1, -4:2 5:1"),
+	ColourLines("1 3 5:2, -2 -3 -4:2, -4:1 5:1"),
+	ColourLines(""), ColourLines(""),
+	ColourLines(""), ColourLines("")};
+    static ColourLines f33barto6bar6u[8]
+      ={ColourLines(""), ColourLines(""),
+	ColourLines(""), ColourLines(""),
+	ColourLines("1 5:1, 5:2 2 -4:1, -3 -4:2"),
+    	ColourLines("1 5:1, 5:2 2 -4:2, -3 -4:1"),
+    	ColourLines("1 5:2, 5:1 2 -4:1, -3 -4:2"),
+    	ColourLines("1 5:2, 5:1 2 -4:2, -3 -4:1")};
+    if(current.channelType == HPDiagram::sChannel)
+      sel.insert(1.,&f33barto6bar6s[flow_]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+	assert(false);
+      else
+	sel.insert(1.,&f33barto6bar6u[flow_]);
+    }
+   break;
+  case Colour88to66bar:
+    static ColourLines f88to66t[12]=
+      {ColourLines("1 4:2, 4:1 2:1 3, -1 2:2 -5:2, -3 -5:1"),
+       ColourLines("1 4:1, 4:2 2:2 3, -1 2:1 -5:2, -3 -5:1"),
+       ColourLines("1 4:2, 4:1 2:1 3, -1 2:2 -5:1, -3 -5:2"),
+       ColourLines("1 4:1, 4:2 2:2 3, -1 2:1 -5:1, -3 -5:2"),
+       ColourLines("1 4:2, 4:1 2:2 -5:2, -1 2:1 3, -3 -5:1"),
+       ColourLines("1 4:1, 4:2 2:2 -5:2, -1 2:1 3, -3 -5:1"),
+       ColourLines("1 4:2, 4:1 2:2 -5:1, -1 2:1 3, -3 -5:2"),
+       ColourLines("1 4:1, 4:2 2:2 -5:1, -1 2:1 3, -3 -5:2"),
+       ColourLines(""),ColourLines(""),
+       ColourLines(""),ColourLines("")};
+    static ColourLines f88to66u[12]=
+      {ColourLines("1 2:2 4:2, 4:1 3, -1 -5:2, -3 2:1 -5:1"),
+       ColourLines("1 2:1 4:1, 4:2 3, -1 -5:2, -3 2:2 -5:1"),
+       ColourLines("1 2:2 4:2, 4:1 3, -1 -5:1, -3 2:1 -5:2"),
+       ColourLines("1 2:1 4:1, 4:2 3, -1 -5:1, -3 2:2 -5:2"),
+       ColourLines(""),ColourLines(""),
+       ColourLines(""),ColourLines(""),
+       ColourLines("-1 -5:1, -5:2 2:2 4:1, 1 2:1 -3, 3 4:2"),
+       ColourLines("-1 -5:1, -5:2 2:2 4:2, 1 2:1 -3, 3 4:1"),
+       ColourLines("-1 -5:2, -5:1 2:2 4:1, 1 2:1 -3, 3 4:2"),
+       ColourLines("-1 -5:2, -5:1 2:2 4:2, 1 2:1 -3, 3 4:1")};
+    static ColourLines f88to66s[12]=
+      {ColourLines(""),ColourLines(""),
+       ColourLines(""),ColourLines(""),
+       ColourLines("1 3 4:2, 4:1 -5:2, -1 2, -2 -3 -5:1"),
+       ColourLines("1 3 4:1, 4:2 -5:2, -1 2, -2 -3 -5:1"),
+       ColourLines("1 3 4:2, 4:1 -5:1, -1 2, -2 -3 -5:2"),
+       ColourLines("1 3 4:1, 4:2 -5:1, -1 2, -2 -3 -5:2"),
+       ColourLines("-1 -3 -5:1, -5:2 4:1, 1 -2, 2 3 4:2"),
+       ColourLines("-1 -3 -5:1, -5:2 4:2, 1 -2, 2 3 4:1"),
+       ColourLines("-1 -3 -5:2, -5:1 4:1, 1 -2, 2 3 4:2"),
+       ColourLines("-1 -3 -5:2, -5:1 4:2, 1 -2, 2 3 4:1")};
+    if(current.channelType == HPDiagram::sChannel) 
+      sel.insert(1., &f88to66s[flow_]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+        sel.insert(1., &f88to66t[flow_]);
+      }
+      else {
+        sel.insert(1., &f88to66u[flow_]);
+      }
+    }
+    break;
+  case Colour33to61:
+    static ColourLines f33to61t[2]
+      ={ColourLines("1 4:1, 3 2 4:2"),
+        ColourLines("1 4:2, 3 2 4:1")};
+    static ColourLines f33to61u[2]
+      ={ColourLines("1 2 4:1, 3 4:2"),
+        ColourLines("1 2 4:2, 3 4:1")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) 
+        sel.insert(1., &f33to61t[flow_]);
+      else 
+        sel.insert(1., &f33to61u[flow_]);
+    }
+    else
+      assert(false);
+    break;
+  case Colour33to16:
+    static ColourLines f33to16t[2]
+      ={ColourLines("1 2 5:1, 3 5:2"),
+        ColourLines("1 2 5:2, 3 5:1")};
+    static ColourLines f33to16u[2]
+      ={ColourLines("1 5:1, 3 2 5:2"),
+        ColourLines("1 5:2, 3 2 5:1")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+        sel.insert(1., &f33to16t[flow_]);
+      else 
+        sel.insert(1., &f33to16u[flow_]);
+    }
+    else
+      assert(false);
+    break;
+  case Colour3bar3barto6bar1:
+    static ColourLines f3bar3barto6bar1t[2]
+      ={ColourLines("-1 -4:1, -3 -2 -4:2"),
+	ColourLines("-1 -4:2, -3 -2 -4:1")};
+    static ColourLines f3bar3barto6bar1u[2]
+      ={ColourLines("-1 -2 -4:1, -3 -4:2"),
+        ColourLines("-1 -2 -4:2, -3 -4:1")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) 
+        sel.insert(1., &f3bar3barto6bar1t[flow_]);
+      else 
+        sel.insert(1., &f3bar3barto6bar1u[flow_]);
+    }
+    break;
+  case Colour3bar3barto16bar:
+    static ColourLines f3bar3barto16bart[2]
+      ={ColourLines("-1 -2 -5:1, -3 -5:2"),
+	ColourLines("-1 -2 -5:2, -3 -5:1")};
+    static ColourLines f3bar3barto16baru[2]
+      ={ColourLines("-1 -5:1, -3 -2 -5:2"),
+        ColourLines("-1 -5:2, -3 -2 -5:1")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) 
+        sel.insert(1., &f3bar3barto16bart[flow_]);
+      else 
+        sel.insert(1., &f3bar3barto16baru[flow_]);
+    }
+    break;
+  case Colour38to3bar6:
+    static ColourLines f38to3bar6t[8]
+      ={ColourLines("1 2:1 -3, -4 2:2 5:1, 3 5:2"),
+        ColourLines("1 2:1 -3, -4 2:2 5:2, 3 5:1"),
+        ColourLines("1 2:1 5:1, -4 2:2 -3, 3 5:2"),
+        ColourLines("1 2:1 5:2, -4 2:2 -3, 3 5:1"),
+	ColourLines(""),ColourLines(""),
+	ColourLines(""),ColourLines("")};
+    static ColourLines f38to3bar6u[8]
+      ={ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+	ColourLines("1 5:1, 3 2 5:2, -4 -3"),
+	ColourLines("1 5:2, 3 2 5:1, -4 -3"),
+	ColourLines(""),ColourLines("")};
+    static ColourLines f38to3bar6s[8]
+      ={ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+	ColourLines("1 -2, 2 3 5:1, -4 5:2"),
+        ColourLines("1 -2, 2 3 5:2, -4 5:1")};
+    if(current.channelType == HPDiagram::sChannel) 
+      sel.insert(1., &f38to3bar6s[flow_]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) 
+        sel.insert(1., &f38to3bar6t[flow_]);
+      else 
+        sel.insert(1., &f38to3bar6u[flow_]);
+    }
+  break;
+  case Colour38to63bar:
+    static ColourLines f38to63baru[8]
+      ={ColourLines("1 2:1 -3, -5 2:2 4:1, 3 4:2"),
+        ColourLines("1 2:1 -3, -5 2:2 4:2, 3 4:1"),
+        ColourLines("1 2:1 4:1, -5 2:2 -3, 3 4:2"),
+        ColourLines("1 2:1 4:2, -5 2:2 -3, 3 4:1"),
+	ColourLines(""),ColourLines(""),
+	ColourLines(""),ColourLines("")};
+    static ColourLines f38to63bart[8]
+      ={ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+	ColourLines("1 4:1, 3 2 4:2, -5 -3"),
+        ColourLines("1 4:2, 3 2 4:1, -5 -3"),
+	ColourLines(""),ColourLines("")};
+    static ColourLines f38to63bars[8]
+      ={ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+      	ColourLines(""),ColourLines(""),
+	ColourLines("1 -2, 2 3 4:1, -5 4:2"),
+        ColourLines("1 -2, 2 3 4:2, -5 4:1")};
+    if(current.channelType == HPDiagram::sChannel) 
+      sel.insert(1., &f38to63bars[flow_]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) 
+        sel.insert(1., &f38to63bart[flow_]);
+      else 
+        sel.insert(1., &f38to63baru[flow_]);
     }
     break;
   default:

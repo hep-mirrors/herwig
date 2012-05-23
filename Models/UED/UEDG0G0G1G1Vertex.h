@@ -13,7 +13,6 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -25,7 +24,7 @@ using namespace ThePEG;
  * @see \ref UEDG0G0G1G1VertexInterfaces "The interfaces"
  * defined for UEDG0G0G1G1Vertex.
  */
-class UEDG0G0G1G1Vertex: public VVVVVertex {
+class UEDG0G0G1G1Vertex: public Helicity::VVVVVertex {
 
 public:
 
@@ -84,23 +83,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<UEDG0G0G1G1Vertex> initUEDG0G0G1G1Vertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   UEDG0G0G1G1Vertex & operator=(const UEDG0G0G1G1Vertex &);
 
 private:
-
-  /**
-   * A pointer to the UEDBase object
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The scale at which the coupling was last evaluated
@@ -112,41 +100,6 @@ private:
    */
   Complex theCoupLast;
 };
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of UEDG0G0G1G1Vertex. */
-template <>
-struct BaseClassTrait<Herwig::UEDG0G0G1G1Vertex,1> {
-  /** Typedef of the first base class of UEDG0G0G1G1Vertex. */
-  typedef ThePEG::Helicity::VVVVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the UEDG0G0G1G1Vertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::UEDG0G0G1G1Vertex>
-  : public ClassTraitsBase<Herwig::UEDG0G0G1G1Vertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::UEDG0G0G1G1Vertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * UEDG0G0G1G1Vertex is implemented. It may also include several, space-separated,
-   * libraries if the class UEDG0G0G1G1Vertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwUED.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_UEDG0G0G1G1Vertex_H */

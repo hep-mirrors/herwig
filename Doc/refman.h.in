@@ -25,6 +25,11 @@ matrix element generators, jet finder algorithms, etc.
 These classes are used for the hard process generation.
 */
 
+/** \defgroup Matchbox Matchbox classes
+Hard process generation at NLO using Catani-Seymour
+subtraction and NLO matching.
+*/
+
 /** \defgroup Models Models classes
 These classes are used for specific models, like the 
 Standard Model.
@@ -36,6 +41,10 @@ These classes are used for particle density functions.
 
 /** \defgroup Shower Shower classes
 These classes are used for the Showering.
+*/
+
+/** \defgroup DipoleShower DipoleShower classes
+Classes implementing the coherent dipole shower algorithm.
 */
 
 /** \defgroup Analysis Analysis classes

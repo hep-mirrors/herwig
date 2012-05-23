@@ -36,4 +36,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 saverun TVT-630-UE LHCGenerator

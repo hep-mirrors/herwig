@@ -1,5 +1,5 @@
 pkglib_LTLIBRARIES = HwAnalysis.la
-HwAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0
+HwAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:2:0
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h  \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \

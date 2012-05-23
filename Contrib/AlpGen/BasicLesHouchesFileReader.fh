@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BasicLesHouchesFileReader class.
+//
+#ifndef HERWIG_BasicLesHouchesFileReader_FH
+#define HERWIG_BasicLesHouchesFileReader_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BasicLesHouchesFileReader;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::BasicLesHouchesFileReader,BasicLesHouchesFileReaderPtr);
+
+}
+
+#endif

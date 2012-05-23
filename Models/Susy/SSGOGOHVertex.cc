@@ -44,7 +44,8 @@ void SSGOGOHVertex::doinit() {
     for(unsigned int j = 0; j < 4; ++j) {
       for(unsigned int k = 0; k < 4; ++k) {
 	if( i < 3 ) {
-	  addToList(neu[j], neu[k], higgs[i]);
+	  if(k<=j)
+	    addToList(neu[j], neu[k], higgs[i]);
 	  //charginos
 	  if( j < 2 && k < 2 ) {
 	    addToList(-chg[j], chg[k], higgs[i]);

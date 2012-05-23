@@ -7,7 +7,8 @@ LeptonME \
 MCPWNLO \
 PGSInterface \
 RadiativeZPrime \
-TauAnalysis
+TauAnalysis \
+AlpGen
 
 
 dist-hook:
