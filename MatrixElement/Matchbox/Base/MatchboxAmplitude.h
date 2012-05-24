@@ -79,7 +79,7 @@ public:
    * Return a ME instance appropriate for this amplitude and the given
    * subprocesses
    */
-  Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
+  virtual Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
 
   /**
    * Return the amplitude parton data.
