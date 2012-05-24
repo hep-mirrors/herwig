@@ -35,13 +35,8 @@ void BSMModel::persistentInput(PersistentIStream & is, int) {
   is >> decayFile_ >> topModesFromFile_ >> tolerance_;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
 DescribeAbstractClass<BSMModel,Herwig::StandardModel>
-  describeHerwigBSMModel("Herwig::BSMModel", "BSMModel.so");
+  describeHerwigBSMModel("Herwig::BSMModel", "");
 
 void BSMModel::Init() {
 
@@ -198,6 +193,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     vector<tcPDPtr> products,bosons;
     Energy mout(ZERO),moutnoWZ(ZERO);
     string tag = prefix;
+    int charge = -inpart->iCharge();
     while( true ) {
       long t;
       is >> t;
@@ -210,6 +206,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	  << Exception::runerror;
       }
       tcPDPtr p = getParticleData(t);
+      charge += p->iCharge();
       if( !p ) {
   	throw SetupException()
   	  << "BSMModel::readDecay() - An unknown PDG code has been encounterd "
@@ -239,6 +236,12 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     }
     if( npr > 1 ) {
       tag.replace(tag.size() - 1, 1, ";");
+      if(charge!=0) {
+	cerr << "BSMModel::readDecay() "
+	     << "Decay mode " << tag << " read from SLHA file does not conserve charge,"
+	     << "\nare you really sure you want to do this?\n";
+      }
+      ++nmode;
       // normal option
       if(mout<=inMass) {
   	inpart->stable(false);
@@ -311,6 +314,10 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	 << " will be rescaled.\n";
     cerr << setprecision(13) << abs(brsum - 1.) << "\n";
   }
+  if(nmode>0) {
+    inpart->update();
+    if(inpart->CC()) inpart->CC()->update();
+  }
 }
 
 void BSMModel::createDecayMode(string tag, double brat) const {
@@ -323,6 +330,11 @@ void BSMModel::createDecayMode(string tag, double brat) const {
   ostringstream brf;
   brf << setprecision(13)<< brat;
   generator()->preinitInterface(dm, "BranchingRatio","set", brf.str());
+  if(dm->CC()) {
+    generator()->preinitInterface(dm->CC(), "OnOff", "set", "On");
+    generator()->preinitInterface(dm->CC(), "Decayer", "set","/Herwig/Decays/Mambo");
+    generator()->preinitInterface(dm->CC(), "BranchingRatio","set", brf.str());
+  }
 }
 
 

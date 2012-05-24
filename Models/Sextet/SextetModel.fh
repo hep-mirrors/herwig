@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SextetModel class.
+//
+#ifndef HERWIG_SextetModel_FH
+#define HERWIG_SextetModel_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class SextetModel;
+
+ThePEG_DECLARE_POINTERS(Herwig::SextetModel,SextetModelPtr);
+
+}
+
+#endif

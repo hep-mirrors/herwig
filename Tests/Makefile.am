@@ -97,10 +97,15 @@ Rivet-LEP-% : Rivet/LEP-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
+Rivet-BFactory-% : Rivet/BFactory-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
 Rivet-TVT-% : Rivet/TVT-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
-Rivet-TVT-% : Rivet/TVT-%.in
+
+Rivet-DIS-% : Rivet/DIS-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
@@ -112,25 +117,67 @@ Rivet-Star-% : Rivet/Star-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
+Rivet-SppS-% : Rivet/SppS-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
+Rivet-ISR-% : Rivet/ISR-%.in
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
 Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
-           Rivet-LEP-133 Rivet-LEP-161 Rivet-LEP-172 Rivet-LEP-177 \
-           Rivet-LEP-183 Rivet-LEP-189 Rivet-LEP-196 Rivet-LEP-197 \
-           Rivet-LEP-200 Rivet-LEP-206 Rivet-LEP-14 \
+           Rivet-LEP-130 Rivet-LEP-133 Rivet-LEP-136 Rivet-LEP-161 \
+           Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 Rivet-LEP-189 \
+           Rivet-LEP-192 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
+           Rivet-LEP-202 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
            Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
-           Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-133 \
+           Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-130 \
+           Rivet-LEP-Powheg-133 Rivet-LEP-Powheg-136 \
            Rivet-LEP-Powheg-161 Rivet-LEP-Powheg-172 \
            Rivet-LEP-Powheg-177 Rivet-LEP-Powheg-183 \
-           Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-196 \
-           Rivet-LEP-Powheg-197 Rivet-LEP-Powheg-200 \
-           Rivet-LEP-Powheg-206 
+           Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-192 \
+           Rivet-LEP-Powheg-196 Rivet-LEP-Powheg-197 \
+           Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
+           Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10
 	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
-	rivet-rmgaps LEP-91.aida;
-	rivet-rmgaps LEP-Powheg-91.aida
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
 	rivet-mkhtml -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
+
+Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
+                Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym \
+                Rivet-BFactory-10.54 Rivet-BFactory-Powheg-10.54 \
+                Rivet-BFactory-10.45 Rivet-BFactory-Powheg-10.45 \
+                Rivet-BFactory-10.58 Rivet-BFactory-Powheg-10.58 \
+                Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
+                Rivet-BFactory-Tau
+	for i in BFactory-*.aida; do rivet-rmgaps $$i; done;
+	rm -rf Rivet-BFactory
+	python/merge-BFactory BFactory
+	python/merge-BFactory BFactory-Powheg
+	rivet-mkhtml -o Rivet-BFactory BFactory.aida:Hw++ BFactory-Powheg.aida:Hw++-Powheg
+
+Rivet-DIS: Rivet-DIS-e--LowQ2 \
+	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\
+           Rivet-DIS-Powheg-e--LowQ2 \
+	   Rivet-DIS-Powheg-e+-LowQ2 Rivet-DIS-Powheg-e+-HighQ2\
+           Rivet-DIS-NoME-e--LowQ2 \
+	   Rivet-DIS-NoME-e+-LowQ2 Rivet-DIS-NoME-e+-HighQ2
+	rivet-rmgaps DIS-e+-LowQ2.aida
+	rivet-rmgaps DIS-e--LowQ2.aida
+	rivet-rmgaps DIS-e+-HighQ2.aida
+	rivet-rmgaps DIS-Powheg-e+-LowQ2.aida
+	rivet-rmgaps DIS-Powheg-e--LowQ2.aida
+	rivet-rmgaps DIS-Powheg-e+-HighQ2.aida
+	rivet-rmgaps DIS-NoME-e+-LowQ2.aida
+	rivet-rmgaps DIS-NoME-e--LowQ2.aida
+	rivet-rmgaps DIS-NoME-e+-HighQ2.aida
+	python/merge-DIS DIS 
+	python/merge-DIS DIS-Powheg
+	python/merge-DIS DIS-NoME
+	rivet-mkhtml -o Rivet-DIS DIS.aida:Hw++ DIS-Powheg.aida:Hw++-Powheg DIS-NoME.aida:Hw++-NoME
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \
@@ -173,14 +220,19 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
 
-Rivet-LHC-Jets: Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
+Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
                 Rivet-LHC-7-Jets-5  Rivet-LHC-7-Jets-6 \
                 Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
                 Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
-	        Rivet-LHC-2360-UE Rivet-LHC-900-UE	
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
+                Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
+                Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
+                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top \
+	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long \
+                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
@@ -193,14 +245,26 @@ Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
 	python/merge-Star Star
 	rivet-mkhtml -o Rivet-Star Star.aida
 
+Rivet-SppS: Rivet-ISR-44-UE Rivet-ISR-63-UE \
+	    Rivet-SppS-63-UE  Rivet-ISR-30-UE \
+	    Rivet-ISR-53-UE   Rivet-SppS-200-UE \
+	    Rivet-SppS-500-UE Rivet-SppS-900-UE \
+	    Rivet-SppS-546-UE Rivet-SppS-53-UE
+	rm -rf Rivet-SppS
+	python/merge-aida  ISR-44-UE.aida ISR-63-UE.aida SppS-63-UE.aida  ISR-30-UE.aida \
+		           ISR-53-UE.aida SppS-200-UE.aida SppS-500-UE.aida SppS-900-UE.aida \
+	                   SppS-546-UE.aida SppS-53-UE.aida -o SppS.aida
+	rivet-mkhtml -o Rivet-SppS SppS.aida
+
 Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
               Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
-              Rivet-LHC-Z    Rivet-LHC-Powheg-Z \
+              Rivet-LHC-Z-e  Rivet-LHC-Powheg-Z-e  \
+              Rivet-LHC-Z-mu Rivet-LHC-Powheg-Z-mu \
               Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
               Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-EW.aida;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-EW.aida;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton

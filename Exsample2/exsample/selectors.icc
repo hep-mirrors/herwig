@@ -1,0 +1,133 @@
+// -*- C++ -*-
+//
+// selectors.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+  template<class Random>
+  std::pair<bool,bool> sampling_selector<Random>::use(cell& parent,
+						      const cell& first_child,
+						      const cell& second_child) const {
+    std::pair<bool,bool> selected (false,false);
+    if (compensate) {
+      if (first_child.missing_events() > 0 && second_child.missing_events() <= 0) {
+	selected.first = true;
+	--parent.missing_events();
+	return selected;
+      }
+      if (first_child.missing_events() <= 0 && second_child.missing_events() > 0) {
+	selected.second = true;
+	--parent.missing_events();
+	return selected;
+      }
+      if (first_child.missing_events() > 0 && second_child.missing_events() > 0) {
+	if (first_child.integral()/parent.integral() > rnd_gen())
+	  selected.first = true;
+	else
+	  selected.second = true;
+	--parent.missing_events();
+	return selected;
+      }
+    }
+    if (first_child.integral()/parent.integral() > rnd_gen())
+      selected.first = true;
+    else
+      selected.second = true;
+    return selected;
+  }
+
+  template<class Random>
+  bool sampling_selector<Random>::use(cell& leaf) const { 
+    if (compensate) {
+      if (leaf.missing_events() < 0) {
+	++leaf.missing_events();
+	return false;
+      }
+      if (leaf.missing_events() > 0)
+	--leaf.missing_events();
+    }
+    return true;
+  }
+
+  inline std::pair<bool,bool> parametric_selector::use(const cell& parent,
+						       const cell&,
+						       const cell&) const {
+    std::pair<bool,bool> match_para (true,true);
+    if (!sampled_variables_[parent.split_dimension()]) {
+      match_para.first = (parent.split_point() > (*point_)[parent.split_dimension()]);
+      match_para.second = (parent.split_point() <= (*point_)[parent.split_dimension()]);
+    }
+    return match_para;
+  }
+
+  template<class Random>
+  std::pair<bool,bool> parametric_sampling_selector<Random>::use(cell& parent,
+								 const cell& first_child,
+								 const cell& second_child) const {
+    std::pair<bool,bool> match_para (true,true);
+    std::pair<bool,bool> selected (false,false);
+    if (!sampled_variables_[parent.split_dimension()]) {
+      match_para.first = (parent.split_point() > (*point_)[parent.split_dimension()]);
+      match_para.second = (parent.split_point() <= (*point_)[parent.split_dimension()]);
+    }
+    if (match_para.first && match_para.second) {
+      if (compensate_) {
+	if (first_child.missing_events() > 0 && second_child.missing_events() <= 0) {
+	  selected.first = true;
+	  --parent.missing_events();
+	  return selected;
+	}
+	if (first_child.missing_events() <= 0 && second_child.missing_events() > 0) {
+	  selected.second = true;
+	  --parent.missing_events();
+	  return selected;
+	}
+
+	if (first_child.missing_events() > 0 && second_child.missing_events() > 0) {
+	  if (first_child.integral()/parent.integral() > rnd_gen_())
+	    selected.first = true;
+	  else
+	    selected.second = true;
+	  --parent.missing_events();
+	  return selected;
+	}
+      }
+      if (first_child.integral()/parent.integral() > rnd_gen_())
+	selected.first = true;
+      else
+	selected.second = true;
+      return selected;
+    }
+    assert(match_para.first || match_para.second);
+    if (compensate_)
+      if ((match_para.first && first_child.missing_events() > 0) ||
+	  (match_para.second && second_child.missing_events() > 0))
+	--parent.missing_events();
+    return match_para;
+  }
+
+  template<class Random>
+  bool parametric_sampling_selector<Random>::use (cell& leaf) const { 
+    if (compensate_) {
+      long pmissing = leaf.info().parametric_missing(*bin_id_);
+      assert(leaf.missing_events() == pmissing);
+      if (pmissing < 0) {
+	leaf.info().increase_parametric_missing(*bin_id_);
+	++leaf.missing_events();
+	return false;
+      }
+      if (pmissing > 0) {
+	leaf.info().decrease_parametric_missing(*bin_id_);
+	--leaf.missing_events();
+      }
+    }
+    return true;
+  }
+
+}

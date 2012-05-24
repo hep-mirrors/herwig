@@ -132,8 +132,9 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	    if(!offshell) continue;
 	    if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
-		ScalarWaveFunction interS = scalar_[ix].first->evaluate(q2, 1, offshell,
-									vin1[ihel1], vin2[ihel2]);
+		ScalarWaveFunction interS = 
+		  scalar_[ix].first->evaluate(q2, 1, offshell,
+					      vin1[ihel1], vin2[ihel2]);
 		diag = scalar_[ix].second->
 		  evaluate(q2, vout1[ohel1], vout2[ohel2], interS);
 	      }
@@ -142,7 +143,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		  evaluate(q2, 1, offshell, vin1[ihel1], vin2[ihel2]);
 		diag = vector_[ix].second->
 		  evaluate(q2, vout1[ohel1], vout2[ohel2], interV);
-		if(colour()==Colour88to88)
+		if(colour()==Colour88to88 || colour()==Colour88to66bar)
 		  diag += fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
 						     vout2[ohel2], vin1[ihel1]);
 	      }
@@ -176,7 +177,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		    first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
 		  diag = vector_[ix].second->
 		    evaluate(q2, vin2[ihel2], interV, vout2[ohel2]);
-		  if(colour()==Colour88to88)
+		  if(colour()==Colour88to88 || colour()==Colour88to66bar)
 		    diag += fourPointVertex_->evaluate(q2, 0, vin1[ihel1], vin2[ihel2], 
 						       vout1[ohel1], vout2[ohel2]);
 		}
@@ -185,7 +186,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
 		  diag = vector_[ix].second->
 		    evaluate(q2, vin1[ihel1], interV, vout2[ohel2]);
-		  if(colour()==Colour88to88)
+		  if(colour()==Colour88to88 || colour()==Colour88to66bar)
 		    diag += fourPointVertex_->
 		      evaluate(q2, 0, vin2[ihel2], vin1[ihel1],
 			       vout1[ohel1], vout2[ohel2]);
@@ -209,7 +210,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		assert(false);
 	    }
 	    else if(current.channelType == HPDiagram::fourPoint) {
-	      if(colour()==Colour88to88)
+	      if(colour()==Colour88to88||colour()==Colour88to66bar)
 		diag = 0.;
 	      else
 		diag = fourPointVertex_->evaluate(q2, 0, vin1[ihel1], vin2[ihel2],
@@ -220,9 +221,11 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	    me[ix] += norm(diag);
 	    diagramME()[ix](2*ihel1, 2*ihel2, ohel1, ohel2) = diag;
 	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
+	    }
 	  }
 	  // MEs for the different colour flows
 	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 

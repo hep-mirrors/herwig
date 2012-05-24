@@ -248,6 +248,7 @@ void SusyBase::Init() {
 
 void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  filename = StringUtils::stripws(filename);
   if(readFile_)
     throw SetupException() 
       << "A second SLHA file " << filename << " has been opened."
@@ -503,9 +504,15 @@ void SusyBase::resetRepositoryMasses() {
     if(!part) throw SetupException() 
       << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
       << " not found." << Exception::warning;
+    if(abs(id)<=5||abs(id)==23||abs(id)==24)
+      cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
+	   << part->PDGName() << " using SLHA "
+	   << "file,\nthis can affect parts of the Standard Model simulation and"
+	   << " is strongly discouraged.\n";
     //Find interface nominal mass interface
     const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
     ostringstream os;
+    os.precision(12);
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
     // switch on gravitino interactions?
@@ -596,6 +603,9 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(tanBeta_<0.) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
 		      << " or BLOCK EXTPAR " << Exception::runerror;
+  if(tanBeta_==0.)
+    throw Exception() << "Tan(beta) = 0 in SusyBase::extractParameters()"
+		      << Exception::runerror;
   // extract parameters from hmix
   pit=parameters_.find("hmix");
   if(pit==parameters_.end()) {

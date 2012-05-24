@@ -174,15 +174,25 @@ private:
 private:
 
   /**
-   *  Minimum \f$Q^2\f$ for the photon
+   *  Minimum \f$Q^2\f$ for the pomeron/reggeon
    */
   Energy2 q2min_;
 
   /**
-   *  Maximum \f$Q^2\f$ for the photon
+   *  Maximum \f$Q^2\f$ for the pomeron/reggeon
    */
   Energy2 q2max_;
 
+  /**
+   * Cut on the minimum xi
+   */
+  double xiMin_;
+  
+  /**
+   * Cut on the maximum xi
+   */
+  double xiMax_;
+  
   /**
    * Pomeron intercept  
    */

@@ -28,7 +28,7 @@ using namespace ThePEG;
    * the branching.
    */
   enum ColourStructure {Undefined=-1,TripletTripletOctet=0,OctetOctetOctet=1,
-			OctetTripletTriplet=2,TripletOctetTriplet=3};
+                        OctetTripletTriplet=2,TripletOctetTriplet=3,SextetSextetOctet=4};
 
 
 /** \ingroup Shower

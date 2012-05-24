@@ -184,10 +184,50 @@ colourConnections(const Particle & parent,
     }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
-			<< "colour octet "
-			<< "in GeneralTwoBodyDecayer::colourConnections() "
-			<< outaColour << " " << outbColour
-			<< Exception::runerror;
+                        << "colour octet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
+  }
+  else if(incColour == PDT::Colour6) {
+    if(outaColour == PDT::Colour3 && outbColour == PDT::Colour3) {
+      tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(tempParent->colourInfo());
+
+      tColinePtr line1 = const_ptr_cast<tColinePtr>(parentColour->colourLines()[0]);
+      line1->addColoured(dynamic_ptr_cast<tPPtr>(out[0]));
+
+      tColinePtr line2 = const_ptr_cast<tColinePtr>(parentColour->colourLines()[1]);
+      line2->addColoured(dynamic_ptr_cast<tPPtr>(out[1]));
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+                        << "colour sextet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
+  }
+  else if(incColour == PDT::Colour6bar) {
+    if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour3bar) {
+     tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(tempParent->colourInfo());
+
+      tColinePtr line1 = const_ptr_cast<tColinePtr>(parentColour->antiColourLines()[0]);
+      line1->addAntiColoured(dynamic_ptr_cast<tPPtr>(out[0]));
+
+      tColinePtr line2 = const_ptr_cast<tColinePtr>(parentColour->antiColourLines()[1]);
+      line2->addAntiColoured(dynamic_ptr_cast<tPPtr>(out[1]));
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+                        << "colour anti-sextet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
   }
   else
     throw Exception() << "Unknown incoming colour in "
@@ -198,12 +238,11 @@ colourConnections(const Particle & parent,
 
 bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 					  double & coupling) const {
-  long parent = dm.parent()->id();
+  assert(dm.parent()->id() == _incoming->id());
   ParticleMSet::const_iterator pit = dm.products().begin();
   long id1 = (*pit)->id();
   ++pit;
   long id2 = (*pit)->id();
-  assert(parent == _incoming->id());
   long id1t(_outgoing[0]->id()), id2t(_outgoing[1]->id());
   mecode = -1;
   coupling = 1.;
@@ -343,6 +382,32 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour octet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  else if(in->iColour()==PDT::Colour6) {
+    // colour sextet -> triplet triplet
+    if( out1->iColour()==PDT::Colour3 && out2->iColour()==PDT::Colour3 ) {
+      output *= 1.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour sextet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  else if(in->iColour()==PDT::Colour6bar) {
+    // colour sextet -> triplet triplet
+    if( out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour3bar ) {
+      output *= 1.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour anti-sextet particle in "
 			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 

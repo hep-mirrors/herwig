@@ -143,6 +143,12 @@ int main(int argc, char * argv[]) {
     Repository::cleanup(); 
     return EXIT_FAILURE;
   }
+  catch (const char* what) {
+    std::cerr << argv[0] << ": caught exception: "
+	      << what << "\n";
+    Repository::cleanup(); 
+    return EXIT_FAILURE;
+  }
   catch (...) {
     std::cerr << argv[0] << ": Unknown exception caught.\n";
     Repository::cleanup(); 

@@ -172,6 +172,29 @@ public:
 		  unsigned int & ndegrees, double minfrac=0.) const;
 
   /**
+   * @brief Output as file ready for usage with flat2aida and other Rivet tools
+   * @param out           The output stream
+   * @param histogramname The histogram name identifying the histogram. Required
+   *                      for comparisons (e.g. with rivet-mkhtml or with
+   *                      compare-histos)
+   * @param analysisname  The analysis name
+   * @param title         The title for the top of the plot in LaTeX format
+   * @param xlabel        The x label in LaTeX format
+   * @param ylabel        The y label in LaTeX format
+   * @param rawcount      Don't normalise to unit area.
+   * @param multiplicator Factor the histogram is multiplied with.
+   * N.B.  Experimental data is not output.
+   */
+  void rivetOutput(ostream & out,
+                   string histogramname = string("default"),
+                   string analysisname = string("default"),
+                   string title  = string(),
+                   string xlabel = string(),
+                   string ylabel = string(),
+                   bool rawcount = false,
+                   double multiplicator = 1.0) const;
+
+  /**
    *  Output as a topdrawer file. The histogram is normalised to unit area
    * @param out The output stream
    * @param flags A bitmask of flags from HistogramOptions, e.g. Frame|Ylog
@@ -194,6 +217,12 @@ public:
 		     string bottom = string(),
 		     string bottomcase = string()
 		     ) const;
+
+  void topdrawMCatNLO(ostream & out,
+		      unsigned int flags =0 ,
+		      string colour = string("BLACK"),
+		      string title = string()
+		      ) const;
 
   /**
    *  Output as a topdrawer file. A bin by bin average is taken.
@@ -248,6 +277,17 @@ public:
    * Returns a new histogram containing bin-by-bin ratios of two histograms
    */
   Histogram ratioWith(const Histogram & h2) const;
+
+
+  /**
+   * @brief Returns limits for bins with exponentially increasing widths.
+   *        For usage with the variable-bin-width Histogram constructor.
+   * @param xmin  Lower limit of the first bin, needs to be > 0
+   * @param nbins Number of bins
+   * @param base  The base, needs to be > 1
+   */
+  static
+  vector<double> LogBins(double xmin, unsigned nbins, double base = 10.0);
 
 
 public:
@@ -357,6 +397,15 @@ private:
    *  Total entry
    */
   double _total;
+
+
+public:
+
+  /**
+   * The vector of bins
+   */
+  vector<Bin> bins() const { return _bins; }
+
 };
 
 }

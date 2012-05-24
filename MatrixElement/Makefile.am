@@ -1,4 +1,4 @@
-SUBDIRS = General Lepton Hadron DIS Powheg Gamma
+SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox
 
 noinst_LTLIBRARIES = libHwME.la 
 

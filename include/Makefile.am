@@ -10,6 +10,8 @@ DIRLINKS = $(top_srcdir)/Analysis \
            $(top_srcdir)/PDF \
            $(top_srcdir)/PDT \
            $(top_srcdir)/Shower \
+           $(top_srcdir)/DipoleShower \
+           $(top_srcdir)/Exsample2 \
            $(top_srcdir)/UnderlyingEvent \
            $(top_srcdir)/Utilities
 

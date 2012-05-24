@@ -1,14 +1,14 @@
 SUBDIRS = SplittingFunctions Default Base .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:0:0
-HwShower_la_LIBADD = Default/libHwDefaultShower.la\
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 15:0:0
+HwShower_la_LIBADD = Default/libHwDefaultShower.la \
 $(top_builddir)/Shower/SplittingFunctions/libHwSplitting.la \
 $(top_builddir)/Shower/Base/libHwShowerBase.la \
 $(top_builddir)/PDF/libHwRemDecayer.la \
 $(top_builddir)/PDF/libHwMPIPDF.la
 HwShower_la_SOURCES =  \
-UEBase.h UEBase.cc UEBase.fh\
-Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc\
+UEBase.h UEBase.cc UEBase.fh \
+Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc
 
 

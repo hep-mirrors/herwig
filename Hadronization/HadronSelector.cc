@@ -32,22 +32,18 @@ DescribeAbstractClass<HadronSelector,Interfaced>
 describeHadronSelector("Herwig::HadronSelector","");
 
 namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
-
-  // debug helper
-  void dumpTable(const HadronSelector::HadronTable & tbl) {
-    typedef HadronSelector::HadronTable::const_iterator TableIter;
-    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-      cerr << it->first.first << ' ' 
-	   << it->first.second << '\n';
-      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-	   jt != it->second.end(); ++jt) {
-	cerr << '\t' << *jt << '\n';
-      }
-    }
-  }
+  // // debug helper
+  // void dumpTable(const HadronSelector::HadronTable & tbl) {
+  //   typedef HadronSelector::HadronTable::const_iterator TableIter;
+  //   for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+  //     cerr << it->first.first << ' ' 
+  // 	   << it->first.second << '\n';
+  //     for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+  // 	   jt != it->second.end(); ++jt) {
+  // 	cerr << '\t' << *jt << '\n';
+  //     }
+  //   }
+  // }
 
   bool weightIsLess (pair<tcPDPtr,double> a, pair<tcPDPtr,double> b) {
     return a.second < b.second;
@@ -501,6 +497,8 @@ void HadronSelector::constructHadronTable() {
     if(_trial==3 && pspin >= 7) continue;
     // Only include pions
     if(_trial==1 && pid!=111 && pid!=211) continue;
+    // shouldn't be coloured
+    if(particle->coloured()) continue;
     // Get the flavours
     const int x4 = (pid/1000)%10; 
     const int x3 = (pid/100 )%10;
@@ -717,7 +715,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     the other one is a (anti-) diquark the sign is negative when both
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
-    if(abs(idQ1->iColour())== 3 && abs(idQ2->iColour()) == 3 &&
+    if(abs(int(idQ1->iColour()))== 3 && abs(int(idQ2->iColour())) == 3 &&
       !DiquarkMatcher::Check(idQ1->id()) && !DiquarkMatcher::Check(idQ2->id()))
     {
       int idQa = abs(idQ1->id());

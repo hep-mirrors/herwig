@@ -180,6 +180,7 @@ ProductionMatrixElement MEvv2tv::vv2tvHeME(const VBVector & vec1,
 	    diagramME()[ix](iv1,iv2,it,iv3) = diag;
 	    // contributions to the different colour flows
 	    for(unsigned int iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
 	      flows[current.colourFlow[iy].first] += 
 		current.colourFlow[iy].second * diag;
 	    }

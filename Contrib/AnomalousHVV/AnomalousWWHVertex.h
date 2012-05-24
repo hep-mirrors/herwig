@@ -15,9 +15,9 @@ using namespace ThePEG;
  * coupling in the \f$h^0W^+W^+\f$ and \f$h^0Z^0Z^0\f$ vertices.
  * 
  * The options of using either the exact Standard Model, a CP-odd
- * \f[\frac1{\Lambda}J_1^\muJ_2^\nu\epsilon^{\mu\nu\alpha\beta}q_{1\alpha}q_{2\beta},\f]
+ * \f[\frac1{\Lambda}J_1^\mu J_2^\nu\epsilon^{\mu\nu\alpha\beta}q_{1\alpha}q_{2\beta},\f]
  * or CP-even
- * \f[\frac1{\Lambda}J_1^\muJ_2^\nu
+ * \f[\frac1{\Lambda}J_1^\mu J_2^\nu
  *    \left[g_{\mu\nu}q_1 \cdot q_2-q_{1\nu}q_{2\mu}\right],\f]
  * form, where \f$\Lambda\f$ is the scale of the new operator.
  *

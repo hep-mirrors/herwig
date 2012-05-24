@@ -5,7 +5,7 @@
 // This is the declaration of the MEChargedCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * @see \ref MEChargedCurrentDISInterfaces "The interfaces"
  * defined for MEChargedCurrentDIS.
  */
-class MEChargedCurrentDIS: public HwMEBase {
+class MEChargedCurrentDIS: public DISBase {
 
 public:
 
@@ -57,11 +57,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -139,6 +134,13 @@ protected:
 		    vector<SpinorBarWaveFunction> & a2,
 		    bool lorder, bool qorder,
 		    bool me) const;
+
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const;
 
 protected:
 
@@ -234,7 +236,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
   /** Typedef of the first base class of MEChargedCurrentDIS. */
-  typedef Herwig::HwMEBase NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

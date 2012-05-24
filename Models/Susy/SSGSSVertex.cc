@@ -13,6 +13,7 @@
 
 #include "SSGSSVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -35,40 +36,31 @@ void SSGSSVertex::doinit() {
   VSSVertex::doinit();
 }
 
-NoPIOClassDescription<SSGSSVertex> SSGSSVertex::initSSGSSVertex;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<SSGSSVertex,Helicity::VSSVertex>
+describeSSGSSVertex("Herwig::SSGSSVertex", "HwSusy.so");
 
 void SSGSSVertex::Init() {
 
   static ClassDocumentation<SSGSSVertex> documentation
-    ("There is no documentation for the SSGSSVertex class");
+    ("The SSGSSVertex class implements the coupling"
+     " of the gluon to the squarks");
 
 }
 
 void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 			      tcPDPtr part2, tcPDPtr) {
-  long isf(0);
-  if(part1->id() == ParticleID::g) {
-    isf = abs(part2->id());
+  assert(part1->id()==ParticleID::g);
+  long isf = abs(part2->id());
+  assert( (isf >= 1000001 && isf <= 1000006) || 
+	  (isf >= 2000001 && isf <= 2000006) );
+  if(q2 != _q2last || _couplast == 0.) {
+    _couplast = strongCoupling(q2);
+    _q2last = q2;
   }
-  else if(part2->id() == ParticleID::g) {
-    isf = abs(part1->id());
-  }
-  else {
-    isf = abs(part1->id());
-  }
-  if((isf >= 1000001 && isf <= 1000006) || 
-     (isf>=2000001 && isf <= 2000006) ) {
-    if(q2 != _q2last || _couplast == 0.) {
-      _couplast = strongCoupling(q2);
-      _q2last = q2;
-    }
-    norm(_couplast);
-}
-  else {
-    throw  HelicityConsistencyError() 
-      << "SSGSSVertex::setCoupling() - Incorrect particle(s) in vertex. "
-      << part1->id() << " " << part2->id()
-      << Exception::warning;
-  }
+  norm(_couplast);
 }

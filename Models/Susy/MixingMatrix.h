@@ -227,12 +227,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MixingMatrix> initMixingMatrix;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -263,37 +257,6 @@ private:
    * Output operator for the MixingMatrix
    */
   ostream & operator<<(ostream &,const MixingMatrix &);
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MixingMatrix. */
-template <>
-struct BaseClassTrait<Herwig::MixingMatrix,1> {
-  /** Typedef of the first base class of MixingMatrix. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MixingMatrix class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MixingMatrix>
-  : public ClassTraitsBase<Herwig::MixingMatrix> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MixingMatrix"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the MixingMatrix class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_MixingMatrix_H */

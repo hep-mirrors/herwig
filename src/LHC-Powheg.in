@@ -36,7 +36,7 @@ set Evolver:HardEmissionMode POWHEG
 # LHC physics parameters (override defaults here) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
@@ -69,6 +69,8 @@ insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
 # insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
 # set PowhegMEPP2VV:Process WpZ
 #
+# Higgs production via VBF
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF
 
 cd /Herwig/Generators
 ##################################################

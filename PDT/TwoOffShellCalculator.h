@@ -20,7 +20,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-class TwoOffShellIntegrand;
+struct TwoOffShellIntegrand;
 
 /** \ingroup PDT
  *
@@ -36,7 +36,7 @@ class TwoOffShellCalculator: public WidthCalculatorBase {
  *  The TwoOffShellIntegrand class is a friend to allow access to the private
  *  members for the integration.
  */
-friend class TwoOffShellIntegrand;
+friend struct TwoOffShellIntegrand;
 
 public:
 

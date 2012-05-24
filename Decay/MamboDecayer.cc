@@ -349,15 +349,61 @@ void MamboDecayer::colourConnections(const Particle & parent,
   //incoming octet
   else if(parent.data().iColour() == PDT::Colour8) {
     PPtr pparent = const_ptr_cast<PPtr>(&parent);
-    for(int i=0; i < N;++i) {
-      if(out[i]->data().iColour() == PDT::Colour8) {
-	out[i]->incomingColour(pparent);
-	out[i]->incomingAntiColour(pparent);
+    tParticleVector trip,anti,oct;
+    for(int i=0;i < N;++i) {
+      if(out[i]->data().iColour() == PDT::Colour3)
+	trip.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour3bar)
+	anti.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour8)
+	oct .push_back(out[i]);
+    }
+    // decay to one octet
+    if(oct.size()==1&&trip.empty()&&anti.empty()) {
+      oct[0]->incomingColour(pparent);
+      oct[0]->incomingAntiColour(pparent);
+    }
+    // decay ot triplet/antitriplet
+    else if(trip.size()==1&&anti.size()==1&&oct.empty()) {
+      trip[0]->incomingColour(pparent,false);
+      anti[0]->incomingColour(pparent,true );
+    }
+    // baryon number violating decay to quarks
+    else if(trip.size()==3&&anti.empty()&&oct.empty()) {
+      unsigned int iloc = UseRandom::irnd(3);
+      tColinePtr col[2];
+      for(unsigned int ix=0;ix<trip.size();++ix) {
+	if(ix==iloc) {
+	  trip[ix]->incomingColour(pparent);
+	}
+	else {
+	  if(col[0]) col[1] = ColourLine::create(trip[ix]);
+	  else       col[0] = ColourLine::create(trip[ix]);
+	}
       }
-      else if(out[i]->data().iColour() == PDT::Colour3 ||
-	      out[i]->data().iColour() == PDT::Colour3bar) {
-	out[i]->incomingColour(pparent,out[i]->id() < 0);
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
+    // baryon number violating decay to antiquarks
+    else if(anti.size()==3&&trip.empty()&&oct.empty()) {
+      unsigned int iloc = UseRandom::irnd(3);
+      tColinePtr col[2];
+      for(unsigned int ix=0;ix<anti.size();++ix) {
+	if(ix==iloc) {
+	  anti[ix]->incomingColour(pparent,true);
+	}
+	else {
+	  if(col[0]) col[1] = ColourLine::create(anti[ix],true);
+	  else       col[0] = ColourLine::create(anti[ix],true);
+	}
       }
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+    }
+    else {
+      ostringstream dec;
+      for(unsigned int ix=0;ix<out.size();++ix) dec << out[ix]->PDGName() << " ";
+      throw Exception() << "Unknown colour for octet decay in MamboDecayer"
+			<< pparent->PDGName() << " -> " << dec.str()
+			<< Exception::runerror;
     }
   }
   else if(N==3 && parent.data().iColour() == PDT::Colour0&&

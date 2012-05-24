@@ -5,7 +5,7 @@
 // This is the declaration of the MENeutralCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -24,7 +24,7 @@ using namespace ThePEG;
  * @see \ref MENeutralCurrentDISInterfaces "The interfaces"
  * defined for MENeutralCurrentDIS.
  */
-class MENeutralCurrentDIS: public HwMEBase {
+class MENeutralCurrentDIS: public DISBase {
 
 public:
 
@@ -55,11 +55,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -137,6 +132,18 @@ protected:
 		    bool lorder, bool qorder,
 		    bool me) const;
 
+
+  /**
+   *  Option for treatment of \f$\gamma/Z\f$ terms
+   */
+  inline unsigned int gammaZOption() const {return _gammaZ;}
+
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const;
 
 protected:
 
@@ -238,6 +245,26 @@ private:
    */
   ProductionMatrixElement _me;
 
+  /**
+   *  Electroweak parameters
+   */
+  //@{
+  /**
+   *  \f$\sin\theta_W\f$
+   */
+  double _sinW;
+
+  /**
+   *  \f$\cos\theta_W\f$
+   */
+  double _cosW;
+
+  /**
+   *  The square of the Z mass
+   */
+  Energy2 _mz2;
+  //@}
+
 };
 
 }
@@ -253,7 +280,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MENeutralCurrentDIS,1> {
   /** Typedef of the first base class of MENeutralCurrentDIS. */
-  typedef Herwig::HwMEBase NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -165,6 +165,7 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 	diagramME()[ix](2*iv1, 2*iv2, 0, 0) = diag;
 	//Compute flows
 	for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	  assert(current.colourFlow[iy].first<flows.size());
 	  flows[current.colourFlow[iy].first] += 
 	    current.colourFlow[iy].second * diag;
 	}
@@ -244,27 +245,46 @@ void MEvv2ss::constructVertex(tSubProPtr sub) {
 
 void MEvv2ss::debug(double me2) const {
   if( !generator()->logfile().is_open() ) return;
-  //SUSY gg>~q~q
+  if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21) return;
   long id3 = abs(mePartonData()[2]->id());
   long id4 = abs(mePartonData()[3]->id());
-  if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21 ||
-      (id3 < 1000001 &&  id3 > 1000006 ) || (id3 < 2000001 && id3 > 2000006 ) ||
-      (id4 < 1000001 &&  id4 > 1000006 ) || (id4 < 2000001 &&  id4 > 2000006 ) ) 
+  int type = -1;
+  //SUSY gg>~q~q
+  if( ((id3 >= 1000001 && id3 <= 1000006 ) && (id4 >= 1000001 &&  id4 <= 1000006 ) ) ||
+      ((id3 >= 2000001 && id3 <= 2000006 ) && (id4 >= 2000001 &&  id4 <= 2000006 ) ) ) {
+    type = 0;
+  }
+  // Sextet production
+  else if(mePartonData()[2]->iColour() == PDT::Colour6 &&
+	  mePartonData()[3]->iColour() == PDT::Colour6bar ) {
+    type = 1;
+  }
+  else {
     return;
-  tcSMPtr sm = generator()->standardModel();
-  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
-  int Nc = sm->Nc();
+  }
+  double gs4 = sqr( 4.*Constants::pi*SM().alphaS(scale()));
+  int Nc = SM().Nc();
   Energy4 s2 = sqr(sHat());
   Energy2 m3s = meMomenta()[2].m2();
   Energy2 m4s = meMomenta()[3].m2();
   Energy4 spt2 = uHat()*tHat() - m3s*m4s;
-  Energy4 t3s = sqr(tHat() - m3s);
-  Energy4 u4s = sqr(uHat() - m4s);
-
-  double analytic = gs4*Nc*( sqr(spt2) + s2*m3s*m4s ) * 
-    ( u4s + t3s - s2/sqr(Nc) )/2./(sqr(Nc) - 1.)/s2/t3s/u4s;
-  double diff = abs(analytic - me2);
-  if(  diff > 1e-4 ) {
+  Energy2 t3  = tHat()-m3s, u4  = uHat()-m4s;
+  Energy4 t3s = sqr(t3)   , u4s = sqr(u4);
+  Energy8 pre = gs4*(sqr(spt2) + s2*m3s*m4s);
+  // matrix element
+  double analytic(0.);
+  // triplet scalars
+  if(type==0) {
+    analytic = pre*Nc*
+      ( u4s + t3s - s2/sqr(Nc) )/2./(sqr(Nc) - 1.)/s2/t3s/u4s;
+  }
+  // sextet scalars
+  else if(type==1) {
+    analytic = pre*(Nc+2.)/(sqr(Nc)-1.)/Nc*
+      ((Nc+2.)*(Nc-1.)/t3s/u4s - sqr(Nc)/t3/u4/s2);
+  }
+  double diff = abs(analytic - me2)/(analytic+me2);
+  if(  diff > 1e-10 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << ","
       << mePartonData()[1]->PDGName() << "->"

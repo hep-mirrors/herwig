@@ -44,17 +44,30 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
 # ALICE particle spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
+# ALICE strange particle production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8909580
 # CMS particle spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
 # CMS charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
 # CMS charged particle pT and rapidity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297
+# CMS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 # LHCB k_s0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_S8758301
+# CMS forward energy flow
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
+# CMS charged particle rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
+# LHC K0s/Lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 saverun LHC-900-UE LHCGenerator

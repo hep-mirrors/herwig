@@ -36,7 +36,7 @@ def fillAbove(desthisto, sourcehistosbyptmin):
                 b.val =  newb.val
                 b.errplus =  newb.errplus
                 b.errminus =  newb.errminus
-                b.focus= newb.focus
+                b._focus= newb._focus
 
 def merge(hpath):
     global inhistos
@@ -78,9 +78,10 @@ if __name__ == "__main__":
 
 # #######################################
 
-aidafiles=["-133.aida","-177.aida","-196.aida","-206.aida","-91.aida" ,\
+aidafiles=["-130.aida","-133.aida","-136.aida","-177.aida","-192.aida",
+           "-196.aida","-202.aida","-206.aida","-91.aida" ,\
            "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
-           "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida" ]
+           "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida","-10.aida" ]
 
 ## Get histos
 inhistos = {}
@@ -88,7 +89,9 @@ outhistos={}
 weights = {}
 for f in aidafiles:
     file = args[0]+f
-    if(file.find("14")>0) :
+    if(file.find("10")>0) :
+        sqrts=10
+    elif(file.find("14")>0) :
         sqrts=14
     elif(file.find("22")>0) :
         sqrts=22
@@ -98,8 +101,12 @@ for f in aidafiles:
         sqrts=44
     elif(file.find("91")>0) :
         sqrts=91
+    elif(file.find("130")>0) :
+        sqrts=130
     elif(file.find("133")>0) :
         sqrts=133
+    elif(file.find("136")>0) :
+        sqrts=136
     elif(file.find("161")>0) :
         sqrts=161
     elif(file.find("172")>0) :
@@ -110,12 +117,16 @@ for f in aidafiles:
         sqrts=183
     elif(file.find("189")>0) :
         sqrts=189
+    elif(file.find("192")>0) :
+        sqrts=192
     elif(file.find("196")>0) :
         sqrts=196
     elif(file.find("197")>0) :
         sqrts=197
     elif(file.find("200")>0) :
         sqrts=200
+    elif(file.find("202")>0) :
+        sqrts=202
     elif(file.find("206")>0) :
         sqrts=206
 
@@ -131,30 +142,24 @@ for f in aidafiles:
     ## Get histos from this AIDA file
     for dps in tree.findall("dataPointSet"):
         h = lighthisto.Histo.fromDPS(dps)
-        # di-jet decorrelations
         # jet shapes
         if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or
            h.fullPath().find("5765862")>0 or h.fullPath().find("3612880")>0 or
-           h.fullPath().find("2148048")>0 ) :
+           h.fullPath().find("4328825")>0 or h.fullPath().find("5361494")>0 or
+           h.fullPath().find("2148048")>0 or h.fullPath().find("MULTIPLICITIES")>0 ) :
            if not inhistos.has_key(h.fullPath()):
                inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
-           if not tmpE.has_key(sqrts):
-               tmpE[sqrts] = h
+           if not inhistos[h.fullPath()].has_key(sqrts):
+               inhistos[h.fullPath()][sqrts] = h
            else:
                 raise Exception("A set with sqrts = %s already exists" % ( sqrts))
-        elif(h.fullPath().find("4553896")>0 or h.fullPath().find("MULTIPLICITIES")>0 or
-             h.fullPath().find("2435284")>0 or h.fullPath().find("3486095")>0 or
-             h.fullPath().find("3430090")>0 or h.fullPath().find("3137023")>0 or
-             h.fullPath().find("3780481")>0 or h.fullPath().find("WUD_03_11")>0 or
-             h.fullPath().find("CONF_603")>0 ) :
-            outhistos[h.fullPath()] = h
         else :
-            print '!!!!! DIDNT FIND',h.fullPath()
+            outhistos[h.fullPath()] = h
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or h.fullPath().find("5765862")>0) :
+    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or hpath.find("5765862")>0 or
+        hpath.find("4328825")>0 or hpath.find("5361494")>0) :
         workhisto = copy.deepcopy(hsets.values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -186,7 +191,8 @@ useOne("/JADE_1998_S3612880/d07-x01-y01","35")
 useOne("/JADE_1998_S3612880/d08-x01-y01","35")
 useOne("/JADE_1998_S3612880/d09-x01-y01","35")
 useOne("/JADE_1998_S3612880/d10-x01-y01","44")
-useOne("/JADE_1998_S3612880/d11-x01-y01","22")
+useOne("/JADE_1998_S3612880/d11-x01-y01","35")
+useOne("/JADE_1998_S3612880/d12-x01-y01","22")
 # opal/jade
 useOne("/JADE_OPAL_2000_S4300807/d07-x01-y01","35")
 useOne("/JADE_OPAL_2000_S4300807/d07-x01-y02","35")
@@ -406,6 +412,14 @@ useOne("/OPAL_2004_S6132243/d26-x01-y02","133")
 useOne("/OPAL_2004_S6132243/d26-x01-y03","177")
 useOne("/OPAL_2004_S6132243/d26-x01-y04","197")
 
+merge(  "/OPAL_2002_S5361494/d01-x01-y01")
+merge(  "/OPAL_2002_S5361494/d01-x01-y02")
+merge(  "/OPAL_2002_S5361494/d01-x01-y03")
+merge(  "/OPAL_2002_S5361494/d01-x01-y04")
+merge("/DELPHI_2000_S4328825/d01-x01-y01")
+merge("/DELPHI_2000_S4328825/d01-x01-y02")
+merge("/DELPHI_2000_S4328825/d01-x01-y03")
+merge("/DELPHI_2000_S4328825/d01-x01-y04")
 merge("/ALEPH_2004_S5765862/d01-x01-y01")
 useOne("/ALEPH_2004_S5765862/d02-x01-y01","133")
 useOne("/ALEPH_2004_S5765862/d03-x01-y01","161")
@@ -638,6 +652,239 @@ useOne("/ALEPH_2004_S5765862/d231-x01-y01","183")
 useOne("/ALEPH_2004_S5765862/d232-x01-y01","189")
 useOne("/ALEPH_2004_S5765862/d233-x01-y01","200")
 useOne("/ALEPH_2004_S5765862/d234-x01-y01","206")
+
+# hadron multiplicities
+useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d22-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d23-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d25-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d40-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d49-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d53-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES/d54-x01-y01","10")
+
+useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d22-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d33-x01-y01","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d34-x01-y01","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y02","35")
+
+useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d02-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d05-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d10-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d11-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d12-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d14-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d16-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d21-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d23-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d24-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d25-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d26-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d27-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d28-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d29-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d30-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d31-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d32-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d34-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d35-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d36-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d37-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d40-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d41-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d42-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d43-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d49-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d50-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d51-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d52-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d54-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d01-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES/d03-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES/d04-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES/d38-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES/d39-x01-y04","177")
+
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d17-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d25-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y01","10" )
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d40-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d45-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d49-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d53-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d54-x01-y01","10")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d33-x01-y01","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d34-x01-y01","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y02","35")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d02-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d05-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d10-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d11-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d12-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d13-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d14-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d15-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d16-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d17-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d18-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d19-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d24-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d25-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d26-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d27-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d28-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d29-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d30-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d31-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d32-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d34-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d35-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d36-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d37-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d40-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d41-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d42-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d43-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d44-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d45-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d46-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d47-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d49-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d50-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d51-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d52-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d54-x01-y02","91")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y04","177")
+useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y04","177")
 
 # Choose output file
 name = args[0]+".aida"

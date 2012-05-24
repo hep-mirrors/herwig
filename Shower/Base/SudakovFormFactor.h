@@ -517,6 +517,11 @@ public:
    *  The square of the minimum \f$p_T\f$
    */
   Energy2 pT2min() const { return pT2min_; }
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  vector<Energy> virtualMasses(const IdList & ids);
   //@}
 
   /**
