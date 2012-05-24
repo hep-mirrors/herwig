@@ -1,0 +1,409 @@
+// -*- C++ -*-
+//
+// cell.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+
+  template<class Random>
+  void cell_info::select (Random& rnd_gen,
+			  std::vector<double>& p) {
+    std::transform(lower_left_.begin(),lower_left_.end(),
+		   upper_right_.begin(),p.begin(),
+		   rnd_gen);
+    ++attempted_;
+  }
+
+
+  template<class Random>
+  void cell_info::select (Random& rnd_gen,
+			  std::vector<double>& p,
+			  const std::vector<bool>& sample) {
+    conditional_transform(lower_left_.begin(),lower_left_.end(),
+			  upper_right_.begin(),sample.begin(),
+			  p.begin(),rnd_gen);
+    ++attempted_;
+  }
+
+
+
+  template<class Random, class Function, class SlaveStatistics>
+  void cell_info::explore(Random& rnd_gen,
+			  const adaption_info& ainfo,
+			  Function* function, statistics* stats,
+			  SlaveStatistics& opt) {
+    function->start_presampling();
+    unsigned long n_sampled = 0;
+    std::vector<double> ll = lower_left_;
+    std::vector<double> ur = upper_right_;
+    double val = 0.;
+    std::vector<double> pos (ll.size());
+    while (n_sampled < ainfo.presampling_points) {
+      std::transform(ll.begin(),ll.end(),
+		     ur.begin(),pos.begin(),
+		     rnd_gen);
+      val = function->evaluate(pos);
+      stats->presampled(val);
+      opt.select(val);
+      if (std::abs(val) > std::abs(overestimate_)) {
+	overestimate_ = std::abs(val);
+	last_max_position_ = pos;
+      }
+      selected(pos,std::abs(val),ainfo);
+      ++n_sampled;
+    }
+    function->stop_presampling();
+  }
+
+
+  template<class Random, class Function>
+  void cell_info::explore (Random& rnd_gen,
+			   const adaption_info& ainfo, Function* function) {
+    function->start_presampling();
+    unsigned long n_sampled = 0;
+    std::vector<double> ll = lower_left_;
+    std::vector<double> ur = upper_right_;
+    double val = 0.;
+    std::vector<double> pos (ll.size());
+    std::vector<double> next_to_largest (ll.size());
+    while (n_sampled < ainfo.presampling_points) {
+      std::transform(ll.begin(),ll.end(),
+		     ur.begin(),pos.begin(),
+		     rnd_gen);
+      val = function->evaluate(pos);
+      if (std::abs(val) > std::abs(overestimate_)) {
+	next_to_largest = last_max_position_;
+	overestimate_ = std::abs(val);
+	last_max_position_ = pos;
+      }
+      ++n_sampled;
+    }
+    function->stop_presampling();
+  }
+
+
+  template<class OStream>
+  void cell_info::put (OStream& os) const {
+    os << overestimate_;
+    ostream_traits<OStream>::separator(os);
+    os << volume_;
+    ostream_traits<OStream>::separator(os);
+    os << lower_left_.size();
+    ostream_traits<OStream>::separator(os);
+    for (std::size_t k = 0; k < lower_left_.size(); ++k) {
+      os << lower_left_[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    for (std::size_t k = 0; k < upper_right_.size(); ++k) {
+      os << upper_right_[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    for (std::size_t k = 0; k < mid_point_.size(); ++k) {
+      os << mid_point_[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    for (std::size_t k = 0; k < last_max_position_.size(); ++k) {
+      os << last_max_position_[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    for (std::size_t k = 0; k < avg_weight_.size(); ++k) {
+      os << avg_weight_[k].first;
+      ostream_traits<OStream>::separator(os);
+      os << avg_weight_[k].second;
+      ostream_traits<OStream>::separator(os);
+    }
+  }
+
+
+  template<class IStream>
+  void cell_info::get (IStream& is) {
+    std::size_t dim;
+    is >> overestimate_ >> volume_ >> dim;
+    lower_left_.resize(dim);
+    for (std::size_t k = 0; k < lower_left_.size(); ++k) {
+      is >> lower_left_[k];
+    }
+    upper_right_.resize(dim);
+    for (std::size_t k = 0; k < upper_right_.size(); ++k) {
+      is >> upper_right_[k];
+    }
+    mid_point_.resize(dim);
+    for (std::size_t k = 0; k < mid_point_.size(); ++k) {
+      is >> mid_point_[k];
+    }
+    last_max_position_.resize(dim);
+    for (std::size_t k = 0; k < last_max_position_.size(); ++k) {
+      is >> last_max_position_[k];
+    }
+    avg_weight_.resize(dim);
+    for (std::size_t k = 0; k < avg_weight_.size(); ++k) {
+      is >> avg_weight_[k].first >> avg_weight_[k].second;
+    }
+  }
+
+  template<class Random, class Function>
+  std::pair<cell,cell > 
+  cell::split (std::pair<std::size_t,double> split_d,
+	       Random& rnd_gen,
+	       Function* function,
+	       const adaption_info& ainfo,
+	       const std::vector<bool>& sampled) {
+    assert(!missing_events() && !info().parametric_compensating());
+    split_dimension_ = split_d.first;
+    split_point_ = split_d.second;
+    std::vector<double> lower_left1 = info().lower_left();
+    std::vector<double> upper_right1 = info().upper_right();
+    std::vector<double> lower_left2 = info().lower_left();
+    std::vector<double> upper_right2 = info().upper_right();
+    upper_right1[split_dimension_] = split_point_;
+    lower_left2[split_dimension_] = split_point_;
+    std::pair<cell,cell> children;
+    if (sampled.empty())
+      children = std::pair<cell,cell>(cell(lower_left1,upper_right1,ainfo),
+				      cell(lower_left2,upper_right2,ainfo));
+    else
+      children = std::pair<cell,cell> (cell(lower_left1,upper_right1,sampled,ainfo),
+				       cell(lower_left2,upper_right2,sampled,ainfo));
+    if (info().last_max_position()[split_dimension_] <= split_point_) {
+      children.first.info().overestimate(info().overestimate(),info().last_max_position());
+      children.second.info().explore(rnd_gen,ainfo,function);
+    } else {
+      children.second.info().overestimate(info().overestimate(),info().last_max_position());
+      children.first.info().explore(rnd_gen,ainfo,function);
+    }
+    cell_info_.reset(0);
+    children.first.integral(children.first.info().volume() * children.first.info().overestimate());
+    children.second.integral(children.second.info().volume() * children.second.info().overestimate());
+    return children;
+  }
+
+
+  template<class OStream>
+  void cell::put (OStream& os) const {
+    os << split_dimension_;
+    ostream_traits<OStream>::separator(os);
+    os << split_point_;
+    ostream_traits<OStream>::separator(os);
+    os << integral_;
+    ostream_traits<OStream>::separator(os);
+    if (cell_info_) {
+      os << "has_cell_info";
+      ostream_traits<OStream>::separator(os);
+      cell_info_->put(os);
+    } else {
+      os << "has_no_cell_info";
+      ostream_traits<OStream>::separator(os);
+    }
+  }
+
+
+  template<class IStream>
+  void cell::get (IStream& is) {
+    std::string info_tag;
+    is >> split_dimension_ >> split_point_
+       >> integral_ >> info_tag;
+    if (info_tag == "has_cell_info") {
+      cell_info_.reset(new cell_info());
+      cell_info_->get(is);
+    }
+  }
+
+  inline cell_info::cell_info()
+    : overestimate_(0.), volume_(0.),
+      lower_left_(), upper_right_(), mid_point_(),
+      last_max_position_(), avg_weight_(),
+      attempted_(0), accepted_(0) {}
+
+  inline cell_info::cell_info(const std::vector<double>& ll,
+			      const std::vector<double>& ur,
+			      const adaption_info& ainfo)
+    : overestimate_(0.), volume_(),
+      lower_left_(ll), upper_right_(ur), mid_point_(),
+      last_max_position_(),
+      avg_weight_(std::vector<std::pair<double,double> >
+		  (ainfo.dimension,std::make_pair(0.,0.))),
+      attempted_(0), accepted_(0) {
+
+    std::vector<double> delta;
+    std::transform(ur.begin(),ur.end(),
+		   ll.begin(),std::back_inserter(delta),
+		   std::minus<double>());
+      
+    volume_ =
+      std::accumulate(delta.begin(),delta.end(),1.,std::multiplies<double>());
+
+    std::transform(ur.begin(),ur.end(),
+		   ll.begin(),std::back_inserter(mid_point_),
+		   std::plus<double>());
+
+    for (std::size_t k = 0; k < ainfo.dimension; ++k)
+      mid_point_[k] /= 2.;
+
+  }
+
+  inline cell_info::cell_info(const std::vector<double>& ll,
+			      const std::vector<double>& ur,
+			      const std::vector<bool>& sampled_variables,
+			      const adaption_info& ainfo)
+    : overestimate_(0.), volume_(),
+      lower_left_(ll), upper_right_(ur), mid_point_(),
+      last_max_position_(),
+      avg_weight_(std::vector<std::pair<double,double> >
+		  (ainfo.dimension,std::make_pair(0.,0.))),
+      attempted_(0), accepted_(0) {
+
+    std::vector<double> delta;
+    conditional_transform(ur.begin(),ur.end(),
+			  ll.begin(),sampled_variables.begin(),
+			  std::back_inserter(delta),
+			  std::minus<double>());
+
+    volume_ = 
+      std::accumulate(delta.begin(),delta.end(),1.,std::multiplies<double>());
+
+    std::transform(ur.begin(),ur.end(),
+		   ll.begin(),std::back_inserter(mid_point_),
+		   std::plus<double>());
+
+    for (std::size_t k = 0; k < ainfo.dimension; ++k)
+      mid_point_[k] /= 2.;
+
+  }
+
+
+  inline int cell_info::parametric_missing(const bit_container<parameter_hash_bits>& id) const {
+    std::map<bit_container<parameter_hash_bits>,int>::const_iterator mit
+      = parametric_missing_map_.find(id);
+    if (mit == parametric_missing_map_.end())
+      return 0;
+    return mit->second;
+  }
+
+  inline void cell_info::parametric_missing(const bit_container<parameter_hash_bits>& id, int n) {
+    if (n == 0) {
+      std::map<bit_container<parameter_hash_bits>,int>::iterator mit
+	= parametric_missing_map_.find(id);	
+      if (mit != parametric_missing_map_.end())
+	parametric_missing_map_.erase(mit);
+      return;
+    }
+    parametric_missing_map_[id] = n;
+  }
+
+  inline void cell_info::increase_parametric_missing(const bit_container<parameter_hash_bits>& id) {
+    std::map<bit_container<parameter_hash_bits>,int>::iterator mit
+      = parametric_missing_map_.find(id);	
+    if (mit != parametric_missing_map_.end()) {
+      mit->second += 1;
+      if (mit->second == 0) parametric_missing_map_.erase(mit);
+    } else parametric_missing_map_[id] = 1;
+  }
+
+  inline void cell_info::decrease_parametric_missing(const bit_container<parameter_hash_bits>& id) {
+    std::map<bit_container<parameter_hash_bits>,int>::iterator mit
+      = parametric_missing_map_.find(id);	
+    if (mit != parametric_missing_map_.end()) {
+      mit->second -= 1;
+      if (mit->second == 0) parametric_missing_map_.erase(mit);
+    } else assert(false);
+  }
+
+  inline void cell_info::selected(const std::vector<double>& p,
+				  double weight,
+				  const adaption_info& ainfo) {
+    for (std::size_t k = 0; k < p.size(); ++k) {
+      if (ainfo.adapt[k]) {
+	if (p[k] < mid_point_[k])
+	  avg_weight_[k].first += weight;
+	else
+	  avg_weight_[k].second += weight;
+      }
+    }
+  }
+
+  inline std::pair<std::size_t,double> cell_info::get_split (const adaption_info& ainfo,
+							     bool& worth) const {
+    std::size_t split_d = 0;
+    double gain = 0.;
+    for (std::size_t k = 0; k < ainfo.dimension; ++k) {
+      double xgain = 0.;
+      double left = avg_weight_[k].first;
+      double right = avg_weight_[k].second;
+      if (left+right > 0.) {
+	xgain = std::abs(left-right)/(left+right);
+      }
+      if (xgain > gain) {
+	gain = xgain;
+	split_d = k;
+      }
+    }
+    worth = (gain >= ainfo.gain_threshold);
+    return std::make_pair(split_d,mid_point_[split_d]);
+  }
+
+  inline bool cell_info::contains_parameter (const std::vector<double>& point,
+					     const std::vector<bool>& sampled) const {
+    std::vector<double>::const_iterator p = point.begin();
+    std::vector<double>::const_iterator l = lower_left_.begin();
+    std::vector<double>::const_iterator u = upper_right_.begin();
+    std::vector<bool>::const_iterator f = sampled.begin();
+    for (; p < point.end(); ++p, ++f, ++l, ++u)
+      if (!(*f)) {
+	if (((*l) > (*p)) ||
+	    ((*u) < (*p)))
+	  return false;
+      }
+    return true;
+  }
+
+
+  inline cell::cell()
+    : split_dimension_(0), split_point_(0.),
+      integral_(0.), missing_events_(0),
+      cell_info_(0) {}
+
+  inline cell::cell(const std::vector<double>& ll,
+		    const std::vector<double>& ur,
+		    const adaption_info& ainfo)
+    : split_dimension_(0), split_point_(0.),
+      integral_(0.), missing_events_(0),
+      cell_info_(new cell_info(ll,ur,ainfo)) {}
+
+  inline cell::cell(const std::vector<double>& ll,
+		    const std::vector<double>& ur,
+		    const std::vector<bool>& sampled_variables,
+		    const adaption_info& ainfo)
+    : split_dimension_(0), split_point_(0.),
+      integral_(0.), missing_events_(0),
+      cell_info_(new cell_info(ll,ur,sampled_variables,ainfo)) {}
+
+  inline cell::cell(const cell& x)
+    : split_dimension_(x.split_dimension_),
+      split_point_(x.split_point_),
+      integral_(x.integral_), 
+      missing_events_(x.missing_events_),
+      cell_info_(0) {
+    if (x.cell_info_)
+      cell_info_.reset(new cell_info(*x.cell_info_));
+  }      
+
+  inline cell& cell::operator=(const cell& x) {
+    if (this == &x)
+      return *this;
+    split_dimension_ = x.split_dimension_;
+    split_point_ = x.split_point_;
+    integral_ = x.integral_;
+    missing_events_ = x.missing_events_;
+    if (x.cell_info_)
+      cell_info_.reset(new cell_info(*x.cell_info_));
+    return *this;
+  }
+
+
+}

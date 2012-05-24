@@ -57,8 +57,8 @@ public:
   /**
    *  Default Constructor
    */
-  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-	      _hardVetoRead(0),
+  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
+	      _hardVetoRead(0), _reconOpt(0), _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
@@ -179,7 +179,8 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type,
+			      bool first); 
 
   /**
    * It does the backward evolution of the space-like input particle 
@@ -313,6 +314,12 @@ protected:
    * veto hard emissions according to lastScale from XComb? 
    */
   bool hardVetoXComb() const {return (_hardVetoRead == 1);}
+
+  /**
+   * Returns true if the hard veto read-in is to be applied to only
+   * the primary collision and false otherwise.
+   */
+  bool hardVetoReadOption() const {return _hardVetoReadOption;}
   //@}
 
   /**
@@ -430,6 +437,11 @@ protected:
   virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
+   *  Update of the time-like stuff
+   */
+  void updateHistory(tShowerParticlePtr particle);
+
+  /**
    *  Start the shower of a spacelike particle
    */
   virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
@@ -527,6 +539,20 @@ private:
    * Hard veto to be read switch
    */
   unsigned int _hardVetoRead; 
+
+  /**
+   *  Control of the reconstruction option
+   */
+  unsigned int _reconOpt;
+
+  /**
+   * If hard veto pT scale is being read-in this determines
+   * whether the read-in value is applied to primary and 
+   * secondary (MPI) scatters or just the primary one, with
+   * the usual computation of the veto being performed for
+   * the secondary (MPI) scatters.
+   */
+  bool _hardVetoReadOption; 
 
   /**
    * rms intrinsic pT of Gaussian distribution

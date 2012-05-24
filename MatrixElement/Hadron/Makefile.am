@@ -18,7 +18,7 @@ MEPP2VGamma.cc   MEPP2VGamma.h  \
 MEPP2HiggsVBF.cc   MEPP2HiggsVBF.h  \
 MEMinBias.h MEMinBias.cc
 
-HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:0
 
 pkglib_LTLIBRARIES += HwMEHadronFast.la
 HwMEHadronFast_la_SOURCES = \

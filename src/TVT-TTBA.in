@@ -35,9 +35,6 @@ set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
 
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
-#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.55
-#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.1
-
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
 ##################################################

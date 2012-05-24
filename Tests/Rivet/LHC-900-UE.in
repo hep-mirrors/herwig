@@ -6,8 +6,6 @@ read LHCBase.in
 # override the beam energy
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
-set /Herwig/UnderlyingEvent/KtCut:MinKT 1.86
-set /Herwig/UnderlyingEvent/UECuts:MHatMin 3.72
 
 
 ##################################################
@@ -58,9 +56,18 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 # LHCB k_s0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_S8758301
+# CMS forward energy flow
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
+# CMS charged particle rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
+# LHC K0s/Lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
+# get the cross section right
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 saverun LHC-900-UE LHCGenerator

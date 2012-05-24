@@ -188,7 +188,7 @@ void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
   Energy2 m2(sqr(m)),M2(sqr(M)),Mi2(sqr(Mi)),Mj2(sqr(Mj));
   using Math::Li2;
   // general form
-  if(m>eps) {
+  if(m>eps || (M2-Mj2) < ZERO || (M2-Mi2)< ZERO) {
     Energy4 li = sqr(m2+M2-Mi2)-4.*sqr(m*M);
     complex<Energy2> rli = li<ZERO ? ii*sqrt(-li) : sqrt(li);
     Energy4 lj = sqr(m2+M2-Mj2)-4.*sqr(m*M);
@@ -215,11 +215,6 @@ void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
 	-log(1.-a-b)*a-log(1.-a-b)*b-2.;
     }
     I2 = (Itest[0]-Itest[1]+log(Mj2/Mi2))/(Mj2-Mi2);
-//     I2 = (M2-m2)/Mi2/Mj2*log(m/M)
-//       +1./(Mj2-Mi2)*(0.5*rlj/Mj2*log((m2+M2-Mj2-rlj)/
-// 				     (m2+M2-Mj2+rlj))-
-// 		     0.5*rli/Mi2*log((m2+M2-Mi2-rli)/
-// 				     (m2+M2-Mi2+rli)));
     K = 1./(Mi2-Mj2)*(1.+Complex(m2*I+M2*J-Mj2*I2));
   }
   // leading term for small m

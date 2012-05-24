@@ -1,0 +1,189 @@
+// -*- C++ -*-
+//
+// MatchboxRambo.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the MatchboxRambo class.
+//
+
+#include "MatchboxRambo.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Utilities/GSLBisection.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+using namespace Herwig;
+
+MatchboxRambo::MatchboxRambo() {}
+
+MatchboxRambo::~MatchboxRambo() {}
+
+IBPtr MatchboxRambo::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MatchboxRambo::fullclone() const {
+  return new_ptr(*this);
+}
+
+static double weights[7] = {
+
+  -1.,-1.,
+  0.039788735772973833942,
+  0.00012598255637968550463,
+  1.3296564302788840628E-7,
+  7.0167897579949011130E-11,
+  2.2217170114046130768E-14
+
+};
+
+void MatchboxRambo::prepare(tStdXCombPtr xc, bool) {
+  theLastXComb = xc;
+  needToReshuffle = false;
+  if ( xc ) {
+    for ( cPDVector::const_iterator d = mePartonData().begin();
+	  d != mePartonData().end(); ++d ) {
+      if ( (**d).mass() != ZERO ) {
+	needToReshuffle = true;
+	break;
+      }
+    }
+  }
+}
+
+double MatchboxRambo::generateKinematics(const double* r,
+					 vector<Lorentz5Momentum>& momenta) {
+
+  size_t offset = dynamic_cast<const Tree2toNDiagram&>(*lastXComb().diagrams().front()).nSpace() > 0 ? 2 : 1;
+
+  Energy w = sqrt(lastSHat());
+  size_t count = 0;
+  Lorentz5Momentum Q;
+  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin() + offset;
+	k != momenta.end(); ++k ) {
+    Energy q = -w*log(r[count]*r[count+1]);
+    double ct = 2.*r[count+2]-1.;
+    double st = sqrt(1.-sqr(ct));
+    double phi = 2.*Constants::pi*r[count+3];
+    double cphi = cos(phi);
+    double sphi = sqrt(1.-sqr(cphi));
+    if ( phi > Constants::pi )
+      sphi = -sphi;
+    (*k).setMass(ZERO);
+    (*k).setT(q);
+    (*k).setX(q*cphi*st);
+    (*k).setY(q*sphi*st);
+    (*k).setZ(q*ct);
+    count += 4;
+    Q += *k;
+  }
+
+  Energy M = sqrt(Q.m2());
+  double x = w/M;
+  Boost beta = -(Q.vect() * (1./M));
+  double gamma = Q.t()/M;
+  double a = 1./(1.+gamma);
+
+  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin() + offset;
+	k != momenta.end(); ++k ) {
+    Energy q = (*k).t();
+    Energy bq = beta*(*k).vect();
+    (*k).setT(x*(gamma*q+bq));
+    (*k).setVect(x*((*k).vect()+(q+a*bq)*beta));
+  }
+
+  size_t n = momenta.size()-offset;
+  double weight = weights[n];
+
+  if ( !needToReshuffle ) {
+    fillDiagramWeights();
+    return weight;
+  }
+
+  double xi;
+
+  ReshuffleEquation solve(w,mePartonData().begin()+offset,mePartonData().end(),
+			  momenta.begin()+2,momenta.end());
+
+  GSLBisection solver(1e-10,1e-8,10000);
+
+  try {
+    xi = solver.value(solve,0.0,1.1);
+  } catch (GSLBisection::GSLerror) {
+    return 0.;
+  } catch (GSLBisection::IntervalError) {
+    return 0.;
+  }
+
+  weight *= pow(xi,3.*(n-1.));
+
+  Energy num = ZERO;
+  Energy den = ZERO;
+
+  cPDVector::const_iterator d = mePartonData().begin()+offset;
+  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin()+offset;
+	k != momenta.end(); ++k, ++d ) {
+    num += (*k).vect().mag2()/(*k).t();
+    Energy q = (*k).t();
+    (*k).setT(sqrt(sqr((**d).mass())+xi*xi*sqr((*k).t())));
+    (*k).setVect(xi*(*k).vect());
+    weight *= q/(*k).t();
+    den += (*k).vect().mag2()/(*k).t();
+    (*k).setMass((**d).mass());
+  }
+
+  weight *= num/den;
+
+  fillDiagramWeights();
+
+  return weight;
+
+}
+
+Energy MatchboxRambo::ReshuffleEquation::operator() (double xi) const {
+  cPDVector::const_iterator d = dataBegin;
+  vector<Lorentz5Momentum>::const_iterator p = momentaBegin;
+  Energy res = -w;
+  for ( ; d != dataEnd; ++d, ++p ) {
+    res += sqrt(sqr((**d).mass()) +
+		xi*xi*sqr(p->t()));
+  }
+  return res;
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+void MatchboxRambo::persistentOutput(PersistentOStream &) const {
+}
+
+void MatchboxRambo::persistentInput(PersistentIStream &, int) {
+}
+
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<MatchboxRambo,MatchboxPhasespace>
+  describeHerwigMatchboxRambo("Herwig::MatchboxRambo", "HwMatchbox.so");
+
+void MatchboxRambo::Init() {
+
+  static ClassDocumentation<MatchboxRambo> documentation
+    ("MatchboxRambo implements RAMBO phase space generation.");
+
+}
+

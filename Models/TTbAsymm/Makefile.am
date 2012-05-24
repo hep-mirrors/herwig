@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwTTbAModel.la
 HwTTbAModel_la_SOURCES = \
-TTbAModel.cc  TTbAModel.h \
+TTbAModel.cc  TTbAModel.h TTbAModel.fh \
 TTbAModelWPTDVertex.h TTbAModelWPTDVertex.cc \
 TTbAModelZPQQVertex.h TTbAModelZPQQVertex.cc \
 TTbAModelAGQQVertex.h TTbAModelAGQQVertex.cc \

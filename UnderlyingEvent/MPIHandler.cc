@@ -33,6 +33,8 @@
 
 using namespace Herwig;
 
+MPIHandler * MPIHandler::currentHandler_ = 0;
+
 bool MPIHandler::beamOK() const {
   return (HadronMatcher::Check(*eventHandler()->incoming().first)  &&
 	  HadronMatcher::Check(*eventHandler()->incoming().second) );
@@ -63,6 +65,7 @@ void MPIHandler::finalize() {
 }
 
 void MPIHandler::initialize() {
+  currentHandler_ = this;
   useMe();
   theHandler = generator()->currentEventHandler(); 
   //stop if the EventHandler is not present:
@@ -94,6 +97,12 @@ void MPIHandler::initialize() {
   if( identicalToUE_ > (int)numSubProcs_ || identicalToUE_ < -1 )
     throw Exception() << "MPIHandler:identicalToUE has disallowed value"
 		      << Exception::runerror;
+
+  // override the cuts for the additional scatters if energyExtrapolation_ is
+  // set
+  if (energyExtrapolation_ != 0 ) {
+    overrideUECuts();
+  }
 
   tcPDPtr gluon=getParticleData(ParticleID::g);
   //determine ptmin
@@ -564,6 +573,28 @@ InvEnergy2 MPIHandler::slopeExp() const{
   return b_0 + log(energy/e_0)/GeV2;
 }
 
+void MPIHandler::overrideUECuts() {
+  if(energyExtrapolation_==1)
+    Ptmin_ = EEparamA_ * log(generator()->maximumCMEnergy() / EEparamB_);
+  else if(energyExtrapolation_==2)
+    Ptmin_ = pT0_*pow(double(generator()->maximumCMEnergy()/refScale_),b_);
+  else
+    assert(false);
+  // create a new SimpleKTCut object with the calculated ptmin value
+  Ptr<SimpleKTCut>::pointer newUEktCut = new_ptr(SimpleKTCut(Ptmin_));
+  newUEktCut->init();
+  newUEktCut->initrun();
+
+  // create a new Cuts object with MHatMin = 2 * Ptmin_
+  CutsPtr newUEcuts = new_ptr(Cuts(2*Ptmin_));
+  newUEcuts->add(dynamic_ptr_cast<tOneCutPtr>(newUEktCut));
+  newUEcuts->init();
+  newUEcuts->initrun();
+
+  // replace the old Cuts object
+  cuts()[0] = newUEcuts;
+}
+
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
   os << theMultiplicities << theHandler 
      << theSubProcesses << theCuts << theProcessHandlers
@@ -573,7 +604,9 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(beta_, 1/GeV2)
      << algorithm_ << ounit(invRadius_, GeV2)
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
-     << DLmode_ << ounit(totalXSecExp_, millibarn);
+     << DLmode_ << ounit(totalXSecExp_, millibarn)
+     << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV)
+     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_;
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -585,7 +618,9 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(beta_, 1/GeV2)
      >> algorithm_ >> iunit(invRadius_, GeV2)
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
-     >> DLmode_ >> iunit(totalXSecExp_, millibarn);
+     >> DLmode_ >> iunit(totalXSecExp_, millibarn)
+     >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV)
+     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_;
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -672,6 +707,42 @@ void MPIHandler::Init() {
      false);
 
 
+  static Switch<MPIHandler,unsigned int> interEnergyExtrapolation
+    ("EnergyExtrapolation",
+     "Switch to ignore the cuts object at MPIHandler:Cuts[0]. "
+     "Instead, extrapolate the pt cut.",
+     &MPIHandler::energyExtrapolation_, 2, false, false);
+  static SwitchOption interEnergyExtrapolationLog
+    (interEnergyExtrapolation,
+     "Log",
+     "Use logarithmic dependence, ptmin = A * log (sqrt(s) / B).",
+     1);
+  static SwitchOption interEnergyExtrapolationPower
+    (interEnergyExtrapolation,
+     "Power",
+     "Use power law, ptmin = pt_0 * (sqrt(s) / E_0)^b.",
+     2);
+  static SwitchOption interEnergyExtrapolationNo
+    (interEnergyExtrapolation,
+     "No",
+     "Use manually set value for the minimal pt, "
+     "specified in MPIHandler:Cuts[0]:OneCuts[0]:MinKT.",
+     0);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamA
+    ("EEparamA",
+     "Parameter A in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamA_, GeV, 0.6*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamB
+    ("EEparamB",
+     "Parameter B in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamB_, GeV, 39.0*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
+
   static Switch<MPIHandler,bool> interfacetwoComp
     ("twoComp",
      "switch to enable the model with a different radius for soft interactions",
@@ -717,4 +788,21 @@ void MPIHandler::Init() {
      "Parametrization taking hard and soft pomeron contributions into account",
      3);
 
+  static Parameter<MPIHandler,Energy> interfaceReferenceScale
+    ("ReferenceScale",
+     "The reference energy for power law energy extrapolation of pTmin",
+     &MPIHandler::refScale_, GeV, 7000.0*GeV, 0.0*GeV, 20000.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfacepTmin0
+    ("pTmin0",
+     "The pTmin at the reference scale for power law extrapolation of pTmin.",
+     &MPIHandler::pT0_, GeV, 3.11*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,double> interfacePower
+    ("Power",
+     "The power for power law extrapolation of the pTmin cut-off.",
+     &MPIHandler::b_, 0.21, 0.0, 10.0,
+     false, false, Interface::limited);
 }

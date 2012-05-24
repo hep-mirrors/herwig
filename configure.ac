@@ -38,6 +38,8 @@ AC_LANG([C++])
 
 AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
 dnl Checks for programs.
 AC_PROG_CXX([g++])
 AC_PROG_INSTALL
@@ -71,6 +73,8 @@ AC_PATH_PROG(PERL, perl)
 HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
+
+HERWIG_CHECK_BOOST
 
 HERWIG_COMPILERFLAGS
 
@@ -141,10 +145,26 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
                 MatrixElement/Gamma/Makefile
+                MatrixElement/Matchbox/Makefile
+                MatrixElement/Matchbox/Base/Makefile
+                MatrixElement/Matchbox/Utility/Makefile
+                MatrixElement/Matchbox/Phasespace/Makefile
+                MatrixElement/Matchbox/Dipoles/Makefile
+                MatrixElement/Matchbox/InsertionOperators/Makefile
+                MatrixElement/Matchbox/Powheg/Makefile
+                MatrixElement/Matchbox/Builtin/Makefile
+                MatrixElement/Matchbox/Builtin/Processes/Makefile
+		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
                 Shower/Makefile
+		DipoleShower/Makefile
+		DipoleShower/Base/Makefile
+		DipoleShower/Kernels/Makefile
+		DipoleShower/Kinematics/Makefile
+		DipoleShower/Utility/Makefile
+		DipoleShower/AlphaS/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		lib/Makefile

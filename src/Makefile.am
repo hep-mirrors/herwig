@@ -32,19 +32,21 @@ LH.model
 
 INPUTFILES = \
 DIS.in \
+DIS-Matchbox.in \
 GammaGamma.in \
 ILC.in \
 ILC-MSSM.in \
 ILC-MUED.in \
 ILC-RS.in \
 LEP.in \
+LEP-Matchbox.in \
 LHC-ADD.in \
 LHC-diffractive.in \
 LHC-GammaGamma.in \
 LHC.in \
+LHC-Matchbox.in \
 LHC-LQ.in \
 LHC-MSSM.in \
-LHC-MU900-2.in \
 LHC-MUED.in \
 LHC-NMSSM.in \
 LHC-Powheg.in \
@@ -53,12 +55,10 @@ LHC-RS.in \
 LHC-Sextet.in \
 LHC-TRP.in \
 LHC-TTBA.in \
-LHC-UE7-2.in \
-LHC-UE-EE-2.in \
-LHC-UE-EE-3-CTEQ6L1.in \
-LHC-UE-EE-3.in \
+LHC-MB.in \
 LHC-ZP.in \
 TVT.in \
+TVT-Matchbox.in \
 TVT-Powheg.in \
 TVT-TTBA.in \
 LHC-LH.in \

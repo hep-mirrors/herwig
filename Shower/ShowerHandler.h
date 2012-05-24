@@ -70,6 +70,12 @@ public:
   virtual void cascade();
 
   /**
+   * Hook to allow vetoing of event after showering hard sub-process
+   * as in e.g. MLM merging.
+   */
+  virtual bool showerHardProcessVeto() { return false; };
+
+  /**
    * It returns true if the particle with the specified id
    * is in the list of those that should be decayed during the showering
    * showering.
@@ -143,6 +149,11 @@ public:
   bool isMPIOn() const {
     return MPIHandler_ && MPIHandler_->beamOK();
   }
+
+  /**
+   * Return the remnant decayer.
+   */
+  tHwRemDecPtr remnantDecayer() const { return remDec_; }
   //@}
 
   /**
@@ -175,9 +186,20 @@ protected:
 protected:
 
   /**
+   * Prepare to shower the given subprocess
+   */
+  void prepareCascade(tSubProPtr sub);
+
+  /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub,XCPtr xcomb);
+  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
+
+  /**
+   * Return the maximum number of attempts for showering
+   * a given subprocess.
+   */
+  unsigned int maxtry() const { return maxtry_; }
 
   /**
    * At the end of the Showering, transform ShowerParticle objects

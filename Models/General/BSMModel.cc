@@ -193,6 +193,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     vector<tcPDPtr> products,bosons;
     Energy mout(ZERO),moutnoWZ(ZERO);
     string tag = prefix;
+    int charge = -inpart->iCharge();
     while( true ) {
       long t;
       is >> t;
@@ -205,6 +206,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	  << Exception::runerror;
       }
       tcPDPtr p = getParticleData(t);
+      charge += p->iCharge();
       if( !p ) {
   	throw SetupException()
   	  << "BSMModel::readDecay() - An unknown PDG code has been encounterd "
@@ -234,6 +236,12 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     }
     if( npr > 1 ) {
       tag.replace(tag.size() - 1, 1, ";");
+      if(charge!=0) {
+	cerr << "BSMModel::readDecay() "
+	     << "Decay mode " << tag << " read from SLHA file does not conserve charge,"
+	     << "\nare you really sure you want to do this?\n";
+      }
+      ++nmode;
       // normal option
       if(mout<=inMass) {
   	inpart->stable(false);
@@ -306,6 +314,10 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	 << " will be rescaled.\n";
     cerr << setprecision(13) << abs(brsum - 1.) << "\n";
   }
+  if(nmode>0) {
+    inpart->update();
+    if(inpart->CC()) inpart->CC()->update();
+  }
 }
 
 void BSMModel::createDecayMode(string tag, double brat) const {
@@ -318,6 +330,11 @@ void BSMModel::createDecayMode(string tag, double brat) const {
   ostringstream brf;
   brf << setprecision(13)<< brat;
   generator()->preinitInterface(dm, "BranchingRatio","set", brf.str());
+  if(dm->CC()) {
+    generator()->preinitInterface(dm->CC(), "OnOff", "set", "On");
+    generator()->preinitInterface(dm->CC(), "Decayer", "set","/Herwig/Decays/Mambo");
+    generator()->preinitInterface(dm->CC(), "BranchingRatio","set", brf.str());
+  }
 }
 
 

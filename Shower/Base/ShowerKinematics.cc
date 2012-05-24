@@ -21,6 +21,12 @@ void ShowerKinematics::updateChildren(const tShowerParticlePtr,
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;
 }
+void ShowerKinematics::resetChildren(const tShowerParticlePtr, 
+				      const ShowerParticleVector &) const {
+  throw Exception() << "Base class ShowerKinematics::resetChildren called,"
+		    << " should have been overriden in an inheriting class" 
+		    << Exception::runerror;
+}
 
 void ShowerKinematics::updateParent(const tShowerParticlePtr, 
 				    const ShowerParticleVector &,

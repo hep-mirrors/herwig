@@ -1,0 +1,67 @@
+// -*- C++ -*-
+//
+// adaption_info.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+  template<class OStream>
+  void adaption_info::put(OStream& os) const {
+    os << dimension;
+    ostream_traits<OStream>::separator(os);
+    for (std::size_t k = 0; k < dimension; ++k) {
+      os << lower_left[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    for (std::size_t k = 0; k < dimension; ++k) {
+      os << upper_right[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    os << presampling_points;
+    ostream_traits<OStream>::separator(os);
+    os << histo_depth;
+    ostream_traits<OStream>::separator(os);
+    for (std::size_t k = 0; k < dimension; ++k) {
+      os << adapt[k];
+      ostream_traits<OStream>::separator(os);
+    }
+    os << freeze_grid;
+    ostream_traits<OStream>::separator(os);
+    os << maxtry;
+    ostream_traits<OStream>::separator(os);
+    os << efficiency_threshold;
+    ostream_traits<OStream>::separator(os);
+    os << gain_threshold;
+    ostream_traits<OStream>::separator(os);
+  }
+
+  template<class IStream>
+  void adaption_info::get(IStream& is) {
+    is >> dimension;
+    lower_left.resize(dimension);
+    upper_right.resize(dimension);
+    adapt.resize(dimension);
+    for (std::size_t k = 0; k < dimension; ++k) {
+      is >> lower_left[k];
+    }
+    for (std::size_t k = 0; k < dimension; ++k) {
+      is >> upper_right[k];
+    }
+    is >> presampling_points >> histo_depth;
+    for (std::size_t k = 0; k < dimension; ++k) {
+      // strange. is >> adapt[k]
+      // gives: warning: value computet is not used
+      // with gcc 4.2.1
+      bool v; is >> v;
+      adapt[k] = v;
+    }
+    is >> freeze_grid >> maxtry
+       >> efficiency_threshold >> gain_threshold;
+  }
+
+}
