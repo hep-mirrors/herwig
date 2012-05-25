@@ -13,13 +13,15 @@
 using namespace Herwig;
 
 void RPV::persistentOutput(PersistentOStream & os ) const {
-  os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_
-     << LLEVertex_ << LQDVertex_ << UDDVertex_;
+  os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_ << ounit(vnu_,GeV)
+     << LLEVertex_ << LQDVertex_ << UDDVertex_
+     << HiggsAMix_ << HiggsPMix_;
 }
 
 void RPV::persistentInput(PersistentIStream & is, int) {
-  is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_
-     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_;
+  is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_ >> iunit(vnu_,GeV)
+     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_
+     >> HiggsAMix_ >> HiggsPMix_;
 }
 
 ClassDescription<RPV> RPV::initRPV;
@@ -79,6 +81,7 @@ void RPV::extractParameters(bool checkmodel) {
 				 << Exception::runerror;
   }
   // get the RPV parameters
+  // lambda
   map<string,ParamMap>::const_iterator pit;
   pit=parameters().find("rvlamlle");
   if( pit != parameters().end() ) {
@@ -91,6 +94,7 @@ void RPV::extractParameters(bool checkmodel) {
       lambdaLLE_[i][j][k] = it->second;
     }
   }
+  // lambda'
   pit=parameters().find("rvlamlqd");
   if( pit != parameters().end() ) {
     for(ParamMap::const_iterator it = pit->second.begin();
@@ -102,6 +106,7 @@ void RPV::extractParameters(bool checkmodel) {
       lambdaLQD_[i][j][k] = it->second;
     }
   }
+  // lambda''
   pit=parameters().find("rvlamudd");
   if( pit != parameters().end() ) {
     for(ParamMap::const_iterator it = pit->second.begin();
@@ -113,79 +118,54 @@ void RPV::extractParameters(bool checkmodel) {
       lambdaUDD_[i][j][k] = it->second;
     }
   }
+  // sneutrino vevs
+  pit=parameters().find("rvsnvev");
+  vnu_.resize(3);
+  if( pit != parameters().end() ) {
+    for(ParamMap::const_iterator it = pit->second.begin();
+	it!=pit->second.end();++it) {
+      if(it->first>0) {
+	assert(it->first>=1&&it->first<=3);
+	vnu_[it->first-1] = it->second*GeV;
+      }
+    }
+  }
 }
 
 void RPV::createMixingMatrices() {
-//   map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
-//   for(it=mixings().begin();it!=mixings().end();++it) {
-//     string name=it->first;
-//     // pseudo-scalar higgs mixing
-//     if (name == "nmamix") {
-//       createMixingMatrix(theHiggsAMix,name,it->second.second,it->second.first);
-//     }
-//   }
+  map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
+  for(it=mixings().begin();it!=mixings().end();++it) {
+    string name=it->first;
+    cerr << "testing in mixings loop " << name << "\n";
+    // pseudo-scalar higgs mixing
+    if (name == "rvamix") {
+      cerr << "testing in mixing create A\n";
+      createMixingMatrix(HiggsAMix_,name,it->second.second,it->second.first);
+    }
+    else if (name == "rvlmix") {
+      cerr << "testing in mixing create C\n";
+      createMixingMatrix(HiggsPMix_,name,it->second.second,it->second.first);
+    }
+  }
   // base class for neutralinos and charginos
   MSSM::createMixingMatrices();
 }
-// Block MINPAR  # SUSY breaking input parameters
-//      3    1.000000000000000e+01   # tanb
-//      4    1.000000000000000e+00   # sign(mu)
-//      1    1.000000000000000e+02   # m0
-//      2    2.500000000000000e+02   # m12
-//      5   -1.000000000000000e+02   # A0
+
+
+
+
+
+
+
+
+
+
+
 
 
 // # Higgs mixing
 // Block alpha   # Effective Higgs mixing parameter
 //           -1.149203839391468e-01   # alpha
-
-// Block stopmix  # stop mixing matrix
-//   1  1     5.567136252574828e-01   # O_{11}
-//   1  2     8.307044838284376e-01   # O_{12}
-//   2  1     8.307044838284376e-01   # O_{21}
-//   2  2    -5.567136252574828e-01   # O_{22}
-
-// Block sbotmix  # sbottom mixing matrix
-//   1  1     9.494595966791360e-01   # O_{11}
-//   1  2     3.138892707212089e-01   # O_{12}
-//   2  1    -3.138892707212089e-01   # O_{21}
-//   2  2     9.494595966791360e-01   # O_{22}
-
-// Block staumix  # stau mixing matrix
-//   1  1     2.666587767723425e-01   # O_{11}
-//   1  2     9.637910026402394e-01   # O_{12}
-//   2  1     9.637910026402394e-01   # O_{21}
-//   2  2    -2.666587767723425e-01   # O_{22}
-
-// Block nmix  # neutralino mixing matrix
-//   1  1     9.851357669950006e-01   # N_{1,1}
-//   1  2    -5.771661350693690e-02   # N_{1,2}
-//   1  3     1.517355210244914e-01   # N_{1,3}
-//   1  4    -5.614841735871662e-02   # N_{1,4}
-//   2  1     1.073787916649285e-01   # N_{2,1}
-//   2  2     9.402548967081881e-01   # N_{2,2}
-//   2  3    -2.795671827746073e-01   # N_{2,3}
-//   2  4     1.619651648729555e-01   # N_{2,4}
-//   3  1    -6.112790189200206e-02   # N_{3,1}
-//   3  2     9.103171953480492e-02   # N_{3,2}
-//   3  3     6.945942965173417e-01   # N_{3,3}
-//   3  4     7.109960399990973e-01   # N_{3,4}
-//   4  1    -1.193343843912277e-01   # N_{4,1}
-//   4  2     3.229593593319475e-01   # N_{4,2}
-//   4  3     6.452575340284490e-01   # N_{4,3}
-//   4  4    -6.819818705078531e-01   # N_{4,4}
-
-// Block Umix  # chargino U mixing matrix 
-//   1  1     9.140759450766424e-01   # U_{1,1}
-//   1  2    -4.055430515151790e-01   # U_{1,2}
-//   2  1     4.055430515151790e-01   # U_{2,1}
-//   2  2     9.140759450766424e-01   # U_{2,2}
-
-// Block Vmix  # chargino V mixing matrix 
-//   1  1     9.711123714587470e-01   # V_{1,1}
-//   1  2    -2.386226351370898e-01   # V_{1,2}
-//   2  1     2.386226351370898e-01   # V_{2,1}
-//   2  2     9.711123714587470e-01   # V_{2,2}
 
 // Block RVT Q= 9.118760000000000e+01 # R-Parity violating LLE soft terms 
 //   1 1 1    0.000000000000000e+00   # T_{111}
@@ -287,56 +267,6 @@ void RPV::createMixingMatrices() {
 //      1    0.000000000000000e+00   # M2LH1_{1}
 //      2    0.000000000000000e+00   # M2LH1_{2}
 //      3    0.000000000000000e+00   # M2LH1_{3}
-// Block RVNMIX Q= 9.118760000000000e+01 # neutrino-neutralino mixing matrix 
-//   1 1    1.000000000000000e+00   # N_{11}
-//   1 2    0.000000000000000e+00   # N_{12}
-//   1 3    0.000000000000000e+00   # N_{13}
-//   1 4    0.000000000000000e+00   # N_{14}
-//   1 5    0.000000000000000e+00   # N_{15}
-//   1 6    0.000000000000000e+00   # N_{16}
-//   1 7    0.000000000000000e+00   # N_{17}
-//   2 1    0.000000000000000e+00   # N_{21}
-//   2 2    1.000000000000000e+00   # N_{22}
-//   2 3    0.000000000000000e+00   # N_{23}
-//   2 4    0.000000000000000e+00   # N_{24}
-//   2 5    0.000000000000000e+00   # N_{25}
-//   2 6    0.000000000000000e+00   # N_{26}
-//   2 7    0.000000000000000e+00   # N_{27}
-//   3 1    0.000000000000000e+00   # N_{31}
-//   3 2    0.000000000000000e+00   # N_{32}
-//   3 3    1.000000000000000e+00   # N_{33}
-//   3 4    0.000000000000000e+00   # N_{34}
-//   3 5    0.000000000000000e+00   # N_{35}
-//   3 6    0.000000000000000e+00   # N_{36}
-//   3 7    0.000000000000000e+00   # N_{37}
-//   4 1    0.000000000000000e+00   # N_{41}
-//   4 2    0.000000000000000e+00   # N_{42}
-//   4 3    0.000000000000000e+00   # N_{43}
-//   4 4    9.847565328754548e-01   # N_{44}
-//   4 5    1.103472257924572e-01   # N_{45}
-//   4 6   -6.109421671307692e-02   # N_{46}
-//   4 7   -1.197729410310909e-01   # N_{47}
-//   5 1    0.000000000000000e+00   # N_{51}
-//   5 2    0.000000000000000e+00   # N_{52}
-//   5 3    0.000000000000000e+00   # N_{53}
-//   5 4   -6.117909738186333e-02   # N_{54}
-//   5 5    9.417013337872188e-01   # N_{55}
-//   5 6    9.139986887133542e-02   # N_{56}
-//   5 7    3.179650609064091e-01   # N_{57}
-//   6 1    0.000000000000000e+00   # N_{61}
-//   6 2    0.000000000000000e+00   # N_{62}
-//   6 3    0.000000000000000e+00   # N_{63}
-//   6 4    1.526096816059464e-01   # N_{64}
-//   6 5   -2.757226329309796e-01   # N_{65}
-//   6 6    6.951143481105823e-01   # N_{66}
-//   6 7    6.461449975203246e-01   # N_{67}
-//   7 1    0.000000000000000e+00   # N_{71}
-//   7 2    0.000000000000000e+00   # N_{72}
-//   7 3    0.000000000000000e+00   # N_{73}
-//   7 4   -5.676243549025390e-02   # N_{74}
-//   7 5    1.581110919350379e-01   # N_{75}
-//   7 6    7.104432445349301e-01   # N_{76}
-//   7 7   -6.834100561295584e-01   # N_{77}
 // Block hmix Q= 4.658779932434547e+02  # Higgs mixing parameters
 //      1     3.523836232180990e+02   # mu(Q)MSSM DRbar
 //      2     9.750797435881633e+00   # tan beta(Q)MSSM DRbar
