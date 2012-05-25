@@ -114,7 +114,6 @@ private:
   SSWWHVertex & operator=(const SSWWHVertex &);
 
 private:
-
   
   /**
    * The value of the factor \f$\frac{m_W \sin(\beta-\alpha)}{\sin\theta_W}\f$
