@@ -662,11 +662,24 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
   setupMaximumScales(currentTree(), particlesToShower);
   // compute the minimum mass of the final-state
-  Energy minmass(ZERO);
+  Energy minmass(ZERO), mIn(ZERO);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if(particlesToShower[ix]->progenitor()->isFinalState())
-      minmass+=particlesToShower[ix]->progenitor()->mass();
+    if(particlesToShower[ix]->progenitor()->isFinalState()) {
+      minmass += max( particlesToShower[ix]->progenitor()->mass(),
+		      particlesToShower[ix]->progenitor()->dataPtr()->constituentMass() );
+    }
+    else {
+      mIn = particlesToShower[ix]->progenitor()->mass();
+    }
   }
+
+  if ( minmass > mIn ) {
+    throw Exception() << "Evolver.cc: Mass of decaying particle is "
+		      << "below constituent masses of decay products."
+		      << Exception::eventerror;
+  } 
+
+
   // main showering loop
   unsigned int ntry(0);
   do {

@@ -26,7 +26,7 @@ read DipoleShower.in
 
 cd /Herwig/EventHandlers
 
-set LHCHandler:LuminosityFunction:Energy 7000.0*GeV
+set LHCHandler:LuminosityFunction:Energy 8000.0*GeV
 
 # the only infrared safe cut in this case is a cut on the lepton pair mass
 # leave all other cuts as set in here

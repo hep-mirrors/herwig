@@ -5,7 +5,7 @@ docdir = $(pkgdatadir)/Doc
 dist_doc_DATA = refman.conf refman.h HerwigDefaults.in
 EXTRA_DATA = tagfileThePEG.tag
 
-doc_SCRIPTS = fixinterfaces.pl
+dist_noinst_SCRIPTS = fixinterfaces.pl
 
 clean-local: html-clean
 

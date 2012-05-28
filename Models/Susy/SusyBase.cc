@@ -504,6 +504,11 @@ void SusyBase::resetRepositoryMasses() {
     if(!part) throw SetupException() 
       << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
       << " not found." << Exception::warning;
+    if(abs(id)<=5||abs(id)==23||abs(id)==24)
+      cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
+	   << part->PDGName() << " using SLHA "
+	   << "file,\nthis can affect parts of the Standard Model simulation and"
+	   << " is strongly discouraged.\n";
     //Find interface nominal mass interface
     const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
     ostringstream os;

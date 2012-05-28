@@ -32,22 +32,18 @@ DescribeAbstractClass<HadronSelector,Interfaced>
 describeHadronSelector("Herwig::HadronSelector","");
 
 namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
-
-  // debug helper
-  void dumpTable(const HadronSelector::HadronTable & tbl) {
-    typedef HadronSelector::HadronTable::const_iterator TableIter;
-    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-      cerr << it->first.first << ' ' 
-	   << it->first.second << '\n';
-      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-	   jt != it->second.end(); ++jt) {
-	cerr << '\t' << *jt << '\n';
-      }
-    }
-  }
+  // // debug helper
+  // void dumpTable(const HadronSelector::HadronTable & tbl) {
+  //   typedef HadronSelector::HadronTable::const_iterator TableIter;
+  //   for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+  //     cerr << it->first.first << ' ' 
+  // 	   << it->first.second << '\n';
+  //     for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+  // 	   jt != it->second.end(); ++jt) {
+  // 	cerr << '\t' << *jt << '\n';
+  //     }
+  //   }
+  // }
 
   bool weightIsLess (pair<tcPDPtr,double> a, pair<tcPDPtr,double> b) {
     return a.second < b.second;

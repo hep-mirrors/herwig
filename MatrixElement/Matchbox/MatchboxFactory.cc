@@ -162,7 +162,13 @@ void MatchboxFactory::setup() {
 	assert((**p).id() == checkid);
       }
 
-    nLight(particleGroups()["j"].size());
+    const PDVector& partons = particleGroups()["j"];
+    unsigned int nl = 0;
+    for ( PDVector::const_iterator p = partons.begin();
+	  p != partons.end(); ++p )
+      if ( abs((**p).id()) < 6 )
+	++nl;
+    nLight(nl/2);
 
     vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
     copy(ames.begin(),ames.end(),back_inserter(bornMEs()));

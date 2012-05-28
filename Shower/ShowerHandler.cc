@@ -82,6 +82,7 @@ void ShowerHandler::doinitrun(){
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
   // \todo DG: Disabled here because of momentum-violation problems
+  // Must set pre-cascade-handler to NewPhysics/DecayHandler instead
   //  ShowerTree::_decayInShower = particlesDecayInShower_;
 }
 

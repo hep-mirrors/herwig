@@ -3,7 +3,7 @@ HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc 
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-HwMRST_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+HwMRST_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 
 EXTRA_DIST = mrst diffraction
 

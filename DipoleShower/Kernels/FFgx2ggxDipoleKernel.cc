@@ -33,7 +33,12 @@ bool FFgx2ggxDipoleKernel::canHandle(const DipoleIndex& ind) const {
     !ind.initialStateEmitter() && !ind.initialStateSpectator();
 }
 
-bool FFgx2ggxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
+bool FFgx2ggxDipoleKernel::canHandleEquivalent(
+#ifndef NDEBUG
+					       const DipoleIndex& a,
+#else
+					       const DipoleIndex&,
+#endif
 					       const DipoleSplittingKernel& sk,
 					       const DipoleIndex& b) const {
 
