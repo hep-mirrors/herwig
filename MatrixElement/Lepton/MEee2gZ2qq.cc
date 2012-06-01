@@ -754,7 +754,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
       emittedMomenta.push_back(vector<Lorentz5Momentum>());
       iemitter  .push_back(0);
       ispectater.push_back(0);
-      return make_pair(ZERO,ShowerInteraction::QCD);
+      continue;
     }
     // now pick the emission with highest pT
     vector<Lorentz5Momentum> emission;

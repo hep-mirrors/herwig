@@ -452,8 +452,6 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
       // generate the intrinsic p_T once and for all
       generateIntrinsicpT(particlesToShower);
       // loop over possible interactions
-      vector<set<ShowerParticlePtr> > 
-	finalStates(interactions_.size(),set<ShowerParticlePtr>());
       if(hardTree()) {
 	if(hardTree()->interaction()!=interactions_[0]) {
 	  showerOrder = false;
@@ -790,8 +788,6 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 			  << Exception::eventerror;
       }
       // loop over possible interactions
-      vector<set<ShowerParticlePtr> > 
-	finalStates(interactions_.size(),set<ShowerParticlePtr>());
       if(hardTree()) {
 	if(hardTree()->interaction()!=interactions_[0]) {
 	  showerOrder = false;
@@ -1778,7 +1774,7 @@ bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower
 }
 
 void Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
-				   ShowerInteraction::Type inter) {
+				ShowerInteraction::Type inter) {
   bool noEmission = true;
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
