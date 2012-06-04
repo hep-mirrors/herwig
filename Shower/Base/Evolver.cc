@@ -1353,59 +1353,62 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
   Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
   Branching bb;
-  // generate branching
+  // parameters of the force branching
+  double z(0.);
+  HardBranchingPtr timelike;
+  for( unsigned int ix = 0; ix < branch->children().size(); ++ix ) {
+    if( branch->children()[ix]->status() ==HardBranching::Outgoing) {
+      timelike = branch->children()[ix];
+    }
+    if( branch->children()[ix]->status() ==HardBranching::Incoming )
+      z = branch->children()[ix]->z();
+  }
+  // generate truncated branching
   tcPDPtr part[2];
-  while (true) {
-    if( !isTruncatedShowerON() || hardOnly() ) break;
-    bb = splittingGenerator()->chooseBackwardBranching( *particle, 
-							beam, 1., beamParticle(), 
-							type , pdf,freeze);
-    if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
-      bb = Branching();
+  if(z>=0.&&z<=1.) {
+    while (true) {
+      if( !isTruncatedShowerON() || hardOnly() ) break;
+      bb = splittingGenerator()->chooseBackwardBranching( *particle, 
+							  beam, 1., beamParticle(), 
+							  type , pdf,freeze);
+      if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
+	bb = Branching();
+	break;
+      }
+      // particles as in Sudakov form factor
+      part[0] = getParticleData( bb.ids[0] );
+      part[1] = getParticleData( bb.ids[2] );
+      
+      //is emitter anti-particle
+      if( particle->id() != bb.ids[1]) {
+	if( part[0]->CC() ) part[0] = part[0]->CC();
+	if( part[1]->CC() ) part[1] = part[1]->CC();
+      }
+      double zsplit = bb.kinematics->z();
+      // apply the vetos for the truncated shower
+      // if doesn't carry most of momentum
+      if(type==branch->sudakov()->interactionType() &&
+	 zsplit < 0.5) {
+	particle->setEvolutionScale(bb.kinematics->scale() );
+	continue;
+      }
+      // others
+      if( part[0]->id() != particle->id() || // if particle changes type
+	  bb.kinematics->pT() > progenitor()->maximumpT(type) ||   // pt veto
+	  bb.kinematics->scale() < branch->scale()) { // angular ordering veto
+	particle->setEvolutionScale(bb.kinematics->scale() );
+	continue;
+      }
+      // and those from the base class
+      if(spaceLikeVetoed(bb,particle,type)) {
+	particle->setEvolutionScale(bb.kinematics->scale() );
+	continue;
+      }
       break;
     }
-    // particles as in Sudakov form factor
-    part[0] = getParticleData( bb.ids[0] );
-    part[1] = getParticleData( bb.ids[2] );
-    
-    //is emitter anti-particle
-    if( particle->id() != bb.ids[1]) {
-      if( part[0]->CC() ) part[0] = part[0]->CC();
-      if( part[1]->CC() ) part[1] = part[1]->CC();
-    }
-    double zsplit = bb.kinematics->z();
-    // apply the vetos for the truncated shower
-    // if doesn't carry most of momentum
-    if(type==branch->sudakov()->interactionType() &&
-       zsplit < 0.5) {
-      particle->setEvolutionScale(bb.kinematics->scale() );
-      continue;
-    }
-    // others
-    if( part[0]->id() != particle->id() || // if particle changes type
-	bb.kinematics->pT() > progenitor()->maximumpT(type) ||   // pt veto
-	bb.kinematics->scale() < branch->scale()) { // angular ordering veto
-      particle->setEvolutionScale(bb.kinematics->scale() );
-      continue;
-    }
-    // and those from the base class
-    if(spaceLikeVetoed(bb,particle,type)) {
-      particle->setEvolutionScale(bb.kinematics->scale() );
-      continue;
-    }
-    break;
   }
   if( !bb.kinematics ) {
     //do the hard emission
-    double z(0.);
-    HardBranchingPtr timelike;
-    for( unsigned int ix = 0; ix < branch->children().size(); ++ix ) {
-      if( branch->children()[ix]->status() ==HardBranching::Outgoing) {
-	timelike = branch->children()[ix];
-      }
-      if( branch->children()[ix]->status() ==HardBranching::Incoming )
-	z = branch->children()[ix]->z();
-    }
     ShoKinPtr kinematics =
       branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
 						      branch->children()[0]->pT() );
