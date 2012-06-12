@@ -795,7 +795,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	  if(!veto) initial->highestpT(pt);
 	}
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(br.kinematics->scale());
+      if(veto) parent->evolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }
@@ -819,7 +819,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 			     << "\nz =  " << z  << "\nkappa = " << kappa
 			     << "\nxa = " << xa 
 			     << "\nroot^2= " << root;
-	  parent->setEvolutionScale(br.kinematics->scale());
+	  parent->evolutionScale(br.kinematics->scale());
 	  return true;
       } 
       root=sqrt(root);
@@ -843,7 +843,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not vetoed reset max
       if(!veto) initial->highestpT(pt);
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(br.kinematics->scale());
+      if(veto) parent->evolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }

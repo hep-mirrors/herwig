@@ -195,7 +195,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
   assert(particleJetParent);
   bool emitted=true;
   // if this is not a fixed point in the reconstruction
-  if( !particleJetParent->isReconstructionFixedPoint() ) {
+  if( !particleJetParent->reconstructionFixedPoint() ) {
     // if not a reconstruction fixpoint, dig deeper for all children:
     for ( ParticleVector::const_iterator cit = 
 	    particleJetParent->children().begin();
@@ -242,7 +242,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
   }
   // recursion has reached an endpoint once, ie we can reconstruct the
   // kinematics from the children.
-  if( !(particleJetParent->isReconstructionFixedPoint()) ) 
+  if( !(particleJetParent->reconstructionFixedPoint()) ) 
     particleJetParent->showerKinematics()
       ->reconstructParent( particleJetParent, particleJetParent->children() );
   return emitted;

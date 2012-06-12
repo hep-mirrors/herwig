@@ -39,12 +39,12 @@ updateChildren(const tShowerParticlePtr theParent,
   theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
   if(angularOrder) {
-    theChildren[0]->setEvolutionScale(z()*dqtilde);
-    theChildren[1]->setEvolutionScale((1.-z())*dqtilde);
+    theChildren[0]->evolutionScale(z()*dqtilde);
+    theChildren[1]->evolutionScale((1.-z())*dqtilde);
   }
   else {
-    theChildren[0]->setEvolutionScale(dqtilde);
-    theChildren[1]->setEvolutionScale(dqtilde);
+    theChildren[0]->evolutionScale(dqtilde);
+    theChildren[1]->evolutionScale(dqtilde);
   }
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=     z() *theParent->showerParameters()[0];
@@ -159,8 +159,8 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   ids[1] = children[0]->id();
   ids[2] = children[1]->id();
   vector<Energy> virtualMasses = SudakovFormFactor()->virtualMasses(ids);
-  if(children[0]->children().empty()) children[0]->setVirtualMass(virtualMasses[1]);
-  if(children[1]->children().empty()) children[1]->setVirtualMass(virtualMasses[2]);
+  if(children[0]->children().empty()) children[0]->virtualMass(virtualMasses[1]);
+  if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
   // compute the new pT of the branching
   Energy2 pt2=sqr(z()*(1.-z()))*sqr(scale())
     - sqr(children[0]->virtualMass())*(1.-z())
@@ -171,10 +171,10 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     sqr(children[1]->virtualMass())/(1.-z()) +
     pt2/z()/(1.-z());
   if(pt2<ZERO) {
-    parent->setVirtualMass(ZERO);
+    parent->virtualMass(ZERO);
   }
   else {
-    parent->setVirtualMass(sqrt(q2));
+    parent->virtualMass(sqrt(q2));
     pT(sqrt(pt2));
   }
 }

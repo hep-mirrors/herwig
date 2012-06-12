@@ -152,11 +152,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addAntiColoured(first);
       }
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0);      
+      first->radiationLine(0);
+      second->radiationLine(0);      
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -179,11 +179,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addAntiColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==OctetOctetOctet) {
@@ -199,8 +199,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // progenitor it will only radiate from the chosen radiation
       // line. Otherwise the parent will radiate randomly.
       // Initializing radiation lines
-      first->setRadiationLine(0);
-      second->setRadiationLine(0);
+      first->radiationLine(0);
+      second->radiationLine(0);
       // Switch to choose random or non-random choice of lines
       bool randomchoice = 0;
       // Radiation line
@@ -271,11 +271,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
 	if (parent->radiationLine() == 1 || parent->radiationLine() == 2){
       	  // Set the radiation line for the children
-      	  first->setRadiationLine(radiationLine);
-	  second->setRadiationLine(0);
+      	  first->radiationLine(radiationLine);
+	  second->radiationLine(0);
 	  // Set the progenitors for the children
-	  first->setProgenitor(parent->progenitor());
-	  second->setProgenitor(parent->progenitor()); 
+	  first->progenitor(parent->progenitor());
+	  second->progenitor(parent->progenitor()); 
 	}    
       }            
     }
@@ -291,8 +291,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // progenitor it will only radiate from the chosen radiation
       // line. Otherwise the parent will radiate randomly.           
       // Initializing radiation lines
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0);
+      parent->radiationLine(0);
+      second->radiationLine(0);
       // Switch to choose random or non-random choice of lines
       bool randomchoice = 0;
       // Radiation line
@@ -364,11 +364,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
         if (first->radiationLine() == 1 || first->radiationLine() == 2){
 	  // Set the radiation line for the children
-     	  parent->setRadiationLine(radiationLine);
-	  second->setRadiationLine(0);
+     	  parent->radiationLine(radiationLine);
+	  second->radiationLine(0);
 	  // Set the progenitors for the children
-	  parent->setProgenitor(first->progenitor());
-	  second->setProgenitor(first->progenitor()); 	  
+	  parent->progenitor(first->progenitor());
+	  second->progenitor(first->progenitor()); 	  
 	}   	      
       }
     }    
@@ -382,11 +382,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       cparent.first ->addColoured    ( first);
       cparent.second->addAntiColoured(second);
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      first->radiationLine(0);
+      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -409,11 +409,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure == TripletOctetTriplet) {
@@ -438,11 +438,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 	newline->addAntiColoured(second);	
       }
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      first->radiationLine(0);
+      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -459,11 +459,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         cfirst.second->addAntiColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==SextetSextetOctet) {

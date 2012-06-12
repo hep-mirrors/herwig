@@ -396,10 +396,10 @@ HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,
     allBranchings.push_back( spectatorBranch );
     allBranchings.push_back( emitterBranch );
   }
-  emitterBranch  ->branchingParticle()->setPartner(spectatorBranch->branchingParticle());
-  spectatorBranch->branchingParticle()->setPartner(emitterBranch  ->branchingParticle());
-  spaceBranchings[0]->branchingParticle()->setPartner(spaceBranchings[1]->branchingParticle());
-  spaceBranchings[1]->branchingParticle()->setPartner(spaceBranchings[0]->branchingParticle());
+  emitterBranch  ->branchingParticle()->partner(spectatorBranch->branchingParticle());
+  spectatorBranch->branchingParticle()->partner(emitterBranch  ->branchingParticle());
+  spaceBranchings[0]->branchingParticle()->partner(spaceBranchings[1]->branchingParticle());
+  spaceBranchings[1]->branchingParticle()->partner(spaceBranchings[0]->branchingParticle());
   // Make the HardTree from the HardBranching vectors.
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					  ShowerInteraction::QED));

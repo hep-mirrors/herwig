@@ -142,7 +142,7 @@ public:
   /**
    * Set the ShowerKinematics object.
    */
-  void setShowerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
+  void showerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
   //@}
 
   /**
@@ -159,7 +159,7 @@ public:
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale
    */
-  void setEvolutionScale(Energy scale) { _scale = scale; }
+  void evolutionScale(Energy scale) { _scale = scale; }
 
   /**
    * Return the virtual mass\f$
@@ -169,7 +169,7 @@ public:
   /**
    *  Set the virtual mass
    */
-  void setVirtualMass(Energy mass) { _vMass = mass; }
+  void virtualMass(Energy mass) { _vMass = mass; }
 
   /** 
    * Return the partner
@@ -180,7 +180,7 @@ public:
   /**
    * Set the partner
    */
-  void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
+  void partner(const tShowerParticlePtr partner) { _partner = partner; } 
 
 
   /**
@@ -203,7 +203,7 @@ public:
   /**
    *  Set the radiation line of a gluon
    */   
-  void setRadiationLine(int radiationLine) { _radiationLine = radiationLine; }
+  void radiationLine(int radiationLine) { _radiationLine = radiationLine; }
   
   
   /** 
@@ -215,7 +215,7 @@ public:
   /**
    * Set the progenitor of the shower
    */
-  void setProgenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
+  void progenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
     
 
   //@}
@@ -235,12 +235,12 @@ public:
   /**
    *  Get the flag
    */
-  bool isReconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
+  bool reconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
 
   /**
    *  Set the flag
    */
-  void setReconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
+  void reconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
   //@}
 
   /**

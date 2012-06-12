@@ -491,7 +491,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   }
   // check it is in the phase space
   if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
-    parent->setEvolutionScale(br.kinematics->scale());
+    parent->evolutionScale(br.kinematics->scale());
     return true;
   }
   double k1 = getKfromX(x, xb);
@@ -514,7 +514,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // if not vetoed reset max
   if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->setEvolutionScale(br.kinematics->scale());
+  if(veto) parent->evolutionScale(br.kinematics->scale());
   // return the veto
   return veto;
 }
@@ -867,11 +867,11 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     allBranchings.push_back( spectatorBranch );
     allBranchings.push_back( emitterBranch );
   }
-  emitterBranch  ->branchingParticle()->setPartner(spectatorBranch->branchingParticle());
-  spectatorBranch->branchingParticle()->setPartner(emitterBranch  ->branchingParticle());
+  emitterBranch  ->branchingParticle()->partner(spectatorBranch->branchingParticle());
+  spectatorBranch->branchingParticle()->partner(emitterBranch  ->branchingParticle());
   if(force==ShowerInteraction::QED) {
-    spaceBranchings[0]->branchingParticle()->setPartner(spaceBranchings[1]->branchingParticle());
-    spaceBranchings[1]->branchingParticle()->setPartner(spaceBranchings[0]->branchingParticle());
+    spaceBranchings[0]->branchingParticle()->partner(spaceBranchings[1]->branchingParticle());
+    spaceBranchings[1]->branchingParticle()->partner(spaceBranchings[0]->branchingParticle());
   }
   // Make the HardTree from the HardBranching vectors.
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,

@@ -41,12 +41,12 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[ix]->showerParameters().resize(2);
   }
   if(angularOrder) {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+    theChildren[0]->evolutionScale(        dqtilde);
+    theChildren[1]->evolutionScale((1.-dz)*dqtilde);
   }
   else {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale(        dqtilde);
+    theChildren[0]->evolutionScale(        dqtilde);
+    theChildren[1]->evolutionScale(        dqtilde);
   }
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 

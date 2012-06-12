@@ -643,7 +643,7 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(br.kinematics->scale());
+  parent->evolutionScale(br.kinematics->scale());
   return true;
 }
 

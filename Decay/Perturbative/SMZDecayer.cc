@@ -797,7 +797,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   // if not vetoed reset max
   if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->setEvolutionScale(br.kinematics->scale());
+  if(veto) parent->evolutionScale(br.kinematics->scale());
   // return the veto
   return veto;
 }

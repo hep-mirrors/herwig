@@ -327,10 +327,10 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
         }
         if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){
 	  // Set radiation lines for hard octets
-	  (*cit)->setRadiationLine(radiationLine[position]);
+	  (*cit)->radiationLine(radiationLine[position]);
 	  if( !(*cit)->progenitor() ){
 	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->setProgenitor(*cit);
+	    (*cit)->progenitor(*cit);
 	    // Set the second evolution scale of the progenitor
 	    (*cit)->setEvolutionScale2(pairScales2.first);
 	  }		
@@ -340,28 +340,28 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	  // Set radiation lines for hard triplets
 	  if( !(*cit)->progenitor() ){
 	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->setProgenitor(*cit);
+	    (*cit)->progenitor(*cit);
 	    // Set the second evolution scale of the progenitor
 	    (*cit)->setEvolutionScale2(pairScales2.first);
 	    // Set the radiation line
-	    (*cit)->setRadiationLine(0);
+	    (*cit)->radiationLine(0);
 	  }		         
 	}
       }
 
       switch(_approach) {
       case 0: // Totally random (unless chosen above)
-	(*cit)->setEvolutionScale(pairScales.first);
-	(*cit)->setPartner(partners[position]);
+	(*cit)->evolutionScale(pairScales.first);
+	(*cit)->partner(partners[position]);
 	break;
       case 1: // Partner is also set, if it has already been set, pick 50/50
         if(!(*cit)->partner() || UseRandom::rndbool()) {
-          (*cit)->setEvolutionScale(pairScales.first);
-          (*cit)->setPartner(partners[position]);
+          (*cit)->evolutionScale(pairScales.first);
+          (*cit)->partner(partners[position]);
         }
         if(!partners[position]->partner() || UseRandom::rndbool()) {
-          partners[position]->setEvolutionScale(pairScales.second);
-          partners[position]->setPartner(*cit);
+          partners[position]->evolutionScale(pairScales.second);
+          partners[position]->partner(*cit);
         }
         break;
       default:
@@ -380,7 +380,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
         calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
                                         isDecayCase);
-      (*cit)->setEvolutionScale(pairScales.first);
+      (*cit)->evolutionScale(pairScales.first);
     }
   }
   return true;
@@ -434,8 +434,8 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
 					isDecayCase);
-      (*cit)->setEvolutionScale(pairScales.first);
-      (*cit)->setPartner(partner);
+      (*cit)->evolutionScale(pairScales.first);
+      (*cit)->partner(partner);
     }
   }
   // partners all ready set only do the scales
@@ -447,7 +447,7 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
 					isDecayCase);
-      (*cit)->setEvolutionScale(pairScales.first);
+      (*cit)->evolutionScale(pairScales.first);
     }
   }
   return true;
