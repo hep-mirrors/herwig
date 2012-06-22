@@ -2106,8 +2106,8 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     // final-state parton
     if(jets[ix]->status()==HardBranching::Outgoing) {
       pout[0] += jets[ix]->branchingParticle()->momentum();
-      mc = jets[ix]->branchingParticle()->getThePEGBase() ? 
-	jets[ix]->branchingParticle()->getThePEGBase()->mass() :
+      mc = jets[ix]->branchingParticle()->thePEGBase() ? 
+	jets[ix]->branchingParticle()->thePEGBase()->mass() :
 	jets[ix]->branchingParticle()->dataPtr()->mass();
     }
     // initial-state parton

@@ -191,7 +191,7 @@ public:
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
    */
-  void setEvolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
+  void evolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
   
   /**
    *  Return the radiation line of a gluon
@@ -263,7 +263,7 @@ public:
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  const tcPPtr getThePEGBase() const { return _thePEGBase; }
+  const tcPPtr thePEGBase() const { return _thePEGBase; }
 
 protected:
 

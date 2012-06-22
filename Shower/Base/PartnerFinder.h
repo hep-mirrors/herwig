@@ -45,6 +45,8 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
  */
 class PartnerFinder: public Interfaced {
 
+enum PartnerType {QCDColourLine,QCDAntiColourLine,QED};
+
 public:
 
   /**
@@ -127,6 +129,22 @@ protected:
 					    const bool isDecayCase,
 					    const bool setPartners=true);
   //@}
+
+  /**
+   *  Find the QCD partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<PartnerType, tShowerParticlePtr> > 
+  findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
+  /**
+   *  Find the QED partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<double, tShowerParticlePtr> > 
+  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
