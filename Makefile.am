@@ -1,11 +1,17 @@
-## include first, then all dirs, then lib, then src! 
-## Helicity and PDT before Decay!
 SUBDIRS = include \
-	Utilities Helicity PDT Decay PDF Models \
+	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Interfaces Analysis Looptools \
-	lib src Doc
+	lib src Doc Contrib
 
-noinst_HEADERS = Config/Herwig.h
+noinst_HEADERS = Config/HepMCHelper.h
 
-## Doc # look at this later
+EXTRA_DIST=GUIDELINES
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH)
+
+ACLOCAL_AMFLAGS = -I m4
+
+libclean:
+	find . -name '*.la' -print0 | xargs -0 rm -rf
+	(cd lib && make clean)

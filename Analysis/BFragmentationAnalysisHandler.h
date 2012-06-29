@@ -1,45 +1,35 @@
 // -*- C++ -*-
+//
+// BFragmentationAnalysisHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BFragmentationAnalysisHandler_H
 #define HERWIG_BFragmentationAnalysisHandler_H
 //
 // This is the declaration of the BFragmentationAnalysisHandler class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "BFragmentationAnalysisHandler.fh"
+#include "ThePEG/EventRecord/Event.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BFragmentationAnalysisHandler class.
+ * The BFragmentationAnalysisHandler class is designed to compare
+ * the fragmentation function for weakly decaying B hadrons with data
+ * from SLD and ALEPH.
  *
  * @see \ref BFragmentationAnalysisHandlerInterfaces "The interfaces"
  * defined for BFragmentationAnalysisHandler.
  */
 class BFragmentationAnalysisHandler: public AnalysisHandler {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline BFragmentationAnalysisHandler();
-
-  /**
-   * The copy constructor.
-   */
-  inline BFragmentationAnalysisHandler(const BFragmentationAnalysisHandler &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BFragmentationAnalysisHandler();
-  //@}
 
 public:
 
@@ -65,12 +55,10 @@ public:
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
   /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
+   *  Identifies which step(2) final state particles originate
+   *  from the b/bbar...
    */
-  virtual LorentzRotation transform(tEventPtr event) const;
+  void analyze_bquarks(ParticleSet);
 
   /**
    * Analyze the given vector of particles. The default version calls
@@ -88,22 +76,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -120,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -134,47 +106,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void dofinish();
   //@}
 
 private:
@@ -183,7 +124,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<BFragmentationAnalysisHandler> initBFragmentationAnalysisHandler;
+  static NoPIOClassDescription<BFragmentationAnalysisHandler> initBFragmentationAnalysisHandler;
 
   /**
    * The assignment operator is private and must never be called.
@@ -204,9 +145,24 @@ private:
   HistogramPtr _fragBxEa;
 
   /**
+   *  Histograms for quark energy fraction
+   */
+  HistogramPtr _fragbquarkxE;
+
+  /**
+   * Histograms for b jet mass
+   */
+  HistogramPtr _fragbquarkjetmass;
+
+  /**
    *  Centre-of-mass energy of the collision
    */
   Energy _emax;
+
+  /**
+   *  The weight for the event
+   */
+  double _weight;
 
 };
 
@@ -232,20 +188,15 @@ template <>
 struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
   : public ClassTraitsBase<Herwig::BFragmentationAnalysisHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BFragmentationAnalysisHandler"; }
+  static string className() { return "Herwig::BFragmentationAnalysisHandler"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the BFragmentationAnalysisHandler class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
+  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "BFragmentationAnalysisHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BFragmentationAnalysisHandler.tcc"
-#endif
 
 #endif /* HERWIG_BFragmentationAnalysisHandler_H */

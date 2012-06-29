@@ -1,47 +1,39 @@
 BUILT_SOURCES = done-all-links
-CLEANFILES = done-all-links \
-Herwig++/Config \
-Herwig++/Decay \
-Herwig++/Hadronization \
-Herwig++/Helicity \
-Herwig++/Interfaces \
-Herwig++/MatrixElement \
-Herwig++/Models \
-Herwig++/PDF \
-Herwig++/PDT \
-Herwig++/Shower \
-Herwig++/UnderlyingEvent \
-Herwig++/Utilities \
-Herwig++/Analysis \
-Herwig++/Looptools/clooptools.h
 
-## replace Herwig++ with $(PACKAGE)
-## replace find with explicit list of directories
+AUTOMAKE_OPTIONS = -Wno-portability
 
-my_directories=Config Decay Hadronization Helicity Interfaces \
-MatrixElement Models PDF PDT Shower UnderlyingEvent Utilities Analysis
-## Looptools is dealt with separately
+DIRLINKS = $(top_srcdir)/Analysis \
+	   $(top_srcdir)/Decay \
+           $(top_srcdir)/Hadronization \
+           $(top_srcdir)/Interfaces \
+           $(top_srcdir)/MatrixElement \
+           $(top_srcdir)/Models \
+           $(top_srcdir)/PDF \
+           $(top_srcdir)/PDT \
+           $(top_srcdir)/Shower \
+           $(top_srcdir)/UnderlyingEvent \
+           $(top_srcdir)/Utilities
 
-done-all-links:
-	mkdir -p Herwig++
-	cd Herwig++; \
-	for i in $(my_directories); \
-	do \
-	$(LN_S) -f ../$(top_srcdir)/$$i ; \
-	done
-	mkdir -p Herwig++/Looptools
-	cd Herwig++/Looptools; \
-	$(LN_S) -f ../../$(top_srcdir)/Looptools/include/clooptools.h
-	echo "stamp" > done-all-links
+CONFIGHEADERS = $(top_builddir)/Config/HepMCHelper.h
+
+LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
+
+CLEANFILES = done-all-links 
+
+done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(LOOPTOOLHEADERS)
+	mkdir -p Herwig++/Config Herwig++/Looptools
+	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
+	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config
+	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
+	touch done-all-links
 
 install-data-local:
-	find Herwig++ -follow -name '*.h' \
-          -exec $(install_sh_DATA) \{\} $(DESTDIR)$(includedir)/\{\} \;
-	find Herwig++ -follow -name '*.icc' \
-          -exec $(install_sh_DATA) \{\} $(DESTDIR)$(includedir)/\{\} \;
-	find Herwig++ -follow -name '*.fh'  \
+	find Herwig++ -follow \( -name '*.h' -or -name '*.icc' \
+	-or -name '*.tcc' -or -name '*.fh' -or -name '*.xh' \) \
           -exec $(install_sh_DATA) \{\} $(DESTDIR)$(includedir)/\{\} \;
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(includedir)/Herwig++
 
+clean-local:
+	rm -rf Herwig++

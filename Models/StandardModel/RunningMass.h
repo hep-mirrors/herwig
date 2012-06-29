@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// RunningMass.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RunningMass_H
 #define HERWIG_RunningMass_H
 //
@@ -20,13 +27,10 @@ class RunningMass: public RunningMassBase {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline RunningMass();
-  //@}  
+  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1) {}
 
 public:
   
@@ -73,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -91,7 +95,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
     
 private:
@@ -131,7 +135,12 @@ private:
   /**
    * Pointer to the StandardModel object.
    */
-  SMPtr _theStandardModel;
+  tcSMPtr _theStandardModel;
+
+  /**
+   *  Option to use pole masses for u,d,s
+   */
+  unsigned int _lightOption;
 
 };
 
@@ -139,41 +148,35 @@ private:
 
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
   
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of RunningMass.
+ */
+template <>
+struct BaseClassTrait<Herwig::RunningMass,1> {
+  /** Typedef of the base class of RunningMass. */
+  typedef Herwig::RunningMassBase NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::RunningMass>
+  : public ClassTraitsBase<Herwig::RunningMass> {
+
   /**
-   * The following template specialization informs ThePEG about the
-   * base class of RunningMass.
+   * Return the class name.
    */
-  template <>
-  struct BaseClassTrait<Herwig::RunningMass,1> {
-    /** Typedef of the base class of RunningMass. */
-    typedef Herwig::RunningMassBase NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::RunningMass>
-    : public ClassTraitsBase<Herwig::RunningMass> {
+  static string className() { return "Herwig::RunningMass"; }
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::RunningMass"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwStandardModel.so"; }
-
-  };
+/** @endcond */
   
 }
-
-#include "RunningMass.icc"
 
 #endif /* HERWIG_RunningMass_H */

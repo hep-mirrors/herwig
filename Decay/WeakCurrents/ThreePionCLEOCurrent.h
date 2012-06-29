@@ -1,13 +1,18 @@
 // -*- C++ -*-
+//
+// ThreePionCLEOCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef THEPEG_ThreePionCLEOCurrent_H
 #define THEPEG_ThreePionCLEOCurrent_H
 //
 // This is the declaration of the ThreePionCLEOCurrent class.
 //
 #include "ThreeMesonCurrentBase.h"
-#include "ThreePionCLEOCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
-#include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -101,20 +106,10 @@ class ThreePionCLEOCurrent: public ThreeMesonCurrentBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline ThreePionCLEOCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ThreePionCLEOCurrent(const ThreePionCLEOCurrent &);
-  //@}
-
-public:
+  ThreePionCLEOCurrent();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -159,16 +154,6 @@ public:
   virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
 			  DecayPhaseSpaceChannelPtr phase,Energy upp);
-
-  /**
-   * The particles produced by the current. This returns the mesons for the mode.
-   * @param icharge The total charge of the particles in the current.
-   * @param imode The mode for which the particles are being requested
-   * @param iq The PDG code for the quark
-   * @param ia The PDG code for the antiquark
-   * @return The external particles for the current.
-   */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
@@ -178,8 +163,6 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
-
-protected:
 
   /**
    * the matrix element for the a1 decay to calculate the running width
@@ -193,8 +176,12 @@ protected:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double a1MatrixElement(int iopt,Energy2 q2, Energy2 s3,Energy2 s2,Energy2 s1,
-				Energy m1,Energy m2,Energy m3);
+  inline double threeBodyMatrixElement(const int iopt, const Energy2 q2,
+				       const Energy2 s3, const Energy2 s2, 
+				       const Energy2 s1, const Energy  m1,
+				       const Energy  m2, const Energy  m3) const;
+
+protected:
 
   /**
    * Can the current handle a particular set of mesons. 
@@ -211,16 +198,9 @@ protected:
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param F1 The form factor \f$F_1\f$.
-   * @param F2 The form factor \f$F_2\f$.
-   * @param F3 The form factor \f$F_3\f$.
-   * @param F4 The form factor \f$F_4\f$.
-   * @param F5 The form factor \f$F_5\f$.
    */
-  virtual void calculateFormFactors(const int ichan,const int imode,
-				    Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3,
-				    Complex&F1,Complex&F2,Complex&F3,
-				    Complex&F4,Complex&F5) const;
+  virtual FormFactors calculateFormFactors(const int ichan,const int imode,Energy2 q2,
+					   Energy2 s1,Energy2 s2,Energy2 s3) const;
 
   /**
    * Calculate CLEO form factors for the current. Implements the form factors
@@ -246,13 +226,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -264,12 +244,17 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
+
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate();
   //@}
 
 private:
@@ -291,20 +276,25 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
    */
-  inline Energy a1width(Energy2 q2) const ;
+  Energy a1width(Energy2 q2) const;
 
   /**
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  inline void inita1width(int iopt);
+  void inita1Width(int iopt);
   
   /**
    * \f$a_1\f$ Breit-Wigner
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const;
+  Complex a1BreitWigner(Energy2 q2) const {
+    Complex ii(0.,1.);
+    Energy2 m2=_a1mass*_a1mass; Energy q=sqrt(q2);
+    Complex output=m2/(m2-q2-ii*q*a1width(q2));
+    return output;
+  }
 
   /**
    * The \f$\rho\f$ Breit-Wigner.
@@ -313,7 +303,16 @@ private:
    * @param icharge The charge of the \f$\rho\f$.
    * @return The Breit-Wigner
    */
-  inline Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const;
+  Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_prhocc[ires];
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpi0)/_prhoc0[ires];
+    ratio*= ratio*ratio;
+    Energy gamrun=_rhowidth[ires]*ratio*_rhomass[ires]/q;
+    return _rhomass[ires]*_rhomass[ires]/(_rhomass[ires]*_rhomass[ires]
+					  -q2-ii*_rhomass[ires]*gamrun);
+  }
 
   /**
    * Breit-Wigner for the \f$\sigma\f$.
@@ -322,7 +321,14 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex sigmaBreitWigner(Energy2 q2,int icharge) const;
+  Complex sigmaBreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_psigmacc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_psigma00;
+    Energy gamrun=_sigmawidth*ratio*_sigmamass/q;
+    return _sigmamass*_sigmamass/(_sigmamass*_sigmamass-q2-ii*_sigmamass*gamrun);
+  }
   
   /**
    * Breit-Wigner for the \f$f_0(1370)\f$.
@@ -331,7 +337,14 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex f0BreitWigner(Energy2 q2,int icharge) const;
+  Complex f0BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf0cc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf000;
+    Energy gamrun=_f0width*ratio*_f0mass/q;
+    return _f0mass*_f0mass/(_f0mass*_f0mass-q2-ii*_f0mass*gamrun);
+  }
 
   /**
    * Breit-Wigner for the \f$f_2\f$.
@@ -340,7 +353,15 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex f2BreitWigner(Energy2 q2,int icharge) const;
+  Complex f2BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf2cc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf200;
+    ratio*= ratio*ratio*ratio*ratio;
+    Energy gamrun=_f2width*ratio*_f2mass/q;
+    return _f2mass*_f2mass/(_f2mass*_f2mass-q2-ii*_f2mass*gamrun);
+  }
 
 private:
   
@@ -578,12 +599,27 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width calculation.
    */
-  Interpolator *_a1runinter;
+  Interpolator<Energy,Energy2>::Ptr _a1runinter;
 
   /**
    * Initialize the running \f$a_1\f$ width.
    */
   bool _initializea1;
+
+  /**
+   * Option for the \f$a_1\f$ width
+   */
+  bool _a1opt;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
 
 };
 
@@ -593,6 +629,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -612,7 +650,7 @@ template <>
 struct ClassTraits<Herwig::ThreePionCLEOCurrent>
   : public ClassTraitsBase<Herwig::ThreePionCLEOCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ThreePionCLEOCurrent"; }
+  static string className() { return "Herwig::ThreePionCLEOCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -622,106 +660,8 @@ struct ClassTraits<Herwig::ThreePionCLEOCurrent>
 
 };
 
-}
-  
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG; 
-
-/** \ingroup Decay
- *
- * Definitions of the functions to be integrated to give the running width
- * functions to return the matrix element for the a1 decay to be
- * integrated to give the a1 running width
- *
- * @see ThreeMesonDefaultCurrent
- */
-class ThreePionCLEOa1MatrixElement: public Genfun::AbsFunction {
-
-public:
-  
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-  
-  /**
-   * Clone method
-   */
-   ThreePionCLEOa1MatrixElement *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-    
-public:
-  
-  /**
-   * Constructor
-   */
-  ThreePionCLEOa1MatrixElement(int,ThreePionCLEOCurrentPtr);
-  
-  /**
-   * Destructor
-   */
-  virtual ~ThreePionCLEOa1MatrixElement();
-
-  /**
-   * The  number of variables, in thsi case 7
-   */  
-  virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  ThreePionCLEOa1MatrixElement(const ThreePionCLEOa1MatrixElement &right);
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double) const {return 0.;}
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const ;
-  
-  /**
-   * set the scale
-   */
-  inline void setQ2(Energy2);
-  
-  
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const ThreePionCLEOa1MatrixElement & 
-  operator=(const ThreePionCLEOa1MatrixElement &right);
-  
-  /**
-   * the decayer
-   * the integer for the mode
-   */
-private:
-  Ptr<Herwig::ThreePionCLEOCurrent>::pointer _decayer;
-  /**
-   * the decayer
-   * the integer for the mode
-   */
-  int _mode;
-};
+/** @endcond */
 
 }
-
-#include "ThreePionCLEOCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreePionCLEOCurrent.tcc"
-#endif
 
 #endif /* THEPEG_ThreePionCLEOCurrent_H */

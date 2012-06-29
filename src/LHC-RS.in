@@ -1,0 +1,50 @@
+##################################################
+# Example generator for the Randall-Sundrum model
+# in hadron collisions
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read RS.model
+cd /Herwig/NewPhysics
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# Example hard process: Incoming proton,resonant gravition
+
+insert ResConstructor:Incoming 0 /Herwig/Particles/g
+insert ResConstructor:Incoming 1 /Herwig/Particles/u
+insert ResConstructor:Incoming 2 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 3 /Herwig/Particles/d
+insert ResConstructor:Incoming 4 /Herwig/Particles/dbar
+
+insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
+
+insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
+insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
+insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
+insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
+
+# coupling
+set RS/Model:Lambda_pi 10000*GeV
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+# Other parameters for run
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-RS LHCGenerator

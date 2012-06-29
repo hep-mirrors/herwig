@@ -1,32 +1,34 @@
 // -*- C++ -*-
 //
+// ClusterFissioner.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the ClusterFissioner class.
 //
 
 namespace Herwig {
 
-
 inline ClusterFissioner::ClusterFissioner() :
-  _clMax( 3.35*GeV ),
-  _clPow( 2.0 ),
-  _pSplit1( 1.0 ),
-  _pSplit2( 1.0 ),
-  _btClM( 1.0*GeV ),
-  _iopRem( 1 )
-{}
-
-
-inline ClusterFissioner::ClusterFissioner(const ClusterFissioner & x)
-  : ThePEG::HandlerBase(x),
-	     _hadronsSelector( x._hadronsSelector ),
-	     _globalParameters( x._globalParameters ),
-	     _clMax( x._clMax ),
-             _clPow( x._clPow ),
-             _pSplit1( x._pSplit1 ),
-             _pSplit2( x._pSplit2 ),
-             _btClM( x._btClM ),
-             _iopRem( x._iopRem )
+  _clMaxLight(3.35*GeV),
+  _clMaxBottom(3.35*GeV),
+  _clMaxCharm(3.35*GeV),
+  _clMaxExotic(3.35*GeV),
+  _clPowLight(2.0),
+  _clPowBottom(2.0),
+  _clPowCharm(2.0),
+  _clPowExotic(2.0),
+  _pSplitLight(1.0),
+  _pSplitBottom(1.0),
+  _pSplitCharm(1.0),
+  _pSplitExotic(1.0),
+  _btClM(1.0*GeV),
+  _iopRem(1),
+  _kappa(1.0e15*GeV/meter)
 {}
 
 inline IBPtr ClusterFissioner::clone() const {

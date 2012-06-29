@@ -1,55 +1,36 @@
-=================
-HERWIG++ 2.0-beta
-=================
+==============
+HERWIG++ 2.3.0
+==============
 
-This is the beta release of Herwig++-2.0, a multi purpose event
+This is the release of Herwig++ 2.3.0, a multi purpose event
 generator for high energy physics.
-
-The main  new  feature is the extension of the program to include
-simple hadron-hadron processes including the initial-state parton shower. 
 
 The Herwig++ distribution contains an adapted version of LoopTools
 <http://www.feynarts.de/looptools/>. 
 
-Please contact <David.Grellscheid@durham.ac.uk> to be added to our
+Please contact <herwig@projects.hepforge.org> to be added to our
 list of users. This will allow you to make full use of the Wiki and
-bug tracker at http://hepforge.cedar.ac.uk/herwig/bugtrack/
+bug tracker at http://projects.hepforge.org/herwig/trac/
 
 BUILD AND INSTALL
 =================
 Generic installation instructions are in the file INSTALL.
 
-Before attempting to build Herwig++, you'll need to get CLHEP and ThePEG
-installed, too.
+Before attempting to build Herwig++, you'll need to get ThePEG installed.
 
------
-CLHEP
------
-
-If not installed already on your system, download CLHEP from 
-http://wwwasd.web.cern.ch/wwwasd/lhc++/clhep/INSTALLATION/clhep-1.9.html
-
-Any version after 1.9.1.1 will do. Do not build this package inside
-the Herwig++ source directory!
-
-$ tar xzvf clhep-2.0.?.?.tgz
-$ mkdir clhep-build
-$ cd clhep-build
-$ ../2.0.?.?/CLHEP/configure --prefix=/path/where/CLHEP/should/be/installed
-$ make
-$ make check
-$ make install
+Herwig++ uses some functions from the GNU scientific library GSL. The
+gsl and gsl header files must be available on your system. Usually
+they can be found in a package called libgsl-dev. 
 
 ------
 ThePEG
 ------
 
-Download ThePEG, snapshot 2006-01-31 or later from 
-http://hepforge.cedar.ac.uk/herwig/.
+Download ThePEG 1.4.0 or later from 
+http://projects.hepforge.org/herwig/versions
  
 Do not build this package inside the Herwig++ source directory!
 
-$ export CLHEPPATH=/path/where/CLHEP/was/installed
 $ tar xzvf ThePEG-*.tar.gz
 $ cd ThePEG*
 $ ./configure --prefix=/path/where/ThePEG/should/be/installed
@@ -57,11 +38,10 @@ $ make
 $ make check
 $ make install
 
-If 'make check' cannot find the libCLHEP library, set LD_LIBRARY_PATH
-to include the path where libCLHEP was installed. On a bash shell, this will do
-it:
-
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CLHEPPATH/lib
+Optional configure switches include --enable-unitchecks for checking
+dimensional correctness of physical expressions in the code, and
+--with-LHAPDF for linking against the LHAPDF library. See 
+'./configure --help' for more details.
 
 --------
 Herwig++
@@ -69,15 +49,12 @@ Herwig++
 
 Download Herwig++, then
 
-$ export CLHEPPATH=/path/where/CLHEP/was/installed
-$ export THEPEGPATH=/path/where/ThePEG/was/installed
 $ tar xzvf Herwig++-*.tar.gz
 $ cd Herwig++*
-$ ./configure --prefix=/path/where/Herwig++/should/be/installed
+$ ./configure --prefix=/path/where/Herwig++/should/be/installed --with-thepeg=/path/where/ThePEG/was/installed
 $ make
 $ make check
 $ make install
 
-
 More detailed instructions can be found on the Herwig++ home page at
-http://hepforge.cedar.ac.uk/herwig/bugtrack/wiki/HerwigInstallation
+http://projects.hepforge.org/herwig/trac/wiki/HerwigInstallation

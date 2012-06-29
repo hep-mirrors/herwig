@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DecayPhaseSpaceChannel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DecayPhaseSpaceChannel_H
 #define HERWIG_DecayPhaseSpaceChannel_H
 //
@@ -7,9 +14,10 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
-#include <ThePEG/Repository/CurrentGenerator.h>
 #include "DecayPhaseSpaceChannel.fh"
 #include "DecayIntegrator.h"
+#include "Herwig++/Utilities/Kinematics.h"
+#include "ThePEG/Repository/UseRandom.h"
 #include "DecayPhaseSpaceMode.fh"
 
 namespace Herwig {
@@ -62,23 +70,13 @@ public:
   /**
    * Default constructor.
    */
-  inline DecayPhaseSpaceChannel();
+  DecayPhaseSpaceChannel() {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseSpaceMode</code>. This 
    * is the constructor which should normally be used in decayers.
    */
-  DecayPhaseSpaceChannel(DecayPhaseSpaceModePtr);
-
-  /**
-   * Copy-constructor.
-   */
-  inline DecayPhaseSpaceChannel(const DecayPhaseSpaceChannel &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~DecayPhaseSpaceChannel();
+  DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr);
   //@}
   
 public:
@@ -92,16 +90,22 @@ public:
    * 0 is a Breit-Wigner and 1 is a power-law
    * @param power The power to beb used for the mass generation if a power law
    * mass distribution is chosen.
-   * @param dau1 The first daughter. If this is postive it is the \f$dau1\f$th
+   * @param dau1 The first daughter. If this is postive it is the \f$dau1\f$ th
    * outgoing particle (0 is the incoming particle), if it is negative it is the 
    * \f$|dau1|\f$ intermediate. The intermediates are specified in the order they
    * are added with 0 being the incoming particle.
-   * @param dau2 The first daughter. If this is postive it is the \f$dau2\f$th
+   * @param dau2 The first daughter. If this is postive it is the \f$dau2\f$ th
    * outgoing particle (0 is the incoming particle), if it is negative it is the 
    * \f$|dau2|\f$ intermediate. The intermediates are specified in the order they
    * are added with 0 being the incoming particle.
    */
-  inline void addIntermediate(PDPtr part,int jac,double power,int dau1,int dau2);
+  void addIntermediate(PDPtr part,int jac,double power,int dau1,int dau2) {
+    _intpart.push_back(part);
+    _jactype.push_back(jac);
+    _intpower.push_back(power);
+    _intdau1.push_back(dau1); 
+    _intdau2.push_back(dau2);
+  }
   
   /**
    * Reset the properties of an intermediate particle. This member is used
@@ -112,14 +116,30 @@ public:
    * @param mass The new mass of the intermediate
    * @param width The new width of the intermediate.
    */
-  inline void resetIntermediate(tcPDPtr part,Energy mass,Energy width);
+  void resetIntermediate(tcPDPtr part,Energy mass,Energy width) {
+    if(!part) return;
+    int idin=part->id();
+    for(unsigned int ix=0;ix<_intpart.size();++ix) {
+      if(_intpart[ix] && _intpart[ix]->id()==idin) {
+	_intmass[ix] =mass;_intwidth[ix]=width;
+	_intmass2[ix]=mass*mass;_intmwidth[ix]=mass*width;
+      }
+    }
+  }
 
   /*
    * Reset the one of the daughters
    * @param oldp The id of the particle being reset
    * @param newp The id of the particle replacing it
    */
-  inline void resetDaughter(int oldp, int newp);
+  void resetDaughter(int oldp, int newp) {
+    for(unsigned int ix=0;ix<_intdau1.size();++ix) {
+      if(_intdau1[ix]==oldp) _intdau1[ix]=newp;
+    }
+    for(unsigned int ix=0;ix<_intdau2.size();++ix) {
+      if(_intdau2[ix]==oldp) _intdau2[ix]=newp;
+    }
+  }
   //@}
 
 protected:
@@ -135,7 +155,7 @@ protected:
    * off-shell effects for the external particles.
    */
   vector<Lorentz5Momentum> generateMomenta(const Lorentz5Momentum & pin,
-					   vector<Energy> massext);
+					   const vector<Energy> & massext);
   
   /**
    * Generate the weight for this channel given a phase space configuration.
@@ -158,6 +178,19 @@ protected:
    * 
    */
   void generateIntermediates(bool cc,const Particle & in, ParticleVector & out);
+
+  /**
+   * Calculate the momenta for a two body decay
+   * The return value indicates success or failure.
+   * @param p The momentum of the decaying particle
+   * @param m1 The mass of the first decay product
+   * @param m2 The mass of the second decay product
+   * @param p1 The momentum of the first decay product
+   * @param p2 The momentum of the second decay product
+   */
+  void twoBodyDecay(const Lorentz5Momentum & p, 
+		    const Energy m1, const Energy m2,
+		    Lorentz5Momentum & p1, Lorentz5Momentum & p2);
   //@}
   
 public:
@@ -191,61 +224,33 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
-  
-protected:
-  
+
+protected:  
+
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
-   * Initialize this object to the begining of the run phase.
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
-  
+
 private:
   
   /**
@@ -268,7 +273,7 @@ private:
    * @param lower The lower limit on the particle's mass.
    * @param upper The upper limit on the particle's mass. 
    */
-  inline Energy generateMass(int ires,Energy lower,Energy upper);
+  Energy generateMass(int ires,Energy lower,Energy upper);
   
   /**
    * Return the weight for a given resonance.
@@ -277,7 +282,7 @@ private:
    * @param lower The lower limit on the particle's mass.
    * @param upper The upper limit on the particle's mass. 
    */
-  inline InvEnergy2 massWeight(int ires, Energy moff,Energy lower,Energy upper);
+  InvEnergy2 massWeight(int ires, Energy moff,Energy lower,Energy upper);
   //@}  
 
 private:
@@ -285,7 +290,7 @@ private:
   /**
    * pointer to the mode
    */
-  DecayPhaseSpaceModePtr _mode;
+  tcDecayPhaseSpaceModePtr _mode;
 
   /**
    * Pointers to the particle data objects of the intermediate particles
@@ -339,9 +344,13 @@ private:
   
 };
 
-ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+
 /**
  * write the phase space channel to a stream
+ */
+ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+
+/**
  * exception for this class and those inheriting from it
  */
 class DecayPhaseSpaceError: public Exception {};
@@ -349,6 +358,8 @@ class DecayPhaseSpaceError: public Exception {};
 
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -370,18 +381,11 @@ template <>
 struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceChannel> {
     /**  Return the class name.*/
-  static string className() { return "Herwig++::DecayPhaseSpaceChannel"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-  static string library() { return ""; }
-
+  static string className() { return "Herwig::DecayPhaseSpaceChannel"; }
 };
 
-}
+/** @endcond */
 
-#include "DecayPhaseSpaceChannel.icc"
+}
 
 #endif /* HERWIG_DecayPhaseSpaceChannel_H */

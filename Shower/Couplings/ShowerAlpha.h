@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ShowerAlpha.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ShowerAlpha_H
 #define HERWIG_ShowerAlpha_H
 //
@@ -48,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlpha();
+  inline ShowerAlpha() : _scaleFactor( 1.0 ) {}
   //@}
 
 public:
@@ -73,7 +80,7 @@ public:
   virtual double overestimateValue() const = 0;
 
   /**
-   *  Virtual method which returns the ratrio of the running alpha
+   *  Virtual method which returns the ratio of the running alpha
    * value at the input scale to the overestimated value.
    * @param scale The scale
    * @return The ratio
@@ -87,7 +94,12 @@ public:
    * whereas different values can be useful for systematics evaluation 
    * for Initial State radiation or Final State radiation effects.
    */
-  inline double scaleFactor() const;
+  inline double scaleFactor() const {return _scaleFactor;}
+
+  /**
+   * Initialize this coupling.
+   */
+  virtual inline void initialize () {}
   //@}
 
 public:
@@ -161,7 +173,7 @@ template <>
 struct ClassTraits<Herwig::ShowerAlpha>
   : public ClassTraitsBase<Herwig::ShowerAlpha> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerAlpha"; }
+  static string className() { return "Herwig::ShowerAlpha"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerAlpha is implemented. It may also include several, space-separated,
@@ -175,10 +187,5 @@ struct ClassTraits<Herwig::ShowerAlpha>
 /** @endcond */
 
 }
-
-#include "ShowerAlpha.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlpha.tcc"
-#endif
 
 #endif /* HERWIG_ShowerAlpha_H */

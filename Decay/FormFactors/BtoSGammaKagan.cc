@@ -1,39 +1,42 @@
 // -*- C++ -*-
 //
+// BtoSGammaKagan.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BtoSGammaKagan class.
 //
 
 #include "BtoSGammaKagan.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaKagan.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Utilities/GaussianIntegrator.h"
 
 using namespace Herwig;
 using Herwig::Math::Li2;
 
-BtoSGammaKagan::BtoSGammaKagan() : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
-				   _mc(1.392*GeV),_ms(0.),_msovermb(1./50.),_zratio(0.),
-				   _lambda2(0.12*GeV2),_mw(80.425*GeV),_mz(91.1876*GeV),
-				   _MB(5279.4*MeV),_c20(0.),_c70(0.),_c80(0.),
-				   _beta0(23./3.),_beta1(116./3.),_alpha(1./137.036),
-				   _alphaSZ(0.118),_mub(4.8*GeV),_alphaSM(0.),
-				   _ckm(0.976),_delta(0.),_spectmax(0.),_maxtry(100),
-				   _fermilambda(0.),_fermia(0.),_ferminorm(1./GeV),
-				   _fermilambda1(-0.3*GeV2),_ycut(0.999999999),
-				   _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100)
-{
+BtoSGammaKagan::BtoSGammaKagan() 
+  : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
+    _mc(1.392*GeV),_ms(ZERO),_msovermb(1./50.),_zratio(0.),
+    _lambda2(0.12*GeV2),_mw(80.425*GeV),_mz(91.1876*GeV),
+    _MB(5279.4*MeV),_c20(0.),_c70(0.),_c80(0.),
+    _beta0(23./3.),_beta1(116./3.),_alpha(1./137.036),
+    _alphaSZ(0.118),_mub(4.8*GeV),_alphaSM(0.),
+    _ckm(0.976),_delta(0.),_spectmax(0.00025/GeV),_maxtry(100),
+    _fermilambda(ZERO),_fermia(0.),_ferminorm(1./GeV),
+    _fermilambda1(-0.3*GeV2),_ycut(0.9999999999),
+    _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100) {
   Energy mHin[100]={0*GeV,0.0505907*GeV,0.101181*GeV,0.151772*GeV,0.202363*GeV,
 		    0.252953*GeV,0.303544*GeV,0.354135*GeV,0.404726*GeV,0.455316*GeV,
 		    0.505907*GeV,0.556498*GeV,0.607088*GeV,0.657679*GeV,0.70827*GeV,
@@ -83,22 +86,32 @@ BtoSGammaKagan::BtoSGammaKagan() : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV)
   _spectrum=vector<InvEnergy>(spin,spin+100);
 }
 
-
-BtoSGammaKagan::~BtoSGammaKagan() {}
+void BtoSGammaKagan::doinitrun() {
+  BtoSGammaHadronicMass::doinitrun();
+  _pmHinter = new_ptr(Interpolator<InvEnergy,Energy>(_spectrum,_mHinter,3));
+}
 
 void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
-  os << _mt << _mb << _mc << _ms << _msovermb << _zratio << _lambda2 << _mw << _mz 
-     << _MB << _c20 << _c70 << _c80 << _beta0 << _beta1 << _alpha << _alphaSZ << _mub 
-     << _alphaSM << _ckm << _delta << _mHinter << _spectrum << _spectmax << _fermilambda 
-     << _fermia << _ferminorm << _fermilambda1 <<_ycut << _deltacut << _nsfunct 
+  os << ounit(_mt,GeV) << ounit(_mb,GeV) << ounit(_mc,GeV) << ounit(_ms,GeV) 
+     << _msovermb << _zratio << ounit(_lambda2,GeV2) << ounit(_mw,GeV) << ounit(_mz,GeV) 
+     << ounit(_MB,GeV) << _c20 << _c70 << _c80 << _beta0 << _beta1 << _alpha 
+     << _alphaSZ << ounit(_mub,GeV) << _alphaSM << _ckm << _delta 
+     << ounit(_mHinter,GeV) << ounit(_spectrum,1./GeV) 
+     << ounit(_spectmax,1./GeV) << ounit(_fermilambda,GeV)
+     << _fermia << ounit(_ferminorm,1./GeV) << ounit(_fermilambda1,GeV2)
+     <<_ycut << _deltacut << _nsfunct 
      << _nspect << _maxtry << _initialize;
 }
 
 void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
-  is >> _mt >> _mb >> _mc >> _ms >> _msovermb >> _zratio >> _lambda2 >> _mw >> _mz 
-     >> _MB >> _c20 >> _c70 >> _c80 >> _beta0 >> _beta1 >> _alpha >> _alphaSZ >> _mub 
-     >> _alphaSM >> _ckm >> _delta >> _mHinter >> _spectrum >> _spectmax >> _fermilambda 
-     >> _fermia >> _ferminorm >> _fermilambda1 >>_ycut >> _deltacut >> _nsfunct 
+  is >> iunit(_mt,GeV) >> iunit(_mb,GeV) >> iunit(_mc,GeV) >> iunit(_ms,GeV) 
+     >> _msovermb >> _zratio >> iunit(_lambda2,GeV2) >> iunit(_mw,GeV) >> iunit(_mz,GeV) 
+     >> iunit(_MB,GeV) >> _c20 >> _c70 >> _c80 >> _beta0 >> _beta1 >> _alpha 
+     >> _alphaSZ >> iunit(_mub,GeV) >> _alphaSM >> _ckm >> _delta 
+     >> iunit(_mHinter,GeV) >> iunit(_spectrum,1./GeV)
+     >> iunit(_spectmax,1./GeV) >> iunit(_fermilambda,GeV) 
+     >> _fermia >> iunit(_ferminorm,1./GeV) >> iunit(_fermilambda1,GeV2)
+     >>_ycut >> _deltacut >> _nsfunct 
      >> _nspect >> _maxtry >> _initialize;
 }
 
@@ -109,7 +122,12 @@ void BtoSGammaKagan::Init() {
 
   static ClassDocumentation<BtoSGammaKagan> documentation
     ("The BtoSGammaKagan class implements the calculation of hep-ph/9805303 for the"
-     " hadronic mass spectrum in b to s gamma decays");
+     " hadronic mass spectrum in b to s gamma decays.",
+     "The decay $b\\to s\\gamma$ was simulated using the hadronic mass spectrum from"
+     "\\cite{Kagan:1998ym}.\n",
+     "\\bibitem{Kagan:1998ym} A.~L.~Kagan and M.~Neubert,\n"
+     "Eur.\\ Phys.\\ J.\\  C {\\bf 7} (1999) 5 [arXiv:hep-ph/9805303].\n"
+     "%%CITATION = EPHJA,C7,5;%%\n");
 
   static Switch<BtoSGammaKagan,bool> interfaceInitialize
     ("Initialize",
@@ -117,12 +135,12 @@ void BtoSGammaKagan::Init() {
      &BtoSGammaKagan::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialize
     (interfaceInitialize,
-     "Initialize",
+     "Yes",
      "Perform initialization",
      true);
   static SwitchOption interfaceInitializeNoInitialization
     (interfaceInitialize,
-     "NoInitialization",
+     "No",
      "No initialization is performed",
      false);
 
@@ -165,7 +183,7 @@ void BtoSGammaKagan::Init() {
   static Parameter<BtoSGammaKagan,Energy2> interfaceLambda2
     ("Lambda2",
      "Hadronic parameter from hep-ph/9805303",
-     &BtoSGammaKagan::_lambda2, GeV2, 0.12*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &BtoSGammaKagan::_lambda2, GeV2, 0.12*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,Energy> interfaceBMesonMass
@@ -213,13 +231,13 @@ void BtoSGammaKagan::Init() {
   static ParVector<BtoSGammaKagan,Energy> interfacemHValues
     ("mHValues",
      "The mH values for the interpolation of the spectrum",
-     &BtoSGammaKagan::_mHinter, GeV, -1, 1.*GeV, 0.0*GeV, 10.*GeV,
+     &BtoSGammaKagan::_mHinter, GeV, -1, 1.*GeV, ZERO, 10.*GeV,
      false, false, Interface::limited);
 
   static ParVector<BtoSGammaKagan,InvEnergy> interfaceSpectrum
     ("Spectrum",
      "Values of the spectrum for interpolation",
-     &BtoSGammaKagan::_spectrum, 1./GeV, -1, 0./GeV, 0./GeV, 1./GeV,
+     &BtoSGammaKagan::_spectrum, 1./GeV, -1, ZERO, ZERO, 1./GeV,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,InvEnergy> interfaceFermiNormalisation
@@ -234,16 +252,16 @@ void BtoSGammaKagan::Init() {
      &BtoSGammaKagan::_maxtry, 100, 10, 10000,
      false, false, Interface::limited);
 
-  static Parameter<BtoSGammaKagan,double> interfaceSpectrumMaximum
+  static Parameter<BtoSGammaKagan,InvEnergy> interfaceSpectrumMaximum
     ("SpectrumMaximum",
      "The maximum value of the spectrum for unweighting",
-     &BtoSGammaKagan::_spectmax, 1.0, 0., 0,
-     false, false, Interface::lowerlim);
+     &BtoSGammaKagan::_spectmax, 1./GeV, 1./GeV, ZERO, 10000.0/GeV,
+     false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,double> interfaceycut
     ("ycut",
      "Limit of the value of y to avoid singualarities in integrals",
-     &BtoSGammaKagan::_ycut, 0.999999999, 0.999, 1.,
+     &BtoSGammaKagan::_ycut, 0.9999999999, 0.999, 1.,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,unsigned int> interfaceNSpectrum
@@ -251,11 +269,9 @@ void BtoSGammaKagan::Init() {
      "Number of spectrum points to calculate for interpolation",
      &BtoSGammaKagan::_nspect, 100, 10, 1000,
      false, false, Interface::limited);
-
 }
 
-void BtoSGammaKagan::calculateWilsonCoefficients()
-{
+void BtoSGammaKagan::calculateWilsonCoefficients() {
   // strong coupling at various scales
   double alphaSMW(alphaS(_mw)),alphaSMT(alphaS(_mt));
   _alphaSM=alphaS(_mub);
@@ -302,8 +318,9 @@ void BtoSGammaKagan::calculateWilsonCoefficients()
   double c71c=(297664./14283.*pow(eta,16./23.)-7164416./357075.*pow(eta,14./23.)
 	       +256868./14283.*pow(eta,37./23.)-6698884./357075.*pow(eta,39./23.))*c8w
     +37208./4761.*(pow(eta,39./23.)-pow(eta,16./23.))*c7w;
-  for(unsigned int ix=0;ix<8;++ix)
-    {c71c+=(ei[ix]*eta*Ex+fi[ix]+gi[ix]*eta)*pow(eta,ai[ix]);}
+  for(unsigned int ix=0;ix<8;++ix) {
+    c71c+=(ei[ix]*eta*Ex+fi[ix]+gi[ix]*eta)*pow(eta,ai[ix]);
+  }
   // total correction
   double c71(pow(eta,39./23.)*c71w+8./3.*(pow(eta,37./23.)-pow(eta,39./23.))*c81w+c71c);
   // electromagnetic corrections
@@ -335,183 +352,129 @@ void BtoSGammaKagan::calculateWilsonCoefficients()
     +_alpha/_alphaSM*(2.*c7em*_c70-kSL*_c70*_c70);
 }
 
-void BtoSGammaKagan::doinit() throw(InitException) {
+void BtoSGammaKagan::doinit() {
   BtoSGammaHadronicMass::doinit();
   // quark masses
   _ms=_msovermb*_mb;
-  _zratio=pow(_mc/_mb,2);
+  _zratio=sqr(_mc/_mb);
   // parameters for the fermi motion function
   _fermilambda=_MB-_mb;
-  _fermia=-3.*pow(_fermilambda,2.)/_fermilambda1-1.;
-  if(_initialize)
-    {
-      // calculate the wilson coefficients etc.
-      calculateWilsonCoefficients();
-      // calculate the interpolation tables for the s functions
-      vector<double> sfunct,yvalues;
-      // s_22 function
-      sfunct.push_back(0.),yvalues.push_back(0.);
-      double step(1./_nsfunct);
-      _y=-0.5*step;
-      // perform the integrals
-      Genfun::AbsFunction * integrand= new KaganIntegrand(this,0);
-      GaussianIntegral *integral= new GaussianIntegral(0.,1.); 
-      for(unsigned int ix=0;ix<_nsfunct;++ix)
-	{
-	  _y+=step;
-	  integral->resetLimits(0.,_y);
-	  yvalues.push_back(_y);
-	  sfunct.push_back((*integral)[*integrand]);
-	}
-      _s22inter = new Interpolator(sfunct,yvalues,3);
-      // s_27 function
-      delete integrand;
-      integrand=new KaganIntegrand(this,1);
-      sfunct.resize(0);yvalues.resize(0);
-      sfunct.push_back(0.),yvalues.push_back(0.);
-      _y=-0.5*step;
-      // perform integrals
-      for(unsigned int ix=0;ix<_nsfunct;++ix)
-	{
-	  _y+=step;
-	  integral->resetLimits(0.,_y);
-	  yvalues.push_back(_y);
-	  sfunct.push_back((*integral)[*integrand]);
-	}
-      _s27inter = new Interpolator(sfunct,yvalues,3);
-      delete integrand;
-      // compute the normalisation constant
-      integrand=new KaganIntegrand(this,3);
-      integral->resetLimits(_MB*(1.-_deltacut)-_mb,_MB-_mb);
-      _ferminorm*=1./(*integral)[*integrand];
-      delete integrand;
-      // now for the spectrum
-      _mHinter.resize(0);
-      _spectrum.resize(0);
-      _spectmax=0.;
-      // limits on the mass
-      Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
-      Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));
-      Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
-      double hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
-      double mhadron(minhadronmass);
-      // function to be integrated      
-      integrand=new KaganIntegrand(this,2);
-      // prefactor
-      double pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
-      // compute the table
-      for(unsigned int ix=0;ix<_nspect;++ix)
-	{
-	  // calculate y
-	  _y=1.-mhadron*mhadron/_MB/_MB;
-	  // perform the integral
-	  integral->resetLimits(_MB*_y-_mb,_MB-_mb);
-	  _spectrum.push_back(pre*mhadron*(*integral)[*integrand]);
-	  _spectmax=max(_spectmax,_spectrum.back());
-	  _mHinter.push_back(mhadron);
-	  // increment the loop
-	  mhadron+=hstep;
-	}
-      // delete the interpolators for the s functions
-      delete _s22inter;
-      delete _s27inter;    
+  _fermia=-3.*sqr(_fermilambda)/_fermilambda1-1.;
+  if(_initialize) {
+    // calculate the wilson coefficients etc.
+    calculateWilsonCoefficients();
+    // calculate the interpolation tables for the s functions
+    vector<double> sfunct,yvalues;
+    // s_22 function
+    sfunct.push_back(0.),yvalues.push_back(0.);
+    double step(1./_nsfunct);
+    _y=-0.5*step;
+    // perform the integrals
+    GaussianIntegrator integrator;
+    _iopt=0;
+    for(unsigned int ix=0;ix<_nsfunct;++ix) {
+      _y+=step;
+      yvalues.push_back(_y);
+      sfunct.push_back(integrator.value(*this,0.,_y));
     }
+    _s22inter = new_ptr(Interpolator<double,double>(sfunct,yvalues,3));
+    // s_27 function;
+    _iopt=1;
+    sfunct.clear();yvalues.clear();
+    sfunct.push_back(0.),yvalues.push_back(0.);
+    _y=-0.5*step;
+    // perform integrals
+    for(unsigned int ix=0;ix<_nsfunct;++ix) {
+      _y+=step;
+      yvalues.push_back(_y);
+      sfunct.push_back(integrator.value(*this,0.,_y));
+    }
+    _s27inter = new_ptr(Interpolator<double,double>(sfunct,yvalues,3));
+    // compute the normalisation constant
+    KaganIntegrand integrand(this);
+    _iopt=0;
+    _ferminorm*=1./integrator.value(integrand,_MB*(1.-_deltacut)-_mb,_MB-_mb);
+    // now for the spectrum
+    _mHinter.clear();
+    _spectrum.clear();
+    _spectmax=ZERO;
+    // limits on the mass
+    Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
+    Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));
+    Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
+    Energy hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
+    Energy mhadron(minhadronmass);
+    // function to be integrated
+    _iopt=1;
+    // prefactor
+    InvEnergy2 pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
+    // compute the table
+    for(unsigned int ix=0;ix<_nspect;++ix) {
+      // calculate y
+      _y=1.-mhadron*mhadron/_MB/_MB;
+      // perform the integral
+      _spectrum.push_back(pre*mhadron*integrator.value(integrand,_MB*_y-_mb,_MB-_mb));
+      _spectmax=max(_spectmax,_spectrum.back());
+      _mHinter.push_back(mhadron);
+      // increment the loop
+      mhadron+=hstep;
+    }
+  }
 }
 
-Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark)
-{
+Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
+  useMe();
   Energy minmass(max(minMass(),mquark)),maxmass(min(maxMass(),mb)),mass;
-  double minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
+  Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
   minmass=max(minmass,sqrt(_MB*_MB-2.*_MB*maxegamma));
   maxmass=min(maxmass,sqrt(_MB*_MB-2.*_MB*minegamma));
   unsigned int ntry(0);
   double rand;
-  do
-    {
-      rand=UseRandom::rnd();
-      mass = minmass*(1.-rand)+rand*maxmass;
-      ++ntry;
-    }
+  do {
+    rand=UseRandom::rnd();
+    mass = minmass*(1.-rand)+rand*maxmass;
+    ++ntry;
+  }
   while(ntry<_maxtry&&(*_pmHinter)(mass)<UseRandom::rnd()*_spectmax);
-  if(ntry>=_maxtry)
-    {throw Exception() << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
-		       << Exception::eventerror;}
+  if(ntry>=_maxtry) throw Exception() 
+    << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
+    << Exception::eventerror;
   return mass;
 }
 
 void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
-					   bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::BtoSGammaKagan " << fullName() << " \n";}
-  output << "set " << fullName() << ":TopMass "    << _mt/GeV << " \n";
-  output << "set " << fullName() << ":BottomMass " << _mb/GeV << " \n";
-  output << "set " << fullName() << ":CharmMass "  << _mc/GeV << " \n";
-  output << "set " << fullName() << ":StrangeMassRatio " << _msovermb << " \n";
-  output << "set " << fullName() << ":WMass " << _mw/GeV << " \n";
-  output << "set " << fullName() << ":ZMass " << _mz/GeV << " \n";
-  output << "set " << fullName() << ":Lambda2 " << _lambda2/GeV2 << " \n";
-  output << "set " << fullName() << ":BMesonMass " << _MB/GeV << " \n";
-  output << "set " << fullName() << ":Mu " << _mub/GeV << " \n";
-  output << "set " << fullName() << ":Delta " << _deltacut << " \n";
-  output << "set " << fullName() << ":Lambda1 " << _fermilambda1/GeV2 << " \n";
-  output << "set " << fullName() << ":alpha " << _alpha << " \n";
-  output << "set " << fullName() << ":CKM " << _ckm << " \n";
-  output << "set " << fullName() << ":FermiNormalisation " << _ferminorm*GeV << " \n";
-  output << "set " << fullName() << ":MaximumTries " << _maxtry << " \n";
-  output << "set " << fullName() << ":ycut " << _ycut << " \n";
-  output << "set " << fullName() << ":NSpectrum " <<  _nspect << " \n";
-  for(unsigned int ix=0;ix<_mHinter.size();++ix)
-    {
-      if(ix<100)
-	{output << "set " << fullName() << ":mHValues " << ix << " " 
-		<< _mHinter[ix]/GeV << " \n";}
-      else
-	{output << "insert " << fullName() << ":mHValues " << ix << " " 
-		<< _mHinter[ix]/GeV << " \n";}
-    }
-  for(unsigned int ix=0;ix<_spectrum.size();++ix)
-    {
-      if(ix<100)
-	{output << "set " << fullName() << ":Spectrum " << ix << " " 
-		<< _spectrum[ix]*GeV 
-		<< " \n";}
-      else
-	{output << "insert " << fullName() << ":Spectrum " << ix << " " 
-		<< _spectrum[ix]*GeV 
-		<< " \n";}
-    }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";}
+					   bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::BtoSGammaKagan " << name() << " \n";
+  output << "set " << name() << ":TopMass "    << _mt/GeV << " \n";
+  output << "set " << name() << ":BottomMass " << _mb/GeV << " \n";
+  output << "set " << name() << ":CharmMass "  << _mc/GeV << " \n";
+  output << "set " << name() << ":StrangeMassRatio " << _msovermb << " \n";
+  output << "set " << name() << ":WMass " << _mw/GeV << " \n";
+  output << "set " << name() << ":ZMass " << _mz/GeV << " \n";
+  output << "set " << name() << ":Lambda2 " << _lambda2/GeV2 << " \n";
+  output << "set " << name() << ":BMesonMass " << _MB/GeV << " \n";
+  output << "set " << name() << ":Mu " << _mub/GeV << " \n";
+  output << "set " << name() << ":Delta " << _deltacut << " \n";
+  output << "set " << name() << ":Lambda1 " << _fermilambda1/GeV2 << " \n";
+  output << "set " << name() << ":alpha " << _alpha << " \n";
+  output << "set " << name() << ":CKM " << _ckm << " \n";
+  output << "set " << name() << ":FermiNormalisation " << _ferminorm*GeV << " \n";
+  output << "set " << name() << ":MaximumTries " << _maxtry << " \n";
+  output << "set " << name() << ":ycut " << _ycut << " \n";
+  output << "set " << name() << ":NSpectrum " <<  _nspect << " \n";
+  for(unsigned int ix=0;ix<_mHinter.size();++ix) {
+    if(ix<100) output << "set " << name() << ":mHValues " << ix << " " 
+		      << _mHinter[ix]/GeV << " \n";
+    else       output << "insert " << name() << ":mHValues " << ix << " " 
+		      << _mHinter[ix]/GeV << " \n";
+  }
+  for(unsigned int ix=0;ix<_spectrum.size();++ix) {
+    if(ix<100) output << "set " << name() << ":Spectrum " << ix << " " 
+		      << _spectrum[ix]*GeV << " \n";
+    else       output << "insert " << name() << ":Spectrum " << ix << " " 
+		      << _spectrum[ix]*GeV << " \n";
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
-
-// function for the integral
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
-
-FUNCTION_OBJECT_IMP(KaganIntegrand)
-
-  KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin)
-{_kagan=in,_iopt=ioptin;}
-
-KaganIntegrand::~KaganIntegrand() {}
-
-KaganIntegrand::KaganIntegrand(const KaganIntegrand & right)
-  : _kagan(right._kagan),_iopt(right._iopt) {}
-
-// calculate the integrand  
-double KaganIntegrand::operator() (double x) const 
-{
-  if(_iopt==0)
-    {return _kagan->integrands22(x);}
-  else if(_iopt==1)
-    {return _kagan->integrands27(x);}
-  else if(_iopt==2)
-    {return _kagan->integrandPy(x);}
-  else
-    {return _kagan->fermiFunction(x);}
-}
-
-}
- 

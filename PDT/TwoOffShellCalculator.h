@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// TwoOffShellCalculator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TwoOffShellCalculator_H
 #define HERWIG_TwoOffShellCalculator_H
 //
@@ -8,7 +15,55 @@
 #include "GenericMassGenerator.h"
 #include "TwoOffShellCalculator.fh"
 #include "OneOffShellCalculator.fh"
-#include "Herwig++/Utilities/GaussianIntegral.h"
+#include "Herwig++/Utilities/GSLIntegrator.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+/** \ingroup PDT
+ * Class for the integrand of a matrix element where two of the outgoing
+ * particles is off-shell. This class is used by the TwoOffShellCalculator class
+ * to perform the integral.
+ */
+struct TwoOffShellIntegrand {
+  /**
+   * Constructor.
+   * @param in Pointer to the OneOffShellCalculator class this is doing the 
+   * integration for.
+   * @param m2 The mass squared of the off-shell particle for the Jacobian 
+   * transform.
+   * @param mw The mass times width of the off-shell particle for the Jacobian 
+   * transform.
+   */
+  inline TwoOffShellIntegrand(tcTwoOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
+
+  /**
+   * Retreive function value
+   */
+  inline Energy operator ()(double argument) const;
+  /** Argument type for the GSLIntegrator */
+  typedef double ArgType;
+  /** Return type for the GSLIntegrator */
+  typedef Energy ValType;
+
+private:
+
+  /**
+   * pointer to the decay integrator
+   */
+  cTwoOffShellCalculatorPtr _integrand;
+
+  /**
+   * The mass squared for the off-shell particle for the Jacobian transform.
+   */
+  Energy2 _mass2;
+
+  /**
+   * The mass times width for the off-shell particle for the Jacobian transform.
+   */
+  Energy2 _mwidth;
+};
+}
 
 namespace Herwig {
 using namespace ThePEG;
@@ -23,30 +78,13 @@ using namespace ThePEG;
  */
 class TwoOffShellCalculator: public WidthCalculatorBase {
 
-  /**
-   *  The TwoOffShellIntegrand class is a friend to allow access to the private
-   *  members for the integration.
-   */
-  friend class TwoOffShellIntegrand;
+/**
+ *  The TwoOffShellIntegrand class is a friend to allow access to the private
+ *  members for the integration.
+ */
+friend class TwoOffShellIntegrand;
 
 public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor
-   */
-  inline TwoOffShellCalculator();
-
-  /**
-   * Copy constructor
-   */
-  inline TwoOffShellCalculator(const TwoOffShellCalculator &);
-
-  /**
-   * Destructor
-   */
-  virtual ~TwoOffShellCalculator();
 
   /**
    * Constructor which should be used setting all the required members.
@@ -61,9 +99,6 @@ public:
   inline TwoOffShellCalculator(int inloc, WidthCalculatorBasePtr inwidth,
 			       GenericMassGeneratorPtr inmass,
 			       Energy inmin2,Energy inmin1);
-  //@}
-
-public:
 
   /**
    * member to calculate the partial width.
@@ -97,13 +132,6 @@ public:
    */
   inline Energy otherMass(const int imass) const;
 
-public:
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
 protected:
 
   /**
@@ -111,14 +139,9 @@ protected:
    * @param mass The mass of the second off-shell particle,
    * @return The differential rate.
    */
-  inline  Energy dGamma(Energy mass);
+  inline  Energy dGamma(Energy mass) const;
 
 private:
-
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<TwoOffShellCalculator> initTwoOffShellCalculator;
 
   /**
    * Private and non-existent assignment operator.
@@ -155,12 +178,7 @@ private:
   /**
    * integrator
    */
-  GaussianIntegral * _Integrator;
-
-  /**
-   * the integrand
-   */
-  Genfun::AbsFunction *_integrand;
+  GSLIntegrator _integrator;
 
   /**
    * the mass squared of the decaying particle
@@ -168,147 +186,8 @@ private:
   mutable Energy2 _scale;
 
 };
-
 }
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of TwoOffShellCalculator.
- */
-template <>
- struct BaseClassTrait<Herwig::TwoOffShellCalculator,1> {
-  /** Typedef of the base class of TwoOffShellCalculator. */
-   typedef Herwig::WidthCalculatorBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::TwoOffShellCalculator>
-  : public ClassTraitsBase<Herwig::TwoOffShellCalculator> {
-  /** Return the class name.*/
-  static string className() { return "Herwig++::TwoOffShellCalculator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
-};
-
-}
-
-
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG; 
-
-/** \ingroup PDT
- * Class for the integrand of a matrix element where two of the outgoing
- * particles is off-shell. This class is used by the TwoOffShellCalculator class
- * to perform the integral.
- */
-class TwoOffShellIntegrand : public Genfun::AbsFunction {
-
-public:    
-
-  /**
-   * The TwoOffShellCaculator is a friend to allow access to the private members
-   * for the integration.
-   */
-  friend class TwoOffShellCaculator;
-  
-public:
-
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-  
-  /**
-   * Clone method
-   */
-  TwoOffShellIntegrand *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-  
-public:
-  
-  /**
-   * Constructor.
-   * @param in Pointer to the OneOffShellCalculator class this is doing the 
-   * integration for.
-   * @param m2 The mass squared of the off-shell particle for the Jacobian 
-   * transform.
-   * @param mw The mass times width of the off-shell particle for the Jacobian 
-   * transform.
-   */
-  TwoOffShellIntegrand(TwoOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
-
-  /**
-   * Destructor
-   */
-  virtual ~TwoOffShellIntegrand();
-
-  /**
-   * Copy constructor
-   * Retreive function value
-   */
-  TwoOffShellIntegrand(const TwoOffShellIntegrand &right);
-
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double argument) const;
-
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const TwoOffShellIntegrand & operator=(const TwoOffShellIntegrand &right);
-  
-private:
-
-  /**
-   * pointer to the decay integrator
-   */
-  TwoOffShellCalculatorPtr _integrand;
-
-  /**
-   * The mass squared for the off-shell particle for the Jacobian transform.
-   */
-  Energy2 _mass2;
-
-  /**
-   * The mass times width for the off-shell particle for the Jacobian transform.
-   */
-  Energy2 _mwidth;
-};
-}
-
 
 #include "TwoOffShellCalculator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoOffShellCalculator.tcc"
-#endif
 
 #endif /* HERWIG_TwoOffShellCalculator_H */

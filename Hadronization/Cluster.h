@@ -1,16 +1,23 @@
 // -*- C++ -*-
+//
+// Cluster.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Cluster_H
 #define HERWIG_Cluster_H
 
 #include <ThePEG/Pointer/Ptr.h>
-#include <ThePEG/Pointer/ReferenceCounted.h>
 #include <ThePEG/Pointer/PtrTraits.h>
 #include <ThePEG/Pointer/RCPtr.h>
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include <ThePEG/EventRecord/Particle.h>
 #include "Herwig++/Utilities/EnumParticles.h"
 #include <iostream>
 #include "CluHadConfig.h"
+#include "ClusterHadronizationHandler.fh"
+#include "Cluster.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -44,15 +51,13 @@ using namespace ThePEG;
  *       all clusters will have a reshuffling partner.
  *  
  *  Notice that in order to determine the cluster position from the positions
- *  of the components, the Cluster class needs some global parameters.
+ *  of the components, the Cluster class needs some parameters.
  *  Because the Cluster class is neither interfaced nor persistent, 
- *  a static pointer to the GlobalParameters class instance, 
- *  where the global parameters are, is used. This static pointer is 
- *  set via the method setPointerGlobalParameters, during the
- *  run initialization, doinitrun(), in the steering class
- *  ClusterHadronizationHandler.
+ *  a static pointer to the ClusterHadronizationHandler class instance, 
+ *  where the parameters are, is used. This static pointer is 
+ *  set via the method setPointerClusterHadHandler(), during the
+ *  run initialization, doinitrun() of ClusterHadronizationHandler.
  *
- *  @see GlobalParameters
  *  @see ClusterHadronizationHandler
  */ 
 class Cluster : public Particle {
@@ -74,39 +79,19 @@ public:
   /**
    * This creates a cluster from 2 (or 3) partons.
    */
-  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());    
+  Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());
   
   /**
-   * Copy constructor.
-   */
-  Cluster(const Cluster &);
-  
-  /**
-   * Also a copy constructor where a particle is given not a cluster.
+   * Also a constructor where a particle is given not a cluster.
    */
   Cluster(const Particle &);
-  
-  /**
-   * Destructor.
-   */
-  virtual ~Cluster();
-  
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void * operator new(size_t);
-  
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void operator delete(void *, size_t);
   //@}
 
   /**
-   * Set the static pointer to the GlobalParameters object.
+   * Set the static pointer to the ClusterHadronizationHandler object.
    * The pointer is set in ClusterHadronizationHandler::doinitrun().
    */ 
-  static inline void setPointerGlobalParameters(GlobParamPtr gp);
+  static void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
   
   /**
    * Number of quark (diquark) constituents (normally two).    
@@ -224,7 +209,7 @@ public:
    */
   bool isStatusFinal() const;
   
-private:
+protected:
   
   /** @name Clone Methods. */
   //@{
@@ -232,15 +217,16 @@ private:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual PPtr clone() const;
+  inline virtual PPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual PPtr fullclone() const;
+  inline virtual PPtr fullclone() const;
   //@}
-   
+
+private:   
   /**
    * Private and non-existent assignment operator.
    */
@@ -260,7 +246,7 @@ private:
    * vertex \f$x_i\f$ and mass \f$m_i\f$ is 
    * \f[ D_i = -C \log(r) \frac{p_i}{\sqrt{(p_i^2 - m_i^2)^2 + v^4}} \f]
    * where \f$r\f$ is a random number [0,1], 
-   * \f$v\f$ is the minimum virtuality (a global parameter) and \f$C\f$ is 
+   * \f$v\f$ is the minimum virtuality and \f$C\f$ is 
    * a conversion factor from GeV to millimeters. We can then find the 
    * difference in \f$s\f$ factors as
    * \f[ (s_1-s_2) = \frac{(\vec{p}_1 + \vec{p}_2) \cdot (\vec{x}_2 - 
@@ -275,13 +261,18 @@ private:
   /**
    * Determines whether constituent p is perturbative or not.
    */
-  bool initPerturbative(tPPtr p);
+  inline bool initPerturbative(tPPtr p);
   
   /**
    * This is needed to determine if a cluster is from a perturbative quark.
    */
-  static GlobParamPtr _globalParameters;
+  static tcCluHadHdlPtr _clusterHadHandler;
   
+  /**
+   *  The gluon mass is needed to determine if a cluster is from a perturbative quark
+   */
+  static Energy2 _mg2;
+
   /**
    * Describe an abstract base class with persistent data.
    */
@@ -299,34 +290,34 @@ private:
   
 } // end namespace Herwig  
 
+#include "ThePEG/Utilities/ClassTraits.h"
+
 namespace ThePEG {
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of Cluster.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Cluster,1> {
-    /** Typedef of the base class of Cluster. */
-    typedef EventRecordBase NthBase;
-  };
+/** @cond TRAITSPECIALIZATIONS */
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */ 
-  template <>
-  struct ClassTraits<Herwig::Cluster>:
-    public ClassTraitsBase<Herwig::Cluster> {
-    /** Return the class name. */
-    static string className() { return "Herwig++::Cluster"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwHadronization.so"; }
-  };
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of Cluster.
+ */
+template <>
+struct BaseClassTrait<Herwig::Cluster,1> {
+  /** Typedef of the base class of Cluster. */
+  typedef Particle NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */ 
+template <>
+struct ClassTraits<Herwig::Cluster>:
+  public ClassTraitsBase<Herwig::Cluster> {
+  /** Return the class name. */
+  static string className() { return "Herwig::Cluster"; }
+};
+
+/** @endcond */
 
 }
 

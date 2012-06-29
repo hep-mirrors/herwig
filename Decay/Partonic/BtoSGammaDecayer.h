@@ -1,13 +1,19 @@
 // -*- C++ -*-
+//
+// BtoSGammaDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BtoSGammaDecayer_H
 #define HERWIG_BtoSGammaDecayer_H
 //
 // This is the declaration of the BtoSGammaDecayer class.
 //
 
-#include "Herwig++/Decay/HwDecayerBase.h"
+#include "PartonicDecayerBase.h"
 #include "Herwig++/Decay/FormFactors/BtoSGammaHadronicMass.h"
-#include "BtoSGammaDecayer.fh"
 
 namespace Herwig {
 
@@ -17,27 +23,28 @@ using namespace ThePEG;
  * Here is the documentation of the BtoSGammaDecayer class.
  *
  */
-class BtoSGammaDecayer: public HwDecayerBase {
+class BtoSGammaDecayer: public PartonicDecayerBase {
 
 public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
-   * @return a ParticleVector containing the decay products.
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -81,13 +88,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -118,12 +125,14 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaDecayer. */
 template <>
 struct BaseClassTrait<Herwig::BtoSGammaDecayer,1> {
   /** Typedef of the first base class of BtoSGammaDecayer. */
-  typedef Herwig::HwDecayerBase NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -132,18 +141,15 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaDecayer>
   : public ClassTraitsBase<Herwig::BtoSGammaDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaDecayer"; }
+  static string className() { return "Herwig::BtoSGammaDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaDecayer class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwPartonicDecay.so"; }
 };
 
-}
+/** @endcond */
 
-#include "BtoSGammaDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_BtoSGammaDecayer_H */

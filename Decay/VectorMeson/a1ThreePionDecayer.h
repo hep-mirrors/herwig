@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// a1ThreePionDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_a1ThreePionDecayer_H
 #define HERWIG_a1ThreePionDecayer_H
 //
@@ -7,8 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
-// #include "a1ThreePionDecayer.fh"
-// #include "a1ThreePionDecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 
@@ -97,43 +103,62 @@ class a1ThreePionDecayer: public DecayIntegrator {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline a1ThreePionDecayer();
+  a1ThreePionDecayer();
 
-  /**
-   * Copy-constructor.
-   */
-  inline a1ThreePionDecayer(const a1ThreePionDecayer &);
-
-  /**
-   * Standard ctors and dtor.
-   */
-  virtual ~a1ThreePionDecayer();
-  //@}
-  
-public:
-  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
+
+  /**
+   * Method to return an object to calculate the 3 body partial width.
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+
+  /**
+   * The matrix element to be integrated for the three-body decays as a function
+   * of the invariant masses of pairs of the outgoing particles.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The matrix element
+   */
+  virtual double threeBodyMatrixElement(const int imode , const Energy2 q2,
+					const Energy2 s3, const Energy2 s2,
+					const Energy2 s1, const Energy  m1,
+					const Energy  m2, const Energy m3) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
   
 public:
    
@@ -166,13 +191,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -184,12 +209,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -211,14 +236,24 @@ private:
    * @param q2 The scale, \f$q^2\f$.
    * @return The Breit-Wigner
    */
-  inline complex<InvEnergy2> sigmaBreitWigner(Energy2 q2) const;
+  Complex sigmaBreitWigner(Energy2 q2) const {
+    Energy q=sqrt(q2);
+    Energy width=_sigmawidth*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi)/_psigma;
+    Energy2 msigma2=_sigmamass*_sigmamass;
+    Complex ii(0.,1.);
+    complex<Energy2> denom = q>2.*_mpi ? q2-msigma2+ii*msigma2*width/q :
+      q2-msigma2;
+    return msigma2/denom;
+  }
   
   /**
    * The \f$a_1\f$ form factor, \f$F_{a_1}(q^2)\f$
    * @param q2 The scale, \f$q^2\f$.
    * @return The form factor.
    */
-  inline double a1FormFactor(Energy2 q2) const;
+  double a1FormFactor(Energy2 q2) const {
+    return (1.+_a1mass2/_lambda2)/(1.+q2/_lambda2);
+  }
 
   /**
    * Breit-Wigner for the \f$\rho\f$, this is  \f$\frac1{D_{\rho_k}(q^2)}\f$.
@@ -226,28 +261,73 @@ private:
    * @param ires The \f$\rho\f$ multiplet.
    * @return The Breit-Wigner
    */
-  inline Complex rhoBreitWigner(Energy2 q2,int ires) const;
+  Complex rhoBreitWigner(Energy2 q2,int ires) const {
+    Energy q=sqrt(q2);
+    Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+    complex<Energy2> denom;
+    Complex ii(0.,1.);
+    if(q2<4.*_mpi2) {
+      denom=q2-_rhomass[ires]*_rhomass[ires]-_rhowidth[ires]*_rhomass[ires]*
+	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])
+	/grhom;
+    }
+    else {
+      Energy pcm=2.*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+      Energy2 grho = pcm*pcm*pcm/q;
+      denom=q2-_rhomass[ires]*_rhomass[ires]
+	-_rhowidth[ires]*_rhomass[ires]*
+	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])/grhom
+	+ii*_rhomass[ires]*_rhowidth[ires]*grho/grhom;
+    }
+    return _rhoD[ires]/denom;
+  }
 
   /**
    *  Normalisation factor for the \f$\rho\f$ propagator to ensure \f$D(0)=-1\f$.
    * @param ires The \f$\rho\f$ multiplet.
    * @return The normalisation factor.
    */
-  inline Energy2 DParameter(int ires) const;
+  Energy2 DParameter(int ires) const {
+    Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+    return _rhomass[ires]*_rhomass[ires]+_rhowidth[ires]*_rhomass[ires]*
+      (hFunction(ZERO)-_hm2[ires]+sqr(_rhomass[ires])*_dhdq2m2[ires])/grhom;
+  }
 
   /**
    * The \f$\frac{dh}{dq^2}\f$ function in the rho propagator evaluated at \f$q^2=m^2\f$.
    * @param ires The \f$\rho\f$ resonance for the function
    * @return \f$\frac{dh}{dq^2}\f$ evaluated at \f$q^2=m^2\f$.
    */
-  inline double dhdq2Parameter(int ires) const ;
+  double dhdq2Parameter(int ires) const  {
+    Energy2 mrho2(sqr(_rhomass[ires]));
+    double root = sqrt(1.-4.*_mpi2/mrho2);
+    using Constants::pi;
+    return root/pi*(root+(1.+2*_mpi2/mrho2)*log((1+root)/(1-root)));
+  }
   
   /**
    * The \f$h(q^2)\f$ function in the \f$\rho\f$ propagator.
-   * @param q2 The scale, \f$q^2\f$.
+   * @param q The scale, \f$q\f$.
    * @return The function \f$h(q^2)\f$.
    */
-  inline Energy2 hFunction(const Energy q2) const ;
+  Energy2 hFunction(const Energy q) const  {
+    static const Energy2 eps(0.01*MeV2);
+    Energy2 q2=sqr(q), output;
+    double root = sqrt(1.-4.*_mpi2/q2);
+    if(q2>4*_mpi2) {
+      output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;
+    }
+    else if(q2>eps) output=ZERO;
+    else            output=-8.*_mpi2/Constants::pi;
+    return output;
+  }
+
+  /**
+   *  Momentum Function
+   */
+  Energy4 lambda(Energy2 a, Energy2 b, Energy2 c) const {
+    return sqr(a)+sqr(b)+sqr(c)-2.*a*b-2.*a*c-2.*b*c;
+  }
   
 private:
 
@@ -313,9 +393,9 @@ private:
   Energy2 _lambda2;
   
   /**
-   * The mass of the \f$a_1\f$ meson, \f$m_{a_1}\f$.
+   * The mass squared of the \f$a_1\f$ meson, \f$m_{a_1}^2\f$.
    */
-  Energy _a1mass2;
+  Energy2 _a1mass2;
 
   /**
    * The \f$z\f$ coupling for the \f$\sigma\f$ resonance.
@@ -323,9 +403,29 @@ private:
   Complex _zsigma;
 
   /**
-   * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$th \f$\rho\f$ multiplet.
+   * The magnitude of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zmag;
+
+  /**
+   * The phase of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zphase;
+
+  /**
+   * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$ th \f$\rho\f$ multiplet.
    */
   vector<Complex> _rhocoupling;
+
+  /**
+   *  Magnitude of the rho coupling
+   */
+  vector<double> _rhomag;
+
+  /**
+   *  Phase of the rho coupling
+   */
+  vector<double> _rhophase;
 
   /**
    * The overall coupling for the decay.
@@ -377,46 +477,55 @@ private:
    */
   mutable double _threemax;
 
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
 };
   
 }
 
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of a1ThreePionDecayer.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::a1ThreePionDecayer,1> {
-    /** Typedef of the base class of a1ThreePionDecayer. */
-    typedef Herwig::DecayIntegrator NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::a1ThreePionDecayer>
-    : public ClassTraitsBase<Herwig::a1ThreePionDecayer> {
-    /** Return the class name.*/
-    static string className() { return "Herwig++::a1ThreePionDecayer"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwVMDecay.so"; }
 
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of a1ThreePionDecayer.
+ */ 
+template <>
+struct BaseClassTrait<Herwig::a1ThreePionDecayer,1> {
+  /** Typedef of the base class of a1ThreePionDecayer. */
+  typedef Herwig::DecayIntegrator NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::a1ThreePionDecayer>
+  : public ClassTraitsBase<Herwig::a1ThreePionDecayer> {
+  /** Return the class name.*/
+  static string className() { return "Herwig::a1ThreePionDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwVMDecay.so"; }
+  
+};
+
+/** @endcond */
   
 }
-
-#include "a1ThreePionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "a1ThreePionDecayer.tcc"
-#endif
 
 #endif /* HERWIG_a1ThreePionDecayer_H */

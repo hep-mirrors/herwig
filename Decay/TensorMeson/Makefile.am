@@ -1,11 +1,7 @@
-pkglib_LTLIBRARIES =
-
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwTMDecay.la
-endif
+pkglib_LTLIBRARIES = HwTMDecay.la
 
 HwTMDecay_la_SOURCES = \
-TensorMeson2PScalarDecayer.cc TensorMeson2PScalarDecayer.h TensorMeson2PScalarDecayer.icc \
-TensorMesonVectorPScalarDecayer.cc TensorMesonVectorPScalarDecayer.h TensorMesonVectorPScalarDecayer.icc \
-TensorMesonVectorVectorDecayer.cc TensorMesonVectorVectorDecayer.h TensorMesonVectorVectorDecayer.icc
-HwTMDecay_la_LDFLAGS = -module
+TensorMeson2PScalarDecayer.cc TensorMeson2PScalarDecayer.h\
+TensorMesonVectorPScalarDecayer.cc TensorMesonVectorPScalarDecayer.h \
+TensorMesonVectorVectorDecayer.cc TensorMesonVectorVectorDecayer.h
+HwTMDecay_la_LDFLAGS = -module -version-info 5:0:0

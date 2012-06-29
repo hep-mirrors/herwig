@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Histogram2Output class.
+//
+#ifndef HERWIG_Histogram2Output_FH
+#define HERWIG_Histogram2Output_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Histogram2Output;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Histogram2Output,Histogram2OutputPtr);
+
+}
+
+#endif

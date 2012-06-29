@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwRemDecayer class.
+//
+#ifndef HERWIG_HwRemDecayer_FH
+#define HERWIG_HwRemDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class HwRemDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::HwRemDecayer,HwRemDecPtr);
+
+}
+
+#endif

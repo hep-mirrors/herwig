@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterFissioner.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // Thisk is the implementation of the non-inlined, non-templated member
 // functions of the ClusterFissioner class.
 //
@@ -12,24 +19,31 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/EnumParticles.h>
-#include <ThePEG/Repository/EventGenerator.h>
-#include <ThePEG/EventRecord/Collision.h>
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/HwDebug.h"
-#include "Herwig++/Utilities/CheckId.h"
+#include "CheckId.h"
 #include "Cluster.h"
-#include <iomanip>
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << _globalParameters
-     << _clMax << _clPow << _pSplit1 << _pSplit2 << _btClM << _iopRem;
+  os << _hadronsSelector << ounit(_clMaxLight,GeV)
+     << ounit(_clMaxBottom,GeV) << ounit(_clMaxCharm,GeV)
+     << ounit(_clMaxExotic,GeV) << _clPowLight << _clPowBottom
+     << _clPowCharm << _clPowExotic << _pSplitLight 
+     << _pSplitBottom << _pSplitCharm << _pSplitExotic << ounit(_btClM,GeV) 
+     << _iopRem  << ounit(_kappa, GeV/meter);
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _globalParameters
-     >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 >> _btClM >> _iopRem;
+  is >> _hadronsSelector >> iunit(_clMaxLight,GeV)
+     >> iunit(_clMaxBottom,GeV) >> iunit(_clMaxCharm,GeV)
+     >> iunit(_clMaxExotic,GeV) >> _clPowLight >> _clPowBottom
+     >> _clPowCharm >> _clPowExotic >> _pSplitLight 
+     >> _pSplitBottom >> _pSplitCharm >> _pSplitExotic
+     >> iunit(_btClM,GeV) >> _iopRem
+     >> iunit(_kappa, GeV/meter);
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -46,29 +60,53 @@ void ClusterFissioner::Init() {
                              "A reference to the HadronSelector object", 
                              &Herwig::ClusterFissioner::_hadronsSelector,
 			     false, false, true, false);
-
-  static Reference<ClusterFissioner,GlobalParameters> 
-    interfaceGlobalParameters("GlobalParameters", 
-			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterFissioner::_globalParameters,
-			      false, false, true, false);
   
+  // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,Energy>
-    interfaceClMax ("ClMax","cluster max mass  (unit [GeV])",
-                    &ClusterFissioner::_clMax, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+    interfaceClMaxLight ("ClMaxLight","cluster max mass for light quarks (unit [GeV])",
+                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
+  static Parameter<ClusterFissioner,Energy>
+    interfaceClMaxBottom ("ClMaxBottom","cluster max mass  for b quarks (unit [GeV])",
+                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, ZERO, 10.0*GeV,
+		    false,false,false);
+  static Parameter<ClusterFissioner,Energy>
+    interfaceClMaxCharm ("ClMaxCharm","cluster max mass for c quarks  (unit [GeV])",
+                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, ZERO, 10.0*GeV,
+		    false,false,false);
+  static Parameter<ClusterFissioner,Energy>
+    interfaceClMaxExotic ("ClMaxExotic","cluster max mass  for exotic quarks (unit [GeV])",
+                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, ZERO, 10.0*GeV,
+		    false,false,false);
+ 
+ // ClPow for light, Bottom, Charm and exotic (e.g. Susy) quarks
+ static Parameter<ClusterFissioner,double>
+    interfaceClPowLight ("ClPowLight","cluster mass exponent for light quarks",
+                    &ClusterFissioner::_clPowLight, 0, 2.0, 0.0, 10.0,false,false,false);
+ static Parameter<ClusterFissioner,double>
+    interfaceClPowBottom ("ClPowBottom","cluster mass exponent for b quarks",
+                    &ClusterFissioner::_clPowBottom, 0, 2.0, 0.0, 10.0,false,false,false);
+ static Parameter<ClusterFissioner,double>
+    interfaceClPowCharm ("ClPowCharm","cluster mass exponent for c quarks",
+                    &ClusterFissioner::_clPowCharm, 0, 2.0, 0.0, 10.0,false,false,false);
+ static Parameter<ClusterFissioner,double>
+    interfaceClPowExotic ("ClPowExotic","cluster mass exponent for exotic quarks",
+                    &ClusterFissioner::_clPowExotic, 0, 2.0, 0.0, 10.0,false,false,false);
 
+ // PSplit for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,double>
-    interfaceClPow ("ClPow","cluster mass exponent",
-                    &ClusterFissioner::_clPow, 0, 2.0, 0.0, 10.0,false,false,false);
+    interfacePSplitLight ("PSplitLight","cluster mass splitting param for light quarks",
+                    &ClusterFissioner::_pSplitLight, 0, 1.0, 0.0, 10.0,false,false,false);
+  static Parameter<ClusterFissioner,double>
+    interfacePSplitBottom ("PSplitBottom","cluster mass splitting param for b quarks",
+                    &ClusterFissioner::_pSplitBottom, 0, 1.0, 0.0, 10.0,false,false,false);
+ static Parameter<ClusterFissioner,double>
+    interfacePSplitCharm ("PSplitCharm","cluster mass splitting param for c quarks",
+                    &ClusterFissioner::_pSplitCharm, 0, 1.0, 0.0, 10.0,false,false,false);
+ static Parameter<ClusterFissioner,double>
+    interfacePSplitExotic ("PSplitExotic","cluster mass splitting param for exotic quarks",
+                    &ClusterFissioner::_pSplitExotic, 0, 1.0, 0.0, 10.0,false,false,false);
 
-  static Parameter<ClusterFissioner,double>
-    interfacePSplt1 ("PSplt1","cluster mass splitting param for u,d,s,c",
-                    &ClusterFissioner::_pSplit1, 0, 1.0, 0.0, 10.0,false,false,false);
-
-  static Parameter<ClusterFissioner,double>
-    interfacePSplt2 ("PSplt2","cluster mass splitting param for b",
-                    &ClusterFissioner::_pSplit2, 0, 1.0, 0.0, 10.0,false,false,false);
 
   static Switch<ClusterFissioner,int> interfaceRemnantOption
     ("RemnantOption",
@@ -87,29 +125,31 @@ void ClusterFissioner::Init() {
      1);
 
   static Parameter<ClusterFissioner,Energy> interfaceBTCLM
-    ("BTCLM",
+    ("SoftClusterFactor",
      "Parameter for the mass spectrum of remnant clusters",
      &ClusterFissioner::_btClM, GeV, 1.*GeV, 0.1*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
+  
+  static Parameter<ClusterFissioner,Tension> interfaceStringTension
+    ("StringTension",
+     "String tension used in vertex displacement calculation",
+     &ClusterFissioner::_kappa, GeV/meter, 
+     1.0e15*GeV/meter, ZERO, ZERO,
+     false, false, Interface::lowerlim);
+
 }
 
-void ClusterFissioner::fission(const StepPtr &pstep) {
+tPVector ClusterFissioner::fission(ClusterVector & clusters, bool softUEisOn) {
+  if (clusters.empty()) return tPVector();
   /*****************
    * Loop over the (input) collection of cluster pointers, and store in 
    * the vector  splitClusters  all the clusters that need to be split
    * (these are beam clusters, if soft underlying event is off, and 
    *  heavy non-beam clusters).
    ********************/
-  vector<tClusterPtr> splitClusters; 
   
-  ClusterVector clusters; 
-  for (ParticleSet::iterator it = pstep->particles().begin();
-       it!= pstep->particles().end(); it++) { 
-    if((*it)->id() == ExtraParticleID::Cluster) 
-      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
-  }
-  
+  stack<ClusterPtr> splitClusters; 
   for(ClusterVector::iterator it = clusters.begin() ; 
       it != clusters.end() ; ++it) {
     
@@ -122,21 +162,17 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
      **************/
     if((*it)->isRedefined() || !(*it)->isAvailable()) continue;
     // if the cluster is a beam cluster add it to the vector of clusters
-    // to be split
-    if((*it)->isBeamCluster()) splitClusters.push_back(*it);
-    // If the cluster is heavy add it to the vector of clusters to be split.
-    else if(pow((*it)->mass() , _clPow) > 
-	    pow(_clMax, _clPow) + pow((*it)->sumConstituentMasses(), _clPow))
-      splitClusters.push_back(*it);
-  }
-  // split the clusters
-  vector<tClusterPtr>::const_iterator iter;
-  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter)
-    {cut(*iter, pstep, clusters);}
+    // to be split or if it is heavy
+    if((*it)->isBeamCluster() || isHeavy(*it)) splitClusters.push(*it);
+  }    
+  tPVector finalhadrons;
+  cut(splitClusters, clusters, finalhadrons, softUEisOn);
+  return finalhadrons;
 }
 
-void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep, 
-   			   ClusterVector &clusters) {
+void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack, 
+   			   ClusterVector &clusters, tPVector & finalhadrons, 
+			   bool softUEisOn) {
   /**************************************************
    * This method does the splitting of the cluster pointed by  cluPtr
    * and "recursively" by all of its cluster children, if heavy. All of these
@@ -158,123 +194,134 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
    * produce an unphysical large transverse energy from a supposed soft beam
    * remnant process).
    ****************************************/
-  vector<tClusterPtr> clusterStack; 
-  clusterStack.push_back(cluster);
   // Here we recursively loop over clusters in the stack and cut them
   while (!clusterStack.empty()) {
     // take the last element of the vector
-    tClusterPtr iCluster = clusterStack.back(); 
-    clusterStack.pop_back();   
+    ClusterPtr iCluster = clusterStack.top(); clusterStack.pop();   
     // split it                 
-    cutType ct = cut(iCluster);
+    cutType ct = cut(iCluster, finalhadrons, softUEisOn);
     // There are cases when we don't want to split, even if it fails mass test
-    if(!ct.first.first || !ct.second.first)
-      {
-	// if an unsplit beam cluster leave if for the underlying event
-	if(iCluster->isBeamCluster()&&_globalParameters->isSoftUnderlyingEventON())
-	  iCluster->isAvailable(false);
-	// continue
-	continue;
-      }
+    if(!ct.first.first || !ct.second.first) {
+      // if an unsplit beam cluster leave if for the underlying event
+      if(iCluster->isBeamCluster() && softUEisOn)
+	iCluster->isAvailable(false);
+      continue;
+    }
     // check if clusters
     ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
     ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
-    // is a beam cluster must be split into two hadrons
-    if(iCluster->isBeamCluster()&&(!one||!two)
-       &&_globalParameters->isSoftUnderlyingEventON())
-      {
-	iCluster->isAvailable(false);
-	continue;
-      }
-
-    // There should always be a intermediate quark(s) from the splitting, but
-    // in case there isn't
-    if(ct.first.second) {
-      pstep->addIntermediate(ct.first.second);
-      ct.first.second->addChild(ct.first.first);
+    // is a beam cluster must be split into two clusters
+    if(iCluster->isBeamCluster() && (!one||!two) && softUEisOn) {
+      iCluster->isAvailable(false);
+      continue;
     }
-    if(ct.second.second) {
-      pstep->addIntermediate(ct.second.second);
-      ct.second.second->addChild(ct.second.first);
-    }
-    pstep->addDecayProduct(iCluster, ct.first.first);
-    pstep->addDecayProduct(iCluster, ct.second.first);
 
+    // There should always be a intermediate quark(s) from the splitting
+    assert(ct.first.second && ct.second.second);
+    /// \todo sort out motherless quark pairs here. Watch out for 'quark in final state' errors
+    iCluster->addChild(ct.first.first);
+    //    iCluster->addChild(ct.first.second);
+    //    ct.first.second->addChild(ct.first.first);
+ 
+    iCluster->addChild(ct.second.first);
+    //    iCluster->addChild(ct.second.second);
+    //    ct.second.second->addChild(ct.second.first);
+ 
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
     if(one) {
       clusters.push_back(one);
-      if(one->isBeamCluster()&&
-	 _globalParameters->isSoftUnderlyingEventON()) one->isAvailable(false);
-      if(pow(one->mass(), _clPow) > 
-	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
-	 &&one->isAvailable()) {
-	clusterStack.push_back(one);
-      } 
+      if(one->isBeamCluster() && softUEisOn)
+	one->isAvailable(false);
+      if(isHeavy(one) && one->isAvailable())
+	clusterStack.push(one);
     }
     if(two) {
       clusters.push_back(two);
-      if(two->isBeamCluster()&&
-	 _globalParameters->isSoftUnderlyingEventON()) two->isAvailable(false);
-      if(pow(two->mass(), _clPow) > 
-	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
-	 && two->isAvailable()) {
-	clusterStack.push_back(two);
-      } 
+      if(two->isBeamCluster() && softUEisOn)
+	two->isAvailable(false);
+      if(isHeavy(two) && two->isAvailable())
+	clusterStack.push(two);
     }
   }
 }
 
-ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
-  // Get the actual particles making up the cluster
-  long idQ1 = 0, idQ2 = 0;
-  tPPtr ptrQ1 = cluster->particle(0), ptrQ2 = cluster->particle(1);
-  if(ptrQ1) idQ1 = ptrQ1->id();
-  if(ptrQ2) idQ2 = ptrQ2->id(); 
+namespace {
+  inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+    return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
+  }
+}
+
+ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster, 
+						tPVector & finalhadrons,
+						bool softUEisOn) {
+  // need to make sure only 2-cpt clusters get here
+  assert(cluster->numComponents() == 2);
+  tPPtr ptrQ1 = cluster->particle(0);
+  tPPtr ptrQ2 = cluster->particle(1);
+  Energy Mc = cluster->mass();
+  assert(ptrQ1);
+  assert(ptrQ2);
   
   // And check if those particles are from a beam remnant
   bool rem1 = cluster->isBeamRemnant(0);
   bool rem2 = cluster->isBeamRemnant(1);
   // workout which distribution to use
-  bool soft1=rem1||(_iopRem==0&&rem2);
-  bool soft2=rem2||(_iopRem==0&&rem1);
+  bool soft1 = rem1 || (_iopRem==0 && rem2);
+  bool soft2 = rem2 || (_iopRem==0 && rem1);
   // Initialization for the exponential ("soft") mass distribution.
-  static const InvEnergy b = 2.0 / _btClM;
   static const int max_loop = 1000;
   int counter = 0;
-  bool succeeded=false;
-  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
-  bool toHadron1,toHadron2;
-  long idNew;
+  Energy Mc1 = ZERO, Mc2 = ZERO,m1=ZERO,m2=ZERO,m=ZERO;
+  bool toHadron1(false), toHadron2(false);
+  PPtr newPtr1 = PPtr ();
+  PPtr newPtr2 = PPtr ();
+  bool succeeded = false;
   do
     {
-      succeeded=false;
+      succeeded = false;
       ++counter;
-      // Draw new flavour
-      idNew = drawNewFlavour();      // draw the new flavour (idNew > 0)
-      if(!CheckId::canBeMeson(idQ1,-idNew) && !CheckId::canBeBaryon(idQ1,-idNew))
-	idNew = -idNew;
+      
+      drawNewFlavour(newPtr1,newPtr2); 
+      // check for right ordering
+      assert (ptrQ2);
+      assert (newPtr2);
+      assert (ptrQ2->dataPtr());
+      assert (newPtr2->dataPtr());
+      if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
+	swap(newPtr1, newPtr2);
+	// check again
+	if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
+	  throw Exception() 
+	    << "ClusterFissioner cannot split the cluster ("
+	    << ptrQ1->PDGName() << ' ' << ptrQ2->PDGName()
+	    << ") into hadrons.\n" << Exception::runerror;
+	}
+      }
       // Check that new clusters can produce particles and there is enough
       // phase space to choose the drawn flavour
-      Energy Mc = cluster->mass(); 
       m1 = ptrQ1->data().constituentMass();
       m2 = ptrQ2->data().constituentMass();
-      m  = getParticleData(abs(idNew))->constituentMass();
+      m  = newPtr1->data().constituentMass();
       // Do not split in the case there is no phase space available
-      // (it happens sometimes for clusters with b-flavour)
       if(Mc <  m1+m + m2+m) continue;
       // power for splitting
-      double exp1=_pSplit1, exp2=_pSplit1;
-      if(CheckId::hasBeauty(idQ1)) exp1 = _pSplit2;
-      if(CheckId::hasBeauty(idQ2)) exp2 = _pSplit2;
+      double exp1=_pSplitLight;
+      double exp2=_pSplitLight;
+
+      if     (CheckId::isExotic(ptrQ1->dataPtr())) exp1 = _pSplitExotic;
+      else if(CheckId::hasBottom(ptrQ1->dataPtr()))exp1 = _pSplitBottom;
+      else if(CheckId::hasCharm(ptrQ1->dataPtr())) exp1 = _pSplitCharm;
+
+      if     (CheckId::isExotic(ptrQ2->dataPtr()))  exp2 = _pSplitExotic;
+      else if(CheckId::hasBottom(ptrQ2->dataPtr())) exp2 = _pSplitBottom;
+      else if(CheckId::hasCharm(ptrQ2->dataPtr()))  exp2 = _pSplitCharm;
+
       // If, during the drawing of candidate masses, too many attempts fail 
-      // (because the phase space available is tiny) 
-      //_hadronsSelector->lightestHadron(idQ2, idNew)then give up (the cluster 
-      // is not split).
-      Mc1 = Energy();
-      Mc2 = Energy();
-      drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,soft1);
-      drawChildMass(Mc,m2,m1,m,Mc2,exp2,b,soft2);
-      if(Mc1<m1+m || Mc2<m+m2 || Mc1+Mc2>Mc) continue;
+      // (because the phase space available is tiny)
+      /// \todo run separate loop here?
+      Mc1 = drawChildMass(Mc,m1,m2,m,exp1,soft1);
+      Mc2 = drawChildMass(Mc,m2,m1,m,exp2,soft2);
+      if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
       /**************************
        * New (not present in Fortran Herwig):
        * check whether the fragment masses  Mc1  and  Mc2  are above the 
@@ -298,36 +345,38 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
        * to decay the light cluster to the lightest hadron.   
        ****************************/
       toHadron1 = false;
-      if(Mc1 < _hadronsSelector->massLightestHadronPair(idQ1,-idNew)) { 
-	Mc1 = _hadronsSelector->massLightestHadron(idQ1,-idNew);          
+      if(Mc1 < _hadronsSelector->massLightestHadronPair(ptrQ1->dataPtr(), newPtr1->dataPtr())) { 
+	Mc1 = _hadronsSelector->massLightestHadron(ptrQ1->dataPtr(), newPtr1->dataPtr());          
 	toHadron1 = true;
       }
-      
       toHadron2 = false;
-      if(Mc2 < _hadronsSelector->massLightestHadronPair(idQ2,idNew)) { 
-	Mc2 = _hadronsSelector->massLightestHadron(idQ2,idNew);           
+      if(Mc2 < _hadronsSelector->massLightestHadronPair(ptrQ2->dataPtr(), newPtr2->dataPtr())) { 
+	Mc2 = _hadronsSelector->massLightestHadron(ptrQ2->dataPtr(), newPtr2->dataPtr());           
 	toHadron2 = true;
       }
 
+      // if a beam cluster not allowed to decay to hadrons
+      if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
+	continue;
       // Check if the decay kinematics is still possible: if not then 
       // force the one-hadron decay for the other cluster as well.
       if(Mc1 + Mc2  >  Mc) {
 	if(!toHadron1) {
-	  Mc1 = _hadronsSelector->massLightestHadron(idQ1, -idNew); 
+	  Mc1 = _hadronsSelector->massLightestHadron(ptrQ1->dataPtr(), newPtr1->dataPtr()); 
 	  toHadron1 = true;	
 	} else if(!toHadron2) {
-	  Mc2 = _hadronsSelector->massLightestHadron(idQ2, idNew);
+	  Mc2 = _hadronsSelector->massLightestHadron(ptrQ2->dataPtr(), newPtr2->dataPtr());
 	  toHadron2 = true;
 	}
       }
-      succeeded = (Mc>=Mc1+Mc2); 
+      succeeded = (Mc >= Mc1+Mc2);
     }
   while (!succeeded && counter < max_loop);
 
-  if(counter >= max_loop)
-    return cutType(PPair(PPtr(),PPtr()),PPair(PPtr(),PPtr()));
-
-
+  if(counter >= max_loop) {
+    static const PPtr null = PPtr();
+    return cutType(PPair(null,null),PPair(null,null));
+  }
 
   // Determined the (5-components) momenta (all in the LAB frame)
   Lorentz5Momentum pClu = cluster->momentum(); // known
@@ -365,42 +414,52 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
    ********************/
   LorentzPoint posC,pos1,pos2;
   posC = cluster->labVertex();
-  calculatePositions(pClu,posC,pClu1,pClu2,pos1,pos2);
+  calculatePositions(pClu, posC, pClu1, pClu2, pos1, pos2);
   cutType rval;
-  if(toHadron1) rval.first = produceHadron(idQ1,-idNew,pClu1,pos1);
-  else rval.first = produceCluster(ptrQ1,-idNew, pClu1, pos1,
-				   pQ1, pQone, rem1);
-
-  if(toHadron2) rval.second = produceHadron(idQ2,idNew,pClu2,pos2);
-  else rval.second = produceCluster(ptrQ2, idNew, pClu2, pos2,
-				    pQ2, pQtwo, rem2);
+  if(toHadron1) {
+    rval.first = produceHadron(ptrQ1->dataPtr(), newPtr1, pClu1, pos1);
+    finalhadrons.push_back(rval.first.first);
+  }
+  else {
+    rval.first = produceCluster(ptrQ1, newPtr1, pClu1, pos1, pQ1, pQone, rem1);
+  }
+  if(toHadron2) {
+    rval.second = produceHadron(ptrQ2->dataPtr(), newPtr2, pClu2, pos2);
+    finalhadrons.push_back(rval.second.first);
+  }
+  else {
+    rval.second = produceCluster(ptrQ2, newPtr2, pClu2, pos2, pQ2, pQtwo, rem2);
+  }
   return rval;
 }
 
-ClusterFissioner::PPair ClusterFissioner::produceHadron(long id1, long id2, 
-		                                        Lorentz5Momentum &a,
-				                        LorentzPoint &b) const {
+ClusterFissioner::PPair 
+ClusterFissioner::produceHadron(tcPDPtr ptrQ, tPPtr newPtr, 
+				const Lorentz5Momentum &a,
+				const LorentzPoint &b) const {
   PPair rval;
-  rval.first = getParticle(_hadronsSelector->lightestHadron(id1, id2));
-  rval.second = getParticle(id2);
+  rval.first =( _hadronsSelector->lightestHadron(ptrQ,newPtr->dataPtr()))->produceParticle();
+  
+  rval.second = newPtr;
   rval.first->set5Momentum(a);
   rval.first->setLabVertex(b);
   return rval;
 }
 
-ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr &p1, long id, 
-		                                         Lorentz5Momentum &a,
-				                         LorentzPoint &b, 
-							 Lorentz5Momentum &c,
-				                         Lorentz5Momentum &d, 
+ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr & ptrQ,
+							 tPPtr newPtr,
+							 Lorentz5Momentum & a,
+				                         LorentzPoint & b, 
+							 Lorentz5Momentum & c,
+				                         Lorentz5Momentum & d, 
 							 bool isRem) const {
   PPair rval;
-  rval.second = getParticle(id);
-  ClusterPtr cluster = new_ptr(Cluster(p1,rval.second));
+  rval.second = newPtr;
+  ClusterPtr cluster = new_ptr(Cluster(ptrQ,rval.second));
   rval.first = cluster;
   rval.first->set5Momentum(a);
   rval.first->setLabVertex(b);
-  if(cluster->particle(0)->id() == p1->id()) {
+  if(cluster->particle(0)->id() == ptrQ->id()) {
     cluster->particle(0)->set5Momentum(c);
     cluster->particle(1)->set5Momentum(d);
     cluster->setBeamRemnant(0,isRem);
@@ -412,7 +471,7 @@ ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr &p1, long id,
   return rval;
 }
 
-long ClusterFissioner::drawNewFlavour() const {
+void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
 
   // Flavour is assumed to be only  u, d, s,  with weights
   // (which are not normalized probabilities) given
@@ -421,25 +480,25 @@ long ClusterFissioner::drawNewFlavour() const {
   double prob_d = _hadronsSelector->pwtDquark();
   double prob_u = _hadronsSelector->pwtUquark();
   double prob_s = _hadronsSelector->pwtSquark();
-  double sum = prob_d + prob_u + prob_s;
-  prob_d = prob_d / sum;
-  prob_u = prob_u / sum;
-  prob_s = prob_s / sum;
-  int choice = rnd3(prob_u, prob_d, prob_s);
+  int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
   switch (choice) {
   case 0: idNew = ThePEG::ParticleID::u; break;  
   case 1: idNew = ThePEG::ParticleID::d; break;
   case 2: idNew = ThePEG::ParticleID::s; break;
   }
-  return idNew;
+  newPtrPos = getParticle(idNew);
+  newPtrNeg = getParticle(-idNew);
+  assert (newPtrPos);
+  assert(newPtrNeg);
+  assert (newPtrPos->dataPtr());
+  assert(newPtrNeg->dataPtr());
+
 }
 
-
-void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
-				     const Energy m2, const Energy m,
-                                     Energy & Mclu, const double expt, 
-                                     const InvEnergy b, const bool soft) const {
+Energy ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
+				       const Energy m2, const Energy m,
+				       const double expt, const bool soft) const {
 
   /***************************
    * This method, given in input the cluster mass Mclu of an heavy cluster C,
@@ -470,20 +529,25 @@ void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
    * The new one coded here is a more efficient version, same density 
    * but taking into account 'in phase space from' beforehand      
    ***************************/
-  Energy max = M-m1-m2-2.0*m;
-  double rmin = exp(-b*max);
-  if(rmin > 50.0) rmin = 0.0;
-
   // hard cluster
-  if(!soft)
-    {Mclu = pow(rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;}
+  if(!soft) {
+    return pow(UseRandom::rnd(pow((M-m1-m2-m)*UnitRemoval::InvE, expt), 
+			      pow(m*UnitRemoval::InvE, expt)), 1./expt
+	       )*UnitRemoval::E + m1;
+  }
   // Otherwise it uses a soft mass distribution
-  else 
-    { 
-      double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
-      if(r1 > rmin) Mclu = m1 + m - log(r1)/b;
-      else Mclu = Energy();
+  else { 
+    static const InvEnergy b = 2.0 / _btClM;
+    Energy max = M-m1-m2-2.0*m;
+    double rmin = b*max;
+    rmin = ( rmin < 50 ) ? exp(-rmin) : 0.;
+    double r1;
+    do {
+      r1 = UseRandom::rnd(rmin, 1.0) * UseRandom::rnd(rmin, 1.0);
     }
+    while (r1 < rmin);
+    return m1 + m - log(r1)/b;
+  }
 }
 
 
@@ -611,24 +675,13 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
-  double GeV2mm = _globalParameters->conversionFactorGeVtoMillimeter();
-  Length x1 = GeV2mm * (Mclu*0.25 + 0.5
-                     *(pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/GeV;
-  Length t1 = ((Mclu/GeV) * GeV2mm - x1); 
+  Length x1 = ( 0.25*Mclu + 0.5*( pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t1 = Mclu/_kappa - x1; 
   LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
-  Length x2 = GeV2mm * (-Mclu*0.25 + 0.5
-                     *(-pstarChild + (sqr(Mclu2) - sqr(Mclu))/(2.0*Mclu)))/GeV;
-  Length t2 = ((Mclu/GeV) * GeV2mm + x2);
-  LorentzDistance distanceClu2(x2 * u.vect().unit(), t2);
 
-  // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {
-    generator()->log() << "ClusterFissioner::calculatePositions : *** extreme debugging ***" << endl
-                       << "\t distanceClu1 = " << distanceClu1 
-                       << "\t invariant length = " << distanceClu1.mag() << "  [mm] " << endl
-                       << "\t distanceClu2 = " << distanceClu2 
-                       << "\t invariant length = " << distanceClu2.mag() << "  [mm] " << endl;
-  }
+  Length x2 = (-0.25*Mclu + 0.5*(-pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t2 = Mclu/_kappa + x2;
+  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
 
   // Then, transform such relative positions from the parent cluster
   // reference frame to the Lab frame.
@@ -641,3 +694,39 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
 }
 
+bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
+  // default
+  double clpow = _clPowLight;
+  Energy clmax = _clMaxLight;
+  // particle data for constituents
+  tcPDPtr cptr[3]={tcPDPtr(),tcPDPtr(),tcPDPtr()};
+  for(int ix=0;ix<min(clu->numComponents(),3);++ix) {
+    cptr[ix]=clu->particle(ix)->dataPtr();
+  }
+  // different parameters for exotic, bottom and charm clusters
+  if(CheckId::isExotic(cptr[0],cptr[1],cptr[1])) {
+    clpow = _clPowExotic;
+    clmax = _clMaxExotic;
+  }
+  else if(CheckId::hasBottom(cptr[0],cptr[1],cptr[1])) {
+    clpow = _clPowBottom;
+    clmax = _clMaxBottom;
+  }
+  else if(CheckId::hasCharm(cptr[0],cptr[1],cptr[1])) {
+    clpow = _clPowCharm;
+    clmax = _clMaxCharm;
+  }
+  bool aboveCutoff = (
+		      pow(clu->mass()*UnitRemoval::InvE , clpow) 
+		      > 
+		      pow(clmax*UnitRemoval::InvE, clpow) 
+		      + pow(clu->sumConstituentMasses()*UnitRemoval::InvE, clpow)
+		      );
+  // required test for SUSY clusters, since aboveCutoff alone
+  // cannot guarantee (Mc > m1 + m2 + 2*m) in cut()
+  static const Energy minmass 
+    = getParticleData(ParticleID::d)->constituentMass();
+  bool canSplitMinimally 
+    = clu->mass() > clu->sumConstituentMasses() + 2.0 * minmass;
+  return aboveCutoff && canSplitMinimally;
+}

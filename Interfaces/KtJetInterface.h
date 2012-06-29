@@ -1,12 +1,19 @@
-#ifndef _KTJET_INTERFACE_H_
-#define _KTJET_INTERFACE_H_
+// -*- C++ -*-
+//
+// KtJetInterface.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef HERWIG_KTJET_INTERFACE_H
+#define HERWIG_KTJET_INTERFACE_H
 
 // This is the declaration of the KtJetInterface class.
 
 #include "KtJet/KtLorentzVector.h"
 #include "KtJet/KtEvent.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Config/Herwig.h"
 #include "ThePEG/Repository/Strategy.fh"
 #include <fstream>
 #include <map>
@@ -14,7 +21,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace KtJet;
 
 /** \ingroup Interfaces
  * 
@@ -31,11 +37,6 @@ public:
    */
   KtJetInterface() {}
 
-  /**
-   * The copy constructor.
-   */
-  ~KtJetInterface() {}
-
 public:
 
   /**
@@ -48,19 +49,29 @@ public:
   /**
    *  Convert ThePEG particles to KtJet vectors
    */
-  vector<KtLorentzVector> convertToKtVectorList(const tPVector &);
+  vector<KtJet::KtLorentzVector> convert(const tPVector &);
+
+  /**
+   *  Convert  KtJet Lorentz vectors to ThePEG momenta
+   */
+  static vector<LorentzMomentum> convert(const vector<KtJet::KtLorentzVector> &);
 
   /**
    *  Get the PDG code for a KtJet vector
    */ 
-  int getThePEGID(KtLorentzVector &);
+  int getThePEGID(const KtJet::KtLorentzVector &);
+
+  /**
+   * Convert KtJet vector back to ThePEG
+   */
+  static LorentzMomentum convert(const KtJet::KtLorentzVector & kt);
 
  private:
 
   /**
    *  Convert one particle to KtJet
    */
-  KtLorentzVector convertToKtVector(const PPtr &);
+  static KtJet::KtLorentzVector convert(tcPPtr);
 
   /**
    *  Map between Herwig++ and KtJet
@@ -71,4 +82,4 @@ public:
 
 }
 
-#endif // _KTJET_INTERFACE_H_
+#endif // HERWIG_KTJET_INTERFACE_H

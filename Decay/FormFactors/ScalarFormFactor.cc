@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ScalarFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ScalarFormFactor class.
 //
@@ -7,18 +14,21 @@
 #include "ScalarFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-ScalarFormFactor::~ScalarFormFactor() {}
+void ScalarFormFactor::doinit() {
+  Interfaced::doinit();
+  // check the consistency of the parameters
+  unsigned int isize=_incomingid.size();
+  if(isize!=_outgoingid.size() || isize!=_outgoingJ.size()||
+     isize!=_spectator.size()  || isize!=_inquark.size()||
+     isize!=_outquark.size())
+    throw InitException() << "Inconsistent parameters in ScalarFormFactor::doinit() " 
+			  << Exception::abortnow;
+}
 
 void ScalarFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _incomingid << _outgoingid << _outgoingJ << _spectator << _inquark << _outquark
@@ -78,8 +88,7 @@ void ScalarFormFactor::Init() {
 
 // form-factor for scalar to scalar
 void ScalarFormFactor::ScalarScalarFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
-					      Complex &,Complex &) const
-{
+					      Complex &,Complex &) const {
   throw Exception() << "Error in ScalarFormFactor::ScalarScalarFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
@@ -88,8 +97,7 @@ void ScalarFormFactor::ScalarScalarFormFactor(Energy2,unsigned int,int,int,Energ
 // form-factor for scalar to vector
 void ScalarFormFactor::ScalarVectorFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
 					      Complex &,Complex &,
-					      Complex &,Complex &) const
-{
+					      Complex &,Complex &) const {
   throw Exception() << "Error in ScalarFormFactor::ScalarVectorFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
@@ -97,71 +105,66 @@ void ScalarFormFactor::ScalarVectorFormFactor(Energy2,unsigned int,int,int,Energ
 
 // form-factor for scalar to tensor
 void ScalarFormFactor::ScalarTensorFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
-					      Complex &,Complex &,
-					      Complex &,Complex &) const
-{
+					      complex<InvEnergy2> & ,
+					      Complex &, complex<InvEnergy2> &,
+					      complex<InvEnergy2> &) const {
   throw Exception() << "Error in ScalarFormFactor::ScalarTensorFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
 }
 
 // form-factor for scalar to scalar (sigma)
-void ScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,
-						   int id1,Energy m0, Energy m1,
-						   Complex & fT) const
-{
+void ScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2,unsigned int,int,
+						   int,Energy, Energy,
+						   Complex &) const {
   throw Exception() << "Error in ScalarFormFactor::ScalarScalarSigmaFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
 }
+
 // form-factor for scalar to vector (sigma)
-void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
-						   Energy m0, Energy m1, Complex & T1,
-						   Complex & T2, Complex & T3) const
-{
+void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2,unsigned int,int,int,
+						   Energy, Energy, Complex &,
+						   Complex &, Complex &) const {
   throw Exception() << "Error in ScalarFormFactor::ScalarVectorSigmaFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
 }
+
 void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
-				       bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::ScalarFormFactor " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_incomingid.size();++ix)
-    {
-      if(ix<_numbermodes)
-	{
-	  output << "set " << fullName() << ":Incoming "  << ix << " " 
-		 << _incomingid[ix] << endl;
-	  output << "set " << fullName() << ":Outgoing "  << ix << " " 
-		 << _outgoingid[ix] << endl;
-	  output << "set " << fullName() << ":Spin "      << ix << " " 
-		 << _outgoingJ[ix] << endl;
-	  output << "set " << fullName() << ":Spectator " << ix << " " 
-		 << _spectator[ix] << endl;
-	  output << "set " << fullName() << ":InQuark "   << ix << " " 
-		 << _inquark[ix] << endl;
-	  output << "set " << fullName() << ":OutQuark "  << ix << " " 
-		 << _outquark[ix]<< endl;
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming "  << ix << " " 
-		 << _incomingid[ix] << endl;
-	  output << "insert " << fullName() << ":Outgoing "  << ix << " " 
-		 << _outgoingid[ix] << endl;
-	  output << "insert " << fullName() << ":Spin "      << ix << " " 
-		 << _outgoingJ[ix] << endl;
-	  output << "insert " << fullName() << ":Spectator " << ix << " "
-		 << _spectator[ix] << endl;
-	  output << "insert " << fullName() << ":InQuark "   << ix << " " 
-		 << _inquark[ix] << endl;
-	  output << "insert " << fullName() << ":OutQuark "  << ix << " " 
-		 << _outquark[ix]<< endl;
-	}
+				       bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::ScalarFormFactor " << name() << " \n";
+  for(unsigned int ix=0;ix<_incomingid.size();++ix) {
+    if(ix<_numbermodes) {
+      output << "set " << name() << ":Incoming "  << ix << " " 
+	     << _incomingid[ix] << "\n";
+      output << "set " << name() << ":Outgoing "  << ix << " " 
+	     << _outgoingid[ix] << "\n";
+      output << "set " << name() << ":Spin "      << ix << " " 
+	     << _outgoingJ[ix] << "\n";
+      output << "set " << name() << ":Spectator " << ix << " " 
+	     << _spectator[ix] << "\n";
+      output << "set " << name() << ":InQuark "   << ix << " " 
+	     << _inquark[ix] << "\n";
+      output << "set " << name() << ":OutQuark "  << ix << " " 
+	     << _outquark[ix]<< "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+    else {
+      output << "insert " << name() << ":Incoming "  << ix << " " 
+	     << _incomingid[ix] << "\n";
+      output << "insert " << name() << ":Outgoing "  << ix << " " 
+	     << _outgoingid[ix] << "\n";
+      output << "insert " << name() << ":Spin "      << ix << " " 
+	     << _outgoingJ[ix] << "\n";
+      output << "insert " << name() << ":Spectator " << ix << " "
+	     << _spectator[ix] << "\n";
+      output << "insert " << name() << ":InQuark "   << ix << " " 
+	     << _inquark[ix] << "\n";
+      output << "insert " << name() << ":OutQuark "  << ix << " " 
+	     << _outquark[ix]<< "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NBodyDecayConstructorBase class.
+//
+#ifndef HERWIG_NBodyDecayConstructorBase_FH
+#define HERWIG_NBodyDecayConstructorBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class NBodyDecayConstructorBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::NBodyDecayConstructorBase,
+			NBodyDecayConstructorBasePtr);
+
+}
+
+#endif

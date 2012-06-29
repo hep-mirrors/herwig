@@ -1,18 +1,22 @@
 // -*- C++ -*-
+//
+// ClusterDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterDecayer_H
 #define HERWIG_ClusterDecayer_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-
+#include "ClusterDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-
-class ThePEG::Particle;   // forward declaration
 
 /** \ingroup Hadronization
  *  \class ClusterDecayer
@@ -26,9 +30,11 @@ class ThePEG::Particle;   // forward declaration
  *  This class is directs the production of hadrons via 2-body cluster decays. 
  *  The selection of the hadron flavours is given by Herwig::HadronSelector.
  *
- *  @see HadronSelector
+ *  @see HadronSelector 
+ * @see \ref ClusterDecayerInterfaces "The interfaces"
+ * defined for ClusterDecayer.
  */
-class ClusterDecayer: public ThePEG::HandlerBase {
+class ClusterDecayer: public Interfaced {
 
 public:
 
@@ -38,16 +44,6 @@ public:
    * Default constructor.
    */
   inline ClusterDecayer();  
-  
-  /**
-   * Copy constructor.
-   */
-  inline ClusterDecayer(const ClusterDecayer &);
-
-  /**
-   * Standard destructor.
-   */
-  virtual ~ClusterDecayer();
   //@}
 
   /** Decays all remaining clusters into hadrons. 
@@ -57,8 +53,8 @@ public:
    * the "normal" clusters which are not forced into hadrons by
    * the other functions.
    */
-  void decay(const StepPtr&) 
-    throw(Veto, Stop, Exception);
+  void decay(const ClusterVector & clusters, tPVector & finalhadrons) 
+   ;
 
 public:
 
@@ -94,47 +90,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
 
   /**
@@ -161,7 +116,7 @@ public:
    *  number [0,1].
    */
   pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr) 
-    throw(Veto, Stop, Exception);
+   ;
 
 private:
 
@@ -180,30 +135,23 @@ private:
    */
   Ptr<HadronSelector>::pointer _hadronsSelector;
 
+  //@{  
   /**
-   * Pointer to a Herwig::GlobalParameters for various global data
+   * Whether a cluster decays along the perturbative parton direction.
    */
-  Ptr<GlobalParameters>::pointer _globalParameters;
-  
-  /**
-   * Whether non-b clusters decay along the perturbative parton direction.
-   */
-  int _ClDir1;
+  bool _clDirLight;
+  bool _clDirBottom;
+  bool _clDirCharm;
+  bool _clDirExotic;
 
-  /**
-   * Whether b clusters decay along the perturbative parton direction.
+   /**
+   * The S parameter from decayIntoTwoHadrons
    */
-  int _ClDir2;
-
-  /**
-   * The S parameter from decayIntoTwoHadrons for non-b clusters.
-   */
-  double _ClSmr1;
-
-  /**
-   * The S parameter from decayIntoTwoHadrons for b clusters.
-   */
-  double _ClSmr2;
+  double _clSmrLight;
+  double _clSmrBottom;
+  double _clSmrCharm;
+  double _clSmrExotic;
+  //@}
 
   /**
    * Whether or not the hadrons produced should be on-shell
@@ -221,9 +169,9 @@ private:
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /** 
@@ -232,7 +180,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::ClusterDecayer,1> {
   /** Typedef of the base class of ClusterDecayer. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
   
 /**
@@ -247,17 +195,12 @@ template <>
 struct ClassTraits<Herwig::ClusterDecayer>
   : public ClassTraitsBase<Herwig::ClusterDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ClusterDecayer"; }
-  /** Return the name of the shared library to be loaded to get
-   *  access to this class and every other class it uses
-   *  (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
+  static string className() { return "Herwig::ClusterDecayer"; }
 };
 
-}
+/** @endcond */
 
-#endif // DOXYGEN
+}
 
 #include "ClusterDecayer.icc"
 

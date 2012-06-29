@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// StandardModel.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the StandardModel class.
 //
@@ -9,61 +16,106 @@ using namespace ThePEG;
 typedef Ptr<Herwig::RunningMassBase>::pointer runPtr;
 typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
 
-inline IBPtr StandardModel::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr StandardModel::fullclone() const {
-  return new_ptr(*this);
-}
-
 // Standard Model couplings
-inline double StandardModel::lnu() const 
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()+anu());}
-inline double StandardModel::le()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()+ae());}
-inline double StandardModel::lu()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()+au());}
-inline double StandardModel::ld()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()+ad());}
-inline double StandardModel::rnu() const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()-anu());}
-inline double StandardModel::re()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()-ae());}
-inline double StandardModel::ru()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()-au());}
-inline double StandardModel::rd()  const
-{return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()-ad());}
+inline double StandardModel::lnu() const  {
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()+anu());
+}
 
-// vertices	
+inline double StandardModel::le()  const {
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()+ae());
+}
 
-inline tFFVVertexPtr  StandardModel::vertexFFZ() const {return _theFFZVertex;}
-inline tFFVVertexPtr  StandardModel::vertexFFP() const {return _theFFPVertex;}
-inline tFFVVertexPtr  StandardModel::vertexFFG() const {return _theFFGVertex;}
-inline tFFVVertexPtr  StandardModel::vertexFFW() const {return _theFFWVertex;}
-inline tVVVVertexPtr  StandardModel::vertexGGG() const {return _theGGGVertex;}
-inline tVVVVertexPtr  StandardModel::vertexWWW() const {return _theWWWVertex;}
-inline tFFSVertexPtr  StandardModel::vertexFFH() const {return _theFFHVertex;}
-inline tVVSVertexPtr  StandardModel::vertexWWH() const {return _theWWHVertex;}
-inline tVVVVVertexPtr StandardModel::vertexWWWW() const {return _theWWWWVertex;}
-inline tVVVVVertexPtr StandardModel::vertexGGGG() const {return _theGGGGVertex;}
+inline double StandardModel::lu()  const {
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()+au());
+}
 
+inline double StandardModel::ld()  const{
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()+ad());
+}
+
+inline double StandardModel::rnu() const{
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()-anu());
+}
+
+inline double StandardModel::re()  const{
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()-ae());
+}
+
+inline double StandardModel::ru()  const{
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()-au());
+}
+
+inline double StandardModel::rd()  const{
+  return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()-ad());
+}
+
+inline tAbstractFFVVertexPtr  StandardModel::vertexFFZ()  const {
+  return _theFFZVertex;
+}
+
+inline tAbstractFFVVertexPtr  StandardModel::vertexFFP()  const {
+  return _theFFPVertex;
+}
+inline tAbstractFFVVertexPtr  StandardModel::vertexFFG()  const {
+  return _theFFGVertex;
+}
+
+inline tAbstractFFVVertexPtr  StandardModel::vertexFFW()  const {
+  return _theFFWVertex;
+}
+
+inline tAbstractVVVVertexPtr  StandardModel::vertexGGG()  const {
+  return _theGGGVertex;
+}
+
+inline tAbstractVVVVertexPtr  StandardModel::vertexWWW()  const {
+  return _theWWWVertex;
+}
+
+inline tAbstractFFSVertexPtr  StandardModel::vertexFFH()  const {
+  return _theFFHVertex;
+}
+
+inline tAbstractVVSVertexPtr  StandardModel::vertexWWH()  const {
+  return _theWWHVertex;
+}
+
+inline tAbstractVVVVVertexPtr StandardModel::vertexWWWW() const {
+  return _theWWWWVertex;
+}
+
+inline tAbstractVVVVVertexPtr StandardModel::vertexGGGG() const {
+  return _theGGGGVertex;
+}
+
+inline tAbstractVVSVertexPtr  StandardModel::vertexHGG()  const {
+  return _theHGGVertex;
+}
+
+inline tAbstractVVSVertexPtr  StandardModel::vertexHPP()  const {
+  return _theHPPVertex;
+}
 
 inline trunPtr StandardModel::massPtr() const {
-  return _theRunningMass;}
+  return _theRunningMass;
+}
 
 // Return the running mass for a given scale and particle type 
-inline double StandardModel::mass(Energy2 scale,tcPDPtr part) const
-{return _theRunningMass->value(scale,part);}
+inline Energy StandardModel::mass(Energy2 scale,tcPDPtr part) const {
+  return _theRunningMass->value(scale,part);
+}
 
 // Total number of vertices
-inline unsigned int StandardModel::numberOfVertices() const 
-{return _vertexlist.size();}
+inline unsigned int StandardModel::numberOfVertices() const  {
+  return _vertexlist.size();
+}
 
-inline tVertexBasePtr StandardModel::vertex(unsigned int ix)
-{return _vertexlist[ix];}
+inline tVertexBasePtr StandardModel::vertex(unsigned int ix) {
+  return _vertexlist[ix];
+}
 
-inline void StandardModel::addVertex(VertexBasePtr in)
-{_vertexlist.push_back(in);}
+inline void StandardModel::addVertex(VertexBasePtr in) {
+  _vertexlist.push_back(in);
+}
 
 }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// EventShapesMasterAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the EventShapesMasterAnalysis class.
 //
@@ -7,23 +14,17 @@
 #include "EventShapesMasterAnalysis.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EventShapesMasterAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-EventShapesMasterAnalysis::~EventShapesMasterAnalysis() {}
-
-void EventShapesMasterAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void EventShapesMasterAnalysis::analyze(tEventPtr event, long ieve,
+					int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 }
 
-LorentzRotation EventShapesMasterAnalysis::transform(tEventPtr event) const {
+LorentzRotation EventShapesMasterAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

@@ -1,18 +1,17 @@
 pkglib_LTLIBRARIES = 
 
-if WANT_LIBAMEGIC
-pkglib_LTLIBRARIES += HwAmegic.la 
-endif
-
 if WANT_LIBKTJET
-AM_CPPFLAGS+= $(KTJETINCLUDE)
 pkglib_LTLIBRARIES += HwKtJet.la
 endif
 
-HwAmegic_la_SOURCES = AmegicInterface.cc  AmegicInterface.icc \
-		AmegicInterface.h
-HwAmegic_la_LDFLAGS = -module
-
 HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
-HwKtJet_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
-HwKtJet_la_LDFLAGS = -module
+HwKtJet_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
+HwKtJet_la_LDFLAGS = -module -version-info 3:0:0
+HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
+
+pkglib_LTLIBRARIES += HwPOWHEG.la
+HwPOWHEG_la_LDFLAGS = -R$(EVTGENPATH)/lib -module 
+
+HwPOWHEG_la_SOURCES =\
+POWHEGReader.cc POWHEGReader.fh \
+POWHEGReader.h POWHEGReader.icc 

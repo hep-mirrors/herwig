@@ -1,14 +1,25 @@
 // -*- C++ -*-
 //
+// MRST.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the MRST class.
 //
 
 namespace Herwig {
 
-inline MRST::MRST() : data(np+1,vector<vector<double> >
+  inline MRST::MRST() : _inter(2), _xswitch(0.8),
+		      data(np+1,vector<vector<double> >
 			   (nx+1,vector<double>
-			    (nq+1,0.0))) {}
+			    (nq+1,0.0))),
+		      fdata(np+1,vector<vector<double> >
+			    (nx+1,vector<double>
+			     (nq+1,0.0))) {}
 
 inline IBPtr MRST::clone() const {
   return new_ptr(*this);
@@ -26,8 +37,7 @@ inline double MRST::polderivative(double x1, double x2, double x3,
           x2*x2*(y1-y3) + x1*x1*(y2-y3))/((x1-x2)*(x1-x3)*(x2-x3));
 }
 
-inline int MRST::locate(double xx[],int n,double x) const
-{
+inline int MRST::locate(double xx[],int n,double x) const {
   // returns an integer j such that x lies inbetween xx[j] and xx[j+1]. unit
   // offset of increasing ordered array xx assumed. n is the length of the
   // array (xx[n] highest element)

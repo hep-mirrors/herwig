@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// RunningMassBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RunningMassBase_H
 #define HERWIG_RunningMassBase_H
 //
@@ -17,26 +24,11 @@ using namespace ThePEG;
 class RunningMassBase: public Interfaced {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * Default constructor.
    */
   inline RunningMassBase();
-
-  /**
-   * Copy-constructor.
-   */
-  inline RunningMassBase(const RunningMassBase &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~RunningMassBase();
-  //@}
-  
-public:
   
   /**
    * Return the running mass for a given scale \f$q^2\f$ and particle type.
@@ -51,7 +43,7 @@ public:
   virtual vector<Energy> mass() const = 0;
 
   /**
-   * Return the \f$i\f$th element of the mass array.
+   * Return the \f$i\f$ th element of the mass array.
    * @param i The element to return
    */
   inline Energy massElement(unsigned int i) const;
@@ -84,45 +76,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  inline virtual void doinit();
   //@}
 
 private:
@@ -150,37 +108,33 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of RunningMassBase.
+ */
+template <>
+struct BaseClassTrait<Herwig::RunningMassBase,1> {
+  /** Typedef of the base class of RunningMassBase. */
+  typedef Interfaced NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::RunningMassBase>
+  : public ClassTraitsBase<Herwig::RunningMassBase> {
+
   /**
-   * The following template specialization informs ThePEG about the
-   * base class of RunningMassBase.
+   * Return the class name.
    */
-  template <>
-  struct BaseClassTrait<Herwig::RunningMassBase,1> {
-    /** Typedef of the base class of RunningMassBase. */
-    typedef Interfaced NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::RunningMassBase>
-    : public ClassTraitsBase<Herwig::RunningMassBase> {
+  static string className() { return "Herwig::RunningMassBase"; }
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::RunningMassBase"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwStandardModel.so"; }
-
-  };
+/** @endcond */
   
 }
 

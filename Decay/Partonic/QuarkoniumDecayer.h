@@ -1,30 +1,25 @@
 // -*- C++ -*-
+//
+// QuarkoniumDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_QuarkoniumDecayer_H
 #define HERWIG_QuarkoniumDecayer_H
 //
 // This is the declaration of the QuarkoniumDecayer class.
 //
 
-#include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/PDT/Decayer.h>
-#include <ThePEG/Handlers/HandlerBase.h>
-#include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/Strategy.fh>
-#include "Herwig++/Utilities/GlobalParameters.h"
-#include <fstream>
+#include <PartonicDecayerBase.h>
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * <code>QuarkoniumDecayer</code> is a class that defines all the general routines 
- * used in HERWIG++ to imitate the HERWIG 6.4 decays. The goal is to have an exact
- * copy of HERWIG 6.4 decay routines. This will allow for easy 'callibration'
- * of the new C++ code with the old Fortran code.
- *
- *  This particular class is designed for the partonic decay of bottom and charmonium
+ * The QuarkoniumDecayer class is designed for the partonic decay of bottom and charmonium
  *  resonances. In general it is used for decays of the type:
  *    - \f$q,\bar{q}\f$ decay to a quark-antiquark pair generally using phase space,
  *      \e i.e. MECode=0.
@@ -45,47 +40,61 @@ using namespace ThePEG;
  *  - MECode=0   flat-phase space
  *  - MECode=130 The Ore-Powell onium matrix element.
  *
- *  The Ore-Powell matrix element is only for a three-body decay and this
- *  class only supports two and three body phase-space decays.
+ *  This is designed to be the same as the FORTRAN HERWIG routine.
  *
  * @see HeavyDecayer
  * @see Hw64Decayer
  * @see Decayer
  *
  */
-class QuarkoniumDecayer: public Decayer {
+class QuarkoniumDecayer: public PartonicDecayerBase {
 
 public:
 
   /**
    * Standard ctors and dtor
    */
-  inline QuarkoniumDecayer();
+  QuarkoniumDecayer();
+
+  /**
+   * Check if this decayer can perfom the decay for a particular mode
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return true If this decayer can handle the given mode, otherwise false.
+   */
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  
+  /**
+   *  Perform the decay of the particle to the specified decay products
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return a ParticleVector containing the decay products.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
+
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
-
-  /**
-   * return true if this decayer can perfom the decay specified by the
-   * given decay mode.
-   */
-  virtual bool accept(const DecayMode &) const;
-
-  /**
-   * for a given decay mode and a given particle instance, perform the
-   * decay and return the decay products.
-   */
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
 
   /**
    * Standard Init function used to initialize the interface.
    */
   static void Init();
+
   /**
-   * Standard Persisten stream methods
+   * Standard Persistent stream methods
    */
   void persistentOutput(PersistentOStream &) const;
+
   /**
-   * Standard Persisten stream methods
+   * Standard Persistent stream methods
    */
   void persistentInput(PersistentIStream &, int);
 
@@ -93,23 +102,18 @@ public:
     * Standard clone methods
     */
 protected:
-   inline virtual IBPtr clone() const;
+
    /**
     * Standard clone methods
     */
-   inline virtual IBPtr fullclone() const;
+   virtual IBPtr clone() const;
+
+   /**
+    * Standard clone methods
+    */
+   virtual IBPtr fullclone() const;
 
 private:
-
-  /**
-   *  The code for the type of matrix element being used.
-   */
-  int MECode;
-
-  /**
-   * A pointer to the global parameters object/
-   */
-  Ptr<GlobalParameters>::pointer global;
 
   /**
    * Describe a concrete class with persistant decay
@@ -117,19 +121,23 @@ private:
   static ClassDescription<QuarkoniumDecayer> initQuarkoniumDecayer;
 
   /**
-   * Variable which control the adding of handlers, no longer used
-   */
-  static long lastAddedNumber;
-
-  /**
    *  Private and non-existent assignment operator.
    */
   const QuarkoniumDecayer & operator=(const QuarkoniumDecayer &);
+
+private:
+
+  /**
+   *  The code for the type of matrix element being used.
+   */
+  int MECode;
 };
 
 }
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * This template specialization informs ThePEG about the base class of
@@ -138,7 +146,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::QuarkoniumDecayer,1> {
   /** Typedef of the base class of QuarkoniumDecayer. */
-  typedef HandlerBase NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /**
@@ -146,9 +154,10 @@ struct BaseClassTrait<Herwig::QuarkoniumDecayer,1> {
  * QuarkoniumDecayer class.
  */
 template <>
-struct ClassTraits<Herwig::QuarkoniumDecayer>: public ClassTraitsBase<Herwig::QuarkoniumDecayer> {
+struct ClassTraits<Herwig::QuarkoniumDecayer>: 
+    public ClassTraitsBase<Herwig::QuarkoniumDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::QuarkoniumDecayer"; }
+  static string className() { return "Herwig::QuarkoniumDecayer"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
@@ -156,8 +165,8 @@ struct ClassTraits<Herwig::QuarkoniumDecayer>: public ClassTraitsBase<Herwig::Qu
   static string library() { return "HwPartonicDecay.so"; }
 };
 
-}
+/** @endcond */
 
-#include "QuarkoniumDecayer.icc"
+}
 
 #endif /* HERWIG_QuarkoniumDecayer_H */

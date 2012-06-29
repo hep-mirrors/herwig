@@ -1,9 +1,17 @@
 // -*- C++ -*-
+//
+// ColourReconnector.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ColourReconnector_H
 #define HERWIG_ColourReconnector_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
+#include "ColourReconnector.fh"
 
 
 namespace Herwig {
@@ -24,11 +32,10 @@ using namespace ThePEG;
  *
  *  Note: by default this class does nothing. It can be inherited and overridden
  *  in future hadronization models.
+ * * @see \ref ColourReconnectorInterfaces "The interfaces"
+ * defined for ColourReconnector.
  */
-//class ThePEG::PartialCollisionHandler; // forward declaration
-
-
-class ColourReconnector: public ThePEG::HandlerBase {
+class ColourReconnector: public Interfaced {
 
 public:
 
@@ -38,16 +45,6 @@ public:
    * Default constructor.
    */
   inline ColourReconnector();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ColourReconnector(const ColourReconnector &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~ColourReconnector();
   //@}
 
   /**
@@ -58,8 +55,8 @@ public:
    * in input. If the actual rearrangement is accepted, the new collection 
    * of clusters is overriden to the intial one.
    */
-  void rearrange(EventHandler & ch, const StepPtr & pstep,
-                 ClusterVector & clusters) throw(Veto, Stop, Exception);
+  void rearrange(EventHandler & ch,
+                 ClusterVector & clusters);
     
 public:
 
@@ -101,47 +98,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
 
   /**
@@ -155,23 +111,17 @@ private:
   ColourReconnector & operator=(const ColourReconnector &);
 
   /**
-   * The numer of colours in the reconstruction.
+   * Do we do colour reconnections?
    */
-  int    _ClReco;
-
-  /**
-   * The probability of a reconstruction.
-   */
-  double _PReco;
-
+  int _clreco;
 };
 
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -180,7 +130,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::ColourReconnector,1> {
   /** Typedef of the base class of ColourReconnector. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 template <>
@@ -191,19 +141,13 @@ template <>
 struct ClassTraits<Herwig::ColourReconnector>
   : public ClassTraitsBase<Herwig::ColourReconnector> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ColourReconnector"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
-
+  static string className() { return "Herwig::ColourReconnector"; }
 };
+
+/** @endcond */
 
 }
 
-#endif // DOXYGEN
 
 #include "ColourReconnector.icc"
 

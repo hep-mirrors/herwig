@@ -6,7 +6,6 @@
 //
 
 #include "Baryon1MesonDecayerBase.h"
-#include "RadiativeHeavyBaryonDecayer.fh"
 
 namespace Herwig {
 using namespace Herwig;
@@ -38,35 +37,19 @@ class RadiativeHeavyBaryonDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   RadiativeHeavyBaryonDecayer();
 
   /**
-   * The copy constructor.
-   */
-  inline RadiativeHeavyBaryonDecayer(const RadiativeHeavyBaryonDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~RadiativeHeavyBaryonDecayer();
-  //@}
-
-public:
-
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-  //@}
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -148,13 +131,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -162,47 +145,17 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -224,12 +177,12 @@ private:
   /**
    *  The \f$M1\f$ coupling
    */
-  vector<InvEnergy>  _M1coupling;
+  vector<InvEnergy>  _m1coupling;
 
   /**
    *  The \f$E1\f$ coupling
    */
-  vector<InvEnergy2> _E1coupling;
+  vector<InvEnergy2> _e1coupling;
 
   /**
    * PDG code for the incoming baryons
@@ -259,11 +212,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of RadiativeHeavyBaryonDecayer. */
@@ -279,18 +232,15 @@ template <>
  struct ClassTraits<Herwig::RadiativeHeavyBaryonDecayer>
   : public ClassTraitsBase<Herwig::RadiativeHeavyBaryonDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::RadiativeHeavyBaryonDecayer"; }
+  static string className() { return "Herwig::RadiativeHeavyBaryonDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the RadiativeHeavyBaryonDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 };
 
-}
+/** @endcond */
 
-#include "RadiativeHeavyBaryonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RadiativeHeavyBaryonDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_RadiativeHeavyBaryonDecayer_H */

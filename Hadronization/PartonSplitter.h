@@ -1,11 +1,18 @@
 // -*- C++ -*-
+//
+// PartonSplitter.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PartonSplitter_H
 #define HERWIG_PartonSplitter_H
 
 #include "CluHadConfig.h"
-#include <ThePEG/Handlers/HandlerBase.h>
-#include "Herwig++/Utilities/GlobalParameters.h"
-
+#include <ThePEG/Interface/Interfaced.h>
+#include <ThePEG/Utilities/Selector.h>
+#include "PartonSplitter.fh"
 
 namespace Herwig {
 
@@ -23,30 +30,13 @@ using namespace ThePEG;
  *  immediately after the end of the showering (both initial and final),
  *  as very first step of the cluster hadronization.
  *
- *  See also:
- *  GlobalParameters.h.
+ *  \todo change so quark weights can be varied and quarks other
+ *        than u and d can be produced
+ *
+ * * @see \ref PartonSplitterInterfaces "The interfaces"
+ * defined for PartonSplitter.
  */
-class PartonSplitter: public ThePEG::HandlerBase {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline PartonSplitter();
-
-  /**
-   * The copy constructor.
-   */
-  inline PartonSplitter(const PartonSplitter &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~PartonSplitter();
-  //@}
+class PartonSplitter: public Interfaced {
 
 public:
 
@@ -55,10 +45,9 @@ public:
    * time-like gluons. At the end of the shower the gluons should be
    * on a "physical" mass shell and should therefore be time-like.
    * @param tagged The tagged particles to be split
-   * @param pstep Pointer to the step
    * @return The particles which were not split and the products of splitting.
    */
-  tPVector split(const tPVector & tagged, tStepPtr pstep);
+  void split(PVector & tagged);
  
 public:
 
@@ -108,41 +97,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -158,49 +117,28 @@ private:
   PartonSplitter & operator=(const PartonSplitter &);
 
   /**
-   * Given in input a pointer to a time-like gluon, it forces
-   * a nonperturbative quark - anti-quark splitting, returning
-   * the pointers to these produced two new particles. 
-   * If something wrong happens, it will returns null pointers.
+   * Non-perturbatively split a time-like gluon,
+   * if something goes wrong null pointers are returned.
+   * @param gluon The gluon to be split
+   * @param quark The quark produced in the splitting
+   * @param anti  The antiquark produced in the splitting
    */
-  void splitTimeLikeGluon(tcPPtr ptrGluon,                   // input        
-			  PPtr & ptrQ, PPtr & ptrQbar);      // output
-  
-  /**
-   * Given in input a pointer to a space-like gluon, it forces
-   * a nonperturbative quark - anti-quark splitting, returning
-   * the pointers to these produced two new particles. 
-   * If something wrong happens, it will returns null pointers.
-   */
-  //void splitSpaceLikeGluon(tcPPtr ptrGluon,                  // input       
-  //         		     PPtr & ptrQ, PPtr & ptrQbar);     // output
-  
-  /**
-   * Given in input a pointer to a space-like sea quark, it forces 
-   * a nonperturbative soft gluon emission, returning the pointers 
-   * to the emitted gluon and the sea quark after the emission. 
-   * If something wrong happens, it will return null pointers.
-   */
-  //void splitSpaceLikeSeaQuark(tcPPtr ptrSeaQ0,                   // input
-  //			        PPtr & ptrGluon, PPtr & ptrSeaQ1); // output
+  void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
+
+private:
 
   /**
-   * Print full information for debugging.
+   *  The selector to pick the type of quark
    */
-  void debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons);
-
-  /**
-   * Pointer to a Herwig::GlobalParameters object for using global variables.
-   */
-  GlobParamPtr _globalParameters;  
+  Selector<PDPtr,double> _quarkSelector;
 
 };
-
 
 }
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -209,7 +147,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::PartonSplitter,1> {
   /** Typedef of the first base class of PartonSplitter. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 /**
@@ -220,14 +158,10 @@ template <>
 struct ClassTraits<Herwig::PartonSplitter>:
     public ClassTraitsBase<Herwig::PartonSplitter> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::PartonSplitter"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
+  static string className() { return "Herwig::PartonSplitter"; }
 };
+
+/** @endcond */
 
 }
 

@@ -10,57 +10,100 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonSingletOctetPhotonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-SU3BaryonSingletOctetPhotonDecayer::~SU3BaryonSingletOctetPhotonDecayer() 
-{}
+SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer() {
+  // the coupling
+  _c=0.252/GeV;
+  // the relative parities of the two baryon multiplets
+  _parity=false;
+  // PDG codes for the various ground state baryons
+  _sigma0   = 3212;
+  _lambda   = 3122;
+  // PDG codes for the excited baryon
+  _elambda  = 3124;
+  // intermediates
+  generateIntermediates(false);
+}
 
-int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+void SU3BaryonSingletOctetPhotonDecayer::doinit() {
+  Baryon1MesonDecayerBase::doinit();
+  // set up the decay modes
+  setupModes(1);
+  // set up the phase space and the couplings
+  tPDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  double wgtmax;
+  vector<double> wgt(0);
+  for(unsigned int ix=0;ix<_outgoingB.size();++ix) {
+    extpart[0]=getParticleData(_elambda);
+    extpart[1]=getParticleData(_outgoingB[ix]);
+    extpart[2]=getParticleData(ParticleID::gamma);
+    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
+    else{wgtmax=1.;}
+    addMode(mode,wgtmax,wgt);
+  }
+}
+
+void SU3BaryonSingletOctetPhotonDecayer::doinitrun() {
+  Baryon1MesonDecayerBase::doinitrun();
+  if(initialize()) {
+    _maxweight.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix)
+      _maxweight.push_back(mode(ix)->maxWeight());
+  }
+}
+
+int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const tPDVector & children) const {
   int imode(-1);
   if(_outgoingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),iout;
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
   else{return imode;}
   unsigned int ix(0);
   cc =false;
-  do
-    {
-      if(id0==_elambda){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
-      else if(id0==-_elambda){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
-      ++ix;
+  do {
+    if(id0==_elambda){
+      if(iout==_outgoingB[ix]) {
+	imode=ix;
+	cc=false;
+      }
     }
+    else if(id0==-_elambda) {
+      if(iout==-_outgoingB[ix]) {
+	imode=ix;
+	cc=true;
+      }
+    }
+    ++ix;
+  }
   while(ix<_outgoingB.size()&&imode<0);
   return imode;
 }
 
 void SU3BaryonSingletOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _C << _parity << _sigma0 << _lambda << _elambda << _outgoingB 
-     << _maxweight << _prefactor;
+  os << ounit(_c,1./GeV) << _parity << _sigma0 << _lambda << _elambda << _outgoingB 
+     << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonSingletOctetPhotonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _C >> _parity >> _sigma0 >> _lambda >> _elambda >> _outgoingB 
-     >> _maxweight >> _prefactor;
+  is >> iunit(_c,1./GeV) >> _parity >> _sigma0 >> _lambda >> _elambda >> _outgoingB 
+     >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
-ClassDescription<SU3BaryonSingletOctetPhotonDecayer> SU3BaryonSingletOctetPhotonDecayer::initSU3BaryonSingletOctetPhotonDecayer;
+ClassDescription<SU3BaryonSingletOctetPhotonDecayer> 
+SU3BaryonSingletOctetPhotonDecayer::initSU3BaryonSingletOctetPhotonDecayer;
 // Definition of the static class description member.
 
 void SU3BaryonSingletOctetPhotonDecayer::Init() {
@@ -72,7 +115,7 @@ void SU3BaryonSingletOctetPhotonDecayer::Init() {
   static Parameter<SU3BaryonSingletOctetPhotonDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The C coupling of the baryon resonances.",
-     &SU3BaryonSingletOctetPhotonDecayer::_C, 1./GeV, 0.252/GeV, -10./GeV, 10.0/GeV,
+     &SU3BaryonSingletOctetPhotonDecayer::_c, 1./GeV, 0.252/GeV, -10./GeV, 10.0/GeV,
      false, false, true);
 
   static Switch<SU3BaryonSingletOctetPhotonDecayer,bool> interfaceParity
@@ -118,96 +161,90 @@ void SU3BaryonSingletOctetPhotonDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-1
 void SU3BaryonSingletOctetPhotonDecayer::
-halfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
-		       Complex&A1,Complex&A2,Complex&B1,Complex&B2) const
-{
-  if(_parity)
-    {
-      A1=    _prefactor[imode]*(m0+m1);B1=0.;
-      A2=-2.*_prefactor[imode]*(m0+m1);B2=0.;
-    }
-  else
-    {
-      A1=0.;B1=    _prefactor[imode]*(m1-m0);
-      A2=0.;B2=-2.*_prefactor[imode]*(m0+m1);
-    }
+halfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
+		       Complex&A1,Complex&A2,Complex&B1,Complex&B2) const {
+  if(_parity) {
+    A1=    _prefactor[imode]*(m0+m1);
+    B1=0.;
+    A2=-2.*_prefactor[imode]*(m0+m1);
+    B2=0.;
+  }
+  else {
+    A1=0.;
+    B1=    _prefactor[imode]*(m1-m0);
+    A2=0.;
+    B2=-2.*_prefactor[imode]*(m0+m1);
+  }
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-1
 void SU3BaryonSingletOctetPhotonDecayer::
-threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 			    Complex&A1,Complex&A2,Complex&A3,
-			    Complex&B1,Complex&B2,Complex&B3) const
-{
+			    Complex&B1,Complex&B2,Complex&B3) const {
   A3=0.;B3=0.;
-  if(_parity)
-    {
-      A1=0.;B1=-_prefactor[imode]*(m0+m1);
-      A2=0.;B2= _prefactor[imode]*(m0+m1);
-    }
-  else
-    {
-      A1=_prefactor[imode]*(m0-m1);B1=0.;
-      A2=_prefactor[imode]*(m0+m1);B2=0.;
-    }
+  if(_parity) {
+    A1=0.;
+    B1=-_prefactor[imode]*(m0+m1);
+    A2=0.;
+    B2= _prefactor[imode]*(m0+m1);
+  }
+  else {
+    A1=_prefactor[imode]*(m0-m1);B1=0.;
+    A2=_prefactor[imode]*(m0+m1);B2=0.;
+  }
 }
 
 // set up the decay modes
-void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const
-{
+void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const {
   if(_outgoingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);}
+  if(iopt==1){_outgoingB.clear();}
   // set up for the various different decay modes
   vector<int> outtemp;
-  vector<double> factor;
-  if(_elambda==0){throw DecayIntegratorError() << "Invalid incoming particle in "
-					       << "SU3BaryonSingletOctetScalarDecayer::" 
-					       << "setupModes()" << Exception::abortnow;}
+  vector<InvEnergy> factor;
+  if(_elambda==0)
+    throw DecayIntegratorError() << "Invalid incoming particle in "
+				 << "SU3BaryonSingletOctetScalarDecayer::" 
+				 << "setupModes()" << Exception::abortnow;
   // decays of the excited lambda
-  outtemp.push_back(_sigma0);factor.push_back(_C/sqrt(2.));
-  outtemp.push_back(_lambda);factor.push_back(_C/sqrt(6.));
-  PDVector extpart(2);extpart[0]=getParticleData(_elambda);
+  outtemp.push_back(_sigma0);factor.push_back(_c/sqrt(2.));
+  outtemp.push_back(_lambda);factor.push_back(_c/sqrt(6.));
+  tPDVector extpart(2);extpart[0]=getParticleData(_elambda);
   int inspin(extpart[0]->iSpin()),outspin;
-  for(unsigned int ix=0;ix<outtemp.size();++ix)
-    {
-      if(outtemp[ix]!=0)
-	{
-	  extpart[1]=getParticleData(outtemp[ix]);
-	  if(extpart[0]->massMax()>extpart[1]->massMin())
-	    {
-	      _outgoingB.push_back(outtemp[ix]);
-	      if(iopt==1)
-		{
-		  outspin = extpart[1]->iSpin();
-		  factor[ix] *=2.;
-		  if(inspin==2&&outspin==2)
-		    {_prefactor.push_back(2.*factor[ix]);}
-		  else if(inspin==4&&outspin==2)
-		    {_prefactor.push_back(factor[ix]);}
-		  else
-		    {throw DecayIntegratorError() 
-			<< "Invalid combination of spins in "
-			<< "SU3BaryonSingletOctetScalarDecayer::" 
-			<< "setupModes()" << Exception::abortnow;}
-		}
-	    }
+  for(unsigned int ix=0;ix<outtemp.size();++ix) {
+    if(outtemp[ix]!=0) {
+      extpart[1]=getParticleData(outtemp[ix]);
+      if(extpart[0]->massMax()>extpart[1]->massMin()) {
+	_outgoingB.push_back(outtemp[ix]);
+	if(iopt==1) {
+	  outspin = extpart[1]->iSpin();
+	  factor[ix] *=2.;
+	  if(inspin==2&&outspin==2)      _prefactor.push_back(2.*factor[ix]);
+	  else if(inspin==4&&outspin==2) _prefactor.push_back(   factor[ix]);
+	  else
+	    throw DecayIntegratorError() 
+	      << "Invalid combination of spins in "
+	      << "SU3BaryonSingletOctetScalarDecayer::" 
+	      << "setupModes()" << Exception::abortnow;
 	}
+      }
     }
+  }
 }
 
 void SU3BaryonSingletOctetPhotonDecayer::dataBaseOutput(ofstream & output,
-							bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+							bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":Coupling " << _C*GeV << "\n";
-  output << "set " << fullName() << ":Parity " << _parity<< "\n";
-  output << "set " << fullName() << ":Sigma0 " << _sigma0 << "\n";
-  output << "set " << fullName() << ":Lambda " << _lambda << "\n";
-  output << "set " << fullName() << ":ExcitedLambda " << _elambda << "\n";
-  for(unsigned int ix=0;ix<_maxweight.size();++ix)
-    {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
-	    << _maxweight[ix] << "\n";}
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  output << "set " << name() << ":Coupling " << _c*GeV << "\n";
+  output << "set " << name() << ":Parity " << _parity<< "\n";
+  output << "set " << name() << ":Sigma0 " << _sigma0 << "\n";
+  output << "set " << name() << ":Lambda " << _lambda << "\n";
+  output << "set " << name() << ":ExcitedLambda " << _elambda << "\n";
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
+    output << "insert " << name() << ":MaxWeight " << ix << " " 
+	   << _maxweight[ix] << "\n";
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -1,0 +1,7 @@
+# @configure_input@
+@INCLUDE=@THEPEGPATH@/share/ThePEG/Doc/refman.conf
+PROJECT_NAME     = Herwig++
+INPUT            = ../include/Herwig++ .
+FILE_PATTERNS    = *.h
+GENERATE_TAGFILE = Herwig++-refman.tag
+TAGFILES         = tagfileThePEG.tag=file://@THEPEGPATH@/share/ThePEG/Doc/refman-html

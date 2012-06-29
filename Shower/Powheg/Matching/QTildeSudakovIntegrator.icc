@@ -1,0 +1,15 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QTildeSudakovIntegrator class.
+//
+namespace Herwig {
+
+inline double InnerSudakovIntegrand::operator() (double z) const {
+  return integrator->innerIntegrand(z);
+}
+
+inline Energy QTildeSudakovIntegrator::minimumScale() const {
+  return qtildemin_;
+}
+}

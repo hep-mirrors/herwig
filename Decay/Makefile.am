@@ -1,22 +1,23 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
-	  WeakCurrents ScalarMeson TensorMeson Partonic Radiation
+	  WeakCurrents ScalarMeson TensorMeson Partonic General Radiation
 
-pkglib_LTLIBRARIES = libHwDecay.la Hw64Decay.la HwMamboDecay.la
+noinst_LTLIBRARIES = libHwDecay.la 
+pkglib_LTLIBRARIES = Hw64Decay.la HwMamboDecay.la
 
-Hw64Decay_la_LDFLAGS = -module
-Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.fh Hw64Decayer.icc Hw64Decayer.cc 
+Hw64Decay_la_LDFLAGS = -module -version-info 4:0:0
+Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.cc 
 
-HwMamboDecay_la_LDFLAGS = -module
-HwMamboDecay_la_SOURCES = MamboDecayer.h MamboDecayer.fh MamboDecayer.icc MamboDecayer.cc 
+HwMamboDecay_la_LDFLAGS = -module -version-info 5:0:0
+HwMamboDecay_la_SOURCES = MamboDecayer.h MamboDecayer.cc 
 
 libHwDecay_la_LIBADD = $(top_builddir)/PDT/libHwPDT.la
 libHwDecay_la_SOURCES =  \
-DecayIntegrator.cc DecayIntegrator.fh DecayIntegrator.h DecayIntegrator.icc \
+DecayIntegrator.cc DecayIntegrator.fh DecayIntegrator.h \
 DecayPhaseSpaceChannel.cc DecayPhaseSpaceChannel.fh \
-DecayPhaseSpaceChannel.h DecayPhaseSpaceChannel.icc \
+DecayPhaseSpaceChannel.h \
 DecayPhaseSpaceMode.cc DecayPhaseSpaceMode.fh \
-DecayPhaseSpaceMode.h DecayPhaseSpaceMode.icc \
-HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h HwDecayerBase.icc \
-HwDecayHandler.cc HwDecayHandler.h HwDecayHandler.icc HwDecayHandler.fh \
-ThreeBodyIntegrator.cc ThreeBodyIntegrator.fh \
-ThreeBodyIntegrator.h ThreeBodyIntegrator.icc
+DecayPhaseSpaceMode.h \
+HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h \
+HwDecayHandler.cc HwDecayHandler.h\
+DecayVertex.fh DecayVertex.h DecayVertex.cc \
+DecayMatrixElement.h DecayMatrixElement.cc

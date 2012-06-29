@@ -1,11 +1,17 @@
 // -*- C++ -*-
+//
+// PScalarVectorVectorDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PScalarVectorVectorDecayer_H
 #define HERWIG_PScalarVectorVectorDecayer_H
 // This is the declaration of the PScalarVectorVectorDecayer class.
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
-// #include "PScalarVectorVectorDecayer.fh"
-// #include "PScalarVectorVectorDecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -42,43 +48,30 @@ class PScalarVectorVectorDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   PScalarVectorVectorDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline PScalarVectorVectorDecayer(const PScalarVectorVectorDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~PScalarVectorVectorDecayer();
-  //@}
-
-public:
-
+  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2( const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -128,13 +121,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -142,45 +135,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -226,6 +190,16 @@ private:
    *  initial number of modes
    */
   unsigned int _initsize;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
 };
 
 }
@@ -234,6 +208,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -253,21 +229,18 @@ template <>
 struct ClassTraits<Herwig::PScalarVectorVectorDecayer>
   : public ClassTraitsBase<Herwig::PScalarVectorVectorDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::PScalarVectorVectorDecayer"; }
+  static string className() { return "Herwig::PScalarVectorVectorDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
+  static string library() { return "HwSMDecay.so"; }
 
 };
 
-}
+/** @endcond */
 
-#include "PScalarVectorVectorDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarVectorVectorDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_PScalarVectorVectorDecayer_H */

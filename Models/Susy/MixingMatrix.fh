@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MixingMatrix class.
+//
+#ifndef ThePEG_MixingMatrix_FH
+#define ThePEG_MixingMatrix_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class MixingMatrix;
+ThePEG_DECLARE_POINTERS(MixingMatrix,MixingMatrixPtr);
+
+}
+
+#endif

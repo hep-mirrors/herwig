@@ -6,11 +6,12 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "TopDalitzAnalysis.fh"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 
@@ -31,17 +32,12 @@ public:
   /**
    * The default constructor.
    */
-  inline TopDalitzAnalysis();
+  TopDalitzAnalysis();
 
   /**
    * The copy constructor.
    */
-  inline TopDalitzAnalysis(const TopDalitzAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~TopDalitzAnalysis();
+  TopDalitzAnalysis(const TopDalitzAnalysis &);
   //@}
 
 public:
@@ -88,7 +84,47 @@ public:
    */
   virtual void analyze(tPPtr particle);
 
-  void topShower(PPtr,tPVector);
+  /**
+   *  Identifies which step(2) final state particles originate
+   *  from the top/antitop, which originate from the b/bbar...
+   */
+  tPVector particleID(PPtr,tPVector);
+
+  /**
+   *  Function to cluster each decay to 2 jets and calculate the 
+   *  corresponding point on the Dalitz plot.
+   */
+  void     dalitz(tPVector);
+
+  /**
+   *  Function to cluster to 3 jets and calculate delta(R).
+   */
+  void     threeJetAnalysis(Energy2,tPVector,tPVector);
+
+  /**
+   *  Histogram for delta R.
+   */
+  Histogram _deltaR;
+
+  /**
+   *  Histogram for log(y3).
+   */
+  Histogram _logy3;
+
+  /**
+   *  Histogram for the b-quark energy spectrum.
+   */
+  Histogram _xb_bquark;
+
+  /**
+   *  Histogram for the b-quark energy spectrum around the Sudakov peak.
+   */
+  Histogram _xb_bquark_peak;
+
+  /**
+   *  Histogram for the B-hadron energy spectrum.
+   */
+  Histogram _xB_Bhad;
   //@}
 
 public:
@@ -125,13 +161,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -143,7 +179,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -171,7 +207,7 @@ private:
   /**
    *  Output stream
    */
-  ofstream _output;
+  ofstream _output[6];
 
   /**
    *  Number of outputs
@@ -207,7 +243,7 @@ template <>
 struct ClassTraits<Herwig::TopDalitzAnalysis>
   : public ClassTraitsBase<Herwig::TopDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TopDalitzAnalysis"; }
+  static string className() { return "Herwig::TopDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TopDalitzAnalysis is implemented. It may also include several, space-separated,
@@ -215,16 +251,11 @@ struct ClassTraits<Herwig::TopDalitzAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
+  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "TopDalitzAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDalitzAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_TopDalitzAnalysis_H */

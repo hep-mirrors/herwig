@@ -9,39 +9,89 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDalitzAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "Herwig++/Utilities/Maths.h"
 
 using namespace Herwig;
 
-TopDalitzAnalysis::~TopDalitzAnalysis() {}
+TopDalitzAnalysis::TopDalitzAnalysis()
+  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120),
+    _xb_bquark(0.0,1.05,200),_xb_bquark_peak(0.8,1.05,200),
+    _xB_Bhad(0.0,1.05,100) {}
 
-void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
-  if(_nout>50000) return;
+TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
+  : AnalysisHandler(x) {}
+
+void TopDalitzAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  string basename = generator()->filename() + string("-") + name();
+  _output[0].open((basename+".top").c_str());
+  _output[0] << "SET FONT DUPLEX\n";
+  _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
+  _output[0] << "TITLE BOTTOM \"X011\"\n";
+  _output[0] << "CASE         \" X X\"\n";
+  _output[0] << "TITLE LEFT \"X021\"\n";
+  _output[0] << "CASE       \" X X\"\n";
+
+  _nout=0;
+
+  _output[1].open((basename+"-DeltaR.top").c_str());
+  _output[2].open((basename+"-logy3.top").c_str());
+  _output[3].open((basename+"-xb_bquark.top").c_str());
+  _output[4].open((basename+"-xb_bquark_peak.top").c_str());
+  _output[5].open((basename+"-xB_Bhad.top").c_str());
+}
+
+void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
+  // Gets all the particles in the primaryCollision step(1)
   ParticleSet pert=event->primaryCollision()->step(1)->all();
+  // Gets just the final state particles of the primaryCollision step(1)
   tPVector final=event->primaryCollision()->step(1)->getFinalState();
   ParticleSet::const_iterator pit;
+  // Find the two tops from the primary collision step(1) and 
+  // call topShower on each of them...
+  tPVector tShower,tbarShower;
   for(pit=pert.begin();pit!=pert.end();++pit)
     {
-      // must be top
-      if(abs((*pit)->id())!=6) continue;
+      // All kinds of stuff is coming through here, b's, W's, t's, g's
+      // c's, e's gamma's... 
+      // Must be top
+      if((*pit)->id() != 6) continue;
+      // must have two children
+      if((*pit)->children().size() != 2) continue;
+      // neither should be top
+      if(abs((*pit)->children()[0]->id()) == 6 ||
+	 abs((*pit)->children()[1]->id()) == 6) continue;
+      tShower = particleID(*pit,final);
+      dalitz(tShower);
+    }
+  for(pit=pert.begin();pit!=pert.end();++pit)
+    {
+      // All kinds of stuff is coming through here, b's, W's, t's, g's
+      // c's, e's gamma's... 
+      // Must be anti-top
+      if((*pit)->id()!=-6) continue;
       // must have two children
       if((*pit)->children().size()!=2) continue;
       // neither should be top
       if(abs((*pit)->children()[0]->id())==6||
 	 abs((*pit)->children()[1]->id())==6) continue;
-      topShower(*pit,final);
+      tbarShower=particleID(*pit,final);
+      dalitz(tbarShower);
     }
+  // quit analysis if we haven't found anything
+  if (tShower.empty() || tbarShower.empty())
+    return;
+  Energy2 s = sqr(event->incoming().first->momentum().e()
+            +     event->incoming().second->momentum().e()
+                 );
+  threeJetAnalysis(s,tShower,tbarShower);
 }
 
-LorentzRotation TopDalitzAnalysis::transform(tEventPtr event) const {
+LorentzRotation TopDalitzAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -53,11 +103,11 @@ void TopDalitzAnalysis::analyze(const tPVector & particles) {
 
 void TopDalitzAnalysis::analyze(tPPtr) {}
 
-void TopDalitzAnalysis::persistentOutput(PersistentOStream & os) const {
+void TopDalitzAnalysis::persistentOutput(PersistentOStream & ) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void TopDalitzAnalysis::persistentInput(PersistentIStream & is, int) {
+void TopDalitzAnalysis::persistentInput(PersistentIStream & , int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 
@@ -72,148 +122,346 @@ void TopDalitzAnalysis::Init() {
 }
 
 
-void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
+tPVector TopDalitzAnalysis::particleID(PPtr top,tPVector final)
 {
   PPtr orig=top;
   ShowerParticlePtr sorig;
-  // find the original version of this top
+  //////////////////////////////////////////////
+  // Find the original top before it showers. //
+  //////////////////////////////////////////////
   do
-    {
+  {
+      if(sqrt(orig->parents()[0]->momentum().m2())>=175001.*MeV) break;
       orig=orig->parents()[0];
       sorig=dynamic_ptr_cast<ShowerParticlePtr>(orig);
       if(sorig)
-	{
+      {
 	  if(sorig->perturbative()==2) break;
-	}
-    }
+      }
+  }
   while(dynamic_ptr_cast<ShowerParticlePtr>(orig));
   if(abs(orig->parents()[0]->id())!=ParticleID::t) orig=PPtr();
-  //cerr << "testing top and orig " << *top << "\n" << *orig << endl;
-  // find the W
-  PPtr Wboson,borig;
-  for(unsigned int ix=0;ix<top->children().size();++ix)
-    {
-      if(abs(top->children()[ix]->id())==ParticleID::Wplus)
-	{
+  // *top is always the thing that decays to bW. It's momentum is always 
+  // exactly equal to that of the top when it is on-shell entering the 
+  // decay shower, irrespective of whether there was (t)ISR or not! 
+  // *orig:
+  // If there is (t)ISR then *orig is the on-shell top right before it 
+  // starts emitting gluons. In this case the momenta and masses of *top
+  // and *orig are identical (e.g. evts 11,104,195,204,219).
+  // *** WARNING(?) ***
+  // If there is no (t)ISR then *orig is the top at production right
+  // where it's mass is initially increased i.e. just prior to it's FSR
+  // emission of gluons (i.e. where it's mass is maximally off-shell 
+  // > 175 GeV). In this case the momenta and masses of *top and *orig
+  // are different. If required this could simply be prevented by adding 
+  // if(sqrt(orig->parents()[0]->momentum().m2())>=175001.) break;
+  // ...or maybe even... 
+  // if(sqrt(orig->parents()[0]->momentum().m2())>=175100.) break;
+  // at the start of the above do-while loop (note: you should
+  // check this mass cut is compatible with the top width i.e. this
+  // assumes the top width is zero).
+
+
+  ///////////////////////////////////////////////
+  // Find the b and W before they shower/decay //
+  ///////////////////////////////////////////////
+  // Wboson turns out to be the W boson before the W boson 
+  // which decays to ffbar. 
+  // borig is the b quark which is one after the b quark which is 
+  // produced at the point where the top decays. The b quark that comes
+  // after borig splits to b+gluon.
+  // The b quark and W boson that borig and Wboson
+  // point to have exactly the same momentum as the b quark 
+  // and W boson that come out of the top decay.
+  // In the event that the hard matrix element correction is applied
+  // then borig is equal to the momentum of the b after it has emitted 
+  // the hard gluon.
+  // This is a more straightforward bit of code than for the top (above).
+  PPtr Wboson; 
+  PPtr borig ;
+  for(unsigned int ix=0;ix<top->children().size();++ix) {
+      if(abs(top->children()[ix]->id())==ParticleID::Wplus) {
 	  Wboson=top->children()[ix];
 	  while(abs(Wboson->children()[0]->id())==ParticleID::Wplus&&
 		!dynamic_ptr_cast<ShowerParticlePtr>(Wboson))
-	    Wboson=Wboson->children()[0];
-	}
-      else
-	{
-	  borig=top->children()[ix];
+	      Wboson=Wboson->children()[0];
+      } else {
+	  borig=top->children()[ ix];
 	  if(abs(borig->children()[0]->id())==ParticleID::b)
-	    borig=borig->children()[0];
-	}
-    }
-  // find the particles
-  tPVector tprod,bottom;
-  for(unsigned int ix=0;ix<final.size();++ix)
-    {
-      tPPtr part=final[ix],last=part->parents()[0];
+	      borig=borig->children()[0];
+      }
+  }
+  // This bit fixes borig to point to the correct b-quark in the event
+  // that a hard matrix element correction occurs.
+  // If a hard MEC occurs you see a top decay to a bW then that b goes
+  // *right away* to b+g instead of the normal b->b->b->b+g type chain.
+  // Also if a hard MEC occurs the right W (for momentum conservation) 
+  // is the W that decays, so we need to move Wboson down the family 
+  // tree by one.
+  if(borig->parents()[0]->children().size()>1) {
+      if(abs(borig->parents()[0]->id())==ParticleID::b) 
+	  { borig=borig->parents()[0]; }
+  } 
+  //////////////////////////////////////
+  // Associate final states to t/W/b. //
+  //////////////////////////////////////
+  // The next bit tries to get borig to be the b-quark at the point where
+  // it's scale is reset to begin FSR showering. This involves moving down
+  // the tree by one.
+  else if(borig->children()[0]->children().size()>1) {
+      if((abs(borig->children()[0]->children()[0]->id())==ParticleID::b&&
+          abs(borig->children()[0]->children()[1]->id())==ParticleID::g)||
+         (abs(borig->children()[0]->children()[1]->id())==ParticleID::b&&
+	  abs(borig->children()[0]->children()[0]->id())==ParticleID::g))
+      {
+          if(borig->children().size()==1)
+	  borig=borig->children()[0];
+      }
+  }
+  // The next for loop finds where the final state particles originated 
+  // from i.e. b quarks or top quarks.
+  tPVector tprod ;
+  tPVector bottom;
+  tPVector Wprod ;
+  for(unsigned int ix=0;ix<final.size();++ix) {
+      tPPtr part=final[ix]; 
+      tPPtr last=part->parents()[0];
       tShowerParticlePtr shower;
-      do
-	{
+      // This do-while hunts the parents of final state particle final[ix].
+      do {
 	  part=last;
-	  if(part->parents().empty())
-	    {
-	      last=tPPtr();
-	      shower=tShowerParticlePtr();
-	    }
-	  else if(last&&last==orig)
-	    {break;}
-	  else
-	    {
-	      last=part->parents()[0];
+          // If the particle has no parents set pointers to null & hang up.
+	  if(part->parents().empty()) {last  =tPPtr();}
+//	                               shower=tShowerParticlePtr();}
+          // If we make it back to orig (top) break out.
+          else if(last&&last==orig)   {break;}
+          // If we make it back to Wboson (W boson) break out.
+	  else if(last&&last==Wboson) {break;}
+          // If we make it back to borig (bottom) break out.
+	  else if(last&&last==borig)  {break;}
+          // If none of the above set last to be the particle's parent,
+          // and shower to be:
+	  else {
+	      last=last->parents()[0];
 	      shower=dynamic_ptr_cast<ShowerParticlePtr>(last);
-	    }
-	}
-      while(!part->parents().empty()&&shower);
-      if(last)
-	{
-	  if(abs(last->id())==ParticleID::b)
-	    {
-	      if(abs(last->id())==ParticleID::b&&
-		 abs(last->parents()[0]->id())==ParticleID::b)
-		last=last->parents()[0];
-	      if(last->parents()[0]==top)
-		bottom.push_back(final[ix]);
-	    }
-	  else if(last==orig)
-	    tprod.push_back(final[ix]);
-	}
-    }
-  //cerr << "testing size " << tprod.size() << " " << bottom.size() << endl;
+	  }
+      } 
+//      while(!part->parents().empty()&&shower);
+      while(!part->parents().empty());
+      // If the particle is found to originate from Wboson,borig,orig
+      // then add it to the appropriate list.
+      if(last) {
+	  if(last==orig)        { tprod.push_back(final[ix]);  }
+	  else if(last==borig)  { bottom.push_back(final[ix]); }
+	  else if(last==Wboson) { Wprod.push_back(final[ix]);  } 
+      }
+  }
+  // All of the final state particles (at the step 2 level) belonging
+  // to the top/bottom/W boson have now been collected in tprod/
+  // bottom/Wprod respectively.
   if(bottom.empty()) bottom.push_back(borig);
+  if(Wprod.empty())  Wprod.push_back(Wboson);
+  ////////////////////////
+  // Check the momenta? //
+  ////////////////////////
+//  cout << "\n\ntprod.size()  " << tprod.size()  << endl;
+//  cout << "bottom.size() " << bottom.size() << endl;
+//   Lorentz5Momentum tq,bq,wb,diff;
+//   for(unsigned int ix=0;ix<tprod.size() ;++ix) tq+=tprod[ix]->momentum();
+//   for(unsigned int ix=0;ix<bottom.size();++ix) bq+=bottom[ix]->momentum();
+//   for(unsigned int ix=0;ix<Wprod.size() ;++ix) wb+=Wprod[ix]->momentum();
+//   cout << endl;
+//   cout << tq << "\n" << bq << "\n" << wb << "\n"; 
+//   diff = orig->momentum()-tq-bq-wb;
+//   if(fabs(diff.t())>0.0001||fabs(diff.x())>0.0001||
+//      fabs(diff.y())>0.0001||fabs(diff.z())>0.0001) 
+//   { cout << "top quark   : " << diff  << endl; }
+//   if(bq.m()>5000.1||bq.m()<4999.9) {
+//       diff = bq-borig->momentum();
+//   } else {
+//       diff = bq-borig->children()[0]->momentum();
+//   }
+//   if(fabs(diff.t())>0.000000001||fabs(diff.x())>0.000000001||
+//      fabs(diff.y())>0.000000001||fabs(diff.z())>0.000000001) 
+//   { cout << "b jet       : " << diff   << endl; 
+//     cout << "bq          : " << bq     << endl; 
+//     cout << "*borig      : " << *borig << endl; 
+//   }
+//   diff = wb-Wboson->momentum();
+//   if(fabs(diff.t())>0.00001||fabs(diff.x())>0.00001||
+//      fabs(diff.y())>0.00001||fabs(diff.z())>0.00001) 
+//   { cout << "W boson     : " << diff  << endl; }
+//   cout << endl;
+
+  ///////////////////////////////////////////////
+  // Find the last b/bbar-quark in the b-shower//
+  ///////////////////////////////////////////////
+  PPtr last_b_quark,parent;
+  unsigned int found_last_b(0),n_gluons(0);
+  for(unsigned int ix=0;ix<bottom.size();++ix) {
+      // Count the number of gluons.
+      if(abs(bottom[ix]->id())==ParticleID::g) n_gluons++;
+      // If there is a b/bbar quark in the list.  
+      if(abs(bottom[ix]->id())==5) {
+          // Now look to see if it's the one from the weak decay.
+	  parent = bottom[ix];
+	  do {
+              parent = parent->parents()[0];
+	  } while(abs(parent->id())!=ParticleID::g&&
+		  abs(parent->id())!=ParticleID::t);
+          if(parent==top) {
+		  last_b_quark = bottom[ix];
+		  found_last_b++;
+	  }
+      }
+  }
+  if(found_last_b!=1) { 
+      cout << "TopDalitzAnalysis.cc: can't find a b in top decay." << endl; 
+      cout << "Set last_b_quark momentum " << found_last_b << "times!" << endl;
+      cout << "Parent: " << *parent << endl;
+  }
+  ///////////////////////////////////////
+  // Calculate xb and do histogramming //
+  ///////////////////////////////////////
+  if(n_gluons>=1) {
+      Energy mt=getParticleData(ParticleID::t)->mass();
+      double bvar=sqr(getParticleData(ParticleID::b)->constituentMass()/mt);
+      double wvar=sqr(getParticleData(ParticleID::Wplus)->mass()/mt);
+      Lorentz5Momentum last_b_mom = last_b_quark->momentum();
+      Lorentz5Momentum top_mom    = orig->momentum();
+      _xb_bquark      += 2.*(last_b_mom*top_mom)/sqr(mt)/(1.-wvar+bvar);
+      _xb_bquark_peak += 2.*(last_b_mom*top_mom)/sqr(mt)/(1.-wvar+bvar);
+  }
+  ////////////////////
+  // Jet Clustering //
+  ////////////////////
+  // First put all the products from the top and bottom quarks
+  // into a single vector (bottom).
   for(unsigned int ix=0;ix<tprod.size();++ix)
-    {
-      bottom.push_back(tprod[ix]);
-    }
-  // check the top
-  Lorentz5Momentum ptotal;
-  for(unsigned int ix=0;ix<bottom.size();++ix)
-    ptotal+=bottom[ix]->momentum();
-  ptotal+=Wboson->momentum();
-  ptotal.rescaleMass();
-  if(bottom.size()>1)
+    { bottom.push_back(tprod[ix]); }
+
+  bottom.push_back(top); 
+  bottom.push_back(orig); 
+  return bottom;
+}
+
+void TopDalitzAnalysis::dalitz(tPVector finalPartons)
+{
+  PPtr top,orig;
+  top  = finalPartons[finalPartons.size()-2];
+  orig = finalPartons[finalPartons.size()-1];
+  finalPartons.pop_back(); // pop out the on-shell top
+  finalPartons.pop_back(); // pop out the top before it decays to bW
+  ////////////////////
+  // Jet Clustering //
+  ////////////////////
+  // For the Dalitz plot we need to have at least one gluon produced in 
+  // the decay! Therefore we only try and plot a point if finalPartons.size()>1 
+  // since the finalPartons array will only have one entry if there are no 
+  // gluons radiated viz the b-quark which did not emit any other radiation
+  // from the top or bottom makes finalPartons.size()>1 .
+  if(finalPartons.size()==2) {
+      Lorentz5Momentum b_mom,g_mom;
+      if(abs(finalPartons[0]->id())==ParticleID::b&&
+	 finalPartons[1]->id()==ParticleID::g) {
+	  b_mom   = finalPartons[0]->momentum();
+	  g_mom   = finalPartons[1]->momentum();
+      } else if(finalPartons[0]->id()==ParticleID::g&&
+		abs(finalPartons[1]->id())==ParticleID::b) {
+	  b_mom   = finalPartons[1]->momentum();
+	  g_mom   = finalPartons[0]->momentum();
+      } else {
+	  cout << "TopDalitzAnalysis.cc: dalitz - warning odd finalPartons.\n";
+	  return;
+      }
+      Lorentz5Momentum t_mom = orig->momentum();
+      Energy mt = getParticleData(ParticleID::t)->mass();
+      double xb(2.*(b_mom*t_mom)/sqr(mt));
+      double xg(2.*(g_mom*t_mom)/sqr(mt));
+      if(_nout<50000) _output[0] << xg << " " << 2.-xb-xg << "\n";
+      ++_nout;
+  }
+  return;
+}
+
+void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antitop)
+{
+  ////////////////////
+  // Jet Clustering //
+  ////////////////////
+  // Chuck out the two top quarks *top and *orig first.
+  top.pop_back();     // pop out the on-shell top 
+  top.pop_back();     // pop out the top before it decays to bW
+  antitop.pop_back(); 
+  antitop.pop_back();
+  tPVector finalPartons(top);
+  // Now put the two lists of final state QCD particles together.
+  for (unsigned int ix=0;ix<antitop.size();++ix) 
+      finalPartons.push_back(antitop[ix]);
+  // Cluster everything into 3 jets (if possible).
+  if(finalPartons.size()>2)
     {
       _kint.clearMap();
-      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convertToKtVectorList(bottom), 1, 1, 1);
-      ev.findJetsN(2);
-      vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
-      int nquark[2]={0,0},iq;
-      for(int ix=0;ix<ev.getNConstituents();++ix)
-	{
-	  // find jet
-	  iq=ktjets[1].contains(*ev.getConstituents()[ix]);
-	  if(bottom[ix]->id()==-5) --nquark[iq];
-	  else if(bottom[ix]->id()==5) ++nquark[iq];
-	}
-      Lorentz5Momentum pb,pg;
-      // identify the jets
-      if(top->id()>0)
-	{
-	  if(nquark[0]>nquark[1])
-	    {
-	      pb=ktjets[0];
-	      pg=ktjets[1];
-	    }
-	  else 
-	    {
-	      pb=ktjets[1];
-	      pg=ktjets[0];
-	    }
-	}
-      else
-	{
-	  if(nquark[0]>nquark[1])
-	    {
-	      pb=ktjets[1];
-	      pg=ktjets[0];
-	    }
-	  else 
-	    {
-	      pb=ktjets[0];
-	      pg=ktjets[1];
-	    }
-	}
-      // boost to the rest frame
-      Hep3Vector boost;
-      if(orig) boost=-orig->momentum().boostVector();
-      else boost=-top->momentum().boostVector();
-      pg.boost(boost);
-      pb.boost(boost);
-      Energy mt(top->mass());
-      double xg(2.*pg.e()/mt),xb(2.*pb.e()/mt);
-      _output << xg << " " << 2.-xb-xg << "\n";
-      ++_nout;
+      // Get KtJet to find two jets out of the list bottom.
+      // Note, if the top did not radiate (tprod.size()==0) then KtJet
+      // is giving back two jets made from the b and whatever the b
+      // radiated. In this case the two jet momenta add to give bq. If
+      // the top radiates then the two jet momenta seem to (and do) equal 
+      // tq and bq respectively!
+      KtJet::KtEvent ev = 
+	  KtJet::KtEvent(_kint.convert(finalPartons),1,1,1);
+      ev.findJetsN(3);
+      // Get the two jets ordered by their Pt (largest Pt first?).
+      vector<KtJet::KtLorentzVector> ktjets = ev.getJetsPt();
+      // Therefore nbs[ix] is the number of b's-bbar's in jet ix.  
+
+      ///////////////////////
+      // Calculate delta R //
+      ///////////////////////
+      double deltaR(0.);
+      deltaR =            sqrt(sqr(ktjets[0].rapidity() - ktjets[1].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[0].phi() - ktjets[1].phi())));
+      deltaR = min(deltaR,sqrt(sqr(ktjets[0].rapidity() - ktjets[2].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[0].phi() - ktjets[2].phi()))));
+      deltaR = min(deltaR,sqrt(sqr(ktjets[1].rapidity() - ktjets[2].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[1].phi() - ktjets[2].phi()))));
+      // If jets pass Et and deltaR separation cuts then add a 
+      // point to the histogram.
+      if(deltaR>0.7&&ktjets[0].et()>10000.&&ktjets[1].et()>10000.&&
+	 ktjets[2].et()>10000.&&ktjets.size()==3) _deltaR += deltaR;
+
+      //////////////////
+      // Calculate y3 //
+      //////////////////
+      vector<LorentzMomentum> jets = KtJetInterface::convert(ktjets);
+      double y3(0.);
+      Axis np0,np1,np2;
+      np0 = jets[0].vect().unit();
+      np1 = jets[1].vect().unit();
+      np2 = jets[2].vect().unit();
+      y3  =        (2./s)*min(sqr(jets[0].e()),
+	 		      sqr(jets[1].e()))*(1.-np0*np1) ;
+      y3  = min(y3,(2./s)*min(sqr(jets[0].e()),
+			      sqr(jets[2].e()))*(1.-np0*np2));
+      y3  = min(y3,(2./s)*min(sqr(jets[1].e()),
+			      sqr(jets[2].e()))*(1.-np1*np2));
+      // If jets pass Et and deltaR separation cuts then add a 
+      // point to the histogram.
+      // *Do log to base 10* 
+      if (deltaR>0.7 && ktjets[0].et()>10000. && ktjets[1].et()>10000. 
+	  && ktjets[2].et()>10000. && ktjets.size()==3) {
+	_logy3 += log(y3)/log(10.);
+      }
     }
 }
 
 void TopDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  _output << "PLOT\n";
+
+  /////////////////
+  // Dalitz Plot //
+  /////////////////
+  _output[0] << "PLOT\n";
   Energy mt=getParticleData(ParticleID::t)->mass();
   Energy mb=getParticleData(ParticleID::b)->constituentMass();
   Energy mw=getParticleData(ParticleID::Wplus)->mass();
@@ -233,10 +481,10 @@ void TopDalitzAnalysis::dofinish() {
       lower.push_back((m122+m23min-mb2)/mt2);
     }
   for(unsigned int ix=0;ix<upper.size();++ix)
-    {_output << xgg[ix] << " " << upper[ix] << "\n";}
+    {_output[0] << xgg[ix] << " " << upper[ix] << "\n";}
   for(int ix=lower.size()-1;ix>=0;--ix)
-    {_output << xgg[ix] << " " << lower[ix] << "\n";}
-  _output << "JOIN RED " << "\n";
+    {_output[0] << xgg[ix] << " " << lower[ix] << "\n";}
+  _output[0] << "JOIN RED " << "\n";
   // phase space for radiation from bottom
   double a=mw2/mt2,c=mb2/mt2,xa,xc,r,xg;
   double lam=sqrt(sqr(1.+a-c)-4.*a);
@@ -254,14 +502,14 @@ void TopDalitzAnalysis::dofinish() {
       r =0.5*(1.+c/(1.+a-xa));
       xc=(2.-xa)*r+(z-r)*sqrt(sqr(xa)-4.*a);
       xg=(2.-xa)*(1.-r)-(z-r)*sqrt(sqr(xa)-4.*a);
-      if(xg<xgmax) _output << xg << " " << xa << "\n";
+      if(xg<xgmax) _output[0] << xg << " " << xa << "\n";
     }
-  _output << "JOIN BLUE" << endl;
+  _output[0] << "JOIN BLUE" << endl;
   // phase space for radiation from top
   kappa=1+0.25*sqr(1.-a+c+lam)/(kappa-c);
   cerr << "top    kappa " << kappa << endl;
   double u,w,v;
-  double zmin=1.-(1.-a)/(kappa+2.*sqrt(a*(kappa-1.)))+0.00001;
+  //double zmin=1.-(1.-a)/(kappa+2.*sqrt(a*(kappa-1.)))+0.00001;
   for(double z=0.;z<=1.;z+=0.0001)
     {
       double kmax=2*a + (-1 + a + c)/(-1 + z) - 
@@ -284,11 +532,40 @@ void TopDalitzAnalysis::dofinish() {
 	  xc = w+z-xa;
 	  xg = (1.-z)*kappa;
         }
-      if(xg<xgmax) _output << xg << " " << xa << "\n";
+      if(xg<xgmax) _output[0] << xg << " " << xa << "\n";
     }
-  _output << "JOIN GREEN" << endl;
-  _output.close();
+  _output[0] << "JOIN GREEN" << endl;
+  _output[0].close();
+
+  using namespace HistogramOptions;
+  ////////////
+  // DeltaR //
+  ////////////
+  _deltaR.topdrawOutput(_output[1],Frame,"RED","delta(R)");
+  _output[1].close();
+
+  /////////////
+  // log(y3) //
+  /////////////
+  _logy3.topdrawOutput(_output[2],Frame,"RED","log(y3)");
+  _output[2].close();
+
+  ////////////////
+  // _xb_bquark //
+  ////////////////
+  _xb_bquark.topdrawOutput(_output[3],Frame,"RED","xb");
+  _output[3].close();
+
+  ////////////////
+  // _xb_bquark_peak //
+  ////////////////
+  _xb_bquark_peak.topdrawOutput(_output[4],Frame,"RED","xb");
+  _output[4].close();
+
+  //////////////
+  // _xB_Bhad //
+  //////////////
+  _xB_Bhad.topdrawOutput(_output[5],Frame,"RED","xB");
+  _output[5].close();
+
 }
-
-
-

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ScalarVectorVectorDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ScalarVectorVectorDecayer class.
 //
@@ -8,91 +15,122 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarVectorVectorDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
+void ScalarVectorVectorDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
 
-inline ScalarVectorVectorDecayer::ScalarVectorVectorDecayer() 
-{
+ScalarVectorVectorDecayer::ScalarVectorVectorDecayer() 
+  : _incoming(13), _outgoing1(13), _outgoing2(13), _coupling(13), 
+    _maxweight(13) {
   // f_0(1370) to rho rho
-  _incoming.push_back(10221);_outgoing1.push_back(113);_outgoing2.push_back(113);
-  _incoming.push_back(10221);_outgoing1.push_back(213);_outgoing2.push_back(-213);
-  _coupling.push_back(11.26/GeV);_maxweight.push_back(20.);
-  _coupling.push_back(15.92/GeV);_maxweight.push_back(20.);
+  _incoming[0] = 10221; _outgoing1[0] = 113; _outgoing2[0] = 113; 
+  _coupling[0] = 11.26/GeV; _maxweight[0] = 20.; 
+  _incoming[1] = 10221; _outgoing1[1] = 213; _outgoing2[1] = -213; 
+  _coupling[1] = 15.92/GeV; _maxweight[1] = 20.; 
   // f_0(1500) to rho rho
-  _incoming.push_back(9030221);_outgoing1.push_back(113);_outgoing2.push_back(113);
-  _incoming.push_back(9030221);_outgoing1.push_back(213);_outgoing2.push_back(-213);
-  _coupling.push_back(1.691/GeV);_maxweight.push_back(20.);
-  _coupling.push_back(2.391/GeV);_maxweight.push_back(20.);
+  _incoming[2] = 9030221; _outgoing1[2] = 113; _outgoing2[2] = 113; 
+  _coupling[2] = 1.691/GeV; _maxweight[2] = 20.; 
+  _incoming[3] = 9030221; _outgoing1[3] = 213; _outgoing2[3] = -213; 
+  _coupling[3] = 2.391/GeV; _maxweight[3] = 20.; 
   // chi_c0 decays
-  _incoming.push_back(10441);_outgoing1.push_back(443);_outgoing2.push_back(22);
-  _coupling.push_back(1./GeV);_maxweight.push_back(1.);
-  _incoming.push_back(10441);_outgoing1.push_back(323);_outgoing2.push_back(-323);
-  _incoming.push_back(10441);_outgoing1.push_back(313);_outgoing2.push_back(-313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(1.);
-  _coupling.push_back(1./GeV);_maxweight.push_back(1.);
-  _incoming.push_back(10441);_outgoing1.push_back(333);_outgoing2.push_back(333);
-  _coupling.push_back(1./GeV);_maxweight.push_back(1.);
-  _incoming.push_back(10441);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(1./GeV);_maxweight.push_back(1.);
+  _incoming[4] = 10441; _outgoing1[4] = 443; _outgoing2[4] = 22; 
+  _coupling[4] = 0.251/GeV; _maxweight[4] = 1.; 
+  _incoming[5] = 10441; _outgoing1[5] = 323; _outgoing2[5] = -323; 
+  _coupling[5] = 0.0088/GeV; _maxweight[5] = 1.; 
+  _incoming[6] = 10441; _outgoing1[6] = 313; _outgoing2[6] = -313; 
+  _coupling[6] = 0.0088/GeV; _maxweight[6] = 1.; 
+  _incoming[7] = 10441; _outgoing1[7] = 333; _outgoing2[7] = 333; 
+  _coupling[7] = 0.0067/GeV; _maxweight[7] = 1.; 
+  _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22; 
+  _coupling[8] = 0.0027/GeV; _maxweight[8] = 1.; 
+  _incoming[12] = 10441; _outgoing1[12] = 223; _outgoing2[12] = 223; 
+  _coupling[12] = 0.0093/GeV; _maxweight[12] = 1.; 
+  // a'_0 -> omega rho
+  _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223; 
+  _coupling[9] = 27.09/GeV; _maxweight[9] = 20.;
+  _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223; 
+  _coupling[10] = 27.09/GeV; _maxweight[10] = 20.;
+  _incoming[11] =-10211; _outgoing1[11] =-213; _outgoing2[11] = 223; 
+  _coupling[11] = 27.09/GeV; _maxweight[11] = 20.; 
+  // size of arrays
+  _initsize = _incoming.size();
   // intermediates
   generateIntermediates(false);
 }
 
-ScalarVectorVectorDecayer::~ScalarVectorVectorDecayer() {}
+void ScalarVectorVectorDecayer::doinit() {
+  DecayIntegrator::doinit();
+  // check the parameters arew consistent
+  unsigned int isize(_coupling.size());
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
+     isize!=_outgoing2.size() || isize!=_maxweight.size())
+    throw InitException() << "Inconsistent parameters in " 
+			  << "ScalarVectorVectorDecayerDecayer" 
+			  << Exception::abortnow;
+  // set up the integration channels
+  vector<double> wgt;
+  DecayPhaseSpaceModePtr mode;
+  tPDVector extpart(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0] = getParticleData(_incoming[ix]);
+    extpart[1] = getParticleData(_outgoing1[ix]);
+    extpart[2] = getParticleData(_outgoing2[ix]);
+    if(extpart[0]&&extpart[1]&&extpart[2]) 
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    else
+      mode=DecayPhaseSpaceModePtr();
+    addMode(mode,_maxweight[ix],wgt);
+  }
+}
 
-int ScalarVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
-  int imode(-1);
+int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const tPDVector & children) const {
+  cc = false;
   // check that at least some modes exist
-  if(_incoming.size()==0){return imode;}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(_incoming.size()==0||children.size()!=2) return -1;
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0)
-	{if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	    (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)){imode=ix;}}
-      ++ix;
+  int imode(-1);
+  do {
+    if(_incoming[ix]==id0) {
+      if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
+	 (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)) imode=ix;
     }
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   return imode;
 }
 
 void ScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(_coupling,1/GeV) << _incoming << _outgoing1 << _outgoing2 << _maxweight;
 }
 
 void ScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
-ClassDescription<ScalarVectorVectorDecayer> ScalarVectorVectorDecayer::initScalarVectorVectorDecayer;
+ClassDescription<ScalarVectorVectorDecayer> 
+ScalarVectorVectorDecayer::initScalarVectorVectorDecayer;
 // Definition of the static class description member.
 
 void ScalarVectorVectorDecayer::Init() {
@@ -123,7 +161,7 @@ void ScalarVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarVectorVectorDecayer::_coupling,
-     0, 0, 0, 0., 10000/GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 10000/GeV, false, false, true);
 
   static ParVector<ScalarVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -133,102 +171,107 @@ void ScalarVectorVectorDecayer::Init() {
 
 }
 
-double ScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
+double ScalarVectorVectorDecayer::me2(const int,
 				      const Particle & inpart,
-				      const ParticleVector & decay) const
-{
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
+				      const ParticleVector & decay,
+				      MEOption meopt) const {
   bool photon[2]={false,false};
-  vector<LorentzPolarizationVector> wave[2];
   for(unsigned int ix=0;ix<2;++ix)
-    {
-      if(decay[ix]->id()==ParticleID::gamma){photon[ix]=true;}
-
-      // workaround for gcc 3.2.3 bug
-      //ALB VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
-      vector<LorentzPolarizationVector> mytempLPV; 
-      VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
-      wave[ix]=mytempLPV;
-    }
+    photon[ix] = decay[ix]->id()==ParticleID::gamma;
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+					    outgoing,true,photon[ix]);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
-  double fact(_coupling[imode()]/inpart.mass());
-  Energy p1p2(decay[0]->momentum()*decay[1]->momentum());
+  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
+  Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
   unsigned int ix,iy;
-  for(ix=0;ix<3;++ix)
-    {for(iy=0;iy<3;++iy)
-	{newME(0,ix,iy)=fact*(p1p2*wave[0][ix]*wave[1][iy]-
-			      (wave[1][iy]*decay[0]->momentum())*
-			      (wave[0][ix]*decay[1]->momentum()));}}
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0); rhoin.average();
-  return newME.contract(rhoin).real();
+  for(ix=0;ix<3;++ix) {
+    for(iy=0;iy<3;++iy) {
+      ME()(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
+			  (_vectors[1][iy]*decay[0]->momentum())*
+			  (_vectors[0][ix]*decay[1]->momentum()));
+    }
+  }
+  // test of the matrix element
+  //   double me = newME.contract(rhoin).real();
+  //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+  // 					   decay[1]->mass());
+  //   double test = sqr(_coupling[imode()]/inpart.mass())*
+  //     (2.*sqr(pcm*inpart.mass())+3.*sqr(decay[0]->mass()*decay[1]->mass()));
+  //   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+  //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+  //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
+  return ME().contract(_rho).real();
 }
 
 // output the setup info for the particle database
 void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
-					       bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  // parameters for the DecayIntegrator base class
+					       bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class  
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming   " << ix << " "
-		 << _incoming[ix]   << "\n";
-	  output << "set " << fullName() << ":FirstOutgoing  " << ix << " "
-		 << _outgoing1[ix]  << "\n";
-	  output << "set " << fullName() << ":SecondOutgoing " << ix << " "
-		 << _outgoing2[ix]  << "\n";
-	  output << "set " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
-	  output << "set " << fullName() << ":MaxWeight  " << ix << " "
-		 << _maxweight[ix]  << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming   " << ix << " "
-		 << _incoming[ix]   << "\n";
-	  output << "insert " << fullName() << ":FirstOutgoing  " << ix << " "
-		 << _outgoing1[ix]  << "\n";
-	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " "
-		 << _outgoing2[ix]  << "\n";
-	  output << "insert " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
-	  output << "insert " << fullName() << ":MaxWeight  " << ix << " "
-		 << _maxweight[ix]  << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << name() << ":Incoming   " << ix << " "
+	     << _incoming[ix]   << "\n";
+      output << "set " << name() << ":FirstOutgoing  " << ix << " "
+	     << _outgoing1[ix]  << "\n";
+      output << "set " << name() << ":SecondOutgoing " << ix << " "
+	     << _outgoing2[ix]  << "\n";
+      output << "set " << name() << ":Coupling   " << ix << " "
+	     << _coupling[ix]*GeV   << "\n";
+      output << "set " << name() << ":MaxWeight  " << ix << " "
+	     << _maxweight[ix]  << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+    else {
+      output << "insert " << name() << ":Incoming   " << ix << " "
+	     << _incoming[ix]   << "\n";
+      output << "insert " << name() << ":FirstOutgoing  " << ix << " "
+	     << _outgoing1[ix]  << "\n";
+      output << "insert " << name() << ":SecondOutgoing " << ix << " "
+	     << _outgoing2[ix]  << "\n";
+      output << "insert " << name() << ":Coupling   " << ix << " "
+	     << _coupling[ix]*GeV   << "\n";
+      output << "insert " << name() << ":MaxWeight  " << ix << " "
+	     << _maxweight[ix]  << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
 bool ScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
-					       double & coupling) const
-{
+					      double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id());
   unsigned int ix(0);
-  do
-    {
-      if(_incoming[ix]==id)
-	{if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}}
-      ++ix;
+  do {
+    if(_incoming[ix]==id) {
+      if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
+	 (id2==_outgoing1[ix]&&id1==_outgoing2[ix])) imode=ix;
     }
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   coupling=_coupling[imode]*dm.parent()->mass();
   itype = 12;
   return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
-}
-
 }

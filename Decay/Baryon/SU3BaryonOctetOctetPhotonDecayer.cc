@@ -10,59 +10,128 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonOctetOctetPhotonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-SU3BaryonOctetOctetPhotonDecayer::~SU3BaryonOctetOctetPhotonDecayer() {}
-int SU3BaryonOctetOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+SU3BaryonOctetOctetPhotonDecayer::SU3BaryonOctetOctetPhotonDecayer() {
+  // default values of the parameters
+  // these are the values for first excited multiplet
+  // the couplings of the anticommutator and communtator terms
+  _lf=-0.009/GeV;
+  _ld=-0.024/GeV;
+  // the relative parities of the two baryon multiplets
+  _parity=true;
+  // PDG codes for the various ground state baryons
+  _proton   = 2212;
+  _neutron  = 2112;
+  _sigma0   = 3212;
+  _sigmap   = 3222;
+  _sigmam   = 3112;
+  _lambda   = 3122;
+  _xi0      = 3322;
+  _xim      = 3312;
+  // PDG codes for the various excited baryons
+  _eproton  = 12212;
+  _eneutron = 12112;
+  _esigma0  = 13212;
+  _esigmap  = 13222;
+  _esigmam  = 13112;
+  _elambda  = 23122;
+  _exi0     = 13322;
+  _exim     = 13312;
+  // intermediates
+  generateIntermediates(false);
+}
+
+void SU3BaryonOctetOctetPhotonDecayer::doinit() {
+  Baryon1MesonDecayerBase::doinit();
+  // set up the decay modes
+  setupModes(1);
+  // set up the phase space and the couplings
+  tPDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  double wgtmax;
+  vector<double> wgt(0);
+  for(unsigned int ix=0;ix<_incomingB.size();++ix) {
+    extpart[0]=getParticleData(_incomingB[ix]);
+    extpart[1]=getParticleData(_outgoingB[ix]);
+    extpart[2]=getParticleData(ParticleID::gamma);
+    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    wgtmax = _maxweight.size()>numberModes() ? 
+      _maxweight[numberModes()] : 1.;
+    addMode(mode,wgtmax,wgt);
+    // testing code
+//     Energy MR = extpart[0]->mass();
+//     Energy MB = extpart[1]->mass();
+//     Energy kg = 0.5*(sqr(MR)-sqr(MB))/MR;
+//     Energy2 Tji = 128.*sqr((sqr(MR)-sqr(MB))/2.*_prefactor[ix]/4.);
+//     Energy width = 1./8./Constants::pi/sqr(MR)*kg*Tji;
+//     generator()->log() << "testing " << extpart[0]->PDGName() << "->"
+// 		       << extpart[1]->PDGName() << " " 
+// 		       << extpart[2]->PDGName() << " " << width/MeV
+// 		       << " MeV\n";
+  }
+}
+
+void SU3BaryonOctetOctetPhotonDecayer::doinitrun() {
+  Baryon1MesonDecayerBase::doinitrun();
+  if(initialize()) {
+    _maxweight.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix)
+      _maxweight.push_back(mode(ix)->maxWeight());
+  }
+}
+
+int SU3BaryonOctetOctetPhotonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const tPDVector & children) const {
   int imode(-1);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),iout;
+  int id0(parent->id()),id1(children[0]->id()),id2(children[1]->id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
   else{return imode;}
   unsigned int ix(0);
   cc =false;
-  do
-    {
-      if(id0==_incomingB[ix]){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
-      else if(id0==-_incomingB[ix]){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
-      ++ix;
+  do {
+    if(id0==_incomingB[ix]) {
+      if(iout==_outgoingB[ix]) {
+	imode=ix;
+	cc=false;
+      }
     }
+    else if(id0==-_incomingB[ix]) {
+      if(iout==-_outgoingB[ix]) {
+	imode=ix;
+	cc=true;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incomingB.size()&&imode<0);
   return imode;
 }
 
 void SU3BaryonOctetOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _lf << _ld <<  _parity << _proton << _neutron << _sigma0 << _sigmap << _sigmam 
-     << _lambda << _xi0 << _xim << _eproton << _eneutron << _esigma0 << _esigmap 
-     << _esigmam << _elambda << _exi0 << _exim << _incomingB << _outgoingB << _maxweight
-     << _prefactor;
+  os << ounit(_lf,1./GeV) << ounit(_ld,1./GeV) <<  _parity << _proton << _neutron 
+     << _sigma0 << _sigmap << _sigmam << _lambda << _xi0 << _xim << _eproton 
+     << _eneutron << _esigma0 << _esigmap << _esigmam << _elambda << _exi0 << _exim 
+     << _incomingB << _outgoingB << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonOctetOctetPhotonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _lf >> _ld >>  _parity >> _proton >> _neutron >> _sigma0 >> _sigmap >> _sigmam 
-     >> _lambda >> _xi0 >> _xim >> _eproton >> _eneutron >> _esigma0 >> _esigmap 
-     >> _esigmam >> _elambda >> _exi0 >> _exim >> _incomingB >> _outgoingB >> _maxweight
-     >> _prefactor;
+  is >> iunit(_lf,1./GeV) >> iunit(_ld,1./GeV) >>  _parity >> _proton >> _neutron 
+     >> _sigma0 >> _sigmap >> _sigmam >> _lambda >> _xi0 >> _xim >> _eproton 
+     >> _eneutron >> _esigma0 >> _esigmap >> _esigmam >> _elambda >> _exi0 >> _exim 
+     >> _incomingB >> _outgoingB >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
-ClassDescription<SU3BaryonOctetOctetPhotonDecayer> SU3BaryonOctetOctetPhotonDecayer::initSU3BaryonOctetOctetPhotonDecayer;
+ClassDescription<SU3BaryonOctetOctetPhotonDecayer> 
+SU3BaryonOctetOctetPhotonDecayer::initSU3BaryonOctetOctetPhotonDecayer;
 // Definition of the static class description member.
 
 void SU3BaryonOctetOctetPhotonDecayer::Init() {
@@ -204,50 +273,55 @@ void SU3BaryonOctetOctetPhotonDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-1
 void SU3BaryonOctetOctetPhotonDecayer::halfHalfVectorCoupling(int imode,Energy m0,
-							      Energy m1, Energy m2,
+							      Energy m1, Energy,
 							      Complex&A1,
 							      Complex&A2,Complex&B1,
-							      Complex&B2) const
-{
-  if(_parity)
-    {
-      A1=    _prefactor[imode]*(m0+m1);B1=0.;
-      A2=-2.*_prefactor[imode]*(m0+m1);B2=0.;
-    }
-  else
-    {
-      A1=0.;B1=    _prefactor[imode]*(m1-m0);
-      A2=0.;B2=-2.*_prefactor[imode]*(m0+m1);
-    }
+							      Complex&B2) const {
+  if(_parity) {
+    A1=    _prefactor[imode]*(m0+m1);
+    B1=0.;
+    A2=-2.*_prefactor[imode]*(m0+m1);
+    B2=0.;
+  }
+  else {
+    A1=0.;
+    B1=    _prefactor[imode]*(m1-m0);
+    A2=0.;
+    B2=-2.*_prefactor[imode]*(m0+m1);
+  }
 }
 
 
 // couplings for spin-1/2 to spin-3/2 spin-1
 void SU3BaryonOctetOctetPhotonDecayer::
-threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1, Energy m2,
+threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1, Energy,
 			    Complex&A1,Complex&A2,Complex&A3,
-			    Complex&B1,Complex&B2,Complex&B3) const
-{
-  if(_parity)
-    {
-      A1=0.;B1=-_prefactor[imode]*(m0+m1);
-      A2=0.;B2= _prefactor[imode]*(m0+m1);
-    }
-  else
-    {
-      A1= _prefactor[imode]*(m0-m1);B1=0.;
-      A2= _prefactor[imode]*(m0+m1);B2=0.;
-    }
-  A3=0.;B3=0.;
+			    Complex&B1,Complex&B2,Complex&B3) const {
+  if(_parity) {
+    A1=0.;
+    B1=-_prefactor[imode]*(m0+m1);
+    A2=0.;
+    B2= _prefactor[imode]*(m0+m1);
+  }
+  else {
+    A1= _prefactor[imode]*(m0-m1);
+    B1=0.;
+    A2= _prefactor[imode]*(m0+m1);
+    B2=0.;
+  }
+  A3=0.;
+  B3=0.;
 }
 
 // set up the decay modes
-void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const
-{
-  if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);}
+void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const {
+  if(_incomingB.size()!=0&&iopt==0) return;
+  if(iopt==1) {
+    _outgoingB.clear();
+    _incomingB.clear();
+  }
   // set up for the various different decay modes
-  vector<double> factor;
+  vector<InvEnergy> factor;
   vector<int> intemp,outtemp;
   // decays of the excited proton
   intemp.push_back(_eproton);outtemp.push_back(_proton);
@@ -278,65 +352,56 @@ void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const
   intemp.push_back(_exi0);outtemp.push_back(_xi0);
   factor.push_back(-2.*_ld/3.);
   int inspin,outspin;
-  PDVector extpart(2);
-  for(unsigned int ix=0;ix<intemp.size();++ix)
-    {
-      if(intemp[ix]!=0&&outtemp[ix]!=0)
-	{
-	  extpart[0]=getParticleData(intemp[ix]);
-	  extpart[1]=getParticleData(outtemp[ix]);
-	  if(extpart[0]->massMax()>extpart[1]->massMin())
-	    {
-	      _incomingB.push_back(intemp[ix]);
-	      _outgoingB.push_back(outtemp[ix]);
-	      if(iopt==1)
-		{
-		  inspin  = extpart[0]->iSpin();
-		  outspin = extpart[1]->iSpin();
-		  factor[ix] *=2.;
-		  if(inspin==2&&outspin==2)
-		    {_prefactor.push_back(2.*factor[ix]);}
-		  else if(inspin==4&&outspin==2)
-		    {_prefactor.push_back(factor[ix]);}
-		  else
-		    {throw DecayIntegratorError() 
-			<< "Invalid combination of spins in "
-			<< "SU3BaryonOctetOctetPhotonDecayer::" 
-			<< "setupModes()" << Exception::abortnow;}
-		}
-	    }
-	}
+  tPDVector extpart(2);
+  for(unsigned int ix=0;ix<intemp.size();++ix) {
+    if(intemp[ix]!=0&&outtemp[ix]!=0) {
+      extpart[0]=getParticleData(intemp[ix]);
+      extpart[1]=getParticleData(outtemp[ix]);
+      if(extpart[0]->massMax()>extpart[1]->massMin()) {
+	_incomingB.push_back(intemp[ix]);
+	_outgoingB.push_back(outtemp[ix]);
+	if(iopt==1) {
+	  inspin  = extpart[0]->iSpin();
+	  outspin = extpart[1]->iSpin();
+	  factor[ix] *=2.;
+	  if(inspin==2&&outspin==2)      _prefactor.push_back(2.*factor[ix]);
+	  else if(inspin==4&&outspin==2) _prefactor.push_back(factor[ix]);
+	  else throw DecayIntegratorError() 
+	    << "Invalid combination of spins in "
+	    << "SU3BaryonOctetOctetPhotonDecayer::" 
+	    << "setupModes()" << Exception::abortnow;}
+      }
     }
+  }
 }
 
 void SU3BaryonOctetOctetPhotonDecayer::dataBaseOutput(ofstream & output,
-						      bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+						      bool header) const {
+  if(header) output << "update decayers set parameters=\""; 
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":Fcoupling " << _lf*GeV << "\n";
-  output << "set " << fullName() << ":Dcoupling " << _ld*GeV << "\n";
-  output << "set " << fullName() << ":Parity " << _parity<< "\n";
-  output << "set " << fullName() << ":Proton " << _proton << "\n";
-  output << "set " << fullName() << ":Neutron " << _neutron << "\n";
-  output << "set " << fullName() << ":Sigma+ " << _sigmap << "\n";
-  output << "set " << fullName() << ":Sigma0 " << _sigma0 << "\n";
-  output << "set " << fullName() << ":Sigma- " << _sigmam << "\n";
-  output << "set " << fullName() << ":Lambda " << _lambda << "\n";
-  output << "set " << fullName() << ":Xi0 " << _xi0 << "\n";
-  output << "set " << fullName() << ":Xi- " << _xim << "\n"; 
-  output << "set " << fullName() << ":ExcitedProton " << _eproton << "\n";
-  output << "set " << fullName() << ":ExcitedNeutron " << _eneutron << "\n";
-  output << "set " << fullName() << ":ExcitedSigma+ " << _esigmap << "\n";
-  output << "set " << fullName() << ":ExcitedSigma0 " << _esigma0 << "\n";
-  output << "set " << fullName() << ":ExcitedSigma- " << _esigmam << "\n";
-  output << "set " << fullName() << ":ExcitedLambda " << _elambda << "\n";
-  output << "set " << fullName() << ":ExcitedXi0 " << _exi0 << "\n";
-  output << "set " << fullName() << ":ExcitedXi- " << _exim << "\n"; 
-  for(unsigned int ix=0;ix<_maxweight.size();++ix)
-    {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
-	    << _maxweight[ix] << "\n";}
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  output << "set " << name() << ":Fcoupling " << _lf*GeV << "\n";
+  output << "set " << name() << ":Dcoupling " << _ld*GeV << "\n";
+  output << "set " << name() << ":Parity " << _parity<< "\n";
+  output << "set " << name() << ":Proton " << _proton << "\n";
+  output << "set " << name() << ":Neutron " << _neutron << "\n";
+  output << "set " << name() << ":Sigma+ " << _sigmap << "\n";
+  output << "set " << name() << ":Sigma0 " << _sigma0 << "\n";
+  output << "set " << name() << ":Sigma- " << _sigmam << "\n";
+  output << "set " << name() << ":Lambda " << _lambda << "\n";
+  output << "set " << name() << ":Xi0 " << _xi0 << "\n";
+  output << "set " << name() << ":Xi- " << _xim << "\n"; 
+  output << "set " << name() << ":ExcitedProton " << _eproton << "\n";
+  output << "set " << name() << ":ExcitedNeutron " << _eneutron << "\n";
+  output << "set " << name() << ":ExcitedSigma+ " << _esigmap << "\n";
+  output << "set " << name() << ":ExcitedSigma0 " << _esigma0 << "\n";
+  output << "set " << name() << ":ExcitedSigma- " << _esigmam << "\n";
+  output << "set " << name() << ":ExcitedLambda " << _elambda << "\n";
+  output << "set " << name() << ":ExcitedXi0 " << _exi0 << "\n";
+  output << "set " << name() << ":ExcitedXi- " << _exim << "\n"; 
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
+    output << "insert " << name() << ":MaxWeight " << ix << " " 
+	   << _maxweight[ix] << "\n";
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

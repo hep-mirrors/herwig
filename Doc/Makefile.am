@@ -2,7 +2,8 @@ CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo
 
 docdir = $(pkgdatadir)/Doc
 
-dist_doc_DATA = refman.conf refman.h refmanThePEG.conf tagfileThePEG.tag HerwigDefaults.in
+dist_doc_DATA = refman.conf refman.h HerwigDefaults.in
+EXTRA_DATA = tagfileThePEG.tag
 
 doc_SCRIPTS = fixinterfaces.pl
 
@@ -16,14 +17,15 @@ html-local: refman-html
 pdf-local: refman-html
 	if test -d refman-latex; then cd refman-latex; make refman.pdf; fi
 
-myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
-
 AllInterfaces.h: HerwigDefaults.in
-	$(myENV) $(top_builddir)/src/Herwig++ init
+	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
 
-refman-html: refman.conf refman.h AllInterfaces.h
-	./fixinterfaces.pl AllInterfaces.h
+refman-html: refman.conf refman.h AllInterfaces.h tagfileThePEG.tag
+	$(srcdir)/fixinterfaces.pl AllInterfaces.h
 	doxygen $<
+
+tagfileThePEG.tag:
+	@if test -e $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag; then $(LN_S) $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag tagfileThePEG.tag; fi
 
 #install-data-local:
 #	if test -d refman-html; then $(mkdir_p) $(DESTDIR)$(docdir);\

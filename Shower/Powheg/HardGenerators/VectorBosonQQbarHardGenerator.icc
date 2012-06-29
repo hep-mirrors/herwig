@@ -1,0 +1,68 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorBosonQQbarHardGenerator class.
+//
+
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cmath>
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+  inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _alphaS_max(2.0), _Qg(1.*GeV)
+{}
+
+
+inline IBPtr VectorBosonQQbarHardGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VectorBosonQQbarHardGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline bool VectorBosonQQbarHardGenerator::inRange() {
+  
+  // 
+  // Extract the reduced (constituent) masses:
+  double mu_q,mu_qb,mu_g;
+  Energy root_s(sqrt(_s));
+  mu_q  = _quark[0].mass()/root_s;
+  mu_qb = _quark[1].mass()/root_s;
+  mu_g  = _g.mass()/root_s;
+
+  // Do we have insane x values? If not calculate the 3-momenta 
+  // (divided by 0.5*sqrt(_s) i.e. betai*xi).
+  double b_xq2,b_xqb2,b_xg2;
+  b_xq2  = (_xq  + 2.*mu_q )*(_xq  - 2.*mu_q );
+  b_xqb2 = (_xqb + 2.*mu_qb)*(_xqb - 2.*mu_qb);
+  b_xg2  = (_xg  + 2.*mu_g )*(_xg  - 2.*mu_g );
+  if(b_xq2 <0. || b_xqb2<0.|| b_xg2 <0.) return 0;
+  _b_xq  = sqrt(b_xq2 );
+  _b_xqb = sqrt(b_xqb2);
+  _b_xg  = sqrt(b_xg2 );
+  if(_xq >(1.+(mu_q -mu_qb-mu_g )*(mu_q +mu_qb+mu_g ))) return 0;
+  if(_xqb>(1.+(mu_qb-mu_q -mu_g )*(mu_qb+mu_q +mu_g ))) return 0;
+
+  // Check if we are in the phase space (this
+  // is a manipulation of the Kallen function 
+  // function lambda(b_xq2,b_xqb2,b_xg2)):
+  //  _rt_mlambda = sqr(b_xq2) + sqr(b_xqb2) + sqr(b_xg2)
+  //          - 2.*(b_xq2*b_xqb2 + b_xq2*b_xg2 + b_xqb2*b_xg2);
+  _rt_mlambda = (_b_xq +_b_xqb+_b_xg )
+    *(_b_xq -_b_xqb-_b_xg )
+    *(_b_xqb-_b_xq -_b_xg )
+    *(_b_xg -_b_xq -_b_xqb);
+  
+  if(_rt_mlambda>=0.) return 0;
+  _rt_mlambda=sqrt(-_rt_mlambda);
+  
+  return 1;
+}
+
+}

@@ -1,53 +1,46 @@
 // -*- C++ -*-
+//
+// RSModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RSModel_H
 #define HERWIG_RSModel_H
 // This is the declaration of the RSModel class.
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVTVertex.h"
+#include "RSModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *
  *  This is the class to be used instead of the Standard Model class for
  *  the Randell Sundrum model.
  *
- *
+ * @see \ref RSModelInterfaces "The interfaces"
+ * defined for RSModel.
  * @see StandardModel
  * @see StandardModelBase
  * 
  */
 class RSModel: public StandardModel {
 
-  
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor
-   */
-  inline RSModel();
 
   /**
-   * Copy constructor
+   * The default constructor 
    */
-  inline RSModel(const RSModel &);
-
-  /**
-   * Destructor
-   */
-  virtual ~RSModel();
-  //@}
-  
-public:
+  RSModel();
   
   /**
    * Return the gravition coupling
@@ -60,27 +53,27 @@ public:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  inline tFFTVertexPtr   vertexFFGR() const;
+  inline tAbstractFFTVertexPtr   vertexFFGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  inline tVVTVertexPtr   vertexVVGR() const;
+  inline tAbstractVVTVertexPtr   vertexVVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  inline tSSTVertexPtr   vertexSSGR() const;
+  inline tAbstractSSTVertexPtr   vertexSSGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  inline tFFVTVertexPtr  vertexFFVGR() const;
+  inline tAbstractFFVTVertexPtr  vertexFFVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  inline tVVVTVertexPtr  vertexVVVGR() const;
+  inline tAbstractVVVTVertexPtr  vertexVVVGR() const;
   //@}
   
 public:
@@ -105,6 +98,18 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit();
+  //@}
   
 protected:
   
@@ -121,52 +126,6 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -189,27 +148,27 @@ private:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  FFTVertexPtr  _theFFGRVertex;
+  AbstractFFTVertexPtr  _theFFGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  VVTVertexPtr  _theVVGRVertex;
+  AbstractVVTVertexPtr  _theVVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  SSTVertexPtr  _theSSGRVertex;
+  AbstractSSTVertexPtr  _theSSGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  FFVTVertexPtr _theFFVGRVertex;
+  AbstractFFVTVertexPtr _theFFVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  VVVTVertexPtr _theVVVGRVertex;
+  AbstractVVVTVertexPtr _theVVVGRVertex;
   
 };
 }
@@ -217,34 +176,38 @@ private:
 
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of RSModel.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::RSModel,1> {
-    /** Typedef of the base class of RSModel. */
-    typedef Herwig::StandardModel NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::RSModel>
-    : public ClassTraitsBase<Herwig::RSModel> {
-    /** Return the class name.*/
-    static string className() { return "Herwig++::RSModel"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwTVertex.so HwRSModel.so"; }
 
-  };
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of RSModel.
+ */
+template <>
+struct BaseClassTrait<Herwig::RSModel,1> {
+  /** Typedef of the base class of RSModel. */
+  typedef Herwig::StandardModel NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::RSModel>
+  : public ClassTraitsBase<Herwig::RSModel> {
+  /** Return the class name.*/
+  static string className() { return "Herwig::RSModel"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwRSModel.so"; }
+  
+};
+
+/** @endcond */
   
 }
 

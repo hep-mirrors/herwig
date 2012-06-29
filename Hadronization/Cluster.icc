@@ -1,20 +1,24 @@
 // -*- C++ -*-
 //
+// Cluster.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the Cluster class.
 //
 
 namespace Herwig {
 
-  inline void * Cluster::operator new(size_t) {
-    return FixedAllocator<Cluster>::allocate();
+  inline PPtr Cluster::clone() const {
+    return new_ptr(*this);
   }
-
-  inline void Cluster::operator delete(void * p, size_t) {
-    FixedAllocator<Cluster>::deallocate(p);
-  }
-  inline void Cluster::setPointerGlobalParameters(GlobParamPtr gp) {
-    _globalParameters = gp;
+  
+  inline PPtr Cluster::fullclone() const {
+    return clone();
   }
 
   inline int Cluster::numComponents() const {
@@ -52,12 +56,16 @@ namespace Herwig {
   }
 
   inline bool Cluster::isRedefined() const {
-    return ( children().size() == 1 && children()[0]->PDGName() == "Cluster" );
+    return ( children().size() == 1 
+	     && children()[0]->id() == ExtraParticleID::Cluster );
   }
 
   inline bool Cluster::hasBeenReshuffled() const {
     return _reshufflingPartner;
   }
 
+  inline bool Cluster::initPerturbative(tPPtr p) {
+    return (p->scale() > _mg2);
+  }
 }
 

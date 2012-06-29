@@ -1,12 +1,19 @@
 // -*- C++ -*-
+//
+// GraphvizPlot.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef THEPEG_GraphvizPlot_H
 #define THEPEG_GraphvizPlot_H
 //
 // This is the declaration of the GraphvizPlot class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "GraphvizPlot.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -26,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GraphvizPlot();
+  inline GraphvizPlot() : _eventNumber(1) {}
   //@}
 
 public:
@@ -101,13 +108,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -115,16 +122,10 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  //  inline virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -142,11 +143,12 @@ private:
   GraphvizPlot & operator=(const GraphvizPlot &);
 
 private:
-  /**
-   * Base name of output file
-   */
 
-  string _fileBaseName;
+  /**
+   * Event number that should be drawn 
+   */
+  long _eventNumber;
+
 };
 
 }
@@ -171,20 +173,15 @@ template <>
 struct ClassTraits<Herwig::GraphvizPlot>
   : public ClassTraitsBase<Herwig::GraphvizPlot> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GraphvizPlot"; }
+  static string className() { return "Herwig::GraphvizPlot"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GraphvizPlot class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
+  static string library() { return "HwHepMCAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "GraphvizPlot.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GraphvizPlot.tcc"
-#endif
 
 #endif /* THEPEG_GraphvizPlot_H */

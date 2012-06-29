@@ -1,12 +1,34 @@
 pkglib_LTLIBRARIES = HwMRST.la
 HwMRST_la_SOURCES = \
-BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc \
-MRST.cc MRST.h MRST.icc \
-PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
-
-HwMRST_la_LDFLAGS = -module
+MRST.cc MRST.h MRST.icc 
+## add this to produce tests of the PDFs
+## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
+HwMRST_la_LDFLAGS = -module -version-info 5:0:0
 
 EXTRA_DIST = mrst
+
+## bound into HwShower.la
+noinst_LTLIBRARIES = libHwRemDecayer.la
+libHwRemDecayer_la_SOURCES = \
+HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh
+
+## bound into HwShower.la
+noinst_LTLIBRARIES += libHwMPIPDF.la
+libHwMPIPDF_la_SOURCES = \
+MPIPDF.h MPIPDF.cc MPIPDF.fh \
+MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
+
+pkglib_LTLIBRARIES += HwSatPDF.la
+HwSatPDF_la_SOURCES = \
+SatPDF.h SatPDF.cc
+
+HwSatPDF_la_LDFLAGS = -module -version-info 2:0:0
+
+pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
+HwIncomingPhotonEvolver_la_SOURCES = \
+IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
+
+HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 2:0:0
 
 if WANT_LOCAL_PDF
 install-data-local:

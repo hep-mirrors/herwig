@@ -1,17 +1,21 @@
 // -*- C++ -*-
+//
+// BtoSGammaKagan.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BtoSGammaKagan_H
 #define HERWIG_BtoSGammaKagan_H
 //
 // This is the declaration of the BtoSGammaKagan class.
 //
 
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "BtoSGammaHadronicMass.h"
 #include "ThePEG/Config/Complex.h"
 #include "ThePEG/Config/Constants.h"
-#include "BtoSGammaKagan.fh"
 
 namespace Herwig {
 
@@ -20,9 +24,8 @@ using namespace ThePEG::Constants;
 
 /** \ingroup Decay
  *
- * The BtoSGammaKagan class implements he model of hep-ph/9805303 for the 
+ * The BtoSGammaKagan class implements the model of hep-ph/9805303 for the 
  * hadronic mass spectrum in \f$b\to s \gamma\f$ decays.
- *
  */
 class BtoSGammaKagan: public BtoSGammaHadronicMass {
 
@@ -33,25 +36,10 @@ class BtoSGammaKagan: public BtoSGammaHadronicMass {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline BtoSGammaKagan();
-
-  /**
-   * The copy constructor.
-   */
-  inline BtoSGammaKagan(const BtoSGammaKagan &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BtoSGammaKagan();
-  //@}
-
-public:
+  BtoSGammaKagan();
 
   /**
    * Returns the hadronic mass.
@@ -96,6 +84,41 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   *  Members which return integrands
+   */
+  //@{
+  /**
+   *  Operator to return the integrand for the \f$s_{22}(y)\f$ function
+   *  or \f$s_{27}(y)\f$ functions of hep-ph/9805303
+   *  depending on the value of _iopt to be integrated
+   */
+  double operator ()(double x) const {
+    if(_iopt==0) {
+      double reg(realG(x/_zratio)),img(imagG(x/_zratio));
+      return 16./27.*(1.-x)*(_zratio*_zratio/x/x*(sqr(reg)+sqr(img))+_zratio/x*reg+0.25);
+    }
+    else {
+      return -8./9.*_zratio*(realG(x/_zratio)+0.5*x/_zratio);
+    }
+  }
+  typedef double ValType;
+  typedef double ArgType;
+
+  /**
+   *  Operator to return the integrand of the smeared function or
+   *  Fermi function depending on the value of _iopt to be integrated
+   */
+  InvEnergy smeared(Energy kp) const {
+    InvEnergy fermi = exponentialFermiFunction(kp,_fermilambda,_fermia,
+					       _ferminorm,_fermilambda1);
+    if(_iopt==1) fermi *=KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp);
+    return fermi;
+  }
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -104,13 +127,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -118,47 +141,17 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -177,10 +170,6 @@ private:
 
 private:
 
-  /**
-   *  Initialisation of mass spectrum
-   */
-  bool _initialize;
   /** @name Functions to calculate the mass spectrum */
   //@{
   /**
@@ -188,72 +177,92 @@ private:
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    * @param alphaS The strong coupling, \f$\alpha_S\f$.
    */
-  inline double Delta(double y, double alphaS);
+  double Delta(double y, double alphaS) const {
+    if(y>_ycut) return 0.;
+    double ln(log(1.-y));
+    return -4./3./pi/(1.-y)*alphaS*(ln+1.75)*exp(-2.*alphaS/3./pi*ln*(ln+3.5));
+  }
 
   /**
    * Kinematic function from semi-leptonic decay for normaalisation
    */
-  inline double semiLeptonicf();
+  double semiLeptonicf() const  {
+    double z2=sqr(_zratio);
+    return 1.-8.*_zratio*(1.-z2)-sqr(z2)-12.*z2*log(_zratio);
+  }
 
   /**
    *  \f$s_{22}(y)\f$ function from hep-ph/9805303. Due to the integration
    * required this function is computed by interpolation.
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s22(double y);
+  double s22(double y) const {return (*_s22inter)(y);}
 
   /**
    *  \f$s_{27}(y)\f$ function from hep-ph/9805303. Due to the integration
    * required this function is computed by interpolation.
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s27(double y);
+  double s27(double y) const {return (*_s27inter)(y);}
 
   /**
    *  \f$s_{77}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s77(double y);
+  double s77(double y) const  {
+    if(y>_ycut) y=_ycut; 
+    return 1./3.*(7.+y*(1.-2.*y)-2.*(1.+y)*log(1.-y));
+  }
 
   /**
    *  \f$s_{78}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s78(double y);
+  double s78(double y) const  {
+    if(y>_ycut) y=_ycut;
+    return 8./9.*((1.-y)/y*log(1.-y)+1.+0.25*y*y);
+  }
 
   /**
    *  \f$s_{88}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s88(double y);
+  double s88(double y) const  {
+    double ratio(_mb/_ms),y2(sqr(y));
+    if(y>_ycut) y=_ycut;
+    return 1./27.*(2.*(2.-2.*y+y2)/y*(log(1.-y)+2.*log(ratio))-2.*y2-y-8.*(1.-y)/y);
+  }
 
   /**
    *  The real part of the \f$G(t)\f$ function from hep-ph/9805303
    */
-  inline double realG(double);
+  double realG(double t) const  {
+    if(t<4.) {
+      double at(atan(sqrt(t/(4.-t))));
+      return -2.*sqr(at);
+    }
+    else {
+      double ln(log(0.5*(sqrt(t)+sqrt(t-4.))));
+      return 2.*(sqr(ln)-0.25*sqr(pi));
+    }
+  }
 
   /**
    *  The imaginary part of the \f$G(t)\f$ function from hep-ph/9805303
    */
-  inline double imagG(double);
-
-  /**
-   * The integrand for the \f$s_{22}(y)\f$ function of hep-ph/9805303
-   * @param x The integrand variable
-   */
-  inline double integrands22(double x);
-
-  /**
-   * The integrand for the \f$s_{22}(y)\f$ function of hep-ph/9805303
-   * @param x The integrand variable
-   */
-  inline double integrands27(double x);
+  double imagG(double t) const {
+    if(t<4.) return 0.;
+    else     return -2.*pi*log(0.5*(sqrt(t)+sqrt(t-4.)));
+  }
 
   /**
    *  Strong coupling \f$\alpha_S\f$ at the scale \f$Q\f$
    * @param Q The scale.
    */
-  inline double alphaS(Energy Q);
+  double alphaS(Energy Q)  {
+    double lo(1.-0.5*_beta0*_alphaSZ/pi*log(_mz/Q));
+    return _alphaSZ/lo*(1.-0.25*_beta1/_beta0*_alphaSZ/pi*log(lo)/lo);
+  }
 
   /**
    *   Calculate the wilson coefficients we need
@@ -263,22 +272,21 @@ private:
   /**
    * The \f$K'_{NLO}(1-y)\f$ function at parton level from hep-ph/9805303
    */
-  inline double KNLO(double);
-
-  /**
-   * The integrand for the smeared distribution
-   * @param kp The integration variable
-   */
-  inline double integrandPy(Energy kp);
-
-  /**
-   *  Fermi motion function
-   * @param kp The scale
-   */
-  inline double fermiFunction(Energy kp);
+  double KNLO(double y) const {
+    return _delta*Delta(y,_alphaSM)
+      +_alphaSM/pi*(s22(y)*sqr(_c20)+s77(y)*sqr(_c70)
+		    +s88(y)*sqr(_c80)+s78(y)*_c70*_c80
+		    +s27(y)*_c20*(_c70-_c80/3.));
+  }
   //@}
 
 private:
+
+
+  /**
+   *  Initialisation of mass spectrum
+   */
+  bool _initialize;
 
   /**
    *  Quark masses and related parameters
@@ -404,17 +412,17 @@ private:
   /**
    *  Interpolator for the \f$s_{22}\f$ function
    */
-  Interpolator *_s22inter;
+  Interpolator<double,double>::Ptr _s22inter;
 
   /**
    *  Interpolator for the \f$s_{27}\f$ function
    */
-  Interpolator *_s27inter;
+  Interpolator<double,double>::Ptr _s27inter;
 
   /**
    *  Interpolator for the spectrum
    */
-  Interpolator *_pmHinter;
+  Interpolator<InvEnergy,Energy>::Ptr _pmHinter;
 
   /**
    *  Values of \f$m_H\f$ for the interpolation of the spectrum
@@ -490,6 +498,11 @@ private:
    * Number of points for the interpolation of the spectrum
    */
   unsigned int _nspect;
+
+  /**
+   *  The function currently being integrated
+   */
+  unsigned int _iopt;
   //@}
 
 };
@@ -499,6 +512,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaKagan. */
@@ -514,101 +529,44 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaKagan>
   : public ClassTraitsBase<Herwig::BtoSGammaKagan> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaKagan"; }
+  static string className() { return "Herwig::BtoSGammaKagan"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaKagan class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
-// class for the integration of the s functions
 namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
 
-  /** \ingroup Decay
-   *  This is a function using the CLHEP Genfun class whiches can access the integrands22
-   * and integrands27 members or the spectrum 
-   * of the BtoSGammaKagan class. This function can then
-   * be integrated to give the coefficients.
-   */
-class KaganIntegrand : public Genfun::AbsFunction {
-
-public:		   
-
-  /**
-   *  Function composition
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
-
-  /**
-   * clone
-   */
-  KaganIntegrand *clone() const; 
-
-private:                               
-
-  /**
-   * clone
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
- 
-/** @name Standard constructors and destructors. */
 /**
- *  The constructor
+ *  A struct for the integrand which can access the dimensional value
+ *  member of the BtoSGammaKagan class
  */
-  KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
-  
-  /**
-   *  The destructor
-   */
-  virtual ~KaganIntegrand();
-  
-  /**
-   * The copy constructor
-   */
-  KaganIntegrand(const KaganIntegrand &right);
-  //@}
+struct KaganIntegrand {
 
   /**
-   *  Retreive the function value
+   *  The constructor
    */
-  virtual double operator ()(double argument) const;
+  KaganIntegrand(Ptr<BtoSGammaKagan>::pointer in) : _kagan(in) {};
 
   /**
-   *  Retreive the function value
+   * Get the function value
    */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-  
-private:
-  
-  /**
-   * Non-existant assignment operator. It is illegal to assign a function
-   */
-  const KaganIntegrand & operator=(const KaganIntegrand &right);
-  
-private:
-  
+  InvEnergy operator ()(Energy arg) const {return _kagan->smeared(arg);}
+  /** Return type for GaussianIntegrator */
+  typedef InvEnergy ValType;
+  /** Argument type for GaussianIntegrator */
+  typedef Energy    ArgType;
+
   /**
    *  A pointer to the form factor to supply the integrand.
    */
-  BtoSGammaKaganPtr _kagan;
-
-  /**
-   *  Option for which function to be integrated
-   */
-  unsigned int _iopt;
-
+  Ptr<BtoSGammaKagan>::pointer _kagan;
 };
 }
-
-#include "BtoSGammaKagan.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaKagan.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaKagan_H */

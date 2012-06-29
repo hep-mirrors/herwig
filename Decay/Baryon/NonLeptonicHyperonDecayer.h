@@ -5,7 +5,6 @@
 // This is the declaration of the NonLeptonicHyperonDecayer class.
 //
 #include "Baryon1MesonDecayerBase.h"
-#include "NonLeptonicHyperonDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -14,9 +13,7 @@ using namespace ThePEG;
  *
  *  This is a general class for the non-leptonic decay of hyperons. The
  *  decays are given in terms of the invariant amplitudes
- *
  *  \f[\bar{u}_{B_j} \left\{A+B\gamma_5\right\}u_{B_i}\f]
- *
  *  where \f$B_j\f$ is the outgoing baryon and \f$B_i\f$ is the incoming baryon.
  *
  *  The default amplitudes are taken from the fit in hep-ph/9902351, 
@@ -30,32 +27,20 @@ class NonLeptonicHyperonDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   NonLeptonicHyperonDecayer();
 
   /**
-   * Copy-constructor.
-   */
-  inline NonLeptonicHyperonDecayer(const NonLeptonicHyperonDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~NonLeptonicHyperonDecayer();
-  //@}
-
-public:
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
+
 
   /**
    * Output the setup information for the particle database
@@ -113,59 +98,31 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -185,27 +142,27 @@ private:
   /**
    * PDG code for the incoming baryon.
    */
-  vector<int> _incomingB;
+  vector<long> _incomingB;
 
   /**
    * PDG code for the outgoing baryon.
    */
-  vector<int> _outgoingB;
+  vector<long> _outgoingB;
 
   /**
    * PDG code for the outgoing meson
    */
-  vector<int> _outgoingM;
+  vector<long> _outgoingM;
 
   /**
    * The \f$A\f$ coefficient.
    */
-  vector<double> _A;
+  vector<double> _a;
 
   /**
    * The \f$B\f$ coefficient.
    */
-  vector<double> _B;
+  vector<double> _b;
 
   /**
    * the maximum weights for the decays
@@ -225,6 +182,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of NonLeptonicHyperonDecayer.
@@ -243,21 +202,18 @@ template <>
  struct ClassTraits<Herwig::NonLeptonicHyperonDecayer>
   : public ClassTraitsBase<Herwig::NonLeptonicHyperonDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::NonLeptonicHyperonDecayer"; }
+  static string className() { return "Herwig::NonLeptonicHyperonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 
 };
 
-}
+/** @endcond */
 
-#include "NonLeptonicHyperonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "NonLeptonicHyperonDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_NonLeptonicHyperonDecayer_H */

@@ -1,0 +1,2 @@
+# Clean up all Herwig related directories
+rrmdir /Herwig

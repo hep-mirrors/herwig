@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VVSLoopVertex class.
+//
+#ifndef HERWIG_VVSLoopVertex_FH
+#define HERWIG_VVSLoopVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class VVSLoopVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::VVSLoopVertex,VVSLoopVertexPtr);
+
+}
+
+#endif

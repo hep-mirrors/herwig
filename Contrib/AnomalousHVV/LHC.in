@@ -1,0 +1,58 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read LHC.in
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set /Herwig/Particles/h0:Stable 1
+set /Herwig/Cuts/JetKtCut:MinKT 20.0*GeV
+set /Herwig/Cuts/JetKtCut:MinEta -4.5
+set /Herwig/Cuts/JetKtCut:MaxEta  4.5
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+
+
+##################################################
+# Matrix Elements for hadron-hadron collisions 
+# (by default only gamma/Z switched on)
+##################################################
+cd /Herwig/MatrixElements/
+create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
+set MEPP2HiggsVBF:Process 1
+set MEPP2HiggsVBF:MaxFlavour 2
+insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
+
+
+create Herwig::AnomalousWWHVertex /Herwig/Vertices/AnonWWHVertex AnomalousWWHVertex.so
+set /Herwig/Vertices/AnonWWHVertex:InteractionType SM
+set /Herwig/Model:Vertex/WWH /Herwig/Vertices/AnonWWHVertex
+
+
+cd /Herwig/Generators
+
+##################################################
+#  Useful analysis handlers for hadron-hadron physics
+##################################################
+# analysis of W/Z events
+set /Herwig/Analysis/Basics:CheckQuark 0
+create Herwig::SimpleVBFAnalysis /Herwig/Analysis/VBF SimpleVBFAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/VBF
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LHC LHCGenerator

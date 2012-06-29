@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// PhitoPhiGSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PhitoPhiGSplitFn_H
 #define HERWIG_PhitoPhiGSplitFn_H
 //
@@ -6,19 +13,17 @@
 //
 
 #include "SplittingFunction.h"
-#include "PhitoPhiGSplitFn.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Shower
  * This class provides the concrete implementation of the exact leading-order
  * splitting function for \f$\phi\to \phi g\f$.
  *
  * In this case the splitting function is given by
- * \f[P(z,\tilde{q}^2) =\frac{2C_Fz}{1-z}\left(1-\frac{m^2_q}{\tilde{q}^2z^2}
- *                                    \right),\f]
+ * \f[P(z,t) = 2C_F\left(\frac{z}{1-z}-\frac{m^2_\phi}{t}\right),\f]
  * where \f$C_F=\frac43\f$.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
@@ -34,25 +39,10 @@ class PhitoPhiGSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline PhitoPhiGSplitFn();
-
-  /**
-   * The copy constructor.
-   */
-  inline PhitoPhiGSplitFn(const PhitoPhiGSplitFn &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~PhitoPhiGSplitFn();
-  //@}
-
-public:
+  PhitoPhiGSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -70,8 +60,10 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   bool mass) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -88,39 +80,47 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			bool mass) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z) const;
+  virtual double integOverP(const double z, const IdList & ids, 
+			    unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
    * @param r Value of the splitting function to be inverted
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r) const;
+  virtual double invIntegOverP(const double r, const IdList & ids, 
+			       unsigned int PDFfactor=0) const;
   //@}
 
   /**
-   *  Concrete implementation of the method to make the colour connections.
-   * @param parent Pair of pointers to ColourLine objects, 
-   * which are associated with, 
-   * respectively, the colour (first element of the pair) and 
-   * anticolour (second element of the pair) of the emitting particle.
-   * @param first Pair of pointers
-   * to ColourLine objects, for respectively the first 
-   * branching product. Again the first element
-   * is associated with the colour line and the second element
-   * is associated with the anticolur line.
-   * @param second As first but for the second particle.
+   * Purely virtual method which should make the proper colour connection 
+   * between the emitting parent and the branching products.
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param back Whether this is foward or backward evolution.
    */
-  virtual void colourConnection(const ColinePair & parent,
-				ColinePair & first,
-				ColinePair & second) const;
+  virtual void colourConnection(tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second,
+				const bool back) const;
 
 public:
 
@@ -140,13 +140,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -187,7 +187,7 @@ template <>
 struct ClassTraits<Herwig::PhitoPhiGSplitFn>
   : public ClassTraitsBase<Herwig::PhitoPhiGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::PhitoPhiGSplitFn"; }
+  static string className() { return "Herwig::PhitoPhiGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * PhitoPhiGSplitFn is implemented. It may also include several, space-separated,
@@ -195,16 +195,11 @@ struct ClassTraits<Herwig::PhitoPhiGSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNewShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "PhitoPhiGSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PhitoPhiGSplitFn.tcc"
-#endif
 
 #endif /* HERWIG_PhitoPhiGSplitFn_H */

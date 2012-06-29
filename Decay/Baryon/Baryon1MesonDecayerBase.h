@@ -7,6 +7,10 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/PDT/BaryonWidthGenerator.fh"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "ThePEG/Helicity/LorentzSpinor.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
+#include "ThePEG/Helicity/LorentzRSSpinor.h"
+#include "ThePEG/Helicity/LorentzRSSpinorBar.h"
 #include "Baryon1MesonDecayerBase.fh"
 
 namespace Herwig {
@@ -59,38 +63,18 @@ class Baryon1MesonDecayerBase: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  inline Baryon1MesonDecayerBase();
-
-  /**
-   * Copy-constructor.
-   */
-  inline Baryon1MesonDecayerBase(const Baryon1MesonDecayerBase &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Baryon1MesonDecayerBase();
-  //@}
-
-public:
-
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
    * This version uses the generalised couplings to compute the matrix elements
    * given above.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -234,72 +218,10 @@ protected:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
 
 private:
 
@@ -309,80 +231,80 @@ private:
   //@{
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
-			const ParticleVector & decay) const;
+  double halfHalfScalar(const int ichan,const Particle & inpart,
+			const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
-			const ParticleVector & decay) const;
+  double halfHalfVector(const int ichan,const Particle & inpart,
+			const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double halfThreeHalfScalar(bool vertex, const int ichan,const Particle & inpart,
-			     const ParticleVector & decay) const;
+  double halfThreeHalfScalar(const int ichan,const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
-			     const ParticleVector & decay) const;
+  double halfThreeHalfVector(const int ichan,const Particle & inpart,
+			     const ParticleVector  & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
-			     const ParticleVector & decay) const;
+  double threeHalfHalfScalar(const int ichan,const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfHalfVector(bool vertex, const int ichan,const Particle & inpart,
-			     const ParticleVector & decay) const;
+  double threeHalfHalfVector(const int ichan,const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfThreeHalfScalar(bool vertex, const int ichan,const Particle & inpart,
-				  const ParticleVector & decay) const;
+  double threeHalfThreeHalfScalar(const int ichan,const Particle & inpart,
+				  const ParticleVector & decay,MEOption meopt) const;
   //@}
 
 private:
@@ -390,13 +312,45 @@ private:
   /**
    * Describe an abstract base class with persistent data.
    */
-  static AbstractClassDescription<Baryon1MesonDecayerBase> initBaryon1MesonDecayerBase;
+  static AbstractNoPIOClassDescription<Baryon1MesonDecayerBase> 
+  initBaryon1MesonDecayerBase;
 
   /**
    * Private and non-existent assignment operator.
    */
   Baryon1MesonDecayerBase & operator=(const Baryon1MesonDecayerBase &);
 
+private:
+
+  /**
+   *  Spin density matrx
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Spin-\f$\frac12\f$ spinor
+   */
+  mutable vector<Helicity::LorentzSpinor<SqrtEnergy> >      _inHalf;
+
+  /**
+   *  Spin-\f$\frac12\f$ barred spinor
+   */
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> >   _inHalfBar;
+
+  /**
+   *  Spin-\f$\frac32\f$ spinor
+   */
+  mutable vector<Helicity::LorentzRSSpinor<SqrtEnergy> >    _inThreeHalf;
+
+  /**
+   *  Spin-\f$\frac32\f$ barred spinor
+   */
+  mutable vector<Helicity::LorentzRSSpinorBar<SqrtEnergy> > _inThreeHalfBar;
+
+  /**
+   *  Polarization vector
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _inVec;
 };
 
 }
@@ -405,6 +359,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -424,21 +380,18 @@ template <>
 struct ClassTraits<Herwig::Baryon1MesonDecayerBase>
   : public ClassTraitsBase<Herwig::Baryon1MesonDecayerBase> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Baryon1MesonDecayerBase";}
+  static string className() { return "Herwig::Baryon1MesonDecayerBase";}
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 
 };
 
-}
+/** @endcond */
 
-#include "Baryon1MesonDecayerBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Baryon1MesonDecayerBase.tcc"
-#endif
+}
 
 #endif /* HERWIG_Baryon1MesonDecayerBase_H */

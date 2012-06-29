@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ThreeMesonDefaultCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ThreeMesonDefaultCurrent class.
 //
@@ -9,22 +16,22 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreeMesonDefaultCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
-ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() 
-{
+namespace {
+  inline Energy  timesGeV (double x) { return x * GeV; }
+  inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+
+ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.;_mK=0.;
+  _mpi=ZERO;_mK=ZERO;
   // set the initial weights for the resonances
   // the rho weights
   _rhoF123wgts.push_back(1.0);_rhoF123wgts.push_back(-0.145);
@@ -32,16 +39,15 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent()
   _rhoF5wgts.push_back(-26.);_rhoF5wgts.push_back(6.5);
   _rhoF5wgts.push_back(1.);
   // the Kstar weights
-  _KstarF123wgts.push_back(1.);_KstarF123wgts.push_back(0.);
-  _KstarF123wgts.push_back(0.);
-  _KstarF5wgts.push_back(1.);_KstarF5wgts.push_back(0.);
-  _KstarF5wgts.push_back(0.);
+  _kstarF123wgts.push_back(1.);
+  _kstarF5wgts.push_back(1.);
   // relative rho/Kstar weights
   _rhoKstarwgt=-0.2;
   // local values of the a_1 parameters
   _a1parameters=true;_a1mass=1.251*GeV;_a1width=0.599*GeV;
+  _a1opt=true;
   // local values of the K_1 parameters
-  _K1parameters=true;_K1mass=1.402*GeV,_K1width=0.174*GeV;
+  _k1parameters=true;_k1mass=1.402*GeV,_k1width=0.174*GeV;
   // local values of the rho parameters
   _rhoparameters=true;
   _rhoF123masses.push_back(0.773*GeV);_rhoF123masses.push_back(1.370*GeV);
@@ -53,14 +59,14 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent()
   _rhoF5widths.push_back(0.145*GeV);_rhoF5widths.push_back(0.220*GeV);
   _rhoF5widths.push_back(0.120*GeV);
   // local values for the Kstar parameters
-  _Kstarparameters=true;
-  _KstarF123masses.push_back(0.8921*GeV);
-  _KstarF123widths.push_back(0.0513*GeV);
-  _KstarF5masses.push_back(0.892*GeV);
-  _KstarF5widths.push_back(0.0513*GeV);
+  _kstarparameters=true;
+  _kstarF123masses.push_back(0.8921*GeV);
+  _kstarF123widths.push_back(0.0513*GeV);
+  _kstarF5masses.push_back(0.8921*GeV);
+  _kstarF5widths.push_back(0.0513*GeV);
   // initialization of the a_1 running width
   _initializea1=false;
-  Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
+  double a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
 		       126309,142098,157886,173675,189464,205252,221041,236830,
 		       252618,268407,284196,299984,315773,331562,347350,363139,
 		       378927,394716,410505,426293,442082,457871,473659,489448,
@@ -96,7 +102,7 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent()
 		       2.98405e+06,2.99984e+06,3.01563e+06,3.03142e+06,3.04721e+06,
 		       3.063e+06,3.07879e+06,3.09457e+06,3.11036e+06,3.12615e+06,
 		       3.14194e+06};
-  Energy a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
+  double a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
 			 0.105567,0.199612,0.333825,0.513831,0.745192,1.0336,1.38501,
 			 1.80581,2.30295,2.88403,3.5575,4.33278,5.22045,6.23243,
 			 7.38223,8.68521,10.1589,11.8234,13.7018,15.8206,18.2107,
@@ -124,15 +130,28 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent()
 			 726.468,727.041,727.608,728.166,728.718,729.262,729.808,
 			 730.337,730.856,731.374,731.883,732.386,732.884,733.373,
 			 733.859,734.339,734.813};
-  _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
-  _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+
+  vector<double> tmp1(a1widthin,a1widthin+200);
+  _a1runwidth.clear();
+  std::transform(tmp1.begin(), tmp1.end(),
+		 back_inserter(_a1runwidth),
+		 timesGeV);
+  
+  vector<double> tmp2(a1q2in,a1q2in+200);
+  _a1runq2.clear();
+  std::transform(tmp2.begin(), tmp2.end(),
+		 back_inserter(_a1runq2),
+		 timesGeV2);
+
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
-void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
+void ThreeMesonDefaultCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
-    k1(getParticleData(ParticleID::K_1minus)),pi0(getParticleData(ParticleID::pi0)),
+    k1(getParticleData(ParticleID::Kstar_1minus)),pi0(getParticleData(ParticleID::pi0)),
     piplus(getParticleData(ParticleID::piplus)),
     piminus(getParticleData(ParticleID::piminus));
   // masses for the running widths
@@ -144,111 +163,129 @@ void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
   // the charged K* resonances
   tPDPtr Kstarc[3]={getParticleData(-323),getParticleData(-100323),
 		    getParticleData(-30323)};
-  if(!_a1parameters){_a1mass=a1->mass();_a1width=a1->width();}
+  if(!_a1parameters) {
+    _a1mass=a1->mass();
+    _a1width=a1->width();
+  }
   // mass and width of the k_1
-  if(!_K1parameters){_K1mass=k1->mass();_K1width=k1->width();}
+  if(!_k1parameters) {
+    _k1mass=k1->mass();
+    _k1width=k1->width();
+  }
   // initialise the a_1 running width calculation
-  if(_initializea1){inita1width(-1);}
+  inita1Width(-1);
   // rho parameters in the base classs
   tcPDPtr temp;
   unsigned int ix;
-  if(_rhoparameters&&_rhoF123masses.size()<3)
-    {
-      ix = _rhoF123masses.size();
-      _rhoF123masses.resize(3);_rhoF123widths.resize(3);
-      for(;ix<3;++ix)
-	{
-	  _rhoF123masses[ix]=rhoc[ix]->mass();
-	  _rhoF123widths[ix]=rhoc[ix]->width();
-	}
+  if(_rhoparameters&&_rhoF123masses.size()<3) {
+    ix = _rhoF123masses.size();
+    _rhoF123masses.resize(3);_rhoF123widths.resize(3);
+    for(;ix<3;++ix) {
+      if(rhoc[ix]) {
+	_rhoF123masses[ix]=rhoc[ix]->mass();
+	_rhoF123widths[ix]=rhoc[ix]->width();
+      }
     }
-  else if(!_rhoparameters)
-    {
-      _rhoF123masses.resize(3);_rhoF123widths.resize(3);
-      for(ix=0;ix<3;++ix)
-	{
-	  _rhoF123masses[ix]=rhoc[ix]->mass();
-	  _rhoF123widths[ix]=rhoc[ix]->width();
-	}
+  }
+  else if(!_rhoparameters) {
+    _rhoF123masses.resize(3);_rhoF123widths.resize(3);
+    for(ix=0;ix<3;++ix) {
+      if(rhoc[ix]) {
+	_rhoF123masses[ix]=rhoc[ix]->mass();
+	_rhoF123widths[ix]=rhoc[ix]->width();
+      }
     }
+  }
   // K star parameters in the base class
-  if(_Kstarparameters&&_KstarF123masses.size()<3)
-    {
-      ix = _KstarF123masses.size();
-      _KstarF123masses.resize(3);_KstarF123widths.resize(3);
-      for(;ix<3;++ix)
-	{
-	  _KstarF123masses[ix]=Kstarc[ix]->mass();
-	  _KstarF123widths[ix]=Kstarc[ix]->width();
-	}
+  if(_kstarparameters&&_kstarF123masses.size()<3) {
+    ix = _kstarF123masses.size();
+    _kstarF123masses.resize(3);_kstarF123widths.resize(3);
+    for(;ix<3;++ix) {
+      if(Kstarc[ix]) {
+	_kstarF123masses[ix]=Kstarc[ix]->mass();
+	_kstarF123widths[ix]=Kstarc[ix]->width();
+      }
     }
-  else if(!_Kstarparameters)
-    {
-      _KstarF123masses.resize(3);_KstarF123widths.resize(3);
-      for(ix=0;ix<3;++ix)
-	{
-	  _KstarF123masses[ix]=Kstarc[ix]->mass();
-	  _KstarF123widths[ix]=Kstarc[ix]->width();
-	}
+  }
+  else if(!_kstarparameters) {
+    _kstarF123masses.resize(3);_kstarF123widths.resize(3);
+    for(ix=0;ix<3;++ix) {
+      if(Kstarc[ix]) {
+	_kstarF123masses[ix]=Kstarc[ix]->mass();
+	_kstarF123widths[ix]=Kstarc[ix]->width();
+      }
     }
+  }
   // rho parameters here
-  if(_rhoparameters&&_rhoF5masses.size()<3)
-    {
-      ix = _rhoF5masses.size();
-      _rhoF5masses.resize(3);_rhoF5widths.resize(3);
-      for(;ix<3;++ix)
-	{
-	  _rhoF5masses[ix]=rhoc[ix]->mass();
-	  _rhoF5widths[ix]=rhoc[ix]->width();
-	}
+  if(_rhoparameters&&_rhoF5masses.size()<3) {
+    ix = _rhoF5masses.size();
+    _rhoF5masses.resize(3);_rhoF5widths.resize(3);
+    for(;ix<3;++ix) {
+      if(rhoc[ix]) {
+	_rhoF5masses[ix]=rhoc[ix]->mass();
+	_rhoF5widths[ix]=rhoc[ix]->width();
+      }
     }
-  else if(!_rhoparameters)
-    {
-      _rhoF5masses.resize(3);_rhoF5widths.resize(3);
-      for(ix=0;ix<3;++ix)
-	{
-	  _rhoF5masses[ix]=rhoc[ix]->mass();
-	  _rhoF5widths[ix]=rhoc[ix]->width();
-	}
+  }
+  else if(!_rhoparameters) {
+    _rhoF5masses.resize(3);_rhoF5widths.resize(3);
+    for(ix=0;ix<3;++ix) {
+      if(rhoc[ix]) {
+	_rhoF5masses[ix]=rhoc[ix]->mass();
+	_rhoF5widths[ix]=rhoc[ix]->width();
+      }
     }
+  }
   // Kstar parameters here
-  if(_Kstarparameters&&_KstarF5widths.size()<3)
-    {
-      ix = _KstarF5masses.size();
-      _KstarF5masses.resize(3);_KstarF5widths.resize(3);
-      for(;ix<3;++ix)
-	{
-	  _KstarF5masses[ix]=Kstarc[ix]->mass();
-	  _KstarF5widths[ix]=Kstarc[ix]->width();
-	}
+  if(_kstarparameters&&_kstarF5widths.size()<3) {
+    ix = _kstarF5masses.size();
+    _kstarF5masses.resize(3);_kstarF5widths.resize(3);
+    for(;ix<3;++ix) {
+      if(Kstarc[ix]) {
+	_kstarF5masses[ix]=Kstarc[ix]->mass();
+	_kstarF5widths[ix]=Kstarc[ix]->width();
+      }
     }
-  else if(!_Kstarparameters)
-    {
-      _KstarF5masses.resize(3);_KstarF5widths.resize(3);
-      for(ix=0;ix<3;++ix)
-	{
-	  _KstarF5masses[ix]=Kstarc[ix]->mass();
-	  _KstarF5widths[ix]=Kstarc[ix]->width();
-	}
+  }
+  else if(!_kstarparameters) {
+    _kstarF5masses.resize(3);_kstarF5widths.resize(3);
+    for(ix=0;ix<3;++ix) {
+      if(Kstarc[ix]) {
+	_kstarF5masses[ix]=Kstarc[ix]->mass();
+	_kstarF5widths[ix]=Kstarc[ix]->width();
+      }
     }
+  }
 }
 
 void ThreeMesonDefaultCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _rhoF123wgts << _KstarF123wgts << _rhoF5wgts << _KstarF5wgts
-     << _rhoKstarwgt <<  _a1runwidth << _a1runq2 <<  _initializea1
-     << _a1mass << _a1width << _K1mass << _K1width << _fpi << _mpi << _mK
-     <<_rhoparameters << _rhoF123masses << _rhoF5masses << _rhoF123widths 
-     << _rhoF5widths << _Kstarparameters << _KstarF123masses <<_KstarF5masses
-     << _KstarF123widths << _KstarF5widths << _a1parameters << _K1parameters;
+  os << _rhoF123wgts << _kstarF123wgts << _rhoF5wgts << _kstarF5wgts
+     << _rhoKstarwgt <<  ounit(_a1runwidth,GeV)<< ounit(_a1runq2,GeV2)
+     <<  _initializea1
+     << ounit(_a1mass,GeV)<< ounit(_a1width,GeV)<< ounit(_k1mass,GeV)
+     << ounit(_k1width,GeV)<< ounit(_fpi,GeV) << ounit(_mpi,GeV)<< ounit(_mK,GeV)
+     <<_rhoparameters << ounit(_rhoF123masses,GeV) << ounit(_rhoF5masses,GeV) 
+     << ounit(_rhoF123widths,GeV) 
+     << ounit(_rhoF5widths,GeV) << _kstarparameters << ounit(_kstarF123masses,GeV) 
+     <<ounit(_kstarF5masses,GeV)
+     << ounit(_kstarF123widths,GeV) << ounit(_kstarF5widths,GeV) << _a1parameters 
+     << _k1parameters
+     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rhoF123wgts >> _KstarF123wgts >> _rhoF5wgts >> _KstarF5wgts
-     >> _rhoKstarwgt >>  _a1runwidth >> _a1runq2 >>  _initializea1
-     >> _a1mass >> _a1width >> _K1mass >> _K1width >> _fpi >> _mpi >> _mK
-     >>_rhoparameters >> _rhoF123masses >> _rhoF5masses >> _rhoF123widths 
-     >> _rhoF5widths >> _Kstarparameters >> _KstarF123masses >>_KstarF5masses
-     >> _KstarF123widths >> _KstarF5widths >> _a1parameters >> _K1parameters;
+  is >> _rhoF123wgts >> _kstarF123wgts >> _rhoF5wgts >> _kstarF5wgts
+     >> _rhoKstarwgt >>  iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) 
+     >>  _initializea1
+     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >> iunit(_k1mass,GeV) 
+     >> iunit(_k1width,GeV) >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV)
+     >>_rhoparameters >> iunit(_rhoF123masses,GeV) >> iunit(_rhoF5masses,GeV) 
+     >> iunit(_rhoF123widths,GeV) 
+     >> iunit(_rhoF5widths,GeV) >> _kstarparameters >> iunit(_kstarF123masses,GeV) 
+     >>iunit(_kstarF5masses,GeV)
+     >> iunit(_kstarF123widths,GeV) >> iunit(_kstarF5widths,GeV) >> _a1parameters 
+     >> _k1parameters
+     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
 ClassDescription<ThreeMesonDefaultCurrent> ThreeMesonDefaultCurrent::initThreeMesonDefaultCurrent;
@@ -271,7 +308,7 @@ void ThreeMesonDefaultCurrent::Init() {
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF123KstarWgt
     ("F123KstarWeight",
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
-     &ThreeMesonDefaultCurrent::_KstarF123wgts,
+     &ThreeMesonDefaultCurrent::_kstarF123wgts,
      0, 0, 0, -1000, 1000, false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF5RhoWgt
@@ -283,7 +320,7 @@ void ThreeMesonDefaultCurrent::Init() {
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF5KstarWgt
     ("F5KstarWeight",
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
-     &ThreeMesonDefaultCurrent::_KstarF5wgts,
+     &ThreeMesonDefaultCurrent::_kstarF5wgts,
      0, 0, 0, -1000, 1000, false, false, true);
   
   static Parameter<ThreeMesonDefaultCurrent,double> interfaceRhoKstarWgt
@@ -298,12 +335,12 @@ void ThreeMesonDefaultCurrent::Init() {
      &ThreeMesonDefaultCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
-     "Initialization",
+     "Yes",
      "Initialize the calculation",
      true);
   static SwitchOption interfaceInitializea1NoInitialization
     (interfaceInitializea1,
-     "NoInitialization",
+     "No",
      "Use the default values",
      false);
   
@@ -325,7 +362,7 @@ void ThreeMesonDefaultCurrent::Init() {
   static Switch<ThreeMesonDefaultCurrent,bool> interfaceKstarParameters
     ("KstarParameters",
      "Use local values of the rho meson masses and widths",
-     &ThreeMesonDefaultCurrent::_Kstarparameters, true, false, false);
+     &ThreeMesonDefaultCurrent::_kstarparameters, true, false, false);
   static SwitchOption interfaceKstarParameterstrue
     (interfaceKstarParameters,
        "Local",
@@ -355,7 +392,7 @@ void ThreeMesonDefaultCurrent::Init() {
   static Switch<ThreeMesonDefaultCurrent,bool> interfaceK1Parameters
     ("K1Parameters",
      "Use local values of the rho meson masses and widths",
-     &ThreeMesonDefaultCurrent::_K1parameters, true, false, false);
+     &ThreeMesonDefaultCurrent::_k1parameters, true, false, false);
   static SwitchOption interfaceK1Parameterstrue
     (interfaceK1Parameters,
      "Local",
@@ -367,644 +404,672 @@ void ThreeMesonDefaultCurrent::Init() {
      "Use the masses and wdiths from the particle data objects",
      false);
   
+  static Switch<ThreeMesonDefaultCurrent,bool> interfacea1WidthOption
+    ("a1WidthOption",
+     "Option for the treatment of the a1 width",
+     &ThreeMesonDefaultCurrent::_a1opt, true, false, false);
+  static SwitchOption interfacea1WidthOptionLocal
+    (interfacea1WidthOption,
+     "Local",
+     "Use a calculation of the running width based on the parameters as"
+     " interpolation table.",
+     true);
+  static SwitchOption interfacea1WidthOptionParam
+    (interfacea1WidthOption,
+     "Kuhn",
+     "Use the parameterization of Kuhn and Santamaria for default parameters."
+     " This should only be used for testing vs TAUOLA",
+     false);
+
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
     
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Width
     ("K1Width",
      "The K_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_K1width, GeV, 0.174*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1width, GeV, 0.174*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Mass
     ("K1Mass",
      "The K_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_K1mass, GeV, 1.402*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1mass, GeV, 1.402*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123masses
     ("rhoF123masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123widths
     ("rhoF123widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5masses
     ("rhoF5masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5widths
     ("rhoF5widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123masses
     ("KstarF123masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_KstarF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123widths
     ("KstarF123widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_KstarF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5masses
     ("KstarF5masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_KstarF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5widths
     ("KstarF5widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_KstarF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 }
   
 // modes handled by this class
-bool ThreeMesonDefaultCurrent::acceptMode(int imode) const{return imode>=0&&imode<=8;}
+bool ThreeMesonDefaultCurrent::acceptMode(int imode) const { 
+  return imode>=0&&imode<=8;
+}
 
 // calculate the form-factors
-void ThreeMesonDefaultCurrent::
-calculateFormFactors(const int ichan, const int imode,
-		     Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3,
-		     Complex & F1, Complex & F2, Complex & F3, Complex & F4,
-		     Complex & F5) const
-{
-  F1=0.;F2=0.;F3=0.;F4=0.;F5=0.;
+ThreeMesonDefaultCurrent::FormFactors 
+ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
+					       Energy2 q2, Energy2 s1, 
+					       Energy2 s2, Energy2 s3) const {
+  Complex F1, F2, F3, F4, F5;
+  F1 = F2 = F3 = F4 = F5 = 0.0;
   // calculate the pi- pi- pi+ factor
-  if(imode==0)
-    {
-      Complex a1fact(a1BreitWigner(q2)*2./3.);
-      if(ichan<0){F1= a1fact*BrhoF123(s1,-1);F2 =-a1fact*BrhoF123(s2,-1);}
-      else if(ichan%2==0){F1 = a1fact*BrhoF123(s1,ichan/2);}
-      else if(ichan%2==1){F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);}
+  if(imode==0) {
+    Complex a1fact(a1BreitWigner(q2)*2./3.);
+    if(ichan<0) {
+      F1= a1fact*BrhoF123(s1,-1);
+      F2 =-a1fact*BrhoF123(s2,-1);
     }
+    else if(ichan%2==0) F1 = a1fact*BrhoF123(s1,    ichan/2);
+    else if(ichan%2==1) F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);
+  }
   // calculate the pi0 pi0 pi- factor
-  else if(imode==1)
-    {
-      Complex a1fact(a1BreitWigner(q2)*2./3.);
-      if(ichan<0){F1 = a1fact*BrhoF123(s1,-1);F2 =-a1fact*BrhoF123(s2,-1);}
-      else if(ichan%2==0){F1 = a1fact*BrhoF123(s1,ichan/2);}
-      else if(ichan%2==1){F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);}
+  else if(imode==1) {
+    Complex a1fact(a1BreitWigner(q2)*2./3.);
+    if(ichan<0) {
+      F1 = a1fact*BrhoF123(s1,-1);
+      F2 =-a1fact*BrhoF123(s2,-1);
     }
+    else if(ichan%2==0) F1 = a1fact*BrhoF123(s1,    ichan/2);
+    else if(ichan%2==1) F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);
+  }
   // calculate the K- pi - K+ factor
-  else if(imode==2)
-    {
-      Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-a1fact*BKstarF123(s1,-1); F2 = a1fact*BrhoF123(s2,-1);
-	  F5 = BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 =-a1fact*BKstarF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
-      else if(ichan%8>=2){F5 = BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==2) {
+    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-a1fact*BKstarF123(s1,-1); 
+      F2 = a1fact*BrhoF123(s2,-1);
+      F5 = BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
     }
+    else if(ichan%8==0) F1 =-a1fact*BKstarF123(s1,ichan/8);
+    else if(ichan%8==1) F2 = a1fact*BrhoF123(s2,(ichan-1)/8);
+    else if(ichan%8>=2) F5 = BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);
+  }
   // calculate the K0 pi- K0bar
-  else if(imode==3)
-    {
-      Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-a1fact*BKstarF123(s1,-1);F2 = a1fact*BrhoF123(s2,-1);
-	  F5 =-BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 = -a1fact*BKstarF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
-      else if(ichan%8>=2){F5 = -BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==3) {
+    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-a1fact*BKstarF123(s1,-1);
+      F2 = a1fact*BrhoF123(s2,-1);
+      F5 =-BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
     }
+    else if(ichan%8==0) F1 = -a1fact*BKstarF123(s1,ichan/8);
+    else if(ichan%8==1) F2 = a1fact*BrhoF123(s2,(ichan-1)/8);
+    else if(ichan%8>=2) F5 = -BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);
+  }
   // calculate the K- pi0 k0
-  else if(imode==4)
-    {
-      Complex a1fact(a1BreitWigner(q2));
-      if(ichan<0){F2 =-a1fact*BrhoF123(s2,-1);}
-      else{F2 =-a1fact*BrhoF123(s2,ichan);}
-    }
+  else if(imode==4) {
+    Complex a1fact(a1BreitWigner(q2));
+    if(ichan<0){F2 =-a1fact*BrhoF123(s2,-1);}
+    else{F2 =-a1fact*BrhoF123(s2,ichan);}
+  }
   // calculate the pi0 pi0 K-
-  else if(imode==5)
-    {
-      Complex K1fact(K1BreitWigner(q2)/6.);
-      if(ichan<0){F1 = K1fact*BKstarF123(s1,-1);F2 =-K1fact*BKstarF123(s2,-1);}
-      else if(ichan%2==0){F1 = K1fact*BKstarF123(s1,ichan/2);}
-      else{F2 =-K1fact*BKstarF123(s2,(ichan-1)/2);}
+  else if(imode==5) {
+    Complex K1fact(K1BreitWigner(q2)/6.);
+    if(ichan<0) {
+      F1 = K1fact*BKstarF123(s1,-1);
+      F2 =-K1fact*BKstarF123(s2,-1);
     }
+    else if(ichan%2==0) F1 = K1fact*BKstarF123(s1,ichan/2);
+    else                F2 =-K1fact*BKstarF123(s2,(ichan-1)/2);
+  }
   // calculate the K- pi- pi+
-  else if(imode==6)
-    {
-      Complex K1fact(K1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-K1fact*BrhoF123(s1,-1);F2 = K1fact*BKstarF123(s2,-1);
-	  F5 =-BKstarF123(q2,-1)*FKrho(s2,s1,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 =-K1fact*BrhoF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = K1fact*BKstarF123(s2,(ichan-1)/8);}
-      else{F5 = -BKstarF123(q2,ichan/8)*FKrho(s2,s1,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==6) {
+    Complex K1fact(K1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-K1fact*BrhoF123(s1,-1);
+      F2 = K1fact*BKstarF123(s2,-1);
+      F5 =-BKstarF123(q2,-1)*FKrho(s2,s1,-1)*sqrt(2.);
     }
+    else if(ichan%8==0) F1 =-K1fact*BrhoF123(s1,ichan/8);
+    else if(ichan%8==1) F2 = K1fact*BKstarF123(s2,(ichan-1)/8);
+    else                F5 = -BKstarF123(q2,ichan/8)*FKrho(s2,s1,(ichan-2)%8)*sqrt(2.);
+  }
   // calculate the pi- K0bar pi0
-  else if(imode==7)
-    {
-      Complex K1fact(K1BreitWigner(q2));
-      if(ichan<0){F2 =-K1fact*BrhoF123(s2,-1);F5 =-2.*BKstarF123(q2,-1)*FKrho(s1,s2,-1);}
-      else if(ichan%7==0){F2 =-K1fact*BrhoF123(s2,ichan/7);}
-      else {F5 =-2.*BKstarF123(q2,ichan/7)*FKrho(s1,s2,(ichan-1)%7);}
+  else if(imode==7) {
+    Complex K1fact(K1BreitWigner(q2));
+    if(ichan<0) {
+      F2 =-K1fact*BrhoF123(s2,-1);
+      F5 =-2.*BKstarF123(q2,-1)*FKrho(s1,s2,-1);
     }
+    else if(ichan%7==0) F2 =-K1fact*BrhoF123(s2,ichan/7);
+    else                F5 =-2.*BKstarF123(q2,ichan/7)*FKrho(s1,s2,(ichan-1)%7);
+  }
   // calculate the pi- pi0 eta
-  else if(imode==8)
-    {
-      if(ichan<0){F5 = BrhoF5(q2,-1)*BrhoF123(s3,-1)*sqrt(2./3.);}
-      else{F5 = BrhoF5(q2,ichan/3)*BrhoF123(s3,ichan%3)*sqrt(2./3.);}
-    }
+  else if(imode==8) {
+    if(ichan<0) F5 = BrhoF5(q2,     -1)*BrhoF123(s3,     -1)*sqrt(2./3.);
+    else        F5 = BrhoF5(q2,ichan/3)*BrhoF123(s3,ichan%3)*sqrt(2./3.);
+  }
   // multiply by the prefactors
-  F1/=_fpi;F2/=_fpi;F3/=_fpi;F4/=_fpi;F5/=_fpi;
-  F5 =-F5*Complex(0.,1.)/4./pi/pi/_fpi/_fpi;
+  using Constants::twopi;
+  return FormFactors(F1/_fpi,
+		     F2/_fpi,
+		     F3/_fpi,
+		     F4/_fpi,
+		     -F5/sqr(twopi)/pow<3,1>(_fpi)
+		     );
 }
 
 // complete the construction of the decay mode for integration
 bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceModePtr mode,
 					  unsigned int iloc,unsigned int ires,
-					  DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
-  bool kineallowed(true);
-  if(!acceptMode(imode)){return false;}
-  PDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.);
-  for(unsigned int ix=0;ix<extpart.size();++ix){min+=extpart[ix]->massMin();}
-  if(min>upp){kineallowed=false;}
-  if(kineallowed==false){return kineallowed;}
+  if(!acceptMode(imode)) return false;
+  tPDVector extpart(particles(1,imode,iq,ia));
+  Energy min(ZERO);
+  for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
+  if(min>upp) return false;
   // the particles we will use a lot
   tPDPtr a1,k1;
-  if(icharge==-3)
-    {
-      a1=getParticleData(ParticleID::a_1minus);
-      k1=getParticleData(ParticleID::K_1minus);
-    }
-  else if(icharge==3)
-    {
-      a1=getParticleData(ParticleID::a_1plus);
-      k1=getParticleData(ParticleID::K_1plus);
-    }
-  else
-    {return false;}
+  if(icharge==-3) {
+    a1=getParticleData(ParticleID::a_1minus);
+    k1=getParticleData(ParticleID::Kstar_1minus);
+  }
+  else if(icharge==3) {
+    a1=getParticleData(ParticleID::a_1plus);
+    k1=getParticleData(ParticleID::Kstar_1plus);
+  }
+  else {
+    return false;
+  }
+  _maxmass=max(_maxmass,upp);
   // the rho0 resonances
   tPDPtr rho0[3]={getParticleData(113),getParticleData(100113),getParticleData(30113)};
   tPDPtr rhoc[3],Kstar0[3],Kstarc[3];
-  if(icharge==-3)
-    {
-      // the charged rho resonances
-      rhoc[0] = getParticleData(-213);
-      rhoc[1] = getParticleData(-100213);
-      rhoc[2] = getParticleData(-30213);
-      // the K*0 resonances
-      Kstar0[0] = getParticleData(313);
-      Kstar0[1] = getParticleData(100313);
-      Kstar0[2] = getParticleData(30313);
-      // the charged K* resonances
-      Kstarc[0] = getParticleData(-323);
-      Kstarc[1] = getParticleData(-100323);
-      Kstarc[2] = getParticleData(-30323);
-    }
-  else
-    {
-      // the charged rho resonances
-      rhoc[0] = getParticleData(213);
-      rhoc[1] = getParticleData(100213);
-      rhoc[2] = getParticleData(30213);
-      // the K*0 resonances
-      Kstar0[0] = getParticleData(-313);
-      Kstar0[1] = getParticleData(-100313);
-      Kstar0[2] = getParticleData(-30313);
-      // the charged K* resonances
-      Kstarc[0] = getParticleData(323);
-      Kstarc[1] = getParticleData(100323);
-      Kstarc[2] = getParticleData(30323);
-    }
+  if(icharge==-3) {
+    // the charged rho resonances
+    rhoc[0] = getParticleData(-213);
+    rhoc[1] = getParticleData(-100213);
+    rhoc[2] = getParticleData(-30213);
+    // the K*0 resonances
+    Kstar0[0] = getParticleData(313);
+    Kstar0[1] = getParticleData(100313);
+    Kstar0[2] = getParticleData(30313);
+    // the charged K* resonances
+    Kstarc[0] = getParticleData(-323);
+    Kstarc[1] = getParticleData(-100323);
+    Kstarc[2] = getParticleData(-30323);
+  }
+  else {
+    // the charged rho resonances
+    rhoc[0] = getParticleData(213);
+    rhoc[1] = getParticleData(100213);
+    rhoc[2] = getParticleData(30213);
+    // the K*0 resonances
+    Kstar0[0] = getParticleData(-313);
+    Kstar0[1] = getParticleData(-100313);
+    Kstar0[2] = getParticleData(-30313);
+    // the charged K* resonances
+    Kstarc[0] = getParticleData(323);
+    Kstarc[1] = getParticleData(100323);
+    Kstarc[2] = getParticleData(30323);
+  }
   DecayPhaseSpaceChannelPtr newchannel;
-  if(imode==0)
-    {
-      // channels for pi- pi- pi+
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+  if(imode==0) {
+    // channels for pi- pi- pi+
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rho0[ix]) continue;
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
+      newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
+      mode->addChannel(newchannel);
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
+      mode->addChannel(newchannel);
+    }
+  }
+  else if(imode==1) {
+    // channels for pi0 pi0 pi-
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rhoc[ix]) continue;
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
+      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc+1,iloc+2);
+      mode->addChannel(newchannel);
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+      mode->addChannel(newchannel);
+    }
+  }
+  else if(imode==2) {
+    // channels for K- pi- K+
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(Kstar0[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
+	newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc+1,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      if(rho0[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
+	newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      for(unsigned int iy=0;iy<3;++iy) {
+	if(!rhoc[ix]) continue;
+	if(Kstar0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
+	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
 	  mode->addChannel(newchannel);
 	}
-    }
-  else if(imode==1)
-    {
-      // channels for pi0 pi0 pi-
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+	if(rho0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rhoc[ix],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
+	  newchannel->addIntermediate(rho0[iy],0,0.0,iloc,iloc+2);
 	  mode->addChannel(newchannel);
 	}
+      }
     }
-  else if(imode==2)
-    {
-      // channels for K- pi- K+
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+  }
+  else if(imode==3) {
+    // channels for K0 pi- K0bar
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(Kstarc[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
+	newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      if(rho0[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
+	newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      for(unsigned int iy=0;iy<3;++iy) {
+	if(!rhoc[ix]) continue;
+	if(Kstarc[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
-	  mode->addChannel(newchannel);
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
-	      newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
-	      mode->addChannel(newchannel);
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
-	      newchannel->addIntermediate(rho0[iy],0,0.0,iloc,iloc+2);
-	      mode->addChannel(newchannel);
-	    }
-	}
-    }
-  else if(imode==3)
-    {
-      // channels for K0 pi- K0bar
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
-	  mode->addChannel(newchannel);
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
-	      newchannel->addIntermediate(Kstarc[iy],0,0.0, iloc+1,iloc+2);
-	      mode->addChannel(newchannel);
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
-	      newchannel->addIntermediate(rho0[iy],0,0.0, iloc,iloc+2);
-	      mode->addChannel(newchannel);
-	    }
-	}
-    }
-  else if(imode==4)
-    {
-      // channels for K- pi0 K0
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
+	  newchannel->addIntermediate(Kstarc[iy],0,0.0, iloc+1,iloc+2);
 	  mode->addChannel(newchannel);
 	}
-    }
-  else if(imode==5)
-    {  
-      // channels for pi0 pi0 K-
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+	if(rho0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
+	  newchannel->addIntermediate(rho0[iy],0,0.0, iloc,iloc+2);
 	  mode->addChannel(newchannel);
 	}
+      }
     }
-  else if(imode==6)
-    {
-      // channels for K- pi- pi+
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+  }
+  else if(imode==4) {
+    // channels for K- pi0 K0
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rhoc[ix]) continue;
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+      mode->addChannel(newchannel);
+    }
+  }
+  else if(imode==5) {  
+    // channels for pi0 pi0 K-
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!Kstarc[ix]) continue;
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc);
+      newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
+      mode->addChannel(newchannel);
+      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc,iloc+2);
+      mode->addChannel(newchannel);
+    }
+  }
+  else if(imode==6) {
+    // channels for K- pi- pi+
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(rho0[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc);
+	newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      if(Kstar0[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
+	newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      for(unsigned int iy=0;iy<3;++iy) {
+	if(!Kstarc[ix]) continue;
+	if(rho0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
+	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
+	  newchannel->addIntermediate(rho0[iy]  ,0,0.0, iloc+1,iloc+2);
 	  mode->addChannel(newchannel);
+	}
+	if(Kstar0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
+	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc,iloc+2);
 	  mode->addChannel(newchannel);
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
-	      newchannel->addIntermediate(rho0[iy]  ,0,0.0, iloc+1,iloc+2);
-	      mode->addChannel(newchannel);
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
-	      newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc,iloc+2);
-	      mode->addChannel(newchannel);
-	    }
 	}
+      }
     }
-  else if(imode==7)
-    {
-      // channels for pi- kbar0 pi0
-      for(unsigned int ix=0;ix<3;++ix)
-	{
+  }
+  else if(imode==7) {
+    // channels for pi- kbar0 pi0
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(rhoc[ix]) {
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc+1);
+	newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+	mode->addChannel(newchannel);
+      }
+      for(unsigned int iy=0;iy<3;++iy) {
+	if(!Kstarc[ix]) continue;
+	if(Kstar0[iy]) {
 	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
+	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
+	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
 	  mode->addChannel(newchannel);
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
-	      newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
-	      mode->addChannel(newchannel);
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
-	      newchannel->addIntermediate(rhoc[iy]  ,0,0.0, iloc,iloc+2);
-	      mode->addChannel(newchannel);
-	    }
 	}
-    }
-  else if(imode==8)
-    {
-      // channels for pi- pi0 eta
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {
-	      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	      newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc);
-	      newchannel->addIntermediate(rho0[iy],0,0.0, iloc+1,iloc+2);
-	      mode->addChannel(newchannel);
-	    }
+	if(rhoc[iy]) {
+	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
+	  newchannel->addIntermediate(rhoc[iy]  ,0,0.0, iloc,iloc+2);
+	  mode->addChannel(newchannel);
 	}
+      }
     }
-  if(_rhoparameters)
-    {
-      for(unsigned int ix=0;ix<_rhoF123masses.size();++ix)
-	{
-	  mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],_rhoF123widths[ix]);
-	  mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],_rhoF123widths[ix]);
-	}
+  }
+  else if(imode==8) {
+    // channels for pi- pi0 eta
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rhoc[ix]) continue;
+      for(unsigned int iy=0;iy<3;++iy) {
+	if(!rho0[iy]) continue;
+	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+	newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc);
+	newchannel->addIntermediate(rho0[iy],0,0.0, iloc+1,iloc+2);
+	mode->addChannel(newchannel);
+      }
     }
+  }
+  if(_rhoparameters) {
+    if(imode!=8) {
+      for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+      }
+    }
+    else {
+      for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+      }
+    }
+  }
   // K star parameters in the base class
-  if(_Kstarparameters)
-    {
-      for(unsigned int ix=0;ix<_KstarF123masses.size();++ix)
-	{
-	  mode->resetIntermediate(Kstarc[ix],_KstarF123masses[ix],_KstarF123widths[ix]);
-	  mode->resetIntermediate(Kstar0[ix],_KstarF123masses[ix],_KstarF123widths[ix]);
-	}
+  if(_kstarparameters) {
+    for(unsigned int ix=0;ix<_kstarF123masses.size();++ix) {
+      if(Kstarc[ix]) mode->resetIntermediate(Kstarc[ix],_kstarF123masses[ix],
+					     _kstarF123widths[ix]);
+      if(Kstar0[ix]) mode->resetIntermediate(Kstar0[ix],_kstarF123masses[ix],
+					     _kstarF123widths[ix]);
     }
-  return kineallowed;
+  }
+  return true;
 }
 
-
-PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int iq,
-					       int ia)
-{
-  PDVector extpart(3);
-  if(imode==0)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::piplus);
+// initialisation of the a_1 width
+// (iopt=-1 initialises, iopt=0 starts the interpolation)
+void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
+  if(iopt==-1) {
+    _maxcalc=_maxmass;
+    if(!_initializea1||_maxmass==ZERO) return;
+    // parameters for the table of values
+    Energy2 step(sqr(_maxcalc)/199.);
+    // integrator to perform the integral
+    vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+    vector<int> intype;intype.push_back(2);intype.push_back(3);
+    Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
+      wrho(getParticleData(ParticleID::rhoplus)->width());
+    vector<Energy> inmass(2,mrho),inwidth(2,wrho);
+    vector<double> inpow(2,0.0);
+    ThreeBodyAllOnCalculator<ThreeMesonDefaultCurrent> 
+      widthgen(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi,_mpi,_mpi);
+    // normalisation constant to give physical width if on shell
+    double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
+    // loop to give the values
+    _a1runq2.clear(); _a1runwidth.clear();
+    for(Energy2 moff2(ZERO); moff2<=sqr(_maxcalc); moff2+=step) {
+      _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
+      _a1runq2.push_back(moff2);
     }
-  else if(imode==1)
-    {
-      extpart[0]=getParticleData(ParticleID::pi0);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::piminus);
-    }
-  else if(imode==2)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::Kplus);
-    }
-  else if(imode==3)
-    {
-      extpart[0]=getParticleData(ParticleID::K0);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::Kbar0);
-    }
-  else if(imode==4)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::K0);
-    }
-  else if(imode==5)
-    {
-      extpart[0]=getParticleData(ParticleID::pi0);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::Kminus);
-    }
-  else if(imode==6)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::piplus);
-    }
-  else if(imode==7)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::Kbar0);
-      extpart[2]=getParticleData(ParticleID::pi0);
-    }
-  else if(imode==8)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::eta);
-    }
-  // conjugate the particles if needed
-  if(icharge==3)
-    {for(unsigned int ix=0;ix<3;++ix)
-	{if(extpart[0]->CC()){extpart[0]=extpart[0]->CC();}}}
-  // return the answer
-  return extpart;
+  }
+  // set up the interpolator
+  else if(iopt==0) {
+    _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
+  }
 }
 
 void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
-					      bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::ThreeMesonDefaultCurrent " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F123RhoWeight " << ix 
-		      << " " << _rhoF123wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F123RhoWeight " << ix 
-		  << " " << _rhoF123wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF123wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F123KstarWeight " << ix 
-		      << " " << _KstarF123wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F123KstarWeight " << ix 
-		  << " " << _KstarF123wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F5RhoWeight " << ix 
-		      << " " << _rhoF5wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F5RhoWeight " << ix 
-		      << " " << _rhoF5wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF5wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F5KstarWeight " << ix 
-		      << " " << _KstarF5wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F5KstarWeight " << ix 
-		      << " " << _KstarF5wgts[ix] << "\n";}
-    }
-  output << "set " << fullName() << ":RhoKstarWgt " << _rhoKstarwgt << "\n";
-  output << "set " << fullName() << ":Initializea1 " << _initializea1 << "\n";
-  output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _Kstarparameters << "\n";
-  output << "set " << fullName() << ":a1Parameters " << _a1parameters << "\n";
-  output << "set " << fullName() << ":K1Parameters " << _K1parameters << "\n";
-  for(unsigned int ix=0;ix<_a1runwidth.size();++ix)
-    {output << "set " << fullName() << ":a1RunningWidth " << ix 
-	    << " " << _a1runwidth[ix]/GeV << "\n";}
-  for(unsigned int ix=0;ix<_a1runq2.size();++ix)
-    {output << "set " << fullName() << ":a1RunningQ2 " << ix 
-	    << " " << _a1runq2[ix]/GeV2 << "\n";}
-  output << "set " << fullName() << ":A1Width " << _a1width/GeV << "\n";
-  output << "set " << fullName() << ":A1Mass " << _a1mass/GeV << "\n";
-  output << "set " << fullName() << ":K1Width " << _K1width/GeV << "\n";
-  output << "set " << fullName() << ":K1Mass " << _K1mass/GeV << "\n";
-  output << "set " << fullName() << ":FPi " << _fpi/MeV << "\n";
-  for(unsigned int ix=0;ix<_rhoF123masses.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":rhoF123masses " << ix 
-		      << " " << _rhoF123masses[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":rhoF123masses " << ix 
-		      << " " << _rhoF123masses[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_rhoF123widths.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":rhoF123widths " << ix 
-		      << " " << _rhoF123widths[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":rhoF123widths " << ix 
-		  << " " << _rhoF123widths[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_rhoF5masses.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":rhoF5masses " << ix 
-		      << " " << _rhoF5masses[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":rhoF5masses " << ix 
-		      << " " << _rhoF5masses[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_rhoF5widths.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":rhoF5widths " << ix 
-		      << " " << _rhoF5widths[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":rhoF5widths " << ix 
-		      << " " << _rhoF5widths[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF123masses.size();++ix)
-    {
-      if(ix<1){output << "set " << fullName() << ":KstarF123masses " << ix 
-		      << " " << _KstarF123masses[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarF123masses " << ix 
-		      << " " << _KstarF123masses[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF123widths.size();++ix)
-    {
-      if(ix<1){output << "set " << fullName() << ":KstarF123widths " << ix 
-		      << " " << _KstarF123widths[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarF123widths " << ix 
-		      << " " << _KstarF123widths[ix]/GeV << "\n";}
-	}
-  for(unsigned int ix=0;ix<_KstarF5masses.size();++ix)
-    {
-      if(ix<1){output << "set " << fullName() << ":KstarF5masses " << ix 
-		      << " " << _KstarF5masses[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarF5masses " << ix 
-		      << " " << _KstarF5masses[ix]/GeV << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF5widths.size();++ix)
-    {
-      if(ix<1){output << "set " << fullName() << ":KstarF5widths " << ix 
-		      << " " << _KstarF5widths[ix]/GeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarF5widths " << ix 
-		      << " " << _KstarF5widths[ix]/GeV << "\n";}
-    }
+					      bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::ThreeMesonDefaultCurrent " 
+		    << name() << " HwWeakCurrents.so\n";
+  for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF123wgts.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":F123KstarWeight " << ix << " " 
+	   << _kstarF123wgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF5wgts.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
+  }
+  output << "set " << name() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
+  output << "set " << name() << ":Initializea1 "    << _initializea1    << "\n";
+  output << "set " << name() << ":RhoParameters "   << _rhoparameters   << "\n";
+  output << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "set " << name() << ":a1Parameters "    << _a1parameters    << "\n";
+  output << "set " << name() << ":K1Parameters "    << _k1parameters    << "\n";
+  output << "set " << name() << ":a1WidthOption "   << _a1opt           << "\n";
+  for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
+    output << "set " << name() << ":a1RunningWidth " << ix 
+	   << " " << _a1runwidth[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
+    output << "set " << name() << ":a1RunningQ2 " << ix 
+	   << " " << _a1runq2[ix]/GeV2 << "\n";
+  }
+  output << "set " << name() << ":A1Width " << _a1width/GeV << "\n";
+  output << "set " << name() << ":A1Mass "  << _a1mass/GeV  << "\n";
+  output << "set " << name() << ":K1Width " << _k1width/GeV << "\n";
+  output << "set " << name() << ":K1Mass "  << _k1mass/GeV  << "\n";
+  output << "set " << name() << ":FPi "     << _fpi/MeV     << "\n";
+  for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":rhoF123masses " << ix 
+	   << " " << _rhoF123masses[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhoF123widths.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":rhoF123widths " << ix << " " 
+	   << _rhoF123widths[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":rhoF5masses " << ix << " " 
+	   << _rhoF5masses[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhoF5widths.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << name() << ":rhoF5widths " << ix << " " 
+	   << _rhoF5widths[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF123masses.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":KstarF123masses " << ix << " " 
+	   << _kstarF123masses[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF123widths.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":KstarF123widths " << ix << " " 
+	   << _kstarF123widths[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF5masses.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":KstarF5masses " << ix << " " 
+	   << _kstarF5masses[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_kstarF5widths.size();++ix) {
+    if(ix<1) output << "set ";
+    else     output << "insert ";
+    output << name() << ":KstarF5widths " << ix << " " 
+	   << _kstarF5widths[ix]/GeV << "\n";
+  }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
-  
+
+void ThreeMesonDefaultCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
 }
 
-// the functions for the integrands of the a_1 width
-namespace Herwig {
-using namespace Genfun;
+void ThreeMesonDefaultCurrent::doupdate() {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
 
-FUNCTION_OBJECT_IMP(Defaulta1MatrixElement)
-
-Defaulta1MatrixElement::Defaulta1MatrixElement(Ptr<Herwig::ThreeMesonDefaultCurrent>::pointer in)
-  {_decayer=in;}
-
-  
-Defaulta1MatrixElement::Defaulta1MatrixElement(const Defaulta1MatrixElement & right)  {  }
-  
-unsigned int Defaulta1MatrixElement::dimensionality() const {return 7;}
-
-double Defaulta1MatrixElement::operator ()(const Argument & a) const 
-{return _decayer->a1MatrixElement(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);}
-
+Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
+							 unsigned int ires) const {
+  Energy q(sqrt(q2)),mass,width,mout[2]={_mpi,_mpi};
+  // get the mass and width of the requested resonance
+  if(itype==0) {
+    mass=_rhoF123masses[ires];
+    width=_rhoF123widths[ires];
+  }
+  else if(itype==1) {
+    mass=_rhoF5masses[ires];
+    width=_rhoF5widths[ires];
+  }
+  else if(itype==2) {
+    mass=_kstarF123masses[ires];
+    width=_kstarF123widths[ires];
+  }
+  else if(itype==3) {
+    mass=_kstarF5masses[ires];
+    width=_kstarF5widths[ires];
+  }
+  else {
+    return 0.;
+  }
+  // calculate the momenta for the running widths
+  if(itype>1) mout[0]=_mK;
+  Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,mout[0],mout[1]));
+  Energy pcm(ZERO);
+  if(mout[0]+mout[1]<q){pcm=Kinematics::pstarTwoBodyDecay(q,mout[0],mout[1]);}
+  double ratio = Math::Pow<3>(pcm/pcm0);
+  Energy gamrun(width*mass*ratio/q);
+  Complex ii(0.,1.);
+  complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);
+  return numer/denom;
 }

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HwDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HwDecayerBase_H
 #define HERWIG_HwDecayerBase_H
 //
@@ -25,15 +32,10 @@ class HwDecayerBase: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline HwDecayerBase();
-  //@}
-
-public:
+  HwDecayerBase() : _initialize(false), _dbOutput(false) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -52,6 +54,31 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
+  //@}
+
+protected:
+
+  /** @name Virtual functions to replaced those from the Decayer class. 
+   *  This is so that the decay and accept members of this class can handle all
+   *  the more complicated features of the DecayMode class
+   */
+  //@{
+  /**
+   * Check if this decayer can perfom the decay for a particular mode
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return true If this decayer can handle the given mode, otherwise false.
+   */
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const = 0;
+  
+  /**
+   *  Perform the decay of the particle to the specified decay products
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return a ParticleVector containing the decay products.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const = 0;
   //@}
 
 public:
@@ -86,18 +113,33 @@ public:
    *  Functions for the Herwig decayer
    */
   //@{
-
   /**
    * Output the setup information for the particle database
    * @param os The stream to output the information to
    * @param header Whether or not to output the information for MySQL
    */
-  virtual void dataBaseOutput(ofstream & os,bool header) const;
+  virtual void dataBaseOutput(ofstream & os,bool header) const = 0;
 
   /**
    *  Access to the initialize variable
    */
-  inline bool initialize() const;
+  bool initialize() const {return _initialize;}
+
+  /**
+   *  Access the database output variable
+   */
+  bool databaseOutput() const {return _dbOutput;}
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -121,6 +163,10 @@ private:
    */
   bool _initialize;
 
+  /**
+   * Print out database  
+   */
+  bool _dbOutput;
 };
 
 }
@@ -145,20 +191,11 @@ template <>
 struct ClassTraits<Herwig::HwDecayerBase>
   : public ClassTraitsBase<Herwig::HwDecayerBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HwDecayerBase"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the HwDecayerBase class and every other class it uses
-   *  (except the base class). */
-  static string library() { return ""; }
+  static string className() { return "Herwig::HwDecayerBase"; }
 };
 
 /** @endcond */
 
 }
-
-#include "HwDecayerBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HwDecayerBase.tcc"
-#endif
 
 #endif /* HERWIG_HwDecayerBase_H */

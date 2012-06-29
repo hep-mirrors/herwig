@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MelikhovStechFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MelikhovStechFormFactor_H
 #define HERWIG_MelikhovStechFormFactor_H
 //
@@ -6,7 +13,6 @@
 //
 
 #include "ScalarFormFactor.h"
-#include "MelikhovStechFormFactor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -14,7 +20,7 @@ using namespace ThePEG;
 /** \ingroup Decay
  *
  * The MelikhovStechFormFactor class is the implementation of the form factors
- * for hep-ph/0001113.
+ * from Phys. Rev. D62  014006 (2000).
  *
  * @see ScalarFormFactor
  */
@@ -22,25 +28,10 @@ class MelikhovStechFormFactor: public ScalarFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   MelikhovStechFormFactor();
-
-  /**
-   * The copy constructor.
-   */
-  inline MelikhovStechFormFactor(const MelikhovStechFormFactor &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MelikhovStechFormFactor();
-  //@}
-
-public:
 
   /** @name Form-Factors */
   //@{
@@ -154,13 +145,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -168,47 +159,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -404,11 +359,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MelikhovStechFormFactor. */
@@ -424,18 +379,15 @@ template <>
 struct ClassTraits<Herwig::MelikhovStechFormFactor>
   : public ClassTraitsBase<Herwig::MelikhovStechFormFactor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MelikhovStechFormFactor"; }
+  static string className() { return "Herwig::MelikhovStechFormFactor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MelikhovStechFormFactor class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwFormFactors.so"; }
 };
 
-}
+/** @endcond */
 
-#include "MelikhovStechFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MelikhovStechFormFactor.tcc"
-#endif
+}
 
 #endif /* HERWIG_MelikhovStechFormFactor_H */

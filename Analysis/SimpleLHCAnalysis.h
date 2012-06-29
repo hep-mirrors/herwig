@@ -1,12 +1,19 @@
 // -*- C++ -*-
+//
+// SimpleLHCAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SimpleLHCAnalysis_H
 #define HERWIG_SimpleLHCAnalysis_H
 //
 // This is the declaration of the SimpleLHCAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "SimpleLHCAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
@@ -14,7 +21,11 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the SimpleLHCAnalysis class.
+ * The SimpleLHCAnalysis class is designed to perform some simple analysis of
+ * gauge boson, W and Z, distributions in hadron-hadron collisions. The main 
+ * distriubtions are the transverse momentum and rapidities of the gauge bosons
+ * which are of physical interest, and the azimuthal angle distribution for
+ * testing purposes.
  *
  * @see \ref SimpleLHCAnalysisInterfaces "The interfaces"
  * defined for SimpleLHCAnalysis.
@@ -23,22 +34,12 @@ class SimpleLHCAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline SimpleLHCAnalysis();
+  SimpleLHCAnalysis();
 
-  /**
-   * The destructor.
-   */
-  virtual ~SimpleLHCAnalysis();
-  //@}
-
-public:
-
-  /** @name Virtual functions required by the AnalysisHandler class. */
+  /** @name Virtual Functions required by the AnalysisHandler class. */
   //@{
   /**
    * Analyze a given Event. Note that a fully generated event
@@ -58,46 +59,9 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -115,13 +79,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -132,7 +96,8 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
+  //@}
 
 private:
 
@@ -140,7 +105,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SimpleLHCAnalysis> initSimpleLHCAnalysis;
+  static NoPIOClassDescription<SimpleLHCAnalysis> initSimpleLHCAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
@@ -149,32 +114,65 @@ private:
   SimpleLHCAnalysis & operator=(const SimpleLHCAnalysis &);
 
 private:
+
   /**
    *   \f$p_T\f$ of the Z boson
    */
   vector<Histogram> _ptZ;
+
+  /**
+   *   \f$p_T\f$ of the \f$W^+\f$ boson
+   */
   vector<Histogram> _ptWp;
+
+  /**
+   *   \f$p_T\f$ of the \f$W^-\f$ boson
+   */
   vector<Histogram> _ptWm;
 
   /**
    * Mass of the Z boson
    */
   Histogram _mZ;
+
+  /**
+   * Mass of the \f$W^+\f$ boson
+   */
   Histogram _mWp;
+
+  /**
+   * Mass of the \f$W^-\f$ boson
+   */
   Histogram _mWm;
 
   /**
    *  Rapidity of Z
    */
   Histogram _rapZ;
+
+  /**
+   *  Rapidity of \f$W^+\f$ boson
+   */
   Histogram _rapWp;
+
+  /**
+   *  Rapidity of \f$W^-\f$ boson
+   */
   Histogram _rapWm;
 
   /**
    *  Azimuth of Z
    */
   Histogram _phiZ;
+
+  /**
+   *  Azimuth of \f$W^+\f$ boson
+   */
   Histogram _phiWp;
+
+  /**
+   *  Azimuth of \f$W^-\f$ boson
+   */
   Histogram _phiWm;
 
 };
@@ -201,7 +199,7 @@ template <>
 struct ClassTraits<Herwig::SimpleLHCAnalysis>
   : public ClassTraitsBase<Herwig::SimpleLHCAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SimpleLHCAnalysis"; }
+  static string className() { return "Herwig::SimpleLHCAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the SimpleLHCAnalysis class and any other class on which it depends
    *  (except the base class). */
@@ -211,10 +209,5 @@ struct ClassTraits<Herwig::SimpleLHCAnalysis>
 /** @endcond */
 
 }
-
-#include "SimpleLHCAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SimpleLHCAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_SimpleLHCAnalysis_H */

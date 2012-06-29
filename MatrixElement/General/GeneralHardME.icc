@@ -1,0 +1,49 @@
+// -*- C++ -*-
+//
+// GeneralHardME.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the GeneralHardME class.
+//
+
+namespace Herwig {
+
+inline const vector<HPDiagram> & GeneralHardME::getProcessInfo() const {
+  return theDiagrams;
+}
+
+inline const vector<vector<double> > & 
+GeneralHardME::getColourFactors() const {
+  return theColour;
+}
+
+inline pair<long,long> GeneralHardME::getIncoming() const {
+  return theIncoming;
+}
+
+inline pair<long,long> GeneralHardME::getOutgoing() const {
+  return theOutgoing;
+}
+
+inline GeneralHardME::HPCount GeneralHardME::numberOfDiags() const {
+  return theNDiags;
+}								    
+
+inline size_t GeneralHardME::numberOfFlows() const {
+  return theNcf;
+}
+
+inline Energy2 GeneralHardME::scale() const {
+  return sHat();
+}
+
+inline bool GeneralHardME::debugME() const {
+  return theDebug;
+}
+
+}

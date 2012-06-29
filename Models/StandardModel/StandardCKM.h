@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// StandardCKM.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_StandardCKM_H
 #define HERWIG_StandardCKM_H
 //
@@ -105,14 +112,14 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doupdate();
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  inline virtual void doinit();
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -129,7 +136,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in
@@ -180,6 +187,9 @@ private:
 #include "StandardCKM.icc"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the base classes
  *  of StandardCKM. */
 template <>
@@ -194,12 +204,10 @@ struct BaseClassTrait<Herwig::StandardCKM,1> {
 template <>
 struct ClassTraits<Herwig::StandardCKM>: public ClassTraitsBase<Herwig::StandardCKM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::StandardCKM"; }
-  /** Return the name of the shared library be loaded to get access to
-   *  the StandardCKM class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwStandardModel.so"; }
+  static string className() { return "Herwig::StandardCKM"; }
 };
+
+/** @endcond */
 
 }
 

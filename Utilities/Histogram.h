@@ -1,12 +1,20 @@
 // -*- C++ -*-
+//
+// Histogram.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Histogram_H
 #define HERWIG_Histogram_H
 //
 // This is the declaration of the Histogram class.
 //
-
-#include "Statistic.h"
 #include "Histogram.fh"
+#include "ThePEG/Interface/Interfaced.h"
+#include "Statistic.h"
+#include <string>
 
 // workaround for OS X bug where isnan() and isinf() are hidden
 // when <iostream> is included
@@ -15,6 +23,20 @@ extern "C" int isnan(double) throw();
 namespace Herwig {
 
 using namespace ThePEG;
+
+  /**
+   * Options for histogram output. 
+   * They can be combined using the '|' operator, e.g. 'Frame | Ylog'
+   */
+  namespace HistogramOptions {
+    const unsigned int None      = 0;      /**< No options */
+    const unsigned int Frame     = 1;      /**< Plot on new frame */
+    const unsigned int Errorbars = 1 << 1; /**< Plot error bars */
+    const unsigned int Xlog      = 1 << 2; /**< log scale for x-axis */
+    const unsigned int Ylog      = 1 << 3; /**< log scale for y-axis */
+    const unsigned int Smooth    = 1 << 4; /**< smooth the line */
+    const unsigned int Rawcount  = 1 << 5; /**< don't normalize to unit area */
+  }
 
 /**
  * The Histogram class is a simple histogram for the Analysis handlers.
@@ -49,11 +71,6 @@ public:
    * @param dataerror The errors on the data
    */
   inline Histogram(vector<double> limits, vector<double> data, vector<double> dataerror);
-
-  /**
-   * The destructor.
-   */
-  virtual ~Histogram();
   //@}
 
 public:
@@ -94,6 +111,11 @@ public:
   void normaliseToData();
 
   /**
+   *  Normalise the distributions to the total cross section
+   */
+  void normaliseToCrossSection();
+
+  /**
    *  Return the chi squared
    * @param chisq The chi squared
    * @param ndegrees The number of points
@@ -103,7 +125,31 @@ public:
 		  unsigned int & ndegrees, double minfrac=0.) const;
 
   /**
-   *  Output as a topdrawer file
+   *  Output as a topdrawer file. The histogram is normalised to unit area
+   * @param out The output stream
+   * @param flags A bitmask of flags from HistogramOptions, e.g. Frame|Ylog
+   * @param colour The colour for the line
+   * @param title  The title for the top of the plot
+   * @param titlecase topdraw format for the title
+   * @param left   Left axis lable
+   * @param leftcase topdraw format for left axis label
+   * @param bottom  Bottom axis lable
+   * @param bottomcase Bottom axis lable ofr topdraw
+   * N.B. in td smoothing only works for histograms with uniform binning.
+   */
+  void topdrawOutput(ostream & out,
+		     unsigned int flags = 0,
+		     string colour = string("BLACK"),
+		     string title = string(),
+		     string titlecase = string(),
+		     string left = string(),
+		     string leftcase = string(),
+		     string bottom = string(),
+		     string bottomcase = string()
+		     ) const;
+
+  /**
+   *  Output as a topdrawer file. A bin by bin average is taken.
    * @param out The output stream
    * @param frame output on a new graph
    * @param errorbars output data points with error bars
@@ -117,35 +163,47 @@ public:
    * @param bottom  Bottom axis lable
    * @param bottomcase Bottom axis lable ofr topdraw
    */
-  void topdrawOutput(ofstream & out,
-		     bool frame,
-		     bool errorbars,
-		     bool xlog, bool ylog,
-		     string colour=string("BLACK"),
-		     string title=string(),
-		     string titlecase =string(),
-		     string left=string(),
-		     string leftcase =string(),
-		     string bottom=string(),
-		     string bottomcase =string()) const;
+  void topdrawOutputAverage(ostream & out,
+			    bool frame,
+			    bool errorbars,
+			    bool xlog, bool ylog,
+			    string colour=string("BLACK"),
+			    string title=string(),
+			    string titlecase =string(),
+			    string left=string(),
+			    string leftcase =string(),
+			    string bottom=string(),
+			    string bottomcase =string()) const;
+
+  /**
+   * get the number of visible entries (all entries without those in the
+   * under- and overflow bins) in the histogram.  This assumes integer
+   * entries, ie it gives wrong results for weighted histograms.
+   */
+  unsigned int visibleEntries() const;
+
+  /**
+   * Compute the normalisation of the data. 
+   */
+  double dataNorm() const;
+
+  /**
+   * Output into a simple ascii file, easily readable by gnuplot.
+   */
+  void simpleOutput(ostream & out, bool errorbars, bool normdata=false);
+
+  /**
+   * Dump bin data into a vector
+   */
+  vector<double> dumpBins() const;
+
+  /**
+   * Returns a new histogram containing bin-by-bin ratios of two histograms
+   */
+  Histogram ratioWith(const Histogram & h2) const;
+
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -178,7 +236,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<Histogram> initHistogram;
+  static NoPIOClassDescription<Histogram> initHistogram;
 
   /**
    * The assignment operator is private and must never be called.
@@ -206,7 +264,7 @@ private:
      *  Default constructor
      */
     Bin() : contents(0.0), contentsSq(0.0), 
-	    limit(0.0), data(0.0), dataerror(0.0) {}
+	    limit(0.0), data(0.0), dataerror(0.0), points(0) {}
     /**
      *  Contents of the bin
      */
@@ -231,6 +289,11 @@ private:
      *  The error on the experimental value for the bin
      */
     double dataerror;
+
+    /**
+     *  The number of points in the bin
+     */
+    long points;
   };
 
   /**
@@ -242,6 +305,11 @@ private:
    *  Prefactors to multiply the output by
    */
   double _prefactor;
+
+  /**
+   *  Total entry
+   */
+  double _total;
 };
 
 }
@@ -266,11 +334,7 @@ template <>
 struct ClassTraits<Herwig::Histogram>
   : public ClassTraitsBase<Herwig::Histogram> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Histogram"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the Histogram class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwUtils.so"; }
+  static string className() { return "Herwig::Histogram"; }
 };
 
 /** @endcond */

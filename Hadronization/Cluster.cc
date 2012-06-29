@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Cluster.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Cluster class.
 //
@@ -7,9 +14,7 @@
 #include "Cluster.h"
 #include <ThePEG/Repository/UseRandom.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
-#include <iostream>
-#include <iomanip>
-#include <cctype>
+#include <cassert>
 #include <ThePEG/EventRecord/Step.h>
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/EventRecord/ColourLine.h>
@@ -19,11 +24,15 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/DecayMode.h>
+#include <ThePEG/PDT/ParticleData.h>
+#include "ClusterHadronizationHandler.h"
 
 using namespace Herwig;
 // using namespace ThePEG;
 
-GlobParamPtr Cluster::_globalParameters = GlobParamPtr();
+tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
+
+Energy2 Cluster::_mg2 = ZERO;
 
 ClassDescription<Cluster> Cluster::initCluster;
 
@@ -85,19 +94,6 @@ Cluster::Cluster(tcEventPDPtr x)
     _isPerturbative(),
     _numComp(0),
     _id(0) {}
-    
-Cluster::~Cluster() { /*cout << "Destroying Cluster\n"; _component.clear(); */}    
-
-Cluster::Cluster(const Cluster &x) 
-  : Particle(x),
-    _isAvailable(x._isAvailable),  
-    _reshufflingPartner(x._reshufflingPartner),
-    _component(x._component),
-    _original(x._original),
-    _isBeamRemnant(x._isBeamRemnant),
-    _isPerturbative(x._isPerturbative),
-    _numComp(x._numComp),
-    _id(x._id) {}
 
 Cluster::Cluster(const Particle &x) 
   : Particle(x),
@@ -118,7 +114,7 @@ Energy Cluster::sumConstituentMasses() const
            _component[2]->mass();
   } else if(_numComp == 2) 
     return _component[0]->mass() + _component[1]->mass();
-  else return 0.0;
+  else return ZERO;
 }
 
 
@@ -137,49 +133,40 @@ void Cluster::calculateX() {
     // position in terms of the two components.
     setVertex(LorentzPoint());
   } else {
-    // Get the needed global parameters. 
-    double theConversionFactorGeVtoMillimeter = 0.0;
-    Energy2 vmin2 = Energy2();
-    Length dmax = Length();
-    if ( _globalParameters ) {
-      theConversionFactorGeVtoMillimeter = 
-    	_globalParameters->conversionFactorGeVtoMillimeter();
-      vmin2 = _globalParameters->minVirtuality2();
-      dmax = _globalParameters->maxDisplacement();
-    }
+    // Get the needed parameters. 
+    assert(_clusterHadHandler); 
+    Energy2 vmin2 = _clusterHadHandler->minVirtuality2();
+    Length dmax = _clusterHadHandler->maxDisplacement();
+    
     // Get the positions and displacements of the two components (Lab frame).
     LorentzPoint pos1 = _component[0]->vertex();
     Lorentz5Momentum p1 = _component[0]->momentum();
-    LorentzDistance displace1 = 
-      -log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * (p1/GeV) * (1.0/sqrt(sqr(p1.m2()/GeV2 - p1.mass2()/GeV2) + 
-			     sqr(vmin2/GeV2)));
-    if ( fabs( displace1.mag() ) > dmax ) {
-      displace1 *= dmax / fabs( displace1.mag() );
+    LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
+      hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
+    if ( abs( displace1.mag() ) > dmax ) {
+      displace1 *= dmax / abs( displace1.mag() );
     }
     LorentzPoint pos2 = _component[1]->vertex();
     Lorentz5Momentum p2 = _component[1]->momentum();
-    LorentzDistance displace2 = 
-      -log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * (p2/GeV) * (1.0/sqrt(sqr(p2.m2()/GeV2 - p2.mass2()/GeV2) + 
-			     sqr(vmin2 /GeV2)));
-    if ( fabs( displace2.mag() ) > dmax ) {
-      displace2 *= dmax / fabs( displace2.mag() );
+    LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
+      hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
+    if ( abs( displace2.mag() ) > dmax ) {
+      displace2 *= dmax / abs( displace2.mag() );
     }
     double s1 = 0.0, s2 = 0.0;
     Lorentz5Momentum pcl = p1 + p2;
-    if ( fabs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20  &&
-	 fabs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20  ) {
+    if ( abs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20*MeV*mm  &&
+	 abs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20*MeV*mm  ) {
       // The displacement with the smallest projection along pcl.vect()
       // is scaled up such that both displacements have equal projections
       // along pcl.vect().
-      double ratio = ( fabs( pcl.vect().dot( displace1.vect() ) ) / 
-		       fabs( pcl.vect().dot( displace2.vect() ) ) );
+      double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) / 
+		       abs( pcl.vect().dot( displace2.vect() ) ) );
       if ( pcl.vect().dot(displace1.vect()) * 
-	   pcl.vect().dot(displace2.vect())  <  0.0 ) {
+	   pcl.vect().dot(displace2.vect())  <  0.0*sqr(MeV*mm) ) {
 	ratio *= -1;
       }
-      if ( fabs( ratio ) > 1.0 ) {
+      if ( abs( ratio ) > 1.0 ) {
 	displace2 *= ratio;
       } else {
 	displace1 *= ratio;
@@ -224,9 +211,7 @@ bool Cluster::isStatusFinal() const {
 }
 
 tPPtr Cluster::particle(int i) const { 
-  if(i < _numComp)
-    return _component[i]; 
-  return _component[2];
+  return (i < _numComp) ? _component[i] : PPtr(); 
 }
 
 bool Cluster::isPerturbative(int i) const { 
@@ -247,17 +232,8 @@ void Cluster::setBeamRemnant(int i, bool b) {
     _isBeamRemnant[i] = b;
 }
 
-PPtr Cluster::clone() const {
-  return dynamic_ptr_cast<PPtr>(ptr_new<ClusterPtr>(*this));
-}
-
-PPtr Cluster::fullclone() const {
-  return clone();
-}
-
-bool Cluster::initPerturbative(tPPtr p) {
-  Energy Q0 = Energy();
-  if(_globalParameters) Q0 = _globalParameters->effectiveGluonMass();
-  if(p->scale() > Q0*Q0) return true;
-  return false;
+void Cluster::setPointerClusterHadHandler(tcCluHadHdlPtr gp) {
+  _clusterHadHandler = gp;
+  _mg2=sqr(_clusterHadHandler->
+	   getParticleData(ParticleID::g)->constituentMass());
 }

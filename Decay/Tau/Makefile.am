@@ -1,8 +1,4 @@
-pkglib_LTLIBRARIES =
+pkglib_LTLIBRARIES = HwTauDecay.la
 
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwTauDecay.la
-endif
-
-HwTauDecay_la_SOURCES = TauDecayer.cc  TauDecayer.fh  TauDecayer.h  TauDecayer.icc
-HwTauDecay_la_LDFLAGS = -module
+HwTauDecay_la_SOURCES = TauDecayer.cc  TauDecayer.h
+HwTauDecay_la_LDFLAGS = -module -version-info 5:0:0

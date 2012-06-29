@@ -1,15 +1,22 @@
 // -*- C++ -*-
+//
+// IdentifiedParticleAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_IdentifiedParticleAnalysis_H
 #define HERWIG_IdentifiedParticleAnalysis_H
 //
 // This is the declaration of the IdentifiedParticleAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "EventShapes.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "IdentifiedParticleAnalysis.fh"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 
 namespace Herwig {
 
@@ -22,25 +29,6 @@ using namespace ThePEG;
  * defined for IdentifiedParticleAnalysis.
  */
 class IdentifiedParticleAnalysis: public AnalysisHandler {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline IdentifiedParticleAnalysis();
-
-  /**   * The copy constructor.
-   */
-  inline IdentifiedParticleAnalysis(const IdentifiedParticleAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~IdentifiedParticleAnalysis();
-  //@}
 
 public:
 
@@ -65,45 +53,7 @@ public:
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
-  //@}
-
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -118,7 +68,10 @@ protected:
   /**
    *  Work out the flavour of the quarks produced
    */
-  inline int getFlavour(const tPVector &);
+  int getFlavour(const tPVector &);
+
+  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam)
+  {return(Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.);}
 
 protected:
 
@@ -128,13 +81,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -142,47 +95,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void dofinish();
   //@}
 
 private:
@@ -191,7 +113,8 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<IdentifiedParticleAnalysis> initIdentifiedParticleAnalysis;
+  static NoPIOClassDescription<IdentifiedParticleAnalysis>
+  initIdentifiedParticleAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
@@ -317,9 +240,165 @@ private:
   HistogramPtr _lpm;
 
   /**
-   *  Pointer to the event shapes object
+   *  Histogram for the ALEPH \f$K^{*\pm}\f$ \f$x\f$distribution
    */
-  EventShapesPtr _shapes;
+  HistogramPtr _xpKstarplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^-\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpXiminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^-\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiXiminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*+}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpSigmaplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*+}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiSigmaplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*-}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpSigmaminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*-}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiSigmaminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^{*0}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpXi0;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^{*0}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiXi0;
+
+  /**
+   *  Histogram for \f$\Lambda(1520)\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpLambda1520;
+
+  /**
+   *  Histogram for \f$\Lambda(1520)\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiLambda1520;
+
+  /**
+   *  Histogram for \f$\Delta^{++}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeDelta;
+
+  /**
+   *  Histogram for \f$f_0(980)\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpf980;
+
+  /**
+   *  Histogram for \f$\phi\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpphi;
+
+  /**
+   *  Histogram for \f$f_2\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpf2;
+
+  /**
+   *  Histogram for \f$K^{*0}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpKstar0;  
+
+  /**
+   *  Histogram for \f$K^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpK0; 
+
+  /**
+   *  Histogram for \f$\rho^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xerho0;
+
+  /**
+   *  Histogram for the OPAL \f$\pi^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xepi0;
+
+  /**
+   *  Histogram for the OPAL \f$\pi^0\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xipi0;
+
+  /**
+   *  Histogram for the OPAL \f$\eta\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeeta;
+
+  /**
+   *  Histogram for the OPAL \f$\eta'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xieta;
+
+  /**
+   *  Histogram for the OPAL \f$\eta\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeetap;
+
+  /**
+   *  Histogram for the OPAL \f$\eta'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xietap;
+
+  /**
+   *  Histogram for the OPAL \f$\omega\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeomega;
+
+  /**
+   *  Histogram for the OPAL \f$\omega'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiomega;
+
+  /**
+   *  Histogram for the OPAL \f$\rho^+\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xerhop;
+
+  /**
+   *  Histogram for the OPAL \f$\rho^+\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xirhop;
+
+  /**
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xea_0p;
+
+  /**
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xia_0p;
+
+  /**
+   *  Histogram for \f$D^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeD0; 
+
+  /**
+   *  Histogram for \f$D^{*+}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeDstar;
+
 };
 
 }
@@ -344,20 +423,15 @@ template <>
 struct ClassTraits<Herwig::IdentifiedParticleAnalysis>
   : public ClassTraitsBase<Herwig::IdentifiedParticleAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::IdentifiedParticleAnalysis"; }
+  static string className() { return "Herwig::IdentifiedParticleAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the IdentifiedParticleAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
+  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "IdentifiedParticleAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IdentifiedParticleAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_IdentifiedParticleAnalysis_H */

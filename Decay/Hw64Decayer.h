@@ -1,12 +1,18 @@
 // -*- C++ -*-
+//
+// Hw64Decayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Hw64Decayer_H
 #define HERWIG_Hw64Decayer_H
 //
 // This is the declaration of the Hw64Decayer class.
 //
 #include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/PDT/Decayer.h>
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <HwDecayerBase.h>
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
@@ -35,31 +41,36 @@ using namespace ThePEG;
  * @see Decayer
  * 
  */
-class Hw64Decayer: public Decayer {
+class Hw64Decayer: public HwDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline Hw64Decayer();
-  //@}
-
-public:
+  Hw64Decayer() : MECode(0),_masstry(50) {} 
 
   /**
    * return true if this decayer can perfom the decay specified by the
    * given decay mode.
    */
-  virtual bool accept(const DecayMode &) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * for a given decay mode and a given particle instance, perform the
    * decay and return the decay products.
    */
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+public:
 
   /**
    * Standard Init function used to initialize the interface.
@@ -90,27 +101,21 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
 
   /**
-   * Perform a one body decay, used for \f$K^0,\bar{K}^0\to K_{L,S}\f$.
-   * Two body decay is handled in static class Kinematics
-   */
-  static void oneBodyDecay(Lorentz5Momentum, Lorentz5Momentum &);
-
-  /**
    * Weighting of phase space for V-A matrix elements
    */
-  static double VAWt(double*);
+  static double VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3);
 
   /**
    * Take an array of momenta and set the momentum member of the particles.
@@ -118,8 +123,14 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  void setParticleMomentum(ParticleVector & out, cPDVector particles, 
-			   vector<Lorentz5Momentum> moms) const;
+  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+			   const vector<Lorentz5Momentum> & moms) const {
+    unsigned int numProds = particles.size();
+    for(unsigned int ix=0;ix<numProds;++ix)
+      out.push_back(particles[ix]->produceParticle(moms[ix]));
+  }
+
+private:
 
   /**
    *  Describe a concrete class with persistant data.
@@ -148,6 +159,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * Hw64Decayer.
@@ -155,7 +168,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::Hw64Decayer,1> {
   /** Typedef of the base class of Hw64Decayer. */
-  typedef HandlerBase NthBase;
+  typedef Herwig::HwDecayerBase NthBase;
 };
 
 /**
@@ -165,7 +178,7 @@ struct BaseClassTrait<Herwig::Hw64Decayer,1> {
 template <>
 struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Decayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Hw64Decayer"; }
+  static string className() { return "Herwig::Hw64Decayer"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
@@ -173,8 +186,8 @@ struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Deca
   static string library() { return "Hw64Decay.so"; }
 };
 
-}
+/** @endcond */
 
-#include "Hw64Decayer.icc"
+}
 
 #endif /* HERWIG_Hw64Decayer_H */

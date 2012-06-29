@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GtoQQbarSplitFn.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GtoQQbarSplitFn class.
 //
@@ -8,11 +15,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GtoQQbarSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -26,52 +30,99 @@ void GtoQQbarSplitFn::Init() {
 
 }
 
-double GtoQQbarSplitFn::P(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) const {
-  Energy m = getParticleData(ids[1])->mass();
+double GtoQQbarSplitFn::P(const double z, const Energy2 t, 
+			  const IdList &ids, const bool mass) const {
   double zz = z*(1.-z);
-  double term = 2.*sqr(m)/zz/qtilde2; 
-  double val = 1./2.*(1.-2.*zz+term);
-  return val;
+  double val=1.-2.*zz;
+  if(mass) {
+    Energy m = getParticleData(ids[1])->mass();
+    val +=2.*sqr(m)/t;
+  }
+  return 0.5*val;
 }
 
 double GtoQQbarSplitFn::overestimateP(const double, const IdList &) const {
-  return 1./2.; 
+  return 0.5; 
 }
 
-double GtoQQbarSplitFn::ratioP(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) const {
-  Energy m = getParticleData(ids[1])->mass();
+double GtoQQbarSplitFn::ratioP(const double z, const Energy2 t, 
+			       const IdList &ids, const bool mass) const {
   double zz = z*(1.-z);
-  double term = 2.*sqr(m)/zz/qtilde2; 
-  double val = (1.-2.*zz+term);
+  double val = 1.-2.*zz;
+  if(mass) {
+    Energy m = getParticleData(ids[1])->mass();
+    val+= 2.*sqr(m)/t;
+  }
   return val;
 }
 
-double GtoQQbarSplitFn::integOverP(const double z) const { 
-  return z/2.; 
+double GtoQQbarSplitFn::integOverP(const double z, const IdList & ,
+				   unsigned int PDFfactor) const { 
+  switch(PDFfactor) {
+  case 0:
+    return 0.5*z; 
+  case 1:
+    return 0.5*log(z);
+  case 2:
+    return -0.5*log(1.-z);
+  case 3:
+    return 0.5*log(z/(1.-z));
+  default:
+    throw Exception() << "GtoQQbarSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-
-double GtoQQbarSplitFn::invIntegOverP(const double r) const {
-  return 2.*r; 
+double GtoQQbarSplitFn::invIntegOverP(const double r, const IdList & ,
+				      unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 2.*r; 
+  case 1:
+    return exp(2.*r);
+  case 2:
+    return 1.-exp(-2.*r);
+  case 3:
+    return 1./(1.+exp(-2.*r));
+  default:
+    throw Exception() << "GtoQQbarSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-void GtoQQbarSplitFn::colourConnection(const ColinePair &parent,
-				       ColinePair &first,
-				       ColinePair &second) const {
-
-  // Return immediately if the input is inconsistent.
-  if ( ! parent.first  ||  ! parent.second ) return;
-  
-  // Initialize
-  first = second = ColinePair();
-
-  // The first branching product is considered to be the quark 
-  // and the second the anti-quark. 
-  first.first = parent.first;
-  second.second = parent.second;
-
+void GtoQQbarSplitFn::colourConnection(tShowerParticlePtr parent,
+				       tShowerParticlePtr first,
+				       tShowerParticlePtr second,
+				       const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(cparent.first&&cparent.second);
+    cparent.first ->addColoured    ( first);
+    cparent.second->addAntiColoured(second);
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second));
+    // g -> q qbar
+    if(cfirst.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addColoured(parent);
+      newline->addAntiColoured(second);
+      newline->addAntiColoured(parent);
+    }
+    // g -> qbar q
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.second->addAntiColoured(parent);
+      newline->addColoured(second);
+      newline->addColoured(parent);
+    }
+  }
 }
 
 bool GtoQQbarSplitFn::accept(const IdList &ids) const {

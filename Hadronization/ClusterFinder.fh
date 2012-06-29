@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ClusterFinder class.
+//
+#ifndef HERWIG_ClusterFinder_FH
+#define HERWIG_ClusterFinder_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ClusterFinder;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ClusterFinder,ClusterFinderPtr);
+
+}
+
+#endif

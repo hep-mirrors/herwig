@@ -1,38 +1,26 @@
-#include "Herwig++/Utilities/HerwigRun.h"
-#include "ThePEG/Utilities/Timer.h"
-// Any headers needed for analysis go here
+// -*- C++ -*-
+//
+// Herwig++.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#include "HerwigRun.h"
 
 int main(int argc, char * argv[]) {
+  // HerwigRun's constructor does all the work
   try {
-    // create the main timer object
-    Herwig::HerwigRun hw(argc,argv);
-    ThePEG::MainTimer timer(".timer");
-    if (hw.isRunMode() && hw.preparedToRun()) {
-      int step = hw.getN() >= 100 ? hw.getN() / 100 : 1 ;
-      for(int i = 0; i<hw.getN(); i++) {
-	hw.generateEvent();
-	// Add analysis code here
-	// To retrieve the particles at the end of the event use
-	// tPVector particles = hw.getFinalState();
-	// To get the particles at the end of a step, e.g. after showering
-	// use (for step s)
-	// tPVector particles = hw.getFinalState(s);
-	// Then do analysis
-	if ((i+1) % step == 0)
-	  std::cout << "Generated event: " << i+1 
-		    << " of " << hw.getN() << "\r" << std::flush;
-      }
-      hw.eventGenerator()->finalize();
-    } else if(hw.isRunMode()) {
-      std::cerr << "Error: Expecting a run but there is no EventGenerator!\n";
-    }
-
+    Herwig::HerwigRun hw(argc, argv);
+    return hw.good() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   catch ( std::exception & e ) {
     std::cerr << e.what() << '\n';
-    return 1;
+    return EXIT_FAILURE;
   }
-  std::cout << std::endl;
-  return 0;
+  catch (...) {
+    std::cerr << __FILE__ << ": Unknown exception caught.\n";
+    return EXIT_FAILURE;
+  }
+  
 }
-

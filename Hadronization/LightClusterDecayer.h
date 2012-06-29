@@ -1,11 +1,18 @@
 // -*- C++ -*-
+//
+// LightClusterDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_LightClusterDecayer_H
 #define HERWIG_LightClusterDecayer_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
-#include <ThePEG/EventRecord/Step.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
+#include "LightClusterDecayer.fh"
 
 
 namespace Herwig {
@@ -39,9 +46,11 @@ using namespace ThePEG;
  *  - An alternate choice of what is considered a "neighbour" could be
  *    implemented but was not considered for Herwig++.
  *
- *  @see HadronSelector
+ *  @see HadronSelector 
+ * @see \ref LightClusterDecayerInterfaces "The interfaces"
+ * defined for LightClusterDecayer.
  */ 
-class LightClusterDecayer: public ThePEG::HandlerBase {
+class LightClusterDecayer: public Interfaced {
 
 public:
 
@@ -51,16 +60,6 @@ public:
    * Default constructor.
    */
   inline LightClusterDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline LightClusterDecayer(const LightClusterDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~LightClusterDecayer();
   //@}
 
   /**
@@ -70,7 +69,7 @@ public:
    * conservation. This is done explicitly by the (private) method 
    * reshuffling().
    */
-  bool decay(const StepPtr &);
+  bool decay(ClusterVector & clusters, tPVector & finalhadrons);
 
 public:
 
@@ -112,47 +111,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
 
   /**
@@ -169,40 +127,44 @@ private:
    * This (private) method, called by decay(), takes care of the kinematical
    * reshuffling necessary for energy-momentum conservation.
    */
-  bool reshuffling( const long, tClusterPtr, tClusterPtr,
-		    const StepPtr , tClusterVector &) 
-    throw (Veto, Stop, Exception); 
+  bool reshuffling( const tcPDPtr, tClusterPtr, tClusterPtr,
+		    tClusterVector &, tPVector & finalhadrons) 
+   ; 
   
   /**
    *  This (private) method, called by decay(), performs reshuffling in the 
    * special case of a semileptonic partonic b/c decay 
-   * @param idhad The hadron to be produced
+   * @param hadron The hadron to be produced
    * @param cluster The cluster to be reshuffled
-   * @param step The step into which the particles are inserted
+   * @param finalhadrons The vector of outgoing hadrons
    */
-  bool partonicReshuffle(const long idhad,const PPtr cluster,const StepPtr step);
+  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,
+			 tPVector & finalhadrons);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.
    */
-  Ptr<HadronSelector>::pointer _hadronsSelector;
+  Ptr<HadronSelector>::pointer _hadronSelector;
 
   /**
-   * A parameter used for determining when b clusters are too light.
+   * @name A parameter used for determining when clusters are too light.
    *
    * This parameter is used for setting the lower threshold, \f$ t \f$ as
    * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
    * where \f$ r \f$ is a random number [0,1].
    */
-  double _B1Lim;
-
+  //@{
+  double _limBottom;
+  double _limCharm;
+  double _limExotic;
+  //@}
 };
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -211,7 +173,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::LightClusterDecayer,1> {
   /** Typedef of the base class of LightClusterDecayer. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 template <>
@@ -222,18 +184,12 @@ template <>
 struct ClassTraits<Herwig::LightClusterDecayer>: 
     public ClassTraitsBase<Herwig::LightClusterDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::LightClusterDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
+  static string className() { return "Herwig::LightClusterDecayer"; }
 };
 
-}
+/** @endcond */
 
-#endif // DOXYGEN STUFF
+}
 
 #include "LightClusterDecayer.icc"
 

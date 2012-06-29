@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SplittingFunction.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SplittingFunction_H
 #define HERWIG_SplittingFunction_H
 //
@@ -8,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
@@ -26,8 +32,16 @@ using namespace ThePEG;
  *  the interaction type of the spltting function.
  *
  *  The inheriting classes need to specific the splitting function 
- *  \f$P(z,\tilde{q}^2)\f$, in terms of the energy fraction \f$z\f$ and evolution scale
- *  \f$\tilde{q}^2\f$ for a given splitting. In addition an overestimate of the 
+ *  \f$P(z,2p_j\cdot p_k)\f$, in terms of the energy fraction \f$z\f$ and
+ *  the evolution scale. In order to allow the splitting functions to be used
+ *  with different choices of evolution functions the scale is given by
+ * \f[2p_j\cdot p_k=(p_j+p_k)^2-m_{jk}^2=Q^2-(p_j+p_k)^2=z(1-z)\tilde{q}^2=
+ *   \frac{p_T^2}{z(1-z)}-m_{jk}^2+\frac{m_j^2}{z}+\frac{m_k^2}{1-z},\f]
+ *  where \f$Q^2\f$ is the virtuality of the branching particle,
+ *  $p_T$ is the relative transverse momentum of the branching products and
+ *  \f$\tilde{q}^2\f$ is the angular variable described in hep-ph/0310083.
+ *
+ *  In addition an overestimate of the 
  *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$, 
  *  the integral, inverse of the integral for this overestimate and
  *  ratio of the true splitting function to the overestimate must be provided
@@ -47,7 +61,8 @@ public:
    * @param a All splitting functions must have an interaction type
    * @param b All splitting functions must have an interaction order
    */
-  inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b);
+  inline SplittingFunction(ShowerInteraction::Type a, unsigned int b)
+    : Interfaced(), _interactionType(a), _interactionorder(b) {}
   //@}
 
 public:
@@ -59,12 +74,14 @@ public:
   /**
    *  Return the type of the interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const;
+  inline ShowerInteraction::Type interactionType() const 
+  {return _interactionType;}
 
   /**
    *  Return the order of the splitting function in the interaction
    */
-  inline unsigned int interactionOrder() const;
+  inline unsigned int interactionOrder() const
+  {return _interactionorder;}
   //@}
 
   /**
@@ -83,10 +100,12 @@ public:
    * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale 
    \f$\tilde{q}^2\f$.
    * @param z   The energy fraction.
-   * @param t   The scale.
+   * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const = 0;
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   const bool mass) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -103,17 +122,25 @@ public:
    * the ratio of the splitting function to the overestimate, i.e.
    * \f$P(z,\tilde{q}^2)/P_{\rm over}(z)\f$.
    * @param z   The energy fraction.
-   * @param t   The scale.
+   * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const = 0;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass) const = 0;
 
   /**
    * Purely virtual method which should return the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
-   * @param z   The energy fraction.
+   * @param z         The energy fraction.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
+   *                  
    */
-  virtual double integOverP(const double z) const = 0; 
+  virtual double integOverP(const double z, const IdList & ids, 
+			    unsigned int PDFfactor=0) const = 0; 
 
   /**
    * Purely virtual method which should return the inverse of the 
@@ -121,40 +148,27 @@ public:
    * overestimated splitting function, \f$P_{\rm over}\f$ which is used to
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double invIntegOverP(const double r) const = 0; 
+  virtual double invIntegOverP(const double r, const IdList & ids, 
+			       unsigned int PDFfactor=0) const = 0;
   //@}
 
   /**
    * Purely virtual method which should make the proper colour connection 
    * between the emitting parent and the branching products.
-   *
-   * @param parent Pair of pointers to ColourLine objects, 
-   * which are associated with, 
-   * respectively, the colour (first element of the pair) and 
-   * anticolour (second element of the pair) of the emitting particle.
-   * @param first Pair of pointers
-   * to ColourLine objects, for respectively the first 
-   * branching product. Again the first element
-   * is associated with the colour line and the second element
-   * is associated with the anticolur line.
-   * @param second As first but for the second particle.
-   *
-   * The ColourLine objects pointed by any of the 
-   * two elements of both pairs can be either one of object pointerd 
-   * by the radiating parent, or can be a new one (and because of that, 
-   * the pointers must be reference counted, not transient).
-   * We prefer to use ColourLine in this method
-   * rather than ShowerParticles for two reasons: first,
-   * there is no coupling between SplittingFunction class
-   * (and its derived classes) and the ShowerParticle class; 
-   * and second, we avoid repeating for each type of splitting
-   * function the same operation of setting the color lines to
-   * proper particles.
-   */ 
-  virtual void colourConnection(const ColinePair & parent,
-				ColinePair & first,
-				ColinePair & second) const = 0;
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param back Whether this is foward or backward evolution.
+   */
+  virtual void colourConnection(tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second,
+				const bool back) const=0;
 
 public:
 
@@ -185,7 +199,7 @@ private:
   /**
    *  The interaction type for the splitting function.
    */
-  const ShowerIndex::InteractionType _interactionType;
+  const ShowerInteraction::Type _interactionType;
 
   /**
    *  The order of the splitting function in the coupling
@@ -215,7 +229,7 @@ template <>
 struct ClassTraits<Herwig::SplittingFunction>
   : public ClassTraitsBase<Herwig::SplittingFunction> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SplittingFunction"; }
+  static string className() { return "Herwig::SplittingFunction"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SplittingFunction is implemented. It may also include several, space-separated,
@@ -229,10 +243,5 @@ struct ClassTraits<Herwig::SplittingFunction>
 /** @endcond */
 
 }
-
-#include "SplittingFunction.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SplittingFunction.tcc"
-#endif
 
 #endif /* HERWIG_SplittingFunction_H */

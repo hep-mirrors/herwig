@@ -8,18 +8,13 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h" 
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ChengHeavyBaryonFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
-ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor() 
-{
+
+ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor() {
   // consituent quark masses
   _mu = 338*MeV;
   _md = 322*MeV;
@@ -78,7 +73,7 @@ ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor()
   initialModes(numberOfFactors());
 }
 
-void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
+void ChengHeavyBaryonFormFactor::doinit() {
   BaryonFormFactor::doinit();
   // check the parameters are consistent
   unsigned int isize(numberOfFactors());
@@ -156,26 +151,28 @@ void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
       tcPDPtr part1=getParticleData(id1);Energy m1=part1->mass();
       Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
       if(part1->iSpin()==2)
-	{SpinHalfSpinHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
+	{SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
       else
-	{SpinHalfSpinThreeHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,
+	{SpinHalfSpinThreeHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,
 					 f4v,f1a,f2a,f3a,f4a);}
     }
 }
-
-ChengHeavyBaryonFormFactor::~ChengHeavyBaryonFormFactor() {}
   
 void ChengHeavyBaryonFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _mu << _md << _ms << _mc << _mb << _Nfi << _eta << _f1 << _f2 << _f3 
-     << _g1 << _g2 << _g3 << _mVbc << _mVbs << _mVcs << _mVbd << _mVcu << _mAbc 
-     << _mAbs << _mAcs << _mAbd << _mAcu;
+  os << ounit(_mu,MeV) << ounit(_md,MeV) << ounit(_ms,MeV) << ounit(_mc,MeV) << ounit(_mb,MeV) 
+     << _Nfi << _eta << _f1 << _f2 << _f3 
+     << _g1 << _g2 << _g3 << ounit(_mVbc,MeV) << ounit(_mVbs,MeV) << ounit(_mVcs,MeV) 
+     << ounit(_mVbd,MeV) << ounit(_mVcu,MeV) << ounit(_mAbc,MeV) 
+     << ounit(_mAbs,MeV) << ounit(_mAcs,MeV) << ounit(_mAbd,MeV) << ounit(_mAcu,MeV);
  }
   
 
 void ChengHeavyBaryonFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _mu >> _md >> _ms >> _mc >> _mb >> _Nfi >> _eta >> _f1 >> _f2 >> _f3 
-     >> _g1 >> _g2 >> _g3 >> _mVbc >> _mVbs >> _mVcs >> _mVbd >> _mVcu >> _mAbc 
-     >> _mAbs >> _mAcs >> _mAbd >> _mAcu;
+  is >> iunit(_mu,MeV) >> iunit(_md,MeV) >> iunit(_ms,MeV) >> iunit(_mc,MeV) >> iunit(_mb,MeV) 
+     >> _Nfi >> _eta >> _f1 >> _f2 >> _f3 
+     >> _g1 >> _g2 >> _g3 >> iunit(_mVbc,MeV) >> iunit(_mVbs,MeV) >> iunit(_mVcs,MeV) 
+     >> iunit(_mVbd,MeV) >> iunit(_mVcu,MeV) >> iunit(_mAbc,MeV) 
+     >> iunit(_mAbs,MeV) >> iunit(_mAcs,MeV) >> iunit(_mAbd,MeV) >> iunit(_mAcu,MeV);
 }
 
 ClassDescription<ChengHeavyBaryonFormFactor> ChengHeavyBaryonFormFactor::initChengHeavyBaryonFormFactor;
@@ -193,91 +190,91 @@ void ChengHeavyBaryonFormFactor::Init() {
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceUpMass
     ("DownMass",
      "The consituent mass of the down quark",
-     &ChengHeavyBaryonFormFactor::_md, GeV, 0.322*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_md, GeV, 0.322*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceDownMass
     ("UpMass",
      "The consituent mass of the up quark",
-     &ChengHeavyBaryonFormFactor::_mu, GeV, 0.338*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mu, GeV, 0.338*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfacStrangeMass
     ("StrangeMass",
      "The consituent mass of the strange quark",
-     &ChengHeavyBaryonFormFactor::_ms, GeV, 0.510*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_ms, GeV, 0.510*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceCharmMass
     ("CharmMass",
      "The consituent mass of the charm quark",
-     &ChengHeavyBaryonFormFactor::_mc, GeV, 1.6*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mc, GeV, 1.6*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceBottomMass
     ("BottomMass",
      "The consituent mass of the bottom quark",
-     &ChengHeavyBaryonFormFactor::_mb, GeV, 5.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mb, GeV, 5.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbc
     ("VectorMassbc",
      "The vector mass for the b->c transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbc, GeV, 6.34*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbc, GeV, 6.34*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbc
     ("AxialMassbc",
      "The axial-vector mass for the b->c transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbc, GeV, 6.73*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbc, GeV, 6.73*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbs
     ("VectorMassbs",
      "The vector mass for the b->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbs, GeV, 5.42*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbs, GeV, 5.42*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbs
     ("AxialMassbs",
      "The axial-vector mass for the b->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbs, GeV, 5.86*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbs, GeV, 5.86*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbd
     ("VectorMassbd",
      "The vector mass for the b->d transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbd, GeV, 5.32*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbd, GeV, 5.32*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbd
     ("AxialMassbd",
      "The axial-vector mass for the b->d transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbd, GeV, 5.71*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbd, GeV, 5.71*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMasscs
     ("VectorMasscs",
      "The vector mass for the c->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mVcs, GeV, 2.11*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVcs, GeV, 2.11*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMasscs
     ("AxialMasscs",
      "The axial-vector mass for the c->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mAcs, GeV, 2.54*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAcs, GeV, 2.54*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMasscu
     ("VectorMasscu",
      "The vector mass for the c->u transitions.",
-     &ChengHeavyBaryonFormFactor::_mVcu, GeV, 2.01*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVcu, GeV, 2.01*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMasscu
     ("AxialMasscu",
      "The axial-vector mass for the c->u transitions.",
-     &ChengHeavyBaryonFormFactor::_mAcu, GeV, 2.42*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAcu, GeV, 2.42*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ChengHeavyBaryonFormFactor,double> interfaceNfi
@@ -303,7 +300,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV(0.*GeV),mA(0.*GeV);
+  Energy mV(ZERO),mA(ZERO);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}
@@ -342,7 +339,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV(0.*GeV),mA(0.*GeV);
+  Energy mV(ZERO),mA(ZERO);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}
@@ -378,41 +375,40 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";}
-  output << "set " << fullName() << ":DownMass     " << _md/GeV << " \n";
-  output << "set " << fullName() << ":UpMass       " << _mu/GeV << " \n";
-  output << "set " << fullName() << ":StrangeMass  " << _ms/GeV << " \n";
-  output << "set " << fullName() << ":CharmMass    " << _mc/GeV << " \n";
-  output << "set " << fullName() << ":BottomMass   " << _mb/GeV << " \n";
-  output << "set " << fullName() << ":VectorMassbc " << _mVbc/GeV << " \n";
-  output << "set " << fullName() << ":AxialMassbc  " << _mAbc/GeV << " \n";
-  output << "set " << fullName() << ":VectorMassbs " << _mVbs/GeV << " \n";
-  output << "set " << fullName() << ":AxialMassbs  " << _mAbs/GeV << " \n";
-  output << "set " << fullName() << ":VectorMassbd " << _mVbd/GeV << " \n";
-  output << "set " << fullName() << ":AxialMassbd  " << _mAbd/GeV << " \n";
-  output << "set " << fullName() << ":VectorMasscs " << _mVcs/GeV << " \n";
-  output << "set " << fullName() << ":AxialMasscs  " << _mAcs/GeV << " \n";
-  output << "set " << fullName() << ":VectorMasscu " << _mVcu/GeV << " \n";
-  output << "set " << fullName() << ":AxialMasscu  " << _mAcu/GeV << " \n";
+    {output << "create Herwig::ChengHeavyBaryonFormFactor " << name() << " \n";}
+  output << "set " << name() << ":DownMass     " << _md/GeV << " \n";
+  output << "set " << name() << ":UpMass       " << _mu/GeV << " \n";
+  output << "set " << name() << ":StrangeMass  " << _ms/GeV << " \n";
+  output << "set " << name() << ":CharmMass    " << _mc/GeV << " \n";
+  output << "set " << name() << ":BottomMass   " << _mb/GeV << " \n";
+  output << "set " << name() << ":VectorMassbc " << _mVbc/GeV << " \n";
+  output << "set " << name() << ":AxialMassbc  " << _mAbc/GeV << " \n";
+  output << "set " << name() << ":VectorMassbs " << _mVbs/GeV << " \n";
+  output << "set " << name() << ":AxialMassbs  " << _mAbs/GeV << " \n";
+  output << "set " << name() << ":VectorMassbd " << _mVbd/GeV << " \n";
+  output << "set " << name() << ":AxialMassbd  " << _mAbd/GeV << " \n";
+  output << "set " << name() << ":VectorMasscs " << _mVcs/GeV << " \n";
+  output << "set " << name() << ":AxialMasscs  " << _mAcs/GeV << " \n";
+  output << "set " << name() << ":VectorMasscu " << _mVcu/GeV << " \n";
+  output << "set " << name() << ":AxialMasscu  " << _mAcu/GeV << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       if(ix<initialModes())
 	{
-	  output << "set " << fullName() << ":Nfi " << ix << "  " 
+	  output << "set " << name() << ":Nfi " << ix << "  " 
 		<< _Nfi[ix] << endl;
-	  output << "set " << fullName() << ":Eta " << ix << "  " 
+	  output << "set " << name() << ":Eta " << ix << "  " 
 		<< _eta[ix] << endl;
 	}
       else
 	{
-	  output << "insert " << fullName() << ":Nfi " << ix << "  " 
+	  output << "insert " << name() << ":Nfi " << ix << "  " 
 		<< _Nfi[ix] << endl;
-	  output << "insert " << fullName() << ":Eta " << ix << "  " 
+	  output << "insert " << name() << ":Eta " << ix << "  " 
 		<< _eta[ix] << endl;
 	}
     }
   BaryonFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  if(header){output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;}
 }

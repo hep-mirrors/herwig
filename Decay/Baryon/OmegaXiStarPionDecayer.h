@@ -4,14 +4,13 @@
 // This is the declaration of the OmegaXiStarPionDecayer class.
 
 #include "Baryon1MesonDecayerBase.h"
-#include "OmegaXiStarPionDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>OmegaXiStarPionDecayer</code> class implements the results of
+ *  The OmegaXiStarPionDecayer class implements the results of
  *  hep-ph/0405162 for the weak decay of the \f$\Omega\f$ to the \f$\Xi^*\f$ and a pion.
  *
  * @see Baryon1MesonDecayerBase
@@ -21,32 +20,19 @@ class OmegaXiStarPionDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline OmegaXiStarPionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline OmegaXiStarPionDecayer(const OmegaXiStarPionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~OmegaXiStarPionDecayer();
-  //@}
-
-public:
+  OmegaXiStarPionDecayer();
 
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -108,13 +94,13 @@ public:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -122,45 +108,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -180,42 +137,42 @@ private:
   /**
    * The \f$A_{\rm Comm}\f$ amplitude from hep-ph/0405162
    */
-  double _Acomm;
+  double Acomm_;
 
   /**
    * The \f$A_P\f$ amplitude from hep-ph/0405162
    */
-  double _AP;
+  double AP_;
 
   /**
    * The \f$A_S\f$ amplitude from hep-ph/0405162
    */
-  double _AS;
+  double AS_;
 
   /**
    * The \f$B_P\f$ amplitude from hep-ph/0405162
    */
-  double _BP;
+  double BP_;
 
   /**
    * The \f$B_S\f$ amplitude from hep-ph/0405162
    */
-  double _BS;
+  double BS_;
   
   /**
    * PDG code of the incoming baryon
    */
-  int _idin;
+  int idin_;
 
   /**
    * PDG code of the outgoing baryon
    */
-  int _idout;
+  int idout_;
 
   /**
    * maximum weight for the decay
    */
-  double _wgtmax;
+  double wgtmax_;
 
 };
 
@@ -225,6 +182,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -244,21 +203,18 @@ template <>
  struct ClassTraits<Herwig::OmegaXiStarPionDecayer>
   : public ClassTraitsBase<Herwig::OmegaXiStarPionDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::OmegaXiStarPionDecayer"; }
+  static string className() { return "Herwig::OmegaXiStarPionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 
 };
 
-}
+/** @endcond */
 
-#include "OmegaXiStarPionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "OmegaXiStarPionDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_OmegaXiStarPionDecayer_H */

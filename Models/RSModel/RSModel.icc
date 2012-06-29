@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
+// RSModel.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the RSModel class.
 //
 namespace Herwig {
-
-inline RSModel::RSModel() {}
-
-inline RSModel::RSModel(const RSModel & x)
-  : StandardModel(x), _theLambda_pi(x._theLambda_pi), _theFFGRVertex(x._theFFGRVertex),
-    _theVVGRVertex(x._theVVGRVertex), _theSSGRVertex(x._theSSGRVertex),
-    _theFFVGRVertex(x._theFFVGRVertex), _theVVVGRVertex(x._theVVVGRVertex) {}
 
 inline IBPtr RSModel::clone() const {
   return new_ptr(*this);
@@ -20,54 +20,21 @@ inline IBPtr RSModel::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RSModel::doupdate() throw(UpdateException) {
-  StandardModel::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void RSModel::doinit() throw(InitException) {
+inline void RSModel::doinit() {
+  addVertex(_theFFGRVertex);
+  addVertex(_theVVGRVertex);
+  addVertex(_theSSGRVertex);
+  addVertex(_theFFVGRVertex);
+  addVertex(_theVVVGRVertex);
   StandardModel::doinit();
-}
-
-inline void RSModel::dofinish() {
-  StandardModel::dofinish();
-}
-
-inline void RSModel::doinitrun() {
-  StandardModel::doinitrun();
-}
-
-inline void RSModel::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  StandardModel::rebind(trans);
-}
-
-inline IVector RSModel::getReferences() {
-  IVector ret = StandardModel::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 inline Energy RSModel::lambda_pi() const {return _theLambda_pi;}
 
-inline tFFTVertexPtr   RSModel::vertexFFGR()  const {return _theFFGRVertex;}
-inline tVVTVertexPtr   RSModel::vertexVVGR()  const {return _theVVGRVertex;}
-inline tSSTVertexPtr   RSModel::vertexSSGR()  const {return _theSSGRVertex;}
-inline tFFVTVertexPtr  RSModel::vertexFFVGR() const {return _theFFVGRVertex;}
-inline tVVVTVertexPtr  RSModel::vertexVVVGR() const {return _theVVVGRVertex;}
+inline tAbstractFFTVertexPtr   RSModel::vertexFFGR()  const {return _theFFGRVertex;}
+inline tAbstractVVTVertexPtr   RSModel::vertexVVGR()  const {return _theVVGRVertex;}
+inline tAbstractSSTVertexPtr   RSModel::vertexSSGR()  const {return _theSSGRVertex;}
+inline tAbstractFFVTVertexPtr  RSModel::vertexFFVGR() const {return _theFFVGRVertex;}
+inline tAbstractVVVTVertexPtr  RSModel::vertexVVVGR() const {return _theVVVGRVertex;}
 
 }

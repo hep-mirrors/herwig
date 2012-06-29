@@ -1,0 +1,17 @@
+#####################################################################
+# Herwig now gets all its particle information from the database
+# at URL HERE
+#####################################################################
+mkdir /Herwig/Particles
+cd /Herwig/Particles
+
+read leptons.in
+read quarks.in
+read bosons.in
+read mesons.in
+read baryons.in
+read diquarks.in
+
+mkdir /Herwig/Masses
+cd /Herwig/Masses
+read masses.in

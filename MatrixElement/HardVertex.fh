@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HardVertex class.
+//
+#ifndef HERWIG_HardVertex_FH
+#define HERWIG_HardVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class HardVertex;
+ThePEG_DECLARE_POINTERS(HardVertex,HardVertexPtr);
+
+}
+
+#endif

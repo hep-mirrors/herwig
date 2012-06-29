@@ -1,0 +1,61 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the FortranSudakov class.
+//
+
+namespace Herwig {
+ 
+inline Energy FortranSudakov::cutOff(long id) const {
+  Energy mc=getParticleData(id)->constituentMass();
+  if(id==ParticleID::g)          mc += _vgcut;
+  else if(abs(id)<=6)            mc += _vqcut;
+  else if(id==ParticleID::gamma) mc += _vpcut;
+  return mc;
+}
+
+inline unsigned int FortranSudakov::findSudakov(const IdList & ids,const bool cc) const{
+  IdList part;
+  if(cc) {
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      if(getParticleData(ids[ix])->CC()) part.push_back(-ids[ix]);
+      else                               part.push_back( ids[ix]);
+    }
+  }
+  else part=ids;
+  bool found=false;
+  unsigned int iloc;
+  for(iloc=0;iloc<particles().size();++iloc) {
+    if(particles()[iloc].size()==ids.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<ids.size();++iy) {
+	if(particles()[iloc][iy]!=ids[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	found=true;
+	break;
+      }
+    }
+  }
+  if(!found) throw Exception() << "Can't find Sudakov in table for " 
+			       << ids[0] << " " << ids[1] << " " << ids[2] 
+			       << " in FortranSudakov::findSudakov()"
+			       << Exception::runerror;
+  return iloc;
+}
+
+inline double FortranSudakovIntegrand::alphaIntegral(double al, double bl, 
+						     unsigned int nf) const {
+  return 1./_bet[nf-3]*log(bl/(al*(1.+_bep[nf-3]*bl))*(1.+_bep[nf-3]*al));
+}
+  
+inline void  FortranSudakovIntegrand::setScales(double qrat,double qlam) {
+  _qrat=qrat;
+  _qlam=qlam;
+}
+}
+
+  

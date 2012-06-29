@@ -1,76 +1,30 @@
 // -*- C++ -*-
 //
+// LightClusterDecayer.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the LightClusterDecayer class.
 //
 
 namespace Herwig {
 
-
 inline LightClusterDecayer::LightClusterDecayer() :
-  // _pointerHadronsSelector( Ptr<HadronsSelector>::pointer() ),
-  _B1Lim( 0.0 )     
+ _limBottom(), 
+ _limCharm(), 
+ _limExotic() 
 {} 
-
-
-inline LightClusterDecayer::LightClusterDecayer(const LightClusterDecayer & x)
-  : ThePEG::HandlerBase(x),
-	     _hadronsSelector( x._hadronsSelector ),
-             _B1Lim( x._B1Lim )     
-{}
-
 
 inline IBPtr LightClusterDecayer::clone() const {
   return new_ptr(*this);
 }
 
-
 inline IBPtr LightClusterDecayer::fullclone() const {
   return new_ptr(*this);
 }
-
-
-inline void LightClusterDecayer::doupdate() throw(UpdateException) {
-  ThePEG::HandlerBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-
-inline void LightClusterDecayer::doinit() throw(InitException) {
-  ThePEG::HandlerBase::doinit();
-}
-
-
-inline void LightClusterDecayer::dofinish() {
-  ThePEG::HandlerBase::dofinish();
-}
-
-
-inline void LightClusterDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  ThePEG::HandlerBase::rebind(trans);
-}
-
-
-inline IVector LightClusterDecayer::getReferences() {
-  IVector ret = ThePEG::HandlerBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 
 }

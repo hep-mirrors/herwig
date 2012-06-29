@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DecayIntegrator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DecayIntegrator_H
 #define HERWIG_DecayIntegrator_H
 //
@@ -7,19 +14,15 @@
 #include <ThePEG/PDT/Decayer.h>
 #include "DecayPhaseSpaceChannel.h"
 #include <ThePEG/PDT/EnumParticles.h>
-#include <Herwig++/Helicity/Correlations/DecayVertex.h>
-#include "ThePEG/Utilities/Timer.h"
-#include <ThePEG/Helicity/SpinInfo.h>
+#include <Herwig++/Decay/DecayVertex.h>
 #include "DecayPhaseSpaceMode.fh"
-#include "Herwig++/PDT/WidthCalculatorBase.h"
-#include <iostream>
+#include "Herwig++/PDT/WidthCalculatorBase.fh"
 #include "Radiation/DecayRadiationGenerator.h"
 #include "HwDecayerBase.h"
 #include "DecayIntegrator.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::DecayMatrixElement;
 
   /** \ingroup Decay
    * \class DecayIntegrator
@@ -56,49 +59,54 @@ using Herwig::Helicity::DecayMatrixElement;
 
 class DecayIntegrator: public HwDecayerBase {
 
+public:
+
   /**
    *  The output operator is a friend, this is mainly for debugging
    */    
   friend ostream & operator<<(ostream &, const DecayIntegrator &);
 
+  /**
+   *  Enum for the matrix element option
+   */
+  enum MEOption {Initialize,Calculate,Terminate};
+
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline DecayIntegrator();
-  //@}
-      
-public:
+  DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
+		      _generateinter(false),_outputmodes(false) {}
   
   /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. As this is the base class it returns false and
-   * should be overridden in class implementing the decays.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   *
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const {
+    bool cc;
+    return modeNumber(cc,parent,children)>=0;
+  }
   
   /**
    * For a given decay mode and a given particle instance, perform the
    * decay and return the decay products. As this is the base class this
    * is not implemented.
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
    * @return The vector of particles produced in the decay.
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
   
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const=0;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const = 0;
 
   /**
    * Add a phase-space mode to the list
@@ -113,30 +121,33 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * This function is purely virtual and must be implemented in classes inheriting
    * from DecayIntegrator.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param opt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const=0;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption opt) const=0;
   
   /**
    * The helicity amplitude matrix element for spin correlations.
    */
-  inline const DecayMatrixElement & ME() const;
+  DecayMatrixElement & ME() const {return _matrixelement;}
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
-   * @param dm The DecayMode
    * @param mecode The code for the matrix element as described
    *               in the GenericWidthGenerator class.
    * @param coupling The coupling for the matrix element.
    * @return True or False if this mode can be handled.
    */
-  virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
-			     double & coupling) const;
+  virtual bool twoBodyMEcode(const DecayMode &, int & mecode,
+			     double & coupling) const {
+    coupling = 1.;
+    mecode   = -1;
+    return false;
+  }						     
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -158,8 +169,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
-					Energy2 s1,Energy m1,Energy m2,Energy m3);
+  virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+					const Energy2 s3, const Energy2 s2, 
+					const Energy2 s1, const Energy  m1, 
+					const Energy  m2, const Energy  m3) const;
   
   /**
    * The differential three body decay rate with one integral performed.
@@ -171,8 +184,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(int imode,Energy q2, Energy2 s,Energy m1,Energy m2,
-				   Energy m3);
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+				      const Energy2 s,
+				      const Energy m1, const Energy m2, 
+				      const Energy m3) const;
   
   /**
    * Set the code for the partial width. Finds the partial width in the
@@ -208,12 +223,14 @@ public:
    * @return A particle vector containing the decay products after the generation
    * of photons.
    */
-  ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  ParticleVector generatePhotons(const Particle & p,ParticleVector children) {
+    return _photongen->generatePhotons(p,children);
+  }
 
   /**
    *  check if photons can be generated in the decay
    */
-  inline bool canGeneratePhotons();
+  bool canGeneratePhotons() {return _photongen;}
 
   /**
    *  The one-loop virtual correction.
@@ -224,7 +241,8 @@ public:
    * @return Whether the correction is implemented
    */
   virtual bool oneLoopVirtualME(double & output, unsigned int imode,
-				const Particle & part, const ParticleVector & products);
+				const Particle & part, 
+				const ParticleVector & products);
   
   /**
    *  The real emission matrix element
@@ -235,7 +253,8 @@ public:
    * @return Whether the correction is implemented
    */
   virtual bool realEmmisionME(double & output, unsigned int imode,
-  			      const Particle & part, const ParticleVector & products);
+			      const Particle & part, 
+			      const ParticleVector & products);
   //@}
   
 public:
@@ -278,17 +297,17 @@ protected:
   /**
    * The mode being used for this decay
    */
-  inline int imode() const;
+  int imode() const {return _imode;}
 
   /**
    * Set the mode being use for this decay.
    */
-  inline void imode(int);
+  void imode(int in) {_imode=in;}
   
   /**
    * Set the helicity matrix element for the decay.
    */
-  inline void ME(const DecayMatrixElement &) const;
+  void ME(const DecayMatrixElement & in) const {_matrixelement.reset(in);}
    
   /**
    * Reset the properities of all intermediates.
@@ -301,7 +320,7 @@ protected:
   /**
    * Number of decay modes
    */
-  inline unsigned int numberModes() const;
+  unsigned int numberModes() const {return _modes.size();}
 
   /**
    * Pointer to a mode
@@ -316,12 +335,19 @@ protected:
   /**
    * Get whether or not the intermediates are included
    */
-  inline bool generateIntermediates() const;
+  bool generateIntermediates() const {return _generateinter;}
 
   /**
    * Set whether or not the intermediates are included 
    */ 
-  inline void generateIntermediates(bool);
+  void generateIntermediates(bool in) {_generateinter=in;}
+
+  /**
+   * Initialize the phase-space mode
+   * @param imode The mode
+   * @param init Whether or not to perform the initialization
+   */
+  Energy initializePhaseSpaceMode(unsigned int imode,bool init) const;
 
 protected:
   
@@ -387,7 +413,7 @@ private:
   /**
    * The helicity matrix element for the current decay
    */
-  DecayMatrixElement _matrixelement;
+  mutable DecayMatrixElement _matrixelement;
 
   /**
    *  Output the phase space channels for testing
@@ -409,37 +435,32 @@ private:
 
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of DecayIntegrator.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::DecayIntegrator,1> {
-    /** Typedef of the base class of DecayIntegrator. */
-    typedef Herwig::HwDecayerBase NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::DecayIntegrator>
-    : public ClassTraitsBase<Herwig::DecayIntegrator> {
-    /** Return the class name. */
-    static string className() { return "Herwig++::DecayIntegrator"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return ""; }
 
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of DecayIntegrator.
+ */
+template <>
+struct BaseClassTrait<Herwig::DecayIntegrator,1> {
+  /** Typedef of the base class of DecayIntegrator. */
+  typedef Herwig::HwDecayerBase NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::DecayIntegrator>
+  : public ClassTraitsBase<Herwig::DecayIntegrator> {
+  /** Return the class name. */
+  static string className() { return "Herwig::DecayIntegrator"; }
+};
+  
+/** @endcond */
 
 }
-
-#include "DecayIntegrator.icc"
 
 #endif /* HERWIG_DecayIntegrator_H */

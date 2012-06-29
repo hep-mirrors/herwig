@@ -27,26 +27,6 @@ class BaryonWidthGenerator: public GenericWidthGenerator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline BaryonWidthGenerator();
-
-  /**
-   * The copy constructor.
-   */
-  inline BaryonWidthGenerator(const BaryonWidthGenerator &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BaryonWidthGenerator();
-  //@}
-
-public:
-
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -122,48 +102,13 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  inline virtual void doinit();
   //@}
 
 private:
@@ -196,11 +141,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of BaryonWidthGenerator. */
@@ -216,18 +161,17 @@ template <>
  struct ClassTraits<Herwig::BaryonWidthGenerator>
   : public ClassTraitsBase<Herwig::BaryonWidthGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BaryonWidthGenerator"; }
+  static string className() { return "Herwig::BaryonWidthGenerator"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BaryonWidthGenerator class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwBaryonDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BaryonWidthGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonWidthGenerator.tcc"
-#endif
 
 #endif /* HERWIG_BaryonWidthGenerator_H */

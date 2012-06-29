@@ -7,18 +7,11 @@
 #include "DrellYanDalitzAnalysis.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanDalitzAnalysis.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-DrellYanDalitzAnalysis::~DrellYanDalitzAnalysis() {}
 
 void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
@@ -82,9 +75,9 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
 	}
     }
   Energy2 Q2=(pb+pc-pg).m2();
-  Energy2 sbar=(pb+pc).m2()/Q2;
-  Energy2 tbar=(pb-pg).m2()/Q2;
-  //Energy2 ubar=(pc-pg).m2()/Q2;
+  double sbar=(pb+pc).m2()/Q2;
+  double tbar=(pb-pg).m2()/Q2;
+  //double ubar=(pc-pg).m2()/Q2;
   ++_nout;
   if(type)
     {
@@ -96,7 +89,7 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
     }
 }
 
-LorentzRotation DrellYanDalitzAnalysis::transform(tEventPtr event) const {
+LorentzRotation DrellYanDalitzAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -108,11 +101,11 @@ void DrellYanDalitzAnalysis::analyze(const tPVector & particles) {
 
 void DrellYanDalitzAnalysis::analyze(tPPtr) {}
 
-void DrellYanDalitzAnalysis::persistentOutput(PersistentOStream & os) const {
+void DrellYanDalitzAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void DrellYanDalitzAnalysis::persistentInput(PersistentIStream & is, int) {
+void DrellYanDalitzAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 
@@ -130,7 +123,8 @@ void DrellYanDalitzAnalysis::Init() {
 void DrellYanDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream file;
-  file.open("DrellYan.top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  file.open(fname.c_str());
   file << "SET WINDOW X 2 9 Y 2 9\n";
   file << "SET LIMITS X 1 10 Y 0 -10\n";
   file << "SET FONT DUPLEX\n";

@@ -1,20 +1,13 @@
-pkglib_LTLIBRARIES = HwPerturbativeDecay.la
-
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwPerturbativeHiggsDecay.la
-endif
+pkglib_LTLIBRARIES = HwPerturbativeDecay.la HwPerturbativeHiggsDecay.la
 
 HwPerturbativeDecay_la_SOURCES = \
- SMWZDecayer.cc  SMWZDecayer.fh  SMWZDecayer.h  SMWZDecayer.icc\
- SMTopDecayer.cc SMTopDecayer.fh SMTopDecayer.h SMTopDecayer.icc
-HwPerturbativeDecay_la_LDFLAGS = -module
+ SMWZDecayer.cc  SMWZDecayer.h\
+ SMTopDecayer.cc SMTopDecayer.h
+HwPerturbativeDecay_la_LDFLAGS = -module -version-info 5:0:0
 
 HwPerturbativeHiggsDecay_la_SOURCES = \
- SMHiggsFermionsDecayer.cc  SMHiggsFermionsDecayer.fh  \
- SMHiggsFermionsDecayer.h  SMHiggsFermionsDecayer.icc  \
- SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.fh \
- SMHiggsGGHiggsPPDecayer.h SMHiggsGGHiggsPPDecayer.icc
-HwPerturbativeHiggsDecay_la_LDFLAGS = -module
+ SMHiggsFermionsDecayer.cc SMHiggsFermionsDecayer.h \
+ SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.h\
+ SMHiggsWWDecayer.cc SMHiggsWWDecayer.h 
+HwPerturbativeHiggsDecay_la_LDFLAGS = -module -version-info 5:0:0
 
-#SMHiggsWWDecayer.cc  SMHiggsWWDecayer.fh  \
-# SMHiggsWWDecayer.h  SMHiggsWWDecayer.icc  

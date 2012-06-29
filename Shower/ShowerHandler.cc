@@ -1,39 +1,100 @@
 // -*- C++ -*-
 //
+// ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ShowerHandler class.
 //
 
 #include "ShowerHandler.h"
-#include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h" 
-#include "ThePEG/Interface/Parameter.h" 
-#include "ThePEG/Handlers/XComb.h"
-#include "ThePEG/Utilities/Timer.h"
-#include "Evolver.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
-#include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/Hadronization/Remnant.h"
-#include <cassert>
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerHandler.tcc"
-#endif
-
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/PDF/PartonExtractor.h"
+#include "ThePEG/PDF/PartonBinInstance.h"
+#include "Herwig++/PDT/StandardMatchers.h"
+#include "ThePEG/Cuts/Cuts.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/Utilities/Throw.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ShowerTree.h"
+#include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/PDF/MPIPDF.h"
+#include "Herwig++/PDF/MinBiasPDF.h"
+#include "ThePEG/Handlers/EventHandler.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/PDF/HwRemDecayer.h"
+#include <cassert>
 
 using namespace Herwig;
 
+ShowerHandler::~ShowerHandler() {}
+
+ShowerHandler * ShowerHandler::currentHandler_ = 0;
+
+void ShowerHandler::doinit() {
+  CascadeHandler::doinit();
+  // copy particles to decay before showering from input vector to the 
+  // set used in the simulation
+  particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
+				 inputparticlesDecayInShower_.end());
+}
+
+IBPtr ShowerHandler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ShowerHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+ShowerHandler::ShowerHandler() : 
+  pdfFreezingScale_(2.5*GeV),
+  maxtry_(10),maxtryMPI_(10),maxtryDP_(10), subProcess_() {
+  inputparticlesDecayInShower_.push_back( 6  ); //  top 
+  inputparticlesDecayInShower_.push_back( 23 ); // Z0
+  inputparticlesDecayInShower_.push_back( 24 ); // W+/-
+  inputparticlesDecayInShower_.push_back( 25 ); // h0
+}
+
+void ShowerHandler::doinitrun(){
+  CascadeHandler::doinitrun();
+  //can't use isMPIOn here, because the EventHandler is not set at that stage
+  if(MPIHandler_){ 
+    MPIHandler_->initialize();
+    if(MPIHandler_->softInt())
+      remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
+  }
+}
+
+void ShowerHandler::dofinish(){
+  CascadeHandler::dofinish();
+  if(MPIHandler_) MPIHandler_->finalize();
+}
+
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << _evolver << _maxtry;
+  os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
+     << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
+     << particlesDecayInShower_ << MPIHandler_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _evolver >> _maxtry;  
+  is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
+     >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
+     >> particlesDecayInShower_ >> MPIHandler_;  
 }
 
 ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;
@@ -47,204 +108,564 @@ void ShowerHandler::Init() {
   static Reference<ShowerHandler,Evolver> 
     interfaceEvolver("Evolver", 
 		     "A reference to the Evolver object", 
-		     &Herwig::ShowerHandler::_evolver,
+		     &Herwig::ShowerHandler::evolver_,
 		     false, false, true, false);
+
+  static Reference<ShowerHandler,HwRemDecayer> 
+    interfaceRemDecayer("RemDecayer", 
+		     "A reference to the Remnant Decayer object", 
+		     &Herwig::ShowerHandler::remDec_,
+		     false, false, true, false);
+
+  static Parameter<ShowerHandler,Energy> interfacePDFFreezingScale
+    ("PDFFreezingScale",
+     "The PDF freezing scale",
+     &ShowerHandler::pdfFreezingScale_, GeV, 2.5*GeV, 2.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
   static Parameter<ShowerHandler,unsigned int> interfaceMaxTry
     ("MaxTry",
      "The maximum number of attempts for the main showering loop",
-     &ShowerHandler::_maxtry, 10, 1, 100,
+     &ShowerHandler::maxtry_, 10, 1, 100,
      false, false, Interface::limited);
 
+  static Parameter<ShowerHandler,unsigned int> interfaceMaxTryMPI
+    ("MaxTryMPI",
+     "The maximum number of regeneration attempts for an additional scattering",
+     &ShowerHandler::maxtryMPI_, 10, 0, 100,
+     false, false, Interface::limited);
+
+  static Parameter<ShowerHandler,unsigned int> interfaceMaxTryDP
+    ("MaxTryDP",
+     "The maximum number of regeneration attempts for an additional hard scattering",
+     &ShowerHandler::maxtryDP_, 10, 0, 100,
+     false, false, Interface::limited);
+
+  static ParVector<ShowerHandler,long> interfaceDecayInShower
+    ("DecayInShower",
+     "PDG codes of the particles to be decayed in the shower",
+     &ShowerHandler::inputparticlesDecayInShower_, -1, 0l, -10000000l, 10000000l,
+     false, false, Interface::limited);
+
+  static Reference<ShowerHandler,UEBase> interfaceMPIHandler
+    ("MPIHandler",
+     "The object that administers all additional scatterings.",
+     &ShowerHandler::MPIHandler_, false, false, true, true);
+  
 }
 
-void ShowerHandler::fillEventRecord() 
-{
-  // create a new step 
-  StepPtr pstep = eventHandler()->newStep();
-  if(_done.empty()) throw Exception() << "Must have some showers to insert in "
-				      << "ShowerHandler::fillEventRecord()" 
-				      << Exception::runerror;
-  if(!_done[0]->isHard()) throw Exception() << "Must start filling with hard process"
-					    << " in ShowerHandler::fillEventRecord()" 
-					    << Exception::runerror;
-  // insert the steps
-  for(unsigned int ix=0;ix<_done.size();++ix)
-    {
-      _done[ix]->fillEventRecord(pstep,
-				 _evolver->isISRadiationON(),
-				 _evolver->isFSRadiationON());
+void ShowerHandler::cascade() {
+  // get the incoming partons
+  tPPair  incomingPartons = 
+    eventHandler()->currentCollision()->primarySubProcess()->incoming();
+  // and the parton bins
+  PBIPair incomingBins    = 
+    make_pair(lastExtractor()->partonBinInstance(incomingPartons.first),
+	      lastExtractor()->partonBinInstance(incomingPartons.second));
+  // and the incoming hadrons
+  tPPair incomingHadrons = 
+    eventHandler()->currentCollision()->incoming();
+  // check if incoming hadron == incoming parton
+  // and get the incoming hadron if exists or parton otherwise
+  incoming_ = make_pair(incomingBins.first  ? 
+			incomingBins.first ->particle() : incomingPartons.first,
+			incomingBins.second ? 
+			incomingBins.second->particle() : incomingPartons.second);
+  // check the collision is of the beam particles
+  // and if not boost collision to the right frame
+  // i.e. the hadron-hadron CMF of the collision
+  bool btotal(false);
+  LorentzRotation rtotal;
+  if(incoming_.first  != incomingHadrons.first ||
+     incoming_.second != incomingHadrons.second ) {
+    btotal = true;
+    boostCollision(false);
+  }
+  // set the current ShowerHandler
+  currentHandler_ = this;
+  // first shower the hard process
+  try {
+    SubProPtr sub = eventHandler()->currentCollision()->primarySubProcess();
+    incomingPartons = cascade(sub);
+  } 
+  catch(ShowerTriesVeto &veto){
+    throw Exception() << "Failed to generate the shower after "
+                      << veto.tries
+                      << " attempts in Evolver::showerHardProcess()"
+                      << Exception::eventerror;
+  }
+  // if a non-hadron collision return (both incoming non-hadronic)
+  if( ( !incomingBins.first||
+        !HadronMatcher::Check(incomingBins.first ->particle()->data()))&&
+      ( !incomingBins.second||
+        !HadronMatcher::Check(incomingBins.second->particle()->data()))) {
+    // boost back to lab if needed
+    if(btotal) boostCollision(true);
+    // unset the current ShowerHandler
+    currentHandler_ = 0;
+    return;
+  }
+  // get the remnants for hadronic collision
+  pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incomingBins));
+  // set the starting scale of the forced splitting to the PDF freezing scale
+  remDec_->initialize(remnants, incoming_, *currentStep(), pdfFreezingScale());
+  // do the first forcedSplitting
+  try {
+    remDec_->doSplit(incomingPartons, make_pair(firstPDF() .pdf(), 
+						secondPDF().pdf()), true);
+  }
+  catch (ExtraScatterVeto) {
+    throw Exception() << "Remnant extraction failed in "
+                      << "ShowerHandler::cascade()" 
+                      << Exception::eventerror;   
+  }
+  // if no MPI return
+  if( !isMPIOn() ) {
+    remDec_->finalize();
+    // boost back to lab if needed
+    if(btotal) boostCollision(true);
+    // unset the current ShowerHandler
+    currentHandler_ = 0;
+    return;
+  }
+  // generate the multiple scatters use modified pdf's now:
+  pair <PDFPtr, PDFPtr> newpdf;
+  setMPIPDFs(newpdf);
+  // additional "hard" processes
+  unsigned int tries(0);
+  // This is the loop over additional hard scatters (most of the time
+  // only one, but who knows...)
+  for(unsigned int i=1; i <= getMPIHandler()->additionalHardProcs(); i++){
+    //counter for regeneration
+    unsigned int multSecond = 0;
+    // generate the additional scatters
+    while( multSecond < getMPIHandler()->multiplicity(i) ) {
+      // generate the hard scatter 
+      tStdXCombPtr lastXC = getMPIHandler()->generate(i);
+      SubProPtr sub = lastXC->construct();
+      // add to the Step
+      newStep()->addSubProcess(sub);
+      // increment the counters
+      tries++;
+      multSecond++;
+      if(tries == maxtryDP_)
+	throw Exception() << "Failed to establish the requested number " 
+			  << "of additional hard processes. If this error "
+			  << "occurs often, your selection of additional "
+			  << "scatter is probably unphysical"
+			  << Exception::eventerror;
+      // Generate the shower. If not possible veto the event
+      try {
+	incomingPartons = cascade(sub);
+      } 
+      catch(ShowerTriesVeto &veto){
+	throw Exception() << "Failed to generate the shower of " 
+			  << "a secondary hard process after "
+			  << veto.tries
+			  << " attempts in Evolver::showerHardProcess()"
+			  << Exception::eventerror;
+      }
+      try {
+	// do the forcedSplitting
+	remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
+						    secondPDF().pdf()), false);
+	// check if there is enough energy to extract
+	if( remnants.first ->momentum().e() - 
+	    incomingPartons.first ->momentum().e() < 1.0e-3*MeV ||
+	    remnants.second->momentum().e() - 
+	    incomingPartons.second->momentum().e() < 1.0e-3*MeV )
+	  throw ExtraScatterVeto();
+      } 
+      catch(ExtraScatterVeto){
+	//remove all particles associated with the subprocess
+	newStep()->removeParticle(incomingPartons.first);
+	newStep()->removeParticle(incomingPartons.second);
+	//remove the subprocess from the list
+	newStep()->removeSubProcess(sub);
+	//regenerate the scattering
+	multSecond--;
+	continue;
+      }
+      // connect with the remnants but don't set Remnant colour,
+      // because that causes problems due to the multiple colour lines.
+      if ( !remnants.first ->extract(incomingPartons.first , false) ||
+	   !remnants.second->extract(incomingPartons.second, false) )
+	throw Exception() << "Remnant extraction failed in "
+			  << "ShowerHandler::cascade()" 
+			  << Exception::runerror;
     }
-} 
+  }
+  // the underlying event processes
+  unsigned int ptveto(1), veto(0);
+  unsigned int max(getMPIHandler()->multiplicity());
+  for(unsigned int i=0; i<max; i++) {
+    // check how often this scattering has been regenerated
+    if(veto > maxtryMPI_) break;
+    //generate PSpoint
+    tStdXCombPtr lastXC = getMPIHandler()->generate();
+    SubProPtr sub = lastXC->construct();
+    //If Algorithm=1 additional scatters of the signal type
+    // with pt > ptmin have to be vetoed
+    //with probability 1/(m+1), where m is the number of occurances in this event
+    if( getMPIHandler()->Algorithm() == 1 ){
+      //get the pT
+      Energy pt = sub->outgoing().front()->momentum().perp();
+      if(pt > getMPIHandler()->PtForVeto() && UseRandom::rnd() < 1./(ptveto+1) ){
+        ptveto++;
+        i--;
+        continue;
+      } 
+    }
+    // add to the SubProcess to the step
+    newStep()->addSubProcess(sub);
+    // Run the Shower. If not possible veto the scattering
+    try {
+      incomingPartons = cascade(sub);
+    } 
+    // discard this extra scattering, but try the next one
+    catch(ShowerTriesVeto) {
+      newStep()->removeSubProcess(sub);
+      //regenerate the scattering
+      veto++;
+      i--;
+      continue;      
+    }
+    try{
+      //do the forcedSplitting
+      remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
+						  secondPDF().pdf()), false);
+      // check if there is enough energy to extract
+      if( remnants.first ->momentum().e() - 
+	  incomingPartons.first ->momentum().e() < 1.0e-3*MeV ||
+	  remnants.second->momentum().e() - 
+	  incomingPartons.second->momentum().e() < 1.0e-3*MeV )
+	throw ExtraScatterVeto();
+    }
+    catch (ExtraScatterVeto) {
+      //remove all particles associated with the subprocess
+      newStep()->removeParticle(incomingPartons.first);
+      newStep()->removeParticle(incomingPartons.second);
+      //remove the subprocess from the list
+      newStep()->removeSubProcess(sub);
+      //regenerate the scattering
+      veto++;
+      i--;
+      continue;      
+    }
+    //connect with the remnants but don't set Remnant colour,
+    //because that causes problems due to the multiple colour lines.
+    if ( !remnants.first ->extract(incomingPartons.first , false) ||
+	 !remnants.second->extract(incomingPartons.second, false) )
+      throw Exception() << "Remnant extraction failed in "
+			<< "ShowerHandler::cascade()" 
+			<< Exception::runerror;
+    //reset veto counter
+    veto = 0;
+  }
+  // finalize the remnants
+  remDec_->finalize(getMPIHandler()->colourDisrupt(), 
+		    getMPIHandler()->softMultiplicity());
+  // boost back to lab if needed
+  if(btotal) boostCollision(true);
+  // unset the current ShowerHandler
+  currentHandler_ = 0;
+}
 
-void ShowerHandler::findShoweringParticles()
-{
-  Timer<1001> timer("ShowerHandler::findShoweringParticles");
+void ShowerHandler::fillEventRecord() {
+  // create a new step 
+  StepPtr pstep = newStep();
+  assert(!done_.empty());
+  assert(done_[0]->isHard());
+  // insert the steps
+  for(unsigned int ix=0;ix<done_.size();++ix) {
+    done_[ix]->fillEventRecord(pstep,
+			       evolver_->isISRadiationON(),
+			       evolver_->isFSRadiationON());
+  }
+}
+
+void ShowerHandler::findShoweringParticles() {
   // clear the storage
-  _hard=ShowerTreePtr();
-  _decay.clear();
-  _done.clear();
+  hard_=ShowerTreePtr();
+  decay_.clear();
+  done_.clear();
   // temporary storage of the particles
   set<PPtr> hardParticles;
   // outgoing particles from the hard process
-  ParticleVector outgoing=eventHandler()->currentCollision()->
-    primarySubProcess()->outgoing();
+  PVector outgoing = currentSubProcess()->outgoing();
   set<PPtr> outgoingset(outgoing.begin(),outgoing.end());
   // loop over the tagged particles
-  tParticleVector::const_iterator taggedP = tagged().begin();
-  for (;taggedP != tagged().end(); ++taggedP) {
+  tPVector thetagged;
+  if( firstInteraction() ){
+    thetagged = tagged();
+  }
+  else{
+    thetagged.insert(thetagged.end(),
+		     outgoing.begin(),outgoing.end());
+  }
+  bool isHard=false;
+  for (tParticleVector::const_iterator 
+	 taggedP = thetagged.begin();
+       taggedP != thetagged.end(); ++taggedP) {
     // if a remnant don't consider
     if(eventHandler()->currentCollision()->isRemnant(*taggedP))
       continue;
-    // find the parent and if colourless s-channel resonance
+    // find the parent and whether its a colourless s-channel resonance
     bool isDecayProd=false;
     tPPtr parent;
-    if(!(*taggedP)->parents().empty()) 
-      {
-	parent = (*taggedP)->parents()[0];
-	// check if from s channel decaying colourless particle
-	// (must be same as in findParent)
-	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.;
-      }
+    if(!(*taggedP)->parents().empty()) {
+      parent = (*taggedP)->parents()[0];
+      // check if from s channel decaying colourless particle
+      isDecayProd = decayProduct(parent);
+    }
     // add to list of outgoing hard particles if needed
-    if(outgoingset.find(*taggedP) != outgoingset.end())
-      {
-	if(isDecayProd) hardParticles.insert(findParent(parent));
-	else            hardParticles.insert(*taggedP);
-      }
-    else
-      {throw Exception() << "Starting on decay not yet implemented in "
-			  << "ShowerHandler::findShoweringParticles()" 
-			  << Exception::runerror;}
+    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
+    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
+    else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower
   if(hardParticles.empty()) 
     throw Exception() << "No particles to shower in "
 		      << "ShowerHandler::fillShoweringParticles" 
 		      << Exception::eventerror;
+  if(!isHard)
+    throw Exception() << "Starting on decay not yet implemented in "
+		      << "ShowerHandler::findShoweringParticles()" 
+		      << Exception::runerror;
   // create the hard process ShowerTree
   ParticleVector out(hardParticles.begin(),hardParticles.end());
-  _hard=new_ptr(ShowerTree(eventHandler(),out,_evolver->showerVariables(),
-			   _decay));
-  _hard->setParents();
+  hard_=new_ptr(ShowerTree(out, decay_));
+  hard_->setParents();
 }
 
-void ShowerHandler::cascade()
-{
-  Timer<1002> timer("ShowerHandler::cascade");
-  //  start of the try block for the whole showering process
+tPPair ShowerHandler::cascade(tSubProPtr sub) {
+  // get the current step
+  current_ = currentStep();
+  // get the current subprocess
+  subProcess_ = sub;
+  // start of the try block for the whole showering process
   unsigned int countFailures=0;
-  ShowerTreePtr hard;
-  vector<ShowerTreePtr> decay;
-  while (countFailures<_maxtry) {
-    try
-      {
-	// set the gluon mass to be used in the reconstruction
-	_evolver->showerVariables()->setGluonMass(false);
-	// find the particles in the hard process and the decayed particles to shower
-	findShoweringParticles();
-	// check if a hard process or decay
- 	bool isHard = _hard;
- 	// find the stopping scale for the shower if multi-scale shower is on
- 	Energy largestWidth = Energy();
- 	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
- 	  {
- 	    largestWidth=(*_decay.rbegin()).first;
- 	    if(largestWidth<
- 	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
- 	      largestWidth = Energy();
- 	  }
- 	// if a hard process perform the shower for the hard process
- 	if(isHard) 
-	  {
-	    _evolver->showerHardProcess(_hard);
-	    _done.push_back(_hard);
-	    _hard->updateAfterShower(_decay,eventHandler());
-	  }
- 	// if no decaying particles to shower break out of the loop
- 	if(_decay.empty()) break;
- 	// if no hard process
- 	if(!isHard) 
- 	  throw Exception() << "Shower starting with a decay is not yet implemented" 
- 			    << Exception::runerror;
- 	// shower the decay products
- 	while(!_decay.empty())
- 	  {
-	    multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
-	    while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
-	      --dit;
- 	    // get the particle and the width
- 	    ShowerTreePtr decayingTree = dit->second;
-	    // 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
- 	    // remove it from the multimap
- 	    _decay.erase(dit);
-	    // make sure the particle has been decayed
-	    decayingTree->decay(_decay,eventHandler());
- 	    // now shower the decay
- 	    _evolver->showerDecay(decayingTree);
-	    _done.push_back(decayingTree);
-	    decayingTree->updateAfterShower(_decay,eventHandler());
- 	  }
-	// suceeded break out of the loop
-	break;
+  while (countFailures<maxtry_) {
+    try {
+      // find the particles in the hard process and the decayed particles to shower
+      findShoweringParticles();
+      // if no hard process
+      if(!hard_)  throw Exception() << "Shower starting with a decay"
+				    << "is not implemented" 
+				    << Exception::runerror;
+      // perform the shower for the hard process
+      evolver_->showerHardProcess(hard_);
+      done_.push_back(hard_);
+      hard_->updateAfterShower(decay_);
+      // if no decaying particles to shower break out of the loop
+      if(decay_.empty()) break;
+      // shower the decay products
+      while(!decay_.empty()) {
+	// find particle whose production process has been showered
+	ShowerDecayMap::iterator dit = decay_.begin();
+	while(!dit->second->parent()->hasShowered() && dit!=decay_.end()) ++dit;
+	assert(dit!=decay_.end());
+	// get the particle
+	ShowerTreePtr decayingTree = dit->second;
+	// remove it from the multimap
+	decay_.erase(dit);
+	// make sure the particle has been decayed
+	decayingTree->decay(decay_);
+	// now shower the decay
+	evolver_->showerDecay(decayingTree);
+	done_.push_back(decayingTree);
+	decayingTree->updateAfterShower(decay_);
       }
-    catch (Veto)
-      {
-	throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
-			  << Exception::eventerror;
-	++countFailures;
-      }
+      // suceeded break out of the loop
+      break;
+    }
+    catch (KinematicsReconstructionVeto) {
+      ++countFailures;
+    }
   }
   // if loop exited because of too many tries, throw event away
-  if (countFailures >= _maxtry) {
+  if (countFailures >= maxtry_) {
+    hard_=ShowerTreePtr();
+    decay_.clear();
+    done_.clear();
     throw Exception() << "Too many tries for main while loop "
 		      << "in ShowerHandler::cascade()." 
 		      << Exception::eventerror; 	
   }
   //enter the particles in the event record
   fillEventRecord();
+  // clear storage
+  hard_=ShowerTreePtr();
+  decay_.clear();
+  done_.clear();
+  // non hadronic case return
+  if (!HadronMatcher::Check(incoming_.first ->data()) && 
+      !HadronMatcher::Check(incoming_.second->data()) )
+    return incoming_;
   // remake the remnants (needs to be after the colours are sorted
   //                       out in the insertion into the event record)
-  makeRemnants();
+  if ( firstInteraction() ) return remakeRemnant(sub->incoming());
+  //Return the new pair of incoming partons. remakeRemnant is not
+  //necessary here, because the secondary interactions are not yet
+  //connected to the remnants.
+  return make_pair(findFirstParton(sub->incoming().first ),
+		   findFirstParton(sub->incoming().second));
 }
 
-void ShowerHandler::makeRemnants()
-{
-  // get the incoming particles
-  PPair incoming=generator()->currentEvent()->incoming();
-  ParticleVector in;
-  in.push_back(incoming.first);
-  in.push_back(incoming.second);
-  // get the remnants
-  tParticleSet remn=generator()->currentEvent()->primaryCollision()->getRemnants();
-  // fix the momenta
-  for(unsigned int ix=0;ix<in.size();++ix)
-    {
-      Lorentz5Momentum pnew;
-      ParticleVector prem,pother;
-      if(in[ix]->children().size()==1) continue;
-      for(unsigned int iy=0;iy<in[ix]->children().size();++iy)
-	{
-	  if(remn.find(in[ix]->children()[iy])==remn.end())
-	    {
-	      pnew+=in[ix]->children()[iy]->momentum();
-	      pother.push_back(in[ix]->children()[iy]);
-	    }
-	  else
-	    prem.push_back(in[ix]->children()[iy]);
-	}
-      pnew=in[ix]->momentum()-pnew;
-      pnew.rescaleMass();
-      // throw exception if gone wrong
-      if(prem.size()!=1||pother.size()!=1) 
-	throw Exception() 
-	  << "Must be one and only 1 remnant for beam in ShowerHandler::makeRemnants()"
-	  << Exception::eventerror;
-	  // remake the remnant
-      if(prem[0]->id()==ExtraParticleID::Remnant)
-	{
-	  tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
-	  if(rem) rem->regenerate(pother[0],pnew);
-	}
+PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
+			       set<PPtr> outgoingset) const {
+  PPtr parent=original;
+  isHard |=(outgoingset.find(original) != outgoingset.end());
+  if(!original->parents().empty()) {
+    PPtr orig=original->parents()[0];
+    if(current_->find(orig)&&decayProduct(orig)) {
+      parent=findParent(orig,isHard,outgoingset);
     }
+  }
+  return parent;
+}
+
+ShowerHandler::RemPair 
+ShowerHandler::getRemnants(PBIPair incomingBins) {
+  RemPair remnants;
+  // first beam particle
+  if(incomingBins.first&&!incomingBins.first->remnants().empty()) {
+    remnants.first  =
+      dynamic_ptr_cast<tRemPPtr>(incomingBins.first->remnants()[0] );
+    if(remnants.first) {
+      ParticleVector children=remnants.first->children();
+      for(unsigned int ix=0;ix<children.size();++ix) {
+	if(children[ix]->dataPtr()==remnants.first->dataPtr()) 
+	  remnants.first = dynamic_ptr_cast<RemPPtr>(children[ix]);
+      } 
+      //remove existing colour lines from the remnants
+      if(remnants.first->colourLine()) 
+	remnants.first->colourLine()->removeColoured(remnants.first);
+      if(remnants.first->antiColourLine()) 
+	remnants.first->antiColourLine()->removeAntiColoured(remnants.first);
+    }
+  }
+  // seconnd beam particle
+  if(incomingBins.second&&!incomingBins. second->remnants().empty()) {
+    remnants.second = 
+      dynamic_ptr_cast<tRemPPtr>(incomingBins.second->remnants()[0] );
+    if(remnants.second) {
+      ParticleVector children=remnants.second->children();
+      for(unsigned int ix=0;ix<children.size();++ix) {
+	if(children[ix]->dataPtr()==remnants.second->dataPtr()) 
+	  remnants.second = dynamic_ptr_cast<RemPPtr>(children[ix]);
+      } 
+      //remove existing colour lines from the remnants
+      if(remnants.second->colourLine()) 
+	remnants.second->colourLine()->removeColoured(remnants.second);
+      if(remnants.second->antiColourLine()) 
+	remnants.second->antiColourLine()->removeAntiColoured(remnants.second);
+    }
+  }
+  assert(remnants.first || remnants.second);
+  return remnants;
+}
+
+tPPair ShowerHandler::remakeRemnant(tPPair oldp){
+  // get the parton extractor
+  PartonExtractor & pex = *lastExtractor();
+  // get the new partons
+  tPPair newp = make_pair(findFirstParton(oldp.first ), 
+			  findFirstParton(oldp.second));
+  // if the same do nothing
+  if(newp == oldp) return oldp;
+  // Creates the new remnants and returns the new PartonBinInstances
+  PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
+  newStep()->addIntermediate(newp.first);
+  newStep()->addIntermediate(newp.second);
+  // return the new partona
+  return newp;
+}
+
+PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
+  if(seed->parents().empty()) return seed;
+  tPPtr parent = seed->parents()[0];
+  //if no parent there this is a loose end which will 
+  //be connected to the remnant soon.
+  if(!parent || parent == incoming_.first || 
+     parent == incoming_.second ) return seed;
+  else return findFirstParton(parent);
+}
+
+bool ShowerHandler::decayProduct(tPPtr particle) const {
+  // must be time-like and not incoming
+  if(particle->momentum().m2()<=ZERO||
+     particle == currentSubProcess()->incoming().first||
+     particle == currentSubProcess()->incoming().second) return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
+  // must not be the s-channel intermediate
+  if(find(currentSubProcess()->incoming().first->children().begin(),
+	  currentSubProcess()->incoming().first->children().end(),particle)!=
+     currentSubProcess()->incoming().first->children().end()&&
+     find(currentSubProcess()->incoming().second->children().begin(),
+	  currentSubProcess()->incoming().second->children().end(),particle)!=
+     currentSubProcess()->incoming().second->children().end()&&
+     currentSubProcess()->incoming().first ->children().size()==1&&
+     currentSubProcess()->incoming().second->children().size()==1)
+    return false;
+  // must not have same particle type as a child
+  int id = particle->id();
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    if(particle->children()[ix]->id()==id) return false;
+  // otherwise its a decaying particle
+  return true;
+}
+
+namespace {
+
+void addChildren(tPPtr in,set<tPPtr> particles) {
+  particles.insert(in);
+  for(unsigned int ix=0;ix<in->children().size();++ix)
+    addChildren(in->children()[ix],particles);
+}
+}
+
+void ShowerHandler::boostCollision(bool boost) {
+  // calculate boost from lab to rest
+  if(!boost) {
+    Lorentz5Momentum ptotal=incoming_.first ->momentum()+incoming_.second->momentum();
+    boost_ = LorentzRotation(-ptotal.boostVector());
+    Axis axis((boost_*incoming_.first ->momentum()).vect().unit());
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(1.-sqr(axis.z())));
+      boost_.rotate(acos(-axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+  }
+  // first call performs the boost and second inverse
+  // get the particles to be boosted 
+  set<tPPtr> particles;
+  addChildren(incoming_.first,particles);
+  addChildren(incoming_.second,particles);
+  // apply the boost
+  for(set<tPPtr>::const_iterator cit=particles.begin();
+      cit!=particles.end();++cit) {
+    (*cit)->transform(boost_);
+  }
+  if(!boost) boost_.invert();
+}
+
+void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
+  // first have to check for MinBiasPDF
+  tcMinBiasPDFPtr first = 
+    dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf());
+  if(first)
+    newpdf.first = new_ptr(MPIPDF(first->originalPDF()));
+  else
+    newpdf.first = new_ptr(MPIPDF(firstPDF().pdf()));
+  tcMinBiasPDFPtr second =
+    dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf());
+  if(second)
+    newpdf.second = new_ptr(MPIPDF(second->originalPDF()));
+  else
+    newpdf.second = new_ptr(MPIPDF(secondPDF().pdf()));
+  // reset the PDFs stored in the base class
+  resetPDFs(newpdf);
 }

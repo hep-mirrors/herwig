@@ -1,11 +1,17 @@
 // -*- C++ -*-
+//
+// TwoPionPhotonCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TwoPionPhotonCurrent_H
 #define HERWIG_TwoPionPhotonCurrent_H
 //
 // This is the declaration of the TwoPionPhotonCurrent class.
 //
 #include "WeakDecayCurrent.h"
-#include "TwoPionPhotonCurrent.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -55,20 +61,10 @@ class TwoPionPhotonCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline TwoPionPhotonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline TwoPionPhotonCurrent(const TwoPionPhotonCurrent &);
-  //@}
-
-public:
+  TwoPionPhotonCurrent();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -124,21 +120,21 @@ public:
    * @param ia The PDG code for the antiquark
    * @return The external particles for the current.
    */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
    * Hadronic current. This version returns the hadronic current described above.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan,Energy & scale, 
+	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the meson against the list
@@ -171,13 +167,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -189,7 +185,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -211,7 +207,13 @@ private:
    * @param q2 The scale \f$q^2\f$.
    * @return The value of the function. 
    */
-  inline Complex FFunction(Energy2 q2) const;
+  complex<InvEnergy> FFunction(Energy2 q2) const {
+    complex<InvEnergy2> output(ZERO);
+    for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix) {
+      output -= _resweights[ix]*BreitWigner(q2,ix);
+    }
+    return output*_grho*_grhoomegapi*sqrt(2.);
+  }
 
   /**
    * Fixed width Breit wigner
@@ -220,7 +222,18 @@ private:
    * \f$\omega\f$.
    * @return The breit wigner
    */
-  inline Complex BreitWigner(Energy2 q2,unsigned int ires) const;
+  complex<InvEnergy2> BreitWigner(Energy2 q2,unsigned int ires) const {
+    static const Complex ii(0.,1.);
+    complex<Energy2> denom;
+    if(ires<_rhomasses.size()) {
+      denom = q2-_rhomasses[ires]*_rhomasses[ires]+ii*_rhomasses[ires]*_rhowidths[ires];
+    }
+    else if(ires==10) {
+      denom = q2-_omegamass*_omegamass+ii*_omegamass*_omegawidth;
+    }
+    else assert(false);
+    return 1./denom;
+  }
   
 private:
   
@@ -291,6 +304,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of TwoPionPhotonCurrent.
@@ -309,7 +324,7 @@ template <>
 struct ClassTraits<Herwig::TwoPionPhotonCurrent>
   : public ClassTraitsBase<Herwig::TwoPionPhotonCurrent> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TwoPionPhotonCurrent"; }
+  static string className() { return "Herwig::TwoPionPhotonCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -319,11 +334,8 @@ struct ClassTraits<Herwig::TwoPionPhotonCurrent>
 
 };
 
-}
+/** @endcond */
 
-#include "TwoPionPhotonCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoPionPhotonCurrent.tcc"
-#endif
+}
 
 #endif /* HERWIG_TwoPionPhotonCurrent_H */

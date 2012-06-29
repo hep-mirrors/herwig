@@ -1,0 +1,47 @@
+#! /usr/bin/env bash
+# @configure_input@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
+
+tmp=$(echo $* | egrep -- '--\<help\>|-\<h\>')
+if test $# -eq 0 || test -n "$tmp"; then
+    echo "herwig-config: configuration tool for the Herwig++ event generator"
+    echo "               http://projects.hepforge.org/herwig/"
+    echo
+    echo "Usage: `basename $0` [Option]"
+    echo "Options:"
+    echo "  --help | -h    : show this help message"
+    echo "  --prefix       : show the installation prefix (cf. autoconf)"
+    echo "  --datadir      : show the path to the directory containing shared data"
+    echo "  --libdir       : show the path to the directory containing the libraries"
+    echo "  --includedir   : show the path to the directory containing the headers"
+    echo "  --cppflags     : show the required CPPFLAGS for building against Herwig++"
+    echo "  --ldflags      : show the required LDFLAGS for linking against Herwig++"
+    echo "  --ldlibs       : show the required libraries for linking against Herwig++"
+
+    echo
+fi
+
+tmp=$(echo "$*" | egrep -- '--\<prefix\>')
+test -n "$tmp" && echo $prefix
+
+tmp=$(echo "$*" | egrep -- '--\<datadir\>')
+test -n "$tmp" && echo @datadir@/@PACKAGE_TARNAME@
+
+tmp=$(echo "$*" | egrep -- '--\<libdir\>')
+test -n "$tmp" && echo @libdir@/@PACKAGE_TARNAME@
+
+tmp=$(echo "$*" | egrep -- '--\<includedir\>')
+test -n "$tmp" && echo @includedir@
+
+tmp=$(echo "$*" | egrep -- '--\<cppflags\>')
+test -n "$tmp" && echo -I@includedir@ @THEPEGINCLUDE@
+
+tmp=$(echo "$*" | egrep -- '--\<ldflags\>')
+test -n "$tmp" && echo @THEPEGLDFLAGS@
+
+tmp=$(echo "$*" | egrep -- '--\<ldlibs\>')
+test -n "$tmp" && echo @THEPEGLIB@
+

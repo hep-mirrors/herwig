@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// StandardModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_StandardModel_H
 #define HERWIG_StandardModel_H
 //
@@ -6,15 +13,17 @@
 
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/StandardModel/RunningMassBase.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
+#include "Herwig++/Models/General/ModelGenerator.fh"
+#include "StandardModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *  
@@ -44,6 +53,26 @@ class StandardModel: public StandardModelBase {
 
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor
+   */
+  StandardModel();
+
+  /**
+   * Copy-constructor.
+   */
+  StandardModel(const StandardModel &);
+
+  /**
+   * Destructor
+   */
+  virtual ~StandardModel();
+  //@}
+  
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -119,52 +148,62 @@ public:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  inline tFFVVertexPtr  vertexFFZ() const;
+  inline tAbstractFFVVertexPtr  vertexFFZ() const;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  inline tFFVVertexPtr  vertexFFP() const;
+  inline tAbstractFFVVertexPtr  vertexFFP() const;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  inline tFFVVertexPtr  vertexFFG() const;
+  inline tAbstractFFVVertexPtr  vertexFFG() const;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  inline tFFVVertexPtr  vertexFFW() const;
+  inline tAbstractFFVVertexPtr  vertexFFW() const;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  inline tFFSVertexPtr  vertexFFH() const;
+  virtual inline tAbstractFFSVertexPtr  vertexFFH() const;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  inline tVVVVertexPtr  vertexGGG() const;
+  inline tAbstractVVVVertexPtr  vertexGGG() const;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  inline tVVVVertexPtr  vertexWWW() const;
+  inline tAbstractVVVVertexPtr  vertexWWW() const;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  inline tVVSVertexPtr  vertexWWH() const;
+  virtual inline tAbstractVVSVertexPtr  vertexWWH() const;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  inline tVVVVVertexPtr vertexWWWW() const;
+  inline tAbstractVVVVVertexPtr vertexWWWW() const;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  inline tVVVVVertexPtr vertexGGGG() const;
+  inline tAbstractVVVVVertexPtr vertexGGGG() const;
+
+ /**
+   * Pointer to the quartic gluon vertex
+   */
+  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
+
+ /**
+   * Pointer to the quartic gluon vertex
+   */
+  inline tAbstractVVSVertexPtr vertexHPP() const;
 
   /**
    *  Total number of vertices
@@ -182,7 +221,7 @@ public:
    * @param scale The scale \f$q^2\f$.
    * @param part The ParticleData object for the particle
    */
-  inline double mass(Energy2 scale,tcPDPtr part) const;
+  inline Energy mass(Energy2 scale,tcPDPtr part) const;
   
   /**
    * Return a pointer to the object handling the running mass.
@@ -206,6 +245,16 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
   
+protected:
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 protected:
 
   /**
@@ -235,53 +284,63 @@ private:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  FFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr _theFFPVertex;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  FFVVertexPtr _theFFGVertex;
+  AbstractFFVVertexPtr _theFFGVertex;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  FFVVertexPtr _theFFWVertex;
+  AbstractFFVVertexPtr _theFFWVertex;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  FFSVertexPtr _theFFHVertex;
+  AbstractFFSVertexPtr _theFFHVertex;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  VVSVertexPtr _theWWHVertex;
+  AbstractVVSVertexPtr _theWWHVertex;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  VVVVertexPtr _theGGGVertex;
+  AbstractVVVVertexPtr _theGGGVertex;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  VVVVertexPtr _theWWWVertex;
+  AbstractVVVVertexPtr _theWWWVertex;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  VVVVVertexPtr _theGGGGVertex;
+  AbstractVVVVVertexPtr _theGGGGVertex;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  VVVVVertexPtr _theWWWWVertex;
+  AbstractVVVVVertexPtr _theWWWWVertex;
 
+  /**
+   * Pointer to higgs-gluon-gluon vertex
+   */
+  AbstractVVSVertexPtr _theHGGVertex;
+
+  /**
+   * Pointer to higgs-gamma-gamma vertex
+   */
+  AbstractVVSVertexPtr _theHPPVertex; 
+  
   /**
    *  Full list of vertices as a vector to allow searching
    */
@@ -292,7 +351,11 @@ private:
    * The running mass.
    */
   runPtr _theRunningMass;
-  
+
+  /**
+   * Pointer to ModelGenerator Class
+   */
+  ModelGeneratorPtr _theModelGenerator;
 };
 
 }  
@@ -300,6 +363,8 @@ private:
 #include "StandardModel.icc"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -322,16 +387,10 @@ struct ClassTraits<Herwig::StandardModel>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::StandardModel"; }
-
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwStandardModel.so"; }
-
+  static string className() { return "Herwig::StandardModel"; }
 };
+
+/** @endcond */
 
 }
 

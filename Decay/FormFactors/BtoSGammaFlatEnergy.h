@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BtoSGammaFlatEnergy.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BtoSGammaFlatEnergy_H
 #define HERWIG_BtoSGammaFlatEnergy_H
 //
@@ -6,7 +13,6 @@
 //
 
 #include "BtoSGammaHadronicMass.h"
-#include "BtoSGammaFlatEnergy.fh"
 
 namespace Herwig {
 
@@ -22,26 +28,6 @@ using namespace ThePEG;
  * @see BtoSGammaHadronicMass
  */
 class BtoSGammaFlatEnergy: public BtoSGammaHadronicMass {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline BtoSGammaFlatEnergy();
-
-  /**
-   * The copy constructor.
-   */
-  inline BtoSGammaFlatEnergy(const BtoSGammaFlatEnergy &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BtoSGammaFlatEnergy();
-  //@}
 
 public:
 
@@ -64,22 +50,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -96,61 +66,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -159,7 +81,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<BtoSGammaFlatEnergy> initBtoSGammaFlatEnergy;
+  static NoPIOClassDescription<BtoSGammaFlatEnergy> initBtoSGammaFlatEnergy;
 
   /**
    * The assignment operator is private and must never be called.
@@ -175,6 +97,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaFlatEnergy. */
 template <>
@@ -189,18 +113,15 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaFlatEnergy>
   : public ClassTraitsBase<Herwig::BtoSGammaFlatEnergy> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaFlatEnergy"; }
+  static string className() { return "Herwig::BtoSGammaFlatEnergy"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaFlatEnergy class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwFormFactors.so"; }
 };
 
-}
+/** @endcond */
 
-#include "BtoSGammaFlatEnergy.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaFlatEnergy.tcc"
-#endif
+}
 
 #endif /* HERWIG_BtoSGammaFlatEnergy_H */

@@ -1,0 +1,402 @@
+Herwig++ News				(emacs -*- outline -*- format)
+
+* Herwig++-2.3.0 release: 2008-12-02 (tagged at SVN r3939)
+** Major release, with many new features and bug fixes
+
+** Extension to lepton-hadron collisions
+
+** Inclusion of several processes accurate at next-to-leading order
+   in the POsitive Weight Hardest Emission Generator (POWHEG) scheme
+
+** Inclusion of three-body decays and finite-width effects
+   in BSM processes
+
+** New procedure for reconstructing kinematics of the parton shower
+   based on the colour structure of the hard scattering process
+
+** New model for baryon decays including excited baryon multiplets
+
+** Addition of a soft component to the multiple scattering model
+   of the underlying event and the option to choose more than one hard
+   scattering explicitly
+
+** New matrix elements for DIS and e+e- processes
+
+** New /Contrib directory added
+   containing external modules that will hopefully be of use to some
+   users but are not expected to be needed by most users and are not
+   supported at the same level as the main Herwig++ code
+
+** Minor changes to improve the physics simulation:
+
+*** IncomingPhotonEvolver added
+    to allow the simulation of partonic processes with incoming photons
+    in hadron collisions
+
+*** KTRapidityCut added
+    to allow cuts on the p_T and rapidity, rather than just the p_T and
+    pseudorapidity used in SimpleKTCut. This is now used by default for
+    cuts on massive particles such as the $W^\pm$, $Z^0$ and Higgs
+    bosons and the top quark
+
+*** Several changes to the decayers of B mesons
+    both to resolve problems with the modelling of partonic decays and
+    improve agreement with $\Upsilon(4s)$ data
+
+*** Changes to allow values other than transverse mass of final-state particles as maximum transverse momentum for radiation in parton shower
+    either SCALUP for Les Houches events or the scale of the hard
+    process for internally generated hard processes
+
+*** Changed defaults for intrinsic transverse momentum in hadron collisions
+    to 1.9GeV, 2.1GeV and 2.2GeV for the Tevatron and LHC at 10 TeV and
+    14 TeV, respectively
+
+*** Pdfinfo object is now created in the HepMC interface
+    However in order to support all versions of HepMC containing this
+    feature the PDF set is not specified as not all versions contain
+    this information
+
+*** New option of only decaying particles with lifetimes below user specified value
+
+*** New options for the cut-off in the shower
+    and some obsolete parameters removed
+
+*** Added option of switching off certain decay modes in BSM models
+
+*** Added a Matcher for Higgs boson
+    to allow cuts to be placed on it
+
+*** Diffractive particles deleted from default input files
+    they were not previously used
+
+** Technical changes:
+
+*** Some AnalysisHandler classes comparing to LEP data have been renamed
+    e.g. MultiplicityCount becomes LEPMultiplicityCount to avoid
+    confusion with those supplied in /Contrib for observables at the
+    Upsilon(4s) resonance
+
+*** Reorganisation to remove the majority of the .icc files
+    by moving inlined functions to headers in an effort to improve
+    compile time
+
+*** Restructured the decay libraries to reduce the amount of memory allocation
+    and de-allocation which improves run-time performance
+
+*** The switch to turn off LoopTools has been removed
+    because LoopTools is now used by several core modules. As LoopTools
+    does not work on 64-bit platforms with g77 this build option is not
+    supported
+
+*** Removed support for obsolete version of HepMC supplied with CLHEP
+    and improved the support for different units options with HepMC
+
+*** EvtGen interface has been removed until it is more stable
+
+*** Support for ROOT has been removed
+    it was not previously used
+
+*** CKKW infrastructure has been removed from the release
+    until a concrete implementation is available
+
+*** Default optimisation has been increased from -O2 to -O3
+
+*** Handling of the fortran compiler has been improved
+    mainly due to improvements in the autotools
+
+*** Use of FixedAllocator for Particle objects in ThePEG has been removed
+    as it had no performance benefits
+
+** Bugs fixed:
+
+*** Problems with the mother/daughter relations in the hard process
+    and diagram selection in W+- and Z0 production in association with a
+    hard jet
+
+*** In general matrix element code for fermion-vector to fermion-scalar
+    where the outgoing fermion is coloured and the scalar neutral
+
+*** In the selection of diagrams in some associated squark gaugino processes
+
+*** h0->mu+mu- was being generated when h0->tau+tau-
+
+*** Normalisation in the Histogram class for non unit-weight events
+
+*** Protection against negative PDF values has been improved
+    these can occur when using NLO PDF sets
+
+*** Lifetime for BSM particles is now automatically calculated
+    at the same time as the width
+
+*** Hadrons containing a top quark now treated like hadrons containing BSM particles
+    in order to support this possibility
+
+*** Several ambiguous uses of unsigned int
+
+*** Several variables that may have been used undefined
+
+*** Several memory leaks at initialisation
+
+*** The configuration now aborts if no fortran compiler is found
+    as this is required to compile Looptools
+
+*** Several minor floating point errors that did not affect results
+
+
+
+* Herwig++-2.2.1 release: 2008-07-09 (tagged at SVN r3434)
+** Ticket #181: BSM shower with a decay close to threshold
+   Now fixed.
+
+** Ticket #191: Split SUSY crash
+   Improved error message. 
+
+** Ticket #192: using SCALUP as the pT veto in the shower
+   Now implemented.
+
+** Ticket #194: production processes of ~chi_1(2)-
+   Fixed bug in the diagram creation.
+
+** Removed unused particles
+   DiffractiveParticles.in was removed, they were never produced.
+
+** Hadronization
+   Top quark clusters now possible, handled as 'exotic' clusters.
+
+** Improved handling of decay modes
+   See ThePEG-1.3.0. 'defaultparticle' command is now obsolete. 
+
+** Multi-Parton interactions
+   Increased phase space sampling to have less than 1% uncertainty on
+   average multiplicity.
+
+** New libtool version
+   gfortran is now used as default if it is available. Set FC=g77 to
+   override this. 
+
+** Fixed several memory leaks
+
+** Memory allocation
+   Now using plain 'new' and 'delete'.
+
+
+* Herwig++-2.2.0 release: 2008-04-18 (tagged at SVN r3195)
+** Major release: now as stand-alone library
+   Herwig++ is now a stand-alone dlopen() plugin to ThePEG.
+   No compile-time linking to Herwig code is required. The Herwig++
+   binary is a simple executable steering ThePEG, which can
+   be replaced by other frontends (such as setupThePEG / runThePEG).  
+
+** New matrix elements
+   p p   -> W + jet / Z + jet / W + higgs / Z + higgs
+   e+ e- -> Z + higgs
+
+** Looptools 
+   Updated to version 2.2.
+
+** Ticket #141: segfault from using 'run' command
+   Fixed by using default allocators in Herwig++, and the
+   Repository::cleanup() method in ThePEG 1.2.0. 
+
+** Ticket #157: broken gsl library path on some 64bit systems
+   Paths with lib64 are correctly identified now.
+
+** Ticket #159: p_t spectrum of ttbar pair
+   Fixed identical particle multiplier in Sudakov form factor.
+
+** Ticket #161: glibc segfault
+   Rare segfault in MPI handler fixed.
+
+** Ticket #165: rare infinite loop in four-body decay
+   All 4-body decays without dedicated decayers now use the Mambo algorithm.
+   A loop guard has been introduced to 3-body decays to avoid infinite retries.
+
+** Ticket #166: rare infinite loop in top ME correction
+   These very rare events (O(1) in 10^7) close to mass threshold
+   now are discarded.
+
+** Higgs width fixes
+
+** SatPDF
+   Optionally, the PDF extrapolation behaviour outside a given range 
+   can now be specified.
+
+** gcc 4.3
+   Herwig++-2.2 compiles cleanly with the new gcc 4.3 series.
+
+
+
+
+* Herwig++-2.1.4 release: 2008-03-03 (tagged at SVN r3024)
+** Ticket #152: Vertex positions
+   All vertex positions of unphysical particles are set to zero until
+   a fix for the previous nonsensical values can be implemented.
+
+
+
+
+* Herwig++-2.1.3 release: 2008-02-25 (tagged at SVN r2957)
+** Ticket #129: Baryon decays
+   Fix for baryon decay modes.
+
+** Ticket #131: HepMC
+   Check if IO_GenEvent exists
+
+** Ticket #134: Hadronization
+   Smearing of hadron directions in cluster decay fixed.
+
+** Ticket #137: HepMC
+   HepMC conversion allows specification of energy and length units to
+   be used. 
+
+** Ticket #139: Neutral kaons
+   Ratio K_L / K_S corrected.
+
+** Ticket #140 / #141: Crash on shutdown
+   Event generation from the 'read' stage or an interface now shuts
+   down cleanly. Fixes a crash bug introduced in 2.1.1 which affected
+   external APIs to ThePEG / Herwig.
+
+** Ticket #146: BSM models can be disabled
+   To save build time, some or all of the BSM models can be disabled
+   using the '--enable-models' configure switch.
+
+** Reorganised .model files
+   The .model files now include the model-specific particles, too.
+
+** Re-tune
+   Re-tuned hadronization parameters to LEP data. 
+
+** Other fixes in
+   QSPAC implementation in Shower; Multi-parton interaction tuning;
+   MRST initialization
+
+
+
+
+* Herwig++-2.1.2 release: 2008-01-05 (tagged at SVN r2694)
+** Ticket #127
+   Thanks to a patch submitted by Fred Stober, HepMCFile now can
+   output event files in all supported formats. 
+
+** Ticket #128
+   Fixed incorrect value of pi in histogram limits.
+
+** Other fixes in
+   CKKW Qtilde clusterers, BSM width cut, SUSY mixing matrices.
+
+
+
+
+* Herwig++-2.1.1 release: 2007-12-08 (tagged at SVN r2589)
+** Bug #123
+   Fixed a bug with particle lifetimes which resulted in nan for some
+   vertex positions.
+
+** Secondary scatters
+   Fixed bug which gave intrinsic pT to secondary scatters.
+
+** gcc abs bug detection
+   configure now checks for and works around
+   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
+
+** CKKW reweighting
+   Fixed wrong check for top quarks.
+
+** MPIHandler
+   Fixed call order ambiguity.
+
+
+
+
+* Herwig++-2.1.0 release: 2007-11-20 (tagged at SVN r2542)
+** Major new release
+   Herwig++-2.1 includes significant improvements, including
+   multi-parton interactions, BSM physics and a new hadronic decay
+   model, tuned to LEP data.
+
+   For an overview of the changes, please see the release note
+   arXiv:0711.3137
+
+
+
+
+* Herwig++-2.0.3 release: 2007-08-21 (tagged at SVN r2101)
+
+** Bug #90
+   nan in top decay ME corrections fixed.
+
+** unlisted
+   Colour flow fix in LightClusterDecayer
+
+** unlisted
+   Updated version of MultiplicityCount analysis handler.
+
+
+
+
+* Herwig++-2.0.2 release: 2007-07-06 (tagged at SVN r1716)
+
+** Bug #80
+   Separation of HepMC from CLHEP is handled properly now.
+
+** Bug #83
+   Workaround for OS X header problem
+
+** unlisted
+   Veto on very hard emissions from Shower.
+
+** unlisted
+   Detailed documentation in .in files
+
+
+
+
+* Herwig++-2.0.1 release: 2006-12-05 (tagged at SVN r1195)
+
+** Bug #54
+   ClusterFissioner vertex calculation fixed.
+
+** Bug #57
+   Crash when showering W+jet events supplied by Les Houches interface.
+
+** Bug #59
+   Fix for #57 applied to LHC events.
+
+** Bug #60
+   Segfault when PDF is set to NoPDF.
+
+** Bug #61
+   Missing weight factor for I=0 mesons
+
+** Bug #62
+   Spinor vertex calculations broken when spinor rep is not default rep.
+
+** Bug #63
+   Top decay never produces tau.
+
+** Bug #69
+   TTbar and HiggsJet analysis handlers fixed.
+
+** unlisted 
+   Reorganization of Hadronization module gives 30% speedup. 
+   Thanks to Vincenzo Innocente at CMS for his profiling work!
+
+** unlisted
+   cleaner automake files in include/ and src/
+
+** unlisted 
+   Hw64 hadron selection algorithm 'abortnow' fixed.
+
+** unlisted 
+   Top/LeptonDalitzAnalysis removed (only worked with modified code).
+
+** unlisted
+   removed f'_0 from particle list, decays were not handled
+
+
+
+
+* Herwig++-2.0.0 release: 2006-09-28 (tagged at SVN r1066)
+
+** Full simulation of hadron collisions

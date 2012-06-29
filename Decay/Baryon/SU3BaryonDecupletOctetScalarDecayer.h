@@ -5,7 +5,6 @@
 // This is the declaration of the SU3BaryonDecupletOctetScalarDecayer class.
 //
 #include "Baryon1MesonDecayerBase.h"
-#include "SU3BaryonDecupletOctetScalarDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -43,33 +42,19 @@ class SU3BaryonDecupletOctetScalarDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SU3BaryonDecupletOctetScalarDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline
-  SU3BaryonDecupletOctetScalarDecayer(const SU3BaryonDecupletOctetScalarDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~SU3BaryonDecupletOctetScalarDecayer();
-  //@}
-
-public:
+  SU3BaryonDecupletOctetScalarDecayer();
 
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -128,13 +113,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -142,45 +127,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -209,7 +165,7 @@ private:
   /**
    * the coupling
    */
-  double _C;
+  double _c;
 
   /**
    * the relative parities of the two baryon multiplets
@@ -228,42 +184,42 @@ private:
   /**
    *  The PDG code for the \f$p\f$-like member of the outgoing octet.
    */
-  int _proton;
+  long _proton;
 
   /**
    *  The PDG code for the \f$n\f$-like member of the outgoing octet.
    */
-  int _neutron;
+  long _neutron;
 
   /**
    *  The PDG code for the \f$\Sigma^0\f$-like member of the outgoing octet.
    */
-  int _sigma0;
+  long _sigma0;
 
   /**
    *  The PDG code for the  \f$\Sigma^+\f$-like member of the outgoing octet.
    */
-  int _sigmap;
+  long _sigmap;
 
   /**
    *  The PDG code for the  \f$\Sigma^-\f$-like member of the outgoing octet.
    */
-  int _sigmam;
+  long _sigmam;
 
   /**
    *  The PDG code for the \f$\Sigma^0\f$-like member of the outgoing octet.
    */
-  int _lambda;
+  long _lambda;
 
   /**
    *  The PDG code for the \f$\Xi^0\f$-like member of the outgoing octet.
    */
-  int _xi0;
+  long _xi0;
 
   /**
    *  The PDG code for the \f$\Xi^-\f$-like member of the outgoing octet.
    */
-  int _xim;
+  long _xim;
   //@}
 
   /**
@@ -273,68 +229,68 @@ private:
   /**
    *  The PDG code for the \f$\Delta^{++}\f$-like member of the incoming decuplet.
    */
-  int _deltapp;
+  long _deltapp;
 
   /**
    *  The PDG code for the \f$\Delta^{+}\f$-like member of the incoming decuplet.
    */
-  int _deltap;
+  long _deltap;
 
   /**
    *  The PDG code for the \f$\Delta^{0}\f$-like member of the incoming decuplet.
    */
-  int _delta0;
+  long _delta0;
 
   /**
    *  The PDG code for the \f$\Delta^{-}\f$-like member of the incoming decuplet.
    */
-  int _deltam;
+  long _deltam;
 
   /**
    *  The PDG code for the \f$\Sigma^{*+}\f$-like member of the incoming decuplet.
    */
-  int _sigmasp;
+  long _sigmasp;
 
   /**
    *  The PDG code for the \f$\Sigma^{*0}\f$-like member of the incoming decuplet.
    */
-  int _sigmas0;
+  long _sigmas0;
 
   /**
    *  The PDG code for the \f$\Sigma^{*-}\f$-like member of the incoming decuplet.
    */
-  int _sigmasm;
+  long _sigmasm;
 
   /**
    *  The PDG code for the \f$\Omega^-\f$-like member of the incoming decuplet.
    */
-  int _omega;
+  long _omega;
 
   /**
    *  The PDG code for the \f$\Xi^{*-}\f$-like member of the incoming decuplet.
    */
-  int _xism;
+  long _xism;
 
   /**
    *  The PDG code for the \f$\Xi^{*0}\f$-like member of the incoming decuplet.
    */
-  int _xis0;
+  long _xis0;
   //@}
 
   /**
    * PDG code for the incoming baryons
    */
-  mutable vector<int> _incomingB;
+  mutable vector<long> _incomingB;
 
   /**
    * PDG code for the outgoing baryons
    */
-  mutable vector<int> _outgoingB;
+  mutable vector<long> _outgoingB;
 
   /**
    * PDG code for the outgoing mesons
    */
-  mutable vector<int> _outgoingM;
+  mutable vector<long> _outgoingM;
 
   /**
    * the maximum weight for the various modes
@@ -355,6 +311,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SU3BaryonDecupletOctetScalarDecayer.
@@ -373,21 +331,18 @@ template <>
  struct ClassTraits<Herwig::SU3BaryonDecupletOctetScalarDecayer>
   : public ClassTraitsBase<Herwig::SU3BaryonDecupletOctetScalarDecayer> {
    /** Return the class name.*/
-   static string className() { return "Herwig++::SU3BaryonDecupletOctetScalarDecayer"; }
+   static string className() { return "Herwig::SU3BaryonDecupletOctetScalarDecayer"; }
    /**
     * Return the name of the shared library to be loaded to get
     * access to this class and every other class it uses
     * (except the base class).
     */
-   static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+   static string library() { return "HwBaryonDecay.so"; }
    
 };
 
-}
+/** @endcond */
 
-#include "SU3BaryonDecupletOctetScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonDecupletOctetScalarDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_SU3BaryonDecupletOctetScalarDecayer_H */

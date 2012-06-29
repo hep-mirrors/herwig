@@ -1,3 +1,230 @@
+2006-10-27 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Susy/* : Tidy up and correction of some minor errors
+
+	* MatrixElement/{MEff2ff, MEff2ss, MEfv2fs, MEvv2ff, MEvv2ss} : Tidy up
+	of code and moved of diagrams and getDiagrams functions to base class
+	since they are generic
+
+	* MatrixElement/GeneralHardME.{h, cc} : Implemented getDiagrams() 
+	member function here instead of in derived classes
+
+	* Models/General/HardProcessConstructor.cc : Tidy up of code
+
+	* Models/General/HPDiagram : Fixed doxygen warning and removed 
+	uneeded ThePEG header
+
+2006-10-23 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* MatrixElement/VVFFbarME.*, VVSSME.*, FFbarSSME.* : Renamed matrix 
+	elements to be more in line with naming convention
+
+	* Models/General/HardProcessConstructor.{h, cc} : Changes to reflect
+	renaming of MatrixElements
+	
+2006-10-19 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Susy/SSCNZWVertex.* : Added chargino-neutralino-W 
+	vertex.
+
+	* Helicity/Vertex/Susy/* : Various corrections to vertices.
+
+	* Models/Susy/SusyBase.{h, cc} : Added SSCNWVertex to vertex list
+
+2006-10-19 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Susy/SSCC{Z, P}Vertex.* : Added chargino-chargino-photon
+	and chargino-chargino-Z vertices
+
+	* Models/Susy/SusyBase.{h, cc} : Added new vertices to list
+
+2006-10-18 Martyn Gigg <m.a.gigg@dur.ac.uk>
+	
+	* Helicity/Vertex/Scalar/FFSVertex.{h, cc} : Added an integer param to 
+	the setCoupling method to identify off-shell particle in vertex
+	
+	* Helicity/Vertex/Susy/* : Fixed compiler warnings and various bugs
+	within the majorana vertices
+
+	* Helicity/Vertex/StandardModel/SMFFHVertex.h : Updated to use new
+	setCoupling method in FFSVertex
+
+	* Decay/General/FFSDecayer.cc, Decay/General/SFFDecayer.cc : Updated to
+	use new setCoupling in FFSVertex
+
+2006-10-10 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* MatrixElement/MEff2ff.* : Added matrix element for ffbar to ffbar
+
+	* MatrixElement/MEfv2fs.cc : Corrected diagram calculation
+
+	* Models/General/HardProcessConstructor.cc, HPDiagram.icc : Changes in
+	line with matrix element changes
+	
+	* Helicity/Vertex/Susy/SSNNZVertex.* : Added neutralino-neutralino-
+	Z vertex
+
+	* Helicity/Vertex/Susy/SSCFSVertex.icc : Fixed typo with sin2Theta 
+	where sqrt was forgotten
+
+	* Models/Susy/SusyBase.{h, cc} : Added SSNNZVertex to list of vertices
+	within the Model
+
+2006-10-03 Martyn Gigg <m.a.gigg@dur.ac.uk>
+	* Models/General/HPDiagram.*, Models/General/HardProcessConstructor.* :
+	Changes to the way colourflows are calculated
+
+	* MatrixElement/GeneralHardME.* : Changes in matrix element 
+	implementation to reflect the changes in the HardProcessConstructor
+	and HPDiagram
+
+	* Helicity/Vertex/StandardModel/*.icc, Helicity/Vertex/Susy/*.icc : 
+	Replaced memebrs that set the order in alphaS and alphaEM that had 
+	been removed
+
+	* Helicity/Vertex/Susy/{SSGFSVertex.cc, SSNFSVertex.cc} : Changed 
+	setCoupling so that vertex is evaluated properly if fermion flow 
+	direction is reversed
+	
+2006-08-18 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Models/General/HPDiagram.{h, icc} : Split off declaration of
+	HPDiagram structure to separate file and made some changes to the
+	information that it stores so that MEDiagram in GeneralHardME could
+	be removed
+
+	* Models/General/HardProcessConstructor.* : Changes to use new 
+	object creation methods of ThePEG and tidy up of code (not complete)
+	
+	* MatrixElement/{GeneralHardME.*, VVFFbarME.*, VVSSME.*} : 
+	Changes to MatrixElements to be compatible with new way in which
+	HardProcessConstructor creates them	
+
+2006-08-17 Martyn Gigg <m.a.gigg@dur.ac.uk>
+	* MatrixElement/GeneralHardME.{h, icc, cc}, 
+	* MatrixElement/VVFFbar.{h, icc, cc} : Changed the method of
+	calculating the matrix element colour flows
+	
+	* Models/StandardModel/StandardModel.{h, cc} : Removed obselete 
+	doinitrun method and removed call to setupModel from doinit
+
+	* Models/General/* : Changes to the structure of automatic decayer,
+	decaymode and matrix element creation to utilise new functions in 
+	ThePEG. Requires up-to-date version of ThePEG.
+
+	* Decay/General/* : Removed old members not needed now the decayers 
+	are created properly in the EventGenerator and modeNumber virtual
+	function is now implemented. This required a new member function
+	colourConnections() that must be called in the me2() function of 
+	each inheriting decayer.
+
+	* src/{LEP.in, Model.in} : Removed double initilisation from LEP.in 
+	and removed reference to model pointer from HardProcessConstructor
+
+	* Models/Susy/SusyBase.{h, icc, cc} : Implemented getReferences
+	virtual function so that MixingMatrix objects get cloned.
+
+	* Helicity/Vertex/Susy/* : Removed references to SusyBase object and 
+	changed the way in which MixingMatrices were retrieved. They are now
+	taken from the current event generator and not the Repository.
+	
+	* Helicity/Vertex/Scalar/SVVLoopVertex.{h, icc} : Replaced interface
+	doinit, doinitrun and dofinish members that were mistakenly removed.
+
+	* Helicity/Vertex/GeneralSVVVertex.icc : Correctly set the type of 
+	vertex in the constructor
+
+2006-07-26 Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Models/Susy/SusyBase.*, Models/General/TwoBodyDecayConstructor.cc,
+	* Models/General/HardProcessConstructor.cc: Changed use of stringstream
+	to comply with the new changes in the ThePEG and uninlined 2 functions
+	in SusyBase that should not have been inlined
+
+2006-07-24  Martyn Gigg <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Susy/* : Clean up to tidy up code and remove
+	some unecessary member functions
+
+2006-07-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/*Model/*Vertex.*, Models/*Model/*: Fixed memory 
+	leak problem with theback-references to StandardModel by the Vertex 
+	classes. Cleanup of Vertex classes.
+
+	* MatrixElement/*.*cc, Decay/Perturbative/*.cc: Used new Model 
+	typedefs HwSMPtr and HwRSPtr
+
+2006-07-18  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* MatrixElement/Makefile.am : Fixed spelling error that meant 
+	some files were not included in tar ball
+
+	* src/Model.in : Now creates HardProcessConstructor object
+	by default
+
+	* Helicity/Vertex/Susy/SSGSGSGVertex.* : Added gluon-gluino-
+	gluino vertex
+
+	* Models/Susy/SusyBase.* : Added gluon-gluino-gluino vertex
+	to list of vertices
+
+	* Helicity/Vertex/Susy/SSNFSVertex : Corrected error with
+	retrieving particle mass
+
+	* Helicity/Vertex/Scalar/GeneralSVVVertex.h : Changes so that class
+	shows up in doxygen documentation
+
+	* Shower/ShowerHandler.cc : Changed how to deduce whether a particle
+	is a decay product
+
+	* Models/General/TwoBodyDecayConstructor.cc : Taken out repository 
+	stats output
+
+	* Decay/MamboDecayer.cc : Fixed colourlines for decaying colour 
+	octet states
+
+	* Decay/General/GeneralTwoBodyDecayer.cc : Taken out statement
+	printing decay modes
+	
+2006-07-07  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Merged latest changes from trunk
+
+2006-07-05  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Scalar/VSSVeretex.cc : Corrected mistake in
+	function evaluating the vertex
+	
+2006-06-30  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* MatrixElement/VVSSME.*, FFbarSSME.*: Added new matrix elements
+
+	* Helicity/Vertex/* : Tidy up of documentation and added new gluon
+	gluon-squark-squark vertex
+
+	* lib/Makefile.am : StandardModel vertices are now dynamically loaded
+
+	* Models/General/HardProcessConstructor.cc : Changed the way diagrams
+	are created for matrix elements
+
+	* Models/Susy/SusyBase.* : Added new vertex to model
+
+2006-07-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/*Model/*Vertex.*, Models/*Model/*: Fixed memory 
+	leak problem with theback-references to StandardModel by the Vertex 
+	classes. Cleanup of Vertex classes.
+
+	* MatrixElement/*.*cc, Decay/Perturbative/*.cc: Used new Model 
+	typedefs HwSMPtr and HwRSPtr
+
+2006-06-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Models/StandardModel/O2AlphaS.*: changed LambdaQCD() output to
+	return vector starting with Lambda_0 instead of Lambda_1. In line
+	with ThePEG
+
 2006-06-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Models/StandardModel/O2AlphaS.*: changed LambdaQCD() output to
@@ -8,6 +235,17 @@
 
 	* Decay/Perturbative/Makefile.am: SMWZDecayer and SMTopDecayer
 	need to be built by default. Split out HwPerturbativeHiggsDecay.so
+
+2006-06-13  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Decay/Perturbative/Makefile.am: SMWZDecayer and SMTopDecayer
+	need to be built by default. Split out HwPerturbativeHiggsDecay.so
+
+2006-06-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* */Makefile.am, acinclude.m4, configure.ac: New decayers only get
+	built when requested in configure flag. Apple Looptool problem
+	fixed. Optionally, all Looptool-dependent code can be disabled.
 
 2006-06-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -22,15 +260,106 @@
 
 	* src/Herwig++.cc: counter now only updates for every 1% of events.
 
+2006-06-01  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Analysis/LEPEventShapes.*, Utilities/Histogram.*,
+	Utilities/Statistic.*: Added support for weighted events.
+
+	* src/Herwig++.cc: counter now only updates for every 1% of events.
+
+2006-05-30  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/VertexBase.h (Repository): Added storage for the
+	order in g_s and alpha_em of the vertex
+
+	* Helicity/Vertex/StandardModel, Helicity/Vertex/Susy (Repository) :
+	Changed vertices to incorporate new method for storing order in
+	couplings and added gluon-sfermion-sfermion vertex
+
+	* MatrixElement/GeneralHardME, MatrixElement/FFbarSSME (Repository):
+	Added new matrix elements
+
+	* Decay/MamboDecayer.*, Decay/General (Repository) : Tidy up
+
+	* lib/Makefile.am (Repository) : Statically linked new matrix 
+	element library
+
+	* Models/General/* (Repository) : Changed to create new matrix
+	elements and general tidy up
+
+	* Models/Susy/SusyBase.* (Repository) : Incorporate new vertices 
+	into model
+	
+	* Models/Susy/MixingMatrix.icc (Repository) : Changed constructor to
+	use initialisation syntax 
+	
+2006-05-30  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Models/General (Repository): Added HardProcessConstructor class
+	
+	* Models/Susy/MixingMatrix (Repository): Modified range checking when
+	returning element of matrix to use at() member of vector
+
+	* Decay/General (Repository): Tidy up of decayers
+
+	* Helicity/Vertex/Susy (Repository): Fixed bugs where if was using
+	assignment rather than testing for equality
+
+2006-06-18  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* configure.ac (Repository): Added Susy vertices directory 
+	
+	* Models/StandardModel/O2AlphaS.h (Repository): Merged from main branch
+
+	* Models/General (Repository): Modified classes to use new decayers 
+
+	* Models/Susy (Repository): Modified SusyBase reading member funtion
+
+	* Helicity/Vertex/Susy (Repository): Added Susy Directory and Vertices 
+
+	* Models/General/ (Repository): Added New Decayers and and altered old
+	ones to change the way they search lists
+
 2006-03-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* MatrixElement/MEPP2HiggsJet.icc (Repository): added matrix element for gamma
 		gamma and Higgs + jet production
 
+2006-03-13  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Models/General/TwoBodyDecayConstructor.cc (Repository): Changed in order to create new decayers
+
+	* Models/Makefile.am, configure.ac (Repository): Altered to include Susy directory
+	
+	* Models/Susy (Repository): Added Susy directory and SusyBase class
+
+2006-03-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEPP2HiggsJet.icc (Repository): added matrix element for gamma
+		gamma and Higgs + jet production
+
+2006-03-09  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/General (Repository): Added FFSDecayer,VVVDecayer,SSSDecayer
+
 2006-03-02  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Models/StandardModel/O2AlphaS: Added a 2-loop alphaS class using the same
 	approach as FORTRAN HERWIG to make comparisions easier.
+
+2006-03-02  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Models/StandardModel/O2AlphaS: Added a 2-loop alphaS class using the same
+	approach as FORTRAN HERWIG to make comparisions easier.
+
+2006-02-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEPP2GammaJet.h (Repository): spin correlation code added to
+		gamma+jets ME
+
+2006-02-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEQCD2to2 (Repository): QCD 2-to-2 matrix elements added
 
 2006-02-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
@@ -51,6 +380,16 @@
 	* Base class changed in a number of Vector decayers in preparation for the 
 	removal of the VectorMesonDecayerBase class.
 
+2006-02-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Finished the removal of the VectorMesonDecayerBase and TensorMesonDecayerBase
+	classes
+
+2006-02-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Base class changed in a number of Vector decayers in preparation for the 
+	removal of the VectorMesonDecayerBase class.
+
 2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* changes to fix change conservation problems from branch merge
@@ -59,6 +398,37 @@
 2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* changes to include the matrix element for gamma+jet 
+
+2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* changes to fix change conservation problems from branch merge
+	  and change base class of TensorMeson2MesonDecayer.
+
+2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* changes to include the matrix element for gamma+jet 
+
+2006-02-20  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Models/General/TwoBodyDecayConstructor.cc (Repository): Changes to create newly added decayers
+
+	* Decay/General (Repository): Added more decayers for bsm study
+
+	* Helicity/Vertex/VertexBase.h (Repository): Changed getLeft() and getRight() from protected to public
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): Changed one of the special constructors to set particle pointer and momentum properly
+
+	* Helicity/Vertex/Scalar/GeneralSVVVertex.cc (Repository): Documentation changes
+
+	* Models/RSModel/RSModel.icc (Repository): Added RS Vertices to storage in base class
+
+	* Models/StandardModel/StandardModel.cc (Repository): Initialized running mass object in doinit
+
+	* Decay/General/GeneralTwoBodyDecayer.h (Repository): Changes to store pointer to vertex in each decayer
+
+2006-02-16  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/HerwigDefaults.in: New handling of cuts in ThePEG
 
 2006-02-16  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -70,10 +440,27 @@
 	published as Herwig++-2.0-beta release. Merged release branch into
 	main up until tag herwig-2-0-beta
 	
+2006-02-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* configure.ac, README, AUTHORS: Last updates, tagged and
+	published as Herwig++-2.0-beta release. Merged release branch into
+	main up until tag herwig-2-0-beta
+	
 2006-02-03  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* MatrixElement/MEqq2W2ll.cc: Bugfix for unititialized
 	variable. Solves imbalance between W+ and W-.
+
+2006-02-03  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* MatrixElement/MEqq2W2ll.cc: Bugfix for unititialized
+	variable. Solves imbalance between W+ and W-.
+
+2006-02-02  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Shower/ShowerHandler.cc, Hadronization/PartonSplitter.cc: Added
+	eventerror for spacelike gluons in PartonSplitter. Added check for
+	QCD-FSR when doing ME corrections.
 
 2006-02-02  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -90,6 +477,32 @@
 	SMHiggsGGHiggsPPDecayer.h, SMHiggsFermionsDecayer.h: Temporary
 	fixes to allow compilation.
 
+
+2006-02-01  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* all: Branched off herwig-2-0-beta-release branch, then merged
+	Decay Radiation branch. Structural changes to decayers. 
+
+	* Utilities/Math.cc, Decay/Perturbative/SMTopDecayer.h,
+	SMHiggsGGHiggsPPDecayer.h, SMHiggsFermionsDecayer.h: Temporary
+	fixes to allow compilation.
+
+
+2006-01-31  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Shower.in, Shower/SplittingFunctions: Individual PDFMax
+	limits for efficiency.
+
+	* Decay/HwDecayHandler.cc: Added vertex setting to handle displaced
+	vertices. 
+	
+2006-01-31  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* src/HerwigDefaults.in: Updating after main-to-bsm merge
+
+	* Models/General/TwoBodyDecayConstructor.cc: Added creation of FFV decayer
+	
+	* Decay/General/FFVDecayer.h (Repository): Added FFVDecayer for bsm
 
 2006-01-31  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -115,6 +528,30 @@
 	NOT a permanent solution, there is no timelike showering of ISR
 	particles at the moment! 
 
+2006-01-26  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* MatrixElements/*: New qq->W->ll and ee->gZ->qq matrix
+	elements. Replaced default qq->gZ->ll
+	
+	* src/Analysis.in, Analysis/SimpleLHCAnalysis.*,
+	Analysis/Histogram.*, Analysis/BasicConsistency.*: Added
+	SimpleLHCAnalysis, cleaned up Histogram class and BasicConsistency
+	analysis.
+
+	* src/Shower.in, Shower/PartnerFinder.cc,
+	Shower/KinematicsReconstructor.cc, Shower/Evolver.cc,
+	Shower/BackwardEvolver.cc: fixed ISR/FSR crash for LHC. This is
+	NOT a permanent solution, there is no timelike showering of ISR
+	particles at the moment! 
+
+2006-01-24 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* PDF/MRST.cc: Restructured for speed, high-x problem unchanged
+	
+2006-01-24 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* PDF/MRST.cc: Restructured for speed, high-x problem unchanged
+	
 2006-01-24 David Grellscheid <David.Grellscheid@durham.ac.uk>
 
 	* PDF/MRST.cc: Restructured for speed, high-x problem unchanged
@@ -132,6 +569,50 @@
 
 	* Added basic analysis handlers
 
+2006-01-23  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Analysis/*: Added more simple analysis handlers for multiplicity
+	checking and general consistency.
+
+	* src/Hadronization.in: reset s-quark weight to 1.0
+
+	* PDF/MRST.cc: Added GeV2 to fix wrong PDF behaviour
+	
+2006-01-23  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Added basic analysis handlers
+
+2006-01-23  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Analysis/*: Added more simple analysis handlers for multiplicity
+	checking and general consistency.
+
+	* src/Hadronization.in: reset s-quark weight to 1.0
+
+	* PDF/MRST.cc: Added GeV2 to fix wrong PDF behaviour
+	
+2006-01-23  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Added basic analysis handlers
+
+2006-01-20  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/General/VFFDecayer.icc (Repository): Altered default contructor to set which list to search  
+
+	* Models/General/TwoBodyDecayConstructor.cc (Repository): Added functionality to create decaymodes dynamically
+
+2006-01-06  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Various changes to get the forced splitting to work
+	
+	* Shower/Makefile.am (Repository): Change to Makefile due to move of SudakovFormFactor to SplittingFunctions directory
+
+2006-01-06  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Various changes to get the forced splitting to work
+	
+	* Shower/Makefile.am (Repository): Change to Makefile due to move of SudakovFormFactor to SplittingFunctions directory
+
 2006-01-06  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Various changes to get the forced splitting to work
@@ -141,6 +622,48 @@
 2005-12-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
+
+2005-12-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
+
+2005-12-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
+
+2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* Shower/SudakovFormFactor.cc: Veto bugs fixed
+	
+	* Shower/KinematicsReconstructor.cc, Shower/BackwardEvolver.cc:
+	wrapped forced splittings in '#ifdef PHILSCODE', to make Shower
+	testing work (also in PDF/BaryonRemnants.cc)
+
+	* Shower/SplittingGenerator.cc: small change, wrapped some 'cout'
+	in a DEBUG_LEVEL test
+
+	* Hadronization/ClusterHadronizationHandler.cc: added missing
+	Remnant code
+
+	* src/Shower.in: typo c->c,cbar fixed to g->c,cbar; cleaned up
+	arrangement 
+
+2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* Shower/SudakovFormFactor.cc: Veto bugs fixed
+	
+	* Shower/KinematicsReconstructor.cc, Shower/BackwardEvolver.cc:
+	wrapped forced splittings in '#ifdef PHILSCODE', to make Shower
+	testing work (also in PDF/BaryonRemnants.cc)
+
+	* Shower/SplittingGenerator.cc: small change, wrapped some 'cout'
+	in a DEBUG_LEVEL test
+
+	* Hadronization/ClusterHadronizationHandler.cc: added missing
+	Remnant code
+
+	* src/Shower.in: typo c->c,cbar fixed to g->c,cbar; cleaned up
+	arrangement 
 
 2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
 
@@ -169,6 +692,38 @@
 	together so far. File contains #defines to choose version. This
 	must be resolved! NOT tested yet. 
 
+2005-12-17 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* Shower/*, src/*.in ( and others ): Full merge of Stefan's Shower
+	changes, Phil's refactoring of forced splitting, Peter's Remnant
+	class and Durham bugfixes. NOT tested yet.
+
+	* PDF/BaryonRemnants.cc: Remnant and forced splitting don't work
+	together so far. File contains #defines to choose version. This
+	must be resolved! NOT tested yet. 
+	
+2005-12-17 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* Shower/*, src/*.in ( and others ): Full merge of Stefan's Shower
+	changes, Phil's refactoring of forced splitting, Peter's Remnant
+	class and Durham bugfixes. NOT tested yet.
+
+	* PDF/BaryonRemnants.cc: Remnant and forced splitting don't work
+	together so far. File contains #defines to choose version. This
+	must be resolved! NOT tested yet. 
+
+2005-12-15  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Helicity/Vertex/Scalar/FFSVertex.h (Repository): Changed access for getting left and right components 
+
+2005-12-09  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Models/General/TwoBodyDecayConstructor.h (Repository): Added functions to create decayer and decay list 
+
+2005-12-09  Martyn Gigg  <dph3mag@d52.phyip3.dur.ac.uk>
+
+	* Decay/General/GeneralTwoBodyDecayer.cc (Repository): Added two body decayer class files 
+
 2005-11-15  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* src/StandardModelVertices.in: changes to decay structure to avoid code duplication
@@ -177,6 +732,22 @@
 
 	* Decay/Radiation/FFDipole.cc (Repository): changes to FF Dipole
 
+2005-11-15  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* src/StandardModelVertices.in: changes to decay structure to avoid code duplication
+
+2005-11-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Radiation/FFDipole.cc (Repository): changes to FF Dipole
+
+2005-11-04  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Helicity/Vertex/VertexBase.h (Repository): Changed VertexBase to allow for enumerating inheriting vertices  
+
+2005-11-01  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Models/General/DecayConstructor.h (Repository): Added DecayConstructor and other files for BSM structure
+
 2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
 
 	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
@@ -184,6 +755,50 @@
 2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* src (Repository): correction to ensure HGG and HPP work and minor structure for vertices
+
+2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Models/General/ModelGenerator.fh (Repository): added files for new branch
+
+2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
+
+2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* src (Repository): correction to ensure HGG and HPP work and minor structure for vertices
+
+2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
+
+2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* src (Repository): correction to ensure HGG and HPP work and minor structure for vertices
+
+2005-10-24  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Helicity/Vertex/StandardModel/SMHPPVertex.h (Repository): Added SMHPPVertex class
+
+	* Helicity/Vertex/StandardModel/SMHGGVertex.h (Repository): Added SMHGGVertex 
+
+	* Helicity/Vertex/Scalar/SVVLoopVertex.h (Repository): Added SVVLoopVertex class
+
+	* Helicity/Vertex/Scalar/GeneralSVVVertex.h (Repository): Added GeneralSVVVertex class 
+
+	* Decay/Perturbative/SMHDecayer.h (Repository): Added HVV decayer 
+
+2005-10-24  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Helicity/Vertex/StandardModel/SMHPPVertex.h (Repository): Added SMHPPVertex class
+
+	* Helicity/Vertex/StandardModel/SMHGGVertex.h (Repository): Added SMHGGVertex 
+
+	* Helicity/Vertex/Scalar/SVVLoopVertex.h (Repository): Added SVVLoopVertex class
+
+	* Helicity/Vertex/Scalar/GeneralSVVVertex.h (Repository): Added GeneralSVVVertex class 
+
+	* Decay/Perturbative/SMHDecayer.h (Repository): Added HVV decayer 
 
 2005-10-24  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
 
@@ -211,6 +826,52 @@
 
 	* Helicity/Vertex/Scalar/Makefile.am (Repository): changes to include .fh file for FFSVertex
 
+2005-10-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/Vertex/StandardModel/SMFFHVertex.cc (Repository): changes to remove hard-wired value of pi
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): changes to correctly return rho matrix
+
+	* Decay/Perturbative/SMWZDecayer.icc (Repository): modifications to SMWZDecayer to clean up code using new constructors to produce spinInfo
+
+	* Helicity/Vertex/Vector/FFVVertex.h (Repository): added .fh file for FFVVertex
+
+	* Decay/Perturbative/SMWZDecayer.h (Repository): added decayer for H -> f fbar
+
+	* Helicity/Vertex/Scalar/Makefile.am (Repository): changes to include .fh file for FFSVertex
+
+2005-10-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/Vertex/StandardModel/SMFFHVertex.cc (Repository): changes to remove hard-wired value of pi
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): changes to correctly return rho matrix
+
+	* Decay/Perturbative/SMWZDecayer.icc (Repository): modifications to SMWZDecayer to clean up code using new constructors to produce spinInfo
+
+	* Helicity/Vertex/Vector/FFVVertex.h (Repository): added .fh file for FFVVertex
+
+	* Decay/Perturbative/SMWZDecayer.h (Repository): added decayer for H -> f fbar
+
+	* Helicity/Vertex/Scalar/Makefile.am (Repository): changes to include .fh file for FFSVertex
+
+2005-10-07  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/Perturbative/SMTopDecayer.h (Repository): Added TopDecayer
+
+2005-10-07  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.cc (Repository): changes so the reference to the
+	PartonicHadronizer can be set to null to switch off hadronization.
+
+2005-10-07  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/Perturbative/SMTopDecayer.h (Repository): Added TopDecayer
+
+2005-10-07  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.cc (Repository): changes so the reference to the
+	PartonicHadronizer can be set to null to switch off hadronization.
+
 2005-10-07  Martyn Gigg  <m.a.gigg@dur.ac.uk>
 
 	* Decay/Perturbative/SMTopDecayer.h (Repository): Added TopDecayer
@@ -224,9 +885,51 @@
 
 	* acinclude.m4: Fixed bug #8. CLHEPINCLUDE is used correctly now
 
+2005-10-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* acinclude.m4: Fixed bug #8. CLHEPINCLUDE is used correctly now
+
+2005-10-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* acinclude.m4: Fixed bug #8. CLHEPINCLUDE is used correctly now
+
 2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* configure.ac, Makefile.am: configure switches for Mac OS X
+
+2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* configure.ac, Makefile.am: configure switches for Mac OS X
+
+2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* configure.ac, Makefile.am: configure switches for Mac OS X
+
+2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Hw64Decays.in, src/Decays.in: Activated Mambo decayer for
+	5-body decays in Hw64Decays.in to keep code working
+
+	* Utilities/Math.cc: inlined power series
+
+2005-09-29  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Math.h (Repository): changes so private power series for dilog is not publically visible
+
+	* Decay/MamboDecayer.h (Repository): removed 5 body decay option from Hw64Decayer
+
+2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Hw64Decays.in, src/Decays.in: Activated Mambo decayer for
+	5-body decays in Hw64Decays.in to keep code working
+
+	* Utilities/Math.cc: inlined power series
+
+2005-09-29  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Math.h (Repository): changes so private power series for dilog is not publically visible
+
+	* Decay/MamboDecayer.h (Repository): removed 5 body decay option from Hw64Decayer
 
 2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -247,10 +950,295 @@
 
 	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
 
+2005-09-28  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Baryon/BaryonFactorizedDecayer.h (Repository): added all .so files needed by library to all classes to ensure correct dynamic loading
+
+	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
+
+2005-09-28  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Baryon/BaryonFactorizedDecayer.h (Repository): added all .so files needed by library to all classes to ensure correct dynamic loading
+
+	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
+
 2005-09-27  kmh  <kmh@phyip3.dur.ac.uk>
 
 	* Decay/Radiation/FFDipole.cc (Module): Implemented boost factor
 	added some histogramming (PAW).
+
+2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function
+	(Repository): Removed unused variables
+
+2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/DecayPhaseSpaceMode.cc (Repository): change to unmask parameters
+
+2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function
+	(Repository): Removed unused variables
+
+2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/DecayPhaseSpaceMode.cc (Repository): change to unmask parameters
+
+2005-09-27  kmh  <kmh@phyip3.dur.ac.uk>
+
+	* Decay/Radiation/FFDipole.cc (Module): Implemented boost factor
+	added some histogramming (PAW).
+
+2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function
+	(Repository): Removed unused variables
+
+2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/DecayPhaseSpaceMode.cc (Repository): change to unmask parameters
+
+2005-09-26  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added MamboDecayer
+
+2005-09-26  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added MamboDecayer
+
+2005-09-26  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added MamboDecayer
+
+2005-09-23  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* */*.h, */Makefile.am, src/*.in: Restructuring of libraries to
+	clean up dependencies. Many parts turned into modules.
+	make clean && make recommended.
+
+2005-09-23  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* */*.h, */Makefile.am, src/*.in: Restructuring of libraries to
+	clean up dependencies. Many parts turned into modules.
+	make clean && make recommended.
+
+2005-09-23  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* */*.h, */Makefile.am, src/*.in: Restructuring of libraries to
+	clean up dependencies. Many parts turned into modules.
+	make clean && make recommended.
+
+2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Shower/*, UnderlyingEvent/*, lib/Makefile.am,
+	src/UnderlyingEvent.in, src/Shower.in: Turned Shower and UA5 into
+	modules.
+	
+	* src/LEPbb.in, src/HerwigDefaults.in, lib/Makefile.am, 
+	MatrixElement/*: Turned HwME.so into a module.
+
+	* Decay/*, PDF/*, PDT/*: bugfixes and warning eliminations from
+	-Wshadow 
+
+2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Shower/*, UnderlyingEvent/*, lib/Makefile.am,
+	src/UnderlyingEvent.in, src/Shower.in: Turned Shower and UA5 into
+	modules.
+	
+	* src/LEPbb.in, src/HerwigDefaults.in, lib/Makefile.am, 
+	MatrixElement/*: Turned HwME.so into a module.
+
+	* Decay/*, PDF/*, PDT/*: bugfixes and warning eliminations from
+	-Wshadow 
+
+2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Shower/*, UnderlyingEvent/*, lib/Makefile.am,
+	src/UnderlyingEvent.in, src/Shower.in: Turned Shower and UA5 into
+	modules.
+	
+	* src/LEPbb.in, src/HerwigDefaults.in, lib/Makefile.am, 
+	MatrixElement/*: Turned HwME.so into a module.
+
+	* Decay/*, PDF/*, PDT/*: bugfixes and warning eliminations from
+	-Wshadow 
+
+2005-09-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()
+	lines to take care of dependency on HwRSModel.so
+
+2005-09-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): minor changes to ensure special constructor returns a wavefunction
+	
+
+2005-09-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and
+	cleanup of b to s gamma code 
+
+	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to
+	solve problems when vetoing hadronization if intermediates removed 
+
+2005-09-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()
+	lines to take care of dependency on HwRSModel.so
+
+2005-09-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): minor changes to ensure special constructor returns a wavefunction
+	
+
+2005-09-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and
+	cleanup of b to s gamma code 
+
+	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to
+	solve problems when vetoing hadronization if intermediates removed 
+
+2005-09-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()
+	lines to take care of dependency on HwRSModel.so
+
+2005-09-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): minor changes to ensure special constructor returns a wavefunction
+	
+
+2005-09-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and
+	cleanup of b to s gamma code 
+
+	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to
+	solve problems when vetoing hadronization if intermediates removed 
+
+2005-09-20  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEee2Z.icc (Repository): Added files for e+e- > Z matrix element
+
+	* Decay/Radiation/FFDipole.icc (Repository): Merged Keith's code into the
+		structure
+
+2005-09-20  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEee2Z.icc (Repository): Added files for e+e- > Z matrix element
+
+	* Decay/Radiation/FFDipole.icc (Repository): Merged Keith's code into the
+		structure
+
+2005-09-19  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Makefile.am (Repository): changes for new directories
+
+	* Decay/Hw64Decayer.cc (Repository): added changes from main branch
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* PDF/*: Removed obsolete MRST99_1.*, renamed MRST.so to HwMRST.so
+
+	* Helicity/Vertex/RSModel/*, Models/RSModel/*: Made RS model
+	dynamically loadable.
+	
+2005-09-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* PDF/*: Removed obsolete MRST99_1.*, renamed MRST.so to HwMRST.so
+
+	* Helicity/Vertex/RSModel/*, Models/RSModel/*: Made RS model
+	dynamically loadable.
+	
+2005-09-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-19  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Makefile.am (Repository): changes for new directories
+
+	* Decay/Hw64Decayer.cc (Repository): added changes from main branch
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* PDF/*: Removed obsolete MRST99_1.*, renamed MRST.so to HwMRST.so
+
+	* Helicity/Vertex/RSModel/*, Models/RSModel/*: Made RS model
+	dynamically loadable.
+	
+2005-09-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* ** multiple files **: small changes to reduce compile warnings 
+	when extra warning flags are enabled.
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+	
+	* Decay/Radiation (Repository): changes to add the basic structure for the YODA code
+2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+
+	* Doc/refman.conf (Repository): changes due change in name of repository
+	* configure.ac, Makefile.am: configure switches for Mac OS X
+
+2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Hw64Decays.in, src/Decays.in: Activated Mambo decayer for
+	5-body decays in Hw64Decays.in to keep code working
+
+	* Utilities/Math.cc: inlined power series
+
+2005-09-29  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Math.h (Repository): changes so private power series for dilog is not publically visible
+
+	* Decay/MamboDecayer.h (Repository): removed 5 body decay option from Hw64Decayer
+
+2005-09-28  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Baryon/BaryonFactorizedDecayer.h (Repository): added all .so files needed by library to all classes to ensure correct dynamic loading
+
+	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
 
 2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
 
@@ -301,26 +1289,6 @@
 	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to
 	solve problems when vetoing hadronization if intermediates removed 
 
-2005-09-20  Pete's account  <Peter.Richardson@durham.ac.uk>
-
-	* MatrixElement/MEee2Z.icc (Repository): Added files for e+e- > Z matrix element
-
-	* Decay/Radiation/FFDipole.icc (Repository): Merged Keith's code into the
-		structure
-
-2005-09-19  Pete's account  <Peter.Richardson@durham.ac.uk>
-
-	* Makefile.am (Repository): changes for new directories
-
-	* Decay/Hw64Decayer.cc (Repository): added changes from main branch
-
-	* Utilities/Interpolator.cc (Repository): minor bug fixes
-
-	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
-
-	* Utilities/Math.h (Repository): added math namesapce for mathematical
-	functions and included the dilog from FORTRAN HERWIG.
-
 2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* PDF/*: Removed obsolete MRST99_1.*, renamed MRST.so to HwMRST.so
@@ -336,6 +1304,52 @@
 
 	* Utilities/Math.h (Repository): added math namesapce for mathematical
 	functions and included the dilog from FORTRAN HERWIG.
+
+2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* ** multiple files **: small changes to reduce compile warnings 
+	when extra warning flags are enabled.
+>>>>>>> 1.44
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/refman.conf (Repository): changes due change in name of
+	repository 
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository):
+	minor bug fixes 
+
+2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* ** multiple files **: small changes to reduce compile warnings 
+	when extra warning flags are enabled.
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/refman.conf (Repository): changes due change in name of
+	repository 
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository):
+	minor bug fixes 
+
+2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* ** multiple files **: small changes to reduce compile warnings 
+	when extra warning flags are enabled.
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/refman.conf (Repository): changes due change in name of
+	repository 
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository):
+	minor bug fixes 
 
 2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
 
@@ -512,6 +1526,114 @@
 	it served little purpose and should be replaced by information on
 	the Wiki. 
 
+2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Decay: changes to many classes due to the new base class 
+	
+	* Hadronization changes to tidy up the PartonicHadronizer and allow the
+	hadronization to produce off-shell particles. 
+	
+	* Decay/HwDecayerBase.h (Repository): added new base class for
+	decayers including the Initialize feature of the DecayIntegrator
+	and dataBaseOutput so this can be used for classes not built on
+	DecayIntegrator. 
+
+	* PDT/GenericWidthGenerator.h: changes so that the mass generator
+	only includes	the numerator factor when generating a mass
+	without the weight to avoid biases	towards high masses. 
+
+	* Decay/DecayConfig.h (Repository): this was really the .fh file
+	for Hw64Decayer and has been renamed as such.
+
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as
+	it served little purpose and should be replaced by information on
+	the Wiki. 
+
+2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Decay: changes to many classes due to the new base class 
+	
+	* Hadronization changes to tidy up the PartonicHadronizer and allow the
+	hadronization to produce off-shell particles. 
+	
+	* Decay/HwDecayerBase.h (Repository): added new base class for
+	decayers including the Initialize feature of the DecayIntegrator
+	and dataBaseOutput so this can be used for classes not built on
+	DecayIntegrator. 
+
+	* PDT/GenericWidthGenerator.h: changes so that the mass generator
+	only includes	the numerator factor when generating a mass
+	without the weight to avoid biases	towards high masses. 
+
+	* Decay/DecayConfig.h (Repository): this was really the .fh file
+	for Hw64Decayer and has been renamed as such.
+
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as
+	it served little purpose and should be replaced by information on
+	the Wiki. 
+
+2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Decay: changes to many classes due to the new base class 
+	
+	* Hadronization changes to tidy up the PartonicHadronizer and allow the
+	hadronization to produce off-shell particles. 
+	
+	* Decay/HwDecayerBase.h (Repository): added new base class for
+	decayers including the Initialize feature of the DecayIntegrator
+	and dataBaseOutput so this can be used for classes not built on
+	DecayIntegrator. 
+
+	* PDT/GenericWidthGenerator.h: changes so that the mass generator
+	only includes	the numerator factor when generating a mass
+	without the weight to avoid biases	towards high masses. 
+
+	* Decay/DecayConfig.h (Repository): this was really the .fh file
+	for Hw64Decayer and has been renamed as such.
+
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as
+	it served little purpose and should be replaced by information on
+	the Wiki. 
+
+2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* src/HerwigDefaults.in (Repository): changes for the new
+	treatment of hadronization in partonic decays 
+
+	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc
+	(Repository): various minor bug fixes to the decays 
+
+2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
+
+	* lib/Makefile.am: added libHwPartonicDecay.la to the list of
+	libraries 
+
+2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* src/HerwigDefaults.in (Repository): changes for the new
+	treatment of hadronization in partonic decays 
+
+	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc
+	(Repository): various minor bug fixes to the decays 
+
+2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
+
+	* lib/Makefile.am: added libHwPartonicDecay.la to the list of
+	libraries 
+
+2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* src/HerwigDefaults.in (Repository): changes for the new
+	treatment of hadronization in partonic decays 
+
+	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc
+	(Repository): various minor bug fixes to the decays 
+
+2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
+
+	* lib/Makefile.am: added libHwPartonicDecay.la to the list of
+	libraries 
+
 2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* src/HerwigDefaults.in (Repository): changes for the new
@@ -550,6 +1672,24 @@
 	doxygen errors and more changes due to change in random numbers
 	from ThePEG 
 
+2005-09-05  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/HerwigRun.cc: changes to documentation to remove some
+	doxygen errors and more changes due to change in random numbers
+	from ThePEG 
+
+2005-09-05  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/HerwigRun.cc: changes to documentation to remove some
+	doxygen errors and more changes due to change in random numbers
+	from ThePEG 
+
+2005-09-05  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/HerwigRun.cc: changes to documentation to remove some
+	doxygen errors and more changes due to change in random numbers
+	from ThePEG 
+
 2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Doc/tagfileThePEG.tag (Repository): changes to documentation so
@@ -567,6 +1707,180 @@
 
 	* Utilities/Kinematics.cc (Repository): Changes for the changes to
 	random numbers from ThePEG and improvements to documentation 
+
+2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/tagfileThePEG.tag (Repository): changes to documentation so
+	that include is not scanned by doxygen and duplicate base classes
+	do not appear 
+
+	* Utilities/Kinematics.cc (Repository): Changes for the changes to
+	random numbers from ThePEG and improvements to documentation 
+
+2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/tagfileThePEG.tag (Repository): changes to documentation so
+	that include is not scanned by doxygen and duplicate base classes
+	do not appear 
+
+	* Utilities/Kinematics.cc (Repository): Changes for the changes to
+	random numbers from ThePEG and improvements to documentation 
+
+2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/tagfileThePEG.tag (Repository): changes to documentation so
+	that include is not scanned by doxygen and duplicate base classes
+	do not appear 
+
+	* Utilities/Kinematics.cc (Repository): Changes for the changes to
+	random numbers from ThePEG and improvements to documentation 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.icc (Repository): changes to partonic decays
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new
+	partonic decayers for b to s gamma and weak partonic decays 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Hadronization/PartonicHadronizer.h (Repository): added new class
+	for hadronization of partonic b and c decays. 
+
+	* Hadronization/PartonSplitter.h (Repository): changes to the
+	hadronization to ensure only the taggws particles are hadronized. 
+
+	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and
+	naive running width option added 
+
+	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository):
+	various minor fixes to the decay classes. 
+
+	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository):
+	added new decayer for S -> VV 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic (Repository): added files for b to s gamma
+	hadronic mass spectra 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository):
+	changes to helicity classes to move large inlined members to the
+	.cc files 
+
+	* Makefile.am (Repository): Interfaces now made automatically
+
+	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to
+	move partonic decayers into a sperate directory 
+
+	* Decay/HeavyDecayer.icc (Repository): changes to move partonic
+	decayers into a seperate directory 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Changes for changes to the LorentzRotation in ThePEG
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.icc (Repository): changes to partonic decays
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new
+	partonic decayers for b to s gamma and weak partonic decays 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Hadronization/PartonicHadronizer.h (Repository): added new class
+	for hadronization of partonic b and c decays. 
+
+	* Hadronization/PartonSplitter.h (Repository): changes to the
+	hadronization to ensure only the taggws particles are hadronized. 
+
+	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and
+	naive running width option added 
+
+	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository):
+	various minor fixes to the decay classes. 
+
+	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository):
+	added new decayer for S -> VV 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic (Repository): added files for b to s gamma
+	hadronic mass spectra 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository):
+	changes to helicity classes to move large inlined members to the
+	.cc files 
+
+	* Makefile.am (Repository): Interfaces now made automatically
+
+	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to
+	move partonic decayers into a sperate directory 
+
+	* Decay/HeavyDecayer.icc (Repository): changes to move partonic
+	decayers into a seperate directory 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Changes for changes to the LorentzRotation in ThePEG
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.icc (Repository): changes to partonic decays
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new
+	partonic decayers for b to s gamma and weak partonic decays 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Hadronization/PartonicHadronizer.h (Repository): added new class
+	for hadronization of partonic b and c decays. 
+
+	* Hadronization/PartonSplitter.h (Repository): changes to the
+	hadronization to ensure only the taggws particles are hadronized. 
+
+	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and
+	naive running width option added 
+
+	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository):
+	various minor fixes to the decay classes. 
+
+	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository):
+	added new decayer for S -> VV 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic (Repository): added files for b to s gamma
+	hadronic mass spectra 
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository):
+	changes to helicity classes to move large inlined members to the
+	.cc files 
+
+	* Makefile.am (Repository): Interfaces now made automatically
+
+	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to
+	move partonic decayers into a sperate directory 
+
+	* Decay/HeavyDecayer.icc (Repository): changes to move partonic
+	decayers into a seperate directory 
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
+
+	* Changes for changes to the LorentzRotation in ThePEG
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 

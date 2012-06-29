@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// VectorMesonVectorScalarDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_VectorMesonVectorScalarDecayer_H
 #define HERWIG_VectorMesonVectorScalarDecayer_H
 //
@@ -6,7 +13,7 @@
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "VectorMesonVectorScalarDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace Herwig;
@@ -35,43 +42,30 @@ class VectorMesonVectorScalarDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   VectorMesonVectorScalarDecayer();
 
   /**
-   * Copy-constructor.
-   */
-  inline VectorMesonVectorScalarDecayer(const VectorMesonVectorScalarDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMesonVectorScalarDecayer();
-  //@}
-
-public:
-
-  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -121,13 +115,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -139,12 +133,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -191,6 +185,16 @@ private:
    */
   unsigned int _initsize;
 
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+
 };
 
 }
@@ -199,6 +203,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -218,7 +224,7 @@ template <>
 struct ClassTraits<Herwig::VectorMesonVectorScalarDecayer>
   : public ClassTraitsBase<Herwig::VectorMesonVectorScalarDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::VectorMesonVectorScalarDecayer"; }
+  static string className() { return "Herwig::VectorMesonVectorScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -228,11 +234,8 @@ struct ClassTraits<Herwig::VectorMesonVectorScalarDecayer>
 
 };
 
-}
+/** @endcond */
 
-#include "VectorMesonVectorScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonVectorScalarDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_VectorMesonVectorScalarDecayer_H */

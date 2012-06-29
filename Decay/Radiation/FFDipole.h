@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// FFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_FFDipole_H
 #define HERWIG_FFDipole_H
 //
@@ -7,9 +14,9 @@
 
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "FFDipole.fh"
 
@@ -33,17 +40,12 @@ public:
   /**
    * The default constructor.
    */
-  inline FFDipole();
-
-  /**
-   * The copy constructor.
-   */
-  inline FFDipole(const FFDipole &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFDipole();
+  FFDipole() :
+    _emin(1.e-6*MeV), _eminrest(100*MeV), _eminlab(100*MeV), _emax(),
+    _multiplicity(), _nphotonmax(20), _m(3), _charge(), _qdrf(2),
+    _qnewdrf(2), _qprf(2), _qnewprf(2), _qlab(2), _qnewlab(2), _dipolewgt(),
+    _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(5.0), _mode(1), _maxtry(500),
+    _energyopt(1), _betaopt(1), _dipoleopt(){}
   //@}
 
 public:
@@ -54,7 +56,8 @@ public:
    * @param children The decay products
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  virtual ParticleVector generatePhotons(const Particle & p,
+					 ParticleVector children);
 
 public:
 
@@ -90,24 +93,16 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
-
-  /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
 
   /**
    * Generate the momentum of a photon 
@@ -130,13 +125,36 @@ protected:
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
-  inline double exactDipoleWeight(double beta1,double ombeta1,
-				  double beta2,double ombeta2,unsigned int iphot);
-
+  double exactDipoleWeight(double beta1,double ombeta1,
+			   double beta2,double ombeta2,unsigned int iphot) {
+    double opbc,ombc;
+    // if cos is greater than zero use result accurate as cos->1
+    if(_cosphot[iphot]>0) {
+      opbc=1.+beta2*_cosphot[iphot];
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    }
+    // if cos is less    than zero use result accurate as cos->-1
+    else {
+      opbc=ombeta2+beta2*sqr(_sinphot[iphot])/(1.-_cosphot[iphot]);
+      ombc=1.-beta1*_cosphot[iphot];
+    }
+    return 0.5/(opbc*ombc)*(1.+beta1*beta2
+			    -0.5*ombeta1*(1.+beta1)*opbc/ombc		 
+			    -0.5*ombeta2*(1.+beta2)*ombc/opbc);
+  }
+  
   /**
    * Jacobian factor for the weight
    */
-  inline double jacobianWeight();
+  double jacobianWeight() {
+    Energy pcm1=Kinematics::pstarTwoBodyDecay(_m[0],_m[1],_m[2]);
+    Energy m12 =sqrt((_qnewdrf[0]+_qnewdrf[1]).m2())            ;
+    Energy pcm2=Kinematics::pstarTwoBodyDecay(m12,_m[1],_m[2])  ;
+    double betaprobeta = pcm2*_m[0]/pcm1/m12   ;
+    double spros       = sqr(m12/_m[0])        ;
+    double deltafn     = m12/(m12+_bigLdrf.e());
+    return betaprobeta*spros*deltafn           ;
+  }
 
   /**
    * Matrix element weight
@@ -149,7 +167,7 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Hep3Vector boost,ParticleVector children);
+  double makePhotons(Boost boost,ParticleVector children);
 
   /**
    *  Boost all the momenta from the dipole rest frame via the parent rest frame
@@ -157,7 +175,7 @@ protected:
    * @param boost The boost vector from the rest frame to the lab
    * @return Whether or not it suceeded
    */
-  bool boostMomenta(Hep3Vector boost);
+  bool boostMomenta(Boost boost);
 
   /**
    *  Remove any photons which fail the energy cuts
@@ -214,7 +232,7 @@ private:
   /**
    *  Masses of the particles involved
    */
-  Energy _m[3];
+  vector<Energy> _m;
 
   /**
    *  Produce of the particles charges
@@ -228,11 +246,11 @@ private:
   /**
    *  Momenta of the charged particles in the dipole rest frame before radiation
    */
-  Lorentz5Momentum _qdrf[2];
+  vector<Lorentz5Momentum> _qdrf;
 
   /**   *  Momenta of the charged particles in the dipole rest frame after radiation
    */
-  Lorentz5Momentum _qnewdrf[2];
+  vector<Lorentz5Momentum> _qnewdrf;
 
   /**
    *  Momenta of the photons in the dipole rest frame
@@ -252,12 +270,12 @@ private:
   /**
    *  Momenta of the charged particles in the parent's rest frame before radiation
    */
-  Lorentz5Momentum _qprf[2];
+  vector<Lorentz5Momentum> _qprf;
 
   /**
    *  Momenta of the charged particles in the parent's rest frame after radiation
    */
-  Lorentz5Momentum _qnewprf[2];
+  vector<Lorentz5Momentum> _qnewprf;
 
   /**
    *  Momenta of the photons in the parent rest frame
@@ -277,12 +295,12 @@ private:
   /**
    *  Momenta of the charged particles in the lab frame before radiation
    */
-  Lorentz5Momentum _qlab[2];
+  vector<Lorentz5Momentum> _qlab;
   
   /**
    *  Momenta of the charged particles in the lab frame after  radiation
    */
-  Lorentz5Momentum _qnewlab[2];
+  vector<Lorentz5Momentum> _qnewlab;
 
   /**
    *  Momenta of the photons in the lab frame
@@ -401,20 +419,11 @@ template <>
 struct ClassTraits<Herwig::FFDipole>
   : public ClassTraitsBase<Herwig::FFDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FFDipole"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the FFDipole class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwDecRad.so"; }
+  static string className() { return "Herwig::FFDipole"; }
 };
 
 /** @endcond */
 
 }
-
-#include "FFDipole.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FFDipole.tcc"
-#endif
 
 #endif /* HERWIG_FFDipole_H */

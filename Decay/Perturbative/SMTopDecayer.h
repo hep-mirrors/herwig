@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMTopDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMTopDecayer_H
 #define HERWIG_SMTopDecayer_H
 //
@@ -6,73 +13,90 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "SMTopDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;
-  using namespace Herwig::Helicity;
+  using namespace ThePEG::Helicity;
   
 /**
  * \ingroup Decay
  *
- * The <code>SMTopDecayer</code> performs decays of the top quark into
+ * The SMTopDecayer performs decays of the top quark into
  * the bottom quark and qqbar pairs or to the bottom quark and lepton 
- * anti-lepton pairs via W boson exchange.
+ * neutrino pairs via W boson exchange.
  */
 class SMTopDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline SMTopDecayer();
-  //@}
-
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
-   * @param ichan The channel we are calculating the matrix element for. 
-   * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
-
-public:
-
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
-  /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
-   */
-  virtual bool accept(const DecayMode & dm) const;
+  SMTopDecayer();
 
   /**
    * Which of the possible decays is required
-   * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const {return -1;}
-
+  virtual int modeNumber(bool & , tcPDPtr , const tPDVector & ) const {return -1;}
 
   /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
-   * @return a ParticleVector containing the decay products.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
-  //@}
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
+
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
+   * @return The matrix element squared for the phase-space configuration.
+   */
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
+
+  /**
+   * Method to return an object to calculate the 3 (or higher body) partial width
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+  
+  /**
+   * The differential three body decay rate with one integral performed.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s  The invariant mass which still needs to be integrate over.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
+   */
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+				      const Energy2 s, const Energy m1,
+				      const Energy m2, const Energy m3) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -102,19 +126,27 @@ public:
 
 protected:
 
+  /**
+   *  The integrand for the integrate partial width
+   */
+  Energy6 dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt, Energy mb, 
+			  Energy mf, Energy mfb, Energy mw) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -126,7 +158,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -146,31 +184,62 @@ private:
   /**
    *Pointer to the W vertex
    */
-   Ptr<Herwig::Helicity::FFVVertex>::pointer _wvertex;
-   
+  AbstractFFVVertexPtr _wvertex;
+  
   /**
    * Max weight for integration
    */
-  //@{
-   
+  //@{   
   /**
-   * Weight W->q,qbar
+   * Weight \f$W\to q\bar{q}'\f$
    */
   vector<double> _wquarkwgt;
   
   /**
-   * Weight t->l,lnu
+   * Weight \f$W\to \ell \nu\f$
    */
   vector<double> _wleptonwgt;
+  //@}
+
+  /**
+   *  Pointer to the \f$W^\pm\f$
+   */
+  PDPtr _wplus;
+
+  /**
+   *  Spin density matrix for the decay
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  1st spinor for the decay
+   */
+  mutable vector<SpinorWaveFunction   >   _inHalf;
+
+  /**
+   *  2nd spinor for the decay
+   */
+  mutable vector<SpinorWaveFunction   >   _outHalf;
+
+  /**
+   *  1st barred spinor for the decay
+   */
+  mutable vector<SpinorBarWaveFunction>   _inHalfBar;
+
+  /**
+   *  2nd barred spinor for the decay
+   */
+  mutable vector<SpinorBarWaveFunction>   _outHalfBar;
+
 };
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SMTopDecayer. */
@@ -186,18 +255,15 @@ template <>
 struct ClassTraits<Herwig::SMTopDecayer>
   : public ClassTraitsBase<Herwig::SMTopDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMTopDecayer"; }
+  static string className() { return "Herwig::SMTopDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMTopDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
+  static string library() { return "HwPerturbativeDecay.so"; }
 };
 
-}
+/** @endcond */
 
-#include "SMTopDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMTopDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_SMTopDecayer_H */

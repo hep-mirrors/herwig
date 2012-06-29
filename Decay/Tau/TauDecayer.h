@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// TauDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TauDecayer_H
 #define HERWIG_TauDecayer_H
 // This is the declaration of the TauDecayer class.
@@ -6,8 +13,9 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "TauDecayer.fh"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "ThePEG/Helicity/LorentzSpinor.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -43,55 +51,41 @@ class TauDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline TauDecayer();
+  TauDecayer() :_gf(1.16637E-5/GeV2) {
+    generateIntermediates(true);
+  }
 
   /**
-   * Copy-constructor.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  inline TauDecayer(const TauDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~TauDecayer();
-  //@}
-
-public:
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-
-  /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. As this is the base class it returns false and
-   * should be overridden in class implementing the decays.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   *
-   */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
    * This method combines the leptonic current and the hadronic current to 
    * calculate the matrix element.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database.
@@ -129,59 +123,31 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -201,7 +167,7 @@ private:
   /**
    * Fermi coupling constant, \f$G_F\f$.
    */
-  InvEnergy2 _GF;
+  InvEnergy2 _gf;
 
   /**
    * mapping of the modes to the currents
@@ -219,9 +185,39 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weight
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  The weights for the different channels
+   */
+  vector<double> _weights;
+
+  /**
+   *  The spinors for the decaying particle
+   */
+  mutable vector<LorentzSpinor   <SqrtEnergy> > _inspin;
+
+  /**
+   *  Barred spinors for the deaying particle
+   */
+  mutable vector<LorentzSpinorBar<SqrtEnergy> > _inbar ;
+
+  /**
+   *  Rho matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Maps for the vectors
+   */
+  mutable vector<unsigned int> _constants;
+
+  /**
+   *  Spins of the particles
+   */
+  mutable vector<PDT::Spin> _ispin; 
 
 };
 
@@ -231,6 +227,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -250,7 +248,7 @@ template <>
 struct ClassTraits<Herwig::TauDecayer>
   : public ClassTraitsBase<Herwig::TauDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TauDecayer"; }
+  static string className() { return "Herwig::TauDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -260,11 +258,8 @@ struct ClassTraits<Herwig::TauDecayer>
 
 };
 
-}
+/** @endcond */
 
-#include "TauDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TauDecayer.tcc"
-#endif
+}
 
 #endif /* THEPEG_TauDecayer_H */

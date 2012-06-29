@@ -1,0 +1,70 @@
+// -*- C++ -*-
+//
+// MPISampler.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the MPISampler class.
+//
+
+namespace Herwig {
+
+inline MPISampler::MPISampler()
+: theEps(100*Constants::epsilon), theMargin(1.1),
+  theNTry(1000) {}
+
+inline MPISampler::MPISampler(const MPISampler & x)
+  : SamplerBase(x), theProcessHandler(x.theProcessHandler), theEps(x.theEps), 
+    theMargin(x.theMargin), theNTry(x.theNTry) {}
+
+inline void MPISampler::setProcessHandler(tProHdlPtr proh){
+  theProcessHandler = proh;
+}
+
+inline IBPtr MPISampler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MPISampler::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MPISampler::doupdate() {
+  SamplerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void MPISampler::doinit() {
+  SamplerBase::doinit();
+}
+
+inline void MPISampler::rebind(const TranslationMap & trans)
+  {
+  // dummy = trans.translate(dummy);
+  SamplerBase::rebind(trans);
+}
+
+inline IVector MPISampler::getReferences() {
+  IVector ret = SamplerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

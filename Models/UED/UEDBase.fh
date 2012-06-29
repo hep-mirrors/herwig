@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the UEDBase class.
+//
+#ifndef HERWIG_UEDBase_FH
+#define HERWIG_UEDBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class UEDBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::UEDBase,UEDBasePtr);
+
+}
+
+#endif

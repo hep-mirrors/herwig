@@ -1,7 +1,27 @@
-Stefan Gieseke <gieseke@particle.uni-karlsruhe.de>
-David Grellscheid <david.grellscheid@durham.ac.uk>
-Alberto Ribon <Alberto.Ribon@cern.ch>
-Peter Richardson <Peter.Richardson@durham.ac.uk>
-Mike Seymour <M.H.Seymour@rl.ac.uk>
-Philip Stephens <stephens@hep.phy.cam.ac.uk>
-Bryan Webber <webber@hep.phy.cam.ac.uk>
+============
+Herwig++ 2.3
+============
+
+Please contact <herwig@projects.hepforge.org> for any queries.
+
+========
+Authors:
+========
+Manuel Baehr
+Stefan Gieseke
+Martyn Gigg
+David Grellscheid
+Keith Hamilton
+Seyi Latunde-Dada
+Simon Plaetzer
+Peter Richardson
+Mike Seymour
+Alexander Sherstnev
+Jon Tully
+Bryan Webber
+
+===============
+Former authors:
+===============
+Alberto Ribon
+Philip Stephens

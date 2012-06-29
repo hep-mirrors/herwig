@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// FivePionCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_FivePionCurrent_H
 #define HERWIG_FivePionCurrent_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "WeakDecayCurrent.h"
-#include "Herwig++/Helicity/EpsFunction.h"
-#include "FivePionCurrent.fh"
+#include "ThePEG/Helicity/epsilon.h"
 
 namespace Herwig {
 
@@ -23,20 +29,10 @@ class FivePionCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FivePionCurrent();
-
-  /**
-   * The copy constructor.
-   */
-  inline FivePionCurrent(const FivePionCurrent &);
-  //@}
-
-public:
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{
@@ -66,22 +62,22 @@ public:
    * @param ia The PDG code for the antiquark
    * @return The external particles for the current.
    */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
    * Hadronic current. This method is purely virtual and must be implemented in
    * all classes inheriting from this one.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE>  
+  current(const int imode,const int ichan,Energy & scale, 
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. 
@@ -142,25 +138,37 @@ protected:
    * Breit-Wigner for the \f$\rho\f$.
    * @param scale The virtual mass
    */
-  inline Complex rhoBreitWigner(Energy2 scale) const;
+  Complex rhoBreitWigner(Energy2 scale) const {
+    Energy2 m2=sqr(_rhomass);
+    return m2/(m2-scale-Complex(0.,1.)*_rhomass*_rhowidth);
+  }
 
   /**
    * Breit-Wigner for the \f$a_1\f$.
    * @param scale The virtual mass
    */
-  inline Complex a1BreitWigner(Energy2 scale) const;
-
+  Complex a1BreitWigner(Energy2 scale) const {
+    Energy2 m2=sqr(_a1mass);
+    return m2/(m2-scale-Complex(0.,1.)*_a1mass*_a1width);
+  }
+  
   /**
    * Breit-Wigner for the \f$\omega\f$.
    * @param scale The virtual mass
    */
-  inline Complex omegaBreitWigner(Energy2 scale) const;
+  Complex omegaBreitWigner(Energy2 scale) const {
+    Energy2 m2=sqr(_omegamass);
+    return m2/(m2-scale-Complex(0.,1.)*_omegamass*_omegawidth);
+  }
 
   /**
    * Breit-Wigner for the \f$\sigma\f$.
    * @param scale The virtual mass
    */
-  inline Complex sigmaBreitWigner(Energy2 scale) const;
+  Complex sigmaBreitWigner(Energy2 scale) const {
+    Energy2 m2=sqr(_sigmamass);
+    return m2/(m2-scale-Complex(0.,1.)*_sigmamass*_sigmawidth);
+  }
   //@}
 
   /**
@@ -178,14 +186,34 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector rhoOmegaCurrent(unsigned int iopt,
-						   const Lorentz5Momentum & Q,
-						   const Lorentz5Momentum & q1,
-						   const Lorentz5Momentum & q2,
-						   const Lorentz5Momentum & q3,
-						   const Lorentz5Momentum & q4,
-						   const Lorentz5Momentum & q5) const;
-
+  LorentzVector<complex<InvEnergy2> >
+  rhoOmegaCurrent(unsigned int iopt,
+		  const Lorentz5Momentum & Q,
+		  const Lorentz5Momentum & q1,
+		  const Lorentz5Momentum & q2,
+		  const Lorentz5Momentum & q3,
+		  const Lorentz5Momentum & q4,
+		  const Lorentz5Momentum & q5) const {
+    // prefactor
+    complex<InvEnergy7> pre(_preomega*a1BreitWigner(Q.m2())*
+			    omegaBreitWigner((q1+q2+q3).m2())*
+			    rhoBreitWigner((q4+q5).m2()));
+    // omega piece
+    Complex omega(-1.);
+    if(_rhoomega) {
+      if(iopt==1)      omega=rhoBreitWigner((q2+q3).m2());
+      else if(iopt==2) omega=rhoBreitWigner((q1+q3).m2());
+      else if(iopt==3) omega=rhoBreitWigner((q1+q2).m2());
+      else            
+	omega=rhoBreitWigner((q2+q3).m2())+rhoBreitWigner((q1+q3).m2())+
+	  rhoBreitWigner((q1+q2).m2());
+    }
+    LorentzVector<complex<Energy3> > omegacurrent(Helicity::epsilon(q1,q2,q3));
+    LorentzVector<complex<InvEnergy2> > output =
+      pre * omega * Helicity::epsilon(q4-q5,omegacurrent,Q);
+    return output;
+  }
+  
   /**
    *  The \f$a_1\sigma\f$ current
    * @param iopt Option for the inclusion of \f$\rho\f$ Breit-Wigner terms in the 
@@ -197,13 +225,32 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector a1SigmaCurrent(unsigned int iopt,
-						  const Lorentz5Momentum & Q,
-						  const Lorentz5Momentum & q1,
-						  const Lorentz5Momentum & q2,
-						  const Lorentz5Momentum & q3,
-						  const Lorentz5Momentum & q4,
-						  const Lorentz5Momentum & q5) const;
+  LorentzVector<complex<InvEnergy2> > 
+  a1SigmaCurrent(unsigned int iopt,
+		 const Lorentz5Momentum & Q,
+		 const Lorentz5Momentum & q1,
+		 const Lorentz5Momentum & q2,
+		 const Lorentz5Momentum & q3,
+		 const Lorentz5Momentum & q4,
+		 const Lorentz5Momentum & q5) const {
+    Lorentz5Momentum pa1(q1+q2+q3);pa1.rescaleMass();
+    Energy2 ma12(pa1.m2());
+    complex<InvEnergy3> pre(_presigma*a1BreitWigner(Q.m2())*a1BreitWigner(ma12)*
+			    sigmaBreitWigner((q4+q5).m2()));
+    Energy2 pdot[2]={q2*(q1-q3),q1*(q2-q3)};
+    LorentzPolarizationVectorE rho[2] = 
+      {(pdot[0]/ma12*pa1-q1+q3)*rhoBreitWigner((q1+q3).m2()),
+       (pdot[1]/ma12*pa1-q2+q3)*rhoBreitWigner((q2+q3).m2())};
+    LorentzPolarizationVectorE total;
+    if(iopt==1)      total = rho[0];
+    else if(iopt==2) total = rho[1];
+    else             total = rho[0]+rho[1];
+    Complex qdot = total * Q / Q.m2();
+    LorentzPolarizationVectorE cq(Q);
+    cq = cq * qdot;
+    cq -= total;
+    return pre * cq;
+  }
   //@}
 
 protected:
@@ -214,13 +261,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -232,7 +279,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -302,13 +349,18 @@ private:
   bool _localparameters;
 
   /**
+   *  Option for the treatment of \f$\rho\f$ Breit-Wigners in \f$\omega\f$ decay
+   */
+  bool _rhoomega;
+
+  /**
    *  Normalisation parameters for the different currents
    */
   //@{
   /**
    *  The \f$c\f$ parameter
    */
-  double _c;
+  Energy2 _c;
 
   /**
    *  The \f$c_0\f$ parameter
@@ -328,17 +380,32 @@ private:
   /**
    * The \f$G_{a\rho\pi}\f$ parameter
    */
-  double _garhopi;
+  Energy _garhopi;
 
   /**
    *  The \f$f_{aaf}\f$ parameter
    */
-  double _faaf;
+  Energy _faaf;
 
   /**
    *  The \f$f_{f\pi\pi}\f$ parameter
    */
-  double _ffpipi;
+  Energy _ffpipi;
+  //@}
+
+  /**
+   *  Values cached to avoid unnessacary calculations
+   */
+  //@{
+  /**
+   *  Prefactor for the \f$\rho\omega\f$ current
+   */
+  InvEnergy7 _preomega;
+
+  /**
+   *  Prefactor for the \f$a_1\sigma\f$ current
+   */
+  InvEnergy3 _presigma;
   //@}
 };
 
@@ -364,7 +431,7 @@ template <>
 struct ClassTraits<Herwig::FivePionCurrent>
   : public ClassTraitsBase<Herwig::FivePionCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FivePionCurrent"; }
+  static string className() { return "Herwig::FivePionCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * FivePionCurrent is implemented. It may also include several, space-separated,
@@ -378,10 +445,5 @@ struct ClassTraits<Herwig::FivePionCurrent>
 /** @endcond */
 
 }
-
-#include "FivePionCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FivePionCurrent.tcc"
-#endif
 
 #endif /* HERWIG_FivePionCurrent_H */

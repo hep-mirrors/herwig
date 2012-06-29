@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// EventShapes.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_EventShapes_H
 #define HERWIG_EventShapes_H
 //
@@ -7,9 +14,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "ThePEG/CLHEPWrap/Matrix.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "ThePEG/CLHEPWrap/ThreeVector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/ThreeVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "EventShapes.fh"
 
@@ -27,26 +33,6 @@ using namespace ThePEG;
  * defined for EventShapes.
  */
 class EventShapes: public Interfaced {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline EventShapes();
-
-  /**
-   * The copy constructor.
-   */
-  inline EventShapes(const EventShapes &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~EventShapes();
-  //@}
 
 public:
 
@@ -84,17 +70,17 @@ public:
   /**
    *  The thrust axis
    */
-  inline Vector3 thrustAxis();
+  inline Axis thrustAxis();
 
   /**
    *  The major axis
    */ 
-  inline Vector3 majorAxis(); 
+  inline Axis majorAxis(); 
 
   /**
    *  The minor axis
    */
-  inline Vector3 minorAxis(); 
+  inline Axis minorAxis(); 
   //@}
 
   /**
@@ -119,7 +105,7 @@ public:
   /**
    *  The eigenvectors in order of descending eigenvalue
    */
-  inline vector<Vector3> linTenEigenVectors();
+  inline vector<Axis> linTenEigenVectors();
   //@}
 
   /**
@@ -144,7 +130,7 @@ public:
   /**
    *  The sphericity axis
    */
-  inline Vector3 sphericityAxis();
+  inline Axis sphericityAxis();
 
   /**
    *  The sphericity eigenvalues
@@ -154,7 +140,7 @@ public:
   /**
    *  The sphericity eigenvectors
    */
-  inline vector<Vector3> sphericityEigenVectors();
+  inline vector<Axis> sphericityEigenVectors();
   //@}
 
   /**
@@ -207,10 +193,6 @@ public:
    *  Single particle variables which do not depend on event shapes axes
    */
   //@{
-  /**
-   *  Ratio of momentum to beam momentum
-   */
-  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam);
 
   /**
    *  The scaled momentum \f$\xi=-\log\left( p/E_{\rm beam}\right)\f$.
@@ -225,7 +207,7 @@ public:
   /**
    *  Rapidity with respect to the beam direction
    */
-  inline Energy getRapidity(const Lorentz5Momentum & p);
+  inline double getRapidity(const Lorentz5Momentum & p);
   //@}
 
   /**
@@ -289,22 +271,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -321,61 +287,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -414,7 +332,7 @@ private:
   /**
    *  Calculate the hemisphere masses and jet broadenings
    */
-  inline void calcHemisphereMasses();
+  void calcHemisphereMasses();
 
   /**
    * Calculate the thrust and related axes
@@ -430,20 +348,42 @@ private:
   void diagonalizeTensors(bool linear, bool cmboost);
 
   /**
+   * Quite general diagonalization of a symmetric Matrix  T, given as
+   * an array of doubles.  The symmetry is not checked explicitly as
+   * this is clear in the context.  It uses an explicit generic
+   * solution of the eigenvalue problem and no numerical
+   * approximation, based on Cardano's formula.
+   * @param T Matrix to be diagonalised 
+   */
+  vector<double> eigenvalues(const double T[3][3]);
+
+  /**
+   * The eigenvector of @param T to a given eigenvalue @param lam 
+   */
+  Axis eigenvector(const double T[3][3], const double &lam);
+
+  /**
+   * The eigenvectors of @param T corresponding to the eigenvectors
+   * @param lam . The ordering of the vectors corresponds to the
+   * ordering of the eigenvalues.
+   */
+  vector<Axis> eigenvectors(const double T[3][3], const vector<double> &lam);
+
+  /**
    *  Member to calculate the thrust
    * @param p The three vectors
-   * @param t The thrust
+   * @param t The thrust-squared (up to an Energy scale factor)
    * @param taxis The thrust axis
    */
-  void calcT(const vector<Vector3> &p, double &t, Vector3 &taxis);
+  void calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis);
 
   /**
    *  Member to calculate the major
    * @param p The three vectors
-   * @param m The major
+   * @param m The major-squared (up to an Energy scale factor)
    * @param maxis The major axis
    */
-  void calcM(const vector<Vector3> &p, double &m, Vector3 &maxis);
+  void calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis);
   //@}
 
 private:
@@ -452,7 +392,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<EventShapes> initEventShapes;
+  static NoPIOClassDescription<EventShapes> initEventShapes;
 
   /**
    * The assignment operator is private and must never be called.
@@ -474,17 +414,17 @@ private:
   /**
    *  The thrust related axes
    */
-  vector<Vector3> _thrustAxis;
+  vector<Axis> _thrustAxis;
 
   /**
    *  The sphericity related axes
    */
-  vector<Vector3> _spherAxis; 
+  vector<Axis> _spherAxis; 
 
   /**
    *  The linearised tensor axes
    */
-  vector<Vector3> _linTenAxis; 
+  vector<Axis> _linTenAxis; 
   //@}
 
   /**
@@ -590,7 +530,7 @@ template <>
 struct ClassTraits<Herwig::EventShapes>
   : public ClassTraitsBase<Herwig::EventShapes> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EventShapes"; }
+  static string className() { return "Herwig::EventShapes"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the EventShapes class and any other class on which it depends
    *  (except the base class). */

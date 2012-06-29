@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SplittingGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SplittingGenerator_H
 #define HERWIG_SplittingGenerator_H
 //
@@ -6,9 +13,9 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "SudakovFormFactor.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
-#include "Herwig++/Shower/Kinematics/ShowerKinematics.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include<vector>     
 
@@ -47,25 +54,25 @@ struct Branching {
   /**
    *  Pointer to the ShowerKinematics object for the branching
    */
-   ShoKinPtr kinematics;
-
-  /**
-   *  Pointer to the SudakovFormFactor for the branching
-   */
-  tSudakovPtr sudakov; 
-
+  ShoKinPtr kinematics;
+  
   /**
    *  PDG codes of the particles in the branching
    */
   IdList ids; 
 
   /**
+   *  The SudakovFormFactor for the branching
+   */
+  tSudakovPtr sudakov;
+
+  /**
    *  Constructor for the struct
    * @param a pointer to the ShowerKinematics object for the branching
-   * @param b pointer to the SudakovFormFactor object for the branching
    * @param c PDG codes of the particles in the branching
+   * @param d The SudakovFormFactor for the branching
    */
-  Branching(ShoKinPtr a, tSudakovPtr b, IdList c) : kinematics(a), sudakov(b), ids(c) {}
+  Branching(ShoKinPtr a, IdList c,tSudakovPtr d) : kinematics(a), ids(c), sudakov(d) {}
 
   /**
    *  Default constructor
@@ -89,25 +96,14 @@ struct Branching {
  *  These switches are useful mainly for debugging, but eventually can
  *  also be used for a "quick and dirty" estimation of systematic errors.
  *
- *  This class is not responsible for creating new ShowerParticle objects,
- *  and is independent from ShowerVariables. The checking that the chosen
- *  candidate branching is acceptable according to the vetos in ShowerVariables
- *  and then, if accepted, the creation of the ShowerParticle
- *  created from the branching, should all be done in
- *  in ForwardShowerEvolver and BackwardShowerEvolver.
- *  The advantages in doing this is that the SplittingGenerator
- *  is kept simpler and easier to manage.
- *
  *  In the future it should be possible to implement in this class
  *
  *  -  the \f$1\to2\f$ azimuthal correlations for soft emission due to QCD coherence  
  *     using the ShowerParticle object provided in the input.
- *  -  Similarly hacing the \f$\rho-D\f$ matrix and the SplittingFunction pointer
+ *  -  Similarly having the \f$\rho-D\f$ matrix and the SplittingFunction pointer
  *     it should be possible to implement the spin correlations.
  *     
- *  @see ShowerIndex
  *  @see SudakovFormFactor
- *  @see ShowerVariables
  *  @see SplitFun
  *
  * @see \ref SplittingGeneratorInterfaces "The interfaces"
@@ -122,7 +118,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SplittingGenerator();
+  SplittingGenerator() : _isr_Mode(1), _fsr_Mode(1) {}
   //@}
 
 public:
@@ -146,9 +142,11 @@ public:
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
    *
    * @param particle The particle to be evolved
+   * @param enhance The factor by which to ehnace the emission of radiation
    * @return The Branching struct for the branching
    */
-  Branching chooseForwardBranching(ShowerParticle & particle) const; 
+  Branching chooseForwardBranching(ShowerParticle & particle,
+				   double enhance) const; 
 
   /**
    * Select the next branching of a particles for the initial-state shower
@@ -156,11 +154,12 @@ public:
    * @param particle The particle being showerwed
    * @param maxscale The maximum scale
    * @param minmass Minimum mass of the particle after the branching
+   * @param enhance The factor by which to ehnace the emission of radiation
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
-				 vector<Energy> maxscale,
-				 Energy minmass) const; 
+				 Energy maxscale,
+				 Energy minmass,double enhance) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -177,54 +176,32 @@ public:
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
    *
    * @param particle The particle to be evolved
+   * @param enhance The factor by which to ehnace the emission of radiation
+   * @param beam The beam particle
    * @return The Branching struct for the branching
    */
-  Branching chooseBackwardBranching(ShowerParticle & particle) const;
+  Branching 
+  chooseBackwardBranching(ShowerParticle & particle,
+			  PPtr beam,
+			  double enhance,
+			  Ptr<BeamParticleData>::transient_const_pointer) const;
   //@}
 
-public:  
-
-  /**
-   * Access to the ShowerVariables
-   */
-  inline const ShowerVarsPtr & showerVariables() const;
+public:
 
   /**
    *  Access to the switches
    */
   //@{
   /**
-   * It returns true/false if interaction type specified in input is on/off.
-   */
-  inline bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
-
-  /**
    * It returns true/false if the initial-state radiation is on/off.
    */
-  inline bool isISRadiationON() const;  
+  bool isISRadiationON() const { return _isr_Mode; }
 
   /**
    * It returns true/false if the final-state radiation is on/off.
    */
-  inline bool isFSRadiationON() const;  
-
-  /**
-   * It returns true/false if the initial-state radiation for the
-   * specified interaction type is on/off. However, they return false, 
-   * regardless of the switch, if either the corresponding interaction switch 
-   * (see method isInteractionON) is off, or if the global initial or final 
-   * state radiation (see overloaded methods above without argument) is off.
-   */
-  inline bool isISRadiationON(const ShowerIndex::InteractionType interaction) const;  
-
-  /**
-   * It returns true/false if the final-state radiation for the
-   * specified interaction type is on/off. However, they return false, 
-   * regardless of the switch, if either the corresponding interaction switch 
-   * (see method isInteractionON) is off, or if the global initial or final 
-   * state radiation (see overloaded methods above without argument) is off.
-   */
-  inline bool isFSRadiationON(const ShowerIndex::InteractionType interaction) const;
+  bool isFSRadiationON() const { return _fsr_Mode; }
   //@}
 
   /**
@@ -235,17 +212,28 @@ public:
   /**
    *  Add a final-state splitting
    */
-  inline string addFinalSplitting(string);
+  string addFinalSplitting(string arg) { return addSplitting(arg,true); }
 
   /**
    *  Add an initial-state splitting
    */
-  inline string addInitialSplitting(string);
+  string addInitialSplitting(string arg) { return addSplitting(arg,false); }
+  //@}
 
   /**
-   *  Set the shower variables, only used by Evolver in doinit
+   *  Access to the splittings
    */
-  inline void setShowerVariables(ShowerVarsPtr);
+  //@{
+  /**
+   *  Access the final-state branchings
+   */
+  const BranchingList & finalStateBranchings() const { return _fbranchings; }
+
+  /**
+   *  Access the initial-state branchings
+   */
+  const BranchingList & initialStateBranchings() const { return _bbranchings; }
+  //@}
 
 public:
 
@@ -281,34 +269,19 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinitrun() throw(InitException);
-
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  //inline virtual void dofinish();
-
-
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
    * after all objects used in an EventGenerator has been cloned so that
@@ -318,15 +291,15 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+  virtual void rebind(const TranslationMap & trans)
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -340,14 +313,12 @@ private:
   void addToMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
 
   /**
-   *  Obtain the reference vectors for a final-state particle
+   * Obtain the reference vectors for a final-state particle
    * @param particle The particle
-   * @param type The  type of the interaction
    * @param p The p reference vector
    * @param n The n reference vector
    */
-  void finalStateBasisVectors(ShowerParticle particle,
-			      ShowerIndex::InteractionType type, Lorentz5Momentum & p,
+  void finalStateBasisVectors(ShowerParticle particle, Lorentz5Momentum & p,
 			      Lorentz5Momentum & n) const;
 
   /**
@@ -378,65 +349,15 @@ private:
    */
   //@{
   /**
-   *  Is QCD on/off
-   */
-  bool _qcdinteractionMode;
-
-  /**
-   *  Is QED on/off
-   */
-  bool _qedinteractionMode;
-
-  /**
-   *  Is electroweak on/off
-   */
-  bool _ewkinteractionMode;
-
-  /**
    *  Is inqitial-state radiation on/off
    */
   bool _isr_Mode;
 
   /**
-   *  is initial-state QCD radiation on/off
-   */
-  bool _isr_qcdMode;
-
-  /**
-   *  is initial-state QED radiation on/off
-   */
-  bool _isr_qedMode;
-
-  /**
-   *  is initial-state electroweak radiation on/off
-   */
-  bool _isr_ewkMode;
-
-  /**
    *  Is final-state radiation on/off
    */
   bool _fsr_Mode;
-
-  /**
-   *  Is final-state QCD radiation on/off
-   */
-  bool _fsr_qcdMode;
-
-  /**
-   *  Is final-state QED radiation on/off
-   */
-  bool _fsr_qedMode;
-
-  /**
-   *  Is final-state electroweak radiation on/off
-   */
-  bool _fsr_ewkMode;
   //@}
-
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
 
   /**
    *  List of the branchings and the appropriate Sudakovs for forward branchings
@@ -471,7 +392,7 @@ template <>
 struct ClassTraits<Herwig::SplittingGenerator>
   : public ClassTraitsBase<Herwig::SplittingGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SplittingGenerator"; }
+  static string className() { return "Herwig::SplittingGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SplittingGenerator is implemented. It may also include several, space-separated,
@@ -485,10 +406,5 @@ struct ClassTraits<Herwig::SplittingGenerator>
 /** @endcond */
 
 }
-
-#include "SplittingGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SplittingGenerator.tcc"
-#endif
 
 #endif /* HERWIG_SplittingGenerator_H */

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// VectorMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the VectorMesonCurrent class.
 //
@@ -8,24 +15,21 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using Helicity::VectorWaveFunction;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-VectorMesonCurrent::VectorMesonCurrent() 
-{
+void VectorMesonCurrent::doinit() {
+  unsigned int isize=numberOfModes();
+  if(_id.size()!=isize||_decay_constant.size()!=isize)
+    {throw InitException() << "Inconsistent parameters in VectorMesonCurrent::doinit()"
+			   << Exception::abortnow;}
+  WeakDecayCurrent::doinit();
+}
+VectorMesonCurrent::VectorMesonCurrent()  {
   _id.push_back(213);_decay_constant.push_back(0.1764*GeV2);
   addDecayMode(2,-1);
   _id.push_back(113);_decay_constant.push_back(0.1764*GeV2);
@@ -66,11 +70,11 @@ VectorMesonCurrent::VectorMesonCurrent()
 }
 
 void VectorMesonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _id << _decay_constant;
+  os << _id << ounit(_decay_constant,GeV2);
 }
 
 void VectorMesonCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _id >> _decay_constant;
+  is >> _id >> iunit(_decay_constant,GeV2);
 }
 
 ClassDescription<VectorMesonCurrent> VectorMesonCurrent::initVectorMesonCurrent;
@@ -100,111 +104,109 @@ void VectorMesonCurrent::Init() {
 bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
 				    DecayPhaseSpaceModePtr mode,
 				    unsigned int iloc,unsigned int ires,
-				    DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+				    DecayPhaseSpaceChannelPtr phase,Energy upp) {
   tPDPtr part(getParticleData(_id[imode]));
   // check the mode has the correct charge
-  if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))){return false;}
+  if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
   // check if the particle is kinematically allowed
-  bool kineallowed(true);
-  Energy min=part->mass()-part->widthLoCut();
-  if(min>upp){kineallowed=false;return false;}
+  Energy min=part->massMin();
+  if(min>upp) return false;
   // construct the mode
   DecayPhaseSpaceChannelPtr newchannel(new_ptr(DecayPhaseSpaceChannel(*phase)));
   newchannel->resetDaughter(-ires,iloc);
   mode->addChannel(newchannel);
-  return kineallowed;
+  return true;
 }
 
 // outgoing particles 
-PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia)
-{
+tPDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
   tPDPtr part(getParticleData(_id[imode]));
-  PDVector output;
-  if(icharge==int(part->iCharge()))
-    {
-      if(icharge==0)
-	{
-	  int iqb,iab;
-	  decayModeInfo(imode,iqb,iab);
-	  if(iq==iqb&&ia==iab){output.push_back(part);}
-	  else{output.push_back(part->CC());}
-	}
-      else{output.push_back(part);}
+  tPDVector output;
+  if(icharge==int(part->iCharge())) {
+    if(icharge==0) {
+      int iqb,iab;
+      decayModeInfo(imode,iqb,iab);
+      if(iq==iqb&&ia==iab) output.push_back(part);
+      else                 output.push_back(part->CC());
     }
-  else if(icharge==-int(part->iCharge())){output.push_back(part->CC());}
+    else output.push_back(part);
+  }
+  else if(icharge==-int(part->iCharge())) output.push_back(part->CC());
   return output;
 }
 
-vector<LorentzPolarizationVector> 
-VectorMesonCurrent::current(bool vertex, const int imode, const int ichan, 
-			    Energy & scale,const ParticleVector & decay) const
-{
+vector<LorentzPolarizationVectorE> 
+VectorMesonCurrent::current(const int imode, const int, 
+			    Energy & scale,const ParticleVector & decay,
+			    DecayIntegrator::MEOption meopt) const {
+  // set up the spin information for the particle and calculate the wavefunctions
+  vector<LorentzPolarizationVector> temp;
+  VectorWaveFunction::
+    calculateWaveFunctions(temp,decay[0],outgoing,false);
+  if(meopt==DecayIntegrator::Terminate) {
+    VectorWaveFunction::constructSpinInfo(temp,decay[0],
+					  outgoing,true,false);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   scale=decay[0]->mass();
   // polarization vector
-  vector<LorentzPolarizationVector> temp;
   Energy fact(_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
   decayModeInfo(imode,iq,ia);
-  if(abs(iq)==abs(ia)&&abs(iq)<3)
-    {
-      fact*=(sqrt(0.5));
-      if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1){fact=-fact;}
-    }
-  // set up the spin information for the particle and calculate the wavefunctions
-  VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
+  if(abs(iq)==abs(ia)&&abs(iq)<3) {
+    fact *= sqrt(0.5);
+    if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
+  }
   // normalise the current
-  for(unsigned int ix=0;ix<3;++ix){temp[ix]*=fact;}
+  vector<LorentzPolarizationVectorE> returnval(3);
+  for(unsigned int ix=0;ix<3;++ix) {
+    returnval[ix] = temp[ix] * fact;
+  }
   // return the answer
-  return temp;
+  return returnval;
 }
 
-bool VectorMesonCurrent::accept(vector<int> id)
-{
-  if(id.size()!=1){return false;}
+bool VectorMesonCurrent::accept(vector<int> id) {
+  if(id.size()!=1) return false;
   int idtemp(abs(id[0]));
-  for(unsigned int ix=0;ix<_id.size();++ix){if(abs(_id[ix])==idtemp){return true;}}
+  for(unsigned int ix=0;ix<_id.size();++ix) {
+    if(abs(_id[ix])==idtemp) return true;
+  }
   return false;
 }
 
-unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
-{
+unsigned int VectorMesonCurrent::decayMode(vector<int> idout) {
   int idtemp(abs(idout[0])); unsigned int ix(0);
   bool found(false);
-  do
-    {
-      if(idtemp==abs(_id[ix])){found=true;}
-      else{++ix;}
-    }
+  do {
+    if(idtemp==abs(_id[ix])) found=true;
+    else                     ++ix;
+  }
   while(!found);
   return ix;
 }
 
-void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::VectorMesonCurrent " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_id.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":ID " << ix 
-		 << " " << _id[ix] << "\n";
-	  output << "set " << fullName() << ":Decay_Constant " << ix 
-		 << " " << _decay_constant[ix]/GeV2 << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":ID " << ix 
-		 << " " << _id[ix] << "\n";
-	  output << "insert " << fullName() << ":Decay_Constant " << ix 
-		 << " " << _decay_constant[ix]/GeV2 << "\n";
-	}
+void VectorMesonCurrent::dataBaseOutput(ofstream & output,
+					bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::VectorMesonCurrent " << name() 
+		    << " HwWeakCurrents.so\n";
+  for(unsigned int ix=0;ix<_id.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << name() << ":ID " << ix 
+	     << " " << _id[ix] << "\n";
+      output << "set " << name() << ":Decay_Constant " << ix 
+	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
+    else {
+      output << "insert " << name() << ":ID " << ix 
+	     << " " << _id[ix] << "\n";
+      output << "insert " << name() << ":Decay_Constant " << ix 
+	     << " " << _decay_constant[ix]/GeV2 << "\n";
+    }
+  }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

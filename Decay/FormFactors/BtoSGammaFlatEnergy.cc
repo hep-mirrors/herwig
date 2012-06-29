@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BtoSGammaFlatEnergy.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BtoSGammaFlatEnergy class.
 //
@@ -9,25 +16,13 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaFlatEnergy.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-BtoSGammaFlatEnergy::~BtoSGammaFlatEnergy() {}
-
-void BtoSGammaFlatEnergy::persistentOutput(PersistentOStream & os) const {
- }
-
-void BtoSGammaFlatEnergy::persistentInput(PersistentIStream & is, int) {
- }
-
-ClassDescription<BtoSGammaFlatEnergy> BtoSGammaFlatEnergy::initBtoSGammaFlatEnergy;
+NoPIOClassDescription<BtoSGammaFlatEnergy> 
+BtoSGammaFlatEnergy::initBtoSGammaFlatEnergy;
 // Definition of the static class description member.
 
 void BtoSGammaFlatEnergy::Init() {
@@ -39,18 +34,17 @@ void BtoSGammaFlatEnergy::Init() {
 
 }
 
-Energy BtoSGammaFlatEnergy::hadronicMass(Energy mb,Energy mquark)
-{
+Energy BtoSGammaFlatEnergy::hadronicMass(Energy mb,Energy mquark) {
   Energy upper(min(mb,maxMass())),lower(max(minMass(),mquark));
   double rand(UseRandom::rnd());
   return sqrt(upper*upper*rand+(1.-rand)*lower*lower);
 }
 
 void BtoSGammaFlatEnergy::dataBaseOutput(ofstream & output,bool header,
-					   bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::BtoSGammaFlatEnergy " << fullName() << " \n";}
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+					   bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::BtoSGammaFlatEnergy " 
+		    << name() << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() 
+		    << "\";" << endl;
 }

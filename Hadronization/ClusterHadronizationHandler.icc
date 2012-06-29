@@ -1,79 +1,40 @@
 // -*- C++ -*-
 //
+// ClusterHadronizationHandler.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the ClusterHadronizationHandler class.
 //
 
 namespace Herwig {
 
-
-inline ClusterHadronizationHandler::ClusterHadronizationHandler() {}
-
-
-inline ClusterHadronizationHandler::
-ClusterHadronizationHandler(const ClusterHadronizationHandler & x) : 
-  ThePEG::HadronizationHandler(x) , 
-  _globalParameters(x._globalParameters ),
-  _partonSplitter(x._partonSplitter ),
-  _clusterFinder(x._clusterFinder ),
-  _colourReconnector(x._colourReconnector), 
-  _clusterFissioner(x._clusterFissioner),
-  _lightClusterDecayer(x._lightClusterDecayer),
-  _clusterDecayer(x._clusterDecayer)
+inline ClusterHadronizationHandler::ClusterHadronizationHandler() 
+  : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*mm )
 {}
-
 
 inline IBPtr ClusterHadronizationHandler::clone() const {
   return new_ptr(*this);
 }
 
-
 inline IBPtr ClusterHadronizationHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-
-inline void ClusterHadronizationHandler::doupdate() throw(UpdateException) {
-  ThePEG::HadronizationHandler::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
+inline Energy2 ClusterHadronizationHandler::minVirtuality2() const {
+  return _minVirtuality2;
 }
 
-
-inline void ClusterHadronizationHandler::doinit() throw(InitException) {
-  ThePEG::HadronizationHandler::doinit();
+inline Length ClusterHadronizationHandler::maxDisplacement() const {
+  return _maxDisplacement;
 }
 
-
-inline void ClusterHadronizationHandler::dofinish() {
-  ThePEG::HadronizationHandler::dofinish();
+inline bool ClusterHadronizationHandler::isSoftUnderlyingEventON() const {
+  return _underlyingEventHandler;
 }
-
-
-inline void ClusterHadronizationHandler::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  ThePEG::HadronizationHandler::rebind(trans);
-}
-
-
-inline IVector ClusterHadronizationHandler::getReferences() {
-  IVector ret = ThePEG::HadronizationHandler::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 
 }

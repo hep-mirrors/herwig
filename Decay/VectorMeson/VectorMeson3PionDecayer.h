@@ -1,12 +1,18 @@
 // -*- C++ -*-
+//
+// VectorMeson3PionDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_VectorMeson3PionDecayer_H
 #define HERWIG_VectorMeson3PionDecayer_H
 // This is the declaration of the VectorMeson3PionDecayer class.
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-// #include "VectorMeson3PionDecayer.fh"
-// #include "VectorMeson3PionDecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -94,42 +100,30 @@ class VectorMeson3PionDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline VectorMeson3PionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson3PionDecayer(const VectorMeson3PionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson3PionDecayer();
-  //@}
-
-public:
+  VectorMeson3PionDecayer();
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const tPDVector & children) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -151,8 +145,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
-					Energy2 s1,Energy m1,Energy m2,Energy m3);
+  virtual double threeBodyMatrixElement(const int imode, const Energy2 q2,
+					const  Energy2 s3, const Energy2 s2, const 
+					Energy2 s1, const Energy m1,
+					const Energy m2, const Energy m3) const;
   
   /**
    * Output the setup information for the particle database
@@ -192,13 +188,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -210,12 +206,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -328,9 +324,19 @@ private:
   vector<bool> _defaultmass;
 
   /**
-   * constants for the running widths
+   * Constants for the running widths
    */
-  vector<vector <double> > _rho0const,_rhocconst;
+  //@{
+  /**
+   *  For the neutral \f$\rho\f$
+   */
+  vector<vector <double> > _rho0const;
+
+  /**
+   *  For the charged \f$\rho\f$
+   */
+  vector<vector <double> > _rhocconst;
+  //@}
 
   /**
    * rho mass parameters
@@ -348,14 +354,30 @@ private:
   vector<vector <complex<InvEnergy2> > > _ccoupling;
 
   /**
-   * the pion masses
+   * The charge pion mass
    */
-  Energy _mpic,_mpi0;
+  Energy _mpic;
+
+  /**
+   *  The neutral pion mass
+   */
+  Energy _mpi0;
 
   /**
    *  Initial size of the vectors
    */
   unsigned int _initsize;
+
+  /**
+   *  Storage of polarization tensors to try and increase
+   *  speed
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  
+  /**
+   *   Storage of the \f$\rho\f$ matrix
+   */
+  mutable RhoDMatrix _rho;
 };
 
 }
@@ -364,6 +386,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -383,7 +407,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson3PionDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson3PionDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::VectorMeson3PionDecayer"; }
+  static string className() { return "Herwig::VectorMeson3PionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -393,11 +417,8 @@ struct ClassTraits<Herwig::VectorMeson3PionDecayer>
 
 };
 
-}
+/** @endcond */
 
-#include "VectorMeson3PionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMeson3PionDecayer.tcc"
-#endif
+}
 
 #endif /* HERWIG_VectorMeson3PionDecayer_H */

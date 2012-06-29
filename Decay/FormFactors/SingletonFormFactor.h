@@ -7,45 +7,28 @@
 
 #include "BaryonFormFactor.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "SingletonFormFactor.fh"
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup Decay
-   *
-   *  The SingletonFormFactor class implements the form-factors from
-   *  PRD43, 2939 for the decay of spin-1/2 baryons containing bottom and charm
-   *  quarks.
-   *
-   * @see BaryonFormFactor
-   * 
-   */
-
+/** \ingroup Decay
+ *
+ *  The SingletonFormFactor class implements the form-factors from
+ *  PRD43, 2939 for the decay of spin-1/2 baryons containing bottom and charm
+ *  quarks.
+ *
+ * @see BaryonFormFactor
+ * 
+ */
 class SingletonFormFactor: public BaryonFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline SingletonFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline SingletonFormFactor(const SingletonFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~SingletonFormFactor();
-  //@}
+  SingletonFormFactor();
 
 public:
 
@@ -112,13 +95,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -127,45 +110,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -225,7 +174,7 @@ private:
   /**
    *  The normalisation factor, \f$N_{mM}\f$, for the form factors.
    */
-  vector<double> _NmM;
+  vector<double> _nmM;
 
   /**
    *  The mass of the quark for the form factor.
@@ -239,6 +188,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * This template specialization informs ThePEG about the base class of
@@ -258,18 +209,15 @@ template <>
  struct ClassTraits<Herwig::SingletonFormFactor>
   : public ClassTraitsBase<Herwig::SingletonFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::SingletonFormFactor"; }
+  static string className() { return "Herwig::SingletonFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).*/
   static string library() { return "HwFormFactors.so"; }
 };
 
-}
+/** @endcond */
 
-#include "SingletonFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SingletonFormFactor.tcc"
-#endif
+}
 
 #endif /* HERWIG_SingletonFormFactor_H */

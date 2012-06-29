@@ -1,16 +1,18 @@
 noinst_LTLIBRARIES = libHwUtils.la
 libHwUtils_la_SOURCES = \
-CheckId.cc CheckId.h CheckId.icc \
 EnumParticles.h \
-GaussianIntegral.cc GaussianIntegral.h GaussianIntegral.icc \
-GlobalParameters.cc GlobalParameters.h \
-GlobalParameters.icc GlobalParameters.fh\
-HerwigRun.cc HerwigRun.h \
-HwDebug.cc HwDebug.h \
-Interpolator.cc Interpolator.h Interpolator.icc \
+Interpolator.tcc Interpolator.h \
+Interpolator2d.tcc Interpolator2d.h \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
-Math.h Math.icc Math.cc \
+Maths.h Maths.icc Maths.cc \
 StandardSelectors.cc StandardSelectors.h StandardSelectors.icc \
 Histogram.cc Histogram.fh Histogram.h Histogram.icc \
-Statistic.cc Statistic.fh Statistic.h Statistic.icc 
+GaussianIntegrator.cc GaussianIntegrator.h \
+GaussianIntegrator.icc GaussianIntegrator.tcc \
+Statistic.h HerwigStrategy.cc HerwigStrategy.h \
+GSLIntegrator.h GSLIntegrator.tcc \
+GSLBisection.h GSLBisection.tcc GSLHelper.h
+
+CLEANFILES=
+include $(srcdir)/Makefile.am.versionstring

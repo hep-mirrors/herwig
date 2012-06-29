@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ScalarMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ScalarMassGenerator_H
 #define HERWIG_ScalarMassGenerator_H
 // This is the declaration of the ScalarMassGenerator class.
@@ -14,8 +21,19 @@ using namespace ThePEG;
  *
  *  The <code>ScalarMassGenerator</code> class is designed for the generation
  *  of the masses of the \f$a_0\f$ and \f$f_0\f$ mesons which have \f$K\bar{K}\f$
- *  modes close
- *  to the on-shell mass of the particle. It includes finite-width effects.
+ *  modes close to the on-shell mass of the particle. 
+ *
+ *  The form based on the Flatte parameterisation of PLB63, 224, we use a weight
+ * \f[\frac{1}{\pi}\frac{m\Gamma(m)}{|M^2-m^2-i\sum_ig^2_i\rho_i|^2}\f],
+ * where
+ * -  \f$g_i\f$  is the coupling for a given decay mode
+ * -  \f$\rho_i=2p_i/m\f$ is Lorentz-invariant phase-space where \f$p_i\f$ is the 
+ *     momentum release in the decay, this analytically continued
+ *     below the threshold.
+ * In this case the running width given by the sum of the running partial widths
+ * \f[\Gamma_i(m) = 2g^2_i\frac{p_i}{m^2}\f],
+ * and we differ from the Flatte approach in not analytically 
+ * continuing below the threshold for the numerator.
  *
  * @see MassGenerator
  * @see GenericMassGenerator
@@ -25,34 +43,20 @@ class ScalarMassGenerator: public GenericMassGenerator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
+  /** @name Functions used by the persistent I/O system. */
   //@{
   /**
-   * Default constructor
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  inline ScalarMassGenerator();
+  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Copy constructor
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
    */
-  inline ScalarMassGenerator(const ScalarMassGenerator &);
-
-  /**
-   * Destructor
-   */
-  virtual ~ScalarMassGenerator();
-
-public:
-
-  /**
-   * Standard functions for writing and reading from persistent streams.
-   */
-  void persistentOutput(PersistentOStream &) const;
-
-  /**
-   * Standard functions for writing and reading from persistent streams.
-   */
-  void persistentInput(PersistentIStream &, int);
+  void persistentInput(PersistentIStream & is, int version);
   //@}
 
   /**
@@ -65,23 +69,15 @@ public:
   /**
    * Weight for the factor for an off-shell mass
    * @param mass The off-shell mass
+   * @param shape The type of shape to use as for the BreitWignerShape interface
    * @return The weight.
    */
-  inline virtual double weight(Energy mass) const;
+  inline virtual double weight(Energy mass,int shape) const;
 
   /**
    * output for the database
    */
-  virtual void dataBaseOutput(ofstream &);
-
-protected:
-
-  /**
-   * The self-energy for the weight
-   * @param mass The off-shell mass.
-   * @return The self energy.
-   */
-  inline complex<Energy2> selfEnergy(Energy mass) const;
+  virtual void dataBaseOutput(ofstream &,bool);
 
 protected:
 
@@ -105,47 +101,12 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  inline virtual void doinit();
   //@}
-
 
 private:
 
@@ -159,7 +120,7 @@ private:
    */
   ScalarMassGenerator & operator=(const ScalarMassGenerator &);
 
- private:
+private:
 
   /**
    * couplings for the decay channels
@@ -176,21 +137,20 @@ private:
    */
   vector<Energy> _mass2;
 
-
   /**
    * calculated values to speed things up
    */
-  vector<Energy>  _mplus ,_mminus;
+  //@{
+  /**
+   *  Maximum mass squared
+   */
+  vector<Energy2> _m2plus;
 
   /**
-   * calculated values to speed things up
+   *  Minimum mass squared
    */
-  vector<Energy2> _m2plus,_m2minus;
-
-  /**
-   * calculated values to speed things up
-   */
-  vector<Energy2> _term;
+  vector<Energy2> _m2minus;
+  //@}
 
 };
 
@@ -200,6 +160,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -219,21 +181,13 @@ template <>
 struct ClassTraits<Herwig::ScalarMassGenerator>
   : public ClassTraitsBase<Herwig::ScalarMassGenerator> {
   /** Return the class name. */
-  static string className() { return "/Herwig++/ScalarMassGenerator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
+  static string className() { return "Herwig::ScalarMassGenerator"; }
 };
+
+/** @endcond */
 
 }
 
 #include "ScalarMassGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMassGenerator.tcc"
-#endif
 
 #endif /* HERWIG_ScalarMassGenerator_H */

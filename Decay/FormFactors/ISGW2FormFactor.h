@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ISGW2FormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ISGW2FormFactor_H
 #define HERWIG_ISGW2FormFactor_H
 //
@@ -8,7 +15,6 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ISGW2FormFactor.fh"
 #include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
@@ -31,25 +37,10 @@ class ISGW2FormFactor: public ScalarFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ISGW2FormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline ISGW2FormFactor(const ISGW2FormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~ISGW2FormFactor();
-  //@}
-
-public:
 
   /** @name Form-Factors */
   //@{
@@ -99,8 +90,9 @@ public:
    * @param bm The form-factor \f$b_-\f$.
    */
   virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
-				      Energy m0,Energy m1, Complex & h,Complex & k,
-				      Complex & bp, Complex & bm) const;
+				      Energy m0,Energy m1, complex<InvEnergy2> & h,
+				      Complex & k, complex<InvEnergy2> & bp,
+				      complex<InvEnergy2> & bm) const;
   //@}
 
   /**
@@ -161,13 +153,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -175,48 +167,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -239,7 +194,16 @@ protected:
    * @param q2 \f$q^2\f$ the scale.
    * @return the value of \f$\alpha_S\f$.
    */
-  double alphaS(Energy mass, Energy2 q2) const;
+  double alphaS(Energy mass, Energy2 q2) const {
+    Energy2 lqcd2(0.04*GeV2);
+    double nflav(4.);
+    double output(_alphamuQM);
+    if (q2>0.36*GeV2) {
+      if(mass<_mcharm+0.03*GeV) nflav=3.0;
+      output = 12.*Constants::pi/(33.-2.*nflav)/log(q2/lqcd2);
+    }
+    return output;
+  }
 
 private:
 
@@ -273,7 +237,7 @@ private:
   /**
    * The masses of the quarks as a vector
    */
-  Energy _mquark[5];
+  vector<Energy> _mquark;
   //@}
 
   /** @name Wave function parameters for the \f$1^1S_0\f$ level.*/
@@ -327,12 +291,12 @@ private:
   /**
    *  The wavefunction parameters as an array
    */
-  Energy _beta1S0[5][5];
+  vector<vector<Energy> > _beta1S0;
 
   /**
    *  The masses as a array
    */
-  Energy _mass1S0[5][5];
+  vector<vector<Energy> > _mass1S0;
   //@}
 
   /** @name Wave function parameters for the \f$1^3S_1\f$ level.*/
@@ -385,7 +349,7 @@ private:
   /**
    * The wavefunction paramaeters as an array.
    */
-  Energy _beta3S1[5][5];
+  vector<vector<Energy> > _beta3S1;
   //@}
 
 
@@ -440,18 +404,18 @@ private:
   /**
    * The wavefunction paramaeters as an array.
    */
-  Energy _beta1P[5][5];
+  vector<vector<Energy> > _beta1P;
 
   /**
    * The spin-1/2 masses
    */
   // the 1/2 spin masses
-  Energy _massPoh[5][5];
+  vector<vector<Energy> > _massPoh;
 
   /**
    * The spin-3/2 masses
    */
-  Energy _massPth[5][5];
+  vector<vector<Energy> > _massPth;
   //@}
 
   /**@name Parameters for the strong coupling*/
@@ -463,7 +427,7 @@ private:
   /**
    * The values of \f$\alpha_S\f$ at the quark masses.
    */
-  double _alphaQ[5];
+  vector<double> _alphaQ;
   //@}
 
   /**@name Relativistic correction factors */
@@ -533,6 +497,11 @@ private:
    * The \f$\eta-\eta'\f$ mixing angle 
    */
   double _thetaeta;
+
+  /**
+   * Include the \f$a_L(\omega)\f$ piece of the \f$C_{ji}\f$ factor
+   */
+  bool _includeaW;
 };
 
 }
@@ -540,6 +509,9 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * ISGW2FormFactor.
@@ -558,7 +530,7 @@ template <>
  struct ClassTraits<Herwig::ISGW2FormFactor>
   : public ClassTraitsBase<Herwig::ISGW2FormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ISGW2FormFactor"; }
+  static string className() { return "Herwig::ISGW2FormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
@@ -566,12 +538,9 @@ template <>
   static string library() { return "HwFormFactors.so"; }
 };
 
-}
+/** @endcond */
 
-#include "ISGW2FormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ISGW2FormFactor.tcc"
-#endif
+}
 
 #endif /* HERWIG_ISGW2FormFactor_H */
 

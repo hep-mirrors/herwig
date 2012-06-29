@@ -1,10 +1,16 @@
 // -*- C++ -*-
+//
+// ThreeMesonCurrentBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ThreeMesonCurrentBase_H
 #define HERWIG_ThreeMesonCurrentBase_H
 // This is the declaration of the ThreeMesonCurrentBase class.
 
 #include "WeakDecayCurrent.h"
-#include "ThreeMesonCurrentBase.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -13,8 +19,7 @@ using namespace ThePEG;
  *
  *  This is the base class for the three meson decays of the weak current.
  *  It is designed so that the currents for the following modes can be implemented
- *  in classes inheriting from this. 
- *
+ *  in classes inheriting from this
  * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
  * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
  * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
@@ -25,9 +30,14 @@ using namespace ThePEG;
  * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
  * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
  *
- * obvioulsly there are other modes with three pseudoscalar mesons for the decay
+ * obviously there are other modes with three pseudoscalar mesons for the decay
  * of the weak current but this model original came from \f$\tau\f$ decay where
- * these are the only modes.
+ * these are the only modes. However one case which is important is the inclusion
+ * of the mixing in the neutral kaon sector for which we include the additional
+ * currents
+ * - \f$    K^0_S \pi^- K^0_S\f$, (imode=9)
+ * - \f$    K^0_L \pi^- K^0_L\f$, (imode=10)
+ * - \f$    K^0_S \pi^- K^0_L\f$, (imode=11)
  *
  *  In this case the current is given by
  *  \f[ J^\mu = \left(g^{\mu\nu}-\frac{q^\mu q^\nu}{q^2}\right)
@@ -53,25 +63,7 @@ public:
   /**
    * Default constructor
    */
-  inline ThreeMesonCurrentBase();
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+  ThreeMesonCurrentBase();
 
   /**
    * Standard Init function used to initialize the interfaces.
@@ -83,16 +75,16 @@ public:
 
   /**
    * Hadronic current. This version returns the hadronic current described above.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan,Energy & scale,
+	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the mesons against the list.
@@ -108,6 +100,16 @@ public:
    * @return The number of the mode
    */
   virtual unsigned int decayMode(vector<int> id);
+
+  /**
+   * The particles produced by the current. This returns the mesons for the mode.
+   * @param icharge The total charge of the particles in the current.
+   * @param imode The mode for which the particles are being requested
+   * @param iq The PDG code for the quark
+   * @param ia The PDG code for the antiquark
+   * @return The external particles for the current.
+   */
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
 
   /**
    * Output the setup information for the particle database
@@ -127,6 +129,52 @@ protected:
   virtual bool acceptMode(int imode) const=0;
 
   /**
+   * Helper class for form factors
+   */
+  struct FormFactors {
+
+    /**
+     * @param F1 The \f$F_1\f$ form factor
+     */
+    complex<InvEnergy>  F1;
+    
+    /**
+     * @param F2 The \f$F_2\f$ form factor
+     */
+    complex<InvEnergy>  F2;
+    
+    /**
+     * @param F3 The \f$F_3\f$ form factor
+     */
+    complex<InvEnergy>  F3; 
+    
+    /**
+     * @param F4 The \f$F_4\f$ form factor
+     */
+    complex<InvEnergy>  F4;
+    
+    /**
+     * @param F5 The \f$F_5\f$ form factor
+     */
+    complex<InvEnergy3> F5;
+
+    /**
+     *  Constructor
+     * @param f1 The \f$F_1\f$ form factor
+     * @param f2 The \f$F_2\f$ form factor
+     * @param f3 The \f$F_3\f$ form factor
+     * @param f4 The \f$F_4\f$ form factor
+     * @param f5 The \f$F_5\f$ form factor
+     */    
+    FormFactors(complex<InvEnergy>  f1 = InvEnergy(), 
+		complex<InvEnergy>  f2 = InvEnergy(),
+		complex<InvEnergy>  f3 = InvEnergy(),
+		complex<InvEnergy>  f4 = InvEnergy(),
+		complex<InvEnergy3> f5 = InvEnergy3())
+      : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
+  };
+
+  /**
    * Calculate the form factor for the current.
    * @param ichan The phase space channel
    * @param imode The mode
@@ -134,16 +182,10 @@ protected:
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param F1 The form factor \f$F_1\f$.
-   * @param F2 The form factor \f$F_2\f$.
-   * @param F3 The form factor \f$F_3\f$.
-   * @param F4 The form factor \f$F_4\f$.
-   * @param F5 The form factor \f$F_5\f$.
    */
-  virtual void calculateFormFactors(const int ichan,const int imode,
-				    Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3,
-				    Complex&F1,Complex&F2,Complex&F3,
-				    Complex&F4,Complex&F5) const=0;
+  virtual FormFactors calculateFormFactors(const int ichan, const int imode,
+					   Energy2 q2,
+					   Energy2 s1, Energy2 s2, Energy2 s3) const = 0;
 
 private:
 
@@ -151,7 +193,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
-  static AbstractClassDescription<ThreeMesonCurrentBase> initThreeMesonCurrentBase;
+  static AbstractNoPIOClassDescription<ThreeMesonCurrentBase> initThreeMesonCurrentBase;
 
   /**
    * The assignment operator is private and must never be called.
@@ -163,10 +205,11 @@ private:
 
 }
 
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -186,7 +229,7 @@ template <>
  struct ClassTraits<Herwig::ThreeMesonCurrentBase>
   : public ClassTraitsBase<Herwig::ThreeMesonCurrentBase> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::ThreeMesonCurrentBase"; }
+  static string className() { return "Herwig::ThreeMesonCurrentBase"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -196,11 +239,8 @@ template <>
 
 };
 
-}
+/** @endcond */
 
-#include "ThreeMesonCurrentBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreeMesonCurrentBase.tcc"
-#endif
+}
 
 #endif /* HERWIG_ThreeMesonCurrentBase_H */

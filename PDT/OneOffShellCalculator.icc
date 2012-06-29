@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// OneOffShellCalculator.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the OneOffShellCalculator class.
 //
@@ -7,47 +14,40 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline OneOffShellCalculator::OneOffShellCalculator() {}
-
-inline OneOffShellCalculator::OneOffShellCalculator(const OneOffShellCalculator & x)
-  : WidthCalculatorBase(x),_themass(x._themass),_minmass(x._minmass),
-    _onshellwidth(x._onshellwidth), _massptr(x._massptr) 
-{
-  _Integrator = new GaussianIntegral(0.,1.);
-  _integrand  = new 
-    OneOffShellIntegrand(this,_massptr->nominalMass()*_massptr->nominalMass(),
-			 _massptr->nominalWidth()*_massptr->nominalMass());
-}
-
 inline OneOffShellCalculator::OneOffShellCalculator(int inloc,
 						    WidthCalculatorBasePtr inwidth, 
 						    GenericMassGeneratorPtr inmass,
 						    Energy inmin)
-{
-  _themass=inloc;
-  _minmass=inmin;
-  _onshellwidth=inwidth;
-  _massptr=inmass;
-  _Integrator = new GaussianIntegral(0.,1.);
-  _integrand  = new 
-    OneOffShellIntegrand(this,_massptr->nominalMass()*_massptr->nominalMass(),
-			 _massptr->nominalWidth()*_massptr->nominalMass());
+  : _themass(inloc), _minmass(inmin),_onshellwidth(inwidth),_massptr(inmass)
+{}
+
+inline void OneOffShellCalculator::resetMass(int id,Energy inmass)  {
+  _onshellwidth->resetMass(id,inmass);
 }
 
-inline void OneOffShellCalculator::resetMass(int id,Energy inmass) 
-{_onshellwidth->resetMass(id,inmass);}
+inline Energy OneOffShellCalculator::getMass(const int id) const {
+  return _onshellwidth->getMass(id);
+}
 
-inline Energy OneOffShellCalculator::getMass(const int id) const
-{return _onshellwidth->getMass(id);}
+inline Energy OneOffShellCalculator::otherMass(const int id) const {
+  return _onshellwidth->otherMass(id);
+}
 
-inline Energy OneOffShellCalculator::otherMass(const int id) const
- {return _onshellwidth->otherMass(id);}
 // the integrand
-inline  Energy OneOffShellCalculator::dGamma(Energy min)
-{
+inline  Energy OneOffShellCalculator::dGamma(Energy min) const {
   _onshellwidth->resetMass(_themass,min);
-  double wgt = (_onshellwidth->partialWidth(_scale));
+  Energy wgt = (_onshellwidth->partialWidth(_scale));
   wgt*=(_massptr->weight(min));
   return wgt;
+}
+   
+inline OneOffShellIntegrand::
+OneOffShellIntegrand(tcOneOffShellCalculatorPtr in, Energy2 m2,
+		     Energy2 mw) 
+  : _integrand(in),_mass2(m2),_mwidth(mw) 
+{}
+ 
+inline Energy OneOffShellIntegrand::operator() (double x) const  {
+  return _integrand->dGamma(sqrt(_mass2+_mwidth*tan(x)));
 }
 }

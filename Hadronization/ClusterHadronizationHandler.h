@@ -1,17 +1,22 @@
 // -*- C++ -*-
+//
+// ClusterHadronizationHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterHadronizationHandler_H
 #define HERWIG_ClusterHadronizationHandler_H
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include "PartonSplitter.h"
 #include "ClusterFinder.h"
 #include "ColourReconnector.h"
 #include "ClusterFissioner.h"
 #include "LightClusterDecayer.h"
 #include "ClusterDecayer.h"
-#include "Cluster.h"
-
+#include "ClusterHadronizationHandler.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -20,7 +25,11 @@ using namespace ThePEG;
 /** \ingroup Hadronization
  *  \class ClusterHadronizationHandler
  *  \brief Class that controls the cluster hadronization algorithm.
- *  \author Philip Stephens
+ *  \author Philip Stephens  //  cerr << *ch.currentEvent() << '\n';
+  cerr << finalHadrons.size() << '\n';
+
+  cerr << "Finished hadronizing \n";
+
  *  \author Alberto Ribon
  *
  *  This class is the main driver of the cluster hadronization: it is 
@@ -28,22 +37,16 @@ using namespace ThePEG;
  *  classes PartonSplitter, ClusterFinder, ColourReconnector, ClusterFissioner, 
  *  LightClusterDecayer, ClusterDecayer; 
  *  and for the storing of the produced particles in the Event record.
- * 
- *  Notice that the access to the GlobalParameters class 
- *  instance is provided only to allow non-interfaced and non-persistent classes
- *  (Cluster) to access the global parameters and/or to draw 
- *  random numbers. This is done in the run initialization, doinitrun()
- *  by setting static pointers defined in those non-interfaced and 
- *  non-persistent classes.
  *
- *  @see GlobalParameters
  *  @see PartonSplitter
  *  @see ClusterFinder
  *  @see ColourReconnector
  *  @see ClusterFissioner
  *  @see LightClusterDecayer
  *  @see ClusterDecayer
- *  @see Cluster
+ *  @see Cluster 
+ * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
+ * defined for ClusterHadronizationHandler.
  */ 
 class ClusterHadronizationHandler: public HadronizationHandler {
 
@@ -52,19 +55,9 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * Default constructor.
+   * The default constructor.
    */
   inline ClusterHadronizationHandler();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ClusterHadronizationHandler(const ClusterHadronizationHandler &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~ClusterHadronizationHandler();
   //@}
 
 public:
@@ -77,7 +70,25 @@ public:
    * situation of vetos on the hadronization.
    */
   virtual void handle(EventHandler & ch, const tPVector & tagged,
-		      const Hint & hint) throw(Veto, Stop, Exception);
+		      const Hint & hint);
+
+  /**
+   * It returns minimum virtuality^2 of partons to use in calculating 
+   * distances. It is used both in the Showering and Hadronization.
+   */
+  inline Energy2 minVirtuality2() const;
+
+  /**
+   * It returns the maximum displacement that is allowed for a particle
+   * (used to determine the position of a cluster with two components).
+   */
+  inline Length maxDisplacement() const;
+
+  /**
+   * It returns true/false according if the soft underlying model
+   * is switched on/off. 
+   */
+  inline bool isSoftUnderlyingEventON() const;
 
 public:
 
@@ -123,46 +134,10 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+   /**
+    * Initialize this object at the begining of the run phase.
+    */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -176,21 +151,6 @@ private:
    * Private and non-existent assignment operator.
    */
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
-
-  /**
-   * Print the step for debugging.
-   */
-  void printStep(tStepPtr ptrStep, const string & title);
-
-  /**
-   * Print information about the final, complete collections of clusters.
-   */
-  void debuggingInfo(EventHandler & ch, ClusterVector &);
-
-  /**
-   * This is a pointer to a Herwig::GlobalParameters object.
-   */
-  GlobParamPtr           _globalParameters;
 
   /**
    * This is a pointer to a Herwig::PartonSplitter object.
@@ -221,12 +181,31 @@ private:
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
   ClusterDecayerPtr      _clusterDecayer; 
+
+  /**
+   * The minimum virtuality^2 of partons to use in calculating 
+   * distances.
+   */
+  Energy2 _minVirtuality2;
+
+  /**
+   * The maximum displacement that is allowed for a particle
+   * (used to determine the position of a cluster with two components).
+   */
+  Length _maxDisplacement;
+
+  /**
+   * The pointer to the Underlying Event handler. 
+   */
+  StepHdlPtr _underlyingEventHandler;
 };
 
 
 }
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -246,14 +225,10 @@ template <>
 struct ClassTraits<Herwig::ClusterHadronizationHandler>: 
     public ClassTraitsBase<Herwig::ClusterHadronizationHandler> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ClusterHadronizationHandler"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
+  static string className() { return "Herwig::ClusterHadronizationHandler"; }
 };
+
+/** @endcond */
 
 }
 

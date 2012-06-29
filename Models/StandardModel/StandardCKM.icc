@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// StandardCKM.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the StandardCKM class.
 //
@@ -16,11 +23,11 @@ inline StandardCKM::StandardCKM(const StandardCKM & x)
   : CKMBase(x), theta12(x.theta12), theta13(x.theta13), theta23(x.theta23),
     delta(x.delta) {}
 
-inline void StandardCKM::doupdate() throw(UpdateException) {
+inline void StandardCKM::doupdate() {
   CKMBase::doupdate();
 }
 
-inline void StandardCKM::doinit() throw(InitException) {
+inline void StandardCKM::doinit() {
   CKMBase::doinit();
 }
 
@@ -29,7 +36,7 @@ inline void StandardCKM::dofinish() {
 }
 
 inline void StandardCKM::
-rebind(const TranslationMap & trans) throw(RebindException) {
+rebind(const TranslationMap & trans) {
   // dummy = trans.translate(dummy);
   CKMBase::rebind(trans);
 }

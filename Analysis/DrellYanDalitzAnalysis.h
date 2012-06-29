@@ -5,8 +5,8 @@
 // This is the declaration of the DrellYanDalitzAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "DrellYanDalitzAnalysis.fh"
 
 namespace Herwig {
 
@@ -22,25 +22,10 @@ class DrellYanDalitzAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline DrellYanDalitzAnalysis();
-
-  /**
-   * The copy constructor.
-   */
-  inline DrellYanDalitzAnalysis(const DrellYanDalitzAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~DrellYanDalitzAnalysis();
-  //@}
-
-public:
+  inline DrellYanDalitzAnalysis() : _nout(0) {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -119,13 +104,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -189,7 +174,7 @@ template <>
 struct ClassTraits<Herwig::DrellYanDalitzAnalysis>
   : public ClassTraitsBase<Herwig::DrellYanDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DrellYanDalitzAnalysis"; }
+  static string className() { return "Herwig::DrellYanDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DrellYanDalitzAnalysis is implemented. It may also include several, space-separated,
@@ -197,16 +182,11 @@ struct ClassTraits<Herwig::DrellYanDalitzAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
+  static string library() { return "HwShower.so HwAnalysis.so HwDrellYanDalitzAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "DrellYanDalitzAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanDalitzAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_DrellYanDalitzAnalysis_H */

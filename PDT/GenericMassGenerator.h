@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GenericMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GenericMassGenerator_H
 #define HERWIG_GenericMassGenerator_H
 //
@@ -44,25 +51,10 @@ class GenericMassGenerator: public MassGenerator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline GenericMassGenerator();
-
-  /**
-   * Copy constructor
-   */
-  inline GenericMassGenerator(const GenericMassGenerator &);
-
-  /**
-   * Destructor
-   */
-  virtual ~GenericMassGenerator();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -116,9 +108,11 @@ public:
    * Return a mass with the weight using the default limits.
    * @param part The particle data pointer of the particle.
    * @param wgt The weight for this mass.
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt) const;
+  inline Energy mass(double & wgt, const ParticleData & part, 
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Return a mass with the weight using the specified limits.
@@ -126,10 +120,12 @@ public:
    * @param low The lower limit on the particle's mass.
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
-		     const Energy low,const Energy upp) const;
+  inline Energy mass(double & wgt, const ParticleData & part,
+		     const Energy low,const Energy upp,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Weight for the factor.
@@ -142,7 +138,7 @@ public:
   /**
    * Output the initialisation info for the database
    */
-  void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &,bool);
 
 public:
 
@@ -184,19 +180,23 @@ protected:
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
    * @param shape The type of shape to use
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
-		     const Energy low,const Energy upp, int shape) const;
+  inline Energy mass(double & wgt, const ParticleData & part,
+		     const Energy low,const Energy upp, int shape,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Return a mass with the weight using the default limits.
    * @param part The particle data pointer of the particle.
    * @param wgt The weight for this mass.
    * @param shape The type of shape to use
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt,int shape) const;
+  inline Energy mass(double & wgt, const ParticleData & part, int shape,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Weight for the factor.
@@ -205,6 +205,11 @@ protected:
    * @return The weight.
    */
   inline virtual double weight(Energy mass,int shape) const;
+
+  /**
+   *  Accesss to the particle
+   */
+  inline tcPDPtr particle() const;
 
 protected:
 
@@ -228,27 +233,17 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
+  virtual void doinit();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -256,17 +251,18 @@ protected:
    * the pointers will refer to the cloned objects afterwards.
    * @param trans a TranslationMap relating the original objects to
    * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+  virtual void rebind(const TranslationMap & trans)
+   ;
 
   /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -281,7 +277,7 @@ private:
    */
   GenericMassGenerator & operator=(const GenericMassGenerator &);
 
- protected:
+protected:
 
   /**
    * The maximum weight for unweighting when generating the mass.
@@ -301,14 +297,24 @@ private:
 private:
  
   /**
+   * Helper function for the interface
+   */
+  void setParticle(string);
+
+  /**
+   * Helper function for the interface
+   */
+  string getParticle() const;
+
+  /**
    * Pointer to the particle
    */
-  PDPtr _particle;
+  tPDPtr _particle;
 
   /**
    * Pointer to the anti-particle
    */
-  PDPtr _antiparticle;
+  tPDPtr _antiparticle;
 
   /**
    * Lower limit on the particle's mass
@@ -354,6 +360,12 @@ private:
    * Pointer to the width generator
    */
   WidthGeneratorPtr _widthgen;
+
+  /**
+   *  Option for the treatment of the width
+   */
+  bool _widthopt;
+
 };
 
 }
@@ -362,6 +374,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -381,21 +395,13 @@ template <>
 struct ClassTraits<Herwig::GenericMassGenerator>
   : public ClassTraitsBase<Herwig::GenericMassGenerator> {
   /** Return the class name. */
-  static string className() { return "Herwig++::GenericMassGenerator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
+  static string className() { return "Herwig::GenericMassGenerator"; }
 };
+
+/** @endcond */
 
 }
 
 #include "GenericMassGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GenericMassGenerator.tcc"
-#endif
 
 #endif /* HERWIG_GenericMassGenerator_H */

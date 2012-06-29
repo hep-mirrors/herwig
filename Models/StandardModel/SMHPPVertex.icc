@@ -1,0 +1,45 @@
+// -*- C++ -*-
+//
+// SMHPPVertex.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the SMHPPVertex class.
+//
+
+namespace Herwig {
+
+inline SMHPPVertex::SMHPPVertex() 
+  :_couplast(0.),_q2last(),_mw(),massopt(1),
+   _minloop(6),_maxloop(6),_CoefRepresentation(1)
+{
+  //PDG codes for particles at vertices
+  vector<long> first(1,22),second(1,22),third(1,25);
+  setList(first,second,third);
+}
+
+inline IBPtr SMHPPVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMHPPVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+void SMHPPVertex::doinit() {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if( !_theSM ) 
+    throw InitException() 
+      << "SMHGGVertex::doinit() - The pointer to the SM object is null."
+      << Exception::abortnow;
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  orderInGs(0);
+  orderInGem(3);
+  VVSLoopVertex::doinit();
+}
+
+}

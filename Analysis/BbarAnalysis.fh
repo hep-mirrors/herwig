@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BbarAnalysis class.
+//
+#ifndef HEWIG_BbarAnalysis_FH
+#define HERWIG_BbarAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BbarAnalysis;
+
+}
+
+
+#endif

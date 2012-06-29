@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TwoBodyAllOnCalculator.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the TwoBodyAllOnCalculator class.
 //
@@ -7,39 +14,33 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth, 
-					       int inmode, Energy inm1, Energy inm2)
-{
-   _widthgen=inwidth;
-   _mode=inmode;
-   _mass1=inm1;
-   _mass2=inm2;
+inline TwoBodyAllOnCalculator::
+TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth, 
+		       int inmode, Energy inm1, Energy inm2) 
+  : _mode(inmode),_mass1(inm1),_mass2(inm2),_widthgen(inwidth)
+{}
+
+inline void TwoBodyAllOnCalculator::resetMass(int ipart,Energy mass) {
+  if(ipart==1)      _mass1=mass;
+  else if(ipart==2) _mass2=mass;
+  else throw Exception() << "Unknown particle in " 
+			 << "TwoBodyAllOnCalculator::resetMass()"
+			 << Exception::runerror;
 }
 
-inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator() {}
-
-inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(const TwoBodyAllOnCalculator & x)
-  :  WidthCalculatorBase(x),_mode(x._mode), _mass1(x._mass1),
-     _mass2(x._mass2), _widthgen(x._widthgen) {}
-
-inline void TwoBodyAllOnCalculator::resetMass(int ipart,Energy mass)
-{
-  if(ipart==1){_mass1=mass;}
-  else if(ipart==2){_mass2=mass;}
-  else{cerr << "unknown particle" << endl;}
+inline Energy TwoBodyAllOnCalculator::getMass(const int ipart) const {
+  if(ipart==1)      return _mass1;
+  else if(ipart==2) return _mass2;
+  else throw Exception() << "Unknown particle in " 
+			 << "TwoBodyAllOnCalculator::getMass()"
+			 << Exception::runerror;
 }
 
-inline Energy TwoBodyAllOnCalculator::getMass(const int ipart) const
-{
-  if(ipart==1){return _mass1;}
-  else if(ipart==2){return _mass2;}
-  else{cerr << "unknown particle" << endl;return 0.;}
-}
-
-inline Energy TwoBodyAllOnCalculator::otherMass(const int ipart) const
-{
-  if(ipart==1){return _mass2;}
-  else if(ipart==2){return _mass1;}
-  else{cerr << "unknown particle" << endl;return 0.;}
+inline Energy TwoBodyAllOnCalculator::otherMass(const int ipart) const {
+  if(ipart==1)      return _mass2;
+  else if(ipart==2) return _mass1;
+  else throw Exception() << "Unknown particle in " 
+			 << "TwoBodyAllOnCalculator::otherMass()"
+			 << Exception::runerror;
 }
 }

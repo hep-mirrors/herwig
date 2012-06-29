@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ScalarFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ScalarFormFactor_H
 #define HERWIG_ScalarFormFactor_H
 //
@@ -91,23 +98,10 @@ class ScalarFormFactor: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline ScalarFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline ScalarFormFactor(const ScalarFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~ScalarFormFactor();
-  //@}
+  ScalarFormFactor() : _numbermodes(0) {}
 
 public:
 
@@ -140,13 +134,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 public:
@@ -161,15 +155,39 @@ public:
    * \param cc  particles or charge conjugates stored in form factor.
    * @return The location in the vectors storing the data. 
    */
-  inline int formFactorNumber(int in,int out,bool & cc) const;
-
+  int formFactorNumber(int in,int out,bool & cc) const  {
+    if(_incomingid.size()==0) return -1;
+    int output(-1);unsigned int ix(0);
+    do {
+      if(_incomingid[ix]== in && _outgoingid[ix]== out) {
+	cc=false;
+	output=ix;
+      }
+      else if (_incomingid[ix]==-in && _outgoingid[ix]==-out) {
+	cc=true;
+	output=ix;
+      }
+      else if(_incomingid[ix]==-in && _outgoingid[ix]==out &&
+	      (abs(_outgoingid[ix])/100)%10==(abs(_outgoingid[ix])/10)%10) {
+	cc=true;
+	output=ix;
+      }
+      ++ix;
+    }
+    while(ix<_incomingid.size()&&output<0);
+    return output;
+  }
+  
   /**
    * Get the particle ids for an entry.
    * @param iloc The location in the list.
    * @param id0 The PDG code for the incoming meson.
    * @param id1 The PDG code for the outgoing meson.
    */
-  inline void particleID(unsigned int iloc,int& id0,int& id1) const;
+  void particleID(unsigned int iloc,int& id0,int& id1) const {
+    id0=_incomingid[iloc];
+    id1=_outgoingid[iloc];
+  }
 
   /**
    * Information on the form factor.
@@ -179,8 +197,13 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(unsigned int & iloc,int & ispin,int & spect,int & inquark,
-			     int & outquark) const;
+  void formFactorInfo(unsigned int & iloc,int & ispin,int & spect,
+		      int & inquark, int & outquark) const {
+    ispin    = _outgoingJ[iloc];
+    spect    = _spectator[iloc];
+    inquark  = _inquark[iloc];
+    outquark = _outquark[iloc];
+  }
 
   /**
    * Information on the form factor.
@@ -191,13 +214,17 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(int in,int out,int & ispin,
-			     int & spect,int & inquark, int & outquark) const;
+  void formFactorInfo(int in,int out,int & ispin,
+		      int & spect,int & inquark, int & outquark) const {
+    bool dummy;
+    unsigned int ix(formFactorNumber(in,out,dummy));
+    formFactorInfo(ix,ispin,spect,inquark,outquark);
+  }
 
   /**
    * number of form factors
    */
-  inline unsigned int numberOfFactors() const;
+  unsigned int numberOfFactors() const {return _incomingid.size();}
   //@}
 
 public:
@@ -255,9 +282,10 @@ public:
    * @param bp The form factor \f$b_+\f$.
    * @param bm The form factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
-				      Energy m1, Complex & h,Complex & k,
-				      Complex & bp, Complex & bm) const;
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0, Energy m1, complex<InvEnergy2> & h,
+				      Complex & k, complex<InvEnergy2> & bp,
+				      complex<InvEnergy2> & bm) const;
 
   /**
    * The form factor for the weak penguin decay of a scalar meson to a scalar meson.
@@ -315,64 +343,37 @@ protected:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void addFormFactor(int in,int out,int spin, int spect, int inquark,
-			    int outquark);
+  void addFormFactor(int in,int out,int spin, int spect,
+		     int inquark, int outquark) {
+    _incomingid.push_back(in);
+    _outgoingid.push_back(out);
+    _outgoingJ.push_back(spin);
+    _spectator.push_back(spect);
+    _inquark.push_back(inquark);
+    _outquark.push_back(outquark);
+  }
 
   /**
    *  Set initial number of modes
    * @param nmodes The number of modes.
    */
-  inline void initialModes(unsigned int nmodes);
+  void initialModes(unsigned int nmodes) {_numbermodes=nmodes;}
 
   /**
    * Get the initial number of modes
    */
-  inline unsigned int initialModes() const;
+  unsigned int initialModes() const {return _numbermodes;}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -432,6 +433,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * ScalarFormFactor.
@@ -450,19 +453,11 @@ template <>
 struct ClassTraits<Herwig::ScalarFormFactor>
   : public ClassTraitsBase<Herwig::ScalarFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ScalarFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
+  static string className() { return "Herwig::ScalarFormFactor"; }
 };
 
-}
+/** @endcond */
 
-#include "ScalarFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarFormFactor.tcc"
-#endif
+}
 
 #endif /* HERWIG_ScalarFormFactor_H */

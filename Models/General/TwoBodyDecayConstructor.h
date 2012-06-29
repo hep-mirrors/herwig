@@ -1,0 +1,220 @@
+// -*- C++ -*-
+//
+// TwoBodyDecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef HERWIG_TwoBodyDecayConstructor_H
+#define HERWIG_TwoBodyDecayConstructor_H
+//
+// This is the declaration of the TwoBodyDecayConstructor class.
+//
+
+#include "NBodyDecayConstructorBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
+
+namespace Herwig {
+using namespace ThePEG;
+using Helicity::VertexType;
+using Helicity::VertexBasePtr;
+
+//typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
+
+  /**
+   * A two body decay mode 
+   */
+  struct TwoBodyDecay {
+    
+  public:
+
+    /**
+     *  Constructor
+     * @param pa Decaying particle
+     * @param pb First  decay product
+     * @param pc Second decay product
+     */    
+    TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc) : parent_(pa) {
+      ParticleOrdering order;
+      if( order(pb, pc) ) {
+	children_.first = pb;
+	children_.second = pc;
+      }
+      else {
+	children_.first = pc;
+	children_.second = pb;
+      }
+    }
+
+    /**
+     *  The parent
+     */    
+    tPDPtr parent_;
+
+    /**
+     *  The children
+     */
+    tPDPair children_;
+    
+  private:
+    
+    TwoBodyDecay();
+  };
+
+/**
+ * The TwoBodyDecayConstructor class inherits from the dummy base class
+ * NBodyDecayConstructorBase and implements the necessary functions in
+ * order to create the 2 body decay modes for a given set of vertices
+ * stored in a Model class.
+ *
+ * @see \ref TwoBodyDecayConstructorInterfaces "The interfaces"
+ * defined for TwoBodyDecayConstructor.
+ * @see NBodyDecayConstructor
+ **/
+class TwoBodyDecayConstructor: public NBodyDecayConstructorBase {
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  inline TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
+
+  /**
+   * Function used to determine allowed decaymodes
+   *@param part vector of ParticleData pointers containing particles in model
+   */
+  virtual void DecayList(const PDVector & part);
+  
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<TwoBodyDecayConstructor> initTwoBodyDecayConstructor;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  TwoBodyDecayConstructor & operator=(const TwoBodyDecayConstructor &);
+
+private:
+  
+  /** @name Functions to create decayers and decaymodes. */
+  //@{
+  /**
+   * Function to create decays
+   * @param inpart Incoming particle 
+   * @param vert The vertex to create decays for
+   * @param ilist Which list to search
+   * @param iv Row number in _theExistingDecayers member
+   * @return A vector a decay modes
+   */
+  vector<TwoBodyDecay> createModes(tPDPtr inpart, VertexBasePtr vert,
+				   unsigned int ilist,
+				   unsigned int iv);
+
+  /**
+   * Function to create decayer for specific vertex
+   * @param vert Pointer to vertex 
+   * @param icol Integer referring to the colmun in _theExistingDecayers
+   * @param ivert Integer referring to the row in _theExistingDecayers
+   * member variable
+   */
+  void createDecayer(VertexBasePtr vert, unsigned int icol,
+		     unsigned int ivert);
+
+  /**
+   * Create decay mode(s) from given part and decay modes
+   * @param decays The vector of decay modes
+   * @param decayer The decayer responsible for this decay
+   */
+  void createDecayMode(const vector<TwoBodyDecay> & decays,
+		       GeneralTwoBodyDecayerPtr decayer);
+  //@}
+
+private:
+  
+  /**
+   * Existing decayers
+   */
+   vector<vector<GeneralTwoBodyDecayerPtr> > _theExistingDecayers;
+};
+  
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of TwoBodyDecayConstructor. */
+template <>
+struct BaseClassTrait<Herwig::TwoBodyDecayConstructor,1> {
+  /** Typedef of the first base class of TwoBodyDecayConstructor. */
+  typedef Herwig::NBodyDecayConstructorBase NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the TwoBodyDecayConstructor class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::TwoBodyDecayConstructor>
+  : public ClassTraitsBase<Herwig::TwoBodyDecayConstructor> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig::TwoBodyDecayConstructor"; }
+};
+
+/** @endcond */
+
+}
+
+#endif /* HERWIG_TwoBodyDecayConstructor_H */

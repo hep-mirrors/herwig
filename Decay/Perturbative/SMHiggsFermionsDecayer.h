@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsFermionsDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsFermionsDecayer_H
 #define HERWIG_SMHiggsFermionsDecayer_H
 //
@@ -6,13 +13,12 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "SMHiggsFermionsDecayer.fh"
+#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::FFSVertexPtr;
 
 /**
  * The SMHiggsFermionsDecayer class is designed to decay the Standard Model Higgs
@@ -24,63 +30,49 @@ class SMHiggsFermionsDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline SMHiggsFermionsDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline SMHiggsFermionsDecayer(const SMHiggsFermionsDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~SMHiggsFermionsDecayer();
-  //@}
-
-public:
-
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
-  /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
-   */
-  virtual bool accept(const DecayMode & dm) const;
-
+  SMHiggsFermionsDecayer();
+  
   /**
    * Which of the possible decays is required
-   * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const {return -1;}
-
+  virtual int modeNumber(bool & , tcPDPtr , const tPDVector & ) const {return -1;}
 
   /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
-   * @return a ParticleVector containing the decay products.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const Particle & parent,const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
-  //@}
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -116,61 +108,33 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
+
+protected:
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -192,13 +156,37 @@ private:
   /**
    * Pointer to the Higgs vertex
    */
-  FFSVertexPtr _hvertex;
+  AbstractFFSVertexPtr _hvertex;
 
   /**
    * maximum weights for the different decay modes
    */
   vector<double> _maxwgt;
 
+  /**
+   *  Pointer to the width generator for the Higgs
+   */
+  SMHiggsWidthGeneratorPtr _hwidth;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   * Scalar wavefunction
+   */
+  mutable ScalarWaveFunction _swave;
+
+  /**
+   *  Spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction> _wave;
+
+  /**
+   *  Barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
 }
@@ -223,20 +211,15 @@ template <>
 struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsFermionsDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsFermionsDecayer"; }
+  static string className() { return "Herwig::SMHiggsFermionsDecayer"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the SMHiggsFermionsDecayer class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "SMHiggsFermionsDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMHiggsFermionsDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SMHiggsFermionsDecayer_H */

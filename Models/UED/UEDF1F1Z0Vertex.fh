@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the UEDF1F1Z0Vertex class.
+//
+#ifndef HERWIG_UEDF1F1Z0Vertex_FH
+#define HERWIG_UEDF1F1Z0Vertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+class UEDF1F1Z0Vertex;
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::UEDF1F1Z0Vertex,UEDFFZ0VertexPtr);
+
+}
+
+#endif

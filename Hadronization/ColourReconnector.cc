@@ -1,32 +1,32 @@
 // -*- C++ -*-
 //
+// ColourReconnector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ColourReconnector class.
 //
 
 #include "ColourReconnector.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-#include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/EventGenerator.h>
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-ColourReconnector::~ColourReconnector() {}
-
 
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
-  os << _ClReco << _PReco;
+  os << _clreco;
 }
-
 
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
-  is >> _ClReco >> _PReco;
+  is >> _clreco;
 }
-
 
 ClassDescription<ColourReconnector> ColourReconnector::initColourReconnector;
 // Definition of the static class description member.
@@ -37,30 +37,28 @@ void ColourReconnector::Init() {
   static ClassDocumentation<ColourReconnector> documentation
     ("This class is responsible of the colour reconnection.");
 
-  static Parameter<ColourReconnector,int>
-    interfaceClReco ("ClReco","colour reconnection option",
-                     &ColourReconnector::_ClReco, 0, 0, 0, 1,false,false,false);
-  static Parameter<ColourReconnector,double>
-    interfacePReco ("PReco","probability of colour reconnection",
-                     &ColourReconnector::_PReco, 0, (1.0/9.0) , 0.0, 1.0,false,false,false);
+
+  static Switch<ColourReconnector,int> interfaceColourReconnection
+    ("ColourReconnection",
+     "Colour reconnections",
+     &ColourReconnector::_clreco, 0, true, false);
+  static SwitchOption interfaceColourReconnectionOff
+    (interfaceColourReconnection,
+     "No",
+     "Colour reconnections off",
+     0);
+  static SwitchOption interfaceColourReconnectionOn
+    (interfaceColourReconnection,
+     "Yes",
+     "Colour reconnections on",
+     1);
   
 }
 
 
-void ColourReconnector::rearrange(EventHandler & ch, 
-				  const StepPtr & pstep, 
-				  ClusterVector & clusters) 
-   throw(Veto, Stop, Exception){
-  // Scan the particles in the Event record, and the "usual" clusters
-  // stored in collecCluPtr.
-  // If a new colour rearrangement is accepted, then  
-  //       collecCluPtr.clear(); 
-  // to get rid of the old clusters, and then add the new ones:
-  //       collecCluPtr.insert( collecCluPtr.end(), clusterPointer );    
+void ColourReconnector::rearrange(EventHandler &, 
+				  ClusterVector &) 
+  {
+  if (_clreco != 0)
+    throw Exception("Colour reconnection not implemented.",Exception::abortnow);
 }
-
-
-
-
-
-

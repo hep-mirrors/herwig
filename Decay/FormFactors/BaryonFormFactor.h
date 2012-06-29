@@ -92,26 +92,6 @@ class BaryonFormFactor: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor
-   */
-  inline BaryonFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline BaryonFormFactor(const BaryonFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~BaryonFormFactor();
-  //@}
-
-public:
-
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -141,13 +121,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 public:
@@ -162,7 +142,24 @@ public:
    * \param cc  particles or charge conjugates stored in form factor.
    * @return The location in the vectors storing the data. 
    */
-  inline int formFactorNumber(int in,int out,bool & cc) const;
+  int formFactorNumber(int in,int out,bool & cc) const {
+    int output(-1);
+    unsigned int ix(0);
+    if(_incomingid.size()==0){return output;}
+    do {
+      if(_incomingid[ix]== in && _outgoingid[ix]== out) {
+	cc=false;
+	output=ix;
+      }
+      else if (_incomingid[ix]==-in && _outgoingid[ix]==-out) {
+	cc=true;
+	output=ix;
+      }
+      ++ix;
+    }
+    while(ix<_incomingid.size()&&output<0);
+    return output;
+  }
 
   /**
    * Get the particle ids for an entry.
@@ -170,7 +167,10 @@ public:
    * @param id0 The PDG code for the incoming baryon.
    * @param id1 The PDG code for the outgoing baryon.
    */
-  inline void particleID(int iloc,int& id0,int& id1);
+  void particleID(int iloc,int& id0,int& id1) {
+    id0=_incomingid[iloc];
+    id1=_outgoingid[iloc];
+  }
 
   /**
    * Information on the form factor.
@@ -182,8 +182,15 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(int iloc,int & ispin,int & ospin,int & spect1,int & spect2,
-			     int & inquark,int & outquark);
+  void formFactorInfo(int iloc,int & ispin,int & ospin,int & spect1,
+		      int & spect2, int & inquark,int & outquark) {
+    ispin    = _incomingJ[iloc];
+    ospin    = _outgoingJ[iloc];
+    spect1   = _spectator1[iloc];
+    spect2   = _spectator2[iloc];
+    inquark  = _inquark[iloc];
+    outquark = _outquark[iloc]; 
+  }
 
   /**
    * Information on the form factor.
@@ -196,13 +203,17 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(int in,int out,int & ispin,int & ospin,int & spect1,
-        		     int & spect2, int & inquark,int & outquark);
+  void formFactorInfo(int in,int out,int & ispin,int & ospin,int & spect1,
+		      int & spect2, int & inquark,int & outquark) {
+    bool dummy;
+    unsigned int ix=formFactorNumber(in,out,dummy);
+    formFactorInfo(ix,ispin,ospin,spect1,spect2,inquark,outquark);
+  }
 
   /**
    * number of form factors
    */
-  inline unsigned int numberOfFactors() const;
+  unsigned int numberOfFactors() const {return _incomingid.size();}
   //@}
 
 public:
@@ -282,64 +293,39 @@ protected:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void addFormFactor(int in,int out,int inspin, int outspin, int spect1,
-			    int spect2, int inquark,int outquark);
+  void addFormFactor(int in,int out,int inspin, int outspin, int spect1,
+		     int spect2, int inquark,int outquark) {
+    _incomingid.push_back(in);
+    _outgoingid.push_back(out);
+    _incomingJ.push_back(inspin);
+    _outgoingJ.push_back(outspin);
+    _spectator1.push_back(spect1);
+    _spectator2.push_back(spect2);
+    _inquark.push_back(inquark);
+    _outquark.push_back(outquark);
+  }
 
   /**
    *  Set initial number of modes
    * @param nmodes The number of modes.
    */
-  inline void initialModes(unsigned int nmodes);
+  void initialModes(unsigned int nmodes) {_numbermodes=nmodes;}
 
   /**
    * Get the initial number of modes
    */
-  inline unsigned int initialModes() const;
+  unsigned int initialModes() const {return _numbermodes;}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -408,6 +394,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * BaryonFormFactor.
@@ -426,19 +414,11 @@ template <>
  struct ClassTraits<Herwig::BaryonFormFactor>
   : public ClassTraitsBase<Herwig::BaryonFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::BaryonFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
+  static string className() { return "Herwig::BaryonFormFactor"; }
 };
 
-}
+/** @endcond */
 
-#include "BaryonFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonFormFactor.tcc"
-#endif
+}
 
 #endif /* HERWIG_BaryonFormFactor_H */

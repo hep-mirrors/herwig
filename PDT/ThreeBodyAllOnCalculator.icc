@@ -1,103 +1,80 @@
 // -*- C++ -*-
 //
+// ThreeBodyAllOnCalculator.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the ThreeBodyAllOnCalculator class.
 //
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Genfun;
 
-inline ThreeBodyAllOnCalculator::ThreeBodyAllOnCalculator() {}
-
-inline 
-ThreeBodyAllOnCalculator::ThreeBodyAllOnCalculator(const ThreeBodyAllOnCalculator & x)
-  : WidthCalculatorBase(x),_channelweights(x._channelweights),
-    _channeltype(x._channeltype),_channelmass(x._channelmass),
-    _channelwidth(x._channelwidth),_theME(x._theME),_thechannel(x._thechannel),
-    _souter(x._souter)
- {
-   for(unsigned int ix=0;ix<4;++ix){_m[ix]=x._m[ix];_m2[ix]=x._m2[ix];}
-  tThreeBodyAllOnCalculatorPtr temp=const_ptr_cast<tThreeBodyAllOnCalculatorPtr>(this);
-  _theInnerIntegrand= new ThreeBodyAllOnInner(temp);
-  _theOuterIntegrand= new ThreeBodyAllOnOuter(temp);
-  _Integrator  =new GaussianIntegral(0.,1.);
- }
-// constructor with the me as a function
-inline ThreeBodyAllOnCalculator::ThreeBodyAllOnCalculator(vector<double> inweights,
-							  vector<int> intype,
-							  vector<Energy> inmass,
-							  vector<Energy> inwidth,
-							  Genfun::AbsFunction * inme,
-							  Energy m1,Energy m2,
-							  Energy m3)
+template <class T>
+inline ThreeBodyAllOnCalculator<T>::
+ThreeBodyAllOnCalculator(vector<double> inweights,
+			 vector<int> intype,
+			 vector<Energy> inmass, 
+			 vector<Energy> inwidth, 
+			 vector<double> inpow,
+			 T inme, int mode, 
+			 Energy m1,Energy m2,Energy m3)
+  : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
+    _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
+    _thechannel(0),_souter(ZERO)
 {
-  _channelweights=inweights;
-  _channeltype=intype;
-  _channelmass=inmass;
-  _channelwidth=inwidth;
-  _theME=inme;
-  _thechannel=0;
-  _souter=0.;
+  _m.resize(4);
   _m[1]=m1;_m[2]=m2;_m[3]=m3;
-  for(int ix=1;ix<4;++ix){_m2[ix]=_m[ix]*_m[ix];}
-  tThreeBodyAllOnCalculatorPtr temp=const_ptr_cast<tThreeBodyAllOnCalculatorPtr>(this);
-  _theInnerIntegrand= new ThreeBodyAllOnInner(temp);
-  _theOuterIntegrand= new ThreeBodyAllOnOuter(temp);
-  _Integrator  =new GaussianIntegral(0.,1.);
+  _m2.resize(4);
+  for(int ix=1;ix<4;++ix) {
+    _m2[ix]=sqr(_m[ix]);
+  }
 }
 
-// constructor with decayer
-inline ThreeBodyAllOnCalculator::ThreeBodyAllOnCalculator(vector<double> inweights,
-							  vector<int> intype,
-							  vector<Energy> inmass,
-							  vector<Energy> inwidth,
-							  DecayIntegratorPtr decayer,
-							  int inmode,
-							  Energy m1,Energy m2,
-							  Energy m3)
-{
-  _channelweights=inweights;
-  _channeltype=intype;
-  _channelmass=inmass;
-  _channelwidth=inwidth;
-  _theME=new ThreeBodyOnShellME(decayer,inmode);
-  _thechannel=0;
-  _souter=0.;
-  _m[1]=m1;_m[2]=m2;_m[3]=m3;
-  for(int ix=1;ix<4;++ix){_m2[ix]=_m[ix]*_m[ix];}
-  tThreeBodyAllOnCalculatorPtr temp=const_ptr_cast<tThreeBodyAllOnCalculatorPtr>(this);
-  _theInnerIntegrand= new ThreeBodyAllOnInner(temp);
-  _theOuterIntegrand= new ThreeBodyAllOnOuter(temp);
-  _Integrator  =new GaussianIntegral(0.,1.);
+template <class T>
+inline void ThreeBodyAllOnCalculator<T>::resetMass(int id,Energy inmass) {
+  if(id<4) {
+    _m[id]=inmass;
+    _m2[id]=inmass*inmass;
+  }
+  else throw Exception() << "Tried to set invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::resetMass()"
+			 << Exception::runerror;
 }
 
-inline Genfun::AbsFunction * ThreeBodyAllOnCalculator::ME(){return _theME;}
-  // pointer to the function for the inner integrand
-  
-inline Genfun::AbsFunction * ThreeBodyAllOnCalculator::InnerIntegrand()
-  {return _theInnerIntegrand;}
-
-inline void ThreeBodyAllOnCalculator::resetMass(int id,Energy inmass)
- {
-   if(id<4){_m[id]=inmass;_m2[id]=inmass*inmass;}
-   else{cerr << "Tried to set invalid mass" << endl;}
- }
-
-inline Energy ThreeBodyAllOnCalculator::getMass(const int id) const
- {
-   if(id<4){return _m[id];}
-   else{cerr << "Tried to get invalid mass" << endl; return 0.;}
- }
-
-inline Energy ThreeBodyAllOnCalculator::otherMass(const int id) const
-{
-  if(id==1)
-    {return _m[2]+_m[3];}
-  else if(id==2)
-    {return _m[1]+_m[3];}
-  else if(id==3)
-    {return _m[1]+_m[2];}
-  else{cerr << "Tried to set invalid mass" << endl; return 0.;}
+template <class T>
+inline Energy ThreeBodyAllOnCalculator<T>::getMass(const int id) const {
+  if(id<4) return _m[id];
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::getMass()"
+			 << Exception::runerror;
 }
+
+template <class T>
+inline Energy ThreeBodyAllOnCalculator<T>::otherMass(const int id) const {
+  if(id==1)      return _m[2]+_m[3];
+  else if(id==2) return _m[1]+_m[3];
+  else if(id==3) return _m[1]+_m[2];
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::otherMass()"
+			 << Exception::runerror;
+}
+
+template <class T>
+inline ThreeBodyAllOnCalculator<T>::Outer::
+Outer(typename Ptr< ThreeBodyAllOnCalculator<T> >::const_pointer in) 
+  : _integrand(in)
+{}
+
+template <class T>
+inline Energy4 ThreeBodyAllOnCalculator<T>::Outer::operator() (double x) const {
+  Energy2 low, upp;
+  _integrand->outerVariables(x,low,upp);
+  return _integrator.value(*_integrand,low,upp);
+}
+
 }

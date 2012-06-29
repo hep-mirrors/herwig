@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BtoSGammaHadronicMass.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BtoSGammaHadronicMass class.
 //
@@ -7,28 +14,21 @@
 #include "BtoSGammaHadronicMass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaHadronicMass.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
-
-BtoSGammaHadronicMass::~BtoSGammaHadronicMass() {}
+using namespace Herwig;
 
 void BtoSGammaHadronicMass::persistentOutput(PersistentOStream & os) const {
-  os << _minMass << _maxMass;
+  os << ounit(_minMass,GeV) << ounit(_maxMass,GeV);
 }
 
 void BtoSGammaHadronicMass::persistentInput(PersistentIStream & is, int) {
-  is >> _minMass >> _maxMass;
+  is >> iunit(_minMass,GeV) >> iunit(_maxMass,GeV);
 }
 
-AbstractClassDescription<BtoSGammaHadronicMass> BtoSGammaHadronicMass::initBtoSGammaHadronicMass;
+AbstractClassDescription<BtoSGammaHadronicMass> 
+BtoSGammaHadronicMass::initBtoSGammaHadronicMass;
 // Definition of the static class description member.
 
 void BtoSGammaHadronicMass::Init() {
@@ -49,17 +49,15 @@ void BtoSGammaHadronicMass::Init() {
      &BtoSGammaHadronicMass::_maxMass, GeV, 5.300*GeV, 0.825*GeV, 5.300*GeV,
      false, false, Interface::limited);
 
-
 }
 
 void BtoSGammaHadronicMass::dataBaseOutput(ofstream & output,bool header,
-					   bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::BtoSGammaHadronicMass " << fullName() << " \n";}
-  output << "set " << fullName() << ":MinimumMass " << _minMass/GeV << " \n";
-  output << "set " << fullName() << ":MaximumMass " << _maxMass/GeV << " \n";
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+					   bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::BtoSGammaHadronicMass " 
+		    << name() << " \n";
+  output << "set " << name() << ":MinimumMass " << _minMass/GeV << " \n";
+  output << "set " << name() << ":MaximumMass " << _maxMass/GeV << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

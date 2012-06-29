@@ -1,5 +1,5 @@
 #include "Herwig++/Interfaces/KtJetInterface.h"
-#include "Herwig++/Utilities/HerwigRun.h"
+#include "HerwigRun.h"
 
 int main(int argc, char * argv[]) {
   using namespace ThePEG;

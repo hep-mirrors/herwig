@@ -1,11 +1,17 @@
 // -*- C++ -*-
 //
+// StandardCKM.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the StandardCKM class.
 //
 
 #include "StandardCKM.h"
-#include "ThePEG/CLHEPWrap/PhysicalConstants.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -104,23 +110,22 @@ void StandardCKM::Init() {
     ("theta_12",
      "The mixing angle between the first and second generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta12, 0.222357, 0.0, twopi, false, false, true);
+     &StandardCKM::theta12, 0.2262, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceTheta13
     ("theta_13",
      "The mixing angle between the first and third generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta13, 0.0003150, 0.0, twopi, false, false, true);
+     &StandardCKM::theta13, 0.0037, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceTheta23
     ("theta_23",
      "The mixing angle between the second and third generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta12, 0.039009, 0.0, twopi, false, false, true);
+     &StandardCKM::theta23, 0.0413, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceDelta
     ("delta",
      "The phase angle in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::delta, 1.35819, 0.0, twopi, false, false, true);
-  
+     &StandardCKM::delta, 1.05, 0.0, Constants::twopi, false, false, true);
 }
 
 }

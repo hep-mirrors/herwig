@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// RSModel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the RSModel class.
 //
@@ -14,17 +21,19 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
-RSModel::~RSModel() {}
+RSModel::RSModel() : _theLambda_pi(10000*GeV) {}
 
 void RSModel::persistentOutput(PersistentOStream & os) const {
-  os << _theLambda_pi << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
+  os << ounit(_theLambda_pi,GeV) 
+     << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
      << _theFFVGRVertex << _theVVVGRVertex;
 }
 
 void RSModel::persistentInput(PersistentIStream & is, int) {
-  is >> _theLambda_pi >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
+  is >> iunit(_theLambda_pi,GeV) 
+     >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
      >> _theFFVGRVertex >> _theVVVGRVertex;
 }
 
@@ -34,26 +43,26 @@ ClassDescription<RSModel> RSModel::initRSModel;
 void RSModel::Init() {
   
 
-static Reference<RSModel,Herwig::Helicity::FFTVertex> interfaceVertexFFGR
+static Reference<RSModel,ThePEG::Helicity::AbstractFFTVertex> interfaceVertexFFGR
   ("Vertex/FFGR",
    "Reference to the fermion-fermion-graviton vertex",
    &RSModel::_theFFGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::VVTVertex> interfaceVertexVVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractVVTVertex> interfaceVertexVVGR
   ("Vertex/VVGR",
    "Reference to the vector-vector-graviton vertex",
    &RSModel::_theVVGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::SSTVertex> interfaceVertexSSGR
+static Reference<RSModel,ThePEG::Helicity::AbstractSSTVertex> interfaceVertexSSGR
   ("Vertex/SSGR",
    "Reference to the scalar-scalar-graviton vertex",
    &RSModel::_theSSGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::FFVTVertex> interfaceVertexFFVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractFFVTVertex> interfaceVertexFFVGR
   ("Vertex/FFVGR",
    "Reference to the fermion-antifermion-vector graviton vertex",
    &RSModel::_theFFVGRVertex, false, false, true, false, false);
-static Reference<RSModel,Herwig::Helicity::VVVTVertex> interfaceVertexVVVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractVVVTVertex> interfaceVertexVVVGR
   ("Vertex/VVVGR",
    "Reference to the three vector graviton vertex",
    &RSModel::_theVVVGRVertex, false, false, true, false, false);
@@ -61,7 +70,7 @@ static Reference<RSModel,Herwig::Helicity::VVVTVertex> interfaceVertexVVVGR
 static Parameter<RSModel,Energy> interfaceLambda_pi
   ("Lambda_pi",
    "The coupling of the graviton to matter",
-   &RSModel::_theLambda_pi, GeV, 10000*GeV, 0*GeV, 1.0e12*GeV,
+   &RSModel::_theLambda_pi, GeV, 10000*GeV, ZERO, 1.0e12*GeV,
    false, false, false);
 
   static ClassDocumentation<RSModel> documentation

@@ -1,0 +1,108 @@
+###########################################################
+# Default cuts (applied to the hard subprocess)
+#
+# Don't change values here, re-set them in your own input 
+# files using these as examples.
+###########################################################
+
+mkdir /Herwig/Matchers
+cd /Herwig/Matchers
+
+create ThePEG::Matcher<Lepton> Lepton
+create ThePEG::Matcher<LightQuark> LightQuark
+create ThePEG::Matcher<LightAntiQuark> LightAntiQuark
+create ThePEG::Matcher<StandardQCDParton> StandardQCDParton
+create ThePEG::Matcher<Photon> Photon
+create ThePEG::Matcher<Top> Top
+create ThePEG::Matcher<WBoson> WBoson
+create ThePEG::Matcher<ZBoson> ZBoson
+create ThePEG::Matcher<HiggsBoson> HiggsBoson
+
+mkdir /Herwig/Cuts
+cd /Herwig/Cuts
+
+# create the cuts object for e+e-
+create ThePEG::Cuts EECuts
+set EECuts:MHatMin 22.36*GeV
+
+# create the cuts object for hadron collisions
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 1.0e-5
+set QCDCuts:X2Min 1.0e-5
+set QCDCuts:MHatMin 20.*GeV
+
+# cut on jet pt 
+create ThePEG::SimpleKTCut JetKtCut SimpleKTCut.so
+set JetKtCut:Matcher /Herwig/Matchers/StandardQCDParton
+set JetKtCut:MinKT 20.0*GeV
+
+# cut on photon
+create ThePEG::SimpleKTCut PhotonKtCut SimpleKTCut.so
+set PhotonKtCut:Matcher /Herwig/Matchers/Photon
+set PhotonKtCut:MinKT 20.0*GeV
+set PhotonKtCut:MinEta -3.
+set PhotonKtCut:MaxEta  3.
+
+# cut on leptons
+create ThePEG::SimpleKTCut LeptonKtCut SimpleKTCut.so
+set LeptonKtCut:Matcher /Herwig/Matchers/Lepton
+set LeptonKtCut:MinKT 0.0*GeV
+
+# cut on top quarks
+create ThePEG::KTRapidityCut TopKtCut KTRapidityCut.so
+set TopKtCut:Matcher /Herwig/Matchers/Top
+set TopKtCut:MinKT 0.0*GeV
+
+# cut on W bosons
+create ThePEG::KTRapidityCut WBosonKtCut KTRapidityCut.so
+set WBosonKtCut:Matcher /Herwig/Matchers/WBoson
+set WBosonKtCut:MinKT 0.0*GeV
+
+# cut on Z bosons
+create ThePEG::KTRapidityCut ZBosonKtCut KTRapidityCut.so
+set ZBosonKtCut:Matcher /Herwig/Matchers/ZBoson
+set ZBosonKtCut:MinKT 0.0*GeV
+
+# cut on Higgs bosons
+create ThePEG::KTRapidityCut HiggsBosonKtCut KTRapidityCut.so
+set HiggsBosonKtCut:Matcher /Herwig/Matchers/HiggsBoson
+set HiggsBosonKtCut:MinKT 0.0*GeV
+
+# create a cut on the invariant mass of lepton pairs
+create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so
+set MassCut:MaxM 14000.*GeV
+set MassCut:Families All
+set MassCut:CComb All
+set MassCut:MinM 20.*GeV
+set MassCut:MaxM 14000.*GeV
+
+# create a cut on Q^2 for neutral current DIS
+create ThePEG::SimpleDISCut NeutralCurrentCut SimpleDISCut.so
+set NeutralCurrentCut:MinQ2 20.
+set NeutralCurrentCut:Current Neutral
+
+# create a cut on Q^2 for charged current DIS
+create ThePEG::SimpleDISCut ChargedCurrentCut SimpleDISCut.so
+set ChargedCurrentCut:MinQ2 20.
+set ChargedCurrentCut:Current Charged
+
+# create a cut of Q^2 for charged current DIS
+
+# insert into hadron cuts
+insert QCDCuts:OneCuts[0] JetKtCut
+insert QCDCuts:OneCuts[1] PhotonKtCut
+insert QCDCuts:OneCuts[2] LeptonKtCut
+insert QCDCuts:OneCuts[3] TopKtCut
+insert QCDCuts:OneCuts[4] WBosonKtCut
+insert QCDCuts:OneCuts[5] ZBosonKtCut
+insert QCDCuts:OneCuts[6] HiggsBosonKtCut
+insert QCDCuts:MultiCuts[0] MassCut
+
+# cuts for DIS
+create ThePEG::Cuts DISCuts
+set DISCuts:ScaleMin 1.0*GeV
+set DISCuts:X1Min 1.0e-5
+set DISCuts:X2Min 1.0e-5
+insert DISCuts:TwoCuts[0] NeutralCurrentCut
+insert DISCuts:TwoCuts[1] ChargedCurrentCut

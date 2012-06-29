@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// IFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_IFDipole_H
 #define HERWIG_IFDipole_H
 //
@@ -7,9 +14,9 @@
 
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "IFDipole.fh"
 
@@ -32,17 +39,13 @@ public:
   /**
    * The default constructor.
    */
-  inline IFDipole();
-
-  /**
-   * The copy constructor.
-   */
-  inline IFDipole(const IFDipole &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFDipole();
+  IFDipole() :
+    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
+    _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
+    _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
+    _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
+    _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()
+  {}
   //@}
 
 public:
@@ -89,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -107,7 +110,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:
@@ -118,15 +121,10 @@ protected:
    * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$.
    * @return The average photon multiplicity
    */
-  inline double nbar(double beta1,double ombeta1);
-
-  /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
+  double nbar(double beta1,double ombeta1) {
+    return  _alpha/pi*_chrg1*_chrg2/beta1*
+      log((1.+beta1)/ombeta1)*log(_emax/_emin);
+  }
 
   /**
    * Generate the momentum of a photon 
@@ -144,16 +142,28 @@ protected:
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
-  inline double exactDipoleWeight(double beta1,double ombeta1,
-				  unsigned int iphot);
+  double exactDipoleWeight(double beta1,double ombeta1,
+			   unsigned int iphot) {
+    double ombc;
+    // if cos is greater than zero use result accurate as cos->1
+    if(_cosphot[iphot]>0.0)
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    // if cos is less    than zero use result accurate as cos->-1
+    else
+      ombc=1.-beta1*_cosphot[iphot];
+    return 1.0*sqr(beta1*_sinphot[iphot]/ombc);
+  }
 
   /**
    *  The crude YFS form factor for calculating the weight
-   * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
+   * @param b   Velocity of the first charged particle, \f$\beta_1\f$
+   * @param omb One minus the velocity of the first particle,  \f$1-\beta_1\f$
    * @return The YFS form factor
    */
-    inline double crudeYFSFormFactor(double beta1,double ombeta1);
+  double crudeYFSFormFactor(double b,double omb) {
+    double Y =-_alpha/pi*_chrg1*_chrg2 / b * log((1.+b)/omb) * log(_m[0]/(2.*_emin));
+    return exp(Y);
+  }
 
   /**
    *  The exact YFS form factor for calculating the weight
@@ -182,7 +192,15 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Hep3Vector boost,ParticleVector children);
+  double makePhotons(Boost boost,ParticleVector children);
+
+  /**
+   *  Compute a Lorentz transform from p to q
+   * @param p Original momentum
+   * @param q Final momentum
+   */
+  LorentzRotation solveBoost(const Lorentz5Momentum & q, 
+			     const Lorentz5Momentum & p ) const;
 
 private:
 
@@ -200,11 +218,6 @@ private:
 
 private:
 
-#ifdef KEITH_DEBUG
-  inline void KFILL(int,double,double);
-  inline void LFILL(int,double,double,double);
-  void IF_FILL(int);
-#endif
   /**
    *  the fine structure constant at $q^2=0$
    */
@@ -235,12 +248,12 @@ private:
    *  _q???[_map[0]] is the charged child and
    *  _q???[_map[1]] is the neutral child.
    */
-  int _map[2];
+  vector<int> _map;
 
   /**
    *  Masses of the particles involved
    */
-  Energy _m[3];
+  vector<Energy> _m;
 
   /**
    *  charge of the parent particle 
@@ -259,12 +272,12 @@ private:
   /**
    *  Momenta of the charged particles in the parent's rest frame before radiation
    */
-  Lorentz5Momentum _qprf[2];
+  vector<Lorentz5Momentum> _qprf;
 
   /**
    *  Momenta of the charged particles in the parent's rest frame after radiation
    */
-  Lorentz5Momentum _qnewprf[2];
+  vector<Lorentz5Momentum> _qnewprf;
 
   /**
    *  Momenta of the photons in the parent rest frame
@@ -284,12 +297,12 @@ private:
   /**
    *  Momenta of the charged particles in the lab frame before radiation
    */
-  Lorentz5Momentum _qlab[2];
+  vector<Lorentz5Momentum> _qlab;
   
   /**
    *  Momenta of the charged particles in the lab frame after  radiation
    */
-  Lorentz5Momentum _qnewlab[2];
+  vector<Lorentz5Momentum> _qnewlab;
 
   /**
    *  Momenta of the photons in the lab frame
@@ -398,20 +411,11 @@ template <>
 struct ClassTraits<Herwig::IFDipole>
   : public ClassTraitsBase<Herwig::IFDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::IFDipole"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the IFDipole class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwDecRad.so"; }
+  static string className() { return "Herwig::IFDipole"; }
 };
 
 /** @endcond */
 
 }
-
-#include "IFDipole.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IFDipole.tcc"
-#endif
 
 #endif /* HERWIG_IFDipole_H */
