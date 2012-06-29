@@ -56,3 +56,34 @@ void SMTopPOWHEGDecayer::Init() {
 
 }
 
+HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr) {
+  cerr << "in generate hardest\n";
+
+  // herwig stuff to get t, b and W from shower tree
+
+  // call Alix's function to calculate hardest emission
+
+  unsigned int npoint=100000;
+  ofstream file("dalitz.top");
+  for(unsigned int ix=0;ix<npoint;++ix) {
+    vector<Lorentz5Momentum> momenta = hardMomenta();
+    if(momenta.size()==4) { 
+      double x_g = 2.*momenta[3].e()/momenta[0].mass();
+      double x_w = 2.*momenta[2].e()/momenta[0].mass();
+      file << x_g << "\t" << x_w << "\n";
+    }
+  }
+  file.close();
+
+
+
+  // Herwig stuff to put it in the hard tree and return it
+
+  exit(1);
+}
+
+vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
+
+
+  return vector<Lorentz5Momentum>();
+}

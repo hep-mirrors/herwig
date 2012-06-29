@@ -24045,7 +24045,7 @@ newdef BtosgammaMass:Spectrum 99 1.04156e-05
 newdef BtosgammaKagan:HadronicMass BtosgammaMass 
 
 #
-create Herwig::SMTopDecayer  Top
+create Herwig::SMTopPOWHEGDecayer  Top
 newdef Top:Coupling /Herwig/Shower/AlphaQCD
 newdef Top:QuarkWeights 0 5.
 newdef Top:QuarkWeights 1 5.

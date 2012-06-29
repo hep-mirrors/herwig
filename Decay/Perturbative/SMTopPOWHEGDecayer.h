@@ -26,6 +26,16 @@ public:
    */
   SMTopPOWHEGDecayer();
 
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -66,6 +76,13 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+
+protected:
+
+  /**
+   *  Return the momenta including the hard emission
+   */
+  vector<Lorentz5Momentum> hardMomenta();
 
 private:
 
