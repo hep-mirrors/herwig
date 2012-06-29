@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreePionCLEOCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -25,10 +25,9 @@ namespace {
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
+ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   // local particle properties
   _localparameters=true;
   // rho masses and widths
@@ -63,7 +62,7 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
     _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
   }
   // f_2
-  _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=0./MeV2;
+  _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=ZERO;
   // sigma
   _sigmamag=2.10;_sigmaphase=0.23*pi;_sigmacoup=0.;
   // f_0
@@ -154,20 +153,20 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
 		   timesGeV2);
   }
   // zero parameters which will be calculated later to avoid problems
-  _pf2cc=0.*MeV; 
-  _pf200=0.*MeV;
-  _pf0cc=0.*MeV;
-  _pf000=0*MeV;
-  _psigmacc=0.*MeV;
-  _psigma00=0.*MeV; 
-  _mpi0=0.*MeV;
-  _mpic=0.*MeV;
-  _fact=0./MeV;
-  _maxmass=0.*MeV;
-  _maxcalc=0.*MeV;
+  _pf2cc=ZERO; 
+  _pf200=ZERO;
+  _pf0cc=ZERO;
+  _pf000=ZERO;
+  _psigmacc=ZERO;
+  _psigma00=ZERO; 
+  _mpi0=ZERO;
+  _mpic=ZERO;
+  _fact=ZERO;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
-void ThreePionCLEOCurrent::doinit() throw(InitException) {
+void ThreePionCLEOCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // pointers to the particles we need
   tPDPtr a1m = getParticleData(ParticleID::a_1minus);
@@ -281,78 +280,89 @@ void ThreePionCLEOCurrent::Init() {
 
   static ClassDocumentation<ThreePionCLEOCurrent> documentation
     ("The ThreePionCLEOCurrent class performs the decay of the"
-     " tau to three pions using the currents from CLEO");
-  
+     " tau to three pions using the currents from CLEO",
+     "The decay of tau to three pions is modelled using the currents from "
+     "\\cite{Asner:1999kj}.",
+     "  %\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
+
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &ThreePionCLEOCurrent::_rhomass,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, -10000*MeV, 10000*MeV, false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &ThreePionCLEOCurrent::_rhowidth,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, -10000*MeV, 10000*MeV, false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacef_2Mass
     ("f_2Mass",
      "The mass of the f_2 meson",
-     &ThreePionCLEOCurrent::_f2mass, GeV, 1.275*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_f2mass, GeV, 1.275*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacef_2Width
     ("f_2Width",
      "The width of the f_2 meson",
-     &ThreePionCLEOCurrent::_f2width, GeV, 0.185*GeV, 0.0*GeV, 1.0*GeV,
+     &ThreePionCLEOCurrent::_f2width, GeV, 0.185*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacef_0Mass
     ("f_0Mass",
      "The mass of the f_0 meson",
-     &ThreePionCLEOCurrent::_f0mass, GeV, 1.186*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_f0mass, GeV, 1.186*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacef_0Width
     ("f_0Width",
      "The width of the f_0 meson",
-     &ThreePionCLEOCurrent::_f0width, GeV, 0.350*GeV, 0.0*GeV, 1.0*GeV,
+     &ThreePionCLEOCurrent::_f0width, GeV, 0.350*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacesigmaMass
     ("sigmaMass",
      "The mass of the sigma meson",
-     &ThreePionCLEOCurrent::_sigmamass, GeV, 0.860*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_sigmamass, GeV, 0.860*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacesigmaWidth
     ("sigmaWidth",
      "The width of the sigma meson",
-     &ThreePionCLEOCurrent::_sigmawidth, GeV, 0.880*GeV, 0.0*GeV, 2.0*GeV,
+     &ThreePionCLEOCurrent::_sigmawidth, GeV, 0.880*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacea1Mass
     ("a1Mass",
      "The mass of the a_1 meson",
-     &ThreePionCLEOCurrent::_a1mass, GeV, 1.331*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_a1mass, GeV, 1.331*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacea1Width
     ("a1Width",
      "The width of the a_1 meson",
-     &ThreePionCLEOCurrent::_a1width, GeV, 0.814*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_a1width, GeV, 0.814*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfaceKaonMass
     ("KaonMass",
      "The mass of the kaon",
-     &ThreePionCLEOCurrent::_mK, GeV, 0.496*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_mK, GeV, 0.496*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfaceKStarMass
     ("KStarMass",
      "The mass of the k* meson",
-     &ThreePionCLEOCurrent::_mKstar, GeV, 0.894*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreePionCLEOCurrent::_mKstar, GeV, 0.894*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfaceKaonCoupling
@@ -364,7 +374,7 @@ void ThreePionCLEOCurrent::Init() {
   static Parameter<ThreePionCLEOCurrent,Energy> interfaceFpi
     ("Fpi",
      "The pion decay constant",
-     &ThreePionCLEOCurrent::_fpi, MeV, 130.7*MeV/sqrt(2.), 0.0*MeV, 500.0*MeV,
+     &ThreePionCLEOCurrent::_fpi, MeV, 130.7*MeV/sqrt(2.), ZERO, 500.0*MeV,
      false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,double> interfacerhomagP
@@ -383,7 +393,7 @@ void ThreePionCLEOCurrent::Init() {
     ("RhoDWaveMagnitude",
      "The magnitude of the couplings for the d-wave rho currents",
      &ThreePionCLEOCurrent::_rhomagD,
-     1/MeV2, 0, 0/MeV2, 0/MeV2, 10000/MeV2, false, false, true);
+     1/MeV2, 0, ZERO, ZERO, 10000/MeV2, false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,double> interfacerhophaseD
     ("RhoDWavePhase",
@@ -419,7 +429,7 @@ void ThreePionCLEOCurrent::Init() {
   static Parameter<ThreePionCLEOCurrent,InvEnergy2> interfacef2Magnitude
     ("f2Magnitude",
      "The magnitude of the f_2 tensor current",
-     &ThreePionCLEOCurrent::_f2mag, 1./GeV2, 0.71/GeV2, 0./GeV2, 10./GeV2,
+     &ThreePionCLEOCurrent::_f2mag, 1./GeV2, 0.71/GeV2, ZERO, 10./GeV2,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfacesigmaMagnitude
@@ -447,13 +457,13 @@ void ThreePionCLEOCurrent::Init() {
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
      &ThreePionCLEOCurrent::_a1runwidth,
-     MeV, 0, 0*MeV, 0*MeV, 10000000*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000000*MeV, false, false, true);
   
   static ParVector<ThreePionCLEOCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
      &ThreePionCLEOCurrent::_a1runq2,
-     MeV2, 0, 0*MeV2, 0*MeV2, 10000000*MeV2, false, false, true);
+     MeV2, 0, ZERO, ZERO, 10000000*MeV2, false, false, true);
 
   static Switch<ThreePionCLEOCurrent,bool> interfaceInitializea1
     ("Initializea1",
@@ -493,7 +503,7 @@ void ThreePionCLEOCurrent::Init() {
 void ThreePionCLEOCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return;
+    if(!_initializea1||_maxmass==ZERO) return;
     // parameters for the table of values
     Energy2 step=sqr(_maxmass)/200.;
     // function to be integrated to give the matrix element
@@ -514,12 +524,12 @@ void ThreePionCLEOCurrent::inita1Width(int iopt) {
 			       widthgenC.partialWidth(sqr(_a1mass)));
     // loop to give the values
     _a1runq2.clear();_a1runwidth.clear();
-    for(Energy2 moff2=0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
+    for(Energy2 moff2=ZERO; moff2<=sqr(_maxmass); moff2+=step) {
       Energy moff=sqrt(moff2);
       _a1runq2.push_back(moff2);
       Energy charged=a1const*widthgenC.partialWidth(moff2);
       Energy neutral=a1const*widthgenN.partialWidth(moff2);
-      Energy kaon = moff<=_mK+_mKstar ? 0.*MeV : 2.870*_gammk*_gammk/8./Constants::pi*
+      Energy kaon = moff<=_mK+_mKstar ? ZERO : 2.870*_gammk*_gammk/8./Constants::pi*
 	Kinematics::pstarTwoBodyDecay(moff,_mK,_mKstar)/moff2*GeV2;
       Energy total = charged + neutral + kaon;
       _a1runwidth.push_back(total);
@@ -553,6 +563,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 					  Energy2 q2,Energy2 s1, Energy2 s2, Energy2 s3,
 					  Complex & F1, Complex & F2, 
 					  Complex & F3) const {
+  useMe();
   if(imode==0) {
     // compute the breit wigners we need
     Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
@@ -723,7 +734,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
   if(!acceptMode(imode)){return false;}
   int iq(0),ia(0);
   tPDVector extpart=particles(1,imode,iq,ia);
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   _maxmass=max(_maxmass,upp);
@@ -859,112 +870,219 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create) {
-    output << "create Herwig::ThreePionCLEOCurrent " << fullName() 
+    output << "create Herwig::ThreePionCLEOCurrent " << name() 
 	   << " HwWeakCurrents.so\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoMasses " << ix 
+      output << "newdef    " << name() << ":RhoMasses " << ix 
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoMasses " << ix 
+      output << "insert " << name() << ":RhoMasses " << ix 
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoWidths " << ix 
+      output << "newdef    " << name() << ":RhoWidths " << ix 
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoWidths " << ix 
+      output << "insert " << name() << ":RhoWidths " << ix 
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
   }
-  output << "set " << fullName() << ":f_2Mass " << _f2mass/GeV << "\n";
-  output << "set " << fullName() << ":f_2Width " << _f2width/GeV << "\n";
-  output << "set " << fullName() << ":f_0Mass " << _f0mass/GeV << "\n";
-  output << "set " << fullName() << ":f_0Width " << _f0width/GeV << "\n";
-  output << "set " << fullName() << ":sigmaMass " << _sigmamass/GeV << "\n";
-  output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
-  output << "set " << fullName() << ":a1Mass " << _a1mass/GeV << "\n";
-  output << "set " << fullName() << ":a1Width " <<_a1width /GeV << "\n";
-  output << "set " << fullName() << ":KaonMass " << _mK/GeV << "\n";
-  output << "set " << fullName() << ":KStarMass " << _mKstar/GeV << "\n";
-  output << "set " << fullName() << ":KaonCoupling " << _gammk << "\n";
-  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
-  output << "set " << fullName() << ":a1WidthOption " << _a1opt << "\n";
+  output << "newdef " << name() << ":f_2Mass " << _f2mass/GeV << "\n";
+  output << "newdef " << name() << ":f_2Width " << _f2width/GeV << "\n";
+  output << "newdef " << name() << ":f_0Mass " << _f0mass/GeV << "\n";
+  output << "newdef " << name() << ":f_0Width " << _f0width/GeV << "\n";
+  output << "newdef " << name() << ":sigmaMass " << _sigmamass/GeV << "\n";
+  output << "newdef " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "newdef " << name() << ":a1Mass " << _a1mass/GeV << "\n";
+  output << "newdef " << name() << ":a1Width " <<_a1width /GeV << "\n";
+  output << "newdef " << name() << ":KaonMass " << _mK/GeV << "\n";
+  output << "newdef " << name() << ":KStarMass " << _mKstar/GeV << "\n";
+  output << "newdef " << name() << ":KaonCoupling " << _gammk << "\n";
+  output << "newdef " << name() << ":Fpi " << _fpi/MeV << "\n";
+  output << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
       if(ix<2) {
-	output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix 
+	output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix 
 	       << " " << _rhomagP[ix] << "\n";
       }
       else {
-	output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix 
+	output << "insert " << name() << ":RhoPWaveMagnitude " << ix 
 	       << " " << _rhomagP[ix] << "\n";
       }
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoPWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoPWavePhase " << ix 
 	     << " " << _rhophaseP[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoPWavePhase " << ix 
+      output << "insert " << name() << ":RhoPWavePhase " << ix 
 	     << " " << _rhophaseP[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix 
+      output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix 
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix 
+      output << "insert " << name() << ":RhoDWaveMagnitude " << ix 
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoDWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoDWavePhase " << ix 
 	     << " " << _rhophaseD[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoDWavePhase " << ix 
+      output << "insert " << name() << ":RhoDWavePhase " << ix 
 	     << " " << _rhophaseD[ix] << "\n";
     }
   }
-  output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
-  output << "set " << fullName() << ":f2Phase " <<_f2phase  << "\n";
-  output << "set " << fullName() << ":sigmaPhase " <<_sigmaphase  << "\n";
-  output << "set " << fullName() << ":f0Magnitude " << _f0mag << "\n";
-  output << "set " << fullName() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
-  output << "set " << fullName() << ":sigmaMagnitude " <<_sigmamag  << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Initializea1 " <<_initializea1  << "\n";
+  output << "newdef " << name() << ":f0Phase " << _f0phase << "\n";
+  output << "newdef " << name() << ":f2Phase " <<_f2phase  << "\n";
+  output << "newdef " << name() << ":sigmaPhase " <<_sigmaphase  << "\n";
+  output << "newdef " << name() << ":f0Magnitude " << _f0mag << "\n";
+  output << "newdef " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
+  output << "newdef " << name() << ":sigmaMagnitude " <<_sigmamag  << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
-      output << "set    " << fullName() << ":a1RunningWidth " << ix 
+      output << "newdef    " << name() << ":a1RunningWidth " << ix 
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":a1RunningWidth " << ix 
+      output << "insert " << name() << ":a1RunningWidth " << ix 
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) {
-      output << "set    " << fullName() << ":a1RunningQ2 " << ix 
+      output << "newdef    " << name() << ":a1RunningQ2 " << ix 
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":a1RunningQ2 " << ix 
+      output << "insert " << name() << ":a1RunningQ2 " << ix 
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
   }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
+void ThreePionCLEOCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
+}
+
+void ThreePionCLEOCurrent::doupdate() {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
+
+Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const {
+  Energy output;
+  if(_a1opt) output=(*_a1runinter)(q2);
+  else {
+    double gam(0.);
+    if(q2<0.1753*GeV2) {
+      gam =0.;
+    }
+    else if(q2<0.823*GeV2) {
+      double p=q2/GeV2-0.1753;
+      gam = 5.80900*p*sqr(p)*(1.-3.00980*p+4.57920*sqr(p));
+    }
+    else {
+      double p=q2/GeV2;
+      gam = -13.91400+27.67900*p-13.39300*sqr(p)
+	+3.19240*sqr(p)*p-0.10487*sqr(sqr(p));
+    }
+    if(q2<0.1676*GeV2) {
+      gam+=0.;
+    }
+    else if(q2<0.823*GeV2) {
+      double p=q2/GeV2-0.1676;
+      gam+= 6.28450*p*sqr(p)*(1.-2.95950*p+4.33550*sqr(p));
+    }
+    else {
+      double p=q2/GeV2;
+      gam+= -15.41100+32.08800*p-17.66600*sqr(p)
+	+4.93550*sqr(p)*p-0.37498*sqr(sqr(p));
+    }
+    Energy mkst=0.894*GeV,mk=0.496*GeV;
+    Energy2 mk1sq=sqr(mkst+mk), mk2sq=sqr(mkst-mk);
+    double c3pi=sqr(0.2384),ckst=sqr(4.7621)*c3pi;
+    gam*=c3pi;
+    if(q2>mk1sq) gam+=0.5*ckst*sqrt((q2-mk1sq)*(q2-mk2sq))/q2;
+    gam = gam*_a1width*_a1mass/GeV2/1.331/0.814/1.0252088;
+    output = gam*GeV2/sqrt(q2);
+  }
+  return output;
+}
+
+double 
+ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
+					     const Energy2 s3, const Energy2 s2, 
+					     const Energy2 s1, const Energy,
+					     const Energy, const Energy) const {
+  Energy p1[5],p2[5],p3[5];
+  Energy2 p1sq, p2sq, p3sq;
+  Energy q=sqrt(q2);
+  Energy2 mpi2c=_mpic*_mpic;
+  Energy2 mpi20=_mpi0*_mpi0;
+  // construct the momenta for the 2 neutral 1 charged mode
+  Complex F1,F2,F3;
+  if(iopt==0) {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi20-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi20);
+    p2[0] = 0.5*(q2+mpi20-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi20);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-2.*mpi20+mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
+  // construct the momenta for the 3 charged mode 
+  else {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi2c-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi2c);
+    p2[0] = 0.5*(q2+mpi2c-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi2c);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=ZERO; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
+  // construct a vector with the current
+  complex<Energy> current[4];
+  for(unsigned int ix=0;ix<4;++ix)
+    current[ix] = F1*(p2[ix]-p3[ix])-F2*(p3[ix]-p1[ix])+F3*(p1[ix]-p2[ix]);
+  complex<Energy2> dot1=current[0]*conj(current[0]);
+  for(unsigned int ix=1;ix<4;++ix) dot1-=current[ix]*conj(current[ix]);
+  complex<Energy2> dot2=current[0]*q;
+  return(-dot1+dot2*conj(dot2)/q2).real() / sqr(_rhomass[0]);
 }

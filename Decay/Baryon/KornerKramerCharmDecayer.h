@@ -5,7 +5,6 @@
 // This is the declaration of the KornerKramerCharmDecayer class.
 //
 #include "Baryon1MesonDecayerBase.h"
-#include "KornerKramerCharmDecayer.fh"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
@@ -26,25 +25,10 @@ class KornerKramerCharmDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   KornerKramerCharmDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline KornerKramerCharmDecayer(const KornerKramerCharmDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~KornerKramerCharmDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -156,13 +140,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -170,45 +154,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -226,78 +181,73 @@ private:
 private:
 
   /**
-   * The Fermi constant, \f$G_F\f$.
-   */
-  InvEnergy2 _GF;
-
-  /**
    * one over the number of colours 
    */
-  double _oneNC;
+  double oneNC_;
 
   /**
    * Pion decay constant, \f$f_\pi\f$.
    */
-  Energy _fpi;
+  Energy fpi_;
 
   /**
    * Kaon decay constant, \f$f_K\f$.
    */
-  Energy _FK;
+  Energy fk_;
 
   /**
    * \f$\rho\f$ decay constant, \f$f_\rho\f$.
    */
-  double _frho;
+  double frho_;
 
   /**
    * \f$K^*\f$ decay constans, \f$f_{K^*}\f$.
    */
-  double _fKstar;
+  double fKstar_;
 
   /**
    * Axial-Vector mass for the form factor for the factorizing diagrams
    * for the \f$c\to d\f$ transition.
    */
-  Energy _mdcplus;
+  Energy mdcplus_;
 
   /**
    * Vector mass for the form factor for the factorizing diagrams
    * for the \f$c\to d\f$ transition.
    */
-  Energy _mdcminus;
+  Energy mdcminus_;
 
   /**
    * Axial-Vector mass for the form factor for the factorizing diagrams
    * for the \f$c\to s\f$ transition.
    */
-  Energy _mscplus;
+  Energy mscplus_;
 
   /**
    * Vector mass for the form factor for the factorizing diagrams
    * for the \f$c\to s\f$ transition.
    */
-  Energy _mscminus;
+  Energy mscminus_;
 
   /**
    * Perturbative factor, \f$c_+\f$.
    */
-  double _cplus;
+  double cplus_;
 
   /**
    * Perturbative factor, \f$c_-\f$.
    */
-  double _cminus;
+  double cminus_;
 
   /**
    * \f$H_2\f$ factor for the non-factorizing diagrams.
    */
-  Energy _H2;
+  Energy H2_;
 
   /**
    * \f$H_3\f$ factor for the non-factorizing diagrams.
    */
-  Energy _H3;
+  Energy H3_;
 
   /**
    * SU(4) invariants for the various modes
@@ -306,58 +256,58 @@ private:
   /**
    *  The \f$I_1\f$ invariant
    */
-  vector<double> _I1;
+  vector<double> I1_;
 
   /**
    *  The \f$I_2\f$ invariant
    */
-  vector<double> _I2;
+  vector<double> I2_;
 
   /**
    *  The \f$I_3\f$ invariant
    */
-  vector<double> _I3;
+  vector<double> I3_;
 
   /**
    *  The \f$I_4\f$ invariant
    */
-  vector<double> _I4;
+  vector<double> I4_;
 
   /**
    *  The \f$I_5\f$ invariant
    */
-  vector<double> _I5;
+  vector<double> I5_;
 
   /**
    *  The \f$\hat{I}_3\f$ invariant
    */
-  vector<double> _Ihat3;
+  vector<double> Ihat3_;
 
   /**
    *  The \f$\hat{I}_4\f$ invariant
    */
-  vector<double> _Ihat4;
+  vector<double> Ihat4_;
   //@}
 
   /**
    * The PDG code for the incoming baryon.
    */
-  vector<int> _incoming;
+  vector<int> incoming_;
 
   /**
    * The PDG code for the outgoing baryon.
    */
-  vector<int> _outgoingB;
+  vector<int> outgoingB_;
 
   /**
    * The PDG code for the outgoing meson.
    */
-  vector<int> _outgoingM;
+  vector<int> outgoingM_;
 
   /**
    * The maximum weight.
    */
-  vector<double> _maxweight;
+  vector<double> maxweight_;
 
   /**
    * The couplings for the different modes.
@@ -366,35 +316,35 @@ private:
   /**
    * The first A coupling
    */
-  vector<double> _A1;
+  vector<double> A1_;
 
   /**
    * The second A coupling
    */
-  vector<InvEnergy> _A2;
+  vector<InvEnergy> A2_;
 
   /**
    * The third A coupling
    */
-  vector<InvEnergy2> _A3;
+  vector<InvEnergy2> A3_;
   /**
    * The first B coupling
    */
-  vector<double> _B1;
+  vector<double> B1_;
   /**
    * The second B coupling
    */
-  vector<InvEnergy> _B2;
+  vector<InvEnergy> B2_;
   /**
    * The third B coupling
    */
-  vector<InvEnergy2> _B3;
+  vector<InvEnergy2> B3_;
   //@}
 
   /**
    *  Initial size of the vectors
    */
-  unsigned int _initsize;
+  unsigned int initsize_;
 
 };
 
@@ -438,7 +388,5 @@ struct ClassTraits<Herwig::KornerKramerCharmDecayer>
 /** @endcond */
 
 }
-
-#include "KornerKramerCharmDecayer.icc"
 
 #endif /* HERIWG_KornerKramerCharmDecayer_H */

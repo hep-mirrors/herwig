@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // OniumToOniumPiPiDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,6 +24,13 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void OniumToOniumPiPiDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
+    if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   // Upsilon(3S)->Upsilon(1S) pi pi
   _incoming.push_back(200553);
@@ -31,70 +38,70 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(3.92e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-2.523/MeV2);_imB.push_back( 1.189/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(3S)->Upsilon(2S) pi pi
   _incoming.push_back(200553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(311e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-0.395/MeV2);_imB.push_back( 0.001/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(2S)->Upsilon(1S) pi pi
   _incoming.push_back(100553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(61.4e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back(-0.753/MeV2);_imB.push_back( 0.000/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-0.753/MeV2);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(4S)->Upsilon(1S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(1.77e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back( ZERO);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(4S)->Upsilon(2S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // psi(2s)->psi(1S) pi pi
   _incoming.push_back(100443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(66.2e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back(-0.336/MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-0.336/MeV2);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // psi(3770)->psi(1S) pi pi
   _incoming.push_back(30443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(20.6e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back( ZERO);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Initial size of the vectors
   _initsize=_incoming.size();
   // don'y generate the intermediates in the phase-space
   generateIntermediates(false);
 }
 
-void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
+void OniumToOniumPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the vectors
   unsigned int isize=_incoming.size();
@@ -288,41 +295,44 @@ int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return npi0==2 ? 2*imode+1 : 2*imode;
 }
 
-double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
+double OniumToOniumPiPiDecayer::me2(const int,
 				    const Particle & inpart,
-				    const ParticleVector & decay) const {
+				    const ParticleVector & decay,
+				    MEOption meopt) const {
   useMe();
-  // polarization vector of the incoming onium resonance
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> vin;
-  VectorWaveFunction(vin,rhoin,const_ptr_cast<tPPtr>(&inpart),
- 		     incoming,true,false,vertex);
-  // polarization vector of the outgoing onium resonance
-  vector<LorentzPolarizationVector> vout;
-  VectorWaveFunction(vout,decay[0],outgoing,true,false,vertex);
-  for(unsigned int ix=1;ix<decay.size();++ix) {
-    PPtr myvout = decay[ix];
-    ScalarWaveFunction(myvout,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0));
   }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
+					  outgoing,true,false);
+    for(unsigned int ix=1;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors[1],decay[0],outgoing,false);
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0);
   complex<InvEnergy2> A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
   Energy2 q2  =(decay[1]->momentum()+decay[2]->momentum()).m2();
   Energy2 mpi2=sqr(decay[1]->mass());
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      Complex dota = vin[ix].dot(vout[iy]);
+      Complex dota = _vectors[0][ix].dot(_vectors[1][iy]);
       complex<Energy2> dotb = 
-	(vin[ix]*decay[1]->momentum())*(vout[iy]*decay[2]->momentum())+
-	(vin[ix]*decay[2]->momentum())*(vout[iy]*decay[1]->momentum());
-      newME(ix,iy,0,0)= _coupling[imode()/2]*
+	(_vectors[0][ix]*decay[1]->momentum())*(_vectors[1][iy]*decay[2]->momentum())+
+	(_vectors[0][ix]*decay[2]->momentum())*(_vectors[1][iy]*decay[1]->momentum());
+      ME()(ix,iy,0,0)= _coupling[imode()/2]*
 	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
 	 +C*dotb);
     }
   }
   // matrix element
-  ME(newME);
-  double output=newME.contract(rhoin).real();
+  double output=ME().contract(_rho).real();
   if(imode()%2==1) output*=0.5;
   // test of the matrix element
 //   Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();
@@ -344,53 +354,53 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":Outgoing " << ix << " " 
+      output << "newdef " << name() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "set " << fullName() << ":ReA " << ix << " " 
+      output << "newdef " << name() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImA " << ix << " " 
+      output << "newdef " << name() << ":ImA " << ix << " " 
 	     << _imA[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ReB " << ix << " " 
+      output << "newdef " << name() << ":ReB " << ix << " " 
 	     << _reB[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImB " << ix << " " 
+      output << "newdef " << name() << ":ImB " << ix << " " 
 	     << _imB[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ReC " << ix << " " 
+      output << "newdef " << name() << ":ReC " << ix << " " 
 	     << _reC[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImC " << ix << " " 
+      output << "newdef " << name() << ":ImC " << ix << " " 
 	     << _imC[ix]*MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":Outgoing " << ix << " " 
+      output << "insert " << name() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "insert " << fullName() << ":ReA " << ix << " " 
+      output << "insert " << name() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImA " << ix << " " 
+      output << "insert " << name() << ":ImA " << ix << " " 
 	     << _imA[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ReB " << ix << " " 
+      output << "insert " << name() << ":ReB " << ix << " " 
 	     << _reB[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImB " << ix << " " 
+      output << "insert " << name() << ":ImB " << ix << " " 
 	     << _imB[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ReC " << ix << " " 
+      output << "insert " << name() << ":ReC " << ix << " " 
 	     << _reC[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImC " << ix << " " 
+      output << "insert " << name() << ":ImC " << ix << " " 
 	     << _imC[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(ix<2*_initsize) {
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

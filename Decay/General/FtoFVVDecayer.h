@@ -17,7 +17,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the FtoFVVDecayer class.
+ * The FtoFVVDecayer class provides the general matrix elements for the
+ * decay of a fermion to a fermion and two vector bosons.
  *
  * @see \ref FtoFVVDecayerInterfaces "The interfaces"
  * defined for FtoFVVDecayer.
@@ -28,14 +29,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -96,7 +97,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -134,6 +135,26 @@ private:
    * Store the vector of tensor intermediates
    */
   vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > _ten;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Spinor wavefunctions
+   */
+  mutable vector<SpinorWaveFunction> _fwave;
+
+  /**
+   *  Barred spinor wavefunctions
+   */
+  mutable vector<SpinorBarWaveFunction> _fbwave;
+
+  /**
+   *  Vector wavefunctions
+   */
+  mutable pair<vector<VectorWaveFunction>, vector<VectorWaveFunction> > _vwave;
 };
 
 }

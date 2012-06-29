@@ -5,7 +5,7 @@
 // This is the declaration of the MEee2VV class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -15,12 +15,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEee2VV class.
+ * The MEee2VV class implements the matrix elements for 
+ * \f$e^+e^-\to W^+W^-/|^0Z^0\f$.
  *
  * @see \ref MEee2VVInterfaces "The interfaces"
  * defined for MEee2VV.
  */
-class MEee2VV: public HwME2to2Base {
+class MEee2VV: public HwMEBase {
 
 public:
 
@@ -87,8 +88,12 @@ public:
    * limits on cos(theta).
    */
   virtual double getCosTheta(double cthmin, double cthmax, const double * r);
-  //@}
 
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
+  //@}
 
 public:
 
@@ -119,18 +124,28 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\to f\bar{f} f\bar{f}\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
-   * @param me  Whether or not to calculate the matrix element for spin correlations
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  Polarization vector for the 1st outgoing boson
+   * @param v2  Polarization vector for the 2nd outgoing boson
    */
-  double helicityME(vector<SpinorWaveFunction>    & f1,
-		    vector<SpinorBarWaveFunction> & a1,
-		    vector<VectorWaveFunction>    & v1,
-		    vector<VectorWaveFunction>    & v2,
-		    bool me) const;
+  double WWME(vector<SpinorWaveFunction>    & f1,
+	      vector<SpinorBarWaveFunction> & a1,
+	      vector<VectorWaveFunction>    & v1,
+	      vector<VectorWaveFunction>    & v2) const;
+
+  /**
+   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
+   * @param f1  Spinors for the incoming fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  Polarization vector for the 1st outgoing boson
+   * @param v2  Polarization vector for the 2nd outgoing boson
+   */
+  double ZZME(vector<SpinorWaveFunction>    & f1,
+	      vector<SpinorBarWaveFunction> & a1,
+	      vector<VectorWaveFunction>    & v1,
+	      vector<VectorWaveFunction>    & v2) const;
 
 protected:
 
@@ -159,7 +174,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -185,33 +200,38 @@ private:
   /**
    *   FFPVertex
    */
-  AbstractFFVVertexPtr _vertexFFP;
+  AbstractFFVVertexPtr FFPvertex_;
 
   /**
    *   FFWVertex
    */
-  AbstractFFVVertexPtr _vertexFFW;
+  AbstractFFVVertexPtr FFWvertex_;
 
   /**
    *   FFZVertex
    */
-  AbstractFFVVertexPtr _vertexFFZ;
+  AbstractFFVVertexPtr FFZvertex_;
 
   /**
    *  WWW Vertex
    */ 
-  AbstractVVVVertexPtr _vertexWWW;
+  AbstractVVVVertexPtr WWWvertex_;
   //@}
 
   /**
    *  Processes
    */
-  unsigned int _process;
+  unsigned int process_;
+
+  /**
+   *  Treatment of the the W and Z masses
+   */
+  unsigned int massOption_;
 
   /**
    *  The matrix element
    */
-  ProductionMatrixElement _me;
+  mutable ProductionMatrixElement me_;
 };
 
 }
@@ -227,7 +247,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2VV,1> {
   /** Typedef of the first base class of MEee2VV. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

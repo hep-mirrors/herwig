@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2HiggsJet.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -30,6 +30,14 @@ using namespace Herwig;
 
 const Complex MEPP2HiggsJet::_epsi = Complex(0.,-1.e-20);
 
+IBPtr MEPP2HiggsJet::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEPP2HiggsJet::fullclone() const {
+  return new_ptr(*this);
+}
+
 unsigned int MEPP2HiggsJet::orderInAlphaS() const {
   return 3;
 }
@@ -57,7 +65,7 @@ void MEPP2HiggsJet::Init() {
     ("The MEPP2HiggsJet class implements the matrix elements for"
      " Higgs+Jet production in hadron-hadron collisions.",
      "The theoretical calculations of \\cite{Baur:1989cm} and \\cite{Ellis:1987xu}"
-     "were used for the Higgs+jet matrix element in hadron-hadron collisions.",
+     " were used for the Higgs+jet matrix element in hadron-hadron collisions.",
      "\\bibitem{Baur:1989cm} U.~Baur and E.~W.~N.~Glover,"
      "Nucl.\\ Phys.\\ B {\\bf 339} (1990) 38.\n"
      "\\bibitem{Ellis:1987xu} R.~K.~Ellis, I.~Hinchliffe, M.~Soldate and "
@@ -114,13 +122,13 @@ void MEPP2HiggsJet::Init() {
      "Only include the incoming gg subprocess",
      4);
 
-  static Parameter<MEPP2HiggsJet,unsigned int> interfaceMinimumInLoop
+  static Parameter<MEPP2HiggsJet,int> interfaceMinimumInLoop
     ("MinimumInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &MEPP2HiggsJet::_minloop, 6, 4, 6,
      false, false, Interface::limited);
 
-  static Parameter<MEPP2HiggsJet,unsigned int> interfaceMaximumInLoop
+  static Parameter<MEPP2HiggsJet,int> interfaceMaximumInLoop
     ("MaximumInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &MEPP2HiggsJet::_maxloop, 6, 4, 6,
@@ -149,22 +157,22 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
   Energy e = sqrt(sHat())/2.0;
   // generate the mass of the higgs boson
   Energy2 mhmax2 = sHat()-4.*ptmin*e;
-  Energy2 mhmin2 =0.*GeV2;
+  Energy2 mhmin2 =ZERO;
   if(mhmax2<=mhmin2) return false;
-  double rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
-  double rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
+  double rhomin = atan2((mhmin2-sqr(_mh)), _mh*_wh);
+  double rhomax = atan2((mhmax2-sqr(_mh)), _mh*_wh);
   Energy mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
   // assign masses
   if(mePartonData()[2]->id()!=ParticleID::h0) {
-    meMomenta()[2].setMass(0.*GeV);
+    meMomenta()[2].setMass(ZERO);
     meMomenta()[3].setMass(mh);
   }
   else {
-    meMomenta()[3].setMass(0.*GeV);
+    meMomenta()[3].setMass(ZERO);
     meMomenta()[2].setMass(mh);
   }
 
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -182,17 +190,17 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
   Energy2 pq   = 2.0*e*q;
   double ctmin = -1.0,ctmax = 1.0;
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-  if ( ptmin > 0.0*GeV ) {
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -386,7 +394,7 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for ( int ix=_minloop; ix<=_maxloop; ++ix ) {
     // full mass dependance
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -409,10 +417,10 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   complex<Energy2> fdotp;
   complex<Energy> epsdot[2];
   Complex diag;
-  Lorentz5Momentum ps(fin[0].getMomentum()+ain[0].getMomentum());
+  Lorentz5Momentum ps(fin[0].momentum()+ain[0].momentum());
   ps.rescaleMass();
   for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gout[ix].wave().dot(ps);}
-  Energy2 denom(-ps*gout[0].getMomentum());
+  Energy2 denom(-ps*gout[0].momentum());
   LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
@@ -420,7 +428,7 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
       // compute the fermion current
       atemp=ain[ihel2].wave();
       fcurrent=UnitRemoval::E*fin[ihel1].wave().vectorCurrent(atemp);
-      fdotp = -(fcurrent.dot(gout[0].getMomentum()));
+      fdotp = -(fcurrent.dot(gout[0].momentum()));
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
 	diag=A5c*(fcurrent.dot(gout[ghel].wave())
@@ -455,7 +463,7 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for(int ix=_minloop;ix<=_maxloop;++ix) {
       if(_massopt==0) {
 	Energy2 mf2=sqr(getParticleData(ix)->mass());
 	A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
@@ -476,10 +484,10 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   complex<Energy2> fdotp;
   complex<Energy> epsdot[2];
   Complex diag;
-  Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
+  Lorentz5Momentum pu(fin[0].momentum()+fout[0].momentum());
   pu.rescaleMass();
   for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave().dot(pu);}
-  Energy2 denom(pu*gin[0].getMomentum());
+  Energy2 denom(pu*gin[0].momentum());
   LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
@@ -487,7 +495,7 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
       // compute the fermion current
       atemp=fout[ohel].wave();
       fcurrent=UnitRemoval::E*fin[ihel].wave().vectorCurrent(atemp);
-      fdotp=fcurrent.dot(gin[0].getMomentum());
+      fdotp=fcurrent.dot(gin[0].momentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
 	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
@@ -520,7 +528,7 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for(int ix=_minloop;ix<=_maxloop;++ix) {
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
@@ -541,10 +549,10 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   complex<Energy2> fdotp;
   complex<Energy> epsdot[2];
   Complex diag;
-  Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
+  Lorentz5Momentum pu(fin[0].momentum()+fout[0].momentum());
   pu.rescaleMass();
   for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave().dot(pu);}
-  Energy2 denom(pu*gin[0].getMomentum());
+  Energy2 denom(pu*gin[0].momentum());
   LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
@@ -552,7 +560,7 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
       // compute the fermion current
       atemp=fin[ihel].wave();
       fcurrent=UnitRemoval::E*fout[ohel].wave().vectorCurrent(atemp);
-      fdotp=fcurrent.dot(gin[0].getMomentum());
+      fdotp=fcurrent.dot(gin[0].momentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
 	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
@@ -625,7 +633,7 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    // calculate the loop functions
    Complex A4stu(0.),A2stu(0.),A2tsu(0.),A2ust(0.);
    Complex A5s(0.),A5t(0.),A5u(0.);
-   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+   for(int ix=_minloop;ix<=_maxloop;++ix) {
      Energy2 mf2=sqr(getParticleData(ix)->mass());
      // loop functions
      if(_massopt==0) {
@@ -654,18 +662,18 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    // compute the dot products for the matrix element
    complex<InvEnergy> eps[3][4][2];
    Energy2 pdot[4][4];
-   pdot[0][0]=0.*GeV2;
-   pdot[0][1]= g1[0].getMomentum()*g2[0].getMomentum();
-   pdot[0][2]=-1.*g1[0].getMomentum()*g4[0].getMomentum();
-   pdot[0][3]=-1.*g1[0].getMomentum()*hout.getMomentum();
+   pdot[0][0]=ZERO;
+   pdot[0][1]= g1[0].momentum()*g2[0].momentum();
+   pdot[0][2]=-1.*g1[0].momentum()*g4[0].momentum();
+   pdot[0][3]=-1.*g1[0].momentum()*hout.momentum();
    pdot[1][0]= pdot[0][1];
-   pdot[1][1]= 0.*GeV2;
-   pdot[1][2]=-1.*g2[0].getMomentum()*g4[0].getMomentum();
-   pdot[1][3]=-1.*g2[0].getMomentum()*hout.getMomentum();
+   pdot[1][1]= ZERO;
+   pdot[1][2]=-1.*g2[0].momentum()*g4[0].momentum();
+   pdot[1][3]=-1.*g2[0].momentum()*hout.momentum();
    pdot[2][0]= pdot[0][2];
    pdot[2][1]= pdot[1][2];
-   pdot[2][2]= 0.*GeV2;
-   pdot[2][3]= g4[0].getMomentum()*hout.getMomentum();
+   pdot[2][2]= ZERO;
+   pdot[2][3]= g4[0].momentum()*hout.momentum();
    pdot[3][0]=pdot[0][3];
    pdot[3][1]=pdot[1][3];
    pdot[3][2]=pdot[2][3];
@@ -673,17 +681,17 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    for(unsigned int ix=0;ix<2;++ix)
      {
        eps[0][0][ix]=InvEnergy();
-       eps[0][1][ix]=g1[ix].wave().dot(g2[0].getMomentum())/pdot[0][1];
-       eps[0][2][ix]=-1.*g1[ix].wave().dot(g4[0].getMomentum())/pdot[0][2];
-       eps[0][3][ix]=-1.*g1[ix].wave().dot(hout.getMomentum())/ pdot[0][3];
-       eps[1][0][ix]=g2[ix].wave().dot(g1[0].getMomentum())/    pdot[1][0];
+       eps[0][1][ix]=g1[ix].wave().dot(g2[0].momentum())/pdot[0][1];
+       eps[0][2][ix]=-1.*g1[ix].wave().dot(g4[0].momentum())/pdot[0][2];
+       eps[0][3][ix]=-1.*g1[ix].wave().dot(hout.momentum())/ pdot[0][3];
+       eps[1][0][ix]=g2[ix].wave().dot(g1[0].momentum())/    pdot[1][0];
        eps[1][1][ix]=InvEnergy();
-       eps[1][2][ix]=-1.*g2[ix].wave().dot(g4[0].getMomentum())/pdot[1][2];
-       eps[1][3][ix]=-1.*g2[ix].wave().dot(hout.getMomentum())/ pdot[1][3];
-       eps[2][0][ix]=g4[ix].wave().dot(g1[0].getMomentum())/    pdot[2][0];
-       eps[2][1][ix]=g4[ix].wave().dot(g2[0].getMomentum())/    pdot[2][1];
+       eps[1][2][ix]=-1.*g2[ix].wave().dot(g4[0].momentum())/pdot[1][2];
+       eps[1][3][ix]=-1.*g2[ix].wave().dot(hout.momentum())/ pdot[1][3];
+       eps[2][0][ix]=g4[ix].wave().dot(g1[0].momentum())/    pdot[2][0];
+       eps[2][1][ix]=g4[ix].wave().dot(g2[0].momentum())/    pdot[2][1];
        eps[2][2][ix]=InvEnergy();
-       eps[2][3][ix]=-1.*g4[ix].wave().dot(hout.getMomentum())/     pdot[2][3];
+       eps[2][3][ix]=-1.*g4[ix].wave().dot(hout.momentum())/     pdot[2][3];
      }
    // prefactors
    using Constants::pi;
@@ -777,7 +785,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     VectorWaveFunction(g1,hard[0],incoming,false,true,true);
     VectorWaveFunction(g2,hard[1],incoming,false,true,true);
     VectorWaveFunction(g4,hard[3],outgoing,true ,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g1[1]=g1[2];g2[1]=g2[2];g4[1]=g4[2];
     ggME(g1,g2,hout,g4,true);
   }
@@ -789,7 +797,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorWaveFunction(    qin,hard[0],incoming,false,true);
     VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
     SpinorBarWaveFunction(qout,hard[3],outgoing,true ,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g2[1]=g2[2];
     qgME(qin,g2,hout,qout,true); 
   }
@@ -801,7 +809,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorBarWaveFunction( qin,hard[0],incoming,false,true);
     VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
     SpinorWaveFunction(   qout,hard[3],outgoing,true ,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g2[1]=g2[2];
     qbargME(qin,g2,hout,qout,true); 
   }
@@ -813,7 +821,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorWaveFunction(    q  ,hard[0],incoming,false,true);
     SpinorBarWaveFunction(qbar,hard[1],incoming,false,true);
     VectorWaveFunction(     g4,hard[3],outgoing,true ,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g4[1]=g4[2];
     qqbarME(q,qbar,hout,g4,true); 
   }
@@ -825,8 +833,8 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    dynamic_ptr_cast<ThePEG::Helicity::SpinfoPtr>(hard[ix]->spinInfo())->
-      setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->
+      productionVertex(hardvertex);
   }
 }
 
@@ -834,17 +842,17 @@ int MEPP2HiggsJet::nDim() const {
   return 2;
 }
 
-void MEPP2HiggsJet::doinit() throw(InitException) {
+void MEPP2HiggsJet::doinit() {
   ME2to2Base::doinit();
   tcPDPtr h0=getParticleData(ParticleID::h0);
   _mh = h0->mass();
   _wh = h0->generateWidth(_mh);
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(h0->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEPP2HiggsJet::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << "the mass generator must be an instance of the GenericMassGenerator class"
     << Exception::runerror;
 }
 
@@ -860,7 +868,7 @@ CrossSection MEPP2HiggsJet::dSigHatDR() const {
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
   else {
-    bwfact = _hmass->BreitWignerWeight(moff,0);
+    bwfact = _hmass->BreitWignerWeight(moff);
   }
   return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc)*
     (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)*bwfact;

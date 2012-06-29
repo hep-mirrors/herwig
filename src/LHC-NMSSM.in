@@ -46,53 +46,6 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # spectrum file is an example using NMHDecay-1.2.1
 setup NMSSM/Model NMSSM.spc
 
-# If the file contains a decay table 
-# set this interface to 'No'
-set TwoBodyDC:CreateDecayModes Yes
-
-# Particles that are specified in the 'DecayParticles' 
-# interface will have spin correlations included
-# when they are decayed. If a decay table in SLHA
-# format is not available then set the above 
-# 'CreateDecayModes' interface to 'Yes' and the
-# particles list here will have decay modes
-# created also.
-insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
-insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
-insert NewModel:DecayParticles 2 /Herwig/Particles/~s_L
-insert NewModel:DecayParticles 3 /Herwig/Particles/~c_L
-insert NewModel:DecayParticles 4 /Herwig/Particles/~b_1
-insert NewModel:DecayParticles 5 /Herwig/Particles/~t_1
-insert NewModel:DecayParticles 6 /Herwig/Particles/~d_R
-insert NewModel:DecayParticles 7 /Herwig/Particles/~u_R
-insert NewModel:DecayParticles 8 /Herwig/Particles/~s_R
-insert NewModel:DecayParticles 9 /Herwig/Particles/~c_R
-insert NewModel:DecayParticles 10 /Herwig/Particles/~b_2
-insert NewModel:DecayParticles 11 /Herwig/Particles/~t_2
-insert NewModel:DecayParticles 12 /Herwig/Particles/~e_L-
-insert NewModel:DecayParticles 13 /Herwig/Particles/~nu_eL
-insert NewModel:DecayParticles 14 /Herwig/Particles/~mu_L-
-insert NewModel:DecayParticles 15 /Herwig/Particles/~nu_muL
-insert NewModel:DecayParticles 16 /Herwig/Particles/~tau_1-
-insert NewModel:DecayParticles 17 /Herwig/Particles/~nu_tauL
-insert NewModel:DecayParticles 18 /Herwig/Particles/~e_R-
-insert NewModel:DecayParticles 19 /Herwig/Particles/~mu_R-
-insert NewModel:DecayParticles 20 /Herwig/Particles/~tau_2-
-insert NewModel:DecayParticles 21 /Herwig/Particles/~g
-insert NewModel:DecayParticles 22 /Herwig/Particles/~chi_10
-insert NewModel:DecayParticles 23 /Herwig/Particles/~chi_20
-insert NewModel:DecayParticles 24 /Herwig/Particles/~chi_30
-insert NewModel:DecayParticles 25 /Herwig/Particles/~chi_40
-insert NewModel:DecayParticles 26 /Herwig/Particles/~chi_50
-insert NewModel:DecayParticles 27 /Herwig/Particles/~chi_1+
-insert NewModel:DecayParticles 28 /Herwig/Particles/~chi_2+
-insert NewModel:DecayParticles 29 /Herwig/Particles/h0
-insert NewModel:DecayParticles 30 /Herwig/Particles/H0
-insert NewModel:DecayParticles 31 /Herwig/Particles/H30
-insert NewModel:DecayParticles 32 /Herwig/Particles/A0
-insert NewModel:DecayParticles 33 /Herwig/Particles/A20
-insert NewModel:DecayParticles 34 /Herwig/Particles/H+
-
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
@@ -100,7 +53,6 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 

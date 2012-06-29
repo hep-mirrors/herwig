@@ -6,6 +6,8 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "LHModel.fh"
 
 namespace Herwig {
@@ -25,7 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LHModel();
+  LHModel();
 
 public:
 
@@ -62,57 +64,77 @@ public:
   /**
    *  The \f$\lambda_1\f$ top Yukawa coupling
    */
-  inline double lambda1() const;
+  double lambda1() const {return _lambda1;}
 
   /**
    *  The \f$\lambda_2\f$ top Yukawa coupling
    */
-  inline double lambda2() const;
+  double lambda2() const {return _lambda2;}
 
   /**
    *  The sine of the \f$\theta\f$ mixing angle
    */
-  inline double sinTheta() const;
+  double sinTheta() const {return _s;}
 
   /**
    *  The cosine of the \f$\theta\f$ mixing angle
    */
-  inline double cosTheta() const;
+  double cosTheta() const {return _c;}
 
   /**
    *  The sine of the \f$\theta'\f$ mixing angle
    */
-  inline double sinThetaPrime() const;
+  double sinThetaPrime() const {return _sp;}
 
   /**
    *  The cosine of the \f$\theta'\f$ mixing angle
    */
-  inline double cosThetaPrime() const;
+  double cosThetaPrime() const {return _cp;}
 
   /**
    *  The sine of the Higgs mixing angle
    */
-  inline double sinTheta0() const;
+  double sinTheta0() const {return _s0;}
 
   /**
    *  The cosine of the Higgs mixing angle
    */
-  inline double cosTheta0() const;
+  double cosTheta0() const {return _c0;}
+
+  /**
+   *  The sine of the pseudoscalar Higgs mixing angle
+   */
+  double sinThetaP() const {return _sP;}
+
+  /**
+   *  The cosine of the pseudoscalar Higgs mixing angle
+   */
+  double cosThetaP() const {return _cP;}
+
+  /**
+   *  The sine of the charged Higgs mixing angle
+   */
+  double sinThetaPlus() const {return _sPlus;}
+
+  /**
+   *  The cosine of the charged Higgs mixing angle
+   */
+  double cosThetaPlus() const {return _cPlus;}
 
   /**
    *  The vacuum expection value
    */
-  inline Energy vev() const;
+  Energy vev() const {return _v;}
 
   /**
    *  The vacuum expection value
    */
-  inline Energy vevPrime() const;
+  Energy vevPrime() const {return _v*_vacratio;}
 
   /**
    *  The \f$f\f$ scale of the non-linear \f$\sigma\f$-model
    */
-  inline Energy f() const;
+  Energy f() const {return _f;}
   //@}
 
 protected:
@@ -130,13 +152,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -148,7 +170,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -171,16 +193,6 @@ private:
    *  Parameters for the model
    */
   //@{
-  /**
-   *  The \f$g\f$ coupling
-   */
-  double _g;
-
-  /**
-   *  the \f$g'\f$ coupling
-   */
-  double _gp;
-
   /**
    *  The value of \f$\cot\theta\f$ for the mixing with the \f$g\f$ coupling 
    */
@@ -250,8 +262,37 @@ private:
    *  The cosine of the Higgs mixing angle
    */
   double _c0;
+
+  /**
+   *  The sine of the pseudoscalar Higgs mixing angle
+   */
+  double _sP;
+
+  /**
+   *  The cosine of the pseudoscalar Higgs mixing angle
+   */
+  double _cP;
+
+  /**
+   *  The sine of the charged Higgs mixing angle
+   */
+  double _sPlus;
+
+  /**
+   *  The cosine of the charged Higgs mixing angle
+   */
+  double _cPlus;
   //@}
 
+  /**
+   *  Additional vertices
+   */
+  //@{
+  /**
+   *  WHH Vertex
+   */
+  AbstractVSSVertexPtr WHHVertex_;
+  //@}
 };
 
 }
@@ -290,7 +331,5 @@ struct ClassTraits<Herwig::LHModel>
 /** @endcond */
 
 }
-
-#include "LHModel.icc"
 
 #endif /* HERWIG_LHModel_H */

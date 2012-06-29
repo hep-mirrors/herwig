@@ -3,48 +3,29 @@ pkglib_LTLIBRARIES = HwFormFactors.la
 
 libHwFormFactor_la_SOURCES = \
 BaryonFormFactor.cc BaryonFormFactor.fh \
-BaryonFormFactor.h BaryonFormFactor.icc \
+BaryonFormFactor.h \
 ScalarFormFactor.cc ScalarFormFactor.fh \
-ScalarFormFactor.h ScalarFormFactor.icc \
-BtoSGammaHadronicMass.h BtoSGammaHadronicMass.icc \
+ScalarFormFactor.h \
+BtoSGammaHadronicMass.h \
 BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
 
-HwFormFactors_la_LDFLAGS = -module -version-info 3:0:0
+HwFormFactors_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
 HwFormFactors_la_SOURCES = \
-BallZwickyScalarFormFactor.cc BallZwickyScalarFormFactor.fh \
-BallZwickyScalarFormFactor.h BallZwickyScalarFormFactor.icc \
-BallZwickyVectorFormFactor.cc BallZwickyVectorFormFactor.fh \
-BallZwickyVectorFormFactor.h BallZwickyVectorFormFactor.icc \
-BaryonSimpleFormFactor.cc BaryonSimpleFormFactor.fh \
-BaryonSimpleFormFactor.h BaryonSimpleFormFactor.icc \
-BaryonThreeQuarkModelFormFactor.cc BaryonThreeQuarkModelFormFactor.fh \
-BaryonThreeQuarkModelFormFactor.h BaryonThreeQuarkModelFormFactor.icc \
-ChengHeavyBaryonFormFactor.cc ChengHeavyBaryonFormFactor.fh \
-ChengHeavyBaryonFormFactor.h ChengHeavyBaryonFormFactor.icc \
-ISGW2FormFactor.cc ISGW2FormFactor.fh \
-ISGW2FormFactor.h ISGW2FormFactor.icc \
-ISGWFormFactor.cc ISGWFormFactor.fh \
-ISGWFormFactor.h ISGWFormFactor.icc \
+BallZwickyScalarFormFactor.cc BallZwickyScalarFormFactor.h \
+BallZwickyVectorFormFactor.cc BallZwickyVectorFormFactor.h \
+BaryonSimpleFormFactor.cc     BaryonSimpleFormFactor.h \
+BaryonThreeQuarkModelFormFactor.cc BaryonThreeQuarkModelFormFactor.h \
+ChengHeavyBaryonFormFactor.cc ChengHeavyBaryonFormFactor.h \
+ISGW2FormFactor.cc ISGW2FormFactor.h \
+ISGWFormFactor.cc ISGWFormFactor.h \
 LambdabExcitedLambdacSumRuleFormFactor.cc \
-LambdabExcitedLambdacSumRuleFormFactor.fh \
 LambdabExcitedLambdacSumRuleFormFactor.h \
-LambdabExcitedLambdacSumRuleFormFactor.icc \
-LightBaryonQuarkModelFormFactor.cc LightBaryonQuarkModelFormFactor.fh \
-LightBaryonQuarkModelFormFactor.h LightBaryonQuarkModelFormFactor.icc \
-SingletonFormFactor.cc SingletonFormFactor.fh \
-SingletonFormFactor.h SingletonFormFactor.icc \
-WSBFormFactor.cc WSBFormFactor.fh \
-WSBFormFactor.h WSBFormFactor.icc \
-KiselevBcFormFactor.cc KiselevBcFormFactor.fh \
-KiselevBcFormFactor.h KiselevBcFormFactor.icc \
+LightBaryonQuarkModelFormFactor.cc LightBaryonQuarkModelFormFactor.h \
+SingletonFormFactor.cc SingletonFormFactor.h\
+WSBFormFactor.cc WSBFormFactor.h\
+KiselevBcFormFactor.cc KiselevBcFormFactor.h\
 MelikhovFormFactor.cc MelikhovFormFactor.h \
-MelikhovFormFactor.fh MelikhovFormFactor.icc \
-MelikhovStechFormFactor.cc MelikhovStechFormFactor.fh \
-MelikhovStechFormFactor.h MelikhovStechFormFactor.icc \
-BtoSGammaFlatEnergy.h BtoSGammaFlatEnergy.icc \
-BtoSGammaFlatEnergy.cc BtoSGammaFlatEnergy.fh \
-BtoSGammaKagan.h BtoSGammaKagan.icc \
-BtoSGammaKagan.cc BtoSGammaKagan.fh\
-HQETFormFactor.h HQETFormFactor.icc \
-HQETFormFactor.cc HQETFormFactor.fh
-
+MelikhovStechFormFactor.cc MelikhovStechFormFactor.h \
+BtoSGammaFlatEnergy.h BtoSGammaFlatEnergy.cc \
+BtoSGammaKagan.h BtoSGammaKagan.cc\
+HQETFormFactor.h HQETFormFactor.cc

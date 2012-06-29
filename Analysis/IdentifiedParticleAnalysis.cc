@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // IdentifiedParticleAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,7 +24,7 @@ using namespace Herwig;
 
 int IdentifiedParticleAnalysis::getFlavour(const tPVector &pv) {
   tPVector::const_iterator it;
-  for(it = pv.begin(); it!=pv.end(); it++) 
+  for(it = pv.begin(); it!=pv.end(); ++it) 
     if (abs((*it)->id()) < 7) break; 
   return abs((*it)->id());
 }
@@ -164,27 +164,21 @@ analyze(tEventPtr event, long ieve, int loop, int state) {
       break;
     case ParticleID::pi0:
       _xepi0 ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xipi0 ->addWeighted(-log(xp),event->weight());
     case ParticleID::eta:
       _xeeta ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xieta ->addWeighted(-log(xp),event->weight());
     case ParticleID::etaprime:
       _xeetap ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xietap ->addWeighted(-log(xp),event->weight());
     case ParticleID::rhoplus:
       _xerhop ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xirhop ->addWeighted(-log(xp),event->weight());
     case ParticleID::omega:
       _xeomega ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xiomega ->addWeighted(-log(xp),event->weight());
     case ParticleID::a_0plus:
       _xea_0p ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xia_0p ->addWeighted(-log(xp),event->weight());
     case ParticleID::K0:
     case ParticleID::K_S0:
@@ -202,10 +196,103 @@ void IdentifiedParticleAnalysis::Init() {
 
   static ClassDocumentation<IdentifiedParticleAnalysis> documentation
     ("The IdentifiedParticleAnalysis class compares identified"
-     " particle spectra with Z pole data");
+     " particle spectra with Z pole data",
+     "The LEP IdentifiedParticle analysis uses data from"
+     "\\cite{Akers:1994ez,Alexander:1995gq,Alexander:1996qj,Ackerstaff:1998ue,Ackerstaff:1997kj,Abbiendi:2000cv,Ackerstaff:1998ap,Acton:1991aa,Abreu:1998nn,Abreu:1993mn,Barate:1999bg,Barate:1996fi,Abe:1998zs}.",
+     "%\\cite{Akers:1994ez}\n"
+     "\\bibitem{Akers:1994ez}\n"
+     "  R.~Akers {\\it et al.}  [OPAL Collaboration],\n"
+     "   ``Measurement of the production rates of charged hadrons in e+ e-\n"
+     "  %annihilation at the Z0,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 63}, 181 (1994).\n"
+     "  %%CITATION = ZEPYA,C63,181;%%\n"
+     "%\\cite{Alexander:1995gq}\n"
+     "\\bibitem{Alexander:1995gq}\n"
+     "  G.~Alexander {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``Delta++ production in hadronic Z0 decays,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 358}, 162 (1995).\n"
+     "  %%CITATION = PHLTA,B358,162;%%\n"
+     "%\\cite{Alexander:1996qj}\n"
+     "\\bibitem{Alexander:1996qj}\n"
+     "  G.~Alexander {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``Strange baryon production in hadronic Z0 decays,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 73}, 569 (1997).\n"
+     "  %%CITATION = ZEPYA,C73,569;%%\n"
+     "%\\cite{Ackerstaff:1998ue}\n"
+     "\\bibitem{Ackerstaff:1998ue}\n"
+     "  K.~Ackerstaff {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``Production of f0(980), f2(1270) and Phi(1020) in hadronic Z0 decay,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 4}, 19 (1998)\n"
+     "  [arXiv:hep-ex/9802013].\n"
+     "  %%CITATION = EPHJA,C4,19;%%\n"
+     "%\\cite{Ackerstaff:1997kj}\n"
+     "\\bibitem{Ackerstaff:1997kj}\n"
+     "  K.~Ackerstaff {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``Spin alignment of leading K*(892)0 mesons in hadronic Z0 decays,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 412}, 210 (1997)\n"
+     "  [arXiv:hep-ex/9708022].\n"
+     "  %%CITATION = PHLTA,B412,210;%%\n"
+     "%\\cite{Abbiendi:2000cv}\n"
+     "\\bibitem{Abbiendi:2000cv}\n"
+     "  G.~Abbiendi {\\it et al.}  [OPAL Collaboration],\n"
+     "   ``Multiplicities of pi0, eta, K0 and of charged particles in quark and  gluon\n"
+     "  %jets,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 17}, 373 (2000)\n"
+     "  [arXiv:hep-ex/0007017].\n"
+     "  %%CITATION = EPHJA,C17,373;%%\n"
+     "%\\cite{Ackerstaff:1998ap}\n"
+     "\\bibitem{Ackerstaff:1998ap}\n"
+     "  K.~Ackerstaff {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``Photon and light meson production in hadronic Z0 decays,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 5}, 411 (1998)\n"
+     "  [arXiv:hep-ex/9805011].\n"
+     "  %%CITATION = EPHJA,C5,411;%%\n"
+     "%\\cite{Acton:1991aa}\n"
+     "\\bibitem{Acton:1991aa}\n"
+     "  P.~D.~Acton {\\it et al.}  [OPAL Collaboration],\n"
+     "  %``A Study of charged particle multiplicities in hadronic decays of the Z0,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 53}, 539 (1992).\n"
+     "  %%CITATION = ZEPYA,C53,539;%%\n"
+     "%\\cite{Abreu:1998nn}\n"
+     "\\bibitem{Abreu:1998nn}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "   ``Measurement of inclusive rho0, f0(980), f2(1270), K*2(1430)0  and f\'2(1525)\n"
+     "  %production in Z0 decays,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 449}, 364 (1999).\n"
+     "  %%CITATION = PHLTA,B449,364;%%\n"
+     "%\\cite{Abreu:1993mn}\n"
+     "\\bibitem{Abreu:1993mn}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "  %``A Measurement of D meson production in Z0 hadronic decays,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 59}, 533 (1993)\n"
+     "  [Erratum-ibid.\\  C {\\bf 65}, 709 (1995)].\n"
+     "  %%CITATION = ZEPYA,C59,533;%%\n"
+     "%\\cite{Barate:1999bg}\n"
+     "\\bibitem{Barate:1999bg}\n"
+     "  R.~Barate {\\it et al.}  [ALEPH Collaboration],\n"
+     "  %``Study of charm production in Z decays,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 16}, 597 (2000)\n"
+     "  [arXiv:hep-ex/9909032].\n"
+     "  %%CITATION = EPHJA,C16,597;%%\n"
+     "%\\cite{Barate:1996fi}\n"
+     "\\bibitem{Barate:1996fi}\n"
+     "  R.~Barate {\\it et al.}  [ALEPH Collaboration],\n"
+     "  %``Studies of quantum chromodynamics with the ALEPH detector,''\n"
+     "  Phys.\\ Rept.\\  {\\bf 294}, 1 (1998).\n"
+     "  %%CITATION = PRPLC,294,1;%%\n"
+     "%\\cite{Abe:1998zs}\n"
+     "\\bibitem{Abe:1998zs}\n"
+     "  K.~Abe {\\it et al.}  [SLD Collaboration],\n"
+     "   ``Production of pi+, K+, K0, K*0, Phi, p and Lambda0 in hadronic Z0\n"
+     "  %decays,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 59}, 052001 (1999)\n"
+     "  [arXiv:hep-ex/9805029].\n"
+     "  %%CITATION = PHRVA,D59,052001;%%\n"
+     );
 }
 
 void IdentifiedParticleAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() 
     + string("-") + name() + string(".top");

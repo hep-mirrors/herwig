@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,6 +22,13 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void VectorMesonCurrent::doinit() {
+  unsigned int isize=numberOfModes();
+  if(_id.size()!=isize||_decay_constant.size()!=isize)
+    {throw InitException() << "Inconsistent parameters in VectorMesonCurrent::doinit()"
+			   << Exception::abortnow;}
+  WeakDecayCurrent::doinit();
+}
 VectorMesonCurrent::VectorMesonCurrent()  {
   _id.push_back(213);_decay_constant.push_back(0.1764*GeV2);
   addDecayMode(2,-1);
@@ -129,11 +136,20 @@ tPDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 }
 
 vector<LorentzPolarizationVectorE> 
-VectorMesonCurrent::current(bool vertex, const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay) const {
+VectorMesonCurrent::current(const int imode, const int, 
+			    Energy & scale,const ParticleVector & decay,
+			    DecayIntegrator::MEOption meopt) const {
+  // set up the spin information for the particle and calculate the wavefunctions
+  vector<LorentzPolarizationVector> temp;
+  VectorWaveFunction::
+    calculateWaveFunctions(temp,decay[0],outgoing,false);
+  if(meopt==DecayIntegrator::Terminate) {
+    VectorWaveFunction::constructSpinInfo(temp,decay[0],
+					  outgoing,true,false);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   scale=decay[0]->mass();
   // polarization vector
-  vector<LorentzPolarizationVector> temp;
   Energy fact(_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
@@ -142,8 +158,6 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int,
     fact *= sqrt(0.5);
     if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
   }
-  // set up the spin information for the particle and calculate the wavefunctions
-  VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
   // normalise the current
   vector<LorentzPolarizationVectorE> returnval(3);
   for(unsigned int ix=0;ix<3;++ix) {
@@ -176,19 +190,19 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout) {
 void VectorMesonCurrent::dataBaseOutput(ofstream & output,
 					bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::VectorMesonCurrent " << fullName() 
+  if(create) output << "create Herwig::VectorMesonCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":ID " << ix 
+      output << "newdef " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << fullName() << ":Decay_Constant " << ix 
+      output << "newdef " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":ID " << ix 
+      output << "insert " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "insert " << fullName() << ":Decay_Constant " << ix 
+      output << "insert " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
   }

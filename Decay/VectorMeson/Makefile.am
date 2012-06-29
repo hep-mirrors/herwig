@@ -1,26 +1,17 @@
 pkglib_LTLIBRARIES = HwVMDecay.la
 
 HwVMDecay_la_SOURCES = \
-a1ThreePionCLEODecayer.cc a1ThreePionCLEODecayer.h a1ThreePionCLEODecayer.icc \
-a1SimpleDecayer.cc a1SimpleDecayer.h \
-a1SimpleDecayer.icc a1SimpleDecayer.fh\
-a1ThreePionDecayer.cc a1ThreePionDecayer.h a1ThreePionDecayer.icc \
-PVectorMesonVectorPScalarDecayer.cc PVectorMesonVectorPScalarDecayer.fh \
-PVectorMesonVectorPScalarDecayer.h PVectorMesonVectorPScalarDecayer.icc \
-VectorMeson2FermionDecayer.cc VectorMeson2FermionDecayer.h \
-VectorMeson2FermionDecayer.icc VectorMeson2MesonDecayer.cc \
-VectorMeson2MesonDecayer.h VectorMeson2MesonDecayer.icc \
-VectorMeson3PionDecayer.cc VectorMeson3PionDecayer.h \
-VectorMeson3PionDecayer.icc \
+a1ThreePionCLEODecayer.cc            a1ThreePionCLEODecayer.h \
+a1SimpleDecayer.cc                   a1SimpleDecayer.h\
+a1ThreePionDecayer.cc                a1ThreePionDecayer.h \
+PVectorMesonVectorPScalarDecayer.cc  PVectorMesonVectorPScalarDecayer.h \
+VectorMeson2FermionDecayer.cc        VectorMeson2FermionDecayer.h \
+VectorMeson2MesonDecayer.cc          VectorMeson2MesonDecayer.h \
+VectorMeson3PionDecayer.cc           VectorMeson3PionDecayer.h \
 VectorMesonPScalarFermionsDecayer.cc VectorMesonPScalarFermionsDecayer.h \
-VectorMesonPScalarFermionsDecayer.icc VectorMesonPVectorPScalarDecayer.cc \
-VectorMesonPVectorPScalarDecayer.fh VectorMesonPVectorPScalarDecayer.h \
-VectorMesonPVectorPScalarDecayer.icc VectorMesonVectorPScalarDecayer.cc \
-VectorMesonVectorPScalarDecayer.h VectorMesonVectorPScalarDecayer.icc \
-VectorMesonVectorScalarDecayer.cc VectorMesonVectorScalarDecayer.fh \
-VectorMesonVectorScalarDecayer.h VectorMesonVectorScalarDecayer.icc \
-VectorMesonVectorVectorDecayer.cc VectorMesonVectorVectorDecayer.fh \
-VectorMesonVectorVectorDecayer.h VectorMesonVectorVectorDecayer.icc \
-OniumToOniumPiPiDecayer.cc OniumToOniumPiPiDecayer.fh \
-OniumToOniumPiPiDecayer.h OniumToOniumPiPiDecayer.icc
-HwVMDecay_la_LDFLAGS = -module -version-info 3:0:0
+VectorMesonPVectorPScalarDecayer.cc  VectorMesonPVectorPScalarDecayer.h \
+VectorMesonVectorPScalarDecayer.cc   VectorMesonVectorPScalarDecayer.h  \
+VectorMesonVectorScalarDecayer.cc    VectorMesonVectorScalarDecayer.h  \
+VectorMesonVectorVectorDecayer.cc    VectorMesonVectorVectorDecayer.h  \
+OniumToOniumPiPiDecayer.cc           OniumToOniumPiPiDecayer.h
+HwVMDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0

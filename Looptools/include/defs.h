@@ -1,16 +1,18 @@
 * defs.h
 * internal definitions for the LoopTools routines
 * this file is part of LoopTools
-* last modified 13 Apr 06 th
+* last modified 7 Dec 10 th
+
+#include "externals.h"
 
 
 #ifdef COMPLEXPARA
 
 #define XA0 A0C
 #define XA0b A0bC
-#define XA0sub A0subC
+#define XA0sub a0subc
 #define XA00 A00C
-#define XA00sub A00subC
+#define XA00sub a00subc
 #define XB0 B0C
 #define XB1 B1C
 #define XB00 B00C
@@ -34,22 +36,23 @@
 #define XDget DgetC
 #define XDcoeff DcoeffC
 #define XE0 E0C
-#define XE0sub E0subC
+#define XE0sub e0subc
 #define XE0i E0iC
 #define XEget EgetC
 #define XEcoeff EcoeffC
 #define XEcoeffa EcoeffaC
 #define XEcoeffb EcoeffbC
 #define XEcheck EcheckC
-#define XltEgram ltEgramC
-#define XLUDecomp LUDecompC
-#define XLUBackSubst LUBackSubstC
-#define XDet ltDetC
-#define XInverse ltInverseC
+#define XInvGramE InvGramEC
+#define XSolve SolveC
+#define XEigen EigenC
+#define XDecomp DecompC
+#define XDet DetmC
+#define XInverse InverseC
 #define XDumpPara DumpParaC
 #define XDumpCoeff DumpCoeffC
 #define XLi2 Li2C
-#define XLi2sub Li2Csub
+#define XLi2sub li2csub
 #define Xfpij2 cfpij2
 #define Xffa0 ffca0
 #define Xffb0 ffcb0
@@ -61,15 +64,17 @@
 #define DVAR double complex
 #define QVAR double complex
 #define QREAL double precision
-#define QEXT(x) x
+#define QPREC(x) x
+#define QCC(x) DCONJG(x)
+#define QRE(x) DBLE(x)
 
 #else
 
 #define XA0 A0
 #define XA0b A0b
-#define XA0sub A0sub
+#define XA0sub a0sub
 #define XA00 A00
-#define XA00sub A00sub
+#define XA00sub a00sub
 #define XB0 B0
 #define XB1 B1
 #define XB00 B00
@@ -93,22 +98,23 @@
 #define XDget Dget
 #define XDcoeff Dcoeff
 #define XE0 E0
-#define XE0sub E0sub
+#define XE0sub e0sub
 #define XE0i E0i
 #define XEget Eget
 #define XEcoeff Ecoeff
 #define XEcoeffa Ecoeffa
 #define XEcoeffb Ecoeffb
 #define XEcheck Echeck
-#define XltEgram ltEgram
-#define XLUDecomp LUDecomp
-#define XLUBackSubst LUBackSubst
-#define XDet ltDet
-#define XInverse ltInverse
+#define XInvGramE InvGramE
+#define XSolve Solve
+#define XEigen Eigen
+#define XDecomp Decomp
+#define XDet Detm
+#define XInverse Inverse
 #define XDumpPara DumpPara
 #define XDumpCoeff DumpCoeff
 #define XLi2 Li2
-#define XLi2sub Li2sub
+#define XLi2sub li2sub
 #define Xfpij2 fpij2
 #define Xffa0 ffxa0
 #define Xffb0 ffxb0
@@ -118,13 +124,16 @@
 
 #define RC 1
 #define DVAR double precision
-#ifdef QUAD
+#if QUAD
 #define QVAR real*16
+#define QPREC(x) QEXT(x)
 #else
 #define QVAR double precision
-#define QEXT(x) x
+#define QPREC(x) x
 #endif
 #define QREAL QVAR
+#define QCC(x) x
+#define QRE(x) x
 
 #endif
 
@@ -342,9 +351,10 @@
 #define KeyBget 2
 #define KeyC0 4
 #define KeyD0 6
-#define KeyE0 8
-#define KeyEget 10
-#define KeyEgetC 12
+#define KeyD0C 8
+#define KeyE0 10
+#define KeyEget 12
+#define KeyEgetC 14
 
 #define DebugB 0
 #define DebugC 1
@@ -358,6 +368,8 @@
 #define Nval(n,id,p) cache(p+id,RC+2*n-4)
 
 #define Sgn(i) (1 - 2*iand(i,1))
+
+#define MAXDIM 8
 
 #ifndef KIND
 #define KIND 1

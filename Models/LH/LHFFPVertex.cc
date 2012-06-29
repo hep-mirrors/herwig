@@ -14,39 +14,23 @@ using namespace Herwig;
 
 LHFFPVertex::LHFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
-  // PDG codes for the particles
-  vector<long> first,second,third;
+  // order in strong and em coupling
+  orderInGem(1);
+  orderInGs(0);
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(22);
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
   }
-  first.push_back( -8);
-  second.push_back( 8);
-  third.push_back(22);
-  first.push_back( -8);
-  second.push_back( 8);
-  third.push_back(32);
-  first.push_back( -6);
-  second.push_back( 8);
-  third.push_back(32);
-  first.push_back( -8);
-  second.push_back( 6);
-  third.push_back(32);
+  addToList( -8,   8,  22);
+  addToList( -8,   8,  32);
+  addToList( -6,   8,  32);
+  addToList( -8,   6,  32);
   // the leptons
   for(int ix=11;ix<17;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(22);
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
   }
-  setList(first,second,third);
 }
 
 void LHFFPVertex::persistentOutput(PersistentOStream & os) const {
@@ -68,7 +52,7 @@ void LHFFPVertex::Init() {
 
 }
 
-void LHFFPVertex::doinit() throw(InitException) {
+void LHFFPVertex::doinit() {
   FFVVertex::doinit();
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
@@ -85,13 +69,14 @@ void LHFFPVertex::doinit() throw(InitException) {
     _charge[2*ix+10] = model->enu();
   }
   _charge[8] =  model->eu();
-  // couplings for the heavy photon
-  double cw  = sqrt(1.-model->sin2ThetaW());
-  double pre = 0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
+  // couplings for the heavy photon taken from table IX
+  double cw  = sqrt(sin2ThetaW());
   double xL  = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
   double cp2 = sqr(model->cosThetaPrime());
   double yu  = -0.4;
   double ye  =  0.6;
+  // prefactor after removal of -e
+  double pre = -0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
   // down type quarks
   double gvd   = pre*(2.*yu+11./15.+1./6.*cp2);
   double gad   = pre*(-0.2+0.5*cp2);
@@ -135,42 +120,34 @@ void LHFFPVertex::doinit() throw(InitException) {
   // heavy top
   _gr[8] = gvthh+gathh;
   _gl[8] = gvthh-gathh;
-  // order in strong and em coupling
-  orderInGem(1);
-  orderInGs(0);
 }
 
 // coupling for FFP vertex
 void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+  int iferm=abs(a->id());
+  assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8);
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
-  if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8) {
-    // photon
-    if(c->id()==ParticleID::gamma) {
-      setLeft (_charge[iferm]);
-      setRight(_charge[iferm]);
+  // photon
+  if(c->id()==ParticleID::gamma) {
+    left (_charge[iferm]);
+    right(_charge[iferm]);
+  }
+  // heavy photon
+  else {
+    int ianti = abs(b->id());
+    if(ianti==iferm) {
+      left (-_gl[iferm]);
+      right(-_gr[iferm]);
     }
-    // heavy photon
     else {
-      int ianti = abs(b->id());
-      if(ianti==iferm) {
-	setRight(-_gr[iferm]);
-	setLeft (-_gl[iferm]);
-      }
-      else {
-	setRight(_gr[7]);
-	setLeft (_gl[7]);
-      }
+      left (_gl[7]);
+      right(_gr[7]);
     }
   }
-  else
-    throw HelicityConsistencyError() << "SMGFFPVertex::setCoupling "
-				     << "Unknown particle in photon vertex" 
-				     << Exception::runerror;
 }

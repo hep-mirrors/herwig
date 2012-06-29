@@ -1,0 +1,237 @@
+################################################################################
+# Analysis of various observables at LEP 1
+################################################################################
+
+cd /Analysis2
+cp EventShapes LEPEventShapes
+cp YMerge LEPYMerge
+cp FourJetCorrelations LEPFourJets
+
+################################################################################
+# Analysis handlers to be used by the LEP generator
+################################################################################
+
+## y-merge distribution ########################################################
+## enable KtJet in Analysis2.in !
+
+# cd /Analysis2/JetFinders
+# set KtJet:CollisionType ee
+# set KtJet:DistanceScheme angular
+# set KtJet:RecombinationScheme E
+# cd /Analysis2
+# set LEPYMerge:JetFinder /Analysis2/JetFinders/KtJet
+
+## Four-jet correlations #######################################################
+## enable KtJet in Analysis2.in !
+
+# cd /Analysis2/JetFinders
+# cp KtJet KtJetFourJets
+# set KtJetFourJets:yCut 0.008
+# set KtJetFourJets:CollisionType ee
+# set KtJetFourJets:DistanceScheme angular
+# set KtJetFourJets:RecombinationScheme E
+# cd /Analysis2
+# set LEPFourJets:JetFinder /Analysis2/JetFinders/KtJetFourJets
+
+################################################################################
+# Set the data files to compare to
+################################################################################
+
+## Event shapes ################################################################
+
+set LEPEventShapes:OneMinusThrust <options \
+	xlabel="$1-T$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}(1-T)}$" \
+	norm="data" \
+	datafile="Data/DELPHI.OneMinusThrust.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:ThrustMajor <options \
+	xlabel="$T_{maj}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}T_{maj}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.ThrustMajor.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:ThrustMinor <options \
+	xlabel="$T_{min}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}T_{min}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.ThrustMinor.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:Oblateness <options \
+	xlabel="$O$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}O}$" \
+	norm="data" \
+	datafile="Data/DELPHI.Oblateness.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:Sphericity <options \
+	xlabel="$S$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}S}$" \
+	norm="data" \
+	datafile="Data/DELPHI.Sphericity.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:Aplanarity <options \
+	xlabel="$A$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}A}$" \
+	norm="data" \
+	datafile="Data/DELPHI.Aplanarity.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:Planarity <options \
+	xlabel="$P$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}P}$" \
+	norm="data" \
+	datafile="Data/DELPHI.Planarity.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:CParameter <options \
+	xlabel="$C$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}C}$" \
+	norm="data" \
+	datafile="Data/DELPHI.CParameter.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:DParameter <options \
+	xlabel="$D$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}D}$" \
+	norm="data" \
+	datafile="Data/DELPHI.DParameter.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:MHigh <options \
+	xlabel="$\rho_{high}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}\rho_{high}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.MHigh.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:MLow <options \
+	xlabel="$\rho_{low}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}\rho_{low}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.MLow.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:MDiff <options \
+	xlabel="$\rho_{diff}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}\rho_{diff}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.MDiff.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:BMax <options \
+	xlabel="$B_{max}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}B_{max}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.BMax.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:BMin <options \
+	xlabel="$B_{min}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}B_{min}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.BMin.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:BSum <options \
+	xlabel="$B_{sum}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}B_{sum}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.BSum.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+set LEPEventShapes:BDiff <options \
+	xlabel="$D_{diff}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}B_{diff}}$" \
+	norm="data" \
+	datafile="Data/DELPHI.BDiff.dat" \
+	dataname="DELPHI 1996" \
+	/>
+
+## y-merge distribution ########################################################
+
+set LEPYMerge:Y 2 <options \
+	xlabel="$y_{23}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}y_{23}}$" \
+	norm="data" \
+	datafile="Data/OPAL.y23.dat" \
+	dataname="OPAL 1999" \
+	/>
+
+set LEPYMerge:Y 3 <options \
+	xlabel="$y_{34}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}y_{34}}$" \
+	norm="data" \
+	datafile="Data/OPAL.y34.dat" \
+	dataname="OPAL 1999" \
+	/>
+
+set LEPYMerge:Y 4 <options \
+	xlabel="$y_{45}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}y_{45}}$" \
+	norm="data" \
+	datafile="Data/OPAL.y45.dat" \
+	dataname="OPAL 1999" \
+	/>
+
+set LEPYMerge:Y 5 <options \
+	xlabel="$y_{56}$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}y_{56}}$" \
+	norm="data" \
+	datafile="Data/OPAL.y56.dat" \
+	dataname="OPAL 1999" \
+	/>
+
+## Four-jet correlations #######################################################
+
+set LEPFourJets:CosAlpha34 <options \
+	xlabel="$\cos (\alpha_{34})$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}\cos (\alpha_{34})}$" \
+	norm="data" \
+	datafile="Data/DELPHI.CosAlpha34.dat" \
+	dataname="DELPHI" \
+	/>
+
+set LEPFourJets:CosChiBZ <options \
+	xlabel="$|\cos (\chi_{BZ})|$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}|\cos (\chi_{BZ})|}$" \
+	norm="data" \
+	datafile="Data/DELPHI.CosChiBZ.dat" \
+	dataname="DELPHI" \
+	/>
+
+set LEPFourJets:CosPhiKSW <options \
+	xlabel="$\cos (\Phi_{KSW})$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}\cos (\Phi_{KSW})}$" \
+	norm="data" \
+	datafile="Data/DELPHI.CosPhiKSW.dat" \
+	dataname="DELPHI" \
+	/>
+
+set LEPFourJets:CosThetaNR <options \
+	xlabel="$|\cos (\theta_{NR}^*)|$" \
+	ylabel="$\frac{1}{\sigma}\frac{{\rm d}\sigma}{{\rm d}|\cos (\theta_{NR}^*)}$" \
+	norm="data" \
+	datafile="Data/DELPHI.CosThetaNR.dat" \
+	dataname="DELPHI" \
+	/>
+

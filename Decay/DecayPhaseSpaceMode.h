@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayPhaseSpaceMode.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -66,7 +66,8 @@ public:
   /**
    * Default constructor.
    */
-  inline DecayPhaseSpaceMode();
+  DecayPhaseSpaceMode() :  _maxweight(0.),_niter(10), _npoint(10000), _ntry(500),
+			   _partial(-1), _testOnShell(false), _ichannel(999) {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseIntegrator</code> and a vector
@@ -74,8 +75,12 @@ public:
    * is the constructor which should normally be used in decayers.
    * @param in The particle data objects for the external particles
    * @param intin A pointer to the DecayIntegrator class using this mode.
+   * @param onShell Whether or not to perform tests for zero width on-shell particles
    */
-  inline DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin);
+  DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin,bool onShell=false) 
+    :  _integrator(intin), _maxweight(0.),
+       _niter(10), _npoint(10000), _ntry(500),
+       _extpart(in),  _partial(-1), _testOnShell(onShell), _ichannel(999) {}
   //@}
 
   /**
@@ -83,25 +88,28 @@ public:
    * @param ix The external particle required.
    * @return A pointer to the ParticleData object.
    */
-  inline tcPDPtr externalParticles(int ix) const;
+  tcPDPtr externalParticles(int ix) const {return _extpart[ix];}
 
   /**
    * Number of external particles.
    * @return The number of external particles.
    */
-  inline unsigned int numberofParticles() const;
+  unsigned int numberofParticles() const {return _extpart.size();}
 
   /**
    * Number of channels
    * @return The number of channels.
    */
-  inline unsigned int numberChannels() const;
+  unsigned int numberChannels() const {return _channels.size();}
 
   /**
    * Add a new channel. 
    * @param channel A pointer to the new DecayPhaseChannel
    */
-  inline void addChannel(DecayPhaseSpaceChannelPtr channel);
+  void addChannel(DecayPhaseSpaceChannelPtr channel) {
+    channel->init();
+    _channels.push_back(channel);
+  }
 
   /**
    * Reset the properties of one of the intermediate particles. Only a specific channel
@@ -111,7 +119,10 @@ public:
    * @param mass The mass of the intermediate.
    * @param width The width of gthe intermediate.
    */
-  inline void resetIntermediate(int ichan, tcPDPtr part, Energy mass, Energy width);
+  void resetIntermediate(int ichan, tcPDPtr part, Energy mass, Energy width) {
+    if(!part) return;
+    _channels[ichan]->resetIntermediate(part,mass,width);
+  }
 
   /**
    * Reset the properties of one of the intermediate particles. All the channels 
@@ -120,37 +131,45 @@ public:
    * @param mass The mass of the intermediate.
    * @param width The width of gthe intermediate.
    */
-  inline void resetIntermediate(tcPDPtr part, Energy mass, Energy width);
+  void resetIntermediate(tcPDPtr part, Energy mass, Energy width) {
+    for(unsigned int ix=0,N=_channels.size();ix<N;++ix)
+      _channels[ix]->resetIntermediate(part,mass,width);
+  }
 
   /**
    * Get the maximum weight for the decay.
    * @return The maximum weight.
    */
-  inline double maxWeight() const;
+  double maxWeight() const {return _maxweight;}
 
   /**
    * Set the maximum weight for the decay.
    * @param wgt The maximum weight. 
    */
-  inline void setMaxWeight(double wgt) const;
+  void setMaxWeight(double wgt) const {_maxweight=wgt;}
 
   /**
    * Get the weight for a channel. This is the weight for the multi-channel approach.
    * @param ichan The channel.
    * @return The weight for the channel.
    */
-  inline double channelWeight(unsigned int ichan) const;
+  double channelWeight(unsigned int ichan) const {return _channelwgts[ichan];}
 
   /**
    * Set the weights for the different channels.
    * @param in The weights for the different channels in the multi-channel approach.
    */
-  inline void setWeights(const vector<double> & in) const;
+  void setWeights(const vector<double> & in) const {_channelwgts=in;}
 
   /**
    *  Access to the selected channel
    */
-  inline unsigned int selectedChannel() const;
+  unsigned int selectedChannel() const {return _ichannel;}
+
+  /**
+   *  test on/off-shell kinematics
+   */
+  bool testOnShell() const { return _testOnShell; }
 
 protected:
 
@@ -168,14 +187,18 @@ protected:
    * @param points The number of points to use for each iteration during initialization.
    * @param ntry The number of tries to generate a decay.
    */
-  inline void setIntegrate(int iter,int points,int ntry);
+  void setIntegrate(int iter,int points,int ntry) {
+    _niter=iter;
+    _npoint=points;
+    _ntry=ntry;
+  }
 
   /**
    * Set the partial width to use for normalization. This is the partial width
    * in the WidthGenerator object.
    * @param in The partial width to use.
    */
-  inline void setPartialWidth(int in);
+  void setPartialWidth(int in) {_partial=in;}
   //@}
 
 
@@ -184,15 +207,17 @@ protected:
 
   /**
    * Access to the matrix element from the decayer.
-   * @param bin Generate the vertex information for spin correlations
    * @param ichan The channel, this is to allow the matrix element to be used to
    *              select the intermediates
    * @param inpart The incoming particle.
+   * @param opt The option for what to calculate
    * @param outpart The outgoing particles.
    */
-  inline double me2(bool bin,const int ichan ,const Particle &inpart,
-		    const ParticleVector &outpart) const;
-
+  double me2(const int ichan ,const Particle & inpart,
+	     const ParticleVector &outpart,DecayIntegrator::MEOption opt) const {
+    return _integrator->me2(ichan,inpart,outpart,opt);
+  }
+  
   /**
    * Generate the decay.
    * @param intermediates Whether or not to generate the intermediate particle
@@ -210,20 +235,45 @@ protected:
    * @param inpart  The incoming particles.
    * @param outpart The outgoing particles.
    */
-  inline int selectChannel(const Particle & inpart, ParticleVector & outpart) const;
+  int selectChannel(const Particle & inpart, ParticleVector & outpart) const {
+    // if using flat phase-space don't need to do this
+    if(_channelwgts.empty()) return 0;
+    vector<double> mewgts(_channels.size(),0.0);
+    double total=0.;
+    for(unsigned int ix=0,N=_channels.size();ix<N;++ix) {
+      mewgts[ix]=me2(ix,inpart,outpart,DecayIntegrator::Calculate);
+      total+=mewgts[ix];
+    }
+    // randomly pick a channel
+    total*=UseRandom::rnd();
+    int ichan=-1;
+    do {
+      ++ichan;
+      total-=mewgts[ichan];
+    }
+    while(ichan<int(_channels.size())&&total>0.);
+    return ichan;
+  }
 
   /**
    * Return the weight for a given phase-space point.
-   * @param vertex Produce the SpinInfo objects for the spin correlations.
    * @param cc Whether we are generating the mode specified or the charge 
    *           conjugate mode.
    * @param ichan The channel to generate the weight for.
    * @param in The incoming particle.
    * @param particles The outgoing particles.
+   * @param first Whether or not this is the first call for initialisation
    * @return The weight.
    */
-  inline Energy weight(bool vertex, bool cc,int & ichan, const Particle & in,
-		       ParticleVector & particles) const;
+  Energy weight(bool cc,int & ichan, const Particle & in,
+		ParticleVector & particles,bool first) const {
+    ichan=0;
+    Energy phwgt = (_channels.size()==0) ? 
+      flatPhaseSpace(cc,in,particles) : channelPhaseSpace(cc,ichan,in,particles);
+    // generate the matrix element
+    return me2(-1,in,particles,
+	       first ? DecayIntegrator::Initialize : DecayIntegrator::Calculate)*phwgt;
+  }
     
   /**
    * Return the weight and momenta for a flat phase-space decay.
@@ -261,7 +311,6 @@ protected:
    * @return The masses.
    */
   vector<Energy> externalMasses(Energy inmass,double & wgt) const;
-
   //@}
 
 public:
@@ -295,13 +344,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -313,7 +362,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -391,9 +440,16 @@ private:
   vector<cGenericMassGeneratorPtr> _massgen;
 
   /**
+   *  Whether to check on-shell or off-shell kinematics
+   * in doinit, if on-shell off-shell is tested in initrun
+   */
+  bool _testOnShell;
+
+  /**
    *  The selected channel
    */
   mutable unsigned int _ichannel;
+
 };
 
   /**
@@ -434,6 +490,5 @@ template <>
 /** @endcond */
 
 }
-#include "DecayPhaseSpaceMode.icc"
 
 #endif /* HERWIG_DecayPhaseSpaceMode_H */

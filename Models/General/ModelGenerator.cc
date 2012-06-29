@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ModelGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,6 +23,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -36,19 +37,15 @@ IBPtr ModelGenerator::fullclone() const {
 }
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _theHPConstructor << _theDecayConstructor << _theParticles 
-     << _theRPConstructor << _theOffshell << _theOffsel << _theBRnorm
-     << _theNpoints << _theIorder << _theBWshape << brMin_;
+  os << hardProcessConstructors_ << _theDecayConstructor << particles_ 
+     << offshell_ << Offsel_ << BRnorm_
+     << Npoints_ << Iorder_ << BWshape_ << brMin_ << decayOutput_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _theHPConstructor >> _theDecayConstructor >> _theParticles
-     >> _theRPConstructor >> _theOffshell >> _theOffsel >> _theBRnorm
-     >> _theNpoints >> _theIorder >> _theBWshape >> brMin_;
-}
-
-bool ModelGenerator::preInitialize() const {
-  return true;
+  is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
+     >> offshell_ >> Offsel_ >> BRnorm_
+     >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
 ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
@@ -59,16 +56,24 @@ void ModelGenerator::Init() {
   static ClassDocumentation<ModelGenerator> documentation
     ("This class controls the the use of BSM physics.",
      "BSM physics was produced using the algorithm of "
-     "\\cite{Gigg2007:cr}",
+     "\\cite{Gigg:2007cr,Gigg:2008yc}",
      "\\bibitem{Gigg:2007cr} M.~Gigg and P.~Richardson, \n"
      "Eur.\\ Phys.\\ J.\\  C {\\bf 51} (2007) 989.\n"
-     "%%CITATION = EPHJA,C51,989;%%");
-  
-  static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
-    interfaceHardProcessConstructor
-    ("HardProcessConstructor",
-     "Pointer to the object that constructs the hard process",
-     &ModelGenerator::_theHPConstructor, false, false, true, true);
+     "%%CITATION = EPHJA,C51,989;%%\n"
+     " %\\cite{Gigg:2008yc}\n"
+     "\\bibitem{Gigg:2008yc}\n"
+     "  M.~A.~Gigg and P.~Richardson,\n"
+     "  %``Simulation of Finite Width Effects in Physics Beyond the Standard Model,''\n"
+     "  arXiv:0805.3037 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0805.3037;%%\n"
+     );
+ 
+  static RefVector<ModelGenerator,HardProcessConstructor> 
+    interfaceHardProcessConstructors
+    ("HardProcessConstructors",
+     "The objects to construct hard processes",
+     &ModelGenerator::hardProcessConstructors_, -1, 
+     false, false, true, false, false);
 
   static Reference<ModelGenerator,Herwig::DecayConstructor> 
      interfaceDecayConstructor
@@ -80,24 +85,18 @@ void ModelGenerator::Init() {
     ("DecayParticles",
      "ParticleData pointers to the particles requiring spin correlation "
      "decayers. If decay modes do not exist they will also be created.",
-     &ModelGenerator::_theParticles, -1, false, false, true, false);
-
-  static Reference<ModelGenerator,Herwig::ResonantProcessConstructor> 
-    interfaceResonantProcessConstructor
-    ("ResonantProcessConstructor",
-     "Pointer to the object that constructs the resonant process(es)",
-     &ModelGenerator::_theRPConstructor, false, false, true, true);
+     &ModelGenerator::particles_, -1, false, false, true, false);
     
   static RefVector<ModelGenerator,ParticleData> interfaceOffshell
     ("Offshell",
      "The particles to treat as off-shell",
-     &ModelGenerator::_theOffshell, -1, false, false, true, false);
+     &ModelGenerator::offshell_, -1, false, false, true, false);
 
   static Switch<ModelGenerator,int> interfaceWhichOffshell
     ("WhichOffshell",
      "A switch to determine which particles to create mass and width "
      "generators for.",
-     &ModelGenerator::_theOffsel, 0, false, false);
+     &ModelGenerator::Offsel_, 0, false, false);
   static SwitchOption interfaceWhichOffshellSelected
     (interfaceWhichOffshell,
      "Selected",
@@ -114,7 +113,7 @@ void ModelGenerator::Init() {
     ("BRNormalize",
      "Whether to normalize the partial widths to BR*total width for an "
      "on-shell particle",
-     &ModelGenerator::_theBRnorm, true, false, false);
+     &ModelGenerator::BRnorm_, true, false, false);
   static SwitchOption interfaceBRNormalizeNormalize
     (interfaceBRNormalize,
      "Yes",
@@ -129,19 +128,19 @@ void ModelGenerator::Init() {
   static Parameter<ModelGenerator,int> interfacePoints
     ("InterpolationPoints",
      "Number of points to use for interpolation tables when needed",
-     &ModelGenerator::_theNpoints, 50, 5, 1000,
+     &ModelGenerator::Npoints_, 50, 5, 1000,
      false, false, true);
   
   static Parameter<ModelGenerator,unsigned int> 
     interfaceInterpolationOrder
     ("InterpolationOrder", "The interpolation order for the tables",
-     &ModelGenerator::_theIorder, 1, 1, 5,
+     &ModelGenerator::Iorder_, 1, 1, 5,
      false, false, Interface::limited);
 
   static Switch<ModelGenerator,int> interfaceBreitWignerShape
     ("BreitWignerShape",
      "Controls the shape of the mass distribution generated",
-     &ModelGenerator::_theBWshape, 0, false, false);
+     &ModelGenerator::BWshape_, 0, false, false);
   static SwitchOption interfaceBreitWignerShapeDefault
     (interfaceBreitWignerShape,
      "Default",
@@ -168,20 +167,58 @@ void ModelGenerator::Init() {
      "The minimum branching fraction to include",
      &ModelGenerator::brMin_, 1e-6, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Switch<ModelGenerator,unsigned int> interfaceDecayOutput
+    ("DecayOutput",
+     "Option to control the output of the decay mode information",
+     &ModelGenerator::decayOutput_, 1, false, false);
+  static SwitchOption interfaceDecayOutputNone
+    (interfaceDecayOutput,
+     "None",
+     "No output",
+     0);
+  static SwitchOption interfaceDecayOutputPlain
+    (interfaceDecayOutput,
+     "Plain",
+     "Default plain text output",
+     1);
+  static SwitchOption interfaceDecayOutputSLHA
+    (interfaceDecayOutput,
+     "SLHA",
+     "Output in the Susy Les Houches Accord format",
+     2);
+
 }
 
-void ModelGenerator::doinit() throw(InitException) {
-  Interfaced::doinit();
+namespace {
+  /// Helper function for sorting by mass
+  inline bool massIsLess(tcPDPtr a, tcPDPtr b) {
+    return a->mass() < b->mass();
+  }
+}
+
+void ModelGenerator::doinit() {
   useMe();
+  Interfaced::doinit();
+  // make sure the model is initialized
+  Ptr<Herwig::StandardModel>::pointer model 
+    = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>(generator()->standardModel());
+  model->init();
+  // and the vertices
+  for(size_t iv = 0; iv < model->numberOfVertices(); ++iv)
+    model->vertex(iv)->init();
+  // sort DecayParticles list by mass
+  sort(particles_.begin(),particles_.end(),
+       massIsLess);
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
-  if( _theOffsel == 0 ) {
-    pit = _theOffshell.begin();
-    pend = _theOffshell.end();
+  if( Offsel_ == 0 ) {
+    pit = offshell_.begin();
+    pend = offshell_.end();
   }
   else {
-    pit = _theParticles.begin();
-    pend = _theParticles.end();
+    pit = particles_.begin();
+    pend = particles_.end();
   }
   for(; pit != pend; ++pit)
     createWidthGenerator(*pit);
@@ -189,22 +226,36 @@ void ModelGenerator::doinit() throw(InitException) {
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
-    _theDecayConstructor->createDecayers(_theParticles);
+    _theDecayConstructor->createDecayers(particles_,brMin_);
   }
 
-  // write out decays with spin correlations and set particles
-  // that have no decay modes to stable.
-  string filename = CurrentGenerator::current().filename() + 
-    string("-BSMModelInfo.out");
-  ofstream ofs(filename.c_str(), ios::out|ios::app);
-  ofs << "# The decay modes listed below will have spin\n"
-      << "# correlations included when they are generated.\n#\n#";
-  pit = _theParticles.begin();
-  pend = _theParticles.end();
+  // write out decays with spin correlations
+  ostream & os = CurrentGenerator::current().misc();
+  ofstream ofs;
+  if ( decayOutput_ > 1 ) {
+    string filename 
+      = CurrentGenerator::current().filename() + "-BR.spc";
+    ofs.open(filename.c_str());
+  }
+
+
+  if(decayOutput_!=0) {
+    if(decayOutput_==1) {
+      os << "# The decay modes listed below will have spin\n"
+	  << "# correlations included when they are generated.\n#\n#";
+    }
+    else {
+      ofs << "#  Herwig++ decay tables in SUSY Les Houches accord format\n";
+      ofs << "Block DCINFO                           # Program information\n";
+      ofs << "1   Herwig++          # Decay Calculator\n";
+      ofs << "2   " << generator()->strategy()->versionstring() 
+	  << "     # Version number\n";
+    }
+  }
+  pit = particles_.begin();
+  pend = particles_.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
-    cerr << "Checking width and decay length " << parent->width()/MeV
-	 << " MeV   " << parent->cTau()/mm << " mm\n";
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
     checkDecays(parent);
@@ -214,37 +265,51 @@ void ModelGenerator::doinit() throw(InitException) {
 
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
-      parent->width(0.0*MeV);
+      parent->width(ZERO);
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
-    else
-      writeDecayModes(ofs, parent);
+    else {
+      if ( decayOutput_ == 2 )
+	writeDecayModes(ofs, parent);
+      else
+	writeDecayModes(os, parent);
+    }
 
     if( parent->massGenerator() ) {
+      parent->widthCut(5.*parent->width());
       parent->massGenerator()->reset();
-      ofs << "# " <<parent->PDGName() << " will be considered off-shell.\n#";
+      if(decayOutput_==1)
+	os << "# " <<parent->PDGName() << " will be considered off-shell.\n#\n";
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
   //Now construct hard processes given that we know which
   //objects have running widths
-  if(_theHPConstructor) {
-    _theHPConstructor->init();
-    _theHPConstructor->constructDiagrams();
-  }
-  if(_theRPConstructor) {
-    _theRPConstructor->init();
-    _theRPConstructor->constructResonances();
+  for(unsigned int ix=0;ix<hardProcessConstructors_.size();++ix) {
+    hardProcessConstructors_[ix]->init();
+    hardProcessConstructors_[ix]->constructDiagrams();
   }
 
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
-  if( parent->stable() ) return;
+  if( parent->stable() ) {
+    if(parent->coloured())
+      cerr << "Warning: No decays for coloured particle " << parent->PDGName() << "\n\n" 
+	   << "have been calcluated in BSM model.\n"
+	   << "This may cause problems in the hadronization phase.\n"
+	   << "You may have forgotten to switch on the decay mode calculation using\n"
+	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
+	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
+	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
+	   << "or the decays of this particle are missing from your\n"
+	   << "input spectrum and decay file in the SLHA format.\n\n";
+    return;
+  }
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
-  Energy oldwidth(parent->width()), newwidth(0.*MeV);
+  Energy oldwidth(parent->width()), newwidth(ZERO);
   bool rescalebrat(false);
   double brsum(0.);
   for(; dit != dend; ++dit ) {
@@ -255,8 +320,8 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     for( ; pit != pend; ++pit ) {
       release -= (**pit).constituentMass();
     }
-    if( (**dit).brat() < brMin_ || release < 0.*MeV ) {
-      if( release < 0.*MeV )
+    if( (**dit).brat() < brMin_ || release < ZERO ) {
+      if( release < ZERO )
 	cerr << "Warning: The shower cannot be generated using this decay " 
 	     << (**dit).tag() << " because it is too close to threshold. It "
 	     << "will be switched off and the branching fractions of the "
@@ -265,6 +330,10 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
+      DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());
+      if(decayer) {
+      	generator()->preinitInterface(decayer->fullName(), "Initialize", "set","0");
+      }
     }
     else {
       brsum += (**dit).brat();
@@ -286,26 +355,77 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 				    "set", brf.str());
     }
     parent->width(newwidth);
-    if( newwidth > 0.0*MeV ) parent->cTau(hbarc/newwidth);
-    parent->widthCut(5*newwidth);
+    if( newwidth > ZERO ) parent->cTau(hbarc/newwidth);
   }
   
 }
 
-void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
-  ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
-      << parent->mass()/GeV << "  Total Width (GeV): " 
-      << parent->width()/GeV << endl;
-  ofs << std::left << std::setw(40) << '#' 
-      << std::left << std::setw(20) << "Partial Width/GeV"
-      << "BR\n"; 
-  Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-  Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
-  for(; dit != dend; ++dit)
-    ofs << std::left << std::setw(40) << (*dit).second->tag() 
-	<< std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
-	<< (*dit).second->brat() << '\n';
-  ofs << "#\n#";
+namespace {
+  struct DecayModeOrdering {
+    bool operator()(tcDMPtr m1, tcDMPtr m2) {
+      if(m1->brat()!=m2->brat()) {
+	return m1->brat()>m2->brat();
+      }
+      else {
+	if(m1->products().size()==m2->products().size()) {
+	  ParticleMSet::const_iterator it1=m1->products().begin();
+	  ParticleMSet::const_iterator it2=m2->products().begin();
+	  do {
+	    if((**it1).id()!=(**it2).id()) {
+	      return (**it1).id()>(**it2).id();
+	    }
+	    ++it1;
+	    ++it2;
+	  }
+	  while(it1!=m1->products().end()&&
+		it2!=m2->products().end());
+	  assert(false);
+	}
+	else
+	  return m1->products().size()<m2->products().size();
+      }
+      return false;
+    }
+  };
+}
+
+void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
+  if(decayOutput_==0) return;
+  set<tcDMPtr,DecayModeOrdering> modes;
+  for(Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
+      dit != parent->decaySelector().end(); ++dit) {
+    modes.insert((*dit).second);
+  }
+  if(decayOutput_==1) {
+    os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
+       << parent->mass()/GeV << "  Total Width (GeV): " 
+       << parent->width()/GeV << endl;
+    os << std::left << std::setw(40) << '#' 
+       << std::left << std::setw(20) << "Partial Width/GeV"
+       << "BR\n"; 
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit)
+      os << std::left << std::setw(40) << (**dit).tag() 
+	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
+	 << (**dit).brat() << '\n';
+    os << "#\n#";
+  }
+  else if(decayOutput_==2) {
+    os << "#    \t PDG \t Width\n";
+    os << "DECAY\t" << parent->id() << "\t" << parent->width()/GeV << "\t # " << parent->PDGName() << "\n";
+    for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
+	dit!=modes.end();++dit) {
+      os << "\t" << std::left << std::setw(10) 
+	 << (**dit).brat() << "\t" << (**dit).orderedProducts().size() 
+	 << "\t";
+      for(unsigned int ix=0;ix<(**dit).orderedProducts().size();++ix)
+	os << std::right << std::setw(10)
+	   << (**dit).orderedProducts()[ix]->id() ;
+      for(unsigned int ix=(**dit).orderedProducts().size();ix<4;++ix)
+	os << "\t";
+      os << "# " << (**dit).tag() << "\n";
+    }
+  }
 }
 
 void ModelGenerator::createWidthGenerator(tPDPtr p) {
@@ -331,18 +451,18 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   generator()->preinitInterface(mgen, "Initialize", "set", "Yes");
   generator()->preinitInterface(wgen, "Initialize", "set", "Yes");
 
-  string norm = _theBRnorm ? "Yes" : "No";
+  string norm = BRnorm_ ? "Yes" : "No";
   generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
   ostringstream os;
-  os << _theNpoints;
+  os << Npoints_;
   generator()->preinitInterface(wgen, "InterpolationPoints", "set", 
 				  os.str());
   os.str("");
-  os << _theIorder;
+  os << Iorder_;
   generator()->preinitInterface(wgen, "InterpolationOrder", "set",
 				  os.str());
   os.str("");
-  os << _theBWshape;
+  os << BWshape_;
   generator()->preinitInterface(mgen, "BreitWignerShape", "set", 
 				  os.str());
 }

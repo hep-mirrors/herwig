@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MRST.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,6 +32,11 @@ class MRST : public PDFBase {
    */
   enum PDFFlavour { upValence = 1, dnValence, glu, upSea, chm, str, bot, dnSea };
 
+  /**
+   *  Enum for type of pdf to return
+   */
+  enum PDFType {Sea,Valence,Total};
+
 public:
 
   /** @name Standard constructors and destructors. */
@@ -61,18 +66,6 @@ public:
   virtual cPDVector partons(tcPDPtr p) const;
 
   /**
-   * Return x times the pdf for the given parameters, with the momentum
-   * fraction given as l=log(1/x).
-   * @param particle The beam particle
-   * @param parton The parton for which to return the PDF.
-   * @param partonScale The scale at which to evaluate the PDF.
-   * @param l \f$\log\left(\frac1x\right)\f$
-   * @param particleScale The scale for the particle
-   */
-  virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                     double l, Energy2 particleScale = 0.0*GeV2) const;
-
-  /**
    * Return x times the pdf for the given parameters
    * @param particle The beam particle
    * @param parton The parton for which to return the PDF.
@@ -83,19 +76,7 @@ public:
    */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double x, double eps = 0.0,
-                     Energy2 particleScale = 0.0*GeV2) const;
-
-  /**
-   * Return x times the valence pdf for the given parameters, with the momentum
-   * fraction given as l=log(1/x).
-   * @param particle The beam particle
-   * @param parton The parton for which to return the PDF.
-   * @param partonScale The scale at which to evaluate the PDF.
-   * @param l \f$\log\left(\frac1x\right)\f$
-   * @param particleScale The scale for the particle
-   */
-  virtual double xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                     double l, Energy2 particleScale = 0.0*GeV2) const;
+                     Energy2 particleScale = ZERO) const;
 
   /**
    * Return x times the valence pdf for the given parameters
@@ -108,7 +89,20 @@ public:
    */
   virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                       double x, double eps = 0.0,
-                      Energy2 particleScale = 0.0*GeV2) const;
+                      Energy2 particleScale = ZERO) const;
+
+  /**
+   * The sea density. Return the pdf for the given cvalence \a
+   * parton inside the given \a particle for the virtuality \a
+   * partonScale and momentum fraction \a x. The \a particle is
+   * assumed to have a virtuality \a particleScale. If not overidden
+   * by a sub class this implementation will assume that the
+   * difference between a quark and anti-quark distribution is due do
+   * valense quarks.
+   */
+  virtual double xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		      double x, double eps = 0.0,
+		      Energy2 particleScale = ZERO) const;
   //@}
 
 public:
@@ -200,10 +194,10 @@ private:
    * @param q2 The scale
    * @param particle The beam particle
    * @param parton The parton for which to return the PDF.
-   * @param valenceOnly Switch to request valence-only PDFs
+   * @param type Type of PDF, sea, valence or total.
    */
   double pdfValue(double x, Energy2 q2, 
-		  tcPDPtr particle, tcPDPtr parton, bool valenceOnly=false) const;
+		  tcPDPtr particle, tcPDPtr parton,PDFType type) const;
 
   /**
    * Returns an integer j such that x lies inbetween xx[j] and xx[j+1].
@@ -229,7 +223,7 @@ private:
   /**
    *  Read the data from the file
    */
-  virtual void readSetup(istream &) throw(SetupException);
+  virtual void readSetup(istream &);
 
   /**
    *  Initialize the data
@@ -338,7 +332,12 @@ private:
   /**
    *  The \f$x\f$ values for interpolation
    */
-  static double xxb[nx+1];
+  static double lxx[nx+1];
+
+  /**
+   *  The \f$x\f$ values for interpolation
+   */
+  static double lxxb[nx+1];
 
   /**
    *  The \f$q^2\f$ values for interpolation
@@ -348,7 +347,7 @@ private:
   /**
    *  The \f$q^2\f$ values for interpolation
    */
-  static double qqb[nq+1];
+  static double lqq[nq+1];
 
   /**
    *  Coefficients used for interpolation

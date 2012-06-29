@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEfv2vf.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -56,16 +56,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -85,12 +75,15 @@ private:
    * @param spbOut A vector of SpinorBarWaveFunctions for the outgoing fermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
    * @param mc If the outgoing vector is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
 	    const VBVector & vecOut, bool mc,
-	    const SpinorBarVector & spbOut, double & mesq) const;
+	    const SpinorBarVector & spbOut, 
+	    double & mesq, bool first) const;
 
   /**
    * Calculate the matrix element for an incoming anti-fermion
@@ -99,12 +92,15 @@ private:
    * @param spOut A vector of Spinors for the outgoing antifermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
    * @param mc If the outgoing vector is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fbv2vfbHeME(const SpinorBarVector & spbIn,  const VBVector & vecIn, 
 	      const VBVector & vecOut, bool mc,
-	      const SpinorVector & spOut, double & mesq) const;
+	      const SpinorVector & spOut, 
+	      double & mesq, bool first) const;
   //@}
 
 protected:
@@ -152,7 +148,14 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
   //@}
 
 protected:
@@ -163,13 +166,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -193,12 +196,12 @@ private:
   /**
    * A pair off FFVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * A pair of FFVVertex, VVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
     //@}
 
 };

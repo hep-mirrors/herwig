@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2ll.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
@@ -169,13 +170,17 @@ ProductionMatrixElement MEee2gZ2ll::HelicityME(vector<SpinorWaveFunction>    & f
   // me to be returned
   ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,
 				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement gamma (PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
+  ProductionMatrixElement Zboson(PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1Half,PDT::Spin1Half);
   //   // wavefunctions for the intermediate particles
   VectorWaveFunction interZ,interG;
   // temporary storage of the different diagrams
   Complex diag1,diag2;
   // sum over helicities to get the matrix element
   unsigned int inhel1,inhel2,outhel1,outhel2;
-  double total[3]={0.,0.};
+  double total[3]={0.,0.,0.};
   for(inhel1=0;inhel1<2;++inhel1) {
     for(inhel2=0;inhel2<2;++inhel2) {
       // intermediate Z
@@ -191,19 +196,30 @@ ProductionMatrixElement MEee2gZ2ll::HelicityME(vector<SpinorWaveFunction>    & f
 	  diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
 					  interG);
 	  // add up squares of individual terms
-	  total[1] += real(diag1*conj(diag1));
-	  total[2] += real(diag2*conj(diag2));
-	  diag1+=diag2;
+	  total[1] += norm(diag1);
+	  Zboson(inhel1,inhel2,outhel1,outhel2) = diag1;
+	  total[2] += norm(diag2);
+	  gamma (inhel1,inhel2,outhel1,outhel2) = diag2;
 	  // the full thing including interference
-	  diag1 +=diag2;
-	  total[0] += real(diag1*conj(diag1));
-	  output(inhel1,inhel2,outhel1,outhel2)=diag1;
+	  diag1 += diag2;
+	  total[0] += norm(diag1);
+	  output(inhel1,inhel2,outhel1,outhel2) = diag1;
 	}
       }
     }
   }
   // results
-  for(int ix=0;ix<3;++ix){total[ix]*=0.25;}
+  for(int ix=0;ix<3;++ix) total[ix] *= 0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    total[0] = output.average(rho[0],rho[1]);
+    total[1] = Zboson.average(rho[0],rho[1]);
+    total[2] = gamma .average(rho[0],rho[1]);
+  }
   cont = total[2];
   BW   = total[1];
   me   = total[0];
@@ -232,6 +248,48 @@ void MEee2gZ2ll::constructVertex(tSubProPtr sub) {
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    tSpinPtr spin = hard[ix]->spinInfo();
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->productionVertex(hardvertex);
   }
+}
+
+void MEee2gZ2ll::doinit() {
+  HwMEBase::doinit();
+  // set the particle data objects
+  _Z0=getParticleData(ThePEG::ParticleID::Z0);
+  _gamma=getParticleData(ThePEG::ParticleID::gamma);
+  // cast the SM pointer to the Herwig SM pointer
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  // do the initialisation
+  if(hwsm) {
+    _theFFZVertex = hwsm->vertexFFZ();
+    _theFFPVertex = hwsm->vertexFFP();
+  }
+  else {
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEee2gZ2ll::doinit() the Herwig++ version must be used"
+			  << Exception::runerror;
+  }
+}
+
+void MEee2gZ2ll::rebind(const TranslationMap & trans) {
+  _theFFZVertex = trans.translate(_theFFZVertex);
+  _theFFPVertex = trans.translate(_theFFPVertex);
+  _Z0           = trans.translate(_Z0);
+  _gamma        = trans.translate(_gamma);
+  HwMEBase::rebind(trans);
+}
+
+IVector MEee2gZ2ll::getReferences() {
+  IVector ret = HwMEBase::getReferences();
+  ret.push_back(_theFFZVertex);
+  ret.push_back(_theFFPVertex);
+  ret.push_back(_Z0          );
+  ret.push_back(_gamma       );
+  return ret;
 }

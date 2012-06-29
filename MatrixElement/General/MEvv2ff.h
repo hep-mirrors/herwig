@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEvv2ff.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,6 +13,8 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
@@ -63,16 +65,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -88,7 +80,8 @@ private:
    */
   ProductionMatrixElement vv2ffME(const VBVector & v1, const VBVector & v2,
 				  const SpinorBarVector & sbar,
-				  const SpinorVector & sp, double & me2) const;
+				  const SpinorVector & sp, 
+				  double & me2, bool first) const;
   
 protected:
 
@@ -135,7 +128,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 
@@ -147,13 +146,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -175,19 +174,23 @@ private:
   /** @name Dynamically casted vertices. */
   //@{
   /**
+   *  Intermediate scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr > > scalar_;
+  /**
    * Intermediate fermion 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * Intermediate vector
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vector_;
   
   /**
    * Intermediate tensor
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
   //@}
 };
 

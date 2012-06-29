@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMWWHVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,25 +19,17 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
-  : _couplast(0.), _q2last(0.*GeV2), _mw(0.*GeV), _zfact(0.) {
-  // particles
-  vector<long> first,second,third;
-  first.push_back(24);  
-  second.push_back(-24);
-  third.push_back(25);  
-  first.push_back(23);  
-  second.push_back(23); 
-  third.push_back(25);  
-  setList(first,second,third);
-}
-
-void SMWWHVertex::doinit() throw(InitException) {
-  // parameters
-  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  _zfact = 1./(1.-generator()->standardModel()->sin2ThetaW());
-  // order in the couplings
+  : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
   orderInGem(1);
   orderInGs(0);
+}
+
+void SMWWHVertex::doinit() {
+  addToList(24,-24, 25);
+  addToList(23, 23, 25);
+  // parameters
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  _zfact = 1./(1.-sin2ThetaW());
   // base class
   VVSVertex::doinit();
 }
@@ -60,15 +52,15 @@ void SMWWHVertex::Init() {
      " Model electroweak gauge bosons to the Higgs.");
 }
 
-void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
-  int ibos=abs(a->id());
+void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
+  int ibos=abs(aa->id());
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = weakCoupling(q2) * UnitRemoval::InvE * _mw;
     _q2last=q2;
   }
-  if(ibos==24)      setNorm(_couplast);
-  else if(ibos==23) setNorm(_couplast*_zfact);
+  if(ibos==24)      norm(_couplast);
+  else if(ibos==23) norm(_couplast*_zfact);
   else
     throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex" 

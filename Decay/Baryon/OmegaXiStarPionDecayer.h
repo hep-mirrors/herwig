@@ -4,14 +4,13 @@
 // This is the declaration of the OmegaXiStarPionDecayer class.
 
 #include "Baryon1MesonDecayerBase.h"
-#include "OmegaXiStarPionDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>OmegaXiStarPionDecayer</code> class implements the results of
+ *  The OmegaXiStarPionDecayer class implements the results of
  *  hep-ph/0405162 for the weak decay of the \f$\Omega\f$ to the \f$\Xi^*\f$ and a pion.
  *
  * @see Baryon1MesonDecayerBase
@@ -24,10 +23,7 @@ public:
   /**
    * Default constructor.
    */
-  inline OmegaXiStarPionDecayer();
-
-public:
-
+  OmegaXiStarPionDecayer();
 
   /**
    * Which of the possible decays is required
@@ -98,13 +94,13 @@ public:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -116,12 +112,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -141,42 +137,42 @@ private:
   /**
    * The \f$A_{\rm Comm}\f$ amplitude from hep-ph/0405162
    */
-  double _Acomm;
+  double Acomm_;
 
   /**
    * The \f$A_P\f$ amplitude from hep-ph/0405162
    */
-  double _AP;
+  double AP_;
 
   /**
    * The \f$A_S\f$ amplitude from hep-ph/0405162
    */
-  double _AS;
+  double AS_;
 
   /**
    * The \f$B_P\f$ amplitude from hep-ph/0405162
    */
-  double _BP;
+  double BP_;
 
   /**
    * The \f$B_S\f$ amplitude from hep-ph/0405162
    */
-  double _BS;
+  double BS_;
   
   /**
    * PDG code of the incoming baryon
    */
-  int _idin;
+  int idin_;
 
   /**
    * PDG code of the outgoing baryon
    */
-  int _idout;
+  int idout_;
 
   /**
    * maximum weight for the decay
    */
-  double _wgtmax;
+  double wgtmax_;
 
 };
 
@@ -220,7 +216,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "OmegaXiStarPionDecayer.icc"
 
 #endif /* HERWIG_OmegaXiStarPionDecayer_H */

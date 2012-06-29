@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LightClusterDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,8 +22,21 @@
 #include "Cluster.h"
 #include "CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<LightClusterDecayer,Interfaced>
+describeLightClusterDecayer("Herwig::LightClusterDecayer","");
+
+IBPtr LightClusterDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LightClusterDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
   os << _hadronSelector << _limBottom << _limCharm << _limExotic;
@@ -32,11 +45,6 @@ void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
 void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hadronSelector >> _limBottom >> _limCharm >> _limExotic ;
 }
-
-
-ClassDescription<LightClusterDecayer> LightClusterDecayer::initLightClusterDecayer;
-// Definition of the static class description member.
-
 
 void LightClusterDecayer::Init() {
 
@@ -175,7 +183,7 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
     for ( ClusterVector::iterator jt = clusters.begin();
 	  jt != clusters.end(); ++jt ) {
       if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
-	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).mag());
+	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).m());
 	candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
       }
     }
@@ -206,7 +214,7 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
 				      tClusterPtr cluPtr2,
 				      tClusterVector & redefinedClusters,
 				      tPVector & finalhadrons)
-  throw (Veto, Stop, Exception) {
+  {
   // don't reshuffle with beam clusters
   if(cluPtr2->isBeamCluster()) return false;
 
@@ -276,8 +284,9 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
                                                 // parent cluster position.
   cluPtr1->addChild(ptrhad1);
   finalhadrons.push_back(ptrhad1);
-  cluPtr1->reshufflingPartnerCluster( cluPtr2 );
-  cluPtr2->reshufflingPartnerCluster( cluPtr1 );
+  cluPtr1->flagAsReshuffled();
+  cluPtr2->flagAsReshuffled();
+
 
   if(singleHadron) {  
 
@@ -361,7 +370,7 @@ bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,
   }
   if(leptons.size()!=2) return false;
   // get momentum of leptonic system and the its minimum possible mass
-  Energy mmin(0.*GeV);
+  Energy mmin(ZERO);
   Lorentz5Momentum pw;
   for(unsigned int ix=0;ix<leptons.size();++ix) {
     pw+=leptons[ix]->momentum();

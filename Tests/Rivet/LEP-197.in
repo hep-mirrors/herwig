@@ -1,0 +1,23 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 197.
+
+##################################################
+# select the analyses
+##################################################
+
+# OPAL event shapes and multiplicities at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+
+###################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LEP-197 LEPGenerator

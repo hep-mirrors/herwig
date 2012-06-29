@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2WJet class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -24,7 +24,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2WJetInterfaces "The interfaces"
  * defined for MEPP2WJet.
  */
-class MEPP2WJet: public MEBase {
+class MEPP2WJet: public HwMEBase {
 
 public:
 
@@ -209,13 +209,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -227,7 +227,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -336,7 +336,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2WJet,1> {
   /** Typedef of the first base class of MEPP2WJet. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

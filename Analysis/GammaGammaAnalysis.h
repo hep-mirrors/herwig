@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GammaGammaAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * GammaGammaAnalysis is for the analysis of events with a pair of hard
  * photons produced.  These are selected as the two highest pt photons
  * in the final state of the event.  A topdrawer file with histograms
@@ -58,46 +58,9 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -115,13 +78,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -139,9 +102,9 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Indicates that this is a concrete class without persistent data.
    */
-  static ClassDescription<GammaGammaAnalysis> initGammaGammaAnalysis;
+  static NoPIOClassDescription<GammaGammaAnalysis> initGammaGammaAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
@@ -150,32 +113,65 @@ private:
   GammaGammaAnalysis & operator=(const GammaGammaAnalysis &);
 
 private:
+
   /**
-   *   \f$p_T\f$ of the photon
+   *   \f$p_T\f$ of the harder photon
    */
   Histogram _ptharder;
+
+  /**
+   *   \f$p_T\f$ of the softer photon
+   */
   Histogram _ptsofter;
+
+  /**
+   *   \f$p_T\f$ of the photon pair
+   */
   Histogram _ptpair;
 
   /**
-   *   Energy of the photons
+   *   Energy of the harder photon
    */
   Histogram _Eharder;
+
+  /**
+   *   Energy of the softer photon
+   */
   Histogram _Esofter;
+
+  /**
+   *   Energy of the photon pair
+   */
   Histogram _Epair;
 
   /**
-   *  Rapidity of the photons
+   *  Rapidity of the harder photon
    */
   Histogram _rapharder;
+
+  /**
+   *  Rapidity of the softer photon
+   */
   Histogram _rapsofter;
+
+  /**
+   *  Rapidity of the photon pair
+   */
   Histogram _rappair;
 
   /**
-   *  Azimuth of the photons
+   *  Azimuth of the harder photon
    */
   Histogram _phiharder;
+
+  /**
+   *  Azimuth of the softer photon
+   */
   Histogram _phisofter;
+
+  /**
+   *  Azimuth of the photon pair
+   */
   Histogram _deltaphi;
   
   /**

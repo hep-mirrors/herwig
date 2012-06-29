@@ -725,7 +725,23 @@
 	character*80 w252
 	parameter (w252="ffcdna: warning: cancellations between r*x1 "//
      +   "and r*x2")
-	character*80 warn(252)
+	character*80 w253
+	parameter (w253="ffd0c: warning: something wrong with the "//
+     +   "rotation")
+	character*80 w254
+	parameter (w254="ffTn: warning: numerical cancellation "//
+     +   "in in-triangle check")
+	character*80 w255
+	parameter (w255="ffRn: warning: 3-point Landau singularity")
+	character*80 w256
+	parameter (w256="ffRn: warning: Im(a.b) in the 1st theta "//
+     +   "function is zero")
+	character*80 w257
+	parameter (w257="ffRn: warning: Im(a.b) in the 2nd theta "//
+     +   "function is zero")
+	character*80 w258
+	parameter (w258="ffint3: cannot handle complex x yet")
+	character*80 warn(258)
 	data warn / w1,w2,w3,w4,w5,w6,w7,w8,w9,
      +   w10,w11,w12,w13,w14,w15,w16,w17,w18,w19,
      +   w20,w21,w22,w23,w24,w25,w26,w27,w28,w29,
@@ -751,4 +767,4 @@
      +   w220,w221,w222,w223,w224,w225,w226,w227,w228,w229,
      +   w230,w231,w232,w233,w234,w235,w236,w237,w238,w239,
      +   w240,w241,w242,w243,w244,w245,w246,w247,w248,w249,
-     +   w250,w251,w252 /
+     +   w250,w251,w252,w253,w254,w255,w256,w257,w258 /

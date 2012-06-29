@@ -123,7 +123,7 @@ void LHTPModel::resetMass(long id, Energy mass) {
   ifb->exec(*part, "set", os.str());
 }
 
-void LHTPModel::doinit() throw(InitException) {
+void LHTPModel::doinit() {
   StandardModel::doinit();
   string name = CurrentGenerator::current().filename() +
     string("-BSMModelInfo.out");

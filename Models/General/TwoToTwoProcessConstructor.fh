@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TwoToTwoProcessConstructor class.
+//
+#ifndef HERWIG_TwoToTwoProcessConstructor_FH
+#define HERWIG_TwoToTwoProcessConstructor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class TwoToTwoProcessConstructor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::TwoToTwoProcessConstructor,TwoToTwoConstructorPtr);
+
+}
+
+#endif

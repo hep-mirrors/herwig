@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UA5Handler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -60,8 +60,13 @@ void UA5Handler::Init() {
     ("This is the simple UA5 model for the underlying event.",
      "The underlying event was simulated using the model of "
      "the UA5 collaboration, \\cite{Alner:1986is}.",
-     "\\bibitem{Alner:1986is} G.~J.~Alner {\\it et al.}  "
-     "UA5 Collaboration, Nucl.\\ Phys.\\ B{\\bf 291} (1987) 445.");
+     "%\\cite{Alner:1986is}\n"
+     "\\bibitem{Alner:1986is}\n"
+     "  G.~J.~Alner {\\it et al.}  [UA5 Collaboration],\n"
+     "  ``The UA5 High-Energy anti-p p Simulation Program,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 291}, 445 (1987).\n"
+     "  %%CITATION = NUPHA,B291,445;%%\n"
+     );
 
   static Reference<UA5Handler,ClusterFissioner>
     interfaceClusterFissioner("ClusterFissioner",
@@ -108,7 +113,7 @@ void UA5Handler::Init() {
   static Parameter<UA5Handler,Energy> interfaceM1
     ("M1",
      "The parameter m_1 used to generate the cluster mass distribution.",
-     &UA5Handler::_m1, GeV, 0.4*GeV, 0.0*GeV, 10.0*GeV,
+     &UA5Handler::_m1, GeV, 0.4*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<UA5Handler,InvEnergy> interfaceM2
@@ -225,7 +230,7 @@ LorentzRotation UA5Handler::rotate(const LorentzMomentum &p) const {
   Energy2 pp2 = sqr(p.z())+pt2;
   double phi, theta;
   if(pt2 <= pp2*ptcut) {
-     if(p.z() > 0*GeV) theta = 0.;
+     if(p.z() > ZERO) theta = 0.;
      else theta = Constants::pi;
      phi = 0.;
   } else {
@@ -298,7 +303,7 @@ void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge) 
 		      children[i]->setLabVertex(parent->labDecayVertex());
 		      parent->addChild(children[i]);
 		    }
-		  parent->scale(0.0*GeV2);
+		  parent->scale(ZERO);
 		  // loop over the children and decay
 		  for ( int i = 0, N = children.size(); i < N; ++i )
 		    {performDecay(children[i],totalcharge,numbercharge);}
@@ -327,7 +332,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 					       mom, vert);
       // put the cluster and the hadron on mass-shell
       Energy mass=products.first->nominalMass();
-      Lorentz5Momentum newp(0.*MeV,0.*MeV,0.*MeV,mass,mass);
+      Lorentz5Momentum newp(ZERO,ZERO,ZERO,mass,mass);
       cluster->set5Momentum(newp);
       products.first->set5Momentum(newp);
       cluster->addChild(products.first);
@@ -341,7 +346,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
-			const Hint &) throw(Veto,Stop,Exception) {
+			const Hint &) {
   // Warn if the event has multiple scatters. 
   // If so, UA5 often has been left on by accident.
   if (_needWarning 
@@ -372,13 +377,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   // Find the first two clusters
   // Lets find the clusters, set the partons inside to be on shell and no momentum
   tClusterPtr clu[2];
-  Lorentz5Momentum cluP[2];
   tPVector::const_iterator it;
   unsigned int i = 0;
   for(it = tagged.begin(); it!=tagged.end(); ++it) {
-    if((*it)->id() != ExtraParticleID::Cluster) continue;
+    if((*it)->id() != ParticleID::Cluster) continue;
     clu[i] = dynamic_ptr_cast<ClusterPtr>(*it);
-    cluP[i] = clu[i]->momentum();
     ++i;
     if(i>2) throw Exception() << "Must have at most two beam clusters in "
 			      << "UA5Handler::handle " 
@@ -427,7 +430,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
      ++ntry;
      unsigned int numberCluster = 0;
      int theMult = nppbar;
-     Energy sumMasses = 0.*GeV;
+     Energy sumMasses = ZERO;
      // delete the particles from the previous attempt if needed
      if(ntry > 1) clusters.clear();
      int numCharge = 0;
@@ -455,7 +458,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 	 getParticleData(id2)->constituentMass() 
 	 + _m1 - log(rnd()*rnd())/_m2;
        // set momentum of the cluster
-       Lorentz5Momentum cp(0.*MeV,0.*MeV,0.*MeV,newMass,newMass);
+       Lorentz5Momentum cp(ZERO,ZERO,ZERO,newMass,newMass);
        cluster->set5Momentum(cp);
        // Now the gaussian distribution of the x,y,z components,
        // and a time component given by
@@ -528,11 +531,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
 				  const ClusterVector &clusters, 
 				  Energy CME, const Lorentz5Momentum & cm) 
-  const throw(Veto,Exception) {
+  const {
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
   // boost momentum of incoming cluster along z axis to cluster cmf frame
-  if(clu2->momentum().z()>0*MeV) swap(clu1,clu2);
+  if(clu2->momentum().z()>ZERO) swap(clu1,clu2);
   LorentzMomentum bmp = clu1->momentum();
   bmp = bmp.boost(cm.findBoostToCM());
   // Rotation to put bmp on the z axis
@@ -601,17 +604,17 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
   double eps = 1e-10/double(ncl);
   vector<double> xi(ncl);
   unsigned int its(0);
-  Energy sum1(0.*MeV);
+  Energy sum1(ZERO);
   double yy(0.);
   while(its < _maxtries) {
     ++its;
-    Energy sumx = 0.*MeV;
-    Energy sumy = 0.*MeV;
+    Energy sumx = ZERO;
+    Energy sumy = ZERO;
     for(unsigned int i = 0; i<ncl; ++i) {
       // Generate the pt given the parameter slope
       Energy   pt = randExt(clusters[i]->mass(), slope[i]);
       Energy2 ptp = pt*pt - sqr(mom[i].mass());
-      if(ptp <= Energy2()) pt = - sqrt(-ptp);
+      if(ptp <= ZERO) pt = - sqrt(-ptp);
       else pt = sqrt(ptp);
       // randomize azimuth
       Energy px,py;
@@ -625,7 +628,7 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
     sumx /= ncl;
     sumy /= ncl;
     // find the sum of the transverse mass
-    Energy sumtm=0.*MeV;
+    Energy sumtm=ZERO;
     for(unsigned int ix = 0; ix<ncl; ++ix) {
       mom[ix].setX(mom[ix].x()-sumx);
       mom[ix].setY(mom[ix].y()-sumy);
@@ -648,7 +651,7 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
     bool suceeded=false;
     Energy sum2,sum3,sum4;
     for(unsigned int j = 0; j<10; j++) {
-      sum1 = sum2 = sum3 = sum4 = 0.*MeV;
+      sum1 = sum2 = sum3 = sum4 = ZERO;
       for(unsigned int i = 0; i<ncl; i++) {
         Energy tm = mom[i].z();
         double ex = exp(yy*xi[i]);

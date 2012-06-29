@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SemiLeptonicScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -30,7 +30,24 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
+SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() {
+  // intermediates
+  generateIntermediates(true);
+}
+
+void SemiLeptonicScalarDecayer::doinitrun() {
+  _current->initrun();
+  _form->initrun();
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    _maxwgt.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _maxwgt.push_back(mode(ix)->maxWeight());
+    }
+  }
+}
+
+void SemiLeptonicScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();
@@ -120,11 +137,11 @@ int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void SemiLeptonicScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _maxwgt << _modemap << ounit(_GF,1/GeV2);
+  os << _current << _form << _maxwgt << _modemap;
 }
 
 void SemiLeptonicScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _maxwgt >> _modemap >> iunit(_GF,1/GeV2);
+  is >> _current >> _form >> _maxwgt >> _modemap;
 }
 
 ClassDescription<SemiLeptonicScalarDecayer> SemiLeptonicScalarDecayer::initSemiLeptonicScalarDecayer;
@@ -135,13 +152,6 @@ void SemiLeptonicScalarDecayer::Init() {
   static ClassDocumentation<SemiLeptonicScalarDecayer> documentation
     ("The SemiLeptonicScalarDecayer class is designed for the"
     "semi-leptonic decay of a (pseudo)-scalar meson.");
-
-  static Parameter<SemiLeptonicScalarDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &SemiLeptonicScalarDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2,
-     0./GeV2, 1.e-4/GeV2,
-     false, false, false);
 
   static Reference<SemiLeptonicScalarDecayer,LeptonNeutrinoCurrent> interfaceCurrent
     ("Current",
@@ -162,35 +172,88 @@ void SemiLeptonicScalarDecayer::Init() {
 }
 
 // combine the currents and form-factors to give the matrix element
-double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
+double SemiLeptonicScalarDecayer::me2(const int ichan,
 				      const Particle & inpart,
-				      const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  // spin info for the decaying particle
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+				      const ParticleVector & decay,
+				      MEOption meopt) const {
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
-  bool cc=false;
+  bool cc(false);
   unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
   int spect,iq,ia;
   _form->formFactorInfo(iloc,jspin,spect,iq,ia);
+  // extract leptons for the lepton current
+  Energy scale;
+  ParticleVector leptons;
+  leptons.push_back(decay[decay.size()-2]);
+  leptons.push_back(decay[decay.size()-1]);
+  int mode=(abs(decay[1]->id())-11)/2;
+  // initialisation
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    if(jspin==0)
+      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
+    else if(jspin==1)       
+      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
+    else if(jspin==2)       
+      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half));
+    // work out the mapping for the lepton vector
+    _constants.resize(decay.size()+1);
+    _ispin.resize(decay.size());
+    _imes=0;
+    unsigned int itemp(1);
+    for(int ix=int(decay.size()-1);ix>=0;--ix) {
+      _ispin[ix]=decay[ix]->data().iSpin();
+      if(abs(decay[ix]->id())<=16) {
+	itemp*=_ispin[ix];
+	_constants[ix]=itemp;
+      }
+      else _imes=ix;
+    }
+    _constants[decay.size()]=1;
+    _constants[_imes]=_constants[_imes+1];
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    if(jspin==0)
+      ScalarWaveFunction::
+	constructSpinInfo(decay[0],outgoing,true);
+    else if(jspin==1)
+      VectorWaveFunction::
+	constructSpinInfo(_vectors,decay[0],outgoing,true,false);
+    else if(jspin==2)
+      TensorWaveFunction::
+	constructSpinInfo(_tensors,decay[0],outgoing,true,false);
+    _current->current(mode,ichan,scale,leptons,meopt);
+    return 0.;
+  }
+  // get the wavefunctions of the decay products
+  switch(decay[0]->dataPtr()->iSpin()) {
+  case 1:
+    break;
+  case 3:
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors,decay[0],outgoing,false);
+    break;
+  case 5:
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,decay[0],outgoing,false);
+    break;
+  default:
+    assert(false);
+  }
   // work out the value of q and calculate the form factors
   Lorentz5Momentum q(inpart.momentum()-decay[0]->momentum());
   q.rescaleMass();
-  
   Energy2 q2(q.mass2());
   Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
   // calculate the hadronic current for the decay
   Complex ii(0.,1.);
   vector<LorentzPolarizationVectorE> hadron;
   if(jspin==0) {
-    // workaround for gcc 3.2.3 bug
-    //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-    PPtr mytemp = decay[0];
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    
     Complex fp,f0;
     _form->ScalarScalarFormFactor(q2,iloc,id0,id1,inpart.mass(),decay[0]->mass(),
 				  f0,fp);
@@ -198,8 +261,6 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
     hadron.push_back(fp*sum+(pre*q));
   }
   else if(jspin==1) {
-    vector<LorentzPolarizationVector> vwave;
-    VectorWaveFunction(vwave,decay[0],outgoing,true,false,vertex);
     Complex A0,A1,A2,A3,V;
     complex<Energy> dot;
     Energy MP(inpart.mass()),MV(decay[0]->mass()),msum(MP+MV),mdiff(MP-MV);
@@ -209,18 +270,16 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
     // compute the hadron currents
     for(unsigned int ix=0;ix<3;++ix) {
       // dot product
-      dot = vwave[ix]*inpart.momentum();
+      dot = _vectors[ix]*inpart.momentum();
       // current
-      hadron.push_back(-ii*msum*A1*vwave[ix]
+      hadron.push_back(-ii*msum*A1*_vectors[ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
+		       +2.*V/msum*Helicity::epsilon(_vectors[ix],inpart.momentum(),
 						    decay[0]->momentum()));
     }
   }
   else if(jspin==2) {
-    vector<LorentzTensor<double> > twave;
-    TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
     complex<InvEnergy2> h,bp,bm;
     complex<double> k;
     complex<Energy2> dot;
@@ -230,57 +289,37 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
     LorentzPolarizationVectorE dotv;
     // compute the hadron currents
     for(unsigned int ix=0;ix<5;++ix) {
-      dotv = twave[ix]*inpart.momentum();
+      dotv = _tensors[ix]*inpart.momentum();
       dot = dotv*inpart.momentum();
       hadron.push_back(ii*h*Helicity::epsilon(dotv,sum,q)
 		       -k*dotv-bp*dot*sum-bm*dot*q);
     }
   }
-  int mode=(abs(decay[1]->id())-11)/2;
   // construct the lepton current
-  Energy scale;
-  ParticleVector leptons;
-  leptons.push_back(decay[decay.size()-2]);
-  leptons.push_back(decay[decay.size()-1]);
   vector<LorentzPolarizationVectorE> 
-    lepton(_current->current(vertex,mode,ichan,scale,leptons));
-  // work out the mapping for the lepton vector
-  vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
-  vector<PDT::Spin> ispin(decay.size());
-  unsigned int itemp(1),imes(0);
-  for(int ix=int(decay.size()-1);ix>=0;--ix) {
-    ispin[ix]=decay[ix]->data().iSpin();
-    if(abs(decay[ix]->id())<=16) {
-      itemp*=ispin[ix];
-      constants[ix]=itemp;
-    }
-    else imes=ix;
-  }
-  constants[decay.size()]=1;
-  constants[imes]=constants[imes+1];
-  DecayMatrixElement newME(PDT::Spin0,ispin);
+    lepton(_current->current(mode,ichan,scale,leptons,meopt));
+  // compute the matrix element
+  vector<unsigned int> ihel(decay.size()+1);
   for(unsigned int mhel=0;mhel<hadron.size();++mhel) {
     for(unsigned int lhel=0;lhel<lepton.size();++lhel) {
       // map the index for the leptons to a helicity state
       for(unsigned int ix=decay.size();ix>0;--ix) {
-	if(ix-1!=imes) ihel[ix]=(lhel%constants[ix-1])/constants[ix];
+	if(ix-1!=_imes) ihel[ix]=(lhel%_constants[ix-1])/_constants[ix];
       }
       // helicities of mesons
       ihel[0]=0;
-      ihel[imes+1]=mhel;
-      newME(ihel)= lepton[lhel].dot(hadron[mhel])*_GF;
+      ihel[_imes+1]=mhel;
+      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
     }
   }
-  RhoDMatrix temp(PDT::Spin0); temp.average();
   // store the matrix element
-  ME(newME);
   double ckm(1.);
   if(iq<=6) {
     if(iq%2==0) ckm = SM().CKM(abs(iq)/2-1,(abs(ia)-1)/2);
     else        ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
   }
   // return the answer
-  return 0.5*(newME.contract(temp)).real()*ckm; 
+  return 0.5*(ME().contract(_rho)).real()*ckm; 
 }
  
 // output the setup information for the particle database
@@ -288,14 +327,13 @@ void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "   << _GF*GeV2 << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight " << ix << " " 
+    output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":Current " << _current->fullName() << " \n";
+  output << "newdef " << name() << ":Current " << _current->name() << " \n";
   _form->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":FormFactor " << _form->fullName() << " \n";
+  output << "newdef " << name() << ":FormFactor " << _form->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

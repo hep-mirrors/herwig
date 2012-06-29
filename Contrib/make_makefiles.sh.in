@@ -1,0 +1,38 @@
+#!/bin/bash
+# script to put the HERWIG and THEPEG paths into the simple makefiles,
+# for everything else the user is on their own!
+# loop over all the files
+
+THEPEGINCLUDE="@THEPEGINCLUDE@"
+GSLINCLUDE="@GSLINCLUDE@"
+FASTJETINCLUDE="@FASTJETINCLUDE@"
+HERWIGINCLUDE=-I@prefix@/include/
+FC="@FC@"
+FCLIBS="@FCLIBS@"
+CXX="@CXX@"
+CXXFLAGS="@CXXFLAGS@"
+LDFLAGS="@LDFLAGS@" 
+SHARED_FLAG="@SHARED_FLAG@" 
+
+for i in *
+do
+# if a directory
+  if [ -d $i ]; then
+# check input files exists
+      file=$i/Makefile.in
+      if [ -e $file ]; then
+	  file2=`echo $file | sed s!\.in!!`
+	  echo 'Making ' $file2
+	  sed "s!THEPEGINCLUDE *\=!THEPEGINCLUDE=$THEPEGINCLUDE!" < $file | \
+	  sed "s!FC *\=!FC=$FC!" | \
+	  sed "s!FCLIBS *\=!FCLIBS=$FCLIBS!" | \
+          sed "s!CXX *\=!CXX=$CXX!" | \
+          sed "s!SHARED_FLAG *\=!SHARED_FLAG=$SHARED_FLAG!" | \
+          sed "s!LDFLAGS *\=!LDFLAGS=$LDFLAGS!" | \
+          sed "s!CXXFLAGS *\=!CXXFLAGS=$CXXFLAGS!" | \
+	  sed "s!HERWIGINCLUDE *\=!HERWIGINCLUDE=$HERWIGINCLUDE!" | \
+	  sed "s!GSLINCLUDE *\=!GSLINCLUDE=$GSLINCLUDE!" | \
+	  sed "s!FASTJETINCLUDE *\=!FASTJETINCLUDE=$FASTJETINCLUDE!" > $file2
+      fi
+  fi
+done

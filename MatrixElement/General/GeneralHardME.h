@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralHardME.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,11 +12,15 @@
 // This is the declaration of the GeneralHardME class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/General/HPDiagram.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/EventRecord/SpinInfo.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "GeneralHardME.fh"
 
 namespace Herwig {
@@ -30,10 +34,10 @@ using Helicity::VertexBasePtr;
  * ME. It stores a vector of diagram structures that contain the required
  * to calculate the matrix element.
  *
- * @see HwME2to2Base
+ * @see HwMEBase
  */
 
-class GeneralHardME: public HwME2to2Base {
+class GeneralHardME: public HwMEBase {
 
 public:
 
@@ -41,6 +45,26 @@ public:
    * Convenient typedef for size_type of HPDiagram vector 
    */
   typedef vector<HPDiagram>::size_type HPCount;
+
+  /**
+   *  Enum for the possible colour structures
+   */
+  enum ColourStructure {UNDEFINED,
+                        Colour11to11,Colour11to33bar,Colour11to88,
+                        Colour33to33,Colour33barto11,Colour33barto33bar,
+                        Colour33barto66bar, Colour33barto6bar6,
+			Colour33to61, Colour3bar3barto6bar1,
+                        Colour33to16, Colour3bar3barto16bar,
+			Colour38to3bar6, Colour38to63bar,
+                        Colour33barto18,Colour33barto81,Colour33barto88,
+                        Colour38to13,Colour38to31,
+                        Colour38to83,Colour38to38,
+                        Colour3bar3barto3bar3bar,
+                        Colour3bar8to13bar,Colour3bar8to3bar1,
+                        Colour3bar8to83bar,Colour3bar8to3bar8,
+                        Colour88to11,Colour88to33bar,
+                        Colour88to66bar,Colour88to88,
+                        Colour88to18,Colour88to81};
 
 public:
 
@@ -77,7 +101,19 @@ public:
   /**
    * Return the scale associated with the last set phase space point.
    */
-  virtual inline Energy2 scale() const;
+  virtual Energy2 scale() const {
+    if(scaleChoice_==0) {
+      return scaleFactor_*sHat();
+    }
+    else {
+      assert( scaleChoice_== 1 );
+      Energy2 mbar = 0.5*(meMomenta()[2].mass2()+meMomenta()[3].mass2());
+      Energy2 t = 0.5*(tHat()-mbar);
+      Energy2 u = 0.5*(uHat()-mbar);
+      Energy2 s = 0.5*sHat();
+      return scaleFactor_*4.*s*t*u/(s*s+t*t+u*u);
+    }
+  }
 
   /**
    * Add all possible diagrams with the add() function.
@@ -103,23 +139,24 @@ public:
    * relative probabilities.
    */
   virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const = 0;
+  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
    * Set the diagrams and matrix of colour factors. 
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
-   * @param factors
-   * @param ncf Number of colour flows
+   * @param colour The colour structure for the process
    * @param debug Whether to compare the numerical answer to an analytical
    * formula (This is only stored for certain processes. It is intended
    * for quick checks of the matrix elements).
+   * @param scaleOption The option of what scale to use
+   * @param scaleFactor The prefactor for the scale
    */
   void setProcessInfo(const vector<HPDiagram> & process,
-		      const vector<DVector> & factors,
-		      const unsigned int ncf,
-		      bool debug);
+		      ColourStructure colour, bool debug, 
+		      unsigned int scaleOption,
+		      double scaleFactor);
 
 public:
 
@@ -149,12 +186,22 @@ public:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
+
+protected:
+
   /**
    * A debugging function to test the value of me2 against an
    * analytic function. This is to be overidden in an inheriting class.
-   * @param x The value of \f$ |\mathcal{M} |^2 \f$
    */
-  virtual void debug(double x) const;  
+  virtual void debug(double ) const {}  
 
 protected:
 
@@ -162,39 +209,154 @@ protected:
    * Access the HPDiagrams that store the required information
    * to create the diagrams
    */
-  inline const vector<HPDiagram> & getProcessInfo() const; 
+  const vector<HPDiagram> & getProcessInfo() const {
+    return diagrams_;
+  }
 
   /**
    * Return the incoming pair
    * @return Pair of particle ids for the incoming particles
    */
-  inline pair<long, long> getIncoming() const;
-
+  pair<long, long> getIncoming() const {
+    return incoming_;
+  }
+  
   /**
    * Return the outgoing pair
    * @return Pair of particle ids for the outgoing particles
    */
-  inline pair<long, long> getOutgoing() const;
+  pair<long, long> getOutgoing() const {
+    return outgoing_;
+  }
   
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getColourFactors() const;
+  const vector<DVector> & getColourFactors() const {
+    return colour_;
+  }
 
   /**
    * Get the number of diagrams in this process
    */
-  inline HPCount numberOfDiags() const;
+  HPCount numberOfDiags() const {
+    return numberOfDiagrams_;
+  } 
   
   /**
    * Access number of colour flows
    */
-  inline size_t numberOfFlows() const;
+  size_t numberOfFlows() const {
+    return numberOfFlows_;
+  }
 
   /**
    * Whether to print the debug information 
    */
-  inline bool debugME() const;
+  bool debugME() const {
+    return debug_;
+  }
+
+
+  /**
+   *  Set/Get Info on the selected diagram and colour flow
+   */
+  //@{
+  /**
+   * Colour flow
+   */
+  unsigned int colourFlow() const {return flow_;}
+
+  /**
+   * Colour flow
+   */
+  void colourFlow(unsigned int flow) const {flow_=flow;}
+
+  /**
+   * Diagram
+   */
+  unsigned int diagram() const {return diagram_;}
+
+  /**
+   * Diagram
+   */
+  void diagram(unsigned int diag) const {diagram_=diag;}
+  //@}
+
+  /**
+   *  Calculate weight and select colour flow
+   */
+  double selectColourFlow(vector<double> & flow,
+			  vector<double> & me,double average) const;
+
+  /**
+   *  Access to the colour flow matrix element
+   */
+  vector<ProductionMatrixElement> & flowME() const {
+    return flowME_;
+  }
+
+  /**
+   *  Access to the diagram matrix element
+   */
+  vector<ProductionMatrixElement> & diagramME() const {
+    return diagramME_;
+  }
+
+  /**
+   *  Access to the colour structure
+   */
+  ColourStructure colour() const {return colourStructure_;}
+
+  /**
+   *  Extract the paricles from the subprocess
+   */
+  ParticleVector hardParticles(tSubProPtr subp) {
+    ParticleVector output(4);
+    output[0] = subp->incoming().first; 
+    output[1] = subp->incoming().second;
+    output[2] = subp->outgoing()[0]; 
+    output[3] = subp->outgoing()[1];    
+    //ensure particle ordering is the same as it was when
+    //the diagrams were created
+    if( output[0]->id() != getIncoming().first )
+      swap(output[0], output[1]);
+    if( output[2]->id() != getOutgoing().first )
+      swap(output[2], output[3]);
+    // return answer
+    return output;
+  }
+
+  /**
+   *  Set the rescaled momenta
+   */
+  void setRescaledMomenta(const ParticleVector & external) {
+    cPDVector data(4);
+    vector<Lorentz5Momentum> momenta(4);
+    for( size_t i = 0; i < 4; ++i ) {
+      data[i] = external[i]->dataPtr();
+      momenta[i] = external[i]->momentum();
+    }
+    rescaleMomenta(momenta, data);
+  }
+
+  /**
+   *  Create the vertes
+   */
+  void createVertex(ProductionMatrixElement & me,
+		    ParticleVector & external) {
+    HardVertexPtr hardvertex = new_ptr(HardVertex());
+    hardvertex->ME(me);
+    for(ParticleVector::size_type i = 0; i < 4; ++i) {
+      tSpinPtr spin = external[i]->spinInfo();
+      if(i<2) {
+	tcPolarizedBeamPDPtr beam = 
+	  dynamic_ptr_cast<tcPolarizedBeamPDPtr>(external[i]->dataPtr());
+	if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+      }
+      spin->productionVertex(hardvertex);
+    }
+  }
 
 private:
 
@@ -213,44 +375,105 @@ private:
 private:
   
   /**
+   *  External particles
+   */
+  //@{
+  /**
    * Store incoming particles
    */
-  pair<long, long> theIncoming;
+  pair<long, long> incoming_;
   
   /**
    * Store the outgoing particles
    */
-  pair<long, long> theOutgoing;
+  pair<long, long> outgoing_;
+  //@}
 
+  /**
+   *  Diagrams
+   */
+  //@{
   /**
    * Store all diagrams as a vector of structures
    */
-  vector<HPDiagram> theDiagrams;
+  vector<HPDiagram> diagrams_;
 
   /**
    * Store the number of diagrams for fast retrieval
    */
-  HPCount theNDiags;
+  HPCount numberOfDiagrams_;
+  //@}
+
+  /**
+   *  Colour information
+   */
+  //@{
+  /**
+   *  The colour structure
+   */
+  ColourStructure colourStructure_;
 
   /**
    * Store colour factors for ME calc.
    */
-  vector<DVector> theColour;
+  vector<DVector> colour_;
 
   /**
    * The number of colourflows.
    */
-  unsigned int theNcf;
+  unsigned int numberOfFlows_;
+  //@}
 
   /**
    * Whether to test the value of me2 against the analytical function
    */
-  bool theDebug;
+  bool debug_;
+
+  /**
+   * The scale chocie
+   */
+  unsigned int scaleChoice_;
+
+  /**
+   *  The scale factor
+   */
+  double scaleFactor_;
+
+  /**
+   *  Info on the selected diagram and colour flow
+   */
+  //@{
+  /**
+   * Colour flow
+   */
+  mutable unsigned int flow_;
+
+  /**
+   * Diagram
+   */
+  mutable unsigned int diagram_;
+  //@}
+
+  /**
+   *  Storage of the matrix elements
+   */
+  //@{
+  /**
+   *  Matrix elements for the different colour flows
+   */
+  mutable vector<ProductionMatrixElement> flowME_;
+
+  /**
+   *  Matrix elements for the different Feynman diagrams
+   */
+  mutable vector<ProductionMatrixElement> diagramME_;
+  //@}
+
 };
 
-  /** Exception class to indicate a problem has occurred with setting
-   up to matrix element.*/
-  class MEException : public Exception {};
+/** Exception class to indicate a problem has occurred with setting
+    up to matrix element.*/
+class MEException : public Exception {};
   
 }
 
@@ -265,7 +488,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::GeneralHardME,1> {
   /** Typedef of the first base class of GeneralHardME. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -280,7 +503,5 @@ struct ClassTraits<Herwig::GeneralHardME>
 /** @endcond */
 
 }
-
-#include "GeneralHardME.icc"
 
 #endif /* HERWIG_GeneralHardME_H */

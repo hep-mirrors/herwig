@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2GammaJet.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -29,26 +29,25 @@
 using namespace Herwig;
 
 MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 void MEPP2GammaJet::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
   _gluonvertex =trans.translate(_gluonvertex );
   _photonvertex=trans.translate(_photonvertex);
 }
 
 IVector MEPP2GammaJet::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_gluonvertex);
   ret.push_back(_photonvertex);
   return ret;
 }
 
-void MEPP2GammaJet::doinit() throw(InitException) {
+void MEPP2GammaJet::doinit() {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
@@ -61,7 +60,7 @@ void MEPP2GammaJet::doinit() throw(InitException) {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 void MEPP2GammaJet::getDiagrams() const {
@@ -69,7 +68,7 @@ void MEPP2GammaJet::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr p = getParticleData(ParticleID::gamma);
   // for each quark species there are three subprocesses
-  for(unsigned int iq=1;iq<=_maxflavour;++iq) {
+  for ( int iq=1; iq<=_maxflavour; ++iq ) {
     tcPDPtr q = getParticleData(iq);
     tcPDPtr qb = q->CC();
     // q qbar to gamma gluon (two diagrams)
@@ -135,7 +134,7 @@ void MEPP2GammaJet::Init() {
     ("The MEPP2GammaJet class implements the matrix element for"
      " hadron-hadron to photon+jet");
 
-  static Parameter<MEPP2GammaJet,unsigned int> interfaceMaximumFlavour
+  static Parameter<MEPP2GammaJet,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour of the quarks in the process",
      &MEPP2GammaJet::_maxflavour, 5, 1, 5,
@@ -329,11 +328,11 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].particle()->CC(),
 					 fin[inhel1],gout[outhel1]);
-	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],pout[outhel2]);
+	  diag[0] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],pout[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],pout[outhel2]);
 	  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
 	  // compute the running totals
@@ -385,13 +384,13 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,inter,fout[outhel2],gin[inhel2]);
 	  // second diagram
-	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].particle()->CC(),
 					 fin[inhel1],gin[inhel2]);
-	  diag[1]=_photonvertex->evaluate(0.*GeV2,inter,fout[outhel2],pout[outhel1]);
+	  diag[1]=_photonvertex->evaluate(ZERO,inter,fout[outhel2],pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 +=norm(diag[0]);
@@ -442,13 +441,13 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,ain[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,ain[inhel1].particle()->CC(),
 					  ain[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,aout[outhel2],inter,gin[inhel2]);
 	  // second diagram
-	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].particle()->CC(),
 					 ain[inhel1],gin[inhel2]);
-	  diag[1]=_photonvertex->evaluate(0.*GeV2,aout[outhel2],inter,pout[outhel1]);
+	  diag[1]=_photonvertex->evaluate(ZERO,aout[outhel2],inter,pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 +=norm(diag[0]);
@@ -473,7 +472,6 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
 }
 
 void MEPP2GammaJet::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -518,14 +516,11 @@ void MEPP2GammaJet::constructVertex(tSubProPtr sub) {
     p[1]=p[2];g[1]=g[2];
     qqbarME(q,qb,g,p,true);
   }
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) 
-    spin[ix]->setProductionVertex(hardvertex);
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPISampler.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -33,7 +33,7 @@ inline IBPtr MPISampler::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MPISampler::doupdate() throw(UpdateException) {
+inline void MPISampler::doupdate() {
   SamplerBase::doupdate();
   // First update base class.
   bool redo = touched();
@@ -51,12 +51,12 @@ inline void MPISampler::doupdate() throw(UpdateException) {
   // Touch if anything has changed.
 }
 
-inline void MPISampler::doinit() throw(InitException) {
+inline void MPISampler::doinit() {
   SamplerBase::doinit();
 }
 
 inline void MPISampler::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
   SamplerBase::rebind(trans);
 }

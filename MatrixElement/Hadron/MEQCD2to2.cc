@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEQCD2to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -27,12 +27,11 @@
 #include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 void MEQCD2to2::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _ggggvertex = trans.translate(_ggggvertex);
   _gggvertex  = trans.translate( _gggvertex);
   _qqgvertex  = trans.translate( _qqgvertex);
@@ -41,11 +40,11 @@ void MEQCD2to2::rebind(const TranslationMap & trans)
     {_quark[ix]=trans.translate(_quark[ix]);}
   for(unsigned int ix=0;ix<_antiquark.size();++ix)
     {_antiquark[ix]=trans.translate(_quark[ix]);}
-  HwME2to2Base::rebind(trans);
+  HwMEBase::rebind(trans);
 }
 
 IVector MEQCD2to2::getReferences() {
-  IVector ret = HwME2to2Base::getReferences();
+  IVector ret = HwMEBase::getReferences();
   ret.push_back(_ggggvertex);
   ret.push_back(_gggvertex);
   ret.push_back(_qqgvertex);
@@ -57,9 +56,9 @@ IVector MEQCD2to2::getReferences() {
   return ret;
 }
 
-void MEQCD2to2::doinit() throw(InitException) {
+void MEQCD2to2::doinit() {
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
@@ -200,11 +199,11 @@ double MEQCD2to2::gg2qqbarME(vector<VectorWaveFunction> &g1,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].particle(),
 				       qbar[ohel2],g2[ihel2]);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
 	  //second t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].particle(),
 				       qbar[ohel2],g1[ihel1]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
 	  // s-channel diagram
@@ -259,11 +258,11 @@ double MEQCD2to2::qqbar2ggME(vector<SpinorWaveFunction> & q,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // first t-channel diagram
-	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].particle()->CC(),
 				      q[ihel1],g1[ohel1]);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g2[ohel2]);
 	  // second t-channel diagram
-	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].particle()->CC(),
 				      q[ihel1],g2[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g1[ohel1]);
 	  // s-channel diagram
@@ -314,14 +313,14 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
   SpinorWaveFunction inters,inters2;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				  qin[ihel1],g2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // s-channel diagram
 	  diag[0]=_qqgvertex->evaluate(mt,inters,qout[ohel1],g4[ohel2]);
 	  // first t-channel
-	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				       qin[ihel1],g4[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters2,qout[ohel1],g2[ihel2]);
 	  // second t-channel
@@ -437,14 +436,14 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
   SpinorBarWaveFunction inters,inters2;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				  qin[ihel1],g2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // s-channel diagram
 	  diag[0]=_qqgvertex->evaluate(mt,qout[ohel1],inters,g4[ohel2]);
 	  // first t-channel
-	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				       qin[ihel1],g4[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,qout[ohel1],inters2,g2[ihel2]);
 	  // second t-channel
@@ -608,7 +607,8 @@ double MEQCD2to2::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
 				vector<SpinorWaveFunction>    & q4,
 				unsigned int iflow) const {
   // type of process
-  bool diagon[2]={q1[0].id()== -q2[0].id(),q1[0].id()== q3[0].id()};
+  bool diagon[2]={q1[0].id()== -q2[0].id(),
+		  q1[0].id()== -q3[0].id()};
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
@@ -740,7 +740,7 @@ void MEQCD2to2::getDiagrams() const {
 		   1,_antiquark[ix],2,_gluon,-15)));
     }
     // processes involving two quark lines
-    for(unsigned int iy=0;iy<_maxflavour;++iy) {
+    for(unsigned int iy=ix;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
       if(_process==0||_process==6) {
 	// gluon t-channel
@@ -761,6 +761,8 @@ void MEQCD2to2::getDiagrams() const {
 	  add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_antiquark[iy],
 		       2,_antiquark[ix],1,_antiquark[iy],-19)));
       }
+    }
+    for(unsigned int iy=0;iy<_maxflavour;++iy) {
       // q qbar -> q qbar
       if(_process==0||_process==8) {
 	// gluon s-channel
@@ -1058,7 +1060,6 @@ double MEQCD2to2::me2() const {
 }
 
 void MEQCD2to2::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -1168,13 +1169,11 @@ void MEQCD2to2::constructVertex(tSubProPtr sub) {
   }
   else throw Exception() << "Unknown process in MEQCD2to2::constructVertex()"
 			 << Exception::runerror;
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<4;++ix) 
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

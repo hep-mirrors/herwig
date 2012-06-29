@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TensorMeson2PScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,9 +23,18 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void TensorMeson2PScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
   : _incoming(48), _outgoing1(48), _outgoing2(48), 
     _coupling(48), _maxweight(48) {
+  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0));
   // a_2 -> eta pi
   _incoming[0] = 115; _outgoing1[0] =  221; _outgoing2[0] = 111; 
   _coupling[0] = 10.90/GeV; _maxweight[0] = 1.7; 
@@ -150,7 +159,7 @@ TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer()
   generateIntermediates(false);
 }
 
-void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
+void TensorMeson2PScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
@@ -246,7 +255,7 @@ void TensorMeson2PScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMeson2PScalarDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0/GeV, 1000./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 1000./GeV, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -256,30 +265,31 @@ void TensorMeson2PScalarDecayer::Init() {
 }
 
 // matrix elememt for the process
-double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
-				       const Particle & inpart,
-				       const ParticleVector & decay) const {
-  vector<LorentzTensor<double> > inten;
-  // wave functions etc for the incoming particle
-  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
-  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
-		     true,false,vertex);
-  // set up the spin information for the decay products
-  for(unsigned int ix=0;ix<decay.size();++ix) {
-    // workaround for gcc 3.2.3 bug
-    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    PPtr mytemp=decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
+				       const ParticleVector & decay,
+				       MEOption meopt) const {
+  // stuff for incoming particle
+  if(meopt==Initialize) {
+    _rho = RhoDMatrix(PDT::Spin2);
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+			     incoming,false);
+  }
+  if(meopt==Terminate) {
+    TensorWaveFunction::constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // calculate the matrix element
-  DecayMatrixElement newME(PDT::Spin2,PDT::Spin0,PDT::Spin0);
   for(unsigned int ix=0;ix<5;++ix) {
-    newME(ix,0,0) = _coupling[imode()]/inpart.mass()*
-      ((inten[ix]*decay[1]->momentum())*decay[0]->momentum());
+    ME()(ix,0,0) = _coupling[imode()]/inpart.mass()*
+      ((_tensors[ix]*decay[1]->momentum())*decay[0]->momentum());
   }
-  ME(newME);
 //   // test of the answer
-//   double me = newME.contract(rhoin).real();
+//   double me = newME.contract(_rho).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					     decay[1]->mass());
 //   double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()]/inpart.mass())/120.;
@@ -287,7 +297,7 @@ double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 bool TensorMeson2PScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -339,27 +349,27 @@ void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "newdef " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "newdef " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "insert " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "insert " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

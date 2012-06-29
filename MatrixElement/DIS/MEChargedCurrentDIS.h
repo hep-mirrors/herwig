@@ -5,7 +5,7 @@
 // This is the declaration of the MEChargedCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * @see \ref MEChargedCurrentDISInterfaces "The interfaces"
  * defined for MEChargedCurrentDIS.
  */
-class MEChargedCurrentDIS: public HwME2to2Base {
+class MEChargedCurrentDIS: public DISBase {
 
 public:
 
@@ -57,11 +57,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -140,6 +135,13 @@ protected:
 		    bool lorder, bool qorder,
 		    bool me) const;
 
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -148,13 +150,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -166,7 +168,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -234,7 +236,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
   /** Typedef of the first base class of MEChargedCurrentDIS. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

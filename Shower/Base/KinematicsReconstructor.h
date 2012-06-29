@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KinematicsReconstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,6 +16,8 @@
 #include "ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
+#include "HardTree.h"
+#include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
 
@@ -64,26 +66,51 @@ public:
    */
   //@{
   /**
-   * Given in input a vector of the particles which initiated the showers
-   * the method does the reconstruction of such jets,
+   * Given the ShowerTree for the shower from a hard process
+   * the method does the reconstruction of the jets,
    * including the appropriate boosts (kinematics reshufflings)  
    * needed to conserve the total energy-momentum of the collision
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
-				   map<tShowerProgenitorPtr,
-				   pair<Energy,double> > pt) const=0;
+				   const map<tShowerProgenitorPtr,
+				   pair<Energy,double> > & pt) const=0;
 
   /**
-   * Given in input a vector of the particles which initiated the showers
-   * the method does the reconstruction of such jets,
+   * Given the ShowerTree for a decay shower
+   * the method does the reconstruction of the jets,
    * including the appropriate boosts (kinematics reshufflings)  
    * needed to conserve the total energy-momentum of the collision
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
   virtual bool reconstructDecayJets(ShowerTreePtr decay) const=0;
+  //@}
+
+  /**
+   *  Methods to invert the reconstruction of the shower for
+   *  a scattering or decay process and calculate
+   *  the variables used to generate the
+   *  shower given the particles produced.
+   *  This is needed for the CKKW and POWHEG approaches
+   */
+  //@{
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the 
+   * shower for a decay process
+   */
+  virtual bool deconstructDecayJets(HardTreePtr decay,cEvolverPtr,
+				    ShowerInteraction::Type) const=0;
+
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the shower
+   *  for a hard process
+   */
+  virtual bool deconstructHardJets(HardTreePtr hard,cEvolverPtr,
+				   ShowerInteraction::Type) const=0;
   //@}
 
 public:
@@ -141,16 +168,11 @@ struct ClassTraits<Herwig::KinematicsReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "KinematicsReconstructor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KinematicsReconstructor.tcc"
-#endif
 
 #endif /* HERWIG_KinematicsReconstructor_H */

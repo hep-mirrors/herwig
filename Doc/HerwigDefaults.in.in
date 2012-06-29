@@ -2,33 +2,49 @@
 #
 # output interfaces for documentation
 # the following need to come first
+globallibrary Herwig.so
 library HwWeakCurrents.so
-library HwSusy.so
 #
 library Hw64Decay.so
 library HwAnalysis.so
-library HwBSMAnalysis.so
 library HwFormFactors.so
 library HwLEPAnalysis.so
+library HwTevatronAnalysis.so
 library HwMamboDecay.so
-library HwMEFast.so
-library HwME.so
-library HwMPIPDF.so
+library HwMEHadronFast.so
+library HwMEHadron.so
+library HwMEDIS.so
+library HwMELepton.so
+library HwMEGammaGamma.so
+library HwMEGammaHadron.so
+library HwPowhegMEHadron.so
+library HwPowhegMELepton.so
+library SimpleKTCut.so
 library HwMPI.so
 library HwMRST.so
+library HwReggeonPDF.so
+library HwPomeronPDF.so
+library HwPomeronFlux.so
 library HwPartonicDecay.so
 library HwPerturbativeDecay.so
 library HwPerturbativeHiggsDecay.so
-library HwRemDecayer.so
-library HwRSModel.so
 library HwShower.so
 library HwSMDecay.so
 library HwTauDecay.so
 library HwTMDecay.so
+library HwBaryonDecay.so
+library HwSOPHTY.so
 library HwUA5.so
-library HwUED.so
 library HwVMDecay.so
-@LOAD_EVTGEN@
-@LOAD_KTJET@
-@LOAD_ROOT@
+library HwSatPDF.so
+library HwIncomingPhotonEvolver.so
+@LOAD_SUSY@
+@LOAD_NMSSM@
+@LOAD_RS@
+@LOAD_TRP@
+@LOAD_UED@
+@LOAD_ADD@
+@LOAD_LEPTOQUARKS@
+@LOAD_SEXTET@
+@LOAD_FASTJET@
 doxygendump Herwig:: AllInterfaces.h

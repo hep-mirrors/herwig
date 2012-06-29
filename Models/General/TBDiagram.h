@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TBDiagram.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,6 +15,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Utilities/EnumIO.h"
+#include "PrototypeVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -45,10 +47,20 @@ struct TBDiagram {
   enum Channel {UNDEFINED = -1, channel23=0, channel13=1, channel12=2, fourPoint=3};
 
   /** Standard Constructor */
-  TBDiagram();
+  TBDiagram()  
+    : incoming(0), outgoing(0), outgoingPair(make_pair(0, 0)),
+      channelType(UNDEFINED), colourFlow(0), ids(4, 0) 
+  {}
 
   /** Constructor taking ids as arguments.*/
-  inline TBDiagram(long, long, IDPair);
+  TBDiagram(long a, long b, IDPair c)
+    : incoming(a), outgoing(b), outgoingPair(c), 	
+      channelType(UNDEFINED), colourFlow(0), ids(4, 0) {
+    ids[0] = a;
+    ids[1] = b;
+    ids[2] = c.first;
+    ids[3] = c.second;
+  }
   
   /** Incoming particle id's */
   long incoming;
@@ -81,13 +93,93 @@ struct TBDiagram {
    * Test whether this and x are the same decay
    * @param x The other process to check
    */
-  inline bool sameDecay(const TBDiagram & x) const;
+  bool sameDecay(const TBDiagram & x) const {
+    if(ids[0] != x.ids[0]) return false;
+    bool used[4]={false,false,false,false};
+    for(unsigned int ix=1;ix<4;++ix) {
+      bool found=false;
+      for(unsigned int iy=1;iy<4;++iy) {
+	if(used[iy]) continue;
+	if(ids[ix]==x.ids[iy]) {
+	  used[iy]=true;
+	  found=true;
+	  break;
+	}
+      }
+      if(!found) return false;
+    }
+    return true;
+  }
+
+  /** Constructor from NBDiagram */
+  TBDiagram(const NBDiagram & diagram) 
+    : channelType(UNDEFINED),
+      colourFlow       (diagram.colourFlow),
+      largeNcColourFlow(diagram.largeNcColourFlow), ids(4,0) {
+    incoming = diagram.incoming->id();
+    if(diagram.vertices.size()==2) {
+      const NBVertex & child = (++diagram.vertices.begin())->second;
+      outgoing = diagram.vertices.begin()->first->id();
+      unsigned int iloc=0;
+      for(OrderedParticles::const_iterator it = child.outgoing.begin();
+	  it!=child.outgoing.end();++it) {
+	if (iloc==0)      outgoingPair.first  = (**it).id();
+	else if (iloc==1) outgoingPair.second = (**it).id();
+	++iloc;
+      }
+      intermediate = child.incoming;
+      vertices.second = child.vertex;
+    }
+    else {
+      unsigned int iloc=0;
+      for(OrderedParticles::const_iterator it = diagram.outgoing.begin();
+	  it!=diagram.outgoing.end();++it) {
+	if(iloc==0)       outgoing            = (**it).id();
+	else if (iloc==1) outgoingPair.first  = (**it).id();
+	else if (iloc==2) outgoingPair.second = (**it).id();
+	++iloc;
+      }
+    }
+    vertices.first = diagram.vertex;
+    ids[0] = incoming;
+    ids[1] = outgoing;
+    ids[2] = outgoingPair.first;
+    ids[3] = outgoingPair.second;
+  }
+
 };
 
 /**
  * Test whether two diagrams are identical.
  */
-inline bool operator==(const TBDiagram & x, const TBDiagram & y);
+inline bool operator==(const TBDiagram & x, const TBDiagram & y) {
+  if( x.incoming     != y.incoming) return false;
+  if( x.outgoing     != y.outgoing) return false;
+  if( x.intermediate != y.intermediate) return false;
+  if( x.vertices     != y.vertices    ) return false;
+  if( (x.outgoingPair.first  == y.outgoingPair.first  &&
+       x.outgoingPair.second == y.outgoingPair.second ) ||
+      (x.outgoingPair.first  == y.outgoingPair.second &&
+       x.outgoingPair.second == y.outgoingPair.first  ) ) return true;
+  else return false;
+}
+
+/**
+ * Output to a stream 
+ */
+inline ostream & operator<<(ostream & os, const TBDiagram & diag) {
+  os << diag.incoming << " -> ";
+  os << diag.outgoing << " + ( ";
+  if(diag.intermediate) os << diag.intermediate->id();
+  os << " ) -> ";
+  os << diag.outgoingPair.first << " " << diag.outgoingPair.second
+     << "  channel: " << diag.channelType << "  ";
+  for(size_t cf = 0; cf < diag.colourFlow.size(); ++cf) 
+    os << "(" << diag.colourFlow[cf].first << "," 
+       <<diag.colourFlow[cf].second << ")";
+  os << '\n';
+  return os;
+}
 
 /** 
  * Output operator to allow the structure to be persistently written
@@ -95,18 +187,26 @@ inline bool operator==(const TBDiagram & x, const TBDiagram & y);
  * @param x The TBDiagram 
  */
 inline PersistentOStream & operator<<(PersistentOStream & os, 
-				      const TBDiagram  & x);
-
+				      const TBDiagram  & x) {
+  os << x.incoming << x.outgoing << x.outgoingPair << x.intermediate
+     << x.vertices << oenum(x.channelType) << x.colourFlow 
+     << x.largeNcColourFlow << x.ids;
+  return os;
+}
+  
 /** 
  * Input operator to allow persistently written data to be read in
  * @param is The input stream
  * @param x The TBDiagram 
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
-				      TBDiagram & x);
-
+				      TBDiagram & x) {
+  is >> x.incoming >> x.outgoing >> x.outgoingPair >> x.intermediate
+     >> x.vertices >> ienum(x.channelType) >> x.colourFlow 
+     >> x.largeNcColourFlow >> x.ids;
+  return is;
 }
 
-#include "TBDiagram.icc"
+}
 
 #endif /* HERWIG_TBDiagram_H */

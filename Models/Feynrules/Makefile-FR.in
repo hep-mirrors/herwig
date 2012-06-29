@@ -1,0 +1,40 @@
+# -*- Makefile -*- (for emacs)
+# @configure_input@
+#
+# @PACKAGE_STRING@
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find example plugins in the Contrib directory
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+#
+# C++ flags
+# 
+.PRECIOUS: %.o
+
+CXX = @CXX@
+
+CXXFLAGS = -g -W -Wall -ansi -pedantic @CXXFLAGS@
+
+# add additional package header directories here
+CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@
+
+# add additional libraries here
+LDFLAGS = @APPLE_DSO_FLAGS@
+
+ALLCCFILES=$(shell echo *.cc)
+all : FeynrulesModel.so 
+ALLOBJFILES=$(ALLCCFILES:.cc=.o)
+
+%.so : $(ALLOBJFILES)
+	$(CXX) @SHARED_FLAG@ -fPIC $(CXXFLAGS) $(LDFLAGS) $^ -o $@  
+
+%.o : %.cc
+	$(CXX) -fPIC $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
+	rm -f *.{run,log,out,tex,dot,svg,model,spc}

@@ -6,6 +6,7 @@
 
 #include "MEfftoVH.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -17,18 +18,19 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
 void MEfftoVH::persistentOutput(PersistentOStream & os) const {
-  os << _shapeopt << _wplus << _wminus << _z0 
-     << _vertexFFW << _vertexFFZ << _vertexWWH
+  os << _shapeopt << _wplus << _wminus << _z0 << _higgs
+     << _vertexFFW << _vertexFFZ << _vertexWWH << _maxflavour
      << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
 }
 
 void MEfftoVH::persistentInput(PersistentIStream & is, int) {
-  is >> _shapeopt >> _wplus >> _wminus >> _z0 
-     >> _vertexFFW >> _vertexFFZ >> _vertexWWH
+  is >> _shapeopt >> _wplus >> _wminus >> _z0 >> _higgs 
+     >> _vertexFFW >> _vertexFFZ >> _vertexWWH >> _maxflavour
      >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
 }
 
@@ -54,6 +56,17 @@ void MEfftoVH::Init() {
      "MassGenerator",
      "Use the mass generator to give the shape",
      2);
+  static SwitchOption interfaceStandardShapeOnShell
+    (interfaceShapeOption,
+     "OnShell",
+     "Produce an on-shell Higgs boson",
+     0);
+
+  static Parameter<MEfftoVH,unsigned int> interfaceMaxFlavour
+    ( "MaxFlavour",
+      "The heaviest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEfftoVH::_maxflavour, 5, 1, 5, false, false, true);
 
 }
 
@@ -70,11 +83,11 @@ Energy2 MEfftoVH::scale() const {
 }
 
 int MEfftoVH::nDim() const {
-  return 5;
+  return 4 + int(_shapeopt>0);
 }
 
 void MEfftoVH::setKinematics() {
-  MEBase::setKinematics();
+  DrellYanBase::setKinematics();
 }
 
 Selector<MEBase::DiagramIndex>
@@ -103,15 +116,14 @@ MEfftoVH::colourGeometries(tcDiagPtr ) const {
   return sel;
 }
 
-void MEfftoVH::doinit() throw(InitException) {
-  MEBase::doinit();
+void MEfftoVH::doinit() {
+  DrellYanBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm) {
     _vertexFFW = hwsm->vertexFFW();
     _vertexFFZ = hwsm->vertexFFZ();
-    _vertexWWH = hwsm->vertexWWH();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
 			     << "MEfftoVH::doinit() the Herwig++"
@@ -121,16 +133,17 @@ void MEfftoVH::doinit() throw(InitException) {
   _wplus  = getParticleData(ParticleID::Wplus );
   _wminus = getParticleData(ParticleID::Wminus);
   _z0     = getParticleData(ParticleID::Z0);
-  tcPDPtr h0=getParticleData(ParticleID::h0);
-  _mh = h0->mass();
-  _wh = h0->width();
-  if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+  // higgs stuff
+  _mh = _higgs->mass();
+  _wh = _higgs->width();
+  if(_higgs->massGenerator()) {
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(_higgs->massGenerator());
   }
-  if(_shapeopt==2&&!_hmass) throw InitException()
-    << "If using the mass generator for the line shape in MEfftoVH::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
-    << Exception::runerror;
+  if(_shapeopt==2&&!_hmass) 
+    throw InitException()
+      << "If using the mass generator for the line shape in MEfftoVH::doinit()"
+      << "the mass generator must be an instance of the GenericMassGenerator class"
+      << Exception::runerror;
 }
 
 double MEfftoVH::me2() const {
@@ -150,10 +163,10 @@ double MEfftoVH::me2() const {
 }
 
 double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
-			   vector<SpinorBarWaveFunction> & ain ,
-			   vector<SpinorBarWaveFunction> & fout,
-			   vector<SpinorWaveFunction>    & aout,
-			   bool calc) const {
+			    vector<SpinorBarWaveFunction> & ain ,
+			    vector<SpinorBarWaveFunction> & fout,
+			    vector<SpinorWaveFunction>    & aout,
+			    bool calc) const {
   // scale
   Energy2 mb2(scale());
   // matrix element to be stored
@@ -183,16 +196,25 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
       // boson decay piece
       for(ohel1=0;ohel1<2;++ohel1) {
 	for(ohel2=0;ohel2<2;++ohel2) {
-	  diag = vertex->evaluate(sqr(inter[1].getParticle()->mass()),
+	  diag = vertex->evaluate(sqr(inter[1].particle()->mass()),
 				  aout[ohel2],fout[ohel1],inter[1]);
 	  me += norm(diag);
-	  if(calc) menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
+	  menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
 	}
       }
     }
   }
   // spin factor
   me *=0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = 
+      {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+       beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me = menew.average(rho[0],rho[1]);
+  }
   // incoming colour factor
   if(mePartonData()[0]->coloured()) me /= 3.;
   // outgoing colour factor
@@ -202,7 +224,6 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEfftoVH::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[5];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -212,28 +233,30 @@ void MEfftoVH::constructVertex(tSubProPtr sub) {
   hard.push_back(sub->outgoing()[2]);
   // ensure right order
   if(hard[0]->id()<0) swap(hard[0],hard[1]);
-  if(hard[3]->id()==ParticleID::h0) swap(hard[2],hard[3]);
-  if(hard[4]->id()==ParticleID::h0) swap(hard[2],hard[4]);
+  if(hard[3]->dataPtr()->iSpin()==PDT::Spin0) swap(hard[2],hard[3]);
+  if(hard[4]->dataPtr()->iSpin()==PDT::Spin0) swap(hard[2],hard[4]);
   if(hard[3]->id()<0) swap(hard[3],hard[4]);
   vector<SpinorWaveFunction>    fin,aout;
   vector<SpinorBarWaveFunction> ain,fout;
   SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
   SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
-  ScalarWaveFunction(        hard[2],outgoing,true,true);
+  ScalarWaveFunction(        hard[2],outgoing,true);
   SpinorBarWaveFunction(fout,hard[3],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[4],outgoing,true ,true);
   helicityME(fin,ain,fout,aout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<5;++ix) {
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
-  }
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix) {
-    spin[ix]->setProductionVertex(hardvertex);
+    tcSpinPtr spin = hard[ix]->spinInfo();
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->productionVertex(hardvertex);
   }
 }
 
@@ -244,24 +267,27 @@ bool MEfftoVH::generateKinematics(const double * r) {
     ? _wplus : _z0;
   // order determined randomly
   Energy e = sqrt(sHat())/2.0;
-  Energy mh,mv;
+  Energy mh(_mh),mv;
   double jac(1.);
   if(UseRandom::rndbool()) {
+    double rhomax,rhomin;
     // generate the mass of the Higgs
-    Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
-    Energy mhmin = max(0.*GeV             ,mePartonData()[2]->massMin());
-    if(mhmax<=mhmin) return false;
-    double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-    mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
-    jac *= rhomax-rhomin;
+    if(_shapeopt!=0) {
+      Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
+      Energy mhmin = max(ZERO               ,mePartonData()[2]->massMin());
+      if(mhmax<=mhmin) return false;
+      rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+      rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
+      mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
+      jac *= rhomax-rhomin;
+    }
     // generate the mass of the vector boson
     Energy2 mvmax2 = sqr(min(2.*e-mh,vec->massMax()));
     Energy2 mvmin2 = sqr(vec->massMin());
     if(mvmax2<=mvmin2) return false; 
-    rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
-    rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
-    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[2]*(rhomax-rhomin))
+    rhomin = atan2((mvmin2-sqr(vec->mass())), vec->mass()*vec->width());
+    rhomax = atan2((mvmax2-sqr(vec->mass())), vec->mass()*vec->width());
+    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
   }
@@ -270,25 +296,28 @@ bool MEfftoVH::generateKinematics(const double * r) {
     Energy2 mvmax2 = sqr(min(2.*e,vec->massMax()));
     Energy2 mvmin2 = sqr(vec->massMin());
     if(mvmax2<=mvmin2) return false; 
-    double rhomin = atan((mvmin2-sqr(vec->mass()))/vec->mass()/vec->width());
-    double rhomax = atan((mvmax2-sqr(vec->mass()))/vec->mass()/vec->width());
-    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[2]*(rhomax-rhomin))
+    double rhomin = atan2((mvmin2-sqr(vec->mass())), vec->mass()*vec->width());
+    double rhomax = atan2((mvmax2-sqr(vec->mass())), vec->mass()*vec->width());
+    mv = sqrt(vec->mass()*vec->width()*tan(rhomin+r[1]*(rhomax-rhomin))
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
     // generate the mass of the Higgs
-    Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
-    Energy mhmin = max(0.*GeV ,mePartonData()[2]->massMin());
-    if(mhmax<=mhmin) return false;
-    rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-    mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
-    jac *= rhomax-rhomin;
+    if(_shapeopt!=0) {
+      Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
+      Energy mhmin = max(ZERO ,mePartonData()[2]->massMin());
+      if(mhmax<=mhmin) return false;
+      rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+      rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
+      mh = sqrt(_mh*_wh*tan(rhomin+r[3]*(rhomax-rhomin))+sqr(_mh));
+      jac *= rhomax-rhomin;
+    }
   }
+  if(mh+mv>2.*e) return false;
   // assign masses
   meMomenta()[2].setMass(mh);
   for(unsigned int ix=3;ix<5;++ix) 
     meMomenta()[ix] = Lorentz5Momentum(mePartonData()[ix]->generateMass());
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   Lorentz5Momentum pvec(mv);
   try {
     q = SimplePhaseSpace::
@@ -309,17 +338,17 @@ bool MEfftoVH::generateKinematics(const double * r) {
   Energy2 pq   = 2.0*e*q;
   double ctmin = -1.0,ctmax = 1.0;
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-  if ( ptmin > 0.0*GeV ) {
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -345,7 +374,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   // decay of the vector boson
   bool test=Kinematics::twoBodyDecay(pvec,meMomenta()[3].mass(),
 				     meMomenta()[4].mass(),
-				     -1.+2*r[3],r[4]*2.*pi,
+				     -1.+2*r[2],r[3]*2.*pi,
 				     meMomenta()[3],meMomenta()[4]);
   if(!test) return false;
   // check cuts
@@ -375,17 +404,19 @@ bool MEfftoVH::generateKinematics(const double * r) {
 CrossSection MEfftoVH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
-  InvEnergy2 bwfact;
-  Energy moff =meMomenta()[2].mass();if(_shapeopt==1) {
-    tcPDPtr h0 = mePartonData()[2]->id()==ParticleID::h0 ?
+  InvEnergy2 bwfact(ZERO);
+  Energy moff =meMomenta()[2].mass();
+  if(_shapeopt==1) {
+    tcPDPtr h0 = mePartonData()[2]->iSpin()==PDT::Spin0 ?
       mePartonData()[2] : mePartonData()[3];
     bwfact = h0->generateWidth(moff)*moff/pi/
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
-  else {
-    bwfact = _hmass->BreitWignerWeight(moff,0);
+  else if(_shapeopt==2) {
+    bwfact = _hmass->BreitWignerWeight(moff);
   }
-  double jac1 = bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh);
+  double jac1 = _shapeopt!=0 ? 
+    double(bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;
   // answer
   return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
 }

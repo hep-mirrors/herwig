@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WeakPartonicDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -253,10 +253,10 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 				   CosAngle,AzmAngle,pout[0],pout[1]);
 	  // kinematic piece of the weight
 	  wgt = 
-	    Kinematics::CMMomentum(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
-	    Kinematics::CMMomentum(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
+	    Kinematics::pstarTwoBodyDecay(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
+	    Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	  // piece to improve weight variation
-	  wgt *= pdec.mass()/Kinematics::CMMomentum(pdec.mass(),sqrt(mb2min),pout[2].mass());
+	  wgt *= pdec.mass()/Kinematics::pstarTwoBodyDecay(pdec.mass(),sqrt(mb2min),pout[2].mass());
 	  // matrix element piece
 	  wgt *= 16.*(pdec*pout[1])*(pout[0]*pout[2])/sqr(mb2max-mb2min);
 	  // check doesn't violate max
@@ -335,9 +335,9 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 				 CosAngle,AzmAngle,pout[0],pout[1]);
 	// kinematic piece of the weight
 	wgt *= 16.*
-	  Kinematics::CMMomentum(pdec.mass(),pout[3].mass(),ms            )/pdec.mass()*
-	  Kinematics::CMMomentum(ms         ,p01    .mass(),pout[2].mass())/ms*
-	  Kinematics::CMMomentum(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
+	  Kinematics::pstarTwoBodyDecay(pdec.mass(),pout[3].mass(),ms            )/pdec.mass()*
+	  Kinematics::pstarTwoBodyDecay(ms         ,p01    .mass(),pout[2].mass())/ms*
+	  Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	wgt *= fourBodyMatrixElement(pdec,pout[2],pout[0],pout[1],pout[3],Wcol,initial);
 	// check doesn't violate max
 	if(wgt>_threemax) {
@@ -442,19 +442,19 @@ void WeakPartonicDecayer::Init() {
   static Parameter<WeakPartonicDecayer,unsigned int> interfaceMaxTry
     ("MaxTry",
      "The maximum number of attempts to generate the kinematics",
-     &WeakPartonicDecayer::_maxtry, 100, 10, 1000,
+     &WeakPartonicDecayer::_maxtry, 300, 10, 1000,
      false, false, Interface::limited);
 
   static Parameter<WeakPartonicDecayer,double> interfaceThreeMax
     ("ThreeMax",
      "Maximum weight for sampling of three-body decays",
-     &WeakPartonicDecayer::_threemax, 2.0, 1.0, 1000.0,
+     &WeakPartonicDecayer::_threemax, 3.0, 1.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<WeakPartonicDecayer,double> interfaceFourMax
     ("FourMax",
      "Maximum weight for sampling of four-body decays",
-     &WeakPartonicDecayer::_fourmax, 2.0, 1.0, 1000.0,
+     &WeakPartonicDecayer::_fourmax, 3.0, 1.0, 1000.0,
      false, false, Interface::limited);
 
 }
@@ -468,7 +468,7 @@ void WeakPartonicDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  output << "newdef " << name() << ":MECode " << MECode << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
@@ -597,7 +597,7 @@ fourBodyMatrixElement(Lorentz5Momentum & p0,Lorentz5Momentum & p1,
     +1./d1g      *( d12*d13+d03*d2g+d03*d12 )
     +m12/sqr(d1g)*( -d03*d2g-d03*d12 )
     +m02/sqr(d0g)*(  d12*d3g-d03*d12 );
-  Energy2 mef = !Wcol ? 0.*GeV2 : 
+  Energy2 mef = !Wcol ? ZERO : 
     +1./d2g/d3g  *( d0g*d12*d23+d03*d1g*d23+2*d03*d12*d23 )
     +1./d2g      *( d03*d1g+d03*d12-d02*d12 )
     +1./d3g      *( d0g*d12-d03*d13+d03*d12 )

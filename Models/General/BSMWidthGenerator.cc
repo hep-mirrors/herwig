@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BSMWidthGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -54,7 +54,7 @@ void BSMWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
 
 Energy BSMWidthGenerator::partial2BodyWidth(int iloc, Energy m0,
 					    Energy m1, Energy m2) const {
-  if( m0 < (m1 + m2) ) return Energy();
+  if( m0 < (m1 + m2) ) return ZERO;
   //need pointers to particles involved
   tcDMPtr dm = theModes[iloc].first;
   ParticleMSet::const_iterator pit = dm->products().begin();

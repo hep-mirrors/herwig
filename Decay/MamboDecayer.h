@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MamboDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,7 +14,6 @@
 
 #include "HwDecayerBase.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "MamboDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -32,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MamboDecayer();
+  MamboDecayer() : _maxweight(10.) {}
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -93,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -110,7 +109,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -155,9 +154,17 @@ private:
    * @param f The value of the ratio
    * @param fp The value of the derivative ratio
    */
-  inline void BesselFns(const long double x,
-			long double & f, long double & fp) const;
-
+  void BesselFns(const long double x,
+		 long double & f, long double & fp) const {
+    assert(x>=0.);
+    if( x < 10. ) {
+      f = BesselK0(x)/BesselK1(x);
+      fp = ( sqr(f)*x + f - x )/x;
+    }
+    else
+      BesselIExpand(-x, f, fp);
+  } 
+  
   /**
    * Compute the values \f$I_0(x)/I_1(x)\f$ and it's derivative using
    * asymptotic expansion.
@@ -165,33 +172,99 @@ private:
    * @param f The value of the ratio
    * @param fp The value of the derivative ratio
    */
-  inline void BesselIExpand(const long double x,
-			    long double & f, long double & fp) const;
+  void BesselIExpand(const long double x,
+		     long double & f, long double & fp) const {
+    long double y = 1./x;
+    f = 1.+ y*(_a0[0] + y*(_a0[1] + y*(_a0[2] + y*(_a0[3] 
+        + y*(_a0[4] + y*(_a0[5] + y*(_a0[6] + y*(_a0[7] 
+        + y*(_a0[8] + y*_a0[9] )))))))));
+    fp = -y*y*(_a1[0] + y*(_a1[1] + y*(_a1[2] + y*(_a1[3] 
+        + y*(_a1[4] + y*(_a1[5] + y*(_a1[6] + y*(_a1[7] 
+        + y*(_a1[8] + y*_a1[9] )))))))));
+  }
 
   /**
    * Modified Bessel function of first kind \f$I_0(x)\f$.
    *@param x Argument of Bessel Function 
    **/
-  inline long double BesselI0(const long double x) const;
+  long double BesselI0(const long double x) const {
+    long double y,ans;
+    if(x < 3.75) {
+      y = sqr(x/3.75);
+      ans = 1. + y*(3.5156229 + y*(3.0899424 + y*(1.2067492 
+          + y*(0.2659732 + y*(0.0360768+y*0.0045813)))));
+    }
+    else {
+      y = (3.75/x);
+      ans = (exp(x)/sqrt(x))*(0.39894228 + y*(0.01328592 
+          + y*(0.00225319 + y*(-0.00157565 + y*(0.00916281 
+          + y*(-0.02057706+y*(0.02635537+y*(-0.01647633+y*0.00392377))))))));
+    }
+    return ans;
+  }
   
   /**
    *  Modified Bessel function of first kind \f$I_1(x)\f$.
    *@param x Argument of Bessel Function 
    **/
-  inline long double BesselI1(const long double x) const;
+  long double BesselI1(const long double x) const {
+    long double y,ans;
+    if(x < 3.75) {
+      y = sqr(x/3.75);
+      ans = x*(0.5 + y*(0.87890594 + y*(0.51498869 + y*(0.15084934 
+          + y*(0.02658733 + y*(0.00301532 + y*0.00032411))))));
+    }
+    else {
+      y = 3.75/x;
+      ans = (0.39894228 + y*(-0.03988024 + y*(-0.00362018 
+          + y*(0.00163801 + y*(-0.01031555 + y*(0.02282967 
+	  + y*(-0.02895312 + y*(0.01787654-y*0.00420059))))))))*(exp(x)/sqrt(x));
+    }
+    return ans;
+  }
   
   /**
    * Modified Bessel function of second kind \f$K_0(x)\f$.
    * @param x Argument of Bessel Function 
    **/
-  inline long double BesselK0(const long double x) const;
+  long double BesselK0(const long double x) const {
+    long double y,ans;
+    if(x <= 2.0) {
+      y = x*x/4.0;
+      ans = -log(x/2.0)*BesselI0(x) - 0.57721566 
+          + y*(0.42278420 + y*(0.23069756 
+          + y*(0.03488590 + y*(0.00262698 + y*(0.00010750+y*0.00000740)))));
+    }
+    else {
+      y = 2.0/x;
+      ans = (1.25331414 + y*(-0.07832358 + y*(+0.02189568 
+          + y*(-0.01062446 + y*(0.00587872 
+          + y*(-0.00251540 + y*0.00053208))))))*(exp(-x)/sqrt(x));
+    }
+    return ans;
+  }
   
   /**
    * Modified Bessel function of second kind \f$K_1(x)\f$.
    * @param x Argument of Bessel Function 
    **/
-  inline long double BesselK1(const long double x) const;
-//@}
+  long double BesselK1(const long double x) const  {
+    long double y,ans;
+    if(x <= 2.0) {
+      y = x*x/4.;
+      ans = log(x/2.)*BesselI1(x) + (1./x)*(1. + y*(0.15443144 
+          + y*(-0.67278579 + y*(-0.18156897 
+          + y*(-0.01919402+y*(-0.00110404-(y*0.00004686)))))));
+    }
+    else {
+      y = 2./x;
+      ans = (exp(-x)/sqrt(x))*(1.25331414 + y*(0.23498619 
+          + y*(-0.03655620 + y*(0.01504268 + y*(-0.00780353 
+          + y*(0.00325614+y*(-0.00068245)))))));
+    }
+    return ans;
+  }
+  //@}
 
 private:
   
@@ -243,7 +316,5 @@ struct ClassTraits<Herwig::MamboDecayer>
 /** @endcond */
 
 }
-
-#include "MamboDecayer.icc"
 
 #endif /* HERWIG_MamboDecayer_H */

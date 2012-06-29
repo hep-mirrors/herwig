@@ -26,8 +26,8 @@ MEPP2ZJet::MEPP2ZJet() : _process(0), _maxflavour(5), _zdec(0),
 			 _gammaZ(0), _widthopt(1), _pprob(0.5)
 {}
 
-void MEPP2ZJet::doinit() throw(InitException) {
-  MEBase::doinit();
+void MEPP2ZJet::doinit() {
+  HwMEBase::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0   );
   _gamma = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
@@ -52,13 +52,13 @@ void MEPP2ZJet::Init() {
   static ClassDocumentation<MEPP2ZJet> documentation
     ("The MEPP2ZJet class implements the matrix element for Z/gamma+ jet production");
 
-  static Parameter<MEPP2ZJet,unsigned int> interfaceMaxFlavour
+  static Parameter<MEPP2ZJet,int> interfaceMaxFlavour
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
       &MEPP2ZJet::_maxflavour, 5, 0, 8, false, false, true);
 
-  static Switch<MEPP2ZJet,unsigned int> interfaceZDecay
+  static Switch<MEPP2ZJet,int> interfaceZDecay
     ("ZDecay",
      "Which process to included",
      &MEPP2ZJet::_zdec, 0, false, false);
@@ -226,7 +226,7 @@ void MEPP2ZJet::getDiagrams() const {
   // pointer for gluon
   tcPDPtr g = getParticleData(ParticleID::g);
   bool quark,lepton;
-  for(unsigned int ix=1;ix<17;++ix) {
+  for ( int ix=1; ix<17; ++ix ) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     // is it a valid quark process
@@ -241,26 +241,26 @@ void MEPP2ZJet::getDiagrams() const {
     // pointer for Z decay products
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for (unsigned int i = 1; i <= _maxflavour; ++i ) {
+    for (int i = 1; i <= _maxflavour; ++i ) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
       // q qbar -> Z g -> l+l- g
       if(_process==0||_process==1) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 1, _gamma,
-			       3, g,  4, lm, 4, lp, -1)));
+			       2, g,  4, lm, 4, lp, -1)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 1,    _z0,
-			       3, g,  4, lm, 4, lp, -2)));
-	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 3, _gamma,
+			       2, g,  4, lm, 4, lp, -2)));
+	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 2, _gamma,
 			       1, g,  4, lm, 4, lp, -3)));
-	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 3,    _z0,
+	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 2,    _z0,
 			       1, g,  4, lm, 4, lp, -4)));
       }
       // q g   -> Z q -> l+l- qbar
       if(_process==0||_process==2) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, g,    1, _gamma,
-			       3, q,  4, lm, 4, lp, -5)));
+			       2, q,  4, lm, 4, lp, -5)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, g,    1,    _z0,
-			       3, q,  4, lm, 4, lp, -6)));
+			       2, q,  4, lm, 4, lp, -6)));
 	if(gamma) add(new_ptr((Tree2toNDiagram(2), q, g, 1, q, 3, _gamma,
 			       3, q,  4, lm, 4, lp, -7)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(2), q, g, 1, q, 3,    _z0,
@@ -269,9 +269,9 @@ void MEPP2ZJet::getDiagrams() const {
       // qbar g   -> Z qbar -> l+l- qbar
       if(_process==0||_process==3) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), qb, qb, g,     1, _gamma,
-			       3, qb,  4, lm, 4, lp, -9 )));
+			       2, qb,  4, lm, 4, lp, -9 )));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), qb, qb, g,     1,    _z0,
-			       3, qb,  4, lm, 4, lp, -10)));
+			       2, qb,  4, lm, 4, lp, -10)));
 	if(gamma) add(new_ptr((Tree2toNDiagram(2), qb,  g, 1, qb, 3, _gamma,
 			       3, qb,  4, lm, 4, lp, -11)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(2), qb,  g, 1, qb, 3,    _z0,
@@ -383,7 +383,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
 		     lastCuts().minKT(_z0));
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
-  if(maxMass2<=0.*GeV2||minMass2<0.*GeV2) return false;
+  if(maxMass2<=ZERO||minMass2<ZERO) return false;
   // also impose the limits from the ParticleData object
   minMass2 = max(minMass2,sqr(_z0->massMin()));
   maxMass2 = min(maxMass2,sqr(_z0->massMax()));
@@ -392,8 +392,8 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   if(r[1]<_pprob) {
     double rand=r[1]/_pprob;
     _mz2=minMass2*maxMass2/(minMass2+rand*(maxMass2-minMass2));
@@ -408,11 +408,11 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // jacobian
   jacobian(jacobian()/sHat()/(emjac1+emjac2));
   // set the masses of the outgoing particles to 2-2 scattering
-  meMomenta()[2].setMass(0.*MeV);
+  meMomenta()[2].setMass(ZERO);
   Lorentz5Momentum pz(mz);
   // generate the polar angle of the hard scattering
   double ctmin(-1.0), ctmax(1.0);
-  Energy q(0.0*GeV);
+  Energy q(ZERO);
   try {
     q = SimplePhaseSpace::getMagnitude(sHat(), meMomenta()[2].mass(),mz);
   } 
@@ -420,7 +420,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
     return false;
   }	    
   Energy2 pq = sqrt(sHat())*q;
-  if ( ptmin > 0.0*GeV ) {
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -439,7 +439,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // generate the momenta of the Z decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
-  Energy q2 = 0.0*GeV;
+  Energy q2 = ZERO;
   try {
     q2 = SimplePhaseSpace::getMagnitude(_mz2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
@@ -449,9 +449,9 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   double cth2 =-1.+2.*r[3];
   double phi2=Constants::twopi*r[4];
   Energy pt2 =q2*sqrt(1.-sqr(cth2));
-  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,ZERO,
 					    meMomenta()[3].mass()),
-			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.*MeV,
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,ZERO,
 					   meMomenta()[4].mass())};
   pl[0].rescaleEnergy();
   pl[1].rescaleEnergy();
@@ -494,8 +494,7 @@ double MEPP2ZJet::getCosTheta(double ctmin, double ctmax, const double r) {
 }  
 
 double MEPP2ZJet::me2() const {
-  useMe();
-  InvEnergy2 output(0./GeV2);
+  InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
   vector<SpinorWaveFunction>    lp;
@@ -874,5 +873,5 @@ void MEPP2ZJet::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix)
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
 }

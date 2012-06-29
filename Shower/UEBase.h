@@ -26,21 +26,6 @@ class UEBase: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  UEBase(){}
-
-  /**
-   * The destructor.
-   */
-  virtual ~UEBase(){}
-  //@}
-
-public:
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -52,7 +37,6 @@ public:
   /** @name Virtual functions used for the generation of additional
       interactions . */
   //@{
-
   /**
    * Some initialization code eventually.
    */
@@ -64,6 +48,11 @@ public:
   virtual bool beamOK() const = 0;
 
   /**
+   * Return true or false depending on whether soft interactions are enabled.
+   */
+  virtual bool softInt() const {return false;}
+
+  /**
    * Return the value of the pt cutoff.
    */
   virtual Energy Ptmin() const = 0;
@@ -72,7 +61,7 @@ public:
    * Return the slope of the soft pt spectrum. Only necessary when the
    * soft part is modelled.
    */
-  virtual InvEnergy2 beta() const {return 0/GeV2;}
+  virtual InvEnergy2 beta() const {return ZERO;}
 
   /**
    * Some finalize code eventually.
@@ -120,13 +109,7 @@ public:
    * implementation.
    */
   virtual unsigned int softMultiplicity() const {return 0;} 
-
   //@}
-  
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
 
 private:
 
@@ -174,7 +157,7 @@ struct ClassTraits<Herwig::UEBase>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "UEBase.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FourPionNovosibirskCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,15 +20,23 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include <functional>
 
 using namespace Herwig;
 using namespace ThePEG;
-using ThePEG::Helicity::ScalarSpinInfo;
+using namespace ThePEG::Helicity;
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+ 
+void FourPionNovosibirskCurrent::doupdate() {
+  WeakDecayCurrent::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1width(-1);
 }
 
 FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
@@ -59,8 +67,8 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
   _lambda2 = 1.2*GeV2;
   _onedlam2 = 1./_lambda2;
   _a1massolam2 = _a1mass*_a1mass*_onedlam2;
-  _hm2=0.*MeV2; 
-  _rhoD=0.*MeV2;
+  _hm2=ZERO; 
+  _rhoD=ZERO;
   _dhdq2m2=0.;
   // use local values of the parameters
   _localparameters=true;
@@ -299,11 +307,11 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
 		 back_inserter(_a1runq2),
 		 timesGeV2);
 
-  _maxmass=0.*MeV;
-  _maxcalc=0.*MeV;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
-void FourPionNovosibirskCurrent::doinit() throw(InitException) {
+void FourPionNovosibirskCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // pion masses
   _mpic=getParticleData(ParticleID::piplus)->mass();
@@ -377,12 +385,22 @@ void FourPionNovosibirskCurrent::Init() {
   static ClassDocumentation<FourPionNovosibirskCurrent> documentation
     ("The FourPionNovosibirskCurrent class performs the decay"
      " of the tau to four pions using currents based on the the"
-     " Novosibirsk e+e- data");
+     " Novosibirsk e+e- data",
+     "The decay of the tau to four pions uses currents based on \\cite{Bondar:2002mw}.",
+     "%\\cite{Bondar:2002mw}\n"
+     "\\bibitem{Bondar:2002mw}\n"
+     "  A.~E.~Bondar, S.~I.~Eidelman, A.~I.~Milstein, T.~Pierzchala, N.~I.~Root, Z.~Was and M.~Worek,\n"
+     "   ``Novosibirsk hadronic currents for tau --> 4pi channels of tau decay\n"
+     "  %library TAUOLA,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 146}, 139 (2002)\n"
+     "  [arXiv:hep-ph/0201149].\n"
+     "  %%CITATION = CPHCB,146,139;%%\n"
+     );
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacerhoMass
     ("rhoMass",
      "The local value of the rho mass",
-     &FourPionNovosibirskCurrent::_rhomass, GeV,0.7761*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_rhomass, GeV,0.7761*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacea1mass
@@ -394,49 +412,49 @@ void FourPionNovosibirskCurrent::Init() {
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceSigmaMass
     ("sigmaMass",
      "The local value of the sigma mass",
-     &FourPionNovosibirskCurrent::_sigmamass, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_sigmamass, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceOmegaMass
     ("omegaMass",
      "The local value of the omega mass",
-     &FourPionNovosibirskCurrent::_omegamass, GeV, 0.7820*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_omegamass, GeV, 0.7820*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacerhoWidth
     ("rhoWidth",
      "The local value of the rho width",
-     &FourPionNovosibirskCurrent::_rhowidth, GeV,0.1445*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_rhowidth, GeV,0.1445*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacea1width
     ("a1Width",
      "The local value of the square of the a_1 width",
-     &FourPionNovosibirskCurrent::_a1width, GeV, 0.45*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_a1width, GeV, 0.45*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceSigmaWidth
     ("sigmaWidth",
      "The local value of the sigma width",
-     &FourPionNovosibirskCurrent::_sigmawidth, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_sigmawidth, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceOmegaWidth
     ("omegaWidth",
      "The local value of the omega width",
-     &FourPionNovosibirskCurrent::_omegawidth, GeV, 0.00841*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_omegawidth, GeV, 0.00841*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceIntegrationMass
     ("IntegrationMass",
      "Mass of the pseudoresonance used to improve integration effciency",
-     &FourPionNovosibirskCurrent::_intmass, GeV, 1.4*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_intmass, GeV, 1.4*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceIntegrationWidth
     ("IntegrationWidth",
      "Width of the pseudoresonance used to improve integration effciency",
-     &FourPionNovosibirskCurrent::_intwidth, GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_intwidth, GeV, 0.5*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,double> interfaceSigmaMagnitude
@@ -490,56 +508,55 @@ void FourPionNovosibirskCurrent::Init() {
   static ParVector<FourPionNovosibirskCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<FourPionNovosibirskCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
 }
 
 // initialisation of the a_1 running width 
 void FourPionNovosibirskCurrent::inita1width(int iopt) {
-  if(iopt==-1) {
-    _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return;
-    // parameters for the table of values
-    Energy2 step(sqr(_maxmass)/200.);
-    // function to be integrated to give the matrix element
-    // integrator to perform the integral
-    // weights for the integration channels
-    vector<double> inweights;
-    inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
-    vector<double> inpower(3, 0.0);
-    // types of integration channels
-    vector<int> intype;
-    intype.push_back(2);intype.push_back(3);intype.push_back(1);
-    // masses for the integration channels
-    vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
-    // widths for the integration channels
-    vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
-      widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
-    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
-      widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
-    // normalisation constant to give physical width if on shell
-    double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
-			     widthgen2.partialWidth(sqr(_a1mass))));
-    // loop to give the values
-    Energy2 moff2(0.*MeV2);
-    _a1runwidth.clear();_a1runq2.clear();
-    for(;moff2<=sqr(_maxmass);moff2+=step) {
-      Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
-      _a1runwidth.push_back(total);
-      _a1runq2.push_back(moff2);
-    }
-  }
   // set up the interpolator
-  else if(iopt==0) {
+  if(iopt==0||!_initializea1) {
     _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
+    return;
+  }
+  _maxcalc=_maxmass;
+  if(_maxmass==ZERO) return;
+  // parameters for the table of values
+  Energy2 step(sqr(_maxmass)/200.);
+  // function to be integrated to give the matrix element
+  // integrator to perform the integral
+  // weights for the integration channels
+  vector<double> inweights;
+  inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
+  vector<double> inpower(3, 0.0);
+  // types of integration channels
+  vector<int> intype;
+  intype.push_back(2);intype.push_back(3);intype.push_back(1);
+  // masses for the integration channels
+  vector<Energy> inmass(2,_rhomass);inmass.push_back(_sigmamass);
+  // widths for the integration channels
+  vector<Energy> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent> 
+    widthgen1(inweights,intype,inmass,inwidth,inpower,*this,0,_mpi0,_mpic,_mpic); 
+  ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
+    widthgen2(inweights,intype,inmass,inwidth,inpower,*this,1,_mpi0,_mpi0,_mpi0); 
+  // normalisation constant to give physical width if on shell
+  double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
+			   widthgen2.partialWidth(sqr(_a1mass))));
+  // loop to give the values
+  Energy2 moff2(ZERO);
+  _a1runwidth.clear();_a1runq2.clear();
+  for(;moff2<=sqr(_maxmass);moff2+=step) {
+    Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
+    _a1runwidth.push_back(total);
+    _a1runq2.push_back(moff2);
   }
 }
 
@@ -552,7 +569,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
   // check the charge
   if(abs(icharge)!=3) return false;
   // check that the modes are kinematical allowed
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   if(imode==0) {
     min=   getParticleData(ParticleID::piplus)->mass()
         +3.*getParticleData(ParticleID::pi0)->mass();
@@ -779,16 +796,17 @@ tPDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,
  
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int ichan,
-				    Energy & scale,const ParticleVector & decay) const {
+FourPionNovosibirskCurrent::current(const int imode, const int ichan,
+				    Energy & scale,const ParticleVector & decay,
+				    DecayIntegrator::MEOption meopt) const {
+  useMe();
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<4;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   LorentzVector<complex<InvEnergy> > output;
   double fact(1.);
-  // construct the spininfo objects if needed
-  if(vertex) {
-    for(unsigned int ix=0;ix<decay.size();++ix) {
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
-    }
-  }
   // the momenta of the particles
   Lorentz5Momentum q1(decay[0]->momentum()),q2(decay[2]->momentum()),
     q3(decay[1]->momentum()),q4(decay[3]->momentum());
@@ -910,33 +928,95 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::FourPionNovosibirskCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":rhoMass "    << _rhomass/GeV << "\n";
-  output << "set " << fullName() << ":a1Mass  "    << _a1mass/GeV  << "\n";
-  output << "set " << fullName() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
-  output << "set " << fullName() << ":omegaMass  " << _omegamass/GeV  << "\n";
-  output << "set " << fullName() << ":rhoWidth "    << _rhowidth/GeV << "\n";
-  output << "set " << fullName() << ":a1Width  "    << _a1width/GeV  << "\n";
-  output << "set " << fullName() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
-  output << "set " << fullName() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
-  output << "set " << fullName() << ":SigmaMagnitude "  <<  _zmag << "\n";
-  output << "set " << fullName() << ":SigmaPhase " << _zphase  << "\n";
-  output << "set " << fullName() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
-  output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << fullName() << ":Initializea1 " <<  _initializea1 << "\n";
+		    << name() << " HwWeakCurrents.so\n";
+  output << "newdef " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
+  output << "newdef " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
+  output << "newdef " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
+  output << "newdef " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
+  output << "newdef " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "newdef " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
+  output << "newdef " << name() << ":SigmaPhase " << _zphase  << "\n";
+  output << "newdef " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
+  output << "newdef " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "newdef " << name() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
-    output << fullName() << ":a1RunningWidth " << ix << " " 
+    output << name() << ":a1RunningWidth " << ix << " " 
 	   << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    if(ix<200) output << "set ";
+    if(ix<200) output << "newdef ";
     else       output << "insert ";
-    output << fullName() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
+    output << name() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}
+
+double FourPionNovosibirskCurrent::
+threeBodyMatrixElement(const int iopt, const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy,
+		       const Energy, const Energy) const {
+  unsigned int ix;
+  // construct the momenta of the decay products
+  Energy p1[5],p2[5],p3[5];
+  Energy2 p1sq, p2sq, p3sq;
+  Energy q(sqrt(q2));
+  if(iopt==0) {
+    p1[0] = 0.5*(q2+_mpi02-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-_mpi02);
+    p2[0] = 0.5*(q2+_mpic2-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-_mpic2);
+    p3[0] = 0.5*(q2+_mpic2-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-_mpic2);
+  }
+  else {
+    p1[0] = 0.5*(q2+_mpi02-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-_mpi02);
+    p2[0] = 0.5*(q2+_mpi02-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-_mpi02);
+    p3[0] = 0.5*(q2+_mpi02-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-_mpi02);
+  }
+  // take momentum of 1 parallel to z axis
+  p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
+  // construct 2 
+  double cos2(0.5*(sqr(p1[4])+sqr(p2[4])-sqr(p3[4]))/p1[4]/p2[4]);
+  p2[1] = p2[4]*sqrt(1.-sqr(cos2)); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
+  // construct 3
+  double cos3(0.5*(sqr(p1[4])-sqr(p2[4])+sqr(p3[4]))/p1[4]/p3[4]);
+  p3[1] =-p3[4]*sqrt(1.-sqr(cos3)); p3[2]=ZERO; p3[3]=-p3[4]*cos3;
+  // pi+pi-pi0 term
+  complex<Energy4> output(0.*sqr(MeV2));
+  if(iopt==0) {
+    // values for the different Breit-Wigner terms
+    Complex rho1(2.365*rhoBreitWigner(s2)),
+      rho2(2.365*rhoBreitWigner(s3)),
+      sig1(sigmaBreitWigner(s1,1));
+    // compute the vector
+    complex<Energy2> term;
+    for(ix=1;ix<4;++ix) { 
+      term = (p1[0]*p2[ix]-p2[0]*p1[ix])*rho2+(p1[0]*p3[ix]-p3[0]*p1[ix])*rho1
+	+_zsigma*q*p1[ix]*sig1;
+      output+=term*conj(term);
+    }
+  }
+  // pi0pi0pi0 term
+  else if(iopt==1) {
+    // values for the different Breit-Wigner terms
+    Complex sig1(sigmaBreitWigner(s1,0)),
+      sig2(sigmaBreitWigner(s2,0)),
+      sig3(sigmaBreitWigner(s3,0));
+    // compute the vector
+    complex<Energy2> term;
+    for(ix=1;ix<4;++ix) {
+      term = _zsigma * q * (p1[ix]*sig1 + p2[ix]*sig2 + p3[ix]*sig3);
+      output += term*conj(term);
+    }
+    output/=6.;
+  }
+  output *= a1FormFactor(q2);
+  return output.real() / pow<4,1>(_rhomass);
 }

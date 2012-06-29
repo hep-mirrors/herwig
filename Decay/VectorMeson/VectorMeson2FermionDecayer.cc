@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMeson2FermionDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,7 +24,16 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void VectorMeson2FermionDecayer::doinit() throw(InitException) {
+void VectorMeson2FermionDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix) {
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+    }
+  }
+}
+
+void VectorMeson2FermionDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
@@ -50,6 +59,7 @@ void VectorMeson2FermionDecayer::doinit() throw(InitException) {
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
   : _coupling(42), _incoming(42), _outgoingf(42), _outgoinga(42), _maxweight(42) {
+  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
   // don't include intermediates
   generateIntermediates(false);
   // rho -> e+e-, mu+mu
@@ -241,38 +251,45 @@ void VectorMeson2FermionDecayer::Init() {
 
 }
 
-double VectorMeson2FermionDecayer::me2(bool vertex, const int,
-				   const Particle & inpart,
-				   const ParticleVector & decay) const {
-  // wavefunctions of the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
+double VectorMeson2FermionDecayer::me2(const int,
+				       const Particle & inpart,
+				       const ParticleVector& decay,
+				       MEOption meopt) const {
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
-  if(_outgoingf[imode()]!=decay[iferm]->id()){iferm=1;ianti=0;}
-  // construct the spin information objects for the  decay products
-  vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  SpinorBarWaveFunction(wavebar,decay[iferm],outgoing,true,vertex);
-  SpinorWaveFunction(   wave   ,decay[ianti],outgoing,true,vertex);
+  if(_outgoingf[imode()]!=decay[iferm]->id()) swap(iferm,ianti);
+  // initialization
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       incoming,false);
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // prefactor
   InvEnergy pre(_coupling[imode()]/inpart.mass());
-  // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   // now compute the currents
   LorentzPolarizationVector temp;
   for(unsigned ix=0;ix<2;++ix) {
     for(unsigned iy=0;iy<2;++iy) {
-      temp = pre*wave[ix].vectorCurrent(wavebar[iy]);
+      temp = pre*_wave[ix].vectorCurrent(_wavebar[iy]);
       for(unsigned int iz=0;iz<3;++iz) {
-	if(iferm>ianti) newME(iz,ix,iy)=invec[iz].dot(temp);
-	else            newME(iz,iy,ix)=invec[iz].dot(temp);
+	if(iferm>ianti) ME()(iz,ix,iy)=_vectors[iz].dot(temp);
+	else            ME()(iz,iy,ix)=_vectors[iz].dot(temp);
       }
     }
   }
-  ME(newME);
   // test of the matrix element
 //   double me = newME.contract(rhoin).real();
 //   double test = 4.*sqr(_coupling[imode()])/3.*
@@ -281,7 +298,7 @@ double VectorMeson2FermionDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -334,29 +351,30 @@ void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " "
+      output << "newdef " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingFermion " << ix << " "
+      output << "newdef " << name() << ":OutgoingFermion " << ix << " "
 	     << _outgoingf[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+      output << "newdef " << name() << ":OutgoingAntiFermion "  << ix << " "
 	     << _outgoinga[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " "
+      output << "newdef " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix] << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " "
+      output << "newdef " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " "
+      output << "insert " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingFermion "  << ix << " "
+      output << "insert " << name() << ":OutgoingFermion "  << ix << " "
 	     << _outgoingf[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+      output << "insert " << name() << ":OutgoingAntiFermion "  << ix << " "
 	     << _outgoinga[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " "
+      output << "insert " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix] << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " "
+      output << "insert " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

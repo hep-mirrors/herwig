@@ -5,16 +5,15 @@
 // This is the declaration of the NMSSMHHHVertex class.
 //
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMHHHVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /** \ingroup Helicity
- * The <code>NMSSMHHHVertex<\code> defines the triple
+ * The NMSSMHHHVertex defines the triple
  * Higgs coupling in the NMSSM.
  *
  * @see \ref NMSSMHHHVertexInterfaces "The interfaces"
@@ -24,13 +23,10 @@ class NMSSMHHHVertex: public SSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   NMSSMHHHVertex();
-  //@}
 
 public:
 
@@ -77,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -93,9 +89,8 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -117,33 +112,43 @@ private:
   /**
    * The mixing matrix combination \f$U^S_{ai}U^S_{bj}U^S_{ck}\f$
    * @param a The row element of the first CP-even mixing matrix   
-   * @param i The column element of the first CP-even mixing matrix
-   * @param b The row element of the second CP-even mixing matrix   
-   * @param j The column element of the second CP-even mixing matrix
-   * @param c The row element of the third CP-even mixing matrix   
+   * @param b The column element of the first CP-even mixing matrix
+   * @param c The row element of the second CP-even mixing matrix   
+   * @param i The column element of the second CP-even mixing matrix
+   * @param j The row element of the third CP-even mixing matrix   
    * @param k The column element of the third CP-even mixing matrix
    */
-  inline Complex usMix(unsigned int a, unsigned int i, unsigned int b,
-		       unsigned int j, unsigned int c, unsigned int k) const;
+  Complex usMix(unsigned int a, unsigned int b, unsigned int c,
+		unsigned int i, unsigned int j, unsigned int k) const {
+    return (*_mixS)(a,i)*(*_mixS)(b,j)*(*_mixS)(c,k) +
+           (*_mixS)(a,i)*(*_mixS)(c,j)*(*_mixS)(b,k) +
+   	   (*_mixS)(b,i)*(*_mixS)(a,j)*(*_mixS)(c,k) +
+   	   (*_mixS)(b,i)*(*_mixS)(c,j)*(*_mixS)(a,k) +
+           (*_mixS)(c,i)*(*_mixS)(a,j)*(*_mixS)(b,k) +
+           (*_mixS)(c,i)*(*_mixS)(b,j)*(*_mixS)(a,k);
+  }
   
   /**
    * The mixing matrix combination \f$U^S_{ai}U^P_{bj}U^P_{ck}\f$
    * @param a The row element of the first CP-even mixing matrix   
-   * @param i The column element of the first CP-even mixing matrix
-   * @param b The row element of the second CP-even mixing matrix   
-   * @param j The column element of the second CP-even mixing matrix
-   * @param c The row element of the third CP-even mixing matrix   
+   * @param b The column element of the first CP-even mixing matrix
+   * @param c The row element of the second CP-even mixing matrix   
+   * @param i The column element of the second CP-even mixing matrix
+   * @param j The row element of the third CP-even mixing matrix   
    * @param k The column element of the third CP-even mixing matrix
    */
-  inline Complex upMix(unsigned int a, unsigned int i, unsigned int b,
-		       unsigned int j, unsigned int c, unsigned int k) const;
+  Complex upMix(unsigned int a, unsigned int b, unsigned int c,
+		unsigned int i, unsigned int j, unsigned int k) const {
+    return (*_mixS)(a,i)*((*_mixP)(b,j)*(*_mixP)(c,k) + 
+			  (*_mixP)(c,j)*(*_mixP)(b,k));
+  }
 
 private:
 
   /**
    * A pointer to the object containing the SM parameters 
    */
-  tcSMPtr _theSM;
+  tcHwSMPtr _theSM;
 
   /**
    * The \f$W\f$ mass 
@@ -154,6 +159,15 @@ private:
    * The \f$Z\f$ mass 
    */
   Energy _mz;
+     /**
+   * The \f$b\f$ mass 
+   */
+  Energy _mb;
+  
+  /**
+   * The \f$t\f$ mass 
+   */
+  Energy _mt;
   
   /**
    * \f$\sin^2\theta_W\f$
@@ -222,15 +236,20 @@ private:
 
   /**
    * The value of the VEV of the higgs that couples to the down-type sector
-   * with the coupling factored out, i.e. \f$ 2M_W\cos\beta \f$
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
    */
-  Energy _v1;
+  Energy _vu;
 
   /**
    * The value of the VEV of the higgs that couples to the up-type sector
-   * with the coupling factored out i.e. \f$ 2M_W\sin\beta \f$
+   * i.e. \f$ g*sqrt(2)M_W\sin\beta \f$
    */
-  Energy _v2;
+  Energy _vd;
+  
+    /**
+   * The value of the VEV of the singlet higgs
+   */
+  Energy _s;
 
   /**
    * The scale at which this vertex was last evaluated 
@@ -241,6 +260,21 @@ private:
    * The value of the EW coupling when it was last evaluated
    */
   double _glast;
+        /**
+   * left 3rd generation scalar quark mass
+   */
+  Energy _MQ3;
+
+  /**
+   *  right scalar top mass
+   */
+  Energy _MU2;
+
+  /**
+   *  Whether or onto to include the radiative terms
+   */
+  bool _includeRadiative;
+
 };
 
 }
@@ -279,7 +313,5 @@ struct ClassTraits<Herwig::NMSSMHHHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMHHHVertex.icc"
 
 #endif /* HERWIG_NMSSMHHHVertex_H */

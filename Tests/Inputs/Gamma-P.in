@@ -1,0 +1,11 @@
+read GammaP.common
+cd /Herwig/MatrixElements
+create Herwig::MEGammaP2Jets MEgammaP2Jets HwMEGammaHadron.so
+insert SimpleGammaHadron:MatrixElements 0 /Herwig/MatrixElements/MEgammaP2Jets
+cd /Herwig/Generators
+set GammaHadronGenerator:EventHandler:CascadeHandler NULL
+set GammaHadronGenerator:EventHandler:HadronizationHandler NULL
+set GammaHadronGenerator:EventHandler:DecayHandler NULL
+create Herwig::GammaPMETest TestP GammaTest.so
+insert GammaHadronGenerator:AnalysisHandlers 0 TestP
+saverun Gamma-P GammaHadronGenerator

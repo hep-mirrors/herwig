@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DtoKPiPiMarkIII.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,10 +21,25 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
+
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
+
+Complex DtoKPiPiMarkIII::amplitude(bool rho, Energy mD, 
+					  Energy mA , Energy mB , Energy mC ,
+					  Energy mAB, Energy mAC, Energy mBC,
+					  Energy mres, Energy wres) const {
+  InvEnergy radius = rho ? _rrho : _rKstar;
+  Energy  pAB  = Kinematics::pstarTwoBodyDecay(mAB ,mA,mB);
+  Energy  pR   = Kinematics::pstarTwoBodyDecay(mres,mA,mB);
+  Energy2 mgam = wres*sqr(mres)/mAB*Math::powi(pAB/pR,3)*
+    (1.+sqr(radius*pR))/(1.+sqr(radius*pAB));
+  Energy2 s = (sqr(mAC)-sqr(mBC)-(sqr(mD)-sqr(mC))*(sqr(mA)-sqr(mB))/sqr(mres))*
+    sqrt((1.+sqr(radius*pR))/(1.+sqr(radius*pAB))); 
+  Complex output=s/((sqr(mres)- sqr(mAB)-complex<Energy2>(ZERO,mgam)));
+  return output;
+}
 
 DtoKPiPiMarkIII::DtoKPiPiMarkIII() {
   // Amplitudes and phases for D0 -> K- pi+ pi0
@@ -257,49 +272,49 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Mass
     ("Kstar0Mass",
      "The mass of the K*(892)0",
-     &DtoKPiPiMarkIII::_mKstar0, GeV, 0.8965 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mKstar0, GeV, 0.8965 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Width
     ("Kstar0Width",
      "The width of the K*(892)0",
-     &DtoKPiPiMarkIII::_wKstar0, GeV, 0.0502*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wKstar0, GeV, 0.0502*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusMass
     ("KstarMinusMass",
      "The mass of the K*(892)-",
-     &DtoKPiPiMarkIII::_mKstarm, GeV, 0.8921*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mKstarm, GeV, 0.8921*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusWidth
     ("KstarMinusWidth",
      "The width of the K*(892)-",
-     &DtoKPiPiMarkIII::_wKstarm, GeV, 0.0511*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wKstarm, GeV, 0.0511*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Mass
     ("Rho0Mass",
      "The mass of the rho0",
-     &DtoKPiPiMarkIII::_mrho0, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mrho0, GeV, 0.770 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Width
     ("Rho0Width",
      "The width of the rho0",
-     &DtoKPiPiMarkIII::_wrho0, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wrho0, GeV, 0.1533*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+",
-     &DtoKPiPiMarkIII::_mrhop, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mrhop, GeV, 0.770 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+",
-     &DtoKPiPiMarkIII::_wrhop, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wrhop, GeV, 0.1533*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceRhoRadius
@@ -327,7 +342,7 @@ void DtoKPiPiMarkIII::Init() {
      false, false, Interface::limited);
 }
 
-void DtoKPiPiMarkIII::doinit() throw(InitException) {
+void DtoKPiPiMarkIII::doinit() {
   DecayIntegrator::doinit();
   double fact = Constants::pi/180.;
   // amplitudes for D0 -> K- pi+ pi0
@@ -541,16 +556,22 @@ int DtoKPiPiMarkIII::modeNumber(bool & cc, tcPDPtr parent,
   }
 }
 
-double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart,
-			    const ParticleVector & decay) const {
+double DtoKPiPiMarkIII::me2( const int ichan,const Particle & inpart,
+			    const ParticleVector & decay,
+			     MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the invariant masses needed to calulate the amplitudes
   Energy mA  = decay[0]->mass();
@@ -623,10 +644,8 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
@@ -634,47 +653,47 @@ void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << fullName() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
-  output << "set " << fullName() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
-  output << "set " << fullName() << ":KmPipPi0KstarmMagnitude " << _a1Kstarm << "\n";
-  output << "set " << fullName() << ":KmPipPi0KstarmPhase " << _phi1Kstarm << "\n";
-  output << "set " << fullName() << ":KmPipPi0Kstar0Magnitude " << _a1Kstar0 << "\n";
-  output << "set " << fullName() << ":KmPipPi0Kstar0Phase " << _phi1Kstar0 << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantMagnitude " << _a1NR << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantPhase " << _phi1NR << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoMagnitude " << _a2rho << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoPhase " << _phi2rho << "\n";
-  output << "set " << fullName() << ":K0PipPimKstarMagnitude " << _a2Kstar << "\n";
-  output << "set " << fullName() << ":K0PipPimKstarPhase " << _phi2Kstar << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantMagnitude " << _a2NR << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantPhase " << _phi2NR << "\n";
-  output << "set " << fullName() << ":K0PipPi0RhoMagnitude " << _a3rho << "\n";
-  output << "set " << fullName() << ":K0PipPi0RhoPhase " << _phi3rho << "\n";
-  output << "set " << fullName() << ":K0PipPi0KstarMagnitude " << _a3Kstar << "\n";
-  output << "set " << fullName() << ":K0PipPi0KstarPhase " << _phi3Kstar << "\n";
-  output << "set " << fullName() << ":K0PipPi0NonResonantMagnitude " << _a3NR << "\n";
-  output << "set " << fullName() << ":K0PipPi0NonResonantPhase " << _phi3NR << "\n";
-  output << "set " << fullName() << ":KmPipPipNonResonantMagnitude " << _a4NR << "\n";
-  output << "set " << fullName() << ":KmPipPipNonResonantPhase " << _phi4NR << "\n";
-  output << "set " << fullName() << ":KmPipPipKstarMagnitude " << _a4Kstar << "\n";
-  output << "set " << fullName() << ":KmPipPipKstarPhase " << _phi4Kstar << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Kstar0Mass " << _mKstar0/GeV << "\n";
-  output << "set " << fullName() << ":Kstar0Width " << _wKstar0/GeV << "\n";
-  output << "set " << fullName() << ":KstarMinusMass " << _mKstarm/GeV << "\n";
-  output << "set " << fullName() << ":KstarMinusWidth " << _wKstarm/GeV << "\n";
-  output << "set " << fullName() << ":Rho0Mass " << _mrho0/GeV << "\n";
-  output << "set " << fullName() << ":Rho0Width " << _wrho0/GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusMass " << _mrhop/GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusWidth " << _wrhop/GeV << "\n";
-  output << "set " << fullName() << ":RhoRadius " << _rrho/(mm*1e-12/hbarc) << "\n";
-  output << "set " << fullName() << ":KstarRadius " << _rKstar/(mm*1e-12/hbarc) << "\n";
+  output << "newdef " << name() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
+  output << "newdef " << name() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
+  output << "newdef " << name() << ":KmPipPi0KstarmMagnitude " << _a1Kstarm << "\n";
+  output << "newdef " << name() << ":KmPipPi0KstarmPhase " << _phi1Kstarm << "\n";
+  output << "newdef " << name() << ":KmPipPi0Kstar0Magnitude " << _a1Kstar0 << "\n";
+  output << "newdef " << name() << ":KmPipPi0Kstar0Phase " << _phi1Kstar0 << "\n";
+  output << "newdef " << name() << ":KmPipPi0NonResonantMagnitude " << _a1NR << "\n";
+  output << "newdef " << name() << ":KmPipPi0NonResonantPhase " << _phi1NR << "\n";
+  output << "newdef " << name() << ":K0PipPimRhoMagnitude " << _a2rho << "\n";
+  output << "newdef " << name() << ":K0PipPimRhoPhase " << _phi2rho << "\n";
+  output << "newdef " << name() << ":K0PipPimKstarMagnitude " << _a2Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPimKstarPhase " << _phi2Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPimNonResonantMagnitude " << _a2NR << "\n";
+  output << "newdef " << name() << ":K0PipPimNonResonantPhase " << _phi2NR << "\n";
+  output << "newdef " << name() << ":K0PipPi0RhoMagnitude " << _a3rho << "\n";
+  output << "newdef " << name() << ":K0PipPi0RhoPhase " << _phi3rho << "\n";
+  output << "newdef " << name() << ":K0PipPi0KstarMagnitude " << _a3Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPi0KstarPhase " << _phi3Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPi0NonResonantMagnitude " << _a3NR << "\n";
+  output << "newdef " << name() << ":K0PipPi0NonResonantPhase " << _phi3NR << "\n";
+  output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " << _a4NR << "\n";
+  output << "newdef " << name() << ":KmPipPipNonResonantPhase " << _phi4NR << "\n";
+  output << "newdef " << name() << ":KmPipPipKstarMagnitude " << _a4Kstar << "\n";
+  output << "newdef " << name() << ":KmPipPipKstarPhase " << _phi4Kstar << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Kstar0Mass " << _mKstar0/GeV << "\n";
+  output << "newdef " << name() << ":Kstar0Width " << _wKstar0/GeV << "\n";
+  output << "newdef " << name() << ":KstarMinusMass " << _mKstarm/GeV << "\n";
+  output << "newdef " << name() << ":KstarMinusWidth " << _wKstarm/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Mass " << _mrho0/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Width " << _wrho0/GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusMass " << _mrhop/GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusWidth " << _wrhop/GeV << "\n";
+  output << "newdef " << name() << ":RhoRadius " << _rrho/(mm*1e-12/hbarc) << "\n";
+  output << "newdef " << name() << ":KstarRadius " << _rKstar/(mm*1e-12/hbarc) << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeights " 
+    output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights " 
+    output << "insert " << name() << ":Weights " 
 	   << ix << " " << _weights[ix] << "\n";
   }
   if(header) {

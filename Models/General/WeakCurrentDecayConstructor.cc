@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WeakCurrentDecayConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,9 +19,10 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Decay/General/GeneralCurrentDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "DecayConstructor.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
@@ -34,30 +35,42 @@ IBPtr WeakCurrentDecayConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-void WeakCurrentDecayConstructor::doinit() throw(InitException) {
+void WeakCurrentDecayConstructor::doinit() {
   NBodyDecayConstructorBase::doinit();
   _theModel = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>
     (generator()->standardModel());
-  unsigned int isize=_part1.size();
-  if(isize!=_part1.size()||isize!=_part2.size()||isize!=_part3.size()||
-     isize!=_part4.size()||isize!=_part5.size()||isize!=_norm .size()||
-     isize!=_current.size())
+  unsigned int isize=decayTags_.size();
+  if(isize!=_norm .size()||isize!=_current.size())
     throw InitException() << "Invalid sizes for the decay mode vectors in "
 			  << " WeakCurrentDecayConstructor " 
-			  << _part1.size() << " " << _part2.size() << " " 
-			  << _part3.size() << " " << _part4.size() << " "
-			  << _part5.size() << " " << _norm .size() << " " 
+			  << decayTags_.size() << " " << _norm.size() << " " 
 			  << _current.size() << Exception::runerror;
+  // get the particles from the tags
+  for(unsigned int ix=0;ix<decayTags_.size();++ix) {
+    _current[ix]->init();
+    particles_.push_back(vector<tPDPtr>());
+    string tag=decayTags_[ix];
+    do {
+      string::size_type next = min(tag.find(','), tag.find(';'));
+      particles_.back().push_back(generator()->findParticle(tag.substr(0,next)));
+      if(!particles_.back().back()) 
+	throw Exception() << "Failed to find particle " << tag.substr(0,next)
+			  << " in DecayMode " << decayTags_[ix]
+			  << " in WeakCurrentDecayConstructor::doinit()"
+			  << Exception::runerror;
+      if(tag[next]==';') break;
+      tag = tag.substr(next+1);
+    }
+    while(true);
+  }
 }
 
 void WeakCurrentDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _theExistingDecayers << _init << _iteration << _points << ounit(_masscut,GeV)
-     << _part1 << _part2 << _part3 << _part4 << _part5 << _norm << _current;
+  os << ounit(_masscut,GeV) << decayTags_ << particles_ << _norm << _current;
 }
 
 void WeakCurrentDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >>_theExistingDecayers >> _init >> _iteration >> _points >> iunit(_masscut,GeV)
-     >> _part1 >> _part2 >> _part3 >> _part4 >> _part5 >> _norm >> _current;
+  is >> iunit(_masscut,GeV) >> decayTags_ >> particles_ >> _norm >> _current;
 }
 
 ClassDescription<WeakCurrentDecayConstructor> WeakCurrentDecayConstructor::initWeakCurrentDecayConstructor;
@@ -66,64 +79,14 @@ ClassDescription<WeakCurrentDecayConstructor> WeakCurrentDecayConstructor::initW
 void WeakCurrentDecayConstructor::Init() {
 
   static ClassDocumentation<WeakCurrentDecayConstructor> documentation
-    ("There is no documentation for the WeakCurrentDecayConstructor class");
-  
-  static Switch<WeakCurrentDecayConstructor,bool> interfaceInitializeDecayers
-    ("InitializeDecayers",
-     "Initialize new decayers",
-     &WeakCurrentDecayConstructor::_init, true, false, false);
-  static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
-    (interfaceInitializeDecayers,
-     "Yes",
-     "Initialize new decayers to find max weights",
-     true);
-  static SwitchOption interfaceInitializeDecayersoff
-    (interfaceInitializeDecayers,
-     "No",
-     "Use supplied weights for integration",
-     false);
-  
-  static Parameter<WeakCurrentDecayConstructor,int> interfaceInitIteration
-    ("InitIteration",
-     "Number of iterations to optimise integration weights",
-     &WeakCurrentDecayConstructor::_iteration, 5, 0, 5,
-     false, false, true);
+    ("The WeakCurrentDecayConstructor class implemets the decay of BSM particles "
+     "to low mass hadronic states using the Weak current");
 
-  static Parameter<WeakCurrentDecayConstructor,int> interfaceInitPoints
-    ("InitPoints",
-     "Number of points to generate when optimising integration",
-     &WeakCurrentDecayConstructor::_points, 10000, 100, 100000000,
-     false, false, true);
-
-  static ParVector<WeakCurrentDecayConstructor,long> interfaceParticle1
-    ("Particle1",
-     "The first decay product",
-     &WeakCurrentDecayConstructor::_part1, -1, long(0), long(-1000000), long(1000000),
-     false, false, Interface::limited);
-
-  static ParVector<WeakCurrentDecayConstructor,long> interfaceParticle2
-    ("Particle2",
-     "The second decay product",
-     &WeakCurrentDecayConstructor::_part2, -1, long(0), long(-1000000), long(1000000),
-     false, false, Interface::limited);
-
-  static ParVector<WeakCurrentDecayConstructor,long> interfaceParticle3
-    ("Particle3",
-     "The third   decay product",
-     &WeakCurrentDecayConstructor::_part3, -1, long(0), long(-1000000), long(1000000),
-     false, false, Interface::limited);
-
-  static ParVector<WeakCurrentDecayConstructor,long> interfaceParticle4
-    ("Particle4",
-     "The fourth decay product",
-     &WeakCurrentDecayConstructor::_part4, -1, long(0), long(-1000000), long(1000000),
-     false, false, Interface::limited);
-
-  static ParVector<WeakCurrentDecayConstructor,long> interfaceParticle5
-    ("Particle5",
-     "The fifth decay product",
-     &WeakCurrentDecayConstructor::_part5, -1, long(0), long(-1000000), long(1000000),
-     false, false, Interface::limited);
+  static ParVector<WeakCurrentDecayConstructor,string> interfaceDecayModes
+    ("DecayModes",
+     "The decays of the weak current",
+     &WeakCurrentDecayConstructor::decayTags_, -1, "", "", "",
+     false, false, Interface::nolimits);
 
   static ParVector<WeakCurrentDecayConstructor,double> interfaceNormalisation
     ("Normalisation",
@@ -144,57 +107,38 @@ void WeakCurrentDecayConstructor::Init() {
 
 }
 
-void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
-  _theModel->init();
+void WeakCurrentDecayConstructor::DecayList(const set<PDPtr> & part) {
+  if( part.empty() ) return;
   unsigned int nv(_theModel->numberOfVertices());
-  // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) _theModel->vertex(i)->init();
-  // resize the vectors
-  _theExistingDecayers.
-    resize(nv,vector<map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> >
-	   (3,map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr>()));
-  tPDVector decays;
-  unsigned int np = part.size();
-  for(unsigned int ipart = 0; ipart < np; ++ipart) {
+  for(set<PDPtr>::const_iterator ip=part.begin();ip!=part.end();++ip) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       for(unsigned int ilist = 0; ilist < 3; ++ilist) { 
-	decays = createModes(part[ipart], _theModel->vertex(iv),
-			     ilist, iv);
-	if(decays.size() > 0){
-	  tPDPtr incpart = part[ipart]->CC() ? part[ipart]->CC() : tPDPtr(part[ipart]);
-	  createDecayMode(incpart, decays, _theExistingDecayers[iv][ilist]);
-	}
+	vector<TwoBodyDecay> decays =
+	  createModes(*ip, _theModel->vertex(iv),ilist);
+	if(!decays.empty()) createDecayMode(decays);
       }
     }
   }
-  //ParticleData objects need updating 
-//   for(unsigned int ip= 0; ip < np; ++ip) {
-//     PDPtr pdp = part[ip];
-//     pdp->touch();
-//     pdp->update();
-//     if(pdp->CC()) pdp->CC()->synchronize();
-//   }
 }
   
-vector<tPDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
-						       const VertexBasePtr vert,
-						       unsigned int ilist,
-						       unsigned int iv) {
+vector<TwoBodyDecay> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
+							      const VertexBasePtr vert,
+							      unsigned int ilist) {
   int id = inpart->id();
-  if( id < 0 || !vert->incoming(id) || vert->getNpoint() != 3 )
-    return tPDVector();
+  if( id < 0 || !vert->isIncoming(inpart) || vert->getNpoint() != 3 )
+    return vector<TwoBodyDecay>();
   Energy m1(inpart->mass());
   vector<tPDPtr> decaylist;
-  decaylist = vert->search(ilist,id);
+  decaylist = vert->search(ilist,inpart);
   tPDVector::size_type nd = decaylist.size();
-  tPDVector decays;
+  vector<TwoBodyDecay> decays;
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist.at(i + 1)), 
       pc(decaylist.at(i + 2));
     if( pb->id() == id ) swap(pa, pb);
     if( pc->id() == id ) swap(pa, pc);
     //One of the products must be a W
-    Energy mp(0.*GeV);
+    Energy mp(ZERO);
     if( abs(pb->id()) == ParticleID::Wplus )
       mp = pc->mass();
     else if( abs(pc->id()) == ParticleID::Wplus )
@@ -202,214 +146,148 @@ vector<tPDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
     else 
       continue;
     //allowed on-shell decay and passes mass cut
-    if( ( m1 <= pb->mass() + pc->mass() ) && m1 - mp <= _masscut ) continue;
+    if( m1 >= pb->mass() + pc->mass() ) continue;
+    if( m1 < mp ) continue;
+    if( m1 - mp >= _masscut ) continue;
     //vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
-    decays.push_back(inpart); decays.push_back(pb);
-    decays.push_back(pc);    
+    decays.push_back( TwoBodyDecay(inpart,pb, pc, vert) );
+    if(abs(decays.back().children_.second->id())!=ParticleID::Wplus)
+      swap(decays.back().children_.first,decays.back().children_.second);
+    assert(abs(decays.back().children_.second->id())==ParticleID::Wplus);
   }
-  
-  if( !decays.empty() ) createDecayer(vert,ilist,iv);
   return decays;
 }
 
-void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
-						unsigned int icol,
-						unsigned int ivert) {
-  if(_theExistingDecayers[ivert][icol].empty()) {
-    string name;
-    switch(vert->getName()) {
-    case FFV : 
-      name = "FFVCurrentDecayer";
-      break;
-    default : throw NBodyDecayConstructorError() << "Cannot find appropriate "
- 						 << "vertex to create "
- 						 << "decayer\n";
-    }
-//     case VVS : {
-//       if( icol == 0 || icol == 1) 
-// 	name = "VVSDecayer";
-//       else 
-// 	name = "SVVDecayer";
-//     } 
-//       break;
-//     case GeneralSVV : {
-//       if(icol == 0) 
-// 	name = "SVVLoopDecayer";
-//     }
-//       break;
-//     case VSS : {
-//       if(icol == 0)
-// 	name = "VSSDecayer";
-//       else 
-// 	name = "SSVDecayer";
-//     }
-//       break;
-//     case VVT : {
-//       if(icol == 2)
-// 	name = "TVVDecayer";
-//     }
-    ostringstream fullname;
-    fullname << "/Herwig/Decays/" << name << "_" 
- 	     << ivert << "_" << icol;
-    string classname = "Herwig::" + name;
-    ostringstream cut;
-    cut << _masscut/GeV;
-    for(unsigned int ix=0;ix<_part1.size();++ix) {
-      GeneralCurrentDecayerPtr decayer;
-      ostringstream fullname2;
-      fullname2 << fullname.str() << "_" << ix;
-      if(_theExistingDecayers[ivert][icol].find(_current[ix])==
-	 _theExistingDecayers[ivert][icol].end()) {
-	decayer = dynamic_ptr_cast<GeneralCurrentDecayerPtr>
-	  (generator()->preinitCreate(classname,fullname2.str()));
-	string msg = generator()->preinitInterface(decayer, "DecayVertex", 
-						   "set", vert->fullName());
-	if(msg.find("Error:") != string::npos)
-	  throw NBodyDecayConstructorError() 
-	    << "WeakCurrentDecayConstructor::createDecayer - An error occurred while "
-	    << "setting the vertex for " << decayer->fullName()
-	    << " - " << msg
-	    << Exception::abortnow;
-	msg = generator()->preinitInterface(decayer, "Current","set",
-					    _current[ix]->fullName());
-	if(msg.find("Error:") != string::npos)
-	  throw NBodyDecayConstructorError() 
-	    << "WeakCurrentDecayConstructor::createDecayer - An error occurred while "
-	    << "setting the current for " << decayer->fullName()
-	    << " - " << msg
-	    << Exception::abortnow;
-	msg = generator()->preinitInterface(decayer, "MaximumMass","set",cut.str());
-	if(msg.find("Error:") != string::npos)
-	  throw NBodyDecayConstructorError() 
-	    << "WeakCurrentDecayConstructor::createDecayer - An error occurred while "
-	    << "setting the cut-off for " << decayer->fullName()
-	    << " - " << msg
-	    << Exception::abortnow;
-	if(_init) initializeDecayers(fullname2.str());
-	decayer->init();
-	_theExistingDecayers[ivert][icol][_current[ix]]=decayer;
-      }
-    }
+GeneralCurrentDecayerPtr  WeakCurrentDecayConstructor::createDecayer(PDPtr in, PDPtr out1,
+								     vector<tPDPtr> outCurrent,
+								     VertexBasePtr vertex,
+								     WeakDecayCurrentPtr current) {
+  string name;
+  using namespace ThePEG::Helicity::VertexType;
+  switch(vertex->getName()) {
+  case FFV : 
+    name = "FFVCurrentDecayer";
+    break;
+  default :
+    ostringstream message;
+    message << "Invalid vertex for decays of " << in->PDGName() << " -> " << out1->PDGName() 
+	    << " via weak current " << vertex->fullName() << "\n";
+    generator()->logWarning(NBodyDecayConstructorError(message.str(),
+						       Exception::warning));
+    return GeneralCurrentDecayerPtr();
   }
-  else 
-    return;
+  ostringstream fullname;
+  fullname << "/Herwig/Decays/" << name << "_" << in->PDGName() << "_"
+	   << out1->PDGName();
+  for(unsigned int ix=0;ix<outCurrent.size();++ix)
+    fullname  << "_" << outCurrent[ix]->PDGName();
+  string classname = "Herwig::" + name;
+  GeneralCurrentDecayerPtr decayer = dynamic_ptr_cast<GeneralCurrentDecayerPtr>
+    (generator()->preinitCreate(classname,fullname.str()));
+  decayer->setDecayInfo(in,out1,outCurrent,vertex,current,_masscut);
+  // set decayer options from base class
+  setDecayerInterfaces(fullname.str());
+  // initialize the decayer
+  decayer->init();
+  // return the decayer
+  return decayer;
 }
 
 void WeakCurrentDecayConstructor::
-createDecayMode(PDPtr inpart, const tPDVector & decays,
-		map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> decayers) {
-  if(decays.empty()) {
-    throw NBodyDecayConstructorError() 
-      << "WeakCurrentDecayConstructor::createDecayMode - No decayers\n"
-      << Exception::runerror;
-  }
-  // the partial widths
-  Energy totalWidth(0.*MeV);
-  vector<vector<Energy> > pWidths(decays.size()/3);
-  vector<vector<string> > tags(decays.size()/3);
-  vector<vector<WeakDecayCurrentPtr> > currents(decays.size()/3);
-  PDVector particles(3);
-  if(inpart->CC()) inpart = inpart->CC();
-  inpart->stable(false);
-  particles[0] = inpart;
-  string dmtag,dmtagb;
-  bool Wplus;
-  for(unsigned int ix = 0; ix < decays.size(); ix += 3) {
-    if(decays[ix]->id() == inpart->id()) {
-      particles[1] = decays[ix+1];
-      particles[2] = decays[ix+2];
-    }
-    else if(decays[ix+1]->id() == inpart->id()) {
-      particles[1] = decays[ix];
-      particles[2] = decays[ix+2];
-    }
-    else {
-      particles[1] = decays[ix];
-      particles[2] = decays[ix+1];
-    }
-    if(abs(particles[1]->id())==ParticleID::Wplus) swap(particles[1],particles[2]);
-    Wplus=particles[2]->id()==ParticleID::Wplus;
-    particles.resize(2);
-    dmtag = particles[0]->PDGName() + "->" + particles[1]->PDGName();
+createDecayMode(vector<TwoBodyDecay> & decays) {
+  assert(!decays.empty());
+  for(unsigned int ix = 0; ix < decays.size(); ++ix) {
+    PDVector particles(3);
+    particles[0] = decays[ix].parent_;
+    particles[1] = decays[ix].children_.first ;
+    bool Wplus=decays[ix].children_.second->id()==ParticleID::Wplus;
     for(unsigned int iy=0;iy<_current.size();++iy) {
-       particles.resize(2);
-      dmtagb=dmtag;
-      vector<tPDPtr> wprod;
-      if(_part1[iy]!=0) wprod.push_back(getParticleData(_part1[iy]));
-      if(_part2[iy]!=0) wprod.push_back(getParticleData(_part2[iy]));
-      if(_part3[iy]!=0) wprod.push_back(getParticleData(_part3[iy]));
-      if(_part4[iy]!=0) wprod.push_back(getParticleData(_part4[iy]));
-      if(_part5[iy]!=0) wprod.push_back(getParticleData(_part5[iy]));
+      particles.resize(2);
+      vector<tPDPtr> wprod=particles_[iy];
       int icharge=0;
-      for(unsigned int iz=0;iz<wprod.size();++iz) icharge+=wprod[iz]->iCharge();
+      Energy msum = particles[0]->mass()-particles[1]->mass();
+      for(unsigned int iz=0;iz<wprod.size();++iz) {
+	icharge += wprod[iz]->iCharge();
+	msum -=wprod[iz]->mass();
+      }
+      if(msum<=ZERO) continue;
       bool cc = (Wplus&&icharge==-3)||(!Wplus&&icharge==3);
+      OrderedParticles outgoing;
+      outgoing.insert(particles[1]);
       for(unsigned int iz=0;iz<wprod.size();++iz) {
  	if(cc&&wprod[iz]->CC())  wprod[iz]=wprod[iz]->CC();
- 	dmtagb+="," + wprod[iz]->      PDGName();
+	outgoing.insert(wprod[iz]);
       }
-      dmtagb += ";";
-      pWidths[ix/3].push_back(decayers.find(_current[iy])
-			      ->second->partialWidth(inpart,particles[1],wprod));
-      tags[ix/3].push_back(dmtagb);
-      currents[ix/3].push_back(_current[iy]);
-      totalWidth += pWidths[ix/3][iy];
-    }
-  }
-  for(unsigned int ix=0;ix<tags.size();++ix) {
-    for(unsigned int iy=0;iy<tags[ix].size();++iy) {
-      double tbr = pWidths[ix][iy]/totalWidth;
-      tDMPtr thedm= generator()->findDecayMode(tags[ix][iy]);
-      if( !thedm ) {
-	tDMPtr ndm = generator()->preinitCreateDecayMode(tags[ix][iy]);
-	if(ndm) {
-	  generator()->preinitInterface(ndm, "Decayer", "set",
-					decayers.find(currents[ix][iy])
-					->second->fullName());
-	  generator()->preinitInterface(ndm, "OnOff", "set", "1");
-	  ostringstream br;
-	  br << tbr;
-	  if(!br)
-	    throw NBodyDecayConstructorError()
-	      << "Error with branching ratio stream. "
-	      << "Branching ratio set to zero for decay mode "
-	      << tags[ix][iy]
-	      << Exception::warning;
-	  else {
-	    generator()->preinitInterface(ndm, "BranchingRatio",
-					  "set", br.str());
-	  }
+      // check outgoing particles initialised
+      for(unsigned int iz=0;iz<wprod.size();++iz) wprod[iz]->init();
+      // create the tag for the decay mode
+      string tag = particles[0]->PDGName() + "->";
+      OrderedParticles::const_iterator it = outgoing.begin();
+      do {
+	tag += (**it).name();
+	++it;
+	if(it!=outgoing.end()) tag +=",";
+	else                   tag +=";";
+      }
+      while(it!=outgoing.end());
+      // find the decay mode
+      tDMPtr dm= generator()->findDecayMode(tag);
+      if( !dm && createDecayModes() ) {
+	// create the decayer
+	GeneralCurrentDecayerPtr decayer = createDecayer(particles[0],particles[1],
+							 wprod,decays[ix].vertex_,
+							 _current[iy]);
+	if(!decayer) continue;
+	// calculate the width
+	Energy pWidth = _norm[iy]*decayer->partialWidth(particles[0],particles[1],wprod);
+	if(pWidth<=ZERO) {
+	  generator()->preinitInterface(decayer->fullName(),
+					"Initialize", "set","0");
+	  continue;
 	}
-	else 
-	  throw NBodyDecayConstructorError() 
-	    << "WeakCurrentDecayConstructor::createDecayMode - Needed to create "
-	    << "new decaymode but one could not be created for the tag " 
-	    << tags[ix][iy] 
-	    << Exception::warning;
+	tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
+	if(!ndm) throw NBodyDecayConstructorError() 
+		   << "WeakCurrentDecayConstructor::createDecayMode - Needed to create "
+		   << "new decaymode but one could not be created for the tag " 
+		   << tag
+		   << Exception::warning;
+	generator()->preinitInterface(ndm, "Decayer", "set",
+				      decayer->fullName());
+	generator()->preinitInterface(ndm, "OnOff", "set", "On");
+	setBranchingRatio(ndm, pWidth);
+	particles[0]->stable(false);
+	if(ndm->brat()<decayConstructor()->minimumBR()) {
+	  generator()->preinitInterface(decayer->fullName(),
+					"Initialize", "set","0");
+	}
       }
-      else {
-	string::size_type idx = (thedm->decayer()->fullName()).find("Mambo");
-	if(idx != string::npos)
-	  generator()->preinitInterface(thedm, "Decayer", "set", 
-					decayers.find(currents[ix][iy])
-					->second->fullName());
+      else if (dm) {
+	// create the decayer
+	GeneralCurrentDecayerPtr decayer = createDecayer(particles[0],particles[1],
+							 wprod,decays[ix].vertex_,
+							 _current[iy]);
+	if(!decayer) continue;
+	generator()->preinitInterface(dm, "Decayer", "set", decayer->fullName());
+	particles[0]->stable(false);
+	if(createDecayModes()) {
+	  // calculate the width
+	  Energy pWidth = _norm[iy]*decayer->partialWidth(particles[0],particles[1],wprod);
+	  if(pWidth<=ZERO) {
+	    generator()->preinitInterface(decayer->fullName(),
+					  "Initialize", "set","0");
+	    continue;
+	  }
+	  generator()->preinitInterface(dm, "OnOff", "set", "On");
+	  particles[0]->width(particles[0]->width()*(1.-dm->brat()));
+	  setBranchingRatio(dm, pWidth);
+	}
+	if(dm->brat()<decayConstructor()->minimumBR()) {
+	  generator()->preinitInterface(decayer->fullName(),
+					"Initialize", "set","0");
+	}
       }
     }
   }
-}
-
-void WeakCurrentDecayConstructor::initializeDecayers(string fullname) const {
-  ostringstream value;
-  value << _init;
-  string msg = generator()->preinitInterface(fullname, "Initialize", "set",
-					     value.str());
-  value.str("");
-  value << _iteration;
-  msg=generator()->preinitInterface(fullname, "Iteration", "set",
-				value.str());
-  value.str("");
-  value << _points;
-  msg=generator()->preinitInterface(fullname, "Points", "set",
-				value.str());
 }

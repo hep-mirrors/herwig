@@ -46,8 +46,10 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_d_Lbar
 
 # --- Perturbative Decays ---
 # All of the two- and three-body decay modes are calculated automatically.
-# Uncomment the next line to disable the creation of the three-body modes
-#set ThreeBodyDC:CreateDecayModes No
+# Set the next line to 'Yes' to enable the creation of the three-body modes.
+# Initialisation of all three-body decayers will take several minutes.
+# For production runs, they should be enabled!
+set ThreeBodyDC:CreateDecayModes Yes
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
@@ -65,7 +67,6 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 

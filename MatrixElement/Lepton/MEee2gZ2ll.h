@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2ll.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2ll class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -31,14 +31,16 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2llInterfaces "The interfaces"
  * defined for MEee2gZ2ll.
  */
-class MEee2gZ2ll: public ME2to2Base {
+class MEee2gZ2ll: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2gZ2ll();
+  MEee2gZ2ll() : _allowed(0) {
+    massOption(vector<unsigned int>(2,1));
+  }
 
 public:
 
@@ -83,7 +85,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -136,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -154,7 +156,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -165,15 +167,15 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+  virtual void rebind(const TranslationMap & trans)
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -251,7 +253,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2ll,1> {
   /** Typedef of the first base class of MEee2gZ2ll. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -274,10 +276,5 @@ struct ClassTraits<Herwig::MEee2gZ2ll>
 /** @endcond */
 
 }
-
-#include "MEee2gZ2ll.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEee2gZ2ll.tcc"
-#endif
 
 #endif /* HERWIG_MEee2gZ2ll_H */

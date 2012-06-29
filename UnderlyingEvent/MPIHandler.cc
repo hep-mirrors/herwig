@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,8 +21,6 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Deleted.h"
-
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
@@ -30,14 +28,12 @@
 
 #include "gsl/gsl_sf_bessel.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MPIHandler.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+
+MPIHandler * MPIHandler::currentHandler_ = 0;
 
 bool MPIHandler::beamOK() const {
   return (HadronMatcher::Check(*eventHandler()->incoming().first)  &&
@@ -63,11 +59,13 @@ IBPtr MPIHandler::fullclone() const {
 }
 
 void MPIHandler::finalize() {
-  if( beamOK() )
-    statistics("UE.out");
+  if( beamOK() ){
+    statistics();
+  }
 }
 
 void MPIHandler::initialize() {
+  currentHandler_ = this;
   useMe();
   theHandler = generator()->currentEventHandler(); 
   //stop if the EventHandler is not present:
@@ -75,11 +73,13 @@ void MPIHandler::initialize() {
 
   //check if MPI is wanted
   if( !beamOK() ){
-    generator()->log() << "You have requested multiple parton-parton scattering,\n"
-		       << "but the model is not forseen for the setup you chose.\n" 
-		       << "Events will be produced without MPI.\n";
-    return;
+    throw Exception()  << "You have requested multiple parton-parton scattering,\n"
+		       << "but the model is not forseen for the beam setup you chose.\n" 
+		       << "You should therefore disable that by setting XXXGenerator:EventHandler:"
+		       << "CascadeHandler:MPIHandler to NULL"
+                       << Exception::runerror;
   }
+
   numSubProcs_ = subProcesses().size();
 
   if( numSubProcs_ != cuts().size() ) 
@@ -97,6 +97,12 @@ void MPIHandler::initialize() {
   if( identicalToUE_ > (int)numSubProcs_ || identicalToUE_ < -1 )
     throw Exception() << "MPIHandler:identicalToUE has disallowed value"
 		      << Exception::runerror;
+
+  // override the cuts for the additional scatters if energyExtrapolation_ is
+  // set
+  if (energyExtrapolation_ != 0 ) {
+    overrideUECuts();
+  }
 
   tcPDPtr gluon=getParticleData(ParticleID::g);
   //determine ptmin
@@ -126,7 +132,7 @@ void MPIHandler::initialize() {
     else
       algorithm_ = 0;
 
-    if(PtOfQCDProc_ == 0*GeV)//pure MinBias mode
+    if(PtOfQCDProc_ == ZERO)//pure MinBias mode
       algorithm_ = -1;
   }
 
@@ -149,7 +155,6 @@ void MPIHandler::initialize() {
     GSLBisection rootFinder;
 
     if(twoComp_){
-      cerr << "start twoComp model\n";
       //two component model
       /*
       GSLMultiRoot eqSolver;
@@ -163,9 +168,13 @@ void MPIHandler::initialize() {
 	softMu2_ = rootFinder.value(fs, 0.3*GeV2, 1.*GeV2);
 	softXSec_ = fs.softXSec();
       }catch(GSLBisection::IntervalError){
-	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
-			  << "the total cross section. Please check arXiv:0806.2949 "
-			  << "for the allowed parameter space."
+	throw Exception() <<
+        "\n**********************************************************\n"
+	  "* Inconsistent MPI parameter choice for this beam energy *\n"
+	  "**********************************************************\n"
+	  "MPIHandler parameter choice is unable to reproduce\n"
+	  "the total cross section. Please check arXiv:0806.2949\n"
+	  "for the allowed parameter space."
 			  << Exception::runerror;
       }
 
@@ -175,10 +184,14 @@ void MPIHandler::initialize() {
       try{
 	softXSec_ = rootFinder.value(fn, 0*millibarn, 5000*millibarn);
       }catch(GSLBisection::IntervalError){
-	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
-			  << "the total cross section. Please check arXiv:0806.2949 "
-			  << "for the allowed parameter space."
-			  << Exception::runerror;
+	throw Exception() <<
+	"\n**********************************************************\n"
+	  "* Inconsistent MPI parameter choice for this beam energy *\n"
+	  "**********************************************************\n"
+	  "MPIHandler parameter choice is unable to reproduce\n"
+	  "the total cross section. Please check arXiv:0806.2949\n"
+	  "for the allowed parameter space."
+			  << Exception::runerror;      
       }
     }
 
@@ -213,13 +226,35 @@ void MPIHandler::initialize() {
   }
 
   Probs(UEXSecs);
+  //MultDistribution("probs.test");
+
   UEXSecs.clear();
 }
 
-
-void MPIHandler::statistics(string os) const {
+void MPIHandler::MultDistribution(string filename) const {
   ofstream file;
-  file.open(os.c_str());
+  double p(0.0), pold(0.0);
+  file.open(filename.c_str());
+  //theMultiplicities  
+  Selector<MPair>::const_iterator it = theMultiplicities.begin();
+
+  while(it != theMultiplicities.end()){
+    p = it->first;
+    file << it->second.first << " " << it->second.second
+	 << " " << p-pold << '\n';
+    it++;
+    pold = p;
+  }
+
+  file << "sum of all probabilities: " << theMultiplicities.sum() 
+       << endl;
+
+  file.close();
+}
+
+void MPIHandler::statistics() const {
+  ostream & file = generator()->misc();
+  
   string line = "======================================="
     "=======================================\n";
 
@@ -243,21 +278,23 @@ void MPIHandler::statistics(string os) const {
 	 << "                                     "
 	 << "DL mode: " << DLmode_
 	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
-	 << " GeV" << endl
+	 << " GeV" << '\n'
 	 << "hard inclusive cross section (mb):   "
-	 << hardXSec_/millibarn << endl
+	 << hardXSec_/millibarn << '\n'
 	 << "soft inclusive cross section (mb):   "
-	 << softXSec_/millibarn << endl
+	 << softXSec_/millibarn << '\n'
 	 << "total cross section (mb):            "
-	 << totalXSecExp()/millibarn << endl
+	 << totalXSecExp()/millibarn << '\n'
+	 << "inelastic cross section (mb):        "
+	 << inelXSec_/millibarn << '\n'
 	 << "soft inv radius (GeV2):              "
-	 << softMu2_/GeV2 << endl
+	 << softMu2_/GeV2 << '\n'
 	 << "slope of soft pt spectrum (1/GeV2):  "
-	 << beta_*sqr(1.*GeV) << endl
+	 << beta_*sqr(1.*GeV) << '\n'
 	 << "Average hard multiplicity:           "
-	 << avgNhard_ << endl
+	 << avgNhard_ << '\n'
 	 << "Average soft multiplicity:           "
-	 << avgNsoft_ << endl;
+	 << avgNsoft_ << '\n' << line << endl;
   }else{
     file << line
 	 << "Eikonalized and soft cross sections:\n\n"
@@ -266,14 +303,12 @@ void MPIHandler::statistics(string os) const {
       	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
 	 << "                                     "
 	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
-	 << " GeV" << endl
+	 << " GeV" << '\n'
 	 << "hard inclusive cross section (mb):   "
-	 << hardXSec_/millibarn << endl
+	 << hardXSec_/millibarn << '\n'
 	 << "Average hard multiplicity:           "
-	 << avgNhard_ << endl;
+	 << avgNhard_ << '\n' << line << endl;
   }
-
-  file.close();
 }
 
 unsigned int MPIHandler::multiplicity(unsigned int sel){
@@ -281,7 +316,7 @@ unsigned int MPIHandler::multiplicity(unsigned int sel){
     MPair m = theMultiplicities.select(UseRandom::rnd());
     softMult_ = m.second;
     return m.first;
-  }else{ //fixed multiplicities for the additional hard scatters
+  } else{ //fixed multiplicities for the additional hard scatters
     if(additionalMultiplicities_.size() < sel)
       throw Exception() << "MPIHandler::multiplicity: process index "
 			<< "is out of range"
@@ -301,47 +336,45 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   //only one UE process will be drawn from a probability distribution,
   //so check that.
   assert(UEXSecs.size() == 1);
-  ofstream file;
-  file.open("probs.test");
-  file << "hard process xsec: "
-       << eventHandler()->integratedXSec()/millibarn
-       << endl;             
-
-  file << "UE process[0] xsec: " 
-       << UEXSecs.front()/millibarn << endl; 
 
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
 
     iH = 0; 
 
-    Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
-    CrossSection inel = integrator.value(inelint, Length(), bmax);
+    //get the inel xsec
+    Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);
+    inelXSec_ = integrator.value(inelint, ZERO, bmax);
 
     avgNhard_ = 0.0;
     avgNsoft_ = 0.0;
     bmax = 10.0*sqrt(millibarn);
     do{//loop over hard ints
-      if(Algorithm()>-1 && iH==0) continue;
+      if(Algorithm()>-1 && iH==0){
+	iH++;
+	continue;
+      }
       iS = 0;
       do{//loop over soft ints
+	if( ( Algorithm() == -1 && iS==0 && iH==0 ) ){
+	  iS++;
+	  continue;
+	}
 
 	Eikonalization integrand(this, iH*100+iS, *it, softXSec_, softMu2_);
       
 	if(Algorithm() > 0){
-	  P = integrator.value(integrand, Length(), bmax) / *it;
+	  P = integrator.value(integrand, ZERO, bmax) / *it;
 	}else{
-	  P = integrator.value(integrand, Length(), bmax) / inel;
+	  P = integrator.value(integrand, ZERO, bmax) / inelXSec_;
 	}
 	//store the probability
 	if(Algorithm()>-1){
 	  theMultiplicities.insert(P, make_pair(iH-1, iS));
 	  avgNhard_ += P*(iH-1);
-	  file << iH-1 << " " << iS << " " << P << endl;
 	}else{
 	  theMultiplicities.insert(P, make_pair(iH, iS));
 	  avgNhard_ += P*(iH);
-	  file << iH << " " << iS << " " << P << endl;
 	}
 	avgNsoft_ += P*iS;
 	if(iS==0)
@@ -352,9 +385,6 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       iH++;
     } while ( (iH < maxScatters_) && (iH < 5 || P0 > 1.e-15) );
   }
-  file << "avgN(hard) = " << avgNhard_ << endl;
-  file << "avgN(soft) = " << avgNsoft_ << endl;
-  file.close();  
 }
 
 
@@ -461,7 +491,7 @@ double MPIHandler::factorial (unsigned int n) const {
 }
 
 InvArea MPIHandler::OverlapFunction(Length b, Energy2 mu2) const {
-  if(mu2 == 0*GeV2)
+  if(mu2 == ZERO)
     mu2 = invRadius_;
 
   InvLength mu = sqrt(mu2)/hbarc;
@@ -483,7 +513,7 @@ CrossSection MPIHandler::totalXSecDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  CrossSection tot = integrator.value(integrand, ZERO, bmax);
   return (tot-totalXSecExp());
 }
 
@@ -493,14 +523,17 @@ InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  CrossSection tot = integrator.value(integrand, ZERO, bmax);
   
   slopeInt integrand2(this, hardXSec_, softXSec, softMu2);
   
-  return integrator.value(integrand2, Length(), bmax)/tot - slopeExp();
+  return integrator.value(integrand2, ZERO, bmax)/tot - slopeExp();
 }
 
 CrossSection MPIHandler::totalXSecExp() const {
+  if(totalXSecExp_ != 0*millibarn)
+    return totalXSecExp_;
+
   double pom_old = 0.0808;
   CrossSection coef_old = 21.7*millibarn;
   double pom_new_hard = 0.452;
@@ -540,6 +573,28 @@ InvEnergy2 MPIHandler::slopeExp() const{
   return b_0 + log(energy/e_0)/GeV2;
 }
 
+void MPIHandler::overrideUECuts() {
+  if(energyExtrapolation_==1)
+    Ptmin_ = EEparamA_ * log(generator()->maximumCMEnergy() / EEparamB_);
+  else if(energyExtrapolation_==2)
+    Ptmin_ = pT0_*pow(double(generator()->maximumCMEnergy()/refScale_),b_);
+  else
+    assert(false);
+  // create a new SimpleKTCut object with the calculated ptmin value
+  Ptr<SimpleKTCut>::pointer newUEktCut = new_ptr(SimpleKTCut(Ptmin_));
+  newUEktCut->init();
+  newUEktCut->initrun();
+
+  // create a new Cuts object with MHatMin = 2 * Ptmin_
+  CutsPtr newUEcuts = new_ptr(Cuts(2*Ptmin_));
+  newUEcuts->add(dynamic_ptr_cast<tOneCutPtr>(newUEktCut));
+  newUEcuts->init();
+  newUEcuts->initrun();
+
+  // replace the old Cuts object
+  cuts()[0] = newUEcuts;
+}
+
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
   os << theMultiplicities << theHandler 
      << theSubProcesses << theCuts << theProcessHandlers
@@ -549,7 +604,9 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(beta_, 1/GeV2)
      << algorithm_ << ounit(invRadius_, GeV2)
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
-     << DLmode_;
+     << DLmode_ << ounit(totalXSecExp_, millibarn)
+     << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV)
+     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_;
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -561,7 +618,9 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(beta_, 1/GeV2)
      >> algorithm_ >> iunit(invRadius_, GeV2)
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
-     >> DLmode_;
+     >> DLmode_ >> iunit(totalXSecExp_, millibarn)
+     >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV)
+     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_;
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -572,12 +631,20 @@ void MPIHandler::Init() {
   static ClassDocumentation<MPIHandler> documentation
     ("The MPIHandler class is the main administrator of the multiple interaction model", 
      "The underlying event was simulated with an eikonal model for multiple partonic interactions."
-     "Details can be found in Ref.~\\cite{Bahr:2008dy}.", 
-     "\\bibitem{Bahr:2008dy}"
-     "M.~Bahr, S.~Gieseke, and M.~H. Seymour, "
-     "{\\it {Simulation of multiple partonic interactions in Herwig++}}, "
-     "arXiv:0803.3633.");
-
+     "Details can be found in Ref.~\\cite{Bahr:2008dy,Bahr:2009ek}.", 
+     "%\\cite{Bahr:2008dy}\n"
+     "\\bibitem{Bahr:2008dy}\n"
+     "  M.~Bahr, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Simulation of multiple partonic interactions in Herwig++,''\n"
+     "  JHEP {\\bf 0807}, 076 (2008)\n"
+     "  [arXiv:0803.3633 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0807,076;%%\n"
+    "\\bibitem{Bahr:2009ek}\n"
+     "  M.~Bahr, J.~M.~Butterworth, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Soft interactions in Herwig++,''\n"
+     "  arXiv:0905.4671 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0905.4671;%%\n"
+     );
   
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",
@@ -612,7 +679,7 @@ void MPIHandler::Init() {
   static Parameter<MPIHandler,Energy> interfacePtOfQCDProc
     ("PtOfQCDProc",
      "Specify the value of the pt cutoff for the process that is identical to the UE one",
-     &MPIHandler::PtOfQCDProc_, GeV, -1.0*GeV, 0*GeV, 0*GeV,
+     &MPIHandler::PtOfQCDProc_, GeV, -1.0*GeV, ZERO, ZERO,
      false, false, Interface::nolimits);
 
   static Parameter<MPIHandler,double> interfacecolourDisrupt
@@ -640,6 +707,42 @@ void MPIHandler::Init() {
      false);
 
 
+  static Switch<MPIHandler,unsigned int> interEnergyExtrapolation
+    ("EnergyExtrapolation",
+     "Switch to ignore the cuts object at MPIHandler:Cuts[0]. "
+     "Instead, extrapolate the pt cut.",
+     &MPIHandler::energyExtrapolation_, 2, false, false);
+  static SwitchOption interEnergyExtrapolationLog
+    (interEnergyExtrapolation,
+     "Log",
+     "Use logarithmic dependence, ptmin = A * log (sqrt(s) / B).",
+     1);
+  static SwitchOption interEnergyExtrapolationPower
+    (interEnergyExtrapolation,
+     "Power",
+     "Use power law, ptmin = pt_0 * (sqrt(s) / E_0)^b.",
+     2);
+  static SwitchOption interEnergyExtrapolationNo
+    (interEnergyExtrapolation,
+     "No",
+     "Use manually set value for the minimal pt, "
+     "specified in MPIHandler:Cuts[0]:OneCuts[0]:MinKT.",
+     0);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamA
+    ("EEparamA",
+     "Parameter A in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamA_, GeV, 0.6*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfaceEEparamB
+    ("EEparamB",
+     "Parameter B in the empirical parametrization "
+     "ptmin = A * log (sqrt(s) / B)",
+     &MPIHandler::EEparamB_, GeV, 39.0*GeV, ZERO, Constants::MaxEnergy,
+     false, false, Interface::limited);
+
   static Switch<MPIHandler,bool> interfacetwoComp
     ("twoComp",
      "switch to enable the model with a different radius for soft interactions",
@@ -656,35 +759,50 @@ void MPIHandler::Init() {
      "disable the model",
      false);
 
-  //outdated interfaces....
-  string desc("The supported way of determining in which mode the ");
-  desc += "MPI model runs is by setting MPIHandler:IdenticalToUE.";
-  static Deleted<MPIHandler> delint("Algorithm", desc);
 
-  static Switch<MPIHandler,int> interfaceAlgorithm
-    ("Algorithm",
-     "This option is outdated and only kept for backward compatibility."
-     "One should rather set MPIHandler:IdenticalToUE",
-     &MPIHandler::algorithm_, 2, false, false);
+  static Parameter<MPIHandler,CrossSection> interfaceMeasuredTotalXSec
+    ("MeasuredTotalXSec",
+     "Value for the total cross section (assuming rho=0). If non-zero, this "
+     "overwrites the Donnachie-Landshoff parametrizations.",
+     &MPIHandler::totalXSecExp_, millibarn, 0.0*millibarn, 0.0*millibarn, 0*millibarn,
+     false, false, Interface::lowerlim);
 
-  static SwitchOption interfaceAlgorithm0
-    (interfaceAlgorithm,
-     "lowpt",
-     "Signal process has similar cross section than UE.",
-     0);
-
-  static SwitchOption interfaceAlgorithm1
-    (interfaceAlgorithm,
-     "highpt",
-     "Signal process has a much smaller cross section "
-     "than UE, but the same ME's",
+  
+  static Switch<MPIHandler,unsigned int> interfaceDLmode
+    ("DLmode",
+     "Choice of Donnachie-Landshoff parametrization for the total cross section.",
+     &MPIHandler::DLmode_, 2, false, false);
+  static SwitchOption interfaceDLmodeStandard
+    (interfaceDLmode,
+     "Standard",
+     "Standard parametrization with s**0.08",
      1);
-
-  static SwitchOption interfaceAlgorithm2
-    (interfaceAlgorithm,
-     "rare",
-     "Signal process has a much smaller cross section "
-     "than UE and is a different process.",
+  static SwitchOption interfaceDLmodeCDF
+    (interfaceDLmode,
+     "CDF",
+     "Standard parametrization but normalization fixed to CDF's measured value",
      2);
+  static SwitchOption interfaceDLmodeNew
+    (interfaceDLmode,
+     "New",
+     "Parametrization taking hard and soft pomeron contributions into account",
+     3);
 
+  static Parameter<MPIHandler,Energy> interfaceReferenceScale
+    ("ReferenceScale",
+     "The reference energy for power law energy extrapolation of pTmin",
+     &MPIHandler::refScale_, GeV, 7000.0*GeV, 0.0*GeV, 20000.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfacepTmin0
+    ("pTmin0",
+     "The pTmin at the reference scale for power law extrapolation of pTmin.",
+     &MPIHandler::pT0_, GeV, 3.11*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MPIHandler,double> interfacePower
+    ("Power",
+     "The power for power law extrapolation of the pTmin cut-off.",
+     &MPIHandler::b_, 0.21, 0.0, 10.0,
+     false, false, Interface::limited);
 }

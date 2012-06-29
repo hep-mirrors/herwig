@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Kinematics.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,54 +21,6 @@
 
 using namespace Herwig;
 using namespace ThePEG;
-
-Energy Kinematics::CMMomentum(const Energy M, 
-			      const Energy m1, 
-			      const Energy m2) {
-  return ( M <= Energy()  ||  m1 < Energy()  
-	   ||  m2 < Energy()  ||  M <= m1+m2  ?  
-	   Energy()  : 
-	   Energy(sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) ))
-	   /(2.0*M))); 
-}
-
-bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
-			      const Energy m1, const Energy m2,
-			      const Axis & unitDir1,
-			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
-  Energy min=p.m();
-  if ( min >= m1 + m2  &&  m1 >= Energy()  &&  m2 >= Energy()  ) {
-    Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
-    p1 = Lorentz5Momentum(m1, pstarVector);
-    p2 = Lorentz5Momentum(m2,-pstarVector);
-    // boost from CM to LAB
-    Boost bv=p.boostVector();
-    p1.boost( bv );   
-    p2.boost( bv );
-    return true;
-  } else {
-    CurrentGenerator::log() 
-      << "Kinematics::twoBodyDecay() phase space problem\n" 
-      << "p = " << p / GeV 
-      << " p.m() = " << min / GeV
-      << " -> " << m1/GeV 
-      << ' ' << m2/GeV << '\n';
-    return false;
-  }
-}
-
-bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                    
-			      const Energy m1, const Energy m2,  
-			      const double cosThetaStar1, 
-			      const double phiStar1, 
-			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
-  return twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); 
-}
-
-void Kinematics::generateAngles(double &ct, double &az) {
-  ct = UseRandom::rnd()*2.0 - 1.0;  // Flat from -1..1
-  az = UseRandom::rnd()*2.0*Constants::pi;   // Flat from 0..2 Pi
-}
 
 /*****
  * This function, as the name implies, performs a three body decay. The decay

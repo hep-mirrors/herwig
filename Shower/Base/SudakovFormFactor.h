@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SudakovFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,17 +15,21 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
-#include "ShowerKinematics.h"
+#include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+/**
+ *  A typedef for the BeamParticleData
+ */
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**  \ingroup Shower
  *
@@ -131,10 +135,10 @@ public:
   /**
    * The default constructor.
    */
-  inline SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
+  SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
 			       cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
 			       kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(0.*GeV2),
+			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
 			       z_( 0.0 ),phi_(0.0), pT_() {}
 
   /**
@@ -143,7 +147,7 @@ public:
   //@{
   /**
    * Return the scale of the next time-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
@@ -156,7 +160,7 @@ public:
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
@@ -174,19 +178,19 @@ public:
 
   /**
    * Return the scale of the next space-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param beam The beam particle
-   * @param enhance THe radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc,double enhance,
-					       Ptr<BeamParticleData>::transient_const_pointer beam)=0;
+					       tcBeamPtr beam)=0;
   //@}
 
   /**
@@ -196,17 +200,17 @@ public:
   /** 
    * Return the pointer to the SplittingFunction object.
    */
-  inline tSplittingFnPtr splittingFn() const { return splittingFn_; }
+  tSplittingFnPtr splittingFn() const { return splittingFn_; }
 
   /**
    * Return the pointer to the ShowerAlpha object.
    */
-  inline tShowerAlphaPtr alpha() const { return alpha_; }
+  tShowerAlphaPtr alpha() const { return alpha_; }
 
   /**
    *  The type of interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const
+  inline ShowerInteraction::Type interactionType() const 
   {return splittingFn_->interactionType();}
   //@}
 
@@ -219,18 +223,47 @@ public:
   /**
    *  The energy fraction
    */
-  inline double z() const { return z_; }
+  double z() const { return z_; }
 
   /**
    *  The azimuthal angle
    */
-  inline double phi() const { return phi_; }
+  double phi() const { return phi_; }
 
   /**
    *  The transverse momentum
    */
-  inline Energy pT() const { return pT_; }
+  Energy pT() const { return pT_; }
   //@}
+
+  /**
+   *  Access the maximum weight for the PDF veto
+   */
+  double pdfMax() const { return pdfmax_;}
+
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for a final-state branching
+   */
+  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
+					      double phi, Energy pt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for an initial-state branching
+   */
+  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
+						double phi, Energy pt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for a decay branching
+   */
+  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
+					 double phi, Energy pt)=0;
 
 public:
 
@@ -267,7 +300,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:
@@ -313,7 +346,7 @@ protected:
    */
   bool PDFVeto(const Energy2 t, const double x,
 	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       Ptr<BeamParticleData>::transient_const_pointer beam) const;
+	       tcBeamPtr beam) const;
 
   /**
    *  The veto on the splitting function.
@@ -322,7 +355,7 @@ protected:
    * @param mass Whether or not to use the massive splitting functions 
    * @return true if vetoed
    */
-  inline bool SplittingFnVeto(const Energy2 t, 
+  bool SplittingFnVeto(const Energy2 t, 
 			      const IdList &ids, 
 			      const bool mass) const 
   { return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass); }
@@ -332,9 +365,9 @@ protected:
    * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  inline bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > Math::powi(alpha_->ratio(pt2),
-					splittingFn_->interactionOrder());}
+  bool alphaSVeto(const Energy2 pt2) const 
+  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+						splittingFn_->interactionOrder());}
   //@}
 
   /**
@@ -344,17 +377,17 @@ protected:
   /**
    *  The energy fraction
    */
-  inline void z(double in) { z_=in; }
+  void z(double in) { z_=in; }
 
   /**
    *  The azimuthal angle
    */
-  inline void phi(double in) { phi_=in; }
+  void phi(double in) { phi_=in; }
 
   /**
    *  The transverse momentum
    */
-  inline void pT(Energy in) { pT_=in; }
+  void pT(Energy in) { pT_=in; }
   //@}
 
   /**
@@ -364,12 +397,12 @@ protected:
   /**
    * Get the limits
    */
-  inline pair<double,double> zLimits() const { return zlimits_;}
+  pair<double,double> zLimits() const { return zlimits_;}
 
   /**
    * Set the limits
    */
-  inline void zLimits(pair<double,double> in) { zlimits_=in; }
+  void zLimits(pair<double,double> in) { zlimits_=in; }
   //@}
 
   /**
@@ -378,14 +411,41 @@ protected:
   void addSplitting(const IdList &);
 
   /**
+   *  Delete the particles in the splittings
+   */
+  void removeSplitting(const IdList &);
+
+  /**
    *  Access the potential branchings
    */
-  inline vector<IdList> particles() const { return particles_; }
+  vector<IdList> particles() const { return particles_; }
+
+  /**
+   *  Methods to set the member variables for inheriting classes
+   */
+  //@{
+  /**
+   *  Method to set the SplittingFunction
+   */
+  void splittingFn(tSplittingFnPtr in) { splittingFn_ = in;}
+
+  /**
+   *  Method to set the coupling
+   */
+  void alpha(tShowerAlphaPtr in) { alpha_ = in; }
+
+  /**
+   *  Method to set the maximum PDF weight
+   */
+  void pdfMax(double in) { pdfmax_ = in;}
 
   /**
    *  Get the option for the PDF factor
    */
-  inline unsigned int PDFFactor() const { return pdffactor_; }
+  unsigned int PDFFactor() const { return pdffactor_; }
+  //@}
+
+public:
 
   /**
    * @name Methods for the cut-off
@@ -394,41 +454,54 @@ protected:
   /**
    *  The option being used
    */
-  inline unsigned int cutOffOption() const { return cutOffOption_; }
+  unsigned int cutOffOption() const { return cutOffOption_; }
 
   /**
    *  The kinematic scale
    */
-  inline Energy kinScale() const {return kinCutoffScale_;}
+  Energy kinScale() const {return kinCutoffScale_;}
 
   /**
    * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
    * @param scale The scale \f$\delta\f$
    * @param mq The quark mass \f$m_q\f$.
    */
-  inline Energy kinematicCutOff(Energy scale, Energy mq) const 
+  Energy kinematicCutOff(Energy scale, Energy mq) const 
   {return max((scale -a_*mq)/b_,c_);}
 
   /**
    *  The virtualilty cut-off for gluons
    */
-  inline Energy vgCut() const { return vgcut_; }
+  Energy vgCut() const { return vgcut_; }
   
   /**
    *  The virtuality cut-off for everything else
    */
-  inline Energy vqCut() const { return vqcut_; }
+  Energy vqCut() const { return vqcut_; }
 
   /**
    *  The minimum \f$p_T\f$ for the branching
    */
-  inline Energy const pTmin() const { return pTmin_; }
+  Energy pTmin() const { return pTmin_; }
   
   /**
    *  The square of the minimum \f$p_T\f$
    */
-  inline Energy2 const pT2min() const { return pT2min_; }
+  Energy2 pT2min() const { return pT2min_; }
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  vector<Energy> virtualMasses(const IdList & ids);
   //@}
+
+  /**
+   *   Set the PDF
+   */
+  void setPDF(tcPDFPtr pdf, Energy scale) {
+    pdf_ = pdf;
+    freeze_ = scale;
+  }
 
 private:
 
@@ -558,12 +631,25 @@ private:
   Energy pT_;
   //@}
 
-private:
-
   /**
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zlimits_;
+
+  /**
+   *  Stuff for the PDFs
+   */
+  //@{
+  /**
+   *  PDf
+   */
+  tcPDFPtr pdf_;
+
+  /**
+   *  Freezing scale
+   */
+  Energy freeze_;
+  //@}
 };
 
 }
@@ -589,14 +675,6 @@ struct ClassTraits<Herwig::SudakovFormFactor>
   : public ClassTraitsBase<Herwig::SudakovFormFactor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SudakovFormFactor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SudakovFormFactor is implemented. It may also include several, space-separated,
-   * libraries if the class SudakovFormFactor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

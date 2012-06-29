@@ -1,0 +1,40 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase.in
+
+create ThePEG::LuminosityFunction BFactoryLuminosity
+set BFactoryLuminosity:BeamEMaxA 3.5*GeV
+set BFactoryLuminosity:BeamEMaxB 8.*GeV
+set /Herwig/Cuts/EECuts:MHatMin 10.58299
+#set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+#set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/EventHandlers/LEPHandler:LuminosityFunction BFactoryLuminosity
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/MatrixElements
+set /Herwig/MatrixElements/MEee2gZ2qq:MinimumFlavour 1
+set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4
+create Herwig::MEee2VectorMeson MEUpsilon HwMELepton.so
+set MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set MEUpsilon:Coupling 0.0004151809
+insert SimpleEE:MatrixElements 0 MEUpsilon
+insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/Upsilon(4S)
+cd /Herwig/Generators
+##################################################
+# select the analyses 
+##################################################
+
+# BELLE charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_S6265367
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2001_S4598261
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun BFactory-10.58 LEPGenerator

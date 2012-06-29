@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHGGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,6 @@
 #include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "SMHGGVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -68,19 +67,20 @@ public:
   virtual void setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2, tcPDPtr part3);
 
 protected:
+
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
   /**
@@ -88,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
 private:
   /**
@@ -136,12 +136,12 @@ private:
   /**
    * The minimum flavour number in quark loops
    */
-  unsigned int _minloop;
+  int _minloop;
   
   /**
    * The maximum flavour number in quark loops
    */
-  unsigned int _maxloop;
+  int _maxloop;
 
   /**
    * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
@@ -192,7 +192,5 @@ struct ClassTraits<Herwig::SMHGGVertex>
 /** @endcond */
 
 }
-
-#include "SMHGGVertex.icc"
 
 #endif /* HERWIG_SMHGGVertex_H */

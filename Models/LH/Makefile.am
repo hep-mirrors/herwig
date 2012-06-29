@@ -2,21 +2,15 @@ if WANT_LH
 pkglib_LTLIBRARIES = HwLHModel.la
 endif
 HwLHModel_la_SOURCES = \
-LHModel.fh LHModel.cc  \
-LHModel.h  LHModel.icc \
-LHFFZVertex.fh LHFFZVertex.cc  \
-LHFFZVertex.h  LHFFZVertex.icc \
-LHFFPVertex.fh LHFFPVertex.cc  \
-LHFFPVertex.h  LHFFPVertex.icc \
-LHFFGVertex.fh LHFFGVertex.cc  \
-LHFFGVertex.h  LHFFGVertex.icc \
-LHFFWVertex.fh LHFFWVertex.cc  \
-LHFFWVertex.h  LHFFWVertex.icc \
-LHWWWVertex.fh LHWWWVertex.cc  \
-LHWWWVertex.h  LHWWWVertex.icc \
-LHFFHVertex.fh LHFFHVertex.cc  \
-LHFFHVertex.h  LHFFHVertex.icc \
-\
-LHWWHVertex.fh LHWWHVertex.cc  \
-LHWWHVertex.h  LHWWHVertex.icc 
+LHModel.h LHModel.cc  \
+LHFFZVertex.h  LHFFZVertex.cc  \
+LHFFPVertex.h  LHFFPVertex.cc  \
+LHFFGVertex.h  LHFFGVertex.cc  \
+LHFFWVertex.h  LHFFWVertex.cc  \
+LHWWWVertex.h  LHWWWVertex.cc  \
+LHWWWWVertex.h LHWWWWVertex.cc  \
+LHFFHVertex.h  LHFFHVertex.cc  \
+LHWWHVertex.h  LHWWHVertex.cc  \
+LHWHHVertex.h  LHWHHVertex.cc  \
+LHWWHHVertex.h LHWWHHVertex.cc  
 HwLHModel_la_LDFLAGS = -module -version-info 3:0:0

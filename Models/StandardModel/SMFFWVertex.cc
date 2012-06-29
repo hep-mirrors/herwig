@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMFFWVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,7 +13,6 @@
 
 #include "SMFFWVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/StandardModel/CKMBase.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -24,39 +23,8 @@ using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
 			     _q2last(0.*sqr(MeV)) {
-  // particles for the vertex
-  vector<long> first,second,third;
-  // particles for outgoing W-
-  // quarks
-  for(int ix=1;ix<6;ix+=2) {
-    for(int iy=2;iy<7;iy+=2) {
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(-24);
-    }
-  }
-  // leptons
-  for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix+1);
-    third.push_back(-24);
-  }
-  // particles for outgoing W+
-  // quarks
-  for(int ix=2;ix<7;ix+=2) {
-    for(int iy=1;iy<6;iy+=2) {
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(24);
-    }
-  }
-  // leptons
-  for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-1);
-    second.push_back(ix);
-    third.push_back(24);
-  }
-  setList(first,second,third);
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
@@ -67,7 +35,29 @@ void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _ckm;
 }
   
-void SMFFWVertex::doinit() throw(InitException) {
+void SMFFWVertex::doinit() {
+  // particles for outgoing W-
+  // quarks
+  for(int ix=1;ix<6;ix+=2) {
+    for(int iy=2;iy<7;iy+=2) {
+      addToList(-ix, iy, -24);
+    }
+  }
+  // leptons
+  for(int ix=11;ix<17;ix+=2) {
+    addToList(-ix, ix+1, -24);
+  }
+  // particles for outgoing W+
+  // quarks
+  for(int ix=2;ix<7;ix+=2) {
+    for(int iy=1;iy<6;iy+=2) {
+      addToList(-ix, iy, 24);
+    }
+  }
+  // leptons
+  for(int ix=11;ix<17;ix+=2) {
+    addToList(-ix-1, ix, 24);
+  }
   ThePEG::Helicity::FFVVertex::doinit();
   Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
@@ -84,12 +74,10 @@ void SMFFWVertex::doinit() throw(InitException) {
     }
   }
   else {
-    throw InitException() << "Must have access to the Herwig::StandardCKM object"
-			  << "for the CKM matrix in SMFFWVertex::doinit()"
-			  << Exception::runerror;
+    throw Exception() << "Must have access to the Herwig::StandardCKM object"
+		      << "for the CKM matrix in SMFFWVertex::doinit()"
+		      << Exception::runerror;
   }
-  orderInGem(1);
-  orderInGs(0);
 }
 
 ClassDescription<SMFFWVertex>SMFFWVertex::initSMFFWVertex;
@@ -104,16 +92,16 @@ void SMFFWVertex::Init() {
 }
   
 // coupling for FFW vertex
-void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
+void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr aa, tcPDPtr bb, tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
-  int ianti=abs(b->id());
+  int iferm=abs(aa->id());
+  int ianti=abs(bb->id());
   // quarks
   if(iferm>=1 && iferm <=6) {
     int iu,id;
@@ -127,21 +115,17 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
       iu = ianti/2;
       id = (iferm+1)/2;
     }
-    if( iu<1 || iu>3 || id<1 || id>3)
-      throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
-				       << "Unknown particle in W vertex" 
-				       << Exception::runerror;
-    setLeft(_ckm[iu-1][id-1]);
-    setRight(0.);
+    assert( iu>=1 && iu<=3 && id>=1 && id<=3);
+    left(_ckm[iu-1][id-1]);
+    right(0.);
   }
   // leptons
   else if(iferm>=11 && iferm <=16) {
-    setLeft(1.);
-    setRight(0.);
+    left(1.);
+    right(0.);
   }
-  else throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
-					<< "Unknown particle in W vertex" 
-					<< Exception::runerror;
+  else 
+    assert(false);
 }
 
 

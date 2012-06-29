@@ -12,7 +12,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2WH class.
+ * The MEPP2WH class provides the matrix elements for the production of
+ * the \f$W^\pm\f$ boson in association with the Higgs in hadron collisions.
  *
  * @see \ref MEPP2WHInterfaces "The interfaces"
  * defined for MEPP2WH.
@@ -69,13 +70,25 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -95,19 +108,9 @@ private:
 private:
 
   /**
-   *  Switches to control the particles in the hard process
-   */
-  //@{
-  /**
-   *  The allowed flavours of the incoming quarks
-   */
-  unsigned int _maxflavour;
-
-  /**
    *  Which intermediate \f$W^\pm\f$ bosons to include
    */
   unsigned int _plusminus;
-  //@}
 
 };
 

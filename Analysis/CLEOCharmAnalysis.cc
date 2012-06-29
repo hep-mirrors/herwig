@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // CLEOCharmAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,7 +22,7 @@ using namespace Herwig;
 void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
   _s = (event->incoming().first ->momentum()+
 	event->incoming().second->momentum()).m2();
-  _weight = event->weight();
+  double weight = event->weight();
   set<tPPtr> particles;
   StepVector steps = event->primaryCollision()->steps();
   for ( StepVector::const_iterator it = steps.begin()+2;
@@ -37,29 +37,25 @@ void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
        id==ParticleID::D0      || id==ParticleID::Dstar0       )
       output.push_back(*it);
   }
-  analyze(output);
+  analyze(output,weight);
 }
 
-void CLEOCharmAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void CLEOCharmAnalysis::analyze(tPPtr particle) {
+void CLEOCharmAnalysis::analyze(tPPtr particle, double weight) {
   // Calls analyze() for each particle.
   double xp = particle->momentum().vect().mag()/
     sqrt(0.25*_s-sqr(particle->mass()));
   int id = abs(particle->id());
   if(id==ParticleID::Dstarplus) {
-    _histDstarplus->addWeighted(xp,_weight);
+    _histDstarplus->addWeighted(xp,weight);
   }
   else if(id==ParticleID::Dstar0) {
-    _histDstar0   ->addWeighted(xp,_weight);
+    _histDstar0   ->addWeighted(xp,weight);
   }
   else if(id==ParticleID::D0) {
-    _histD0       ->addWeighted(xp,_weight);
+    _histD0       ->addWeighted(xp,weight);
   }
   else if(id==ParticleID::Dplus) {
-    _histDplus    ->addWeighted(xp,_weight);
+    _histDplus    ->addWeighted(xp,weight);
   }
 }
 
@@ -69,11 +65,21 @@ NoPIOClassDescription<CLEOCharmAnalysis> CLEOCharmAnalysis::initCLEOCharmAnalysi
 void CLEOCharmAnalysis::Init() {
 
   static ClassDocumentation<CLEOCharmAnalysis> documentation
-    ("There is no documentation for the CLEOCharmAnalysis class");
+    ("CLEO Charm meson analysis class",
+     "The CLEO Charm meson analysis uses data from \\cite{Artuso:2004pj}.",
+     "%\\cite{Artuso:2004pj}\n"
+     "\\bibitem{Artuso:2004pj}\n"
+     "  M.~Artuso {\\it et al.}  [CLEO Collaboration],\n"
+     "  %``Charm meson spectra in $e^{+} e^{-}$ annihilation at 10.5-GeV c.m.e,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 70}, 112001 (2004)\n"
+     "  [arXiv:hep-ex/0402040].\n"
+     "  %%CITATION = PHRVA,D70,112001;%%\n"
+     );
 
 }
 
 void CLEOCharmAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + 
     string("-") + name() + string(".top");

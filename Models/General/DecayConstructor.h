@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,6 +14,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "NBodyDecayConstructorBase.h"
+#include "Herwig++/Decay/Radiation/DecayRadiationGenerator.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
@@ -37,8 +38,8 @@ public:
   /**
    * The default constructor.
    */
-  inline DecayConstructor() : _theNBodyDecayConstructors(0), 
-			      _disableDMTags(0) {}
+  DecayConstructor() : NBodyDecayConstructors_(0), 
+		       _disableDMTags(0), _minBR(0.) {}
 
 public:
 
@@ -70,8 +71,9 @@ public:
    * Function to create decayers
    * @param particles vector of ParticleData pointers to particles contained
    * in model
+   * @param minBR minimum branching ratio for modes
    */
-  void createDecayers(const vector<PDPtr> & particles);
+  void createDecayers(const vector<PDPtr> & particles, double minBR);
 
   /**
    * Check whether the decay mode given is one that should not be
@@ -80,6 +82,23 @@ public:
    */
   bool disableDecayMode(string tag) const;
 
+  /**
+   *  QED Generator
+   */
+  DecayRadiationGeneratorPtr QEDGenerator() {return QEDGenerator_;}
+
+  /**
+   * Vector of references to the objects that will construct the N-Body
+   * decays.
+   */
+  const vector<NBodyDecayConstructorBasePtr> & decayConstructors() {
+    return NBodyDecayConstructors_;
+  }
+
+  /**
+   *  Get minimum branching ratio
+   */
+  double minimumBR() const { return _minBR;}
 
 protected:
 
@@ -90,7 +109,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:
@@ -130,12 +149,22 @@ private:
    * Vector of references to the objects that will construct the N-Body
    * decays.
    */
-   vector<NBodyDecayConstructorBasePtr> _theNBodyDecayConstructors;
+   vector<NBodyDecayConstructorBasePtr> NBodyDecayConstructors_;
 
   /**
    * A list of DecayMode tags that are not to be created 
    */
   vector<string> _disableDMTags;
+
+  /**
+   *  The decay radiation generator to use for QED radiation
+   */
+  DecayRadiationGeneratorPtr QEDGenerator_;
+
+  /**
+   *  Minimum allowed branching ratio
+   */
+  double _minBR;
 };
 
 }

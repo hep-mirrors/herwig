@@ -5,11 +5,11 @@
 // This is the declaration of the MEfftoffH class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/SMHiggsMassGenerator.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -22,15 +22,16 @@ using namespace ThePEG;
  * @see \ref MEfftoffHInterfaces "The interfaces"
  * defined for MEfftoffH.
  */
-class MEfftoffH: public MEBase {
+class MEfftoffH: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEfftoffH();
-
+  MEfftoffH() : _shapeopt(2), _maxflavour(5), _minflavour(1), _process(0), 
+		_mh(), _wh(), _swap(false) {}
+  
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**
@@ -151,12 +152,15 @@ protected:
    * @param f2  Spinors for second incoming fermion
    * @param a1  Spinors for first  outgoing fermion
    * @param a2  Spinors for second outgoing fermion
+   * @param swap1 Whether or not to swap the order for the first fermion line
+   * @param swap2 Whether or not to swap the order for the second fermion line
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double helicityME(vector<SpinorWaveFunction> & f1 ,
 		    vector<SpinorWaveFunction> & f2 ,
 		    vector<SpinorBarWaveFunction> & a1,
 		    vector<SpinorBarWaveFunction> & a2,
+		    bool swap1, bool swap2,
 		    bool me) const;
 
   /**
@@ -166,23 +170,65 @@ protected:
   /**
    *  Access to the \f$W^+\f$ data
    */ 
-  inline PDPtr WPlus() const;
+  PDPtr WPlus() const {return _wplus;}
 
   /**
    *  Access to the \f$W^-\f$ data
    */ 
-  inline PDPtr WMinus() const;
+  PDPtr WMinus() const {return _wminus;}
 
   /**
    *  Access to the \f$Z^0\f$ data
    */ 
-  inline PDPtr Z0() const;
+  PDPtr Z0() const {return _z0;}
+
+  /**
+   *  Access to the Higgs boson
+   */
+  PDPtr higgs() const {return _higgs;}
+
+  /**
+   *  Set the Higgs boson
+   */
+  void higgs(PDPtr in) {_higgs=in;}
   //@}
+
+  /**
+   *  Set the pointer to the vector-vector-Higgs vertex
+   */
+  void setWWHVertex(AbstractVVSVertexPtr in) {
+    _vertexWWH = in;
+  }
+
+  /**
+   *  Set the line shape treatment
+   */
+  void lineShape(unsigned int in) {_shapeopt=in;}
 
   /**
    *  Which process to generate
    */
-  inline unsigned int process() const;
+  unsigned int process() const {return _process;}
+
+  /**
+   *  Whether momenta are swapped
+   */
+  bool swapOrder() {return _swap;}
+
+  /**
+   *  Which process to generate
+   */
+  void process(unsigned int in) {_process = in;}
+
+  /**
+   *  Maximum flavour of the incoming partons
+   */
+  unsigned int maxFlavour() const {return _maxflavour;}
+
+  /**
+   *  Minimum flavour of the incoming partons
+   */
+  unsigned int minFlavour() const {return _minflavour;}
 
 protected:
 
@@ -193,7 +239,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -218,6 +264,16 @@ private:
   unsigned int _shapeopt;
 
   /**
+   *  Maximum flavour of the quarks involved 
+   */
+  unsigned int _maxflavour;
+
+  /**
+   *  Minimum flavour of the quarks involved 
+   */
+  unsigned int _minflavour;
+
+  /**
    *  Whether to include $WW$ and $ZZ$ processes or both
    */
   unsigned int _process;
@@ -240,6 +296,11 @@ private:
    *  \f$Z^0\f$
    */
   PDPtr _z0;
+
+  /**
+   *  Higgs boson
+   */
+  PDPtr _higgs;
   //@}
 
   /**
@@ -275,14 +336,18 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  GenericMassGeneratorPtr _hmass;
 
 
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  mutable ProductionMatrixElement _me;
 
+  /**
+   *  if order swaped
+   */
+  bool _swap;
 };
 
 }
@@ -298,7 +363,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEfftoffH,1> {
   /** Typedef of the first base class of MEfftoffH. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -313,7 +378,5 @@ struct ClassTraits<Herwig::MEfftoffH>
 /** @endcond */
 
 }
-
-#include "MEfftoffH.icc"
 
 #endif /* HERWIG_MEfftoffH_H */

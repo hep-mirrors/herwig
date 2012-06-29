@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayPhaseSpaceChannel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -99,7 +99,13 @@ public:
    * \f$|dau2|\f$ intermediate. The intermediates are specified in the order they
    * are added with 0 being the incoming particle.
    */
-  inline void addIntermediate(PDPtr part,int jac,double power,int dau1,int dau2);
+  void addIntermediate(PDPtr part,int jac,double power,int dau1,int dau2) {
+    _intpart.push_back(part);
+    _jactype.push_back(jac);
+    _intpower.push_back(power);
+    _intdau1.push_back(dau1); 
+    _intdau2.push_back(dau2);
+  }
   
   /**
    * Reset the properties of an intermediate particle. This member is used
@@ -110,14 +116,30 @@ public:
    * @param mass The new mass of the intermediate
    * @param width The new width of the intermediate.
    */
-  inline void resetIntermediate(tcPDPtr part,Energy mass,Energy width);
+  void resetIntermediate(tcPDPtr part,Energy mass,Energy width) {
+    if(!part) return;
+    int idin=part->id();
+    for(unsigned int ix=0;ix<_intpart.size();++ix) {
+      if(_intpart[ix] && _intpart[ix]->id()==idin) {
+	_intmass[ix] =mass;_intwidth[ix]=width;
+	_intmass2[ix]=mass*mass;_intmwidth[ix]=mass*width;
+      }
+    }
+  }
 
   /*
    * Reset the one of the daughters
    * @param oldp The id of the particle being reset
    * @param newp The id of the particle replacing it
    */
-  inline void resetDaughter(int oldp, int newp);
+  void resetDaughter(int oldp, int newp) {
+    for(unsigned int ix=0;ix<_intdau1.size();++ix) {
+      if(_intdau1[ix]==oldp) _intdau1[ix]=newp;
+    }
+    for(unsigned int ix=0;ix<_intdau2.size();++ix) {
+      if(_intdau2[ix]==oldp) _intdau2[ix]=newp;
+    }
+  }
   //@}
 
 protected:
@@ -166,7 +188,7 @@ protected:
    * @param p1 The momentum of the first decay product
    * @param p2 The momentum of the second decay product
    */
-  inline void twoBodyDecay(const Lorentz5Momentum & p, 
+  void twoBodyDecay(const Lorentz5Momentum & p, 
 		    const Energy m1, const Energy m2,
 		    Lorentz5Momentum & p1, Lorentz5Momentum & p2);
   //@}
@@ -202,13 +224,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:  
@@ -220,7 +242,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -251,7 +273,7 @@ private:
    * @param lower The lower limit on the particle's mass.
    * @param upper The upper limit on the particle's mass. 
    */
-  inline Energy generateMass(int ires,Energy lower,Energy upper);
+  Energy generateMass(int ires,Energy lower,Energy upper);
   
   /**
    * Return the weight for a given resonance.
@@ -260,7 +282,7 @@ private:
    * @param lower The lower limit on the particle's mass.
    * @param upper The upper limit on the particle's mass. 
    */
-  inline InvEnergy2 massWeight(int ires, Energy moff,Energy lower,Energy upper);
+  InvEnergy2 massWeight(int ires, Energy moff,Energy lower,Energy upper);
   //@}  
 
 private:
@@ -320,6 +342,12 @@ private:
    */
   vector< vector<int> > _intext;
   
+  /**
+   * Helper function for the weight calculation.
+   * @param ires The resonance to be generated.
+   * @param limit The limit on the particle's mass. 
+   */
+  double atanhelper_(int ires, Energy limit);
 };
 
 
@@ -365,7 +393,5 @@ struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
 /** @endcond */
 
 }
-
-#include "DecayPhaseSpaceChannel.icc"
 
 #endif /* HERWIG_DecayPhaseSpaceChannel_H */

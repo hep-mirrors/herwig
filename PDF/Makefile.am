@@ -1,49 +1,62 @@
-pkglib_LTLIBRARIES = 
-
-noinst_LTLIBRARIES = libHwPDF.la 
-libHwPDF_la_SOURCES = \
-PartonExtractor.cc PartonExtractor.h \
-PartonExtractor.icc PartonExtractor.fh
-
-pkglib_LTLIBRARIES += HwMRST.la
+pkglib_LTLIBRARIES = HwMRST.la
 HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc 
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-HwMRST_la_LDFLAGS = -module -version-info 4:0:0
+HwMRST_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 
-pkglib_LTLIBRARIES += HwLeptonPDF.la
-HwLeptonPDF_la_SOURCES = \
-WeiszackerWilliamsPDF.cc WeiszackerWilliamsPDF.h \
-WeiszackerWilliamsPDF.icc WeiszackerWilliamsPDF.fh\
-LeptonRemnant.cc LeptonRemnant.h LeptonRemnant.icc LeptonRemnant.fh
-HwLeptonPDF_la_LDFLAGS = -module -version-info 3:0:0
+EXTRA_DIST = mrst diffraction
 
+pkglib_LTLIBRARIES += HwPomeronPDF.la
+HwPomeronPDF_la_SOURCES = \
+PomeronPDF.cc PomeronPDF.h 
+## add this to produce tests of the PDFs
+## HwDIFFRACTIVEPDF_la_CPPFLAGS=$(AM_CPPFLAGS) -DDIFFRACTIVEPDF_TESTING
+HwPomeronPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
-EXTRA_DIST = mrst
+pkglib_LTLIBRARIES += HwReggeonPDF.la
+HwReggeonPDF_la_SOURCES = \
+ReggeonPDF.cc ReggeonPDF.h 
+## add this to produce tests of the PDFs
+## HwDIFFRACTIVEPDF_la_CPPFLAGS=$(AM_CPPFLAGS) -DDIFFRACTIVEPDF_TESTING
+HwReggeonPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
-pkglib_LTLIBRARIES += HwRemDecayer.la
-HwRemDecayer_la_SOURCES = \
-HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh
+pkglib_LTLIBRARIES += HwPomeronFlux.la
+HwPomeronFlux_la_SOURCES = \
+PomeronFlux.h PomeronFlux.cc
+HwPomeronFlux_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
 
-HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
+## bound into HwShower.la
+noinst_LTLIBRARIES = libHwRemDecayer.la
+libHwRemDecayer_la_SOURCES = \
+HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh
 
-pkglib_LTLIBRARIES += HwMPIPDF.la
-HwMPIPDF_la_SOURCES = \
+## bound into HwShower.la
+noinst_LTLIBRARIES += libHwMPIPDF.la
+libHwMPIPDF_la_SOURCES = \
 MPIPDF.h MPIPDF.cc MPIPDF.fh \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
 
-HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
-
 pkglib_LTLIBRARIES += HwSatPDF.la
 HwSatPDF_la_SOURCES = \
-SatPDF.h SatPDF.cc SatPDF.fh
+SatPDF.h SatPDF.cc
 
-HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
+HwSatPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+
+pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
+HwIncomingPhotonEvolver_la_SOURCES = \
+IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
+
+HwIncomingPhotonEvolver_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
 
 if WANT_LOCAL_PDF
 install-data-local:
 	for i in `find $(srcdir)/mrst -name '*.dat'`; \
+	do \
+	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
+	done
+
+	for i in `find $(srcdir)/diffraction -name '*.data'`; \
 	do \
 	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
 	done
@@ -54,3 +67,4 @@ endif
 
 dist-hook:
 	rm -rf `find $(distdir)/mrst -name '.svn' -or -name '.cvsignore' -or -name 'CVS'`
+	rm -rf `find $(distdir)/diffraction -name '.svn' -or -name '.cvsignore' -or -name 'CVS'`

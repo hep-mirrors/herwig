@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralTwoBodyDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralTwoBodyDecayer() : _thelist(0,0), _maxweight(1,1.) {}
+  GeneralTwoBodyDecayer() : _maxweight(1.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -70,14 +70,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const = 0;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
    * Function to return partial Width
@@ -112,28 +112,28 @@ public:
 		      double oldbrat) const;
   //@}
 
+  /**
+   *  Set the information on the decay
+   */
+  void setDecayInfo(PDPtr incoming,PDPair outgoing,
+		    VertexBasePtr);
+
 protected:
   
   /** @name Functions used by inheriting decayers. */
   //@{
-  /** Set list to search
-   * @param ilist 
-   */
-  inline void addToSearchList(unsigned int ilist) { 
-    _thelist.push_back(ilist); 
-  }
   
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr getVertex() const { return _theVertex; }
 
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  inline void setWeight(const vector<double> & wgt) { _maxweight = wgt; }
+  void setWeight(const double & wgt) { _maxweight = wgt; }
 
   /**
    * Set colour connections
@@ -185,7 +185,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -211,34 +211,24 @@ private:
 private:
 
   /**
-   * vector of ints as to which list(s) to search
+   *  Store the incoming particle
    */
-  vector<unsigned int> _thelist;
-  
-  /**
-   * Pointer to vertex set in inheriting class
-   */
-  VertexBasePtr _theVertex;
-  
-  /**
-   * PDG codes for all incoming particles
-   **/
-  vector<int> _inpart;
+  PDPtr _incoming;
 
   /**
-   * PDG codes for 1st set of outgoing particles
-   **/
-  vector<int> _outparta;
-   
+   *  Outgoing particles
+   */
+  vector<PDPtr> _outgoing;
+  
   /**
-   * PDG codes for 2nd set of outgoing particles
-   **/
-  vector<int> _outpartb;
+   * Pointer to vertex
+   */
+  VertexBasePtr _theVertex;
  
   /**
-   * Vector of maximum weights for integration
+   * Maximum weight for integration
    */
-  vector<double> _maxweight;
+  double _maxweight;
 };
 
 }

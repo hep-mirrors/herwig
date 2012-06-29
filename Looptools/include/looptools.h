@@ -1,11 +1,11 @@
 * looptools.h
 * the header file for Fortran with all definitions for LoopTools
 * this file is part of LoopTools
-* last modified 13 Apr 06 th
+* last modified 6 Jul 10 th
 
 
-#ifndef LOOPTOOLS_H__
-#define LOOPTOOLS_H__
+#ifndef LOOPTOOLS_H
+#define LOOPTOOLS_H
 
 #define bb0 1
 #define bb1 2
@@ -213,10 +213,11 @@
 #define KeyBget 2**2
 #define KeyC0 2**4
 #define KeyD0 2**6
-#define KeyE0 2**8
-#define KeyEget 2**10
-#define KeyCEget 2**12
-#define KeyAll 5461
+#define KeyD0C 2**8
+#define KeyE0 2**10
+#define KeyEget 2**12
+#define KeyEgetC 2**14
+#define KeyAll 21845
 
 #define DebugB 2**0
 #define DebugC 2**1
@@ -238,7 +239,10 @@
 
 #endif
 
-	double complex cache(2,8)
+	integer ncaches
+	parameter (ncaches = 8)
+
+	double complex cache(2,ncaches)
 	common /ltvars/ cache
 
 	double complex A0, A0C, B0i, B0iC

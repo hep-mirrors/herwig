@@ -5,42 +5,27 @@
 // This is the declaration of the BaryonSimpleFormFactor class.
 //
 #include "BaryonFormFactor.h"
-#include "BaryonSimpleFormFactor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup Decay
-   *
-   *  The BaryonSimpleFormFactor class is a simple model for the form-factors
-   *  for the semi-leptonic decay of the light (i.e. uds) baryons. The form-factors
-   *  are assumed to be constant and are taken from the quark model results
-   *  of PRD25, 206 (1982).
-   *
-   * @ see BaryonFormFactor
-   */
-
+/** \ingroup Decay
+ *
+ *  The BaryonSimpleFormFactor class is a simple model for the form-factors
+ *  for the semi-leptonic decay of the light (i.e. uds) baryons. The form-factors
+ *  are assumed to be constant and are taken from the quark model results
+ *  of PRD25, 206 (1982).
+ *
+ * @ see BaryonFormFactor
+ */
 class BaryonSimpleFormFactor: public BaryonFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline BaryonSimpleFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline BaryonSimpleFormFactor(const BaryonSimpleFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~BaryonSimpleFormFactor();
-  //@}
+  BaryonSimpleFormFactor();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -105,13 +90,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -120,45 +105,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit();
   //@}
 
 private:
@@ -264,7 +215,5 @@ struct ClassTraits<Herwig::BaryonSimpleFormFactor>
 /** @endcond */
 
 }
-
-#include "BaryonSimpleFormFactor.icc"
 
 #endif /* HERWIG_BaryonSimpleFormFactor_H */

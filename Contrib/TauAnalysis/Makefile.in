@@ -1,0 +1,40 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find plugins here: INSERT URL
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
+#
+# C++ flags
+# 
+CXX = 
+CXXFLAGS = 
+LDFLAGS = 
+SHARED_FLAG = 
+
+ALLCCFILES=$(shell echo *.cc)
+
+default : HwTauAnalysis.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
+
+HwTauAnalysis.so: Tau5Pion.o TauTo2MesonAnalysis.o TauTo4MesonAnalysis.o \
+                  TauCorrelationAnalysis.o TauTo3MesonAnalysis.o \
+                  TauToLeptonsAnalysis.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
+		  Tau5Pion.o TauTo2MesonAnalysis.o TauTo4MesonAnalysis.o \
+                  TauCorrelationAnalysis.o TauTo3MesonAnalysis.o \
+                  TauToLeptonsAnalysis.o $(SHARED_FLAG) $(LDFLAGS)  -o HwTauAnalysis.so
+
+clean:
+	rm -f $(ALLCCFILES:.cc=.o) HwTauAnalysis.so

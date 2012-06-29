@@ -11,6 +11,8 @@
 
 read LH.model
 cd /Herwig/NewPhysics
+set LH/Model:f 1*TeV
+set LH/Model:VEVRatio 0.01
 
 ##################################################
 #

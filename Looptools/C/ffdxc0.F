@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffdxc0:
 	subroutine ffdxc0(cs3,ipi12,isoort,clogi,ilogi,xpi,dpipj,piDpj,
      +		xqi,qiDqj,sdel2,del2s,etalam,etami,delpsi,alph,
@@ -70,7 +73,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -203,7 +206,6 @@
 		if ( abs(dyzzy(ii,2)) .ge. xmax ) goto 140
 		isoort(3) = isoort(3) + 10
 		isoort(11) = isoort(11) + 10
- 1000		format(a,i1,a,g22.14,g12.4)
 		if ( ldel2s ) then
 		    print *,'ffdxc0: not ready for del2s=0, real case'
 		    goto 130
@@ -259,7 +261,6 @@
 		if ( absc(cdyzzy(ii,2)) .ge. xmax ) goto 170
 		isoort(3) = isoort(3) - 10
 		isoort(11) = isoort(11) - 10
- 1002		format(a,i1,a,2g22.14,g12.4)
 		if ( ldel2s ) then
 		    ip = 3
 		else

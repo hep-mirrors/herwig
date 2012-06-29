@@ -16,50 +16,47 @@ using namespace ThePEG::Helicity;
 
 NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
 				   _q2last(0.*MeV2), _couplast(0.) {
-  // PDG codes for the particles
-  vector<long> first,second,third;
-  // codes for the neutral higgs
-  int ieven[3]={25,35,45};
-  int iodd [2]={36,46};
-  // Z S P
-  for(unsigned int ix=0;ix<3;++ix) {
-    for(unsigned int iy=0;iy<2;++iy) {
-      first.push_back(23);
-      second.push_back(ieven[ix]);
-      third.push_back(iodd [iy]);
-    }
-  }
-  // W H+ S
-  for(unsigned int ix=0;ix<3;++ix) {
-    first.push_back(-24);
-    second.push_back(37);
-    third.push_back(ieven[ix]);
-  }
-  // W H+ P
-  for(unsigned int ix=0;ix<2;++ix) {
-    first.push_back(-24);
-    second.push_back(37);
-    third.push_back(iodd[ix]);
-  }
-  // charged higgs Z and photon
-  first.push_back(22);
-  second.push_back(37);
-  third.push_back(-37);
-  first.push_back(23);
-  second.push_back(37);
-  third.push_back(-37);
-  // add list
-  setList(first,second,third);
+  orderInGem(1);
+  orderInGs(0);
 }
 
-void NMSSMWHHVertex::doinit() throw(InitException) {
+void NMSSMWHHVertex::doinit() {
+  // codes for the neutral higgs
+  //CP even
+  int ieven[3]={25,35,45};
+  //CP odd
+  int iodd [2]={36,46};
+  // Z CP even CP odd
+  for(unsigned int ix=0;ix<3;++ix)
+    for(unsigned int iy=0;iy<2;++iy)
+      addToList( 23, ieven[ix], iodd[iy] );
+
+  // W H+ CP even
+  for(unsigned int ix=0;ix<3;++ix)
+    addToList( -24, 37, ieven[ix] );
+
+   // W+ H- CP even
+  for(unsigned int ix=0;ix<3;++ix)
+    addToList( 24, -37, ieven[ix] );
+
+  // W H+ CP odd
+  for(unsigned int ix=0;ix<2;++ix)
+    addToList( -24, 37, iodd[ix] );
+
+  //W+ H- CP odd
+  for(unsigned int ix=0;ix<2;++ix)
+    addToList( 24, -37, iodd[ix] );
+
+  // Charged higgs Z/gamma
+  addToList( 22, 37, -37 );
+  addToList( 23, 37, -37 );
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must have the NMSSM Model in NMSSMFFHVertex::doinit()"
 			  << Exception::runerror;
   // sin theta_W
-  double sw2=model->sin2ThetaW();
+  double sw2 = sin2ThetaW();
   _sw = sqrt(sw2);
   _cw = sqrt(1.-sw2);
   // get the mixing matrices
@@ -73,11 +70,8 @@ void NMSSMWHHVertex::doinit() throw(InitException) {
 				   << Exception::runerror;
   // sin and cos beta
   double beta = atan(model->tanBeta());
-  _sinb=sin(beta);
-  _cosb=cos(beta);
-  // order in the couplings
-  orderInGem(1);
-  orderInGs(0);
+  _sinb = sin(beta);
+  _cosb = cos(beta);
   // base class
   VSSVertex::doinit();
 }
@@ -101,56 +95,61 @@ void NMSSMWHHVertex::Init() {
 
 }
 
+//calulate the couplings
 void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
-  // em coupling
+  // weak coupling
   if(q2!=_q2last) {
-    _couplast = electroMagneticCoupling(q2);
+    _couplast = weakCoupling(q2);
     _q2last=q2;
   }
   // gauge bosons
-  int ibos=a->id();
-  int ih1 =b->id();
-  int ih2 =c->id();
+  int ibos= a->id();
+  int ih1 = b->id();
+  int ih2 = c->id();
   Complex fact;
   if(ibos==ParticleID::Z0) {
-    fact = 0.5/_sw/_cw;
+    fact = 0.5/_cw;
     // Z H+ H-
     if(abs(ih1)==37) {
-      fact = 0.5*(sqr(_cw)-sqr(_sw));
-      if(ih1<0) fact *=-1.;
+      fact *= (sqr(_cw)-sqr(_sw));
+      if(ih1<0) fact *=-1.;  
     }
-    // Z S P
+    // Z CP even CP odd
     else {
+      fact *= -1.; 
       if(ih1%10==6) {
-	fact *=-1.;
+	fact *= -1.; 
 	swap(ih1,ih2);
       }
       int is = (ih1-25)/10;
       int ip = (ih2-36)/10;
-      fact *= Complex(0.,1.)*
-	(*_mixS)(is,0)*(*_mixP)(ip,0)-(*_mixS)(is,1)*(*_mixP)(ip,1);
+      fact *= Complex(0.,1.)*((*_mixS)(is,1)*(*_mixP)(ip,1)-
+			      (*_mixS)(is,0)*(*_mixP)(ip,0));
     }
   }
+  // gamma CP even CP odd
   else if(ibos==ParticleID::gamma) {
-    fact = ih1>0 ? 1. : -1;
+    fact = ih1>0 ? _sw : -_sw;  
   }
+  // W boson
   else {
-    fact = 0.5/_sw; 
+    fact = 0.5; 
     if(abs(ih2)==37) {
-      fact *=-1.;
       swap(ih1,ih2);
+      fact*=-1; 
     }
-    if(ibos>0) fact*=-1;
-    // H+ S
+    if(ibos<0&&ih2%5==0) fact*=-1; 
+    // H+ CP even
     if(ih2%5==0) {
-      int is = (ih1-25)/10;
-      fact *= -              (_sinb*(*_mixS)(is,0)-_cosb*(*_mixS)(is,1));
+      int is = (ih2-25)/10;
+      fact *= (_cosb*(*_mixS)(is,1)-_sinb*(*_mixS)(is,0));
     }
-    // H+ P
+    // H+ CP odd
     else {
-      int ip = (ih1-36)/10;
-      fact *= Complex(0.,1.)*(_sinb*(*_mixP)(ip,0)+_cosb*(*_mixP)(ip,1));
+      int ip = (ih2-36)/10;
+      fact *= Complex(0.,1.)*(_cosb*(*_mixP)(ip,1)+_sinb*(*_mixP)(ip,0));
     }
   }
-  setNorm(_couplast*fact);
+  //output the coupling
+  norm(_couplast*fact);
 }

@@ -1,9 +1,12 @@
 if WANT_RS
 pkglib_LTLIBRARIES = HwRSModel.la
 endif
-HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  RSModel.icc\
-RSModelFFGRVertex.cc RSModelFFGRVertex.h RSModelFFGRVertex.icc RSModelFFVGRVertex.cc\
-RSModelFFVGRVertex.h RSModelFFVGRVertex.icc RSModelSSGRVertex.cc RSModelSSGRVertex.h\
-RSModelSSGRVertex.icc RSModelVVGRVertex.cc RSModelVVGRVertex.h RSModelVVGRVertex.icc\
-RSModelVVVGRVertex.cc RSModelVVVGRVertex.h RSModelVVVGRVertex.icc
-HwRSModel_la_LDFLAGS = -module -version-info 3:1:0
+HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  \
+RSModelFFGRVertex.cc  RSModelFFGRVertex.h  \
+RSModelFFGGRVertex.cc RSModelFFGGRVertex.h \
+RSModelFFWGRVertex.cc RSModelFFWGRVertex.h \
+RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
+RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
+RSModelWWWGRVertex.cc RSModelWWWGRVertex.h\
+RSModelGGGGRVertex.cc RSModelGGGGRVertex.h 
+HwRSModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwDecayHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,8 +13,7 @@
 //
 #include "ThePEG/Handlers/DecayHandler.h"
 #include "ThePEG/EventRecord/Particle.h"
-#include "ThePEG/Helicity/SpinInfo.h"
-#include "HwDecayHandler.fh"
+
 
 namespace Herwig {
 using namespace ThePEG;
@@ -44,7 +43,8 @@ public:
   /**
    * Default constructor
    */
-  inline HwDecayHandler();
+  HwDecayHandler()  : DecayHandler(), _newstep(true) 
+  {}
 
 public:
 
@@ -57,7 +57,7 @@ public:
    */
   virtual void handle(EventHandler & eh, const tPVector & tagged,
 		      const Hint & hint)
-    throw(Veto, Stop, Exception);
+   ;
 
   /**
    * Perform the decay of one unstable particle.
@@ -67,7 +67,7 @@ public:
    * @throws Exception if something goes wrong.
    */
   virtual void performDecay(tPPtr parent, Step & s) const
-    throw(Veto, Exception);
+   ;
   
   /**
    * add the decay products of in intermediate particle produced in a decay
@@ -77,7 +77,7 @@ public:
    * @throws Exception if something goes wrong.
    */
   void addDecayedParticle(tPPtr parent, Step & s) const
-    throw(Veto, Exception);
+   ;
 
   /**
    * Standard Init function
@@ -110,13 +110,25 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 protected:
@@ -124,7 +136,11 @@ protected:
   /**
    *  Develop a stable particle
    */
-  inline void develop(tPPtr particle) const;
+  void develop(tPPtr particle) const {
+    tcSpinPtr hwspin = particle->spinInfo();
+    if ( hwspin ) 
+      hwspin->develop();
+  }
 
 private:
 
@@ -144,6 +160,16 @@ private:
    *  Option for adding particles in a new Step
    */
   bool _newstep;
+
+  /**
+   *  Particles which should not be decayed
+   */
+  set<tcPDPtr> _excluded;
+
+  /**
+   *  Vector to fill the set as an interface
+   */
+  vector<PDPtr> _excludedVector;
 
 };
 }
@@ -175,7 +201,5 @@ struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDec
 /** @endcond */
 
 }
-
-#include "HwDecayHandler.icc"
 
 #endif /* HERWIG_HwDecayHandler_H */

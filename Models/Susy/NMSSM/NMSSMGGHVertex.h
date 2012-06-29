@@ -8,7 +8,6 @@
 #include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.fh"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMGGHVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -76,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -94,7 +93,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -140,6 +139,41 @@ private:
    */
   Energy _mz;
   
+   /**
+   * The product \f$\lambda \langle S\rangle \f$.
+   */
+  
+  Energy _lambdaVEV;
+  
+  /**
+   *  The coefficient of the trilinear \f$SH_2 H_1\f$ term in the superpotential
+   */
+  
+  double _lambda;
+  
+  /**
+   * The value of the VEV of the higgs that couples to the up-type sector
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
+   */
+  
+  Energy _v1;
+
+  /**
+   * The value of the VEV of the higgs that couples to the down-type sector
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
+   */ 
+  Energy _v2;
+  
+  /**
+   * The top quark trilinear coupling
+   */
+  complex<Energy> _triTp;
+
+  /**
+   * The bottom quark trilinear coupling
+   */
+  complex<Energy> _triBt;
+  
   /**
    * A pointer to the top quark
    */
@@ -149,22 +183,22 @@ private:
    * A pointer to the bottom quark
    */
   tcPDPtr _bt;
-
+  
   /**
    * CP-even Higgs mixing matrix 
    */
   MixingMatrixPtr _mixS;
-
+  
   /**
    * CP-even Higgs mixing matrix 
    */
   MixingMatrixPtr _mixP;
-
+  
   /**
    * \f$\tilde{t}\f$ mixing matrix  
    */
   MixingMatrixPtr _mixQt;
-
+  
   /**
    * \f$\tilde{b}\f$ mixing matrix  
    */
@@ -196,6 +230,12 @@ private:
    * evaluated.
    */
   double _couplast;
+
+  /**
+   * The value of the weak coupling was last 
+   * evaluated.
+   */
+  double _coup;
   
   /**
    * The PDG code of the Higgs particle when the vertex was last evaluated 
@@ -208,7 +248,7 @@ private:
   bool _recalc;
   //@}
 };
-
+  
 }
 
 #include "ThePEG/Utilities/ClassTraits.h"
@@ -245,7 +285,5 @@ struct ClassTraits<Herwig::NMSSMGGHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMGGHVertex.icc"
 
 #endif /* HERWIG_NMSSMGGHVertex_H */

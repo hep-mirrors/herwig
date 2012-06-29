@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GSLHelper.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -11,8 +11,6 @@
 //
 // This is the declaration of the GSLHelper class.
 //
-
-#include "ThePEG/Config/PhysicalQty.h"
 
 namespace Herwig {
 
@@ -34,16 +32,35 @@ struct GSLHelper
 {
     
 public:
+
+  /**
+   *  Constructor
+   */
   GSLHelper() {}
 
+  /**
+   *  Destructor
+   */
   virtual ~GSLHelper() {}
 
+  /**
+   * Typedef for Agrument type
+   */
   typedef T ArgType;
 
+  /**
+   *  Typedef for Value type
+   */
   typedef V ValType;
 
+  /**
+   * Value type
+   */
   virtual V vUnit() const {return TypeTraits<V>::baseunit;}
 
+  /**
+   * Agrument type
+   */
   virtual T aUnit() const {return TypeTraits<T>::baseunit;}
 
 private:

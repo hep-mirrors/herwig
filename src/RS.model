@@ -38,30 +38,34 @@ mkdir /Herwig/Vertices/RS
 cd /Herwig/Vertices/RS
 library HwRSModel.so
 create Herwig::RSModelFFGRVertex RS_FFGRVertex
-create Herwig::RSModelFFVGRVertex RS_FFVGRVertex
+create Herwig::RSModelFFGGRVertex RS_FFGGRVertex
+create Herwig::RSModelFFWGRVertex RS_FFWGRVertex
 create Herwig::RSModelSSGRVertex RS_SSGRVertex
 create Herwig::RSModelVVGRVertex RS_VVGRVertex
-create Herwig::RSModelVVVGRVertex RS_VVVGRVertex
+create Herwig::RSModelGGGGRVertex RS_GGGGRVertex
+create Herwig::RSModelWWWGRVertex RS_WWWGRVertex
 cd /Herwig/NewPhysics/RS
 # SM vertices
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
-set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWH  /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
 # RS model vertices
 set Model:Vertex/FFGR  /Herwig/Vertices/RS/RS_FFGRVertex
-set Model:Vertex/FFVGR /Herwig/Vertices/RS/RS_FFVGRVertex
+set Model:Vertex/FFGGR /Herwig/Vertices/RS/RS_FFGGRVertex
+set Model:Vertex/FFWGR /Herwig/Vertices/RS/RS_FFWGRVertex
 set Model:Vertex/SSGR  /Herwig/Vertices/RS/RS_SSGRVertex
 set Model:Vertex/VVGR  /Herwig/Vertices/RS/RS_VVGRVertex
-set Model:Vertex/VVVGR /Herwig/Vertices/RS/RS_VVVGRVertex
+set Model:Vertex/GGGGR /Herwig/Vertices/RS/RS_GGGGRVertex
+set Model:Vertex/WWWGR /Herwig/Vertices/RS/RS_WWWGRVertex
 ###################################################
 #
 #  Set up spin correlation Decayers
@@ -70,18 +74,12 @@ set Model:Vertex/VVVGR /Herwig/Vertices/RS/RS_VVVGRVertex
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
 ###################################################
-#
-#  Setting to ensure spin correlations
-#  and generation of processes and decays
-#
-###################################################
-cd /Herwig/NewPhysics
-insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
-insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 # Set up the model framework
+###################################################
 set RS/Model:ModelGenerator NewModel
 ###################################################
 #

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxb0:
 	subroutine ffxb0(cb0,xp,xma,xmb,ier)
 ***#[*comment:***********************************************************
@@ -31,7 +34,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ get differences:
@@ -119,7 +122,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -569,7 +572,7 @@
 *
 *		    next s2:
 *
-  490		    s2p = s2 - 2*alpha
+		    s2p = s2 - 2*alpha
 		    if ( abs(s2p) .lt. xloss*abs(s2) ) then
 * -#[			bounds:
 *			determine the boundaries for 1,5,10,15 terms
@@ -764,7 +767,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	aa1 = abs(a1)
@@ -843,7 +846,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -926,7 +929,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *

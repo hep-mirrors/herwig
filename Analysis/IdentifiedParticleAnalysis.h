@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // IdentifiedParticleAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,8 +22,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the IdentifiedParticleAnalysis class.
+/** \ingroup Analysis
+ * The IdentifiedParticleAnalysis class produces various identified particle spectra
+ * compared to LEP data.
  *
  * @see \ref IdentifiedParticleAnalysisInterfaces "The interfaces"
  * defined for IdentifiedParticleAnalysis.
@@ -70,8 +71,9 @@ protected:
    */
   int getFlavour(const tPVector &);
 
-  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam)
-  {return(Ebeam > 0*MeV ? double(p.vect().mag()/Ebeam) : -1.);}
+  double getX(const Lorentz5Momentum & p, const Energy & Ebeam) {
+    return Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.;
+  }
 
 protected:
 
@@ -81,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:

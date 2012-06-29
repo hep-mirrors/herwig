@@ -1,10 +1,11 @@
 // -*- C++ -*-
 //
-// EventShapes.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// EventShapes.h is a part of Herwig++ - A multi-purpose Monte Carlo
+// event generator Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for
+// details.  Please respect the MCnet academic guidelines, see
+// GUIDELINES for details.
 //
 #ifndef HERWIG_EventShapes_H
 #define HERWIG_EventShapes_H
@@ -25,21 +26,38 @@ using namespace ThePEG;
 
 /** \ingroup Analysis
  *
- * The EventShapes class is designed so that certain event shapes,
- * such as the thrust are only calculated once per event given the
- * speed of the calculation.
+ * The EventShapes class is designed so that certain event shapes, such
+ * as the thrust are only calculated once per event given the speed of
+ * the calculation.
  *
- * @see \ref EventShapesInterfaces "The interfaces"
- * defined for EventShapes.
+ * @see \ref EventShapesInterfaces "The interfaces" defined for
+ * EventShapes.
  */
 class EventShapes: public Interfaced {
 
 public:
 
   /**
+   * The default constructor.
+   */
+  EventShapes() : _thrustDone(false), _spherDone(false), _linTenDone(false),
+		  _hemDone(false), _useCmBoost(false), 
+		  _mPlus(), _mMinus(), _bPlus(), _bMinus() 
+  {}
+
+  /**
    *  Member to reset the particles to be considered
    */
-  inline void reset(const tPVector &part);
+  void reset(const tPVector &part) {
+    _pv.resize(part.size());
+    for(unsigned int ix=0;ix<part.size();++ix) _pv[ix]=part[ix]->momentum();
+    _thrustDone = false;
+    _spherDone  = false;
+    _linTenDone = false;
+    _hemDone    = false;
+    _useCmBoost = false; 
+  }
+
 
 public:
 
@@ -50,37 +68,58 @@ public:
   /**
    *  The thrust
    */
-  inline double thrust();
+  double thrust() {
+    checkThrust(); 
+    return _thrust[0];
+  }
 
   /**
    *  The major
    */ 
-  inline double thrustMajor();
+  double thrustMajor() {
+    checkThrust(); 
+    return _thrust[1];
+  }
 
   /**
    *  The minor
    */ 
-  inline double thrustMinor();
+  double thrustMinor() {
+    checkThrust(); 
+    return _thrust[2];
+  }
 
   /**
    *  The oblateness
    */ 
-  inline double oblateness(); 
+  double oblateness() {
+    checkThrust(); 
+    return _thrust[1]-_thrust[2];
+  }
 
   /**
    *  The thrust axis
    */
-  inline Axis thrustAxis();
+  Axis thrustAxis() {
+    checkThrust(); 
+    return _thrustAxis[0];
+  }
 
   /**
    *  The major axis
    */ 
-  inline Axis majorAxis(); 
+  Axis majorAxis() {
+    checkThrust(); 
+    return _thrustAxis[1];
+  }
 
   /**
    *  The minor axis
    */
-  inline Axis minorAxis(); 
+  Axis minorAxis() {
+    checkThrust(); 
+    return _thrustAxis[2];
+  }
   //@}
 
   /**
@@ -90,22 +129,37 @@ public:
   /**
    *  The C parameter
    */
-  inline double CParameter();
+  double CParameter() {
+    checkLinTen(); 
+    return 3.*(_linTen[0]*_linTen[1]+_linTen[1]*_linTen[2]
+	       +_linTen[2]*_linTen[0]); 
+  }
 
   /**
    *  The D parameter
    */
-  inline double DParameter();
+  double DParameter() {
+    checkLinTen(); 
+    return 27.*(_linTen[0]*_linTen[1]*_linTen[2]); 
+  }
 
   /**
    *  The eigenvalues in descending order
    */
-  inline vector<double> linTenEigenValues();
+  vector<double> linTenEigenValues() {
+    checkLinTen(); 
+    return _linTen; 
+  }
+
 
   /**
    *  The eigenvectors in order of descending eigenvalue
    */
-  inline vector<Axis> linTenEigenVectors();
+  vector<Axis> linTenEigenVectors() {
+    checkLinTen(); 
+    return _linTenAxis; 
+  }
+
   //@}
 
   /**
@@ -115,53 +169,84 @@ public:
   /**
    *  The sphericity
    */
-  inline double sphericity();
+  double sphericity() {
+    checkSphericity(); 
+    return 3./2.*(_spher[1]+_spher[2]); 
+  }
 
   /**
    *  The aplanarity
    */
-  inline double aplanarity();
+  double aplanarity() {
+    checkSphericity(); 
+    return 3./2.*_spher[2];
+  }
+
 
   /**
    *  The planarity
    */
-  inline double planarity();
+  double planarity() {
+    checkSphericity(); 
+    return _spher[1]-_spher[2]; 
+  }
 
   /**
    *  The sphericity axis
    */
-  inline Axis sphericityAxis();
+  Axis sphericityAxis() {
+    checkSphericity(); 
+    return _spherAxis[0]; 
+  }
+
 
   /**
    *  The sphericity eigenvalues
    */
-  inline vector<double> sphericityEigenValues();
+  vector<double> sphericityEigenValues() {
+    checkSphericity(); 
+    return _spher; 
+  }
 
   /**
    *  The sphericity eigenvectors
    */
-  inline vector<Axis> sphericityEigenVectors();
-  //@}
+  vector<Axis> sphericityEigenVectors() {
+    checkSphericity(); 
+    return _spherAxis; 
+  }  //@}
 
   /**
    * Jet mass related event shapes
    */
   //@{
   /**
-   *  The high hemishpere mass squared divided by the visible energy squared
+   *  The high hemishpere mass squared divided by the visible energy
+   *  squared
    */
-  inline double Mhigh2();
-
+  double Mhigh2() {
+    checkHemispheres();
+    return _mPlus; 
+  } 
+  
   /**
-   *  The low hemishpere mass squared divided by the visible energy squared
+   *  The low hemishpere mass squared divided by the visible energy
+   *  squared
    */
-  inline double Mlow2();
+  double Mlow2() {
+    checkHemispheres();
+    return _mMinus; 
+  } 
 
   /**
    *  The difference between the 
    * hemishpere masses squared divided by the visible energy squared
    */
-  inline double Mdiff2();
+  double Mdiff2() {
+    checkHemispheres();
+    return _mPlus-_mMinus; 
+  } 
+
   //@}
 
   /**
@@ -171,22 +256,35 @@ public:
   /**
    *  The wide jet broadening
    */
-  inline double Bmax();
+  double Bmax() {
+    checkHemispheres(); 
+    return _bPlus;
+  }
 
   /**
    *  The narrow jet broadening
    */
-  inline double Bmin();
+  double Bmin() {
+    checkHemispheres(); 
+    return _bMinus;
+  }
 
   /**
    *  The sum of the jet broadenings
    */
-  inline double Bsum();
+  double Bsum() {
+    checkHemispheres(); 
+    return _bPlus+_bMinus;
+  }
+
 
   /**
    *  The difference of the jet broadenings
    */
-  inline double Bdiff();
+  double Bdiff() {
+    checkHemispheres(); 
+    return _bPlus-_bMinus;
+  }
   //@}
 
   /**
@@ -197,17 +295,25 @@ public:
   /**
    *  The scaled momentum \f$\xi=-\log\left( p/E_{\rm beam}\right)\f$.
    */
-  inline double getXi(const Lorentz5Momentum & p, const Energy & Ebeam);
+  double getXi(const Lorentz5Momentum & p, 
+				   const Energy & Ebeam) {
+    return((Ebeam > 0*MeV && p.vect().mag() > 0*MeV) ? 
+	   log(Ebeam/p.vect().mag()) : -1.); 
+  }
 
   /**
    *  Transverse momentum with respect to the beam
    */
-  inline Energy getPt(const Lorentz5Momentum & p);
+  Energy getPt(const Lorentz5Momentum & p) {
+    return p.perp(); 
+  }
 
   /**
    *  Rapidity with respect to the beam direction
    */
-  inline double getRapidity(const Lorentz5Momentum & p);
+  double getRapidity(const Lorentz5Momentum & p) {
+    return (p.t() > p.z() ? p.rapidity() : 1e99); 
+  }
   //@}
 
   /**
@@ -217,65 +323,97 @@ public:
   /**
    *  Transverse momentum with respect to the thrust axis in the event plane
    */
-  inline Energy ptInT(const Lorentz5Momentum & p);
-
+  Energy ptInT(const Lorentz5Momentum & p) {
+    checkThrust(); 
+    return p.vect()*_thrustAxis[1]; 
+  }
+  
   /**
-   *  Transverse momentum with respect to the thrust axis out of the event plane
+   *  Transverse momentum with respect to the thrust axis out of the
+   *  event plane
    */
-  inline Energy ptOutT(const Lorentz5Momentum & p);
+  Energy ptOutT(const Lorentz5Momentum & p) {
+    checkThrust(); 
+    return p.vect()*_thrustAxis[2]; 
+  }
 
   /**
    *  Rapidity with respect to the thrust axis
    */
-  inline double yT(const Lorentz5Momentum & p);
+  double yT(const Lorentz5Momentum & p) {
+    checkThrust(); 
+    return (p.t() > p.vect()*_thrustAxis[0] ? 
+	    p.rapidity(_thrustAxis[0]) : 1e99);
+  }
 
   /**
-   *  Transverse momentum with respect to the sphericity axis in the event plane
+   *  Transverse momentum with respect to the sphericity axis in the
+   *  event plane
    */
-  inline Energy ptInS(const Lorentz5Momentum & p);
+  Energy ptInS(const Lorentz5Momentum & p) { 
+    checkSphericity(); 
+    return p.vect()*_spherAxis[1]; 
+  }
 
   /**
-   *  Transverse momentum with respect to the sphericity axis out of the event plane
+   *  Transverse momentum with respect to the sphericity axis out of the
+   *  event plane
    */
-  inline Energy ptOutS(const Lorentz5Momentum & p);
+  Energy ptOutS(const Lorentz5Momentum & p) {
+    checkSphericity(); 
+    return p.vect()*_spherAxis[2]; 
+  }
 
   /**
    *  Rapidity with respect to the sphericity axis
    */
-  inline double yS(const Lorentz5Momentum & p);
+  double yS(const Lorentz5Momentum & p) {
+    checkSphericity(); 
+    return (p.t() > p.vect()*_spherAxis[0] ? 
+	    p.rapidity(_spherAxis[0]) : 1e99);
+  }
   //@}
 
 
   /**
-   * Energy-energy correlation (EEC)
-   * @param hi is the histogram and has to be provided externally
-   * It is understood that
-   * the range of the histogam is -1 < cos(chi) < 1. 
-   * hi.front() contains the bin [-1 < cos(chi) < -1+delta] and
-   * hi.back() the bin [1-delta < cos(chi) < 1].  delta =
-   * 2/hi.size(). We use classical indices to access the vector. 
+   * Energy-energy correlation (EEC) @param hi is the histogram and has
+   * to be provided externally It is understood that the range of the
+   * histogam is -1 < cos(chi) < 1.  hi.front() contains the bin [-1 <
+   * cos(chi) < -1+delta] and hi.back() the bin [1-delta < cos(chi) <
+   * 1].  delta = 2/hi.size(). We use classical indices to access the
+   * vector.
    */
   void bookEEC(vector<double> & hi);
 
   /**
-   * Before writing the histogram it has to be normalized according to the
-   * number of events. 
+   * Before writing the histogram it has to be normalized according to
+   * the number of events.
    */
-  inline void normalizeEEC(vector<double> & hi, long evts);
-
+  void normalizeEEC(vector<double> & hi, long evts) {
+    for (unsigned int bin = 0; bin < hi.size(); bin++) bin /= (hi.size()*evts);
+  }
+  
   /**
-   * The asymmetry of EEC is calculated from a given \f$\cos\chi\f$ and EEC
-   * histogram, which is a vector<double> as described above.
+   * The asymmetry of EEC is calculated from a given \f$\cos\chi\f$ and
+   * EEC histogram, which is a vector<double> as described above.
    */
-  inline double AEEC(vector<double> & hi, double& coschi);
+  double AEEC(vector<double> & hi, double& coschi) {
+    if (coschi > 0. && coschi <= 1.) {
+      int i = static_cast<int>( floor((-coschi+1.)/2.*hi.size()) ); 
+      int j = static_cast<int>( floor(( coschi+1.)/2.*hi.size()) ); 
+      return hi[i]-hi[j];
+    } else {
+      return 1e99;
+    }
+  }
 
 public:
 
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
+   * before the main function starts or when this class is dynamically
+   * loaded.
    */
   static void Init();
 
@@ -284,16 +422,15 @@ protected:
   /** @name Clone Methods. */
   //@{
   /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
+   * Make a simple clone of this object.  @return a pointer to the new
+   * object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
+   * to make it sane.  @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -304,25 +441,48 @@ private:
    */
   //@{
   /**
-   *  Check if thrust related variables have been calculated and if not do so
+   *  Check if thrust related variables have been calculated and if not
+   *  do so
    */
-  inline void checkThrust();
+  void checkThrust() {
+    if (!_thrustDone) {
+      _thrustDone = true;
+      calculateThrust(); 
+    }
+  }
 
   /**
-   *  Check if the linear tensor related variables have been calculated and if not do so
+   *  Check if the linear tensor related variables have been calculated
+   *  and if not do so
    */
-  inline void checkLinTen();
+  void checkLinTen() {
+    if (!_linTenDone) {
+      _linTenDone = true;
+      diagonalizeTensors(true, _useCmBoost); 
+    }
+  }
 
   /**
-   *  Check if the quadratic tensor related variables have been calculated and if not do so
+   *  Check if the quadratic tensor related variables have been
+   *  calculated and if not do so
    */
-  inline void checkSphericity();
+  void checkSphericity() {
+    if (!_spherDone) {
+      _spherDone = true;
+      diagonalizeTensors(false, _useCmBoost); 
+    }
+  }
 
   /**
-   *  Check if the hemisphere mass variables and jet broadenings 
-   *  have been calculated and if not do so
+   *  Check if the hemisphere mass variables and jet broadenings have
+   *  been calculated and if not do so
    */
-  inline void checkHemispheres();
+  void checkHemispheres() {
+    if (!_hemDone) {
+      _hemDone = true;
+      calcHemisphereMasses(); 
+    }
+  }
   //@}
 
   /**
@@ -340,25 +500,24 @@ private:
   void calculateThrust();
 
   /**
-   * Diagonalize the tensors
-   * @param linear switch between diagonalization of linear/quadratic tensor.
-   * @param cmboost tells whether to boost into cm frame of all
-   * momenta first, or not (default off, and no interface to this).
+   * Diagonalize the tensors @param linear switch between
+   * diagonalization of linear/quadratic tensor.  @param cmboost tells
+   * whether to boost into cm frame of all momenta first, or not
+   * (default off, and no interface to this).
    */
   void diagonalizeTensors(bool linear, bool cmboost);
 
   /**
-   * Quite general diagonalization of a symmetric Matrix  T, given as
-   * an array of doubles.  The symmetry is not checked explicitly as
-   * this is clear in the context.  It uses an explicit generic
-   * solution of the eigenvalue problem and no numerical
-   * approximation, based on Cardano's formula.
-   * @param T Matrix to be diagonalised 
+   * Quite general diagonalization of a symmetric Matrix T, given as an
+   * array of doubles.  The symmetry is not checked explicitly as this
+   * is clear in the context.  It uses an explicit generic solution of
+   * the eigenvalue problem and no numerical approximation, based on
+   * Cardano's formula.  @param T Matrix to be diagonalised
    */
   vector<double> eigenvalues(const double T[3][3]);
 
   /**
-   * The eigenvector of @param T to a given eigenvalue @param lam 
+   * The eigenvector of @param T to a given eigenvalue @param lam
    */
   Axis eigenvector(const double T[3][3], const double &lam);
 
@@ -540,10 +699,5 @@ struct ClassTraits<Herwig::EventShapes>
 /** @endcond */
 
 }
-
-#include "EventShapes.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EventShapes.tcc"
-#endif
 
 #endif /* HERWIG_EventShapes_H */

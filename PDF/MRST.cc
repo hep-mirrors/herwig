@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MRST.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -57,6 +57,24 @@ const Energy2 MRST::mb2 = 18.5 * GeV2;
 
 ClassDescription<MRST> MRST::initMRST;
 
+MRST::MRST() : _inter(2), _xswitch(0.9),
+	       data(np+1,vector<vector<double> >
+		    (nx+1,vector<double>
+		     (nq+1,0.0))),
+	       fdata(np+1,vector<vector<double> >
+		     (nx+1,vector<double>
+		      (nq+1,0.0))) {
+  if ( ! initialized ) {
+    for ( int jj=1; jj < ntenth; ++jj ) {
+      lxxb[jj] = log10(xx[jj]/xx[ntenth]) + xx[ntenth];
+    }
+    lxxb[ntenth] = xx[ntenth];
+    for ( int n=1; n<=nx; n++ ) lxx[n] = log10(xx[n]);
+    for ( int n=1; n<=nq; n++ ) lqq[n] = log10(qq[n]);
+    initialized = true;
+  }
+}
+
 bool MRST::canHandleParticle(tcPDPtr particle) const {
   // Return true if this PDF can handle the extraction of parton from the
   // given particle ie. if the particle is a proton or neutron.
@@ -78,30 +96,24 @@ cPDVector MRST::partons(tcPDPtr p) const {
   return ret;
 }
 
-double MRST::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		 double l, Energy2 particleScale) const {
-  double x(exp(-l));
-  return xfx(particle,parton,partonScale,x,0.0,particleScale);
-}
-
 double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                  double x, double, Energy2) const {
-  return pdfValue(x, partonScale, particle, parton);
-}
-
-double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		  double l, Energy2 particleScale) const {
-  double x = exp(-l);
-  return xfvx(particle,parton,partonScale,x,0.0,particleScale);
+  return pdfValue(x, partonScale, particle, parton,Total);
 }
 
 double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                   double x, double, Energy2) const {
-  return pdfValue(x, partonScale, particle, parton, true);
+  return pdfValue(x, partonScale, particle, parton,Valence);
+}
+
+double MRST::xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+                  double x, double, Energy2) const {
+  return pdfValue(x, partonScale, particle, parton,Sea);
 }
 
 double MRST::pdfValue(double x, Energy2 q2, 
-		      tcPDPtr particle, tcPDPtr parton, bool valenceOnly) const {
+		      tcPDPtr particle, tcPDPtr parton, PDFType type) const {
+  assert(!isnan(x) && !isinf(x));
   // reset x  to min or max if outside range
   if(x<xmin)      x=xmin;
   else if(x>xmax) x=xmax;
@@ -116,17 +128,17 @@ double MRST::pdfValue(double x, Energy2 q2,
     double qsq=log10(q2/GeV2);
     
     // bin position
-    int n=locate(xx,nx,xxx);
-    int m=locate(qq,nq,qsq);
+    int n=locate(lxx,nx,xxx);
+    int m=locate(lqq,nq,qsq);
     
     // fraction along the bin
-    double t=(xxx-xx[n])/(xx[n+1]-xx[n]);
-    double u=(qsq-qq[m])/(qq[m+1]-qq[m]);
+    double t=(xxx-lxx[n])/(lxx[n+1]-lxx[n]);
+    double u=(qsq-lqq[m])/(lqq[m+1]-lqq[m]);
     
     bool anti = particle->id() < 0;
     bool neutron = abs(particle->id()) == ParticleID::n0;
     
-    if (valenceOnly) {
+    if (type==Valence) {
       switch(parton->id()) {
       case ParticleID::u:
 	output= (neutron? 
@@ -149,7 +161,35 @@ double MRST::pdfValue(double x, Energy2 q2,
 		 (anti? lookup(dnValence,n,m,u,t): 0.0));
 	break;
       }
-    } else {
+    } 
+    else if(type==Sea) {
+      switch(parton->id()) {
+      case ParticleID::b:
+      case ParticleID::bbar:
+	output= lookup(bot,n,m,u,t);
+	break;
+      case ParticleID::c:
+      case ParticleID::cbar:
+	output= lookup(chm,n,m,u,t);
+	break;
+      case ParticleID::s:
+      case ParticleID::sbar:
+	output= lookup(str,n,m,u,t);
+	break;
+      case ParticleID::u:
+      case ParticleID::ubar:
+	output= (neutron? lookup(dnSea,n,m,u,t) : lookup(upSea,n,m,u,t));
+	break;
+      case ParticleID::d:
+      case ParticleID::dbar:
+	output= (neutron? lookup(upSea,n,m,u,t) : lookup(dnSea,n,m,u,t));
+	break;
+      case ParticleID::g:
+	output= lookup(glu,n,m,u,t);
+	break;
+      }
+    }
+    else if(type==Total) {
       switch(parton->id()) {
       case ParticleID::b:
       case ParticleID::bbar:
@@ -191,16 +231,16 @@ double MRST::pdfValue(double x, Energy2 q2,
   }
   else {
     double xxx=x;
-    if(x<xxb[ntenth]) xxx = log10(x/xxb[ntenth])+xxb[ntenth];
+    if(x<lxxb[ntenth]) xxx = log10(x/lxxb[ntenth])+lxxb[ntenth];
     int nn=0;
     do ++nn;
-    while(xxx>xxb[nn+1]);
-    double a=(xxx-xxb[nn])/(xxb[nn+1]-xxb[nn]);
+    while(xxx>lxxb[nn+1]);
+    double a=(xxx-lxxb[nn])/(lxxb[nn+1]-lxxb[nn]);
     double qsq=q2/GeV2;
     int mm=0;
     do ++mm;
-    while(qsq>qqb[mm+1]);
-    double b=(qsq-qqb[mm])/(qqb[mm+1]-qqb[mm]);
+    while(qsq>qq[mm+1]);
+    double b=(qsq-qq[mm])/(qq[mm+1]-qq[mm]);
     double g[np+1];
     for(int ii=1;ii<=np;++ii) {
       g[ii]= (1.-a)*(1.-b)*fdata[ii][nn  ][mm] + (1.-a)*b*fdata[ii][nn  ][mm+1]
@@ -213,7 +253,7 @@ double MRST::pdfValue(double x, Energy2 q2,
     }
     bool anti = particle->id() < 0;
     bool neutron = abs(particle->id()) == ParticleID::n0;
-    if (valenceOnly) {
+    if (type==Valence) {
       switch(parton->id()) {
       case ParticleID::u:
 	output= (neutron? 
@@ -236,7 +276,35 @@ double MRST::pdfValue(double x, Energy2 q2,
 		 (anti? g[2]: 0.0));
 	break;
       }
-    } else {
+    } 
+    else if(type==Sea) {
+      switch(parton->id()) {
+      case ParticleID::b:
+      case ParticleID::bbar:
+	output= g[7];
+	break;
+      case ParticleID::c:
+      case ParticleID::cbar:
+	output= g[5];
+	break;
+      case ParticleID::s:
+      case ParticleID::sbar:
+	output= g[6];
+	break;
+      case ParticleID::u:
+      case ParticleID::ubar:
+	output= (neutron ? g[8] : g[4] );
+	break;
+      case ParticleID::d:
+      case ParticleID::dbar:
+	output= (neutron?  g[4] : g[8] );
+	break;
+      case ParticleID::g:
+	output= g[3];
+	break;
+      }
+    }
+    else if(type==Total) {
       switch(parton->id()) {
       case ParticleID::b:
       case ParticleID::bbar:
@@ -292,7 +360,17 @@ void MRST::persistentInput(PersistentIStream & in, int) {
 
 void MRST::Init() {
 
-  static ClassDocumentation<MRST> documentation("Implementation of the MRST PDFs");
+  static ClassDocumentation<MRST> documentation
+    ("Implementation of the MRST PDFs",
+     "Implementation of the MRST LO* / LO** PDFs \\cite{Sherstnev:2007nd}.",
+     "  %\\cite{Sherstnev:2007nd}\n"
+     "\\bibitem{Sherstnev:2007nd}\n"
+     "  A.~Sherstnev and R.~S.~Thorne,\n"
+     "  ``Parton Distributions for LO Generators,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 55} (2008) 553\n"
+     "  [arXiv:0711.2473 [hep-ph]].\n"
+     "  %%CITATION = EPHJA,C55,553;%%\n"
+     );
 
   static Switch<MRST,unsigned int> interfaceInterpolation
     ("Interpolation",
@@ -317,7 +395,7 @@ void MRST::Init() {
   static Parameter<MRST,double> interfaceXSwitch
     ("XSwitch",
      "Value of x to switch from cubic to linear interpolation",
-     &MRST::_xswitch, 0.8, 0.0, 1.0,
+     &MRST::_xswitch, 0.9, 0.0, 1.0,
      false, false, Interface::limited);
 
 }
@@ -428,14 +506,15 @@ void MRST::doinitrun() {
 #endif
 }
 
-void MRST::readSetup(istream &is) throw(SetupException) {
+void MRST::readSetup(istream &is) {
   _file = dynamic_cast<istringstream*>(&is)->str();
   initialize();
 }
 
 void MRST::initialize(bool reread) {
+  useMe();
   //  int i,n,m,k,l,j; // counters
-  double dx,dq,dtemp;
+  double dx,dq;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		  { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
 		  {-3, 0, 0, 3, 0, 0, 0, 0,-2, 0, 0,-1, 0, 0, 0, 0},
@@ -459,12 +538,6 @@ void MRST::initialize(bool reread) {
 
   double xxd,d1d2,cl[16],x[16],d1,d2,y[5],y1[5],y2[5],y12[5];
 
-  // Set xx and qq to the logs of their values. Makes entering below easier
-  if(!initialized) {
-    for(int n=1; n<=nx; n++) xx[n] = log10(xx[n]);
-    for(int n=1; n<=nq; n++) qq[n] = log10(qq[n]);
-  }
-
   if(reread) {
     ifstream datafile(_file.c_str());
     if(!datafile) throw Exception() << "Could not open file '" << _file 
@@ -487,7 +560,7 @@ void MRST::initialize(bool reread) {
 					      << Exception::runerror;
 	 for(int ii=1;ii<=np;++ii) {
 	   fdata[ii][nn][mm] = _inter==0 ? 0. :
-	     data[ii][nn][mm]/pow(1.-xxb[nn],n0[ii]);
+	     data[ii][nn][mm]/pow(1.-xx[nn],n0[ii]);
 	 }
        }
      }
@@ -497,7 +570,7 @@ void MRST::initialize(bool reread) {
 	 data[n][nx][mm]=0.0;
        }
      }
-  
+     double dtemp;
      datafile >> dtemp;
      if(!datafile.eof()) throw Exception() << "Error reading end of " << _file 
 					   << " too many data points in file" 
@@ -506,7 +579,6 @@ void MRST::initialize(bool reread) {
      datafile.close();
      // calculate the FORTRAN interpolation
      for(int jj=1;jj<=ntenth-1;++jj) {
-       if(!initialized) xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
        for(int ii=1;ii<=np;++ii) {
 	 if(ii==5||ii==7) continue;
 	 for(int kk=1;kk<=nq;++kk) {
@@ -527,20 +599,20 @@ void MRST::initialize(bool reread) {
   for (int i=1;i<=np;i++) {
     // Start by calculating the first x derivatives
     // along the first x value
-    dx=xx[2]-xx[1];
+    dx=lxx[2]-lxx[1];
     for (int m=1;m<=nq;m++)
       f1[i][1][m]=(data[i][2][m]-data[i][1][m])/dx;
     // The along the rest (up to the last)
     for (int k=2;k<nx;k++) {
       for (int m=1;m<=nq;m++) {
-	f1[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
+	f1[i][k][m]=polderivative(lxx[k-1],lxx[k],lxx[k+1],
 				  data[i][k-1][m],
 				  data[i][k][m],
 				  data[i][k+1][m]);
       }
     }
     // Then for the last column
-    dx=xx[nx]-xx[nx-1];
+    dx=lxx[nx]-lxx[nx-1];
     for (int m=1;m<=nq;m++)
       f1[i][nx][m]=(data[i][nx][m]-data[i][nx-1][m])/dx;
     
@@ -548,19 +620,19 @@ void MRST::initialize(bool reread) {
     if ((i!=5)&&(i!=7)) {
       // then calculate the qq derivatives
       // Along the first qq value
-      dq=qq[2]-qq[1];
+      dq=lqq[2]-lqq[1];
       for (int k=1;k<=nx;k++)
 	f2[i][k][1]=(data[i][k][2]-data[i][k][1])/dq;
       // The rest up to the last qq value
       for (int m=2;m<nq;m++) {
 	for (int k=1;k<=nx;k++)
-	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
+	  f2[i][k][m]=polderivative(lqq[m-1],lqq[m],lqq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
 				    data[i][k][m+1]);
       }
       // then for the last row
-      dq=qq[nq]-qq[nq-1];
+      dq=lqq[nq]-lqq[nq-1];
       for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
@@ -570,17 +642,17 @@ void MRST::initialize(bool reread) {
       
       // Start by calculating the first x derivatives
       // along the first x value
-      dx=xx[2]-xx[1];
+      dx=lxx[2]-lxx[1];
       for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
       for (int k=2;k<nx;k++) {
 	for (int m=1;m<=nq;m++)
-	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
+	  f12[i][k][m]=polderivative(lxx[k-1],lxx[k],lxx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
-      dx=xx[nx]-xx[nx-1];
+      dx=lxx[nx]-lxx[nx-1];
       for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
@@ -593,20 +665,20 @@ void MRST::initialize(bool reread) {
 
       // then calculate the qq derivatives 
       // Along the first qq value above the threshold (m=ncq0)
-      dq=qq[nqc0+1]-qq[nqc0];
+      dq=lqq[nqc0+1]-lqq[nqc0];
       for (int k=1;k<=nx;k++)
 	f2[i][k][nqc0]=(data[i][k][nqc0+1]-data[i][k][nqc0])/dq;
 
       // The rest up to the last qq value
       for (int m=nqc0+1;m<nq;m++) {
 	for (int k=1;k<=nx;k++)
-	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
+	  f2[i][k][m]=polderivative(lqq[m-1],lqq[m],lqq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
 				    data[i][k][m+1]);
       }
       // then for the last row
-      dq=qq[nq]-qq[nq-1];
+      dq=lqq[nq]-lqq[nq-1];
       for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
@@ -614,17 +686,17 @@ void MRST::initialize(bool reread) {
       // Calculate these as x-derivatives of the y-derivatives
       // ?? Could be improved by taking the average between dxdy and dydx ??
 
-      dx=xx[2]-xx[1];
+      dx=lxx[2]-lxx[1];
       for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
       for (int k=2;k<nx;k++) {
 	for (int m=1;m<=nq;m++)
-	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
+	  f12[i][k][m]=polderivative(lxx[k-1],lxx[k],lxx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
-      dx=xx[nx]-xx[nx-1];
+      dx=lxx[nx]-lxx[nx-1];
       for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
@@ -637,20 +709,20 @@ void MRST::initialize(bool reread) {
 
       // then calculate the qq derivatives
       // Along the first qq value above the threshold (m=nqb0)
-      dq=qq[nqb0+1]-qq[nqb0];
+      dq=lqq[nqb0+1]-lqq[nqb0];
       for (int k=1;k<=nx;k++)
 	f2[i][k][nqb0]=(data[i][k][nqb0+1]-data[i][k][nqb0])/dq;
 
       // The rest up to the last qq value
       for (int m=nqb0+1;m<nq;m++) {
 	for (int k=1;k<=nx;k++)
-	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
+	  f2[i][k][m]=polderivative(lqq[m-1],lqq[m],lqq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
 				    data[i][k][m+1]);
       }
       // then for the last row
-      dq=qq[nq]-qq[nq-1];
+      dq=lqq[nq]-lqq[nq-1];
       for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
@@ -658,17 +730,17 @@ void MRST::initialize(bool reread) {
       // Calculate these as x-derivatives of the y-derivatives
       // ?? Could be improved by taking the average between dxdy and dydx ??
 
-      dx=xx[2]-xx[1];
+      dx=lxx[2]-lxx[1];
       for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
       for (int k=2;k<nx;k++) {
 	for (int m=1;m<=nq;m++)
-	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
+	  f12[i][k][m]=polderivative(lxx[k-1],lxx[k],lxx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
-      dx=xx[nx]-xx[nx-1];
+      dx=lxx[nx]-lxx[nx-1];
       for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
@@ -677,8 +749,8 @@ void MRST::initialize(bool reread) {
     // Now calculate the coefficients c_ij
     for(int n=1;n<=nx-1;n++) {
       for(int m=1;m<=nq-1;m++) {
-	d1=xx[n+1]-xx[n];
-	d2=qq[m+1]-qq[m];
+	d1=lxx[n+1]-lxx[n];
+	d2=lqq[m+1]-lqq[m];
 	d1d2=d1*d2;
 	
 	// Iterate around the grid and store the values of f, f_x, f_y and f_xy
@@ -721,15 +793,23 @@ void MRST::initialize(bool reread) {
       } //m
     } //n
   } // i
-  if(!initialized) {
-    for(int jj=1;jj<=ntenth-1;++jj) {
-      xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
-    }
-  }
-  initialized = true;
 }
 
 double MRST::xx[] =
+  { 0.0, 1E-5, 2E-5, 4E-5, 6E-5, 8E-5, 1E-4, 2E-4, 4E-4, 6E-4, 8E-4,
+    1E-3, 2E-3, 4E-3, 6E-3, 8E-3, 1E-2, 1.4E-2, 2E-2, 3E-2, 4E-2, 6E-2, 8E-2,
+    .1, .125, 0.15, .175, .2, .225, 0.25, .275, .3, .325, 0.35, .375,
+    .4, .425, 0.45, .475, .5, .525, 0.55, .575, .6, .65, .7, .75, 
+    .8, .9, 1. };
+
+double MRST::lxx[] =
+  { 0.0, 1E-5, 2E-5, 4E-5, 6E-5, 8E-5, 1E-4, 2E-4, 4E-4, 6E-4, 8E-4,
+    1E-3, 2E-3, 4E-3, 6E-3, 8E-3, 1E-2, 1.4E-2, 2E-2, 3E-2, 4E-2, 6E-2, 8E-2,
+    .1, .125, 0.15, .175, .2, .225, 0.25, .275, .3, .325, 0.35, .375,
+    .4, .425, 0.45, .475, .5, .525, 0.55, .575, .6, .65, .7, .75, 
+    .8, .9, 1. };
+
+double MRST::lxxb[] =
   { 0.0, 1E-5, 2E-5, 4E-5, 6E-5, 8E-5, 1E-4, 2E-4, 4E-4, 6E-4, 8E-4,
     1E-3, 2E-3, 4E-3, 6E-3, 8E-3, 1E-2, 1.4E-2, 2E-2, 3E-2, 4E-2, 6E-2, 8E-2,
     .1, .125, 0.15, .175, .2, .225, 0.25, .275, .3, .325, 0.35, .375,
@@ -742,14 +822,7 @@ double MRST::qq[] =
     1E4, 1.8E4, 3.2E4, 5.6E4, 1E5, 1.8E5, 3.2E5, 5.6E5, 1E6, 1.8E6,
     3.2E6, 5.6E6, 1E7 };
 
-double MRST::xxb[] =
-  { 0.0, 1E-5, 2E-5, 4E-5, 6E-5, 8E-5, 1E-4, 2E-4, 4E-4, 6E-4, 8E-4,
-    1E-3, 2E-3, 4E-3, 6E-3, 8E-3, 1E-2, 1.4E-2, 2E-2, 3E-2, 4E-2, 6E-2, 8E-2,
-    .1, .125, 0.15, .175, .2, .225, 0.25, .275, .3, .325, 0.35, .375,
-    .4, .425, 0.45, .475, .5, .525, 0.55, .575, .6, .65, .7, .75, 
-    .8, .9, 1. };
-
-double MRST::qqb[] = 
+double MRST::lqq[] = 
   { 0.0, 1.25, 1.5, 2., 2.5, 3.2, 4., 5., 6.4, 8., 10., 12., 18., 26., 40., 
     64., 1E2, 1.6E2, 2.4E2, 4E2, 6.4E2, 1E3, 1.8E3, 3.2E3, 5.6E3,
     1E4, 1.8E4, 3.2E4, 5.6E4, 1E5, 1.8E5, 3.2E5, 5.6E5, 1E6, 1.8E6,

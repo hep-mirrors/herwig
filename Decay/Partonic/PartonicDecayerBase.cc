@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartonicDecayerBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -59,9 +59,6 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
     // form the clusters
     ClusterVector clusters = _clusterFinder->formClusters(currentlist);
     _clusterFinder->reduceToTwoComponents(clusters);
-    // perform colour reconnection if needed and then
-    // decay the clusters into one hadron
-    _colourReconnector->rearrange(*generator()->eventHandler(),clusters);
     tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
     bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
     // abandon child here so alwasy done
@@ -97,15 +94,15 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 }
 
 void PartonicDecayerBase::persistentOutput(PersistentOStream & os) const {
-  os << _partonSplitter << _clusterFinder << _colourReconnector
-     << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive
-     << _partontries << _inter;
+  os << _partonSplitter << _clusterFinder << _clusterFissioner
+    << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
+    << _inter;
 }
 
 void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
-  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
-     >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
-     >> _partontries >> _inter;
+  is >> _partonSplitter >> _clusterFinder >> _clusterFissioner
+    >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
+    >> _inter;
 }
 
 AbstractClassDescription<PartonicDecayerBase> 
@@ -128,12 +125,6 @@ void PartonicDecayerBase::Init() {
     interfaceClusterFinder("ClusterFinder", 
 		      "A reference to the ClusterFinder object", 
 		      &Herwig::PartonicDecayerBase::_clusterFinder,
-		      false, false, true, false);
-
-  static Reference<PartonicDecayerBase,ColourReconnector> 
-    interfaceColourReconnector("ColourReconnector", 
-		      "A reference to the ColourReconnector object", 
-		      &Herwig::PartonicDecayerBase::_colourReconnector,
 		      false, false, true, false);
 
   static Reference<PartonicDecayerBase,ClusterFissioner> 
@@ -203,31 +194,25 @@ bool PartonicDecayerBase::duplicateMode(const Particle & parent,
   bool found(false);
   for (unsigned ix = 0; ix < hadrons.size(); ++ix)
     hadronsb.insert(hadrons[ix]->dataPtr());
-
   // now check particle's decay modes 
-  tcPDPtr pdata(parent.dataPtr());
-  Selector<tDMPtr> modes = pdata->decaySelector();
-  Selector<tDMPtr>::const_iterator modeptr = modes.begin();
-  Selector<tDMPtr>::const_iterator end = modes.end();
-
-
+  Selector<tDMPtr>::const_iterator modeptr 
+    = parent.dataPtr()->decaySelector().begin();
+  Selector<tDMPtr>::const_iterator end     
+    = parent.dataPtr()->decaySelector().end();
   // check not a duplicate of a known mode
   for(;modeptr!=end;++modeptr) {
     tcDMPtr mode=(*modeptr).second;
     // check same number of products
-    if (mode->products().size() == hadronsb.size()) {
-      ParticleMSet::const_iterator dit;
-      cParticleMSet::const_iterator pit;
-      
-      for(dit=mode->products().begin(), pit=hadronsb.begin();
-	  dit!=mode->products().end(); ++dit,++pit) {
-	if((*dit)!=(*pit)) break;
-      }
-      if(dit == mode->products().end()) {
-	found = true;
-	break;
-      }
+    if(mode->products().size() != hadronsb.size()) continue;
+    ParticleMSet::const_iterator dit;
+    cParticleMSet::const_iterator pit;
+    for(dit=mode->products().begin(), pit=hadronsb.begin();
+	dit!=mode->products().end(); ++dit,++pit) {
+      if((*dit)!=(*pit)) break;
     }
+    if(dit != mode->products().end()) continue;
+    found = true;
+    break;
   }
   return found;
 }
@@ -236,21 +221,20 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
   // parameters
-  output << "set  " << fullName() << ":PartonSplitter " 
-	 << _partonSplitter->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterFinder " 
-	 << _clusterFinder->fullName() << " \n";
-  output << "set  " << fullName() << ":ColourReconnector " 
-	 << _colourReconnector->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterFissioner " 
-	 << _clusterFissioner->fullName() << " \n";
-  output << "set  " << fullName() << ":LightClusterDecayer " 
-	 << _lightClusterDecayer->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterDecayer " 
-	 << _clusterDecayer->fullName() << " \n";
-  output << "set  " << fullName() << ":Exclusive " <<  _exclusive<< " \n";
-  output << "set  " << fullName() << ":Intermediates " << _inter << " \n";
-  output << "set  " << fullName() << ":Partonic_Tries " << _partontries << " \n";
+  output << "newdef  " << name() << ":PartonSplitter " 
+	 << _partonSplitter->name() << " \n";
+  output << "newdef  " << name() << ":ClusterFinder " 
+	 << _clusterFinder->name() << " \n";
+  output << "newdef  " << name() << ":ClusterFissioner " 
+	 << _clusterFissioner->name() << " \n";
+  output << "newdef  " << name() << ":LightClusterDecayer " 
+	 << _lightClusterDecayer->name() << " \n";
+  output << "newdef  " << name() << ":ClusterDecayer " 
+	 << _clusterDecayer->name() << " \n";
+  output << "newdef  " << name() << ":Exclusive " <<  _exclusive<< " \n";
+  output << "newdef  " << name() << ":Intermediates " << _inter << " \n";
+  output << "newdef  " << name() << ":Partonic_Tries " << _partontries << " \n";
   // footer for MySQL
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

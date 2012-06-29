@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsMassGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -37,9 +37,14 @@ void SMHiggsMassGenerator::Init() {
     ("The SMHiggsMassGenerator class implements the mass distribution for the"
      " Higgs boson as in hep-ph/9505211.",
      "The Higgs mass was distributed as in \\cite{Seymour:1995qg}.",
-     "\\bibitem{Seymour:1995qg} M.~H.~Seymour,\n"
-     "Phys.\\ Lett.\\  B {\\bf 354} (1995) 409 [arXiv:hep-ph/9505211].\n"
-     "%%CITATION = PHLTA,B354,409;%%\n");
+     "%\\cite{Seymour:1995qg}\n"
+     "\\bibitem{Seymour:1995qg}\n"
+     "  M.~H.~Seymour,\n"
+     "  %``The Higgs boson line shape and perturbative unitarity,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 354}, 409 (1995)\n"
+     "  [arXiv:hep-ph/9505211].\n"
+     "  %%CITATION = PHLTA,B354,409;%%\n"
+     );
 
   static Switch<SMHiggsMassGenerator,unsigned int> interfaceHiggsShape
     ("HiggsShape",
@@ -62,18 +67,20 @@ bool SMHiggsMassGenerator::accept(const ParticleData & part) const {
   return GenericMassGenerator::accept(part);
 }
 
-void SMHiggsMassGenerator::doinit() throw(InitException) {
-  if(particle()->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(particle()->widthGenerator());
+void SMHiggsMassGenerator::doinit() {
+  if(particle()->massGenerator()==this) { 
+    if(particle()->widthGenerator()) {
+      _hwidth=dynamic_ptr_cast<GenericWidthGeneratorPtr>(particle()->widthGenerator());
+    }
+    if(!_hwidth) throw InitException() 
+		   << "Must be using the Herwig::GenericWidthGenerator in "
+		   << "SMHiggsMassGenerator::doinit()" << Exception::runerror;
   }
-  if(!_hwidth) throw InitException() 
-    << "Must be using the Herwig::SMHiggsWidthGenerator in "
-    << "SMHiggsMassGenerator::doinit()" << Exception::runerror;
   GenericMassGenerator::doinit();
 }
 
 void SMHiggsMassGenerator::dataBaseOutput(ofstream & output,bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << fullName() << ":BreitWignerShape "   << _shape << "\n";
+  output << "newdef " << fullName() << ":BreitWignerShape "   << _shape << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

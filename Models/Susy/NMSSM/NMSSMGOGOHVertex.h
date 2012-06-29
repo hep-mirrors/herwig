@@ -6,13 +6,12 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMGOGOHVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
  * Here is the documentation of the NMSSMGOGOHVertex class.
@@ -60,11 +59,9 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
-   * @param ioff An integer referring to which particle in the list is 
-   * offshell if applicable.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
-			   tcPDPtr part3,int ioff);
+			   tcPDPtr part3);
 
 protected:
 
@@ -74,13 +71,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -90,9 +87,8 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -219,7 +215,5 @@ struct ClassTraits<Herwig::NMSSMGOGOHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMGOGOHVertex.icc"
 
 #endif /* HERWIG_NMSSMGOGOHVertex_H */

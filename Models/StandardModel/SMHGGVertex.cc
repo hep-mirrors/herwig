@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHGGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,26 +17,49 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Looptools/clooptools.h"
 
 using namespace Herwig;
 using namespace ThePEG;  
 
 SMHGGVertex::SMHGGVertex()
-  :_couplast(0.),_q2last(0.*GeV2),_mw(),massopt(1),_minloop(6),
+  :_couplast(0.),_q2last(ZERO),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
-  //PDG codes for particles at vertices
-  vector<long> first(1,21),second(1,21),third(1,25);
-  setList(first,second,third);
+  orderInGs(2);
+  orderInGem(1);
 }
 
-void SMHGGVertex::doinit() throw(InitException) {
+void SMHGGVertex::doinit() {
+  //PDG codes for particles at vertices
+  addToList(21,21,25);
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if(!_theSM) 
     throw InitException();
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  orderInGs(2);
-  orderInGem(1);
   VVSLoopVertex::doinit();
+  // code to test the partial width
+//   Energy mh = getParticleData(25)->mass();
+//   Complex I(0.);
+//   for(long ix=int(_minloop);ix<=int(_maxloop);++ix) {
+//     tcPDPtr qrk = getParticleData(ix);
+//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     double lambda = sqr(mt/mh);
+//     Complex fl;
+//     if(lambda>=0.25) {
+//       fl = -2.*sqr(asin(0.5/sqrt(lambda)));
+//     }
+//     else {
+//       double etap = 0.5+sqrt(0.25-lambda);
+//       double etam = 0.5-sqrt(0.25-lambda);
+//       fl = 0.5*sqr(log(etap/etam))-0.5*sqr(Constants::pi)
+// 	-Complex(0.,1.)*Constants::pi*log(etap/etam);
+//     }
+//     I += 3.*(2.*lambda+lambda*(4.*lambda-1)*fl);
+//   }
+//   Energy width = sqr(weakCoupling(sqr(mh))*sqr(strongCoupling(sqr(mh))))/36./8.*sqr(mh/_mw)*mh
+//     /sqr(4.*sqr(Constants::pi))*std::norm(I)/Constants::pi;
+//   cerr << "testing anal " << width/GeV << "\n";
+  Looptools::ltexi();
 }
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
@@ -47,7 +70,6 @@ void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
 void SMHGGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> iunit(_mw,GeV) >> massopt 
      >> _minloop >> _maxloop >> _CoefRepresentation;
-  setCoefScheme(_CoefRepresentation);
 }
 
 ClassDescription<SMHGGVertex> SMHGGVertex::initSMHGGVertex;
@@ -58,13 +80,13 @@ void SMHGGVertex::Init() {
   static ClassDocumentation<SMHGGVertex> documentation
     ("This class implements the h->g,g vertex");
 
-  static Parameter<SMHGGVertex,unsigned int> interfaceMinQuarkInLoop
+  static Parameter<SMHGGVertex,int> interfaceMinQuarkInLoop
     ("MinQuarkInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &SMHGGVertex::_minloop, 6, 1, 6,
      false, false, Interface::limited);
 
-  static Parameter<SMHGGVertex,unsigned int> interfaceMaxQuarkInLoop
+  static Parameter<SMHGGVertex,int> interfaceMaxQuarkInLoop
     ("MaxQuarkInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &SMHGGVertex::_maxloop, 6, 1, 6,
@@ -84,6 +106,11 @@ void SMHGGVertex::Init() {
      "RunningMasses",
      "running quark masses are taken in the loop",
      2);
+  static SwitchOption interfaceInfiniteTopMass
+    (interfaceMassOption,
+     "InfiniteTopMass",
+     "the loop consists of an infinitely massive top quark",
+     3);
 
   static Switch<SMHGGVertex,unsigned int> interfaceScheme
     ("CoefficientScheme",
@@ -102,29 +129,39 @@ void SMHGGVertex::Init() {
 }
 
 void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr part1) {
-  if (part1->id() != ParticleID::h0 && part2->id() != ParticleID::g &&
-      part3->id() != ParticleID::g ) 
-    throw HelicityConsistencyError() 
-      << "SMHGGVertex::setCoupling() - The particle content of this vertex "
-      << "is incorrect: " << part1->id() << " " << part2->id() << " " << part3->id() 
-      << Exception::runerror;
-  unsigned int Qminloop = _minloop;
-  unsigned int Qmaxloop = _maxloop;
+  assert(part1 && part2 && part3);
+  assert(part1->id() == ParticleID::h0 &&
+	 part2->id() == ParticleID::g  && part3->id() == ParticleID::g );
+  int Qminloop = _minloop;
+  int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
     Qmaxloop=_minloop;
     Qminloop=_maxloop;
   }
-  switch (_CoefRepresentation) {
-  case 1: {
+  if(massopt==3) {
     if(q2 != _q2last) {
       double g   = weakCoupling(q2);
       double gs2 = sqr(strongCoupling(q2));
       _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);
       _q2last = q2;
     }
-    setNorm(_couplast);
+    norm(_couplast);
+    Complex loop(2./3.);
+    a00( loop);    a11(0.0);   a12(0.0);
+    a21(-loop);    a22(0.0);   aEp(0.0);
+    return;
+  }
+  switch (_CoefRepresentation) {
+  case 1: {
+    if(q2 != _q2last||_couplast==0.) {
+      double g   = weakCoupling(q2);
+      double gs2 = sqr(strongCoupling(q2));
+      _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);
+      _q2last = q2;
+    }
+    norm(_couplast);
     Complex loop(0.);
-    for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
+    for ( int i = Qminloop; i <= Qmaxloop; ++i ) {
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
       loop += Af(sqr(mass)/q2);
@@ -139,15 +176,15 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   case 2: {
     if (q2 != _q2last) {
-      double g = weakCoupling(q2);
-      double gs2 = sqr(strongCoupling(q2));
-      _couplast = gs2*g/Constants::pi/sqrt(0.5*Constants::pi);
+      Looptools::clearcache();
+      _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
+      _q2last = q2;
     }
-    setNorm(_couplast);
-    unsigned int delta = Qmaxloop - Qminloop + 1;
+    norm(_couplast);
+    int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
-    masses.resize(delta,0.*GeV);
-    for (unsigned int i = 0; i < delta; ++i) {
+    masses.resize(delta,ZERO);
+    for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
       masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
@@ -166,25 +203,18 @@ Complex SMHGGVertex::Af(double tau) const {
 
 Complex SMHGGVertex::W2(double lambda) const {
   double pi = Constants::pi;
-
   if (0.0 == lambda)     return 0.0;
   else if (lambda < 0.0) return 4.*sqr(asinh(0.5*sqrt(-1./lambda)));
 
   double root(0.5*sqrt(1./lambda));
   Complex ac(0.);
+    // formulae from NPB297,221
   if(root < 1.) {
     ac = -sqr(asin(root));
-  } else {
-// formulae from NPB297,221
+  } 
+  else {
     double ex = acosh(root);
     ac = sqr(ex) - 0.25*sqr(pi) - pi*ex*Complex(0.,1.);
-/*
-// formulae from Higgs hunter's guide (gives the same result).
-    double pl = .5 + .5*sqrt(1. - 4.*lambda);
-    double ms = .5 - .5*sqrt(1. - 4.*lambda);
-    double lg = 0.5*log(pl/ms);
-    ac = sqr(lg) - 0.25*sqr(pi) - pi*lg*Complex(0.,1.);
-*/
   }
   return 4.*ac;
 }

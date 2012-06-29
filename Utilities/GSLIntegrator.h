@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GSLIntegrator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -46,7 +46,7 @@ public:
   /**
    * Default Constructor uses values in GSL manual as parameters
    **/
-  GSLIntegrator() : _abserr(1.0E-35), _relerr(5.E-5), _nbins(1000) {}
+  GSLIntegrator() : _abserr(1.0E-35), _relerr(1.0E-3), _nbins(1000) {}
   
   /**
    * Specify all the parameters.
@@ -71,6 +71,22 @@ public:
 	const typename T::ArgType lower,
 	const typename T::ArgType upper) const;
 
+  /**
+   * The value of the integral
+   * @param function The integrand class that defines operator()
+   * @param lower The lower limit of integration.
+   * @param upper The upper limit of integration.
+   * @param error Returns the estimated error of the integral
+   */
+  template <class T>
+  inline typename BinaryOpTraits<typename T::ValType,
+				 typename T::ArgType>::MulT
+  value(const T & function, 
+	const typename T::ArgType lower,
+	const typename T::ArgType upper,
+	typename BinaryOpTraits<typename T::ValType,
+	typename T::ArgType>::MulT & error) const;
+
 private:
 
   /**
@@ -82,9 +98,14 @@ private:
 private:
 
   /**
-   * The parameters controlling the error.
+   * The parameters controlling the absolute error.
    */
-  double _abserr,_relerr;
+  double _abserr;
+
+  /**
+   * The parameters controlling the relative error.
+   */
+  double _relerr;
 
   /**
    * The maximum number of intervals to use.

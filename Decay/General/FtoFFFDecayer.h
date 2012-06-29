@@ -14,7 +14,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the FtoFFFDecayer class.
+ * The FtoFFFDecayer class provides the general matrix elements for the
+ * decay of a (anti)fermion to three (anti)fermions.
  *
  * @see \ref FtoFFFDecayerInterfaces "The interfaces"
  * defined for FtoFFFDecayer.
@@ -25,14 +26,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -48,8 +49,7 @@ public:
   /**
    * Function used to write out object persistently.
    * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
+   */  void persistentOutput(PersistentOStream & os) const;
 
   /**
    * Function used to read in object persistently.
@@ -93,7 +93,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -127,6 +127,20 @@ private:
    */
   vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > _ten;
 
+  /**
+   *  Spin density matrix 
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Spinors for incoming particle
+   */
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _inwave;
+
+  /**
+   *  Spinors for outgoing particles
+   */
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outwave[3];
 };
 
 }

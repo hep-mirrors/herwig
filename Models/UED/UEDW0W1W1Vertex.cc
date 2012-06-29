@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDW0W1W1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,47 +23,29 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 				     theSinThetaOne(0.), theCosThetaOne(0.),
 				     theq2last(), theElast(0.), theCouplast(0.),
 				     theSMlast(0), theKKlast(0) {
-  vector<long> first(6), second(6), third(6);
-  first[0] = 22;
-  second[0] = -5100024;
-  third[0] = 5100024;
-
-  first[1] = 24;
-  second[1] = -5100024;
-  third[1] = 5100022;
-
-  first[2] = -24;
-  second[2] = 5100024;
-  third[2] = 5100022;
-
-  first[3] = 24;
-  second[3] = -5100024;
-  third[3] = 5100023;
-
-  first[4] = -24;
-  second[4] = 5100024;
-  third[4] = 5100023;
-
-  first[5] = 23;
-  second[5] = -5100024;
-  third[5] = 5100024;
-
-  setList(first, second, third);
+  orderInGs(0);
+  orderInGem(1);
 }
 
-void UEDW0W1W1Vertex::doinit() throw(InitException) {
+void UEDW0W1W1Vertex::doinit() {
+  addToList( 22, -5100024, 5100024);
+  addToList( 23, -5100024, 5100024);
+
+  addToList( 24, -5100024, 5100022);
+  addToList( 24, -5100024, 5100023);
+
+  addToList(-24,  5100024, 5100022);
+  addToList(-24,  5100024, 5100023);
   VVVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)
     throw InitException() << "UEDW0W1W1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theSinW = sqrt(model->sin2ThetaW());
+  theSinW = sqrt(sin2ThetaW());
   theCosW = sqrt( 1. - sqr(theSinW) );
   theSinThetaOne = model->sinThetaOne();
   theCosThetaOne = sqrt( 1. - sqr(theSinThetaOne));
-  orderInGs(0);
-  orderInGem(1);
 }
 
 void UEDW0W1W1Vertex::persistentOutput(PersistentOStream & os) const {
@@ -84,35 +66,54 @@ void UEDW0W1W1Vertex::Init() {
 
 }
 
+/// \todo look again
 void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3,Direction,Direction,Direction) {
+				  tcPDPtr part3) {
   long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())), 
     smID(0), kkparticle(0);
-  double perm(-1.);
-  if( id1 == 22 || id1 == 23 || id1 == 24 ) {
-    if( part1->id() < 0 ) perm = 1.;
+  double perm(1.);
+  if( id1 == 22 || id1 == 23) {
+    smID = id1;
+    kkparticle = id2;
+    if(part2->id()>0) perm=-1.;
+  }
+  else if(id2 == 22 || id2 == 23) {
+    smID = id2;
+    kkparticle = id1;
+    if(part1->id()<0) perm=-1.;
+  }
+  else if(id3 == 22 || id3 == 23) {
+    smID = id3;
+    kkparticle = id1;
+    if(part1->id()>0) perm=-1.;
+  }
+  else if(id1 == 24 ) {
+    if( part1->id() == 24 ) perm = -1.;
     smID = id1;
     kkparticle = (id2 == 5100024) ? id3 : id2;
+    if(id3 == 5100024) perm *=-1.;
   }
-  else if( id2 == 22 || id2 == 23 || id2 == 24 ) {
-    if( part2->id() < 0 ) perm = 1.;
+  else if( id2 == 24 ) {
+    if( part2->id() == 24 ) perm = -1.;
     smID = id2;
     kkparticle = (id1 == 5100024) ? id3 : id1;
+    if(id1 == 5100024) perm *=-1.;
   }
-  else if( id3 == 22 || id3 == 23 || id3 == 24 ) {
-    if( part3->id() < 0 ) perm = 1.;
+  else if( id3 == 24 ) {
+    if( part3->id() == 24 ) perm = -1.;
     smID = id3;
     kkparticle = (id1 == 5100024) ? id2 : id1;
+    if(id2 == 5100024) perm *=-1.;
   }
   else {
     throw HelicityLogicalError()
       << "UEDW0W1W1Vertex::setCoupling() - There is no SM gauge boson in "
       << "this vertex. " << id1 << " " << id2 << " " << id3 
       << Exception::warning; 
-    setNorm(0.);
+    norm(0.);
     return;
   }
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theElast == 0.) {
     theq2last = q2;
     theElast = electroMagneticCoupling(q2);
   }
@@ -131,5 +132,5 @@ void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 	theCouplast = theSinThetaOne/theSinW;
     }
   }
-  setNorm(perm*theElast*theCouplast);
+  norm(perm*theElast*theCouplast);
 }

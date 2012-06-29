@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WeakPartonicDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -136,10 +136,11 @@ protected:
   /**
    *  Compute \f$\rho\f$ matrix for tau decay in three body case
    * @param dec ParticleData object of decaying quark
+   * @param pdec The momentum of the decaying particle
    * @param partons The partons produced
    */
   void threeBodyMatrixElement(tcPDPtr dec,Lorentz5Momentum & pdec,
-				    ParticleVector& partons) const;
+			      ParticleVector& partons) const;
 
   /**
    *  Four body matrix element for weak decay including an extra gluon

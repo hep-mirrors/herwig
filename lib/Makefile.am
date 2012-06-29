@@ -1,15 +1,11 @@
-## ugly hack to get linking done by CXX
-LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
-        $(AM_LDFLAGS) $(LDFLAGS) -o $@
-
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
-Herwig_la_LDFLAGS = -module -version-info 1:0:0
-Herwig_la_LDFLAGS += $(THEPEGLDFLAGS)
+Herwig_la_LIBTOOLFLAGS = --tag=CXX
+Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:0:0
+Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
-$(top_builddir)/PDF/libHwPDF.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
 $(top_builddir)/Decay/Radiation/libHwDecRad.la \
@@ -19,12 +15,9 @@ $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
+$(top_builddir)/Looptools/libHwLooptools.la \
+$(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
-
-if WANT_LOOPTOOLS
-Herwig_la_LIBADD += $(top_builddir)/Looptools/libHwLooptoolsXFC.la
-Herwig_la_LDFLAGS += $(FCLIBS)
-endif
 
 all-local: done-all-links
 

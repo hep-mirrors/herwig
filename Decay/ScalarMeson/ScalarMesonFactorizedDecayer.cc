@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ScalarMesonFactorizedDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,7 +28,27 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
+
+ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer() 
+// default values of the couplings (taken from ZPC34, 103)
+  : _a1b(1.10), _a2b(-0.24), _a1c(1.30), _a2c(-0.55) { 
+  // intermediates
+  generateIntermediates(true);
+}
+
+void ScalarMesonFactorizedDecayer::rebind(const TranslationMap & trans)
+  {
+  _ckm = trans.translate(_ckm);
+  DecayIntegrator::rebind(trans);
+}
+
+IVector ScalarMesonFactorizedDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  ret.push_back(_ckm);
+  return ret;
+}
+
+void ScalarMesonFactorizedDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the ckm object
   _ckm=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
@@ -70,7 +90,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	  // get the particles from the current
 	  _current[icurr]->decayModeInfo(iy,iq,ia);
 	  ptemp=_current[icurr]->particles(Wcharge,iy,iq,ia);
-	  minb=0.*MeV;
+	  minb=ZERO;
 	  for(iz=0;iz<ptemp.size();++iz) {
 	    extpart.push_back(ptemp[iz]);
 	    minb+=ptemp[iz]->massMin();
@@ -91,7 +111,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	    extpart.resize(2);
 	    // get the particles from the current
 	    ptemp=_current[icurr]->particles(Wcharge,iy,-ia,-iq);
-	    minb=0.*MeV;
+	    minb=ZERO;
 	    for(iz=0;iz<ptemp.size();++iz) {
 	      extpart.push_back(ptemp[iz]);
 	      minb+=ptemp[iz]->massMin();
@@ -124,7 +144,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
       if(particles[ix].empty()) break;
       findModes(ix,particles,modeloc,modecc);
       // if more than three particles only allow one diagram
-      if(particles[ix].size()>3&&modeloc.size()!=0){break;}
+      if ( particles[ix].size()>3 && !modeloc.empty() ) break;
       // create the mode and set the particles as for the first instance
       mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
       channel = new_ptr(DecayPhaseSpaceChannel(mode));
@@ -375,7 +395,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
     for(unsigned int ix=0;ix<children.size();++ix) 
       mode += children[ix]->PDGName() +",";
     throw DecayIntegratorError() << "Unable to find the mode " << mode << " in " 
-				 << fullName() 
+				 << name() 
 				 << " ScalarMesonFactorizedDecayer::decay()" 
 				 << Exception::abortnow;
   }
@@ -384,7 +404,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _ckm << ounit(_GF,1/GeV2)
+  os << _current << _form << _ckm 
      << _a1b << _a2b << _a1c << _a2c 
      << _currentmapA << _currentmapB 
      << _formmapA << _formmapB << _formpart << _wgtloc 
@@ -392,7 +412,7 @@ void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) cons
 }
 
 void ScalarMesonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _ckm >> iunit(_GF ,1/GeV2)
+  is >> _current >> _form >> _ckm 
      >> _a1b >> _a2b >> _a1c >> _a2c 
      >> _currentmapA >> _currentmapB 
      >> _formmapA >> _formmapB >> _formpart >> _wgtloc
@@ -418,13 +438,6 @@ void ScalarMesonFactorizedDecayer::Init() {
     ("FormFactors",
      "A vector of references to the form-factors",
      &ScalarMesonFactorizedDecayer::_form, -1, false, false, true, false, false);
-
-  static Parameter<ScalarMesonFactorizedDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &ScalarMesonFactorizedDecayer::_GF, 
-     1./GeV2, 1.16639E-5/GeV2, 0./GeV2, 1.0e-4/GeV2,
-     false, false, false);
 
   static Parameter<ScalarMesonFactorizedDecayer,double> interfacea1Bottom
     ("a1Bottom",
@@ -469,44 +482,69 @@ void ScalarMesonFactorizedDecayer::Init() {
      0, 0, 0, 0., 1., false, false, true);
 }
  
-double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
+double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
-					 const ParticleVector & decay) const {
-  // find the mode
-  unsigned int mode(imode()),ix,iy,chel,fhel;
-  int id0(part.id()),id1;
-  Complex ii(0.,1.);
-  // workaround for gcc 3.2.3 bug
-  // spin info for the decaying particle
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&part),incoming,true,vertex);
-  tPPtr mytempPart = const_ptr_cast<tPPtr>(&part);
-  ScalarWaveFunction(mytempPart,incoming,true,vertex);
-  vector<unsigned int> ihel(decay.size());
-  // get the wavefunctions of the decay products
-  vector<vector<LorentzPolarizationVector> > vecwave(decay.size());
-  vector<vector<LorentzTensor<double> > > tenwave(decay.size());
-  for(ix=0;ix<decay.size();++ix) {
-    iy=decay[ix]->dataPtr()->iSpin();
-    // workaround for gcc 3.2.3 bug
-    //ALB if(iy==1){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    if(iy==1){PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-    else if(iy==3) {
-      //ALB {VectorWaveFunction(vecwave[ix],decay[ix],outgoing,true,false,vertex);}
-      vector<LorentzPolarizationVector> mytempLPV ; 
-      VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,false,vertex);
-      vecwave[ix]=mytempLPV ;
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  // initialisation
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+    _vectors.resize(decay.size());
+    _tensors.resize(decay.size());
+    // create the matrix element
+    vector<PDT::Spin> spin;
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      spin.push_back(decay[ix]->dataPtr()->iSpin());
+    ME(DecayMatrixElement(PDT::Spin0,spin));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					  incoming,true);
+    // get the wavefunctions of the decay products
+    for(unsigned int ix=0;ix<decay.size();++ix) {
+      switch(decay[ix]->dataPtr()->iSpin()) {
+      case 1:
+	ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+	break;
+      case 3:
+	VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],outgoing,
+					      true,false);
+	break;
+      case 5:
+	TensorWaveFunction::constructSpinInfo(_tensors[ix],decay[ix],outgoing,
+					      true,false);
+	break;
+      default:
+	assert(false);
+      }
     }
-    else if(iy==5) {
-      //ALB {TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
-      vector<LorentzTensor<double> > mytempLT;
-      TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);
-      tenwave[ix]=mytempLT;
+    return 0.;
+  }
+  // get the wavefunctions of the decay products
+  for(unsigned int ix=0;ix<decay.size();++ix) {
+    switch(decay[ix]->dataPtr()->iSpin()) {
+    case 1:
+      break;
+    case 3:
+      VectorWaveFunction::
+	calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,false);
+      break;
+    case 5:
+      TensorWaveFunction::
+	calculateWaveFunctions(_tensors[ix],decay[ix],outgoing,false);
+      break;
+    default:
+      assert(false);
     }
   }
-  // create the matrix element
-  vector<PDT::Spin> spin;
-  for(ix=0;ix<decay.size();++ix){spin.push_back(decay[ix]->dataPtr()->iSpin());}
-  DecayMatrixElement newME(PDT::Spin0,spin);
+  ME().zero();
+  // find the mode
+  unsigned int mode(imode()),chel,fhel;
+  int id0(part.id()),id1;
+  Complex ii(0.,1.);
+  vector<unsigned int> ihel(decay.size());
   // loop over the different diagrams
   vector<LorentzPolarizationVectorE> form;
   Complex fp,f0,A0,A1,A2,A3,V,k;
@@ -542,14 +580,14 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       if(cc){V=-V;}
       A3 = 0.5/MV*(msum*A1-mdiff*A2);
       // compute the hadron currents
-      for(ix=0;ix<3;++ix) {
+      for(unsigned int ix=0;ix<3;++ix) {
 	// dot product
-	complex<Energy> dot = vecwave[_formpart[mode][iy]][ix]*part.momentum();
+	complex<Energy> dot = _vectors[_formpart[mode][iy]][ix]*part.momentum();
 	// current
-	form.push_back(-ii*msum*A1*vecwave[_formpart[mode][iy]][ix]
+	form.push_back(-ii*msum*A1*_vectors[_formpart[mode][iy]][ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*epsilon(vecwave[_formpart[mode][iy]][ix],
+		       +2.*V/msum*epsilon(_vectors[_formpart[mode][iy]][ix],
 					  part.momentum(),
 					  decay[_formpart[mode][iy]]->momentum())); 
       }
@@ -559,8 +597,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 							 id0,id1,MP,MV,h,k,bp,bm);
       if(cc){h=-h;}
       // compute the hadron currents
-      for(ix=0;ix<5;++ix) {
-	dotv = tenwave[_formpart[mode][iy]][ix]*part.momentum();
+      for(unsigned int ix=0;ix<5;++ix) {
+	dotv = _tensors[_formpart[mode][iy]][ix]*part.momentum();
 	complex<Energy2> dot = dotv*part.momentum();
 	form.push_back(ii*h*epsilon(dotv,sum,q)-k*dotv
 		       -bp*dot*sum-bm*dot*q);
@@ -568,9 +606,9 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
     }
     // find the particles for the current
     cpart.clear();
-    for(ix=0;ix<decay.size();++ix)
+    for(unsigned int ix=0;ix<decay.size();++ix)
       {if(ix!=_formpart[mode][iy]){cpart.push_back(decay[ix]);}}
-    ix=decay.size();
+    unsigned int ix=decay.size();
     vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
     int itemp(1);
     do {
@@ -586,8 +624,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       constants[_formpart[mode][iy]]=constants[_formpart[mode][iy]+1];
     // calculate the current
     vector<LorentzPolarizationVectorE>
-      curr=_current[_currentmapA[mode][iy]]->current(vertex,_currentmapB[mode][iy],ichan,
-						     scale,cpart);
+      curr=_current[_currentmapA[mode][iy]]->
+      current(_currentmapB[mode][iy],ichan,scale,cpart,meopt);
     pre = (pow(part.mass()/scale,int(cpart.size()-2)));
     // loop over the helicities to calculate the matrix element
     ihel[0]=0;
@@ -598,15 +636,13 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       }
       for(fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])*_GF;
+	ME()(ihel) +=pre*_CKMfact[mode][iy]*
+	  form[fhel].dot(curr[chel])*SM().fermiConstant();
       }
     }
   }
-  // store the matrix element
-  ME(newME);
   // perform the contraction
-  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
-  return 0.5*(newME.contract(rhoin)).real();
+  return 0.5*(ME().contract(_rho)).real();
 }
   
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
@@ -680,32 +716,32 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "    << _GF*GeV2 << "\n";
-  output << "set " << fullName() << ":a1Bottom "  << _a1b << "\n";
-  output << "set " << fullName() << ":a2Bottom "  << _a2b << "\n";
-  output << "set " << fullName() << ":a1Charm "   << _a1c << "\n";
-  output << "set " << fullName() << ":a2Charm "   << _a2c << "\n";
+  output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
+  output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
+  output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";
+  output << "newdef " << name() << ":a2Charm "   << _a2c << "\n";
   for(ix=0;ix<_current.size();++ix) {
     _current[ix]->dataBaseOutput(output,false,true);
-    output << "insert " << fullName() << ":Currents " << ix << " " 
-	   << _current[ix]->fullName() << " \n";
+    output << "insert " << name() << ":Currents " << ix << " " 
+	   << _current[ix]->name() << " \n";
   }
   for(ix=0;ix<_form.size();++ix) {
     _form[ix]->dataBaseOutput(output,false,true);
-    output << "insert " << fullName() << ":FormFactors " << ix << " " 
-	   << _form[ix]->fullName() << " \n";
+    output << "insert " << name() << ":FormFactors " << ix << " " 
+	   << _form[ix]->name() << " \n";
   }
   for(ix=0;ix<_wgtloc.size();++ix) {
-    output << "insert " << fullName() << ":WeightLocation " << ix << " " 
+    output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
   }
   for(ix=0;ix<_wgtmax.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight "  << ix << " " 
+    output << "insert " << name() << ":MaximumWeight "  << ix << " " 
 	   << _wgtmax[ix] << "\n";
   }
   for(ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights "        << ix << " " 
+    output << "insert " << name() << ":Weights "        << ix << " " 
 	   << _weights[ix] << "\n";
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

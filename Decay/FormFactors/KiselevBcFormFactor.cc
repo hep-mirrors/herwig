@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KiselevBcFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,11 +18,11 @@
 
 using namespace Herwig;
 
-inline KiselevBcFormFactor::KiselevBcFormFactor() :
-  _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,0./GeV),
-  _F0A (16,0.*GeV), _FpA (16,0./GeV), _FmA (16,0./GeV),
-  _Mfp (16,0.*GeV), _Mfm (16,0.*GeV), _MFV (16,0.*GeV),
-  _MF0A(16,0.*GeV), _MFpA(16,0.*GeV), _MFmA(16,0.*GeV) {
+KiselevBcFormFactor::KiselevBcFormFactor() :
+  _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,ZERO),
+  _F0A (16,ZERO), _FpA (16,ZERO), _FmA (16,ZERO),
+  _Mfp (16,ZERO), _Mfm (16,ZERO), _MFV (16,ZERO),
+  _MF0A(16,ZERO), _MFpA(16,ZERO), _MFmA(16,ZERO) {
   // B_c to B_s
   addFormFactor(541,531,0,-5,4,3);
   _fp[0] =   1.30    ;_Mfp[0] =   1.8*GeV;
@@ -99,7 +99,7 @@ inline KiselevBcFormFactor::KiselevBcFormFactor() :
   initialModes(numberOfFactors());
 }
 
-void KiselevBcFormFactor::doinit() throw(InitException) {
+void KiselevBcFormFactor::doinit() {
   ScalarFormFactor::doinit();
   unsigned int isize(numberOfFactors());
   if(isize!=_fp.size() ||isize!=_fm.size()  ||isize!=_FV.size()  ||isize!=_F0A.size()||
@@ -150,61 +150,61 @@ void KiselevBcFormFactor::Init() {
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFV
     ("FV",
      "The value of the F_V form factor at q^2=0",
-     &KiselevBcFormFactor::_FV, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FV, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceF0A
     ("F0A",
      "The value of the F_0^A form factor at q^2=0",
-     &KiselevBcFormFactor::_F0A, 1.*GeV, -1, 0.*GeV, -10.*GeV, 10.*GeV,
+     &KiselevBcFormFactor::_F0A, 1.*GeV, -1, ZERO, -10.*GeV, 10.*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFpA
     ("FplusA",
      "The value of the F_+^A form factor at q^2=0",
-     &KiselevBcFormFactor::_FpA, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FpA, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFmA
     ("FminusA",
      "The value of the F_-^A form factor at q^2=0",
-     &KiselevBcFormFactor::_FmA, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FmA, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFplus
     ("MpoleFplus",
      "The pole mass for the f_+ form factor",
-     &KiselevBcFormFactor::_Mfp, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_Mfp, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFminus
     ("MpoleFminus",
      "The pole mass for the f_- form factor",
-     &KiselevBcFormFactor::_Mfm, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_Mfm, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFV
     ("MpoleFV",
      "The pole mass for the f_V form factor",
-     &KiselevBcFormFactor::_MFV, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFV, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleF0A
     ("MpoleF0A",
      "The pole mass for the f_0^A form factor",
-     &KiselevBcFormFactor::_MF0A, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MF0A, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFpA
     ("MpoleFplusA",
      "The pole mass for the f_+^A form factor",
-     &KiselevBcFormFactor::_MFpA, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFpA, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFmA
     ("MpoleFminusA",
      "The pole mass for the f_-^A form factor",
-     &KiselevBcFormFactor::_MFmA, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFmA, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 }
 
@@ -223,13 +223,13 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   useMe();
   InvEnergy fv,fp,fm;
   Energy f0;
-  if(_MFV[iloc]>0*MeV)  fv = _FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);
+  if(_MFV[iloc]>ZERO)  fv = _FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);
   else                  fv = _FV[iloc];
-  if(_MFmA[iloc]>0*MeV) fm = _FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);
+  if(_MFmA[iloc]>ZERO) fm = _FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);
   else                  fm = _FmA[iloc];
-  if(_MFpA[iloc]>0*MeV) fp = _FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);
+  if(_MFpA[iloc]>ZERO) fp = _FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);
   else                  fp = _FpA[iloc];
-  if(_MF0A[iloc]>0*MeV) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
+  if(_MF0A[iloc]>ZERO) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
   else                  f0 = _F0A[iloc];
   Energy msum(m0+m1);
   V  = fv*msum;
@@ -241,58 +241,58 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
 void KiselevBcFormFactor::dataBaseOutput(ofstream & output,
 					 bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::KiselevBcFormFactor " << fullName() << " \n";
+  if(create) output << "create Herwig::KiselevBcFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":Fplus "  << ix << "  " 
+      output << "newdef " << name() << ":Fplus "  << ix << "  " 
 	     << _fp[ix]  << "\n";
-      output << "set " << fullName() << ":Fminus "  << ix << "  " 
+      output << "newdef " << name() << ":Fminus "  << ix << "  " 
 	     << _fm[ix]  << "\n";
-      output << "set " << fullName() << ":FV "  << ix << "  " 
+      output << "newdef " << name() << ":FV "  << ix << "  " 
 	     << _FV[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":F0A "  << ix << "  " 
+      output << "newdef " << name() << ":F0A "  << ix << "  " 
 	     << _F0A[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":FplusA "  << ix << "  " 
+      output << "newdef " << name() << ":FplusA "  << ix << "  " 
 	     << _FpA[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":FminusA "  << ix << "  " 
+      output << "newdef " << name() << ":FminusA "  << ix << "  " 
 	     << _FmA[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFplus "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFplus "  << ix << "  " 
 	     << _Mfp[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFminus "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFminus "  << ix << "  " 
 	     << _Mfm[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFV "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFV "  << ix << "  " 
 	     << _MFV[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleF0A "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleF0A "  << ix << "  " 
 	     << _MF0A[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFplusA "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFplusA "  << ix << "  " 
 	     << _MFpA[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFminusA "  << ix << "  " 
+      output << "newdef " << name() << ":MpoleFminusA "  << ix << "  " 
 	     << _MFmA[ix]/GeV  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Fplus "  << ix << "  " 
+      output << "insert " << name() << ":Fplus "  << ix << "  " 
 	     << _fp[ix]  << "\n";
-      output << "insert " << fullName() << ":Fminus "  << ix << "  " 
+      output << "insert " << name() << ":Fminus "  << ix << "  " 
 	     << _fm[ix]  << "\n";
-      output << "insert " << fullName() << ":FV "  << ix << "  " 
+      output << "insert " << name() << ":FV "  << ix << "  " 
 	     << _FV[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":F0A "  << ix << "  " 
+      output << "insert " << name() << ":F0A "  << ix << "  " 
 	     << _F0A[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":FplusA "  << ix << "  " 
+      output << "insert " << name() << ":FplusA "  << ix << "  " 
 	     << _FpA[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":FminusA "  << ix << "  " 
+      output << "insert " << name() << ":FminusA "  << ix << "  " 
 	     << _FmA[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFplus "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFplus "  << ix << "  " 
 	     << _Mfp[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFminus "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFminus "  << ix << "  " 
 	     << _Mfm[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFV "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFV "  << ix << "  " 
 	     << _MFV[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleF0A "  << ix << "  " 
+      output << "insert " << name() << ":MpoleF0A "  << ix << "  " 
 	     << _MF0A[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFplusA "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFplusA "  << ix << "  " 
 	     << _MFpA[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFminusA "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFminusA "  << ix << "  " 
 	     << _MFmA[ix]/GeV  << "\n";
     }
   }

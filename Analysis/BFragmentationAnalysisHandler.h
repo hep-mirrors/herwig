@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BFragmentationAnalysisHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,7 +21,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The BFragmentationAnalysisHandler class is designed to compare
  * the fragmentation function for weakly decaying B hadrons with data
  * from SLD and ALEPH.
@@ -32,6 +32,11 @@ using namespace ThePEG;
 class BFragmentationAnalysisHandler: public AnalysisHandler {
 
 public:
+
+  /**
+   * The default constructor.
+   */
+  BFragmentationAnalysisHandler() : _emax() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -58,20 +63,16 @@ public:
    *  Identifies which step(2) final state particles originate
    *  from the b/bbar...
    */
-  void analyze_bquarks(ParticleSet);
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
+  void analyze_bquarks(ParticleSet, double);
 
   /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
+   * @param weight The weight for the event
    */
-  virtual void analyze(tPPtr particle);
+  virtual void analyze(tPPtr particle, double weight);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -92,13 +93,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -158,11 +159,6 @@ private:
    *  Centre-of-mass energy of the collision
    */
   Energy _emax;
-
-  /**
-   *  The weight for the event
-   */
-  double _weight;
 
 };
 

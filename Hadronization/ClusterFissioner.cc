@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterFissioner.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,8 +24,38 @@
 #include "Cluster.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterFissioner,Interfaced>
+describeClusterFissioner("Herwig::ClusterFissioner","");
+
+ClusterFissioner::ClusterFissioner() :
+  _clMaxLight(3.35*GeV),
+  _clMaxBottom(3.35*GeV),
+  _clMaxCharm(3.35*GeV),
+  _clMaxExotic(3.35*GeV),
+  _clPowLight(2.0),
+  _clPowBottom(2.0),
+  _clPowCharm(2.0),
+  _clPowExotic(2.0),
+  _pSplitLight(1.0),
+  _pSplitBottom(1.0),
+  _pSplitCharm(1.0),
+  _pSplitExotic(1.0),
+  _btClM(1.0*GeV),
+  _iopRem(1),
+  _kappa(1.0e15*GeV/meter)
+{}
+
+IBPtr ClusterFissioner::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterFissioner::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
   os << _hadronsSelector << ounit(_clMaxLight,GeV)
@@ -46,10 +76,6 @@ void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
      >> iunit(_kappa, GeV/meter);
 }
 
-ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
-// Definition of the static class description member.
-
-
 void ClusterFissioner::Init() {
 
   static ClassDocumentation<ClusterFissioner> documentation
@@ -64,19 +90,19 @@ void ClusterFissioner::Init() {
   // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxLight ("ClMaxLight","cluster max mass for light quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxBottom ("ClMaxBottom","cluster max mass  for b quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxCharm ("ClMaxCharm","cluster max mass for c quarks  (unit [GeV])",
-                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxExotic ("ClMaxExotic","cluster max mass  for exotic quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
  
  // ClPow for light, Bottom, Charm and exotic (e.g. Susy) quarks
@@ -135,7 +161,7 @@ void ClusterFissioner::Init() {
     ("StringTension",
      "String tension used in vertex displacement calculation",
      &ClusterFissioner::_kappa, GeV/meter, 
-     1.0e15*GeV/meter, 0.0*GeV/meter, 0*GeV/meter,
+     1.0e15*GeV/meter, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
 }
@@ -245,6 +271,12 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
   }
 }
 
+namespace {
+   bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+    return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
+  }
+}
+
 ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster, 
 						tPVector & finalhadrons,
 						bool softUEisOn) {
@@ -265,7 +297,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
   // Initialization for the exponential ("soft") mass distribution.
   static const int max_loop = 1000;
   int counter = 0;
-  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
+  Energy Mc1 = ZERO, Mc2 = ZERO,m1=ZERO,m2=ZERO,m=ZERO;
   bool toHadron1(false), toHadron2(false);
   PPtr newPtr1 = PPtr ();
   PPtr newPtr2 = PPtr ();
@@ -276,15 +308,21 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
       ++counter;
       
       drawNewFlavour(newPtr1,newPtr2); 
-
-     // check for right ordering
+      // check for right ordering
       assert (ptrQ2);
       assert (newPtr2);
       assert (ptrQ2->dataPtr());
       assert (newPtr2->dataPtr());
-      if(!CheckId::canBeHadron(ptrQ2->dataPtr(), newPtr2->dataPtr()))
+      if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
 	swap(newPtr1, newPtr2);
-         
+	// check again
+	if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
+	  throw Exception() 
+	    << "ClusterFissioner cannot split the cluster ("
+	    << ptrQ1->PDGName() << ' ' << ptrQ2->PDGName()
+	    << ") into hadrons.\n" << Exception::runerror;
+	}
+      }
       // Check that new clusters can produce particles and there is enough
       // phase space to choose the drawn flavour
       m1 = ptrQ1->data().constituentMass();

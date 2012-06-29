@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DtoKPiPiE691.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,7 +14,6 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "DtoKPiPiE691.fh"
 
 namespace Herwig {
 
@@ -32,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline DtoKPiPiE691();
+  DtoKPiPiE691();
   
   /**
    * Which of the possible decays is required
@@ -45,14 +44,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2( const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -101,9 +100,15 @@ protected:
    * @param pres    The momentum of the resonance
    * @param p1      The momentum of the first decay product of the resonance
    */
-  inline double decayAngle(const Lorentz5Momentum & pparent,
-			   const Lorentz5Momentum & pres,
-			   const Lorentz5Momentum & p1) const;
+  double decayAngle(const Lorentz5Momentum & pparent,
+		    const Lorentz5Momentum & pres,
+		    const Lorentz5Momentum & p1) const {
+    Energy2 dot   = pparent*p1,   mREp  = pres*pparent;
+    Energy2 mRE1  = pres*p1,      mp2   = pparent.mass2();
+    Energy2 mres2 = pres.mass2(), m12   = p1.mass2();
+    return (dot*mres2-mREp*mRE1)/
+      sqrt((mREp*mREp-mres2*mp2)*(mRE1*mRE1-mres2*m12));
+  }
 
   /**
    * Calculate the amplitude
@@ -113,8 +118,19 @@ protected:
    * @param wres The width of the resonance
    * @param mres The on-shell mass of the resonance
    */
-  inline Complex amplitude(int ispin, double costheta,Energy mAB,
-			   Energy wres, Energy mres) const;
+  Complex amplitude(int ispin, double costheta,Energy mAB,
+		    Energy wres, Energy mres) const {
+    double s = 0.;
+    switch(ispin) {
+    case 0: s = 1.;                    break;
+    case 1: s = costheta;              break;
+    case 2: s = 1.5*sqr(costheta)-0.5; break;
+    default: assert(false);
+    }
+    Complex bw = sqrt(0.5*wres/GeV/Constants::pi)*GeV/
+      (mAB-mres-complex<Energy>(ZERO,0.5*wres));
+    return s*bw;
+  }
   //@}
 
 protected:
@@ -125,13 +141,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -143,7 +159,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -427,6 +443,11 @@ private:
    */
   vector<double> _weights;
   //@}
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
 };
 
 }
@@ -465,7 +486,5 @@ struct ClassTraits<Herwig::DtoKPiPiE691>
 /** @endcond */
 
 }
-
-#include "DtoKPiPiE691.icc"
 
 #endif /* HERWIG_DtoKPiPiE691_H */

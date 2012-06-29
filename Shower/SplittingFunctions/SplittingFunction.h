@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SplittingFunction.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,12 +15,19 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+  /** \ingroup Shower
+   * Enum to define the possible types of colour structure which can occur in
+   * the branching.
+   */
+  enum ColourStructure {Undefined=-1,TripletTripletOctet=0,OctetOctetOctet=1,
+                        OctetTripletTriplet=2,TripletOctetTriplet=3,SextetSextetOctet=4};
+
 
 /** \ingroup Shower
  *
@@ -55,16 +62,15 @@ class SplittingFunction: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.   
-   * @param a All splitting functions must have an interaction type
    * @param b All splitting functions must have an interaction order
    */
-  inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b);
-  //@}
-
+  SplittingFunction(unsigned int b)
+    : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
+      _interactionorder(b), 
+      _colourStructure(Undefined), _colourFactor(-1.),
+      _splittingColourMethod(0) {}
 public:
 
   /**
@@ -74,12 +80,22 @@ public:
   /**
    *  Return the type of the interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const;
+  ShowerInteraction::Type interactionType() const {return _interactionType;}
 
   /**
    *  Return the order of the splitting function in the interaction
    */
-  inline unsigned int interactionOrder() const;
+  unsigned int interactionOrder() const {return _interactionorder;}
+
+  /**
+   *  Return the colour structure
+   */
+  ColourStructure colourStructure() const {return _colourStructure;}
+
+  /**
+   *  Return the colour factor
+   */
+  double colourFactor() const {return _colourFactor;}
   //@}
 
   /**
@@ -88,6 +104,11 @@ public:
    *  @param ids The PDG codes for the particles in the splitting.
    */
   virtual bool accept(const IdList & ids) const = 0;
+
+  /**
+   *  Method to check the colours are correct
+   */
+  virtual bool checkColours(const IdList & ids) const;
 
   /**
    *   Methods to return the splitting function.
@@ -166,9 +187,25 @@ public:
   virtual void colourConnection(tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
-				const bool back) const=0;
+				const bool back) const;
 
 public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -178,13 +215,32 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
+  /**
+   *  Set the colour factor
+   */
+  void colourFactor(double in) {_colourFactor=in;}
+
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class without persistent data.
    */
-  static AbstractNoPIOClassDescription<SplittingFunction> initSplittingFunction;
+  static AbstractClassDescription<SplittingFunction> initSplittingFunction;
 
   /**
    * The assignment operator is private and must never be called.
@@ -197,12 +253,33 @@ private:
   /**
    *  The interaction type for the splitting function.
    */
-  const ShowerIndex::InteractionType _interactionType;
+  ShowerInteraction::Type _interactionType;
 
   /**
    *  The order of the splitting function in the coupling
    */
-  const unsigned int _interactionorder;
+  unsigned int _interactionorder;
+
+  /**
+   *  The colour structure
+   */
+  ColourStructure _colourStructure;
+
+  /**
+   *  The colour factor
+   */
+  double _colourFactor;
+  
+  /**
+   *  The method for assigning colour
+   *  The default, 0, will assign colour lines for octets
+   *  randomly without keeping a record of which lines radiate.
+   *  For option 1 only the "correct" lines will radiate until
+   *  the lowest scale is reached.
+   *  For option 2 there will be random radiation, but the
+   *  line which radiates is recorded
+   */
+   int _splittingColourMethod;
 };
 
 }
@@ -228,20 +305,10 @@ struct ClassTraits<Herwig::SplittingFunction>
   : public ClassTraitsBase<Herwig::SplittingFunction> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SplittingFunction"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SplittingFunction is implemented. It may also include several, space-separated,
-   * libraries if the class SplittingFunction depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "SplittingFunction.icc"
 
 #endif /* HERWIG_SplittingFunction_H */

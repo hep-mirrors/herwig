@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TwoPionPhotonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -25,13 +25,30 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::outgoing;
 
-void TwoPionPhotonCurrent::doinit() throw(InitException) {
+TwoPionPhotonCurrent::TwoPionPhotonCurrent() {
+  // modes handled
+  addDecayMode(2,-1);
+  setInitialModes(1);
+  // weight of the resonances in the current
+  _resweights.push_back(1.0);_resweights.push_back(-0.1);_resweights.push_back(0.0);
+  // parameters of the rho resonaces
+  _rhoparameters=true;
+  _rhomasses.push_back(0.773*GeV);_rhomasses.push_back(1.70*GeV);
+  _rhowidths.push_back(0.145*GeV);_rhowidths.push_back(0.26*GeV);
+  // parameters fo the omega resonance
+  _omegaparameters=true;
+  _omegamass=782*MeV;_omegawidth=8.5*MeV;
+  // couplings
+  _grho   = 0.11238947*GeV2;
+  _grhoomegapi = 12.924/GeV;
+  // parameters for the resonance used in the integration
+  _intmass = 1.2*GeV;
+  _intwidth = 0.35*GeV;
+}
+
+void TwoPionPhotonCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // set up the rho masses and widths
   tPDPtr temp;
@@ -118,31 +135,40 @@ void TwoPionPhotonCurrent::Init() {
   static ParVector<TwoPionPhotonCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the different rho resonances for the decay tau ->  pi pi photon",
-     &TwoPionPhotonCurrent::_rhomasses, MeV, -1, 773.*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoPionPhotonCurrent::_rhomasses, MeV, -1, 773.*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoPionPhotonCurrent,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the different rho resonances for the decay tau -> nu pi pi photon",
-     &TwoPionPhotonCurrent::_rhowidths, MeV, -1, 145.*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoPionPhotonCurrent::_rhowidths, MeV, -1, 145.*MeV, ZERO, 1000.*MeV,
      false, false, true);
 
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceomegamass
     ("omegamass",
      "The mass of the omega",
-     &TwoPionPhotonCurrent::_omegamass, GeV, 0.782*GeV, 0.0*GeV, 1.0*GeV,
+     &TwoPionPhotonCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 1.0*GeV,
      false, false, true);
   
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceomegawidth
     ("omegawidth",
      "The width of the omega for the decay tau- -> pi pi photon",
-     &TwoPionPhotonCurrent::_omegawidth, GeV, 0.0085*GeV, 0.*GeV, 1.*GeV,
+     &TwoPionPhotonCurrent::_omegawidth, GeV, 0.0085*GeV, ZERO, 1.*GeV,
      false, false, false);
   
   static ClassDocumentation<TwoPionPhotonCurrent> documentation
     ("The TwoPionPhotonCurrent class implements the decay "
-     "tau+/- -> pi+/- pi0 gamma via an omega.");
-  
+     "tau+/- -> pi+/- pi0 gamma via an omega.",
+     "The decay $\\tau^\\pm \\to \\omega \\to \\pi^\\pm \\pi^0 \\gamma$ "
+     "is modelled after \\cite{Jadach:1993hs}.",
+     "  %\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     );
+
   static Parameter<TwoPionPhotonCurrent,Energy2> interfacegrho
     ("grho",
      "The rho meson decay constant.",
@@ -159,13 +185,13 @@ void TwoPionPhotonCurrent::Init() {
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceIntegrationMass
     ("IntegrationMass",
      "Mass of the pseudoresonance used to improve integration effciency",
-     &TwoPionPhotonCurrent::_intmass, GeV, 1.4*GeV, 0.0*GeV, 10.0*GeV,
+     &TwoPionPhotonCurrent::_intmass, GeV, 1.4*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceIntegrationWidth
     ("IntegrationWidth",
      "Width of the pseudoresonance used to improve integration effciency",
-     &TwoPionPhotonCurrent::_intwidth, GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV,
+     &TwoPionPhotonCurrent::_intwidth, GeV, 0.5*GeV, ZERO, 10.0*GeV,
      false, false, true);
 }
 
@@ -209,10 +235,23 @@ tPDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-TwoPionPhotonCurrent::current(bool vertex, const int, const int, 
-			      Energy & scale,const ParticleVector & decay) const {
+TwoPionPhotonCurrent::current(const int, const int,Energy & scale,
+			      const ParticleVector & decay,
+			      DecayIntegrator::MEOption meopt) const {
+  useMe();
+  vector<LorentzPolarizationVector> temp;
+  VectorWaveFunction::
+    calculateWaveFunctions(temp,decay[2],outgoing,true);
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    VectorWaveFunction::constructSpinInfo(temp,decay[2],
+					  outgoing,true,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // locate the particles
-  Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+decay[0]->momentum());
+  Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+
+			decay[0]->momentum());
   // overall hadronic mass
   pout.rescaleMass();
   scale=pout.mass();
@@ -222,7 +261,7 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
   pout.rescaleMass();
   Energy2 s2(pout.m2());
   // compute the prefactor
-  complex<InvEnergy3> prefactor(-FFunction(0.*MeV2)*FFunction(q2)*scale*
+  complex<InvEnergy3> prefactor(-FFunction(ZERO)*FFunction(q2)*scale*
 			    sqrt(Constants::twopi*generator()->standardModel()->alphaEM())*
 			    BreitWigner(s2,10));
   // dot products which don't depend on the polarization vector
@@ -230,19 +269,6 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
   Energy2 dot13(decay[2]->momentum()*decay[0]->momentum());
   Energy2 dot23(decay[1]->momentum()*decay[0]->momentum());
   Energy2 mpi2 = sqr(decay[0]->mass());
-
-  // workaround for gcc 3.2.3 bug
-  // construct the spininfomation objects for the decay products
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
-  vector<LorentzPolarizationVector> temp;
-  VectorWaveFunction(temp,decay[2],outgoing,true,true,vertex);
-
   vector<LorentzPolarizationVectorE> ret(3);
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix!=1) {
@@ -282,33 +308,33 @@ unsigned int TwoPionPhotonCurrent::decayMode(vector<int>) {
 void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::TwoPionPhotonCurrent " << fullName() 
+  if(create) output << "create Herwig::TwoPionPhotonCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";
-  output << "set " << fullName() << ":omegaParameters "    << _omegaparameters << "\n";
-  output << "set " << fullName() << ":omegamass "    << _omegamass/GeV << "\n";
-  output << "set " << fullName() << ":omegawidth "    << _omegawidth/GeV << "\n";
-  output << "set " << fullName() << ":grho "    << _grho/GeV2 << "\n";
-  output << "set " << fullName() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
-  output << "set " << fullName() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "newdef " << name() << ":RhoParameters "    << _rhoparameters << "\n";
+  output << "newdef " << name() << ":omegaParameters "    << _omegaparameters << "\n";
+  output << "newdef " << name() << ":omegamass "    << _omegamass/GeV << "\n";
+  output << "newdef " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
+  output << "newdef " << name() << ":grho "    << _grho/GeV2 << "\n";
+  output << "newdef " << name() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
+  output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
   unsigned int ix;
   for(ix=0;ix<_resweights.size();++ix) {
-    if(ix<3) output << "set " << fullName() << ":Weights " << ix 
+    if(ix<3) output << "newdef " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
-    else     output << "insert " << fullName() << ":Weights " << ix 
+    else     output << "insert " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
   }
   for(ix=0;ix<_rhomasses.size();++ix) {
-    if(ix<2) output << "set " << fullName() << ":RhoMasses " << ix 
+    if(ix<2) output << "newdef " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix 
+    else     output << "insert " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
-    if(ix<2) output << "set " << fullName() << ":RhoWidths " << ix 
+    if(ix<2) output << "newdef " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix 
+    else     output << "insert " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // WSBFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,6 +23,17 @@
 #include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
+
+void WSBFormFactor::doinit() {
+  ScalarFormFactor::doinit();
+  unsigned int isize(numberOfFactors());
+  if(isize!=_F0.size() ||isize!=_V.size()  ||isize!=_A0.size() ||
+     isize!=_A1.size() ||isize!=_A2.size() ||isize!=_mS0.size()||
+     isize!=_mS1.size()||isize!=_mV0.size()||isize!=_mV1.size())
+    throw InitException() << "Inconsistent parameters in WSBFormFactor::doinit()" 
+			  << Exception::abortnow;
+}
+
 
 WSBFormFactor::WSBFormFactor() 
   : _F0(51), _V(51), _A0(51), _A1(51), _A2(51), 
@@ -370,47 +381,47 @@ void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
   useMe();
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::WSBFormFactor " << fullName() << " \n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  if(create) output << "create Herwig::WSBFormFactor " << name() << " \n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":F0 " 
+      output << "newdef " << name() << ":F0 " 
 	     << ix << "  " << _F0[ix] << "\n";
-      output << "set " << fullName() << ":V  " 
+      output << "newdef " << name() << ":V  " 
 	     << ix << "  " << _V[ix]  << "\n";
-      output << "set " << fullName() << ":A0 " 
+      output << "newdef " << name() << ":A0 " 
 	     << ix << "  " << _A0[ix] << "\n";
-      output << "set " << fullName() << ":A1 " 
+      output << "newdef " << name() << ":A1 " 
 	     << ix << "  " << _A1[ix] << "\n";
-      output << "set " << fullName() << ":A2 " 
+      output << "newdef " << name() << ":A2 " 
 	     << ix << "  " << _A2[ix] << "\n";
-      output << "set " << fullName() << ":ScalarMass " 
+      output << "newdef " << name() << ":ScalarMass " 
 	     << ix << "  " << _mS0[ix]/GeV << "\n";
-      output << "set " << fullName() << ":PseudoScalarMass " 
+      output << "newdef " << name() << ":PseudoScalarMass " 
 	     << ix << "  " << _mS1[ix]/GeV << "\n";
-      output << "set " << fullName() << ":VectorMass " 
+      output << "newdef " << name() << ":VectorMass " 
 	     << ix << "  " << _mV0[ix]/GeV << "\n";
-      output << "set " << fullName() << ":PseudoVectorMass " 
+      output << "newdef " << name() << ":PseudoVectorMass " 
 	     << ix << "  " << _mV1[ix]/GeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":F0 " 
+      output << "insert " << name() << ":F0 " 
 	     << ix << "  " << _F0[ix] << "\n";
-      output << "insert " << fullName() << ":V  " 
+      output << "insert " << name() << ":V  " 
 	     << ix << "  " << _V[ix]  << "\n";
-      output << "insert " << fullName() << ":A0 " 
+      output << "insert " << name() << ":A0 " 
 	     << ix << "  " << _A0[ix] << "\n";
-      output << "insert " << fullName() << ":A1 " 
+      output << "insert " << name() << ":A1 " 
 	     << ix << "  " << _A1[ix] << "\n";
-      output << "insert " << fullName() << ":A2 " 
+      output << "insert " << name() << ":A2 " 
 	     << ix << "  " << _A2[ix] << "\n";
-      output << "insert " << fullName() << ":ScalarMass " 
+      output << "insert " << name() << ":ScalarMass " 
 	     << ix << "  " << _mS0[ix]/GeV << "\n";
-      output << "insert " << fullName() << ":PseudoScalarMass " 
+      output << "insert " << name() << ":PseudoScalarMass " 
 	     << ix << "  " << _mS1[ix]/GeV << "\n";
-      output << "insert " << fullName() << ":VectorMass " 
+      output << "insert " << name() << ":VectorMass " 
 	     << ix << "  " << _mV0[ix]/GeV << "\n";
-      output << "insert " << fullName() << ":PseudoVectorMass " 
+      output << "insert " << name() << ":PseudoVectorMass " 
 	     << ix << "  " << _mV1[ix]/GeV << "\n";
     }
   }

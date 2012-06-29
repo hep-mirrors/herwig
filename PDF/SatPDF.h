@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SatPDF.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2008 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,12 +13,11 @@
 //
 
 #include "ThePEG/PDF/PDFBase.h"
-#include "SatPDF.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the SatPDF class. It defines
+ * The SatPDF class defines
  * a modified pdf which uses an existing pdf object to add
  * modifications like removing the valence part of it, which
  * is needed in the backward evolution of secondary scatters.
@@ -74,7 +73,7 @@ public:
    * particleScale.
    */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double x, double eps=0.0, Energy2 particleScale = 0.0*GeV2) const;
+		     double x, double eps=0.0, Energy2 particleScale = ZERO) const;
 
   /**
    * The valence density. Return the pdf for the given cvalence \a
@@ -86,7 +85,7 @@ public:
    * valense quarks, but return zero for anything else.
    */
   virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double x, double eps=0.0, Energy2 particleScale = 0.0*GeV2) const;
+		     double x, double eps=0.0, Energy2 particleScale = ZERO) const;
   //@}
 
 

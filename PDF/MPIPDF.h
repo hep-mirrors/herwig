@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIPDF.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the MPIPDF class. It defines
+ * The MPIPDF class defines
  * a modified pdf which uses an existing pdf object to add
  * modifications like removing the valence part of it, which
  * is needed in the backward evolution of secondary scatters.
@@ -34,20 +34,11 @@ public:
 
   /** @name Standard constructors and destructors. */
   //@{
-  /**
-   * The default constructor, which shouldn't be called
-   */
-  inline MPIPDF();
 
   /**
    * The constructor which takes a PDF object as argument, to work with.
    */
-  inline MPIPDF(tcPDFPtr orig);
-
-  /**
-   * The copy constructor.
-   */
-  inline MPIPDF(const MPIPDF &);
+  MPIPDF(cPDFPtr orig = cPDFPtr()) : thePDF(orig) {}
 
   /**
    * The destructor.
@@ -73,23 +64,28 @@ public:
 
   /**
    * The density. Return the pdf for the given \a parton inside the
-   * given \a particle for the virtuality \a partonScale and
-   * logarithmic momentum fraction \a l \f$(l=\log(1/x)\f$. The \a
-   * particle is assumed to have a virtuality \a particleScale.
+   * given \a particle for the virtuality \a partonScale and momentum
+   * fraction \a x. The \a particle is assumed to have a virtuality \a
+   * particleScale. For MPIPDF, only the sea quark densities
+   * are included here!
    */
-  virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale = 0.0*GeV2) const;
+  virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		     double x, double eps = 0.0,
+		     Energy2 particleScale = ZERO) const;
+
 
   /**
    * The valence density. Return the pdf for the given cvalence \a
    * parton inside the given \a particle for the virtuality \a
-   * partonScale and logarithmic momentum fraction \a l
-   * \f$(l=\log(1/x)\f$. The \a particle is assumed to have a
-   * virtuality \a particleScale. If not overidden by a sub class this
-   * will return zero.
+   * partonScale and momentum fraction \a x. The \a particle is
+   * assumed to have a virtuality \a particleScale. If not overidden
+   * by a sub class this implementation will assume that the
+   * difference between a quark and anti-quark distribution is due do
+   * valense quarks, but return zero for anything else.
    */
-  virtual double xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale = 0.0*GeV2) const;
+  virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		      double x, double eps = 0.0,
+		      Energy2 particleScale = ZERO) const;
   //@}
 
 
@@ -127,13 +123,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 
@@ -158,7 +154,7 @@ private:
   /**
    * pointer to the underlying ThePEG::PDFBase object, we are modifying.
    */
-  tcPDFPtr thePDF;
+  cPDFPtr thePDF;
 };
 
 }
@@ -191,16 +187,11 @@ struct ClassTraits<Herwig::MPIPDF>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "MPIPDF.icc"
-#ifndef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "MPIPDF.tcc"
-#endif
 
 #endif /* HERWIG_MPIPDF_H */

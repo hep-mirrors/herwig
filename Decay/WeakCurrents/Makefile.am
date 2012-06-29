@@ -1,29 +1,20 @@
 pkglib_LTLIBRARIES = HwWeakCurrents.la 
 noinst_LTLIBRARIES = libHwWeakCurrent.la 
 libHwWeakCurrent_la_SOURCES = \
-WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h WeakDecayCurrent.icc \
+WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h\
 LeptonNeutrinoCurrent.cc LeptonNeutrinoCurrent.fh \
-LeptonNeutrinoCurrent.h LeptonNeutrinoCurrent.icc
+LeptonNeutrinoCurrent.h
 
-HwWeakCurrents_la_LDFLAGS = -module -version-info 3:0:0
+HwWeakCurrents_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 HwWeakCurrents_la_SOURCES = \
-FourPionNovosibirskCurrent.cc FourPionNovosibirskCurrent.fh \
-FourPionNovosibirskCurrent.h FourPionNovosibirskCurrent.icc \
-ScalarMesonCurrent.cc ScalarMesonCurrent.fh \
-ScalarMesonCurrent.h ScalarMesonCurrent.icc \
-ThreeMesonCurrentBase.cc ThreeMesonCurrentBase.fh \
-ThreeMesonCurrentBase.h \
-ThreeMesonDefaultCurrent.cc ThreeMesonDefaultCurrent.fh \
-ThreeMesonDefaultCurrent.h ThreeMesonDefaultCurrent.icc \
-ThreePionCLEOCurrent.cc ThreePionCLEOCurrent.fh \
-ThreePionCLEOCurrent.h ThreePionCLEOCurrent.icc \
-TwoMesonRhoKStarCurrent.cc TwoMesonRhoKStarCurrent.fh \
-TwoMesonRhoKStarCurrent.h TwoMesonRhoKStarCurrent.icc \
-TwoPionPhotonCurrent.cc TwoPionPhotonCurrent.fh \
-TwoPionPhotonCurrent.h TwoPionPhotonCurrent.icc\
-VectorMesonCurrent.cc VectorMesonCurrent.fh \
-VectorMesonCurrent.h VectorMesonCurrent.icc\
-FivePionCurrent.cc FivePionCurrent.fh FivePionCurrent.h FivePionCurrent.icc \
-KPiCurrent.cc KPiCurrent.fh KPiCurrent.h KPiCurrent.icc\
-KaonThreeMesonCurrent.cc KaonThreeMesonCurrent.fh \
-KaonThreeMesonCurrent.h KaonThreeMesonCurrent.icc 
+FourPionNovosibirskCurrent.cc FourPionNovosibirskCurrent.h \
+ScalarMesonCurrent.cc ScalarMesonCurrent.h\
+ThreeMesonCurrentBase.cc ThreeMesonCurrentBase.h \
+ThreeMesonDefaultCurrent.cc ThreeMesonDefaultCurrent.h\
+ThreePionCLEOCurrent.cc ThreePionCLEOCurrent.h\
+TwoMesonRhoKStarCurrent.cc TwoMesonRhoKStarCurrent.h\
+TwoPionPhotonCurrent.cc TwoPionPhotonCurrent.h\
+VectorMesonCurrent.cc VectorMesonCurrent.h\
+FivePionCurrent.cc FivePionCurrent.h \
+KPiCurrent.cc KPiCurrent.h\
+KaonThreeMesonCurrent.cc KaonThreeMesonCurrent.h

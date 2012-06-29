@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BELLECharmAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,7 +19,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The BELLECharmAnalysis class is designed to compared the results of
  * Herwig++ at 10.52 GeV with data from the BELLE experiment.
  *
@@ -33,7 +33,9 @@ public:
   /**
    * The default constructor.
    */
-  inline BELLECharmAnalysis() : _onshell(false) {}
+  BELLECharmAnalysis() : _s(), _onshell(false), _ratioDstar(),
+			 _ratioDs(), _ratioLambda(), _weight()
+  {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -104,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:

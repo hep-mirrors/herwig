@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffcc0.f,v 1.2 1996/06/30 19:03:55 gj Exp $
 *###[ ffcc0:
 	subroutine ffcc0(cc0,cpi,ier)
@@ -57,7 +60,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -120,7 +123,7 @@
 	DOUBLE COMPLEX cc0,cc0p,cpi(6),cqi(6)
 	integer inew(6,2),irota,ier1,i,j,ialsav
 	save inew
-	include 'ff.h'
+#include "ff.h"
 	data inew /1,2,3,4,5,6,
      +		   1,3,2,6,5,4/
 *  #] declarations:
@@ -180,7 +183,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	memory
 *
@@ -480,7 +483,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function:
 *
@@ -503,7 +506,7 @@
 	fodel2 = del2
 	fdel2 = fodel2
 	cel2 = DCMPLX(DBLE(del2))
-	call ffcel3(cel3,cqi,cqiDqj,6,ier)
+	call ffcel3(cel3,cqiDqj)
 	if ( DIMAG(cel3).ne.0 .and. 
      +		abs(DIMAG(cel3)).lt.precc*abs(DBLE(cel3)) ) then
 	    cel3 = DBLE(cel3)
@@ -609,7 +612,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -721,7 +724,7 @@
 *
 *	rest
 *
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *
 *  #] declarations:
@@ -830,7 +833,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -901,7 +904,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -969,7 +972,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ add widths:

@@ -54,27 +54,7 @@ void DrellYanPT::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-LorentzRotation DrellYanPT::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void DrellYanPT::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
-}
-
-void DrellYanPT::analyze(tPPtr) {}
-
-void DrellYanPT::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void DrellYanPT::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<DrellYanPT> DrellYanPT::initDrellYanPT;
+NoPIOClassDescription<DrellYanPT> DrellYanPT::initDrellYanPT;
 // Definition of the static class description member.
 
 void DrellYanPT::Init() {

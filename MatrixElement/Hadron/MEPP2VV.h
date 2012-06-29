@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2VV class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -15,12 +15,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2VV class.
+ * The MEPP2VV class implements the production of \f$W^+W^-\f$,
+ * \f$W^\pm Z^0\f$ and \f$Z^0Z^o\f$ in hadron-hadron collisions.
  *
  * @see \ref MEPP2VVInterfaces "The interfaces"
  * defined for MEPP2VV.
  */
-class MEPP2VV: public HwME2to2Base {
+class MEPP2VV: public HwMEBase {
 
 public:
 
@@ -60,6 +61,11 @@ public:
   virtual Energy2 scale() const;
 
   /**
+   * Return the process being run (WW/ZZ/WZ).
+   */
+  virtual int process() const { return process_; }
+
+  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -89,6 +95,11 @@ public:
    * limits on cos(theta).
    */
   virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 public:
@@ -120,18 +131,46 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\to f\bar{f} f\bar{f}\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing W polarization vectors
+   * @param v2  The second outgoing W polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
-  double helicityME(vector<SpinorWaveFunction>    & f1,
-		    vector<SpinorBarWaveFunction> & a1,
-		    vector<VectorWaveFunction>    & v1,
-		    vector<VectorWaveFunction>    & v2,
-		    bool me) const;
+  double WWME(vector<SpinorWaveFunction>    & f1,
+	      vector<SpinorBarWaveFunction> & a1,
+	      vector<VectorWaveFunction>    & v1,
+	      vector<VectorWaveFunction>    & v2,
+	      bool me) const;
+  
+  /**
+   * Matrix element for \f$f\bar{f}\to W^\pm Z^0\f$.
+   * @param f1  Spinors for the incoming fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The outgoing W polarization vectors
+   * @param v2  The outgoing Z polarization vectors
+   * @param me  Whether or not to calculate the matrix element for spin correlations
+   */
+  double WZME(vector<SpinorWaveFunction>    & f1,
+	      vector<SpinorBarWaveFunction> & a1,
+	      vector<VectorWaveFunction>    & v1,
+	      vector<VectorWaveFunction>    & v2,
+	      bool me) const;
+  
+  /**
+   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
+   * @param f1  Spinors for the incoming fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing Z polarization vectors 
+   * @param v2  The second outgoing Z polarization vectors
+   * @param me  Whether or not to calculate the matrix element for spin correlations
+   */
+  double ZZME(vector<SpinorWaveFunction>    & f1,
+	      vector<SpinorBarWaveFunction> & a1,
+	      vector<VectorWaveFunction>    & v1,
+	      vector<VectorWaveFunction>    & v2,
+	      bool me) const;
 
 protected:
 
@@ -159,7 +198,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -185,38 +224,43 @@ private:
   /**
    *   FFPVertex
    */
-  AbstractFFVVertexPtr _vertexFFP;
+  AbstractFFVVertexPtr FFPvertex_;
 
   /**
    *   FFWVertex
    */
-  AbstractFFVVertexPtr _vertexFFW;
+  AbstractFFVVertexPtr FFWvertex_;
 
   /**
    *   FFZVertex
    */
-  AbstractFFVVertexPtr _vertexFFZ;
+  AbstractFFVVertexPtr FFZvertex_;
 
   /**
    *  WWW Vertex
    */ 
-  AbstractVVVVertexPtr _vertexWWW;
+  AbstractVVVVertexPtr WWWvertex_;
   //@}
 
   /**
    *  Processes
    */
-  unsigned int _process;
+  unsigned int process_;
 
   /**
    *  Allowed flavours of the incoming quarks
    */
-  int _maxflavour;
+  int maxflavour_;
+
+  /**
+   *  Treatment of the the boson masses
+   */
+  unsigned int massOption_;
 
   /**
    *  The matrix element
    */
-  ProductionMatrixElement _me;
+  mutable ProductionMatrixElement me_;
 };
 
 }
@@ -232,7 +276,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2VV,1> {
   /** Typedef of the first base class of MEPP2VV. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

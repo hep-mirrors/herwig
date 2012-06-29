@@ -44,82 +44,49 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
 				 _coupd(0.), _coupu(0.),
 				 _coupe(0.), _coupnu(0.),
 				 _couplast(0.0), _q2last(0.*GeV2) {
-  // PDG codes for the particles
-  vector<long> first,second,third;
+  orderInGem(1);
+  orderInGs(0);
   // Z
   // the quarks
   for(int ix = 1; ix < 7; ++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(23);
+    addToList(-ix,    ix,    23);
   }
   // T+T+
-  first .push_back(-8);
-  second.push_back(+8);
-  third.push_back(23);
+  addToList(-8,  +8,  23);
   //T+t
-  first .push_back(-6);
-  second.push_back(+8);
-  third.push_back(23);
-  first .push_back(-8);
-  second.push_back(+6);
-  third.push_back(23);
+  addToList(-6,  +8,  23);
+  addToList(-8,  +6,  23);
   // the leptons
   for(int ix = 11; ix < 17; ++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(23);
+    addToList(-ix,    ix,    23);
   }
   // the T-odd quarks
   for(long ix = 4000001; ix < 4000007; ++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(23);
+    addToList(-ix,    ix,    23);
   }
-  first .push_back(-4000008);
-  second.push_back(+4000008);
-  third.push_back(23);
+  addToList(-4000008,  +4000008,  23);
   // the T-odd leptons
   for(long ix = 4000011;ix<17;++ix) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix+4000000);
-    third.push_back(23);
+    addToList(-ix-4000000,    ix+4000000,    23);
   }
   // Z_H
   // the quarks
   for(unsigned int ix=1;ix<7;++ix) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix);
-    third.push_back(33);
-    first.push_back(-ix);
-    second.push_back(ix+4000000);
-    third.push_back(33);
+    addToList(-ix-4000000,    ix,    33);
+    addToList(-ix,    ix+4000000,    33);
   }  
-  first .push_back(      -8);
-  second.push_back(+4000008);
-  third .push_back(33);
-  first .push_back(       8);
-  second.push_back(-4000008);
-  third .push_back(33);
-  first .push_back(      -6);
-  second.push_back(+4000008);
-  third .push_back(33);
-  first .push_back(       6);
-  second.push_back(-4000008);
-  third .push_back(33);
+  addToList(      -8,  +4000008,  33);
+  addToList(       8,  -4000008,  33);
+  addToList(      -6,  +4000008,  33);
+  addToList(       6,  -4000008,  33);
   // the leptons
   for(unsigned int ix=11;ix<17;++ix) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix);
-    third.push_back(33);
-    first.push_back(-ix);
-    second.push_back(ix+4000000);
-    third.push_back(33);
+    addToList(-ix-4000000,    ix,    33);
+    addToList(-ix,    ix+4000000,    33);
   }
-  setList(first,second,third);
 }
 
-void LHTPFFZVertex::doinit() throw(InitException) {
+void LHTPFFZVertex::doinit() {
   // model
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
@@ -169,8 +136,6 @@ void LHTPFFZVertex::doinit() throw(InitException) {
   _tr[3] = 0.4*sH*model->sinAlpha()/cw;
   _tl[4] = 0.4*sH*model->cosBeta ()/cw;
   _tr[4] = 0.4*sH*model->cosAlpha()/cw;
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }
 
@@ -180,7 +145,7 @@ void LHTPFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
   long iferm = abs(a->id());
   long ianti = abs(b->id());
@@ -188,49 +153,49 @@ void LHTPFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   if(ibos == ParticleID::Z0) {
     if(iferm == 8 || ianti == 8) {
       if(iferm == 8 && ianti == 8) {
-	setLeft (_tl[1]);
-	setRight(_tr[1]);
+	left (_tl[1]);
+	right(_tr[1]);
       }
       else {
-	setLeft (_tl[2]);
-	setRight(_tr[2]);
+	left (_tl[2]);
+	right(_tr[2]);
       }
     }
     else if(iferm == 4000008) {
-      setLeft (_tl[0]);
-      setRight(_tr[0]);
+      left (_tl[0]);
+      right(_tr[0]);
     }
     else if((iferm >= 1 && iferm <= 6)|| (iferm >= 11 && iferm <= 16)) {
-      setLeft(_gl[iferm]);
-      setRight(_gr[iferm]);
+      left(_gl[iferm]);
+      right(_gr[iferm]);
     }
     else {
       iferm = (iferm % 4000000) + 20;
-      setLeft (_gl[iferm]);
-      setRight(_gr[iferm]);
+      left (_gl[iferm]);
+      right(_gr[iferm]);
     }
   }
   else {
     if(iferm == 4000008||ianti == 4000008) {
       if(iferm == 8||ianti == 8) {
-	setLeft (_tl[4]);
-	setRight(_tr[4]);
+	left (_tl[4]);
+	right(_tr[4]);
       }
       else {
-	setLeft (_tl[3]);
-	setRight(_tr[3]);
+	left (_tl[3]);
+	right(_tr[3]);
       }
     }
     else {
       iferm = iferm % 4000000;
-      setRight(0.);
+      right(0.);
       if(iferm <= 6) {
-	if(iferm % 2 == 0) setLeft(_coupu );
-	else  setLeft(_coupd );
+	if(iferm % 2 == 0) left(_coupu );
+	else  left(_coupd );
       }
       else {
-	if(iferm%2 == 0) setLeft(_coupnu);
-	else setLeft(_coupe );
+	if(iferm%2 == 0) left(_coupnu);
+	else left(_coupe );
       }
     }
   }

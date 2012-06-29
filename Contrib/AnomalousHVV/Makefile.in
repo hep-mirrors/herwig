@@ -1,0 +1,35 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE =
+HERWIGINCLUDE =
+GSLINCLUDE    = 
+LDFLAGS = 
+SHARED_FLAG = 
+INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
+#
+# C++ flags
+# 
+CXX =
+CXXFLAGS =
+
+ALLCCFILES=$(shell echo *.cc)
+
+default : AnomalousHVV.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
+
+AnomalousHVV.so : AnomalousWWHVertex.o  SimpleVBFAnalysis.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	AnomalousWWHVertex.o  SimpleVBFAnalysis.o -o AnomalousHVV.so
+
+clean:
+	rm -f $(ALLCCFILES:.cc=.o) RadiativeZPrime.so

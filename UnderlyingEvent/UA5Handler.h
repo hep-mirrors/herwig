@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UA5Handler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -155,7 +155,7 @@ public:
    */
   virtual void handle(EventHandler &eh, const tPVector &tagged,
 		      const Hint &hint) 
-    throw(Veto,Stop,Exception);
+   ;
 
 protected:
 
@@ -255,7 +255,7 @@ private:
    */
   void generateMomentum(tClusterPtr clu1,tClusterPtr clu2,
 			const ClusterVector &clusters, Energy CME,
-			const Lorentz5Momentum & cm) const throw(Veto,Exception);
+			const Lorentz5Momentum & cm) const;
   
   /**
    * The implementation of the cylindrical phase space.

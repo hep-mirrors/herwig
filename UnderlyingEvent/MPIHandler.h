@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -44,17 +44,19 @@ using namespace ThePEG;
 
 class MPIHandler: public UEBase {
 
-
+  /**
+   *  Maximum number of scatters
+   */
   static const unsigned int maxScatters_ = 99;
 
   /**
    * Class for the integration is a friend to access private members
    */
-  friend class Eikonalization;
-  friend class TotalXSecBisection;
-  friend class slopeAndTotalXSec;
-  friend class slopeInt;
-  friend class slopeBisection;
+  friend struct Eikonalization;
+  friend struct TotalXSecBisection;
+  friend struct slopeAndTotalXSec;
+  friend struct slopeInt;
+  friend struct slopeBisection;
 
 public:
 
@@ -81,10 +83,14 @@ public:
   MPIHandler(): softMult_(0), identicalToUE_(-1), 
 		PtOfQCDProc_(-1.0*GeV), Ptmin_(-1.0*GeV), 
 		hardXSec_(0*millibarn), softXSec_(0*millibarn), 
-		softMu2_(0*GeV2), beta_(100/GeV2), 
+		totalXSecExp_(0*millibarn),
+		softMu2_(ZERO), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
-		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0) {}
+		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0),
+                energyExtrapolation_(2), EEparamA_(0.6*GeV),
+                EEparamB_(37.5*GeV), refScale_(7000.*GeV),
+		pT0_(3.11*GeV), b_(0.21) {}
 
   /**
    * The destructor.
@@ -101,6 +107,11 @@ public:
    * @return true if for this beam setup MPI can be generated
    */
   virtual bool beamOK() const;
+
+  /**
+   * Return true or false depending on whether soft interactions are enabled.
+   */
+  virtual bool softInt() const {return softInt_;}
 
   /**
    * Get the soft multiplicity from the pretabulated multiplicity
@@ -162,10 +173,9 @@ public:
   virtual void finalize();
 
   /**
-   * Write out accumulated statistics about intergrated cross sections
-   * and stuff.
+   * Write out accumulated statistics about integrated cross sections.
    */
-  void statistics(string file) const;
+  void statistics() const;
 
   /**
    * The level of statistics. Controlls the amount of statistics
@@ -173,6 +183,21 @@ public:
    * <code>.out</code> file. Simply the EventHandler method is called here.
    */
   int statLevel() const {return eventHandler()->statLevel();}
+
+  /**
+   * Return the hard cross section above ptmin
+   */
+  CrossSection hardXSec() const { return hardXSec_; }
+
+  /**
+   * Return the soft cross section below ptmin
+   */
+  CrossSection softXSec() const { return softXSec_; }
+
+  /**
+   * Return the inelastic cross section
+   */
+  CrossSection inelasticXSec() const { return inelXSec_; }
 
   /** @name Simple access functions. */
   //@{
@@ -188,6 +213,13 @@ public:
   tEHPtr eventHandler() const {return theHandler;}
 
   /**
+   * Return the current handler
+   */
+  static const MPIHandler * currentHandler() {
+    return currentHandler_;
+  }
+
+  /**
    * Return theAlgorithm.
    */
   virtual int Algorithm() const {return algorithm_;}
@@ -196,7 +228,7 @@ public:
    * Return the ptmin parameter of the model
    */
   virtual Energy Ptmin() const {
-    if(Ptmin_ > 0*GeV)
+    if(Ptmin_ > ZERO)
       return Ptmin_;
     else
       throw Exception() << "MPIHandler::Ptmin called without initialize before"
@@ -207,7 +239,7 @@ public:
    * Return the slope of the soft pt spectrum as calculated.
    */
   virtual InvEnergy2 beta() const {
-    if(beta_ != 100/GeV2)
+    if(beta_ != 100.0/GeV2)
       return beta_;
     else
       throw Exception() << "MPIHandler::beta called without initialization"
@@ -289,6 +321,12 @@ private:
    *  @param UEXSecs is(are) the inclusiv cross section(s) for the UE process(es).
    */
   void Probs(XSVector UEXSecs);
+
+  /**
+   * Debug method to check the individual probabilities.
+   * @param filename is the file the output gets written to
+   */
+  void MultDistribution(string filename) const;
   
   /**
    * Return the value of the Overlap function A(b) for a given impact 
@@ -298,14 +336,14 @@ private:
    *  invRadius_
    *  @return inverse area.
    */
-  InvArea OverlapFunction(Length b, Energy2 mu2=0*GeV2) const;
+  InvArea OverlapFunction(Length b, Energy2 mu2=ZERO) const;
 
   /**
    * Method to calculate the poisson probability for expectation value
-   * <n> = A(b)*sigma, and multiplicity N.
+   * \f$<n> = A(b)\sigma\f$, and multiplicity N.
    */
   double poisson(Length b, CrossSection sigma, 
-		 unsigned int N, Energy2 mu2=0*GeV2) const;
+		 unsigned int N, Energy2 mu2=ZERO) const;
 
   /**
    *  Return n!
@@ -326,7 +364,7 @@ private:
    * @param softMu2 = the soft radius, if 0 the hard radius will be used
    */
   CrossSection totalXSecDiff(CrossSection softXSec, 
-			     Energy2 softMu2=0*GeV2) const;
+			     Energy2 softMu2=ZERO) const;
 
   /**
    * Difference of the calculated elastic slope and the
@@ -335,7 +373,7 @@ private:
    * @param softMu2 = the soft radius, if 0 the hard radius will be used
    */
   InvEnergy2 slopeDiff(CrossSection softXSec, 
-			 Energy2 softMu2=0*GeV2) const;
+			 Energy2 softMu2=ZERO) const;
 
   /**
    * Returns the value of the elastic slope for the current CMenergy.
@@ -343,6 +381,12 @@ private:
    * external parameter of this class.
    */
   InvEnergy2 slopeExp() const;
+
+
+  /**
+   * Calculate the minimal transverse momentum from the extrapolation
+   */
+  void overrideUECuts();
 
 
 private:
@@ -432,14 +476,27 @@ private:
   CrossSection softXSec_;
 
   /**
+   * Variable to store the inelastic cross section
+   */
+  CrossSection inelXSec_;
+
+  /**
+   * Variable to store the total pp cross section (assuming rho=0!) as
+   * measured at LHC. If this variable is set, this value is used in the
+   * subsequent run instead of any of the Donnachie-Landshoff
+   * parametrizations.
+   */
+  CrossSection totalXSecExp_;
+
+  /**
    * Variable to store the soft radius, that is calculated during
    * initialization for the two-component model.
    */
   Energy2 softMu2_;
 
   /**
-   * slope to the non-perturbative pt spectrum: d\sigma/dp_T^2 = A \exp
-   * (- beta p_T^2). Its value is determined durint initialization.
+   * slope to the non-perturbative pt spectrum: \f$d\sigma/dp_T^2 = A \exp
+   * (- beta p_T^2)\f$. Its value is determined durint initialization.
    */
   InvEnergy2 beta_;
   /**
@@ -493,6 +550,26 @@ private:
    * Variable to store the average soft multiplicity.
    */
   double avgNsoft_;
+
+  /**
+   * The current handler
+   */
+  static MPIHandler * currentHandler_;
+
+  /**
+   * Flag to store whether to calculate the minimal UE pt according to an
+   * extrapolation formula or whether to use MPIHandler:Cuts[0]:OneCuts[0]:MinKT
+   */
+  unsigned int energyExtrapolation_;
+
+  /**
+   * Parameters for the energy extrapolation formula
+   */
+  Energy EEparamA_;
+  Energy EEparamB_;
+  Energy refScale_;
+  Energy pT0_;
+  double b_;
 
 protected:
 
@@ -553,6 +630,10 @@ namespace Herwig {
   struct slopeAndTotalXSec : public GSLHelper<CrossSection, CrossSection> {
 
   public:
+
+    /**
+     *  Constructor
+     */
     slopeAndTotalXSec(tcMPIHPtr handler): handler_(handler) {}
 
     /** second argument type */
@@ -561,12 +642,18 @@ namespace Herwig {
     /** second value type */
     typedef InvEnergy2 ValType2;
 
-    /* first element of the vector like function to find root for */
+    /** first element of the vector like function to find root for 
+     * @param softXSec soft cross-section
+     * @param softMu2 \f$\mu^2\f$ 
+     */
     CrossSection f1(ArgType softXSec, ArgType2 softMu2) const {
       return handler_->totalXSecDiff(softXSec, softMu2);
     }
 
-    /* second element of the vector like function to find root for */
+    /** second element of the vector like function to find root for 
+     * @param softXSec soft cross-section
+     * @param softMu2 \f$\mu^2\f$ 
+     */
     InvEnergy2 f2(ArgType softXSec, ArgType2 softMu2) const {
       return handler_->slopeDiff(softXSec, softMu2);
     }
@@ -585,6 +672,9 @@ namespace Herwig {
 
   private: 
 
+    /**
+     *  Pointer to the handler
+     */
     tcMPIHPtr handler_;
 
   };
@@ -611,7 +701,7 @@ namespace Herwig {
     virtual Energy2 operator ()(InvEnergy2 beta) const
     {
       if( fabs(beta*GeV2) < 1.E-4 )
-	beta = (beta > 0/GeV2) ? 1.E-4/GeV2 : -1.E-4/GeV2;
+	beta = (beta > ZERO) ? 1.E-4/GeV2 : -1.E-4/GeV2;
 
       return (exp(beta*sqr(ptmin_)) - 1.0)/beta - softXSec_/dsig_;
     }
@@ -669,9 +759,18 @@ namespace Herwig {
   struct TotalXSecBisection : public GSLHelper<CrossSection, CrossSection> {
   public:
 
-    TotalXSecBisection(tcMPIHPtr handler, Energy2 softMu2=0*GeV2): 
+    /**
+     *  Constructor
+     * @param handler The handler
+     * @param softMu2 \f$\mu^2\f$
+     */
+    TotalXSecBisection(tcMPIHPtr handler, Energy2 softMu2=ZERO): 
       handler_(handler), softMu2_(softMu2) {}
 
+    /**
+     *  operator to return the cross section
+     * @param argument input cross section
+     */
     CrossSection operator ()(CrossSection argument) const {
       return handler_->totalXSecDiff(argument, softMu2_);
     }
@@ -684,23 +783,44 @@ namespace Herwig {
 
   private: 
 
+    /**
+     *  The handler
+     */
     tcMPIHPtr handler_;
 
+    /**
+     *  \f$\mu^2\f$
+     */
     Energy2 softMu2_;
 
   };
 
+  /**
+   *  Typedef for derivative of the length
+   */
   typedef QTY<1,-2,0>::Type LengthDiff;
 
+  /**
+   *  A struct for the integrand for the slope
+   */
   struct slopeInt : public GSLHelper<LengthDiff, Length>{
 
   public:
-    /** Constructor */
+    /** Constructor 
+     * @param handler The handler
+     * @param hard The hard cross section
+     * @param soft The soft cross section
+     * @param softMu2 \f$\mu^2\f$
+     */
     slopeInt(tcMPIHPtr handler, CrossSection hard, 
-	      CrossSection soft=0*millibarn, Energy2 softMu2=0*GeV2)
+	      CrossSection soft=0*millibarn, Energy2 softMu2=ZERO)
       : handler_(handler), hardXSec_(hard), 
 	softXSec_(soft), softMu2_(softMu2) {}
 
+    /**
+     *  Operator to return the answer
+     * @param arg The argument
+     */
     ValType operator ()(ArgType arg) const;
 
   private:
@@ -736,15 +856,18 @@ namespace Herwig {
      *  The constructor
      *  @param handler is the pointer to the MPIHandler to get access to 
      *  MPIHandler::OverlapFunction and member variables of the MPIHandler.
-     *  @param xsec is the cross section to be eikonalized.
      *  @param option is a flag, whether the inelastic or the total 
+     *  @param handler The handler
+     *  @param hard The hard cross section
+     *  @param soft The soft cross section
+     *  @param softMu2 \f$\mu^2\f$
      *  cross section should be returned (-2 or -1). For option = N > 0 the integrand
      *  is N*(A(b)*sigma)^N/N! exp(-A(b)*sigma) this is the P_N*sigma where
      *  P_N is the Probability of having exactly N interaction (including the hard one)
      *  This is equation 14 from "Jimmy4: Multiparton Interactions in HERWIG for the LHC"
      */
     Eikonalization(tcMPIHPtr handler, int option, CrossSection hard, 
-		   CrossSection soft=0*millibarn, Energy2 softMu2=0*GeV2) 
+		   CrossSection soft=0*millibarn, Energy2 softMu2=ZERO) 
       : theHandler(handler), theoption(option), hardXSec_(hard), 
 	softXSec_(soft), softMu2_(softMu2) {}
 

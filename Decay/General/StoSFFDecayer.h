@@ -17,7 +17,8 @@ namespace Herwig {
   using namespace ThePEG;
 
 /**
- * Here is the documentation of the StoSFFDecayer class.
+ * The StoSFFDecayer class provides the general matrix element for
+ * scalar decays into another scalar and a fermion-antifermion pair.
  *
  * @see \ref StoSFFDecayerInterfaces "The interfaces"
  * defined for StoSFFDecayer.
@@ -28,14 +29,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -96,7 +97,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -135,6 +136,20 @@ private:
    */
   vector<pair<AbstractSSTVertexPtr, AbstractFFTVertexPtr> > _ten;
 
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Scalar wavefunction
+   */
+  mutable ScalarWaveFunction _swave;
+
+  /**
+   *  Spinor wavefunctions
+   */
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
 };
 
 }

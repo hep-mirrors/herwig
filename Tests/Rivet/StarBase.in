@@ -1,0 +1,42 @@
+##################################################
+# Example generator based on Tevatron parameters
+# usage: Herwig++ read TVT.in
+#
+# Since most parameters are identical to LHC,
+# we use the default LHCGenerator and adapt only
+# for the differences
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 100000
+set LHCGenerator:EventHandler:StatLevel Full
+
+##################################################
+# Tevatron physics parameters (override defaults) 
+##################################################
+set LHCGenerator:EventHandler:BeamB /Herwig/Particles/p+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 200.0
+
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
+
+cd /Herwig/Generators
+
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+set /Herwig/Decays/DecayHandler:LifeTimeOption 0
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
+
+set /Herwig/Cuts/QCDCuts:X2Min 0.01

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPISampler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2008 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -170,14 +170,14 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doupdate();
 
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  inline virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -201,7 +201,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this object.

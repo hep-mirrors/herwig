@@ -26,8 +26,8 @@ MEPP2WJet::MEPP2WJet() : _process(0), _maxflavour(5), _plusminus(0),
 			 _wdec(0), _widthopt(1)
 {}
 
-void MEPP2WJet::doinit() throw(InitException) {
-  MEBase::doinit();
+void MEPP2WJet::doinit() {
+  HwMEBase::doinit();
   _wplus  = getParticleData(ThePEG::ParticleID::Wplus );
   _wminus = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -257,15 +257,15 @@ void MEPP2WJet::getDiagrams() const {
 	// q qbar -> W- g
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg2, qNeg2, 1, _wminus,
-		       3, g,  4, lNeg1, 4, lNeg2, -1)));
-	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg1, qNeg2, 3, _wminus,
+		       2, g,  4, lNeg1, 4, lNeg2, -1)));
+	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg1, qNeg2, 2, _wminus,
 		       1, g,  4, lNeg1, 4, lNeg2, -2)));
 	}
 	// q qbar -> W+ g
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos2, qPos2, 1, _wplus,
-		       3, g,  4, lPos1, 4, lPos2, -3)));
-	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos1, qPos2, 3, _wplus,
+		       2, g,  4, lPos1, 4, lPos2, -3)));
+	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos1, qPos2, 2, _wplus,
 		       1, g,  4, lPos1, 4, lPos2, -4)));
 	}
       }
@@ -273,13 +273,13 @@ void MEPP2WJet::getDiagrams() const {
       if(_process==0||_process==2) {
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qPos1, g    , 1, _wminus,
-		       3, qPos1,  4, lNeg1, 4, lNeg2, -5)));
+		       2, qPos1,  4, lNeg1, 4, lNeg2, -5)));
 	  add(new_ptr((Tree2toNDiagram(2), qNeg1, g, 1, qNeg1,  3, _wminus,
 		       3, qPos1,  4, lNeg1, 4, lNeg2, -6)));
 	}
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos1, qNeg1, g,     1, _wplus,
-		       3, qNeg1,  4, lPos1, 4, lPos2, -7)));
+		       2, qNeg1,  4, lPos1, 4, lPos2, -7)));
 	  add(new_ptr((Tree2toNDiagram(2), qPos1, g, 1, qNeg1,  3, _wplus,
 		       3, qNeg1,  4, lPos1, 4, lPos2, -8)));
 	}
@@ -288,13 +288,13 @@ void MEPP2WJet::getDiagrams() const {
       if(_process==0||_process==3) {
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg2, qPos2, g,     1, _wminus,
-		       3, qPos2,  4, lNeg1, 4, lNeg2, -9 )));
+		       2, qPos2,  4, lNeg1, 4, lNeg2, -9 )));
 	  add(new_ptr((Tree2toNDiagram(2), qNeg2, g, 1, qNeg2,  3, _wminus,
 		       3, qPos2,  4, lNeg1, 4, lNeg2, -10)));
 	}
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos2, qNeg2, g,     1, _wplus,
-		       3, qNeg2,  4, lPos1, 4, lPos2, -11)));
+		       2, qNeg2,  4, lPos1, 4, lPos2, -11)));
 	  add(new_ptr((Tree2toNDiagram(2), qPos2,  g, 1, qPos2, 3, _wplus,
 		       3, qNeg2,  4, lPos1, 4, lPos2, -12)));
 	}
@@ -374,7 +374,7 @@ MEPP2WJet::diagrams(const DiagramVector & diags) const {
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     int id=abs(diags[i]->id());
     if     (id <= 2 ) sel.insert(meInfo()[id- 1],i);
-    if     (id <= 4 ) sel.insert(meInfo()[id- 3],i);
+    else if(id <= 4 ) sel.insert(meInfo()[id- 3],i);
     else if(id <= 6 ) sel.insert(meInfo()[id- 5],i);
     else if(id <= 8 ) sel.insert(meInfo()[id- 7],i);
     else if(id <= 10) sel.insert(meInfo()[id- 9],i);
@@ -411,7 +411,7 @@ bool MEPP2WJet::generateKinematics(const double * r) {
 		     lastCuts().minKT(wdata));
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
-  if(maxMass2<=0.*GeV2||minMass2<0.*GeV2) return false;
+  if(maxMass2<=ZERO||minMass2<ZERO) return false;
   // also impose the limits from the ParticleData object
   minMass2 = max(minMass2,sqr(wdata->massMin()));
   maxMass2 = min(maxMass2,sqr(wdata->massMax()));
@@ -420,18 +420,18 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(wdata->mass()),Gamma(wdata->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   _mw2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mw=sqrt(_mw2);
   // jacobian
   jacobian(jacobian()*(sqr(_mw2-M2)+sqr(MG))/MG*(rhomax-rhomin)/sHat());
   // set the masses of the outgoing particles in the 2-2 scattering
-  meMomenta()[2].setMass(0.*MeV);
+  meMomenta()[2].setMass(ZERO);
   Lorentz5Momentum pw(mw);
   // generate the polar angle of the hard scattering
   double ctmin(-1.0), ctmax(1.0);
-  Energy q(0.0*GeV);
+  Energy q(ZERO);
   try {
     q = SimplePhaseSpace::getMagnitude(sHat(), meMomenta()[2].mass(),mw);
   }
@@ -439,7 +439,7 @@ bool MEPP2WJet::generateKinematics(const double * r) {
     return false;
   }
   Energy2 pq = sqrt(sHat())*q;
-  if ( ptmin > 0.0*GeV ) {
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -459,7 +459,7 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   // generate the momenta of the W decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
-  Energy q2 = 0.0*GeV;
+  Energy q2 = ZERO;
   try {
     q2 = SimplePhaseSpace::getMagnitude(_mw2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
@@ -469,9 +469,9 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   double cth2 =-1.+2.*r[3];
   double phi2=Constants::twopi*r[4];
   Energy pt2 =q2*sqrt(1.-sqr(cth2));
-  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,ZERO,
 					    meMomenta()[3].mass()),
-			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.*MeV,
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,ZERO,
 					   meMomenta()[4].mass())};
   pl[0].rescaleEnergy();
   pl[1].rescaleEnergy();
@@ -516,8 +516,7 @@ double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double r) {
 } 
 
 double MEPP2WJet::me2() const {
-  useMe();
-  InvEnergy2 output(0./MeV2);
+  InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
   vector<SpinorWaveFunction>    lp;
@@ -851,5 +850,5 @@ void MEPP2WJet::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix)
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
 }

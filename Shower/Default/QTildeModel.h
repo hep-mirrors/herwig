@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/Shower/Base/ShowerModel.h"
-#include "QTildeModel.fh"
 
 namespace Herwig {
 
@@ -31,11 +30,6 @@ class QTildeModel: public ShowerModel {
 public:
 
   /**
-   * The default constructor.
-   */
-  inline QTildeModel();
-
-  /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
    * before the main function starts or
@@ -49,7 +43,7 @@ protected:
    *  The implementation of the virtual member from the base class to
    *  check that the correct objects are loaded
    */
-  virtual void checkConsistency() throw(InitException);
+  virtual void checkConsistency();
 
 protected:
 
@@ -59,13 +53,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -114,16 +108,11 @@ struct ClassTraits<Herwig::QTildeModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "QTildeModel.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeModel.tcc"
-#endif
 
 #endif /* HERWIG_QTildeModel_H */

@@ -44,7 +44,7 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # then add another 'setup' line with that
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
-setup MSSM/Model SPhenoSPS1a.spc
+setup MSSM/Model CMSSM40.1.1.slha
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
@@ -63,7 +63,6 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 

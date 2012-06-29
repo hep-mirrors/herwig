@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2GammaGamma.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -26,6 +26,14 @@
 
 using namespace Herwig;
 
+IBPtr MEPP2GammaGamma::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEPP2GammaGamma::fullclone() const {
+  return new_ptr(*this);
+}
+
 unsigned int MEPP2GammaGamma::orderInAlphaS() const {
   return 0;
 }
@@ -34,7 +42,7 @@ unsigned int MEPP2GammaGamma::orderInAlphaEW() const {
   return 2;
 }
 
-void MEPP2GammaGamma::doinit() throw(InitException) {
+void MEPP2GammaGamma::doinit() {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
@@ -45,7 +53,7 @@ void MEPP2GammaGamma::doinit() throw(InitException) {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 void MEPP2GammaGamma::getDiagrams() const {
@@ -207,13 +215,13 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],p1[outhel1]);
-	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],p2[outhel2]);
+	  diag[0] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p2[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],p2[outhel2]);
-	  diag[1] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],p1[outhel1]);
+	  diag[1] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p1[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 += norm(diag[0]);
@@ -232,13 +240,13 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
   }
   // check versus analytic result
 //   Energy2 s(sHat()),u(uHat()),t(tHat());
-//   double test = 2./3.*sqr(4.*pi*SM().alphaEM(0.))*(t/u+u/t)*
-//     sqr(mePartonData()[0]->charge())*
-//     sqr(mePartonData()[0]->charge());
+//   double test = 2./3.*sqr(4.*Constants::pi*SM().alphaEM(ZERO))*(t/u+u/t)*
+//     pow(double(mePartonData()[0]->iCharge())/3.,4);
 //   cerr << "testing me " << 12./me*test << endl;
   // return the answer (including colour and spin factor)
   if(calc) _me.reset(newme);
-  return me/12;
+  // this is 1/3 colour average, 1/4 spin aver, 1/2 identical particles
+  return me/24.;
 }
 
 double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
@@ -313,11 +321,10 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
   //    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
   // final factors
   if(calc) _me.reset(newme);
-  return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.*GeV2));
+  return 0.25*sum*sqr(SM().alphaS(scale())*SM().alphaEM(ZERO));
 }
 
 void MEPP2GammaGamma::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -345,14 +352,11 @@ void MEPP2GammaGamma::constructVertex(tSubProPtr sub) {
     p1[1]=p1[2];p2[1]=p2[2];
     qqbarME(q,qb,p1,p2,true);
   }
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]->setProductionVertex(hardvertex);
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

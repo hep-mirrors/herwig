@@ -1,0 +1,80 @@
+###################################################
+#
+#  Particle Data objects
+#
+###################################################
+mkdir /Herwig/Feynrules
+
+mkdir /Herwig/Feynrules/Particles
+cd /Herwig/Feynrules/Particles
+${plist}
+
+
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/Feynrules
+cd /Herwig/Feynrules
+
+library FeynrulesModel.so
+
+#### create Herwig::FeynRulesModel FRModel
+create Herwig::FeynRulesModel FRModel
+# cp /Herwig/Model FRModel
+
+# SM couplings
+set FRModel:QCD/RunningAlphaS /Herwig/AlphaS
+set FRModel:EW/RunningAlphaEM /Herwig/AlphaEM
+set FRModel:EW/CKM /Herwig/CKM
+set FRModel:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create FR model vertices
+
+# SM vertices
+set FRModel:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set FRModel:Vertex/FFW /Herwig/Vertices/FFWVertex
+set FRModel:Vertex/FFH /Herwig/Vertices/FFHVertex
+set FRModel:Vertex/FFG /Herwig/Vertices/FFGVertex
+set FRModel:Vertex/FFP /Herwig/Vertices/FFPVertex
+set FRModel:Vertex/GGG /Herwig/Vertices/GGGVertex
+set FRModel:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set FRModel:Vertex/WWH /Herwig/Vertices/WWHVertex
+set FRModel:Vertex/WWW /Herwig/Vertices/WWWVertex
+set FRModel:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set FRModel:Vertex/HGG /Herwig/Vertices/HGGVertex
+set FRModel:Vertex/HPP /Herwig/Vertices/HPPVertex
+
+${vlist}
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+
+###################################################
+# Set up the model framework
+###################################################
+set /Herwig/Feynrules/FRModel:ModelGenerator NewModel
+###################################################
+#
+#  Choose FR over SM
+#
+###################################################
+cd /Herwig/Generators
+
+erase DefaultStrategy:DefaultParticlesDirs[0]
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Feynrules/Particles
+
+set LEPGenerator:StandardModelParameters  /Herwig/Feynrules/FRModel
+set LHCGenerator:StandardModelParameters  /Herwig/Feynrules/FRModel

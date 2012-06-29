@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2VectorMeson.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,7 +28,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::SpinfoPtr;
+
 
 void MEee2VectorMeson::getDiagrams() const {
   tcPDPtr em = getParticleData(ParticleID::eminus);
@@ -41,14 +41,14 @@ Energy2 MEee2VectorMeson::scale() const {
 }
 
 int MEee2VectorMeson::nDim() const {
-  return 0;
+  return 1;
 }
 
 void MEee2VectorMeson::setKinematics() {
   MEBase::setKinematics(); // Always call the base class method first.
 }
 
-bool MEee2VectorMeson::generateKinematics(const double *) {
+bool MEee2VectorMeson::generateKinematics(const double *r) {
   Lorentz5Momentum pout=meMomenta()[0]+meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2] = pout;
@@ -56,6 +56,7 @@ bool MEee2VectorMeson::generateKinematics(const double *) {
   // check passes all the cuts
   vector<LorentzMomentum> out(1,meMomenta()[2]);
   tcPDVector tout(1,mePartonData()[2]);
+  jacobian(1.+0.002*(0.5-r[0]));
   // return true if passes the cuts
   return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }
@@ -139,7 +140,7 @@ CrossSection MEee2VectorMeson::dSigHatDR() const {
   return me2()*jacobian()*wgt*sqr(hbarc);
 }
 
-void MEee2VectorMeson::doinit() throw(InitException) {
+void MEee2VectorMeson::doinit() {
   MEBase::doinit();
   // mass generator
   tMassGenPtr mass=_vector->massGenerator();
@@ -217,7 +218,7 @@ void MEee2VectorMeson::constructVertex(tSubProPtr sub) {
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<3;++ix) {
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
   }
 }
 

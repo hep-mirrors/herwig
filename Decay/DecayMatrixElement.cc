@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayMatrixElement.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,11 +31,11 @@ void DecayMatrixElement::Init() {
 }
     
 // calculate the decay matrix for this decay
-RhoDMatrix DecayMatrixElement::calculateDMatrix(vector<RhoDMatrix> rhoout) {
+RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
-  RhoDMatrix output(_inspin);output.zero();
+  RhoDMatrix output(_inspin, false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
@@ -65,12 +65,13 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(vector<RhoDMatrix> rhoout) {
 }
 
 // calculate the rho matrix for a given outgoing particle
-RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
-						  vector<RhoDMatrix>rhoout) {
+RhoDMatrix DecayMatrixElement::
+calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
+		   const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
-  RhoDMatrix output(_outspin[id]); output.zero();
+  RhoDMatrix output(_outspin[id], false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
@@ -88,7 +89,7 @@ RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
       // matrix element piece
       temp=_matrixelement[ix]*conj(_matrixelement[iy]);
       // spin denisty matrix for the incoming particle
-      temp*=rhoin(ihel1[0],ihel2[0]);
+      temp *= rhoin(ihel1[0],ihel2[0]);
       // spin density matrix for the outgoing particles
       for(iz=0;iz<_outspin.size()-1;++iz) {
 	if(int(iz)<id) temp*=rhoout[iz](ihel1[iz+1],ihel2[iz+1]);
@@ -104,13 +105,12 @@ RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
 }
 
 // contract the matrix element with the rho matrix of the incoming particle
-Complex DecayMatrixElement::contract(RhoDMatrix &in) {
+Complex DecayMatrixElement::contract(const RhoDMatrix & in) const {
   unsigned int ispin(abs(int(_inspin)));
   Complex me=0.;
-  unsigned int ix,inhel1,inhel2;
-  for(ix=0;ix<_constants[1];++ix) {
-    for(inhel1=0;inhel1<ispin;++inhel1) {
-      for(inhel2=0;inhel2<ispin;++inhel2) {
+  for(unsigned int ix=0;ix<_constants[1];++ix) {
+    for(unsigned int inhel1=0;inhel1<ispin;++inhel1) {
+      for(unsigned int inhel2=0;inhel2<ispin;++inhel2) {
 	// compute the term
 	me+=_matrixelement[inhel1*_constants[1]+ix]*
 	  conj(_matrixelement[inhel2*_constants[1]+ix])*in(inhel1,inhel2);
@@ -122,7 +122,7 @@ Complex DecayMatrixElement::contract(RhoDMatrix &in) {
 
 // contract the matrix element with the rho matrix of the incoming particle
 Complex DecayMatrixElement::contract(const DecayMatrixElement & con, 
-				     RhoDMatrix &in) {
+				     const RhoDMatrix & in) {
   unsigned int ispin(abs(int(_inspin)));
   Complex me=0.;
   unsigned int ix,inhel1,inhel2;

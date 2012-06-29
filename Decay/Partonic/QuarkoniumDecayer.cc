@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QuarkoniumDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -120,8 +120,8 @@ ParticleVector QuarkoniumDecayer::decay(const Particle & p,
     Kinematics::generateAngles(Theta, Phi);
     Energy p1 = partons[0]->mass();
     Energy p2 = partons[1]->mass();
-    if(p1 == 0.0*GeV) p1 = gluMass;
-    if(p2 == 0.0*GeV) p2 = gluMass;
+    if(p1 == ZERO) p1 = gluMass;
+    if(p2 == ZERO) p2 = gluMass;
     if (! Kinematics::twoBodyDecay(p.momentum(), p1, p2, Theta, Phi,
 				   products[0], products[1]))
       return ParticleVector();
@@ -148,7 +148,7 @@ void QuarkoniumDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  output << "newdef " << name() << ":MECode " << MECode << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

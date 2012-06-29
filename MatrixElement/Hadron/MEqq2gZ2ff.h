@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEqq2gZ2ff.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEqq2gZ2ff class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/DrellYanBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEqq2gZ2ffInterfaces "The interfaces"
  * defined for MEqq2gZ2ff.
  */
-class MEqq2gZ2ff: public HwME2to2Base {
+class MEqq2gZ2ff: public DrellYanBase {
 
 public:
 
@@ -150,13 +150,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -168,7 +168,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -222,9 +222,14 @@ private:
    */
   //@{
   /**
-   *  Allowed flavours for the incoming quarks
+   *  Minimum allowed flavour for the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _minflavour;
+
+  /**
+   *  Maximum allowed flavour for the incoming quarks
+   */
+  int _maxflavour;
 
   /**
    *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one
@@ -234,7 +239,7 @@ private:
   /**
    *  Which processes to include
    */
-  unsigned int _process;
+  int _process;
   //@}
 
   /**
@@ -256,7 +261,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEqq2gZ2ff,1> {
   /** Typedef of the first base class of MEqq2gZ2ff. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::DrellYanBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

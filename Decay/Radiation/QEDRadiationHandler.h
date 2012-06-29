@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QEDRadiationHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -64,7 +64,7 @@ public:
     * @throws Exception if something goes wrong.
     */
   virtual void handle(EventHandler & eh, const tPVector & tagged,
-		      const Hint & hint) throw(Veto, Stop, Exception);
+		      const Hint & hint);
   //@}
 
 public:
@@ -101,13 +101,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -172,7 +172,5 @@ struct ClassTraits<Herwig::QEDRadiationHandler>
 /** @endcond */
 
 }
-
-#include "QEDRadiationHandler.icc"
 
 #endif /* HERWIG_QEDRadiationHandler_H */

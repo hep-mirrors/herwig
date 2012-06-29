@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ISGW2FormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -313,7 +313,7 @@ ISGW2FormFactor::ISGW2FormFactor() {
   initialModes(numberOfFactors());
 }			     
 
-inline void ISGW2FormFactor::doinit() throw(InitException) {
+void ISGW2FormFactor::doinit() {
   ScalarFormFactor::doinit();
   // set up the quark masses
   _mquark.resize(5);
@@ -358,7 +358,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
   _beta1S0[1][4] = _beta1S0ub;_beta3S1[1][4] = _beta3S1ub;_beta1P[1][4] = _beta1Pub;
   _beta1S0[2][4] = _beta1S0sb;_beta3S1[2][4] = _beta3S1sb;_beta1P[2][4] = _beta1Psb;
   _beta1S0[3][4] = _beta1S0bc;_beta3S1[3][4] = _beta3S1bc;_beta1P[3][4] = _beta1Pbc;
-  _beta1S0[4][4] = 0.*MeV    ;_beta3S1[4][4] = 0.*MeV    ;_beta1P[4][4] = 0.*MeV   ;
+  _beta1S0[4][4] = ZERO    ;_beta3S1[4][4] = ZERO    ;_beta1P[4][4] = ZERO   ;
   // set up the values of mbar
   // get the particle data objects
   tcPDPtr p1S0[5][5],p3S1[5][5];
@@ -446,7 +446,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 1S0 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m1S0 = 0.*MeV;
+	m1S0 = ZERO;
       }
       else {
 	m1S0 = p1S0[ix][iy]->mass();
@@ -455,7 +455,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3S1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3S1 = 0.*MeV;
+	m3S1 = ZERO;
       }
       else {
 	m3S1 = p3S1[ix][iy]->mass();
@@ -464,7 +464,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P0 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P0 = 0.*MeV;
+	m3P0 = ZERO;
       }
       else {
 	m3P0 = p3P0[ix][iy]->mass();
@@ -473,7 +473,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P1 = 0.*MeV;
+	m3P1 = ZERO;
       }
       else {
 	m3P1 = p3P1[ix][iy]->mass();
@@ -482,7 +482,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P2 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P2 = 0.*MeV;
+	m3P2 = ZERO;
       }
       else {
 	m3P2 = p3P2[ix][iy]->mass();
@@ -491,7 +491,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 1P1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m1P1 = 0.*MeV;
+	m1P1 = ZERO;
       }
       else {
 	m1P1 = p1P1[ix][iy]->mass();
@@ -567,25 +567,25 @@ void ISGW2FormFactor::Init() {
   static Parameter<ISGW2FormFactor,Energy> interfaceDownMass
     ("DownMass",
      "The mass of the down quark in the ISGW model (this is a consituent mass)",
-     &ISGW2FormFactor::_mdown, GeV, 0.33*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGW2FormFactor::_mdown, GeV, 0.33*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceUpMass
     ("UpMass",
      "The mass of the up quark in the ISGW model (this is a consituent mass)",
-     &ISGW2FormFactor::_mup, GeV, 0.33*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGW2FormFactor::_mup, GeV, 0.33*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceStrangeMass
     ("StrangeMass",
      "The mass of the strange quark in the ISGW model (this is a consituent mass)",
-     &ISGW2FormFactor::_mstrange, GeV, 0.55*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGW2FormFactor::_mstrange, GeV, 0.55*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceCharmMass
     ("CharmMass",
      "The mass of the charm quark in the ISGW model (this is a consituent mass)",
-     &ISGW2FormFactor::_mcharm, GeV, 1.82*GeV, 0.0*GeV, 3.0*GeV,
+     &ISGW2FormFactor::_mcharm, GeV, 1.82*GeV, ZERO, 3.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBottomMass
@@ -597,163 +597,163 @@ void ISGW2FormFactor::Init() {
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0ud
     ("Beta1S0ud",
      "The beta wavefunction parameter for the ud meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0ud, GeV, 0.41*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0ud, GeV, 0.41*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0us
     ("Beta1S0us",
      "The beta wavefunction parameter for the us meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0us, GeV, 0.44*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0us, GeV, 0.44*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0ss
     ("Beta1S0ss",
      "The beta wavefunction parameter for the ss meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0ss, GeV, 0.53*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0ss, GeV, 0.53*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0cu
     ("Beta1S0cu",
      "The beta wavefunction parameter for the cu meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0cu, GeV, 0.45*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0cu, GeV, 0.45*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0cs
     ("Beta1S0cs",
      "The beta wavefunction parameter for the cs meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0cs, GeV, 0.56*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0cs, GeV, 0.56*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0ub
     ("Beta1S0ub",
      "The beta wavefunction parameter for the ub meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0ub, GeV, 0.43*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0ub, GeV, 0.43*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0sb
     ("Beta1S0sb",
      "The beta wavefunction parameter for the sb meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0sb, GeV, 0.54*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0sb, GeV, 0.54*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0cc
     ("Beta1S0cc",
      "The beta wavefunction parameter for the cc meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0cc, GeV, 0.88*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0cc, GeV, 0.88*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1S0bc
     ("Beta1S0bc",
      "The beta wavefunction parameter for the bc meson in the 1 1S0 level",
-     &ISGW2FormFactor::_beta1S0bc, GeV, 0.92*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1S0bc, GeV, 0.92*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pud
     ("Beta1Pud",
      "The beta wavefunction parameter for the ud meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pud, GeV, 0.28*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pud, GeV, 0.28*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pus
     ("Beta1Pus",
      "The beta wavefunction parameter for the us meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pus, GeV, 0.30*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pus, GeV, 0.30*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pss
     ("Beta1Pss",
      "The beta wavefunction parameter for the ss meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pss, GeV, 0.33*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pss, GeV, 0.33*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pcu
     ("Beta1Pcu",
      "The beta wavefunction parameter for the cu meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pcu, GeV, 0.33*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pcu, GeV, 0.33*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pcs
     ("Beta1Pcs",
      "The beta wavefunction parameter for the cs meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pcs, GeV, 0.38*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pcs, GeV, 0.38*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pub
     ("Beta1Pub",
      "The beta wavefunction parameter for the ub meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pub, GeV, 0.35*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pub, GeV, 0.35*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Psb
     ("Beta1Psb",
      "The beta wavefunction parameter for the sb meson in the 1P level",
-     &ISGW2FormFactor::_beta1Psb, GeV, 0.41*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Psb, GeV, 0.41*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pcc
     ("Beta1Pcc",
      "The beta wavefunction parameter for the cc meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pcc, GeV, 0.52*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pcc, GeV, 0.52*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta1Pbc
     ("Beta1Pbc",
      "The beta wavefunction parameter for the bc meson in the 1P level",
-     &ISGW2FormFactor::_beta1Pbc, GeV, 0.60*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta1Pbc, GeV, 0.60*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1ud
     ("Beta3S1ud",
      "The beta wavefunction parameter for the ud meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1ud, GeV, 0.30*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1ud, GeV, 0.30*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1us
     ("Beta3S1us",
      "The beta wavefunction parameter for the us meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1us, GeV, 0.33*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1us, GeV, 0.33*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1ss
     ("Beta3S1ss",
      "The beta wavefunction parameter for the ss meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1ss, GeV, 0.37*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1ss, GeV, 0.37*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1cu
     ("Beta3S1cu",
      "The beta wavefunction parameter for the cu meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1cu, GeV, 0.38*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1cu, GeV, 0.38*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1cs
     ("Beta3S1cs",
      "The beta wavefunction parameter for the cs meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1cs, GeV, 0.44*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1cs, GeV, 0.44*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1ub
     ("Beta3S1ub",
      "The beta wavefunction parameter for the ub meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1ub, GeV, 0.40*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1ub, GeV, 0.40*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1sb
     ("Beta3S1sb",
      "The beta wavefunction parameter for the sb meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1sb, GeV, 0.49*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1sb, GeV, 0.49*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1cc
     ("Beta3S1cc",
      "The beta wavefunction parameter for the cc meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1cc, GeV, 0.62*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1cc, GeV, 0.62*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,Energy> interfaceBeta3S1bc
     ("Beta3S1bc",
      "The beta wavefunction parameter for the bc meson in the 3S1 level",
-     &ISGW2FormFactor::_beta3S1bc, GeV, 0.75*GeV, 0.0*GeV, 10.0*GeV,
+     &ISGW2FormFactor::_beta3S1bc, GeV, 0.75*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ISGW2FormFactor,double> interfaceAlphaCutOff
@@ -862,6 +862,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				 Energy mY,
 				 Energy mX, Complex & f1,Complex & f2,Complex & f3,
 				 Complex & f4) const {
+  useMe();
   // get the flavours of the quarks etc
   int jspin,spect,inquark,outquark;
   formFactorInfo(iloc,jspin,spect,inquark,outquark);
@@ -873,7 +874,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   // of the mesons
   Energy mtildeX(mq+ms),mtildeY(mQ+ms),mup(mq*mQ/(mQ+mq)),mum(mq*mQ/(mQ-mq));
   // wavefunction parameters for the mesons
-  Energy betaX(0.*MeV),mbarX(0.*MeV),
+  Energy betaX(ZERO),mbarX(ZERO),
     betaY(_beta1S0[ifl0-1][ifls-1]),mbarY(_mass1S0[ifl0-1][ifls-1]);
   double Cf(1.);
   // the wavefunction parameter for the outgoing meson
@@ -934,9 +935,9 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   // work out wtilde
   double wt(1.+0.5*tmmt/mbarX/mbarY);
   // storage of the form factors
-  Energy f(0.*MeV);
-  InvEnergy g(0./MeV),appam(0./MeV),apmam(0./MeV);
-  InvEnergy2 h(0./MeV2),bp(0./MeV2),bm(0./MeV2);
+  Energy f(ZERO);
+  InvEnergy g(ZERO),appam(ZERO),apmam(ZERO);
+  InvEnergy2 h(ZERO),bp(ZERO),bm(ZERO);
   double fpmfm(0.),fppfm(0.),k(0.);
   // scalar and vector from 1S levels
   if(ispin==0) {
@@ -1158,53 +1159,54 @@ ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 
 void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::ISGW2FormFactor " << fullName() << "\n";
-  output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
-  output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
-  output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";
-  output << "set " << fullName() << ":CharmMass "   << _mcharm/GeV   << "\n";
-  output << "set " << fullName() << ":BottomMass "  << _mbottom/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0ud " << _beta1S0ud/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0us " << _beta1S0us/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0ss " << _beta1S0ss/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0cu " << _beta1S0cu/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0cs " << _beta1S0cs/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0ub " << _beta1S0ub/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0sb " << _beta1S0sb/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0cc " << _beta1S0cc/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1S0bc " << _beta1S0bc/GeV  << "\n";
-  output << "set " << fullName() << ":Beta1Pud  " << _beta1Pud/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pus  " << _beta1Pus/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pss  " << _beta1Pss/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pcu  " << _beta1Pcu/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pcs  " << _beta1Pcs/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pub  " << _beta1Pub/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Psb  " << _beta1Psb/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pcc  " << _beta1Pcc/GeV   << "\n";
-  output << "set " << fullName() << ":Beta1Pbc  " << _beta1Pbc/GeV   << "\n";
-  output << "set " << fullName() << ":Beta3S1ud " << _beta3S1ud/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1us " << _beta3S1us/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1ss " << _beta3S1ss/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1cu " << _beta3S1cu/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1cs " << _beta3S1cs/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1ub " << _beta3S1ub/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1sb " << _beta3S1sb/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1cc " << _beta3S1cc/GeV  << "\n";
-  output << "set " << fullName() << ":Beta3S1bc " << _beta3S1bc/GeV  << "\n";
-  output << "set " << fullName() << ":AlphaCutOff " << _alphamuQM    << "\n";
-  output << "set " << fullName() << ":CfDrho "      << _CfDrho       << "\n";
-  output << "set " << fullName() << ":CfDKstar "    << _CfDKstar     << "\n";
-  output << "set " << fullName() << ":CfDsKstar "   << _CfDsKstar    << "\n";
-  output << "set " << fullName() << ":CfDsphi "     << _CfDsphi      << "\n";
-  output << "set " << fullName() << ":CfBrho "      << _CfBrho       << "\n";
-  output << "set " << fullName() << ":CfBDstar "    << _CfBDstar     << "\n";
-  output << "set " << fullName() << ":CfBsKstar "   << _CfBsKstar    << "\n";
-  output << "set " << fullName() << ":CfBsDstar "   << _CfBsDstar    << "\n";
-  output << "set " << fullName() << ":CfBcDstar "   << _CfBcDstar    << "\n";
-  output << "set " << fullName() << ":CfBcpsi "     << _CfBcpsi      << "\n";
-  output << "set " << fullName() << ":CfBcBsstar "  << _CfBcBsstar   << "\n";
-  output << "set " << fullName() << ":CfBcBstar "   << _CfBcBstar    << "\n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  if(create) output << "create Herwig::ISGW2FormFactor " << name() << "\n";
+  output << "newdef " << name() << ":DownMass "    << _mdown/GeV    << "\n";
+  output << "newdef " << name() << ":UpMass "      << _mup/GeV      << "\n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << "\n";
+  output << "newdef " << name() << ":CharmMass "   << _mcharm/GeV   << "\n";
+  output << "newdef " << name() << ":BottomMass "  << _mbottom/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0ud " << _beta1S0ud/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0us " << _beta1S0us/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0ss " << _beta1S0ss/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0cu " << _beta1S0cu/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0cs " << _beta1S0cs/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0ub " << _beta1S0ub/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0sb " << _beta1S0sb/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0cc " << _beta1S0cc/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1S0bc " << _beta1S0bc/GeV  << "\n";
+  output << "newdef " << name() << ":Beta1Pud  " << _beta1Pud/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pus  " << _beta1Pus/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pss  " << _beta1Pss/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pcu  " << _beta1Pcu/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pcs  " << _beta1Pcs/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pub  " << _beta1Pub/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Psb  " << _beta1Psb/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pcc  " << _beta1Pcc/GeV   << "\n";
+  output << "newdef " << name() << ":Beta1Pbc  " << _beta1Pbc/GeV   << "\n";
+  output << "newdef " << name() << ":Beta3S1ud " << _beta3S1ud/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1us " << _beta3S1us/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1ss " << _beta3S1ss/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1cu " << _beta3S1cu/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1cs " << _beta3S1cs/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1ub " << _beta3S1ub/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1sb " << _beta3S1sb/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1cc " << _beta3S1cc/GeV  << "\n";
+  output << "newdef " << name() << ":Beta3S1bc " << _beta3S1bc/GeV  << "\n";
+  output << "newdef " << name() << ":AlphaCutOff " << _alphamuQM    << "\n";
+  output << "newdef " << name() << ":CfDrho "      << _CfDrho       << "\n";
+  output << "newdef " << name() << ":CfDKstar "    << _CfDKstar     << "\n";
+  output << "newdef " << name() << ":CfDsKstar "   << _CfDsKstar    << "\n";
+  output << "newdef " << name() << ":CfDsphi "     << _CfDsphi      << "\n";
+  output << "newdef " << name() << ":CfBrho "      << _CfBrho       << "\n";
+  output << "newdef " << name() << ":CfBDstar "    << _CfBDstar     << "\n";
+  output << "newdef " << name() << ":CfBsKstar "   << _CfBsKstar    << "\n";
+  output << "newdef " << name() << ":CfBsDstar "   << _CfBsDstar    << "\n";
+  output << "newdef " << name() << ":CfBcDstar "   << _CfBcDstar    << "\n";
+  output << "newdef " << name() << ":CfBcpsi "     << _CfBcpsi      << "\n";
+  output << "newdef " << name() << ":CfBcBsstar "  << _CfBcBsstar   << "\n";
+  output << "newdef " << name() << ":CfBcBstar "   << _CfBcBstar    << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

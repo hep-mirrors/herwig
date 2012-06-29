@@ -7,7 +7,6 @@
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "LHModel.h"
-#include "LHWWWVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -40,8 +39,7 @@ public:
    * @param d2 The direction for the second particle.
    * @param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   Direction d1,Direction d2, Direction d3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 public:
 
@@ -77,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -96,7 +94,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -173,7 +171,5 @@ struct ClassTraits<Herwig::LHWWWVertex>
 /** @endcond */
 
 }
-
-#include "LHWWWVertex.icc"
 
 #endif /* HERWIG_LHWWWVertex_H */

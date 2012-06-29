@@ -28,14 +28,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -97,7 +97,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -135,6 +135,31 @@ private:
    * Store the vertices for vector intrermediate
    */
   vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > _ten;
+
+  /**
+   *  Spinr density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decaying particle
+   */
+  mutable vector<VectorWaveFunction> _inVector;
+
+  /**
+   *  Scalar wavefunction for the decay products
+   */
+  mutable ScalarWaveFunction _swave;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
+  mutable vector<VectorWaveFunction> _outVector;
+
+  /**
+   *  Spinors for the decay products
+   */
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
 };
 
 }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GSLBisection.tcc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -63,13 +63,13 @@ GSLBisection::value(const T & fn,
     throw IntervalError();
   }
    
+/*    
   printf ("Root finding is using %s method\n", 
 	  gsl_root_fsolver_name (solver));
-    
   printf ("%5s [%9s, %9s] %9s %10s\n",
 	  "iter", "lower", "upper", "root", 
 	  "err");
-     
+*/   
   do{
     iter++;
     status = gsl_root_fsolver_iterate (solver);
@@ -78,12 +78,14 @@ GSLBisection::value(const T & fn,
     x_hi = gsl_root_fsolver_x_upper (solver);
     status = gsl_root_test_interval (x_lo, x_hi, abserr_, relerr_);
     
+/*    
     if (status == GSL_SUCCESS)
       printf ("Converged:\n");
-    
+
     printf ("%5d [%.7f, %.7f] %.7f %.7f\n",
 	    iter, x_lo, x_hi,
 	    result, x_hi - x_lo);
+*/
   }
   while (status == GSL_CONTINUE && iter < maxPoints_);
     

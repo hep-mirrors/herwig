@@ -7,7 +7,6 @@
 
 #include "LHModel.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "LHFFZVertex.fh"
 
 namespace Herwig {
 
@@ -26,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LHFFZVertex();
+  LHFFZVertex();
   
   /**
    * Calculate the couplings. 
@@ -69,13 +68,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -87,7 +86,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -172,13 +171,11 @@ struct ClassTraits<Herwig::LHFFZVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwLH.so"; }
+  static string library() { return "HwLHModel.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "LHFFZVertex.icc"
 
 #endif /* HERWIG_LHFFZVertex_H */

@@ -5,11 +5,11 @@
 // This is the declaration of the MEfftoVH class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "DrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/SMHiggsMassGenerator.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -22,14 +22,14 @@ using namespace ThePEG;
  * @see \ref MEfftoVHInterfaces "The interfaces"
  * defined for MEfftoVH.
  */
-class MEfftoVH: public MEBase {
+class MEfftoVH: public DrellYanBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEfftoVH() : _shapeopt(2), _mh(), _wh() {}
+  MEfftoVH() : _shapeopt(2), _maxflavour(5), _mh(), _wh() {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -183,7 +183,34 @@ protected:
    *  Access to the \f$Z^0\f$ data
    */ 
   PDPtr Z0() const { return _z0; }
+
+  /**
+   *  Access to the higgs data
+   */ 
+  PDPtr higgs() const { return _higgs; }
+
+  /**
+   *  Set the higgs data
+   */ 
+  void higgs(PDPtr in) {_higgs =in;}
   //@}
+
+  /**
+   *  Set the pointer to the vector-vector-Higgs vertex
+   */
+  void setWWHVertex(AbstractVVSVertexPtr in) {
+    _vertexWWH = in;
+  }
+
+  /**
+   *  Set the line shape treatment
+   */
+  void lineShape(unsigned int in) {_shapeopt=in;}
+
+  /**
+   *  Maximum flavour of the incoming partons
+   */
+  unsigned int maxFlavour() const {return _maxflavour;}
 
 protected:
 
@@ -194,7 +221,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -219,6 +246,11 @@ private:
   unsigned int _shapeopt;
 
   /**
+   *  The allowed flavours of the incoming quarks
+   */
+  unsigned int _maxflavour;
+
+  /**
    *  The intermediate vector bosons
    */
   //@{
@@ -236,6 +268,11 @@ private:
    *  \f$Z^0\f$
    */
   PDPtr _z0;
+
+  /**
+   *  The higgs bosom
+   */
+  PDPtr _higgs;
   //@}
 
   /**
@@ -271,8 +308,7 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
-
+  GenericMassGeneratorPtr _hmass;
 
   /**
    * Matrix element for spin correlations
@@ -293,7 +329,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEfftoVH,1> {
   /** Typedef of the first base class of MEfftoVH. */
-  typedef MEBase NthBase;
+  typedef Herwig::DrellYanBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

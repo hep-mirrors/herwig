@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimpleLHCAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,7 +28,19 @@ SimpleLHCAnalysis::SimpleLHCAnalysis() :
   _ptWm(4,Histogram(0.,250.,250)), 
   _mZ(0.,250.,250), _mWp(0.,250.,250), _mWm(0.,250.,250), 
   _rapZ(-10.,10.,100),_rapWp(-10.,10.,100),_rapWm(-10.,10.,100),
-  _phiZ(-3.2,3.2,100),_phiWp(-3.2,3.2,100),_phiWm(-3.2,3.2,100) {}
+  _phiZ(-Constants::pi,Constants::pi,100),
+  _phiWp(-Constants::pi,Constants::pi,100),
+  _phiWm(-Constants::pi,Constants::pi,100) 
+{}
+
+void sumMomenta(Lorentz5Momentum & psum, tPPtr parent) {
+  if(!parent->children().empty()) {
+    for(unsigned int ix=0;ix<parent->children().size();++ix)
+      sumMomenta(psum,parent->children()[ix]);
+  }
+  else
+    psum += parent->momentum();
+}
 
 void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
@@ -49,9 +61,11 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
     for( ;iter!=end;++iter) {
       if((**iter).children().size()!=2) continue;
       if((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptZ[1].addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) _ptZ[2].addWeighted(pt,event->weight());
 	else if (mz>100.)         _ptZ[3].addWeighted(pt,event->weight());
@@ -61,9 +75,11 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	_phiZ  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wplus) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptWp[1].addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) _ptWp[2].addWeighted(pt,event->weight());
 	else if (mz>100.)         _ptWp[3].addWeighted(pt,event->weight());
@@ -73,9 +89,11 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	_phiWp  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wminus) {
-	pz=(*iter)->momentum();
+	pz=Lorentz5Momentum();
+	sumMomenta(pz,*iter);
+	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        (_ptWm[1]).addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) (_ptWm[2]).addWeighted(pt,event->weight());
 	else if (mz>100.)         (_ptWm[3]).addWeighted(pt,event->weight());

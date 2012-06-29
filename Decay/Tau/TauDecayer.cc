@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TauDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,6 +16,7 @@
 #include "TauDecayer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -31,7 +32,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void TauDecayer::doinit() throw(InitException) {
+void TauDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();
@@ -87,7 +88,23 @@ void TauDecayer::doinit() throw(InitException) {
   _current->touch();
   _current->update();
 }
-  
+
+void TauDecayer::doinitrun() {
+  _current->initrun();
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    _weights.clear();_wgtloc.clear();_wgtmax.clear();
+    unsigned int ix,iy;
+    for(ix=0;ix<numberModes();++ix) {
+      _wgtmax.push_back(mode(ix)->maxWeight());
+      _wgtloc.push_back(_weights.size());
+      for(iy=0;iy<mode(ix)->numberChannels();++iy) {
+	_weights.push_back(mode(ix)->channelWeight(iy));
+      }
+    }
+  }
+}
+
 bool TauDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   bool allowed(false);
   // find the neutrino 
@@ -128,11 +145,13 @@ int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children)
 
 
 void TauDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights;
+  os << _modemap << _current << _wgtloc 
+     << _wgtmax << _weights << _polOpt << _tauMpol << _tauPpol;
 }
 
 void TauDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights;
+  is >> _modemap >> _current >> _wgtloc 
+     >> _wgtmax >> _weights >> _polOpt >> _tauMpol >> _tauPpol;
 }
 
 ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
@@ -143,12 +162,6 @@ void TauDecayer::Init() {
   static ClassDocumentation<TauDecayer> documentation
     ("The TauDecayer class is designed to use a weak current"
      " to perform the decay of the tau.");
-
-  static Parameter<TauDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &TauDecayer::_gf, 1./GeV2, 1.16637E-5/GeV2, 0./GeV2, 1.e-3/GeV2,
-     false, false, false);
 
   static Reference<TauDecayer,WeakDecayCurrent> interfaceWeakCurrent
     ("WeakCurrent",
@@ -172,78 +185,141 @@ void TauDecayer::Init() {
      "The weights for the integration.",
      &TauDecayer::_weights,
      0, 0, 0, 0., 1., false, false, true);
+
+  static Switch<TauDecayer,bool> interfacePolarizationOption
+    ("PolarizationOption",
+     "Option of forcing the polarization of the tau leptons, N.B. you"
+     " should only use this option for making distributions for"
+     " comparision if you really know what you are doing.",
+     &TauDecayer::_polOpt, false, false, false);
+  static SwitchOption interfacePolarizationOptionDefault
+    (interfacePolarizationOption,
+     "Default",
+     "Don't force the polarization use the full spin density matrices"
+     " to get the right answer",
+     false);
+  static SwitchOption interfacePolarizationOptionForce
+    (interfacePolarizationOption,
+     "Force",
+     "Force the polarizations",
+     true);
+
+  static Parameter<TauDecayer,double> interfaceTauMinusPolarization
+    ("TauMinusPolarization",
+     "The polarization of the tau-, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauMpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
+
+  static Parameter<TauDecayer,double> interfaceTauPlusPolarization
+    ("TauPlusPolarization",
+     "The polarization of the tau+, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauPpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
 }
 
 // combine the currents to give the matrix element
-double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
-		       const ParticleVector & decay) const {
-  // spin density matrix for the decaying particle
-  RhoDMatrix temp(PDT::Spin1Half);temp.average();
-  // storage for the wavefunctions of the tau and neutrino
-  vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  // calculate or extract the wavefunctions of the neutrino
-  if(inpart.id()==ParticleID::tauminus) {
-    SpinorWaveFunction   (wave   ,temp,const_ptr_cast<tPPtr>(&inpart),
-			  incoming,true,vertex);
-    SpinorBarWaveFunction(wavebar,decay[0],outgoing,true,vertex);
-  }
-  else {
-    SpinorBarWaveFunction(wavebar,temp,const_ptr_cast<tPPtr>(&inpart),
-			  incoming,true,vertex);
-    SpinorWaveFunction   (wave   ,decay[0],outgoing,true,vertex);
-  }
+double TauDecayer::me2(const int ichan,const Particle & inpart,
+		       const ParticleVector & decay,
+		       MEOption meopt) const {
   // map the mode to those in the current
   int mode(_modemap[imode()]);
   // get the particles for the hadronic current
-  ParticleVector::const_iterator start(decay.begin()+1),end(decay.end());
-  ParticleVector hadpart(start,end);
-  // calculate the hadron current
+  ParticleVector hadpart(decay.begin()+1,decay.end());
   Energy q;
-  vector<LorentzPolarizationVectorE> 
-    hadron(_current->current(vertex,mode,ichan,q,hadpart));
-  // prefactor
-  double pre(pow(inpart.mass()/q,int(hadpart.size()-2)));pre*=pre;
-  // work out the mapping for the hadron vector
-  vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
-  vector<PDT::Spin> ispin(decay.size());
-  int itemp(1);
-  unsigned int hhel,ix(decay.size()),iy;
-  do {
-    --ix;
-    ispin[ix]=decay[ix]->data().iSpin();
-    itemp*=ispin[ix];constants[ix]=itemp;
+  // extract info on the decaying particle
+  if(meopt==Initialize) {
+    // spin density matrix for the decaying particle
+    _rho = RhoDMatrix(PDT::Spin1Half);
+    if(inpart.id()==ParticleID::tauminus)
+      SpinorWaveFunction   ::calculateWaveFunctions(_inspin,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+    else
+      SpinorBarWaveFunction::calculateWaveFunctions(_inbar ,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+    if(_polOpt) {
+      _rho(0,1) = _rho(1,0) = 0.;
+      if(inpart.id()==ParticleID::tauminus) {
+	_rho(0,0) = 0.5*(1.-_tauMpol);
+	_rho(1,1) = 0.5*(1.+_tauMpol);
+      }
+      else {
+	_rho(0,0) = 0.5*(1.+_tauPpol);
+	_rho(1,1) = 0.5*(1.-_tauPpol);
+      }
+    }
+    // work out the mapping for the hadron vector
+    _constants = vector<unsigned int>(decay.size()+1);
+    _ispin     = vector<PDT::Spin   >(decay.size());
+    int itemp(1);
+    unsigned int ix(decay.size());
+    do {
+      --ix;
+      _ispin[ix]     = decay[ix]->data().iSpin();
+      itemp         *= _ispin[ix];
+      _constants[ix] = itemp;
+    }
+    while(ix>0);
+    _constants[decay.size()] = 1;
+    _constants[0           ] = _constants[1];
+    ME(DecayMatrixElement(PDT::Spin1Half,_ispin));  
   }
-  while(ix>0);
-  constants[decay.size()]=1;
-  constants[0]=constants[1];
+  // connect the spininfo up if needed
+  if(meopt==Terminate) {
+    if(inpart.id()==ParticleID::tauminus) {
+      SpinorWaveFunction   ::
+	constructSpinInfo(_inspin,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorBarWaveFunction::
+	constructSpinInfo(_inbar,decay[0],outgoing,true);
+    }
+    else {
+      SpinorBarWaveFunction::
+	constructSpinInfo(_inbar ,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorWaveFunction::
+	constructSpinInfo(_inspin,decay[0],outgoing,true);
+    }
+    _current->current(mode,ichan,q,hadpart,meopt);
+    return 0.;
+  }
+  // calculate the spinors for the decay products
+  if(inpart.id()==ParticleID::tauminus)
+    SpinorBarWaveFunction::calculateWaveFunctions(_inbar ,decay[0],outgoing);
+  else   
+    SpinorWaveFunction   ::calculateWaveFunctions(_inspin,decay[0],outgoing);
+  // calculate the hadron current
+  vector<LorentzPolarizationVectorE> 
+    hadron(_current->current(mode,ichan,q,hadpart,meopt));
+  // prefactor
+  double pre = sqr(pow(inpart.mass()/q,int(hadpart.size()-2)));
   // calculate the lepton current
   LorentzPolarizationVectorE lepton[2][2];
-  for(ix=0;ix<2;++ix) {
-    for(iy=0;iy<2;++iy) {
+  for(unsigned ix=0;ix<2;++ix) {
+    for(unsigned iy=0;iy<2;++iy) {
       if(inpart.id()==15) 
-	lepton[ix][iy]=2.*wave[ix].leftCurrent(wavebar[iy]); 
+	lepton[ix][iy]=2.*_inspin[ix].leftCurrent(_inbar[iy]); 
       else                
-	lepton[iy][ix]=2.*wave[ix].leftCurrent(wavebar[iy]); 
+	lepton[iy][ix]=2.*_inspin[ix].leftCurrent(_inbar[iy]); 
     }
   }
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1Half,ispin);
-  for(hhel=0;hhel<hadron.size();++hhel) {
+  vector<unsigned int> ihel(decay.size()+1);
+  for(unsigned int hhel=0;hhel<hadron.size();++hhel) {
     // map the index for the hadrons to a helicity state
-    for(ix=decay.size();ix>1;--ix) {
-      ihel[ix]=(hhel%constants[ix-1])/constants[ix];
+    for(unsigned int ix=decay.size();ix>1;--ix) {
+      ihel[ix]=(hhel%_constants[ix-1])/_constants[ix];
     }
     // loop over the helicities of the tau and neutrino and set up the matrix 
     // element
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	newME(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*UnitRemoval::InvE2;
+	ME()(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*
+	  SM().fermiConstant();
       }
     }
   }
-  // store the matrix element
-  ME(newME);
   // multiply by the CKM element
   int iq,ia;
   _current->decayModeInfo(mode,iq,ia);
@@ -252,7 +328,7 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
     if(iq%2==0) ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);
     else        ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);
   }
-  return 0.5*pre*ckm*(newME.contract(temp)).real()*_gf*_gf*UnitRemoval::E4;
+  return 0.5*pre*ckm*(ME().contract(_rho)).real();
 }
   
 // output the setup information for the particle database
@@ -260,20 +336,19 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "    << _gf*GeV2 << "\n";
   for(ix=0;ix<_wgtloc.size();++ix) {
-    output << "insert " << fullName() << ":WeightLocation " << ix << " " 
+    output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
   }
   for(ix=0;ix<_wgtmax.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight "  << ix << " " 
+    output << "insert " << name() << ":MaximumWeight "  << ix << " " 
 	   << _wgtmax[ix] << "\n";
   }
   for(ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights "        << ix << " " 
+    output << "insert " << name() << ":Weights "        << ix << " " 
 	   << _weights[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":WeakCurrent " << _current->fullName() << " \n";
+  output << "newdef " << name() << ":WeakCurrent " << _current->name() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

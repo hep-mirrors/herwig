@@ -31,8 +31,10 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralThreeBodyDecayer() :
-    _widthopt(1), _reftag(""), _reftagcc("") {}
+  GeneralThreeBodyDecayer() : _nflow(999), _widthopt(1), 
+			      _reftag(), _reftagcc(), _iflow(999),
+			      _intOpt(0), _relerr(1e-2)
+  {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -52,17 +54,6 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent,const tPDVector & children) const;
-
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
-   * @param ichan The channel we are calculating the matrix element for.
-   * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const = 0;
   
   /**
    * The matrix element to be integrated for the three-body decays as a function
@@ -107,11 +98,9 @@ public:
   /**
    *  Set the diagrams
    */
-  void setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
+  bool setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
 		    const vector<TBDiagram> & process,
-		    const vector<DVector> & factors,
-		    const vector<DVector> & Ncfactors,
-		    const unsigned int ncf);
+		    double symfac);
 
 public:
 
@@ -148,7 +137,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:
@@ -157,48 +146,53 @@ protected:
    * Access the TBDiagrams that store the required information
    * to create the diagrams
    */
-  inline const vector<TBDiagram> & getProcessInfo() const {
+  const vector<TBDiagram> & getProcessInfo() const {
     return _diagrams;
   }
 
   /**
    *  Incoming particle
    */
-  inline PDPtr incoming() const { return _incoming; }
+  PDPtr incoming() const { return _incoming; }
 
   /**
    *  Outgoing particles
    */
-  inline const vector<PDPtr> & outgoing() const {  return _outgoing; }
+  const vector<PDPtr> & outgoing() const {  return _outgoing; }
  
   /**
    *  Number of colour flows
    */
-  inline unsigned int numberOfFlows() const { return _nflow; }
+  unsigned int numberOfFlows() const { return _nflow; }
+
+  /**
+   * Set up the colour factors
+   */
+  bool setColourFactors(double symfac);
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getColourFactors() const {  return _colour; }
+  const vector<DVector> & getColourFactors() const {  return _colour; }
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getLargeNcColourFactors() const {
+  const vector<DVector> & getLargeNcColourFactors() const {
     return _colourLargeNC;
   }
 
   /**
    *  Get the mapping between the phase-space channel and the diagram
    */
-  inline const vector<unsigned int> & diagramMap() const { 
+  const vector<unsigned int> & diagramMap() const { 
     return _diagmap; 
   }
 
   /**
    *  Option for the handling of the widths of the intermediate particles
    */
-  inline unsigned int widthOption() const { return _widthopt; }
+  unsigned int widthOption() const { return _widthopt; }
 
   /**
    * Set colour connections
@@ -210,7 +204,12 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
-   *
+   *  Method to construct the channels for the integrator to give the partial width
+   * @param intype  Types of the channels
+   * @param inmass Mass for the channels
+   * @param inwidth Width for the channels
+   * @param inpow Power for the channels
+   * @param inweights Weights for the channels
    */
   void constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 				   vector<Energy> & inwidth, vector<double> & inpow,
@@ -218,14 +217,19 @@ protected:
 
   /**
    *  Set the colour flow
-   * @param The value for the colour flow
+   * @param flow The value for the colour flow
    */
-  inline void colourFlow(unsigned int flow) const { _iflow = flow; }
+  void colourFlow(unsigned int flow) const { _iflow = flow; }
 
   /**
    *  Set the colour flow
    */
-  inline unsigned int const & colourFlow() const { return _iflow; }
+  unsigned int const & colourFlow() const { return _iflow; }
+
+  /**
+   *  Relative error for GQ integration
+   */
+  double relativeError() const {return _relerr;}
 
 private:
 
@@ -306,6 +310,16 @@ private:
    *  The colour flow
    */
   mutable unsigned int _iflow;
+
+  /**
+   *  Option for the construction of the gaussian integrator
+   */
+  unsigned int _intOpt;
+
+  /**
+   *  Relative error for GQ integration of partial width
+   */
+  double _relerr;
 };
 
 }

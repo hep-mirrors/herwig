@@ -20,8 +20,9 @@ using namespace Herwig;
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void MEMinBias::getDiagrams() const {
-  int maxflav(5);
-  tcPDPtr ph = getParticleData(ParticleID::gamma);
+  int maxflav(2);
+  // Pomeron data
+  tcPDPtr pom = getParticleData(990);
 
   for ( int i = 1; i <= maxflav; ++i ) {
     for( int j=1; j <= i; ++j){
@@ -32,13 +33,11 @@ void MEMinBias::getDiagrams() const {
 
       // For each flavour we add:
       //qq -> qq
-      add(new_ptr((Tree2toNDiagram(3), q1, ph, q2, 1, q1, 2, q2, -1)));
+      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2, 1, q1, 2, q2, -1)));
       //qqb -> qqb
-      add(new_ptr((Tree2toNDiagram(3), q1, ph, q2b, 1, q1, 2, q2b, -2)));
-      //qbq -> qbq
-      //      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2, 1, q1b, 2, q2, -3)));
+      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
       //qbqb -> qbqb
-      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2b, 1, q1b, 2, q2b, -3)));
+      add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
     }
   }
 }
@@ -52,7 +51,7 @@ int MEMinBias::nDim() const {
 }
 
 void MEMinBias::setKinematics() {
-  MEBase::setKinematics(); // Always call the base class method first.
+  HwMEBase::setKinematics(); // Always call the base class method first.
 }
 
 bool MEMinBias::generateKinematics(const double *) {
@@ -61,7 +60,7 @@ bool MEMinBias::generateKinematics(const double *) {
     meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->generateMass());
   }
 
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -69,7 +68,7 @@ bool MEMinBias::generateKinematics(const double *) {
     return false;
   }
 
-  Energy pt = 0*GeV;
+  Energy pt = ZERO;
   meMomenta()[2].setVect(Momentum3( pt,  pt, q));
   meMomenta()[3].setVect(Momentum3(-pt, -pt, -q));
 
@@ -110,7 +109,6 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
 
   static ColourLines qq("1 4, 3 5");
   static ColourLines qqb("1 4, -3 -5");
-  //  static ColourLines qbq("-1 -4, 3 5");
   static ColourLines qbqb("-1 -4, -3 -5");
 
   Selector<const ColourLines *> sel;
@@ -122,9 +120,6 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
   case -2:
     sel.insert(1.0, &qqb);
     break;
-    //  case -3:
-    // sel.insert(1.0, &qbq);
-    //break;
   case -3:
     sel.insert(1.0, &qbqb);
     break;

@@ -8,40 +8,13 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
+#include "PrototypeVertex.h"
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::VertexType;
+
 using Helicity::VertexBasePtr;
-
-/**
- * A two body decay mode which is a prototype for the 
- * three body mode
- */
-struct TwoBodyPrototype {
-
-  /**
-   *  Constructor
-   */
-  TwoBodyPrototype(tPDPtr in, tPDPair out, VertexBasePtr v) :
-    incoming(in), outgoing(out), vertex(v) {}
-
-  /**
-   *  Incoming particle
-   */
-  tPDPtr incoming;
-
-  /**
-   *  Outgoing particles
-   */
-  tPDPair outgoing;
-
-  /**
-   *  The vertex for the interaction
-   */
-  VertexBasePtr vertex;
-};
 
 /**
  * The ThreeBodyDecayConstructor class inherits from the dummy base class
@@ -60,45 +33,31 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor() : 
-    _removeOnShell(true), _interopt(0), _widthopt(1) {}
+  ThreeBodyDecayConstructor() : 
+    interOpt_(0), widthOpt_(1), weakMassCut_(-GeV),
+    intOpt_(1), relErr_(1e-2) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part);
+  virtual void DecayList(const set<PDPtr> & part);
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const { return 3; }
 
 protected:
 
-
   /**
-   * Create the two body prototypes for the decays
-   * @param inpart Incoming particle 
-   * @param vert The vertex to create decays for
-   * @param ilist Which list to search
-   * @return A vector a decay modes
+   * Create the decayer
+   * @param diagrams The diagrams for the decay
+   * @param inter Option for intermediates
    */
-  vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
-					unsigned int ilist);
-
-  /**
-   * Expand the two body prototype to get the possible
-   * threebody diagrams
-   * @param proto The two body prototype
-   * @param vert The vertex to create decays for
-   * @param ilist Which list to search
-   */
-  vector<TBDiagram> expandPrototype(TwoBodyPrototype proto, VertexBasePtr vert,
-				    unsigned int ilist);
-
-  /**
-   *  Create the decayer
-   * @param The diagrams for the decay
-   */
-  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
-					   bool inter) const;
+  GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
+					   bool inter,double symfac) const;
 
   /**
    * Contruct the classname and object name for the Decayer
@@ -112,18 +71,11 @@ protected:
   /**
    *  Create the DecayMode from the diagrams
    * @param diagrams The diagrams
+   * @param inter Option for intermediates
    */
-  void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
-
-  /**
-   * Get the correct colour factor matrix.
-   * @param extpart Vector of external ParticleData pointers
-   * @param ncf Set the number of colourflows.
-   */
-  pair<vector<DVector>,vector<DVector> >
-  getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
-		   const vector<TBDiagram> & diagrams,
-		   unsigned int & ncf) const;
+  virtual void createDecayMode(vector<NBDiagram> & mode,
+			       bool possibleOnShell,
+			       double symfac);
 
 public:
 
@@ -185,20 +137,29 @@ private:
 private:
 
   /**
-   *  Whether or not to remove on-shell diagrams
-   */
-  bool _removeOnShell;
-
-  /**
    *  Option for the inclusion of intermediates
    */
-  unsigned int _interopt;
+  unsigned int interOpt_;
 
   /**
    *  How to treat the widths of the intermediate particles
    */
-  unsigned int _widthopt;
+  unsigned int widthOpt_;
 
+  /**
+   *  Cut off or decays via the weak current
+   */
+  Energy weakMassCut_;
+
+  /**
+   *  Option for the integration to get the partial width
+   */
+  unsigned int intOpt_;
+
+  /**
+   *  Relative error for partial width integration
+   */
+  double relErr_;
 };
 
 }

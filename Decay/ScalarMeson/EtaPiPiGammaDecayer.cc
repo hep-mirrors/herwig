@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EtaPiPiGammaDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,6 +28,14 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void EtaPiPiGammaDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_maxweight.size();++ix)
+      _maxweight[ix]=mode(ix)->maxWeight();
+  }
+}
+
 EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
   : _incoming(2), _coupling(2), _maxweight(2), _option(2) {
   // the pion decay constant
@@ -52,7 +60,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   _coupling[1] = 4.278e-3; 
   _maxweight[1] = 3.53141; 
   _rhoconst=0.;
-  _mpi=0.*MeV;
+  _mpi=ZERO;
   // initialization of the experimental function
   _initialize =false;
   _npoints=100;
@@ -148,7 +156,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   generateIntermediates(false);
 }
 
-void EtaPiPiGammaDecayer::doinit() throw(InitException) {
+void EtaPiPiGammaDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();
@@ -288,7 +296,7 @@ void EtaPiPiGammaDecayer::Init() {
   static Parameter<EtaPiPiGammaDecayer,Energy> interfacefpi
     ("fpi",
      "The pion decay constant",
-     &EtaPiPiGammaDecayer::_fpi, MeV, 130.7*MeV, 0.*MeV, 200.*MeV,
+     &EtaPiPiGammaDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.*MeV,
      false, false, false); 
 
   static ParVector<EtaPiPiGammaDecayer,int> interfaceIncoming
@@ -345,7 +353,7 @@ void EtaPiPiGammaDecayer::Init() {
   static Parameter<EtaPiPiGammaDecayer,InvEnergy2> interfaceOmnesA
     ("OmnesA",
      "The constant a for the Omnes form of the prefactor",
-     &EtaPiPiGammaDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, 0./GeV2,
+     &EtaPiPiGammaDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, ZERO,
      10./GeV2,
      false, false, false);
 
@@ -422,26 +430,31 @@ void EtaPiPiGammaDecayer::Init() {
 
 }
 
-double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
-				 const ParticleVector & decay) const {
+double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
+				const ParticleVector & decay,
+				MEOption meopt) const {
   useMe();
-  // workaround for gcc 3.2.3 bug
-  // set up the spin info
-  vector<LorentzPolarizationVector> wave;
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  PPtr mytemp0 = decay[0];
-  ScalarWaveFunction(mytemp0,outgoing,true,vertex);
-  PPtr mytemp1 = decay[1];
-  ScalarWaveFunction(mytemp1,outgoing,true,vertex);
-
-  VectorWaveFunction(wave,decay[2],outgoing,true,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    VectorWaveFunction::constructSpinInfo(_vectors,decay[2],
+					  outgoing,true,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[2],
+					     outgoing,true);
   // prefactor for the matrix element
   complex<InvEnergy3> pre(_coupling[imode()]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
-  Lorentz5Momentum ppipi(decay[0]->momentum()+decay[1]->momentum());ppipi.rescaleMass();
+  Lorentz5Momentum ppipi(decay[0]->momentum()+decay[1]->momentum());
+  ppipi.rescaleMass();
   Energy q(ppipi.mass());
   Energy2 q2(q*q);
   Complex ii(0.,1.);
@@ -471,16 +484,13 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
 							  decay[1]->momentum(),
 							  decay[2]->momentum()));
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1);
   vector<unsigned int> ispin(4,0);
   for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
-    if(ispin[3]==1) newME(ispin)=0.;
-    else            newME(ispin)=epstemp.dot(wave[ispin[3]]);
+    if(ispin[3]==1) ME()(ispin)=0.;
+    else            ME()(ispin)=epstemp.dot(_vectors[ispin[3]]);
   }
   // contract the whole thing
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 double EtaPiPiGammaDecayer::
@@ -530,7 +540,7 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<double> inpow(1,0.0);
   WidthCalculatorBasePtr 
     output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiGammaDecayer>
-		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,0.*MeV)));
+		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,ZERO)));
   return output;
 }
 
@@ -539,54 +549,54 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":fpi             " << _fpi/MeV         << "\n";
-  output << "set " << fullName() << ":RhoMass         " << _mrho/MeV        << "\n";
-  output << "set " << fullName() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":OmnesC          " << _cconst          << "\n";
-  output << "set " << fullName() << ":OmnesA          " << _aconst*GeV2     << "\n";
-  output << "set " << fullName() << ":InitializeOmnes " << _initialize      << "\n";
-  output << "set " << fullName() << ":OmnesPoints     " << _npoints         << "\n";
-  output << "set " << fullName() << ":OmnesCut        " << _epscut/MeV      << "\n";
+  output << "newdef " << name() << ":fpi             " << _fpi/MeV         << "\n";
+  output << "newdef " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
+  output << "newdef " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":OmnesC          " << _cconst          << "\n";
+  output << "newdef " << name() << ":OmnesA          " << _aconst*GeV2     << "\n";
+  output << "newdef " << name() << ":InitializeOmnes " << _initialize      << "\n";
+  output << "newdef " << name() << ":OmnesPoints     " << _npoints         << "\n";
+  output << "newdef " << name() << ":OmnesCut        " << _epscut/MeV      << "\n";
   for(unsigned int ix=0;ix<2;++ix) {
-    output << "set " << fullName() << ":Incoming    " << ix << "  " 
+    output << "newdef " << name() << ":Incoming    " << ix << "  " 
 	   << _incoming[ix]    << "\n";
-    output << "set " << fullName() << ":Coupling    " << ix << "  " 
+    output << "newdef " << name() << ":Coupling    " << ix << "  " 
 	   << _coupling[ix]    << "\n";
-    output << "set " << fullName() << ":MaxWeight   " << ix << "  " 
+    output << "newdef " << name() << ":MaxWeight   " << ix << "  " 
 	   << _maxweight[ix]   << "\n";
-    output << "set " << fullName() << ":Option      " << ix << "  " 
+    output << "newdef " << name() << ":Option      " << ix << "  " 
 	   << _option[ix]      << "\n";
   }
   for(unsigned int ix=0;ix<_energy.size();++ix) {
     if(ix<_nsizea) {
-      output << "set " << fullName() << ":Phase_Energy " << ix << "  " 
+      output << "newdef " << name() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
-      output << "set " << fullName() << ":Phase_Shift  " << ix << "  " 
+      output << "newdef " << name() << ":Phase_Shift  " << ix << "  " 
 	     << _phase[ix]  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Phase_Energy " << ix << "  " 
+      output << "insert " << name() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
-      output << "insert " << fullName() << ":Phase_Shift  " << ix << "  " 
+      output << "insert " << name() << ":Phase_Shift  " << ix << "  " 
 	     << _phase[ix]  << "\n";
     }
   }
   for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
       if(ix<_nsizeb) {
-	output << "set " << fullName() << ":OmnesEnergy " << ix << "  " 
+	output << "newdef " << name() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
-	output << "set " << fullName() << ":OmnesReal " << ix << "  " 
+	output << "newdef " << name() << ":OmnesReal " << ix << "  " 
 	       << _omnesfunctionreal[ix] << "\n";
-	output << "set " << fullName() << ":OmnesImag " << ix << "  " 
+	output << "newdef " << name() << ":OmnesImag " << ix << "  " 
 	       << _omnesfunctionimag [ix] << "\n";
       }
       else {
-	output << "insert " << fullName() << ":OmnesEnergy " << ix << "  " 
+	output << "insert " << name() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
-	output << "insert " << fullName() << ":OmnesReal " << ix << "  " 
+	output << "insert " << name() << ":OmnesReal " << ix << "  " 
 	       << _omnesfunctionreal[ix] << "\n";
-	output << "insert " << fullName() << ":OmnesImag " << ix << "  " 
+	output << "insert " << name() << ":OmnesImag " << ix << "  " 
 	       << _omnesfunctionimag [ix] << "\n";
       }
   }

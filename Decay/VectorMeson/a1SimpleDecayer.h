@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1SimpleDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,14 +14,15 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "a1SimpleDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the a1SimpleDecayer class.
+ * The a1SimpleDecayer class provides a simple model of the decay of the
+ * \f$a_1\f$ meson to three pions including \f$\rho\f$ meson intermediate states.
  *
  * @see \ref a1SimpleDecayerInterfaces "The interfaces"
  * defined for a1SimpleDecayer.
@@ -33,7 +34,7 @@ public:
   /**
    * The default constructor.
    */
-  inline a1SimpleDecayer();
+  a1SimpleDecayer();
 
   /**
    * Which of the possible decays is required
@@ -46,14 +47,14 @@ public:
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector& decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -121,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const  {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -140,7 +141,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -156,7 +157,14 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner.
    * @param ires Which multiplet to use.
    */
-  inline Complex rhoBreitWigner(Energy2 q2, unsigned int ires) const;
+  Complex rhoBreitWigner(Energy2 q2, unsigned int ires) const {
+    Energy q(sqrt(q2));
+    Energy mass  = _rhomass[ires], width = _rhowidth[ires];
+    Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi));
+    Energy pcm = 2.*_mpi<q ? Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi) : ZERO;
+    Energy gamrun(width*mass*Math::Pow<3>(pcm/pcm0)/q);
+    return -sqr(mass)/complex<Energy2>(q2-mass*mass,mass*gamrun);
+  }
 
   /**
    * The \f$\rho\f$ form factors
@@ -164,7 +172,7 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The form factor
    */
-  inline Complex rhoFormFactor(Energy2 q2,int ires) const;
+  Complex rhoFormFactor(Energy2 q2,int ires) const;
 
 private:
 
@@ -242,6 +250,16 @@ private:
    */
   Energy _mpi;
 
+  /**
+   *  Spin Density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
 };
 
 }
@@ -280,7 +298,5 @@ struct ClassTraits<Herwig::a1SimpleDecayer>
 /** @endcond */
 
 }
-
-#include "a1SimpleDecayer.icc"
 
 #endif /* HERWIG_a1SimpleDecayer_H */

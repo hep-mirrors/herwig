@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1ThreePionCLEODecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -29,11 +29,11 @@ using Constants::pi;
  
 a1ThreePionCLEODecayer::a1ThreePionCLEODecayer() 
   : _rhomass(2), _rhowidth(2), _f2mass(1.275*GeV), _f2width(0.185*GeV), 
-    _pf2cc(0.*MeV), _pf200(0.*MeV), _f0mass(1.186*GeV), _f0width(0.350*GeV),
-    _pf0cc(0.*MeV), _pf000(0.*MeV), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
-    _psigmacc(0.*MeV), _psigma00(0.*MeV), _mpi0(0.*MeV), _mpic(0.*MeV),
+    _pf2cc(ZERO), _pf200(ZERO), _f0mass(1.186*GeV), _f0width(0.350*GeV),
+    _pf0cc(ZERO), _pf000(ZERO), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
+    _psigmacc(ZERO), _psigma00(ZERO), _mpi0(ZERO), _mpic(ZERO),
     _coupling(45.57/GeV), _rhomagP(2), _rhophaseP(2), _rhomagD(2),
-    _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(0./MeV2,0./MeV2),
+    _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(ZERO,ZERO),
     _f0mag(0.77), _f0phase(-0.54*pi), _f0coup(0.,0.), _sigmamag(2.10),
     _sigmaphase(0.23*pi), _sigmacoup(0.,0.), _localparameters(true),
     _zerowgts(9), _onewgts(9), _twowgts(9), _threewgts(12), _zeromax(13.0704),
@@ -65,7 +65,7 @@ a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   generateIntermediates(true);
 }
   
-void a1ThreePionCLEODecayer::doinit() throw(InitException) {
+void a1ThreePionCLEODecayer::doinit() {
   DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
@@ -437,54 +437,64 @@ void a1ThreePionCLEODecayer::Init() {
   
   static ClassDocumentation<a1ThreePionCLEODecayer> documentation
     ("The a1ThreePionCLEODecayer class performs the decay of the "
-     "a_1 to three pions using the model of CLEO");
+     "a_1 to three pions using the model of CLEO",
+     "The decay of a_1 to three pions was modelled after \\cite{Asner:1999kj}.",
+     "%\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
 
   static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1ThreePionCLEODecayer::_rhomass,
-     GeV, 0, 0*GeV, -10000*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, -10000*GeV, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1ThreePionCLEODecayer::_rhowidth,
-     GeV, 0, 0*GeV, -10000*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, -10000*GeV, 10000*GeV, false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Mass
     ("f_2Mass",
      "The mass of the f_2 meson",
-     &a1ThreePionCLEODecayer::_f2mass, GeV, 1.275*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_f2mass, GeV, 1.275*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Width
     ("f_2Width",
      "The width of the f_2 meson",
-     &a1ThreePionCLEODecayer::_f2width, GeV, 0.185*GeV, 0.0*GeV, 1.0*GeV,
+     &a1ThreePionCLEODecayer::_f2width, GeV, 0.185*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Mass
     ("f_0Mass",
      "The mass of the f_0 meson",
-     &a1ThreePionCLEODecayer::_f0mass, GeV, 1.186*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_f0mass, GeV, 1.186*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Width
     ("f_0Width",
      "The width of the f_0 meson",
-     &a1ThreePionCLEODecayer::_f0width, GeV, 0.350*GeV, 0.0*GeV, 1.0*GeV,
+     &a1ThreePionCLEODecayer::_f0width, GeV, 0.350*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaMass
     ("sigmaMass",
      "The mass of the sigma meson",
-     &a1ThreePionCLEODecayer::_sigmamass, GeV, 0.860*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_sigmamass, GeV, 0.860*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaWidth
     ("sigmaWidth",
      "The width of the sigma meson",
-     &a1ThreePionCLEODecayer::_sigmawidth, GeV, 0.880*GeV, 0.0*GeV, 2.0*GeV,
+     &a1ThreePionCLEODecayer::_sigmawidth, GeV, 0.880*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,InvEnergy> interfaceCoupling
@@ -509,7 +519,7 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoDWaveMagnitude",
      "The magnitude of the couplings for the d-wave rho currents",
      &a1ThreePionCLEODecayer::_rhomagD,
-     1/MeV2, 0, 0/MeV2, 0/MeV2, 10000/MeV2, false, false, true);
+     1/MeV2, 0, ZERO, ZERO, 10000/MeV2, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,double> interfacerhophaseD
     ("RhoDWavePhase",
@@ -544,7 +554,7 @@ void a1ThreePionCLEODecayer::Init() {
   static Parameter<a1ThreePionCLEODecayer,InvEnergy2> interfacef2Magnitude
     ("f2Magnitude",
      "The magnitude of the f_2 tensor current",
-     &a1ThreePionCLEODecayer::_f2mag, 1./GeV2, 0.71/GeV2, 0./GeV2, 10./GeV2,
+     &a1ThreePionCLEODecayer::_f2mag, 1./GeV2, 0.71/GeV2, ZERO, 10./GeV2,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaMagnitude
@@ -621,22 +631,24 @@ void a1ThreePionCLEODecayer::Init() {
      false, false, true);
 }
 
-double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
+double a1ThreePionCLEODecayer::me2(const int ichan,
 				   const Particle & inpart,
-				   const ParticleVector & decay) const {
-  // wavefunctions of the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex){ 
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+				   const ParticleVector & decay,
+				   MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
@@ -658,12 +670,10 @@ double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
     -F2*decay[2]->momentum()+F2*decay[0]->momentum()
     +F3*decay[0]->momentum()-F3*decay[1]->momentum();
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
   for(unsigned int ix=0;ix<3;++ix) 
-    newME(ix,0,0,0)=output.dot(invec[ix]);
-  ME(newME);
+    ME()(ix,0,0,0)=output.dot(_vectors[ix]);
   // answer
-  double out = newME.contract(rhoin).real();
+  double out = ME().contract(_rho).real();
   // test of the answer
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
 // 				       s3,s2,s1,decay[0]->mass(),decay[1]->mass(), 
@@ -1033,80 +1043,80 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // masses and widths of the intermediate particles
-  output << "set " << fullName() << ":f_2Mass "    << _f2mass/GeV     << "\n";
-  output << "set " << fullName() << ":f_2Width "   << _f2width/GeV    << "\n";
-  output << "set " << fullName() << ":f_0Mass "    << _f0mass/GeV     << "\n";
-  output << "set " << fullName() << ":f_0Width "   << _f0width/GeV    << "\n";
-  output << "set " << fullName() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
-  output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "newdef " << name() << ":f_2Mass "    << _f2mass/GeV     << "\n";
+  output << "newdef " << name() << ":f_2Width "   << _f2width/GeV    << "\n";
+  output << "newdef " << name() << ":f_0Mass "    << _f0mass/GeV     << "\n";
+  output << "newdef " << name() << ":f_0Width "   << _f0width/GeV    << "\n";
+  output << "newdef " << name() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
   }
   // couplings and phases for different channels
-  output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
-  output << "set " << fullName() << ":f2Phase " << _f2phase<< "\n";
-  output << "set " << fullName() << ":sigmaPhase " << _sigmaphase<< "\n";
-  output << "set " << fullName() << ":f0Magnitude " << _f0mag<< "\n";
-  output << "set " << fullName() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
-  output << "set " << fullName() << ":sigmaMagnitude " << _sigmamag << "\n";
-  output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
+  output << "newdef " << name() << ":f0Phase " << _f0phase << "\n";
+  output << "newdef " << name() << ":f2Phase " << _f2phase<< "\n";
+  output << "newdef " << name() << ":sigmaPhase " << _sigmaphase<< "\n";
+  output << "newdef " << name() << ":f0Magnitude " << _f0mag<< "\n";
+  output << "newdef " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
+  output << "newdef " << name() << ":sigmaMagnitude " << _sigmamag << "\n";
+  output << "newdef " << name() << ":Coupling " << _coupling*GeV << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix << " " 
 		    << _rhomagP[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+    else     output << "insert " << name() << ":RhoPWaveMagnitude " << ix << " " 
 		    << _rhomagP[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoPWavePhase " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoPWavePhase " << ix << " " 
 		    << _rhophaseP[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoPWavePhase " << ix << " " 
+    else     output << "insert " << name() << ":RhoPWavePhase " << ix << " " 
 		    << _rhophaseP[ix] << "\n";
   }  
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix << " " 
 		    << _rhomagD[ix]*MeV2 << "\n";
-    else     output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+    else     output << "insert " << name() << ":RhoDWaveMagnitude " << ix << " " 
 		    << _rhomagD[ix]*MeV2 << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
-    if(ix<2) output << "set    " << fullName() << ":RhoDWavePhase " << ix << " " 
+    if(ix<2) output << "newdef    " << name() << ":RhoDWavePhase " << ix << " " 
 		    << _rhophaseD[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoDWavePhase " << ix << " " 
+    else     output << "insert " << name() << ":RhoDWavePhase " << ix << " " 
 		    << _rhophaseD[ix] << "\n";
   }
   // use local values of the masses etc.
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   // integration weights for the different channels
   for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
-    output << "set " << fullName() << ":AllNeutralWeights " 
+    output << "newdef " << name() << ":AllNeutralWeights " 
 	   << ix << " " << _zerowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << fullName() << ":OneChargedWeights " 
+    output << "newdef " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << fullName() << ":TwoChargedWeights " 
+    output << "newdef " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << fullName() << ":ThreeChargedWeights " 
+    output << "newdef " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
   // maximum weights for the different  channels
-  output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
-  output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
-  output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
-  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  output << "newdef " << name() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "newdef " << name() << ":OneMax "   << _onemax   << "\n";
+  output << "newdef " << name() << ":TwoMax "   << _twomax   << "\n";
+  output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxd0m0:
 	subroutine ffxd0m0(cd0, xpi, ier)
 ***#[*comment:***********************************************************
@@ -24,7 +27,7 @@
 	DOUBLE COMPLEX k12, k23, k34, k14, k13, k24
 	integer j, ipi1(2), ipi2(2), nffeta
 
-	include 'ff.h'
+#include "ff.h"
 
 	a = xpi(10)*xpi(7)
 	b = xpi(9)*xpi(10) + xpi(5)*xpi(7) - xpi(8)*xpi(6)

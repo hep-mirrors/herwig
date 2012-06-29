@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMeson3PionDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -26,12 +26,37 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void VectorMeson3PionDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    double temp;
+    unsigned int iy;
+    for(unsigned int ix=0;ix<_incoming.size();++ix) {
+      _maxwgt[ix]=mode(ix)->maxWeight();
+      for(iy=0;iy<3;++iy) {
+	if(mode(ix)->numberChannels()>3*iy+1) {
+	  temp=mode(ix)->channelWeight(3*iy)+mode(ix)->channelWeight(3*iy+1)+
+	    mode(ix)->channelWeight(3*iy+2);
+	  temp/=3.;
+	  switch(iy) {
+	  case 0: _rho1wgt[ix]=temp; break;
+	  case 1: _rho2wgt[ix]=temp; break;
+	  case 2: _rho3wgt[ix]=temp; break;
+	  }
+	}
+      }
+    }
+  }
+}
+
 VectorMeson3PionDecayer::VectorMeson3PionDecayer() 
   : _incoming(2), _coupling(2), _directcoupling(2), _directphase(2),
     _rho2coupling(2), _rho2phase(2), _rho3coupling(2), _rho3phase(2),
     _maxwgt(2), _rho1wgt(2), _rho2wgt(2), _rho3wgt(2), _rho1mass(2),
     _rho2mass(2), _rho3mass(2), _rho1width(2), _rho2width(2), 
-    _rho3width(2), _defaultmass(2), _mpic(0.*MeV), _mpi0(0.*MeV) {
+    _rho3width(2), _defaultmass(2), _mpic(ZERO), _mpi0(ZERO) {
+  // matrix element storage
+  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
   // omega decay
   _incoming[0] = 223;
   _coupling[0] = 178.71/GeV;
@@ -72,7 +97,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
   generateIntermediates(true);
 }
 
-void VectorMeson3PionDecayer::doinit() throw(InitException) {
+void VectorMeson3PionDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the decay modes
   unsigned int isize=_incoming.size();
@@ -254,7 +279,18 @@ void VectorMeson3PionDecayer::Init() {
   static ClassDocumentation<VectorMeson3PionDecayer> documentation
     ("The VectorMeson3PionDecayer class is designed for the decay "
      "of I=0 vector mesons to three pions via a current taking into account the "
-     "rho and a possible direct term");
+     "rho and a possible direct term",
+     "The decay of I=0 vector mesons to three pions via a current taking into account the "
+     "rho and a possible direct term is taken from \\cite{Aloisio:2003ur}.",
+     "%\\cite{Aloisio:2003ur}\n"
+     "\\bibitem{Aloisio:2003ur}\n"
+     "  A.~Aloisio {\\it et al.}  [KLOE Collaboration],\n"
+     "  %``Study of the decay Phi --> pi+ pi- pi0 with the KLOE detector,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 561}, 55 (2003)\n"
+     "  [Erratum-ibid.\\  B {\\bf 609}, 449 (2005)]\n"
+     "  [arXiv:hep-ex/0303016].\n"
+     "  %%CITATION = PHLTA,B561,55;%%\n"
+     );
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceIncoming
     ("Incoming",
@@ -339,37 +375,37 @@ void VectorMeson3PionDecayer::Init() {
     ("Rho1Mass",
      "The mass of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Mass
     ("Rho2Mass",
      "The mass of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Mass
     ("Rho3Mass",
      "The mass of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho1Width
     ("Rho1Width",
      "The width of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Width
     ("Rho2Width",
      "The width of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Width
     ("Rho3Width",
      "The width of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,bool> interfaceDefaultParam
     ("DefaultParameters",
@@ -380,83 +416,79 @@ void VectorMeson3PionDecayer::Init() {
 
 }
 
-double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
+double VectorMeson3PionDecayer::me2(const int ichan,
 				    const Particle & inpart,
-				    const ParticleVector & decay) const {
-  // wavefunctions for the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex) {
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      PPtr mytemp = decay[ix]; 
-      ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+				    const ParticleVector & decay,
+				    MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
   // work out the prefactor
-  complex<InvEnergy2> pre(0./MeV2);
+  complex<InvEnergy2> pre(ZERO);
   Complex resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}
   Energy pcm;
   // work out the direct invariant masses needed
-  Lorentz5Momentum temp(decay[1]->momentum()+decay[2]->momentum());temp.rescaleMass();
-  Energy mrho0(temp.mass());
-  temp = decay[1]->momentum()+decay[0]->momentum();temp.rescaleMass();
-  Energy mrhop(temp.mass());
-  temp = decay[2]->momentum()+decay[0]->momentum();temp.rescaleMass();
-  Energy mrhom(temp.mass());
+  Energy mrho0(sqrt(decay[1]->momentum().m2(decay[2]->momentum())));
+  Energy mrhop(sqrt(decay[1]->momentum().m2(decay[0]->momentum())));
+  Energy mrhom(sqrt(decay[2]->momentum().m2(decay[0]->momentum())));
   // contribution of the resonances
   int ichannow(-3);
-  for(ix=0;ix<3;++ix) {
-      ichannow+=3;
-      if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
-	 (ix==2 && _rho3wgt[imode()]>0.)) {
-	if(ichan<0) {
-	  // rho0 contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	  resfact = _rhomass2[imode()][ix]/
-	    (mrho0*mrho0-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	  // rho+ contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhop*mrhop-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	  // rho- contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhom*mrhom-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	  // add the contribution
-	}
-	else if(ichan==ichannow) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	  resfact = _rhomass2[imode()][ix]/
-	    (mrho0*mrho0-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	}
-	else if(ichan==ichannow+1) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhop*mrhop-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	}
-	else if(ichan==ichannow+2) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhom*mrhom-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	}
-	pre += resfact * _ccoupling[imode()][ix];
-	ichannow+=3;
+  for(unsigned int ix=0;ix<3;++ix) {
+    ichannow+=3;
+    if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
+       (ix==2 && _rho3wgt[imode()]>0.)) {
+      if(ichan<0) {
+	// rho0 contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	resfact = _rhomass2[imode()][ix]/
+	  (mrho0*mrho0-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+	// rho+ contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhop*mrhop-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+	// rho- contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhom*mrhom-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	// add the contribution
       }
+      else if(ichan==ichannow) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	resfact = _rhomass2[imode()][ix]/
+	  (mrho0*mrho0-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+      }
+      else if(ichan==ichannow+1) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhop*mrhop-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+      }
+      else if(ichan==ichannow+2) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhom*mrhom-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+      }
+      pre += resfact * _ccoupling[imode()][ix];
+      ichannow+=3;
+    }
   }
   // polarization vector piece
   LorentzPolarizationVector 
@@ -464,10 +496,10 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 					  decay[1]->momentum(),
 					  decay[2]->momentum());
   // compute the matrix element
-  for(ix=0;ix<3;++ix) newME(ix,0,0,0)=scalar.dot(invec[ix]);
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix) 
+    ME()(ix,0,0,0)=scalar.dot(_vectors[ix]);
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 double VectorMeson3PionDecayer::
@@ -481,13 +513,13 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
   p2.setE(0.5*(q2+mpi2c-s2)/q); ee2=p2.e()*p2.e(); pp2=sqrt(ee2-mpi2c);
   p3.setE(0.5*(q2+mpi2c-s3)/q); ee3=p3.e()*p3.e(); pp3=sqrt(ee3-mpi2c);
   // take momentum of 1 parallel to z axis
-  p1.setX(0.*MeV);p1.setY(0.*MeV);p1.setZ(pp1);
+  p1.setX(ZERO);p1.setY(ZERO);p1.setZ(pp1);
   // construct 2 
   double cos2(0.5*(ee1+ee2-ee3-mpi20)/pp1/pp2);
-  p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(0.*MeV); p2.setZ(-pp2*cos2);
+  p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(ZERO); p2.setZ(-pp2*cos2);
   // construct 3
   double cos3(0.5*(ee1-ee2+ee3-mpi20)/pp1/pp3);
-  p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(0.*MeV); p3.setZ(-pp3*cos3); 
+  p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(ZERO); p3.setZ(-pp3*cos3); 
   // compute the prefactor
   complex<InvEnergy2> pre(_ccoupling[imode][3]);
   Complex resfact,ii(0.,1.);
@@ -548,85 +580,86 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "set " << fullName() << ":Coupling " 
+      output << "newdef " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "set " << fullName() << ":DirectCoupling " 
+      output << "newdef " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "set " << fullName() << ":Rho2Coupling " 
+      output << "newdef " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "set " << fullName() << ":Rho3Coupling " 
+      output << "newdef " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "set " << fullName() << ":DirectPhase " 
+      output << "newdef " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "set " << fullName() << ":Rho2Phase " 
+      output << "newdef " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "set " << fullName() << ":Rho3Phase " 
+      output << "newdef " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "set " << fullName() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "set " << fullName() << ":Rho1Weight " 
+      output << "newdef " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho2Weight " 
+      output << "newdef " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho3Weight " 
+      output << "newdef " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho1Mass " 
+      output << "newdef " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho2Mass " 
+      output << "newdef " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "set " << fullName() << ":Rho3Mass " 
+      output << "newdef " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "set " << fullName() << ":Rho1Width " 
+      output << "newdef " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho2Width " 
+      output << "newdef " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho3Width " 
+      output << "newdef " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "set " << fullName() << ":DefaultParameters " 
+      output << "newdef " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
     else {
-      output << "insert " << fullName() << ":Incoming " 
+      output << "insert " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "insert " << fullName() << ":Coupling " 
+      output << "insert " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "insert " << fullName() << ":DirectCoupling " 
+      output << "insert " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Coupling " 
+      output << "insert " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Coupling " 
+      output << "insert " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "insert " << fullName() << ":DirectPhase " 
+      output << "insert " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Phase " 
+      output << "insert " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Phase " 
+      output << "insert " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "insert " << fullName() << ":MaxWeight " 
+      output << "insert " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho1Weight " 
+      output << "insert " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Weight " 
+      output << "insert " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Weight " 
+      output << "insert " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho1Mass " 
+      output << "insert " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho2Mass " 
+      output << "insert " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "insert " << fullName() << ":Rho3Mass " 
+      output << "insert " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "insert " << fullName() << ":Rho1Width " 
+      output << "insert " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho2Width " 
+      output << "insert " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho3Width " 
+      output << "insert " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":DefaultParameters " 
+      output << "insert " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
   }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header){output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;}
 }

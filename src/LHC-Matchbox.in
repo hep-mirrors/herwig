@@ -1,0 +1,88 @@
+read Matchbox.in
+
+################################################################################
+# setup the sampler
+################################################################################
+
+set /Herwig/EventHandlers/LHCHandler:Sampler /Herwig/MatrixElements/Matchbox/Samplers/Sampler
+
+################################################################################
+# setup the shower
+#
+# use -LO.in or -NLO.in for LO/NLO simulations, respectively.
+#
+################################################################################
+
+read DipoleShower.in
+# read DipoleShowerParameters-LO.in
+# read DipoleShowerParameters-NLO.in
+
+################################################################################
+# setup matrix element and matching
+#
+# uncomment the desired calculation
+#
+################################################################################
+
+cd /Herwig/EventHandlers
+
+set LHCHandler:LuminosityFunction:Energy 8000.0*GeV
+
+# the only infrared safe cut in this case is a cut on the lepton pair mass
+# leave all other cuts as set in here
+
+set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+
+cd /Herwig/MatrixElements/Matchbox/Builtin
+cp /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler MECorrectionHandler
+
+################################################################################
+# leading order
+################################################################################
+
+# insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] MEPP2llbarLO
+
+################################################################################
+# MC@NLO-type next-to-leading order
+################################################################################
+
+# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+# insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] MEPP2llbarNLO
+# uncomment to run plain NLO calculation (no consistent analysis yet)
+# set MElP2lJetNLO:SubProcessGroups On
+
+################################################################################
+# POWHEG-type next-to-leading order
+################################################################################
+
+# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+# insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] MEPP2llbarNLOInclusive
+# insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+
+################################################################################
+# setup generator and analysis
+################################################################################
+
+cd /Herwig/Generators
+
+set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+set LHCGenerator:NumberOfEvents 100000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 4000000
+
+cd /Herwig/Generators
+
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+set /Herwig/Analysis/HepMCFile:PrintEvent 10000000
+set /Herwig/Analysis/HepMCFile:Format GenEvent
+set /Herwig/Analysis/HepMCFile:Units GeV_mm
+set /Herwig/Analysis/HepMCFile:Filename events.fifo
+
+saverun LHC LHCGenerator

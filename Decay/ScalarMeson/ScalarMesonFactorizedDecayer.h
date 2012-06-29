@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ScalarMesonFactorizedDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,6 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/FormFactors/ScalarFormFactor.h"
-#include "ScalarMesonFactorizedDecayer.fh"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
@@ -43,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ScalarMesonFactorizedDecayer();
+  ScalarMesonFactorizedDecayer();
 
 public:
 
@@ -64,20 +63,20 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
    * This function combines the current and the form factor to give the matrix
    * element.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2( const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   //@}
 
   /**
@@ -121,13 +120,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -139,7 +138,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -156,15 +155,15 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+  virtual void rebind(const TranslationMap & trans)
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 
@@ -205,11 +204,6 @@ private:
    * The baryon form factor
    */
   vector<ScalarFormFactorPtr> _form;
-
-  /**
-   *  The Fermi constant, \f$G_F\f$
-   */
-  InvEnergy2 _GF;
 
   /**
    *  The perturbative coefficients
@@ -295,6 +289,21 @@ private:
    */
   Ptr<StandardCKM>::pointer _ckm;
 
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
+  mutable vector<vector<Helicity::LorentzPolarizationVector> > _vectors;
+
+  /**
+   *  Polarization tensors for the decay products
+   */
+  mutable vector<vector<Helicity::LorentzTensor<double>    > > _tensors;
+
 };
 
 }
@@ -329,7 +338,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "ScalarMesonFactorizedDecayer.icc"
 
 #endif /* HERWIG_ScalarMesonFactorizedDecayer_H */

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSHHHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSHHHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -76,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -94,7 +93,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -216,7 +215,5 @@ struct ClassTraits<Herwig::SSHHHVertex>
 /** @endcond */
 
 }
-
-#include "SSHHHVertex.icc"
 
 #endif /* HERWIG_SSHHHVertex_H */

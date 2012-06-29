@@ -41,13 +41,12 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~chi_30
 # then add another 'setup' line with that
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
-setup MSSM/Model SPhenoSPS1a.spc
+setup MSSM/Model CMSSM40.1.1.slha
 
 # Other parameters for run
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 10000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0

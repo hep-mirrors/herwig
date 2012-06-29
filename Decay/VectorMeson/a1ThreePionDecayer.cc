@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1ThreePionDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,7 +28,7 @@ using namespace ThePEG::Helicity;
 
 a1ThreePionDecayer::a1ThreePionDecayer() 
   : _rhomass(1,0.7761*GeV), _rhowidth(1,0.1445*GeV), _sigmamass(0.8*GeV),
-    _sigmawidth(0.8*GeV), _psigma(0.*GeV), _mpi(0.*GeV), _mpi2(0.*GeV2),
+    _sigmawidth(0.8*GeV), _psigma(ZERO), _mpi(ZERO), _mpi2(ZERO),
     _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
     _zsigma(0.), _zmag(1.3998721), _zphase(0.43585036),
     _rhomag(1,1.), _rhophase(1,0.), _coupling(90.44), 
@@ -85,7 +85,7 @@ void a1ThreePionDecayer::doinitrun() {
   }
 }
 
-void a1ThreePionDecayer::doinit() throw(InitException) {
+void a1ThreePionDecayer::doinit() {
   DecayIntegrator::doinit();
   // particles we need for the external state
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
@@ -340,7 +340,18 @@ void a1ThreePionDecayer::Init() {
   static ClassDocumentation<a1ThreePionDecayer> documentation
     ("The a1ThreePionDecayer class is designed to decay the a_1 "
      "resonance to three pions using a model based on that used in the modelling "
-     "of tau->4 pions.");
+     "of tau->4 pions.",
+     "The decay of the $a_1$ resonance to three pions uses a model based on"
+     "tau to four pions, \\cite{Bondar:2002mw}.",
+     "%\\cite{Bondar:2002mw}\n"
+     "\\bibitem{Bondar:2002mw}\n"
+     "  A.~E.~Bondar, S.~I.~Eidelman, A.~I.~Milstein, T.~Pierzchala, N.~I.~Root, Z.~Was and M.~Worek,\n"
+     "   ``Novosibirsk hadronic currents for tau --> 4pi channels of tau decay\n"
+     "  %library TAUOLA,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 146}, 139 (2002)\n"
+     "  [arXiv:hep-ph/0201149].\n"
+     "  %%CITATION = CPHCB,146,139;%%\n"
+     );
 
   static Switch<a1ThreePionDecayer,bool> interfaceLocalParameters
     ("LocalParameters",
@@ -367,13 +378,13 @@ void a1ThreePionDecayer::Init() {
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1ThreePionDecayer::_rhomass,
-     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1ThreePionDecayer::_rhowidth,
-     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfaceRhoMagnitude
     ("RhoMagnitude",
@@ -402,13 +413,13 @@ void a1ThreePionDecayer::Init() {
   static Parameter<a1ThreePionDecayer,Energy> interfaceSigmaMass
     ("SigmaMass",
      "The local value of the sigma mass",
-     &a1ThreePionDecayer::_sigmamass, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionDecayer::_sigmamass, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionDecayer,Energy> interfaceSigmaWidth
     ("SigmaWidth",
      "The local value of the sigma width",
-     &a1ThreePionDecayer::_sigmawidth, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionDecayer::_sigmawidth, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfacezerowgts
@@ -476,22 +487,24 @@ void a1ThreePionDecayer::Init() {
      false, false, true);
 }
 
-double a1ThreePionDecayer::me2(bool vertex, const int ichan,
+double a1ThreePionDecayer::me2(const int ichan,
 			       const Particle & inpart,
-			       const ParticleVector & decay) const {
-  // wavefunctions for the decaying particles
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex) {
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-	PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+			       const ParticleVector & decay,
+			       MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
@@ -593,13 +606,12 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   }
   // form-factor
   LorentzPolarizationVector outputFinal 
-    = output * a1FormFactor(Q.mass2())*_coupling/(Q.mass()*_rhomass[0]*_rhomass[0]);
+    = output * a1FormFactor(Q.mass2())*_coupling/(Q.mass()*sqr(_rhomass[0]));
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0,0)=outputFinal.dot(invec[ix]);}
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix)
+    ME()(ix,0,0,0)=outputFinal.dot(_vectors[ix]);
   // return the answer
-  double out = newME.contract(rhoin).real();
+  double out = ME().contract(_rho).real();
   // test of the answer
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),s3,s2,s1,
 // 				       decay[0]->mass(),decay[1]->mass(), 
@@ -705,59 +717,59 @@ void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Coupling " << _coupling     << "\n";
-  output << "set " << fullName() << ":Lambda2 "  << _lambda2/GeV2 << "\n";
-  output << "set " << fullName() << ":a1mass2 "  << _a1mass2/GeV2 << "\n";
-  output << "set " << fullName() << ":SigmaMass "  << _sigmamass/GeV  << "\n";
-  output << "set " << fullName() << ":SigmaWidth " << _sigmawidth/GeV << "\n";
-  output << "set " << fullName() << ":SigmaMagnitude " << _zmag << "\n";
-  output << "set " << fullName() << ":SigmaPhase " << _zphase << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Coupling " << _coupling     << "\n";
+  output << "newdef " << name() << ":Lambda2 "  << _lambda2/GeV2 << "\n";
+  output << "newdef " << name() << ":a1mass2 "  << _a1mass2/GeV2 << "\n";
+  output << "newdef " << name() << ":SigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "newdef " << name() << ":SigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "newdef " << name() << ":SigmaMagnitude " << _zmag << "\n";
+  output << "newdef " << name() << ":SigmaPhase " << _zphase << "\n";
   for(unsigned int ix=0;ix<_rhomag.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoMagnitude " << ix << " " 
+    if(ix<1) output << "newdef    " << name() << ":RhoMagnitude " << ix << " " 
 		    << _rhomag[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoMagnitude " << ix << " " 
+    else     output << "insert " << name() << ":RhoMagnitude " << ix << " " 
 		    << _rhomag[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhophase.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoPhase " << ix << " " 
+    if(ix<1) output << "newdef    " << name() << ":RhoPhase " << ix << " " 
 		    << _rhophase[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoPhase " << ix << " " 
+    else     output << "insert " << name() << ":RhoPhase " << ix << " " 
 		    << _rhophase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+    if(ix<1) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+    if(ix<1) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
   }
   // integration weights for the different channels
   for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
-    output << "set " << fullName() << ":AllNeutralWeights " 
+    output << "newdef " << name() << ":AllNeutralWeights " 
 	   << ix << " " << _zerowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << fullName() << ":OneChargedWeights " 
+    output << "newdef " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << fullName() << ":TwoChargedWeights " 
+    output << "newdef " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << fullName() << ":ThreeChargedWeights " 
+    output << "newdef " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
-  output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
-  output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
-  output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
-  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  output << "newdef " << name() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "newdef " << name() << ":OneMax "   << _onemax   << "\n";
+  output << "newdef " << name() << ":TwoMax "   << _twomax   << "\n";
+  output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

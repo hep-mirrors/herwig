@@ -11,51 +11,26 @@ create Herwig::StandardModel Model
 ## Couplings
 
 # the strong coupling
-create ThePEG::O1AlphaS AlphaS O1AlphaS.so
-set Model:QCD/RunningAlphaS AlphaS
+create Herwig::O2AlphaS AlphaS O2AlphaS.so
+newdef Model:QCD/RunningAlphaS AlphaS
 
 # the electromagetic coupling
 create ThePEG::SimpleAlphaEM AlphaEM SimpleAlphaEM.so
-set Model:EW/RunningAlphaEM AlphaEM
+newdef Model:EW/RunningAlphaEM AlphaEM
 
 # the CKM matrix
 create Herwig::StandardCKM CKM
-set Model:EW/CKM CKM
+newdef Model:EW/CKM CKM
 
 # the running mass
 create Herwig::RunningMass RunningMass
-set RunningMass:MaxFlav 6
-set RunningMass:QCDOrder 2
-set Model:RunningMass RunningMass
+newdef RunningMass:MaxFlav 6
+newdef RunningMass:QCDOrder 2
+newdef Model:RunningMass RunningMass
 
 #####################################
 # Set up the standard model vertices
 #####################################
 mkdir /Herwig/Vertices
 cd /Herwig/Vertices
-read StandardModelVertices.in 
-
-#################################################
-# Create the BSM machinery
-# This only gets switched on in read if it is
-# requested by the user
-################################################
-mkdir /Herwig/NewPhysics
-cd /Herwig/NewPhysics
-create Herwig::ModelGenerator NewModel
-create Herwig::HardProcessConstructor HPConstructor
-create Herwig::ResonantProcessConstructor ResConstructor
-create Herwig::DecayConstructor DecayConstructor
-create Herwig::TwoBodyDecayConstructor TwoBodyDC
-create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
-
-set NewModel:HardProcessConstructor HPConstructor
-set NewModel:DecayConstructor DecayConstructor
-set NewModel:ResonantProcessConstructor ResConstructor
-insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
-insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
-
-# Required to decay the particles before showering so as to keep
-# the spin correlations in the decay
-create Herwig::HwDecayHandler DecayHandler
-set DecayHandler:NewStep No
+read StandardModelVertices.in

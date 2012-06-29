@@ -1,0 +1,88 @@
+// -*- C++ -*-
+//
+// FR${classname}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+
+#include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+// #include "ThePEG/Persistency/PersistentOStream.h"
+// #include "ThePEG/Persistency/PersistentIStream.h"
+
+namespace Herwig 
+{
+  using namespace ThePEG;
+  using namespace ThePEG::Helicity;
+
+  class FR${classname}: public ${lorentztag}Vertex {
+  public:
+    FR${classname}();
+    virtual void setCoupling(Energy2${couplingptrs});
+
+  public:
+    static void Init();
+
+  protected:
+    virtual IBPtr clone() const { return new_ptr(*this); }
+    virtual IBPtr fullclone() const { return new_ptr(*this); }
+    virtual void doinit();
+  
+  private:
+    static NoPIOClassDescription<FR${classname}> initFR${classname};
+    FR${classname} & operator=(const FR${classname} &);
+
+  };
+}
+
+namespace ThePEG 
+{
+  template <>
+  struct BaseClassTrait<Herwig::FR${classname},1> {
+    typedef ThePEG::Helicity::${lorentztag}Vertex NthBase;
+  };
+  template <>
+  struct ClassTraits<Herwig::FR${classname}>
+    : public ClassTraitsBase<Herwig::FR${classname}> {
+      static string className() { return "Herwig::FR${classname}"; }
+      static string library() { return "FeynrulesModel.so"; }
+    };
+}
+
+namespace Herwig {
+using namespace ThePEG;
+
+NoPIOClassDescription<FR${classname}> 
+FR${classname}::initFR${classname};
+
+void FR${classname}::Init() {
+  static ClassDocumentation<FR${classname}> documentation
+    ("The FR${classname} class is the implementation of"
+     "the coupling of the Z boson to the Standard Model fermions");
+}
+
+  void FR${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
+  // first the overall normalisation
+  ${norm}
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ${left}
+  ${right}
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+FR${classname}::FR${classname}() {
+  ${addToPlist}
+  ${addToPlist2}
+}
+
+void FR${classname}::doinit() {
+  ${parameters}
+  ${setCouplings}
+  orderInGem(${qedorder});
+  orderInGs(${qcdorder});
+  ${lorentztag}Vertex::doinit();
+}
+
+}

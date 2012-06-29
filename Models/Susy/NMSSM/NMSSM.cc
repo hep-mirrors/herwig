@@ -14,16 +14,14 @@ using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
   os << theHiggsAMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
-     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV) << _ffhvertex 
-     << _wwhvertex << _whhvertex << _gogohvertex << _hhhvertex 
-     << _hssvertex;// << _gghvertex;
+     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV)
+     << ounit(_MQ3, GeV) << ounit(_MU2, GeV);
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
   is >> theHiggsAMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
-     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV) >> _ffhvertex 
-     >> _wwhvertex >> _whhvertex >> _gogohvertex >> _hhhvertex 
-     >> _hssvertex;// >> _gghvertex;
+     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV)
+     >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -33,45 +31,11 @@ void NMSSM::Init() {
 
   static ClassDocumentation<NMSSM> documentation
     ("The NMSSM class is the base class for the NMSSM model");
-  
-  static Reference<NMSSM,AbstractFFSVertex> interfaceVertexNMSSMFFH
-    ("Vertex/NMSSMFFH",
-     "The higgs coupling to SM fermions in the NMSSM",
-     &NMSSM::_ffhvertex, false, false, true, false, false);
-  
-  static Reference<NMSSM,AbstractVVSVertex> interfaceVertexNMSSMWWH
-    ("Vertex/NMSSMWWH",
-     "The coupling of 2 EW gauge bosons a higgs in the NMSSM",
-     &NMSSM::_wwhvertex, false, false, true, false, false);
 
-  static Reference<NMSSM,AbstractVSSVertex> interfaceVertexNMSSMWHH
-    ("Vertex/NMSSMWHH",
-     "The coupling of a pair of Higgs to EW gauge bosons",
-     &NMSSM::_whhvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractFFSVertex> interfaceVertexNMSSMGOGOH
-    ("Vertex/NMSSMGOGOH",
-     "The coupling of a pair of gauginos to a higgs boson in the NMSSM",
-     &NMSSM::_gogohvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractSSSVertex> interfaceVertexNMSSMHHH
-    ("Vertex/NMSSMHHH",
-     "The triple higgs coupling in the NMSSM",
-     &NMSSM::_hhhvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractSSSVertex> interfaceVertexNMSSMHSS
-    ("Vertex/NMSSMHSS",
-     "The coupling of a pair of sfermions to a higgs in the NMSSM",
-     &NMSSM::_hssvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractVVSVertex> interfaceVertexNMSSMGGH
-    ("Vertex/NMSSMGGH",
-     "The coupling of a higgs to 2 gluons in the NMSSM.",
-     &NMSSM::_gghvertex, false, false, true, false, false);
 }
 
 void NMSSM::extractParameters(bool checkmodel) {
-  SusyBase::extractParameters(false);
+  MSSM::extractParameters(false);
   if(checkmodel) {
     map<string,ParamMap>::const_iterator pit;
     pit = parameters().find("modsel");
@@ -102,23 +66,60 @@ void NMSSM::extractParameters(bool checkmodel) {
   }
   // get the NMSSM parameters
   map<string,ParamMap>::const_iterator pit;
+  pit=parameters().find("msoft");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it;
+    it = pit->second.find(43);
+    if(it != pit->second.end()) _MQ3 = it->second*GeV;
+    it = pit->second.find(46);
+    if(it != pit->second.end()) _MU2 = it->second*GeV;
+  }
+  pit=parameters().find("nmssmrun");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it = pit->second.find(1);
+    if(it != pit->second.end()) _lambda = it->second;
+    it = pit->second.find(2);
+    if(it != pit->second.end()) _kappa = it->second;
+    it = pit->second.find(3);
+    if(it != pit->second.end()) _theAlambda = it->second*GeV;
+    it = pit->second.find(4);
+    if(it != pit->second.end()) _theAkappa = it->second*GeV;
+    it = pit->second.find(5);
+    if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
+  }
   pit=parameters().find("extpar");
   if( pit != parameters().end() ) {
     ParamMap::const_iterator it = pit->second.find(61);
-    if(it != pit->second.end()) _lambda = it->second;
+    if(_lambda==ZERO     && it != pit->second.end()) _lambda = it->second;
     it = pit->second.find(62);
-    if(it != pit->second.end()) _kappa = it->second;
+    if(_kappa==ZERO      && it != pit->second.end()) _kappa = it->second;
     it = pit->second.find(63);
-    if(it != pit->second.end()) _theAlambda = it->second*GeV;
+    if(_theAlambda==ZERO && it != pit->second.end()) _theAlambda = it->second*GeV;
     it = pit->second.find(64);
-    if(it != pit->second.end()) _theAkappa = it->second*GeV;
+    if(_theAkappa==ZERO  && it != pit->second.end()) _theAkappa = it->second*GeV;
     it = pit->second.find(65);
-    if(it != pit->second.end()) _lambdaVEV = it->second*GeV;
+    if(_lambdaVEV==ZERO  && it != pit->second.end()) _lambdaVEV = it->second*GeV;
+    it = pit->second.find(43);
+    if(_MQ3==ZERO        && it != pit->second.end()) _MQ3 = it->second*GeV;
+    it = pit->second.find(46);
+    if(_MU2==ZERO        && it != pit->second.end()) _MU2 = it->second*GeV;
   }
   else {
     throw Exception() << "NMSSM::extractParameters - There was no EXTPAR block "
 		      << "in the extracted parameters list. The model cannot "
 		      << "be used without these." << Exception::runerror;
+  }
+  pit=parameters().find("msoft");
+  if( pit != parameters().end() ) {
+    ParamMap::const_iterator it;
+    if(_MQ3==ZERO) {
+      it = pit->second.find(43);
+      if(it != pit->second.end()) _MQ3 = it->second*GeV;
+    }
+    if(_MU2==ZERO) {
+      it = pit->second.find(46);
+      if(it != pit->second.end()) _MU2 = it->second*GeV;
+    }
   }
 }
 

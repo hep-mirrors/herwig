@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ISGWFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -174,7 +174,7 @@ ISGWFormFactor::ISGWFormFactor() {
   initialModes(numberOfFactors());
 }
 
-void ISGWFormFactor::doinit() throw(InitException) {
+void ISGWFormFactor::doinit() {
   ScalarFormFactor::doinit();
   // set up the quark masses
   _mquark.resize(5);
@@ -190,27 +190,27 @@ void ISGWFormFactor::doinit() throw(InitException) {
   _betaS[1][0] = _betaSud;_betaP[1][0] = _betaPud;
   _betaS[2][0] = _betaSus;_betaP[2][0] = _betaPus;
   _betaS[3][0] = _betaSuc;_betaP[3][0] = _betaPuc;
-  _betaS[4][0] = _betaSub;_betaP[4][0] = 0.*MeV  ;
+  _betaS[4][0] = _betaSub;_betaP[4][0] = ZERO  ;
   _betaS[0][1] = _betaSud;_betaP[0][1] = _betaPud;
   _betaS[1][1] = _betaSud;_betaP[1][1] = _betaPud;
   _betaS[2][1] = _betaSus;_betaP[2][1] = _betaPus;
   _betaS[3][1] = _betaSuc;_betaP[3][1] = _betaPuc;
-  _betaS[4][1] = _betaSub;_betaP[4][1] = 0.*MeV  ;
+  _betaS[4][1] = _betaSub;_betaP[4][1] = ZERO  ;
   _betaS[0][2] = _betaSus;_betaP[0][2] = _betaPus;
   _betaS[1][2] = _betaSus;_betaP[1][2] = _betaPus;
-  _betaS[2][2] = 0.*MeV  ;_betaP[2][2] = 0.*MeV  ;
-  _betaS[3][2] = 0.*MeV  ;_betaP[3][2] = 0.*MeV  ;
-  _betaS[4][2] = 0.*MeV  ;_betaP[4][2] = 0.*MeV  ;
+  _betaS[2][2] = ZERO  ;_betaP[2][2] = ZERO  ;
+  _betaS[3][2] = ZERO  ;_betaP[3][2] = ZERO  ;
+  _betaS[4][2] = ZERO  ;_betaP[4][2] = ZERO  ;
   _betaS[0][3] = _betaSuc;_betaP[0][3] = _betaPuc;
   _betaS[1][3] = _betaSuc;_betaP[1][3] = _betaPuc;
-  _betaS[2][3] = 0.*MeV  ;_betaP[2][3] = 0.*MeV  ;
-  _betaS[3][3] = 0.*MeV  ;_betaP[3][3] = 0.*MeV  ;
-  _betaS[4][3] = 0.*MeV  ;_betaP[4][3] = 0.*MeV  ;
-  _betaS[0][4] = 0.*MeV  ;_betaP[0][4] = 0.*MeV  ;
-  _betaS[1][4] = 0.*MeV  ;_betaP[1][4] = 0.*MeV  ;
-  _betaS[2][4] = 0.*MeV  ;_betaP[2][4] = 0.*MeV  ;
-  _betaS[3][4] = 0.*MeV  ;_betaP[3][4] = 0.*MeV  ;
-  _betaS[4][4] = 0.*MeV  ;_betaP[4][4] = 0.*MeV  ;
+  _betaS[2][3] = ZERO  ;_betaP[2][3] = ZERO  ;
+  _betaS[3][3] = ZERO  ;_betaP[3][3] = ZERO  ;
+  _betaS[4][3] = ZERO  ;_betaP[4][3] = ZERO  ;
+  _betaS[0][4] = ZERO  ;_betaP[0][4] = ZERO  ;
+  _betaS[1][4] = ZERO  ;_betaP[1][4] = ZERO  ;
+  _betaS[2][4] = ZERO  ;_betaP[2][4] = ZERO  ;
+  _betaS[3][4] = ZERO  ;_betaP[3][4] = ZERO  ;
+  _betaS[4][4] = ZERO  ;_betaP[4][4] = ZERO  ;
 }
 
 void ISGWFormFactor::persistentOutput(PersistentOStream & os) const {
@@ -259,25 +259,25 @@ void ISGWFormFactor::Init() {
   static Parameter<ISGWFormFactor,Energy> interfaceDownMass
     ("DownMass",
      "The mass of the down quark in the ISGW model (this is a consituent mass)",
-     &ISGWFormFactor::_mdown, GeV, 0.33*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_mdown, GeV, 0.33*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceUpMass
     ("UpMass",
      "The mass of the up quark in the ISGW model (this is a consituent mass)",
-     &ISGWFormFactor::_mup, GeV, 0.33*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_mup, GeV, 0.33*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceStrangeMass
     ("StrangeMass",
      "The mass of the strange quark in the ISGW model (this is a consituent mass)",
-     &ISGWFormFactor::_mstrange, GeV, 0.55*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_mstrange, GeV, 0.55*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceCharmMass
     ("CharmMass",
      "The mass of the charm quark in the ISGW model (this is a consituent mass)",
-     &ISGWFormFactor::_mcharm, GeV, 1.82*GeV, 0.0*GeV, 3.0*GeV,
+     &ISGWFormFactor::_mcharm, GeV, 1.82*GeV, ZERO, 3.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBottomMass
@@ -289,43 +289,43 @@ void ISGWFormFactor::Init() {
   static Parameter<ISGWFormFactor,Energy> interfaceBetaSud
     ("BetaSud",
      "The variational parameter for s-wave ud mesons",
-     &ISGWFormFactor::_betaSud, GeV, 0.31*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaSud, GeV, 0.31*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaSus
     ("BetaSus",
      "The variational parameter for s-wave us mesons",
-     &ISGWFormFactor::_betaSus, GeV, 0.34*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaSus, GeV, 0.34*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaSuc
     ("BetaSuc",
      "The variational parameter for s-wave uc mesons",
-     &ISGWFormFactor::_betaSuc, GeV, 0.39*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaSuc, GeV, 0.39*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaSub
     ("BetaSub",
      "The variational parameter for s-wave ub mesons",
-     &ISGWFormFactor::_betaSub, GeV, 0.41*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaSub, GeV, 0.41*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaPud
     ("BetaPud",
      "The variational parameter for p-wave ud mesons",
-     &ISGWFormFactor::_betaPud, GeV, 0.27*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaPud, GeV, 0.27*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaPus
     ("BetaPus",
      "The variational parameter for p-wave us mesons",
-     &ISGWFormFactor::_betaPus, GeV, 0.30*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaPus, GeV, 0.30*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,Energy> interfaceBetaPuc
     ("BetaPuc",
      "The variational parameter for p-wave uc mesons",
-     &ISGWFormFactor::_betaPuc, GeV, 0.34*GeV, 0.0*GeV, 1.0*GeV,
+     &ISGWFormFactor::_betaPuc, GeV, 0.34*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<ISGWFormFactor,double> interfaceThetaEtaEtaPrime
@@ -384,7 +384,7 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   Energy mQ(_mquark[ifl0-1]),mq(_mquark[ifl1-1]),ms(_mquark[ifls-1]);
   Energy mtildeX(mq+ms),mtildeY(mQ+ms);
   // wavefunction parameters for the mesons
-  Energy betaX(0.*MeV),betaY(_betaS[ifl0-1][ifls-1]);
+  Energy betaX(ZERO),betaY(_betaS[ifl0-1][ifls-1]);
   // spin-0 outgoing mesons
   if(ispin==0&&jspin<2) {
     betaX=_betaS[ifl1-1][ifls-1];
@@ -522,21 +522,21 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 
 void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::ISGWFormFactor " << fullName() << "\n";
-  output << "set " << fullName() << ":Kappa    "    << _kappa        << "\n";
-  output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
-  output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
-  output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";
-  output << "set " << fullName() << ":CharmMass "   << _mcharm/GeV   << "\n";
-  output << "set " << fullName() << ":BottomMass "  << _mbottom/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSud "     << _betaSud/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSus "     << _betaSus/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSuc "     << _betaSuc/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSub "     << _betaSub/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPud "     << _betaPud/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPus "     << _betaPus/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  if(create) output << "create Herwig::ISGWFormFactor " << name() << "\n";
+  output << "newdef " << name() << ":Kappa    "    << _kappa        << "\n";
+  output << "newdef " << name() << ":DownMass "    << _mdown/GeV    << "\n";
+  output << "newdef " << name() << ":UpMass "      << _mup/GeV      << "\n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << "\n";
+  output << "newdef " << name() << ":CharmMass "   << _mcharm/GeV   << "\n";
+  output << "newdef " << name() << ":BottomMass "  << _mbottom/GeV  << "\n";
+  output << "newdef " << name() << ":BetaSud "     << _betaSud/GeV  << "\n";
+  output << "newdef " << name() << ":BetaSus "     << _betaSus/GeV  << "\n";
+  output << "newdef " << name() << ":BetaSuc "     << _betaSuc/GeV  << "\n";
+  output << "newdef " << name() << ":BetaSub "     << _betaSub/GeV  << "\n";
+  output << "newdef " << name() << ":BetaPud "     << _betaPud/GeV  << "\n";
+  output << "newdef " << name() << ":BetaPus "     << _betaPus/GeV  << "\n";
+  output << "newdef " << name() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

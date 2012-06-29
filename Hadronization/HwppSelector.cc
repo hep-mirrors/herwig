@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwppSelector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,16 +21,22 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "CheckId.h"
 #include <cassert>
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
+DescribeClass<HwppSelector,HadronSelector>
+describeHwppSelector("Herwig::HwppSelector","");
+
+IBPtr HwppSelector::clone() const {
+  return new_ptr(*this);
 }
 
-void HwppSelector::doinit() throw(InitException) {
+IBPtr HwppSelector::fullclone() const {
+  return new_ptr(*this);
+}
+
+void HwppSelector::doinit() {
   HadronSelector::doinit();
 }
 
@@ -42,14 +48,20 @@ void HwppSelector::persistentInput(PersistentIStream & is, int) {
   is >> _mode;
 }
 
-ClassDescription<HwppSelector> HwppSelector::initHwppSelector;
-// Definition of the static class description member.
-
 void HwppSelector::Init() {
 
   static ClassDocumentation<HwppSelector> documentation
     ("The HwppSelector class implements the Herwig++ algorithm for selecting"
-     " the hadrons");
+     " the hadrons",
+     "The hadronization used the selection algorithm described in \\cite{Kupco:1998fx}.",
+     "%\\cite{Kupco:1998fx}\n"
+     "\\bibitem{Kupco:1998fx}\n"
+     "  A.~Kupco,\n"
+     "  ``Cluster hadronization in HERWIG 5.9,''\n"
+     "  arXiv:hep-ph/9906412.\n"
+     "  %%CITATION = HEP-PH/9906412;%%\n"
+     );
+    // put useMe() only in correct place!
 
 
   static Switch<HwppSelector,unsigned int> interfaceMode
@@ -71,7 +83,7 @@ void HwppSelector::Init() {
 
 pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
 						     tcPDPtr par2,tcPDPtr )
-  throw(Veto, Stop, Exception) {
+  {
   // if either of the input partons is a diquark don't allow diquarks to be 
   // produced
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
@@ -84,19 +96,20 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       quark = false;
     }
     else {
+      useMe();
       diquark = false;
       quark = true;
     }
   }
   // weights for the different possibilities
-  Energy weight, wgtsum(0.0*MeV);
+  Energy weight, wgtsum(ZERO);
   // loop over all hadron pairs with the allowed flavours
   vector<Kupco> hadrons;
   for(unsigned int ix=0;ix<partons().size();++ix) {
     tcPDPtr quarktopick  = partons()[ix];
-    if(!quark  &&  abs(quarktopick->iColour()) == 3
+    if(!quark  &&  abs(int(quarktopick->iColour())) == 3
        && !DiquarkMatcher::Check(quarktopick->id())) continue;
-    if(!diquark && abs(quarktopick->iColour()) == 3
+    if(!diquark && abs(int(quarktopick->iColour())) == 3
        && DiquarkMatcher::Check(quarktopick->id())) continue;
     HadronTable::const_iterator 
       tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));
@@ -154,8 +167,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     wgtsum-= hadrons[ix].weight;
     ++ix;
   }
-  while(wgtsum > 0*MeV && ix < hadrons.size());
-  if(ix == hadrons.size() && wgtsum > 0*MeV) 
+  while(wgtsum > ZERO && ix < hadrons.size());
+  if(ix == hadrons.size() && wgtsum > ZERO) 
       return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   assert(hadrons[ix].idQ);

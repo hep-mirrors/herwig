@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LeptonNeutrinoCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -37,7 +37,13 @@ public:
   /**
    * Default constructor
    */
-  inline LeptonNeutrinoCurrent();
+  LeptonNeutrinoCurrent() {
+    // set up the modes in the base class
+    addDecayMode(11,-12);
+    addDecayMode(13,-15);
+    addDecayMode(15,-16);
+    setInitialModes(3);
+  }
 
 public:
 
@@ -74,16 +80,16 @@ public:
 
   /**
    * Hadronic current. This version returns the hadronic current described above.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode, const int ichan,Energy & scale, 
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks that this is one of the allowed modes.
@@ -122,13 +128,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -185,7 +191,5 @@ struct ClassTraits<Herwig::LeptonNeutrinoCurrent>
 /** @endcond */
 
 }
-
-#include "LeptonNeutrinoCurrent.icc"
 
 #endif /* HERWIG_LeptonNeutrinoCurrent_H */

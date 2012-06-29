@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RunningMassBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,11 +24,6 @@ using namespace ThePEG;
 class RunningMassBase: public Interfaced {
   
 public:
-
-  /**
-   * Default constructor.
-   */
-  inline RunningMassBase();
   
   /**
    * Return the running mass for a given scale \f$q^2\f$ and particle type.
@@ -46,7 +41,7 @@ public:
    * Return the \f$i\f$ th element of the mass array.
    * @param i The element to return
    */
-  inline Energy massElement(unsigned int i) const;
+  Energy massElement(unsigned int i) const {return _theMass[i];}
 
 public:
   
@@ -80,7 +75,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -137,7 +132,5 @@ struct ClassTraits<Herwig::RunningMassBase>
 /** @endcond */
   
 }
-
-#include "RunningMassBase.icc"
 
 #endif /* HERWIG_RunningMassBase_H */

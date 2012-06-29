@@ -8,11 +8,11 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/FormFactors/BaryonFormFactor.h"
-#include "BaryonFactorizedDecayer.fh"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "ThePEG/Helicity/LorentzRSSpinorBar.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -31,25 +31,10 @@ class BaryonFactorizedDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline BaryonFactorizedDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline BaryonFactorizedDecayer(const BaryonFactorizedDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BaryonFactorizedDecayer();
-  //@}
-
-public:
+  BaryonFactorizedDecayer();
 
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -71,14 +56,14 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * This method combines the form factor and the weka current to 
    * calculate the matrix element.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -91,25 +76,25 @@ protected:
 
   /**
    * Matrix element for \f$\frac12\to\frac12\f$.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param inpart The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfHalf(bool vertex, const int ichan,const Particle & inpart,
-		  const ParticleVector & decay) const;
+  double halfHalf(const int ichan,const Particle & inpart,
+		  const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Matrix element for \f$\frac12\to\frac32\f$.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param inpart The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfThreeHalf(bool vertex, const int ichan,const Particle & inpart,
-		       const ParticleVector & decay) const;
+  double halfThreeHalf(const int ichan,const Particle & inpart,
+		       const ParticleVector & decay,MEOption meopt) const;
 
 public:
 
@@ -145,61 +130,32 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -241,11 +197,6 @@ private:
   BaryonFormFactorPtr _form;
 
   /**
-   *  The Fermi constant, \f$G_F\f$
-   */
-  InvEnergy2 _GF;
-
-  /**
    *  The perturbative coefficients
    */
   //@{
@@ -283,7 +234,7 @@ private:
   /**
    * The CKM factors
    */
-  vector<vector <Complex> > _CKMfact;
+  vector<vector <Complex> > _factCKM;
 
   /**
    * location of the weights
@@ -304,6 +255,31 @@ private:
    * Pointer to the CKM object.
    */
   Ptr<StandardCKM>::pointer _theCKM;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *   Spin-\f$\frac12\f$ spinors
+   */
+  mutable vector<LorentzSpinor<SqrtEnergy> > _inHalf;
+
+  /**
+   *   Spin-\f$\frac12\f$ barred spinors
+   */
+  mutable vector<LorentzSpinorBar<SqrtEnergy> > _inHalfBar;
+
+  /**
+   *   Spin-\f$\frac32\f$ spinors
+   */
+  mutable vector<LorentzRSSpinor<SqrtEnergy> > _inThreeHalf;
+
+  /**
+   *   Spin-\f$\frac32\f$ barred spinors
+   */
+  mutable vector<LorentzRSSpinorBar<SqrtEnergy> > _inThreeHalfBar;
 };
 
 }
@@ -338,7 +314,5 @@ struct ClassTraits<Herwig::BaryonFactorizedDecayer>
 /** @endcond */
 
 }
-
-#include "BaryonFactorizedDecayer.icc"
 
 #endif /* HERWIG_BaryonFactorizedDecayer_H */

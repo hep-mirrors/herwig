@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // NBodyDecayConstructorBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,6 +16,7 @@
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "NBodyDecayConstructorBase.fh"
+#include "PrototypeVertex.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
@@ -30,23 +31,6 @@ using namespace ThePEG;
  * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
  * defined for NBodyDecayConstructor. 
  */
-
-/**
- *  A struct to order the particles in the same way as in the DecayMode's
- */
-struct ParticleOrdering {
-  bool operator()(PDPtr p1, PDPtr p2) {
-    return abs(p1->id()) > abs(p2->id()) ||
-      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
-      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
-  }
-};
-
-/**
- * A set of ParticleData objects ordered as for the DecayMode's
- */
-typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
-
 class NBodyDecayConstructorBase: public Interfaced {
 
 public:
@@ -54,9 +38,11 @@ public:
   /**
    * The default constructor.
    */
-  inline NBodyDecayConstructorBase() : 
-    _init(true),_iteration(1), _points(1000), _info(false), 
-    _createmodes(true) {}
+  NBodyDecayConstructorBase() : 
+    init_(true),iteration_(1), points_(1000), info_(false), 
+    createModes_(true), removeOnShell_(1), excludeEffective_(true), 
+    minReleaseFraction_(1e-3), maxBoson_(1), maxList_(1),
+    includeTopOnShell_(false) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -64,17 +50,30 @@ public:
    * @param particles vector of ParticleData pointers containing 
    * particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & particles) = 0;
+  virtual void DecayList(const set<PDPtr> & particles);
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const = 0;
 
   /**
    * Set the pointer to the DecayConstrcutor
    */
-  inline void decayConstructor(tDecayConstructorPtr d) { 
-    _decayConstructor = d;
+  void decayConstructor(tDecayConstructorPtr d) { 
+    decayConstructor_ = d;
   }
 
 protected:
   
+  /**
+   *  Method to set up the decay mode, should be overidden in inheriting class
+   */
+  virtual void createDecayMode(vector<NBDiagram> & mode,
+			       bool possibleOnShell,
+			       double symfac);
+  
+
   /**
    * Set the branching ratio of this mode. This requires 
    * calculating a new width for the decaying particle and reweighting
@@ -94,35 +93,66 @@ protected:
   /**
    * Whether to initialize decayers or not
    */
-  inline bool initialize() const { return _init; }
+  bool initialize() const { return init_; }
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  inline int iteration() const { return _iteration; }
+  int iteration() const { return iteration_; }
 
   /**
    * Number of points to do in initialization
    */
-  inline int points() const { return _points; }
+  int points() const { return points_; }
 
   /**
    * Whether to output information on the decayers 
    */
-  inline bool info() const { return _info; }
+  bool info() const { return info_; }
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  inline bool createDecayModes() const { return _createmodes; }
+  bool createDecayModes() const { return createModes_; }
+
+  /**
+   *  Maximum number of electroweak gauge bosons
+   */
+  unsigned int maximumGaugeBosons() const { return maxBoson_;}
+
+  /**
+   *  Maximum number of particles from the list whose decays we are calculating
+   */
+  unsigned int maximumList() const { return maxList_;}
+
+  /**
+   *  Minimum energy release fraction
+   */ 
+  double minimumReleaseFraction() const {return minReleaseFraction_;}
 
   /**
    * Get the pointer to the DecayConstructor object
    */
-  inline tDecayConstructorPtr decayConstructor() const { 
-    return _decayConstructor;
+  tDecayConstructorPtr decayConstructor() const { 
+    return decayConstructor_;
   }
 
+  /**
+   *  Option for on-shell particles
+   */
+  unsigned int removeOnShell() const { return removeOnShell_; }
+
+  /**
+   *  Check if a vertex is excluded
+   */
+  bool excluded(VertexBasePtr vertex) const {
+    // skip an effective vertex
+    if( excludeEffective_ &&
+	int(vertex->orderInGs() + vertex->orderInGem()) != int(vertex->getNpoint())-2)
+      return true;
+    // check if explicitly forbidden
+    return excludedVerticesSet_.find(vertex)!=excludedVerticesSet_.end();
+  }
 
 public:
 
@@ -150,6 +180,18 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -170,37 +212,97 @@ private:
   /**
    * Whether to initialize decayers or not
    */
-  bool _init;
+  bool init_;
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  int _iteration;
+  int iteration_;
 
   /**
    * Number of points to do in initialization
    */
-  int _points;
+  int points_;
 
   /**
    * Whether to output information on the decayers 
    */
-  bool _info;
+  bool info_;
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  bool _createmodes;
+  bool createModes_;
+
+  /**
+   *  Whether or not to remove on-shell diagrams
+   */
+  unsigned int removeOnShell_;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVerticesVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedVerticesSet_;
+
+  /**
+   *  Excluded Particles
+   */
+  vector<PDPtr> excludedParticlesVector_;
+
+  /**
+   *  Excluded Particles
+   */
+  set<PDPtr> excludedParticlesSet_;
+
+  /**
+   *  Whether or not to exclude effective vertices
+   */
+  bool excludeEffective_;
   
   /**
    * A pointer to the DecayConstructor object 
    */
-  tDecayConstructorPtr _decayConstructor;
+  tDecayConstructorPtr decayConstructor_;
+
+  /**
+   * The minimum energy release for a three-body decay as a 
+   * fraction of the parent mass
+   */
+  double minReleaseFraction_;
+
+  /**
+   *  Maximum number of EW gauge bosons
+   */
+  unsigned int maxBoson_;
+
+  /**
+   *  Maximum number of particles from the decaying particle list
+   */
+  unsigned int maxList_;
+
+  /**
+   *  Include on-shell for \f$t\to b W\f$
+   */
+  bool includeTopOnShell_;
 };
 
   /** An Exception class that can be used by all inheriting classes to
    * indicate a setup problem. */
-  class NBodyDecayConstructorError : public Exception {};
+  class NBodyDecayConstructorError : public Exception {
+
+  public:
+
+    NBodyDecayConstructorError() : Exception() {}
+    
+    NBodyDecayConstructorError(const string & str,
+			       Severity sev) : Exception(str,sev)
+    {}
+  };
 
 }
 

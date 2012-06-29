@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *	$Id: ffxe0.f,v 1.4 1996/01/10 15:36:51 gj Exp $
 *###[ ffxe0:
 	subroutine ffxe0(ce0,cd0i,xpi,ier)
@@ -43,7 +46,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ get differences:
 *
@@ -142,7 +145,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -176,14 +179,14 @@
    10	    continue
 	    idsub = idsub + 1
 	    ier0 = 0
-	    call ffdl4p(dl4p,xpi,piDpj,15,ii,ier0)
+	    call ffdl4p(dl4p,piDpj,ii)
 *	    if ( dl4p .lt. 0 ) then
 *		call fferr(57,ier)
 *	    endif
 	    fdel4 = dl4p
 	endif
 	idsub = idsub + 1
-	call ffdel5(dl5s,xpi,piDpj,15,ier)
+	call ffdel5(dl5s,xpi,piDpj)
 *
 	do 40 i=1,5
 	    ieri(i) = ier
@@ -194,11 +197,11 @@
 *	    get the coefficient determinant
 *
 	    idsub = idsub + 1
-	    call ffdl4r(dl4ri(i),xpi,piDpj,15,i,ieri(i))
+	    call ffdl4r(dl4ri(i),piDpj,i)
 *
 *	    get four-point momenta
 *
-	    call ffpi54(xpi4,dpipj4,piDpj4,xpi,dpipj,piDpj,i,ieri(i))
+	    call ffpi54(xpi4,dpipj4,piDpj4,xpi,dpipj,piDpj,i)
 *
 *	    first try IR divergent function to avoid error messages from ffrot4
 *
@@ -286,7 +289,7 @@
 *###] ffxe0a:
 	end
 *###[ ffxe00:
-	subroutine ffxe00(ce0,cd0i,dl4ri,xpi,piDpj,ier)
+	subroutine ffxe00(ce0,cd0i,dl4ri,xpi,piDpj)
 ***#[*comment:***********************************************************
 *									*
 *	calculate							*
@@ -307,7 +310,6 @@
 *		piDpj(15,15)	   (real)  pi.pj			*
 *									*
 *	Output:	ce0		  (complex)				*
-*		ier		  (integer) <50:lost # digits 100=error	*
 *									*
 ***#]*comment:***********************************************************
 *  #[ declarations:
@@ -315,19 +317,18 @@
 *
 *	arguments
 *
-	integer ier
 	DOUBLE COMPLEX ce0,cd0i(5)
 	DOUBLE PRECISION dl4ri(5),xpi(20),piDpj(15,15)
 *
 *	local variables
 *
-	integer i,ii(10),imin,ier0
+	integer i,ii(10),imin
 	DOUBLE COMPLEX c,csum
 	DOUBLE PRECISION dl5s,dl4p,absc,xmax
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -346,12 +347,11 @@
 		ii(i) = i+5
    10	    continue
 	    idsub = idsub + 1
-	    ier0 = 0
-	    call ffdl4p(dl4p,xpi,piDpj,15,ii,ier0)
+	    call ffdl4p(dl4p,piDpj,ii)
 	    fdel4 = dl4p
 	endif
 	idsub = idsub + 1
-	call ffdel5(dl5s,xpi,piDpj,15,ier)
+	call ffdel5(dl5s,xpi,piDpj)
 *
 *  #] calculations:
 *  #[ add all up:
@@ -404,7 +404,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -664,7 +664,7 @@
 *###] ffdot5:
 	end
 *###[ ffpi54:
-	subroutine ffpi54(xpi4,dpipj4,piDpj4,xpi,dpipj,piDpj,inum,ier)
+	subroutine ffpi54(xpi4,dpipj4,piDpj4,xpi,dpipj,piDpj,inum)
 ***#[*comment:***********************************************************
 *									*
 *	Gets the dotproducts pertaining to the fourpoint function with  *
@@ -678,7 +678,6 @@
 *	Output:	xpi4	real(13)					*
 *		dpipj4	real(10,13)					*
 *		piDpj4	real(10,10)					*
-*		ier	integer						*
 *									*
 ***#]*comment:***********************************************************
 *  #[ declarations:
@@ -686,7 +685,7 @@
 *
 *	arguments
 *
-	integer inum,ier
+	integer inum
 	DOUBLE PRECISION xpi(20),dpipj(15,20),piDpj(15,15),xpi4(13),
      +		dpipj4(10,13),piDpj4(10,10)
 *
@@ -697,7 +696,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -767,7 +766,7 @@
 	logical lcon
 	parameter (icon=3)
 	save inew,init,lcon
-	include 'ff.h'
+#include "ff.h"
 	data inew
      +	       /1,2,3,4,5, 6,7,8,9,10,11,12,13,14,15, 16,17,18,19,20,
      +		2,1,3,4,5, 6,11,8,9,15,7,14,13,12,10, 16,18,17,19,-20,
@@ -786,9 +785,7 @@
 *  #[ open console for some activity on screen:
 	if ( init .eq. 0 ) then
 	    init = 1
-   11	    continue
 	    lcon = .FALSE.
-   13	    continue
 	endif
 *  #] open console for some activity on screen:
 *  #[ calculations:
@@ -804,10 +801,10 @@
 			xqi(inew(i,irota)) = xpi(i)
 		    endif
    10		continue
-		print '(a,i2,a,i2)','---#[ rotation ',irota,': isgnal ',
-     +			isgnal
-		if (lcon) write(icon,'(a,i2,a,i2)')'rotation ',irota,',
-     +			isgnal ',isgnal
+		print '(a,i2,a,i2)','---#[ rotation ',irota,
+     +			': isgnal ',isgnal
+		if (lcon) write(icon,'(a,i2,a,i2)') 'rotation ',irota,
+     +                  ', isgnal ',isgnal
 		ier1 = 0
 		ner = 0
 		id = id + 1

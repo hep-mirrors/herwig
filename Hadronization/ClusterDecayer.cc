@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,8 +24,33 @@
 #include "CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterDecayer,Interfaced>
+describeClusterDecayer("Herwig::ClusterDecayer","");
+
+ClusterDecayer::ClusterDecayer() :
+  _clDirLight(1),	     
+  _clDirBottom(1),
+  _clDirCharm(1),
+  _clDirExotic(1),	     
+  _clSmrLight(0.0),	     
+  _clSmrBottom(0.0),
+  _clSmrCharm(0.0),
+  _clSmrExotic(0.0),
+  _onshell(false),
+  _masstry(20)
+{}
+
+IBPtr ClusterDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterDecayer::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
@@ -39,9 +64,6 @@ void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
      >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom 
      >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
 }
-
-ClassDescription<ClusterDecayer> ClusterDecayer::initClusterDecayer;
-// Definition of the static class description member.
 
 
 void ClusterDecayer::Init() {
@@ -162,7 +184,7 @@ static Parameter<ClusterDecayer,double>
 
 
 void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-  throw(Veto, Stop, Exception) {
+  {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
@@ -182,7 +204,7 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
 
 
 pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
-  throw(Veto, Stop, Exception) {
+  {
   using Constants::pi;
   using Constants::twopi;
   // To decay the cluster into two hadrons one must distinguish between
@@ -372,7 +394,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     }
     while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
     // if fails produce on shell and issue warning (should never happen??)
-    if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass()) {
+    if( ptrHad1->mass() + ptrHad2->mass() > ptr->mass() ) {
       generator()->log() << "Failed to produce off-shell hadrons in "
 			 << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
 			 << "on-shell" << endl;

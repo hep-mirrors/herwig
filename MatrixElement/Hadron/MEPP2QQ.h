@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2QQ.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2QQ class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2QQInterfaces "The interfaces"
  * defined for MEPP2QQ.
  */
-class MEPP2QQ: public HwME2to2Base {
+class MEPP2QQ: public HwMEBase {
 
 public:
 
@@ -157,6 +157,57 @@ protected:
 		       vector<SpinorBarWaveFunction>    & q3,
 		       vector<SpinorWaveFunction>    & q4,
 		       unsigned int flow) const;
+
+  /**
+   * Matrix element for \f$qq\to qq\f$
+   * @param q1 The wavefunction  for the first  incoming quark
+   * @param q2 The wavefunction  for the second incoming quark
+   * @param q3 The wavefunction  for the first  outgoing quark
+   * @param q4 The wavefunction  for the second outgoing quark
+   * @param flow The colour flow
+   */
+  double qq2qqME(vector<SpinorWaveFunction> & q1, vector<SpinorWaveFunction> & q2,
+		 vector<SpinorBarWaveFunction> & q3, vector<SpinorBarWaveFunction> & q4,
+		 unsigned int flow) const;
+
+  /**
+   * Matrix element for \f$\bar{q}\bar{q}\to \bar{q}\bar{q}\f$
+   * @param q1 The wavefunction  for the first  incoming antiquark
+   * @param q2 The wavefunction  for the second incoming antiquark
+   * @param q3 The wavefunction  for the first  outgoing antiquark
+   * @param q4 The wavefunction  for the second outgoing antiquark
+   * @param flow The colour flow
+   */
+  double qbarqbar2qbarqbarME(vector<SpinorBarWaveFunction> & q1,
+			     vector<SpinorBarWaveFunction> & q2,
+			     vector<SpinorWaveFunction>    & q3,
+			     vector<SpinorWaveFunction>    & q4,
+			     unsigned int flow) const;
+
+  /**
+   * Matrix element for \f$qg\to qg\f$
+   * @param qin  The wavefunction for the incoming quark
+   * @param g2   The wavefunction for the incoming gluon
+   * @param qout The wavefunction for the outgoing quark
+   * @param g4   The wavefunction for the outgoing gluon
+   * @param flow The colour flow
+   */
+  double qg2qgME(vector<SpinorWaveFunction> & qin,vector<VectorWaveFunction> &g2,
+		 vector<SpinorBarWaveFunction> & qout,vector<VectorWaveFunction> &g4,
+		 unsigned int flow) const;
+
+  /**
+   * Matrix elements for \f$\bar{q}g\to \bar{q}g\f$.
+   * @param qin  The wavefunction for the incoming antiquark
+   * @param g2   The wavefunction for the incoming gluon
+   * @param qout The wavefunction for the outgoing antiquark
+   * @param g4   The wavefunction for the outgoing gluon
+   * @param flow The colour flow
+   */
+  double qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
+		       vector<VectorWaveFunction> &g2,
+		       vector<SpinorWaveFunction> & qout,vector<VectorWaveFunction> &g4,
+		       unsigned int flow) const;
   //@}
 
 protected:
@@ -167,13 +218,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -185,7 +236,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -197,7 +248,7 @@ protected:
    * pointer.
    */
   virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this
@@ -260,6 +311,11 @@ private:
   unsigned int _topopt;
 
   /**
+   *  Maximum numbere of quark flavours to include
+   */
+  unsigned int _maxflavour;
+
+  /**
    *  Colour flow
    */
   mutable unsigned int _flow;
@@ -309,7 +365,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2QQ,1> {
   /** Typedef of the first base class of MEPP2QQ. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -12,6 +12,28 @@
 #
 ###################################################
 cd /Herwig/Particles
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:OnOff Off
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:OnOff Off
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:OnOff Off 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:OnOff Off 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:OnOff Off
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:OnOff Off
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:OnOff Off
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:OnOff Off
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:OnOff Off
+set h0/h0->t,tbar;:BranchingRatio 0.0
+
 create ThePEG::ParticleData A_H
 setup A_H 32 A_H 500.0 0. 0. 0.0 0 0 3 0
 create ThePEG::ParticleData Z_H 
@@ -67,31 +89,35 @@ create Herwig::LHFFZVertex FFZVertex
 create Herwig::LHFFPVertex FFPVertex
 create Herwig::LHFFGVertex FFGVertex
 create Herwig::LHFFWVertex FFWVertex
+create Herwig::LHFFHVertex FFHVertex
+create Herwig::LHWWWVertex WWWVertex
+create Herwig::LHWWHVertex WWHVertex
+create Herwig::LHWWWWVertex WWWWVertex
+create Herwig::LHWHHVertex WHHVertex
+create Herwig::LHWWHHVertex WWHHVertex
 
-#create Herwig::LHWWWVertex WWWVertex 
-#create Herwig::LHWWHVertex WWHVertex 
+#  LHWHHVertex.h LHWWHH
+
+
 
 cd /Herwig/NewPhysics/LH
 # SM vertices
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
-set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+set Model:Vertex/GGG   /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG  /Herwig/Vertices/GGGGVertex
+set Model:Vertex/HGG   /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP   /Herwig/Vertices/HPPVertex
+set Model:Vertex/HHH   /Herwig/Vertices/HHHVertex
 # LH vertices
-set Model:Vertex/FFZ /Herwig/Vertices/LH/FFZVertex
-set Model:Vertex/FFP /Herwig/Vertices/LH/FFPVertex
-set Model:Vertex/FFG /Herwig/Vertices/LH/FFGVertex
-set Model:Vertex/FFW /Herwig/Vertices/LH/FFWVertex
-
-
-
-
-
-
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
-set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/FFZ  /Herwig/Vertices/LH/FFZVertex
+set Model:Vertex/FFP  /Herwig/Vertices/LH/FFPVertex
+set Model:Vertex/FFG  /Herwig/Vertices/LH/FFGVertex
+set Model:Vertex/FFW  /Herwig/Vertices/LH/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/LH/FFHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/LH/WWWVertex
+set Model:Vertex/WWH  /Herwig/Vertices/LH/WWHVertex
+set Model:Vertex/WWWW /Herwig/Vertices/LH/WWWWVertex
+set Model:Vertex/WHH  /Herwig/Vertices/LH/WHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/LH/WWHHVertex
 
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler

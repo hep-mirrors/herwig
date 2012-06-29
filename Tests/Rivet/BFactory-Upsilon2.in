@@ -1,0 +1,33 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase.in
+
+create ThePEG::LuminosityFunction BFactoryLuminosity
+set BFactoryLuminosity:BeamEMaxA 5.0125*GeV
+set BFactoryLuminosity:BeamEMaxB 5.0125*GeV
+set /Herwig/Cuts/EECuts:MHatMin 10.02
+set /Herwig/EventHandlers/LEPHandler:LuminosityFunction BFactoryLuminosity
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/MatrixElements
+create Herwig::MEee2VectorMeson MEUpsilon HwMELepton.so
+set MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(2S)
+set MEUpsilon:Coupling 0.0004151809
+set SimpleEE:MatrixElements 0 MEUpsilon
+insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/Upsilon(2S)
+cd /Herwig/Generators
+##################################################
+# select the analyses 
+##################################################
+
+# BELLE charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun BFactory-Upsilon2 LEPGenerator

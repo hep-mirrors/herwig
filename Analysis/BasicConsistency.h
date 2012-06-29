@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BasicConsistency.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,8 +17,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the BasicConsistency class.
+/** \ingroup Analysis
+ * The BasicConsistency class is a simple analysis which performs a basic
+ * analysis of the event checking that energy, momentum and charge are
+ * conserved and no quarks or clusters are final-state particles.
  *
  * @see \ref BasicConsistencyInterfaces "The interfaces"
  * defined for BasicConsistency.
@@ -154,6 +156,16 @@ private:
    *  Check the branching ratios
    */
   bool _checkBR;
+
+  /**
+   *  Maximum absolute momentum deviation before warning
+   */
+  Energy _absolutemomentumtolerance;
+
+  /**
+   *  Maximum momentum deviation relative to beam energy before warning
+   */
+  double _relativemomentumtolerance;
 
 };
 

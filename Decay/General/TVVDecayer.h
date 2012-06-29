@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TVVDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -36,20 +36,20 @@ public:
   /**
    * The default constructor.
    */
-  inline TVVDecayer() { addToSearchList(2); }
+  TVVDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-                      const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+                      const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Function to return partial Width
@@ -113,7 +113,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -141,6 +141,21 @@ private:
    * Pointer to the perturbative vertex
    */
   VVTVertexPtr _perturbativeVertex;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization tensors of decaying particle
+   */
+  mutable vector<Helicity::TensorWaveFunction> _tensors;
+
+  /**
+   *  Polarization vectors of outgoing vector bosons
+   */
+  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
 };
 
 }

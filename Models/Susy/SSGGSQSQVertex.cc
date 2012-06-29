@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGGSQSQVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,33 +13,22 @@
 
 #include "SSGGSQSQVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
-  vector<long> first,second,third,fourth;
-  //L-L squarks
-  for(long ix=1000001;ix<1000007;++ix) {
-    first.push_back(21);
-    second.push_back(21);
-    third.push_back(ix);
-    fourth.push_back(-ix);
-  }
-  //R-R squarks
-  for(long ix=2000001;ix<2000007;++ix) {
-    first.push_back(21);
-    second.push_back(21);
-    third.push_back(ix);
-    fourth.push_back(-ix);
-  }
-  setList(first,second,third,fourth);
-}
-
-NoPIOClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
-// Definition of the static class description member.
+SSGGSQSQVertex::SSGGSQSQVertex() : q2last_(),couplast_(0.) 
+{}
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<SSGGSQSQVertex,Helicity::VVSSVertex>
+describeSSGGSQSQVertex("Herwig::SSGGSQSQVertex", "HwSusy.so");
 
 void SSGGSQSQVertex::Init() {
 
@@ -50,9 +39,23 @@ void SSGGSQSQVertex::Init() {
 
 void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
 				 tcPDPtr) { 
-  if(q2 != _q2last) {
-    _couplast = sqr(strongCoupling(q2));
-    _q2last = q2;
+  if(q2 != q2last_ || couplast_ == 0.) {
+    couplast_ = sqr(strongCoupling(q2));
+    q2last_ = q2;
   }
-  setNorm(_couplast);
+  norm(couplast_);
+}
+
+void SSGGSQSQVertex::doinit() {
+  //L-L squarks
+  for(long ix=1000001;ix<1000007;++ix) {
+    addToList(21,21,ix,-ix);
+  }
+  //R-R squarks
+  for(long ix=2000001;ix<2000007;++ix) {
+    addToList(21,21,ix,-ix);
+  }
+  orderInGs(2);
+  orderInGem(0);
+  VVSSVertex::doinit();
 }

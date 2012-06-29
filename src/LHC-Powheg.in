@@ -11,7 +11,6 @@
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
@@ -22,12 +21,25 @@ set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 
 ##################################################
+#  and strong coupling
+##################################################
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+
+##################################################
+#  Setup the POWHEG shower
+##################################################
+cd /Herwig/Shower
+set Evolver:HardEmissionMode POWHEG
+
+##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 5.7*GeV
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -37,9 +49,29 @@ cd /Herwig/MatrixElements/
 
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
+#
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
- 
+# higgs + W (N.B. if considering all W decay modes useful to set )
+#           (jet pT cut to zero so no cut on W decay products    )
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH
+# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+#
+# higgs + Z (N.B. if considering all Z decay modes useful to set )
+#           (jet pT cut to zero so no cut on Z decay products    )
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2ZH
+# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+#
+# gg/qqbar -> Higgs
+# insert SimpleQCD:MatrixElements[0] PowhegMEHiggs
+#
+# Weak boson pair production: WW / ZZ / WZ / W+Z [WpZ] / W-Z [WmZ]
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
+# set PowhegMEPP2VV:Process WpZ
+#
+# Higgs production via VBF
+# insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF
+
 cd /Herwig/Generators
 ##################################################
 #  Useful analysis handlers for hadron-hadron physics

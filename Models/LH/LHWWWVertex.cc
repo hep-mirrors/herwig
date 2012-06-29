@@ -30,55 +30,30 @@ void LHWWWVertex::Init() {
 
 }
 
-LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
+LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(ZERO) {
+  orderInGem(1);
+  orderInGs(0);
   // particles
-  vector<long> first,second,third;
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(22);
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(23);
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(32);
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(33);
-  first.push_back(34);
-  second.push_back(-24);
-  third.push_back(23);
-  first.push_back(34);
-  second.push_back(-24);
-  third.push_back(32);
-  first.push_back(34);
-  second.push_back(-24);
-  third.push_back(33);
-  first.push_back(24);
-  second.push_back(-34);
-  third.push_back(23);
-  first.push_back(24);
-  second.push_back(-34);
-  third.push_back(32);
-  first.push_back(24);
-  second.push_back(-34);
-  third.push_back(33);
-  first.push_back(34);
-  second.push_back(-34);
-  third.push_back(22);
-  first.push_back(34);
-  second.push_back(-34);
-  third.push_back(23);
-  first.push_back(34);
-  second.push_back(-34);
-  third.push_back(32);
-  first.push_back(34);
-  second.push_back(-34);
-  third.push_back(33);
-  setList(first,second,third);
+  addToList(24,  -24,  22);
+  addToList(24,  -24,  23);
+  addToList(24,  -24,  32);
+  addToList(24,  -24,  33);
+
+  addToList(34,  -24,  23);
+  addToList(34,  -24,  32);
+  addToList(34,  -24,  33);
+
+  addToList(24,  -34,  23);
+  addToList(24,  -34,  32);
+  addToList(24,  -34,  33);
+
+  addToList(34,  -34,  22);
+  addToList(34,  -34,  23);
+  addToList(34,  -34,  32);
+  addToList(34,  -34,  33);
 }
 
-void LHWWWVertex::doinit() throw(InitException) {
+void LHWWWVertex::doinit() {
   // model
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
@@ -108,26 +83,23 @@ void LHWWWVertex::doinit() throw(InitException) {
   _corr[ 4] = -1.;
   // W_H W_H A_H
   _corr[ 5] = vf/sw*(xH*(sqr(c)-sqr(s))/s/c+cw*xB);
-  // W_L W_L A_L
+  // W_L W_L Z_L
   _corr[ 6] = -cw/sw;
-  // W_L W_L A_H
+  // W_L W_L Z_H
   _corr[ 7] = vf/sw*(cw*xW+s*c*(sqr(c)-sqr(s)));
-  // W_L W_H A_L
+  // W_L W_H Z_L
   _corr[ 8] = -vf/sw*xW;
-  // W_L W_H A_H
+  // W_L W_H Z_H
   _corr[ 9] = -1./sw;
-  // W_H W_H A_L
+  // W_H W_H Z_L
   _corr[10] = -cw/sw;
-  // W_H W_H A_H
+  // W_H W_H Z_H
   _corr[11] = (sqr(c)-sqr(s))/s/c/sw;
-  orderInGem(1);
-  orderInGs(0);
   VVVVertex::doinit();
 }
 
 // couplings for the WWW vertex
-void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
-			      Direction,Direction,Direction) {
+void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = electroMagneticCoupling(q2);
@@ -153,25 +125,25 @@ void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
     if(abs(idb)==34) ++nh;
   }
   if(nh==0) {
-    if     (ineut==22) setNorm(_corr[ 0]*_couplast);
-    else if(ineut==23) setNorm(_corr[ 6]*_couplast);
-    else if(ineut==32) setNorm(_corr[ 1]*_couplast);
-    else if(ineut==33) setNorm(_corr[ 7]*_couplast);
+    if     (ineut==22) norm(_corr[ 0]*_couplast);
+    else if(ineut==23) norm(_corr[ 6]*_couplast);
+    else if(ineut==32) norm(_corr[ 1]*_couplast);
+    else if(ineut==33) norm(_corr[ 7]*_couplast);
   }
   else if(nh==1) {
-    if     (ineut==22) setNorm(_corr[ 2]*_couplast);
-    else if(ineut==23) setNorm(_corr[ 8]*_couplast);
-    else if(ineut==32) setNorm(_corr[ 3]*_couplast);
-    else if(ineut==33) setNorm(_corr[ 9]*_couplast);
+    if     (ineut==22) norm(_corr[ 2]*_couplast);
+    else if(ineut==23) norm(_corr[ 8]*_couplast);
+    else if(ineut==32) norm(_corr[ 3]*_couplast);
+    else if(ineut==33) norm(_corr[ 9]*_couplast);
   }
   else if(nh==2) {
-    if     (ineut==22) setNorm(_corr[ 4]*_couplast);
-    else if(ineut==23) setNorm(_corr[10]*_couplast);
-    else if(ineut==32) setNorm(_corr[ 5]*_couplast);
-    else if(ineut==33) setNorm(_corr[11]*_couplast);
+    if     (ineut==22) norm(_corr[ 4]*_couplast);
+    else if(ineut==23) norm(_corr[10]*_couplast);
+    else if(ineut==32) norm(_corr[ 5]*_couplast);
+    else if(ineut==33) norm(_corr[11]*_couplast);
   }
   // check the order for the overall sign 
   if((ia<0  && ib>0  && ic==0) || 
      (ia==0 && ib<0  && ic>0 ) || 
-     (ia>0  && ib==0 && ic<0 ) ) setNorm(-getNorm());
+     (ia>0  && ib==0 && ic<0 ) ) norm(-norm());
 }

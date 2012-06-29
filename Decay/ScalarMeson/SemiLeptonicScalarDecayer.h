@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SemiLeptonicScalarDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,7 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/FormFactors/ScalarFormFactor.h"
 #include "Herwig++/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
-#include "SemiLeptonicScalarDecayer.fh"
+#include "ThePEG/Helicity/LorentzTensor.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -41,7 +41,7 @@ public:
   /**
    * Default constructor.
    */
-  inline SemiLeptonicScalarDecayer();
+  SemiLeptonicScalarDecayer();
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -49,7 +49,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
   
   /**
    * Which of the possible decays is required
@@ -62,14 +62,14 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2( const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -109,13 +109,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -128,12 +128,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -171,10 +171,34 @@ private:
   vector<int> _modemap;
 
   /**
-   * the fermi constant
+   *  Spin density matrix
    */
-  InvEnergy2 _GF;
+  mutable RhoDMatrix _rho;
 
+  /**
+   *  Polarization vectors for the decay products
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
+  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+
+  /**
+   *  Constants for the mapping of the leptonic current
+   */
+  mutable vector<unsigned int> _constants;
+
+  /**
+   *  Spins of the particles
+   */
+  mutable vector<PDT::Spin> _ispin;
+
+  /**
+   *  Location of the outgoing meson
+   */
+  mutable unsigned int _imes;
 };
 
 }
@@ -217,7 +241,5 @@ struct ClassTraits<Herwig::SemiLeptonicScalarDecayer>
 /** @endcond */
 
 }
-
-#include "SemiLeptonicScalarDecayer.icc"
 
 #endif /* HERWIG_SemiLeptonicScalarDecayer_H */
