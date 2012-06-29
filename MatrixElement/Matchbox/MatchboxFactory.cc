@@ -157,7 +157,9 @@ void MatchboxFactory::setup() {
 	  g != particleGroups().end(); ++g )
       for ( PDVector::iterator p = g->second.begin();
 	    p != g->second.end(); ++p ) {
+#ifndef NDEBUG
 	long checkid = (**p).id();
+#endif
 	*p = getParticleData((**p).id());
 	assert((**p).id() == checkid);
       }
