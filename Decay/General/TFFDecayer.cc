@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TFFDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -113,14 +113,14 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale = sqr(inpart.second);
-    _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,
-				     outb.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(scale, in, outa.first, outb.first);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1- 4.*musq);
     double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -130,3 +130,4 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

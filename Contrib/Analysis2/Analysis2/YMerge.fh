@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the YMerge class.
+//
+#ifndef Analysis2_YMerge_FH
+#define Analysis2_YMerge_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class YMerge;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::YMerge,YMergePtr);
+
+}
+
+#endif

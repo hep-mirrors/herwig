@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // O2AlphaS.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -75,7 +75,7 @@ vector<Energy2> O2AlphaS::flavourThresholds() const {
 
 void O2AlphaS::doinit() {
   // thresholds
-  for(unsigned int ix=1;ix<7;++ix) {
+  for ( int ix=1; ix<7; ++ix ) {
     tPDPtr p = getParticleData(ix);
     _threshold[ix-1] = p->mass();
   }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SudakovFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,7 +19,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "ShowerKinematics.h"
 
 using namespace Herwig;
 
@@ -61,7 +61,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 4000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 100000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
@@ -160,26 +160,15 @@ bool SudakovFormFactor::
 PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  tcPDFPtr pdf = tcPDFPtr();
-  //using the pdf's associated with the ShowerHandler assures, that
-  //modified pdf's are used for the secondary interactions via 
-  //CascadeHandler::resetPDFs(...)
-  if(ShowerHandler::currentHandler()->firstPDF().particle() == beam)
-    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
-  if(ShowerHandler::currentHandler()->secondPDF().particle() == beam)
-    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
-
-  assert(pdf);
+  assert(pdf_);
 
   Energy2 theScale = t;
-
-  if (theScale < sqr(ShowerHandler::currentHandler()->pdfFreezingScale()))
-    theScale = sqr(ShowerHandler::currentHandler()->pdfFreezingScale());
+  if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);
   //different treatment of MPI ISR is done via CascadeHandler::resetPDFs()
-  newpdf=pdf->xfx(beam,parton0,theScale,x/z());
-  oldpdf=pdf->xfx(beam,parton1,theScale,x);
+  newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
+  oldpdf=pdf_->xfx(beam,parton1,theScale,x);
 
   
   if(newpdf<=0.) return true;
@@ -202,7 +191,7 @@ PDFVeto(const Energy2 t, const double x,
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > maxpdf) {
     generator()->log() << "PDFVeto warning: Ratio > " << name() 
-		       << ":PDFmax (by a factor of"
+		       << ":PDFmax (by a factor of "
 		       << ratio/maxpdf <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";
@@ -228,6 +217,27 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
     }
   }
   if(add) particles_.push_back(in);
+}
+
+void SudakovFormFactor::removeSplitting(const IdList & in) {
+  for(vector<IdList>::iterator it=particles_.begin();
+      it!=particles_.end();++it) {
+    if(it->size()==in.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<in.size();++iy) {
+	if((*it)[iy]!=in[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	vector<IdList>::iterator itemp=it;
+	--itemp;
+	particles_.erase(it);
+	it = itemp;
+      }
+    }
+  }
 }
 
 Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
@@ -268,4 +278,32 @@ double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
 void SudakovFormFactor::doinit() {
   Interfaced::doinit();
   pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : ZERO; 
+}
+
+vector<Energy> SudakovFormFactor::virtualMasses(const IdList & ids) {
+  vector<Energy> output;
+  if(cutOffOption() == 0) {
+    for(unsigned int ix=0;ix<ids.size();++ix)
+      output.push_back(getParticleData(ids[ix])->mass());
+    Energy kinCutoff=
+      kinematicCutOff(kinScale(),*std::max_element(output.begin(),output.end()));
+    for(unsigned int ix=0;ix<output.size();++ix)
+      output[ix]=max(kinCutoff,output[ix]);
+  }
+  else if(cutOffOption() == 1) {
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      output.push_back(getParticleData(ids[ix])->mass());
+      output.back() += ids[ix]==ParticleID::g ? vgCut() : vqCut();
+    }
+  }
+  else if(cutOffOption() == 2) {
+    for(unsigned int ix=0;ix<ids.size();++ix) 
+      output.push_back(getParticleData(ids[ix])->mass());
+  }
+  else {
+    throw Exception() << "Unknown option for the cut-off"
+		      << " in SudakovFormFactor::virtualMasses()"
+		      << Exception::runerror;
+  }
+  return output;
 }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreeMesonDefaultCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -115,29 +115,20 @@ public:
   
   /**
    * the matrix element for the \f$a_1\f$ decay to calculate the running width
+   * @param imode The mode for which the matrix element is needed.
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  double threeBodyMatrixElement(const int ,  const Energy2 q2,
+  double threeBodyMatrixElement(const int imode,  const Energy2 q2,
 				const Energy2 s3, const Energy2 s2, 
-				const Energy2 s1, const Energy  , 
-				const Energy  , const Energy  ) const {
-    Energy2 mpi2(sqr(_mpi));
-    Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
-    // the matrix element
-    Energy2 output(ZERO); 
-    // first resonance
-    output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
-    // second resonance
-    output += ((s2-4.*mpi2) + 0.25*(s3-s1)*(s3-s1)/q2) * real(propa*conj(propa)); 
-    // the interference term 
-    output += (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
-								propb*conj(propa)); 
-    return output/sqr(_rhoF123masses[0]);
-  }
+				const Energy2 s1, const Energy  m1, 
+				const Energy  m2, const Energy  m3) const;
 
 protected:
 
@@ -336,7 +327,7 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const  {
+  Complex a1BreitWigner(Energy2 q2) const  {
     Complex ii(0.,1.);
     Energy2 m2(_a1mass*_a1mass);
     Energy  q(sqrt(q2));

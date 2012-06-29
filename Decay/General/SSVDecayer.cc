@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSVDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,11 +22,6 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-
-SSVDecayer::SSVDecayer() {
-  addToSearchList(1);
-  addToSearchList(2);
-}
 
 IBPtr SSVDecayer::clone() const {
   return new_ptr(*this);
@@ -110,14 +105,13 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
   if(_perturbativeVertex) {
     double mu1sq(sqr(outa.second/inpart.second)),
       mu2sq(sqr(outb.second/inpart.second));
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin() == PDT::Spin0) {
-      _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
-				       inpart.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,in);
     }
     else {
       swap(mu1sq,mu2sq);
-      _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
-				       inpart.first);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
     }
     double me2(0.);
     if(mu2sq == 0.) 
@@ -126,7 +120,7 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
       me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					       outb.second);
-    Energy output = pcm*me2*norm(_perturbativeVertex->getNorm())/8./Constants::pi;
+    Energy output = pcm*me2*norm(_perturbativeVertex->norm())/8./Constants::pi;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -136,3 +130,4 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

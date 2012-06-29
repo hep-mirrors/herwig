@@ -27,7 +27,7 @@ MEPP2ZJet::MEPP2ZJet() : _process(0), _maxflavour(5), _zdec(0),
 {}
 
 void MEPP2ZJet::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0   );
   _gamma = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
@@ -52,13 +52,13 @@ void MEPP2ZJet::Init() {
   static ClassDocumentation<MEPP2ZJet> documentation
     ("The MEPP2ZJet class implements the matrix element for Z/gamma+ jet production");
 
-  static Parameter<MEPP2ZJet,unsigned int> interfaceMaxFlavour
+  static Parameter<MEPP2ZJet,int> interfaceMaxFlavour
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
       &MEPP2ZJet::_maxflavour, 5, 0, 8, false, false, true);
 
-  static Switch<MEPP2ZJet,unsigned int> interfaceZDecay
+  static Switch<MEPP2ZJet,int> interfaceZDecay
     ("ZDecay",
      "Which process to included",
      &MEPP2ZJet::_zdec, 0, false, false);
@@ -226,7 +226,7 @@ void MEPP2ZJet::getDiagrams() const {
   // pointer for gluon
   tcPDPtr g = getParticleData(ParticleID::g);
   bool quark,lepton;
-  for(unsigned int ix=1;ix<17;++ix) {
+  for ( int ix=1; ix<17; ++ix ) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     // is it a valid quark process
@@ -241,7 +241,7 @@ void MEPP2ZJet::getDiagrams() const {
     // pointer for Z decay products
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for (unsigned int i = 1; i <= _maxflavour; ++i ) {
+    for (int i = 1; i <= _maxflavour; ++i ) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
       // q qbar -> Z g -> l+l- g
@@ -392,8 +392,8 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   if(r[1]<_pprob) {
     double rand=r[1]/_pprob;
     _mz2=minMass2*maxMass2/(minMass2+rand*(maxMass2-minMass2));
@@ -494,7 +494,6 @@ double MEPP2ZJet::getCosTheta(double ctmin, double ctmax, const double r) {
 }  
 
 double MEPP2ZJet::me2() const {
-  useMe();
   InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
@@ -874,5 +873,5 @@ void MEPP2ZJet::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix)
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
 }

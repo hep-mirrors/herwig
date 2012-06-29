@@ -2,7 +2,7 @@
 
 *	$Id: ffinit.f,v 1.9 1996/04/26 10:39:03 gj Exp $
 *###[ ffini:
-	subroutine ffini
+	subroutine ltini
 ***#[*comment:***********************************************************
 *	calculate a lot of commonly-used constants in the common block	*
 *	/ffcnst/. also set the precision, maximum loss of digits and	*
@@ -65,9 +65,13 @@
 *       we do this here because loading block data is unreliable
 *
 	call clearcache
-	errdigits = 100
-	warndigits = 9
 	serial = 0
+
+	call getenv("LTMINMASS", env)
+	minmass = 0
+	read(env, *, end=90, err=90) minmass
+	print *, "using minmass    =", minmass
+90      continue
 
 	call getenv("LTMAXDEV", env)
 	maxdev = 1D-10
@@ -75,32 +79,71 @@
 	print *, "using maxdev     =", maxdev
 91	continue
 
+	call getenv("LTCMPBITS", env)
+	cmpbits = 62 + (KIND-1)*4
+	read(env, *, end=92, err=92) cmpbits
+	print *, "using cmpbits    =", cmpbits
+92	continue
+
 	call getenv("LTVERSION", env)
 	versionkey = 0
-	read(env, *, end=92, err=92) versionkey
+	read(env, *, end=93, err=93) versionkey
 	print *, "using versionkey =", versionkey
-92	continue
+93	continue
 
 	call getenv("LTDEBUG", env)
 	debugkey = 0
-	read(env, *, end=93, err=93) debugkey
+	read(env, *, end=94, err=94) debugkey
 	print *, "using debugkey   =", debugkey
-93	continue
+94	continue
 
 	call getenv("LTRANGE", env)
 	debugfrom = 0
 	debugto = 2**30
 	i = index(env, '-')
 	if( i .eq. 0 ) then
-	  read(env, *, end=96, err=96) debugfrom
+	  read(env, *, end=95, err=95) debugfrom
 	  debugto = debugfrom
 	else
-	  read(env(1:i-1), *, end=94, err=94) debugfrom
-94	  read(env(i+1:), *, end=95, err=95) debugto
-95	  continue
+	  read(env(1:i-1), *, end=951, err=951) debugfrom
+951	  read(env(i+1:), *, end=952, err=952) debugto
+952	  continue
 	endif
 	print *, "using debugrange =", debugfrom, debugto
+95	continue
+
+	call getenv("LTWARN", env)
+	warndigits = 9
+	read(env, *, end=96, err=96) warndigits
+	print *, "using warndigits =", warndigits
 96	continue
+
+	call getenv("LTERR", env)
+	errdigits = 100
+	read(env, *, end=97, err=97) errdigits
+	print *, "using errdigits  =", errdigits
+97	continue
+
+*
+*	regularization parameters
+*
+	call getenv("LTDELTA", env)
+	delta = 0
+	read(env, *, end=100, err=100) delta
+	print *, "using delta      =", delta
+100	continue
+
+	call getenv("LTMUDIM", env)
+	mudim = 1
+	read(env, *, end=101, err=101) mudim
+	print *, "using mudim      =", mudim
+101	continue
+
+	call getenv("LTLAMBDA", env)
+	lambda = 1
+	read(env, *, end=102, err=102) lambda
+	print *, "using lambda     =", lambda
+102	continue
 *
 *  #] LoopTools stuff
 *  #[ precision etc:
@@ -379,12 +422,6 @@
 	isgn34 = 1
 	isgnal = 1
 *
-*	regularization parameters
-*
-	mudim = 1
-	delta = 0
-	lambda = 1
-*
 *	the scheme used for the complex scalar functions:
 *
 *	nschem = 1: do not use the complex mass at all
@@ -426,7 +463,7 @@
 
 
 *###[ ffexi:
-	subroutine ffexi
+	subroutine ltexi
 ***#[*comment:***********************************************************
 *	check a lot of commonly-used constants in the common block	*
 *	/ffcnst/.							*
@@ -434,7 +471,7 @@
 *  #[ declarations:
 	implicit none
 	integer i,ier
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ checks:
 *
@@ -517,8 +554,8 @@
 	integer nerr,ierr
 	integer noccur(nmax),i,inone,nnerr
 	save error,noccur
-	include 'ff.h'
-	include 'fferr.h'
+#include "ff.h"
+#include "fferr.h"
 *  #] declarations:
 *  #[ data:
 	data noccur /nmax*0/
@@ -604,8 +641,8 @@
 *
 *	common blocks
 *
-	include 'ff.h'
-	include 'ffwarn.h'
+#include "ff.h"
+#include "ffwarn.h"
 *  #] declarations:
 *  #[ data:
 	data noccur /nmax*0/
@@ -707,7 +744,7 @@
 	implicit none
 	integer n1,n2
 	DOUBLE PRECISION array(n1+n2)
-	include 'ff.h'
+#include "ff.h"
 	if ( array(n1+n2) .eq. 0 ) then
 	   print *,'ffbnd: fatal: array not initialized; did you call ',
      +		'ffini?'
@@ -738,7 +775,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ check input:
 	if ( a .eq. 0 ) then
@@ -794,7 +831,7 @@
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -843,7 +880,7 @@
 	DOUBLE PRECISION xpi(ns),dpipj(ns,ns)
 	integer i,j
 	DOUBLE PRECISION xheck,rloss
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	if ( ier.lt.0 ) then
@@ -881,7 +918,7 @@
 	integer i,j
 	DOUBLE COMPLEX check
 	DOUBLE PRECISION absc,rloss
-	include 'ff.h'
+#include "ff.h"
 	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
 *  #] declarations:
 *  #[ calculations:
@@ -921,7 +958,7 @@
 	integer ier
 	DOUBLE COMPLEX ca,cb
 	DOUBLE PRECISION a,b,ab,rab
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	a = DIMAG(ca)
@@ -967,7 +1004,7 @@
 	integer ier
 	DOUBLE COMPLEX ca,cb,cc
 	DOUBLE PRECISION a,b,ab
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ calculations:
 	a = DIMAG(ca)
@@ -1024,7 +1061,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -1076,7 +1113,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ work:

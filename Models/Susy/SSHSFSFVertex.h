@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSHSFSFVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSHSFSFVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -81,13 +80,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -297,10 +296,5 @@ struct ClassTraits<Herwig::SSHSFSFVertex>
 /** @endcond */
 
 }
-
-#include "SSHSFSFVertex.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SSHSFSFVertex.tcc"
-#endif
 
 #endif /* HERWIG_SSHSFSFVertex_H */

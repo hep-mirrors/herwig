@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,11 +18,17 @@
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
 #include "Herwig++/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
 
 namespace Herwig {
+
+/**
+ *  Typedef for the ShowerTree for the decays
+ */
+typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
 
 using namespace ThePEG;
 
@@ -62,6 +68,12 @@ public:
    * the shower by calling cascade(sub, lastXC).
    */
   virtual void cascade();
+
+  /**
+   * Hook to allow vetoing of event after showering hard sub-process
+   * as in e.g. MLM merging.
+   */
+  virtual bool showerHardProcessVeto() { return false; };
 
   /**
    * It returns true if the particle with the specified id
@@ -137,7 +149,22 @@ public:
   bool isMPIOn() const {
     return MPIHandler_ && MPIHandler_->beamOK();
   }
+
+  /**
+   * Return the remnant decayer.
+   */
+  tHwRemDecPtr remnantDecayer() const { return remDec_; }
   //@}
+
+  /**
+   *  Access to the Evolver
+   */
+  tEvolverPtr evolver() const {return evolver_;}
+
+  /**
+   *  Generate hard emissions for CKKW etc
+   */
+  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
 
 protected:
 
@@ -159,9 +186,20 @@ protected:
 protected:
 
   /**
+   * Prepare to shower the given subprocess
+   */
+  void prepareCascade(tSubProPtr sub);
+
+  /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub);
+  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
+
+  /**
+   * Return the maximum number of attempts for showering
+   * a given subprocess.
+   */
+  unsigned int maxtry() const { return maxtry_; }
 
   /**
    * At the end of the Showering, transform ShowerParticle objects
@@ -210,7 +248,7 @@ protected:
   /**
    *  Reset the PDF's after the hard collision has been showered
    */
-  void setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf);
+  void setMPIPDFs();
 
   /**
    *  Test for decay products
@@ -218,15 +256,15 @@ protected:
   bool decayProduct(tPPtr) const;
 
   /**
-   *  Access to the Evolver
-   */
-  tEvolverPtr evolver() const {return evolver_;}
-
-  /**
    *  Boost all the particles in the collision so that the collision always occurs
    * in the rest frame with the incoming particles along the z axis
    */
   void boostCollision(bool boost);
+
+  /**
+   *  Is a beam particle where hadronic structure is resolved
+   */
+  bool isResolvedHadron(tPPtr);
 
 protected:
 
@@ -295,6 +333,16 @@ private:
   HwRemDecPtr remDec_;
 
   /**
+   * The PDF for beam particle A. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFA_;
+
+  /**
+   * The PDF for beam particle B. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFB_;
+
+  /**
    * The PDF freezing scale
    */
   Energy pdfFreezingScale_;
@@ -339,12 +387,6 @@ private:
    */
   tPPair incoming_;
 
-
-  /**
-   *  Typedef for the ShowerTree for the decays
-   */
-  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
-
   /**
    *  The ShowerTree for the decays
    */
@@ -375,6 +417,11 @@ private:
    */
   LorentzRotation boost_;
 
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> mpipdfs_;
+
 public:
 
   /** 
@@ -402,6 +449,15 @@ public:
   static const ShowerHandler * currentHandler() {
     assert(currentHandler_);
     return currentHandler_;
+  }
+
+protected:
+
+  /**
+   *  Set the current handler
+   */
+  void setCurrentHandler() {
+    currentHandler_ = this;
   }
 
 };

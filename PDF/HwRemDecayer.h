@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -65,12 +65,13 @@ public:
   /**
    * The default constructor.
    */
-  inline HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
-			  colourDisrupt_(1.0), 
-			  _kinCutoff(0.75*GeV), 
-			  _forcedSplitScale(2.5*GeV),
-			  _range(1.1), _zbin(0.05),_ybin(0.),
-			  _nbinmax(100), DISRemnantOpt_(0) {}
+  HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
+		   colourDisrupt_(1.0), 
+		   _kinCutoff(0.75*GeV), 
+		   _forcedSplitScale(2.5*GeV),
+		   _range(1.1), _zbin(0.05),_ybin(0.),
+		   _nbinmax(100), DISRemnantOpt_(0),
+		   pomeronStructure_(0), mg_(ZERO) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -87,11 +88,7 @@ public:
    * Return true if this decayer can handle the extraction of the \a   
    * extracted parton from the given \a particle.   
    */  
-  virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const {
-    if(!(StandardQCDPartonMatcher::Check(*parton) ||
-	 parton->id()==ParticleID::gamma)) return false;
-    return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma;
-  } 
+  virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const;
   
   /**   
    * Return true if this decayed can extract more than one parton from   
@@ -208,6 +205,7 @@ protected:
   virtual void doinit() {
     Interfaced::doinit();
     _ybin=0.25/_zbin;
+    mg_ = getParticleData(ParticleID::g)->constituentMass();
   }
   //@}
 
@@ -225,7 +223,7 @@ private:
    */
   HwRemDecayer & operator=(const HwRemDecayer &);
 
-private:
+public:
   
   /**                                                                           
    * Simple struct to store info about baryon quark and di-quark                
@@ -239,11 +237,16 @@ private:
     inline void extract(int id) {
       for(unsigned int i=0; i<flav.size(); i++) {
 	if(id == sign*flav[i]){
-	  if(hadron->id() == ParticleID::gamma) {
+	  if(hadron->id() == ParticleID::gamma || 
+	     (hadron->id() == ParticleID::pomeron && pomeronStructure==1) ||
+	     hadron->id() == ParticleID::reggeon) {
 	    flav[0] =  id;
 	    flav[1] = -id;
 	    extracted = 0;
 	    flav.resize(2);
+	  }
+	  else if (hadron->id() == ParticleID::pomeron && pomeronStructure==0) {
+	    extracted = 0;
 	  }
 	  else {
 	    extracted = i;
@@ -271,8 +274,30 @@ private:
      * Method to determine whether \a parton is a valence quark.
      */
     bool isValenceQuark(tcPPtr parton) const {
-      int id(sign*parton->id());
+      return isValenceQuark(parton->id());
+    }
+
+    /**
+     * Method to determine whether \a parton is a quark from the sea.
+     * @return TRUE if \a parton is neither a valence quark nor a gluon.
+     */
+    bool isSeaQuarkData(tcPDPtr partonData) const {
+      return ((partonData->id() != ParticleID::g) && ( !isValenceQuarkData(partonData) ) );
+    }
+
+    /**
+     * Method to determine whether \a parton is a valence quark.
+     */
+    bool isValenceQuarkData(tcPDPtr partonData) const {
+      int id(sign*partonData->id());
       return find(flav.begin(),flav.end(),id) != flav.end();
+    }
+
+    /**
+     * Method to determine whether \a parton is a valence quark.
+     */
+    bool isValenceQuark(int id) const {
+      return find(flav.begin(),flav.end(),sign*id) != flav.end();
     }
 
     /** The valence flavours of the corresponding baryon. */                    
@@ -286,12 +311,32 @@ private:
 
     /** The ParticleData objects of the hadron */
     tcPDPtr hadron;
+
+    /** Pomeron treatment */
+    unsigned int pomeronStructure;
   }; 
+
+  /**
+   * Return the hadron content objects for the incoming particles.
+   */
+  const pair<HadronContent, HadronContent>& content() const {
+    return theContent;
+  }
 
   /**
    * Return a HadronContent struct from a PPtr to a hadron.
    */
   HadronContent getHadronContent(tcPPtr hadron) const;
+
+  /**
+   * Set the hadron contents.
+   */
+  void setHadronContent(tPPair beam) {
+    theContent.first  = getHadronContent(beam.first);
+    theContent.second = getHadronContent(beam.second);
+  }
+
+private:
 
   /**
    * Do the forced Splitting of the Remnant with respect to the 
@@ -365,6 +410,12 @@ private:
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,
 		  HadronContent & content) const;
 
+  /**
+   *  Check if a particle is a parton from a hadron or not
+   * @param parton The parton to be tested
+   */
+  bool isPartonic(tPPtr parton) const;
+
   /** @name Soft interaction methods. */
   //@{
 
@@ -392,7 +443,6 @@ private:
    * @param p = Lorentz5Momentum of the new particle
    */
   tPPtr addParticle(tcPPtr parent, long id, Lorentz5Momentum p) const;
-
   //@}
 
   /**
@@ -516,14 +566,28 @@ private:
   /**
    *  Pointer to the object calculating the QCD coupling
    */
-  ShowerAlphaPtr _alpha; 
+  ShowerAlphaPtr _alphaS;
+
+  /**
+   *  Pointer to the object calculating the QED coupling
+   */
+  ShowerAlphaPtr _alphaEM; 
 
   /**
    *  Option for the DIS remnant
    */
   unsigned int DISRemnantOpt_;
 
+  /**
+   *  Option for the treatment of the pomeron structure
+   */
+  unsigned int pomeronStructure_;
   //@}
+
+  /**
+   * The gluon constituent mass.
+   */
+  Energy mg_;
 
 };
 

@@ -16,8 +16,6 @@ using namespace Herwig;
 using namespace ThePEG;
 
 KornerKramerCharmDecayer::KornerKramerCharmDecayer() {
-  // default value of the fermi constant taken from PDG 2002
-  GF_ = 1.16639E-5/GeV2;
   // one over the number of colours 
   oneNC_=0.;
   // pseudoscalar meson decay constants
@@ -462,7 +460,7 @@ void KornerKramerCharmDecayer::doinit() {
 			  << Exception::abortnow;
   // compute the various coefficients
   Energy m1,m2,m3,fmes(ZERO); 
-  Energy2 P1P2,Qplus,Qminus,gmes(ZERO);
+  Energy2 P1P2,Qplus,gmes(ZERO);
   double Fnonfact,A3,B3,Ffact[2];
   Energy H2,H3,A2,B2;
   Energy2 A,B;
@@ -470,9 +468,9 @@ void KornerKramerCharmDecayer::doinit() {
   double chi,
     chiplus( 0.5*(cplus_*(1.+oneNC_)+cminus_*(1.-oneNC_))),
     chiminus(0.5*(cplus_*(1.+oneNC_)-cminus_*(1.-oneNC_))); 
-  InvEnergy2 pre(GF_*sqrt(SM().CKM(1,1)*SM().CKM(0,0)/2.)),mform2[2];
+  InvEnergy2 pre(SM().fermiConstant()*sqrt(SM().CKM(1,1)*SM().CKM(0,0)/2.)),mform2[2];
   // testing only
-  pre = GF_*0.974/sqrt(2.);
+//   pre = SM().fermiConstant()*0.974/sqrt(2.);
   vector<double> wgt(0);
   tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
@@ -533,7 +531,6 @@ void KornerKramerCharmDecayer::doinit() {
     }
     // invariants
     Qplus  = (m1+m2)*(m1+m2)-m3*m3;
-    Qminus = (m1-m2)*(m1-m2)-m3*m3;
     // decide which type of decay
     mspin=getParticleData(outgoingM_[ix])->iSpin();
     bspin=getParticleData(outgoingB_[ix])->iSpin();
@@ -661,7 +658,7 @@ int KornerKramerCharmDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
 
 void KornerKramerCharmDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(GF_,1./GeV2) << oneNC_ << ounit(fpi_,GeV) << ounit(fk_,GeV) << frho_ 
+  os << oneNC_ << ounit(fpi_,GeV) << ounit(fk_,GeV) << frho_ 
      << fKstar_ << ounit(mdcplus_,GeV) << ounit(mdcminus_,GeV) << ounit(mscplus_,GeV) 
      << ounit(mscminus_,GeV) << cplus_ << cminus_ << ounit(H2_,GeV) << ounit(H3_,GeV) 
      << I1_ << I2_ << I3_ << I4_ << I5_ << Ihat3_ << Ihat4_ << incoming_ << outgoingB_ 
@@ -670,7 +667,7 @@ void KornerKramerCharmDecayer::persistentOutput(PersistentOStream & os) const {
 }
 
 void KornerKramerCharmDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(GF_,1./GeV2) >> oneNC_ >> iunit(fpi_,GeV) >> iunit(fk_,GeV) >> frho_ 
+  is >> oneNC_ >> iunit(fpi_,GeV) >> iunit(fk_,GeV) >> frho_ 
      >> fKstar_ >> iunit(mdcplus_,GeV) >> iunit(mdcminus_,GeV) >> iunit(mscplus_,GeV) 
      >> iunit(mscminus_,GeV) >> cplus_ >> cminus_ >> iunit(H2_,GeV) >> iunit(H3_,GeV) 
      >> I1_ >> I2_ >> I3_ >> I4_ >> I5_ >> Ihat3_ >> Ihat4_ >> incoming_ >> outgoingB_ 
@@ -693,13 +690,6 @@ void KornerKramerCharmDecayer::Init() {
      "J.~G.~Korner and M.~Kramer,\n"
      "Z.\\ Phys.\\  C {\\bf 55} (1992) 659.\n"
      "%%CITATION = ZEPYA,C55,659;%%\n");
-
-  static Parameter<KornerKramerCharmDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &KornerKramerCharmDecayer::GF_, 1./GeV2, 1.16639E-5/GeV2,
-     -1.0e12*1./GeV2, 1.0e12*1./GeV2,
-     false, false, false);
 
   static Parameter<KornerKramerCharmDecayer,double> interfaceOneOverNc
     ("OneOverNc",
@@ -898,43 +888,42 @@ halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi " << GF_*GeV2 << "\n";
-  output << "set " << name() << ":OneOverNc " <<  oneNC_ << "\n";
-  output << "set " << name() << ":Fpi " << fpi_/MeV << "\n";
-  output << "set " << name() << ":FK " << fk_/MeV  << "\n";
-  output << "set " << name() << ":Frho " << frho_ << "\n";
-  output << "set " << name() << ":fKstar " << fKstar_ << "\n";
-  output << "set " << name() << ":Mdcplus " << mdcplus_/GeV << "\n";
-  output << "set " << name() << ":Mscplus " << mscplus_/GeV << "\n";
-  output << "set " << name() << ":Mdcminus " << mdcminus_/GeV << "\n";
-  output << "set " << name() << ":Mscminus " << mscminus_/GeV << "\n";
-  output << "set " << name() << ":Cplus " << cplus_ << "\n";
-  output << "set " << name() << ":Cminus " << cminus_ << "\n";
-  output << "set " << name() << ":H2 " << H2_/GeV << "\n";
-  output << "set " << name() << ":H3 " << H3_/GeV << "\n";
+  output << "newdef " << name() << ":OneOverNc " <<  oneNC_ << "\n";
+  output << "newdef " << name() << ":Fpi " << fpi_/MeV << "\n";
+  output << "newdef " << name() << ":FK " << fk_/MeV  << "\n";
+  output << "newdef " << name() << ":Frho " << frho_ << "\n";
+  output << "newdef " << name() << ":fKstar " << fKstar_ << "\n";
+  output << "newdef " << name() << ":Mdcplus " << mdcplus_/GeV << "\n";
+  output << "newdef " << name() << ":Mscplus " << mscplus_/GeV << "\n";
+  output << "newdef " << name() << ":Mdcminus " << mdcminus_/GeV << "\n";
+  output << "newdef " << name() << ":Mscminus " << mscminus_/GeV << "\n";
+  output << "newdef " << name() << ":Cplus " << cplus_ << "\n";
+  output << "newdef " << name() << ":Cminus " << cminus_ << "\n";
+  output << "newdef " << name() << ":H2 " << H2_/GeV << "\n";
+  output << "newdef " << name() << ":H3 " << H3_/GeV << "\n";
   for(unsigned int ix=0;ix<incoming_.size();++ix) {
     if(ix<initsize_) {
-      output << "set " << name() << ":I1 " 
+      output << "newdef " << name() << ":I1 " 
 	     << ix << " " << I1_[ix] << "\n";
-      output << "set " << name() << ":I2 " 
+      output << "newdef " << name() << ":I2 " 
 	     << ix << " " << I2_[ix] << "\n";
-      output << "set " << name() << ":I3 " 
+      output << "newdef " << name() << ":I3 " 
 	     << ix << " " << I3_[ix] << "\n";
-      output << "set " << name() << ":I4 " 
+      output << "newdef " << name() << ":I4 " 
 	     << ix << " " << I4_[ix] << "\n";
-      output << "set " << name() << ":I5 " 
+      output << "newdef " << name() << ":I5 " 
 	     << ix << " " << I5_[ix] << "\n";
-      output << "set " << name() << ":Ihat3 " 
+      output << "newdef " << name() << ":Ihat3 " 
 	     << ix << " " << Ihat3_[ix] << "\n";
-      output << "set " << name() << ":Ihat4 " 
+      output << "newdef " << name() << ":Ihat4 " 
 	     << ix << " " << Ihat4_[ix] << "\n";
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << incoming_[ix] << "\n";
-      output << "set " << name() << ":OutgoingB " 
+      output << "newdef " << name() << ":OutgoingB " 
 	     << ix << " " << outgoingB_[ix] << "\n";
-      output << "set " << name() << ":OutgoingM " 
+      output << "newdef " << name() << ":OutgoingM " 
 	     << ix << " " << outgoingM_[ix] << "\n";
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << maxweight_[ix] << "\n";
     }
     else {

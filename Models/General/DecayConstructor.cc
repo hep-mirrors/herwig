@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,6 +13,7 @@
 
 #include "DecayConstructor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -32,11 +33,11 @@ IBPtr DecayConstructor::fullclone() const {
 }
   
 void DecayConstructor::persistentOutput(PersistentOStream & os) const {
-   os << _theNBodyDecayConstructors;
+  os << NBodyDecayConstructors_ << QEDGenerator_;
 }
 
 void DecayConstructor::persistentInput(PersistentIStream & is, int) {
-   is >> _theNBodyDecayConstructors;
+  is >> NBodyDecayConstructors_ >> QEDGenerator_;
 }
 
 ClassDescription<DecayConstructor> DecayConstructor::initDecayConstructor;
@@ -51,15 +52,19 @@ void DecayConstructor::Init() {
     interfaceNBodyDecayConstructors
     ("NBodyDecayConstructors",
      "Vector of references to NBodyDecayConstructors",
-     &DecayConstructor::_theNBodyDecayConstructors, -1, false, false, true,
+     &DecayConstructor::NBodyDecayConstructors_, -1, false, false, true,
      false, false);
 
-  
   static ParVector<DecayConstructor,string> interfaceDisableModes
     ("DisableModes",
      "A list of decay modes to disable",
      &DecayConstructor::_disableDMTags, -1, string(""), string(""), string(""),
      false, false, Interface::nolimits);
+
+  static Reference<DecayConstructor,DecayRadiationGenerator> interfaceQEDGenerator
+    ("QEDGenerator",
+     "Object to generate QED radiation in particle decays",
+     &DecayConstructor::QEDGenerator_, false, false, true, true, false);
 
 }
 
@@ -102,22 +107,36 @@ namespace {
    }
 }
 
+namespace {
+  /// Helper function for sorting by number of outgoing lines
+  inline bool orderNBodyConstructors(tNBodyDecayConstructorBasePtr a,
+				     tNBodyDecayConstructorBasePtr b) {
+    return a->numBodies() < b->numBodies();
+  }
+}
+
 void DecayConstructor::doinit() {
   Interfaced::doinit();
   //Need to check that the stored decay mode tags have the
   //products in the standard order
   for_each( _disableDMTags.begin(), _disableDMTags.end(), adjustFSOrder );
+  sort(NBodyDecayConstructors_.begin(), NBodyDecayConstructors_.end(),
+       orderNBodyConstructors);
 }
 
-void DecayConstructor::createDecayers(const PDVector & particles) {
-  if ( particles.empty() || _theNBodyDecayConstructors.empty() ) return;
+void DecayConstructor::createDecayers(const PDVector & particles,
+				      double minBR) {
+  _minBR = minBR;
+  if ( particles.empty() || NBodyDecayConstructors_.empty() ) return;
+  // turn the vector into a set to avoid duplicates
+  set<PDPtr> particleSet(particles.begin(),particles.end());
   typedef vector<NBodyDecayConstructorBasePtr>::iterator NBDecayIterator;
-  NBDecayIterator it =  _theNBodyDecayConstructors.begin();
-  NBDecayIterator iend = _theNBodyDecayConstructors.end();
+  NBDecayIterator it =  NBodyDecayConstructors_.begin();
+  NBDecayIterator iend = NBodyDecayConstructors_.end();
   for( ; it != iend; ++it ) {
     (**it).init();
     (**it).decayConstructor(this);
-    (**it).DecayList(particles);
+    (**it).DecayList(particleSet);
   }
 }
 

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayPhaseSpaceMode.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -67,7 +67,7 @@ public:
    * Default constructor.
    */
   DecayPhaseSpaceMode() :  _maxweight(0.),_niter(10), _npoint(10000), _ntry(500),
-			   _partial(-1) {}
+			   _partial(-1), _testOnShell(false), _ichannel(999) {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseIntegrator</code> and a vector
@@ -75,11 +75,12 @@ public:
    * is the constructor which should normally be used in decayers.
    * @param in The particle data objects for the external particles
    * @param intin A pointer to the DecayIntegrator class using this mode.
+   * @param onShell Whether or not to perform tests for zero width on-shell particles
    */
-  DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin) 
+  DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin,bool onShell=false) 
     :  _integrator(intin), _maxweight(0.),
        _niter(10), _npoint(10000), _ntry(500),
-       _extpart(in),  _partial(-1) {}
+       _extpart(in),  _partial(-1), _testOnShell(onShell), _ichannel(999) {}
   //@}
 
   /**
@@ -164,6 +165,11 @@ public:
    *  Access to the selected channel
    */
   unsigned int selectedChannel() const {return _ichannel;}
+
+  /**
+   *  test on/off-shell kinematics
+   */
+  bool testOnShell() const { return _testOnShell; }
 
 protected:
 
@@ -434,9 +440,16 @@ private:
   vector<cGenericMassGeneratorPtr> _massgen;
 
   /**
+   *  Whether to check on-shell or off-shell kinematics
+   * in doinit, if on-shell off-shell is tested in initrun
+   */
+  bool _testOnShell;
+
+  /**
    *  The selected channel
    */
   mutable unsigned int _ichannel;
+
 };
 
   /**

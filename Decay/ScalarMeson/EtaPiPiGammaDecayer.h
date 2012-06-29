@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EtaPiPiGammaDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -206,7 +206,7 @@ private:
     }
     else {
       root=sqrt(4.*mpi2/s-1.);
-      f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
+      f=2.*(1.-0.25*s/mpi2)*root*atan2(1.,root)-2.;
       f *=pre;
     }
     return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;

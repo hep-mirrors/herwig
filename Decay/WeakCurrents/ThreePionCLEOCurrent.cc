@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreePionCLEOCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -280,8 +280,19 @@ void ThreePionCLEOCurrent::Init() {
 
   static ClassDocumentation<ThreePionCLEOCurrent> documentation
     ("The ThreePionCLEOCurrent class performs the decay of the"
-     " tau to three pions using the currents from CLEO");
-  
+     " tau to three pions using the currents from CLEO",
+     "The decay of tau to three pions is modelled using the currents from "
+     "\\cite{Asner:1999kj}.",
+     "  %\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
+
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
@@ -552,6 +563,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 					  Energy2 q2,Energy2 s1, Energy2 s2, Energy2 s3,
 					  Complex & F1, Complex & F2, 
 					  Complex & F3) const {
+  useMe();
   if(imode==0) {
     // compute the breit wigners we need
     Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
@@ -863,7 +875,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) {
-      output << "set    " << name() << ":RhoMasses " << ix 
+      output << "newdef    " << name() << ":RhoMasses " << ix 
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
     else {
@@ -873,7 +885,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) {
-      output << "set    " << name() << ":RhoWidths " << ix 
+      output << "newdef    " << name() << ":RhoWidths " << ix 
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
     else {
@@ -881,22 +893,22 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
   }
-  output << "set " << name() << ":f_2Mass " << _f2mass/GeV << "\n";
-  output << "set " << name() << ":f_2Width " << _f2width/GeV << "\n";
-  output << "set " << name() << ":f_0Mass " << _f0mass/GeV << "\n";
-  output << "set " << name() << ":f_0Width " << _f0width/GeV << "\n";
-  output << "set " << name() << ":sigmaMass " << _sigmamass/GeV << "\n";
-  output << "set " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
-  output << "set " << name() << ":a1Mass " << _a1mass/GeV << "\n";
-  output << "set " << name() << ":a1Width " <<_a1width /GeV << "\n";
-  output << "set " << name() << ":KaonMass " << _mK/GeV << "\n";
-  output << "set " << name() << ":KStarMass " << _mKstar/GeV << "\n";
-  output << "set " << name() << ":KaonCoupling " << _gammk << "\n";
-  output << "set " << name() << ":Fpi " << _fpi/MeV << "\n";
-  output << "set " << name() << ":a1WidthOption " << _a1opt << "\n";
+  output << "newdef " << name() << ":f_2Mass " << _f2mass/GeV << "\n";
+  output << "newdef " << name() << ":f_2Width " << _f2width/GeV << "\n";
+  output << "newdef " << name() << ":f_0Mass " << _f0mass/GeV << "\n";
+  output << "newdef " << name() << ":f_0Width " << _f0width/GeV << "\n";
+  output << "newdef " << name() << ":sigmaMass " << _sigmamass/GeV << "\n";
+  output << "newdef " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "newdef " << name() << ":a1Mass " << _a1mass/GeV << "\n";
+  output << "newdef " << name() << ":a1Width " <<_a1width /GeV << "\n";
+  output << "newdef " << name() << ":KaonMass " << _mK/GeV << "\n";
+  output << "newdef " << name() << ":KStarMass " << _mKstar/GeV << "\n";
+  output << "newdef " << name() << ":KaonCoupling " << _gammk << "\n";
+  output << "newdef " << name() << ":Fpi " << _fpi/MeV << "\n";
+  output << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
       if(ix<2) {
-	output << "set    " << name() << ":RhoPWaveMagnitude " << ix 
+	output << "newdef    " << name() << ":RhoPWaveMagnitude " << ix 
 	       << " " << _rhomagP[ix] << "\n";
       }
       else {
@@ -906,7 +918,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
     if(ix<2) {
-      output << "set    " << name() << ":RhoPWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoPWavePhase " << ix 
 	     << " " << _rhophaseP[ix] << "\n";
     }
     else {
@@ -916,7 +928,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) {
-      output << "set    " << name() << ":RhoDWaveMagnitude " << ix 
+      output << "newdef    " << name() << ":RhoDWaveMagnitude " << ix 
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
     else {
@@ -926,7 +938,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
     if(ix<2) {
-      output << "set    " << name() << ":RhoDWavePhase " << ix 
+      output << "newdef    " << name() << ":RhoDWavePhase " << ix 
 	     << " " << _rhophaseD[ix] << "\n";
     }
     else {
@@ -934,17 +946,17 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 	     << " " << _rhophaseD[ix] << "\n";
     }
   }
-  output << "set " << name() << ":f0Phase " << _f0phase << "\n";
-  output << "set " << name() << ":f2Phase " <<_f2phase  << "\n";
-  output << "set " << name() << ":sigmaPhase " <<_sigmaphase  << "\n";
-  output << "set " << name() << ":f0Magnitude " << _f0mag << "\n";
-  output << "set " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
-  output << "set " << name() << ":sigmaMagnitude " <<_sigmamag  << "\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":Initializea1 " <<_initializea1  << "\n";
+  output << "newdef " << name() << ":f0Phase " << _f0phase << "\n";
+  output << "newdef " << name() << ":f2Phase " <<_f2phase  << "\n";
+  output << "newdef " << name() << ":sigmaPhase " <<_sigmaphase  << "\n";
+  output << "newdef " << name() << ":f0Magnitude " << _f0mag << "\n";
+  output << "newdef " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
+  output << "newdef " << name() << ":sigmaMagnitude " <<_sigmamag  << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
-      output << "set    " << name() << ":a1RunningWidth " << ix 
+      output << "newdef    " << name() << ":a1RunningWidth " << ix 
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
     else {
@@ -954,7 +966,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) {
-      output << "set    " << name() << ":a1RunningQ2 " << ix 
+      output << "newdef    " << name() << ":a1RunningQ2 " << ix 
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
     else {

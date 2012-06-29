@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Histogram.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,6 +20,15 @@
 #include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
+
+IBPtr Histogram::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr Histogram::fullclone() const {
+  return new_ptr(*this);
+}
+
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
 // Definition of the static class description member.
 void Histogram::Init() {
@@ -29,6 +38,61 @@ void Histogram::Init() {
      " points for comparision with experimental results.");
 
 }
+
+void Histogram::rivetOutput(ostream & out,
+                            string histogramname,
+                            string analysisname,
+                            string title,
+                            string xlabel,
+                            string ylabel,
+                            bool rawcount,
+                            double multiplicator) const {
+
+  // total number of histogram entries
+  double numPoints = static_cast<double>(_total);
+  if (numPoints == 0) numPoints += 1.0;
+
+
+  // collect y values and errors
+  vector<double> yvalues;
+  vector<double> yerrors;
+  const unsigned int lastBinIndex = _bins.size() - 2;
+  for (size_t ix = 1; ix <= lastBinIndex; ++ix) {
+    const double delta = _bins[ix+1].limit - _bins[ix].limit;
+    double factor = rawcount ? _prefactor * multiplicator
+                             : _prefactor * multiplicator / (numPoints * delta);
+    const double value = factor * _bins[ix].contents;
+    const double error = factor * sqrt(_bins[ix].contentsSq);
+    yvalues.push_back(value);
+    yerrors.push_back(error);
+  }
+
+  // file header
+  out << "## " << numPoints << " entries, mean +- sigma = "
+      << _globalStats.mean() << " +- " 
+      << _globalStats.stdDev() << "\n";
+  out << "## xlo xhi y yerr\n" ;
+  out << "##\n";
+  out << "# BEGIN HISTOGRAM /" << analysisname << "/" << histogramname << "\n";
+  out << "AidaPath=/" << analysisname << "/" << histogramname << "\n";
+  if ( title  != string() ) out << "Title=" << title << "\n";
+  if ( xlabel != string() ) out << "XLabel=" << xlabel << "\n";
+  if ( ylabel != string() ) out << "YLabel=" << ylabel << "\n";
+
+  // histogram data
+  for (size_t i = 0; i < yvalues.size(); ++i) {
+    out << _bins[i+1].limit << "\t"
+	<< _bins[i+2].limit << "\t" 
+	<< yvalues[i] << "\t"
+	<< yerrors[i] << "\n";
+  }
+
+  // footer
+  out << "# END HISTOGRAM\n";
+  out << "\n";
+
+}
+
 
 void Histogram::topdrawOutput(ostream & out,
 			      unsigned int flags,
@@ -79,7 +143,7 @@ void Histogram::topdrawOutput(ostream & out,
   vector<double> yout;
   double ymax=-9.8765e34,ymin=9.8765e34;
   double numPoints = _total;
-  if (numPoints == 0) ++numPoints;
+  if (numPoints == 0) numPoints += 1.;
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
@@ -95,6 +159,10 @@ void Histogram::topdrawOutput(ostream & out,
   if (ymin > 1e34)  ymin = 1e-34;
   if (ymax < 1e-33) ymax = 1e-33;
   if (ymax < 10*ymin) ymin = 0.1*ymax;
+  // make the y range slightly larger
+  double fac=pow(ymax/ymin,0.1);
+  ymax *= fac;
+  ymin /= fac;
 
   if (ylog && frame) {
     out << "SET LIMITS Y " << ymin << " " << ymax << endl;
@@ -241,7 +309,6 @@ void Histogram::simpleOutput(ostream & out, bool errorbars,
   // simple ascii output (eg for gnuplot)
   // work out the y points
   vector<double> yout;
-  //  unsigned int numPoints = _globalStats.numberOfPoints();  
   unsigned int numPoints = visibleEntries();
   if (numPoints == 0) ++numPoints;
   double datanorm(1.0); 
@@ -317,21 +384,18 @@ Histogram Histogram::ratioWith(const Histogram & h2) const {
 }
 
 
-void Histogram::normaliseToData()
-{
+void Histogram::normaliseToData() {
   double numer(0.),denom(0.);
-  unsigned int numPoints = _globalStats.numberOfPoints();
-  for(unsigned int ix=1;ix<_bins.size()-1;++ix)
-    {
-      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_bins[ix].contents / (delta*numPoints);
-      if(_bins[ix].dataerror>0.)
-	{
-	  double var = sqr(_bins[ix].dataerror);
-	  numer += _bins[ix].data * value/var;
-	  denom += sqr(value)/var;
-	}
+  double numPoints = _total;
+  for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_bins[ix].contents / (delta*numPoints);
+    if(_bins[ix].dataerror>0.) {
+      double var = sqr(_bins[ix].dataerror);
+      numer += _bins[ix].data * value/var;
+      denom += sqr(value)/var;
     }
+  }
   _prefactor = numer/denom;
 }
 
@@ -339,7 +403,7 @@ void Histogram::chiSquared(double & chisq,
 			   unsigned int & ndegrees, double minfrac) const {
   chisq =0.;
   ndegrees=0;
-  unsigned int numPoints = _globalStats.numberOfPoints();
+  double numPoints = _total;
   for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
@@ -355,8 +419,8 @@ void Histogram::chiSquared(double & chisq,
 }
 
 void Histogram::normaliseToCrossSection() {
-  unsigned int numPoints = _globalStats.numberOfPoints();
-  if (numPoints == 0) ++numPoints;
+  double numPoints = _total;
+  if (numPoints == 0) numPoints += 1.;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
     numPoints/nanobarn;
 }
@@ -438,3 +502,117 @@ void Histogram::topdrawOutputAverage(ostream & out,
   }
 }
 
+
+vector<double> Histogram::LogBins(double xmin, unsigned nbins, double base) {
+  vector<double> limits;
+  for (unsigned e = 0; e <= nbins; e++)
+    limits.push_back(xmin * pow(base, (int)e));
+  return limits;
+}
+
+
+void Histogram::topdrawMCatNLO(ostream & out,
+			       unsigned int flags,
+			       string,
+			       string title
+			       ) const {
+  
+  using namespace HistogramOptions;
+  //  bool frame     = ( flags & Frame )     == Frame;
+  bool errorbars = ( flags & Errorbars ) == Errorbars;
+  //  bool xlog      = ( flags & Xlog )      == Xlog;
+  bool ylog      = ( flags & Ylog )      == Ylog;
+  //  bool smooth    = ( flags & Smooth )    == Smooth;
+  //  bool rawcount  = ( flags & Rawcount )  == Rawcount;
+
+  double myFactor = _prefactor / _total * 1000.;
+
+
+  // output the title info if needed
+  out << "     ( 22-Apr-10 18:28\n\n";
+  out << "   NEW PLOT\n\n\n";
+  out << " ( SET FONT DUPLEX\n";
+  out << "  SET TITLE SIZE 2\n";
+  out << " TITLE 12.8 9 ANGLE -90 \" MLM   22-Apr-10 18:28\"\n";
+
+  out << "  ( SET FONT DUPLEX\n";
+  out << "  SET TITLE SIZE  -1.2247\n";
+  out << "  SET LABEL SIZE  -1.2247\n";
+  out << "  SET TICKS TOP OFF SIZE   0.0245\n";
+  out << "  SET WINDOW X   1.5000 TO   12.000\n";
+  out << "  SET WINDOW Y   1.0000 TO   8.7917\n";
+  out << "  TITLE   1.5000   8.9617 \" "<<title<<"\"\n";
+  out << "  TITLE   9.8719   8.6217 \" INT= "<<visibleEntries()*myFactor<<"\"\n";
+  out << "  TITLE   9.8719   8.4517 \" ENT= "<<visibleEntries()<<"\"\n";
+  out << "  TITLE   9.8719   8.2817 \" OFL= 2.258E+01\"\n";
+  out << "  SET ORD X Y \n";
+  out << "  9.8719   8.1117\n";
+  out << "  12.000   8.1117\n";
+  out << "  JOIN TEXT\n";
+  out << "    9.8719   8.1117\n";
+  out << "    9.8719   8.7917\n";
+  out << "  JOIN TEXT\n";
+  out << "  SET TITLE SIZE  -1.8371\n";
+  out << " TITLE BOTTOM \""<<title<<"\"\n";
+  out << "  TITLE    0.42188   7.37500 ANGLE 90 \" \"\n";
+  if (ylog) {
+    out << "  SET SCALE Y LOG\n"; }
+  else {
+    out << "  SET SCALE Y LIN\n"; }
+  out << "  SET TICKS TOP OFF\n";
+
+  // set the x limits
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+
+  out << "  SET LIMITS X " << _bins[1].limit << " " 
+      << _bins[lastDataBinIndx+1].limit << endl;
+  // work out the y points
+  vector<double> yout;
+  double ymax=-9.8765e34,ymin=9.8765e34;
+  double numPoints = _total;
+  if (numPoints == 0) numPoints += 1.;
+
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    // no differential dist & in pb
+    double factor = _prefactor / numPoints *1000.;
+    double value = factor*_bins[ix].contents;
+
+    yout.push_back(value);
+    ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
+    if(yout.back()>0.) ymin=min(ymin,value);
+    if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
+  }
+  if (ymin > 1e34)  ymin = 1e-34;
+  if (ymax < 1e-33) ymax = 1e-33;
+  if (ymax < 10*ymin) ymin = 0.1*ymax;
+  // make the y range slightly larger
+  double fac=pow(ymax/ymin,0.1);
+  ymax *= fac;
+  ymin /= fac;
+  //if (ylog) {
+  //  out << "  SET LIMITS Y " << ymin << " " << ymax << endl;
+  //}  
+  out << "  SET LIMITS Y " << ymin << " " << ymax << endl;
+  out << "  SET ORDER X Y DY\n";
+  out << " (  "<<title<<"\n";
+
+  out << " ( INT= "<<visibleEntries()*myFactor<<"  ENTRIES=  "<<visibleEntries()*myFactor<<"\n";
+
+  // the histogram from the event generator
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+
+    //double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
+
+    // no differential distributions and in pb
+    double factor = _prefactor / numPoints * 1000.;
+    
+    out << "    "<<_bins[ix].limit+delta << "    " << yout[ix-1] << "    " << delta;
+    if (errorbars) {
+      out << "    " << factor*sqrt(_bins[ix].contentsSq);
+    }
+    out << '\n';
+  }
+  out << "  HIST SOLID\n";
+  out << "   PLOT\n"; 
+}

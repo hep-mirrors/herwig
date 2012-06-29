@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GammaGammaAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -114,26 +114,7 @@ void GammaGammaAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-LorentzRotation GammaGammaAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void GammaGammaAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void GammaGammaAnalysis::analyze(tPPtr) {}
-
-void GammaGammaAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void GammaGammaAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<GammaGammaAnalysis> GammaGammaAnalysis::initGammaGammaAnalysis;
+NoPIOClassDescription<GammaGammaAnalysis> GammaGammaAnalysis::initGammaGammaAnalysis;
 // Definition of the static class description member.
 
 void GammaGammaAnalysis::Init() {

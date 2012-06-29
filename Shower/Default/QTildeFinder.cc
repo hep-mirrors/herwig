@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeFinder.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 
@@ -116,7 +117,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
   Lorentz5Momentum pc = ppair.second->momentum();
   if(!isDecayCase) { 
     // In this case from JHEP 12(2003)045 we find the conditions
-    // ktilda_b = (1+c) and ktilda_c = (1+2c)
+    // ktilde_b = (1+c) and ktilde_c = (1+2c)
     // We also find that c = m_c^2/Q^2. The process is a+b->c where
     // particle a is not colour connected (considered as a colour singlet).
     // Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and 
@@ -130,16 +131,15 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
   else {    
     // In this case from JHEP 12(2003)045 we find, for the decay
     // process b->c+a(neutral), the condition
-    // (ktilda_b-1)*(ktilda_c-c)=(1/4)*sqr(1-a+c+lambda). 
+    // (ktilde_b-1)*(ktilde_c-c)=(1/4)*sqr(1-a+c+lambda). 
     // We also assume that the first particle in the pair is the initial
     // state particle (b) and the second is the final state one (c).
     //  - We find maximal phase space coverage through emissions from 
     //    c if we set ktilde_c = 4.*(sqr(1.-sqrt(a))-c)
     //  - We find the most 'symmetric' way to populate the phase space
-    //    occurs for (ktilda_b-1)=(ktilda_c-c)=(1/2)*(1-a+c+lambda) 
+    //    occurs for (ktilde_b-1)=(ktilde_c-c)=(1/2)*(1-a+c+lambda) 
     //  - We find the most 'smooth' way to populate the phase space
     //    occurs for...
-    Lorentz5Momentum pa = pb-pc;
     Energy2 mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
     double c=sqr(ppair.second->mass())/mb2;
@@ -174,9 +174,9 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
 pair<Energy,Energy> QTildeFinder::
 calculateInitialInitialScales(const ShowerPPair &ppair) {
   // This case is quite simple. From JHEP 12(2003)045 we find the condition
-  // that ktilda_b = ktilda_c = 1. In this case we have the process
+  // that ktilde_b = ktilde_c = 1. In this case we have the process
   // b+c->a so we need merely boost to the CM frame of the two incoming
-  // particles and then qtilda is equal to the energy in that frame
+  // particles and then qtilde is equal to the energy in that frame
   Lorentz5Momentum p(ppair.first->momentum()+ppair.second->momentum());
   p.boost(p.findBoostToCM());
   Energy Q = sqrt(p.m2());
@@ -191,10 +191,11 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
 
 pair<Energy,Energy> QTildeFinder::
 calculateFinalFinalScales(const ShowerPPair &particlePair) {
-  // Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
-  // ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
+  static const double eps=1e-6;
+  // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
+  // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)
   // find momenta in rest frame of system
-  Lorentz5Momentum p1= particlePair.first->momentum(); 
+  Lorentz5Momentum p1 = particlePair.first->momentum(); 
   Lorentz5Momentum p2 = particlePair.second->momentum(); 
   Lorentz5Momentum p12(p1+p2);
   Boost boostv=p12.findBoostToCM();
@@ -202,9 +203,28 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   p2.boost(boostv);
   // calculate quantities for the scales
   Energy2 Q2 = p12.m2();
-  Energy Q   = sqrt(Q2);
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
+  if(b<0.) {
+    if(b<-eps) {
+      generator()->log() << *particlePair.first  << "\n"
+			 << *particlePair.second << "\n";
+      throw Exception() << "Negative Mass squared b = " << b
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
+    b = 0.;
+  }
+  if(c<0.) {
+    if(c<-eps) {
+      generator()->log() << *particlePair.first  << "\n"
+			 << *particlePair.second << "\n";
+      throw Exception() << "Negative Mass squared c = " << c
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
+    c = 0.;
+  }
   // KMH & PR - 16 May 2008 - swapped lambda calculation from 
   // double lam=2.*p1.vect().mag()/Q; to sqrt(kallen(1,b,c)), 
   // which should be identical for p1 & p2 onshell in their COM

@@ -1,0 +1,52 @@
+cd /Herwig/MatrixElements
+insert SimpleEE:MatrixElements[0] MEee2ZH
+
+read LEP.common
+
+cd /Herwig/Generators
+
+set LEPGenerator:EventHandler:CascadeHandler NULL
+set LEPGenerator:EventHandler:HadronizationHandler NULL
+set LEPGenerator:EventHandler:DecayHandler NULL
+
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
+
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+
+create Herwig::VHTest VHTest LeptonTest.so
+insert LEPGenerator:AnalysisHandlers 0 VHTest
+set /Herwig/Analysis/Basics:CheckQuark 0
+
+# parameters to make the same as fortran
+cd /Herwig
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+set Model:EW/CKM:theta_12 0.22274457
+set Model:EW/CKM:theta_13 0.
+set Model:EW/CKM:theta_23 0.
+set Model:EW/CKM:delta 0.
+set Model:EW/Sin2ThetaW 0.22254916
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM2
+
+set /Herwig/Masses/HiggsMass:HiggsShape 0
+set /Herwig/Particles/h0:Stable Stable
+
+set /Herwig/Particles/Z0/Z0->d,dbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->b,bbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->u,ubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->c,cbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_e,nu_ebar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->mu-,mu+;:OnOff Off
+set /Herwig/Particles/Z0/Z0->e-,e+;:OnOff On
+set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
+set /Herwig/Particles/Z0:WidthCut 1000.
+
+set /Herwig/ACDCSampler:Ntry 100000
+
+cd /Herwig/Generators
+saverun LEP-VH LEPGenerator

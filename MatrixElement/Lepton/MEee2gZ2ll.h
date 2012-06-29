@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2ll.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2ll class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -31,14 +31,38 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2llInterfaces "The interfaces"
  * defined for MEee2gZ2ll.
  */
-class MEee2gZ2ll: public ME2to2Base {
+class MEee2gZ2ll: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2gZ2ll() : _allowed(0) {}
+  MEee2gZ2ll() : allowed_(0), pTmin_(GeV),
+		 preFactor_(6.) {
+    massOption(vector<unsigned int>(2,1));
+  }
+
+  /**
+   *  Members for hard corrections to the emission of QCD radiation 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Has an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return false;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr,
+				      vector<ShowerInteraction::Type>);
+  //@}
 
 public:
 
@@ -136,13 +160,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -176,7 +200,16 @@ protected:
   virtual IVector getReferences();
   //@}
 
-private:
+protected:
+
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   */  
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first) const;
 
   /**
    * Member to calculate the matrix element
@@ -196,13 +229,63 @@ private:
 				     double & cont,
 				     double & BW ) const;
 
-private:
+  /**
+   *  The ratio of the matrix element for one additional jet over the
+   * leading order result. In practice
+   * \[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * the spin and colour summed/averaged matrix element.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param inter The type of interaction
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemittor,
+		 bool subtract=false) const;
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param inter The type of interaction
+   */ 
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Generate the momenta for a hard configuration
    */
-  static ClassDescription<MEee2gZ2ll> initMEee2gZ2ll;
+  Energy generateHard(ShowerTreePtr tree, 
+		      vector<Lorentz5Momentum> & emission,
+		      unsigned int & iemit, unsigned int & ispect,
+		      bool applyVeto);
+
+
+protected:
+  
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex() const {return FFZVertex_;}
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex() const {return FFPVertex_;}
+  
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0() const {return Z0_;}
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma() const {return gamma_;}
+
+private:
 
   /**
    * The assignment operator is private and must never be called.
@@ -213,29 +296,69 @@ private:
 private:
 
   /**
+   *  Pointers to the vertices
+   */
+  //@{
+  /**
    *  Pointer to the fermion-antifermion Z vertex
    */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr FFZVertex_;
   
   /**
    *  Pointer to the fermion-antifermion photon vertex
    */
-  AbstractFFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr FFPVertex_;
+  //@}
 
   /**
    *  Pointer to the particle data object for the Z
    */
-  PDPtr _Z0;
+  PDPtr Z0_;
 
   /**
    *  Pointer to the particle data object for the photon
    */
-  PDPtr _gamma;
+  PDPtr gamma_;
     
   /**
    * The allowed outgoing
    */
-  int _allowed;
+  int allowed_;
+  /**
+   * The initial kappa-tilde values for radiation from the quark
+   */
+  double d_kt1_;
+
+  /**
+   *  Pointer to the EM coupling
+   */
+  ShowerAlphaPtr alphaQED_;
+
+  /**
+   *  Variables for the POWHEG style corrections
+   */
+  //@{
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  /**
+   *  Overestimate for the prefactor
+   */
+  double preFactor_;
+
+  /**
+   *  ParticleData objects for the partons
+   */
+  vector<cPDPtr> partons_;
+
+  /**
+   *  Momenta of the leading-order partons
+   */
+  vector<Lorentz5Momentum> loMomenta_;
+  //@}
+
 };
 
 }
@@ -251,7 +374,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2ll,1> {
   /** Typedef of the first base class of MEee2gZ2ll. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

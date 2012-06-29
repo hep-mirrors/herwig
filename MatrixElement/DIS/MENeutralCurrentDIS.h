@@ -5,7 +5,7 @@
 // This is the declaration of the MENeutralCurrentDIS class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "DISBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -24,7 +24,7 @@ using namespace ThePEG;
  * @see \ref MENeutralCurrentDISInterfaces "The interfaces"
  * defined for MENeutralCurrentDIS.
  */
-class MENeutralCurrentDIS: public HwME2to2Base {
+class MENeutralCurrentDIS: public DISBase {
 
 public:
 
@@ -57,11 +57,6 @@ public:
   virtual double me2() const;
 
   /**
-   * Return the scale associated with the last set phase space point.
-   */
-  virtual Energy2 scale() const;
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -74,7 +69,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -138,6 +133,18 @@ protected:
 		    bool me) const;
 
 
+  /**
+   *  Option for treatment of \f$\gamma/Z\f$ terms
+   */
+  inline unsigned int gammaZOption() const {return _gammaZ;}
+
+  /**
+   *  Calculate the coefficient A for the correlations in the hard
+   *  radiation
+   */
+  virtual double A(tcPDPtr lin, tcPDPtr lout, tcPDPtr qin, tcPDPtr qout,
+		   Energy2 scale) const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -158,13 +165,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -220,12 +227,12 @@ private:
   /**
    *  Minimumflavour of the incoming quarks
    */
-  unsigned int _minflavour;
+  int _minflavour;
 
   /**
    *  Maximum flavour of the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one
@@ -237,6 +244,26 @@ private:
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
+
+  /**
+   *  Electroweak parameters
+   */
+  //@{
+  /**
+   *  \f$\sin\theta_W\f$
+   */
+  double _sinW;
+
+  /**
+   *  \f$\cos\theta_W\f$
+   */
+  double _cosW;
+
+  /**
+   *  The square of the Z mass
+   */
+  Energy2 _mz2;
+  //@}
 
 };
 
@@ -253,7 +280,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MENeutralCurrentDIS,1> {
   /** Typedef of the first base class of MENeutralCurrentDIS. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::DISBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

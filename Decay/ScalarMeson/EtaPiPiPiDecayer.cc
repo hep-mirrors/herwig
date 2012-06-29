@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EtaPiPiPiDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -159,7 +159,30 @@ void EtaPiPiPiDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiPiDecayer> documentation
     ("The EtaPiPiPiDecayer class performs the decay of a scalar meson to"
-     " two pions and another meson using a simple paramterisation of the dalitz plot.");
+     " two pions and another meson using a simple paramterisation of the dalitz plot.",
+     "The decay of eta to two pions follows \\cite{Beisert:2003zs,Gormley:1970qz,Tippens:2001fm}.",
+     "%\\cite{Beisert:2003zs}\n"
+     "\\bibitem{Beisert:2003zs}\n"
+     "  N.~Beisert and B.~Borasoy,\n"
+     "  %``Hadronic decays of eta and eta' with coupled channels,''\n"
+     "  Nucl.\\ Phys.\\  A {\\bf 716}, 186 (2003)\n"
+     "  [arXiv:hep-ph/0301058].\n"
+     "  %%CITATION = NUPHA,A716,186;%%\n"
+     "%\\cite{Gormley:1970qz}\n"
+     "\\bibitem{Gormley:1970qz}\n"
+     "  M.~Gormley, E.~Hyman, W.~Y.~Lee, T.~Nash, J.~Peoples, C.~Schultz and S.~Stein,\n"
+     "   ``Experimental determination of the dalitz-plot distribution of the decays\n"
+     "   eta $\\to$ pi+ pi- pi0 and eta $\\to$ pi+ pi- gamma, and the branching ratio\n"
+     "  %eta $\\to$ pi+ pi- gamma/eta $\\to$ pi+,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 2}, 501 (1970).\n"
+     "  %%CITATION = PHRVA,D2,501;%%\n"
+     "%\\cite{Tippens:2001fm}\n"
+     "\\bibitem{Tippens:2001fm}\n"
+     "  W.~B.~Tippens {\\it et al.}  [Crystal Ball Collaboration],\n"
+     "  %``Determination of the quadratic slope parameter in eta $\\to$ 3pi0 decay,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 87}, 192001 (2001).\n"
+     "  %%CITATION = PRLTA,87,192001;%%\n"
+     );
 
   static ParVector<EtaPiPiPiDecayer,int> interfaceIncoming
     ("Incoming",
@@ -314,21 +337,21 @@ void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming   " << ix << " "
+      output << "newdef " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << name() << ":Outgoing  " << ix << " "
+      output << "newdef " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "set " << name() << ":Charged " << ix << " "
+      output << "newdef " << name() << ":Charged " << ix << " "
 		 << _charged[ix]  << "\n";
-      output << "set " << name() << ":Prefactor " << ix << " "
+      output << "newdef " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "set " << name() << ":a " << ix << " "
+      output << "newdef " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "set " << name() << ":b " << ix << " "
+      output << "newdef " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "set " << name() << ":c " << ix << " "
+      output << "newdef " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "set " << name() << ":MaxWeight  " << ix << " "
+      output << "newdef " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
     else {

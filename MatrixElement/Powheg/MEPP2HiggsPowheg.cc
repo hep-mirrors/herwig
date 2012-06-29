@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2HiggsPowheg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,11 +22,11 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-
+ 
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
-  CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
+  CF_(4./3.)  ,  CA_(3.)            , TR_(0.5)        , nlf_(5)          ,
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
   scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.) 
@@ -51,7 +51,17 @@ void MEPP2HiggsPowheg::Init() {
 
   static ClassDocumentation<MEPP2HiggsPowheg> documentation
     ("The MEPP2HiggsPowheg class implements the matrix elements for"
-     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
+     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.",
+     "The PP$\\to$Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -203,15 +213,13 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // g q + g qbar contributions
   a_nlo=getParticleData(ParticleID::g);
   double wgqcollin(0.)   , wgqreal(0.)   , wgq(0.)   ;
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+  for(int ix=1; ix<=nlf_; ++ix) {
     b_nlo=getParticleData( ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    b_nlo=getParticleData(minus_ix);
+
+    b_nlo=getParticleData(-ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
@@ -219,30 +227,25 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // q g + qbar g contributions
   b_nlo=getParticleData(ParticleID::g);
   double wqgcollin(0.)   , wqgreal(0.)   , wqg(0.)   ;
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+  for(int ix=1; ix<=nlf_; ++ix) {
     a_nlo=getParticleData( ix);
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    a_nlo=getParticleData(minus_ix);
+
+    a_nlo=getParticleData(-ix);
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
   }
   // q qbar + qbar q contributions
   double wqqbarreal(0.), wqqbar(0.);
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
+  for(int ix=1; ix<=nlf_; ++ix) {
     a_nlo=getParticleData( ix);
-    b_nlo=getParticleData(minus_ix);
+    b_nlo=getParticleData(-ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qqbar_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;
-    a_nlo=getParticleData(minus_ix);
+    a_nlo=getParticleData(-ix);
     b_nlo=getParticleData( ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qbarq_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;
@@ -350,10 +353,10 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b,
 double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b, 
 					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+  if(y== 1.&&!(abs(a->id())>0&&abs(a->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = "
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
@@ -371,7 +374,7 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&a->id()!=21)
     cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = " 
 	 << a->id() << "\n";
-  if(y== 1.&&!(abs(a->id()>0)&&abs(a->id())<7)) 
+  if(y==-1.&&b->id()!=21) 
     cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);

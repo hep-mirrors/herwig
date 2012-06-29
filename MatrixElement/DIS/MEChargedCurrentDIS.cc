@@ -18,17 +18,19 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
 MEChargedCurrentDIS::MEChargedCurrentDIS() 
-  : _maxflavour(6), _massopt(0) {
-  massOption(true ,1);
-  massOption(false,_massopt);
+  : _maxflavour(5), _massopt(0) {
+  vector<unsigned int> mopt(2,1);
+  mopt[1] = _massopt;
+  massOption(mopt);
 }
 
 void MEChargedCurrentDIS::doinit() {
-  HwME2to2Base::doinit();
+  DISBase::doinit();
   _wp = getParticleData(ThePEG::ParticleID::Wplus );
   _wm = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -66,7 +68,7 @@ void MEChargedCurrentDIS::getDiagrams() const {
     ;
   }
   // create the diagrams
-  for(unsigned int il1=11;il1<=14;++il1) {
+  for(int il1=11;il1<=14;++il1) {
     int il2 = il1%2==0 ? il1-1 : il1+1;
     for(unsigned int iz=0;iz<2;++iz) {
       tcPDPtr lepin  = iz==1 ? getParticleData(il1) : getParticleData(-il1);
@@ -90,10 +92,6 @@ void MEChargedCurrentDIS::getDiagrams() const {
       }
     }
   }
-}
-
-Energy2 MEChargedCurrentDIS::scale() const {
-  return -tHat();
 }
 
 unsigned int MEChargedCurrentDIS::orderInAlphaS() const {
@@ -137,7 +135,7 @@ void MEChargedCurrentDIS::Init() {
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
-      &MEChargedCurrentDIS::_maxflavour, 6, 2, 6, false, false, true);
+      &MEChargedCurrentDIS::_maxflavour, 5, 2, 6, false, false, true);
 
   static Switch<MEChargedCurrentDIS,unsigned int> interfaceMassOption
     ("MassOption",
@@ -167,8 +165,7 @@ double MEChargedCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
 				       vector<SpinorWaveFunction>    & f2,
 				       vector<SpinorBarWaveFunction> & a1,
 				       vector<SpinorBarWaveFunction> & a2,
-				       bool lorder, bool qorder,
-				       bool calc) const {
+				       bool lorder, bool qorder, bool calc) const {
   // scale
   Energy2 mb2(scale());
   // matrix element to be stored
@@ -198,13 +195,21 @@ double MEChargedCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
 	  if(!qorder) swap(hel[1],hel[3]);
 	  diag = _theFFWVertex->evaluate(mb2,f2[qhel1],a2[qhel2],inter);
 	  me += norm(diag);
-	  if(calc) menew(hel[0],hel[1],hel[2],hel[3]) = diag;
+	  menew(hel[0],hel[1],hel[2],hel[3]) = diag;
 	}
       }
     }
   }
   // spin and colour factor
   me *= 0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me = menew.average(rho[0],rho[1]);
+  }
   if(calc) _me.reset(menew);
   return me;
 }
@@ -271,17 +276,26 @@ void MEChargedCurrentDIS::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(a1,hard[order[2]],outgoing, lorder,true);
   SpinorBarWaveFunction(a2,hard[order[3]],outgoing, qorder,true);
   helicityME(f1,f2,a1,a2,lorder,qorder,false);
-  // get the spin info objects
-  SpinfoPtr spin[4];
-  for(unsigned int ix=0;ix<4;++ix) {
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
-  }
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix) {
-    spin[ix]->setProductionVertex(hardvertex);
+    tSpinPtr spin = hard[ix]->spinInfo();
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->productionVertex(hardvertex);
   }
+}
+
+double MEChargedCurrentDIS::A(tcPDPtr lin, tcPDPtr,
+			      tcPDPtr qin, tcPDPtr, Energy2) const {
+  double output = 2.;
+  if(qin->id()<0) output *= -1.;
+  if(lin->id()<0) output *= -1;
+  return output;
 }

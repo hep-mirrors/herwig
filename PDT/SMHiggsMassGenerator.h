@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,8 +13,7 @@
 //
 
 #include "GenericMassGenerator.h"
-#include "SMHiggsWidthGenerator.h"
-#include "SMHiggsMassGenerator.fh"
+#include "GenericWidthGenerator.h"
 
 namespace Herwig {
 
@@ -34,23 +33,20 @@ public:
   /**
    * The default constructor.
    */
-  inline SMHiggsMassGenerator();
+  SMHiggsMassGenerator() : _shape(1) {}
 
   /**
    * Weight for the factor for an off-shell mass
-   * @param mass The off-shell mass
+   * @param q The off-shell mass
    * @param shape The type of shape to use as for the BreitWignerShape interface
    * @return The weight.
    */
-  inline virtual double weight(Energy mass,int shape) const;
-
-  /**
-   * Weight for the factor for an off-shell mass
-   * @param mass The off-shell mass
-   * @param shape The type of shape to use as for the BreitWignerShape interface
-   * @return The weight.
-   */
-  inline InvEnergy2 BreitWignerWeight(Energy mass,int shape) const;
+  virtual double weight(Energy q, int shape) const {
+    Energy2 q2    = sqr(q);
+    Energy2 mass2 = sqr(nominalMass());
+    Energy2 mwidth= nominalMass()*nominalWidth();
+    return BreitWignerWeight(q,shape)*(sqr(mass2-q2)+sqr(mwidth))/mwidth;
+  }
 
   /**
    * Return true if this mass generator can handle the given particle type.
@@ -90,19 +86,40 @@ public:
 
 protected:
 
+  /**
+   * Weight for the factor for an off-shell mass
+   * @param q The off-shell mass
+   * @param shape The type of shape to use as for the BreitWignerShape interface
+   * @return The weight.
+   */
+  virtual InvEnergy2 BreitWignerWeight(Energy q,int shape) const {
+    useMe();
+    pair<Energy,Energy> widths = shape!=2 ? _hwidth->width(q,*particle()) :
+      make_pair(nominalWidth(),nominalWidth());
+    Energy2 q2 = sqr(q);
+    Energy4 sq=sqr(q2-sqr(nominalMass()));
+    Energy2 num = widths.first*q;
+    double fact = 1.;
+    if(_shape==1) fact *= pow<4,1>(nominalMass()/q);
+    if( shape==3) num=GeV2;
+    return num*fact/Constants::pi/(sq+sqr(widths.second*q)*fact);
+  }
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -114,7 +131,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
 
 private:
@@ -141,7 +158,7 @@ private:
   /**
    *  The width generator
    */
-  SMHiggsWidthGeneratorPtr _hwidth;
+  GenericWidthGeneratorPtr _hwidth;
 
 };
 
@@ -173,7 +190,5 @@ struct ClassTraits<Herwig::SMHiggsMassGenerator>
 /** @endcond */
 
 }
-
-#include "SMHiggsMassGenerator.icc"
 
 #endif /* HERWIG_SMHiggsMassGenerator_H */

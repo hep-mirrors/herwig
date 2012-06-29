@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Kinematics.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -49,7 +49,7 @@ namespace Herwig {
 			     const Energy m1, const Energy m2,
 			     const Axis & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2) {
-      Energy min=p.m();
+      Energy min=p.mass();
       if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
 	Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
 	p1 = Lorentz5Momentum(m1, pstarVector);

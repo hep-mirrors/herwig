@@ -27,7 +27,7 @@ MEPP2WJet::MEPP2WJet() : _process(0), _maxflavour(5), _plusminus(0),
 {}
 
 void MEPP2WJet::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   _wplus  = getParticleData(ThePEG::ParticleID::Wplus );
   _wminus = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -420,8 +420,8 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(wdata->mass()),Gamma(wdata->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   _mw2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mw=sqrt(_mw2);
   // jacobian
@@ -516,7 +516,6 @@ double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double r) {
 } 
 
 double MEPP2WJet::me2() const {
-  useMe();
   InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
@@ -851,5 +850,5 @@ void MEPP2WJet::constructVertex(tSubProPtr sub) {
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<5;++ix)
-    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+    (hard[ix]->spinInfo())->productionVertex(hardvertex);
 }

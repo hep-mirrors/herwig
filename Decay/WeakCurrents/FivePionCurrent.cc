@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FivePionCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -105,7 +105,7 @@ void FivePionCurrent::Init() {
   static ClassDocumentation<FivePionCurrent> documentation
     ("The FivePionCurrent class implements the model of hep-ph/0602162",
      "The model of \\cite{Kuhn:2006nw} was used for the hadronic five pion current.",
-     "\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
+     "\\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
 
   static Parameter<FivePionCurrent,Energy> interfaceRhoMass
     ("RhoMass",
@@ -633,23 +633,23 @@ void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) 
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::FivePionCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << name() << ":RhoMass "    << _rhomass/MeV << "\n";
-  output << "set " << name() << ":A1Mass  "    << _a1mass/MeV  << "\n";
-  output << "set " << name() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
-  output << "set " << name() << ":OmegaMass  " << _omegamass/MeV  << "\n";
-  output << "set " << name() << ":RhoWidth "    << _rhowidth/MeV << "\n";
-  output << "set " << name() << ":A1Width  "    << _a1width/MeV  << "\n";
-  output << "set " << name() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
-  output << "set " << name() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
-  output << "set " << name() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << name() << ":RhoOmega " << _rhoomega << "\n";
-  output << "set " << name() << ":C " << _c/GeV2 << "\n";
-  output << "set " << name() << ":C0 " << _c0 << "\n";
-  output << "set " << name() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
-  output << "set " << name() << ":grhopipi " <<_grhopipi << "\n";
-  output << "set " << name() << ":garhopi " << _garhopi/GeV << "\n";
-  output << "set " << name() << ":faaf " <<_faaf/GeV << "\n";
-  output << "set " << name() << ":ffpipi " << _ffpipi/GeV << "\n";
+  output << "newdef " << name() << ":RhoMass "    << _rhomass/MeV << "\n";
+  output << "newdef " << name() << ":A1Mass  "    << _a1mass/MeV  << "\n";
+  output << "newdef " << name() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
+  output << "newdef " << name() << ":OmegaMass  " << _omegamass/MeV  << "\n";
+  output << "newdef " << name() << ":RhoWidth "    << _rhowidth/MeV << "\n";
+  output << "newdef " << name() << ":A1Width  "    << _a1width/MeV  << "\n";
+  output << "newdef " << name() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
+  output << "newdef " << name() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
+  output << "newdef " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "newdef " << name() << ":RhoOmega " << _rhoomega << "\n";
+  output << "newdef " << name() << ":C " << _c/GeV2 << "\n";
+  output << "newdef " << name() << ":C0 " << _c0 << "\n";
+  output << "newdef " << name() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
+  output << "newdef " << name() << ":grhopipi " <<_grhopipi << "\n";
+  output << "newdef " << name() << ":garhopi " << _garhopi/GeV << "\n";
+  output << "newdef " << name() << ":faaf " <<_faaf/GeV << "\n";
+  output << "newdef " << name() << ":ffpipi " << _ffpipi/GeV << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }
@@ -658,6 +658,7 @@ vector<LorentzPolarizationVectorE>
 FivePionCurrent::current(const int imode,const int ichan,
 			 Energy & scale,const ParticleVector & decay,
 			 DecayIntegrator::MEOption meopt) const {
+  useMe();
   if(meopt==DecayIntegrator::Terminate) {
     for(unsigned int ix=0;ix<5;++ix)
       ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);

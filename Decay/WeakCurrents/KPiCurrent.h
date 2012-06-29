@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KPiCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline KPiCurrent();
+  KPiCurrent();
 
 
   /** @name Methods for the construction of the phase space integrator. */
@@ -136,17 +136,17 @@ protected:
    */
   //@{
   /**
-   * s-wave Breit-Wigner for the vector resonances
+   * s-wave Breit-Wigner for the scalar resonances
    * @param q2 The scale
    * @param ires The resonances
    */
   Complex sWaveBreitWigner(Energy2 q2,unsigned int ires) const {
     Energy q=sqrt(q2),gam(ZERO);
-    Energy2 m2=sqr(_vecmass[ires]);
+    Energy2 m2=sqr(_scamass[ires]);
     if(q>_mK+_mpi) {
-      Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
+      Energy pX=Kinematics::pstarTwoBodyDecay(_scamass[ires],_mK,_mpi);
       Energy p =Kinematics::pstarTwoBodyDecay( q            ,_mK,_mpi);
-      gam = _vecwidth[ires]*m2/q2*p/pX;
+      gam = _scawidth[ires]*m2/q2*p/pX;
     }
     return m2/(m2-q2-Complex(0.,1.)*q*gam);
   }

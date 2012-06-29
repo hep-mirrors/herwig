@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEvv2ss.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -56,16 +57,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -84,11 +75,13 @@ private:
    * @param sca2 A ScalarWaveFunction for the second outgoing
    * @param me2 The value of the spin-summed matrix element squared
    * (to be calculated)
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement vv2ssME(const VBVector & v1, const VBVector & v2,
 				  const ScalarWaveFunction & sca1, 
 				  const ScalarWaveFunction & sca2, 
-				  double & me2) const;
+				  double & me2, bool first) const;
 protected:
   
   /**
@@ -135,6 +128,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 
@@ -146,13 +145,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -174,24 +173,29 @@ private:
   /** @name The dynamically casted vertices. */
   //@{
   /**
+   * Intermediate s-channel scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractSSSVertexPtr> > scalar1_;
+
+  /**
    * Intermediate t-channel scalar
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > theSca;
+  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar2_;
 
   /**
    * Intermediate s-channel vector
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > vector_;
 
   /**
    * Intermediate s-channel tensor
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractSSTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractSSTVertexPtr> > tensor_;
   
   /**
    * The contact vertex 
    */
-  AbstractVVSSVertexPtr theContact;
+  AbstractVVSSVertexPtr contact_;
   //@}
   
   

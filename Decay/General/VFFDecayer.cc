@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VFFDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -112,15 +112,15 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
-    _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
-				     inpart.first);
-    Complex cl(_perturbativeVertex->getLeft()), cr(_perturbativeVertex->getRight());
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
+    Complex cl(_perturbativeVertex->left()), cr(_perturbativeVertex->right());
     double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
 					 + sqr(mu1) + sqr(mu2) - 2.)
       - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm / 
+    Energy output = -norm(_perturbativeVertex->norm())*me2*pcm / 
       (24.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
@@ -131,3 +131,4 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

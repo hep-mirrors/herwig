@@ -1,0 +1,58 @@
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 100000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+erase LHCGenerator:EventHandler:PostSubProcessHandlers 0
+set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Particles/h0:Stable Stable
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] PowhegMEPP2ZH
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+cd /Herwig/Shower
+# use the general recon for now
+set KinematicsReconstructor:ReconstructionOption General
+# switch treatment of hardest emission
+set Evolver:HardEmissionMode POWHEG
+cd /Herwig/Generators
+create Herwig::VHTest /Herwig/Analysis/VHTest HadronJetTest.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/VHTest
+
+set /Herwig/Particles/W+/W+->bbar,c;:OnOff Off
+set /Herwig/Particles/W+/W+->c,dbar;:OnOff Off
+set /Herwig/Particles/W+/W+->c,sbar;:OnOff Off
+set /Herwig/Particles/W+/W+->nu_e,e+;:OnOff On
+set /Herwig/Particles/W+/W+->nu_mu,mu+;:OnOff Off
+set /Herwig/Particles/W+/W+->nu_tau,tau+;:OnOff Off
+set /Herwig/Particles/W+/W+->sbar,u;:OnOff Off
+set /Herwig/Particles/W+/W+->u,dbar;:OnOff Off
+set /Herwig/Particles/W-/W-->b,cbar;:OnOff Off
+set /Herwig/Particles/W-/W-->cbar,d;:OnOff Off
+set /Herwig/Particles/W-/W-->cbar,s;:OnOff Off
+set /Herwig/Particles/W-/W-->nu_ebar,e-;:OnOff On
+set /Herwig/Particles/W-/W-->nu_mubar,mu-;:OnOff Off
+set /Herwig/Particles/W-/W-->nu_taubar,tau-;:OnOff Off
+set /Herwig/Particles/W-/W-->s,ubar;:OnOff Off
+set /Herwig/Particles/W-/W-->ubar,d;:OnOff Off
+set /Herwig/Particles/Z0/Z0->b,bbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->c,cbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->d,dbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->e-,e+;:OnOff On
+set /Herwig/Particles/Z0/Z0->mu-,mu+;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_e,nu_ebar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
+set /Herwig/Particles/Z0/Z0->u,ubar;:OnOff Off
+saverun LHC-ZHJet-Powheg LHCGenerator
+

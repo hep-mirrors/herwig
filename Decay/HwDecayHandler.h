@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwDecayHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,7 +13,7 @@
 //
 #include "ThePEG/Handlers/DecayHandler.h"
 #include "ThePEG/EventRecord/Particle.h"
-#include "ThePEG/Helicity/SpinInfo.h"
+
 
 namespace Herwig {
 using namespace ThePEG;
@@ -121,14 +121,25 @@ protected:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
   /**
    *  Develop a stable particle
    */
   void develop(tPPtr particle) const {
-    if(!particle->spinInfo()) return;
-    Helicity::tcSpinfoPtr hwspin = 
-      dynamic_ptr_cast<Helicity::tcSpinfoPtr>(particle->spinInfo());
-    if(hwspin) hwspin->setDeveloped(true);
+    tcSpinPtr hwspin = particle->spinInfo();
+    if ( hwspin ) 
+      hwspin->develop();
   }
 
 private:
@@ -149,6 +160,16 @@ private:
    *  Option for adding particles in a new Step
    */
   bool _newstep;
+
+  /**
+   *  Particles which should not be decayed
+   */
+  set<tcPDPtr> _excluded;
+
+  /**
+   *  Vector to fill the set as an interface
+   */
+  vector<PDPtr> _excludedVector;
 
 };
 }

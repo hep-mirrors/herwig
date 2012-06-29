@@ -51,7 +51,7 @@ threeBodyMEIntegrator(const DecayMode & ) const {
   return new_ptr(ThreeBodyAllOnCalculator<StoFFVDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
 		  outgoing()[0]->mass(),outgoing()[1]->mass(),
-		  outgoing()[2]->mass()));
+		  outgoing()[2]->mass(),relativeError()));
 }
 
 void StoFFVDecayer::doinit() {
@@ -99,6 +99,9 @@ void StoFFVDecayer::doinit() {
 
 double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			  const ParticleVector & decay, MEOption meopt) const {
+  // particle or CC of particle
+  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  // special handling or first/last call
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),
@@ -122,11 +125,13 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
     }
   }
   unsigned int ivec(0);
+  bool massless(false);
   for(unsigned int ix = 0; ix < decay.size();++ix) {
     if(decay[ix]->dataPtr()->iSpin() == PDT::Spin1) {
       ivec = ix;
+      massless = decay[ivec]->mass()==ZERO;
       VectorWaveFunction::
-	calculateWaveFunctions(_outVector, decay[ix], Helicity::outgoing,false);
+	calculateWaveFunctions(_outVector, decay[ix], Helicity::outgoing,massless);
     }
     else {
       SpinorWaveFunction::
@@ -168,6 +173,7 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
   for(unsigned int s1 = 0; s1 < 2; ++s1) {
     for(unsigned int s2 = 0; s2 < 2; ++s2) {
       for(unsigned int v1 = 0; v1 < 3; ++v1) {
+	if(massless&&v1==1) ++v1;
 	flows = vector<Complex>(ncf, Complex(0.));
 	largeflows = vector<Complex>(ncf, Complex(0.));
 	unsigned int idiag(0);
@@ -179,6 +185,7 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	    continue;
 	  }
 	  tcPDPtr offshell = dit->intermediate;
+	  if(cc&&offshell->CC()) offshell=offshell->CC();
 	  Complex diag;
 	  unsigned int o2(out2[dit->channelType]), o3(out3[dit->channelType]);
 	  double sign = (o3 < o2) ? 1. : -1.;

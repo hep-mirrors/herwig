@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEQCD2to2Fast.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -26,6 +26,14 @@
 #include "ThePEG/Cuts/Cuts.h"
 
 using namespace Herwig;
+
+IBPtr MEQCD2to2Fast::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEQCD2to2Fast::fullclone() const {
+  return new_ptr(*this);
+}
 
 Energy2 MEQCD2to2Fast::scale() const {
   Energy2 s(sHat()),u(uHat()),t(tHat());
@@ -196,7 +204,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1,antiquark[ix],2,gluon,-15)));
     }
     // processes involving two quark lines
-    for(unsigned int iy=0;iy<_maxflavour;++iy) {
+    for(unsigned int iy=ix;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
       if(_process==0||_process==6) {
 	// gluon t-channel
@@ -217,6 +225,8 @@ void MEQCD2to2Fast::getDiagrams() const {
 	  add(new_ptr((Tree2toNDiagram(3),antiquark[ix],gluon,antiquark[iy],
 		       2,antiquark[ix],1,antiquark[iy],-19)));
       }
+    }
+    for(unsigned int iy=0;iy<_maxflavour;++iy) {
       // q qbar -> q qbar
       if(_process==0||_process==8) {
 	// gluon s-channel

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralfftoVH class.
+//
+#ifndef HERWIG_GeneralfftoVH_FH
+#define HERWIG_GeneralfftoVH_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class GeneralfftoVH;
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralfftoVH,GeneralfftoVHPtr);
+
+}
+
+#endif

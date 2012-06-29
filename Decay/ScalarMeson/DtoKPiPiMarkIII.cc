@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DtoKPiPiMarkIII.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
+
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
@@ -653,41 +653,41 @@ void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << name() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
-  output << "set " << name() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
-  output << "set " << name() << ":KmPipPi0KstarmMagnitude " << _a1Kstarm << "\n";
-  output << "set " << name() << ":KmPipPi0KstarmPhase " << _phi1Kstarm << "\n";
-  output << "set " << name() << ":KmPipPi0Kstar0Magnitude " << _a1Kstar0 << "\n";
-  output << "set " << name() << ":KmPipPi0Kstar0Phase " << _phi1Kstar0 << "\n";
-  output << "set " << name() << ":KmPipPi0NonResonantMagnitude " << _a1NR << "\n";
-  output << "set " << name() << ":KmPipPi0NonResonantPhase " << _phi1NR << "\n";
-  output << "set " << name() << ":K0PipPimRhoMagnitude " << _a2rho << "\n";
-  output << "set " << name() << ":K0PipPimRhoPhase " << _phi2rho << "\n";
-  output << "set " << name() << ":K0PipPimKstarMagnitude " << _a2Kstar << "\n";
-  output << "set " << name() << ":K0PipPimKstarPhase " << _phi2Kstar << "\n";
-  output << "set " << name() << ":K0PipPimNonResonantMagnitude " << _a2NR << "\n";
-  output << "set " << name() << ":K0PipPimNonResonantPhase " << _phi2NR << "\n";
-  output << "set " << name() << ":K0PipPi0RhoMagnitude " << _a3rho << "\n";
-  output << "set " << name() << ":K0PipPi0RhoPhase " << _phi3rho << "\n";
-  output << "set " << name() << ":K0PipPi0KstarMagnitude " << _a3Kstar << "\n";
-  output << "set " << name() << ":K0PipPi0KstarPhase " << _phi3Kstar << "\n";
-  output << "set " << name() << ":K0PipPi0NonResonantMagnitude " << _a3NR << "\n";
-  output << "set " << name() << ":K0PipPi0NonResonantPhase " << _phi3NR << "\n";
-  output << "set " << name() << ":KmPipPipNonResonantMagnitude " << _a4NR << "\n";
-  output << "set " << name() << ":KmPipPipNonResonantPhase " << _phi4NR << "\n";
-  output << "set " << name() << ":KmPipPipKstarMagnitude " << _a4Kstar << "\n";
-  output << "set " << name() << ":KmPipPipKstarPhase " << _phi4Kstar << "\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":Kstar0Mass " << _mKstar0/GeV << "\n";
-  output << "set " << name() << ":Kstar0Width " << _wKstar0/GeV << "\n";
-  output << "set " << name() << ":KstarMinusMass " << _mKstarm/GeV << "\n";
-  output << "set " << name() << ":KstarMinusWidth " << _wKstarm/GeV << "\n";
-  output << "set " << name() << ":Rho0Mass " << _mrho0/GeV << "\n";
-  output << "set " << name() << ":Rho0Width " << _wrho0/GeV << "\n";
-  output << "set " << name() << ":RhoPlusMass " << _mrhop/GeV << "\n";
-  output << "set " << name() << ":RhoPlusWidth " << _wrhop/GeV << "\n";
-  output << "set " << name() << ":RhoRadius " << _rrho/(mm*1e-12/hbarc) << "\n";
-  output << "set " << name() << ":KstarRadius " << _rKstar/(mm*1e-12/hbarc) << "\n";
+  output << "newdef " << name() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
+  output << "newdef " << name() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
+  output << "newdef " << name() << ":KmPipPi0KstarmMagnitude " << _a1Kstarm << "\n";
+  output << "newdef " << name() << ":KmPipPi0KstarmPhase " << _phi1Kstarm << "\n";
+  output << "newdef " << name() << ":KmPipPi0Kstar0Magnitude " << _a1Kstar0 << "\n";
+  output << "newdef " << name() << ":KmPipPi0Kstar0Phase " << _phi1Kstar0 << "\n";
+  output << "newdef " << name() << ":KmPipPi0NonResonantMagnitude " << _a1NR << "\n";
+  output << "newdef " << name() << ":KmPipPi0NonResonantPhase " << _phi1NR << "\n";
+  output << "newdef " << name() << ":K0PipPimRhoMagnitude " << _a2rho << "\n";
+  output << "newdef " << name() << ":K0PipPimRhoPhase " << _phi2rho << "\n";
+  output << "newdef " << name() << ":K0PipPimKstarMagnitude " << _a2Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPimKstarPhase " << _phi2Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPimNonResonantMagnitude " << _a2NR << "\n";
+  output << "newdef " << name() << ":K0PipPimNonResonantPhase " << _phi2NR << "\n";
+  output << "newdef " << name() << ":K0PipPi0RhoMagnitude " << _a3rho << "\n";
+  output << "newdef " << name() << ":K0PipPi0RhoPhase " << _phi3rho << "\n";
+  output << "newdef " << name() << ":K0PipPi0KstarMagnitude " << _a3Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPi0KstarPhase " << _phi3Kstar << "\n";
+  output << "newdef " << name() << ":K0PipPi0NonResonantMagnitude " << _a3NR << "\n";
+  output << "newdef " << name() << ":K0PipPi0NonResonantPhase " << _phi3NR << "\n";
+  output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " << _a4NR << "\n";
+  output << "newdef " << name() << ":KmPipPipNonResonantPhase " << _phi4NR << "\n";
+  output << "newdef " << name() << ":KmPipPipKstarMagnitude " << _a4Kstar << "\n";
+  output << "newdef " << name() << ":KmPipPipKstarPhase " << _phi4Kstar << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Kstar0Mass " << _mKstar0/GeV << "\n";
+  output << "newdef " << name() << ":Kstar0Width " << _wKstar0/GeV << "\n";
+  output << "newdef " << name() << ":KstarMinusMass " << _mKstarm/GeV << "\n";
+  output << "newdef " << name() << ":KstarMinusWidth " << _wKstarm/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Mass " << _mrho0/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Width " << _wrho0/GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusMass " << _mrhop/GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusWidth " << _wrhop/GeV << "\n";
+  output << "newdef " << name() << ":RhoRadius " << _rrho/(mm*1e-12/hbarc) << "\n";
+  output << "newdef " << name() << ":KstarRadius " << _rKstar/(mm*1e-12/hbarc) << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";

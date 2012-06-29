@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FFVDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,11 +23,6 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-
-FFVDecayer::FFVDecayer() {
-  addToSearchList(0);
-  addToSearchList(1);
-}
 
 IBPtr FFVDecayer::clone() const {
   return new_ptr(*this);
@@ -104,11 +99,13 @@ double FFVDecayer::me2(const int , const Particle & inpart,
   else
     SpinorWaveFunction::
       calculateWaveFunctions(_wave   ,decay[0],outgoing);
+  bool massless = decay[1]->dataPtr()->mass()==ZERO;
   VectorWaveFunction::
-    calculateWaveFunctions(_vector,decay[1],outgoing,false);
+    calculateWaveFunctions(_vector,decay[1],outgoing,massless);
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {
+	if(massless && vhel == 1) ++vhel;
 	if(ferm)
 	  ME()(if1, if2,vhel) = 
 	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
@@ -130,15 +127,16 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if( outa.first->iSpin() == PDT::Spin1Half)
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in,
 				       outa.first, outb.first);
     else {
       swap(mu1,mu2);
-      _perturbativeVertex->setCoupling(sqr(inpart.second),inpart.first,
+      _perturbativeVertex->setCoupling(sqr(inpart.second),in,
 				       outb.first,outa.first);
     }
-    Complex cl(_perturbativeVertex->getLeft()),cr(_perturbativeVertex->getRight());
+    Complex cl(_perturbativeVertex->left()),cr(_perturbativeVertex->right());
     double me2(0.);
     if( mu2 > 0. ) {
       me2 = (norm(cl) + norm(cr))*(1. + sqr(mu1*mu2) + sqr(mu2) 
@@ -152,7 +150,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
 		 - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/16./Constants::pi; 
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/16./Constants::pi; 
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer 

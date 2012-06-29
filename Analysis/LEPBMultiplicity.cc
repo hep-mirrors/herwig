@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LEPBMultiplicity.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,6 +21,33 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+BranchingInfo::BranchingInfo(double inmult,double inerror)
+  : obsBranching(inmult), obsError(inerror), actualCount(0), 
+    sumofsquares(0.0)
+{}
+  
+double BranchingInfo::simBranching(long N, BranchingInfo den) {
+  return den.actualCount>0 ? 
+    double(actualCount) / double(den.actualCount) : 
+    double(actualCount) / double(N)       ;
+}
+
+double BranchingInfo::simError(long N, BranchingInfo den) {
+  double rn = N*( sumofsquares/double(N)  -  sqr(simBranching(N))) /
+    sqr(double(actualCount));
+  double rd = den.actualCount>0 ?
+    N*( den.sumofsquares/double(N)  -  sqr(den.simBranching(N))) /
+    sqr(double(den.actualCount)) : 0.;
+  return simBranching(N,den)*sqrt(rn+rd);
+}
+
+double BranchingInfo::nSigma(long N,BranchingInfo den) {
+  return obsBranching == 0.0 ?
+    0.0 :
+    (simBranching(N,den) - obsBranching) 
+    / sqrt(sqr(simError(N,den)) + sqr(obsError));
+}
+
 string BranchingInfo::bargraph(long N, BranchingInfo den) {
   if (obsBranching == 0.0) return "     ?     ";
   else if (nSigma(N,den) >= 6.0)  return "-----|---->";
@@ -38,7 +65,7 @@ string BranchingInfo::bargraph(long N, BranchingInfo den) {
   else                            return "<----|-----";
 }
 
-inline LEPBMultiplicity::LEPBMultiplicity() {
+LEPBMultiplicity::LEPBMultiplicity() {
   // B+
   _data[521 ] = BranchingInfo(0.403, 0.009);
   // B_s
@@ -87,11 +114,20 @@ NoPIOClassDescription<LEPBMultiplicity> LEPBMultiplicity::initLEPBMultiplicity;
 void LEPBMultiplicity::Init() {
 
   static ClassDocumentation<LEPBMultiplicity> documentation
-    ("There is no documentation for the LEPBMultiplicity class");
+    ("The LEP B multiplicity analysis.",
+     "The LEP B multiplicity analysis uses data from PDG 2006 \\cite{Yao:2006px}.",
+     "%\\cite{Yao:2006px}\n"
+     "\\bibitem{Yao:2006px}\n"
+     "  W.~M.~Yao {\\it et al.}  [Particle Data Group],\n"
+     "  %``Review of particle physics,''\n"
+     "  J.\\ Phys.\\ G {\\bf 33} (2006) 1.\n"
+     "  %%CITATION = JPHGB,G33,1;%%\n"
+     );
 
 }
 
 void LEPBMultiplicity::dofinish() {
+  useMe();
   string filename = generator()->filename() + ".Bmult";
   ofstream outfile(filename.c_str());
   outfile << 

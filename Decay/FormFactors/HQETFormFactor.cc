@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HQETFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -123,6 +123,7 @@ void HQETFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int,
 					    int, int, Energy m0, Energy m1,
 					    Complex & A0, Complex & A1,Complex & A2,
 					    Complex & V) const {
+  useMe();
   double omega = 0.5*(sqr(m0)+sqr(m1)-q2)/m0/m1;
   double root = sqrt(1.+omega),rt2=sqrt(2.);
   double z = (root-rt2)/(root+rt2);
@@ -143,11 +144,11 @@ void HQETFormFactor::dataBaseOutput(ofstream & os,bool header,bool create) const
   if(header) os << "update decayers set parameters=\"";
   if(create) os << "create Herwig::HQETFormFactor " << name() << "\n";
   ScalarFormFactor::dataBaseOutput(os,false,false);
-  os << "set " << name() << ":F1Scalar   " << _f1scalar   << "\n";
-  os << "set " << name() << ":F1Vector   " << _f1vector   << "\n";
-  os << "set " << name() << ":Rho2Scalar " << _rho2scalar << "\n";
-  os << "set " << name() << ":Rho2Vector " << _rho2vector << "\n";
-  os << "set " << name() << ":R1         " << _r1         << "\n";
-  os << "set " << name() << ":R2         " << _r2         << "\n";
+  os << "newdef " << name() << ":F1Scalar   " << _f1scalar   << "\n";
+  os << "newdef " << name() << ":F1Vector   " << _f1vector   << "\n";
+  os << "newdef " << name() << ":Rho2Scalar " << _rho2scalar << "\n";
+  os << "newdef " << name() << ":Rho2Vector " << _rho2vector << "\n";
+  os << "newdef " << name() << ":R1         " << _r1         << "\n";
+  os << "newdef " << name() << ":R2         " << _r2         << "\n";
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

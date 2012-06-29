@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // StandardModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,6 +18,9 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSSVertex.h"
 #include "Herwig++/Models/General/ModelGenerator.fh"
 #include "StandardModel.fh"
 
@@ -50,7 +53,7 @@ class StandardModel: public StandardModelBase {
    */
   typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
   //@}
-
+  
 public:
   
   /** @name Standard constructors and destructors. */
@@ -59,12 +62,12 @@ public:
    * Default constructor
    */
   StandardModel();
-
+  
   /**
    * Copy-constructor.
    */
   StandardModel(const StandardModel &);
-
+  
   /**
    * Destructor
    */
@@ -103,42 +106,58 @@ public:
   /**
    *  The left-handed coupling of a neutrino
    */
-  inline double lnu() const;
+  double lnu() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()+anu());
+  }
 
   /**
    *  The left-handed coupling of a charged lepton.
    */
-  inline double le() const;
+  double le() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()+ae());
+  }
 
   /**
    *  The left-handed coupling of an up type quark.
    */
-  inline double lu() const;
+  double lu() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()+au());
+  }
 
   /**
    *  The left-handed coupling of a down type quark.
    */
-  inline double ld() const;
+  double ld() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()+ad());
+  }
 
   /**
    *  The right-handed coupling of a neutrino
    */
-  inline double rnu() const;
+  double rnu() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()-anu());
+  }
 
   /**
    *  The right-handed coupling of a charged lepton.
    */
-  inline double re() const;
+  double re() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(ve()-ae());
+  }
 
   /**
    *  The right-handed coupling of an up type quark.
    */
-  inline double ru() const;
+  double ru() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vu()-au());
+  }
 
   /**
    *  The right-handed coupling of a down type quark.
    */
-  inline double rd() const;
+  double rd() const {
+    return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vd()-ad());
+  }
   //@}
 
   /**
@@ -148,72 +167,114 @@ public:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  inline tAbstractFFVVertexPtr  vertexFFZ() const;
+  virtual tAbstractFFVVertexPtr  vertexFFZ() const {
+    return FFZVertex_;
+  }
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  inline tAbstractFFVVertexPtr  vertexFFP() const;
+  virtual tAbstractFFVVertexPtr  vertexFFP() const {
+    return FFPVertex_;
+  }
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  inline tAbstractFFVVertexPtr  vertexFFG() const;
-
+  virtual tAbstractFFVVertexPtr  vertexFFG() const {
+    return FFGVertex_;
+  }
+  
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  inline tAbstractFFVVertexPtr  vertexFFW() const;
+  virtual tAbstractFFVVertexPtr  vertexFFW() const {
+    return FFWVertex_;
+  }
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  virtual inline tAbstractFFSVertexPtr  vertexFFH() const;
+  virtual tAbstractFFSVertexPtr  vertexFFH() const {
+    return FFHVertex_;
+  }
 
   /**
    * Pointer to the triple gluon vertex
    */
-  inline tAbstractVVVVertexPtr  vertexGGG() const;
-
+  virtual tAbstractVVVVertexPtr  vertexGGG() const {
+    return GGGVertex_;
+  }
+  
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  inline tAbstractVVVVertexPtr  vertexWWW() const;
+  virtual tAbstractVVVVertexPtr  vertexWWW() const {
+    return WWWVertex_;
+  }
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  virtual inline tAbstractVVSVertexPtr  vertexWWH() const;
+  virtual tAbstractVVSVertexPtr  vertexWWH() const {
+    return WWHVertex_;
+  }
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  inline tAbstractVVVVVertexPtr vertexWWWW() const;
+  virtual tAbstractVVVVVertexPtr vertexWWWW() const {
+    return WWWWVertex_;
+  }
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  inline tAbstractVVVVVertexPtr vertexGGGG() const;
-
- /**
+  virtual tAbstractVVVVVertexPtr vertexGGGG() const {
+    return GGGGVertex_;
+  }
+  
+  /**
    * Pointer to the quartic gluon vertex
    */
-  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
+  virtual tAbstractVVSVertexPtr vertexHGG() const {
+    return HGGVertex_;
+  }
 
- /**
+  /**
    * Pointer to the quartic gluon vertex
    */
-  inline tAbstractVVSVertexPtr vertexHPP() const;
+  virtual tAbstractVVSVertexPtr vertexHPP() const {
+    return HPPVertex_;
+  }
+
+  /**
+   * Pointer to the triple Higgs vertex
+   */
+  virtual tAbstractSSSVertexPtr vertexHHH() const {
+    return HHHVertex_;
+  }
+
+  /**
+   * Pointer to the WWHH vertex
+   */
+  virtual tAbstractVVSSVertexPtr vertexWWHH() const {
+    return WWHHVertex_;
+  }
 
   /**
    *  Total number of vertices
    */
-  inline unsigned int numberOfVertices() const;
+  unsigned int numberOfVertices() const {
+    return vertexList_.size();
+  }
 
   /**
    * Access to a vertex from the list
    */
-  inline tVertexBasePtr vertex(unsigned int); 
+  tVertexBasePtr vertex(unsigned int ix) const {
+    return vertexList_[ix];
+  }
   //@}  
 
   /**
@@ -221,12 +282,16 @@ public:
    * @param scale The scale \f$q^2\f$.
    * @param part The ParticleData object for the particle
    */
-  inline Energy mass(Energy2 scale,tcPDPtr part) const;
+  Energy mass(Energy2 scale,tcPDPtr part) const {
+    return runningMass_->value(scale,part);
+  }
   
   /**
    * Return a pointer to the object handling the running mass.
    */
-  inline trunPtr massPtr() const;
+  trunPtr massPtr() const {
+    return runningMass_;
+  }
   
 protected:
   
@@ -260,7 +325,9 @@ protected:
   /**
    *  Add a vertex to the list
    */
-  inline void addVertex(VertexBasePtr);
+  void addVertex(VertexBasePtr in) {
+    vertexList_.push_back(in);
+  }
 
 private:
   
@@ -284,83 +351,92 @@ private:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr FFZVertex_;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  AbstractFFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr FFPVertex_;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  AbstractFFVVertexPtr _theFFGVertex;
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  AbstractFFVVertexPtr _theFFWVertex;
+  AbstractFFVVertexPtr FFWVertex_;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  AbstractFFSVertexPtr _theFFHVertex;
+  AbstractFFSVertexPtr FFHVertex_;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  AbstractVVSVertexPtr _theWWHVertex;
+  AbstractVVSVertexPtr WWHVertex_;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  AbstractVVVVertexPtr _theGGGVertex;
+  AbstractVVVVertexPtr GGGVertex_;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  AbstractVVVVertexPtr _theWWWVertex;
+  AbstractVVVVertexPtr WWWVertex_;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  AbstractVVVVVertexPtr _theGGGGVertex;
+  AbstractVVVVVertexPtr GGGGVertex_;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  AbstractVVVVVertexPtr _theWWWWVertex;
+  AbstractVVVVVertexPtr WWWWVertex_;
 
   /**
    * Pointer to higgs-gluon-gluon vertex
    */
-  AbstractVVSVertexPtr _theHGGVertex;
+  AbstractVVSVertexPtr HGGVertex_;
 
   /**
    * Pointer to higgs-gamma-gamma vertex
    */
-  AbstractVVSVertexPtr _theHPPVertex; 
+  AbstractVVSVertexPtr HPPVertex_; 
+
+  /**
+   * Pointer to triple Higgs vertex
+   */
+  AbstractSSSVertexPtr HHHVertex_; 
+
+  /**
+   * Pointer to  WWHH vertex
+   */
+  AbstractVVSSVertexPtr WWHHVertex_; 
   
   /**
    *  Full list of vertices as a vector to allow searching
    */
-  vector<VertexBasePtr> _vertexlist;
+  vector<VertexBasePtr> vertexList_;
   //@}
 
   /**
    * The running mass.
    */
-  runPtr _theRunningMass;
+  runPtr runningMass_;
 
   /**
    * Pointer to ModelGenerator Class
    */
-  ModelGeneratorPtr _theModelGenerator;
+  ModelGeneratorPtr modelGenerator_;
+
 };
 
-}  
-
-#include "StandardModel.icc"
+}
 
 namespace ThePEG {
 

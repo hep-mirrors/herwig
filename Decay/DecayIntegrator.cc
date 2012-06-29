@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayIntegrator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,6 +24,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Utilities/Debug.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "DecayPhaseSpaceMode.h"
@@ -46,13 +47,11 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter 
-     << _outputmodes;
+  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter;
 }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter
-     >> _outputmodes;
+  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -69,7 +68,6 @@ void DecayIntegrator::Init() {
     ("The DecayIntegrator class is a base decayer class "
      "including a multi-channel integrator.");
   
-
   static Parameter<DecayIntegrator,int> interfaceIteration
     ("Iteration",
      "Number of iterations for the initialization of the phase space",
@@ -107,22 +105,6 @@ void DecayIntegrator::Init() {
      "Yes",
      "include the intermediates",
      true);
-
-  static Switch<DecayIntegrator,bool> interfaceOutputModes
-    ("OutputModes",
-     "Output the phase space modes for debugging",
-     &DecayIntegrator::_outputmodes, false, false, false);
-  static SwitchOption interfaceOutputModesOutput
-    (interfaceOutputModes,
-     "Yes",
-     "Output the modes",
-     true);
-  static SwitchOption interfaceOutputModesNoOutput
-    (interfaceOutputModes,
-     "No",
-     "Don't output the modes",
-     false);
-  
 }
 
 // output info on the integrator
@@ -146,15 +128,16 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc,
 // initialization for a run
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
-  if(initialize()) CurrentGenerator::current().log() 
-    << "Start of the initialisation for " << this->name() << "\n";
+  if ( initialize() && Debug::level > 1 ) 
+    CurrentGenerator::current().log() << "Start of the initialisation for " 
+				      << this->name() << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix) {
     if(!_modes[ix]) continue;
     _modes[ix]->initrun();
     _imode=ix;
     _modes[ix]->initializePhaseSpace(initialize());
   }
-  if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
+  // CurrentGenerator::current().log() << *this << "\n";
 }
 
 // add a new mode
@@ -325,11 +308,11 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
 void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
-  output << "set " << name() << ":Iteration " << _niter << "\n";
-  output << "set " << name() << ":Ntry " << _ntry << "\n";
-  output << "set " << name() << ":Points " << _npoint << "\n";
+  output << "newdef " << name() << ":Iteration " << _niter << "\n";
+  output << "newdef " << name() << ":Ntry " << _ntry << "\n";
+  output << "newdef " << name() << ":Points " << _npoint << "\n";
   //if(_photongen){;}
-  output << "set " << name() << ":GenerateIntermediates " << _generateinter << " \n";
+  output << "newdef " << name() << ":GenerateIntermediates " << _generateinter << " \n";
   // footer for MySQL
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
@@ -377,14 +360,24 @@ InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2,
     << Exception::runerror;
 }
 
-bool DecayIntegrator::oneLoopVirtualME(double &, unsigned int ,
-				       const Particle &, 
-				       const ParticleVector &) {
-  return false;
+double DecayIntegrator::oneLoopVirtualME(unsigned int ,
+					 const Particle &, 
+					 const ParticleVector &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::oneLoopVirtualME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }
 
-bool DecayIntegrator::realEmmisionME(double &, unsigned int,
-				     const Particle &, 
-				     const ParticleVector &) {
-  return false;
+InvEnergy2 DecayIntegrator::realEmissionME(unsigned int,
+					   const Particle &, 
+					   ParticleVector &,
+					   unsigned int,
+					   double, double, 
+					   const LorentzRotation &,
+					   const LorentzRotation &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::realEmmisionME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }

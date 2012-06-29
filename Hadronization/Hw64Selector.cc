@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Hw64Selector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,22 +13,23 @@
 
 #include "Hw64Selector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-void Hw64Selector::persistentOutput(PersistentOStream & ) const {
+DescribeNoPIOClass<Hw64Selector,HadronSelector>
+describeHw64Selector("Herwig::Hw64Selector","");
+
+IBPtr Hw64Selector::clone() const {
+  return new_ptr(*this);
 }
 
-void Hw64Selector::persistentInput(PersistentIStream & , int) {
+IBPtr Hw64Selector::fullclone() const {
+  return new_ptr(*this);
 }
-
-ClassDescription<Hw64Selector> Hw64Selector::initHw64Selector;
-// Definition of the static class description member.
 
 void Hw64Selector::Init() {
 

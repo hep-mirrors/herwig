@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RunningMass.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,12 +24,12 @@ using namespace ThePEG;
 
 void RunningMass::persistentOutput(PersistentOStream & os) const {
   os << _theQCDOrder << _thePower << _theCoefficient << _theMaxFlav
-     << _theStandardModel << _lightOption;
+     << _theStandardModel << _lightOption << _heavyOption;
 }
 
 void RunningMass::persistentInput(PersistentIStream & is, int) {
   is >> _theQCDOrder >> _thePower >> _theCoefficient >> _theMaxFlav 
-     >> _theStandardModel >> _lightOption;
+     >> _theStandardModel >> _lightOption >> _heavyOption;
 }
 
 ClassDescription<RunningMass> RunningMass::initRunningMass;
@@ -68,26 +68,34 @@ void RunningMass::Init() {
      "Use the pole mass",
      1);
 
-  
+  static Switch<RunningMass,unsigned int> interfaceBottomCharmMass
+    ("TopBottomCharmMass",
+     "Option for using a running or pole mass for the top, bottom and charm quarks",
+     &RunningMass::_heavyOption, 0, false, false);
+  static SwitchOption interfaceBottomCharmMassRunning
+    (interfaceBottomCharmMass,
+     "Running",
+     "Use the running mass",
+     0);
+  static SwitchOption interfaceBottomCharmMassPole
+    (interfaceBottomCharmMass,
+     "Pole",
+     "Use the pole mass",
+     1);
+
 }
 // Return the masses used.
 vector<Energy> RunningMass::mass() const {
+  using Constants::pi;
   vector<Energy> masses;
-  Energy massf;
-  double coeff, as, pi=acos(-1.0);
-  for ( unsigned long f = 1; f <= _theMaxFlav; ++f ) {
+  for ( long f = 1; f <= long(_theMaxFlav); ++f ) {
     PDPtr p = getParticleData(f);
-    if(_theQCDOrder==2)
-      {coeff=_theCoefficient[f-1]+4./3./pi;}
-    else
-      {coeff=0.;}
-    if ( p ){massf=p->mass();}
-    else{massf=ZERO;}
-    as = _theStandardModel->alphaS(massf*massf);
-    if(as>0)
-      {massf = massf/(1.+coeff*as)/pow(as,_thePower[f-1]);}
-    else {
-      massf = ZERO;
+    Energy massf = p ? p->mass() : ZERO;
+    if((f<=3&&_lightOption==0) ||
+       (f>3 &&_heavyOption==0)) {
+      double coeff = _theQCDOrder==2 ? _theCoefficient[f-1]+4./3./pi : 0.;
+      double as = _theStandardModel->alphaS(massf*massf);
+      massf = as>0 ? massf/(1.+coeff*as)/pow(as,_thePower[f-1]) : ZERO;
     }
     masses.push_back(massf);
   }
@@ -100,7 +108,8 @@ Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
   unsigned int id=abs(part->id());
   // calculate the running mass
   if(id<=_theMaxFlav) {
-    if(id<=3&&_lightOption==1) {
+    if( (id <= 3 && _lightOption == 1 ) ||
+	(id >= 4 && _heavyOption == 1 ) ) {
       output= part->mass();
     }
     else {
@@ -121,10 +130,10 @@ Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
 }
 
 void RunningMass::doinit() {
+  using Constants::pi;
   _theStandardModel = generator()->standardModel();
   _theStandardModel->alphaSPtr()->init();
   // coefficients for the calculation
-  double pi= acos(-1.0);
   double c = 1./pi,cprime,b,bprime,power,coeff;
   for(unsigned int f=1;f<=_theMaxFlav;++f) {
     // the basic parameters for the running mass

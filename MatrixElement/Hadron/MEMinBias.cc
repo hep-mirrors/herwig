@@ -21,7 +21,8 @@ using namespace Herwig;
 
 void MEMinBias::getDiagrams() const {
   int maxflav(2);
-  tcPDPtr ph = getParticleData(ParticleID::gamma);
+  // Pomeron data
+  tcPDPtr pom = getParticleData(990);
 
   for ( int i = 1; i <= maxflav; ++i ) {
     for( int j=1; j <= i; ++j){
@@ -32,13 +33,11 @@ void MEMinBias::getDiagrams() const {
 
       // For each flavour we add:
       //qq -> qq
-      add(new_ptr((Tree2toNDiagram(3), q1, ph, q2, 1, q1, 2, q2, -1)));
+      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2, 1, q1, 2, q2, -1)));
       //qqb -> qqb
-      add(new_ptr((Tree2toNDiagram(3), q1, ph, q2b, 1, q1, 2, q2b, -2)));
-      //qbq -> qbq
-      //      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2, 1, q1b, 2, q2, -3)));
+      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
       //qbqb -> qbqb
-      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2b, 1, q1b, 2, q2b, -3)));
+      add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
     }
   }
 }
@@ -52,7 +51,7 @@ int MEMinBias::nDim() const {
 }
 
 void MEMinBias::setKinematics() {
-  MEBase::setKinematics(); // Always call the base class method first.
+  HwMEBase::setKinematics(); // Always call the base class method first.
 }
 
 bool MEMinBias::generateKinematics(const double *) {
@@ -110,7 +109,6 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
 
   static ColourLines qq("1 4, 3 5");
   static ColourLines qqb("1 4, -3 -5");
-  //  static ColourLines qbq("-1 -4, 3 5");
   static ColourLines qbqb("-1 -4, -3 -5");
 
   Selector<const ColourLines *> sel;
@@ -122,9 +120,6 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
   case -2:
     sel.insert(1.0, &qqb);
     break;
-    //  case -3:
-    // sel.insert(1.0, &qbq);
-    //break;
   case -3:
     sel.insert(1.0, &qbqb);
     break;

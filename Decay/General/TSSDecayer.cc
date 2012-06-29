@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TSSDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -71,7 +71,7 @@ double TSSDecayer::me2(const int , const Particle & inpart,
 			incoming,true,false);
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::
-	constructSpinInfo(decay[0],outgoing,true);
+	constructSpinInfo(decay[ix],outgoing,true);
     return 0.;
   }
   ScalarWaveFunction sca1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
@@ -94,13 +94,14 @@ Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
-    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, in);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1. - 4.*musq);
     double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -110,3 +111,4 @@ Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
+

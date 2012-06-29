@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2ZJet class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -25,7 +25,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2ZJetInterfaces "The interfaces"
  * defined for MEPP2ZJet.
  */
-class MEPP2ZJet: public MEBase {
+class MEPP2ZJet: public HwMEBase {
 
 public:
 
@@ -206,13 +206,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -290,12 +290,12 @@ private:
   /**
    *  Allowed flavours for the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Control over which Z decay modes to include
    */
-  unsigned int _zdec;
+  int _zdec;
 
   /**
    *  Which terms to include
@@ -343,7 +343,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2ZJet,1> {
   /** Typedef of the first base class of MEPP2ZJet. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

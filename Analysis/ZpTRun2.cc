@@ -20,7 +20,7 @@ inline IBPtr ZpTRun2::fullclone() const {
   return new_ptr(*this);
 }
 
-void ZpTRun2::analyze(tEventPtr event, long ieve, int loop, int state) {
+void ZpTRun2::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   tParticleVector outgoing = event->primaryCollision()->step(1)->getFinalState();
@@ -43,7 +43,7 @@ void ZpTRun2::analyze(tEventPtr event, long ieve, int loop, int state) {
   pZ.rescaleMass();
   if(pZ.mass()<40.*GeV||pZ.mass()>200.*GeV) return;
   Energy pT = pZ.perp();
-  if(pT>280.*GeV) return;
+  if(pT>260.*GeV) return;
   *_pt += pT/GeV;
 }
 
@@ -62,7 +62,7 @@ void ZpTRun2::dofinish() {
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
-  _pt->topdrawOutput(output,Frame|Ylog,"RED",
+  _pt->topdrawOutput(output,Frame|Errorbars|Ylog,"RED",
 		     "pt of Z (mass 40 GeV to 200 GeV) compared to D0 run II data", 
 		     "                           ",
 		     "1/SdS/dpT",
@@ -73,21 +73,29 @@ void ZpTRun2::dofinish() {
 
 void ZpTRun2::doinitrun() {
   AnalysisHandler::doinitrun();
+  //data from hep-ex 07120803
+  //normalised to one
   double abins[] ={ 0.0 , 2.5, 5.0, 7.5,10.0,
 		    12.5,15.0,17.5,20.0,22.5,
 		    25.0,27.5,30.0,40.0,50.0,
 		    60.0,70.0,80.0,90.0,100.0,
 		    140.0,180.0,220.0,260.0};
-  double adata[] ={0.53342E-01,0.81016E-01,0.63469E-01,0.44418E-01,0.31484E-01,
-		   0.24666E-01,0.18650E-01,0.14238E-01,0.10929E-01,0.94251E-02,
-		   0.69184E-02,0.55147E-02,0.39104E-02,0.21056E-02,0.11029E-02,
-		   0.73195E-03,0.42112E-03,0.25067E-03,0.16043E-03,0.60160E-04,
-		   0.11029E-04,0.30080E-05,0.71189E-06};
-  double aerror[]={0.27368E-02,0.22532E-02,0.17852E-02,0.14251E-02,0.11344E-02,
-		   0.92441E-03,0.78311E-03,0.70899E-03,0.50133E-03,0.44841E-03,
-		   0.36152E-03,0.31707E-03,0.14180E-03,0.92441E-04,0.58465E-04,
-		   0.44841E-04,0.36152E-04,0.22420E-04,0.18838E-04,0.58465E-05,
-		   0.21246E-05,0.10468E-05,0.61458E-06};
+  
+  double adata[] = { 0.0533419,	0.0810158,	0.0634688,	0.0444179,
+		     0.0314839,	0.0246659,	0.01865,	0.014238,
+		     0.010929,	0.00942508,	0.00691838,	0.00551469,
+		     0.00391039,	0.00210559,	0.0011029,	
+		     0.000731948,	0.000421119,	0.000250669,	
+		     0.00016043,	6.01598e-05,	1.1029e-05,	
+		     3.00799e-06,	7.11888e-07 };
+
+  double aerror[] = {0.00273679,	0.00225319,	0.0017852,	
+		     0.0014251, 0.0011344,	0.000924408,	0.000783108,	0.000708988,
+		     0.000501329,	0.000448409,	0.000361519,	0.000317069,
+		     0.0001418,	9.24408e-05,	5.84649e-05,	4.48409e-05,
+		     3.61519e-05,	2.24199e-05,	1.8838e-05,	5.84649e-06,
+		     2.12459e-06,	1.0468e-06,	6.14578e-07 };
+
   vector<double>  bins(abins ,abins +24);
   vector<double>  data(adata ,adata +23);
   vector<double> error(aerror,aerror+23);

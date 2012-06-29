@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralQQHiggs class.
+//
+#ifndef HERWIG_GeneralQQHiggs_FH
+#define HERWIG_GeneralQQHiggs_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class GeneralQQHiggs;
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralQQHiggs,GeneralQQHiggsPtr);
+
+}
+
+#endif

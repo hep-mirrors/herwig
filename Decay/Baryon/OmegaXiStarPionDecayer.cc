@@ -18,11 +18,11 @@ OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()  {
   idin_  = 3334;
   idout_ = 3324;
   // the couplings from the paper
-  Acomm_ = 20.91e-8;
-  AP_    =- 9.20e-8;
-  AS_    =- 6.32e-8;
-  BP_    = 230.1e-8;
-  BS_    =-100.8e-8;
+  Acomm_ =  20.91e-8;
+  AP_    =  -9.20e-8;
+  AS_    =  -6.32e-8;
+  BP_    =  230.1e-8;
+  BS_    = -100.8e-8;
   // maximum weight for the decay
   wgtmax_=0.0032;
   // intermediates
@@ -157,14 +157,14 @@ threeHalfThreeHalfScalarCoupling(int,Energy,Energy,Energy,
 void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":Acomm " << Acomm_ << "\n";
-  output << "set " << name() << ":AP " << AP_ << "\n";
-  output << "set " << name() << ":AS " << AS_ << "\n";
-  output << "set " << name() << ":BP " << BP_ << "\n";
-  output << "set " << name() << ":BS " << BS_ << "\n";
-  output << "set " << name() << ":MaximumWeight " << wgtmax_ << "\n";
-  output << "set " << name() << ":Incoming " << idin_ << "\n";
-  output << "set " << name() << ":Outgoing " << idout_ << "\n";
+  output << "newdef " << name() << ":Acomm " << Acomm_ << "\n";
+  output << "newdef " << name() << ":AP " << AP_ << "\n";
+  output << "newdef " << name() << ":AS " << AS_ << "\n";
+  output << "newdef " << name() << ":BP " << BP_ << "\n";
+  output << "newdef " << name() << ":BS " << BS_ << "\n";
+  output << "newdef " << name() << ":MaximumWeight " << wgtmax_ << "\n";
+  output << "newdef " << name() << ":Incoming " << idin_ << "\n";
+  output << "newdef " << name() << ":Outgoing " << idout_ << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

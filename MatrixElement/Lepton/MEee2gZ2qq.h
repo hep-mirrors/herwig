@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2qq.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2qq class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -34,15 +34,60 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2qqInterfaces "The interfaces"
  * defined for MEee2gZ2qq.
  */
-class MEee2gZ2qq: public HwME2to2Base {
+class MEee2gZ2qq: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
+  MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1), pTmin_(GeV),
+		 preFactor_(6.)
   {}
+
+  /**
+   *  Members for hard corrections to the emission of QCD radiation 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Has an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return true;}
+
+  /**
+   *  Initialize the ME correction
+   */
+  virtual void initializeMECorrection(ShowerTreePtr, double &,
+				      double & );
+
+  /**
+   *  Apply the hard matrix element correction to a given hard process or decay
+   */
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+
+  /**
+   * Apply the soft matrix element correction
+   * @param initial The particle from the hard process which started the 
+   * shower
+   * @param parent The initial particle in the current branching
+   * @param br The branching struct
+   * @return If true the emission should be vetoed
+   */
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
+				     ShowerParticlePtr parent,
+				     Branching br);
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr,
+				      vector<ShowerInteraction::Type>);
+  //@}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -138,13 +183,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -178,7 +223,17 @@ protected:
   virtual IVector getReferences();
   //@}
 
-private:
+protected:
+
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q\f$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param first Whether or not to calculate the spin correlations
+   */  
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta,
+	      bool first) const;
 
   /**
    * Member to calculate the matrix element
@@ -197,14 +252,97 @@ private:
 				     double & me,
 				     double & cont,
 				     double & BW ) const;
-  
+
+  /**
+   *  The ratio of the matrix element for one additional jet over the
+   * leading order result. In practice
+   * \f[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}|\right)}\f]
+   * is returned where \f$\|\overline{\mathcal{M}}|^2\f$ is 
+   * the spin and colour summed/averaged matrix element.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param iemitter Whether the quark or antiquark is regardede as the emitter
+   * @param inter The type of interaction
+   * @param subtract Whether or not to subtract the relevant dipole term
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemitter,
+		 ShowerInteraction::Type inter,
+		 bool subtract =false) const;
+
+  /**
+   *  Calculate the matrix element for \f$e^-e^-\to q \bar q g\f$.
+   * @param partons The incoming and outgoing particles
+   * @param momenta The momenta of the incoming and outgoing particles
+   * @param inter The type of interaction
+   */ 
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction::Type inter) const;
+
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   *  Generate the momenta for a hard configuration
    */
-  static ClassDescription<MEee2gZ2qq> initMEee2gZ2qq;
+  pair<Energy,ShowerInteraction::Type> 
+  generateHard(ShowerTreePtr tree, 
+	       vector<Lorentz5Momentum> & emission,
+	       unsigned int & iemit, unsigned int & ispect,
+	       bool applyVeto,
+	       vector<ShowerInteraction::Type>);
+
+  /**
+   *  Calculate \f$\tilde{\kappa}\f$.
+   */
+  double getKfromX(double, double);
+
+  /**
+   *  Vector and axial vector parts of the matrix element
+   */
+  //@{
+  /**
+   *  Vector part of the matrix element
+   */
+  double MEV(double, double);
+
+  /**
+   * The matrix element, given \f$x_1\f$, \f$x_2\f$.
+   * @param x1 \f$x_1\f$
+   * @param x2 \f$x_2\f$
+   */
+  double PS(double x1, double x2);
+  //@}
+
+protected:
+  
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex() const {return FFZVertex_;}
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex() const {return FFPVertex_;}
+  
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0() const {return Z0_;}
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma() const {return gamma_;}
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon() const {return gluon_;}
+
+private:
 
   /**
    * The assignment operator is private and must never be called.
@@ -215,72 +353,138 @@ private:
 private:
 
   /**
-   *  Pointer to the fermion-antifermion Z vertex
+   *  Parameters controlling the loead-order process
    */
-  AbstractFFVVertexPtr _theFFZVertex;
-  
-  /**
-   *  Pointer to the fermion-antifermion photon vertex
-   */
-  AbstractFFVVertexPtr _theFFPVertex;
-  
-  /**
-   *  Pointer to the particle data object for the Z
-   */
-  PDPtr _Z0;
-
-  /**
-   *  Pointer to the particle data object for the photon
-   */
-  PDPtr _gamma;
-
+  //@{
   /**
    *  The minimum PDG of the quarks to be produced
    */
-   unsigned int _minflav;
+   int minflav_;
 
   /**
    *  The maximum PDG of the quarks to be produced
    */
-   unsigned int _maxflav;
+   int maxflav_;
 
   /**
    *  Option for the treatment of the top quark mass
    */
-  unsigned int _massopt;
+  unsigned int massopt_;
+  //@}
+
+  /**
+   *  Pointers to the vertices
+   */
+  //@{
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  AbstractFFVVertexPtr FFZVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   *  Pointer to the fermion-antifermion photon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
+  //@}
+
+  /**
+   *  Pointer to the ParticleData objects
+   */
+  //@{
+  /**
+   *  Pointer to the particle data object for the Z
+   */
+  PDPtr Z0_;
+
+  /**
+   *  Pointer to the particle data object for the photon
+   */
+  PDPtr gamma_;
+
+  /**
+   *  Pointer to the particle data object for the gluon
+   */
+  PDPtr gluon_;
+  //@}
+
+  /**
+   * CM energy 
+   */
+  Energy d_Q_;
+
+  /**
+   *  Quark mass
+   */
+  Energy d_m_;
+
+  /**
+   * The rho parameter 
+   */
+  double d_rho_;
+
+  /**
+   * The v parameter
+   */
+  double d_v_;
+
+  /**
+   * The initial kappa-tilde values for radiation from the quark
+   */
+  double d_kt1_;
+
+  /**
+   * The initial kappa-tilde values for radiation from the antiquark
+   */
+  double d_kt2_;
+
+  /**
+   *  Cut-off parameter
+   */
+  static const double EPS_;
+
+  /**
+   *  Pointer to the strong coupling
+   */
+  ShowerAlphaPtr alphaQCD_;
+
+  /**
+   *  Pointer to the EM coupling
+   */
+  ShowerAlphaPtr alphaQED_;
+
+private:
+
+  /**
+   *  Variables for the POWHEG style corrections
+   */
+  //@{
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  /**
+   *  Overestimate for the prefactor
+   */
+  double preFactor_;
+
+  /**
+   *  ParticleData objects for the partons
+   */
+  vector<cPDPtr> partons_;
+
+  /**
+   *  Momenta of the leading-order partons
+   */
+  vector<Lorentz5Momentum> loMomenta_;
+  //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEee2gZ2qq. */
-template <>
-struct BaseClassTrait<Herwig::MEee2gZ2qq,1> {
-  /** Typedef of the first base class of MEee2gZ2qq. */
-  typedef Herwig::HwME2to2Base NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEee2gZ2qq class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEee2gZ2qq>
-  : public ClassTraitsBase<Herwig::MEee2gZ2qq> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2gZ2qq"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEee2gZ2qq class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwMELepton.so"; }
-};
-
-/** @endcond */
 
 }
 

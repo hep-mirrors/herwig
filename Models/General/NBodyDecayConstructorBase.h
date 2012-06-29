@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // NBodyDecayConstructorBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -60,7 +60,7 @@ public:
   /**
    * The default constructor.
    */
-  inline NBodyDecayConstructorBase() : 
+  NBodyDecayConstructorBase() : 
     _init(true),_iteration(1), _points(1000), _info(false), 
     _createmodes(true) {}
 
@@ -70,12 +70,17 @@ public:
    * @param particles vector of ParticleData pointers containing 
    * particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & particles) = 0;
+  virtual void DecayList(const set<PDPtr> & particles) = 0;
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const = 0;
 
   /**
    * Set the pointer to the DecayConstrcutor
    */
-  inline void decayConstructor(tDecayConstructorPtr d) { 
+  void decayConstructor(tDecayConstructorPtr d) { 
     _decayConstructor = d;
   }
 
@@ -100,32 +105,32 @@ protected:
   /**
    * Whether to initialize decayers or not
    */
-  inline bool initialize() const { return _init; }
+  bool initialize() const { return _init; }
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  inline int iteration() const { return _iteration; }
+  int iteration() const { return _iteration; }
 
   /**
    * Number of points to do in initialization
    */
-  inline int points() const { return _points; }
+  int points() const { return _points; }
 
   /**
    * Whether to output information on the decayers 
    */
-  inline bool info() const { return _info; }
+  bool info() const { return _info; }
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  inline bool createDecayModes() const { return _createmodes; }
+  bool createDecayModes() const { return _createmodes; }
 
   /**
    * Get the pointer to the DecayConstructor object
    */
-  inline tDecayConstructorPtr decayConstructor() const { 
+  tDecayConstructorPtr decayConstructor() const { 
     return _decayConstructor;
   }
 
@@ -206,7 +211,16 @@ private:
 
   /** An Exception class that can be used by all inheriting classes to
    * indicate a setup problem. */
-  class NBodyDecayConstructorError : public Exception {};
+  class NBodyDecayConstructorError : public Exception {
+
+  public:
+
+    NBodyDecayConstructorError() : Exception() {}
+    
+    NBodyDecayConstructorError(const string & str,
+			       Severity sev) : Exception(str,sev)
+    {}
+  };
 
 }
 

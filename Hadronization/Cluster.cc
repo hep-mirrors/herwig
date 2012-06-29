@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Cluster.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,32 +14,32 @@
 #include "Cluster.h"
 #include <ThePEG/Repository/UseRandom.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
-#include <cassert>
-#include <ThePEG/EventRecord/Step.h>
-#include <ThePEG/EventRecord/Event.h>
-#include <ThePEG/EventRecord/ColourLine.h>
-#include <ThePEG/Utilities/Rebinder.h>
-#include <ThePEG/Config/algorithm.h>
-#include <ThePEG/EventRecord/ParticleTraits.h>
-#include <ThePEG/Persistency/PersistentOStream.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include "ClusterHadronizationHandler.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
-// using namespace ThePEG;
+
+DescribeNoPIOClass<Cluster,Particle>
+describeCluster("Herwig::Cluster","");
+
+PPtr Cluster::clone() const {
+  return new_ptr(*this);
+}
+  
+PPtr Cluster::fullclone() const {
+  return clone();
+}
 
 tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
 Energy2 Cluster::_mg2 = ZERO;
 
-ClassDescription<Cluster> Cluster::initCluster;
-
 Cluster::Cluster() 
-  : Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Cluster)), 
+  : Particle(CurrentGenerator::current().
+	     getParticleData(long(ParticleID::Cluster))), 
     _isAvailable(true),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -48,11 +48,13 @@ Cluster::Cluster()
     _id(0) {}  
 
 Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
-  : Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Cluster)), _isAvailable(true) 
+  : Particle(CurrentGenerator::current().
+	     getParticleData(long(ParticleID::Cluster))),
+    _isAvailable(true), _hasReshuffled(false)
 {
   if(!dataPtr()) {
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "
-	 << "without ParticleData for id " << ExtraParticleID::Cluster << '\n';
+	 << "without ParticleData for id " << ParticleID::Cluster << '\n';
   }
   _component.push_back(new_ptr(Particle(*p1))); 
   _component.push_back(new_ptr(Particle(*p2))); 
@@ -87,7 +89,7 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
 Cluster::Cluster(tcEventPDPtr x) 
   : Particle(x),
     _isAvailable(false),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -98,7 +100,7 @@ Cluster::Cluster(tcEventPDPtr x)
 Cluster::Cluster(const Particle &x) 
   : Particle(x),
     _isAvailable(false),
-    _reshufflingPartner(),
+    _hasReshuffled(false),
     _component(),
     _original(),
     _isBeamRemnant(),
@@ -143,15 +145,15 @@ void Cluster::calculateX() {
     Lorentz5Momentum p1 = _component[0]->momentum();
     LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
       hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
-    if ( abs( displace1.mag() ) > dmax ) {
-      displace1 *= dmax / abs( displace1.mag() );
+    if ( abs( displace1.m() ) > dmax ) {
+      displace1 *= dmax / abs( displace1.m() );
     }
     LorentzPoint pos2 = _component[1]->vertex();
     Lorentz5Momentum p2 = _component[1]->momentum();
     LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
       hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
-    if ( abs( displace2.mag() ) > dmax ) {
-      displace2 *= dmax / abs( displace2.mag() );
+    if ( abs( displace2.m() ) > dmax ) {
+      displace2 *= dmax / abs( displace2.m() );
     }
     double s1 = 0.0, s2 = 0.0;
     Lorentz5Momentum pcl = p1 + p2;
@@ -214,13 +216,19 @@ tPPtr Cluster::particle(int i) const {
   return (i < _numComp) ? _component[i] : PPtr(); 
 }
 
-bool Cluster::isPerturbative(int i) const { 
-  return _isPerturbative[i]; 
+tPPtr Cluster::colParticle(bool anti) const {
+  if ( _numComp != 2 ) return PPtr();
+  if ( _original[0]->hasColour(anti) ) return _original[0];
+  else if ( _original[1]->hasColour(anti) ) return _original[1];
+  else return PPtr();
 }
 
-void Cluster::setPerturbative(int i, bool b) { 
-  if(i < _numComp)
-    _isPerturbative[i] = b; 
+tPPtr Cluster::antiColParticle() const {
+  return colParticle(true);
+}
+
+bool Cluster::isPerturbative(int i) const { 
+  return _isPerturbative[i]; 
 }
 
 bool Cluster::isBeamRemnant(int i) const { 

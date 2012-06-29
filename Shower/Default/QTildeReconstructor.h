@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeReconstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,6 +12,7 @@
 // This is the declaration of the QTildeReconstructor class.
 //
 
+#include "ThePEG/EventRecord/ColourLine.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "ThePEG/Repository/UseRandom.h"
 
@@ -78,7 +79,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -94,7 +95,8 @@ public:
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
-				   pair<Energy,double> > & pt) const;
+				   pair<Energy,double> > & pt,
+				   ShowerInteraction::Type type) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -104,7 +106,8 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
+  virtual bool reconstructDecayJets(ShowerTreePtr decay,
+				    ShowerInteraction::Type type) const;
   //@}
 
   /**
@@ -120,14 +123,16 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructDecayJets(HardTreePtr, cEvolverPtr,
+				    ShowerInteraction::Type) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructHardJets(HardTreePtr, cEvolverPtr,
+				   ShowerInteraction::Type) const;
   //@}
 
 public:
@@ -196,6 +201,137 @@ protected:
   //@}
 
   /**
+   *  Methods to perform the reconstruction of various types of colour
+   *  singlet systems
+   */
+  //@{
+  /**
+   *  Perform the reconstruction of a system with one incoming and at least one
+   *  outgoing particle
+   */
+  void reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
+
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructFinalStateSystem(bool applyBoost, 
+				   const LorentzRotation & toRest,
+				   const LorentzRotation & fromRest, 
+				   vector<ShowerProgenitorPtr>) const;
+
+  /**
+   *  Reconstruction of a general coloured system
+   */
+  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
+
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructInitialInitialSystem(bool & applyBoost,
+				       LorentzRotation &   toRest,
+				       LorentzRotation & fromRest,
+				       vector<ShowerProgenitorPtr>) const;
+  //@}
+
+  /**
+   *  Methods to perform the inverse reconstruction of various types of
+   *  colour singlet systems
+   */
+  //@{
+  /**
+   *  Perform the inverse reconstruction of a system with only final-state
+   *  particles
+   */
+  void deconstructFinalStateSystem(const LorentzRotation &   toRest,
+				   const LorentzRotation & fromRest,
+				   HardTreePtr,
+				   vector<HardBranchingPtr>,
+				   cEvolverPtr,
+				   ShowerInteraction::Type) const;
+  
+  /**
+   *  Perform the inverse reconstruction of a system with only initial-state
+   *  particles
+   */
+  void deconstructInitialInitialSystem(bool & applyBoost,
+				       LorentzRotation &   toRest,
+				       LorentzRotation & fromRest,
+				       HardTreePtr,
+				       vector<HardBranchingPtr>,
+				       ShowerInteraction::Type ) const;
+
+  /**
+   *  Perform the inverse reconstruction of a system with only initial-state
+   *  particles
+   */
+  void deconstructInitialFinalSystem(HardTreePtr,
+				     vector<HardBranchingPtr>,
+				     cEvolverPtr,
+				     ShowerInteraction::Type ) const;
+
+  bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
+				ShowerInteraction::Type) const;
+  //@}
+
+  /**
+   *  Various methods for the Lorentz transforms needed to do the 
+   *  rescalings
+   */
+  //@{
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoost(const double k, 
+			     const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldp) const;
+  
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldq) const;
+  
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoostZ(const Lorentz5Momentum & newq, 
+			      const Lorentz5Momentum & oldq) const;
+  
+  /**
+   *  Recursively boost the initial-state shower
+   * @param p The particle
+   * @param bv The boost
+   * @param parent The parent of the chain
+   */
+  void boostChain(tPPtr p, const LorentzRotation & bv, tPPtr & parent) const;
+
+  /**
+   * Given a 5-momentum and a scale factor, the method returns the
+   * Lorentz boost that transforms the 3-vector vec{momentum} --->
+   * k*vec{momentum}. The method returns the null boost in the case no
+   * solution exists. This will only work in the case where the
+   * outgoing jet-momenta are parallel to the momenta of the particles
+   * leaving the hard subprocess. 
+   */
+  Boost solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
+			  const Lorentz5Momentum & oldp);
+
+  /**
+   * Compute boost parameter along z axis to get (Ep, any perp, qp)
+   * from (E, same perp, q).
+   */
+  double getBeta(const double E, const double q, 
+		 const double Ep, const double qp) const
+  {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
+  //@}
+
+  /**
+   *  Methods to calculate the various scaling factors
+   */
+  //@{
+  /**
    * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
    * ones before showering and the masses are reconstructed after the showering,
    * this method returns the overall scaling factor for the 3-momenta of the
@@ -232,7 +368,6 @@ protected:
 			 double & k2,
 			 Lorentz5Momentum & qt) const;
 
-
   /**
    * Compute the momentum rescaling factor needed to invert the shower
    * @param pout The momenta of the outgoing particles
@@ -243,6 +378,21 @@ protected:
 				vector<Energy> mon,Energy roots) const;
 
   /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   * @param ppartner The momentum of the colour partner
+   * @param mbar The mass of the decaying particle
+   * @param k1 The first scaling factor
+   * @param k2 The second scaling factor
+   */
+  bool inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
+				   vector<Energy> mon,Energy roots,
+				   Lorentz5Momentum ppartner, Energy mbar,
+				   double & k1, double & k2) const;
+
+  /**
    * Check the rescaling conserves momentum
    * @param k The rescaling
    * @param root_s The centre-of-mass energy
@@ -250,106 +400,37 @@ protected:
    */
   Energy momConsEq(const double & k, const Energy & root_s,
 			  const JetKinVect & jets) const;
-
-  /**
-   * Compute the boost to get from the the old momentum to the new 
-   */
-  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
-			     const Lorentz5Momentum & oldp) const;
-  
-  /**
-   * Compute the boost to get from the the old momentum to the new 
-   */
-  LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
-			     const Lorentz5Momentum & oldq) const;
-  
-  /**
-   * Compute the boost to get from the the old momentum to the new 
-   */
-  LorentzRotation solveBoostZ(const Lorentz5Momentum & newq, 
-			      const Lorentz5Momentum & oldq) const;
-  
-  /**
-   *  Recursively boost the initial-state shower
-   * @param p The particle
-   * @param bv The boost
-   * @param parent The parent of the chain
-   */
-  inline void boostChain(tPPtr p, const LorentzRotation & bv, tPPtr & parent) const;
-
-  /**
-   * Given a 5-momentum and a scale factor, the method returns the
-   * Lorentz boost that transforms the 3-vector vec{momentum} --->
-   * k*vec{momentum}. The method returns the null boost in the case no
-   * solution exists. This will only work in the case where the
-   * outgoing jet-momenta are parallel to the momenta of the particles
-   * leaving the hard subprocess. 
-   */
-  Boost solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
-			  const Lorentz5Momentum & oldp);
-
-  /**
-   * Compute boost parameter along z axis to get (Ep, any perp, qp)
-   * from (E, same perp, q).
-   */
-  inline double getBeta(const double E, const double q, 
-			const double Ep, const double qp) const
-  {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
+  //@}
 
   /**
    *  Find the colour partners of a particle to identify the colour singlet
-   *  systems.
+   *  systems for the reconstruction.
    */
   vector<unsigned int> findPartners(unsigned int ,vector<ShowerProgenitorPtr>) const;
 
   /**
-   *  Perform the reconstruction of a system with one incoming and at least one
-   *  outgoing particle
+   *  Find the colour partners for as branching  to identify the colour singlet
+   *  systems for the inverse reconstruction.
    */
-  void reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
-
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest, 
-				   vector<ShowerProgenitorPtr>) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
-				   HardTreePtr,
-				   vector<HardBranchingPtr>,
-				   EvolverPtr ) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructInitialInitialSystem(bool & applyBoost,
-				       Boost & toRest, Boost & fromRest,
-				       vector<ShowerProgenitorPtr>) const;
-  
-  /**
-   *  Perform the reconstruction of a system with only final-state
-   *  particles
-   */
-  void reconstructInitialInitialShower(bool & applyBoost,
-				       Boost & toRest, Boost & fromRest,
-				       HardTreePtr,
-				       vector<HardBranchingPtr> ) const;
-
-  /**
-   *  Reconstruction of a general coloured system
-   */
-  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
+  void findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
+		    const set<HardBranchingPtr> & branchings,
+		    vector<HardBranchingPtr> & jets) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
+
+  /**
+   *  Apply a transform to the particle and any child, including child ShowerTree
+   *  objects
+   * @param particle The particle
+   * @param r The Lorentz transformation
+   * @param match Whether or not to look at children etc
+   * @param original The original particle
+   */
+  void deepTransform(PPtr particle,const LorentzRotation & r,
+		     bool match=true,PPtr original=PPtr()) const;
 
 protected:
 
@@ -359,13 +440,25 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -385,9 +478,58 @@ private:
 private:
 
   /**
+   * Return colour line progenitor pointer for ShowerProgenitor
+   */ 
+   Ptr<ThePEG::ColourLine>::transient_pointer
+   CL(ShowerProgenitorPtr a, unsigned int index=0) const {
+    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->colourLines()[index]);
+  }
+
+  /**
+   * Return progenitor colour line size for ShowerProgenitor
+   */
+  unsigned int CLSIZE(ShowerProgenitorPtr a) const {
+    return a->progenitor()->colourInfo()->colourLines().size();
+  }
+
+  /**
+   * Return anti-colour line progenitor pointer for ShowerProgenitor
+   */
+  Ptr<ThePEG::ColourLine>::transient_pointer 
+  ACL(ShowerProgenitorPtr a, unsigned int index=0) const {
+    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->antiColourLines()[index]);
+  }
+
+  /**
+   * Return progenitor anti-colour line size for ShowerProgenitor
+   */
+  unsigned int ACLSIZE(ShowerProgenitorPtr a) const {
+    return a->progenitor()->colourInfo()->antiColourLines().size();
+  }
+
+  /**
+   * Return colour line size
+   */
+  unsigned int CLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
+    return (*a)->branchingParticle()->colourInfo()->colourLines().size();
+  }  
+
+  /**
+   * Return anti-colour line size
+   */
+  unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
+    return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
+  }
+
+  /**
    *  Option for handling the reconstruction
    */
   unsigned int _reconopt;
+
+  /**
+   *  Option for the boost for initial-initial reconstruction
+   */
+  unsigned int _initialBoost;
 
   /**
    * Minimum invariant mass for initial-final dipoles to allow the
@@ -404,6 +546,23 @@ private:
    * Storage of the intrinsic \f$p_T\f$
    */
   mutable map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
+
+  /**
+   *  Current ShowerTree
+   */
+  mutable tShowerTreePtr _currentTree;
+
+  /**
+   * Particles which shouldn't have their masses rescaled as
+   * vector for the interface
+   */
+  PDVector _noRescaleVector;
+
+  /**
+   * Particles which shouldn't have their masses rescaled as
+   * set for quick access
+   */
+  set<cPDPtr> _noRescale;
 };
 
 }

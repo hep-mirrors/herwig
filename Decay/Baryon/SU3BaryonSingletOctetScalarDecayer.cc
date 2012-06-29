@@ -220,7 +220,6 @@ void SU3BaryonSingletOctetScalarDecayer::Init() {
 void SU3BaryonSingletOctetScalarDecayer::
 halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 		       Complex& A, Complex& B) const {
-  useMe();
   if(_parity) {
     A=0.;
     B=_prefactor[imode]*(m0+m1);
@@ -235,7 +234,6 @@ halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonSingletOctetScalarDecayer::
 threeHalfHalfScalarCoupling(int imode,Energy m0, Energy m1,Energy,
 			    Complex& A, Complex& B) const {
-  useMe();
   if(_parity) {
     A=_prefactor[imode]*(m0+m1);
     B=0.;
@@ -297,18 +295,18 @@ void SU3BaryonSingletOctetScalarDecayer::dataBaseOutput(ofstream & output,
 							bool header) const {
   if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << name() << ":Coupling " << _c << "\n";
-  output << "set " << name() << ":Parity " << _parity<< "\n";
-  output << "set " << name() << ":Fpi " << _fpi/MeV << "\n";
-  output << "set " << name() << ":Proton " << _proton << "\n";
-  output << "set " << name() << ":Neutron " << _neutron << "\n";
-  output << "set " << name() << ":Sigma+ " << _sigmap << "\n";
-  output << "set " << name() << ":Sigma0 " << _sigma0 << "\n";
-  output << "set " << name() << ":Sigma- " << _sigmam << "\n";
-  output << "set " << name() << ":Lambda " << _lambda << "\n";
-  output << "set " << name() << ":Xi0 " << _xi0 << "\n";
-  output << "set " << name() << ":Xi- " << _xim << "\n"; 
-  output << "set " << name() << ":ExcitedLambda " << _elambda << "\n";
+  output << "newdef " << name() << ":Coupling " << _c << "\n";
+  output << "newdef " << name() << ":Parity " << _parity<< "\n";
+  output << "newdef " << name() << ":Fpi " << _fpi/MeV << "\n";
+  output << "newdef " << name() << ":Proton " << _proton << "\n";
+  output << "newdef " << name() << ":Neutron " << _neutron << "\n";
+  output << "newdef " << name() << ":Sigma+ " << _sigmap << "\n";
+  output << "newdef " << name() << ":Sigma0 " << _sigma0 << "\n";
+  output << "newdef " << name() << ":Sigma- " << _sigmam << "\n";
+  output << "newdef " << name() << ":Lambda " << _lambda << "\n";
+  output << "newdef " << name() << ":Xi0 " << _xi0 << "\n";
+  output << "newdef " << name() << ":Xi- " << _xim << "\n"; 
+  output << "newdef " << name() << ":ExcitedLambda " << _elambda << "\n";
   for(unsigned int ix=0;ix<_maxweight.size();++ix) 
     output << "insert " << name() << ":MaxWeight " << ix << " " 
 	   << _maxweight[ix] << "\n";

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SFFDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -111,11 +111,12 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
-				     inpart.first, 3);
+				     in);
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
-    double c2 = norm(_perturbativeVertex->getNorm());
-    Complex al(_perturbativeVertex->getLeft()), ar(_perturbativeVertex->getRight());
+    double c2 = norm(_perturbativeVertex->norm());
+    Complex al(_perturbativeVertex->left()), ar(_perturbativeVertex->right());
     double me2 = -c2*( (norm(al) + norm(ar))*( sqr(mu1) + sqr(mu2) - 1.)
 		       + 2.*(ar*conj(al) + al*conj(ar)).real()*mu1*mu2 );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,

@@ -10,14 +10,12 @@
 namespace Herwig {
 
 class HardTree;
-class HardBranching;
 
 }
 
 namespace ThePEG {
 
 ThePEG_DECLARE_POINTERS(Herwig::HardTree     ,HardTreePtr     );
-ThePEG_DECLARE_POINTERS(Herwig::HardBranching,HardBranchingPtr);
 
 }
 

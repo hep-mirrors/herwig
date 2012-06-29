@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GSLIntegrator.tcc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -38,18 +38,33 @@ namespace {
 namespace Herwig {
 using namespace ThePEG;
 
+
 template <class T>
 inline typename BinaryOpTraits<typename T::ValType,
 			       typename T::ArgType>::MulT
 GSLIntegrator::value(const T & fn, 
 		     const typename T::ArgType lower, 
 		     const typename T::ArgType upper) const {
+  typename BinaryOpTraits<typename T::ValType,
+			       typename T::ArgType>::MulT error;
+  return value(fn,lower,upper,error);
+}
+
+
+template <class T>
+inline typename BinaryOpTraits<typename T::ValType,
+			       typename T::ArgType>::MulT
+GSLIntegrator::value(const T & fn, 
+		     const typename T::ArgType lower, 
+		     const typename T::ArgType upper,
+		     typename BinaryOpTraits<typename T::ValType,
+		     typename T::ArgType>::MulT & error) const {
   typedef typename T::ValType ValType;
   typedef typename T::ArgType ArgType;
   const ValType ValUnit = TypeTraits<ValType>::baseunit;
   const ArgType ArgUnit = TypeTraits<ArgType>::baseunit;
   
-  double result(0.), error(0.);
+  double result(0.), error2(0.);
   
   param<T> parameters = { fn };
   gsl_function integrationFunction;
@@ -63,7 +78,7 @@ GSLIntegrator::value(const T & fn,
   gsl_error_handler_t * oldhandler = gsl_set_error_handler_off();
   int status = gsl_integration_qags(&integrationFunction, lower/ArgUnit, 
 				    upper/ArgUnit, _abserr, _relerr, _nbins, 
-				    workspace, &result, &error);
+				    workspace, &result, &error2);
   if( status > 0 ) {
     CurrentGenerator::log() << "An error occurred in the GSL "
       "integration subroutine:\n";
@@ -94,6 +109,7 @@ GSLIntegrator::value(const T & fn,
   gsl_integration_workspace_free(workspace);
 
   //fix units and return
+  error = error2* ValUnit * ArgUnit;
   return result * ValUnit * ArgUnit;
 }
 

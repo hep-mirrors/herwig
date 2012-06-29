@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ScalarMesonFactorizedDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
 
 ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer() 
 // default values of the couplings (taken from ZPC34, 103)
-  : _GF(1.16639E-5/GeV2), _a1b(1.10), _a2b(-0.24), _a1c(1.30), _a2c(-0.55) { 
+  : _a1b(1.10), _a2b(-0.24), _a1c(1.30), _a2c(-0.55) { 
   // intermediates
   generateIntermediates(true);
 }
@@ -144,7 +144,7 @@ void ScalarMesonFactorizedDecayer::doinit() {
       if(particles[ix].empty()) break;
       findModes(ix,particles,modeloc,modecc);
       // if more than three particles only allow one diagram
-      if(particles[ix].size()>3&&modeloc.size()!=0){break;}
+      if ( particles[ix].size()>3 && !modeloc.empty() ) break;
       // create the mode and set the particles as for the first instance
       mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
       channel = new_ptr(DecayPhaseSpaceChannel(mode));
@@ -404,7 +404,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _ckm << ounit(_GF,1/GeV2)
+  os << _current << _form << _ckm 
      << _a1b << _a2b << _a1c << _a2c 
      << _currentmapA << _currentmapB 
      << _formmapA << _formmapB << _formpart << _wgtloc 
@@ -412,7 +412,7 @@ void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) cons
 }
 
 void ScalarMesonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _ckm >> iunit(_GF ,1/GeV2)
+  is >> _current >> _form >> _ckm 
      >> _a1b >> _a2b >> _a1c >> _a2c 
      >> _currentmapA >> _currentmapB 
      >> _formmapA >> _formmapB >> _formpart >> _wgtloc
@@ -438,13 +438,6 @@ void ScalarMesonFactorizedDecayer::Init() {
     ("FormFactors",
      "A vector of references to the form-factors",
      &ScalarMesonFactorizedDecayer::_form, -1, false, false, true, false, false);
-
-  static Parameter<ScalarMesonFactorizedDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &ScalarMesonFactorizedDecayer::_GF, 
-     1./GeV2, 1.16639E-5/GeV2, ZERO, 1.0e-4/GeV2,
-     false, false, false);
 
   static Parameter<ScalarMesonFactorizedDecayer,double> interfacea1Bottom
     ("a1Bottom",
@@ -493,7 +486,6 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   // initialisation
   if(meopt==Initialize) {
     ScalarWaveFunction::
@@ -644,7 +636,8 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
       }
       for(fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	ME()(ihel) +=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])*_GF;
+	ME()(ihel) +=pre*_CKMfact[mode][iy]*
+	  form[fhel].dot(curr[chel])*SM().fermiConstant();
       }
     }
   }
@@ -723,11 +716,10 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "    << _GF*GeV2 << "\n";
-  output << "set " << name() << ":a1Bottom "  << _a1b << "\n";
-  output << "set " << name() << ":a2Bottom "  << _a2b << "\n";
-  output << "set " << name() << ":a1Charm "   << _a1c << "\n";
-  output << "set " << name() << ":a2Charm "   << _a2c << "\n";
+  output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
+  output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
+  output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";
+  output << "newdef " << name() << ":a2Charm "   << _a2c << "\n";
   for(ix=0;ix<_current.size();++ix) {
     _current[ix]->dataBaseOutput(output,false,true);
     output << "insert " << name() << ":Currents " << ix << " " 

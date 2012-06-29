@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxdir:
 	subroutine ffxdir(cs,cfac,idone,xpi,dpipj,ipoin,ndiv,ier)
 ***#[*comment:***********************************************************
@@ -22,7 +25,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -199,7 +202,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -525,7 +528,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ work:
@@ -601,7 +604,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function
 *
@@ -803,7 +806,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ work:

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SVVDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,7 +16,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.fh"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
@@ -41,7 +40,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SVVDecayer() {  addToSearchList(2); }
+  SVVDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -152,11 +151,6 @@ private:
    * Pointer to the perturbative form
    */
   VVSVertexPtr _perturbativeVertex; 
-  
-  /**
-   * Pointer to the general form
-   */
-  GeneralVVSVertexPtr _generalVertex;
 
   /**
    *  Spin density matrix

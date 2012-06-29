@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerTree.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -10,7 +10,7 @@
 #define HERWIG_ShowerTree_H
 
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/ShowerHandler.fh"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ShowerProgenitor.h"
@@ -44,10 +44,11 @@ public:
   //@{
   /**
    * Constructor for a scattering process
+   * @param incoming The incoming particles
    * @param out The outgoing particles
    * @param decay Map into which the trees for any unstable particles are inserted
    */
-  ShowerTree(const ParticleVector & out,
+  ShowerTree(const PPair incoming, const ParticleVector & out,
 	     ShowerDecayMap & decay);
   
   /**
@@ -224,6 +225,41 @@ public:
    */
   const set<tShowerParticlePtr> & forwardParticles() const { return _forward; }
 
+  /**
+   *  Map of particles in this Tree which are the initial particles in other
+   *  trees
+   */
+  const map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> > &
+  treelinks()  const {return _treelinks;}
+
+  /**
+   *  Update the link between shower particle and tree
+   */
+  void updateLink(tShowerTreePtr tree,
+		  pair<tShowerProgenitorPtr,tShowerParticlePtr> in) {
+    _treelinks[tree] = in;
+  }
+
+  /**
+   *  Transform the tree
+   */
+  void transform(const LorentzRotation & rot, bool applyNow);
+
+  /**
+   *  Apply any postphoned transformations
+   */
+  void applyTransforms();
+
+  /**
+   *   Clear any postphoned transformations
+   */ 
+  void clearTransforms();
+
+  /**
+   *  Transform which needs to be applied
+   */
+  const LorentzRotation & transform() {return _transforms;}
+
 protected:
 
   /**
@@ -269,6 +305,11 @@ protected:
    * @param particle The particle for which the colour is updated.
    */
   void updateColour(PPtr particle);
+
+  /**
+   *  Map the colours for a given particle
+   */
+  void mapColour(PPtr original, PPtr copy);
   //@}
 
   /**
@@ -278,15 +319,28 @@ protected:
    * @param copy The colour isolated copies
    */
   void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
-
+ 
+  /**
+   *  Isolate a specific colour line
+   */
+  void isolateLine(vector<PPair>::const_iterator cit,
+		   vector<PPair> & particles,
+		   tcColinePtr oldline,
+		   tColinePtr newline);
+ 
   /**
    *  After the creatation of a ShowerParticle make sure it is properly attached 
    *  to its ColourLine
    * @param part The particle
    */
   void fixColour(tShowerParticlePtr part);
- 
+
 private:
+
+  /**
+   * Incoming partons for the hard process
+   */
+  PPair _incoming;
   
   /**
    *  The incoming ShowerParticles connected to the interaction
@@ -339,14 +393,31 @@ private:
   tShowerTreePtr _parent;
 
   /**
-   *  Pointer to the shower variables
-   */
-  tcShowerHandlerPtr _showerHandler;
-
-  /**
    *  Has this tree showered
    */
   bool _hasShowered;
+
+  /**
+   *  The transforms which still need to be applied
+   */
+  LorentzRotation _transforms;
+
+private:
+
+  /**
+   *  Copy of decay in shower from ShowerHandler
+   */
+  static set<long> _decayInShower;
+
+  /**
+   *  Check if a particle decays in the shower
+   * @param id The PDG code for the particle
+   */
+  static bool decaysInShower(long id) {
+    return ( _decayInShower.find( abs(id) ) != 
+	     _decayInShower.end() ); 
+  }
+
 };
 }
 

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -26,9 +26,11 @@
 
 using namespace Herwig;
 
+namespace{
+
 const bool dbg = false;
 
-namespace{
+
   void reShuffle(Lorentz5Momentum &p1, Lorentz5Momentum &p2, Energy m1, Energy m2){
 
     Lorentz5Momentum ptotal(p1+p2);
@@ -92,20 +94,13 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   theBeam = parent(rem);
   theBeamData = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
     (theBeam->dataPtr());
-
-  if(rem==theRems.first)
-    theX.first  += parton->momentum().rho()/theBeam->momentum().rho();
-  else
-    theX.second += parton->momentum().rho()/theBeam->momentum().rho();
-
+  double currentx = parton->momentum().rho()/theBeam->momentum().rho();
   double check = rem==theRems.first ? theX.first : theX.second;
-
+  check += currentx;
   if(1.0-check < 1e-3) throw ShowerHandler::ExtraScatterVeto();
-
   bool anti;
   Lorentz5Momentum lastp(parton->momentum());
   int lastID(parton->id());
-  ColinePtr cl;
   Energy oldQ(_forcedSplitScale);
   _pdf = pdf;
   //do nothing if already valence quark
@@ -115,72 +110,96 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     // add the particle to the colour partners
     partners.push_back(make_pair(parton, tPPtr()));
     //set the sign
-    anti = parton->hasAntiColour();
+    anti = parton->hasAntiColour() && parton->id()!=ParticleID::g;
     if(rem==theRems.first) theanti.first  = anti;
     else                   theanti.second = anti;
+    // add the x and return
+    if(rem==theRems.first) theX.first  += currentx;
+    else                   theX.second += currentx; 
     return;
   }
   //or gluon for secondaries
-  else if(!first && lastID == ParticleID::g){
+  else if(!first && lastID == ParticleID::g) {
     partners.push_back(make_pair(parton, tPPtr()));
+    // add the x and return
+    if(rem==theRems.first) theX.first  += currentx;
+    else                   theX.second += currentx;
     return; 
   }
   // if a sea quark.antiquark forced splitting to a gluon
   // Create the new parton with its momentum and parent/child relationship set
   PPtr newSea;
-  if( lastID != ParticleID::g ) {
-    newSea = forceSplit(rem, -lastID, oldQ, 
-			rem==theRems.first ? theX.first : theX.second,
-			lastp, used,content);
-    cl = new_ptr(ColourLine());
-    if(newSea->id() > 0) cl->addColoured(newSea);
-    else cl->addAntiColoured(newSea);
+  if( !(lastID == ParticleID::g || 
+	lastID == ParticleID::gamma) ) {
+    newSea = forceSplit(rem, -lastID, oldQ, currentx, lastp, used,content);
+    ColinePtr cl = new_ptr(ColourLine());
+    if(newSea->id() > 0) cl->    addColoured(newSea);
+    else                 cl->addAntiColoured(newSea);
     // if a secondard scatter finished so return
-    if(!first){
+    if(!first || content.isValenceQuark(ParticleID::g) ){
       partners.push_back(make_pair(parton, newSea));
+      // add the x and return
+      if(rem==theRems.first) theX.first  += currentx;
+      else                   theX.second += currentx;
+      if(first) content.extract(ParticleID::g);
       return;
     }
   }
   // otherwise evolve back to valence
-  if( !content.isValenceQuark(parton) ) {
-    // final valence splitting
-    PPtr newValence = forceSplit(rem, 0, oldQ,
-				 rem==theRems.first ? theX.first : theX.second,
-				 lastp, used, content);
-    // extract from the hadron to allow remnant to be determined
-    content.extract(newValence->id());
-    // case of a gluon going into the hard subprocess
-    if( lastID == ParticleID::g ) {
-      partners.push_back(make_pair(parton, tPPtr()));
-      anti = newValence->hasAntiColour();
-      if(rem==theRems.first) theanti.first  = anti;
-      else                   theanti.second = anti;
-      parton->colourLine(!anti)->addColoured(newValence, anti);
-      return;
-    }
-    //The valence quark will always be connected to the sea quark with opposite sign
-    tcPPtr particle;
-    if(lastID*newValence->id() < 0){
-      particle = parton;
-      partners.push_back(make_pair(newSea, tPPtr()));
-    } 
-    else {
-      particle = newSea;
-      partners.push_back(make_pair(parton, tPPtr()));
-    }
+  // final valence splitting
+  PPtr newValence = forceSplit(rem, 
+			       lastID!=ParticleID::gamma ? 
+			       ParticleID::g : ParticleID::gamma,
+			       oldQ, currentx , lastp, used, content);
+  // extract from the hadron to allow remnant to be determined
+  content.extract(newValence->id());
+  // case of a gluon going into the hard subprocess
+  if( lastID == ParticleID::g ) {
+    partners.push_back(make_pair(parton, tPPtr()));
     anti = newValence->hasAntiColour();
     if(rem==theRems.first) theanti.first  = anti;
     else                   theanti.second = anti;
-    
-    if(particle->colourLine()) 
-      particle->colourLine()->addAntiColoured(newValence);
-    if(particle->antiColourLine()) 
-      particle->antiColourLine()->addColoured(newValence);  
+    parton->colourLine(!anti)->addColoured(newValence, anti);
+    return;
   }
+  else if( lastID == ParticleID::gamma) {
+    partners.push_back(make_pair(parton, newValence));
+    anti = newValence->hasAntiColour();
+    ColinePtr newLine(new_ptr(ColourLine()));
+    newLine->addColoured(newValence, anti);
+    if(rem==theRems.first) theanti.first  = anti;
+    else                   theanti.second = anti;
+    // add the x and return
+    if(rem==theRems.first) theX.first  += currentx;
+    else                   theX.second += currentx;
+    return;
+  }
+  //The valence quark will always be connected to the sea quark with opposite sign
+  tcPPtr particle;
+  if(lastID*newValence->id() < 0){
+    particle = parton;
+    partners.push_back(make_pair(newSea, tPPtr()));
+  } 
+  else {
+    particle = newSea;
+    partners.push_back(make_pair(parton, tPPtr()));
+  }
+  anti = newValence->hasAntiColour();
+  if(rem==theRems.first) theanti.first  = anti;
+  else                   theanti.second = anti;
+  
+  if(particle->colourLine()) 
+    particle->colourLine()->addAntiColoured(newValence);
+  if(particle->antiColourLine()) 
+    particle->antiColourLine()->addColoured(newValence);
+  // add the x and return
+  if(rem==theRems.first) theX.first  += currentx;
+  else                   theX.second += currentx;
   return;
 }
 
-void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> pdfs,
+void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
+			   pair<tcPDFPtr, tcPDFPtr> pdfs,
 			   bool first) {
   if(theRems.first) {
     ParticleVector children=theRems.first->children();
@@ -197,7 +216,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
     }
   }
   // forced splitting for first parton
-  if(partons.first->data().coloured()) {
+  if(isPartonic(partons.first )) { 
     try {
       split(partons.first, theContent.first, theRems.first, 
 	    theUsed.first, theMaps.first, pdfs.first, first);
@@ -209,8 +228,8 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
     }
   }
   // forced splitting for second parton
-  if(partons.second->data().coloured()) {
-    try{
+  if(isPartonic(partons.second)) { 
+    try {
       split(partons.second, theContent.second, theRems.second, 
 	    theUsed.second, theMaps.second, pdfs.second, first);
       // additional check for the remnants
@@ -228,21 +247,21 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
 	
 	for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
 	  pnew[0] += theRems.first->children()[iy]->momentum();
-     
+	
 	for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
 	  pnew[1] += theRems.second->children()[iy]->momentum();
-
+	
 	Lorentz5Momentum ptotal=
 	  theRems.first ->momentum()-partons.first ->momentum()+
 	  theRems.second->momentum()-partons.second->momentum();
-     
+	
 	if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
 	  if(partons.second->id() != ParticleID::g){
 	    if(partons.second==theMaps.second.back().first) 
 	      theUsed.second -= theMaps.second.back().second->momentum();
 	    else
 	      theUsed.second -= theMaps.second.back().first->momentum();
-         
+	    
 	    thestep->removeParticle(theMaps.second.back().first);
 	    thestep->removeParticle(theMaps.second.back().second);
 	  }
@@ -260,25 +279,49 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
 	parent(theRems.first)->momentum().rho();
       theX.second -= partons.second->momentum().rho()/
 	parent(theRems.second)->momentum().rho();
-
+      
       //case of the first interaction
       //throw veto immediately, because event get rejected anyway.
       if(first) throw ShowerHandler::ExtraScatterVeto();
-      
       //secondary interactions have to end on a gluon, if parton 
       //was NOT a gluon, the forced splitting particles must be removed
-      if(partons.first->id() != ParticleID::g){
+      if(partons.first->id() != ParticleID::g) {
 	if(partons.first==theMaps.first.back().first) 
 	  theUsed.first -= theMaps.first.back().second->momentum();
 	else
 	  theUsed.first -= theMaps.first.back().first->momentum();
-     
+	
 	thestep->removeParticle(theMaps.first.back().first);
 	thestep->removeParticle(theMaps.first.back().second);
       }
       theMaps.first.pop_back();
       throw ShowerHandler::ExtraScatterVeto();
     }
+  }
+  // veto if not enough energy for extraction
+  if( !first &&(theRems.first ->momentum().e() - 
+		partons.first ->momentum().e() < 1.0e-3*MeV ||
+		theRems.second->momentum().e() - 
+		partons.second->momentum().e() < 1.0e-3*MeV )) {
+    if(partons.first->id() != ParticleID::g) {
+      if(partons.first==theMaps.first.back().first) 
+	theUsed.first -= theMaps.first.back().second->momentum();
+      else
+	theUsed.first -= theMaps.first.back().first->momentum();
+      thestep->removeParticle(theMaps.first.back().first);
+      thestep->removeParticle(theMaps.first.back().second);
+    }
+    theMaps.first.pop_back();
+    if(partons.second->id() != ParticleID::g) {
+      if(partons.second==theMaps.second.back().first) 
+	theUsed.second -= theMaps.second.back().second->momentum();
+      else
+	theUsed.second -= theMaps.second.back().first->momentum();
+      thestep->removeParticle(theMaps.second.back().first);
+      thestep->removeParticle(theMaps.second.back().second);
+    }
+    theMaps.second.pop_back();
+    throw ShowerHandler::ExtraScatterVeto();
   }
 }
 
@@ -290,8 +333,9 @@ void HwRemDecayer::mergeColour(tPPtr pold, tPPtr pnew, bool anti) const {
   clnew = pnew->colourLine(!anti);
 
   assert(clold);
-    
-  if(clnew){//there is already a colour line (not the final diquark)
+
+  // There is already a colour line (not the final diquark)
+  if(clnew){
 
     if( (clnew->coloured().size() + clnew->antiColoured().size()) > 1 ){
       if( (clold->coloured().size() + clold->antiColoured().size()) > 1 ){
@@ -318,11 +362,11 @@ void HwRemDecayer::mergeColour(tPPtr pold, tPPtr pnew, bool anti) const {
 	//and add it to clnew
 	clnew->addColoured(pold, anti);
       }    
-    }else{//pnnew is the only member on it's colour line.
+    } else{//pnnew is the only member on it's colour line.
       clnew->removeColoured(pnew, !anti);
       clold->addColoured(pnew, !anti);
     }
-  }else{//there is no coline at all for pnew
+  } else {//there is no coline at all for pnew
     clold->addColoured(pnew, !anti);
   }
 }
@@ -331,11 +375,10 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti,
 			      double colourDisrupt) const {
   PartnerMap::iterator prev;
   tPPtr pnew, pold;
-
   assert(partners.size()>=2);
 
   PartnerMap::iterator it=partners.begin();
-  while(it != partners.end()){
+  while(it != partners.end()) {
     //skip the first one to have a partner
     if(it==partners.begin()){
       it++;
@@ -345,21 +388,23 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti,
     prev = it - 1;
     //determine the particles to work with
     pold = prev->first;
-    if(prev->second){
-      if(pold->hasAntiColour() != anti)
+    if(prev->second) {
+      if(!pold->coloured())
+	pold = prev->second;
+      else if(pold->hasAntiColour() != anti)
 	pold = prev->second;
     }
     assert(pold);
 
     pnew = it->first;
-    if(it->second){
+    if(it->second) {
       if(it->second->colourLine(!anti)) //look for the opposite colour
 	pnew = it->second;
     }
     assert(pnew);
 
     // Implement the disruption of colour connections
-    if( it != partners.end()-1 ){//last one is diquark-has to be connected
+    if( it != partners.end()-1 ) {//last one is diquark-has to be connected
       
       //has to be inside the if statement, so that the probability is
       //correctly counted:
@@ -389,7 +434,9 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti,
 
 PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ, 
 			      double &lastx, Lorentz5Momentum &pf, 
-			      Lorentz5Momentum &p, HadronContent & content) const {
+			      Lorentz5Momentum &p, 
+			      HadronContent & content) const {
+  static const double eps=1e-6;
   // beam momentum
   Lorentz5Momentum beam = theBeam->momentum();
   // the last scale is minimum of last value and upper limit
@@ -399,14 +446,22 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
   // Q0 (Qmax/Q0)^R
   Energy q;
-  double zmin,zmax,yy;
+  unsigned int ntry=0,maxtry=100;
+  double zmin=  lastx ,zmax,yy;
+  if(1-lastx<eps) throw ShowerHandler::ExtraScatterVeto();
   do {
     q = minQ*pow(lastQ/minQ,UseRandom::rnd());
-    zmin = lastx;
     yy   = 1.+0.5*sqr(_kinCutoff/q);
     zmax = yy - sqrt(sqr(yy)-1.); 
+    ++ntry;
   }
-  while(zmax<zmin);
+  while(zmax<zmin&&ntry<maxtry);
+  if(ntry==maxtry) {
+    throw Exception() << "Can't set scale and z for forced splitting in " 
+		      << "HwRemDecayer::forceSplit() " 
+		      << Exception::eventerror;
+  }
+  if(zmax-zmin<eps) throw ShowerHandler::ExtraScatterVeto();
   // now generate z as in FORTRAN HERWIG
   // use y = ln(z/(1-z)) as integration variable
   double ymin=log(zmin/(1.-zmin));
@@ -416,10 +471,12 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   dely/=nz;
   yy=ymin+0.5*dely;
   vector<int> ids;
-  if(child!=0) ids.push_back(ParticleID::g);
-  else         {
+  if(child==21||child==22) {
     ids=content.flav;
     for(unsigned int ix=0;ix<ids.size();++ix) ids[ix] *= content.sign;
+  }
+  else {
+    ids.push_back(ParticleID::g);
   }
   // probabilities of the different types of possible splitting
   map<long,pair<double,vector<double> > > partonprob;
@@ -437,7 +494,10 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
       double zr=wr/ez;
       double wz=1./wr;
       double zz=wz*ez;
-      double az=wz*zz*_alpha->value(sqr(max(wz*q,_kinCutoff)));
+      double coup = child!=22 ? 
+	_alphaS ->value(sqr(max(wz*q,_kinCutoff))) :
+	_alphaEM->value(sqr(max(wz*q,_kinCutoff)));
+      double az=wz*zz*coup;
       // g -> q qbar
       if(ids[iflav]==ParticleID::g) {
 	// calculate splitting function   
@@ -461,6 +521,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
     ptotal+=psum;
   }
   // select the flavour
+  if(ptotal==0.) throw ShowerHandler::ExtraScatterVeto();
   ptotal *= UseRandom::rnd();
   map<long,pair<double,vector<double> > >::const_iterator pit;
   for(pit=partonprob.begin();pit!=partonprob.end();++pit) {
@@ -490,6 +551,13 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   double phi = Constants::twopi*UseRandom::rnd();
   Energy pt=sqrt(pt2);
   Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), ZERO, ZERO);
+  Axis axis(p_ref.vect().unit());
+  if(axis.perp2()>0.) {
+    LorentzRotation rot;
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    qt.transform(rot);
+  }
   // compute alpha for previous particle
   Energy2 p_dot_n  = p_ref*n_ref;
   double lastalpha =    pf*n_ref/p_dot_n;
@@ -587,7 +655,7 @@ void HwRemDecayer::setRemMasses() const {
       psystem.rescaleMass();
       ++iloc;
       if(ptotal.mass() > psystem.mass() + diquark->mass() &&
-	 DISRemnantOpt_<2) break;
+	 psystem.mass()>1*MeV && DISRemnantOpt_<2 && ptotal.e() > 0.*GeV ) break;
     }
     while(iloc<progenitors.size());
     if(ptotal.mass() > psystem.mass() + diquark->mass()) --iloc;
@@ -725,7 +793,6 @@ Energy HwRemDecayer::softPt() const {
 void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2, 
 				  Lorentz5Momentum &g1, Lorentz5Momentum &g2) const {
 
-  const Energy mg(0.75*GeV);
   g1 = Lorentz5Momentum();
   g2 = Lorentz5Momentum();
   //All necessary variables for the two soft gluons
@@ -762,8 +829,8 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
 
-  ig1.setMass(mg);
-  ig2.setMass(mg);
+  ig1.setMass(mg_);
+  ig2.setMass(mg_);
   ig1.rescaleEnergy();
   ig2.rescaleEnergy();
 
@@ -772,15 +839,15 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   Boost boostv(cmf.boostVector());
 
   //outgoing gluons in cmf
-  g1.setMass(mg);
-  g2.setMass(mg);
+  g1.setMass(mg_);
+  g2.setMass(mg_);
 
   g1.setX(pt*cos(phi));
   g2.setX(-pt*cos(phi));
   g1.setY(pt*sin(phi));
   g2.setY(-pt*sin(phi));
   
-  pz2 = cmf.m2()/4 - sqr(mg) - sqr(pt);
+  pz2 = cmf.m2()/4 - sqr(mg_) - sqr(pt);
 
   if(pz2/GeV2 < 0.0){
     if(dbg)
@@ -920,8 +987,16 @@ void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
     theMaps.second.push_back(make_pair(diquarks.second, tPPtr()));
   }
   setRemMasses();
-  if(theRems.first) fixColours(theMaps.first, theanti.first, colourDisrupt);
-  if(theRems.second) fixColours(theMaps.second, theanti.second, colourDisrupt);
+  if(theRems.first) {
+    fixColours(theMaps.first, theanti.first, colourDisrupt);
+    if(theContent.first.hadron->id()==ParticleID::pomeron&&
+       pomeronStructure_==0) fixColours(theMaps.first, !theanti.first, colourDisrupt);
+  }
+  if(theRems.second) {
+    fixColours(theMaps.second, theanti.second, colourDisrupt);
+    if(theContent.second.hadron->id()==ParticleID::pomeron&&
+       pomeronStructure_==0) fixColours(theMaps.second, !theanti.second, colourDisrupt);
+  }
 
   if( !theRems.first || !theRems.second ) return;
   //stop here if we don't have two remnants
@@ -943,13 +1018,27 @@ HwRemDecayer::getHadronContent(tcPPtr hadron) const {
     hc.flav.push_back((id /= 10)%10);
     hc.extracted = -1;
   }
-  else if(hadron->data().id()==ParticleID::gamma) {
+  else if(hadron->data().id()==ParticleID::gamma ||
+	  (hadron->data().id()==ParticleID::pomeron && pomeronStructure_==1)) {
     hc.sign = 1;
     for(int ix=1;ix<6;++ix) {
       hc.flav.push_back( ix);
       hc.flav.push_back(-ix);
     }
   }
+  else if(hadron->data().id()==ParticleID::pomeron ) {
+    hc.sign = 1;
+    hc.flav.push_back(ParticleID::g);
+    hc.flav.push_back(ParticleID::g);
+  }
+  else if(hadron->data().id()==ParticleID::reggeon ) {
+    hc.sign = 1;
+    for(int ix=1;ix<3;++ix) {
+      hc.flav.push_back( ix);
+      hc.flav.push_back(-ix);
+    }
+  }
+  hc.pomeronStructure = pomeronStructure_;
   return hc;
 }
 
@@ -1003,15 +1092,17 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 }
 
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_kinCutoff, GeV) << _range 
-     << _zbin << _ybin << _nbinmax << _alpha << DISRemnantOpt_
-     << maxtrySoft_ << colourDisrupt_;
+  os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
+     << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
+     << maxtrySoft_ << colourDisrupt_ << pomeronStructure_
+     << ounit(mg_,GeV);
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_kinCutoff, GeV) >> _range 
-     >> _zbin >> _ybin >> _nbinmax >> _alpha >> DISRemnantOpt_
-     >> maxtrySoft_ >> colourDisrupt_;
+  is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
+     >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
+     >> maxtrySoft_ >> colourDisrupt_ >> pomeronStructure_
+     >> iunit(mg_,GeV);
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
@@ -1037,7 +1128,12 @@ void HwRemDecayer::Init() {
   static Reference<HwRemDecayer,ShowerAlpha> interfaceAlphaS
     ("AlphaS",
      "Pointer to object to calculate the strong coupling",
-     &HwRemDecayer::_alpha, false, false, true, false, false);
+     &HwRemDecayer::_alphaS, false, false, true, false, false);
+
+  static Reference<HwRemDecayer,ShowerAlpha> interfaceAlphaEM
+    ("AlphaEM",
+     "Pointer to object to calculate the electromagnetic coupling",
+     &HwRemDecayer::_alphaEM, false, false, true, false, false);
 
   static Parameter<HwRemDecayer,Energy> interfaceKinCutoff
     ("KinCutoff",
@@ -1093,5 +1189,42 @@ void HwRemDecayer::Init() {
      &HwRemDecayer::colourDisrupt_, 
      1.0, 0.0, 1.0, 
      false, false, Interface::limited);
+
+
+  static Switch<HwRemDecayer,unsigned int> interfacePomeronStructure
+    ("PomeronStructure",
+     "Option for the treatment of the valance structure of the pomeron",
+     &HwRemDecayer::pomeronStructure_, 0, false, false);
+  static SwitchOption interfacePomeronStructureGluon
+    (interfacePomeronStructure,
+     "Gluon",
+     "Assume the pomeron is a two gluon state",
+     0);
+  static SwitchOption interfacePomeronStructureQQBar
+    (interfacePomeronStructure,
+     "QQBar",
+     "Assumne the pomeron is q qbar as for the photon,"
+     " this option is not recommended and is provide for compatiblity with POMWIG",
+     1);
+
 }
 
+bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
+  if(!(StandardQCDPartonMatcher::Check(*parton) ||
+       parton->id()==ParticleID::gamma)) return false;
+  return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
+    || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;
+}
+
+bool HwRemDecayer::isPartonic(tPPtr parton) const {
+  if(parton->parents().empty()) return false;
+  tPPtr parent = parton->parents()[0];
+  bool partonic = false;
+  for(unsigned int ix=0;ix<parent->children().size();++ix) {
+    if(dynamic_ptr_cast<tRemPPtr>(parent->children()[ix])) {
+      partonic = true;
+      break;
+    }
+  }
+  return partonic;
+}

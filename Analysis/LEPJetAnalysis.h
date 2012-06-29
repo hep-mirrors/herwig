@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LEPJetAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,16 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
-#include "KtJet/KtJet.h"
-#include "KtJet/KtLorentzVector.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the LEPJetAnalysis class.
+/** \ingroup Analysis
+ * The LEPJetAnalysis class compares the results of Heriwg++ with LEP data for
+ * various jet distributions.
  *
  * @see \ref LEPJetAnalysisInterfaces "The interfaces"
  * defined for LEPJetAnalysis.
@@ -31,6 +29,9 @@ using namespace ThePEG;
 class LEPJetAnalysis: public AnalysisHandler {
 
 public:
+
+  /// Default constructor
+  LEPJetAnalysis() : _nevent() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -72,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -138,11 +139,6 @@ private:
    */
   HistogramPtr _y56;
   //@}
-
-  /**
-   *  The interface between Herwig++ and KtJet
-   */
-  Herwig::KtJetInterface _kint;
 
   /**
    *  Bins for the y fractions
@@ -276,7 +272,7 @@ struct ClassTraits<Herwig::LEPJetAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

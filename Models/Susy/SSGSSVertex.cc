@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGSSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,6 +13,7 @@
 
 #include "SSGSSVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -21,60 +22,45 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
-  vector<long> first,second,third;
-  for(long ix=1000001;ix<1000007;++ix) {
-    first.push_back(21);
-    second.push_back(ix);
-    third.push_back(-ix);
-  }
-  for(long ix=2000001;ix<2000007;++ix) {
-    first.push_back(21);
-    second.push_back(ix);
-    third.push_back(-ix);
-  }
-  setList(first,second,third);
+  orderInGs(1);
+  orderInGem(0);
 }
 
 void SSGSSVertex::doinit() {
-  orderInGs(1);
-  orderInGem(0);
+  for(long ix=1000001;ix<1000007;++ix) {
+    addToList(21,ix,-ix);
+  }
+  for(long ix=2000001;ix<2000007;++ix) {
+    addToList(21,ix,-ix);
+  }
   VSSVertex::doinit();
 }
 
-NoPIOClassDescription<SSGSSVertex> SSGSSVertex::initSSGSSVertex;
-// Definition of the static class description member.
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<SSGSSVertex,Helicity::VSSVertex>
+describeSSGSSVertex("Herwig::SSGSSVertex", "HwSusy.so");
 
 void SSGSSVertex::Init() {
 
   static ClassDocumentation<SSGSSVertex> documentation
-    ("There is no documentation for the SSGSSVertex class");
+    ("The SSGSSVertex class implements the coupling"
+     " of the gluon to the squarks");
 
 }
 
 void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2, tcPDPtr part3) {
-  long isf(0);
-  if(part1->id() == ParticleID::g) {
-    isf = abs(part2->id());
+			      tcPDPtr part2, tcPDPtr) {
+  assert(part1->id()==ParticleID::g);
+  long isf = abs(part2->id());
+  assert( (isf >= 1000001 && isf <= 1000006) || 
+	  (isf >= 2000001 && isf <= 2000006) );
+  if(q2 != _q2last || _couplast == 0.) {
+    _couplast = strongCoupling(q2);
+    _q2last = q2;
   }
-  else if(part2->id() == ParticleID::g) {
-    isf = abs(part1->id());
-  }
-  else {
-    isf = abs(part1->id());
-  }
-  if((isf >= 1000001 && isf <= 1000006) || 
-     (isf>=2000001 && isf <= 2000006) ) {
-    if(q2 != _q2last) {
-      _couplast = strongCoupling(q2);
-      _q2last = q2;
-    }
-    setNorm(_couplast);
-}
-  else {
-    throw  HelicityConsistencyError() 
-      << "SSGSSVertex::setCoupling() - Incorrect particle(s) in vertex. "
-      << part1->id() << " " << part2->id() << " " <<  part3->id()
-      << Exception::warning;
-  }
+  norm(_couplast);
 }

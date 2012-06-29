@@ -6,6 +6,7 @@
 
 #include "MEfftoffH.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -15,19 +16,22 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
 
 void MEfftoffH::persistentOutput(PersistentOStream & os) const {
   os << _shapeopt << _process << _wplus << _wminus << _z0 
-     << _vertexFFW << _vertexFFZ << _vertexWWH
-     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
+     << _vertexFFW << _vertexFFZ << _vertexWWH << _higgs
+     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass
+     << _maxflavour << _minflavour;
 }
 
 void MEfftoffH::persistentInput(PersistentIStream & is, int) {
   is >> _shapeopt >> _process >> _wplus >> _wminus >> _z0 
-     >> _vertexFFW >> _vertexFFZ >> _vertexWWH
-     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
+     >> _vertexFFW >> _vertexFFZ >> _vertexWWH >> _higgs
+     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass
+     >> _maxflavour >> _minflavour;
 }
 
 AbstractClassDescription<MEfftoffH> MEfftoffH::initMEfftoffH;
@@ -78,6 +82,18 @@ void MEfftoffH::Init() {
      "Only include ZZ processes",
      2);
 
+  static Parameter<MEfftoffH,unsigned int> interfaceMaxFlavour
+    ( "MaxFlavour",
+      "The heaviest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEfftoffH::_maxflavour, 5, 0, 5, false, false, true);
+
+  static Parameter<MEfftoffH,unsigned int> interfaceMinFlavour
+    ( "MinFlavour",
+      "The lightest incoming quark flavour this matrix element is allowed to handle "
+      "(if applicable).",
+      &MEfftoffH::_minflavour, 1, 1, 5, false, false, true);
+
 }
 
 unsigned int MEfftoffH::orderInAlphaS() const {
@@ -97,14 +113,23 @@ Energy2 MEfftoffH::scale() const {
 }
 
 void MEfftoffH::setKinematics() {
-  MEBase::setKinematics();
+  HwMEBase::setKinematics();
 }
 
 Selector<MEBase::DiagramIndex>
 MEfftoffH::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    sel.insert(1.0, i);
+  if(diags.size()==1) {
+    sel.insert(1.0, 0);
+  }
+  else {
+    for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+      if(_swap&&diags[i]->id()==-2)
+	sel.insert(1.0, i);
+      else if(!_swap&&diags[i]->id()==-1)
+	sel.insert(1.0, i);
+    }
+  }
   return sel;
 }
 
@@ -132,14 +157,13 @@ MEfftoffH::colourGeometries(tcDiagPtr ) const {
 }
 
 void MEfftoffH::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   // get the vertex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm) {
     _vertexFFW = hwsm->vertexFFW();
     _vertexFFZ = hwsm->vertexFFZ();
-    _vertexWWH = hwsm->vertexWWH();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
 			     << "MEfftoffH::doinit() the Herwig++"
@@ -149,15 +173,14 @@ void MEfftoffH::doinit() {
   _wplus  = getParticleData(ParticleID::Wplus );
   _wminus = getParticleData(ParticleID::Wminus);
   _z0     = getParticleData(ParticleID::Z0);
-  tcPDPtr h0=getParticleData(ParticleID::h0);
-  _mh = h0->mass();
-  _wh = h0->width();
-  if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+  _mh = _higgs->mass();
+  _wh = _higgs->width();
+  if(_higgs->massGenerator()) {
+    _hmass=dynamic_ptr_cast<GenericMassGeneratorPtr>(_higgs->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
     << "If using the mass generator for the line shape in MEfftoffH::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << "the mass generator must be an instance of the GenericMassGenerator class"
     << Exception::runerror;
 }
 
@@ -166,21 +189,50 @@ double MEfftoffH::me2() const {
   vector<SpinorBarWaveFunction> a1,a2;
   SpinorWaveFunction    fin1,fin2;
   SpinorBarWaveFunction ain1,ain2;
-  if(mePartonData()[0]->id()>0) {
-    fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
-    ain1 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+  bool swap1,swap2;
+  if(_swap) {
+    if(mePartonData()[0]->id()>0) {
+      swap1 = false;
+      fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+      ain1 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+    }
+    else {
+      swap1 = true;
+      fin1 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+      ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+    }
+    if(mePartonData()[1]->id()>0) {
+      swap2 = false;
+      fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+      ain2 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+    }
+    else {
+      swap2 = true;
+      fin2 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+      ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    }
   }
   else {
-    fin1 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
-    ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
-  }
-  if(mePartonData()[1]->id()>0) {
-    fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
-    ain2 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
-  }
-  else {
-    fin2 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
-    ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    if(mePartonData()[0]->id()>0) {
+      swap1 = false;
+      fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+      ain1 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+    }
+    else {
+      swap1 = true;
+      fin1 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+      ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+    }
+    if(mePartonData()[1]->id()>0) {
+      swap2 = false;
+      fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+      ain2 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+    }
+    else {
+      swap2 = true;
+      fin2 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+      ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    }
   }
   for(unsigned int ix=0;ix<2;++ix) {
     fin1.reset(ix); f1.push_back(fin1);
@@ -188,13 +240,14 @@ double MEfftoffH::me2() const {
     ain1.reset(ix); a1.push_back(ain1);
     ain2.reset(ix); a2.push_back(ain2);
   }
-  return helicityME(f1,f2,a1,a2,false)*sHat()*UnitRemoval::InvE2;
+  return helicityME(f1,f2,a1,a2,swap1,swap2,false)*sHat()*UnitRemoval::InvE2;
 }
 
 double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 			     vector<SpinorWaveFunction> & f2 ,
 			     vector<SpinorBarWaveFunction> & a1,
 			     vector<SpinorBarWaveFunction> & a2,
+			     bool swap1, bool swap2,
 			     bool calc) const {
   // scale
   Energy2 mb2(scale());
@@ -205,7 +258,11 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
   tcPDPtr vec[2];
   AbstractFFVVertexPtr vertex[2];
   for(unsigned int ix=0;ix<2;++ix) {
-    int icharge = mePartonData()[ix]->iCharge()-mePartonData()[ix+2]->iCharge();
+    int icharge;
+    if(_swap) 
+      icharge = mePartonData()[ix]->iCharge()-mePartonData()[3-int(ix)]->iCharge();
+    else     
+      icharge = mePartonData()[ix]->iCharge()-mePartonData()[ix+2]->iCharge();
     if(icharge==0)     vec[ix] = _z0;
     else if(icharge>0) vec[ix] = _wplus;
     else               vec[ix] = _wminus;
@@ -229,18 +286,24 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 	  diag = _vertexWWH->evaluate(mb2,inter[0],inter[1],higgs);
 	  me += norm(diag);
 	  // store matrix element if needed
-	  if(calc) {
-	    unsigned int ihel[5]={i1,i3,i2,i4,0};
-	    if(f1[i1].id()<0) swap(ihel[0],ihel[2]);
-	    if(f2[i2].id()<0) swap(ihel[1],ihel[3]);
-	    menew(ihel[0],ihel[1],ihel[2],ihel[3],ihel[4]) = diag;
-	  }
+	  unsigned int ihel[5]={i1,i3,i2,i4,0};
+	  if(swap1) swap(ihel[0],ihel[2]);
+	  if(swap2) swap(ihel[1],ihel[3]);
+	  menew(ihel[0],ihel[1],ihel[2],ihel[3],ihel[4]) = diag;
 	}
       }
     }
   }
   // spin factor
   me *=0.25;
+  tcPolarizedBeamPDPtr beam[2] = 
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+  if( beam[0] || beam[1] ) {
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    me = menew.average(rho[0],rho[1]);
+  }
   // test of the matrix element for e+e- > nu nubar H
 //   Energy2 mw2 = sqr(WPlus()->mass());
 //   Energy2 t1 = (meMomenta()[0]-meMomenta()[2]).m2()-mw2;
@@ -264,15 +327,32 @@ bool MEfftoffH::generateKinematics(const double * r) {
     Energy mhmax = min(roots ,mePartonData()[4]->massMax());
     Energy mhmin = max(ZERO,mePartonData()[4]->massMin());
     if(mhmax<=mhmin) return false;
-    double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
-    double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
+    double rhomin = atan2((sqr(mhmin)-sqr(_mh)), _mh*_wh);
+    double rhomax = atan2((sqr(mhmax)-sqr(_mh)), _mh*_wh);
     mh = sqrt(_mh*_wh*tan(rhomin+r[4]*(rhomax-rhomin))+sqr(_mh));
     jacobian(jacobian()*(rhomax-rhomin));
   }
   if(mh>roots) return false;
   // generate p1 by transform to eta = 1-2p1/sqrt s
+  double r0=r[0];
+  _swap = false;
+  if(_process==0&&mePartonData()[0]->id()!=mePartonData()[1]->id()&&
+     double(mePartonData()[0]->id())/double(mePartonData()[1]->id())>0.) {
+    if(mePartonData()[0]->id()==mePartonData()[3]->id()&&
+       mePartonData()[1]->id()==mePartonData()[2]->id()) {
+      jacobian(2.*jacobian());
+      if(r0<=0.5) {
+ 	r0*=2.;
+	_swap = false;
+      }
+      else {
+ 	r0 = (r0-0.5)*2.;
+	_swap = true;
+      }
+    }
+  }
   // and generate according to deta/eta
-  double eta = pow(mh/roots,2.*r[0]);
+  double eta = pow(mh/roots,2.*r0);
   jacobian(-jacobian()*eta*2.*log(mh/roots));
   Energy p1 = 0.5*roots*(1.-eta);
   // generate the value of cos theta2 first as no cut
@@ -291,20 +371,35 @@ bool MEfftoffH::generateKinematics(const double * r) {
   double cost12 = stheta[0]*stheta[1]*cos(phi12)+ctheta[0]*ctheta[1];
   // momentum of 2
   Energy p2 = 0.5*(sHat()-2.*roots*p1-sqr(mh))/(roots-p1*(1.-cost12));
-  if(p2<ZERO) return false;
+  if(p2<=ZERO) return false;
   // construct the momenta
   // first outgoing particle
-  meMomenta()[2].setX(stheta[0]*p1);
-  meMomenta()[2].setY(ZERO);
-  meMomenta()[2].setZ(ctheta[0]*p1);
-  meMomenta()[2].setT(p1);
-  meMomenta()[2].setMass(ZERO);
-  // second outgoing particle
-  meMomenta()[3].setX(stheta[1]*cos(phi12)*p2);
-  meMomenta()[3].setY(stheta[1]*sin(phi12)*p2);
-  meMomenta()[3].setZ(ctheta[1]*p2);
-  meMomenta()[3].setT(p2);
-  meMomenta()[3].setMass(ZERO);
+  if(_swap) {
+    meMomenta()[3].setX(stheta[0]*p1);
+    meMomenta()[3].setY(ZERO);
+    meMomenta()[3].setZ(ctheta[0]*p1);
+    meMomenta()[3].setT(p1);
+    meMomenta()[3].setMass(ZERO);
+    // second outgoing particle
+    meMomenta()[2].setX(stheta[1]*cos(phi12)*p2);
+    meMomenta()[2].setY(stheta[1]*sin(phi12)*p2);
+    meMomenta()[2].setZ(ctheta[1]*p2);
+    meMomenta()[2].setT(p2);
+    meMomenta()[2].setMass(ZERO);
+  }
+  else {
+    meMomenta()[2].setX(stheta[0]*p1);
+    meMomenta()[2].setY(ZERO);
+    meMomenta()[2].setZ(ctheta[0]*p1);
+    meMomenta()[2].setT(p1);
+    meMomenta()[2].setMass(ZERO);
+    // second outgoing particle
+    meMomenta()[3].setX(stheta[1]*cos(phi12)*p2);
+    meMomenta()[3].setY(stheta[1]*sin(phi12)*p2);
+    meMomenta()[3].setZ(ctheta[1]*p2);
+    meMomenta()[3].setT(p2);
+    meMomenta()[3].setMass(ZERO);
+  }
   // finally the higgs
   meMomenta()[4].setX(-meMomenta()[2].x()-meMomenta()[3].x());
   meMomenta()[4].setY(-meMomenta()[2].y()-meMomenta()[3].y());
@@ -325,7 +420,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
   if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
     return false;
   // final bits of the jacobian
-  Energy2 dot = meMomenta()[3]*meMomenta()[4];
+  Energy2 dot = _swap? meMomenta()[2]*meMomenta()[4] : meMomenta()[3]*meMomenta()[4];
   jacobian(jacobian()*p1*sqr(p2)/roots/dot);
   return true;
 }
@@ -333,7 +428,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
 CrossSection MEfftoffH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
-  InvEnergy2 bwfact = -1.0/MeV2;
+  InvEnergy2 bwfact = ZERO;
   Energy moff =meMomenta()[4].mass();
   if(_shapeopt==1) {
     tPDPtr h0 = getParticleData(ParticleID::h0);
@@ -341,7 +436,7 @@ CrossSection MEfftoffH::dSigHatDR() const {
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
   else if(_shapeopt==2) {
-    bwfact = _hmass->BreitWignerWeight(moff,0);
+    bwfact = _hmass->BreitWignerWeight(moff);
   }
   double jac1 = _shapeopt!=0 ? 
     double( bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;
@@ -349,8 +444,7 @@ CrossSection MEfftoffH::dSigHatDR() const {
   return jac1*me2()*jacobian()/pow(Constants::twopi,3)/32.*sqr(hbarc)/sHat();
 }
 
-void MEfftoffH::constructVertex(tSubProPtr sub) {
-//   SpinfoPtr spin[5];
+void MEfftoffH::constructVertex(tSubProPtr ) {
 //   // extract the particles in the hard process
 //   ParticleVector hard;
 //   hard.push_back(sub->incoming().first);
@@ -371,16 +465,12 @@ void MEfftoffH::constructVertex(tSubProPtr sub) {
 //   SpinorBarWaveFunction(fout,hard[3],outgoing,true ,true);
 //   SpinorWaveFunction(   aout,hard[4],outgoing,true ,true);
 //   helicityME(fin,ain,fout,aout,true);
-//   // get the spin info objects
-//   for(unsigned int ix=0;ix<5;++ix) {
-//     spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
-//   }
 //   // construct the vertex
 //   HardVertexPtr hardvertex=new_ptr(HardVertex());
 //   // set the matrix element for the vertex
 //   hardvertex->ME(_me);
 //   // set the pointers and to and from the vertex
 //   for(unsigned int ix=0;ix<5;++ix) {
-//     spin[ix]->setProductionVertex(hardvertex);
+//     hard[ix]->spinInfo()->productionVertex(hardvertex);
 //   }
 }

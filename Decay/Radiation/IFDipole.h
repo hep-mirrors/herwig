@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // IFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -26,9 +26,11 @@ using ThePEG::Constants::pi;
 /** \ingroup Decay
  *
  * The IFDipole class generates radiation from a final-final dipole for
- * the generation of photons in decay by the YODA algorithm.
+ * the generation of photons in decay by the SOPTHY algorithm.
  * 
- * @see YODA
+ * @see SOPTHY 
+ * @see \ref IFDipoleInterfaces "The interfaces"
+ * defined for IFDipole.
  */
 class IFDipole: public Interfaced {
 
@@ -40,7 +42,7 @@ public:
    * The default constructor.
    */
   IFDipole() :
-    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
+    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(),
     _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
     _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
     _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
@@ -237,11 +239,6 @@ private:
    *  Photon multiplicity being generated
    */
   unsigned int _multiplicity;
-
-  /**
-   * Maximum number of photons to generate
-   */
-  unsigned int _nphotonmax;
 
   /**
    *  Map from arguments of lists such that

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Interpolator.tcc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -34,10 +34,15 @@ void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
      >> iunit(_xunit,TypeTraits<ArgT>::baseunit);
 }
 
-template <typename ValT, typename ArgT>
-ClassDescription<Interpolator<ValT,ArgT> > 
-Interpolator<ValT,ArgT>::initInterpolator;
-// Definition of the static class description member.
+#define HERWIG_INTERPOLATOR_CLASSDESC(ValT,ArgT)                          \
+/**                                                                       \
+ * This template specialization registers the Interpolator with ThePEG    \
+ */                                                                       \
+template <>                                                               \
+ClassDescription<Interpolator<ValT,ArgT> >                                \
+Interpolator<ValT,ArgT>::initInterpolator                                 \
+= ClassDescription<Interpolator<ValT,ArgT> >();                           \
+
 
 template <typename ValT, typename ArgT>
 void Interpolator<ValT,ArgT>::Init() {
@@ -76,7 +81,7 @@ void Interpolator<ValT,ArgT>::Init() {
   static Parameter<Interpolator<ValT,ArgT>,ArgT> interfaceArgType
     ("ArgType",
      "The unit of the function arguments",
-     &Interpolator<ValT,ArgT>::xfunit, 
+     &Interpolator<ValT,ArgT>::_xunit, 
      TypeTraits<ArgT>::baseunit, 
      1.0*TypeTraits<ArgT>::baseunit, 
      0*TypeTraits<ArgT>::baseunit, 

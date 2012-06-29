@@ -1,0 +1,34 @@
+read LHC.common
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+cd /Herwig
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+set Model:EW/CKM:theta_12 0.
+set Model:EW/CKM:theta_13 0.
+set Model:EW/CKM:theta_23 0.
+set Model:EW/CKM:delta 0.
+set Model:EW/Sin2ThetaW .2319
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM2
+set /Herwig/Particles/h0:NominalMass 115
+set /Herwig/Particles/Z0:NominalMass 91.188
+set /Herwig/Particles/W+:NominalMass 80.42
+set /Herwig/Particles/W-:NominalMass 80.42
+set /Herwig/Masses/HiggsMass:HiggsShape 0
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 10000
+set LHCGenerator:EventHandler:StatLevel Full
+set /Herwig/Particles/h0:Stable Stable
+cd /Herwig/MatrixElements/
+set MEPP2HiggsVBF:MaxFlavour 5
+set MEPP2HiggsVBF:ShapeScheme OnShell
+set MEPP2HiggsVBF:Process Both
+insert SimpleQCD:MatrixElements[0]  MEPP2HiggsVBF
+set /Herwig/Cuts/JetKtCut:MinKT 0.*GeV
+cd /Herwig/Generators
+create Herwig::HadronVBFTest VBF-Test HadronTest.so
+insert LHCGenerator:AnalysisHandlers 0 VBF-Test
+saverun LHC-VBF LHCGenerator

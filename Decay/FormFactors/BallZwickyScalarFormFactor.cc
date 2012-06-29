@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BallZwickyScalarFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -98,10 +98,10 @@ void BallZwickyScalarFormFactor::doinit() {
 //     out= getParticleData(id1);
 //     m1=out->mass();
 //     output << "new frame " << endl;
-//     output << "set font duplex" << endl;
+//     output << "newdef font duplex" << endl;
 //     output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
 // 	   << " scalar form factors \"" << endl;
-//     output << "set limits x 0 14. y 0 1" << endl;
+//     output << "newdef limits x 0 14. y 0 1" << endl;
 //     double rt(sqrt(2.));
 //     for(iz=0;iz<3;++iz) {
 //       q2=ZERO;
@@ -304,26 +304,26 @@ void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BallZwickyScalarFormFactor "
 		    << name() << " \n";
-  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":r_10 " << ix << " " << _r10[ix] << "\n";
-      output << "set " << name() << ":r_20 " << ix << " " << _r20[ix] << "\n";
-      output << "set " << name() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
-      output << "set " << name() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
-      output << "set " << name() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
-      output << "set " << name() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
-      output << "set " << name() << ":m_120 " 
+      output << "newdef " << name() << ":r_10 " << ix << " " << _r10[ix] << "\n";
+      output << "newdef " << name() << ":r_20 " << ix << " " << _r20[ix] << "\n";
+      output << "newdef " << name() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
+      output << "newdef " << name() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
+      output << "newdef " << name() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
+      output << "newdef " << name() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
+      output << "newdef " << name() << ":m_120 " 
 	     << ix << " " << _m120[ix]/GeV2 << "\n";
-      output << "set " << name() << ":mfit20 " 
+      output << "newdef " << name() << ":mfit20 " 
 	     << ix << " " << _mfit20[ix]/GeV2 << "\n";
-      output << "set " << name() << ":m_12plus " 
+      output << "newdef " << name() << ":m_12plus " 
 	     << ix << " " << _m12plus[ix]/GeV2 << "\n";
-      output << "set " << name() << ":mfit2plus " 
+      output << "newdef " << name() << ":mfit2plus " 
 	     << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
-      output << "set " << name() << ":m_12T " 
+      output << "newdef " << name() << ":m_12T " 
 	     << ix << " " << _m12T[ix]/GeV2 << "\n";
-      output << "set " << name() << ":mfit2T " 
+      output << "newdef " << name() << ":mfit2T " 
 	     << ix << " " << _mfit2T[ix]/GeV2 << "\n";
     }
     else {

@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffbndc:
 	DOUBLE PRECISION function ffbndc(n1,n2,carray)
 *************************************************************************
@@ -11,7 +14,7 @@
 	implicit none
 	integer n1,n2
 	DOUBLE COMPLEX carray(n1+n2)
-	include 'ff.h'
+#include "ff.h"
 	if ( carray(n1+n2) .eq. 0 ) then
 	   print *,'ffbnd: fatal: array not intialized; did you call ',
      +		'ffini?'

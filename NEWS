@@ -1,5 +1,801 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
+
+** New NLO framework
+   Matchbox, a flexible and very general framework for performing NLO
+   calculations at fixed order or matched to parton showers is
+   provided with this release.
+
+** Dipole shower algorithm
+   A first implementation of the coherent dipole shower algorithm by
+   Plätzer and Gieseke (arXiv:0909.5593 and arXiv:1109.6256) is
+   available.
+
+** Alternative samplers and the ExSample library
+   The ExSample library by Plätzer (arXiv:1108.6182) is shipped along
+   with Herwig++ in an extended version. The extended version provides
+   SamplerBase objects which can be used alternatively to the default
+   ACDCSampler.
+
+** New BSM models
+*** New colour sextet diquark model
+    A colour sextet diquark model has been included, as described in
+    Richardson and Winn (arXiv:1108.6154).
+
+*** Models reproducing the CDF t-tbar asymmetry
+    Four models that can reproduce the reported t-tbar asymmetry have
+    been included. 
+    
+*** Zprime
+    A simple standard model extension by one additional heavy neutral
+    vector boson.
+
+** Interface to AlpGen, with MLM merging
+   The Contrib directory contains a new interface to the AlpGen matrix
+   element generator. AlpGen events must be preprocessed with the
+   provided AlpGenToLH.exe tool before they can be used. More
+   information can be found in the Herwig++ 2.6 release note.
+
+** HiggsVBF Powheg
+   Higgs boson production by vector boson fusion is available at NLO
+   in the POWHEG scheme, as described in d'Errico, Richardson
+   (arXiv:1106.2983). The Powheg DIS processes were available in
+   Herwig++-2.5.2 already.
+   
+** Statistical colour reconnection
+   Alternative mechanisms to minimize the colour length Sum(m_clu)
+   before the hadronization stage, based on Metropolis and annealing
+   algorithms.
+
+** Energy extrapolation of underlying-event tunes
+   To describe underlying-event data at different c.m. energies, the
+   energy-dependent parameter pT_min will now be adjusted
+   automatically, following a power-law. The new tune parameters are
+   the value at 7000 GeV "MPIHandler:pTmin0", and MPIHandler:Power.
+
+** Ticket #239: Reporting of minimum-bias cross-section
+   When simulating minimum-bias events using the MEMinBias matrix
+   element, the correct unitarized cross section can now be reported
+   via the standard facilities; it is no longer necessary to extract
+   it from the .log file of the run. The corresponding functionality
+   is enabled by inserting a MPIXSecReweighter object as a
+   post-subprocess handler: 
+   create Herwig::MPIXSecReweighter MPIXSecReweighter 
+   insert LHCHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+
+** Dependency on 'boost'
+   Herwig++ now requires the boost headers to build; if not detected
+   in standard locations, specify with the --with-boost configure
+   option.
+
+** Tests directory
+   The Tests directory now contains input cards for almost all Rivet
+   analyses. A full comparison run can be initiated with 'make tests'.
+
+** Minor changes
+*** Default LHC energy now 8 TeV
+    All LHC-based defaults have now been updated to use 8 TeV as the
+    center-of-mass energy.
+
+*** Herwig::ExtraParticleID -> ThePEG::ParticleID
+    The namespace for additional particles has been unified into
+    ThePEG::ParticleID
+
+*** MEee2VectorMeson
+    The e+e- -> vector meson matrix element has moved from Contrib into
+    HwMELepton.so
+
+*** SUSY numerics fixes
+    Better handling of rare numerical instabilities.
+
+*** YODA output for Rivet
+    The built-in histogramming handler can now output data in the YODA
+    format used by Rivet.
+
+*** Consistency checks in SLHA file reader
+    Better warnings for inconsistent SusyLHA files
+
+*** better colour flow checking for development
+
+** Bug fixes
+*** Extremely offshell W from top decay
+    Numerical improvements for very off-shell W bosons coming from top
+    decays.
+
+*** Ticket #367: problems in using SUSY + LHE
+    Susy events from Les Houches event files are now handled better.
+
+*** Infinite loop in remnant decayer
+    The remnant decayer will now abort after 100 tries.
+
+*** Fix to HiggsVBF LO diagrams 
+    The diagram structure of HiggsVBF LO matrix elements has been fixed.
+
+*** LEP thrust fix 
+    The calculation of the transverse momentum of a branching from the
+    evolution variable in final-state radiation can now be
+    changed. While formally a sub-leading choice this enables a better
+    description of the thrust distribution in e+e- collisions at
+    small values of the thrust. Currently the default behaviour, where
+    the cut-off masses are used in the calculation, remains the same
+    as previous versions.
+
+
+
+
+* Herwig++-2.5.2 release: 2011-11-01 (tagged at SVN r6928)
+
+** Optional new jet vetoing model
+   The jet vetoing model by Schofield and Seymour (arXiv:1103.4811) is
+   available via Evolver:ColourEvolutionMethod,
+   PartnerFinder:PartnerMethod and SplittingFunction:SplittingColourMethod.
+   The default behaviour is unchanged.
+
+** MPI tune
+   Version 3 of the MPI tunes is now the default. Please note that the
+   pT parameter is energy-dependent and needs to be modified when an
+   LHC run is not at 7 TeV.
+   The latest tunes are always available at 
+     http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+
+** MPI PDFs
+   MPI PDFs can now be controlled independently.
+
+** Initialization time speedup
+   A new BSMModel base class was introduced between StandardModel and
+   the BSM model classes. Together with a restructured decay mode
+   initialization, this offers significantly faster startup times for
+   BSM runs. ThreeBodyDecays can now always be switched on without a
+   large speed penalty.
+
+** Decay mode file
+   Decay mode files in the SLHA format can now be read separately in
+   any BSM model with 'set Model:DecayFileName filename'
+
+** Powheg DIS
+   Charged- and neutral-current DIS processes implementing the POWHEG
+   method are now available.
+
+** Diffraction models
+   Xi cut implemented in PomeronFlux
+
+** Ticket #352: Colour reconnection fixed in DIS
+
+** Ticket #353: Improved numerical stability in chargino decays
+
+** Ticket #358: Infinite loop in top events with pT cut in shower
+
+** Ticket #361: Problem with duplicate 2-body modes in BSM
+
+** Tickets #362 / #363: Crashes with baryon number violating models
+   Particle decays in SUSY models with RPV now work correctly in the
+   colour 8 -> 3,3,3 case. Colour reshuffling now works for RPV
+   clusters.
+
+** Improved Fastjet detection
+   The configure step uses fastjet-config to make sure all header file
+   paths are seen.
+
+** Darwin 11 / OS X Lion
+   A configure bug was fixed which prevented 'make check' from
+   succeeding on OS X Lion.
+
+** Vertex classes
+   The specification of QED / QCD orders has been moved to the vertex
+   constructors, to allow ThePEG consistency checks. WWHH vertices in
+   MSSM and NMSSM were fixed. Some Leptoquark and UED vertices fixed.
+
+** Hadronization
+   Cleanup of obsolete code.
+
+
+
+* Herwig++-2.5.1 release: 2011-06-24 (tagged at SVN r6609)
+
+** Example input files at 7 TeV
+   All our example input files for LHC now have their beam energy set
+   to 7 TeV instead of 14 TeV.
+
+** Colour reconnection on by default
+   The colour reconnection tunes are now the default setup. Version 2
+   of the tunes replaces the *-1 tunes, which had a problem with LEP
+   event shapes.
+
+** Run name tags
+   Aded possibility to add a tag to the run name when running with the
+   '-t' option. One run file can thus be run with different seeds and
+   results stored in different output files.
+
+** Floating point exceptions
+   The new command line option -D enables floating point error checking.
+
+** General improvements to WeakCurrent decays
+
+** Remnant decayer
+   Hardwired gluon mass was removed.
+
+** WeakCurrentDecayConstructor
+   Instead of specifying separate Particle1...Particle5 vectors for
+   the decay modes, the new interface DecayModes can be filled with
+   decay tags in the standard syntax.
+
+** BSM: improvements to handling of vertex and model initialisation
+
+** Powheg Higgs
+   Option to use pT or mT as the scale in alphaS and for the
+   factorization scale in the PDFs
+
+** Ticket #337: Tau polarization wrong in charged Higgs decay
+
+** Ticket #339: Colour flows in GeneralThreeBody Decayers for 3bar -> 8 3bar 1
+
+** Ticket #340: Crash for resonant zero-width particles
+
+** Ticket #341: Varying scale for BSM processes
+   The scale used is now ResonantProcessConstructor:ScaleFactor or
+   TwoToTwoProcessConstructor:ScaleFactor multiplied by sHat.
+
+** Ticket #346: Chargino decays
+   Chargino decayers now automatically switch between the mesonic
+   decays for mass differences less than 2 GeV and the normal partonic
+   decays above 2 GeV.
+
+** Ticket #349: Stop by default on input file errors
+   The '--exitonerror' flag is now the default behaviour for the
+   Herwig++ binary. To switch back to the old behaviour,
+   '--noexitonerror' is required.
+
+** Ticket #351: Four-body stop decays
+
+** Tested with gcc-4.6
+
+
+
+* Herwig++-2.5.0 release: 2011-02-08 (tagged at SVN r6274)
+
+** Uses ThePEG-1.7.0
+   Herwig++ 2.5.0 requires ThePEG 1.7.0 to benefit from various
+   improvements, particularly: handling of diffractive processes;
+   respecting LD_LIBRARY_PATH when loading dynamic libraries,
+   including LHAPDF; improvements to repository commands for decay
+   modes. See ThePEG's NEWS file for more details.
+
+** POWHEG improvements
+
+*** New POWHEG processes
+    Simulation at NLO accuracy using the POWHEG method is now
+    available for hadronic diboson production (pp to WW,WZ,ZZ), Higgs
+    decays to heavy quarks, and e+e- to two jets or ttbar, including
+    full mass dependence.
+
+*** Input file changes
+    The input files for setting up POWHEG process simulation have been
+    simplified.  See the example files LHC-Powheg.in and TVT-Powheg.in
+    for the improved command list.
+
+*** Structural changes
+    The POWHEG backend in the shower code has been restructured to
+    make future additions easier: PowhegEvolver has merged with
+    Evolver; both the matrix element corrections and real corrections
+    in the POWHEG scheme are implemented directly in the ME or Decayer
+    classes.
+
+** New processes at leading order
+
+*** Photon initiated processes
+    We have added a matrix element for dijet production in gamma
+    hadron collisions.
+    
+*** Bottom and charm in heavy quark ME
+    The option of bottom and charm quarks is now supported for heavy
+    quark production in MEHeavyQuark.
+
+** Colour reconnection
+   The cluster hadronization model has been extended by an option to
+   reconnect coloured constituents between clusters with a given
+   probability. This new model is different from the colour
+   reconnection model used in FORTRAN HERWIG, and improves the
+   description of minimum bias and underlying event data.
+
+** Diffractive Processes
+   Both single and double diffractive processes are now supported in
+   Herwig++. The Pomeron PDF is implemented using a fit to HERA data,
+   and a pion PDF can be used to model reggeon flux.
+
+** BSM physics
+
+*** New models 
+    We have added new BSM models, particularly ADD-type extra
+    dimension models and the next-to-minimal supersymmetric standard
+    model (NMSSM).  Effects of leptoquarks can as well be simulated.
+
+*** Vertex additions
+    We have added flavour changing stop interactions (stop -
+    neutralino - charm) and gravitino interactions with particular
+    emphasis on numerical stability for very light gravitinos.
+    Tri-linear Higgs and Higgs-Higgs/Vector-Vector four-vertices are
+    available as well.
+
+*** Input file changes
+    The SUSY model can now also extract the SLHA information from the
+    header of a Les Houches event file: replace the SLHA file name
+    in the example input files with the LH file name.
+
+*** Structure
+    The backend structure of the HardProcessConstructor has changed,
+    to allow easier inclusion of new process constructors. Some 2->3
+    BSM scattering processes involving neutral higgs bosons are now
+    included. The spin handling has been improved in the background. 
+
+** Shower splitting code reorganized
+   The selection of spin structures has been decoupled from the choice
+   of colour structure. This gives more flexibility in implementing
+   new splittings. Selected splittings can be disabled in the input
+   files.
+
+** B mixing
+   B mixing, and indirect CP violation in the B meson system are
+   included now.
+   
+** Looptools
+   The Looptools directory has been updated to reflect T.Hahn's
+   Looptools 2.6.
+
+** Contrib changes
+   The ROOT interface has been removed as deprecated. The MCPWNLO code
+   has temporarily been removed from the Contrib directory as a major
+   review of this code is required. Additionally, there are various
+   fixes to all other codes shipped in Contrib.
+
+** DIS improvements
+   The momentum reshuffling in DIS events has been improved.
+
+** mu and nu beams
+   mu, nu_e and nu_mu and their antiparticles are now available as
+   beam particles. They are all supported in the DIS matrix
+   elements. mu+ mu- collisions are supported in the general
+   matrix element code for BSM models, but not yet in the hard-coded
+   matrix elements for lepton-lepton scattering.
+
+** Structural changes
+
+*** Inline code
+    Inline code has been merged into the header files, .icc files were
+    removed.
+
+*** Silent build
+    By default, Herwig++ now builds with silent build rules. To get
+    the old behaviour, run 'make V=1'.
+
+*** Debug level
+    The debug level on the command line will now always have priority.
+
+*** Event counter
+    The event counter has been simplified.
+
+*** Interpolator persistency
+    Interpolators can now be written persistently.
+
+** Ticket #307: Momentum violation check in BasicConsistency
+   Added parameters AbsoluteMomentumTolerance and
+   RelativeMomentumTolerance
+
+** Example POWHEG input files
+   The example input files for Powheg processes now set the NLO
+   alpha_S correctly, and are run as part of 'make check'.
+
+** Truncated shower
+   A problem which lead to the truncated shower not being applied in
+   some cases has been fixed.
+
+** Fixes to numerical problems
+   Minor problems with values close to zero were fixed in several
+   locations.
+
+** Remove duplicated calculation of event shapes
+   An accidental duplication in the calculation of event shapes was
+   removed, they are now only calculated once per event. Several other
+   minor issues in the event shape calculations have also been fixed.
+
+** MRST PDFs fixed
+   An initialization problem in the internal MRST PDFs was fixed.
+
+** Vertex scale choice
+   The scale in the Vertex classes can now be zero where
+   possible.
+
+** Treatment of -N flag
+   The Herwig++ main program now correctly treats the -N flag
+   as optional.
+
+** Numerical stability improved
+   The numerical stability in the 'RunningMass' and
+   'QTildeReconstructor' classes has been improved.  The
+   stability of the boosts in the SOPTHY code for the
+   simulation of QED radiation has been improved.
+   The accuracy of boosts in the z-direction has been improved to
+   fix problems with extremely high p_T partons.
+
+** Bugfix in initial state splittings
+   A bug in the implementation of the PDF weight in initial-state
+   qbar -> qbar g  splittings has been fixed.
+
+** Bugfix in chargino neutralino vertices
+   A bug in the 'chi+- chi0 W-+' and charged
+   Higgs-sfermions vertices has been fixed.
+
+** Remove uninitialized variables written to repository
+   A number of uninitialised variables which were written to the
+   repository have been initialised to zero to avoid problems on some
+   systems.
+
+** Fix to QED radiation in hadronic collisions
+   The longitudinal boost of the centre-of-mass frame in hadronic
+   collisions is correctly accounted for now in the generation of QED
+   radiation.
+
+** Fix to numerical problems in two-body decays
+   Numerical problems have been fixed, which appeared in the rare case
+   that the three-momenta of the decay products in two-body decays are
+   zero in the rest frame of the decay particle.
+
+** A problem with forced splittings in the Remnant was fixed.
+
+** ME correction for W+- decays applied properly
+   The matrix element correction for QCD radiation in W+- decays
+   which was not being applied is now correctly used.
+
+** Top quark decays from SLHA file
+   The presence of top quark decay modes in SLHA files is now handled
+   correctly.
+
+** Exceptional shower reconstruction kinematics
+   Additional protection against problems due to the shower
+   reconstruction leading to partons with x>1 has been added.
+
+** Ordering of particles in BSM processes
+   Changes have been made to allow arbitrary ordering of the outgoing
+   particles in BSM processes.
+
+** Bugfixes in tau decays
+   Two bugs involving tau decays have been fixed. The wrong masses
+   were used in the 'KPiCurrent' class for the scalar form factors
+   and a mistake in the selection of decay products lead to
+   tau- --> pi0 K- being generated instead of tau- --> eta K-.
+
+** Avoid crashes in baryon number violating processes.
+   To avoid crashes, better protection has been introduced for the
+   case where diquarks cannot be formed from the quarks in a
+   baryon-number violating process. In addition, the parents of the
+   baryon-number violating clusters have been changed to avoid
+   problems with the conversion of the events to HepMC.
+
+** QED radiation in W- decays
+   A bug in the 'QEDRadiationHandler' class which resulted
+   in no QED radiation being generated in W- decays has been fixed.
+
+** A number of minor fixes to the SUSY models have been made.
+
+** Partial width calculations in BSM models  
+   A fix for the direction of the incoming particle in the calculation
+   of two-body partial widths in BSM models has been made.
+
+** LoopTools improvements   
+   The LoopTools cache is now cleared more frequently to
+   reduce the amount of memory used by the particle.
+
+** Negative gluino masses are now correctly handled.
+
+** A problem with mixing matrices which are not square has been fixed. 
+
+** Removed duplicate diagram
+   The 'MEee2gZ2ll' class has been fixed to only include the
+   photon exchange diagram once rather than twice as previously.
+
+** Fix for duplicate particles in DecayConstructor
+   A problem has been fixed which occurred if the same particle was
+   included in the list of DecayConstructor:DecayParticles.
+
+** Fixes for UED model vertices
+   A number of minor problems in the vertices for the UED model have
+   been fixed.
+
+** Include missing symmetry factor
+   The missing identical-particle symmetry factor in
+   'MEPP2GammaGamma' has been included.
+
+** Fix floating point problem in top decays
+   A floating point problem in the matrix element correction for top
+   decays has been fixed.
+
+
+
+* Herwig++-2.4.2 release: 2009-12-11 (tagged at SVN r5022)
+
+** Ticket #292: Tau decay numerical instability
+   The momentum assignment in tau decays contained numerical
+   instabilities which have been fixed by postponing the tau decay
+   until after the parton shower. A new interface setting
+   DecayHandler:Excluded is available to prevent decays in the shower
+   step. This is enabled by default for tau only.
+
+** Ticket #290: Missing MSSM colour structure
+   The missing colour structure for gluino -> gluon neutralino was added.
+
+** Ticket #294: Zero momentum in some decays
+   Some rare phase space points lead to zero momentum in two-body
+   decays. This has been fixed.
+
+** Ticket #295: Stability of QED radiation for lepton collider processes
+   The numerical stability of QED radiation momenta was improved
+   further.
+
+** Ticket #296: K0 oscillation vertex was wrong
+   The oscillation from K0 to K0_L/S now takes place at the production
+   vertex of K0.
+
+** Ticket #289: Undefined variables in repository
+   On some system configurations, undefined variables were written to
+   the repository. These have been fixed.
+
+** Fixed QED radiation for hadron processes
+   The longitudinal boost of the centre-of-mass frame in hadronic
+   collisions is correctly accounted for now.
+
+** Numerical stability fixes 
+   Small fixes in RunningMass and QTildeReconstructor.
+
+** Powheg example input files
+   The example input files for Powheg processes now set the NLO
+   alpha_S correctly, and are run as part of 'make check'.
+
+** OS X builds for Snow Leopard
+   Snow Leopard machines will now be recognized as a 64bit
+   architecture.
+
+
+
+
+* Herwig++-2.4.1 release: 2009-11-19 (tagged at SVN r4932)
+
+** Uses ThePEG-1.6.0 
+   Herwig++ now requires ThePEG-1.6.0 to benefit from the improved
+   helicity code there. If you have self-written vertex classes, see
+   ThePEG's NEWS file for conversion instructions.
+
+** Vertex improvements
+   ThePEG's new helicity code allowed major simplification of the vertex
+   implementations for all Standard Model and BSM physics models.
+
+** New Transplanckian scattering model
+   An example configuration is in LHC-TRP.in
+
+** BSM ModelGenerator as branching ratio calculator
+   The BSM ModelGenerator has a new switch to output the branching
+   ratios for a given SLHA file in SLHA format, which can then be used
+   elsewhere.
+
+** BSM debugging: HardProcessConstructor
+   New interface 'Excluded' to exclude certain particles from
+   intermediate lines.  
+
+** Chargino-Neutralino-W vertex fixed
+
+** Spin correlations
+   are now switched on by default for all perturbative decays.
+
+** Ticket #276: Scale choice in BSM models' HardProcessConstructor
+   New interface 'ScaleChoice' to choose process scale between 
+   - sHat (default for colour neutral intermediates) and 
+   - transverse mass (default for all other processes).
+
+** Ticket #287: Powheg process scale choice
+   The default choice is now the mass of the colour-singlet system.
+   
+** Ticket #278: QED radiation for BSM
+   Soft QED radiation is now enabled in BSM decays and all
+   perturbative decays by default. 
+
+** Ticket #279: Full 1-loop QED radiation for Z decays
+   Soft QED radiation in Z decays is now fully 1-loop by default.
+
+** Ticket #280: Redirect all files to stdout
+   This is now implemented globally. The files previously ending in
+   -UE.out and -BSMinfo.out are now appended to the log file. They now
+   also obey the EventGenerator:UseStdout flag.
+
+** Ticket #270: LaTeX output updated
+   After each run, a LaTeX file is produced that contains the full
+   list of citations. Please include the relevant ones in publications.
+
+** Ticket #256: Mac OS X problems
+   An initialization problem that affected only some configurations has
+   been identified and fixed.
+
+** Tests directory added
+   This contains many .in files, to exercise most matrix
+   elements. 
+
+** Minor fixes
+*** Prevent rare x>1 partons in shower reconstruction.
+*** SUSY-LHA parameter EXTPAR can be used to set tan beta
+*** Improved Fastjet detection at configure time
+
+
+
+
+
+* Herwig++-2.4.0 release: 2009-09-01 (tagged at SVN r4616)
+
+** New matrix elements
+   We have added a built-in implementation of several new matrix elements:
+   PP --> WW / WZ / ZZ
+   PP --> W gamma / Z gamma
+   PP --> VBF Higgs
+   PP --> Higgs tt / Higgs bb
+   e+e- --> WW / ZZ
+   gamma gamma --> ff / WW 
+
+
+
+** Base code improvements
+*** Ticket #257: Remnant handling
+    A problem with forced splittings in the Remnant was fixed.
+
+*** Ticket #264: Soft matrix element correction
+    A problem with emissions form antiquarks was fixed. 
+
+
+
+** PDF sets
+*** New default set
+    MRST LO** is the new default PDF set. LO* is also available built-in.
+
+*** Shower PDFs can be set separately from the hard process
+    Use the 'ShowerHandler:PDF' interface.
+
+
+
+** Parameter tunes
+    Shower, hadronization and underlying event parameters were retuned
+    against LEP and Tevatron data respectively.
+
+
+
+** BSM module improvements
+*** Ticket #259: read error for some UED models
+    Arbitrary ordering of outgoing lines in the process description is now
+    possible.
+
+*** Ticket #266: branching ratio sums
+    The warning threshold for branching ratios not summing to 1 has
+    been relaxed. It is now a user interface parameter.
+
+*** Ticket #267: Top decay modes
+    Top decay modes listed in SLHA files are now handled correctly.
+
+
+
+** QED radiation 
+*** Ticket #241: Soft QED radiation is now enabled by default
+
+*** Ticket #265: Radiation off W+ and W- is now handled correctly
+
+
+
+** Interfaces
+*** Ticket #243: Fastjet
+    Fastjet is now the only supported jet finder code. All example
+    analyses have been converted to use Fastjet.
+
+*** KtJet and CLHEP interfaces have been removed.
+
+*** New interfaces to AcerDet and PGS available in Contrib
+
+*** MCPWnlo distributed in Contrib
+
+*** HepMC and Rivet interfaces moved to ThePEG
+
+
+
+** Ticket #239: Inelastic cross-section for MinBias
+   This information is now available in the ...-UE.out files.
+
+
+
+** Technical changes
+*** Ticket #186
+    Configure now looks for ThePEG in the --prefix location first.
+
+*** Configure information
+    Important configuration information is listed at the end of the
+    'configure' run and in the file 'config.thepeg'. Please provide
+    this file in any bug reports.
+
+*** New ZERO object
+    The ZERO object can be used to set any dimensionful quantity to
+    zero. This avoids explicit constructs like 0.0*GeV.
+
+*** Exception specifiers removed
+    Client code changes are needed in doinit() etc., simply remove the
+    exception specifier after the function name.
+
+*** Ticket #263: Tau polarizations can be forced in TauDecayer
+
+
+
+
+
+* Herwig++-2.3.2 release: 2009-05-08 (tagged at SVN r4249)
+
+** SUSY enhancements
+
+*** Ticket #245: Select inclusive / exclusive production
+    Using the new 'HardProcessConstructor:Processes' switch options
+    'SingleParticleInclusive', 'TwoParticleInclusive' or 'Exclusive'
+*** Improved three-body decay generation
+    Several problems were fixed, incl. tickets #249 #250 #251
+    Thanks to J.Tattersall and K.Rolbiecki for the stress-testing!
+*** Looptools fix
+    Release 2.3.1 had broken the Looptools initialization.
+*** Improved warning message texts
+
+** Ticket #237:
+   Values of q2last can now be zero where possible.
+
+** Ticket #240:
+   The Herwig++ main program now correctly treats the -N flag as optional.
+
+** Ticket #246:
+   Extreme pT partons fixed by improving accuracy of z boosts.
+
+** DIS
+   Improved parton shower momentum reshuffling.
+
+** Minimum Bias events
+   The zero-momentum interacting particle used for
+   bookkeeping is now labelled as a pomeron. 
+
+** User Makefile
+   Makefile-UserModules does not enable -pedantic anymore. User's ROOT
+   code will not compile otherwise.
+
+** Build system
+   Small fixes in the build system.
+
+
+
+* Herwig++-2.3.1 release: 2009-03-31 (tagged at SVN r4140)
+** Initial state showers
+   The PDF veto was wrongly applied to qbar->qbar g splittings.
+
+** User interaction
+   The Makefile-UserModules now includes the Herwig version number.
+   The -N flag to 'Herwig++ run' is optional now, as was always intended.
+
+** Contrib
+   The contrib directory is now included in the tarball. The omission
+   was accidental.
+
+** Numerical accuracy
+   Minor problems with values close to zero were fixed in several
+   locations.
+
+** LEP event shapes
+   An accidental duplication was removed, they are now only calculated
+   once per event.
+
+** MRST PDF code
+   Initialization problem fixed.
+
+** Mac OS X
+   The configure script was improved to detect libraries better.
+
+** Libtool
+   Updated to version 2.2.6
+
+
 * Herwig++-2.3.0 release: 2008-12-02 (tagged at SVN r3939)
 ** Major release, with many new features and bug fixes
 

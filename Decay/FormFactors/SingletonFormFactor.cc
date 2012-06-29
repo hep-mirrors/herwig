@@ -122,7 +122,16 @@ void SingletonFormFactor::Init() {
   static ClassDocumentation<SingletonFormFactor> documentation
     ("The SingletonFormFactor class implements the"
      " form-factors of PRD43, 2939 for the decay of spin-1/2 baryons"
-     " containing one heavy quark.");
+     " containing one heavy quark.",
+     "Spin-1/2 baryons with one heavy quark were decayed using "
+     "the form factors in \\cite{Singleton:1990ye}.",
+     "%\\cite{Singleton:1990ye}\n"
+     "\\bibitem{Singleton:1990ye}\n"
+     "  R.~L.~Singleton,\n"
+     "  %``Semileptonic baryon decays with a heavy quark,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 43} (1991) 2939.\n"
+     "  %%CITATION = PHRVA,D43,2939;%%\n"
+     );
 
   static Parameter<SingletonFormFactor,Energy> interfaceCharmMass
     ("CharmMass",
@@ -199,15 +208,15 @@ void SingletonFormFactor::dataBaseOutput(ofstream & output,bool header,
 					 bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::SingletonFormFactor " << name() << " \n";
-  output << "set " << name() << ":CharmMass " << _mcharm/GeV << " \n";
-  output << "set " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
-  output << "set " << name() << ":ThetaLambda " << _thetalambda << " \n";
-  output << "set " << name() << ":ThetaSigma " << _thetasigma << " \n";
-  output << "set " << name() << ":ThetaXi " << _thetaxi << " \n";
-  output << "set " << name() << ":ThetaXiPrime " << _thetaxip << " \n";
+  output << "newdef " << name() << ":CharmMass " << _mcharm/GeV << " \n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
+  output << "newdef " << name() << ":ThetaLambda " << _thetalambda << " \n";
+  output << "newdef " << name() << ":ThetaSigma " << _thetasigma << " \n";
+  output << "newdef " << name() << ":ThetaXi " << _thetaxi << " \n";
+  output << "newdef " << name() << ":ThetaXiPrime " << _thetaxip << " \n";
   for(unsigned int ix=0;ix<_polemass.size();++ix) {
     if(ix<initialModes()) {
-      output << "set " << name() << ":PoleMass " << ix << "  " 
+      output << "newdef " << name() << ":PoleMass " << ix << "  " 
 	     << _polemass[ix]/GeV << endl;
     }
     else {

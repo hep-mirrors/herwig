@@ -28,7 +28,7 @@ fi
 if test "x$CFLAGS" = "x"; then
    CFLAGS=-O3
 fi
-dnl Looptools manual requires no optimization
+dnl Looptools manual requires optimization off
 if test "x$FCFLAGS" = "x"; then
    FCFLAGS=-O0
 fi
@@ -37,6 +37,9 @@ dnl ==========================================
 AC_LANG([C++])
 
 AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
 dnl Checks for programs.
 AC_PROG_CXX([g++])
 AC_PROG_INSTALL
@@ -71,17 +74,15 @@ HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
 
+HERWIG_CHECK_BOOST
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
 
 HERWIG_PDF_PATH
 
-HERWIG_CHECK_HEPMC
-
-HERWIG_CHECK_KTJET
-
-dnl HERWIG_CHECK_FASTJET
+FASTJET_CHECK_FASTJET
 
 HERWIG_VERSIONSTRING
 
@@ -105,8 +106,14 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/RSModel/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
+		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
-		Interfaces/Makefile
+		Models/Transplanckian/Makefile
+		Models/Leptoquarks/Makefile
+		Models/Zprime/Makefile
+		Models/TTbAsymm/Makefile
+		Models/ADD/Makefile
+		Models/Sextet/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
@@ -120,6 +127,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
                 Doc/refman.conf
+                Doc/refman.h
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
@@ -128,16 +136,27 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Hadron/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
+                MatrixElement/Gamma/Makefile
+                MatrixElement/Matchbox/Makefile
+                MatrixElement/Matchbox/Base/Makefile
+                MatrixElement/Matchbox/Utility/Makefile
+                MatrixElement/Matchbox/Phasespace/Makefile
+                MatrixElement/Matchbox/Dipoles/Makefile
+                MatrixElement/Matchbox/InsertionOperators/Makefile
+                MatrixElement/Matchbox/Powheg/Makefile
+                MatrixElement/Matchbox/Builtin/Makefile
+                MatrixElement/Matchbox/Builtin/Processes/Makefile
+		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
-		Shower/Couplings/Makefile
-		Shower/Default/MECorrections/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
-		Shower/Powheg/Makefile
-		Shower/Powheg/HardGenerators/Makefile
-		Shower/Powheg/Matching/Makefile
-		Shower/Fortran/Makefile
                 Shower/Makefile
+		DipoleShower/Makefile
+		DipoleShower/Base/Makefile
+		DipoleShower/Kernels/Makefile
+		DipoleShower/Kinematics/Makefile
+		DipoleShower/Utility/Makefile
+		DipoleShower/AlphaS/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		lib/Makefile
@@ -149,15 +168,17 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
-		Analysis/BSM/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
+		Tests/Makefile
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 
 HERWIG_OVERVIEW
+
+AC_CONFIG_COMMANDS([summary],[cat config.herwig])
 
 AC_OUTPUT

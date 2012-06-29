@@ -1,11 +1,11 @@
-SUBDIRS = General Lepton Hadron DIS Powheg
+SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox
 
 noinst_LTLIBRARIES = libHwME.la 
 
 libHwME_la_SOURCES =  \
-HwME2to2Base.h HwME2to2Base.icc HwME2to2Base.cc \
-ME2to4Base.h ME2to4Base.cc \
+HwMEBase.h HwMEBase.fh HwMEBase.cc \
 MEfftoVH.h MEfftoVH.cc \
-MEfftoffH.h MEfftoffH.icc MEfftoffH.cc \
+MEfftoffH.h MEfftoffH.cc \
 HardVertex.fh HardVertex.h HardVertex.cc \
-ProductionMatrixElement.h ProductionMatrixElement.icc ProductionMatrixElement.cc
+ProductionMatrixElement.h ProductionMatrixElement.cc \
+DrellYanBase.h DrellYanBase.cc

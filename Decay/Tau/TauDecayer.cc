@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TauDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,6 +16,7 @@
 #include "TauDecayer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -144,11 +145,13 @@ int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children)
 
 
 void TauDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights;
+  os << _modemap << _current << _wgtloc 
+     << _wgtmax << _weights << _polOpt << _tauMpol << _tauPpol;
 }
 
 void TauDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights;
+  is >> _modemap >> _current >> _wgtloc 
+     >> _wgtmax >> _weights >> _polOpt >> _tauMpol >> _tauPpol;
 }
 
 ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
@@ -159,12 +162,6 @@ void TauDecayer::Init() {
   static ClassDocumentation<TauDecayer> documentation
     ("The TauDecayer class is designed to use a weak current"
      " to perform the decay of the tau.");
-
-  static Parameter<TauDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &TauDecayer::_gf, 1./GeV2, 1.16637E-5/GeV2, ZERO, 1.e-3/GeV2,
-     false, false, false);
 
   static Reference<TauDecayer,WeakDecayCurrent> interfaceWeakCurrent
     ("WeakCurrent",
@@ -188,6 +185,38 @@ void TauDecayer::Init() {
      "The weights for the integration.",
      &TauDecayer::_weights,
      0, 0, 0, 0., 1., false, false, true);
+
+  static Switch<TauDecayer,bool> interfacePolarizationOption
+    ("PolarizationOption",
+     "Option of forcing the polarization of the tau leptons, N.B. you"
+     " should only use this option for making distributions for"
+     " comparision if you really know what you are doing.",
+     &TauDecayer::_polOpt, false, false, false);
+  static SwitchOption interfacePolarizationOptionDefault
+    (interfacePolarizationOption,
+     "Default",
+     "Don't force the polarization use the full spin density matrices"
+     " to get the right answer",
+     false);
+  static SwitchOption interfacePolarizationOptionForce
+    (interfacePolarizationOption,
+     "Force",
+     "Force the polarizations",
+     true);
+
+  static Parameter<TauDecayer,double> interfaceTauMinusPolarization
+    ("TauMinusPolarization",
+     "The polarization of the tau-, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauMpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
+
+  static Parameter<TauDecayer,double> interfaceTauPlusPolarization
+    ("TauPlusPolarization",
+     "The polarization of the tau+, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauPpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
 }
 
 // combine the currents to give the matrix element
@@ -211,6 +240,17 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inbar ,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
+    if(_polOpt) {
+      _rho(0,1) = _rho(1,0) = 0.;
+      if(inpart.id()==ParticleID::tauminus) {
+	_rho(0,0) = 0.5*(1.-_tauMpol);
+	_rho(1,1) = 0.5*(1.+_tauMpol);
+      }
+      else {
+	_rho(0,0) = 0.5*(1.+_tauPpol);
+	_rho(1,1) = 0.5*(1.-_tauPpol);
+      }
+    }
     // work out the mapping for the hadron vector
     _constants = vector<unsigned int>(decay.size()+1);
     _ispin     = vector<PDT::Spin   >(decay.size());
@@ -275,7 +315,8 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
     // element
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	ME()(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*_gf;
+	ME()(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*
+	  SM().fermiConstant();
       }
     }
   }
@@ -295,7 +336,6 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "    << _gf*GeV2 << "\n";
   for(ix=0;ix<_wgtloc.size();++ix) {
     output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
@@ -309,6 +349,6 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
 	   << _weights[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << name() << ":WeakCurrent " << _current->name() << " \n";
+  output << "newdef " << name() << ":WeakCurrent " << _current->name() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

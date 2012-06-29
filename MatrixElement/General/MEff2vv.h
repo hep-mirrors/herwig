@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEff2vv.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -54,7 +54,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEff2vv() : theVec(0), theTen(0), theSca(0) {}
+  MEff2vv() : vector_(0), tensor_(0), scalar_(0) {}
 
   /** @name Virtual functions required by the GeneralHardME class. */
   //@{
@@ -66,16 +66,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -104,12 +94,14 @@ private:
    * @param m1 Whether v1 is massless or not
    * @param v2 A vector of VectorWaveFunction objects for the second vector
    * @param m2 Whether v2 is massless or not
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
    */
   ProductionMatrixElement 
   ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar, 
 	  const VBVector & v1, bool m1, const VBVector & v2, bool m2,
-	  double & me2) const;
+	  double & me2, bool first) const;
 
 public:
 
@@ -145,13 +137,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -164,6 +156,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
   
 private:
@@ -186,25 +184,25 @@ private:
    * Storage for a dynamically cast vertices for a tchannel vector
    * intermediate
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * Storage for a dynamically cast vertices for a schannel vector
    * intermediate
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
 
   /**
    * Storage for a dynamically cast vertices for a schannel scalar
    * intermediate
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > theTen;
+  vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > tensor_;
 
   /**
    * Storage for a dynamically cast vertices for a schannel scalar
    * intermediate for massless external vector bosons
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVVSVertexPtr> > theSca;
+  vector<pair<AbstractFFSVertexPtr, AbstractVVSVertexPtr> > scalar_;
 };
 
 }

@@ -11,12 +11,6 @@
 
 using namespace RadiativeZPrime;
 
-AnomalousVVVVertex::AnomalousVVVVertex() {
-  setNpoint(3);
-  setSpin(3,3,3);
-  setName(VVV);
-}
-
 AbstractNoPIOClassDescription<AnomalousVVVVertex> 
 AnomalousVVVVertex::initAnomalousVVVVertex;
 // Definition of the static class description member.
@@ -33,14 +27,14 @@ Complex AnomalousVVVVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
 			    const VectorWaveFunction & vec2,
 			    const VectorWaveFunction & vec3) {
   // calculate the coupling
-  setCoupling(q2,vec1.getParticle(),vec2.getParticle(),vec3.getParticle());
+  setCoupling(q2,vec1.particle(),vec2.particle(),vec3.particle());
   LorentzPolarizationVector eps = epsilon(vec1.wave(),vec2.wave(),vec3.wave());
-  if(vec1.getParticle()->id()==ParticleID::gamma) 
-    return getNorm()*Complex(0.,1.)*(eps*vec1.getMomentum())*UnitRemoval::InvE;
-  else if(vec2.getParticle()->id()==ParticleID::gamma) 
-    return getNorm()*Complex(0.,1.)*(eps*vec2.getMomentum())*UnitRemoval::InvE;
+  if(vec1.particle()->id()==ParticleID::gamma) 
+    return norm()*Complex(0.,1.)*(eps*vec1.momentum())*UnitRemoval::InvE;
+  else if(vec2.particle()->id()==ParticleID::gamma) 
+    return norm()*Complex(0.,1.)*(eps*vec2.momentum())*UnitRemoval::InvE;
   else
-    return getNorm()*Complex(0.,1.)*(eps*vec3.getMomentum())*UnitRemoval::InvE;
+    return norm()*Complex(0.,1.)*(eps*vec3.momentum())*UnitRemoval::InvE;
 }
 
 // off-shell vector

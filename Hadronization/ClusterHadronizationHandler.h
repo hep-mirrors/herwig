@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterHadronizationHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -57,7 +57,10 @@ public:
   /**
    * The default constructor.
    */
-  inline ClusterHadronizationHandler();
+  ClusterHadronizationHandler() 
+  : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*mm )
+  {}
+
   //@}
 
 public:
@@ -76,19 +79,22 @@ public:
    * It returns minimum virtuality^2 of partons to use in calculating 
    * distances. It is used both in the Showering and Hadronization.
    */
-  inline Energy2 minVirtuality2() const;
+  Energy2 minVirtuality2() const
+  { return _minVirtuality2; }
 
   /**
    * It returns the maximum displacement that is allowed for a particle
    * (used to determine the position of a cluster with two components).
    */
-  inline Length maxDisplacement() const;
+  Length maxDisplacement() const
+  { return _maxDisplacement; }
 
   /**
    * It returns true/false according if the soft underlying model
    * is switched on/off. 
    */
-  inline bool isSoftUnderlyingEventON() const;
+  bool isSoftUnderlyingEventON() const
+  { return _underlyingEventHandler; }
 
 public:
 
@@ -143,11 +149,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ClusterHadronizationHandler> initClusterHadronizationHandler;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
@@ -198,40 +199,15 @@ private:
    * The pointer to the Underlying Event handler. 
    */
   StepHdlPtr _underlyingEventHandler;
+
+  /**
+   * Tag the constituents of the clusters as their parents
+   */
+  void _setChildren(ClusterVector clusters) const;
+  
 };
 
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of ClusterHadronizationHandler.
- */
-struct BaseClassTrait<Herwig::ClusterHadronizationHandler,1> {
-  /** Typedef of the base class of ClusterHadronizationHandler. */
-  typedef HadronizationHandler NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ClusterHadronizationHandler>: 
-    public ClassTraitsBase<Herwig::ClusterHadronizationHandler> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::ClusterHadronizationHandler"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ClusterHadronizationHandler.icc"
 
 #endif /* HERWIG_ClusterHadronizationHandler_H */

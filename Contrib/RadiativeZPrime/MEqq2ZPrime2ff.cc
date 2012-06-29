@@ -17,18 +17,17 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "RadiativeZPrimeModel.h"
 
 using namespace RadiativeZPrime;
 
 MEqq2ZPrime2ff::MEqq2ZPrime2ff() : _maxflavour(5), _gammaZ(0), _process(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEqq2ZPrime2ff::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   _zPrime = getParticleData(32); 
   _z0     = getParticleData(ThePEG::ParticleID::Z0);
   _gamma  = getParticleData(ThePEG::ParticleID::gamma);
@@ -64,10 +63,10 @@ void MEqq2ZPrime2ff::getDiagrams() const {
 	  );
     // if not a valid process continue
     if(!(quark||lepton)) continue;
-    tcPDPtr lm = getParticleData(ix);
+    tcPDPtr lm = getParticleData(long(ix));
     tcPDPtr lp = lm->CC();
     for(unsigned int i = 1; i <= _maxflavour; ++i) {
-      tcPDPtr q  = getParticleData(i);
+      tcPDPtr q  = getParticleData(long(i));
       tcPDPtr qb = q->CC();
       if(Z0)     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _z0    , 3, lm, 3, lp, -1)));
       if(gamma)  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _gamma , 3, lm, 3, lp, -2)));
@@ -337,7 +336,6 @@ double MEqq2ZPrime2ff::qqME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2ZPrime2ff::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -355,13 +353,11 @@ void MEqq2ZPrime2ff::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(fout,hard[order[2]],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[order[3]],outgoing,true ,true);
   qqME(fin,ain,fout,aout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<4;++ix) 
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

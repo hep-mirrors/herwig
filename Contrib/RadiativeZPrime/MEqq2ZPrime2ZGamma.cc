@@ -16,7 +16,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "RadiativeZPrimeModel.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "AnomalousVVVVertex.h"
@@ -24,12 +24,14 @@
 using namespace RadiativeZPrime;
 
 MEqq2ZPrime2ZGamma::MEqq2ZPrime2ZGamma()  : _maxflavour(5) {
-  massOption(true ,2);
-  massOption(false,1);
+  vector<unsigned int> mopt(2,1);
+  mopt[0]=2;
+  massOption(mopt);
+  rescalingOption(2);
 }
 
 void MEqq2ZPrime2ZGamma::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   _zPrime = getParticleData(32); 
   tcSMPtr sm = generator()->standardModel();
   tcRadiativeZPrimeModelPtr model = 
@@ -44,7 +46,7 @@ void MEqq2ZPrime2ZGamma::getDiagrams() const {
   tcPDPtr Z0    = getParticleData(ParticleID::Z0);
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   for(unsigned int i = 1; i <= _maxflavour; ++i) {
-    tcPDPtr q  = getParticleData(i);
+    tcPDPtr q  = getParticleData(long(i));
     tcPDPtr qb = q->CC();
     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _zPrime, 3, Z0, 3, gamma, -1)));
   }
@@ -160,7 +162,6 @@ double MEqq2ZPrime2ZGamma::qqME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2ZPrime2ZGamma::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -180,13 +181,11 @@ void MEqq2ZPrime2ZGamma::constructVertex(tSubProPtr sub) {
   VectorWaveFunction(gammaout,hard[order[3]],outgoing,true,true ,true);
   gammaout[1]=gammaout[2];
   qqME(fin,ain,Zout,gammaout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<4;++ix) 
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

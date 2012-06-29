@@ -12,11 +12,6 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-VVSDecayer::VVSDecayer() {
-  addToSearchList(0);
-  addToSearchList(1);
-}
-
 IBPtr VVSDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -96,18 +91,19 @@ Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy2 scale(sqr(inpart.second));
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if( outb.first->iSpin() == PDT::Spin0 )
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, 
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in, 
 				       outa.first, outb.first);
     else {
-      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, 
+      _perturbativeVertex->setCoupling(sqr(inpart.second), in, 
 				       outb.first, outa.first);
       swap(mu1sq, mu2sq);
     }
     double me2 = 2. + 0.25*sqr(1. + mu1sq - mu2sq)/mu1sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/
       (24.*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

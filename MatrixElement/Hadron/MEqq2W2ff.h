@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEqq2W2ff.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEqq2W2ff class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/DrellYanBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -30,7 +30,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEqq2W2ffInterfaces "The interfaces"
  * defined for MEqq2W2ff.
  */
-class MEqq2W2ff: public HwME2to2Base {
+class MEqq2W2ff: public DrellYanBase {
 
 public:
 
@@ -149,13 +149,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -245,7 +245,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEqq2W2ff,1> {
   /** Typedef of the first base class of MEqq2W2ff. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::DrellYanBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

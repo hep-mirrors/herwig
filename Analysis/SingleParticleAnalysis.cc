@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SingleParticleAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,6 +20,7 @@
 using namespace Herwig;
 
 void SingleParticleAnalysis::analyze(const tPVector & particles) {
+  useMe();
   int Ncharged = 0; 
   for(unsigned int ix=0;ix<particles.size();++ix) {
     const Lorentz5Momentum p = particles[ix]->momentum();
@@ -51,7 +52,16 @@ SingleParticleAnalysis::initSingleParticleAnalysis;
 void SingleParticleAnalysis::Init() {
 
   static ClassDocumentation<SingleParticleAnalysis> documentation
-    ("There is no documentation for the SingleParticleAnalysis class");
+    ("LEP SingleParticle analysis class",
+     "The LEP SingleParticle analysis uses data from \\cite{Abreu:1996na}.",
+     "%\\cite{Abreu:1996na}\n"
+     "\\bibitem{Abreu:1996na}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "   ``Tuning and test of fragmentation models based on identified particles  and\n"
+     "  %precision event shape data,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 73}, 11 (1996).\n"
+     "  %%CITATION = ZEPYA,C73,11;%%\n"
+     );
 
   static Reference<SingleParticleAnalysis,EventShapes> interfaceEventShapes
     ("EventShapes",
@@ -61,6 +71,7 @@ void SingleParticleAnalysis::Init() {
 
 
 void SingleParticleAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());

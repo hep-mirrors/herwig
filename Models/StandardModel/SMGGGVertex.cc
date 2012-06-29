@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMGGGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,18 +19,14 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last() {
-  // the particles
-  vector<long> first,second,third;
-  first.push_back(21);
-  second.push_back(21);
-  third.push_back(21);
-  setList(first,second,third);
+SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last(0.*GeV2) {
+  orderInGs(1);
+  orderInGem(0);
 }
 
 void SMGGGVertex::doinit() {
-  orderInGs(1);
-  orderInGem(0);
+  // the particles
+  addToList(21,21,21);
   VVVVertex::doinit();
 }
 
@@ -45,12 +41,11 @@ void SMGGGVertex::Init() {
 }
 
 // couplings for the GGG vertex
-void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr,
-			      Direction,Direction,Direction) {
+void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = strongCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
 }

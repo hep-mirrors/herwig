@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEff2ss.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,11 +16,9 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -54,7 +52,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEff2ss() : theFerm(0), theVec(0), theTen(0) {}
+  MEff2ss() : fermion_(0), vector_(0), tensor_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -66,16 +64,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -130,6 +118,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -140,13 +134,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -172,12 +166,14 @@ private:
    * @param sca1 A ScalarWaveFunction for an outgoing scalar
    * @param sca2 A ScalarWaveFunction for the other outgoing scalar
    * @param me2 The spin averaged matrix element
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    */
   ProductionMatrixElement ff2ssME(const SpinorVector & sp, 
 				  const SpinorBarVector & sbar, 
 				  const ScalarWaveFunction & sca1,
 				  const ScalarWaveFunction & sca2,
-				  double & me2) const;
+				  double & me2, bool first) const;
 
 private:
 
@@ -185,19 +181,25 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > theFerm;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > fermion_;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVSSVertexPtr> > theVec;
+  vector<pair<AbstractFFSVertexPtr, AbstractSSSVertexPtr> > scalar_;
+
+  /**
+   * Storage for dynamically cast vertices for a diagram with intermediate
+   * vector
+   */
+  vector<pair<AbstractFFVVertexPtr, AbstractVSSVertexPtr> > vector_;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * tensor
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractSSTVertexPtr> > theTen;
+  vector<pair<AbstractFFTVertexPtr, AbstractSSTVertexPtr> > tensor_;
 };
 
 }

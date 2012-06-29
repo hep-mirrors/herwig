@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *--#[ log:
 *	$Id: ffxd0.f,v 1.4 1996/01/22 13:32:52 gj Exp $
 *	$Log: ffxd0.f,v $
@@ -70,7 +73,7 @@ c
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *  #] declarations:
 *  #[ catch totally massless case:
 *
@@ -181,7 +184,7 @@ c
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	memory
 *
@@ -263,6 +266,12 @@ c
 	    if ( absc(cs) .lt. xloss*xmax )
      +		call ffwarn(172,ier,absc(cs),xmax)
 	    if ( .not.ldot ) return
+	endif
+	if( itype .eq. 3 ) then
+	    call ffd0tra(cs,
+     &        xpi(iold(9,irota4)), xpi(iold(10,irota4)),
+     &        xpi(iold(1,irota4)), xpi(iold(8,irota4)), ier)
+	    return
 	endif
 *
 *  #] treat doubly IR divergent case:
@@ -396,7 +405,7 @@ c
 *
 	DOUBLE COMPLEX c,cs4(175),cs3(2)
 	logical laai
-	integer i,ier0,itime,maxlos,init,isoort(16),ipi12(26),
+	integer i,ier0,itime,maxlos,init,isoort(16),ipi12(28),
      +		ipi123(2),ipi12t,idone
 	DOUBLE PRECISION absc,sdel2s,ai(4),daiaj(4,4),aai(4),
      +		dt3t4,xqi(10),dqiqj(10,10),qiDqj(10,10),xfac
@@ -404,7 +413,7 @@ c
 *
 *	common blocks:
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	statement function:
 *
@@ -440,7 +449,7 @@ c
 	do 80 i=1,175
 	    cs4(i) = 0
    80	continue
-	do 90 i=1,26
+	do 90 i=1,28
 	    ipi12(i) = 0
    90	continue
 	cs = 0
@@ -549,7 +558,7 @@ c
 	    ipi123(2) = ipi123(2) + ipi12(i)
   114	continue
 	ipi12t = ipi123(1) - ipi123(2)
-	do 120 i=17,26
+	do 120 i=17,28
 	    ipi12t = ipi12t + ipi12(i)
   120	continue
 	cs = cs + ipi12t*DBLE(pi12)
@@ -586,7 +595,7 @@ c
 	DOUBLE COMPLEX cd0,cd0p
 	integer inew(13,6),irota,ier0,ier1,i,j,ialsav
 	save inew
-	include 'ff.h'
+#include "ff.h"
 	data inew /1,2,3,4,5,6,7,8,9,10,11,12,13,
      +		   4,1,2,3,8,5,6,7,10,9,11,13,12,
      +		   3,4,1,2,7,8,5,6,9,10,11,12,13,
@@ -667,7 +676,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ hide information in common blocks:
@@ -739,7 +748,7 @@ c
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 *  #[ get differences:

@@ -288,7 +288,7 @@ Lorentz5Momentum BbarAnalysis::boostx(Lorentz5Momentum p_in,
   // Boost input vector p_in to output vector p_out using the same
   // transformation as required to boost massive vector pt to ptt
   Lorentz5Momentum p_tmp,p_out;
-  Vector3<double> beta;
+  ThreeVector<double> beta;
   Energy  mass, bdotp;
   double  gam;
 

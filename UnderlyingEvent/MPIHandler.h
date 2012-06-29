@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -52,11 +52,11 @@ class MPIHandler: public UEBase {
   /**
    * Class for the integration is a friend to access private members
    */
-  friend class Eikonalization;
-  friend class TotalXSecBisection;
-  friend class slopeAndTotalXSec;
-  friend class slopeInt;
-  friend class slopeBisection;
+  friend struct Eikonalization;
+  friend struct TotalXSecBisection;
+  friend struct slopeAndTotalXSec;
+  friend struct slopeInt;
+  friend struct slopeBisection;
 
 public:
 
@@ -87,7 +87,10 @@ public:
 		softMu2_(ZERO), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
-		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0) {}
+		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0),
+                energyExtrapolation_(2), EEparamA_(0.6*GeV),
+                EEparamB_(37.5*GeV), refScale_(7000.*GeV),
+		pT0_(3.11*GeV), b_(0.21) {}
 
   /**
    * The destructor.
@@ -170,10 +173,9 @@ public:
   virtual void finalize();
 
   /**
-   * Write out accumulated statistics about intergrated cross sections
-   * and stuff.
+   * Write out accumulated statistics about integrated cross sections.
    */
-  void statistics(string file) const;
+  void statistics() const;
 
   /**
    * The level of statistics. Controlls the amount of statistics
@@ -181,6 +183,21 @@ public:
    * <code>.out</code> file. Simply the EventHandler method is called here.
    */
   int statLevel() const {return eventHandler()->statLevel();}
+
+  /**
+   * Return the hard cross section above ptmin
+   */
+  CrossSection hardXSec() const { return hardXSec_; }
+
+  /**
+   * Return the soft cross section below ptmin
+   */
+  CrossSection softXSec() const { return softXSec_; }
+
+  /**
+   * Return the inelastic cross section
+   */
+  CrossSection inelasticXSec() const { return inelXSec_; }
 
   /** @name Simple access functions. */
   //@{
@@ -194,6 +211,13 @@ public:
    * to the ThePEG::EventHandler.
    */
   tEHPtr eventHandler() const {return theHandler;}
+
+  /**
+   * Return the current handler
+   */
+  static const MPIHandler * currentHandler() {
+    return currentHandler_;
+  }
 
   /**
    * Return theAlgorithm.
@@ -359,6 +383,12 @@ private:
   InvEnergy2 slopeExp() const;
 
 
+  /**
+   * Calculate the minimal transverse momentum from the extrapolation
+   */
+  void overrideUECuts();
+
+
 private:
 
   /**
@@ -446,6 +476,11 @@ private:
   CrossSection softXSec_;
 
   /**
+   * Variable to store the inelastic cross section
+   */
+  CrossSection inelXSec_;
+
+  /**
    * Variable to store the total pp cross section (assuming rho=0!) as
    * measured at LHC. If this variable is set, this value is used in the
    * subsequent run instead of any of the Donnachie-Landshoff
@@ -515,6 +550,26 @@ private:
    * Variable to store the average soft multiplicity.
    */
   double avgNsoft_;
+
+  /**
+   * The current handler
+   */
+  static MPIHandler * currentHandler_;
+
+  /**
+   * Flag to store whether to calculate the minimal UE pt according to an
+   * extrapolation formula or whether to use MPIHandler:Cuts[0]:OneCuts[0]:MinKT
+   */
+  unsigned int energyExtrapolation_;
+
+  /**
+   * Parameters for the energy extrapolation formula
+   */
+  Energy EEparamA_;
+  Energy EEparamB_;
+  Energy refScale_;
+  Energy pT0_;
+  double b_;
 
 protected:
 

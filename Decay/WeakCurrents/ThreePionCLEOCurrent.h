@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreePionCLEOCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -176,10 +176,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double threeBodyMatrixElement(const int iopt, const Energy2 q2,
-				       const Energy2 s3, const Energy2 s2, 
-				       const Energy2 s1, const Energy  m1,
-				       const Energy  m2, const Energy  m3) const;
+  double threeBodyMatrixElement(const int iopt, const Energy2 q2,
+				const Energy2 s3, const Energy2 s2, 
+				const Energy2 s1, const Energy  m1,
+				const Energy  m2, const Energy  m3) const;
 
 protected:
 
@@ -249,12 +249,12 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate();
+  virtual void doupdate();
   //@}
 
 private:

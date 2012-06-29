@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Hw64Decayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,7 +28,17 @@ using namespace Herwig;
 void Hw64Decayer::Init() {
 
    static ClassDocumentation<Hw64Decayer> documentation
-     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");
+     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4",
+      "Some decays used the Fortran HERWIG decay algorithm \\cite{Corcella:2000bw}.",
+      "%\\cite{Corcella:2000bw}\n"
+      "\\bibitem{Corcella:2000bw}\n"
+      "  G.~Corcella {\\it et al.},\n"
+      "  %``HERWIG 6.5: an event generator for Hadron Emission Reactions With\n"
+      "  %Interfering Gluons (including supersymmetric processes),''\n"
+      "  JHEP {\\bf 0101} (2001) 010\n"
+      "  [arXiv:hep-ph/0011363].\n"
+      "  %%CITATION = JHEPA,0101,010;%%\n"
+      );
 
   static Switch<Hw64Decayer,int> interfaceMECode
     ("MECode",
@@ -67,6 +77,7 @@ bool Hw64Decayer::accept(tcPDPtr, const tPDVector & children) const  {
 
 ParticleVector Hw64Decayer::decay(const Particle & p, 
 				  const tPDVector & children) const {
+  useMe();
   // storage for the decay products and number of decay products
   ParticleVector rval;
   unsigned int numProds(children.size());
@@ -199,8 +210,8 @@ double Hw64Decayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
 void Hw64Decayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
-  output << "set " << name() << ":MECode "  << MECode << " \n";
-  output << "set " << name() << ":MassTry " << _masstry << " \n";
+  output << "newdef " << name() << ":MECode "  << MECode << " \n";
+  output << "newdef " << name() << ":MassTry " << _masstry << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

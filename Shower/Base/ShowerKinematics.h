@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerKinematics.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,7 +14,7 @@
 
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {
@@ -50,7 +50,7 @@ public:
    */
   ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
 		       _scale(), _z( 0.0 ), _phi( 0.0 ), _pt(),
-		       _splitFun() {}
+		       _sudakov() {}
 
   /**
    *  The updateChildren and updateParent
@@ -66,18 +66,25 @@ public:
    * of the parent kinematics. 
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) const;
+			      const ShowerParticleVector & theChildren,
+			      bool angularOrder) const;
+
+  virtual void resetChildren( const tShowerParticlePtr theParent, 
+			      const ShowerParticleVector & theChildren) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
    * @param theParent   The parent
    * @param theChildren The children
+   * @param angularOrder Whether or not to apply angular ordering
    */
-  virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ShowerParticleVector theChildren) const;
+  virtual void updateParent(const tShowerParticlePtr theParent,
+			    const ShowerParticleVector & theChildren,
+			    bool angularOrder) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -107,7 +114,7 @@ public:
    * @param theChildren The children
    */
   virtual void reconstructChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) const;
+			      const ShowerParticleVector & theChildren) const;
 
   /**
    * Reconstruct the parent Kinematics from the knowledge of the kinematics
@@ -116,7 +123,7 @@ public:
    * @param theChildren The children
    */
   virtual void reconstructParent(const tShowerParticlePtr theParent, 
-				 const ParticleVector theChildren) const;
+				 const ParticleVector & theChildren) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -163,7 +170,7 @@ public:
    * Virtual function to return a set of basis vectors, specific to
    * the type of evolution. This function will be used by the
    * ForwardShowerEvolver in order to access \f$p\f$ and \f$n\f$, 
-   * which in turn are members of the concrete class QtildaShowerKinematics1to2.
+   * which in turn are members of the concrete class QTildeShowerKinematics1to2.
    */
   virtual vector<Lorentz5Momentum> getBasis() const = 0;
 
@@ -210,23 +217,34 @@ public:
   /**
    *  Set the relative \f$p_T\f$ for the branching
    */
-  void pT(const Energy in) { _pt=in; }
+  void pT(const Energy in) const { _pt=in; }
   //@}
 
   /**
    *  Set and get methods for the SplittingFunction object
    */
+  //@{
   /**
    * Access the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  tSplittingFnPtr splittingFn() const { return _splitFun; }
+  tSplittingFnPtr splittingFn() const { return _sudakov-> splittingFn(); }
+  //@}
 
   /**
-   * Set the SplittingFunction object responsible of the 
+   *  Set and get methods for the SudakovFormFactor object
+   */
+  /**
+   * Access the SudakovFormFactor object responsible of the 
    * eventual branching of this particle.
    */
-  void splittingFn(const tSplittingFnPtr sf) { _splitFun=sf; }
+  tSudakovPtr SudakovFormFactor() const { return _sudakov; }
+
+  /**
+   * Set the SudakovFormFactor object responsible of the 
+   * eventual branching of this particle.
+   */
+  void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
 private:
@@ -262,12 +280,12 @@ private:
   /**
    *  The relative \f$p_T\f$
    */
-  Energy _pt;
+  mutable Energy _pt;
 
   /**
    *  The splitting function for the branching of the particle
    */
-  tSplittingFnPtr _splitFun;
+  tSudakovPtr _sudakov;
 };
 
 }
@@ -293,14 +311,6 @@ struct ClassTraits<Herwig::ShowerKinematics>
   : public ClassTraitsBase<Herwig::ShowerKinematics> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ShowerKinematics"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerKinematics is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerKinematics depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

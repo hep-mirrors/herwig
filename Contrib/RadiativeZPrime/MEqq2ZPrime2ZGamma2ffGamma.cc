@@ -16,7 +16,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "RadiativeZPrimeModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
@@ -54,7 +54,7 @@ void MEqq2ZPrime2ZGamma2ffGamma::getDiagrams() const {
   }
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   for(unsigned int i = 1; i <= _maxflavour; ++i) {
-    tcPDPtr q  = getParticleData(i);
+    tcPDPtr q  = getParticleData(long(i));
     tcPDPtr qb = q->CC();
     for(unsigned int iz=0;iz<Zdecays.size();++iz) {
       add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _zPrime, 3, gamma, 3, _z0, 
@@ -97,8 +97,8 @@ bool MEqq2ZPrime2ZGamma2ffGamma::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin = atan((minMass2-M2)/MG);
-  double rhomax = atan((maxMass2-M2)/MG);
+  double rhomin = atan2((minMass2-M2),MG);
+  double rhomax = atan2((maxMass2-M2),MG);
   _mz2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mz=sqrt(_mz2);
   InvEnergy2 emjac = MG/(rhomax-rhomin)/(sqr(_mz2-M2)+sqr(MG));
@@ -170,7 +170,6 @@ bool MEqq2ZPrime2ZGamma2ffGamma::generateKinematics(const double * r) {
 }
 
 double MEqq2ZPrime2ZGamma2ffGamma::me2() const {
-  useMe();
   InvEnergy2 output(ZERO);
   // construct spinors for the leptons
   vector<SpinorBarWaveFunction> lm;
@@ -360,5 +359,5 @@ void  MEqq2ZPrime2ZGamma2ffGamma::constructVertex(tSubProPtr sub) {
 //   hardvertex->ME(_me);
 //   // set the pointers and to and from the vertex
 //   for(unsigned int ix=0;ix<5;++ix)
-//     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+//     (hard[ix]->spinInfo())->productionVertex(hardvertex);
 }

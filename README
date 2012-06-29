@@ -1,11 +1,11 @@
 ==============
-HERWIG++ 2.3.0
+Herwig++ 2.6.0
 ==============
 
-This is the release of Herwig++ 2.3.0, a multi purpose event
+This is the release of Herwig++ 2.6.0, a multi purpose event
 generator for high energy physics.
 
-The Herwig++ distribution contains an adapted version of LoopTools
+The Herwig++ distribution contains an adapted version of LoopTools 2.6
 <http://www.feynarts.de/looptools/>. 
 
 Please contact <herwig@projects.hepforge.org> to be added to our
@@ -16,22 +16,23 @@ BUILD AND INSTALL
 =================
 Generic installation instructions are in the file INSTALL.
 
-Before attempting to build Herwig++, you'll need to get ThePEG installed.
+Before attempting to build Herwig++, you'll need to get ThePEG
+installed.
 
 Herwig++ uses some functions from the GNU scientific library GSL. The
-gsl and gsl header files must be available on your system. Usually
-they can be found in a package called libgsl-dev. 
+gsl libraries and header files must be available on your system.
+Usually they can be found in a package called libgsl-dev. 
 
 ------
 ThePEG
 ------
 
-Download ThePEG 1.4.0 or later from 
+Download ThePEG 1.8.0 or later from 
 http://projects.hepforge.org/herwig/versions
  
 Do not build this package inside the Herwig++ source directory!
 
-$ tar xzvf ThePEG-*.tar.gz
+$ tar xjvf ThePEG-*.tar.bz2
 $ cd ThePEG*
 $ ./configure --prefix=/path/where/ThePEG/should/be/installed
 $ make
@@ -40,8 +41,8 @@ $ make install
 
 Optional configure switches include --enable-unitchecks for checking
 dimensional correctness of physical expressions in the code, and
---with-LHAPDF for linking against the LHAPDF library. See 
-'./configure --help' for more details.
+--with-LHAPDF for linking against the LHAPDF library. See './configure
+--help' for more details.
 
 --------
 Herwig++
@@ -49,7 +50,7 @@ Herwig++
 
 Download Herwig++, then
 
-$ tar xzvf Herwig++-*.tar.gz
+$ tar xjvf Herwig++-*.tar.bz2
 $ cd Herwig++*
 $ ./configure --prefix=/path/where/Herwig++/should/be/installed --with-thepeg=/path/where/ThePEG/was/installed
 $ make

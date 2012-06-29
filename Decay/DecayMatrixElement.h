@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayMatrixElement.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -14,12 +14,12 @@
 #include <ThePEG/Config/ThePEG.h>
 #include <ThePEG/Utilities/ClassDescription.h>
 #include <ThePEG/Helicity/HelicityDefinitions.h>
-#include <ThePEG/Helicity/RhoDMatrix.h>
+#include <ThePEG/EventRecord/RhoDMatrix.h>
 
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
+
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -40,7 +40,7 @@ public:
   /**
    * Default constructor.
    */
-  DecayMatrixElement() {}
+  DecayMatrixElement() : _nout(999) {}
 
   /** 
    * Constructor for two body decay.
@@ -180,7 +180,7 @@ public:
    * Calculate the decay matrix for this decay.
    * @param rhoout The \f$D\f$ matrix for this decay.
    */
-  RhoDMatrix calculateDMatrix(const vector<RhoDMatrix> & rhoout);
+  RhoDMatrix calculateDMatrix(const vector<RhoDMatrix> & rhoout) const;
 
   /** 
    * Calculate the \f$\rho\f$ matrix for a given outgoing particle.
@@ -189,7 +189,7 @@ public:
    * @param rhoout he \f$D\f$ matrices for the other decay products.
    */
   RhoDMatrix calculateRhoMatrix(int ipart,const RhoDMatrix & rhoin,
-				const vector<RhoDMatrix> & rhoout);
+				const vector<RhoDMatrix> & rhoout) const;
 
   /** 
    * Contract the matrix element with the \f$\rho\f$ matrix of the 

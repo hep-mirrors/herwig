@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayMatrixElement.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,7 +31,7 @@ void DecayMatrixElement::Init() {
 }
     
 // calculate the decay matrix for this decay
-RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoout) {
+RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
@@ -67,7 +67,7 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoou
 // calculate the rho matrix for a given outgoing particle
 RhoDMatrix DecayMatrixElement::
 calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
-		   const vector<RhoDMatrix> & rhoout) {
+		   const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
@@ -89,7 +89,7 @@ calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
       // matrix element piece
       temp=_matrixelement[ix]*conj(_matrixelement[iy]);
       // spin denisty matrix for the incoming particle
-      temp*=rhoin(ihel1[0],ihel2[0]);
+      temp *= rhoin(ihel1[0],ihel2[0]);
       // spin density matrix for the outgoing particles
       for(iz=0;iz<_outspin.size()-1;++iz) {
 	if(int(iz)<id) temp*=rhoout[iz](ihel1[iz+1],ihel2[iz+1]);

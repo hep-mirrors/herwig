@@ -11,13 +11,15 @@
 # location of include files
 THEPEGINCLUDE =
 GSLINCLUDE  =
-HERWIGINCLUDE =
+HERWIGINCLUDE = 
+LDFLAGS = 
+SHARED_FLAG = 
 INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
 #
 # C++ flags
 # 
-CXX = g++
-CXXFLAGS = -O2
+CXX =
+CXXFLAGS =
 
 ALLCCFILES=$(shell echo *.cc)
 
@@ -29,7 +31,7 @@ default : RadiativeZPrime.so
 RadiativeZPrime.so : AnomalousVVVVertex.o  RadiativeZPrimeModel.o  FFZPrimeVertex.o\
 		     GammaZPrimeZVertex.o MEqq2ZPrime2ff.o MEqq2ZPrime2ZGamma.o\
                      MEqq2ZPrime2ZGamma2ffGamma.o SimpleZPrimeAnalysis.o
-	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared AnomalousVVVVertex.o \
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) AnomalousVVVVertex.o \
 	RadiativeZPrimeModel.o  FFZPrimeVertex.o GammaZPrimeZVertex.o \
 	MEqq2ZPrime2ZGamma2ffGamma.o MEqq2ZPrime2ZGamma.o MEqq2ZPrime2ff.o \
 	 SimpleZPrimeAnalysis.o -o RadiativeZPrime.so

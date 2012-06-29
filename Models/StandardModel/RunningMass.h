@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RunningMass.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -30,7 +30,7 @@ public:
   /**
    * Default constructor.
    */
-  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1) {}
+  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1), _heavyOption(0) {}
 
 public:
   
@@ -141,6 +141,11 @@ private:
    *  Option to use pole masses for u,d,s
    */
   unsigned int _lightOption;
+
+  /**
+   *  Option to use pole masses for c,b
+   */
+  unsigned int _heavyOption;
 
 };
 

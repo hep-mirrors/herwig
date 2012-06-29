@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartnerFinder.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -45,12 +45,14 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
  */
 class PartnerFinder: public Interfaced {
 
+enum PartnerType {QCDColourLine,QCDAntiColourLine,QED};
+
 public:
 
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0) {}
+  PartnerFinder() : _approach(0), _partnerMethod(0), QEDPartner_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -77,6 +79,7 @@ public:
    */
   virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
+					 ShowerInteraction::Type,
 					 const bool setPartners=true);
   //@}
 
@@ -107,6 +110,41 @@ public:
   static void Init();
 
 protected:
+
+  /**
+   *  Members to set the scales for different interactions
+   */
+  //@{
+  /**
+   *  Set initial scales for a QCD interaction
+   */
+  virtual bool setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
+					    const bool isDecayCase,
+					    const bool setPartners=true);
+
+  /**
+   *  Set initial scales for a QED interaction
+   */
+  virtual bool setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+					    const bool isDecayCase,
+					    const bool setPartners=true);
+  //@}
+
+  /**
+   *  Find the QCD partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<PartnerType, tShowerParticlePtr> > 
+  findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
+  /**
+   *  Find the QED partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<double, tShowerParticlePtr> > 
+  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
@@ -141,6 +179,11 @@ protected:
 							  const bool isDecayCase)=0;
   //@}
 
+  /**
+   *  The approach for the colour partners
+   */
+  bool approach() const {return _approach;}
+
 private:
 
   /**
@@ -158,10 +201,19 @@ private:
 private:
 
   /**
-   *  Approach to use for setting the colour partners
+   *  Approach to use for setting the colour partners in the random approach
    */
   int _approach;
 
+  /**
+   *  Method for choosing colour partner
+   */
+   int _partnerMethod;
+
+  /**
+   *  Choice for the QED radiation partner
+   */
+  int QEDPartner_;
 };
 
 }

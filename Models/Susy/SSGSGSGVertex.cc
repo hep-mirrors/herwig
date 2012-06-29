@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGSGSGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,6 +19,11 @@
 
 using namespace ThePEG::Helicity;
 using namespace Herwig;
+
+SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
+  orderInGs(1);
+  orderInGem(0);
+}
 
 NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
 // Definition of the static class description member.
@@ -38,12 +43,12 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       part3->id() == ParticleID::SUSY_g) ||
      (part3->id() == ParticleID::g && part1->id() == ParticleID::SUSY_g &&
       part2->id() == ParticleID::SUSY_g)) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last || _couplast==0.) {
       _couplast = strongCoupling(q2);
       _q2last = q2;
     }
-    setNorm(_couplast);
-    setLeft(1.);setRight(1.);
+    norm(_couplast);
+    left(1.);right(1.);
   }
   else {
     throw HelicityConsistencyError() 
@@ -51,7 +56,12 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       << part1->id() << "  " << part2->id()
       << "  " << part3->id()
       << Exception::warning;
-    setNorm(0.);
-    setLeft(0.); setRight(0);
+    norm(0.);
+    left(0.); right(0);
   }
+}
+
+void SSGSGSGVertex::doinit() {
+  addToList(1000021, 1000021, 21);
+  FFVVertex::doinit();
 }

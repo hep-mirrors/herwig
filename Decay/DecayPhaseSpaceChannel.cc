@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayPhaseSpaceChannel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -23,11 +23,11 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include <ThePEG/Helicity/SpinInfo.h>
+
 #include <ThePEG/Repository/CurrentGenerator.h>
 
 using namespace Herwig;
-using ThePEG::Helicity::SpinInfo;
+
   
 DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr in) 
   : _mode(in) {}
@@ -349,14 +349,24 @@ void DecayPhaseSpaceChannel::doinit() {
   }
   // ensure intermediates either have the width set, or
   // can't possibly be on-shell
-  Energy massmax(_mode->externalParticles(0)->massMax());
-  for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
-    massmax -= _mode->externalParticles(ix)->massMin();
+  Energy massmax;
+  if(_mode->testOnShell()) {
+    massmax = _mode->externalParticles(0)->mass();
+    for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+      massmax -= _mode->externalParticles(ix)->mass();
+  }
+  else { 
+    massmax = _mode->externalParticles(0)->massMax();
+    for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+      massmax -= _mode->externalParticles(ix)->massMin();
+  }
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     if(_intwidth.back()==ZERO && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(ZERO);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
-	massmin+=_mode->externalParticles(_intext[ix][iy])->massMin();
+	massmin += _mode->testOnShell() ? 
+	  _mode->externalParticles(_intext[ix][iy])->mass() :
+	  _mode->externalParticles(_intext[ix][iy])->massMin();
       // check if can be on-shell
       if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
 	string modeout;
@@ -364,7 +374,7 @@ void DecayPhaseSpaceChannel::doinit() {
 	  modeout += _mode->externalParticles(iy)->PDGName() + " ";
 	}
 	throw InitException() << "Width zero for " << _intpart[ix]->PDGName()
-			      << " in DecayPhaseSpaceChannel::doinit()"
+			      << " in DecayPhaseSpaceChannel::doinit() "
 			      << modeout
 			      << Exception::runerror;
       }
@@ -374,14 +384,38 @@ void DecayPhaseSpaceChannel::doinit() {
 
 void DecayPhaseSpaceChannel::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=1;ix<_jactype.size();++ix) {
-    if(_jactype[ix]==0) {
-      if(_intmass[ix]==ZERO || _intwidth[ix]==ZERO) {
-	CurrentGenerator::log() << "DecayPhaseSpaceChannel::doinitrun()" 
-				<< " Problem with parameters for " 
-				<< _intpart[ix]->PDGName()
-				<< " in phase-space integraton "
-				<< _intmass[ix]/GeV << " " << _intwidth[ix]/GeV << "\n";
+  if(!_mode->testOnShell()) return;
+  _intmass.clear();
+  _intwidth.clear();
+  _intmass2.clear();
+  _intmwidth.clear();
+  // masses and widths of the intermediate particles
+  for(unsigned int ix=0;ix<_intpart.size();++ix) {
+    _intmass.push_back(_intpart[ix]->mass());
+    _intwidth.push_back(_intpart[ix]->width());
+    _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
+    _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
+  }
+  // ensure intermediates either have the width set, or
+  // can't possibly be on-shell
+  Energy massmax = _mode->externalParticles(0)->massMax();
+  for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+    massmax -= _mode->externalParticles(ix)->massMin();
+  for(unsigned int ix=0;ix<_intpart.size();++ix) {
+    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
+      Energy massmin(0.*GeV);
+      for(unsigned int iy=0;iy<_intext[ix].size();++iy)
+	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
+      // check if can be on-shell
+      if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
+	string modeout;
+	for(unsigned int iy=0;iy<_mode->numberofParticles();++iy) {
+	  modeout += _mode->externalParticles(iy)->PDGName() + " ";
+	}
+	throw Exception() << "Width zero for " << _intpart[ix]->PDGName()
+			  << " in DecayPhaseSpaceChannel::doinitrun() "
+			  << modeout
+			  << Exception::runerror;
       }
     }
   }
@@ -426,20 +460,24 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   out.push_back( _intdau2[0]>0 ? external[_intdau2[0]] : resonance[-_intdau2[0]]);
 }
  
+double DecayPhaseSpaceChannel::atanhelper_(int ires, Energy limit) {
+  return atan2( limit*limit-_intmass2[ires], _intmwidth[ires] );
+}
+
 // return the weight for a given resonance
 InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
-						     Energy lower,Energy upper) {
-  InvEnergy2 wgt=InvEnergy2();
+					      Energy lower,Energy upper) {
+  InvEnergy2 wgt = ZERO;
   if(lower>upper) {
     throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
 				 << moff/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
-  if(_jactype[ires]==0) {
-    if(_intmwidth[ires]!=ZERO) {
-      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
-      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+  if ( _jactype[ires] == 0 ) {
+    double rhomin  = atanhelper_(ires,lower);
+    double rhomax  = atanhelper_(ires,upper) - rhomin;
+    if ( rhomax != 0.0 ) {
       Energy2 moff2=moff*moff-_intmass2[ires];
       wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
     }
@@ -466,11 +504,13 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   return wgt;
 }
 Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
+  static const Energy eps=1e-9*MeV;
+  if(lower<eps) lower=eps;
   Energy mass=ZERO;
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed" 
 					       << Exception::eventerror;
-  if(abs(lower-upper)/(lower+upper)>1e-10) {
+  if(abs(lower-upper)/(lower+upper)>2e-10) {
     lower +=1e-10*(lower+upper);
     upper -=1e-10*(lower+upper);
   }
@@ -479,10 +519,15 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
   // use a Breit-Wigner
   if(_jactype[ires]==0) {
     if(_intmwidth[ires]!=ZERO) {
-      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
-      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      Energy2 lower2 = sqr(lower);
+      Energy2 upper2 = sqr(upper);
+
+      double rhomin = atan2((lower2 - _intmass2[ires]),_intmwidth[ires]);
+      double rhomax = atan2((upper2 - _intmass2[ires]),_intmwidth[ires])-rhomin;
       double rho = rhomin+rhomax*UseRandom::rnd();
-      mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
+      Energy2 mass2 = max(lower2,min(upper2,_intmass2[ires]+_intmwidth[ires]*tan(rho)));
+      if(mass2<ZERO) mass2 = ZERO;
+      mass = sqrt(mass2);
     }
     else {
       mass = sqrt(_intmass2[ires]+
@@ -536,7 +581,7 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   p1 = Lorentz5Momentum(m1, pstarVector);
   p2 = Lorentz5Momentum(m2,-pstarVector);
   // boost from CM to LAB
-  Boost bv=p.boostVector();
+  Boost bv = p.vect() * (1./p.t());
   p1.boost( bv );   
   p2.boost( bv );
 }

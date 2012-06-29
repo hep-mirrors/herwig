@@ -14,11 +14,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "KtJet/KtJet.h"
-#include "KtJet/KtDistance.h"
-#include "KtJet/KtLorentzVector.h"
 
 
 namespace Herwig {
@@ -154,12 +150,7 @@ private:
    */
   HistogramPtr _y23;
 
-  HistogramPtr _y23_luc;
-
-  /**
-   *  The interface between Herwig++ and KtJet
-   */
-  Herwig::KtJetInterface _kint;
+  //  HistogramPtr _y23_luc;
 
   /**
    *  c.o.m energy - used in getjetmeasure
@@ -170,23 +161,6 @@ private:
 };
 
 }
-namespace KtJet{
- class KtDistanceLuc : public KtDistance {
-  public:
-    KtDistanceLuc(int collision_type=1);
-    virtual ~KtDistanceLuc(){}
-    /** Jet Kt */
-    KtFloat operator()(const KtLorentzVector &) const;
-    /** Pair Kt */
-    KtFloat operator()(const KtLorentzVector &, const KtLorentzVector &) const;
-    /** Name of scheme */
-    std::string name() const;
-  private:
-    int m_type;
-    std::string m_name;
-  };
-}
-
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -216,7 +190,7 @@ struct ClassTraits<Herwig::y23>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwShower.so libfastjet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

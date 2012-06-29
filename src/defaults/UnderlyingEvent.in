@@ -11,12 +11,12 @@ library SimpleKTCut.so
 # cut on pt. Without a specific matcher object, it works on all
 # particles
 create ThePEG::SimpleKTCut KtCut
-set KtCut:MinKT 4.0
+newdef KtCut:MinKT 3.06
 
 # create the cuts object for the Underlying Event
 create ThePEG::Cuts UECuts
 # This should always be 2*MinKT!!
-set UECuts:MHatMin 8.0
+newdef UECuts:MHatMin 6.12
 
 insert UECuts:OneCuts 0 KtCut
 
@@ -25,7 +25,8 @@ create ThePEG::SubProcessHandler FastQCD
 
 create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
 insert FastQCD:MatrixElements 0 MEQCD2to2Fast
-set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
+cp /Herwig/Partons/QCDExtractor /Herwig/Partons/MPIExtractor
+newdef FastQCD:PartonExtractor /Herwig/Partons/MPIExtractor
 
 ######## MPI Handler ##########################################
 library HwMPI.so
@@ -35,15 +36,23 @@ create Herwig::MPIHandler MPIHandler
 insert MPIHandler:SubProcessHandlers 0 FastQCD
 insert MPIHandler:Cuts 0 UECuts
 
+# energy extrapolation for the MinKT cut
+newdef MPIHandler:EnergyExtrapolation Power
+newdef MPIHandler:Power 0.21
+newdef MPIHandler:pTmin0 3.11*GeV
+newdef MPIHandler:ReferenceScale 7000.*GeV
+newdef MPIHandler:EEparamA 0.585*GeV
+newdef MPIHandler:EEparamB 37.45*GeV
+
 # The inverse hadron radius
-set MPIHandler:InvRadius 1.5
+newdef MPIHandler:InvRadius 1.11
 
 # Set the details of the soft model
 
 # Flag to decide whether additional soft interactions (i.e. pt < ptmin)
 # should be simulated at all
 
-set MPIHandler:softInt Yes
+newdef MPIHandler:softInt Yes
 
 # Flag to decide whether to use the 2 component model. In this model,
 # the hadron radius (or better: mean parton-parton separation) can be
@@ -54,4 +63,5 @@ set MPIHandler:softInt Yes
 # disabled one has to take care that this observable is correctly
 # described by adjusting InvRadius properly.
 
-set MPIHandler:twoComp Yes
+newdef MPIHandler:twoComp Yes
+newdef MPIHandler:DLmode 2

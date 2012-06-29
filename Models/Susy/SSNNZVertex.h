@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSNNZVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,9 +13,8 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
-#include "Herwig++/Models/Susy/MixingMatrix.fh"
-#include "SSNNZVertex.fh"
+#include "SusyBase.h"
+#include "MixingMatrix.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -81,13 +80,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -103,12 +102,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSNNZVertex> initSSNNZVertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -164,43 +157,5 @@ private:
   Complex _rightlast;
 };
 }
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSNNZVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSNNZVertex,1> {
-  /** Typedef of the first base class of SSNNZVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSNNZVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSNNZVertex>
-  : public ClassTraitsBase<Herwig::SSNNZVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSNNZVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSNNZVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSNNZVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
-#include "SSNNZVertex.icc"
 
 #endif /* HERWIG_SSNNZVertex_H */

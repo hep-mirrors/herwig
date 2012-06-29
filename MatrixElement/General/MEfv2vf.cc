@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEfv2vf.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,10 +15,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include <numeric>
 
 using namespace Herwig;
 using ThePEG::Helicity::incoming;
@@ -29,10 +25,15 @@ using ThePEG::Helicity::VectorWaveFunction;
 
 void MEfv2vf::doinit() {
   GeneralHardME::doinit();
-  HPCount ndiags = numberOfDiags();
-  theFerm.resize(ndiags);
-  theVec.resize(ndiags);
-  for(HPCount ix = 0; ix < ndiags; ++ix) {
+  fermion_.resize(numberOfDiags());
+  vector_.resize(numberOfDiags());
+  flowME().resize(numberOfFlows(),
+		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
+					  PDT::Spin1, PDT::Spin1Half));
+  diagramME().resize(numberOfDiags(),
+		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
+					     PDT::Spin1, PDT::Spin1Half));
+  for(HPCount ix = 0; ix < numberOfDiags(); ++ix) {
     HPDiagram diagram = getProcessInfo()[ix];
     PDT::Spin offspin = diagram.intermediate->iSpin();
     if(diagram.channelType == HPDiagram::sChannel ||
@@ -42,7 +43,7 @@ void MEfv2vf::doinit() {
 		(diagram.vertices.first);
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(diagram.vertices.second);
-      theFerm[ix] = make_pair(vert1, vert2);
+      fermion_[ix] = make_pair(vert1, vert2);
     }
     else {
       if(offspin == PDT::Spin1) {
@@ -50,10 +51,20 @@ void MEfv2vf::doinit() {
 	  (diagram.vertices.first);
 	AbstractVVVVertexPtr vert2 = dynamic_ptr_cast<AbstractVVVVertexPtr>
 	  (diagram.vertices.second);
-	theVec[ix] = make_pair(vert1, vert2);
+	vector_[ix] = make_pair(vert1, vert2);
       }
     }
   }
+}
+
+void MEfv2vf::doinitrun() {
+  GeneralHardME::doinitrun();
+  flowME().resize(numberOfFlows(),
+		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
+					  PDT::Spin1, PDT::Spin1Half));
+  diagramME().resize(numberOfDiags(),
+		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
+					     PDT::Spin1, PDT::Spin1Half));
 }
 
 double MEfv2vf::me2() const {
@@ -77,7 +88,7 @@ double MEfv2vf::me2() const {
     if( !mc )
       vecOut[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
-    fv2vfHeME(sp, vecIn, vecOut, mc, spb, fullme);
+    fv2vfHeME(sp, vecIn, vecOut, mc, spb, fullme,true);
   }
   else {
     for(unsigned int i = 0; i < 2; ++i) {
@@ -93,7 +104,7 @@ double MEfv2vf::me2() const {
     if( !mc )
       vecOut[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
-    fbv2vfbHeME(spb, vecIn, vecOut, mc, sp, fullme);
+    fbv2vfbHeME(spb, vecIn, vecOut, mc, sp, fullme,true);
   }
 
 #ifndef NDEBUG
@@ -106,213 +117,159 @@ double MEfv2vf::me2() const {
 ProductionMatrixElement
 MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
 		   const VBVector & vecOut, bool mc, 
-		   const SpinorBarVector & spbOut, double & mesq) const {
-  const HPCount ndiags = numberOfDiags();
-  const size_t ncf(numberOfFlows());
-  const vector<vector<double> > cfactors(getColourFactors());
+		   const SpinorBarVector & spbOut, 
+		   double & me2, bool first) const {
   const Energy2 q2(scale());
-  ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
-				 PDT::Spin1Half);
-  vector<Complex> diag(ndiags, Complex(0., 0.));
-  vector<double> me(ndiags, 0.);
-  //intermediate wave functions
-  SpinorBarWaveFunction interFB; VectorWaveFunction interV;
-  SpinorWaveFunction interF;
+  // weights for the selection of the diagram
+  vector<double> me(numberOfDiags(), 0.);
+  // weights for the selection of the colour flow
+  vector<double> flow(numberOfFlows(),0.);
+  me2 = 0.;
   //loop over helicities
   for(unsigned int ifh = 0; ifh < 2; ++ifh) {
     for(unsigned int ivh = 0; ivh < 2; ++ivh) {
       for(unsigned int ovh = 0; ovh < 3; ++ovh) {
 	if(mc && ovh == 1) ++ovh;
 	for(unsigned int ofh = 0; ofh < 2; ++ofh) {
-	  //store the flows
-	  vector<Complex> cflows(ncf, Complex(0. ,0.));
-	  for(HPCount ix = 0; ix < ndiags; ++ix) {
-	    HPDiagram diagram = getProcessInfo()[ix];
-	    tcPDPtr offshell = diagram.intermediate;
-	    if(diagram.channelType == HPDiagram::tChannel) {
+	  vector<Complex> flows(numberOfFlows(),0.);
+	  for(HPCount ix = 0; ix < numberOfDiags(); ++ix) {
+	    Complex diag(0.);
+	    const HPDiagram & current = getProcessInfo()[ix];
+	    tcPDPtr offshell = current.intermediate;
+	    if(current.channelType == HPDiagram::tChannel) {
 	      //t-chan spin-1/2
 	      if(offshell->iSpin() == PDT::Spin1Half) {
-		interFB = theFerm[ix].second->evaluate(q2, 3, offshell, 
-						       spbOut[ofh], vecIn[ivh]);
-		diag[ix] = theFerm[ix].first->evaluate(q2, spIn[ifh], interFB, 
-						       vecOut[ovh]);
+		SpinorBarWaveFunction interFB = fermion_[ix].second->
+		  evaluate(q2, 3, offshell, spbOut[ofh], vecIn[ivh]);
+		diag = fermion_[ix].first->
+		  evaluate(q2, spIn[ifh], interFB, vecOut[ovh]);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin1) {
-		interV = theVec[ix].second->evaluate(q2, 3, offshell, 
-						     vecIn[ivh], vecOut[ovh]);
-		diag[ix] = theVec[ix].first->evaluate(q2, spIn[ifh], 
-						      spbOut[ofh], interV);
+		VectorWaveFunction interV = vector_[ix].second->
+		  evaluate(q2, 3, offshell, vecIn[ivh], vecOut[ovh]);
+		diag = vector_[ix].first->
+		  evaluate(q2, spIn[ifh], spbOut[ofh], interV);
 	      }
 	      else
-		diag[ix] = 0.0;
+		diag = 0.0;
 	    }
-	    else if(diagram.channelType == HPDiagram::sChannel) {
-	      interFB = theFerm[ix].second->evaluate(q2, 1, offshell, 
-						     spbOut[ofh], vecOut[ovh]);
-	      diag[ix] = theFerm[ix].first->evaluate(q2, spIn[ifh], interFB, 
-						     vecIn[ivh]);
+	    else if(current.channelType == HPDiagram::sChannel) {
+	      SpinorBarWaveFunction interFB = fermion_[ix].second->
+		evaluate(q2, 1, offshell, spbOut[ofh], vecOut[ovh]);
+	      diag = fermion_[ix].first->
+		evaluate(q2, spIn[ifh], interFB, vecIn[ivh]);
 	    }
-	    me[ix] += norm(diag[ix]);
+	    me[ix] += norm(diag);
+	    diagramME()[ix](ifh, 2*ivh, ovh, ofh) = diag;
 	    //Compute flows
- 	    for(size_t iy = 0; iy < diagram.colourFlow.size(); ++iy)
-	      cflows[diagram.colourFlow[iy].first - 1] += 
-		diagram.colourFlow[iy].second * diag[ix];
-	    
-	  }//end of diag loop
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
+	      flows[current.colourFlow[iy].first] += 
+		current.colourFlow[iy].second * diag;
+	    }
+	  }
+	  // MEs for the different colour flows
+	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
+	    flowME()[iy](ifh, 2*ivh, ovh, ofh) = flows[iy];
 	  //Now add flows to me2 with appropriate colour factors
-	  for(size_t ii = 0; ii < ncf; ++ii)
-	    for(size_t ij = 0; ij < ncf; ++ij)
-	      mesq += cfactors[ii][ij]*(cflows[ii]*conj(cflows[ij])).real();
-
-	  prodME(ifh, 2*ivh, ovh, ofh) = 
-	    std::accumulate(cflows.begin(), cflows.end(), Complex(0., 0.));
+	  for(size_t ii = 0; ii < numberOfFlows(); ++ii)
+	    for(size_t ij = 0; ij < numberOfFlows(); ++ij)
+	      me2 += getColourFactors()[ii][ij]*(flows[ii]*conj(flows[ij])).real();
+	  // contribution to the colour flow
+	  for(unsigned int ii = 0; ii < numberOfFlows(); ++ii) {
+	    flow[ii] += getColourFactors()[ii][ii]*norm(flows[ii]);
+	  }
 	}
       }
     }
   }
-  const double colfact = mePartonData()[0]->iColour() == PDT::Colour3 ? 
-    1./24. : 1;
-  DVector save(ndiags);
-  for(DVector::size_type ix = 0; ix < ndiags; ++ix)
-    save[ix] = 0.25*colfact*me[ix];
-  meInfo(save);
-  mesq *= 0.25*colfact;
-  return prodME;
+  // if not computing the cross section return the selected colour flow
+  if(!first) return flowME()[colourFlow()];
+  me2 = selectColourFlow(flow,me,me2);
+  return flowME()[colourFlow()];
 }
 
 ProductionMatrixElement
 MEfv2vf::fbv2vfbHeME(const SpinorBarVector & spbIn, const VBVector & vecIn, 
 		     const VBVector & vecOut, bool mc, 
-		     const SpinorVector & spOut, double & mesq) const {
-  const HPCount ndiags = numberOfDiags();
-  const size_t ncf(numberOfFlows());
-  const vector<vector<double> > cfactors(getColourFactors());
+		     const SpinorVector & spOut,
+		     double & me2, bool first) const {
   const Energy2 q2(scale());
-  ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
-				 PDT::Spin1Half);
-  vector<Complex> diag(ndiags, Complex(0., 0.));
-  vector<double> me(ndiags, 0.);
-  //intermediate wave functions
-  SpinorBarWaveFunction interFB; VectorWaveFunction interV;
-  SpinorWaveFunction interF;
+  // weights for the selection of the diagram
+  vector<double> me(numberOfDiags(), 0.);
+  // weights for the selection of the colour flow
+  vector<double> flow(numberOfFlows(),0.);
+  me2 = 0.;
   //loop over helicities
   for(unsigned int ifh = 0; ifh < 2; ++ifh) {
     for(unsigned int ivh = 0; ivh < 2; ++ivh) {
       for(unsigned int ovh = 0; ovh < 3; ++ovh) {
 	if(mc && ovh == 1) ++ovh;
 	for(unsigned int ofh = 0; ofh < 2; ++ofh) {
-	  //store the flows
-	  vector<Complex> cflows(ncf, Complex(0. ,0.));
-	  for(HPCount ix = 0; ix < ndiags; ++ix) {
-	    HPDiagram diagram = getProcessInfo()[ix];
-	    tcPDPtr offshell = diagram.intermediate;
-	    if(diagram.channelType == HPDiagram::tChannel) {
+	  vector<Complex> flows(numberOfFlows(),0.);
+	  for(HPCount ix = 0; ix < numberOfDiags(); ++ix) {
+	    Complex diag(0.);
+	    const HPDiagram & current = getProcessInfo()[ix];
+	    tcPDPtr offshell = current.intermediate;
+	    if(current.channelType == HPDiagram::tChannel) {
 	      if(offshell->iSpin() == PDT::Spin1Half) {
-		interFB = theFerm[ix].first->evaluate(q2, 3, offshell, 
-						       spbIn[ifh], vecOut[ovh]);
-		diag[ix] = theFerm[ix].second->evaluate(q2, spOut[ofh], interFB, 
-						       vecIn[ivh]);
+		SpinorBarWaveFunction interFB = fermion_[ix].first->
+		  evaluate(q2, 3, offshell, spbIn[ifh], vecOut[ovh]);
+		diag = fermion_[ix].second->
+		  evaluate(q2, spOut[ofh], interFB, vecIn[ivh]);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin1) {
-		interV = theVec[ix].first->evaluate(q2, 3, offshell, 
-						     spOut[ofh], spbIn[ifh]);
-		diag[ix] = theVec[ix].second->evaluate(q2, vecIn[ivh], interV, 
-						      vecOut[ovh]);
+		VectorWaveFunction interV = vector_[ix].first->
+		  evaluate(q2, 3, offshell, spOut[ofh], spbIn[ifh]);
+		diag = vector_[ix].second->
+		  evaluate(q2, vecIn[ivh], interV, vecOut[ovh]);
 	      }
-	      else diag[ix] = 0.0;
+	      else diag = 0.0;
 	    }
-	    else if(diagram.channelType == HPDiagram::sChannel) {
+	    else if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin1Half) {
-		interFB = theFerm[ix].first->evaluate(q2, 1, offshell, spbIn[ifh], 
-						      vecIn[ivh]);
-		diag[ix] = theFerm[ix].second->evaluate(q2, spOut[ofh], interFB, 
-						       vecOut[ovh]);
+		SpinorBarWaveFunction interFB = fermion_[ix].first->
+		  evaluate(q2, 1, offshell, spbIn[ifh], vecIn[ivh]);
+		diag = fermion_[ix].second->
+		  evaluate(q2, spOut[ofh], interFB, vecOut[ovh]);
 	      }
 	    }
-	    me[ix] += norm(diag[ix]);
+	    me[ix] += norm(diag);
+	    diagramME()[ix](ifh, ivh, ovh, ofh) = diag;
 	    //Compute flows
- 	    for(size_t iy = 0; iy < diagram.colourFlow.size(); ++iy)
-	      cflows[diagram.colourFlow[iy].first - 1] += 
-		diagram.colourFlow[iy].second * diag[ix];
-
-	  }//end of diag loop
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	      assert(current.colourFlow[iy].first<flows.size());
+	      flows[current.colourFlow[iy].first] += 
+		current.colourFlow[iy].second * diag;
+	    }
+	  }
+	  // MEs for the different colour flows
+	  for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
+	    flowME()[iy](ifh, ivh, ovh, ofh) = flows[iy];
 	  //Now add flows to me2 with appropriate colour factors
-	  for(size_t ii = 0; ii < ncf; ++ii)
-	    for(size_t ij = 0; ij < ncf; ++ij)
-	      mesq += cfactors[ii][ij]*(cflows[ii]*conj(cflows[ij])).real();
-	  
-	  prodME(ifh, ivh, ovh, ofh) = 
-	    std::accumulate(cflows.begin(), cflows.end(), Complex(0., 0.));
+	  for(size_t ii = 0; ii < numberOfFlows(); ++ii)
+	    for(size_t ij = 0; ij < numberOfFlows(); ++ij)
+	      me2 += getColourFactors()[ii][ij]*(flows[ii]*conj(flows[ij])).real();
+	  // contribution to the colour flow
+	  for(unsigned int ii = 0; ii < numberOfFlows(); ++ii) {
+	    flow[ii] += getColourFactors()[ii][ii]*norm(flows[ii]);
+	  }
 	}
       }
     }
   }
-  const double colfact = mePartonData()[0]->iColour() == PDT::Colour3bar ? 
-    1./24. : 1;
-  DVector save(ndiags);
-  for(DVector::size_type ix = 0; ix < ndiags; ++ix)
-    save[ix] = 0.25*colfact*me[ix];
-  meInfo(save);
-  mesq *= 0.25*colfact;
-  return prodME;
+  // if not computing the cross section return the selected colour flow
+  if(!first) return flowME()[colourFlow()];
+  me2 = selectColourFlow(flow,me,me2);
+  return flowME()[colourFlow()];
 }
-
-Selector<const ColourLines *>
-MEfv2vf::colourGeometries(tcDiagPtr diag) const {
-  static vector<ColourLines> cf(10);
-  //3 8->8 3
-  cf[0] = ColourLines("1 4, -4 2 -3, 3 5");
-  cf[1] = ColourLines("1 2 -3, -4 -2 5, 3 4");
-  cf[2] = ColourLines("1 -2, 2 3 4, -4 5");
-  //3b 8 -> 8 3b
-  cf[3] = ColourLines("-4 -1, 3 2 4, -5 -3");
-  cf[4] = ColourLines("3 2 -1, -5 -2 4, -4 -3");
-  cf[5] = ColourLines("2 -1, -4 -3 -2, -5 4");
-  //3 8 -> 0 3
-  cf[6] = ColourLines("1 2 -3, 3 5");
-  cf[7] = ColourLines("1 -2, 2 3 5");
-  //3b 8 -> 0 3b
-  cf[8] = ColourLines("3 2 -1, -3 -5");
-  cf[9] = ColourLines("2 -1, -5 -3 -2");
-  
-  HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
-  PDT::Colour offcolour = current.intermediate->iColour();
-  bool octetC = (mePartonData()[2]->iColour() == PDT::Colour8);
-  bool cc(mePartonData()[0]->id() < 0);
-  
-  Selector<const ColourLines *> select;
-  int icf(-1);
-  if(current.channelType == HPDiagram::sChannel)
-    if(octetC) icf = cc ? 5 : 2;
-    else icf = cc ? 9 : 7;
-  else if(current.channelType == HPDiagram::tChannel) {
-    if(offcolour == PDT::Colour3 || offcolour == PDT::Colour3bar) {
-      if(octetC) icf = cc ? 3 : 0; 
-      else  icf = cc ? 8 : 6;
-    }
-    else if(offcolour == PDT::Colour8) 
-      icf = cc ? 4 : 1;
-    else
-      throw MEException() << "MEfv2vf::colourGeometries - There is an incorrect "
-			  << "coloured object in a t-channel diagram. "
-			  << "No colour lines set."
-			  << Exception::warning;
-  }
-  else
-    throw MEException() << "MEfv2vf::colourGeometries - Incorrect diagram type "
-			<< "encountered. No colour lines set." 
-			<< Exception::warning;
-  if(icf >= 0) select.insert(1., &cf[icf]);
-  return select;
-}
-
 
 void MEfv2vf::persistentOutput(PersistentOStream & os) const {
-  os << theFerm << theVec;
+  os << fermion_ << vector_;
 }
 
 void MEfv2vf::persistentInput(PersistentIStream & is, int) {
-  is >> theFerm >> theVec;
+  is >> fermion_ >> vector_;
 }
 
 ClassDescription<MEfv2vf> MEfv2vf::initMEfv2vf;
@@ -327,44 +284,28 @@ void MEfv2vf::Init() {
 }
 
 void MEfv2vf::constructVertex(tSubProPtr sub) {
-  ParticleVector ext(4);
-  ext[0] = sub->incoming().first;
-  ext[1] = sub->incoming().second;
-  ext[2] = sub->outgoing()[0];
-  ext[3] = sub->outgoing()[1];
-
-  if( ext[0]->data().iSpin() > ext[1]->data().iSpin() ) swap(ext[0], ext[1]);
-  if( ext[2]->data().iSpin() < ext[3]->data().iSpin() ) swap(ext[2], ext[3]);
-
+  ParticleVector ext = hardParticles(sub);
   VBVector v1, v3;
-  VectorWaveFunction(v1, ext[1], incoming, false, true);
-  //function to calculate me2 expects massless incoming vectors
-  // and this constructor sets the '1' polarisation at element [2] 
-  //in the vector
-  v1[1] = v1[2];
   bool mc = !(ext[2]->data().mass() > ZERO);
+  SpinorVector sp;  
+  SpinorBarVector sbar;
+  VectorWaveFunction(v1, ext[1], incoming, false, true);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc);
-  SpinorVector sp;  SpinorBarVector sbar;
   double dummy(0.);
-  HardVertexPtr hv = new_ptr(HardVertex());
   //Need to use rescale momenta to calculate matrix element
-  cPDVector data(4);
-  vector<Lorentz5Momentum> momenta(4);
-  for( size_t i = 0; i < 4; ++i ) {
-    data[i] = ext[i]->dataPtr();
-    momenta[i] = ext[i]->momentum();
-  }
-  rescaleMomenta(momenta, data);
-  
-  VectorWaveFunction vir(rescaledMomenta()[1], data[1], incoming);
-  VectorWaveFunction vor(rescaledMomenta()[2], data[2], outgoing);
-
+  setRescaledMomenta(ext);
+  // wavefunctions with rescaled momenta 
+  VectorWaveFunction vir(rescaledMomenta()[1],
+			 ext[1]->dataPtr(), incoming);
+  VectorWaveFunction vor(rescaledMomenta()[2],
+			 ext[2]->dataPtr(), outgoing);
   if( ext[0]->id() > 0 ) {
-    SpinorWaveFunction(sp, ext[0], incoming, false);
+    SpinorWaveFunction   (sp  , ext[0], incoming, false);
     SpinorBarWaveFunction(sbar, ext[3], outgoing, true);
-
-    SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
-    SpinorBarWaveFunction sbr(rescaledMomenta()[3], data[3], outgoing);
+    SpinorWaveFunction spr   (rescaledMomenta()[0],
+			      ext[0]->dataPtr(), incoming);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[3],
+			      ext[3]->dataPtr(), outgoing);
     for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
       spr.reset(ihel);
       sp[ihel] = spr;
@@ -379,17 +320,16 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
       vor.reset(1);
       v3[1] = vor;
     }
-    ProductionMatrixElement pme = fv2vfHeME(sp, v1, v3, mc, sbar, dummy);
-    hv->ME(pme);
-    for(unsigned int i = 0; i < 4; ++i) 
-      dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+    ProductionMatrixElement pme = fv2vfHeME(sp, v1, v3, mc, sbar, dummy,false);
+    createVertex(pme,ext);
   }
   else {
     SpinorBarWaveFunction(sbar, ext[0], incoming, false);
     SpinorWaveFunction(sp, ext[3], outgoing, true);
-
-    SpinorBarWaveFunction sbr(rescaledMomenta()[0], data[0], incoming);
-    SpinorWaveFunction spr(rescaledMomenta()[3], data[3], outgoing);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[0],
+			      ext[0]->dataPtr(), incoming);
+    SpinorWaveFunction spr   (rescaledMomenta()[3],
+			      ext[3]->dataPtr(), outgoing);
     for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
       sbr.reset(ihel);
       sbar[ihel] = sbr;
@@ -404,10 +344,8 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
       vor.reset(1);
       v3[1] = vor;
     }
-    ProductionMatrixElement pme = fbv2vfbHeME(sbar, v1, v3, mc, sp, dummy);
-    hv->ME(pme);
-    for(unsigned int i = 0; i < 4; ++i) 
-      dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+    ProductionMatrixElement pme = fbv2vfbHeME(sbar, v1, v3, mc, sp, dummy,false);
+    createVertex(pme,ext);
   }
   
 #ifndef NDEBUG
@@ -443,6 +381,4 @@ void MEfv2vf::debug(double me2) const {
       << mePartonData()[3]->PDGName() << "   difference: " 
       << setprecision(10) << diff << "  ratio: " << analytic/me2 << '\n';
   }
-
-
 }

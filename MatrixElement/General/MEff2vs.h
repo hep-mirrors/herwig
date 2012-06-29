@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEff2vs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -67,7 +67,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEff2vs() : theSca(0), theVec(0), theFerm(0) {}
+  MEff2vs() : scalar_(0), vector_(0), fermion_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -79,16 +79,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -133,6 +123,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -143,13 +139,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -177,13 +173,15 @@ private:
    * @param vec VectorWaveFunctions for outgoing vector
    * @param sca Outgoing ScalarWaveFunction
    * @param me2 colour averaged, spin summed ME
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
   ProductionMatrixElement
   ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	     VBVector & vec, ScalarWaveFunction & sca, 
-	     double & me2) const;
+	     double & me2,bool first) const;
   //@}
 
 
@@ -193,19 +191,19 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * scalar
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theSca;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > scalar_;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > vector_;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFSVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFSVertexPtr> > fermion_;
 };
 
 }

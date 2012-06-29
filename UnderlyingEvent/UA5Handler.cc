@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UA5Handler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -60,8 +60,13 @@ void UA5Handler::Init() {
     ("This is the simple UA5 model for the underlying event.",
      "The underlying event was simulated using the model of "
      "the UA5 collaboration, \\cite{Alner:1986is}.",
-     "\\bibitem{Alner:1986is} G.~J.~Alner {\\it et al.}  "
-     "UA5 Collaboration, Nucl.\\ Phys.\\ B{\\bf 291} (1987) 445.");
+     "%\\cite{Alner:1986is}\n"
+     "\\bibitem{Alner:1986is}\n"
+     "  G.~J.~Alner {\\it et al.}  [UA5 Collaboration],\n"
+     "  ``The UA5 High-Energy anti-p p Simulation Program,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 291}, 445 (1987).\n"
+     "  %%CITATION = NUPHA,B291,445;%%\n"
+     );
 
   static Reference<UA5Handler,ClusterFissioner>
     interfaceClusterFissioner("ClusterFissioner",
@@ -372,13 +377,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   // Find the first two clusters
   // Lets find the clusters, set the partons inside to be on shell and no momentum
   tClusterPtr clu[2];
-  Lorentz5Momentum cluP[2];
   tPVector::const_iterator it;
   unsigned int i = 0;
   for(it = tagged.begin(); it!=tagged.end(); ++it) {
-    if((*it)->id() != ExtraParticleID::Cluster) continue;
+    if((*it)->id() != ParticleID::Cluster) continue;
     clu[i] = dynamic_ptr_cast<ClusterPtr>(*it);
-    cluP[i] = clu[i]->momentum();
     ++i;
     if(i>2) throw Exception() << "Must have at most two beam clusters in "
 			      << "UA5Handler::handle " 

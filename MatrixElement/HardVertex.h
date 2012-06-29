@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HardVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -11,13 +11,12 @@
 //
 // This is the declaration of the HardVertex class.
 
-#include "ThePEG/Helicity/HelicityVertex.h"
+#include "ThePEG/EventRecord/HelicityVertex.h"
 #include "ProductionMatrixElement.h"
 #include "HardVertex.fh"
 // #include "HardVertex.xh"
 
 namespace Herwig {
-using ThePEG::Helicity::HelicityVertex;
 
 using namespace ThePEG;
     
@@ -54,7 +53,7 @@ public:
   /**
    * Set the matrix element
    */
-  inline void ME(const ProductionMatrixElement & in) const {
+  void ME(const ProductionMatrixElement & in) const {
     _matrixelement.reset(in);
   }
   //@}
@@ -72,13 +71,13 @@ public:
    * Method to calculate the \f$\rho\f$ matrix for one of the outgoing particles
    * @param iout The outgoing particle we are calculating the \f$\rho\f$ matrix for.
    */
-  virtual RhoDMatrix getRhoMatrix(int iout);
+  virtual RhoDMatrix getRhoMatrix(int iout,bool) const;
 
   /**
    * Method to calculate the \f$D\f$ matrix for an incoming particle.
    * @param in The incoming particle we are calculating the \f$D\f$ matrix for.
    */
-  virtual RhoDMatrix getDMatrix(int in);
+  virtual RhoDMatrix getDMatrix(int in) const;
   
 private:
   
@@ -115,7 +114,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::HardVertex,1> {
   /** Typedef of the base class of HardVertex. */
-  typedef ThePEG::Helicity::HelicityVertex NthBase;
+  typedef ThePEG::HelicityVertex NthBase;
 };
   
 /**  

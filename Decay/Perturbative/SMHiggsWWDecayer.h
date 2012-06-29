@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsWWDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,7 +18,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 
 namespace Herwig {
 
@@ -186,11 +185,6 @@ private:
    */
   AbstractVVSVertexPtr _theHVVVertex;
   //@}
-
-  /**
-   *  Pointer to the width generator for the Higgs
-   */
-  SMHiggsWidthGeneratorPtr _hwidth;
 
   /**
    *  Selectors for the gauge boson decay modes

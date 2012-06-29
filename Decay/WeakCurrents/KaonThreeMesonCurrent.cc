@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KaonThreeMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -203,7 +203,19 @@ ClassDescription<KaonThreeMesonCurrent> KaonThreeMesonCurrent::initKaonThreeMeso
 void KaonThreeMesonCurrent::Init() {
 
   static ClassDocumentation<KaonThreeMesonCurrent> documentation
-    ("There is no documentation for the KaonThreeMesonCurrent class");
+    ("The KaonThreeMesonCurrent class implements the model of "
+     "Z. Phys.  C 69 (1996) 243 [arXiv:hep-ph/9503474]"
+     " for the weak current with three "
+     "mesons, at least one of which is a kaon",
+     "The KaonThreeMesonCurrent class implements the model of "
+     "\\cite{Finkemeier:1995sr} for the weak current with three "
+     "mesons, at least one of which is a kaon.",
+     "\\bibitem{Finkemeier:1995sr}\n"
+     "M.~Finkemeier and E.~Mirkes,\n"
+     "Z.\\ Phys.\\  C {\\bf 69} (1996) 243 [arXiv:hep-ph/9503474].\n"
+     " %%CITATION = ZEPYA,C69,243;%%\n"
+
+);
 
   static Switch<KaonThreeMesonCurrent,bool> interfaceInitializea1
     ("Initializea1",
@@ -846,7 +858,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 		<< name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rho1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << name() << ":AxialRhoWeight " << ix 
+      os << "newdef " << name() << ":AxialRhoWeight " << ix 
 	 << " " << _rho1wgts[ix] << "\n";
     }
     else {
@@ -856,7 +868,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
   }
   for(unsigned int ix=0;ix<_kstar1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << name() << ":AxialKStarWeight " << ix 
+      os << "newdef " << name() << ":AxialKStarWeight " << ix 
 	 << " " << _kstar1wgts[ix] << "\n";}
     else {
       os << "insert " << name() << ":AxialKStarWeight " << ix 
@@ -865,7 +877,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
   }
   for(unsigned int ix=0;ix<_rho2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << name() << ":VectorRhoWeight " << ix 
+      os << "newdef " << name() << ":VectorRhoWeight " << ix 
 	 << " " << _rho2wgts[ix] << "\n";
     }
     else {
@@ -875,40 +887,40 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
   }
   for(unsigned int ix=0;ix<_kstar2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << name() << ":VectorKStarWeight " << ix 
+      os << "newdef " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";}
     else {
       os << "insert " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";
     }
   }
-  os << "set " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
-  os << "set " << name() << ":EpsOmega " << _epsomega << "\n";
-  os << "set " << name() << ":Initializea1 " << _initializea1 << "\n";
-  os << "set " << name() << ":RhoParameters " << _rhoparameters << "\n";
-  os << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
-  os << "set " << name() << ":a1Parameters " << _a1parameters << "\n";
-  os << "set " << name() << ":K1Parameters " << _k1parameters << "\n";
-  os << "set " << name() << ":OmegaParameters " << _omegaopt << "\n";
-  os << "set " << name() << ":a1WidthOption " << _a1opt << "\n";
+  os << "newdef " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
+  os << "newdef " << name() << ":EpsOmega " << _epsomega << "\n";
+  os << "newdef " << name() << ":Initializea1 " << _initializea1 << "\n";
+  os << "newdef " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  os << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  os << "newdef " << name() << ":a1Parameters " << _a1parameters << "\n";
+  os << "newdef " << name() << ":K1Parameters " << _k1parameters << "\n";
+  os << "newdef " << name() << ":OmegaParameters " << _omegaopt << "\n";
+  os << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    os << "set " << name() << ":a1RunningWidth " << ix 
+    os << "newdef " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    os << "set " << name() << ":a1RunningQ2 " << ix 
+    os << "newdef " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  os << "set " << name() << ":A1Width " << _a1width/GeV << "\n";
-  os << "set " << name() << ":A1Mass " << _a1mass/GeV << "\n";
-  os << "set " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
-  os << "set " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
-  os << "set " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
-  os << "set " << name() << ":PhiMass " << _phimass/GeV << "\n";
-  os << "set " << name() << ":FPi " << _fpi/MeV << "\n";
+  os << "newdef " << name() << ":A1Width " << _a1width/GeV << "\n";
+  os << "newdef " << name() << ":A1Mass " << _a1mass/GeV << "\n";
+  os << "newdef " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
+  os << "newdef " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
+  os << "newdef " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
+  os << "newdef " << name() << ":PhiMass " << _phimass/GeV << "\n";
+  os << "newdef " << name() << ":FPi " << _fpi/MeV << "\n";
   for(unsigned int ix=0;ix<_k1mass.size();++ix) {
     if(ix<2) {
-      os << "set " << name() << ":K1Masses " << ix 
+      os << "newdef " << name() << ":K1Masses " << ix 
 	 << " " << _k1mass[ix]/GeV << "\n";
     }
     else {
@@ -918,7 +930,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
   }
   for(unsigned int ix=0;ix<_k1width.size();++ix) {
     if(ix<2) {
-      os << "set " << name() << ":K1Widths " << ix 
+      os << "newdef " << name() << ":K1Widths " << ix 
 	 << " " << _k1width[ix]/GeV << "\n";
     }
     else {
@@ -927,61 +939,61 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
     }
   }
   for(unsigned int ix=0;ix<_rho1mass.size();++ix) {
-    if(ix<3) os << "set " << name() << ":RhoAxialMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoAxialMasses " << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
     else     os << "insert " << name() << ": RhoAxialMasses" << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho1width.size();++ix) {
-    if(ix<3) os << "set " << name() << ":RhoAxialWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
     else     os << "insert " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2mass.size();++ix) {
-    if(ix<3) os << "set " << name() << ":RhoVectorMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoVectorMasses " << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
     else     os << "insert " << name() << ": RhoVectorMasses" << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2width.size();++ix) {
-    if(ix<3) os << "set " << name() << ":RhoVectorWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
     else     os << "insert " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
-    if(ix<3) os << "set " << name() << ":KstarAxialMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarAxialMasses " << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
     else     os << "insert " << name() << ": KstarAxialMasses" << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1width.size();++ix) {
-    if(ix<3) os << "set " << name() << ":KstarAxialWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
     else     os << "insert " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2mass.size();++ix) {
-    if(ix<3) os << "set " << name() << ":KstarVectorMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarVectorMasses " << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
     else     os << "insert " << name() << ": KstarVectorMasses" << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2width.size();++ix) {
-    if(ix<3) os << "set " << name() << ":KstarVectorWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
     else     os << "insert " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgta.size();++ix) {
-    if(ix<2) os << "set " << name() << ":K1WeightKStarPi " << ix
+    if(ix<2) os << "newdef " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
     else     os << "insert " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgtb.size();++ix) {
-    if(ix<2) os << "set " << name() << ":K1WeightRhoK " << ix
+    if(ix<2) os << "newdef " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
     else     os << "insert " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
@@ -1112,6 +1124,7 @@ KaonThreeMesonCurrent::FormFactors
 KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 						 Energy2 q2,Energy2 s1,
 						 Energy2 s2,Energy2 s3) const {
+  useMe();
   Complex F1, F2, F5;
   // calculate the K- pi - K+ factor
   if(imode==2) {
@@ -1267,3 +1280,22 @@ void KaonThreeMesonCurrent::doupdate() {
   if ( !touched() ) return;
   if(_maxmass!=_maxcalc) inita1Width(-1);
 }
+
+double KaonThreeMesonCurrent::
+threeBodyMatrixElement(const int       , const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy    , 
+		       const Energy    , const Energy    ) const {
+  Energy2 mpi2(sqr(_mpi));
+  Complex propb(Trho1(s1,-1)),propa(Trho1(s2,-1)); 
+  // the matrix element
+  Energy2 output(ZERO); 
+  // first resonance
+  output+= ((s1-4.*mpi2)+0.25*(s3-s2)*(s3-s2)/q2)*real(propb*conj(propb)); 
+  // second resonance
+  output+= ((s2-4.*mpi2)+0.25*(s3-s1)*(s3-s1)/q2)*real(propa*conj(propa)); 
+  // the interference term 
+  output+= (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+							       propb*conj(propa)); 
+    return output / sqr(_rho1mass[0]);
+  }

@@ -111,7 +111,10 @@ namespace Herwig {
 
   
   private:
-    //pt histogram
+    
+    /**
+     * \f$p_T\f$ histogram
+     */
     HistogramPtr  _hpt;
   
     /**
@@ -158,7 +161,7 @@ namespace ThePEG {
      * excepted). In this case the listed libraries will be dynamically
      * linked in the order they are specified.
      */
-    static string library() { return "HwZpt.so"; }
+    static string library() { return "HwTevatronAnalysis.so"; }
   };
   
   /** @endcond */

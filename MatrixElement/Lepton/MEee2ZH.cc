@@ -11,6 +11,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
@@ -27,7 +28,6 @@ void MEee2ZH::Init() {
 void MEee2ZH::getDiagrams() const {
   tcPDPtr eplus  = getParticleData(ParticleID::eplus  );
   tcPDPtr eminus = getParticleData(ParticleID::eminus );
-  tPDPtr higgs = getParticleData(ParticleID::h0);
   // find possible Z decays
   typedef Selector<tDMPtr> DecaySelector;
   DecaySelector Zdec = Z0()->decaySelector();
@@ -44,8 +44,21 @@ void MEee2ZH::getDiagrams() const {
   // create the diagrams
   for(unsigned int ix=0;ix<Zdecays.size();++ix) {
     add(new_ptr((Tree2toNDiagram(2), eminus, eplus, 
-		 1, Z0(), 3, higgs, 3, Z0(), 
+		 1, Z0(), 3, higgs(), 3, Z0(), 
 		 5, Zdecays[ix].first,5, Zdecays[ix].second,-1)));
   }
-  
+}
+
+void MEee2ZH::doinit() {
+  // get the vedrtex pointers from the SM object
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  if(!hwsm)
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEeeto2ZH::doinit() the Herwig++"
+			  << " version must be used" 
+			  << Exception::runerror;
+  // set the vertex
+  setWWHVertex(hwsm->vertexWWH());
+  higgs(getParticleData(ParticleID::h0));
+  MEfftoVH::doinit();
 }

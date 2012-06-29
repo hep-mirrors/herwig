@@ -41,31 +41,48 @@ void Zrapidity::doinitrun() {
 		      1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1,
 		      2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8 };
 
+  double ydata1[] = { 0.271598,	0.276609,	0.274604,	0.266586,
+		      0.278613,	0.269593,	0.260573,	0.276609,
+		      0.235518,	0.244538,	0.251553,	0.233514,
+		      0.230507,	0.223492,	0.211465,	0.191421,
+		      0.170375,	0.16837,	0.142313,	0.119262,
+		      0.117258,	0.0912006,	0.0691521,	0.049108,
+		      0.039086,	0.0180397,	0.0140309,	0.00501102 };
+
+  /*
   double ydata1[] = { 0.271, 0.276, 0.274, 0.266, 0.278, 0.269, 0.26, 0.276, 
 		      0.235, 0.244, 0.251, 0.233, 0.23, 0.223, 0.211, 0.191, 
 		      0.17, 0.168, 0.142, 0.119, 0.117, 0.091, 0.069, 0.049, 
 		      0.039, 0.018, 0.014, 0.005 };
-
+  
   double yerror1[] = { 0.015, 0.015, 0.015, 0.015, 0.015, 0.016, 0.017, 0.016, 
 		       0.014, 0.015, 0.014, 0.014, 0.014, 0.013, 0.013, 0.013, 
 		       0.01, 0.014, 0.013, 0.01, 0.009, 0.008, 0.007, 0.006, 
 		       0.005, 0.004, 0.004, 0.006 };
- 
+  */
+  double yerror1[] = { 0.0150331,	0.0150331,	0.0150331,	
+		       0.0150331,	0.0150331,	0.0160353,	
+		       0.0170375,	0.0160353,	0.0140309,	
+		       0.0150331,	0.0140309,	0.0140309,	
+		       0.0140309,	0.0130287,	0.0130287,	
+		       0.0130287,	0.010022,	0.0140309,	
+		       0.0130287,	0.010022,	0.00901984,	
+		       0.00801764,	0.00701543,	0.00601323,	
+		       0.00501102,	0.00400882,	0.00400882,	
+		       0.00601323 };
+  
   ybins  = vector<double>(yvals1 ,yvals1 +29);
   ydata  = vector<double>(ydata1 ,ydata1 +28);
   yerror = vector<double>(yerror1,yerror1+28);
 
   _hy = new_ptr( Histogram( ybins, ydata, yerror ) );
-
-  
+ 
 }
 
-void Zrapidity::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void Zrapidity::persistentOutput(PersistentOStream & ) const {
 }
 
-void Zrapidity::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void Zrapidity::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<Zrapidity> Zrapidity::initZrapidity;
@@ -86,8 +103,6 @@ void Zrapidity::dofinish() {
 
   using namespace HistogramOptions;
 
-  _hy->normaliseToData();
- 
   _hy->topdrawOutput(outfile,Frame|Errorbars,
 		      "RED",
 		      "y of Z ( mass 71 GeV to 111 GeV ) compared to TVT data",
@@ -100,7 +115,7 @@ void Zrapidity::dofinish() {
   outfile.close();
 }
 
-void Zrapidity::analyze(tEventPtr event, long ieve, int loop, int state) {
+void Zrapidity::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   // find the outgoing particles in the hard process

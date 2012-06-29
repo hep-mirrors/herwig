@@ -82,7 +82,7 @@ To run {\tt DYPP.cxx}, in the folder {\tt DRELLYAN}, type the following commands
 \\
 This creates the executable {\tt DYPP} and {\tt run\_dypp} (which is moved to {\tt
   HERWIGDIR}). Next, type: 
-{\tt .$\backslash$DYPP} \\
+{\tt ./DYPP} \\
 This runs the main program and generates the Les Houches file for interface with \textsf{Herwig++}. This file will be called {\tt PWDYPP.dat} if running {\tt POWHEG} and {\tt
   MCDYPP.dat} if running {\tt MC@NLO}. It contains unweighted events with absolute weights
 of $1$.
@@ -144,18 +144,18 @@ tt MC@NLO}, comment these out. \\
   POWHEG}, this should be set to $1$.\\
 {\tt set /Herwig/Shower/PartnerFinder:PHPartnerFinder 0}: The partner finder option. This
 should be set to $1$ for {\tt POWHEG}.\\
-{\tt set /Herwig/Shower/Evolverr:HardVetoScaleSource 0}: This reads the maximum $p_T$ for
-the veto from {\tt SCALUP} in the LEs Houches file. Set this to $1$ for {\tt POWHEG}.\\
+{\tt set /Herwig/Shower/Evolver:HardVetoScaleSource 0}: This reads the maximum $p_T$ for
+the veto from {\tt SCALUP} in the Les Houches file. Set this to $1$ for {\tt POWHEG}.\\
 \\
 Having set up the initialization file, run \textsf{Herwig++} by typing the following
 commands: \\
 \\
-{\tt .$\backslash$run\_dypp [eventfile] [number of events]} \\
+{\tt ./run\_dypp [eventfile] [number of events]} \\
 \\
 An example of the run
 command is:\\
 \\
-{\tt .$\backslash$run\_dypp /usera/seyi/MCPWNLO/DRELLYAN/MCDYPP.dat 10000}\\
+{\tt ./run\_dypp /usera/seyi/MCPWNLO/DRELLYAN/MCDYPP.dat 10000}\\
 \\
 where you should replace the eventfile with the path to your Les Houches file.
 \\
@@ -163,7 +163,10 @@ where you should replace the eventfile with the path to your Les Houches file.
   produced containing the histograms booked by the analysis handler. If you have topdraw
   installed, you can convert this to a postscript file by typing the command:\\
 \\
-{\tt td -dPOSTSCRIPT  MG-MySimpleAnalysis.top}
+{\tt td -dPOSTSCRIPT  MG-MySimpleAnalysis.top}\\
+\\
+In the Analysis folder, the files ZpTRun1.top and WpTRun1.top contain Tevatron Run 1 data
+which can be used for comparisons.
 \section{Further Information}
 For further information about {\tt MCPWNLO} contact: {\tt seyi@hep.phy.cam.ac.uk}.
 \bibliography{manual}

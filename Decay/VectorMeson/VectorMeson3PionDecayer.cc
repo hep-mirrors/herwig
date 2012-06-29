@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMeson3PionDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -279,7 +279,18 @@ void VectorMeson3PionDecayer::Init() {
   static ClassDocumentation<VectorMeson3PionDecayer> documentation
     ("The VectorMeson3PionDecayer class is designed for the decay "
      "of I=0 vector mesons to three pions via a current taking into account the "
-     "rho and a possible direct term");
+     "rho and a possible direct term",
+     "The decay of I=0 vector mesons to three pions via a current taking into account the "
+     "rho and a possible direct term is taken from \\cite{Aloisio:2003ur}.",
+     "%\\cite{Aloisio:2003ur}\n"
+     "\\bibitem{Aloisio:2003ur}\n"
+     "  A.~Aloisio {\\it et al.}  [KLOE Collaboration],\n"
+     "  %``Study of the decay Phi --> pi+ pi- pi0 with the KLOE detector,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 561}, 55 (2003)\n"
+     "  [Erratum-ibid.\\  B {\\bf 609}, 449 (2005)]\n"
+     "  [arXiv:hep-ex/0303016].\n"
+     "  %%CITATION = PHLTA,B561,55;%%\n"
+     );
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceIncoming
     ("Incoming",
@@ -409,6 +420,7 @@ double VectorMeson3PionDecayer::me2(const int ichan,
 				    const Particle & inpart,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),
@@ -568,43 +580,43 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":Incoming " 
+      output << "newdef " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "set " << name() << ":Coupling " 
+      output << "newdef " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "set " << name() << ":DirectCoupling " 
+      output << "newdef " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "set " << name() << ":Rho2Coupling " 
+      output << "newdef " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "set " << name() << ":Rho3Coupling " 
+      output << "newdef " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "set " << name() << ":DirectPhase " 
+      output << "newdef " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "set " << name() << ":Rho2Phase " 
+      output << "newdef " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "set " << name() << ":Rho3Phase " 
+      output << "newdef " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "set " << name() << ":MaxWeight " 
+      output << "newdef " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "set " << name() << ":Rho1Weight " 
+      output << "newdef " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "set " << name() << ":Rho2Weight " 
+      output << "newdef " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "set " << name() << ":Rho3Weight " 
+      output << "newdef " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "set " << name() << ":Rho1Mass " 
+      output << "newdef " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "set " << name() << ":Rho2Mass " 
+      output << "newdef " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "set " << name() << ":Rho3Mass " 
+      output << "newdef " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "set " << name() << ":Rho1Width " 
+      output << "newdef " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "set " << name() << ":Rho2Width " 
+      output << "newdef " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "set " << name() << ":Rho3Width " 
+      output << "newdef " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "set " << name() << ":DefaultParameters " 
+      output << "newdef " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
     else {

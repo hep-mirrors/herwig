@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSModelFFGRVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,15 +16,15 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void RSModelFFGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << ounit(_theKappa,InvGeV);
+  os << ounit(kappa_,InvGeV);
 }
 
 void RSModelFFGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> iunit(_theKappa,InvGeV);
+  is >> iunit(kappa_,InvGeV);
 }
 
 ClassDescription<RSModelFFGRVertex> RSModelFFGRVertex::initRSModelFFGRVertex;
@@ -36,8 +36,26 @@ void RSModelFFGRVertex::Init() {
      " of the fermion-antifermion-graviton vertex");
   
 }
-// couplings
-void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
-{setNorm(Complex(_theKappa * UnitRemoval::E));}
+  
+void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
+  norm(Complex(kappa_ * UnitRemoval::E));
 }
 
+RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) {
+  orderInGem(1);
+  orderInGs (0);
+}
+
+void RSModelFFGRVertex::doinit() {
+  // PDG codes for the particles
+  // the quarks
+  for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
+  // the leptons
+  for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
+  FFTVertex::doinit();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  if(!hwRS)
+    throw Exception() << "Must have RSModel in RSModelFFGRVertex::doinit()"
+		      << Exception::runerror;
+  kappa_=2./hwRS->lambda_pi();
+}

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GenericMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -54,7 +54,12 @@ public:
   /**
    * Default constructor
    */
-  inline GenericMassGenerator();
+  GenericMassGenerator()
+    : maxWgt_(),BWShape_(0),nGenerate_(100),
+      lowerMass_(),upperMass_(),
+      mass_(),width_(),mass2_(),mWidth_(),
+      nInitial_(1000),
+      initialize_(false), widthOpt_(false) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -93,7 +98,9 @@ public:
    * @param part The particle data pointer of the particle.
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part) const;
+  Energy mass(const ParticleData & part) const {
+    return mass(part,lowerMass_,upperMass_);
+  }
 
   /**
    * Generate a mass using specified limits
@@ -102,7 +109,19 @@ public:
    * @param upp The upper limit on the particle's mass.
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,const Energy low,const Energy upp) const;
+  Energy mass(const ParticleData & part,
+	      const Energy low,const Energy upp) const {
+    if(upp<low) return low;
+    Energy output;
+    int ntry=0; double wgt=0.;
+    do {
+      ++ntry;
+      output=mass(wgt,part,low,upp,3);
+      if(wgt>maxWgt_) maxWgt_=wgt;
+    }
+    while(maxWgt_*(UseRandom::rnd())>wgt&&ntry<nGenerate_);
+    return (ntry>=nGenerate_) ? mass_ : output;
+  }
 
   /**
    * Return a mass with the weight using the default limits.
@@ -111,9 +130,11 @@ public:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(double & wgt, const ParticleData & part, 
-		     double r=UseRandom::rnd()) const;
-
+  Energy mass(double & wgt, const ParticleData & part, 
+	      double r=UseRandom::rnd()) const {
+    return mass(wgt,part,lowerMass_,upperMass_,r);
+  }
+  
   /**
    * Return a mass with the weight using the specified limits.
    * @param part The particle data pointer of the particle.
@@ -123,16 +144,27 @@ public:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(double & wgt, const ParticleData & part,
-		     const Energy low,const Energy upp,
-		     double r=UseRandom::rnd()) const;
-
+  Energy mass(double & wgt, const ParticleData & part,
+	      const Energy low,const Energy upp,
+	      double r=UseRandom::rnd()) const {
+    return mass(wgt,part,low,upp,BWShape_,r);
+  }
+  
   /**
    * Weight for the factor.
-   * @param mass The mass of the instance
+   * @param q The mass of the instance
    * @return The weight.
    */
-  inline virtual double weight(Energy mass) const;
+  virtual double weight(Energy q) const {
+    return weight(q,BWShape_);
+  }
+
+  /**
+   *  Return the full weight
+   */
+  virtual InvEnergy2 BreitWignerWeight(Energy q) {
+    return BreitWignerWeight(q,BWShape_);
+  }
   //@}
 
   /**
@@ -146,36 +178,38 @@ public:
   //@{
   /**
    * The running width.
-   * @param mass The mass for the calculation of the running width
+   * @param q The mass for the calculation of the running width
    * @return The running width.
    */
-  inline Energy width(Energy mass) const;
+  Energy width(Energy q) const {
+    return (BWShape_==1||!widthGen_) ? 
+      width_ : widthGen_->width(*particle_,q);
+  }
 
   /**
    * Lower limit on the mass
    */
-  inline Energy lowerLimit() const;
+  Energy lowerLimit() const {return lowerMass_;}
 
   /**
    * Upper limit on the mass
    */
-  inline Energy upperLimit() const;
+  Energy upperLimit() const {return upperMass_;}
 
   /**
    * Default mass
    */
-  inline Energy nominalMass() const;
+  Energy nominalMass() const {return mass_;}
 
   /**
    * Default Width
    */
-  inline Energy nominalWidth() const;
+  Energy nominalWidth() const {return width_;}
 
 protected:
 
   /**
    * Return a mass with the weight using the specified limits.
-   * @param part The particle data pointer of the particle.
    * @param low The lower limit on the particle's mass.
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
@@ -183,9 +217,20 @@ protected:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(double & wgt, const ParticleData & part,
-		     const Energy low,const Energy upp, int shape,
-		     double r=UseRandom::rnd()) const;
+  virtual Energy mass(double & wgt, const ParticleData & ,
+		      const Energy low,const Energy upp, int shape,
+		      double r=UseRandom::rnd()) const {
+    // calculate the mass square using fixed width BW
+    Energy  lo=max(low,lowerMass_),up=min(upp,upperMass_);
+    double  rhomin=atan2((lo*lo-mass2_),mWidth_);
+    double  rhomax=atan2((up*up-mass2_),mWidth_)-rhomin;
+    double  rho=rhomin+rhomax*r;
+    Energy2 q2 = mass2_+mWidth_*tan(rho);
+    Energy  q = sqrt(q2);  
+    wgt = rhomax*weight(q,shape);
+    // return the mass
+    return q;
+  }
 
   /**
    * Return a mass with the weight using the default limits.
@@ -195,21 +240,50 @@ protected:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(double & wgt, const ParticleData & part, int shape,
-		     double r=UseRandom::rnd()) const;
+  Energy mass(double & wgt, const ParticleData & part, int shape,
+	      double r=UseRandom::rnd()) const {
+    return mass(wgt,part,lowerMass_,upperMass_,shape,r);
+  }
 
   /**
    * Weight for the factor.
-   * @param mass The mass of the instance
+   * @param q The mass of the instance
    * @param shape The type of shape to use as for the BreitWignerShape interface
    * @return The weight.
    */
-  inline virtual double weight(Energy mass,int shape) const;
+  inline virtual double weight(Energy q, int shape) const {
+    Energy2 q2 = q*q;
+    Energy4 sq=sqr(q2-mass2_);
+    Energy gam=width(q);
+    // finish the calculation of the width
+    Energy2 num;
+    if(shape==2)      num = mass_*gam;
+    else if(shape==3) num = mass_*width_;
+    else              num = q*gam;
+    Energy4 den = (shape==2) ? sq+mass2_*gam*gam : sq+q2*gam*gam;
+    return num/den*(sq+mWidth_*mWidth_)/Constants::pi/mWidth_;
+  }
+
+  /**
+   *  Return the full weight
+   */
+  virtual InvEnergy2 BreitWignerWeight(Energy q, int shape) const {
+    Energy2 q2 = q*q;
+    Energy4 sq=sqr(q2-mass2_);
+    Energy gam=width(q);
+    // finish the calculation of the width
+    Energy2 num;
+    if(shape==2)      num = mass_*gam;
+    else if(shape==3) num = mass_*width_;
+    else              num = q*gam;
+    Energy4 den = (shape==2) ? sq+mass2_*gam*gam : sq+q2*gam*gam;
+    return num/den/Constants::pi;
+  }
 
   /**
    *  Accesss to the particle
    */
-  inline tcPDPtr particle() const;
+  tcPDPtr particle() const {return particle_;}
 
 protected:
 
@@ -219,13 +293,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -277,23 +351,6 @@ private:
    */
   GenericMassGenerator & operator=(const GenericMassGenerator &);
 
-protected:
-
-  /**
-   * The maximum weight for unweighting when generating the mass.
-   */
-  mutable double _maxwgt;
-
-  /**
-   * parameter controlling the shape of the Breit-Wigner
-   */
-  int _BWshape;
-
-  /**
-   * Number of attempts to generate the mass.
-   */
-  int _ngenerate;
-
 private:
  
   /**
@@ -306,65 +363,79 @@ private:
    */
   string getParticle() const;
 
+private:
+
+  /**
+   * The maximum weight for unweighting when generating the mass.
+   */
+  mutable double maxWgt_;
+
+  /**
+   * parameter controlling the shape of the Breit-Wigner
+   */
+  int BWShape_;
+
+  /**
+   * Number of attempts to generate the mass.
+   */
+  int nGenerate_;
+
+private:
+
   /**
    * Pointer to the particle
    */
-  tPDPtr _particle;
-
-  /**
-   * Pointer to the anti-particle
-   */
-  tPDPtr _antiparticle;
+  tPDPtr particle_;
 
   /**
    * Lower limit on the particle's mass
    */
-  Energy _lowermass;
+  Energy lowerMass_;
 
   /**
    * Upper limit on the particle's mass
    */
-  Energy _uppermass;
+  Energy upperMass_;
 
   /**
    * Mass of the particle
    */
-  Energy _mass;
+  Energy mass_;
 
   /**
    * Width of the particle
    */
-  Energy _width; 
+  Energy width_; 
 
   /**
    * Mass of the particle squared.
    */
-  Energy2 _mass2;
+  Energy2 mass2_;
 
   /**
    * Mass of the particle times the width.
    */
-  Energy2 _mwidth;
+  Energy2 mWidth_;
 
   /**
    * Number of weights to generate when initializing
    */
-  int _ninitial;
+  int nInitial_;
 
   /**
    * Whether or not to initialize the GenericMassGenerator
    */
-  bool _initialize;
+  bool initialize_;
 
   /**
    * Pointer to the width generator
    */
-  WidthGeneratorPtr _widthgen;
+  WidthGeneratorPtr widthGen_;
 
   /**
    *  Option for the treatment of the width
    */
-  bool _widthopt;
+  bool widthOpt_;
 
 };
 
@@ -401,7 +472,5 @@ struct ClassTraits<Herwig::GenericMassGenerator>
 /** @endcond */
 
 }
-
-#include "GenericMassGenerator.icc"
 
 #endif /* HERWIG_GenericMassGenerator_H */

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDF1F0H1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,105 +24,56 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theAntiLast(0),
 				     theFermLast(0), theHLast(0) {
-  vector<long> anti, ferm, kkhiggs;
+  orderInGs(0);
+  orderInGem(1);
+}
+
+void UEDF1F0H1Vertex::doinit() {
   long heavy[3] = {5, 6, 15};
   //h0
   for( unsigned int i = 0; i < 3; ++i ) {
-    anti.push_back(-5100000 - i);
-    ferm.push_back(5100000 + i);
-    kkhiggs.push_back(25);
-    anti.push_back(-6100000 - i);
-    ferm.push_back(6100000 + i);
-    kkhiggs.push_back(25);
-    anti.push_back(-5100000 - i);
-    ferm.push_back(6100000 + i);
-    kkhiggs.push_back(25);
-    anti.push_back(-6100000 - i);
-    ferm.push_back(5100000 + i);
-    kkhiggs.push_back(25);
+    addToList(-5100000 - i, 5100000 + i, 25);
+    addToList(-6100000 - i, 6100000 + i, 25);
+    addToList(-5100000 - i, 6100000 + i, 25);
+    addToList(-6100000 - i, 5100000 + i, 25);
   }
   // Neutral KK-Higgs
   long higgs[2] = {5100025, 5100036};
   for( unsigned int h = 0; h < 2; ++h ) {
     for( unsigned int i = 0; i < 3; ++i ) {
-      anti.push_back(-heavy[i]);
-      ferm.push_back(5100000 + heavy[i]);
-      kkhiggs.push_back(higgs[h]);
-      anti.push_back(-5100000 - heavy[i]);
-      ferm.push_back(heavy[i]);
-      kkhiggs.push_back(higgs[h]);
-      anti.push_back(-heavy[i]);
-      ferm.push_back(6100000 + heavy[i]);
-      kkhiggs.push_back(higgs[h]);
-      anti.push_back(-6100000 - heavy[i]);
-      ferm.push_back(heavy[i]);
-      kkhiggs.push_back(higgs[h]);
+      addToList(-heavy[i], 5100000 + heavy[i], higgs[h]);
+      addToList(-5100000 - heavy[i], heavy[i], higgs[h]);
+      addToList(-heavy[i], 6100000 + heavy[i], higgs[h]);
+      addToList(-6100000 - heavy[i], heavy[i], higgs[h]);
     }
   }
 
   //KK-charged higgs
   //outgoing H+
-  anti.push_back(-5100006);
-  ferm.push_back(5);
-  kkhiggs.push_back(5100037);
-  anti.push_back(-6100006);
-  ferm.push_back(5);
-  kkhiggs.push_back(5100037);
+  addToList(-5100006, 5, 5100037);
+  addToList(-6100006, 5, 5100037);
 
-  anti.push_back(-6);
-  ferm.push_back(5100005);
-  kkhiggs.push_back(5100037);
-  anti.push_back(-6);
-  ferm.push_back(6100005);
-  kkhiggs.push_back(5100037);
+  addToList(-6, 5100005, 5100037);
+  addToList(-6, 6100005, 5100037);
 
-  anti.push_back(-5100016);
-  ferm.push_back(15);
-  kkhiggs.push_back(5100037);
-  anti.push_back(-6100016);
-  ferm.push_back(15);
-  kkhiggs.push_back(5100037);
+  addToList(-5100016, 15, 5100037);
+  addToList(-6100016, 15, 5100037);
 
-  anti.push_back(-16);
-  ferm.push_back(5100015);
-  kkhiggs.push_back(5100037);
-  anti.push_back(-16);
-  ferm.push_back(6100015);
-  kkhiggs.push_back(5100037);
+  addToList(-16, 5100015, 5100037);
+  addToList(-16, 6100015, 5100037);
 
   //outgoing H-
-  anti.push_back(-5100005);
-  ferm.push_back(6);
-  kkhiggs.push_back(-5100037);
-  anti.push_back(-6100005);
-  ferm.push_back(6);
-  kkhiggs.push_back(-5100037);
-  
-  anti.push_back(-5);
-  ferm.push_back(5100006);
-  kkhiggs.push_back(-5100037);
-  anti.push_back(-5);
-  ferm.push_back(6100006);
-  kkhiggs.push_back(-5100037);
-  
-  anti.push_back(-5100015);
-  ferm.push_back(16);
-  kkhiggs.push_back(-5100037);
-  anti.push_back(-6100015);
-  ferm.push_back(16);
-  kkhiggs.push_back(-5100037);
+  addToList(-5100005, 6,-5100037);
+  addToList(-6100005, 6,-5100037);
 
-  anti.push_back(-15);
-  ferm.push_back(5100016);
-  kkhiggs.push_back(-5100037);
-  anti.push_back(-15);
-  ferm.push_back(6100016);
-  kkhiggs.push_back(-5100037);
+  addToList(-5, 5100006,-5100037);
+  addToList(-5, 6100006,-5100037);
 
-  setList(anti, ferm, kkhiggs);
-}
+  addToList(-5100015, 16,-5100037);
+  addToList(-6100015, 16,-5100037);
 
-void UEDF1F0H1Vertex::doinit() {
+  addToList(-15, 5100016,-5100037);
+  addToList(-15, 6100016,-5100037);
   FFSVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
@@ -131,13 +82,10 @@ void UEDF1F0H1Vertex::doinit() {
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
   theRadius = UEDBase->compactRadius();
-  theSinThetaW = sqrt(UEDBase->sin2ThetaW());
-  theCosThetaW = sqrt(1. - UEDBase->sin2ThetaW());
+  theSinThetaW = sqrt(sin2ThetaW());
+  theCosThetaW = sqrt(1. - sin2ThetaW());
   theMw = getParticleData(24)->mass();
   theMz = getParticleData(23)->mass();
-
-  orderInGs(0);
-  orderInGem(1);
 }
 
 
@@ -162,7 +110,7 @@ void UEDF1F0H1Vertex::Init() {
 }
 
 void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3, int) {
+				  tcPDPtr part3) {
   long anti(abs(part1->id())), ferm(abs(part2->id())), higgs(part3->id());
   if( ferm > 17 ) swap( ferm, anti);
 
@@ -243,12 +191,12 @@ void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   }
 
 
-  if(q2 != theq2Last) {
+  if(q2 != theq2Last || theCoupLast == 0.) {
     theq2Last = q2;
     theCoupLast = weakCoupling(q2);
   }
 
-  setNorm(theCoupLast);
-  setLeft(theLeftLast);
-  setRight(theRightLast);
+  norm(theCoupLast);
+  left(theLeftLast);
+  right(theRightLast);
 }

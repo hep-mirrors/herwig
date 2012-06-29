@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartonicDecayerBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -59,9 +59,6 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
     // form the clusters
     ClusterVector clusters = _clusterFinder->formClusters(currentlist);
     _clusterFinder->reduceToTwoComponents(clusters);
-    // perform colour reconnection if needed and then
-    // decay the clusters into one hadron
-    _colourReconnector->rearrange(*generator()->eventHandler(),clusters);
     tPVector finalHadrons = _clusterFissioner->fission(clusters,false);
     bool lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
     // abandon child here so alwasy done
@@ -97,15 +94,15 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 }
 
 void PartonicDecayerBase::persistentOutput(PersistentOStream & os) const {
-  os << _partonSplitter << _clusterFinder << _colourReconnector
-     << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive
-     << _partontries << _inter;
+  os << _partonSplitter << _clusterFinder << _clusterFissioner
+    << _lightClusterDecayer << _clusterDecayer << _exclusive << _partontries
+    << _inter;
 }
 
 void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
-  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
-     >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
-     >> _partontries >> _inter;
+  is >> _partonSplitter >> _clusterFinder >> _clusterFissioner
+    >> _lightClusterDecayer >> _clusterDecayer >> _exclusive >> _partontries
+    >> _inter;
 }
 
 AbstractClassDescription<PartonicDecayerBase> 
@@ -128,12 +125,6 @@ void PartonicDecayerBase::Init() {
     interfaceClusterFinder("ClusterFinder", 
 		      "A reference to the ClusterFinder object", 
 		      &Herwig::PartonicDecayerBase::_clusterFinder,
-		      false, false, true, false);
-
-  static Reference<PartonicDecayerBase,ColourReconnector> 
-    interfaceColourReconnector("ColourReconnector", 
-		      "A reference to the ColourReconnector object", 
-		      &Herwig::PartonicDecayerBase::_colourReconnector,
 		      false, false, true, false);
 
   static Reference<PartonicDecayerBase,ClusterFissioner> 
@@ -230,21 +221,19 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
   // parameters
-  output << "set  " << name() << ":PartonSplitter " 
+  output << "newdef  " << name() << ":PartonSplitter " 
 	 << _partonSplitter->name() << " \n";
-  output << "set  " << name() << ":ClusterFinder " 
+  output << "newdef  " << name() << ":ClusterFinder " 
 	 << _clusterFinder->name() << " \n";
-  output << "set  " << name() << ":ColourReconnector " 
-	 << _colourReconnector->name() << " \n";
-  output << "set  " << name() << ":ClusterFissioner " 
+  output << "newdef  " << name() << ":ClusterFissioner " 
 	 << _clusterFissioner->name() << " \n";
-  output << "set  " << name() << ":LightClusterDecayer " 
+  output << "newdef  " << name() << ":LightClusterDecayer " 
 	 << _lightClusterDecayer->name() << " \n";
-  output << "set  " << name() << ":ClusterDecayer " 
+  output << "newdef  " << name() << ":ClusterDecayer " 
 	 << _clusterDecayer->name() << " \n";
-  output << "set  " << name() << ":Exclusive " <<  _exclusive<< " \n";
-  output << "set  " << name() << ":Intermediates " << _inter << " \n";
-  output << "set  " << name() << ":Partonic_Tries " << _partontries << " \n";
+  output << "newdef  " << name() << ":Exclusive " <<  _exclusive<< " \n";
+  output << "newdef  " << name() << ":Intermediates " << _inter << " \n";
+  output << "newdef  " << name() << ":Partonic_Tries " << _partontries << " \n";
   // footer for MySQL
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;

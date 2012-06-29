@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDG0G0G1G1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,14 +13,31 @@
 
 #include "UEDG0G0G1G1Vertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "UEDBase.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;
-// Definition of the static class description member.
+UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
+  theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(2);
+  orderInGem(0);
+}
+
+void UEDG0G0G1G1Vertex::doinit() {
+  long kk1g = 5100021, smgl = 21;
+  addToList(smgl, smgl, kk1g, kk1g);
+  VVVVVertex::doinit();
+}
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeNoPIOClass<UEDG0G0G1G1Vertex,Helicity::VVVVVertex>
+describeUEDG0G0G1G1Vertex("Herwig::UEDG0G0G1G1Vertex", "HwUED.so");
 
 void UEDG0G0G1G1Vertex::Init() {
 
@@ -41,12 +58,13 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     if(particles[i]->id() == 5100021) ++ikkg;
   }
   if(ismg == 2 && ikkg == 2) { 
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0. ) {
       theq2Last = q2;
       theCoupLast = sqr(strongCoupling(q2));
     }
-    setNorm(theCoupLast);
-    setType(1); setOrder(0,1,2,3);
+    norm(theCoupLast);
+    setType(1);
+    setOrder(0,1,2,3);
   }
   else {
     throw HelicityLogicalError() << "UEDG0G0G1G1Vertex::setCoupling - "
@@ -54,6 +72,6 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << part1->id() << " " << part2->id() << " " 
 				 << part3->id() << " " << part4->id()
 				 << Exception::warning;
-    setNorm(0.);
+    norm(0.);
   }
 }

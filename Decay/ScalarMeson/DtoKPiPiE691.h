@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DtoKPiPiE691.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -120,7 +120,7 @@ protected:
    */
   Complex amplitude(int ispin, double costheta,Energy mAB,
 		    Energy wres, Energy mres) const {
-    double s;
+    double s = 0.;
     switch(ispin) {
     case 0: s = 1.;                    break;
     case 1: s = costheta;              break;

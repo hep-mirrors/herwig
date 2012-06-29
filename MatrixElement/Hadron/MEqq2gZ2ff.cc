@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEqq2gZ2ff.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,12 +31,11 @@ using namespace Herwig;
 
 MEqq2gZ2ff::MEqq2gZ2ff() : _minflavour(1), _maxflavour(5), 
 			   _gammaZ(0), _process(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEqq2gZ2ff::doinit() {
-  HwME2to2Base::doinit();
+  DrellYanBase::doinit();
   _z0=getParticleData(ThePEG::ParticleID::Z0);
   _gamma=getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
@@ -56,7 +55,7 @@ void MEqq2gZ2ff::getDiagrams() const {
   bool gamma = _gammaZ==0 || _gammaZ==1;
   bool Z0    = _gammaZ==0 || _gammaZ==2;
   // loop over the processes we need
-  for(unsigned int ix=1;ix<17;++ix) {
+  for ( int ix=1; ix<17; ++ix ) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     // is it a valid quark process
@@ -74,7 +73,7 @@ void MEqq2gZ2ff::getDiagrams() const {
     if(!(quark||lepton)) continue;
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for(unsigned int i = _minflavour; i <= _maxflavour; ++i) {
+    for(int i = _minflavour; i <= _maxflavour; ++i) {
       tcPDPtr q  = getParticleData(i);
       tcPDPtr qb = q->CC();
       if(Z0)    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _z0   , 3, lm, 3, lp, -1)));
@@ -153,13 +152,13 @@ void MEqq2gZ2ff::Init() {
      "q qbar to Standard Model fermions via Z and photon exchange using"
      " helicity amplitude techniques");
 
-  static Parameter<MEqq2gZ2ff,unsigned int> interfaceMaxFlavour
+  static Parameter<MEqq2gZ2ff,int> interfaceMaxFlavour
     ("MaxFlavour",
      "The maximum incoming quark flavour this matrix element is allowed to handle",
      &MEqq2gZ2ff::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
 
-  static Parameter<MEqq2gZ2ff,unsigned int> interfaceMinFlavour
+  static Parameter<MEqq2gZ2ff,int> interfaceMinFlavour
     ("MinFlavour",
      "The minimum incoming quark flavour this matrix element is allowed to handle",
      &MEqq2gZ2ff::_minflavour, 1, 1, 5,
@@ -185,7 +184,7 @@ void MEqq2gZ2ff::Init() {
      "Only include the Z",
      2);
 
-  static Switch<MEqq2gZ2ff,unsigned int> interfaceProcess
+  static Switch<MEqq2gZ2ff,int> interfaceProcess
     ("Process",
      "Which process to included",
      &MEqq2gZ2ff::_process, 0, false, false);
@@ -336,7 +335,6 @@ double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2gZ2ff::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -352,13 +350,11 @@ void MEqq2gZ2ff::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(fout,hard[order[2]],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[order[3]],outgoing,true ,true);
   qqbarME(fin,ain,fout,aout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<4;++ix) 
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

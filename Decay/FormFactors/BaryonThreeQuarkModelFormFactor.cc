@@ -12,6 +12,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 
@@ -159,11 +160,11 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
     generator()->log() << "Omega_b-->Omega_c*0 decay" 
 		       << width/6.582119E-22/MeV << "\n";
     // output some plots for testing
-    double lambdabar;
+    double lambdabar = -999.999;
     ofstream output("ThreeQuark.top");
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 3 from paper \"" << endl;
-    output << "set limits x 1 1.44 y 0.5 1" << endl;
+    output << "newdef limits x 1 1.44 y 0.5 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.44),
 	step((omegamax-omegamin)/100.),omega(1.),xi;
@@ -191,9 +192,9 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
       else if(ix==4){output << "join magenta" << endl;}
     }
     output << "new frame " << endl;
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 6 from paper \"" << endl;
-    output << "set limits x 1 1.4 y 0.5 1" << endl;
+    output << "newdef limits x 1 1.4 y 0.5 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
       unsigned int ioff(0);
@@ -222,9 +223,9 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
       else if(ix==4){output << "join magenta" << endl;}
     }
     output << "new frame " << endl;
-    output << "set font duplex" << endl;
+    output << "newdef font duplex" << endl;
     output << "title top \"Figure 7 from paper \"" << endl;
-    output << "set limits x 1 1.33 y 0.4 1" << endl;
+    output << "newdef limits x 1 1.33 y 0.4 1" << endl;
     for(unsigned int ix=0;ix<5;++ix) {
       double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
       unsigned int ioff(_order+1);
@@ -274,7 +275,16 @@ void BaryonThreeQuarkModelFormFactor::Init() {
   static ClassDocumentation<BaryonThreeQuarkModelFormFactor> documentation
     ("The BaryonThreeQuarkModelFormFactor class implements"
      " the form-factors for semi-leptonic decay of baryon containing a"
-     " heavy quark from PRD56, 348.");
+     " heavy quark from PRD56, 348.",
+     "The form factors from \\cite{Ivanov:1996fj} were used.",
+     "%\\cite{Ivanov:1996fj}\n"
+     "\\bibitem{Ivanov:1996fj}\n"
+     "  M.~A.~Ivanov, V.~E.~Lyubovitskij, J.~G.~Korner and P.~Kroll,\n"
+     "  ``Heavy baryon transitions in a relativistic three-quark model,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 56} (1997) 348\n"
+     "  [arXiv:hep-ph/9612463].\n"
+     "  %%CITATION = PHRVA,D56,348;%%\n"
+     );
 
   static Parameter<BaryonThreeQuarkModelFormFactor,unsigned int> interfaceOrder
     ("Order",
@@ -357,6 +367,7 @@ void BaryonThreeQuarkModelFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a) {
+  useMe();
   // this model is based on heavy quark theory
   // therefore most of the factors are zero
   Complex g1v(0.),g1a(0.),g2v(0.),g2a(0.),g3a(0.),g3v(0.);
@@ -421,6 +432,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
 				Energy m1, Complex & f1v,Complex & f2v,
 				Complex & f3v,Complex & f4v,Complex & f1a,
 				Complex & f2a,Complex & f3a,Complex & f4a ) {
+  useMe();
   // work out which light quark constant to use
   double lambdabar;unsigned int ioff(0);
   if(abs(id1)==4334) {
@@ -478,13 +490,13 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool head
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BaryonThreeQuarkModelFormFactor " 
 		    << name() << " \n";
-  output << "set " << name() << ":Order       " << _order        << " \n";
-  output << "set " << name() << ":LightMass   " << _mlight/GeV   << " \n";
-  output << "set " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
-  output << "set " << name() << ":LambdaQ     " << _LambdaQ/GeV  << " \n";
-  output << "set " << name() << ":Lambdaqq    " << _Lambdaqq/GeV << " \n";
-  output << "set " << name() << ":Lambdasq    " << _Lambdasq/GeV << " \n";
-  output << "set " << name() << ":Lambdass    " << _Lambdass/GeV << " \n";
+  output << "newdef " << name() << ":Order       " << _order        << " \n";
+  output << "newdef " << name() << ":LightMass   " << _mlight/GeV   << " \n";
+  output << "newdef " << name() << ":StrangeMass " << _mstrange/GeV << " \n";
+  output << "newdef " << name() << ":LambdaQ     " << _LambdaQ/GeV  << " \n";
+  output << "newdef " << name() << ":Lambdaqq    " << _Lambdaqq/GeV << " \n";
+  output << "newdef " << name() << ":Lambdasq    " << _Lambdasq/GeV << " \n";
+  output << "newdef " << name() << ":Lambdass    " << _Lambdass/GeV << " \n";
   // the number of terms to include in the sum for the form-factors
   for(unsigned int ix=0;ix<_C0.size();++ix)
     output << "insert " << name() << ":C0 " << ix << "   " << _C0[ix] << " \n";
@@ -566,12 +578,11 @@ Energy BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
 						       Energy m1, int type,
 						       int ,int id0,
 						       int id1) {
-  InvEnergy2 GF=1.16639E-5/GeV2;
   // prefactors
   double omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
   double pi=acos(-1.);
-  InvEnergy kw=sqr(GF)/8./pi/pi/pi*m1*m1*m1/6.*
-    (omegamax-omega)*sqrt(omega*omega-1.);
+  InvEnergy kw=sqr(generator()->standardModel()->fermiConstant())
+    /8./pi/pi/pi*m1*m1*m1/6.*(omegamax-omega)*sqrt(omega*omega-1.);
   Energy2 q2 = sqr(m0)+sqr(m1)-2.*m0*m1*omega;
   if(type<=2) {
     Complex f1v,f2v,f3v,f1a,f2a,f3a;

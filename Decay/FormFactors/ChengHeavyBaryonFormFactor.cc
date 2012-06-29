@@ -147,14 +147,17 @@ void ChengHeavyBaryonFormFactor::doinit() {
     {
       int id0,id1;
       particleID(ix,id0,id1);
-      tcPDPtr part0=getParticleData(id0);Energy m0=part0->mass();
-      tcPDPtr part1=getParticleData(id1);Energy m1=part1->mass();
-      Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
-      if(part1->iSpin()==2)
-	{SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
-      else
-	{SpinHalfSpinThreeHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,
-					 f4v,f1a,f2a,f3a,f4a);}
+      tcPDPtr part0=getParticleData(id0); Energy m0=part0->mass();
+      tcPDPtr part1=getParticleData(id1); Energy m1=part1->mass();
+      if ( part1->iSpin() == 2 ) {
+	Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a; // dummy variables
+	SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);
+      }
+      else {
+	Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a; // dummy variables
+	SpinHalfSpinThreeHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,
+					f4v,f1a,f2a,f3a,f4a);
+      }
     }
 }
   
@@ -185,7 +188,25 @@ void ChengHeavyBaryonFormFactor::Init() {
      " of the form-factors of PRD53, 1457 and PRD56, 2799 for the weak decay of"
      "baryons containing a heavy quark. This model can be used for either"
      "semi-leptonic decays, or with the factorization approximation for"
-     " non-leptonic weak decays");
+     " non-leptonic weak decays",
+     "The weak decay of baryons containing a heavy quark used form factors from "
+     "\\cite{Cheng:1995fe,Cheng:1996cs}.",
+     "%\\cite{Cheng:1995fe}\n"
+     "\\bibitem{Cheng:1995fe}\n"
+     "  H.~Y.~Cheng and B.~Tseng,\n"
+     "  %``1/M corrections to baryonic form-factors in the quark model,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 53} (1996) 1457\n"
+     "  [Erratum-ibid.\\  D {\\bf 55} (1997) 1697]\n"
+     "  [arXiv:hep-ph/9502391].\n"
+     "  %%CITATION = PHRVA,D53,1457;%%\n"
+     "%\\cite{Cheng:1996cs}\n"
+     "\\bibitem{Cheng:1996cs}\n"
+     "  H.~Y.~Cheng,\n"
+     "  %``Nonleptonic weak decays of bottom baryons,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 56} (1997) 2799\n"
+     "  [arXiv:hep-ph/9612223].\n"
+     "  %%CITATION = PHRVA,D56,2799;%%\n"
+     );
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceUpMass
     ("DownMass",
@@ -297,6 +318,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {
+  useMe();
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
@@ -336,6 +358,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 				Complex & g4v,Complex & g1a,Complex & g2a,
 				Complex & g3a,Complex & g4a)
 {
+  useMe();
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
@@ -376,28 +399,28 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
   if(header){output << "update decayers set parameters=\"";}
   if(create)
     {output << "create Herwig::ChengHeavyBaryonFormFactor " << name() << " \n";}
-  output << "set " << name() << ":DownMass     " << _md/GeV << " \n";
-  output << "set " << name() << ":UpMass       " << _mu/GeV << " \n";
-  output << "set " << name() << ":StrangeMass  " << _ms/GeV << " \n";
-  output << "set " << name() << ":CharmMass    " << _mc/GeV << " \n";
-  output << "set " << name() << ":BottomMass   " << _mb/GeV << " \n";
-  output << "set " << name() << ":VectorMassbc " << _mVbc/GeV << " \n";
-  output << "set " << name() << ":AxialMassbc  " << _mAbc/GeV << " \n";
-  output << "set " << name() << ":VectorMassbs " << _mVbs/GeV << " \n";
-  output << "set " << name() << ":AxialMassbs  " << _mAbs/GeV << " \n";
-  output << "set " << name() << ":VectorMassbd " << _mVbd/GeV << " \n";
-  output << "set " << name() << ":AxialMassbd  " << _mAbd/GeV << " \n";
-  output << "set " << name() << ":VectorMasscs " << _mVcs/GeV << " \n";
-  output << "set " << name() << ":AxialMasscs  " << _mAcs/GeV << " \n";
-  output << "set " << name() << ":VectorMasscu " << _mVcu/GeV << " \n";
-  output << "set " << name() << ":AxialMasscu  " << _mAcu/GeV << " \n";
+  output << "newdef " << name() << ":DownMass     " << _md/GeV << " \n";
+  output << "newdef " << name() << ":UpMass       " << _mu/GeV << " \n";
+  output << "newdef " << name() << ":StrangeMass  " << _ms/GeV << " \n";
+  output << "newdef " << name() << ":CharmMass    " << _mc/GeV << " \n";
+  output << "newdef " << name() << ":BottomMass   " << _mb/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbc " << _mVbc/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbc  " << _mAbc/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbs " << _mVbs/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbs  " << _mAbs/GeV << " \n";
+  output << "newdef " << name() << ":VectorMassbd " << _mVbd/GeV << " \n";
+  output << "newdef " << name() << ":AxialMassbd  " << _mAbd/GeV << " \n";
+  output << "newdef " << name() << ":VectorMasscs " << _mVcs/GeV << " \n";
+  output << "newdef " << name() << ":AxialMasscs  " << _mAcs/GeV << " \n";
+  output << "newdef " << name() << ":VectorMasscu " << _mVcu/GeV << " \n";
+  output << "newdef " << name() << ":AxialMasscu  " << _mAcu/GeV << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       if(ix<initialModes())
 	{
-	  output << "set " << name() << ":Nfi " << ix << "  " 
+	  output << "newdef " << name() << ":Nfi " << ix << "  " 
 		<< _Nfi[ix] << endl;
-	  output << "set " << name() << ":Eta " << ix << "  " 
+	  output << "newdef " << name() << ":Eta " << ix << "  " 
 		<< _eta[ix] << endl;
 	}
       else

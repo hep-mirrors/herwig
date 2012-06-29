@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TwoPionPhotonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -158,8 +158,17 @@ void TwoPionPhotonCurrent::Init() {
   
   static ClassDocumentation<TwoPionPhotonCurrent> documentation
     ("The TwoPionPhotonCurrent class implements the decay "
-     "tau+/- -> pi+/- pi0 gamma via an omega.");
-  
+     "tau+/- -> pi+/- pi0 gamma via an omega.",
+     "The decay $\\tau^\\pm \\to \\omega \\to \\pi^\\pm \\pi^0 \\gamma$ "
+     "is modelled after \\cite{Jadach:1993hs}.",
+     "  %\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     );
+
   static Parameter<TwoPionPhotonCurrent,Energy2> interfacegrho
     ("grho",
      "The rho meson decay constant.",
@@ -229,6 +238,7 @@ vector<LorentzPolarizationVectorE>
 TwoPionPhotonCurrent::current(const int, const int,Energy & scale,
 			      const ParticleVector & decay,
 			      DecayIntegrator::MEOption meopt) const {
+  useMe();
   vector<LorentzPolarizationVector> temp;
   VectorWaveFunction::
     calculateWaveFunctions(temp,decay[2],outgoing,true);
@@ -300,29 +310,29 @@ void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::TwoPionPhotonCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << name() << ":RhoParameters "    << _rhoparameters << "\n";
-  output << "set " << name() << ":omegaParameters "    << _omegaparameters << "\n";
-  output << "set " << name() << ":omegamass "    << _omegamass/GeV << "\n";
-  output << "set " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
-  output << "set " << name() << ":grho "    << _grho/GeV2 << "\n";
-  output << "set " << name() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
-  output << "set " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "newdef " << name() << ":RhoParameters "    << _rhoparameters << "\n";
+  output << "newdef " << name() << ":omegaParameters "    << _omegaparameters << "\n";
+  output << "newdef " << name() << ":omegamass "    << _omegamass/GeV << "\n";
+  output << "newdef " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
+  output << "newdef " << name() << ":grho "    << _grho/GeV2 << "\n";
+  output << "newdef " << name() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
+  output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
   unsigned int ix;
   for(ix=0;ix<_resweights.size();++ix) {
-    if(ix<3) output << "set " << name() << ":Weights " << ix 
+    if(ix<3) output << "newdef " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
     else     output << "insert " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
   }
   for(ix=0;ix<_rhomasses.size();++ix) {
-    if(ix<2) output << "set " << name() << ":RhoMasses " << ix 
+    if(ix<2) output << "newdef " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
     else     output << "insert " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
-    if(ix<2) output << "set " << name() << ":RhoWidths " << ix 
+    if(ix<2) output << "newdef " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";
     else     output << "insert " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";

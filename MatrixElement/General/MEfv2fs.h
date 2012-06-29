@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEfv2fs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,9 +18,9 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEfv2fs() : theScaV(0), theFermV(0) {}
+  MEfv2fs() : scalar_(0), fermion_(0) {}
 
 public:
 
@@ -69,16 +69,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
   //@}
 
   /**
@@ -97,13 +87,15 @@ private:
    * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spbOut Vector of SpinorBarWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param full_me The value of me2 calculation
    */
   ProductionMatrixElement fv2fbsHeME(const SpinorVector & spIn, 
 				     const VecWFVector & vecIn,
 				     const SpinorBarVector & spbOut,
 				     const ScalarWaveFunction & scaOut,
-				     double & full_me) const;
+				     double & full_me, bool first) const;
   
   /**
    * Calculate me2 and the production matrix element for the cc mode.
@@ -111,13 +103,15 @@ private:
    * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spOut Vector of SpinorWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param first Whether or not first call to decide if colour decomposition etc
+   * should be calculated
    * @param full_me The value of me2 calculation
    */
   ProductionMatrixElement fbv2fsHeME(const SpinorBarVector & spbIn, 
 				     const VecWFVector & vecIn,
 				     const SpinorVector & spOut,
 				     const ScalarWaveFunction & scaOut,
-				     double & full_me) const;
+				     double & full_me, bool first) const;
   //@}
 
 protected:
@@ -165,6 +159,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -175,13 +175,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -203,12 +203,12 @@ private:
   /**
    * Store a pair of  FFSVertex and VSSVertex pointers  
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theScaV;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > scalar_;
 
   /**
    * Store a pair of  FFSVertex and FFVVertex pointers  
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > theFermV;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
   
 };
 

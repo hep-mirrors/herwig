@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIPDF.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the MPIPDF class. It defines
+ * The MPIPDF class defines
  * a modified pdf which uses an existing pdf object to add
  * modifications like removing the valence part of it, which
  * is needed in the backward evolution of secondary scatters.
@@ -38,7 +38,7 @@ public:
   /**
    * The constructor which takes a PDF object as argument, to work with.
    */
-  MPIPDF(tcPDFPtr orig = tcPDFPtr()) : thePDF(orig) {}
+  MPIPDF(cPDFPtr orig = cPDFPtr()) : thePDF(orig) {}
 
   /**
    * The destructor.
@@ -154,7 +154,7 @@ private:
   /**
    * pointer to the underlying ThePEG::PDFBase object, we are modifying.
    */
-  tcPDFPtr thePDF;
+  cPDFPtr thePDF;
 };
 
 }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,6 @@
 #include "KinematicsReconstructor.fh"
 #include "PartnerFinder.fh"
 #include "SudakovFormFactor.fh"
-#include "MECorrectionBase.fh"
 #include "ShowerModel.fh"
 
 namespace Herwig {
@@ -36,8 +35,6 @@ using namespace ThePEG;
  * - A vector of SudakovFormFactor objects which will usually all be instances
  *   of a class implementing the SudakovFormFactor for a specific model with
  *   different splitting functions for different branchings
- * - A vector of MECorrectionBase objects which may be empty with implement the
- *   matrix element corrections for specific processes.
  *
  *  For each model the checkConsistency member must be implemented to check that
  *  the correct objects for the model are used.
@@ -61,20 +58,12 @@ public:
   /**
    *  Access to the PartnerFinder object
    */
-  tPartnerFinderPtr partnerFinder() const {
-    useMe();
-    return _partnerfinder;
-  }
+  tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
 
   /**
    *  Access to the SudakovFormFactor objects
    */
   const vector<SudakovPtr> & sudakovFormFactors() const { return _sudakovs; }
-
-  /**
-   *  Access to the MECorrection objects
-   */
-  const vector<MECorrectionPtr> & meCorrections() const { return _mecorrections; }
   //@}
 
 public:
@@ -156,11 +145,6 @@ private:
    *  Pointers to the SudakovFormFactor objects
    */
   vector<SudakovPtr> _sudakovs;
-
-  /**
-   *  Pointers to the MECorrection base objects
-   */
-  vector<MECorrectionPtr> _mecorrections;
   //@}
 
 };

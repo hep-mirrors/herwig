@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LEPMultiplicityCount.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -120,11 +120,11 @@ LEPMultiplicityCount::LEPMultiplicityCount() : _makeHistograms(false)
 
 namespace {
   bool isLastCluster(tcPPtr p) {
-    if ( p->id() != ExtraParticleID::Cluster ) 
+    if ( p->id() != ParticleID::Cluster ) 
       return false;
     for ( size_t i = 0, end = p->children().size();
 	  i < end; ++i ) {
-      if ( p->children()[i]->id() == ExtraParticleID::Cluster )
+      if ( p->children()[i]->id() == ParticleID::Cluster )
 	return false;
     }
     return true;
@@ -135,7 +135,7 @@ namespace {
       return -1.0*MeV;
 
     tcPPtr parent = p->parents()[0];
-    if (parent->id() == ExtraParticleID::Cluster) {
+    if (parent->id() == ParticleID::Cluster) {
       if ( isLastCluster(parent) )
 	return parent->mass();
       else
@@ -146,7 +146,7 @@ namespace {
   }
 
   bool isPrimaryCluster(tcPPtr p) {
-    if ( p->id() != ExtraParticleID::Cluster ) 
+    if ( p->id() != ParticleID::Cluster ) 
       return false;
     if( p->parents().empty())
       return false;
@@ -203,7 +203,7 @@ void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
   }
   
   if( _makeHistograms ) 
-    _histograms.insert(make_pair(ExtraParticleID::Cluster, 
+    _histograms.insert(make_pair(ParticleID::Cluster, 
 				 Histogram(0.0,10.0,200)));
   
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
@@ -213,7 +213,7 @@ void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
     if(ID==ParticleID::K_L0||ID==ParticleID::K_S0) ID=ParticleID::K0;
     
     if ( _makeHistograms && isLastCluster(*it) ) {
-      _histograms[ExtraParticleID::Cluster] += (*it)->mass()/GeV;
+      _histograms[ParticleID::Cluster] += (*it)->mass()/GeV;
       tcClusterPtr clu = dynamic_ptr_cast<tcClusterPtr>(*it);
       if (clu) {
 	_clusters.insert(make_pair(clu->clusterId(), Histogram(0.0,10.0,200)));
@@ -236,7 +236,7 @@ void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
       
       if (_makeHistograms 
 	  && ! (*it)->parents().empty()
-	  && (*it)->parents()[0]->id() == ExtraParticleID::Cluster) {
+	  && (*it)->parents()[0]->id() == ParticleID::Cluster) {
 	_histograms.insert(make_pair(ID,Histogram(0.0,10.0,200)));
 	_histograms[ID] += parentClusterMass(*it)/GeV;
       }
@@ -255,6 +255,7 @@ void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
 void LEPMultiplicityCount::analyze(const tPVector & ) {}
 
 void LEPMultiplicityCount::dofinish() {
+  useMe();
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
@@ -324,7 +325,7 @@ void LEPMultiplicityCount::dofinish() {
       it->second.topdrawOutput(outfile2,Frame|Ylog,"BLACK",title,"",
 			       "N (200 bins)","","Cluster mass [GeV]");
     }
-    map<long,Histogram>::const_iterator cit = _histograms.find(ExtraParticleID::Cluster);
+    map<long,Histogram>::const_iterator cit = _histograms.find(ParticleID::Cluster);
     string title = generator()->getParticleData(cit->first)->PDGName();
     cit->second.topdrawOutput(outfile2,Frame|Ylog,"BLACK",title,"",
 			     "N (200 bins)","","Parent cluster mass [GeV]");
@@ -399,7 +400,16 @@ void LEPMultiplicityCount::Init() {
 
   static ClassDocumentation<LEPMultiplicityCount> documentation
     ("The LEPMultiplicityCount class count the multiplcities of final-state particles"
-     " and compares them with LEP data.");
+     " and compares them with LEP data.",
+     "The LEP multiplicity analysis uses data from PDG 2006 \\cite{Yao:2006px}.",
+     "%\\cite{Yao:2006px}\n"
+     "\\bibitem{Yao:2006px}\n"
+     "  W.~M.~Yao {\\it et al.}  [Particle Data Group],\n"
+     "  %``Review of particle physics,''\n"
+     "  J.\\ Phys.\\ G {\\bf 33} (2006) 1.\n"
+     "  %%CITATION = JPHGB,G33,1;%%\n"
+     );
+
 }
 
 void LEPMultiplicityCount::persistentOutput(PersistentOStream & os) const {

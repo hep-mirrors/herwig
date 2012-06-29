@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TauDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -54,7 +54,7 @@ public:
   /**
    * Default constructor.
    */
-  TauDecayer() :_gf(1.16637E-5/GeV2) {
+  TauDecayer() : _polOpt(false), _tauMpol(0.), _tauPpol(0.) {
     generateIntermediates(true);
   }
 
@@ -163,11 +163,6 @@ private:
   TauDecayer & operator=(const TauDecayer &);
 
 private:
-  
-  /**
-   * Fermi coupling constant, \f$G_F\f$.
-   */
-  InvEnergy2 _gf;
 
   /**
    * mapping of the modes to the currents
@@ -219,6 +214,20 @@ private:
    */
   mutable vector<PDT::Spin> _ispin; 
 
+  /**
+   *  Option to force the polarizations of the tau leptons
+   */
+  bool _polOpt;
+
+  /**
+   *  Polarization for \f$\tau^-\f$
+   */
+  double _tauMpol;
+
+  /**
+   *  Polarization of \f$\tau^+\f$
+   */
+  double _tauPpol;
 };
 
 }

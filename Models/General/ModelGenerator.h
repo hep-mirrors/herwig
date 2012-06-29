@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ModelGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "DecayConstructor.h"
 #include "HardProcessConstructor.h"
-#include "ResonantProcessConstructor.h"
 #include "ModelGenerator.fh"
 
 namespace Herwig {
@@ -36,10 +35,11 @@ public:
   /**
    * The default constructor.
    */
-  inline ModelGenerator() : _theParticles(0), _theOffshell(0),
-			    _theOffsel(0), _theBRnorm(true),
-			    _theNpoints(50), _theIorder(1),
-			    _theBWshape(0), brMin_(1e-6) {}
+  ModelGenerator() : particles_(0), offshell_(0),
+		     Offsel_(0), BRnorm_(true),
+		     Npoints_(50), Iorder_(1),
+		     BWshape_(0), brMin_(1e-6),
+		     decayOutput_(1) {}
 
 public:
 
@@ -70,7 +70,9 @@ public:
   /**
    * Overloaded function from Interfaced
    */
-  virtual bool preInitialize() const;
+  virtual bool preInitialize() const {
+    return true;
+  }
 
 protected:
 
@@ -128,7 +130,7 @@ private:
   /**
    * Write out the spectrum of masses and decay modes
    */
-  void writeDecayModes(ofstream & ofs, tcPDPtr parent) const;
+  void writeDecayModes(ostream & ofs, tcPDPtr parent) const;
 
   /**
    * Create mass and width generators to simulate off-shell effects
@@ -137,13 +139,12 @@ private:
    */
   void createWidthGenerator(tPDPtr p);
 			   
-
 private:
   
   /**
-   * Pointer to the HardProcessConstructor
+   * Pointer to the TwoToTwoProcessConstructor
    */
-  HPConstructorPtr _theHPConstructor;
+  vector<HPConstructorPtr> hardProcessConstructors_;
   
   /**
    * Pointer to DecayConstructor
@@ -153,53 +154,53 @@ private:
   /**
    * Vector of ParticleData pointer
    */
-  PDVector _theParticles;
-
-  /**
-   * Pointer to the ResonantProcessConstructor
-   */
-  RPConstructorPtr _theRPConstructor;
+  PDVector particles_;
 
   /** @name Width and Mass Generator variables. */
   //@{
   /**
    * The particles to create MassGenerator and WidthGenerators  
    */
-  PDVector _theOffshell;
+  PDVector offshell_;
   
   /**
    * Which particles to treat as off-shell. 1 treats all particles in
-   * _theParticles vector as off-shell, 0 allows selection via
-   * _theOffshell vector.
+   * particles_ vector as off-shell, 0 allows selection via
+   * offshell_ vector.
    */
-  int _theOffsel;
+  int Offsel_;
   
   /**
    * Whether to normalise the partial widths to BR*Total width for 
    * an on-shell particle
    */
-  bool _theBRnorm;
+  bool BRnorm_;
 
   /**
    * The number of points to include in the interpolation table
    */
-  int _theNpoints;
+  int Npoints_;
   
   /**
    * The order for the interpolation
    */
-  unsigned int _theIorder;
+  unsigned int Iorder_;
 
   /**
    * The shape of the Breit-Wigner used in the mass generation
    */
-  int _theBWshape;
+  int BWshape_;
 
   /**
    * The minimum branching ratio to use 
    */
   double brMin_;
   //@}
+
+  /**
+   *   Option for the outputs of the decays to a file
+   */
+  unsigned int decayOutput_;
 };
 
 }

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TTbarAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -132,17 +132,6 @@ void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
 		       << *event;    
   }  
 }
-
-LorentzRotation TTbarAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void TTbarAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void TTbarAnalysis::analyze(tPPtr) {}
 
 NoPIOClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
 // Definition of the static class description member.

@@ -162,7 +162,7 @@ private:
   /**
    *  The PDG code of the outgoing lepton
    */
-  vector<unsigned int> _outgoingL;
+  vector<long> _outgoingL;
 
   /**
    *  The energy of the leptons

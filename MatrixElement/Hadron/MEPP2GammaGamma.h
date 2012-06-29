@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2GammaGamma.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2GammaGamma class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -31,15 +31,17 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2GammaGammaInterfaces "The interfaces"
  * defined for MEPP2GammaGamma.
  */
-class MEPP2GammaGamma: public HwME2to2Base {
+class MEPP2GammaGamma: public HwMEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEPP2GammaGamma();
-
+  MEPP2GammaGamma() : _maxflavour(5),_process(0), scalePreFactor_(1.) {
+    massOption(vector<unsigned int>(2,0));
+  }
+  
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**
@@ -134,13 +136,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -192,7 +194,16 @@ private:
    * @param t The \f$t\f$ invariant
    * @param u The \f$u\f$ invariant
    */
-  inline Complex ggme(Energy2 s,Energy2 t,Energy2 u) const;
+  Complex ggme(Energy2 s,Energy2 t,Energy2 u) const {
+    double ltu(log(abs(t/u)));
+    double frac1((t-u)/s),frac2((sqr(t)+sqr(u))/sqr(s));
+    double thetatu = (t/u<0) ? 0 : 1;
+    double thetat  = (t<ZERO)   ? 0 : 1;
+    double thetau  = (u<ZERO)   ? 0 : 1;
+    using Constants::pi;
+    return Complex(1.+frac1*ltu+0.5*frac2*(sqr(ltu)+sqr(pi)*thetatu),
+		   -pi*(thetat-thetau)*(frac1+frac2*ltu));
+  }
 
 private:
 
@@ -235,6 +246,10 @@ private:
    */
   mutable double _diagwgt[2];
 
+  /**
+   *  Scale prefactor
+   */
+  double scalePreFactor_;
 };
 
 }
@@ -250,7 +265,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaGamma,1> {
   /** Typedef of the first base class of MEPP2GammaGamma. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -273,7 +288,5 @@ struct ClassTraits<Herwig::MEPP2GammaGamma>
 /** @endcond */
 
 }
-
-#include "MEPP2GammaGamma.icc"
 
 #endif /* HERWIG_MEPP2GammaGamma_H */

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // CLEOCharmAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,7 +19,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The CLEOCharmAnalysis class compares the results of Herwig++ at 10.52 GeV
  * with data on Charm hadron spectra from the CLEO experiment
  *
@@ -29,6 +29,11 @@ using namespace ThePEG;
 class CLEOCharmAnalysis: public AnalysisHandler {
 
 public:
+
+  /**
+   * The default constructor.
+   */
+  CLEOCharmAnalysis() : _s() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -52,17 +57,13 @@ public:
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
   /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
+   * @param weight The weight for the event
    */
-  virtual void analyze(tPPtr particle);
+  virtual void analyze(tPPtr particle, double weight);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -83,13 +84,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -154,11 +155,6 @@ private:
    *  CMF energy squared
    */
   Energy2 _s;
-
-  /**
-   *  The weight for the event
-   */
-  double _weight;
 };
 
 }

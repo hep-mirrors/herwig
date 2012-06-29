@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartonicDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,6 @@
 #include "Herwig++/Decay/HwDecayerBase.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
 #include "Herwig++/Hadronization/ClusterFinder.h"
-#include "Herwig++/Hadronization/ColourReconnector.h"
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/LightClusterDecayer.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
@@ -143,11 +142,6 @@ private:
    * This is a pointer to a Herwig::ClusterFinder object.
    */
   ClusterFinderPtr       _clusterFinder;
-
-  /**
-   * This is a pointer to a Herwig::ColourReconnector object.
-   */
-  ColourReconnectorPtr   _colourReconnector;
 
   /**
    * This is a pointer to a Herwig::ClusterFissioner object.

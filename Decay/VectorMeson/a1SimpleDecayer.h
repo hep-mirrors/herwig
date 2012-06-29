@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1SimpleDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,7 +21,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the a1SimpleDecayer class.
+ * The a1SimpleDecayer class provides a simple model of the decay of the
+ * \f$a_1\f$ meson to three pions including \f$\rho\f$ meson intermediate states.
  *
  * @see \ref a1SimpleDecayerInterfaces "The interfaces"
  * defined for a1SimpleDecayer.

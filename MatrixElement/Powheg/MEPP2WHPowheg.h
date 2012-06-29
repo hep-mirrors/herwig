@@ -13,7 +13,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2WHPowheg class.
+ * The MEPP2WHPowheg class provides the next-to-leading order
+ * matrix elements for \f$W^\pm\f$ in assoication with a Higgs boson
+ * in the PoOWHEG scheme.
  *
  * @see \ref MEPP2WHPowhegInterfaces "The interfaces"
  * defined for MEPP2WHPowheg.
@@ -202,13 +204,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -277,12 +279,12 @@ private:
   /**
    * The \f$T_R\f$ colour factor
    */
-  double _TR;
+  const double TR_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  double _CF;
+  const double CF_;
 
   /**
    *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation
@@ -415,7 +417,7 @@ struct ClassTraits<Herwig::MEPP2WHPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */

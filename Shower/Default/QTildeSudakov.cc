@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeSudakov.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -16,10 +16,12 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/Decay_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 
 using namespace Herwig;
 
@@ -159,33 +161,9 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
       if(getParticleData(ids[ix])->CC()) ids_[ix]*=-1;
     }
   }
-  masses_.clear();
+  tmin = cutOffOption() != 2 ? ZERO : 4.*pT2min();
+  masses_ = virtualMasses(ids);
   masssquared_.clear();
-  tmin=ZERO;
-  if(cutOffOption() == 0) {
-    for(unsigned int ix=0;ix<ids_.size();++ix)
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-    Energy kinCutoff=
-      kinematicCutOff(kinScale(),*std::max_element(masses_.begin(),masses_.end()));
-    for(unsigned int ix=0;ix<masses_.size();++ix)
-      masses_[ix]=max(kinCutoff,masses_[ix]);
-  }
-  else if(cutOffOption() == 1) {
-    for(unsigned int ix=0;ix<ids_.size();++ix) {
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-      masses_.back() += ids_[ix]==ParticleID::g ? vgCut() : vqCut();
-    }
-  }
-  else if(cutOffOption() == 2) {
-    for(unsigned int ix=0;ix<ids_.size();++ix) 
-      masses_.push_back(getParticleData(ids_[ix])->mass());
-    tmin = 4.*pT2min();
-  }
-  else {
-    throw Exception() << "Unknown option for the cut-off"
-		      << " in QTildeSudakov::initialize()"
-		      << Exception::runerror;
-  }
   for(unsigned int ix=0;ix<masses_.size();++ix) {
     masssquared_.push_back(sqr(masses_[ix]));
     if(ix>0) tmin=max(masssquared_[ix],tmin);
@@ -234,9 +212,16 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   // previous scale
   Energy2 told = t;
   // overestimated limits on z
+  if(tmax<masssquared_[0]) {
+    t=-1.0*GeV2;
+    return false;
+  }
+  Energy2 tm2 = tmax-masssquared_[0];
+  Energy tm  = sqrt(tm2); 
   pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
-				       1.-masses_[2]/sqrt(tmax-masssquared_[0])
-				       +0.5*masssquared_[2]/(tmax-masssquared_[0]));
+				       1.-sqrt(masssquared_[2]+pT2min()+
+					       0.25*sqr(masssquared_[2])/tm2)/tm
+				       +0.5*masssquared_[2]/tm2);
   zLimits(limits);
   if(zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
@@ -246,9 +231,16 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2]);
   z(guessz(2,ids_)); 
   // actual values for z-limits
+  if(t<masssquared_[0])  {
+    t=-1.0*GeV2;
+    return false;
+  }
+  tm2 = t-masssquared_[0];
+  tm  = sqrt(tm2); 
   limits=make_pair(sqr(minmass/masses_[0]),
-		   1.-masses_[2]/sqrt(t-masssquared_[0])
-		   +0.5*masssquared_[2]/(t-masssquared_[0]));
+		   1.-sqrt(masssquared_[2]+pT2min()+
+			   0.25*sqr(masssquared_[2])/tm2)/tm
+		   +0.5*masssquared_[2]/tm2);
   zLimits(limits);
   if(t>tmax||zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
@@ -259,13 +251,13 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
   // special case for gluon radiating
   pair<double,double> limits;
-  if(ids_[0]==ParticleID::g) {
+  if(ids_[0]==ParticleID::g||ids_[0]==ParticleID::gamma) {
     // no emission possible
     if(t<16.*masssquared_[1]) {
       t=-1.*GeV2;
@@ -276,11 +268,11 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
     limits.second = 1.-limits.first;
   }
   // special case for radiated particle is gluon 
-  else if(ids_[2]==ParticleID::g) {
+  else if(ids_[2]==ParticleID::g||ids_[2]==ParticleID::gamma) {
     limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
     limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
   }
-  else if(ids_[1]==ParticleID::g) {
+  else if(ids_[1]==ParticleID::g||ids_[1]==ParticleID::gamma) {
     limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
     limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
   }
@@ -297,7 +289,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
-  if (t == ZERO) {
+  if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
@@ -331,6 +323,10 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
     Energy2 scale=(sqr(pt)+zin*masssquared_[2])/sqr(1.-zin);
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
+  else if(iopt==2) {
+    Energy2 scale = (sqr(pt)+zin*masssquared_[2])/sqr(1.-zin)+masssquared_[0];
+    return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
+  }
   else {
     throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
@@ -339,33 +335,33 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 
 ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
 						   double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
 ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(IS_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
 ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
-						     double phi, Energy pt) {
-  ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+					      double phi, Energy pt) {
+  ShoKinPtr  showerKin = new_ptr(Decay_QTildeShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }

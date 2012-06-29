@@ -1,5 +1,5 @@
 ============
-Herwig++ 2.3
+Herwig++ 2.6
 ============
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -7,21 +7,31 @@ Please contact <herwig@projects.hepforge.org> for any queries.
 ========
 Authors:
 ========
-Manuel Baehr
+Ken Arnold
+Luca d'Errico
 Stefan Gieseke
-Martyn Gigg
 David Grellscheid
 Keith Hamilton
-Seyi Latunde-Dada
-Simon Plaetzer
+Andreas Papaefstathiou
+Simon Plätzer
 Peter Richardson
+Christian Röhr
+Alex Schofield
 Mike Seymour
-Alexander Sherstnev
-Jon Tully
+Andrzej Siódmok
+Martin Stoll
 Bryan Webber
+David Winn
 
 ===============
 Former authors:
 ===============
+Manuel Bähr
+Martyn Gigg
+Seyi Latunde-Dada
 Alberto Ribon
+Pavel Růžička
+Alexander Sherstnev
 Philip Stephens
+Louise Suter
+Jon Tully

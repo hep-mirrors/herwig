@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerModel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,16 +21,15 @@
 #include "PartnerFinder.h"
 #include "Evolver.h"
 #include "SudakovFormFactor.h"
-#include "MECorrectionBase.h"
 
 using namespace Herwig;
 
 void ShowerModel::persistentOutput(PersistentOStream & os) const {
-  os << _reconstructor << _partnerfinder << _sudakovs << _mecorrections;
+  os << _reconstructor << _partnerfinder << _sudakovs;
 }
 
 void ShowerModel::persistentInput(PersistentIStream & is, int) {
-  is >> _reconstructor >> _partnerfinder >> _sudakovs >> _mecorrections;
+  is >> _reconstructor >> _partnerfinder >> _sudakovs;
 }
 
 void ShowerModel::doinit() {
@@ -61,11 +60,6 @@ void ShowerModel::Init() {
     ("SudakovFormFactors",
      "Vector of references to the SudakovFormFactor objects",
      &ShowerModel::_sudakovs, -1, false, false, true, false, false);
-
-  static RefVector<ShowerModel,MECorrectionBase> interfaceMECorrections
-    ("MECorrections",
-     "Vector of references to the MECorrectionBase objects",
-     &ShowerModel::_mecorrections, -1, false, false, true, false, false);
 
 }
 

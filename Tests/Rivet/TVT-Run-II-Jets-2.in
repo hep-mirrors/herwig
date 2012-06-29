@@ -1,0 +1,46 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+set /Herwig/Cuts/JetKtCut:MinKT 40.
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# CDF jet shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2005_S6217184
+# not ready
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8057893
+# CDF inclusive jet kt
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2007_S7057202
+# CDF inclusive jet cone
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2006_S6450792
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7828950
+# run II UE analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
+# inclusive jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7662670
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Run-II-Jets-2 LHCGenerator

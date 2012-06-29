@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,40 +12,36 @@
 // This is the declaration of the SMHiggsWidthGenerator class.
 //
 
-#include "ThePEG/PDT/WidthGenerator.h"
-#include "SMHiggsWidthGenerator.fh"
+#include "GenericWidthGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Typedef to define a DecayMoap
- */
-typedef Selector<tDMPtr> DecayMap;
-
-/**
- * Here is the documentation of the SMHiggsWidthGenerator class.
+ * The SMHiggsWidthGenerator class calculates the width for the Standard Model 
+ * Higgs boson
  *
  * @see \ref SMHiggsWidthGeneratorInterfaces "The interfaces"
  * defined for SMHiggsWidthGenerator.
  */
-class SMHiggsWidthGenerator: public WidthGenerator {
+class SMHiggsWidthGenerator: public GenericWidthGenerator {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline SMHiggsWidthGenerator();
+  SMHiggsWidthGenerator() 
+    : widthopt_(2), offshell_(10.), mw_(ZERO), mz_(ZERO), gamw_(ZERO),
+      gamz_(ZERO), qmass_(7,ZERO), lmass_(3,ZERO),
+      sw2_(0.), ca_(0.), cf_(0.), qlast_(ZERO)
+  {}
+
+private:
+
 
   /** @name Virtual functions to be overridden from based class */
   //@{
-  /**
-   * Return true if this object can be used for the given particle
-   * type with the given decay map.
-   */
-  virtual bool accept(const ParticleData &) const;
-
   /**
    * Given a particle type and a mass of an instance of that particle
    * type, calculate a width.
@@ -67,14 +63,14 @@ public:
    *  Return the total width and the sum of the partial widths for
    *  modes which are used
    */
-  pair<Energy,Energy> width(Energy, const ParticleData &) const;
+  virtual pair<Energy,Energy> width(Energy, const ParticleData &) const;
 
   /**
    *  Calculate the partial width for a given mode
    * @param mH The Higgs masses
    * @param imode The decay mode
    */
-  Energy partialWidth(Energy mH,unsigned int imode) const;
+  Energy partialWidth(int imode, Energy mH) const;
 
 public:
 
@@ -110,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -156,6 +152,7 @@ protected:
   virtual void doinit();
   //@}
 
+
 private:
 
   /**
@@ -175,61 +172,61 @@ private:
   /**
    * Type of the Higgs width used (options: fixed, LO running, NLL corrected running)
    */
-  unsigned int _widthopt;
+  unsigned int widthopt_;
 
   /**
    *  Number of times the width the Higgs is allowed to be off-shell
    */
-  double _offshell;
+  double offshell_;
 
   /**
-   *  Particle properties extracged at initialization
+   *  Particle properties extracted at initialization
    */
   //@{
   /**
    *  Mass of the W boson
    */
-  Energy _mw;
+  Energy mw_;
 
   /**
    *  Mass of the Z boson
    */
-  Energy _mz;
+  Energy mz_;
 
   /**
    *  Width of the W boson
    */
-  Energy _gamw;
+  Energy gamw_;
 
   /**
    *  Width of the Z boson
    */
-  Energy _gamz;
+  Energy gamz_;
 
   /**
    *  Masses of the quarks
    */
-  vector<Energy> _qmass;
+  vector<Energy> qmass_;
 
   /**
    *  Masses of the leptons
    */
-  vector<Energy> _lmass;
+  vector<Energy> lmass_;
 
   /**
    *  \f$\sin^2\theta_W\f$
    */
-  double _sw2;
+  double sw2_;
 
   /**
    *  The \f$C_A\f$ colour factor
    */
-  double _ca;
+  double ca_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  double _cf;
+  double cf_;
   //@}
 
   /**
@@ -239,44 +236,48 @@ private:
   /**
    *  The last scale
    */
-  mutable Energy _qlast;
+  mutable Energy qlast_;
 
   /**
    *  \f$\Lambda_{\rm QCD}\f$
    */
-  mutable Energy _lambdaQCD;
+  mutable Energy lambdaQCD_;
 
   /**
    *  The electromagnetic coupling
    */
-  mutable double _alphaEM;
+  mutable double alphaEM_;
 
   /**
    *  The strong coupling
    */
-  mutable double _alphaS;
+  mutable double alphaS_;
 
   /**
    *  Correction factor for \f$H\to q\bar{q}\f$
    */
-  mutable double _cd;
+  mutable double cd_;
 
   /**
    *  Fermi constant
    */
-  mutable Energy2 _gfermiinv;
+  mutable Energy2 gfermiinv_;
 
   /**
    *  The anomalous dimension for  \f$H\to q\bar{q}\f$
    */
-  mutable double _gam0;
+  mutable double gam0_;
 
   /**
    *  The \f$\beta\f$ function coefficient for  \f$H\to q\bar{q}\f$
    */
-  mutable double _beta0;
+  mutable double beta0_;
   //@}
 
+  /**
+   *  Map between location in decay modes vector and code here
+   */
+  map<int,int> locMap_;
 };
 
 }
@@ -292,7 +293,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SMHiggsWidthGenerator,1> {
   /** Typedef of the first base class of SMHiggsWidthGenerator. */
-  typedef WidthGenerator NthBase;
+  typedef GenericWidthGenerator NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -307,7 +308,5 @@ struct ClassTraits<Herwig::SMHiggsWidthGenerator>
 /** @endcond */
 
 }
-
-#include "SMHiggsWidthGenerator.icc"
 
 #endif /* HERWIG_SMHiggsWidthGenerator_H */

@@ -1,0 +1,15 @@
+read LHC.common
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:StatLevel Full
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 100000
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+cd /Herwig/Generators
+set /Herwig/Analysis/Basics:CheckQuark 0
+create Herwig::GammaPMETest QCDTest GammaTest.so
+insert LHCGenerator:AnalysisHandlers 0 QCDTest
+saverun LHC-QCD LHCGenerator

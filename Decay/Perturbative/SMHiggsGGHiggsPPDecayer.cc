@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsGGHiggsPPDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -25,16 +25,16 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 bool SMHiggsGGHiggsPPDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
-  bool acc(false);
   int idp = parent->id();
   int id0 = children[0]->id();
   int id1 = children[1]->id();
-  if((idp == ParticleID::h0 && id0 == ParticleID::g && 
-      id1 == ParticleID::g)||
-     (idp == ParticleID::h0 && id0 == ParticleID::gamma 
-      && id1 == ParticleID::gamma)) 
-    {acc = true;}
-  return acc;
+  if((idp == ParticleID::h0 && 
+      id0 == ParticleID::g     && id1 == ParticleID::g) ||
+     (idp == ParticleID::h0 && 
+      id0 == ParticleID::gamma && id1 == ParticleID::gamma)) 
+    return true;
+  else
+    return false;
 }
 
 ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
@@ -54,11 +54,11 @@ ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hggvertex  << _hppvertex << _h0wgt << _hwidth;
+  os << _hggvertex  << _hppvertex << _h0wgt;
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hggvertex >> _hppvertex >> _h0wgt >> _hwidth;
+  is >> _hggvertex >> _hppvertex >> _h0wgt;
 }
 
 ClassDescription<SMHiggsGGHiggsPPDecayer>
@@ -128,17 +128,11 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
   //colour factor (N^2 - 1)/4
   if(decay[0]->id() == ParticleID::g &&
      decay[1]->id() == ParticleID::g) {
-    output *= 2.;
+    output *= 8.;
   }
   //symmetric final states
   output /= 2.;
-  // normalize if width generator
-  if(_hwidth) {
-    if(decay[0]->id() == ParticleID::g) 
-      output *= part.data().width()/_hwidth->partialWidth(part.mass(),13);
-    else
-      output *= part.data().width()/_hwidth->partialWidth(part.mass(),12);
-  }
+
   return output;
 }
 
@@ -146,9 +140,6 @@ void SMHiggsGGHiggsPPDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);
-  if(higgs->widthGenerator()) {
-    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
-  }
   if(_hggvertex) {
     _hggvertex->init();
   }

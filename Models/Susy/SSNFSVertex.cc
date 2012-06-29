@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSNFSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,6 +13,7 @@
 
 #include "SSNFSVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -22,60 +23,44 @@ using namespace Herwig;
 SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(), 
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
-			     _id2last(0) {
-  vector<long> first,second,third;
-  long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
-  for(unsigned int nl = 0; nl < 5; ++nl) {
-    //quarks
-    for(long ix=1;ix<7;++ix){
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(2000000+ix));
-
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((2000000+ix));
-    }
-    //leptons
-    for(long ix=11;ix<17;++ix){
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((1000000+ix));
-      
-      if( ix % 2 != 0 ) {
-	first.push_back(neut[nl]);
-	second.push_back(ix);
-	third.push_back(-(2000000+ix));
-	first.push_back(neut[nl]);
-	second.push_back(-ix);
-	third.push_back((2000000+ix));      
-      }
-    }
-    
-  }
-  setList(first,second,third);
+			     _id2last(0),
+			      yukawa_(true) {
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _stop << _sbot << _stau << _nmix << _theSS  << _sw << _cw 
-     << ounit(_mw,GeV) << _sb << _cb;
+     << ounit(_mw,GeV) << _sb << _cb << yukawa_;
 }
 
 void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _stop >> _sbot >> _stau >> _nmix >> _theSS >> _sw >> _cw 
-     >> iunit(_mw,GeV) >> _sb >> _cb;
+     >> iunit(_mw,GeV) >> _sb >> _cb >> yukawa_;
 }
 
 void SSNFSVertex::doinit() {
+  long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
+  for(unsigned int nl = 0; nl < 5; ++nl) {
+    //quarks
+    for(long ix=1;ix<7;++ix){
+      addToList( neut[nl],  ix, -(1000000+ix) );
+      addToList( neut[nl],  ix, -(2000000+ix) );
+      addToList( neut[nl], -ix,  (1000000+ix) );
+      addToList( neut[nl], -ix,  (2000000+ix) );
+    }
+    //leptons
+    for(long ix=11;ix<17;++ix) {
+      addToList( neut[nl],  ix, -(1000000+ix) );
+      addToList( neut[nl], -ix,  (1000000+ix) );
+     
+      if( ix % 2 != 0 ) {
+	addToList( neut[nl],  ix, -(2000000+ix) );
+	addToList( neut[nl], -ix,  (2000000+ix) );
+      }
+    }
+    
+  }
   FFSVertex::doinit();
   _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)
@@ -94,14 +79,12 @@ void SSNFSVertex::doinit() {
 			  << _sbot << " stau: " << _stau 
 			  << " N: " << _nmix << Exception::abortnow;
 
-  _sw = sqrt(_theSS->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
   _mw = getParticleData(24)->mass();
   double tb = _theSS->tanBeta();
   _cw = sqrt(1. - sqr(_sw));
   _sb = tb/sqrt(1 + sqr(tb));
   _cb = sqrt(1 - sqr(_sb));
-  orderInGem(1);
-  orderInGs(0);
 }
 
 ClassDescription<SSNFSVertex> SSNFSVertex::initSSNFSVertex;
@@ -113,10 +96,24 @@ void SSNFSVertex::Init() {
     ("The SSNFSVertex implements the coupling of a neutralino to "
      "a fermion-sfermion");
 
+  static Switch<SSNFSVertex,bool> interfaceYukawa
+    ("Yukawa",
+     "Whether or not to include the Yukawa type couplings",
+     &SSNFSVertex::yukawa_, true, false, false);
+  static SwitchOption interfaceYukawaYes
+    (interfaceYukawa,
+     "Yes",
+     "Include the terms",
+     true);
+  static SwitchOption interfaceYukawaNo
+    (interfaceYukawa,
+     "No",
+     "Don't include them",
+     false);
 }
 
 void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-			      tcPDPtr part2,tcPDPtr part3, int iinc) {
+			      tcPDPtr part2,tcPDPtr part3) {
   long isc(abs(part3->id())), ism(abs(part1->id())),
     ineut(abs(part2->id()));
   tcPDPtr smfermion = part1;
@@ -125,8 +122,12 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     smfermion = part2;
   }
   
-  double gew = weakCoupling(q2);
-  setNorm(-sqrt(2)*gew);
+  if(q2!=_q2last || _couplast==0.) {
+    _couplast = -sqrt(2)*weakCoupling(q2);
+    _q2last=q2;
+  }
+  norm(_couplast);
+
   if( ineut != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ineut;
     _id2last = ism;
@@ -144,7 +145,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       break;
     case 1000045 : nl = 4;
       break;
-    default : {}
+    default : assert(false);
     }
     // common primed neutralino matrices
     Complex n2prime = (*_nmix)(nl,1)*_cw - (*_nmix)(nl,0)*_sw;
@@ -158,7 +159,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       tcPDPtr smf = getParticleData(ism);
       double qf = smf->charge()/eplus;
       Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
-      double y = _theSS->mass(q2, smf)/2./_mw;
+      double y = yukawa_ ? double(_theSS->mass(q2, smf)/2./_mw) : 0.;
       double lambda(0.);
       //neutralino mixing element
       Complex nlf(0.);
@@ -174,16 +175,18 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       }
       Complex bracketr = _sw*qf*n1prime - n2prime*lambda/_cw;
       
-      //heavy quarks
+      //heavy quarks/sleptons
       if( ism == 5 || ism == 6 || ism == 15 ) {
 	Complex ma1(0.), ma2(0.);
 	if( ism == 5 ) {
-	    ma1 = (*_sbot)(alpha,0);
-	    ma2 = (*_sbot)(alpha,1); 
-	} else if( ism == 6 ) {
+	  ma1 = (*_sbot)(alpha,0);
+	  ma2 = (*_sbot)(alpha,1); 
+	} 
+	else if( ism == 6 ) {
 	  ma1 = (*_stop)(alpha,0);
 	  ma2 = (*_stop)(alpha,1);
-	} else {
+	} 
+	else {
 	  ma1 = (*_stau)(alpha,0);
 	  ma2 = (*_stau)(alpha,1);
 	}
@@ -202,45 +205,13 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       }
     }
   }
-
   //determine the helicity order of the vertex
-  tcPDPtr incoming;
-  switch( iinc ) {
-  case 1 : incoming = part1;
-    break;
-  case 2 : incoming = part2;
-    break;
-  default : incoming = part3;
-  }
-  if( incoming->iSpin() == PDT::Spin0 ) {
-    if( incoming->id() > 0 ) {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
-    else {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-  }
-  else if( incoming->id() == smfermion->id() ) {
-    if(incoming->id() > 0) {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-    else {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
+  if( smfermion->id() < 0 ) {
+    left(conj(_rightlast));
+    right(conj(_leftlast));
   }
   else {
-    if( smfermion->id() < 0 ) {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-    else {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
+    left(_leftlast);
+    right(_rightlast);
   }
-
 }

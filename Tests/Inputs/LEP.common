@@ -1,0 +1,6 @@
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:MaxErrors 1000
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:EventHandler:StatLevel Full

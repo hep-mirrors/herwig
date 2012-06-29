@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -194,9 +194,9 @@ void VectorMesonCurrent::dataBaseOutput(ofstream & output,
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << name() << ":ID " << ix 
+      output << "newdef " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << name() << ":Decay_Constant " << ix 
+      output << "newdef " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
     else {

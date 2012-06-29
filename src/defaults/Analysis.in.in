@@ -35,8 +35,6 @@ create Herwig::GammaJetAnalysis  GammaJet
 create Herwig::GammaGammaAnalysis GammaGamma
 # simple analysis of higgs+jet events
 create Herwig::HiggsJetAnalysis  HiggsJet
-# BSM analysis of cascade decays
-@CREATE_BSM_ANALYSIS@ Herwig::CascadeAnalysis Cascade HwSusy.so HwUED.so HwBSMAnalysis.so
 
 #
 #  Analysis Handlers for LEP 91.2 GeV collisions
@@ -51,16 +49,16 @@ create Herwig::BFragmentationAnalysisHandler BFrag HwLEPAnalysis.so
 # master LEP event shape analysis and object which does the work
 create Herwig::EventShapesMasterAnalysis Shapes
 create Herwig::EventShapes LEPShapes
-set Shapes:EventShapes LEPShapes
+newdef Shapes:EventShapes LEPShapes
 # LEP event shapes
 create Herwig::LEPEventShapes LEPEvent
-set LEPEvent:EventShapes LEPShapes
+newdef LEPEvent:EventShapes LEPShapes
 insert Shapes:Slaves 0 LEPEvent
 # LEP identified particles
 create Herwig::IdentifiedParticleAnalysis LEPIdent
 # LEP single particle analysis
 create Herwig::SingleParticleAnalysis LEPSingle
-set LEPSingle:EventShapes LEPShapes
+newdef LEPSingle:EventShapes LEPShapes
 insert Shapes:Slaves 0 LEPSingle
 
 # 
@@ -72,19 +70,22 @@ create Herwig::BELLECharmAnalysis BELLECharm HwLEPAnalysis.so
 # CLEO  data on charm meson spectra
 create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 
+
+# Schematic overview of an event
+# (requires the graphviz program 'dot' to produce a plot)
+create ThePEG::GraphvizPlot Plot GraphvizPlot.so
+
+
 #
-#  Handlers which depend on KtJet for LEP data
+#  Handlers which depend on Fastjet for LEP data
 #  (switched off by default)
 #
 # four jet analysis
-@CREATE_KTJET@ Herwig::LEPFourJetsAnalysis LEPFourJet HwKtJet.so HwLEPJetAnalysis.so
+@CREATE_FASTJET@ Herwig::LEPFourJetsAnalysis LEPFourJet HwLEPJetAnalysis.so
 # general jet analysis
-@CREATE_KTJET@ Herwig::LEPJetAnalysis LEPJet HwKtJet.so HwLEPJetAnalysis.so
+@CREATE_FASTJET@ Herwig::LEPJetAnalysis LEPJet HwLEPJetAnalysis.so
 #
 #  Handlers which depend on HepMC
 #  (switched off by default)
-# Schematic overview of an event (requires --with-hepmc to be set at configure time
-# and the graphviz program 'dot' to produce a plot)
-@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile HwHepMCAnalysis.so
+@CREATE_HEPMC@ ThePEG::HepMCFile HepMCFile HepMCAnalysis.so

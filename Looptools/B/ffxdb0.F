@@ -1,3 +1,6 @@
+#include "externals.h"
+
+
 *###[ ffxdb0:
 	subroutine ffxdb0(cdb0,cdb0p,xp,xma,xmb,ier)
 ***#[*comment:***********************************************************
@@ -31,7 +34,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *  #] declarations:
 	dmamb = (sqrt(xma) - sqrt(xmb))**2
@@ -106,7 +109,7 @@
 *
 *	common blocks
 *
-	include 'ff.h'
+#include "ff.h"
 *
 *	data
 *
@@ -186,9 +189,8 @@
 		    print *,'ffxdb0: IR divergent B0'', using cutoff ',
      +		    	lambda
 		endif
-		if ( lambda .eq. 0D0 ) then
-		    call fferr(74,ier)
-		    cdb0p = 0
+		if ( lambda .le. 0 ) then
+		    cdb0p = -1 + log(xm/mudim)/2
 		else
 		    cdb0p = -1 + log(xm/lambda)/2
 		endif
@@ -539,7 +541,6 @@
 *
 *		    first s2:
 *
-  490		    continue
 		    s2p = s2 - alpha
 		    if ( abs(s2p) .lt. xloss*abs(s2) ) then
 * -#[			bounds:
@@ -579,7 +580,6 @@
 *
 *		    next s1:
 *
-  495		    continue
 		    s1p = s1 - alph1
 		    if ( abs(s1p) .lt. xloss*abs(s1) ) then
 * -#[			bounds:
@@ -635,7 +635,6 @@
 *
 *		    finally ...
 *
-  500		    continue
 		    xx = s1p + s2p
 *--#]		    third try:
 		endif
@@ -661,7 +660,6 @@
 *--#]	    first try:
 	    y = 0
 	endif
-  590	continue
 	cdb0p = DCMPLX(DBLE(xx),DBLE(y))
 	cdb0 = cdb0p*(1/DBLE(xp))
 	goto 990

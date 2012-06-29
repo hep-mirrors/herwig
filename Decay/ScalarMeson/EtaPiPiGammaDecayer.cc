@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EtaPiPiGammaDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -549,30 +549,30 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":fpi             " << _fpi/MeV         << "\n";
-  output << "set " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
-  output << "set " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":OmnesC          " << _cconst          << "\n";
-  output << "set " << name() << ":OmnesA          " << _aconst*GeV2     << "\n";
-  output << "set " << name() << ":InitializeOmnes " << _initialize      << "\n";
-  output << "set " << name() << ":OmnesPoints     " << _npoints         << "\n";
-  output << "set " << name() << ":OmnesCut        " << _epscut/MeV      << "\n";
+  output << "newdef " << name() << ":fpi             " << _fpi/MeV         << "\n";
+  output << "newdef " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
+  output << "newdef " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":OmnesC          " << _cconst          << "\n";
+  output << "newdef " << name() << ":OmnesA          " << _aconst*GeV2     << "\n";
+  output << "newdef " << name() << ":InitializeOmnes " << _initialize      << "\n";
+  output << "newdef " << name() << ":OmnesPoints     " << _npoints         << "\n";
+  output << "newdef " << name() << ":OmnesCut        " << _epscut/MeV      << "\n";
   for(unsigned int ix=0;ix<2;++ix) {
-    output << "set " << name() << ":Incoming    " << ix << "  " 
+    output << "newdef " << name() << ":Incoming    " << ix << "  " 
 	   << _incoming[ix]    << "\n";
-    output << "set " << name() << ":Coupling    " << ix << "  " 
+    output << "newdef " << name() << ":Coupling    " << ix << "  " 
 	   << _coupling[ix]    << "\n";
-    output << "set " << name() << ":MaxWeight   " << ix << "  " 
+    output << "newdef " << name() << ":MaxWeight   " << ix << "  " 
 	   << _maxweight[ix]   << "\n";
-    output << "set " << name() << ":Option      " << ix << "  " 
+    output << "newdef " << name() << ":Option      " << ix << "  " 
 	   << _option[ix]      << "\n";
   }
   for(unsigned int ix=0;ix<_energy.size();++ix) {
     if(ix<_nsizea) {
-      output << "set " << name() << ":Phase_Energy " << ix << "  " 
+      output << "newdef " << name() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
-      output << "set " << name() << ":Phase_Shift  " << ix << "  " 
+      output << "newdef " << name() << ":Phase_Shift  " << ix << "  " 
 	     << _phase[ix]  << "\n";
     }
     else {
@@ -584,11 +584,11 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   }
   for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
       if(ix<_nsizeb) {
-	output << "set " << name() << ":OmnesEnergy " << ix << "  " 
+	output << "newdef " << name() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
-	output << "set " << name() << ":OmnesReal " << ix << "  " 
+	output << "newdef " << name() << ":OmnesReal " << ix << "  " 
 	       << _omnesfunctionreal[ix] << "\n";
-	output << "set " << name() << ":OmnesImag " << ix << "  " 
+	output << "newdef " << name() << ":OmnesImag " << ix << "  " 
 	       << _omnesfunctionimag [ix] << "\n";
       }
       else {

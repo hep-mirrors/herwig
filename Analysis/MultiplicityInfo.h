@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MultiplicityInfo.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2008 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respe
@@ -10,14 +10,14 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  *  Enumeration for species of particle
  */
 enum ParticleSpecies {
   lightMeson=0,strangeMeson,lightBaryon,other
 };
 
-/**
+/** \ingroup Analysis
  *  Struct for the multiplcity data
  */
 struct MultiplicityInfo {
@@ -28,8 +28,8 @@ struct MultiplicityInfo {
    * @param error The error on the observed multiplicity
    * @param type  The type of particle
    */
-  inline MultiplicityInfo(double mult=0.,double error=0.,
-			  ParticleSpecies type=other)
+  MultiplicityInfo(double mult=0.,double error=0.,
+		   ParticleSpecies type=other)
     : obsMultiplicity(mult), obsError(error), type(type) {};
 
   /**

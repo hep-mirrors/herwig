@@ -31,8 +31,10 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralThreeBodyDecayer() :
-    _widthopt(1), _reftag(""), _reftagcc("") {}
+  GeneralThreeBodyDecayer() : _nflow(999), _widthopt(1), 
+			      _reftag(), _reftagcc(), _iflow(999),
+			      _intOpt(0), _relerr(1e-2)
+  {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -157,48 +159,48 @@ protected:
    * Access the TBDiagrams that store the required information
    * to create the diagrams
    */
-  inline const vector<TBDiagram> & getProcessInfo() const {
+  const vector<TBDiagram> & getProcessInfo() const {
     return _diagrams;
   }
 
   /**
    *  Incoming particle
    */
-  inline PDPtr incoming() const { return _incoming; }
+  PDPtr incoming() const { return _incoming; }
 
   /**
    *  Outgoing particles
    */
-  inline const vector<PDPtr> & outgoing() const {  return _outgoing; }
+  const vector<PDPtr> & outgoing() const {  return _outgoing; }
  
   /**
    *  Number of colour flows
    */
-  inline unsigned int numberOfFlows() const { return _nflow; }
+  unsigned int numberOfFlows() const { return _nflow; }
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getColourFactors() const {  return _colour; }
+  const vector<DVector> & getColourFactors() const {  return _colour; }
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getLargeNcColourFactors() const {
+  const vector<DVector> & getLargeNcColourFactors() const {
     return _colourLargeNC;
   }
 
   /**
    *  Get the mapping between the phase-space channel and the diagram
    */
-  inline const vector<unsigned int> & diagramMap() const { 
+  const vector<unsigned int> & diagramMap() const { 
     return _diagmap; 
   }
 
   /**
    *  Option for the handling of the widths of the intermediate particles
    */
-  inline unsigned int widthOption() const { return _widthopt; }
+  unsigned int widthOption() const { return _widthopt; }
 
   /**
    * Set colour connections
@@ -225,12 +227,17 @@ protected:
    *  Set the colour flow
    * @param flow The value for the colour flow
    */
-  inline void colourFlow(unsigned int flow) const { _iflow = flow; }
+  void colourFlow(unsigned int flow) const { _iflow = flow; }
 
   /**
    *  Set the colour flow
    */
-  inline unsigned int const & colourFlow() const { return _iflow; }
+  unsigned int const & colourFlow() const { return _iflow; }
+
+  /**
+   *  Relative error for GQ integration
+   */
+  double relativeError() const {return _relerr;}
 
 private:
 
@@ -311,6 +318,16 @@ private:
    *  The colour flow
    */
   mutable unsigned int _iflow;
+
+  /**
+   *  Option for the construction of the gaussian integrator
+   */
+  unsigned int _intOpt;
+
+  /**
+   *  Relative error for GQ integration of partial width
+   */
+  double _relerr;
 };
 
 }

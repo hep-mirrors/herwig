@@ -87,6 +87,9 @@ void FtoFFFDecayer::doinit() {
 double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 			   const ParticleVector & decay,
 			   MEOption meopt) const {
+  // particle or CC of particle
+  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  // special handling or first/last call
   const vector<vector<double> > cfactors(getColourFactors());
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());
@@ -196,7 +199,8 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      w3 = _outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    tcPDPtr offshell = dit->intermediate;
-	    Complex diag;
+	    if(cc&&offshell->CC()) offshell=offshell->CC();
+	    Complex diag(0.);
 	    // intermediate scalar
 	    if     (offshell->iSpin() == PDT::Spin0) { 
 	      ScalarWaveFunction inters = _sca[idiag].first->
@@ -295,5 +299,6 @@ threeBodyMEIntegrator(const DecayMode & ) const {
   constructIntegratorChannels(intype,inmass,inwidth,inpow,inweights);
   return new_ptr(ThreeBodyAllOnCalculator<FtoFFFDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
-		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass()));
+		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass(),
+		 relativeError()));
 }

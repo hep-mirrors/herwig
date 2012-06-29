@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DecayVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -11,13 +11,11 @@
 //
 // This is the declaration of the DecayVertex class.
 //
-#include <ThePEG/Helicity/HelicityVertex.h>
+#include <ThePEG/EventRecord/HelicityVertex.h>
 #include "DecayMatrixElement.h"
 #include "DecayVertex.fh"
 
 namespace Herwig {
-
-using ThePEG::Helicity::HelicityVertex;
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -69,14 +67,15 @@ public:
   /**
    * Method to calculate the \f$\rho\f$ matrix for one of the decay products
    * @param iprod The product we are calculating the \f$\rho\f$ matrix for.
+   * @param recursive Whether or not to recursive calculate the matrix
    */
-  virtual RhoDMatrix getRhoMatrix(int iprod);
+  virtual RhoDMatrix getRhoMatrix(int iprod,bool recursive) const;
 
   /**
    * Method to calculate the \f$D\f$ matrix for the decaying particle. It this
    * case the argument is a dummy.
    */
-  virtual RhoDMatrix getDMatrix(int);
+  virtual RhoDMatrix getDMatrix(int) const;
   
 private:
   
@@ -112,7 +111,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::DecayVertex,1> {
   /** Typedef of the base class of DecayVertex. */
-  typedef Herwig::HelicityVertex NthBase;
+  typedef ThePEG::HelicityVertex NthBase;
 };
   
 /**

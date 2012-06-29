@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // TBDiagram.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -45,10 +45,20 @@ struct TBDiagram {
   enum Channel {UNDEFINED = -1, channel23=0, channel13=1, channel12=2, fourPoint=3};
 
   /** Standard Constructor */
-  TBDiagram();
+  TBDiagram()  
+    : incoming(0), outgoing(0), outgoingPair(make_pair(0, 0)),
+      channelType(UNDEFINED), colourFlow(0), ids(4, 0) 
+  {}
 
   /** Constructor taking ids as arguments.*/
-  inline TBDiagram(long, long, IDPair);
+  TBDiagram(long a, long b, IDPair c)
+    : incoming(a), outgoing(b), outgoingPair(c), 	
+      channelType(UNDEFINED), colourFlow(0), ids(4, 0) {
+    ids[0] = a;
+    ids[1] = b;
+    ids[2] = c.first;
+    ids[3] = c.second;
+  }
   
   /** Incoming particle id's */
   long incoming;
@@ -81,13 +91,39 @@ struct TBDiagram {
    * Test whether this and x are the same decay
    * @param x The other process to check
    */
-  inline bool sameDecay(const TBDiagram & x) const;
+  bool sameDecay(const TBDiagram & x) const {
+    if(ids[0] != x.ids[0]) return false;
+    bool used[4]={false,false,false,false};
+    for(unsigned int ix=1;ix<4;++ix) {
+      bool found=false;
+      for(unsigned int iy=1;iy<4;++iy) {
+	if(used[iy]) continue;
+	if(ids[ix]==x.ids[iy]) {
+	  used[iy]=true;
+	  found=true;
+	  break;
+	}
+      }
+      if(!found) return false;
+    }
+    return true;
+  }
 };
 
 /**
  * Test whether two diagrams are identical.
  */
-inline bool operator==(const TBDiagram & x, const TBDiagram & y);
+inline bool operator==(const TBDiagram & x, const TBDiagram & y) {
+  if( x.incoming     != y.incoming) return false;
+  if( x.outgoing     != y.outgoing) return false;
+  if( x.intermediate != y.intermediate) return false;
+  if( x.vertices     != y.vertices    ) return false;
+  if( (x.outgoingPair.first  == y.outgoingPair.first  &&
+       x.outgoingPair.second == y.outgoingPair.second ) ||
+      (x.outgoingPair.first  == y.outgoingPair.second &&
+       x.outgoingPair.second == y.outgoingPair.first  ) ) return true;
+  else return false;
+}
 
 /** 
  * Output operator to allow the structure to be persistently written
@@ -95,18 +131,27 @@ inline bool operator==(const TBDiagram & x, const TBDiagram & y);
  * @param x The TBDiagram 
  */
 inline PersistentOStream & operator<<(PersistentOStream & os, 
-				      const TBDiagram  & x);
-
+				      const TBDiagram  & x) {
+  os << x.incoming << x.outgoing << x.outgoingPair << x.intermediate
+     << x.vertices << x.channelType << x.colourFlow << x.largeNcColourFlow
+     << x.ids;
+  return os;
+}
+  
 /** 
  * Input operator to allow persistently written data to be read in
  * @param is The input stream
  * @param x The TBDiagram 
  */
 inline PersistentIStream & operator>>(PersistentIStream & is,
-				      TBDiagram & x);
-
+			       TBDiagram & x) {
+  int chan;
+  is >> x.incoming >> x.outgoing >> x.outgoingPair >> x.intermediate
+     >> x.vertices >> chan >> x.colourFlow >> x.largeNcColourFlow >> x.ids;
+  x.channelType = TBDiagram::Channel(chan);
+  return is;
 }
 
-#include "TBDiagram.icc"
+}
 
 #endif /* HERWIG_TBDiagram_H */

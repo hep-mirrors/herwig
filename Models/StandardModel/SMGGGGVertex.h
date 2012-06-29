@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMGGGGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -49,8 +49,8 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    * @param part4 The ParticleData pointer for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   tcPDPtr part4);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
+			   tcPDPtr part3,tcPDPtr part4);
   
 protected:
   
@@ -60,13 +60,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -78,7 +78,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
   
 private:
@@ -109,9 +109,6 @@ private:
   //@}
 };
 }
-
-
-#include "SMGGGGVertex.icc"
 
 namespace ThePEG {
 

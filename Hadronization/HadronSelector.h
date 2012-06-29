@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HadronSelector.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -90,7 +90,7 @@ public:
     /**
      *  Comparision operator on mass
      */
-    inline bool operator<(const HadronInfo &x) const {
+     bool operator<(const HadronInfo &x) const {
       if(mass!=x.mass) return mass < x.mass;
       else return id < x.id;
     }
@@ -177,7 +177,7 @@ public:
      * @param inhad2 ParticleData for the second hadron produced.
      * @param inwgt  The weight for the hadron pair 
      */
-    inline Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt)
+     Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt)
       : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
     {}
   
@@ -275,7 +275,7 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent
    */
-  inline  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+    Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
 					tcPDPtr ptr3 = PDPtr ()) const  {
     pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
     if ( ! pairData.first || ! pairData.second ) return ZERO;
@@ -292,8 +292,12 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent
    */
-  inline tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+   tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+#ifndef NDEBUG
 				tcPDPtr ptr3 = PDPtr ()) const {
+#else
+                                tcPDPtr = PDPtr ()) const {
+#endif
     // The method assumes ptr3 == 0  
     // rest not implemented
     assert(ptr1 && ptr2 && !ptr3);
@@ -339,8 +343,12 @@ public:
    * @param ptr2 is the second constituent 
    * @param ptr3 is the third  constituent 
    */
-  inline Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-				   tcPDPtr ptr3 = PDPtr ()) const {
+   Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+#ifndef NDEBUG
+  				   tcPDPtr ptr3 = PDPtr ()) const {
+#else
+                                   tcPDPtr = PDPtr ()) const {
+#endif
     // The method assumes ptr3 == empty  
     assert(!(ptr3));
     // find entry in the table
@@ -370,42 +378,42 @@ public:
   /**
    * The down quark weight.
    */
-  inline double pwtDquark()  const {
+   double pwtDquark()  const {
     return _pwtDquark;
   } 
 
   /**
    * The up quark weight.
    */
-  inline double pwtUquark()  const { 
+   double pwtUquark()  const { 
     return _pwtUquark;
   }
 
   /**
    * The strange quark weight.
    */
-  inline double pwtSquark()  const { 
+   double pwtSquark()  const { 
     return _pwtSquark;
   }
 
   /**
    * The charm quark weight.
    */
-  inline double pwtCquark()  const { 
+   double pwtCquark()  const { 
     return _pwtCquark;
   }
 
   /**
    * The bottom quark weight.
    */
-  inline double pwtBquark()  const { 
+   double pwtBquark()  const { 
     return _pwtBquark;
   } 
   
   /**
    * The diquark weight.
    */
-  inline double pwtDIquark() const {
+   double pwtDIquark() const {
     return _pwtDIquark;
   }
   //@}
@@ -498,21 +506,21 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-  inline HadronTable & table() {
+   HadronTable & table() {
     return _table;
   }
   
   /**
    *  Access to the list of partons
    */
-  inline vector<PDPtr> & partons() {
+   vector<PDPtr> & partons() {
     return _partons;
   }
 
   /**
    *  Access the parton weights
    */
-  inline double pwt(tcPDPtr p) {
+   double pwt(tcPDPtr p) {
     assert(p);
     if ( p->id() < 0 ) p = p->CC();
     map<tcPDPtr,double>::iterator it = _pwt.find(p);
@@ -546,7 +554,7 @@ protected:
    * \f[|\eta_{\rm octet  }\rangle = \frac1{\sqrt{6}}
    * \left[|u\bar{u}\rangle + |d\bar{d}\rangle - 2|s\bar{s}\rangle\right]\f]
    */
-  inline double probabilityMixing(const double angleMix,
+   double probabilityMixing(const double angleMix,
 				  const int order) {
     static double convert=Constants::pi/180.0;
     if (order == 1)      
@@ -578,12 +586,6 @@ protected:
   int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<HadronSelector> initHadronSelector;
 
   /**
    * The assignment operator is private and must never be called.
@@ -805,33 +807,6 @@ private:
   unsigned int _trial;
 };
 
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HadronSelector. */
-template <>
-struct BaseClassTrait<Herwig::HadronSelector,1> {
-  /** Typedef of the first base class of HadronSelector. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HadronSelector class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HadronSelector>
-  : public ClassTraitsBase<Herwig::HadronSelector> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HadronSelector"; }
-};
-
-/** @endcond */
 
 }
 

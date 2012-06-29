@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UEDBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,12 +28,8 @@ UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV),
 		     theVeV(246.*GeV) {}
 
 void UEDBase::doinit() {
-  StandardModel::doinit();
-  //create fresh BSM info file so it can be appended to later
-  //when decaymodes have been created
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
+  readDecays(false);
+  BSMModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
   writeSpectrum();
@@ -52,6 +48,9 @@ void UEDBase::doinit() {
   addVertex(theW0A1H1Vertex);
   addVertex(theZ0A1h1Vertex);
   addVertex(theW0W1W1Vertex);
+  readDecays(true);
+  if(decayFile()=="") return;
+  decayRead();
 }
 
 void UEDBase::persistentOutput(PersistentOStream & os) const {
@@ -82,7 +81,23 @@ void UEDBase::Init() {
 
   static ClassDocumentation<UEDBase> documentation
     ("This class implements/stores the necessary information for the simulation"
-     " of a Universal Extra Dimensions model.");
+     " of a Universal Extra Dimensions model.",
+     "Universal extra dimensions model based on \\cite{Cheng:2002iz,Appelquist:2000nn}.",
+     "%\\cite{Cheng:2002iz}\n"
+     "\\bibitem{Cheng:2002iz}\n"
+     "  H.~C.~Cheng, K.~T.~Matchev and M.~Schmaltz,\n"
+     "  ``Radiative corrections to Kaluza-Klein masses,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 66}, 036005 (2002)\n"
+     "  [arXiv:hep-ph/0204342].\n"
+     "  %%CITATION = PHRVA,D66,036005;%%\n"
+     "%\\cite{Appelquist:2000nn}\n"
+     "\\bibitem{Appelquist:2000nn}\n"
+     "  T.~Appelquist, H.~C.~Cheng and B.~A.~Dobrescu,\n"
+     "  ``Bounds on universal extra dimensions,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 64}, 035002 (2001)\n"
+     "  [arXiv:hep-ph/0012100].\n"
+     "  %%CITATION = PHRVA,D64,035002;%%\n"
+   );
 
   static Switch<UEDBase,bool> interfaceRadiativeCorrections
     ("RadiativeCorrections",
@@ -195,6 +210,7 @@ void UEDBase::Init() {
 }
 
 void UEDBase::calculateKKMasses(const unsigned int n) {
+  useMe();
   if(n == 0)
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"
@@ -214,7 +230,7 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;
       Energy2 ndmass2 = sqr(n*theInvRadius);
-      for(unsigned int i = 1; i < 38; ++i) {
+      for ( int i = 1; i < 38; ++i ) {
 	if(i == 7 || i == 17) i += 4;
 	if(i == 26) i += 10;
 	Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
@@ -332,8 +348,9 @@ void UEDBase::fermionMasses(const unsigned int n) {
 
   for(long i = 1; i < 17; ) {
     if(i == 6) i += 5;
-    Energy2 new_m2, smMass2(sqr(getParticleData(i)->mass()));
+    Energy2 smMass2(sqr(getParticleData(i)->mass()));
     if(i < 6) {
+      Energy2 new_m2;
       if( i % 2 == 0)
 	new_m2 = smMass2 + shiftU;
       else 
@@ -381,14 +398,11 @@ void UEDBase::resetMass(long id, Energy mass) {
 
 void UEDBase::writeSpectrum() {
   sort(theMasses.begin(), theMasses.end(), lowerMass);
-  string filename = CurrentGenerator::current().filename() + 
-    string("-BSMModelInfo.out");
-  ofstream ofs(filename.c_str(), ios::out|ios::app);
+  ostream & ofs = CurrentGenerator::current().misc();
   ofs << "# MUED Model Particle Spectrum\n"
       << "# R^-1: " << theInvRadius/GeV << " GeV\n"
       << "# Lambda * R: " << theLambdaR << "\n"
-      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
-      << endl;
+      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV\n";
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
   while (!theMasses.empty()) {
     IDMassPair tmp = theMasses.back();

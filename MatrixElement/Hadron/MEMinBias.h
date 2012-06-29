@@ -5,19 +5,21 @@
 // This is the declaration of the MEMinBias class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEMinBias class.
+ * The MEMinBias class provides a simple colour singlet exchange matrix element
+ * to be used in the soft component of the multiple scattering model of the 
+ * underlying event
  *
  * @see \ref MEMinBiasInterfaces "The interfaces"
  * defined for MEMinBias.
  */
-class MEMinBias: public MEBase {
+class MEMinBias: public HwMEBase {
 
 public:
 
@@ -168,7 +170,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEMinBias,1> {
   /** Typedef of the first base class of MEMinBias. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

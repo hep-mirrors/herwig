@@ -116,7 +116,10 @@ namespace Herwig {
     
     
   private:
-   
+
+    /**
+     *  Rapidity histogram
+     */   
     HistogramPtr _hy;
 
     /**
@@ -163,7 +166,7 @@ namespace ThePEG {
      * excepted). In this case the listed libraries will be dynamically
      * linked in the order they are specified.
      */
-    static string library() { return "HwZrap.so"; }
+    static string library() { return "HwTevatronAnalysis.so"; }
   };
   
   /** @endcond */

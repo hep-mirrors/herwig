@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // a1SimpleDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -95,12 +95,12 @@ void a1SimpleDecayer::doinit() {
     // first rho channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,2);
-    newchannel->addIntermediate(rhom[ix],0,0.0,1,3);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
     mode->addChannel(newchannel);
     // second channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,1);
-    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
+    newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
   }
   if(_twowgts.size()!=mode->numberChannels()) 
@@ -320,6 +320,7 @@ int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
 			    const ParticleVector & decay,MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),
@@ -413,39 +414,39 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << name() << ":Coupling " << _coupling*GeV << "\n";
-  output << "set " << name() << ":OneMax   " <<   _onemax << "\n";
-  output << "set " << name() << ":TwoMax   " <<   _twomax << "\n";
-  output << "set " << name() << ":ThreeMax " << _threemax << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Coupling " << _coupling*GeV << "\n";
+  output << "newdef " << name() << ":OneMax   " <<   _onemax << "\n";
+  output << "newdef " << name() << ":TwoMax   " <<   _twomax << "\n";
+  output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<3) output << "set    " << name() << ":RhoMasses " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
     else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<3) output << "set    " << name() << ":RhoWidths " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
     else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
-    if(ix<3) output << "set    " << name() << ":RhoWeights " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
     else     output << "insert " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << name() << ":OneChargedWeights " 
+    output << "newdef " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << name() << ":TwoChargedWeights " 
+    output << "newdef " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << name() << ":ThreeChargedWeights " 
+    output << "newdef " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 

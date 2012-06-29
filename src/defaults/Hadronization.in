@@ -25,71 +25,77 @@ create Herwig::LightClusterDecayer LightClusterDecayer
 create Herwig::ClusterDecayer ClusterDecayer
 create Herwig::HwppSelector HadronSelector
 
-set ClusterHadHandler:PartonSplitter PartonSplitter
-set ClusterHadHandler:ClusterFinder ClusterFinder
-set ClusterHadHandler:ColourReconnector ColourReconnector
-set ClusterHadHandler:ClusterFissioner ClusterFissioner
-set ClusterHadHandler:LightClusterDecayer LightClusterDecayer
-set ClusterHadHandler:ClusterDecayer ClusterDecayer
-set ClusterHadHandler:MinVirtuality2 0.1*GeV2
-set ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
-set ClusterHadHandler:UnderlyingEventHandler NULL
+newdef ClusterHadHandler:PartonSplitter PartonSplitter
+newdef ClusterHadHandler:ClusterFinder ClusterFinder
+newdef ClusterHadHandler:ColourReconnector ColourReconnector
+newdef ClusterHadHandler:ClusterFissioner ClusterFissioner
+newdef ClusterHadHandler:LightClusterDecayer LightClusterDecayer
+newdef ClusterHadHandler:ClusterDecayer ClusterDecayer
+newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
+newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
+newdef ClusterHadHandler:UnderlyingEventHandler NULL
 
 ##################################################
 # The UA5 soft underlying event model
 # (disabled by default)
 ##################################################
 create Herwig::UA5Handler UA5 HwUA5.so
-set UA5:ClusterFissioner ClusterFissioner
-set UA5:ClusterDecayer ClusterDecayer
+newdef UA5:ClusterFissioner ClusterFissioner
+newdef UA5:ClusterDecayer ClusterDecayer
 #set ClusterHadHandler:UnderlyingEventHandler UA5
 ##################################################
 
-set ClusterFissioner:HadronSelector HadronSelector 
-set LightClusterDecayer:HadronSelector HadronSelector
-set ClusterDecayer:HadronSelector HadronSelector
+newdef ClusterFissioner:HadronSelector HadronSelector 
+newdef LightClusterDecayer:HadronSelector HadronSelector
+newdef ClusterDecayer:HadronSelector HadronSelector
 
-set ColourReconnector:ColourReconnection No
+newdef ColourReconnector:ColourReconnection Yes
+newdef ColourReconnector:ReconnectionProbability 0.54
+newdef ColourReconnector:Algorithm Plain
+newdef ColourReconnector:InitialTemperature 0.01
+newdef ColourReconnector:AnnealingFactor 0.21
+newdef ColourReconnector:AnnealingSteps 10
+newdef ColourReconnector:TriesPerStepFactor 0.66
 
 # Clustering parameters for light quarks
-set ClusterFissioner:ClMaxLight  3.15*GeV
-set ClusterFissioner:ClPowLight  1.28
-set ClusterFissioner:PSplitLight 1.20
-set ClusterDecayer:ClDirLight 1
-set ClusterDecayer:ClSmrLight 0.78
+newdef ClusterFissioner:ClMaxLight  3.25*GeV
+newdef ClusterFissioner:ClPowLight  1.28
+newdef ClusterFissioner:PSplitLight 1.14
+newdef ClusterDecayer:ClDirLight 1
+newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-set ClusterFissioner:ClMaxBottom  3.1*GeV
-set ClusterFissioner:ClPowBottom  1.18
-set ClusterFissioner:PSplitBottom 1.00
-set ClusterDecayer:ClDirBottom 1
-set ClusterDecayer:ClSmrBottom 0.10
-set LightClusterDecayer:SingleHadronLimitBottom 0.16
+newdef ClusterFissioner:ClMaxBottom  3.2*GeV
+newdef ClusterFissioner:ClPowBottom  1.24
+newdef ClusterFissioner:PSplitBottom 0.75
+newdef ClusterDecayer:ClDirBottom 1
+newdef ClusterDecayer:ClSmrBottom 0.00
+newdef LightClusterDecayer:SingleHadronLimitBottom 0.12
 
 # Clustering parameters for c-quarks
-set ClusterFissioner:ClMaxCharm  3.00*GeV
-set ClusterFissioner:ClPowCharm  1.52
-set ClusterFissioner:PSplitCharm 1.18
-set ClusterDecayer:ClDirCharm 1
-set ClusterDecayer:ClSmrCharm 0.26
-set LightClusterDecayer:SingleHadronLimitCharm 0.0
+newdef ClusterFissioner:ClMaxCharm  2.95*GeV
+newdef ClusterFissioner:ClPowCharm  1.52
+newdef ClusterFissioner:PSplitCharm 1.11
+newdef ClusterDecayer:ClDirCharm 1
+newdef ClusterDecayer:ClSmrCharm 0.26
+newdef LightClusterDecayer:SingleHadronLimitCharm 0.0
 
 # Clustering parameters for exotic quarks
 # (e.g. hadronizing Susy particles)
-set ClusterFissioner:ClMaxExotic  2.7*GeV
-set ClusterFissioner:ClPowExotic  1.46
-set ClusterFissioner:PSplitExotic 1.00
-set ClusterDecayer:ClDirExotic 1
-set ClusterDecayer:ClSmrExotic 0.78
-set LightClusterDecayer:SingleHadronLimitExotic 0.1
+newdef ClusterFissioner:ClMaxExotic  2.7*GeV
+newdef ClusterFissioner:ClPowExotic  1.46
+newdef ClusterFissioner:PSplitExotic 1.00
+newdef ClusterDecayer:ClDirExotic 1
+newdef ClusterDecayer:ClSmrExotic 0.78
+newdef LightClusterDecayer:SingleHadronLimitExotic 0.1
 
 # 
-set HadronSelector:PwtDquark  1.0
-set HadronSelector:PwtUquark  1.0
-set HadronSelector:PwtSquark  0.68
-set HadronSelector:PwtCquark  1.0
-set HadronSelector:PwtBquark  1.0
-set HadronSelector:PwtDIquark 0.49
-set HadronSelector:SngWt      0.77
-set HadronSelector:DecWt      0.62
-set HadronSelector:Mode 1
+newdef HadronSelector:PwtDquark  1.0
+newdef HadronSelector:PwtUquark  1.0
+newdef HadronSelector:PwtSquark  0.68
+newdef HadronSelector:PwtCquark  1.0
+newdef HadronSelector:PwtBquark  1.0
+newdef HadronSelector:PwtDIquark 0.49
+newdef HadronSelector:SngWt      0.74
+newdef HadronSelector:DecWt      0.62
+newdef HadronSelector:Mode 1

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2VVPowheg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,6 +13,7 @@
 
 #include "MEPP2VVPowheg.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -22,31 +23,66 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig++/Decay/DecayMatrixElement.h"
 
 using namespace Herwig;
 
 MEPP2VVPowheg::MEPP2VVPowheg() :  
-    CF_(4./3.),    TR_(0.5),  NC_(3.),
-    contrib_(1),   nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
-    removebr_(1) {  
-    massOption(true ,1);
-    massOption(false,1);
-}
+    tiny(1.e-10),  CF_(4./3.),   TR_(0.5),  NC_(3.),
+    contrib_(1),   channels_(0), nlo_alphaS_opt_(0) , fixed_alphaS_(0.1180346226),
+    removebr_(1), scaleopt_(1), mu_F_(100.*GeV), mu_UV_(100.*GeV),
+    ckm_(3,vector<Complex>(3,0.0)),
+    helicityConservation_(true),
+    realMESpinCorrelations_(true), power_(2.0),
+    preqqbar_(3.7),preqg_(16.0),pregqbar_(11.0),
+    b0_((11.-2./3.*5.)/4./Constants::pi),
+    LambdaQCD_(91.118*GeV*exp(-1./2./((11.-2./3.*5.)/4./Constants::pi)/0.118)),
+    min_pT_(2.*GeV){  
+  massOption(vector<unsigned int>(2,1));
+} 
 
 void MEPP2VVPowheg::persistentOutput(PersistentOStream & os) const {
-    os << contrib_    << nlo_alphaS_opt_  << fixed_alphaS_
-       << removebr_ ;
+    os << contrib_  << channels_  << nlo_alphaS_opt_  << fixed_alphaS_
+       << removebr_ << scaleopt_ << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)
+       << ckm_ << helicityConservation_
+       << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << FFGvertex_
+       << realMESpinCorrelations_
+       << showerAlphaS_ << power_ 
+       << preqqbar_ << preqg_ << pregqbar_ << prefactor_
+       << b0_ << ounit(LambdaQCD_,GeV)
+       << ounit( min_pT_,GeV );
 }
 
 void MEPP2VVPowheg::persistentInput(PersistentIStream & is, int) {
-    is >> contrib_    >> nlo_alphaS_opt_  >> fixed_alphaS_
-       >> removebr_ ;
+  is >> contrib_  >> channels_  >> nlo_alphaS_opt_  >> fixed_alphaS_
+     >> removebr_ >> scaleopt_ >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)
+     >> ckm_ >> helicityConservation_
+     >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> FFGvertex_
+     >> realMESpinCorrelations_
+     >> showerAlphaS_ >> power_ 
+     >> preqqbar_ >> preqg_ >> pregqbar_ >> prefactor_
+     >> b0_ >> iunit(LambdaQCD_,GeV)
+     >> iunit( min_pT_, GeV );
 }
 
 ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
 // Definition of the static class description member.
 
 void MEPP2VVPowheg::Init() {
+
+  static ClassDocumentation<MEPP2VVPowheg> documentation
+    ("The MEPP2VVPowheg class implements the NLO matrix elements for the production of"
+     "pairs of electroweak vector bosons.",
+     "The calcultaion of $W^+W^-$, $W^\\pm Z^0$ and $Z^0Z^0$ production"
+     " in hadron collisions at next-to-leading order in the POWHEG scheme"
+     " is described in \\cite{Hamilton:2010mb}.",
+     "\\bibitem{Hamilton:2010mb}\n"
+     " K.~Hamilton,\n"
+     "%``A positive-weight next-to-leading order simulation of weak boson pair\n"
+     "%production,''\n"
+     "JHEP {\bf 1101} (2011) 009\n"
+     "[arXiv:1009.5391 [hep-ph]].\n"
+     "%%CITATION = JHEPA,1101,009;%%\n");
 
   static Switch<MEPP2VVPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -68,14 +104,35 @@ void MEPP2VVPowheg::Init() {
      "Generate the negative contribution to the full NLO cross section",
      2);
 
+  static Switch<MEPP2VVPowheg,unsigned int> interfaceChannels
+    ("Channels",
+     "Which channels to include in the cross section",
+     &MEPP2VVPowheg::channels_, 0, false, false);
+  static SwitchOption interfaceChannelsAll
+    (interfaceChannels,
+     "All",
+     "All channels required for the full NLO cross section: qqb, qg, gqb",
+     0);
+  static SwitchOption interfaceChannelsAnnihilation
+    (interfaceChannels,
+     "Annihilation",
+     "Only include the qqb annihilation channel, omitting qg and gqb channels",
+     1);
+  static SwitchOption interfaceChannelsCompton
+    (interfaceChannels,
+     "Compton",
+     "Only include the qg and gqb compton channels, omitting all qqb processes",
+     2);
+
   static Switch<MEPP2VVPowheg,unsigned int> interfaceNLOalphaSopt
     ("NLOalphaSopt",
-     "Whether to use a fixed or a running QCD coupling for the NLO weight",
+     "An option allowing you to supply a fixed value of alpha_S "
+     "through the FixedNLOAlphaS interface.",
      &MEPP2VVPowheg::nlo_alphaS_opt_, 0, false, false);
   static SwitchOption interfaceNLOalphaSoptRunningAlphaS
     (interfaceNLOalphaSopt,
      "RunningAlphaS",
-     "Use the usual running QCD coupling evaluated at scale scale()",
+     "Use the usual running QCD coupling evaluated at scale mu_UV2()",
      0);
   static SwitchOption interfaceNLOalphaSoptFixedAlphaS
     (interfaceNLOalphaSopt,
@@ -86,7 +143,7 @@ void MEPP2VVPowheg::Init() {
   static Parameter<MEPP2VVPowheg,double> interfaceFixedNLOalphaS
     ("FixedNLOalphaS",
      "The value of alphaS to use for the nlo weight if nlo_alphaS_opt_=1",
-     &MEPP2VVPowheg::fixed_alphaS_, 0.11803463, 0., 1.0,
+     &MEPP2VVPowheg::fixed_alphaS_, 0.1180346226, 0., 1.0,
      false, false, Interface::limited);
 
   static Switch<MEPP2VVPowheg,unsigned int> interfaceremovebr
@@ -104,25 +161,191 @@ void MEPP2VVPowheg::Init() {
      "Multiply by MCFM branching ratios for comparison/debugging purposes",
      0);
 
+  static Switch<MEPP2VVPowheg,unsigned int> interfaceScaleOption
+    ("ScaleOption",
+     "Option for running / fixing EW and QCD factorization & renormalization scales",
+     &MEPP2VVPowheg::scaleopt_, 1, false, false);
+  static SwitchOption interfaceDynamic
+    (interfaceScaleOption,
+     "Dynamic",
+     "QCD factorization & renormalization scales are sqr(pV1+pV2). "
+     "EW scale is (mV1^2+mV2^2)/2 (similar to MCatNLO)",
+     1);
+  static SwitchOption interfaceFixed
+    (interfaceScaleOption,
+     "Fixed",
+     "QCD factorization fixed to value by FactorizationScaleValue."
+     "EW and QCD renormalization scales fixed by RenormalizationScaleValue.",
+     2);
+
+  static Parameter<MEPP2VVPowheg,Energy> interfaceFactorizationScaleValue
+    ("FactorizationScaleValue",
+     "Value to use for the QCD factorization scale if fixed scales"
+     "have been requested with the ScaleOption interface.",
+     &MEPP2VVPowheg::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     true, false, Interface::limited);
+
+  static Parameter<MEPP2VVPowheg,Energy> interfaceRenormalizationScaleValue
+    ("RenormalizationScaleValue",
+     "Value to use for the EW and QCD renormalization scales if fixed "
+     "scales have been requested with the ScaleOption interface.",
+     &MEPP2VVPowheg::mu_UV_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     true, false, Interface::limited);
+
+  static Switch<MEPP2VVPowheg,bool> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Flag to select leading order spin correlations or a "
+     "calculation taking into account the real NLO effects",
+     &MEPP2VVPowheg::realMESpinCorrelations_, 1, false, false);
+  static SwitchOption interfaceSpinCorrelationsLeadingOrder
+    (interfaceSpinCorrelations,
+     "LeadingOrder",
+     "Decay bosons using a leading order 2->2 calculation of the "
+     "production spin density matrix",
+     0);
+  static SwitchOption interfaceSpinCorrelationsRealNLO
+    (interfaceSpinCorrelations,
+     "RealNLO",
+     "Decay bosons using a production spin density matrix which "
+     "takes into account the effects of real radiation",
+     1);
+
+  static Reference<MEPP2VVPowheg,ShowerAlpha> interfaceCoupling
+    ("Coupling",
+     "The object calculating the strong coupling constant",
+     &MEPP2VVPowheg::showerAlphaS_, false, false, true, false, false);
+
+  static Parameter<MEPP2VVPowheg,double> interfacePower
+    ("Power",
+     "The power for the sampling of the matrix elements",
+     &MEPP2VVPowheg::power_, 2.0, 1.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2VVPowheg,double> interfacePrefactorqqbar
+    ("Prefactorqqbar",
+     "The prefactor for the sampling of the q qbar channel",
+     &MEPP2VVPowheg::preqqbar_, 5.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2VVPowheg,double> interfacePrefactorqg
+    ("Prefactorqg",
+     "The prefactor for the sampling of the q g channel",
+     &MEPP2VVPowheg::preqg_, 3.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2VVPowheg,double> interfacePrefactorgqbar
+    ("Prefactorgqbar",
+     "The prefactor for the sampling of the g qbar channel",
+     &MEPP2VVPowheg::pregqbar_, 3.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEPP2VVPowheg, Energy> interfacepTMin
+    ("minPt",
+     "The pT cut on hardest emision generation"
+     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
+     &MEPP2VVPowheg::min_pT_, GeV, 2.*GeV, ZERO, 100000.0*GeV,
+     false, false, Interface::limited);
+}
+
+Energy2 MEPP2VVPowheg::scale() const {
+  // N.B. This scale is the electroweak scale!
+  // It is used in the evaluation of the LO code
+  // in the MEPP2VV base class. This means it 
+  // should appear in the denominator of the 
+  // NLOweight here and all other LO parts like
+  // the function for the lumi ratio (Lhat). It
+  // should also be used for evaluating any EW
+  // parameters / vertices in the numerator. 
+  // The scaleopt_ == 1 "running" option is
+  // chosen to be like the MC@NLO one (it ought
+  // to be more like sHat instead?).
+  return scaleopt_ == 1 ? 
+//        0.5*(meMomenta()[2].m2()+meMomenta()[3].m2()) : sqr(mu_UV_);
+        sHat() : sqr(mu_UV_);
+}
+
+Energy2 MEPP2VVPowheg::mu_F2() const {
+  return scaleopt_ == 1 ? 
+//        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_F_);
+        sHat() : sqr(mu_F_);
+}
+
+Energy2 MEPP2VVPowheg::mu_UV2() const {
+  return scaleopt_ == 1 ? 
+//        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_UV_);
+        sHat() : sqr(mu_UV_);
 }
 
 void MEPP2VVPowheg::doinit() {
   MEPP2VV::doinit();
+  // get the vertices we need
+  // get a pointer to the standard model object in the run
+  static const tcHwSMPtr hwsm
+    = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  if (!hwsm) throw InitException() 
+	       << "missing hwsm pointer in MEPP2VVPowheg::doinit()"
+	       << Exception::abortnow;
+  // get pointers to all required Vertex objects
+  FFPvertex_ = hwsm->vertexFFP();
+  FFZvertex_ = hwsm->vertexFFZ();
+  WWWvertex_ = hwsm->vertexWWW();
+  FFWvertex_ = hwsm->vertexFFW();
+  FFGvertex_ = hwsm->vertexFFG();
+  // get the ckm object
+  Ptr<StandardCKM>::pointer 
+      theCKM=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
+  if(!theCKM) throw InitException() << "MEPP2VVPowheg::doinit() "
+				    << "the CKM object must be the Herwig one"
+				    << Exception::runerror;
+  unsigned int ix,iy;
+  // get the CKM matrix (unsquared for interference)
+  vector< vector<Complex > > CKM(theCKM->getUnsquaredMatrix(SM().families()));
+  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckm_[ix][iy]=CKM[ix][iy];}}
+  // insert the different prefactors in the vector for easy look up
+  prefactor_.push_back(preqqbar_);
+  prefactor_.push_back(preqg_);
+  prefactor_.push_back(pregqbar_);
 }
 
 int MEPP2VVPowheg::nDim() const {
   int output = MEPP2VV::nDim(); 
+  // See related comment in MEPP2VVPowheg::generateKinematics!
   if(contrib_>0) output += 2;
   return output;
 }
 
 bool MEPP2VVPowheg::generateKinematics(const double * r) {
-  double xt(-999.);
-  double y( -999.);
+  // N.B. A fix was made to make theta2 a radiative
+  // variable in r4532. Originally theta2 was take to
+  // be the azimuthal angle coming from the generation
+  // of the Born kinematics inherited from MEPP2VV i.e.
+  // before the change theta2 was a random number between
+  // 0 and 2pi. On changing theta2 was set to be  
+  // theta2  = (*(r+3)) * 2.*Constants::pi; 
+  // and nDim returned if(contrib_>0) output += 3;
+  // In the months following it was noticed that agreement
+  // with MCFM was per mille at Tevatron energies but got
+  // close to 1 percent for LHC energies (for all VV 
+  // processes). After searching back up the svn branch
+  // running 2M events each time, the change was spotted
+  // to occur on r4532. Changing:
+  // if(contrib_>0) output += 3; 
+  // in ::nDim() and also,
+  // xt      = (*(r +nDim() -3));
+  // y       = (*(r +nDim() -2)) * 2. - 1.;
+  // theta2  = (*(r +nDim() -1)) * 2.*Constants::pi; 
+  // did not fix the problem. The following code gives the
+  // same good level of agreement at LHC and TVT: 
+  double xt(     -999.);
+  double y(      -999.);
+  double theta2( -999.);
   if(contrib_>0) {
     // Generate the radiative integration variables:
-    xt = (*(r+1));
-    y  = (*(r+2)) * 2. - 1.;
+    xt      = (*(r +nDim() -2));
+    y       = (*(r +nDim() -1)) * 2. - 1.;
+// KH 19th August - next line changed for phi in 0->pi not 0->2pi
+//    theta2  = UseRandom::rnd() * 2.*Constants::pi;
+    theta2  = UseRandom::rnd() *Constants::pi;
   }
 
   // Continue with lo matrix element code:
@@ -130,7 +353,7 @@ bool MEPP2VVPowheg::generateKinematics(const double * r) {
 
   // Work out the kinematics for the leading order / virtual process 
   // and also get the leading order luminosity function:
-  getKinematics(xt,y);
+  getKinematics(xt,y,theta2);
 
   return output;
 }
@@ -174,85 +397,60 @@ double MEPP2VVPowheg::me2() const {
   return output;
 }
 
-void MEPP2VVPowheg::getKinematics(double xt, double y) {
+void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
 
   // In this member we want to get the lo_lumi_ as this is a 
   // common denominator in the NLO weight. We want also the 
-  // born2to2Kinematics object and all of the real2to3Kinematics
+  // bornVVKinematics object and all of the realVVKinematics
   // objects needed for the NLO weight.
 
-  // First a few sanity checks (these can be removed when the code is done):
-  if(mePartonData()[0]->id()<0)
-    cout << "Error in get_born_variables:\n" 
-	 << "mePartonData()[0] is an antiquark, id=" 
-	 << mePartonData()[0]->PDGName() << endl;
-  if(mePartonData()[1]->id()>0)
-    cout << "Error in get_born_variables:\n" 
-	 << "mePartonData()[1] is an quark, id=" 
-	 << mePartonData()[1]->PDGName() << endl;
-  bool alarm(false);
+  // Check if the W- is first in W+W- production. Already confirmed 
+  // mePartonData()[0] is a quark, and mePartonData()[1] is an antiquark.
+  // We assume mePartonData[2] and mePartonData[3] are, respectively,
+  // W+/- Z, W+/- W-/+, or Z Z.
   bool wminus_first(false);
-  switch(MEPP2VV::process()) {
-  case 1: // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
-    if(abs(mePartonData()[2]->id())!=24||abs(mePartonData()[3]->id())!=24) 
-      alarm=true;
-    if(mePartonData()[2]->id()<0) wminus_first=true;
-    break;
-  case 2: // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) 
-    // (MCFM: 72+77 [nproc])
-    if(abs(mePartonData()[2]->id())!=24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 3: // Z(mu-,mu+) Z(e-,e+) (MCFM: 86 [nproc])
-    if(mePartonData()[2]->id()!= 23||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 4: // W+(mu+,nu_mu) Z(nu_e,nu_ebar) (MCFM: 72 [nproc])
-    if(mePartonData()[2]->id()!= 24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  case 5: // W-(mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 77 [nproc])
-    if(mePartonData()[2]->id()!=-24||mePartonData()[3]->id()!=23) 
-      alarm=true;
-    break;
-  }
-  if(alarm) { 
-    cout << "Error in get_born_variables: unexpected final state labelling.\n";
-    cout << "mePartonData()[2] = " << mePartonData()[2]->PDGName() << endl; 
-    cout << "mePartonData()[3] = " << mePartonData()[3]->PDGName() << endl; 
-  }
+  if((mePartonData()[2]->id()==-24)&&(mePartonData()[3]->id()==24)) 
+    wminus_first=true;
 
   // Now get all data on the LO process needed for the NLO computation:
 
-  // Should be the hadron containing particle a (the quark):
+  // The +z hadron in the lab:
   hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().first->dataPtr());
-  // Should be the hadron containing particle b (the anti-quark):
+  // The -z hadron in the lab:
   hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
 
   // Leading order momentum fractions:
-  double xa(lastX1()); // Should be the quark momentum fraction. 
-  double xb(lastX2()); // Should be the anti-quark momentum fraction. 
+  double xa(lastX1()); // The +z momentum fraction in the lab. 
+  double xb(lastX2()); // The -z momentum fraction in the lab. 
 
-  // Particle data for incoming QCD particles:
-  ab_ = mePartonData()[0];  // This is the quark in MEPP2VV.cc
-  bb_ = mePartonData()[1];  // This is the antiquark in MEPP2VV.cc
+  // Particle data for incoming +z & -z QCD particles respectively:
+  ab_ = lastPartons().first ->dataPtr(); // The +z momentum parton in the lab.
+  bb_ = lastPartons().second->dataPtr(); // The -z momentum parton in the lab.
 
-  // If the lastPartons.first() and lastPartons.second() are 
-  // not a quark and antiquark respectively, swap xa<->xb and
-  // hadron_A_<->hadron_B_, as xa and xb are defined to be the
-  // quark and anti-quark momentum fractions respectively, also,
-  // hadron_A_ and hadron_B_, are defined to be the hadrons 
-  // containing the colliding partons a and b respectively. 
-  // See MEPP2VV.cc for more info. 
-  flipped_ = false;
-  if(!(lastPartons().first ->dataPtr()==ab_&&
-       lastPartons().second->dataPtr()==bb_)) {
-    swap(xa       ,xb       );
+  // We checked TVT & LHC for all VV channels with 10K events:
+  // lastParticles().first ->momentum().z() is always positive
+  // lastParticles().second->momentum().z() is always negative
+  // lastParticles().first ->momentum().z()*xa=lastPartons().first ->momentum().z() 1 in 10^6
+  // lastParticles().second->momentum().z()*xb=lastPartons().second->momentum().z() 1 in 10^6
+
+  // Set the quark and antiquark data pointers.
+  quark_     = mePartonData()[0];
+  antiquark_ = mePartonData()[1];
+  if(quark_->id()<0) swap(quark_,antiquark_);
+
+  // Now in _our_ calculation we basically define the +z axis as being 
+  // given by the direction of the incoming quark for q+qb & q+g processes
+  // and the incoming gluon for g+qbar processes. So now we might need to
+  // flip the values of hadron_A_, hadron_B_, ab_, bb_, xa, xb accordingly:
+  if(ab_->id()!=quark_->id()) {
     swap(hadron_A_,hadron_B_);
-    flipped_ = true;
+    swap(ab_,bb_);
+    swap(xa,xb);
   }
+  // So hadron_A_ is the thing containing a quark (ab_) with momentum frac xa,
+  // hadron_B_ is the thing containing an antiquark (bb_) with momentum frac xb.
 
   // Now get the partonic flux for the Born process:
   lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,ab_,scale(),xa)/xa
@@ -262,38 +460,51 @@ void MEPP2VVPowheg::getKinematics(double xt, double y) {
   if(MEPP2VV::process()==1&&wminus_first) swap(meMomenta()[2],meMomenta()[3]);
 
   // Create the object containing all 2->2 __kinematic__ information:
-  B_ = born2to2Kinematics(meMomenta(),xa,xb);
+  B_ = bornVVKinematics(meMomenta(),xa,xb);
+  // We checked that meMomenta()[0] (quark) is in the +z direction and meMomenta()[1]
+  // is in the -z direction (antiquark).
 
   // Revert momentum swap in case meMomenta and mePartonData correlation
   // needs preserving for other things.
   if(MEPP2VV::process()==1&&wminus_first) swap(meMomenta()[2],meMomenta()[3]);
 
   // Check the Born kinematics objects is internally consistent:
-  B_.sanityCheck();
+  //  B_.sanityCheck();
 
   // If we are going beyond leading order then lets calculate all of 
   // the necessary real emission kinematics.
   if(contrib_>0) {
     // Soft limit of the 2->3 real emission kinematics:
-    S_   = real2to3Kinematics(B_, 1.,  y);
+    S_   = realVVKinematics(B_, 1.,  y, theta2);
     // Soft-collinear limit of the 2->3 kinematics (emission in +z direction):
-    SCp_ = real2to3Kinematics(B_, 1., 1.);
+    SCp_ = realVVKinematics(B_, 1., 1., theta2);
     // Soft-collinear limit of the 2->3 kinematics (emission in -z direction):
-    SCm_ = real2to3Kinematics(B_, 1.,-1.);
+    SCm_ = realVVKinematics(B_, 1.,-1., theta2);
     // Collinear limit of the 2->3 kinematics (emission in +z direction):
-    Cp_  = real2to3Kinematics(B_, xt, 1.);
+    Cp_  = realVVKinematics(B_, xt, 1., theta2);
     // Collinear limit of the 2->3 kinematics (emission in -z direction):
-    Cm_  = real2to3Kinematics(B_, xt,-1.);
+    Cm_  = realVVKinematics(B_, xt,-1., theta2);
     // The resolved 2->3 real emission kinematics:
-    H_   = real2to3Kinematics(B_, xt,  y);
+    H_   = realVVKinematics(B_, xt,  y, theta2);
+
+    // Borrowed from VVhardGenerator (lab momenta of k1,k2):
+    Energy pT(sqrt(H_.pT2_in_lab()));
+    LorentzRotation yzRotation;
+    yzRotation.setRotateX(-atan2(pT/GeV,sqrt(B_.sb())/GeV));
+    LorentzRotation boostFrompTisZero;
+    boostFrompTisZero.setBoostY(-pT/sqrt(B_.sb()+pT*pT));
+    LorentzRotation boostFromYisZero;
+    boostFromYisZero.setBoostZ(tanh(B_.Yb()));
+    k1r_perp2_lab_ = (boostFromYisZero*boostFrompTisZero*yzRotation*(H_.k1r())).perp2();
+    k2r_perp2_lab_ = (boostFromYisZero*boostFrompTisZero*yzRotation*(H_.k2r())).perp2();
 
     // Check all the real kinematics objects are internally consistent:
-    S_.sanityCheck();
-    SCp_.sanityCheck();
-    SCm_.sanityCheck();
-    Cp_.sanityCheck();
-    Cm_.sanityCheck();
-    H_.sanityCheck();
+    //    S_.sanityCheck();
+    //    SCp_.sanityCheck();
+    //    SCm_.sanityCheck();
+    //    Cp_.sanityCheck();
+    //    Cm_.sanityCheck();
+    //    H_.sanityCheck();
   }
 
   return;
@@ -302,14 +513,14 @@ void MEPP2VVPowheg::getKinematics(double xt, double y) {
 
 double MEPP2VVPowheg::NLOweight() const {
   // If only leading order is required return 1:
-  if(contrib_==0) return 1.;
+  if(contrib_==0) return lo_me()/lo_me2_;
 
   // Calculate alpha_S and alpha_S/(2*pi).
-  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
+  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(mu_UV2());
   double alsOn2pi(alphaS_/2./pi);
 
   // Particle data objects for the new plus and minus colliding partons.
-  tcPDPtr a_nlo, b_nlo, gluon;
+  tcPDPtr gluon;
   gluon = getParticleData(ParticleID::g);
 
   // Get the all couplings.
@@ -322,6 +533,13 @@ double MEPP2VVPowheg::NLOweight() const {
   gdR_ = gW_/2./cosThetaW*(   +2./3.*sin2ThetaW_);
   eZ_  = gW_*cosThetaW;
   eZ2_ = sqr(eZ_);
+
+  // MCFM has gwsq = 0.4389585130009 -> gw = 0.662539442600115
+  // Here we have gW_ = 0.662888
+  // MCFM has xw = 0.22224653300000 -> sqrt(xw) = 0.471430306
+  // Here we have 0.222247
+  // MCFM has esq = 0.097557007645279 -> e = 0.31234117187024679
+  // Here we have 4.0*pi*SM().alphaEM(sqr(100.*GeV)) = 0.0976596
 
   // If the process is W-Z instead of W+Z we must transform these
   // couplings as follows, according to NPB 383(1992)3-44 Eq.3.23
@@ -339,13 +557,13 @@ double MEPP2VVPowheg::NLOweight() const {
   // W+Z / W-Z
   if(abs(mePartonData()[2]->id())==24&&mePartonData()[3]->id()==23) { 
     int up_id(-999),dn_id(-999);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
-      up_id = abs(ab_->id());  
-      dn_id = abs(bb_->id());  
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==1) {
+      up_id = abs(quark_->id());  
+      dn_id = abs(antiquark_->id());  
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==0) {
-      up_id = abs(bb_->id());  
-      dn_id = abs(ab_->id());  
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==0) {
+      up_id = abs(antiquark_->id());  
+      dn_id = abs(quark_->id());  
     }
     else {
       cout << "MEPP2VVPowheg:" << endl;
@@ -359,28 +577,23 @@ double MEPP2VVPowheg::NLOweight() const {
   } 
   // W+W-
   else if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
-    if(!MEPP2VV::mixingInWW()) {
-      Kij = 1.0;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
+      int up_ida(abs(quark_->id())/2-1);
+      int up_idb(abs(antiquark_->id())/2-1);
+      Kij  = sqrt(std::norm( CKM(up_ida,0)*CKM(up_idb,0)
+			   + CKM(up_ida,1)*CKM(up_idb,1)
+			   + CKM(up_ida,2)*CKM(up_idb,2)));
+    }
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
+      int dn_ida((abs(quark_->id())-1)/2);
+      int dn_idb((abs(antiquark_->id())-1)/2);
+      Kij  = sqrt(std::norm( CKM(0,dn_ida)*CKM(0,dn_idb)
+			   + CKM(1,dn_ida)*CKM(1,dn_idb)
+			   + CKM(2,dn_ida)*CKM(2,dn_idb)));
     }
     else {
-      if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
-	int up_ida(abs(ab_->id())/2-1);
-	int up_idb(abs(bb_->id())/2-1);
-	Kij  = sqrt(std::norm( MEPP2VV::CKM(up_ida,0)*MEPP2VV::CKM(up_idb,0)
-			     + MEPP2VV::CKM(up_ida,1)*MEPP2VV::CKM(up_idb,1)
-			     + MEPP2VV::CKM(up_ida,2)*MEPP2VV::CKM(up_idb,2)));
-      }
-      else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
-	int dn_ida((abs(ab_->id())-1)/2);
-	int dn_idb((abs(bb_->id())-1)/2);
-	Kij  = sqrt(std::norm( MEPP2VV::CKM(0,dn_ida)*MEPP2VV::CKM(0,dn_idb)
-			     + MEPP2VV::CKM(1,dn_ida)*MEPP2VV::CKM(1,dn_idb)
-			     + MEPP2VV::CKM(2,dn_ida)*MEPP2VV::CKM(2,dn_idb)));
-      }
-      else {
-	cout << "MEPP2VVPowheg:" << endl;
-	cout << "WW needs 2 down-type / 2 up-type!" << endl;
-      }
+      cout << "MEPP2VVPowheg:" << endl;
+      cout << "WW needs 2 down-type / 2 up-type!" << endl;
     }
   }
   // ZZ 
@@ -393,53 +606,63 @@ double MEPP2VVPowheg::NLOweight() const {
 
   Fij2_ = sqr(gW_/2./sqrt(2.)*Kij);
 
-  // Get the leading order matrix element
+  // Get the leading order matrix element (this is necessary!)
   M_Born_      = M_Born_WZ(B_);
-  // Get the regular part of the virtual correction
-  M_V_regular_ = M_V_regular(S_);
-  // Get the q + qbar real emission matrix element
-  t_u_M_R_qqb_ = t_u_M_R_qqb(H_);
+  //  // Get the regular part of the virtual correction (only needed for sanityCheck()!)
+  //  M_V_regular_ = M_V_regular(S_);
+  //  // Get the q + qbar real emission matrix element (only needed for sanityCheck()!)
+  //  t_u_M_R_qqb_ = t_u_M_R_qqb(H_);
 
   // Calculate the integrand
   double wgt(0.);
+  double wqqb(0.);
+  double wgqb(0.);
+  double wqg(0.);
+  double wqqbvirt(0.);
+  double wqqbcollin(0.);
+  double wqqbreal(0.);
+  double wqgcollin(0.);
+  double wqgreal(0.);
+  double wgqbcollin(0.);
+  double wgqbreal(0.);
 
-  // q qb  contribution
-  a_nlo=ab_;
-  b_nlo=bb_;
-
-  double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)/lo_me2_;
-  double wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
-                               + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_) );
-  double wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
-  double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
-  // q g   contribution
-  a_nlo=ab_;
-  b_nlo=gluon;
-  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
-  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
-  double wqg        = wqgreal + wqgcollin;
-  // g qb  contribution
-  a_nlo=gluon;
-  b_nlo=bb_;
-  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
-  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
-  double wgqb       = wgqbreal+wgqbcollin;
+  if(channels_==0||channels_==1) {
+    // q+qb
+    wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)/lo_me2_;
+    wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(quark_,antiquark_,Cp_) 
+			  + Ctilde_Ltilde_qq_on_x(quark_,antiquark_,Cm_) );
+    wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(quark_,antiquark_);
+    wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
+  }
+  if(channels_==0||channels_==2) {
+    // q+g
+    wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(quark_,gluon,Cm_);
+    wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(quark_,gluon);
+    wqg        = wqgreal + wqgcollin;
+    // g+qb
+    wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(gluon,antiquark_,Cp_);
+    wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(gluon,antiquark_);
+    wgqb       = wgqbreal+wgqbcollin;
+  }
   // total contribution
-  wgt               = 1.+(wqqb+wgqb+wqg);
+  wgt = 1.+(wqqb+wgqb+wqg);
+  // If restricting to qg, gqb channels then subtract the LO contribution:
+  if(channels_==2) wgt -= 1.;
 
-  // Debugging output:
-  if(sanityCheck()) {
-    //  sanityCheck();
-    cout << "MEPP2VV::mixingInWW() " << MEPP2VV::mixingInWW() << endl;
+  if(isnan(wgt)||isinf(wgt)) {
+    cout << "MEPP2VVPowheg:: NLO weight " 
+	 << "is bad: wgt = " << wgt << endl;
+    cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
     cout << ab_->PDGName() << ", " 
 	 << bb_->PDGName() << ", " 
-         << mePartonData()[2]->PDGName() << ", " 
+	 << mePartonData()[2]->PDGName() << ", " 
 	 << mePartonData()[3]->PDGName() << endl; 
     cout << "lo_me2_ - M_Born_ (rel) = " 
 	 <<  lo_me2_-M_Born_                << "  (" 
 	 << (lo_me2_-M_Born_)/M_Born_       << ")\n";
     cout << "lo_me2_, M_Born_    " << lo_me2_ << ", " << M_Born_    << endl;
-    cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
+    cout << "xr  = " << H_.xr()  << "   1-xr = " << 1.-H_.xr() << "   y = " << H_.y() << endl;
+    cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
     cout << "sb+tb+ub = " 
 	 << B_.sb()/GeV2 << " + " 
@@ -458,75 +681,73 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "wgqbreal   " << wgqbreal   << endl;
     cout << "wgqb       " << wgqb       << endl;
     cout << "wgt        " << wgt        << endl;
-  }
-
-  if(isnan(wgt)||isinf(wgt)) 
     throw Exception() << "MEPP2VVPowheg:: NLO weight "
 		      << "is bad: " << wgt 
 		      << Exception::eventerror;
-
+  }
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
 double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, 
-			      real2to3Kinematics Kinematics) const {
+			      realVVKinematics Kinematics) const {
   if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
     cout << "MEPP2VVPowheg::Lhat_ab: Error," 
          << "particle a = " << a->PDGName() << ", "
          << "particle b = " << b->PDGName() << endl;
   double nlo_lumi(-999.);
-  double xp(Kinematics.xpr()),xm(Kinematics.xmr());
-  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp)/xp)
-           * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm)/xm);
+  double x1(Kinematics.x1r()),x2(Kinematics.x2r());
+  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,mu_F2(),x1)/x1)
+           * (hadron_B_->pdf()->xfx(hadron_B_,b,mu_F2(),x2)/x2);
   return nlo_lumi / lo_lumi_;
 }
 
-double MEPP2VVPowheg::Vtilde_universal(real2to3Kinematics S) const {
+double MEPP2VVPowheg::Vtilde_universal(realVVKinematics S) const {
   double xbar_y = S.xbar();
   double y = S.y();
-  double etapb(S.bornVariables().etapb());
-  double etamb(S.bornVariables().etamb());
+  double eta1b(S.bornVariables().eta1b());
+  double eta2b(S.bornVariables().eta2b());
   Energy2 sb(S.s2r());
   return  alphaS_/2./pi*CF_ 
-        * (   log(sb/sqr(mu_F()))
-	    * (3. + 4.*log(etapb)+4.*log(etamb))
-	    + 8.*sqr(log(etapb)) +8.*sqr(log(etamb))
+        * (   log(sb/mu_F2())
+	    * (3. + 4.*log(eta1b)+4.*log(eta2b))
+	    + 8.*sqr(log(eta1b)) +8.*sqr(log(eta2b))
 	    - 2.*sqr(pi)/3.
 	  )
         + alphaS_/2./pi*CF_ 
-        * ( 8./(1.+y)*log(sqrt(1.-xbar_y)/etamb)
-     	  + 8./(1.-y)*log(sqrt(1.-xbar_y)/etapb)
+        * ( 8./(1.+y)*log(sqrt(1.-xbar_y)/eta2b)
+     	  + 8./(1.-y)*log(sqrt(1.-xbar_y)/eta1b)
           );
 }
 
 double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b, 
-					    real2to3Kinematics C) const {
+					    realVVKinematics C) const {
   if(C.y()!= 1.&&C.y()!=-1.) 
     cout << "\nCtilde_qq::y value not allowed.";
-  if(C.y()== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+  if(C.y()== 1.&&!(abs(a->id())>0&&abs(a->id())<7)) 
     cout << "\nCtilde_qq::for Cqq^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(C.y()==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+  if(C.y()==-1.&&!(abs(b->id())>0&&abs(b->id())<7))
     cout << "\nCtilde_qq::for Cqq^minus b must be a quark! id = " 
 	 << b->id() << "\n";
   double xt = C.xt();
   double x  = C.xr();
-  double etab = C.y() == 1. ? C.bornVariables().etapb() 
-                            : C.bornVariables().etamb() ;
+  double etab = C.y() == 1. ? C.bornVariables().eta1b() 
+                            : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
-  return ( ( (1./(1.-xt))*log(sb/sqr(mu_F())/x)+4.*log(etab)/(1.-xt)
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  return ( ( (1./(1.-xt))*log(sb/mu_F2()/x)+4.*log(etab)/(1.-xt)
        	   + 2.*log(1.-xt)/(1.-xt)
            )*CF_*(1.+sqr(x)) 
 	 + sqr(etab)*CF_*(1.-x)
 	 )*Lhat_ab(a,b,C) / x
-       - ( ( (1./(1.-xt))*log(sb/sqr(mu_F())  )+4.*log(etab)/(1.-xt)
+       - ( ( (1./(1.-xt))*log(sb/mu_F2()  )+4.*log(etab)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
 	   )*CF_*2. 
-	 );
+	 )*Lhat_ab(a,b,S_);
 }
 
 double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
-					    real2to3Kinematics C) const {
+					    realVVKinematics C) const {
   if(C.y()!= 1.&&C.y()!=-1.) 
     cout << "\nCtilde_gq::y value not allowed.";
   if(C.y()== 1.&&a->id()!=21)
@@ -537,10 +758,10 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
 	 << b->id() << "\n";
   double xt = C.xt();
   double x  = C.xr();
-  double etab = C.y() == 1. ? C.bornVariables().etapb() 
-                            : C.bornVariables().etamb() ;
+  double etab = C.y() == 1. ? C.bornVariables().eta1b() 
+                            : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
-  return ( ( (1./(1.-xt))*log(sb/sqr(mu_F())/x)+4.*log(etab)/(1.-xt)
+  return ( ( (1./(1.-xt))*log(sb/mu_F2()/x)+4.*log(etab)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
 	   )*(1.-x)*TR_*(sqr(x)+sqr(1.-x))
 	 + sqr(etab)*TR_*2.*x*(1.-x)
@@ -555,26 +776,49 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
-  Energy2 s2(H_.s2r());
+  Energy2 sCp(Cp_.sr());
+  Energy2 sCm(Cm_.sr());
 
-  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
-  Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-			*CF_*(1.+sqr(Cp_.xr()))*M_Born_);
-  Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-			*CF_*(1.+sqr(Cm_.xr()))*M_Born_);
+  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_ ));
+  Energy2 t_u_M_R_qqb_Cp(t_u_M_R_qqb(Cp_));
+  Energy2 t_u_M_R_qqb_Cm(t_u_M_R_qqb(Cm_));
 
-  return 
-   ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCp_)              )/s2
+//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb_hel_amp(H_));
+//   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
+// 			*CF_*(1.+sqr(Cp_.xr()))*lo_me2_);
+//   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
+// 			*CF_*(1.+sqr(Cm_.xr()))*lo_me2_);
 
-     )*2./(1.-y)/(1.-xt)
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cm  ;  config = -1; }
 
-   + ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCm_)              )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
@@ -585,25 +829,49 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
-  Energy2 s2(H_.s2r());
+  Energy2 sCp(Cp_.sr());
+  Energy2 sCm(Cm_.sr());
 
-  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
-  Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_);
+  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_ ));
+  Energy2 t_u_M_R_gqb_Cp(t_u_M_R_gqb(Cp_));
   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
 
-  return 
-   ( ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_) - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCp_)              )/s2
+//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb_hel_amp(H_));
+//   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
+// 			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*lo_me2_);
+//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
+// //   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb_hel_amp(Cm_));
 
-     )*2./(1.-y)/(1.-xt)
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cm  ;  config = -1; }
 
-   + ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_) - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCm_)              )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
@@ -614,25 +882,49 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
-  Energy2 s2(H_.s2r());
+  Energy2 sCp(Cp_.sr());
+  Energy2 sCm(Cm_.sr());
 
-  Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
+  Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_ ));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
-  Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_);
+  Energy2 t_u_M_R_qg_Cm(t_u_M_R_qg(Cm_));
 
-  return 
-   ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCp_)                )/s2
+//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg_hel_amp(H_));
+//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
+// //   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg_hel_amp(Cp_));
+//   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
+// 		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*lo_me2_);
 
-     )*2./(1.-y)/(1.-xt)
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cm  ;  config = -1; }
 
-   + ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCm_)                )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 /***************************************************************************/
@@ -661,7 +953,7 @@ Energy4 H1 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 /***************************************************************************/
 // M_V_Regular is the regular part of the one-loop matrix element 
 // exactly as defined in Eqs. B.1 and B.2 of of NPB 383(1992)3-44.
-double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -680,9 +972,9 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(guL-guR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -696,9 +988,9 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(gdL-gdR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -724,8 +1016,8 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1144,7 +1436,6 @@ Energy2 Fu1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
 /***************************************************************************/
 Energy4 H1  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
     Energy2 sig(mZ2+mW2);
-    Energy2 del(mZ2-mW2);
     Energy4 Val(0.*GeV2*GeV2);
     Val  =   8.*t*t+8.*t*(s-sig)+s*s+6.*s*sig+mZ2*mZ2+10.*mW2*mZ2+mW2*mW2
 	   - sqr(s-sig)*(t*u+2.*s*sig)/mW2/mZ2;
@@ -1177,7 +1468,7 @@ Energy6 t_u_RZ(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
 // t_u_M_R_qqb is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -1190,8 +1481,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   double eZ2(eZ2_);
@@ -1204,9 +1493,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1220,9 +1509,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1248,8 +1537,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1709,7 +1998,6 @@ Energy6 t_u_RZs(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
 Energy6 t_u_RZa(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
 		Energy2 s2,Energy2 mW2,Energy2 mZ2) {
   Energy6 Val(0.*GeV2*GeV2*GeV2);
-  Energy2 sig(mZ2+mW2);
 
   Val += - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
          - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
@@ -1762,11 +2050,12 @@ Energy6 t_u_RZ(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
 
   return Val;
 }
+
 /***************************************************************************/
 // t_u_M_R_qg is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qg(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -1793,9 +2082,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1809,9 +2098,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1837,8 +2126,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1873,7 +2162,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
 // t_u_M_R_gqb is the real emission g + qb -> n + q matrix element 
 // exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -1900,9 +2189,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1916,9 +2205,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1944,8 +2233,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1992,8 +2281,8 @@ Energy4 H0 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 
 /***************************************************************************/
 // M_Born_WZ is the Born matrix element exactly as defined in Eqs. 3.3-3.14
-// of of NPB 383(1992)3-44.
-double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
+// of of NPB 383(1992)3-44 (with a spin*colour averaging factor 1./4./NC_/NC_). 
+double MEPP2VVPowheg::M_Born_WZ(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
@@ -2011,9 +2300,9 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(guL-guR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -2027,9 +2316,9 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(gdL-gdR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -2055,8 +2344,8 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -2139,9 +2428,9 @@ bool MEPP2VVPowheg::sanityCheck() const {
   // WZ->ZZ transformation applied (M_Born_).
 //   if(fabs((lo_me2_ - M_Born_)/M_Born_)>1.e-2) {
 //     alarm=true;
-//     cout << "lo_me2_ - M_Born_ (rel) = " 
+//     cout << "lo_me2_ - M_Born_ (%) = " 
 // 	 <<  lo_me2_ - M_Born_          << "  (" 
-// 	 << (lo_me2_ - M_Born_)/M_Born_ << ")\n";
+// 	 << (lo_me2_ - M_Born_)/M_Born_*100. << ")\n";
 //   }
 
   // Check that the transformation from NPB 383 (1992) 3-44 WZ 
@@ -2302,11 +2591,10 @@ bool MEPP2VVPowheg::sanityCheck() const {
 /***************************************************************************/
 // M_Born_ZZ is the Born matrix element exactly as defined in Eqs. 2.18-2.19
 // of of NPB 357(1991)409-438.
-double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
+double MEPP2VVPowheg::M_Born_ZZ(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
-  Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   
@@ -2318,7 +2606,7 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
   
   return 1./NC_*sqr(gZ*2.)*(t/u+u/t+4.*mZ2*s/t/u-mZ2*mZ2*(1./t/t+1./u/u));
 
@@ -2327,11 +2615,10 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
 /***************************************************************************/
 // M_V_regular_ZZ is the one-loop ZZ matrix element exactly as defined in 
 // Eqs. B.1 & B.2 of NPB 357(1991)409-438.
-double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_ZZ(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
-  Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
   double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
   double cosThetaW(sqrt(1.-sin2ThetaW_));
@@ -2344,7 +2631,7 @@ double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
   
   double M_V_reg(0.);
   M_V_reg  = 2.*s*sqr(gZ*2.)*4.*pi*alphaS_*CF_/NC_/sqr(4.*pi)/2.
@@ -2423,10 +2710,8 @@ double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
 // t_u_M_R_qqb_ZZ is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 357(1991)409-438, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(realVVKinematics R) const {
   // First the Born variables:
-  Energy2 s2(R.s2r());
-  Energy2 mW2(R.k12r());
   Energy2 mZ2(R.k22r());
   // Then the rest:
   Energy2 s(R.sr());
@@ -2436,8 +2721,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   
@@ -2449,7 +2732,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
 
   Energy2 t_u_qqb(0.*GeV2);
   t_u_qqb  = (2.*s)*sqr(gZ*2.)*4.*pi*alphaS_*CF_/NC_/2.
@@ -2566,14 +2849,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
 /***************************************************************************/
 // M_B_WW is the Born matrix element exactly as defined in Eqs. 3.2-3.8
 // of of NPB 410(1993)280-384.
-double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
+double MEPP2VVPowheg::M_Born_WW(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
   Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
-  Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
     
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3.    : -1./3. ; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2587,17 +2869,11 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
 		      	     +sqr(   eZ_*(giL-giR)/e2*s/(s-mW2/cos2ThetaW)))
                   );
 
-  if(!MEPP2VV::mixingInWW()&&ab_->id()!=-bb_->id()) {
-    return 0.;
-  }
-
-  if(MEPP2VV::mixingInWW()) {
-    ctt_i *= 8.*Fij2_/gW_/gW_;
-    cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-    if(ab_->id()!=-bb_->id()) {
-      cts_i = 0./GeV2;
-      css_i = 0./GeV2/GeV2;
-    }
+  ctt_i *= 8.*Fij2_/gW_/gW_;
+  cts_i *= sqrt(8.*Fij2_/gW_/gW_);
+  if(quark_->id()!=-antiquark_->id()) {
+    cts_i = 0./GeV2;
+    css_i = 0./GeV2/GeV2;
   }
 
   if(!up_type) swap(t,u);
@@ -2622,15 +2898,14 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
 // exactly as defined in Eqs. C.1 - C.7 of of NPB 410(1993)280-324 ***
 // modulo a factor 1/(2s) ***, which is a flux factor that those authors 
 // absorb in the matrix element. 
-double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_WW(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
   Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
-  Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
   double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
     
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3. : -1./3.; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2644,17 +2919,11 @@ double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
 		      	     +sqr(   eZ_*(giL-giR)/e2*s/(s-mW2/cos2ThetaW)))
                   );
 
-  if(!MEPP2VV::mixingInWW()&&ab_->id()!=-bb_->id()) {
-    return 0.;
-  }
-
-  if(MEPP2VV::mixingInWW()) {
-    ctt_i *= 8.*Fij2_/gW_/gW_;
-    cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-    if(ab_->id()!=-bb_->id()) {
-      cts_i = 0./GeV2;
-      css_i = 0./GeV2/GeV2;
-    }
+  ctt_i *= 8.*Fij2_/gW_/gW_;
+  cts_i *= sqrt(8.*Fij2_/gW_/gW_);
+  if(quark_->id()!=-antiquark_->id()) {
+    cts_i = 0./GeV2;
+    css_i = 0./GeV2/GeV2;
   }
 
   if(!up_type) swap(t,u);
@@ -2719,11 +2988,10 @@ double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
 // t_u_M_R_qqb is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
-  Energy2 mZ2(R.k22r());
   // Then the rest:
   Energy2 s(R.sr());
   Energy2 tk(R.tkr());
@@ -2732,10 +3000,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
   Energy2 q2(R.q2r());
   Energy2 q1h(R.q1hatr());
   Energy2 q2h(R.q2hatr());
-  Energy2 w1(R.w1r());
-  Energy2 w2(R.w2r());
 
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3. : -1./3.; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2749,19 +3015,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
 		      	       +sqr(   eZ_*(giL-giR)/e2*s2/(s2-mW2/cos2ThetaW)))
                   );
 
-  if(!MEPP2VV::mixingInWW()&&ab_->id()!=-bb_->id()) {
-    return 0.*GeV2;
+  ctt_i *= 8.*Fij2_/gW_/gW_;
+  cts_i *= sqrt(8.*Fij2_/gW_/gW_);
+  if(quark_->id()!=-antiquark_->id()) {
+    cts_i = 0./GeV2;
+    css_i = 0./GeV2/GeV2;
   }
-
-  if(MEPP2VV::mixingInWW()) {
-    ctt_i *= 8.*Fij2_/gW_/gW_;
-    cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-    if(ab_->id()!=-bb_->id()) {
-      cts_i = 0./GeV2;
-      css_i = 0./GeV2/GeV2;
-    }
-  }
-
+  
   if(!up_type) { 
     swap(q1,q1h);
     swap(q2,q2h);
@@ -2856,3 +3116,2266 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
 
 }
 
+/***************************************************************************/
+// The game here is to get this helicity amplitude squared to return all the
+// same values as t_u_M_R_qqb above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
+  using namespace ThePEG::Helicity;
+
+//   qqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+// 					      PDT::Spin1,PDT::Spin1,
+// 					      PDT::Spin1));
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(quark_);
+  tcPDPtr p2data(antiquark_);
+  tcPDPtr k1data(mePartonData()[2]);
+  tcPDPtr k2data(mePartonData()[3]);
+  tcPDPtr kdata(getParticleData(ParticleID::g));
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorWaveFunction qSpinor(R.p1r(),p1data,incoming);
+  SpinorBarWaveFunction qbSpinor(R.p2r(),p2data,incoming);
+  vector<SpinorWaveFunction> q;
+  vector<SpinorBarWaveFunction> qb;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qSpinor.reset(ix);
+    qbSpinor.reset(ix);
+    q.push_back(qSpinor);
+    qb.push_back(qbSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.kr(),kdata,outgoing);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,p1data,q[p1hel],g[khel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,p2data,qb[p2hel],g[khel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel=p2hel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p1hel==p2hel)&&helicityConservation_) {
+// 	      if(getMatrix) {
+// 		if(khel==0)
+//		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
+// 		else
+//		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
+// 	      }
+	      continue;
+	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_t;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_t,q[p1hel],v1[k1hel]);
+	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(scale(),5,intermediate_t,qb[p2hel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 t-channel diagrams
+	      // q+qb->g+v1+v2, q+qb->v1+g+v2, q+qb->v1+v2+g
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
+		diagrams.push_back(ffv1->evaluate(scale(),p1_k,p2_v2,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v1,p2_v2,g[khel]));
+		diagrams.push_back(ffv2->evaluate(scale(),p1_v1,p2_k,v2[k2hel]));
+	      }
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_t,q[p1hel],v2[k2hel]);
+	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(scale(),5,intermediate_t,qb[p2hel],v1[k1hel]);
+	      // q+qb->g+v2+v1, q+qb->v2+g+v1, q+qb->v2+v1+g
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
+		diagrams.push_back(ffv2->evaluate(scale(),p1_k,p2_v1,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v2,p2_v1,g[khel]));
+		diagrams.push_back(ffv1->evaluate(scale(),p1_v2,p2_k,v1[k1hel]));
+	      }
+	    }
+	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
+	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
+	    // means the propagator does not contain a width factor (which is 
+	    // good re. gauge invariance). 
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(scale(),3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(scale(),p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(ffv1->evaluate(scale(),q[p1hel],p2_k,k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==-p2data->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),q[p1hel],p2_k,k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),q[p1hel],p2_k,k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+//  	    if(getMatrix) {
+// 	      if(khel==0)
+// 		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
+// 	      else
+// 		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
+// 	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//   if(getMatrix) {
+//     for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+//       for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+// 	  for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+// 	    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+// 	      qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
+// 	    }
+// 	  }
+//       }
+//     }
+//   }
+
+  // Spin and colour averaging factors = 1/4 * CF * 1/3 = 1/9
+  sum_hel_amps_sqr /= 9.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+/***************************************************************************/
+// The game here is to get this helicity amplitude squared to return all the
+// same values as t_u_M_R_qg above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
+  using namespace ThePEG::Helicity;
+
+//   qg_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+// 					     PDT::Spin1,PDT::Spin1,
+// 					     PDT::Spin1Half));
+  
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(quark_);
+  tcPDPtr p2data(getParticleData(ParticleID::g));
+  tcPDPtr k1data(mePartonData()[2]);
+  tcPDPtr k2data(mePartonData()[3]);
+  tcPDPtr kdata (antiquark_->CC());
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorWaveFunction qinSpinor(R.p1r(),p1data,incoming);
+  SpinorBarWaveFunction qoutSpinor(R.kr(),kdata,outgoing);
+  vector<SpinorWaveFunction> qin;
+  vector<SpinorBarWaveFunction> qout;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qinSpinor.reset(ix);
+    qoutSpinor.reset(ix);
+    qin.push_back(qinSpinor);
+    qout.push_back(qoutSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.p2r(),p2data,incoming);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_p2 = ffg->evaluate(mu_UV2(),5,p1data,qin[p1hel],g[p2hel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qout[khel],g[p2hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p1hel!=khel)&&helicityConservation_) {
+// 	      if(getMatrix) {
+// 		if(p2hel==0)
+// 		  qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
+// 		else
+// 		  qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
+// 	      }
+	      continue;
+	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_q;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? antiquark_ : tc[ix];
+	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_q,qin[p1hel],v1[k1hel]);
+	      SpinorBarWaveFunction k_v2  = ffv2->evaluate(scale(),5,intermediate_q,qout[khel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 abelian diagrams
+	      // q+g->v1+v2+q with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
+		diagrams.push_back(ffv2->evaluate(scale(),p1_v1,p2_k,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v1,k_v2,g[p2hel]));
+		diagrams.push_back(ffv1->evaluate(scale(),p1_p2,k_v2,v1[k1hel]));
+	      }
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_q,qin[p1hel],v2[k2hel]);
+              SpinorBarWaveFunction k_v1  = ffv1->evaluate(scale(),5,intermediate_q,qout[khel],v1[k1hel]);
+	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
+		diagrams.push_back(ffv1->evaluate(scale(),p1_v2,p2_k,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v2,k_v1,g[p2hel]));
+		diagrams.push_back(ffv2->evaluate(scale(),p1_p2,k_v1,v2[k2hel]));
+	      }
+	    }
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(scale(),3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(scale(),p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(ffv1->evaluate(scale(),qin[p1hel],p2_k,k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==kdata->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),qin[p1hel],p2_k,k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),qin[p1hel],p2_k,k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+//   	    if(getMatrix) {
+//  	      if(p2hel==0)
+//  		qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = hel_amp;
+//  	      else
+//  		qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = hel_amp;
+//  	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+  
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//    if(getMatrix) {
+//      for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+//        for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+//  	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+//  	  for(unsigned int khel=0;khel<2;++khel) {
+//  	    qg_hel_amps_(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	  }
+//  	}
+//        }
+//      }
+//    }
+
+  // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
+  sum_hel_amps_sqr /= 24.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+/***************************************************************************/
+// The game here is to get this helicity amplitude squared to return all the
+// same values as t_u_M_R_gqb above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
+  using namespace ThePEG::Helicity;
+
+//   gqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
+// 					      PDT::Spin1,PDT::Spin1,
+// 					      PDT::Spin1Half));
+  
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(getParticleData(ParticleID::g));
+  tcPDPtr p2data(antiquark_);
+  tcPDPtr k1data(mePartonData()[2]);
+  tcPDPtr k2data(mePartonData()[3]);
+  tcPDPtr kdata (quark_->CC());
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorBarWaveFunction qbinSpinor(R.p2r(),p2data,incoming);
+  SpinorWaveFunction qboutSpinor(R.kr(),kdata,outgoing);
+  vector<SpinorBarWaveFunction> qbin;
+  vector<SpinorWaveFunction> qbout;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qbinSpinor.reset(ix);
+    qboutSpinor.reset(ix);
+    qbin.push_back(qbinSpinor);
+    qbout.push_back(qboutSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.p1r(),p1data,incoming);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p2data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p2data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorBarWaveFunction p1_p2 = ffg->evaluate(mu_UV2(),5,p2data,qbin[p2hel],g[p1hel]);
+	SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qbout[khel],g[p1hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p2hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+ 	    if((p2hel!=khel)&&helicityConservation_) {
+//  	      if(getMatrix) {
+//  		if(p1hel==0)
+//  		  gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  		else
+//  		  gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	      }
+ 	      continue;
+ 	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_q;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? quark_ : tc[ix];
+	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(scale(),5,intermediate_q,qbin[p2hel],v1[k1hel]);
+	      SpinorWaveFunction    k_v2  = ffv2->evaluate(scale(),5,intermediate_q,qbout[khel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 abelian diagrams q+g->v1+v2+q 
+              // with 2 t-channel propagators, 1 s- and 1 t-channel 
+              // and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==0))) {
+		diagrams.push_back(ffv2->evaluate(scale(),p1_k,p2_v1,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),k_v2,p2_v1,g[p1hel]));
+		diagrams.push_back(ffv1->evaluate(scale(),k_v2,p1_p2,v1[k1hel]));
+	      }
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(scale(),5,intermediate_q,qbin[p2hel],v2[k2hel]);
+              SpinorWaveFunction    k_v1  = ffv1->evaluate(scale(),5,intermediate_q,qbout[khel],v1[k1hel]);
+	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==1))) {
+		diagrams.push_back(ffv1->evaluate(scale(),p1_k,p2_v2,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),k_v1,p2_v2,g[p1hel]));
+		diagrams.push_back(ffv2->evaluate(scale(),k_v1,p1_p2,v2[k2hel]));
+	      }
+	    }
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(scale(),3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(scale(),qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(ffv1->evaluate(scale(),p1_k,qbin[p2hel],k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p2data->id()==kdata->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(scale(),p1_k,qbin[p2hel],k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(scale(),3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(scale(),p1_k,qbin[p2hel],k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+//   	    if(getMatrix) {
+//  	      if(p1hel==0)
+//  		gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = hel_amp;
+//  	      else
+//  		gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = hel_amp;
+//  	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+  
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//   if(getMatrix) {
+//     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+//       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+//  	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+//  	  for(unsigned int khel=0;khel<2;++khel) {
+//  	    gqb_hel_amps_(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	  }
+//  	}
+//       }
+//     }
+//   }
+
+  // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
+  sum_hel_amps_sqr /= 24.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+double MEPP2VVPowheg::lo_me() const {
+  using namespace ThePEG::Helicity;
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(quark_);
+  tcPDPtr p2data(antiquark_);
+  tcPDPtr k1data(mePartonData()[2]);
+  tcPDPtr k2data(mePartonData()[3]);
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data); // Should never actually occur.
+
+  SpinorWaveFunction qSpinor(B_.p1b(),p1data,incoming);
+  SpinorBarWaveFunction qbSpinor(B_.p2b(),p2data,incoming);
+  vector<SpinorWaveFunction> q;
+  vector<SpinorBarWaveFunction> qb;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qSpinor.reset(ix);
+    qbSpinor.reset(ix);
+    q.push_back(qSpinor);
+    qb.push_back(qbSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(B_.k1b(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(B_.k2b(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      if((p1hel==p2hel)&&helicityConservation_) continue;
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  vector<Complex> diagrams;
+	  // Get all t-channel diagram contributions
+	  tcPDPtr intermediate_t;
+	  for(unsigned int ix=0;ix<tc.size();ix++) {
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	    SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_t,q[p1hel],v1[k1hel]);
+	    // First calculate all the off-shell fermion currents
+	    // Now calculate the 6 t-channel diagrams
+	    // q+qb->v1+v2
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1)))
+	      diagrams.push_back(ffv2->evaluate(scale(),p1_v1,qb[p2hel],v2[k2hel]));
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	    SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_t,q[p1hel],v2[k2hel]);
+	    // q+qb->v2+v1
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0)))
+	      diagrams.push_back(ffv1->evaluate(scale(),p1_v2,qb[p2hel],v1[k1hel]));
+	  }
+	  // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	  if(abs(k1data->id())==24&&k2data->id()==23) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2 = 
+	      WWWvertex_->evaluate(scale(),3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	    // q+qb->v1*->v1+v2
+	    diagrams.push_back(ffv1->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // If W+W- calculate the four V+jet-like s-channel diagrams
+	  if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==-p2data->id())) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2;
+	    // q+qb->Z0*->v1+v2
+	    tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	    k1_k2 = WWWvertex_->evaluate(scale(),3,Z0,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFZvertex_->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	    // q+qb->gamma*->v1+v2
+	    tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	    k1_k2 = WWWvertex_->evaluate(scale(),3,gamma,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFPvertex_->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // Add up all diagrams to get the total amplitude:
+	  Complex hel_amp(0.);
+	  for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	  // If we need to fill the production ME we do it here:
+// 	  if(getMatrix) lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = hel_amp;
+	  sum_hel_amps_sqr += norm(hel_amp);
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * 1/3 = 1/12
+  sum_hel_amps_sqr /= 12.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr;
+}
+
+HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
+					   vector<ShowerInteraction::Type> inter) {
+  // check QCD emission switched on
+  bool QCD=false;
+  for(unsigned int ix=0;ix<inter.size();++ix) 
+    QCD |= inter[ix]==ShowerInteraction::QCD;
+  if(!QCD) return HardTreePtr();
+  // Now we want to set these data vectors according to the particles we've
+  // received from the current 2->2 hard collision:
+  vector<ShowerProgenitorPtr> particlesToShower;
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
+	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit )
+    particlesToShower.push_back(cit->first);
+
+  qProgenitor_  = particlesToShower[0];
+  qbProgenitor_ = particlesToShower[1];
+  showerQuark_        = particlesToShower[0]->progenitor();
+  showerAntiquark_    = particlesToShower[1]->progenitor();
+  qHadron_      = particlesToShower[0]->beam();
+  qbHadron_     = particlesToShower[1]->beam();
+
+  if(showerQuark_->id()<0) {
+    swap(qProgenitor_,qbProgenitor_);
+    swap(showerQuark_,showerAntiquark_);
+    swap(qHadron_,qbHadron_);
+  }
+  
+  // In _our_ calculation we basically define the +z axis as being given 
+  // by the direction of the incoming quark for q+qb & q+g processes and
+  // the incoming gluon for g+qbar processes. So now we might need to flip
+  // the beams, bjorken x values, colliding partons accordingly:
+  flipped_ = showerQuark_->momentum().z()<ZERO ? true : false;
+
+  assert(tree->outgoingLines().size()==2);
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit )
+    particlesToShower.push_back(cit->first);
+  
+  V1_           = particlesToShower[2]->progenitor();
+  V2_           = particlesToShower[3]->progenitor();
+  gluon_        = getParticleData(ParticleID::g)->produceParticle();
+  
+  // Abort the run if V1_ and V2_ are not just pointers to different gauge bosons
+  if(!V1_||!V2_) 
+    throw Exception() 
+      << "MEPP2VVPowheg::generateHardest()\n"
+      << "one or both of the gauge boson pointers is null." << Exception::abortnow;
+  if(!(abs(V1_->id())==24||V1_->id()==23)||!(abs(V2_->id())==24||V2_->id()==23))
+    throw Exception() 
+      << "MEPP2VVPowheg::generateHardest()\nmisidentified gauge bosons" 
+      << "V1_ = " << V1_->PDGName() << "\n"
+      << "V2_ = " << V2_->PDGName() << "\n"
+      << Exception::abortnow;
+  
+  // Order the gauge bosons in the same way as in the NLO calculation
+  // (the same way as in the NLO matrix element):
+  // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
+  if(V1_->id()==-24&&V2_->id()== 24) swap(V1_,V2_); 
+  // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 72+77 [nproc])
+  if(V1_->id()== 23&&abs(V2_->id())== 24) swap(V1_,V2_); 
+  // *** N.B. ***
+  // We should not have to do a swap in the ZZ case, even if the different
+  // (off-shell) masses of the Z's are taken into account by generating
+  // the Born variables using the WZ LO/NLO matrix element(s), because
+  // those transformed matrix elements are, according to mathematica, 
+  // symmetric in the momenta (and therefore also the masses) of the 2 Z's.
+
+  // If the vector bosons have decayed already then we may want to
+  // to get the children_ (and any associated photons) to correct
+  // spin correlations:
+  StepPtr theSubProcess = generator()->eventHandler()->currentStep();
+  tPVector outgoing = theSubProcess->getFinalState();
+  children_.clear();
+  photons_.clear();
+  if(outgoing.size()>=4) {
+    for(unsigned int ix=0;ix<outgoing.size();ix++) 
+      if(outgoing[ix]->parents()[0]&&
+	 (abs(outgoing[ix]->parents()[0]->id())==24||
+	  abs(outgoing[ix]->parents()[0]->id())==23)) {
+	if(outgoing[ix]->id()!=ParticleID::gamma)
+	  children_.push_back(outgoing[ix]);
+	else
+	  photons_.push_back(outgoing[ix]);
+      }
+    assert(children_.size()==4);
+    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
+      swap(children_[0],children_[2]);
+    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
+      swap(children_[0],children_[3]);
+    if(children_[0]->parents()[0]->id()!=V1_->id()) {
+      swap(children_[0],children_[2]);
+      swap(children_[1],children_[3]);
+    }
+    if(children_[0]->id()<0) swap(children_[0],children_[1]);
+    if(children_[2]->id()<0) swap(children_[2],children_[3]);
+    assert(children_[0]->parents()[0]==children_[1]->parents()[0]);
+    assert(children_[2]->parents()[0]==children_[3]->parents()[0]);
+  }
+
+  // Now we want to construct a bornVVKinematics object. The
+  // constructor for that needs all 4 momenta, q, qbar, V1_, V2_ 
+  // in that order, as well as the Bjorken xq and xqbar.
+
+  // Get the momenta first:
+  vector<Lorentz5Momentum> theBornMomenta;
+  theBornMomenta.push_back(showerQuark_->momentum());
+  theBornMomenta.push_back(showerAntiquark_->momentum());
+  theBornMomenta.push_back(V1_->momentum());
+  theBornMomenta.push_back(V2_->momentum());
+  // N.B. if the showerQuark_ travels in the -z direction the born kinematics object
+  // will detect this and rotate all particles by pi about the y axis!
+
+  // Leading order momentum fractions:
+  tcPPtr qHadron  = generator()->currentEvent()->primaryCollision()->incoming().first;
+  tcPPtr qbHadron = generator()->currentEvent()->primaryCollision()->incoming().second;
+  assert(qHadron->children().size()>0&&qbHadron->children().size()>0);
+  if(qHadron->children()[0]->id()<0) swap(qHadron,qbHadron);
+
+  // quark and antiquark momentum fractions respectively
+  double xa = showerQuark_    ->momentum().z()/qHadron ->momentum().z();
+  double xb = showerAntiquark_->momentum().z()/qbHadron->momentum().z();
+
+  // Create the object containing all 2->2 __kinematic__ information:
+  B_ = bornVVKinematics(theBornMomenta,xa,xb);
+
+  // lo_me_ is the colour & spin averaged n-body matrix element squared:
+  lo_me_ = lo_me(true); 
+
+  // Attempt to generate some radiative variables and their kinematics:
+  vector<Lorentz5Momentum> theRealMomenta;
+  channel_ = 999;
+  if(!getEvent(theRealMomenta,channel_)) return HardTreePtr();
+
+  // Set the maximum pT for subsequent emissions:
+  pT_ < min_pT_ ? qProgenitor_ ->maximumpT(min_pT_,ShowerInteraction::QCD) : 
+                  qProgenitor_ ->maximumpT(pT_    ,ShowerInteraction::QCD); 
+  pT_ < min_pT_ ? qbProgenitor_->maximumpT(min_pT_,ShowerInteraction::QCD) :
+                  qbProgenitor_->maximumpT(pT_    ,ShowerInteraction::QCD); 
+
+  // Determine whether the quark or antiquark emitted:
+  fermionNumberOfMother_=0;
+  if((channel_==0&&theRealMomenta[0].z()/theRealMomenta[4].z()>=ZERO)||
+      channel_==2) fermionNumberOfMother_ =  1;
+  else if((channel_==0&&theRealMomenta[0].z()/theRealMomenta[4].z()<ZERO)||
+	   channel_==1) fermionNumberOfMother_ = -1;
+  assert(fermionNumberOfMother_!=0);
+
+  // If the quark in the original tree was travelling in the -z direction
+  // then we need to unflip the event (flips are automatically carried out 
+  // when the original quark travels in the in -z direction when the 
+  // bornVVKinematics object is created):
+  if(flipped_) 
+    for(unsigned int ix=0;ix<theRealMomenta.size();ix++) 
+      theRealMomenta[ix].rotateY(-Constants::pi);
+
+  // Randomly rotate the event about the beam axis:
+  double randomPhi(UseRandom::rnd()*2.*Constants::pi);
+  for(unsigned int ix=0;ix<theRealMomenta.size();ix++) 
+    theRealMomenta[ix].rotateZ(randomPhi);
+
+  // Warn if momentum conservation is not obeyed:
+  Lorentz5Momentum inMinusOut(theRealMomenta[0]+theRealMomenta[1]
+                             -theRealMomenta[2]-theRealMomenta[3]
+                             -theRealMomenta[4]);
+  if(inMinusOut.t()>0.1*GeV||inMinusOut.x()>0.1*GeV||
+     inMinusOut.y()>0.1*GeV||inMinusOut.z()>0.1*GeV)
+    cout << "MEPP2VVPowheg::generateHardest\n"
+         << "Momentum imbalance in V1 V2 rest frame\n"
+         << "P_in minus P_out = " << inMinusOut/GeV << endl;
+
+  // From the radiative kinematics we now have to form ShowerParticle objects:
+  ShowerParticlePtr p1;
+  ShowerParticlePtr p2;
+  ShowerParticlePtr k1(new_ptr(ShowerParticle(V1_->dataPtr(),true )));
+  ShowerParticlePtr k2(new_ptr(ShowerParticle(V2_->dataPtr(),true )));
+  ShowerParticlePtr k ;
+  // q+qbar -> V1+V2+g
+  if(channel_==0) {
+    p1 = new_ptr(ShowerParticle(showerQuark_->dataPtr()           ,false));
+    p2 = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()       ,false));
+    k  = new_ptr(ShowerParticle(gluon_->dataPtr()           ,true ));
+  }
+  // q+g -> V1+V2+q
+  else if(channel_==1) {
+    p1 = new_ptr(ShowerParticle(showerQuark_->dataPtr()           ,false));
+    p2 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
+    k  = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()->CC() ,true ));
+  }
+  // g+qbar -> V1+V2+qbar
+  else {
+    p1 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
+    p2 = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()       ,false));
+    k  = new_ptr(ShowerParticle(showerQuark_->dataPtr()->CC()     ,true ));
+  }
+  // Set the momenta of the ShowerParticlePtr's:
+  p1->set5Momentum(theRealMomenta[0]);
+  p2->set5Momentum(theRealMomenta[1]);
+  k1->set5Momentum(theRealMomenta[2]);
+  k2->set5Momentum(theRealMomenta[3]);
+  k ->set5Momentum(theRealMomenta[4]);
+  // Then construct another set of ShowerPointers that will be
+  // useful in creating the hardTree, using this information:
+  ShowerParticlePtr mother;
+  ShowerParticlePtr spacelikeSon;
+  ShowerParticlePtr timelikeSon;
+  ShowerParticlePtr spectator;
+  if(fermionNumberOfMother_==1) {
+    mother       = new_ptr(ShowerParticle(showerQuark_->dataPtr()    ,false));
+    spacelikeSon = p1;
+    timelikeSon  = k;
+    spectator    = p2;
+  } else if(fermionNumberOfMother_==-1) {
+    mother       = new_ptr(ShowerParticle(showerAntiquark_->dataPtr(),false));
+    spacelikeSon = p2;
+    timelikeSon  = k;
+    spectator    = p1;
+  } else {
+    throw Exception() << "MEPP2VVPowheg::generateHardest()" 
+		      << "Failed to determine whether the q or qbar branched"
+		      <<  Exception::runerror;
+  }
+  Lorentz5Momentum motherMomentum(spacelikeSon->momentum()-timelikeSon->momentum());
+  motherMomentum.rescaleMass();
+  mother->set5Momentum(motherMomentum);
+  // Create HardBranchingPtrs for the particles
+  HardBranchingPtr spacelikeSonBranching =
+    new_ptr(HardBranching(spacelikeSon,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Incoming ));
+  HardBranchingPtr timelikeSonBranching =
+    new_ptr(HardBranching(timelikeSon ,SudakovPtr(),spacelikeSonBranching,HardBranching::Outgoing));
+  HardBranchingPtr spectatorBranching =
+    new_ptr(HardBranching(spectator   ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Incoming ));
+  HardBranchingPtr motherBranching =
+    new_ptr(HardBranching(mother      ,SudakovPtr(),spacelikeSonBranching,HardBranching::Incoming ));
+  HardBranchingPtr V1_Branching =
+    new_ptr(HardBranching(k1          ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Outgoing));
+  HardBranchingPtr V2_Branching =
+    new_ptr(HardBranching(k2          ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Outgoing));
+
+  // N.B. The DrellYanHardGenerator first adds the timelikeSonBranching as a child
+  // child of the spacelikeSonBranching before adding the motherBranching. We do
+  // it the other way round in accordance with PowhegEvolver::checkShowerMomentum.
+  spacelikeSonBranching->addChild(motherBranching);
+  spacelikeSonBranching->addChild(timelikeSonBranching);
+  motherBranching->colourPartner(spectatorBranching);
+  spectatorBranching->colourPartner(motherBranching);
+
+  vector<HardBranchingPtr> spacelikeBranchings,hardBranchings;
+  spacelikeBranchings.push_back(fermionNumberOfMother_ ==  1 ? 
+				spacelikeSonBranching : spectatorBranching);
+  spacelikeBranchings.push_back(fermionNumberOfMother_ == -1 ? 
+				spacelikeSonBranching : spectatorBranching);
+  hardBranchings.push_back(motherBranching);
+  hardBranchings.push_back(spectatorBranching);
+  hardBranchings.push_back(V1_Branching);
+  hardBranchings.push_back(V2_Branching);
+
+  // Recalculate the hard vertex for this event:
+  // For spin correlations, if an emission occurs go calculate the relevant 
+  // combination of amplitudes for the ProductionMatrixElement. 
+  if(realMESpinCorrelations_) {
+    // Here we reset the realVVKinematics n+1 momenta to be those
+    // of the lab frame in order to calculate the spin correlations.
+    // Note that these momenta are not used for anything else after
+    // this.
+    R_.p1r(theRealMomenta[0]);
+    R_.p2r(theRealMomenta[1]);
+    R_.k1r(theRealMomenta[2]);
+    R_.k2r(theRealMomenta[3]);
+    R_.kr (theRealMomenta[4]);
+    if(channel_==0) t_u_M_R_qqb_hel_amp(R_,true);
+    else if(channel_==1) t_u_M_R_qg_hel_amp (R_,true);
+    else if(channel_==2) t_u_M_R_gqb_hel_amp(R_,true);
+    recalculateVertex();
+  }
+  // Construct the HardTree object needed to perform the showers
+  HardTreePtr hardTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
+					 ShowerInteraction::QCD));
+  
+  if(hardTree->branchings().size()!=4) throw Exception() 
+         << "MEPP2VVPowheg::generateHardest()\n" 
+         << "The hardTree has " << hardTree->branchings().size() << "branchings\n"
+	 << hardTree << "\n" <<  Exception::runerror;
+  if((motherBranching->parent()!=spacelikeSonBranching)&&
+     spacelikeSonBranching->parent()!=HardBranchingPtr()&&
+     spectatorBranching->parent()!=HardBranchingPtr()) throw Exception() 
+         << "MEPP2VVPowheg::generateHardest()\n" 
+         << "The parent-child relationships are not valid.\n" 
+	 << "motherBranching->parent()       = " << motherBranching->parent()       << "\n"
+	 << "spacelikeSonBranching           = " << spacelikeSonBranching           << "\n"
+	 << "spectatorBranching->parent()    = " << spectatorBranching->parent()    << "\n"
+	 << "spacelikeSonBranching->parent() = " << spacelikeSonBranching->parent() << "\n"
+	 <<  Exception::runerror;
+
+  if(fermionNumberOfMother_== 1) {
+    hardTree->connect(showerQuark_    ,motherBranching   );
+    hardTree->connect(showerAntiquark_,spectatorBranching);
+    spacelikeSonBranching->beam(qProgenitor_ ->original()->parents()[0]);
+    motherBranching      ->beam(qProgenitor_ ->original()->parents()[0]);
+    spectatorBranching   ->beam(qbProgenitor_->original()->parents()[0]);
+  } else if(fermionNumberOfMother_==-1) {
+    hardTree->connect(showerAntiquark_,motherBranching   );
+    hardTree->connect(showerQuark_    ,spectatorBranching);
+    spacelikeSonBranching->beam(qbProgenitor_->original()->parents()[0]);
+    motherBranching      ->beam(qbProgenitor_->original()->parents()[0]);
+    spectatorBranching   ->beam(qProgenitor_ ->original()->parents()[0]);
+  }
+//   hardTree->connect(V1_ ,V1_Branching );
+//   hardTree->connect(V2_ ,V2_Branching );
+
+  // This if {...} else if {...} puts the mother and spectator on the same colour
+  // line. If we don't do this, then when reconstructFinalStateShower calls
+  // setInitialEvolutionScales it says it failed to set the colour partners, so
+  // it can't set the scale and it just forgets the emission / event. This seems
+  // like an unintrusive work-around until reconstructFinalStateShower is sorted.
+  ColinePtr bornColourLine=new_ptr(ColourLine());
+  if(fermionNumberOfMother_== 1) {
+    bornColourLine->addColoured(mother);
+    bornColourLine->addAntiColoured(spectator);
+  } else if(fermionNumberOfMother_==-1) {
+    bornColourLine->addAntiColoured(mother);
+    bornColourLine->addColoured(spectator);
+  }
+  // this is a pain but we need the boost, which we don't have yet here!!
+  vector<Lorentz5Momentum> pin(2);
+  vector<Lorentz5Momentum> pq (2);
+  vector<HardBranchingPtr>::iterator cit;
+  pin[0] = motherBranching   ->branchingParticle()->momentum();
+  pin[1] = spectatorBranching->branchingParticle()->momentum();
+  Energy etemp = motherBranching    ->beam()->momentum().z();
+  pq[0] = Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp));
+  etemp        = spectatorBranching->beam()->momentum().z();
+  pq[1] = Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp));
+  // decompose the momenta
+  double alpha[2],beta[2];
+  Energy2 p12=pq[0]*pq[1];
+  Lorentz5Momentum pt[2];
+  for(unsigned int ix=0;ix<2;++ix) {
+    alpha[ix] = pin[ix]*pq[1]/p12;
+    beta [ix] = pin[ix]*pq[0]/p12;
+    pt[ix]    = pin[ix]-alpha[ix]*pq[0]-beta[ix]*pq[1];
+  }
+  // parton level centre-of-mass
+  Lorentz5Momentum pcm=pin[0]+pin[1];
+  pcm.rescaleMass();
+  double rap=pcm.rapidity();
+  // hadron level cmf
+  Energy2 s  = (pq[0] +pq[1] ).m2();
+  // calculate the x values 
+  double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
+  if(pq[0].z()<ZERO) swap(x[0],x[1]);
+  Lorentz5Momentum pnew = x[0]*pq[0]+x[1]*pq[1];
+  LorentzRotation toRest   = LorentzRotation(-pcm .boostVector());
+  LorentzRotation fromRest = LorentzRotation( pnew.boostVector());
+  Lorentz5Momentum pv[2]=
+    {fromRest*toRest*V1_Branching->branchingParticle()->momentum(),
+     fromRest*toRest*V2_Branching->branchingParticle()->momentum()};
+  LorentzRotation R(-(mother->momentum()+spectator ->momentum()).boostVector());
+  R.boost((showerQuark_->momentum()+showerAntiquark_->momentum()).boostVector());
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit  = tree->treelinks().begin();
+      tit != tree->treelinks().end();++tit) {
+    ShowerTreePtr decayTree = tit->first;
+    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+      cit = decayTree->incomingLines().begin();
+    // reset the momentum of the decay particle
+    Lorentz5Momentum oldMomentum = cit->first->progenitor()->momentum();
+    Lorentz5Momentum newMomentum = tit->second.second == V1_ ? pv[0] : pv[1];
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+    // reset the momenta of the decay products, 
+    LorentzRotation boostToORF(newMomentum.findBoostToCM(),
+			       newMomentum.e()/newMomentum.mass());
+    tPPtr children[2];
+    if(children_[0]->parents()[0]==cit->first->original()) {
+      children[0] = children_[0];
+      children[1] = children_[1];
+    } 
+    else {
+      children[0] = children_[2];
+      children[1] = children_[3];
+    }
+    if(UseRandom::rndbool()) swap(children[0],children[1]);
+    double originalTheta0 = (boostToORF*R*children[0]->momentum()).theta();
+    double originalPhi0   = (boostToORF*R*children[0]->momentum()).phi();
+    boostToORF.rotateZ(-originalPhi0);
+    boostToORF.rotateY(-originalTheta0);
+    double originalPhi1   = (boostToORF*children[1]->momentum()).phi();
+    LorentzRotation boost(oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
+    tPPtr newChildren[2];
+    for(cjt=decayTree->outgoingLines().begin();
+	cjt!=decayTree->outgoingLines().end();++cjt) {
+      if(cjt->first->progenitor()->id()==children[0]->id())
+	newChildren[0] = cjt->first->progenitor();
+      else if(cjt->first->progenitor()->id()==children[1]->id())
+	newChildren[1] = cjt->first->progenitor();
+    }
+    boost.rotateZ(-(boost*newChildren[0]->momentum()).phi());
+    boost.rotateY(-(boost*newChildren[0]->momentum()).theta());
+    boost.rotateZ(-(boost*newChildren[1]->momentum()).phi());
+    boost.rotateZ( originalPhi1);
+    boost.rotateY( originalTheta0);
+    boost.rotateZ( originalPhi0);
+    boost.boost(-oldMomentum.findBoostToCM(),
+		oldMomentum.e()/oldMomentum.mass());
+    for(cjt=decayTree->outgoingLines().begin();
+	cjt!=decayTree->outgoingLines().end();++cjt) {
+      cjt->first->original()  ->set5Momentum(cjt->first->progenitor()->momentum());
+      cjt->first->progenitor()->deepTransform(boost);
+      cjt->first->original()  ->deepTransform(boost);
+      cjt->first->copy()      ->deepTransform(boost);
+    }
+  }
+  return hardTree;
+}   
+
+double MEPP2VVPowheg::getResult(int channel, realVVKinematics R, Energy pT) {
+
+  // This routine should return the integrand of the exact Sudakov form factor,
+  // defined precisely as
+  // KH 19th August - next 2 lines changed for phi in 0->pi not 0->2pi
+  // \Delta(pT) = exp[ - \int_{pT}^{pTmax} dpT dYk d\phi/pi * getResult(...) ]
+  // (Where phi is in 0->pi NOT 0->2*pi !)
+  
+  // Get pi for the prefactor:
+  using Constants::pi;
+
+  // Get the VV invariant mass^2:
+  Energy2 p2 = B_.sb();
+
+  // Get the momentum fractions for the n+1 body event:
+  double x1 = R.x1r();
+  double x2 = R.x2r();
+
+  // Reject the event if the x1 and x2 values are outside the phase space:
+  if(x1<0.||x1>1.||x2<0.||x2>1.||x1*x2<p2/sqr(generator()->maximumCMEnergy())) return 0.;
+
+  // Get the momentum fractions for the n body event:
+  double x1b = B_.x1b();
+  double x2b = B_.x2b();
+
+  // Get the mandelstam variables needed to calculate the n+1 body matrix element:
+  Energy2 s  = R.sr() ;
+  Energy2 t_u_MR_o_MB;
+  double  lo_lumi, nlo_lumi;
+
+  // The luminosity function for the leading order n-body process:
+  lo_lumi = qHadron_ ->pdf()->xfx(qHadron_ ,showerQuark_    ->dataPtr(),PDFScale_,x1b)*
+            qbHadron_->pdf()->xfx(qbHadron_,showerAntiquark_->dataPtr(),PDFScale_,x2b);
+
+  // Now we calculate the luminosity functions (product of the two pdfs) for the
+  // real emission process(es) and also their matrix elements:
+  // q + qbar -> V + V + g
+  if(channel==0) {
+    nlo_lumi    = qHadron_ ->pdf()->xfx(qHadron_ ,showerQuark_    ->dataPtr()         ,PDFScale_,x1)
+                * qbHadron_->pdf()->xfx(qbHadron_,showerAntiquark_->dataPtr()         ,PDFScale_,x2);
+    t_u_MR_o_MB =  t_u_M_R_qqb_hel_amp(R,false)/lo_me_;
+  }
+  // q + g -> V + V + q
+  else if(channel==1) {
+    nlo_lumi    = qHadron_ ->pdf()->xfx(qHadron_ ,showerQuark_->dataPtr()             ,PDFScale_,x1)
+                * qbHadron_->pdf()->xfx(qbHadron_,getParticleData(ParticleID::g),PDFScale_,x2);
+    t_u_MR_o_MB =  t_u_M_R_qg_hel_amp(R,false)/lo_me_;
+  }
+  // g + qbar -> V + V + qbar
+  else {
+    nlo_lumi    = qHadron_ ->pdf()->xfx(qHadron_ ,getParticleData(ParticleID::g),PDFScale_,x1)
+                * qbHadron_->pdf()->xfx(qbHadron_,showerAntiquark_->dataPtr()         ,PDFScale_,x2);
+    t_u_MR_o_MB =  t_u_M_R_gqb_hel_amp(R,false)/lo_me_;
+  }  
+
+  // Multiply ratio of the real emission matrix elements to the Born matrix element
+  // by the ratio of the pdfs for the real emission and born processes to get theWeight
+  if(lo_lumi<=0.||nlo_lumi<=0.) 
+    return 0.;
+  else 
+    return t_u_MR_o_MB * ( nlo_lumi/lo_lumi * p2/s ) 
+                       * sqr(p2/s)/8./pi/pi 
+                       / pT / p2
+                       * GeV;
+} 
+
+bool MEPP2VVPowheg::getEvent(vector<Lorentz5Momentum> & theRealMomenta, 
+			     unsigned int & channel) {
+  // Invariant mass of the colliding hadrons:
+  Energy2 S  = sqr(generator()->maximumCMEnergy());
+
+  // Born variables which are preserved (mass and rapidity of the diboson system):
+  Energy2 p2 = B_.sb();
+  double  Yb = B_.Yb();
+
+  // Born variables which are not preserved but are needed (the momentum fractions):
+  double x1b(B_.x1b()), x2b(B_.x2b());
+  double x12b(x1b*x1b), x22b(x2b*x2b);
+
+  // Maximum jet pT (half of the hadronic C.O.M. energy. N.B. this is overestimated a lot):
+  Energy starting_pT = sqrt(S)/2.;
+
+  // Initialize the pT_ *integration limit* i.e. the pT of the generated emission:
+  pT_ = ZERO;
+
+  // The pT *integration variable*:
+  Energy pT;
+
+  // The x_1 & x_2 momentum fractions corresponding to incoming momenta p1 & p2:
+  double x1_(-999.), x2_(-999.);
+  double x1 (-999.), x2 (-999.);
+
+  // The jet rapidity *integration variable* and its limits:
+  double Yk, minYk(-8.0), maxYk(8.0);
+
+  // The theta2 integration variable (the azimuthal angle of the gluon w.r.t
+  // V1 in the V1 & V2 rest frame:
+  double theta2;
+
+  // The realVVKinematics object corresponding to the current integration
+  // set of integration variables:
+  realVVKinematics R;
+
+  // The veto algorithm rejection weight and a corresponding flag:
+  double rejectionWeight;
+  bool   rejectEmission ;
+
+  // Initialize the flag indicating the selected radiation channel:
+  channel=999;
+
+  // Some product of constants used for the crude distribution:
+  double a(0.);
+
+  for(int j=0;j<3;j++) {
+    pT=starting_pT;
+    a =(maxYk-minYk)*prefactor_[j]/2./b0_;
+    do {
+      // Generate next pT according to exp[- \int^{pTold}_{pT} dpT a*(power-1)/(pT^power)]
+      // 	pT = GeV/pow(  pow(GeV/pT,power_-1.) - log(UseRandom::rnd())/a
+      // 		    ,  1./(power_-1.) );
+      // Generate next pT according to exp[- \int^{pTold}_{pT} dpT alpha1loop*prefactor/pT ]
+      pT = LambdaQCD_*exp( 0.5*exp( log(log(sqr(pT/LambdaQCD_)))+log(UseRandom::rnd())/a ) );
+      // Generate rapidity of the jet:
+      Yk = minYk + UseRandom::rnd()*(maxYk - minYk);
+      // Generate the theta2 radiative variable:
+      // KH 19th August - next line changed for phi in 0->pi not 0->2pi
+      //      theta2 = UseRandom::rnd() * 2.*Constants::pi;
+      theta2 = UseRandom::rnd() * Constants::pi;
+      // eT of the diboson system:
+      Energy eT = sqrt(pT*pT+p2);
+      // Calculate the eT and then solve for x_{\oplus} & x_{\ominus}:
+      x1 = (pT*exp( Yk)+eT*exp( Yb))/sqrt(S);
+      x2 = (pT*exp(-Yk)+eT*exp(-Yb))/sqrt(S);
+      // Calculate the xr radiative variable:
+      double xr(p2/(x1*x2*S));
+      // Then use this to calculate the y radiative variable:
+      double y(-((xr+1.)/(xr-1.))*(xr*sqr(x1/x1b)-1.)/(xr*sqr(x1/x1b)+1.));
+      // The y value above should equal the one commented out below this line:
+      // double y( ((xr+1.)/(xr-1.))*(xr*sqr(x2/x2b)-1.)/(xr*sqr(x2/x2b)+1.));
+      // Now we get the lower limit on the x integration, xbar:
+      double omy(1.-y), opy(1.+y);
+      double xbar1 = 2.*opy*x12b/(sqrt(sqr(1.+x12b)*sqr(omy)+16.*y*x12b)+omy*(1.-x1b)*(1.+x1b));
+      double xbar2 = 2.*omy*x22b/(sqrt(sqr(1.+x22b)*sqr(opy)-16.*y*x22b)+opy*(1.-x2b)*(1.+x2b));
+      double xbar  = max(xbar1,xbar2);
+      // Now we can calculate xtilde:
+      double xt    = (xr-xbar)/(1.-xbar);
+      // Finally we can make the realVVKinematics object:
+      R = realVVKinematics(B_,xt,y,theta2);
+      // The next thing we have to do is set the QCD, EW and PDF scales using R:
+      setTheScales(pT);
+      // ... and so calculate rejection weight:
+      rejectionWeight = getResult(j,R,pT);
+      // If generating according to exp[- \int^{pTold}_{pT} dpT a*(power-1)/(pT^power)]
+      // rejectionWeight/= showerAlphaS_->overestimateValue()*prefactor_[j]*pow(GeV/pT,power_);
+      // If generating according to exp[- \int^{pTold}_{pT} dpT alpha1loop*prefactor/pT ]
+      rejectionWeight/= 1./b0_/log(sqr(pT/LambdaQCD_))*prefactor_[j]*GeV/pT;
+      rejectEmission  = UseRandom::rnd()>rejectionWeight;
+      // The event is a no-emission event if pT goes past min_pT_ - basically set to 
+      // outside the histogram bounds (hopefully histogram objects just ignore it then).
+      if(pT<min_pT_) {
+	pT=ZERO;
+	rejectEmission = false;
+      }
+      if(rejectionWeight>1.) {
+	ostringstream stream;
+	stream << "MEPP2VVPowheg::getEvent weight for channel " << j
+	       << " is greater than one: " << rejectionWeight << endl;
+	generator()->logWarning( Exception(stream.str(), Exception::warning) );
+      }
+    }
+    while(rejectEmission);
+    // set pT of emission etc
+    if(pT>pT_) {
+      channel = j;
+      pT_ = pT;
+      Yk_ = Yk;
+      R_  = R ;
+      x1_ = x1;
+      x2_ = x2;
+    }
+  }
+  // Was this an (overall) no emission event?
+  if(pT_<min_pT_) { 
+    pT_ = ZERO;
+    channel = 3;
+  }
+  if(channel==3) return false;
+  if(channel>3) throw Exception() 
+	       << "MEPP2VVPowheg::getEvent() channel = " << channel
+	       << "   pT = " << pT/GeV << "   pT_ = " << pT_/GeV
+ 	       << Exception::abortnow;
+
+  // Work out the momenta in the lab frame, reserving the mass and rapidity 
+  // of the VV system:
+  LorentzRotation yzRotation;
+  yzRotation.setRotateX(-atan2(pT_/GeV,sqrt(p2)/GeV));
+  LorentzRotation boostFrompTisZero;
+  boostFrompTisZero.setBoostY(-pT_/sqrt(p2+pT_*pT_));
+  LorentzRotation boostFromYisZero;
+  boostFromYisZero.setBoostZ(tanh(Yb));
+
+  theRealMomenta.resize(5);
+  theRealMomenta[0] = Lorentz5Momentum(ZERO,ZERO, x1_*sqrt(S)/2., x1_*sqrt(S)/2.,ZERO);
+  theRealMomenta[1] = Lorentz5Momentum(ZERO,ZERO,-x2_*sqrt(S)/2., x2_*sqrt(S)/2.,ZERO);
+  theRealMomenta[2] = boostFromYisZero*boostFrompTisZero*yzRotation*(R_.k1r());
+  theRealMomenta[3] = boostFromYisZero*boostFrompTisZero*yzRotation*(R_.k2r());
+  theRealMomenta[4] = Lorentz5Momentum(ZERO, pT_,  pT_*sinh(Yk_),  pT_*cosh(Yk_),ZERO);
+
+  return true;
+}
+
+
+void MEPP2VVPowheg::setTheScales(Energy pT) {
+  // Work out the scales we want to use in the matrix elements and the pdfs:
+  // Scale for alpha_S: pT^2 of the diboson system.
+  QCDScale_ = max(pT*pT,sqr(min_pT_));
+  // Scale for real emission PDF: 
+  // pT^2+mVV^2 - as mcfm does in the case of a single W/Z boson).
+  // Energy2 PDFScale_ = max(R.pT2_in_lab(),sqr(min_pT_))+R.s2r();
+  // pT^2 - as advocated by Nason & Ridolfi for ZZ production & Alioli et al for gg->h: 
+  PDFScale_ = max(pT*pT,sqr(min_pT_));
+  // Scale of electroweak vertices: mVV^2 the invariant mass of the diboson system.
+  //  EWScale_  = B_.sb();
+  // ... And this choice is more like what can be seen in mcatnlo_vbmain.f (weird).
+  EWScale_ = 0.5*(B_.k12b()+B_.k22b());
+  return;
+}
+
+/***************************************************************************/
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_qqb in there, which is supposed to be the real emission ME
+// times tk*uk.
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix) const {
+  using namespace ThePEG::Helicity;
+
+  ProductionMatrixElement qqb_hel_amps(PDT::Spin1Half,PDT::Spin1Half,
+				       PDT::Spin1    ,PDT::Spin1    ,
+				       PDT::Spin1);
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(showerQuark_->dataPtr());
+  tcPDPtr p2data(showerAntiquark_->dataPtr());
+  tcPDPtr k1data(V1_->dataPtr());
+  tcPDPtr k2data(V2_->dataPtr());
+  tcPDPtr kdata(getParticleData(ParticleID::g));
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorWaveFunction qSpinor(R.p1r(),p1data,incoming);
+  SpinorBarWaveFunction qbSpinor(R.p2r(),p2data,incoming);
+  vector<SpinorWaveFunction> q;
+  vector<SpinorBarWaveFunction> qb;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qSpinor.reset(ix);
+    qbSpinor.reset(ix);
+    q.push_back(qSpinor);
+    qb.push_back(qbSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.kr(),kdata,outgoing);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,p1data,q[p1hel],g[khel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,p2data,qb[p2hel],g[khel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel=p2hel
+	    // but if the production ME is required first fill it with (0.,0.).
+ 	    if((p1hel==p2hel)&&helicityConservation_) {
+	      if(getMatrix) {
+		if(khel==0)
+		  qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
+		else
+		  qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
+	      }
+ 	      continue;
+ 	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_t;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	    // Note: choosing 5 as the second argument ffvX_->evaluate() sets
+	    // option 5 in thepeg/Helicity/Vertex/VertexBase.cc, which makes
+	    // the (fermion) propagator denominator massless: 1/p^2.
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(EWScale_,5,intermediate_t,q[p1hel],v1[k1hel]);
+	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(EWScale_,5,intermediate_t,qb[p2hel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 t-channel diagrams
+	      // q+qb->g+v1+v2, q+qb->v1+g+v2, q+qb->v1+v2+g
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
+		diagrams.push_back(ffv1->evaluate(EWScale_,p1_k,p2_v2,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,p1_v1,p2_v2,g[khel]));
+		diagrams.push_back(ffv2->evaluate(EWScale_,p1_v1,p2_k,v2[k2hel]));
+	      }
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(EWScale_,5,intermediate_t,q[p1hel],v2[k2hel]);
+	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(EWScale_,5,intermediate_t,qb[p2hel],v1[k1hel]);
+	      // q+qb->g+v2+v1, q+qb->v2+g+v1, q+qb->v2+v1+g
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
+		diagrams.push_back(ffv2->evaluate(EWScale_,p1_k,p2_v1,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,p1_v2,p2_v1,g[khel]));
+		diagrams.push_back(ffv1->evaluate(EWScale_,p1_v2,p2_k,v1[k1hel]));
+	      }
+	    }
+	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
+	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
+	    // means the propagator does not contain a width factor (which is 
+	    // good re. gauge invariance). 
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(EWScale_,3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(EWScale_,p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(ffv1->evaluate(EWScale_,q[p1hel],p2_k,k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==-p2data->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,q[p1hel],p2_k,k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,p1_k,qb[p2hel],k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,q[p1hel],p2_k,k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(khel==0)
+		qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
+	      else
+		qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
+	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    qqb_hel_amps(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		for(unsigned int khel=0;khel<3;khel+=2) {
+		  theElement += qqb_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(qqb_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
+	  }
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * CF * 1/3 = 1/9
+  sum_hel_amps_sqr /= 9.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+/***************************************************************************/
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_qg in there, which is supposed to be the real emission ME
+// times tk*uk.
+Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) const {
+  using namespace ThePEG::Helicity;
+
+  ProductionMatrixElement qg_hel_amps(PDT::Spin1Half,PDT::Spin1,
+				      PDT::Spin1,PDT::Spin1,
+				      PDT::Spin1Half);
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(showerQuark_->dataPtr());
+  tcPDPtr p2data(getParticleData(ParticleID::g));
+  tcPDPtr k1data(V1_->dataPtr());
+  tcPDPtr k2data(V2_->dataPtr());
+  tcPDPtr kdata (showerAntiquark_->dataPtr()->CC());
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorWaveFunction qinSpinor(R.p1r(),p1data,incoming);
+  SpinorBarWaveFunction qoutSpinor(R.kr(),kdata,outgoing);
+  vector<SpinorWaveFunction> qin;
+  vector<SpinorBarWaveFunction> qout;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qinSpinor.reset(ix);
+    qoutSpinor.reset(ix);
+    qin.push_back(qinSpinor);
+    qout.push_back(qoutSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.p2r(),p2data,incoming);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_p2 = ffg->evaluate(QCDScale_,5,p1data,qin[p1hel],g[p2hel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qout[khel],g[p2hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p1hel!=khel)&&helicityConservation_) {
+	      if(getMatrix) {
+		if(p2hel==0)
+		  qg_hel_amps(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
+		else
+		  qg_hel_amps(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
+	      }
+	      continue;
+	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_q;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? showerAntiquark_->dataPtr() : tc[ix];
+	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(EWScale_,5,intermediate_q,qin[p1hel],v1[k1hel]);
+	      SpinorBarWaveFunction k_v2  = ffv2->evaluate(EWScale_,5,intermediate_q,qout[khel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 abelian diagrams
+	      // q+g->v1+v2+q with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
+		diagrams.push_back(ffv2->evaluate(EWScale_,p1_v1,p2_k,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,p1_v1,k_v2,g[p2hel]));
+		diagrams.push_back(ffv1->evaluate(EWScale_,p1_p2,k_v2,v1[k1hel]));
+	      }
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(EWScale_,5,intermediate_q,qin[p1hel],v2[k2hel]);
+              SpinorBarWaveFunction k_v1  = ffv1->evaluate(EWScale_,5,intermediate_q,qout[khel],v1[k1hel]);
+	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
+		diagrams.push_back(ffv1->evaluate(EWScale_,p1_v2,p2_k,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,p1_v2,k_v1,g[p2hel]));
+		diagrams.push_back(ffv2->evaluate(EWScale_,p1_p2,k_v1,v2[k2hel]));
+	      }
+	    }
+	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
+	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
+	    // means the propagator does not contain a width factor (which is 
+	    // good re. gauge invariance). 
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(EWScale_,3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(EWScale_,p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(ffv1->evaluate(EWScale_,qin[p1hel],p2_k,k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==kdata->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,qin[p1hel],p2_k,k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,p1_p2,qout[khel],k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,qin[p1hel],p2_k,k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(p2hel==0)
+		qg_hel_amps(p1hel,0,k1hel,k2hel,khel) = hel_amp;
+	      else
+		qg_hel_amps(p1hel,2,k1hel,k2hel,khel) = hel_amp;
+	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int khel=0;khel<2;++khel) {
+	    qg_hel_amps(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<3;p2hel+=2) {
+		for(unsigned int khel=0;khel<2;++khel) {
+		  theElement += qg_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(qg_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
+	  }
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
+  sum_hel_amps_sqr /= 24.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+/***************************************************************************/
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_gqb in there, which is supposed to be the real emission ME
+// times tk*uk.
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix) const {
+  using namespace ThePEG::Helicity;
+
+  ProductionMatrixElement gqb_hel_amps(PDT::Spin1,PDT::Spin1Half,
+				       PDT::Spin1,PDT::Spin1,
+				       PDT::Spin1Half);
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(getParticleData(ParticleID::g));
+  tcPDPtr p2data(showerAntiquark_->dataPtr());
+  tcPDPtr k1data(V1_->dataPtr());
+  tcPDPtr k2data(V2_->dataPtr());
+  tcPDPtr kdata (showerQuark_->dataPtr()->CC());
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
+
+  SpinorBarWaveFunction qbinSpinor(R.p2r(),p2data,incoming);
+  SpinorWaveFunction qboutSpinor(R.kr(),kdata,outgoing);
+  vector<SpinorBarWaveFunction> qbin;
+  vector<SpinorWaveFunction> qbout;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qbinSpinor.reset(ix);
+    qboutSpinor.reset(ix);
+    qbin.push_back(qbinSpinor);
+    qbout.push_back(qboutSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(R.k1r(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(R.k2r(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  VectorWaveFunction gPolarization(R.p1r(),p1data,incoming);
+  vector<VectorWaveFunction> g;
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    gPolarization.reset(ix);
+    g.push_back(gPolarization);
+  }
+
+  AbstractFFVVertexPtr ffg  = FFGvertex_;
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p2data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p2data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorBarWaveFunction p1_p2 = ffg->evaluate(QCDScale_,5,p2data,qbin[p2hel],g[p1hel]);
+	SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qbout[khel],g[p1hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p2hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p2hel!=khel)&&helicityConservation_) {
+	      if(getMatrix) {
+		if(p1hel==0)
+		  gqb_hel_amps(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+		else
+		  gqb_hel_amps(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	      }
+	      continue;
+	    }
+	    vector<Complex> diagrams;
+	    // Get all t-channel diagram contributions
+	    tcPDPtr intermediate_q;
+	    for(unsigned int ix=0;ix<tc.size();ix++) {
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? showerQuark_->dataPtr() : tc[ix];
+	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(EWScale_,5,intermediate_q,qbin[p2hel],v1[k1hel]);
+	      SpinorWaveFunction    k_v2  = ffv2->evaluate(EWScale_,5,intermediate_q,qbout[khel],v2[k2hel]);
+	      // First calculate all the off-shell fermion currents
+	      // Now calculate the 6 abelian diagrams q+g->v1+v2+q 
+              // with 2 t-channel propagators, 1 s- and 1 t-channel 
+              // and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==0))) {
+		diagrams.push_back(ffv2->evaluate(EWScale_,p1_k,p2_v1,v2[k2hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,k_v2,p2_v1,g[p1hel]));
+		diagrams.push_back(ffv1->evaluate(EWScale_,k_v2,p1_p2,v1[k1hel]));
+	      }
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(EWScale_,5,intermediate_q,qbin[p2hel],v2[k2hel]);
+              SpinorWaveFunction    k_v1  = ffv1->evaluate(EWScale_,5,intermediate_q,qbout[khel],v1[k1hel]);
+	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
+	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==1))) {
+		diagrams.push_back(ffv1->evaluate(EWScale_,p1_k,p2_v2,v1[k1hel]));
+		diagrams.push_back(ffg->evaluate(QCDScale_,k_v1,p2_v2,g[p1hel]));
+		diagrams.push_back(ffv2->evaluate(EWScale_,k_v1,p1_p2,v2[k2hel]));
+	      }
+	    }
+	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
+	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
+	    // means the propagator does not contain a width factor (which is 
+	    // good re. gauge invariance). 
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	    if(abs(k1data->id())==24&&k2data->id()==23) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2 = 
+		WWWvertex_->evaluate(EWScale_,3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	      // q+qb->g+v1*->g+v1+v2, q+qb->v1*+g->v1+v2+g
+	      diagrams.push_back(ffv1->evaluate(EWScale_,qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(ffv1->evaluate(EWScale_,p1_k,qbin[p2hel],k1_k2));
+	    }
+	    // If W+W- calculate the four V+jet-like s-channel diagrams
+	    if((k1data->id()==24&&k2data->id()==-24)&&(p2data->id()==kdata->id())) {
+	      // The off-shell s-channel boson current
+	      VectorWaveFunction k1_k2;
+	      // q+qb->g+Z0*->g+v1+v2,q+qb->Z0*+g->v1+v2+g,
+	      tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,Z0,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(FFZvertex_->evaluate(EWScale_,p1_k,qbin[p2hel],k1_k2));
+	      // q+qb->g+gamma*->g+v1+v2,q+qb->gamma*+g->v1+v2+g,
+	      tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	      k1_k2 = WWWvertex_->evaluate(EWScale_,3,gamma,v2[k2hel],v1[k1hel]);
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,qbout[khel],p1_p2,k1_k2));
+	      diagrams.push_back(FFPvertex_->evaluate(EWScale_,p1_k,qbin[p2hel],k1_k2));
+	    }
+	    // Add up all diagrams to get the total amplitude:
+	    Complex hel_amp(0.);
+	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(p1hel==0)
+		gqb_hel_amps(0,p2hel,k1hel,k2hel,khel) = hel_amp;
+	      else
+		gqb_hel_amps(2,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    }
+	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int khel=0;khel<2;++khel) {
+	    gqb_hel_amps(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over fermion and gluon spins...
+	    for(unsigned int p1hel=0;p1hel<3;p1hel+=2) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		for(unsigned int khel=0;khel<2;++khel) {
+		  theElement += gqb_hel_amps(p1hel,p2hel,k1hel  ,k2hel  ,khel)
+		          *conj(gqb_hel_amps(p1hel,p2hel,k1helpr,k2helpr,khel));
+		}
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
+	  }
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
+  sum_hel_amps_sqr /= 24.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
+}
+
+
+/***************************************************************************/
+// This returns exactly the same value as lo_me2_ when you put it in MEPP2VVPowheg.cc
+double MEPP2VVPowheg::lo_me(bool getMatrix) const {
+  using namespace ThePEG::Helicity;
+
+  ProductionMatrixElement lo_hel_amps(PDT::Spin1Half,PDT::Spin1Half,
+				      PDT::Spin1    ,PDT::Spin1);
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(showerQuark_->dataPtr());
+  tcPDPtr p2data(showerAntiquark_->dataPtr());
+  tcPDPtr k1data(V1_->dataPtr());
+  tcPDPtr k2data(V2_->dataPtr());
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data); // Should never actually occur.
+
+  // If you want to reproduce the spin correlations of MEPP2VV
+  // you should evaluate this ME using the lab frame momenta
+  // instead of the bornVVKinematics ones (partonic C.O.M. frame).
+  SpinorWaveFunction qSpinor;
+  SpinorBarWaveFunction qbSpinor;
+  if(!getMatrix) {
+    qSpinor=SpinorWaveFunction(B_.p1b(),p1data,incoming);
+    qbSpinor=SpinorBarWaveFunction(B_.p2b(),p2data,incoming);
+  } else {
+    qSpinor=SpinorWaveFunction(showerQuark_->momentum(),p1data,incoming);
+    qbSpinor=SpinorBarWaveFunction(showerAntiquark_->momentum(),p2data,incoming);
+  }
+  vector<SpinorWaveFunction> q;
+  vector<SpinorBarWaveFunction> qb;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qSpinor.reset(ix);
+    qbSpinor.reset(ix);
+    q.push_back(qSpinor);
+    qb.push_back(qbSpinor);
+  }
+
+  // If you want to reproduce the spin correlations of MEPP2VV
+  // you should evaluate this ME using the lab frame momenta
+  // instead of the bornVVKinematics ones (partonic C.O.M. frame).
+  VectorWaveFunction v1Polarization;
+  VectorWaveFunction v2Polarization;
+  if(!getMatrix) {
+    v1Polarization=VectorWaveFunction(B_.k1b(),k1data,outgoing);
+    v2Polarization=VectorWaveFunction(B_.k2b(),k2data,outgoing);
+  } else {
+    v1Polarization=VectorWaveFunction(V1_->momentum(),k1data,outgoing);
+    v2Polarization=VectorWaveFunction(V2_->momentum(),k2data,outgoing);
+  }
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  if((p1hel==p2hel)&&helicityConservation_) {
+	    lo_hel_amps(p1hel,p2hel,k1hel,k2hel) = Complex(0.,0.);
+	    continue;
+	  }
+	  vector<Complex> diagrams;
+	  // Get all t-channel diagram contributions
+	  tcPDPtr intermediate_t;
+	  for(unsigned int ix=0;ix<tc.size();ix++) {
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	    SpinorWaveFunction    p1_v1 = ffv1->evaluate(EWScale_,5,intermediate_t,q[p1hel],v1[k1hel]);
+	    // First calculate all the off-shell fermion currents
+	    // Now calculate the 6 t-channel diagrams
+	    // q+qb->v1+v2
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1)))
+	      diagrams.push_back(ffv2->evaluate(EWScale_,p1_v1,qb[p2hel],v2[k2hel]));
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	    SpinorWaveFunction    p1_v2 = ffv2->evaluate(EWScale_,5,intermediate_t,q[p1hel],v2[k2hel]);
+	    // q+qb->v2+v1
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0)))
+	      diagrams.push_back(ffv1->evaluate(EWScale_,p1_v2,qb[p2hel],v1[k1hel]));
+	  }
+	  // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
+	  // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
+	  // means the propagator does not contain a width factor (which is 
+	  // good re. gauge invariance). 
+	  // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	  if(abs(k1data->id())==24&&k2data->id()==23) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2 = 
+	      WWWvertex_->evaluate(EWScale_,3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	    // q+qb->v1*->v1+v2
+	    diagrams.push_back(ffv1->evaluate(EWScale_,q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // If W+W- calculate the four V+jet-like s-channel diagrams
+	  if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==-p2data->id())) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2;
+	    // q+qb->Z0*->v1+v2
+	    tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	    k1_k2 = WWWvertex_->evaluate(EWScale_,3,Z0,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFZvertex_->evaluate(EWScale_,q[p1hel],qb[p2hel],k1_k2));
+	    // q+qb->gamma*->v1+v2
+	    tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	    k1_k2 = WWWvertex_->evaluate(EWScale_,3,gamma,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFPvertex_->evaluate(EWScale_,q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // Add up all diagrams to get the total amplitude:
+	  Complex hel_amp(0.);
+	  for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	  // If we need to fill the production ME we do it here:
+	  if(getMatrix) lo_hel_amps(p1hel,p2hel,k1hel,k2hel) = hel_amp;
+	  sum_hel_amps_sqr += norm(hel_amp);
+	}
+      }
+    }
+  }
+
+  // Calculate the production density matrix:
+  if(getMatrix) {
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    Complex theElement(0.,0.);
+	    // For each k1hel, k1helpr, k2hel, k2helpr sum over the fermion spins...
+	    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+	      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+		if((p1hel==p2hel)&&helicityConservation_) continue;
+		theElement += lo_hel_amps(p1hel,p2hel,k1hel  ,k2hel  )
+		        *conj(lo_hel_amps(p1hel,p2hel,k1helpr,k2helpr));
+	      }
+	    }
+	    // ...and then set the production matrix element to the sum:
+	    productionMatrix_[k1hel][k1helpr][k2hel][k2helpr] = theElement;
+	  }
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * 1/3 = 1/12
+  sum_hel_amps_sqr /= 12.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr;
+}
+
+/***************************************************************************/
+// This member selects a [2-body] decay mode and assigns children to the
+// vector bosons with momenta which are isotropic in their rest frames.
+bool MEPP2VVPowheg::isotropicDecayer() {
+  using namespace ThePEG::Helicity;
+
+  // Generate the children's momenta isotropically in
+  // the rest frames of V1 and V2:
+  double cth,phi;
+  // First V1's children:
+  cth = UseRandom::rnd()*2.-1.;
+  phi = UseRandom::rnd()*2.*Constants::pi;
+  Energy m1(V1_->momentum().m());
+  Energy m3(children_[0]->data().constituentMass());
+  Energy m4(children_[1]->data().constituentMass());
+  Energy p34(triangleFn(sqr(m1),sqr(m3),sqr(m4))
+	     /2./m1);
+  if(isnan(p34/GeV)||cth>1.||cth<-1.) return false;
+  Energy pT34(p34*sqrt(1.-cth)*sqrt(1.+cth));
+  Lorentz5Momentum k3(pT34*sin(phi),pT34*cos(phi),p34 *cth,
+		      sqrt(p34*p34+sqr(m3)),m3);
+  Lorentz5Momentum k4(-k3);
+  k4.setE(sqrt(p34*p34+sqr(m4)));
+  k4.setTau(m4);
+  Boost boostToV1RF(R_.k1r().boostVector());
+  k3.boost(boostToV1RF);
+  k3.rescaleRho();
+  k4.boost(boostToV1RF);
+  k4.rescaleRho();
+
+  // Second V2's children:
+  cth = UseRandom::rnd()*2.-1.;
+  phi = UseRandom::rnd()*2.*Constants::pi;
+  Energy m2(V2_->momentum().m());
+  Energy m5(children_[2]->data().constituentMass());
+  Energy m6(children_[3]->data().constituentMass());
+  Energy p56(triangleFn(sqr(m2),sqr(m5),sqr(m6))
+	     /2./m2);
+  if(isnan(p56/GeV)||cth>1.||cth<-1.) return false;
+  Energy pT56(p56*sqrt(1.-cth)*sqrt(1.+cth));
+  Lorentz5Momentum k5(pT56*sin(phi),pT56*cos(phi),p56*cth,
+		      sqrt(p56*p56+sqr(m5)),m5);
+  Lorentz5Momentum k6(-k5);
+  k6.setE(sqrt(p56*p56+sqr(m6)));
+  k6.setTau(m6);
+  Boost boostToV2RF(R_.k2r().boostVector());
+  k5.boost(boostToV2RF);
+  k5.rescaleRho();
+  k6.boost(boostToV2RF);
+  k6.rescaleRho();
+
+  // Assign the momenta to the children:
+  children_[0]->set5Momentum(k3);
+  children_[1]->set5Momentum(k4);
+  children_[2]->set5Momentum(k5);
+  children_[3]->set5Momentum(k6);
+  return true;
+
+}
+
+// Override 2->2 production matrix here:
+void MEPP2VVPowheg::recalculateVertex() {
+
+  // Zero the squared amplitude; this equals sum_hel_amps_sqr if all
+  // is working as it should:
+  Complex productionMatrix2(0.,0.);
+  for(unsigned int k1hel=0;k1hel<3;++k1hel)
+    for(unsigned int k2hel=0;k2hel<3;++k2hel)
+      productionMatrix2 += productionMatrix_[k1hel][k1hel][k2hel][k2hel];
+
+  // Get the vector wavefunctions:
+  VectorWaveFunction v1Polarization;
+  VectorWaveFunction v2Polarization;
+  v1Polarization=VectorWaveFunction(R_.k1r(),V1_->dataPtr(),outgoing);
+  v2Polarization=VectorWaveFunction(R_.k2r(),V2_->dataPtr(),outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  AbstractFFVVertexPtr ffv1 = V1_->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = V2_->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  bool vetoed(true);
+  while(vetoed) {
+    // Decay the bosons isotropically in their rest frames:
+    isotropicDecayer();
+
+    // Get the spinor wavefunctions:
+    SpinorWaveFunction k3Spinor(children_[0]->momentum(),children_[0]->dataPtr(),outgoing);
+    SpinorBarWaveFunction k4Spinor(children_[1]->momentum(),children_[1]->dataPtr(),outgoing);
+    SpinorWaveFunction k5Spinor(children_[2]->momentum(),children_[2]->dataPtr(),outgoing);
+    SpinorBarWaveFunction k6Spinor(children_[3]->momentum(),children_[3]->dataPtr(),outgoing);
+    vector<SpinorWaveFunction> k3,k5;
+    vector<SpinorBarWaveFunction> k4,k6;
+    for(unsigned int ix=0;ix<2;ix++) {
+      k3Spinor.reset(ix);
+      k4Spinor.reset(ix);
+      k3.push_back(k3Spinor);
+      k4.push_back(k4Spinor);
+      k5Spinor.reset(ix);
+      k6Spinor.reset(ix);
+      k5.push_back(k5Spinor);
+      k6.push_back(k6Spinor);
+    }
+
+    DecayMatrixElement decayAmps(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
+
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k3hel=0;k3hel<2;++k3hel) {
+	for(unsigned int k4hel=0;k4hel<2;++k4hel) {
+	  decayAmps(k1hel,k3hel,k4hel) = 
+	    ffv1->evaluate(EWScale_,k3[k3hel],k4[k4hel],v1[k1hel]);
+	}
+      }
+    }
+    Complex V1decayMatrix[3][3];
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	Complex theElement(0.,0.);
+	for(unsigned int k3hel=0;k3hel<2;++k3hel) {
+	  for(unsigned int k4hel=0;k4hel<2;++k4hel) {
+	    theElement += decayAmps(k1hel,k3hel,k4hel)
+	            *conj(decayAmps(k1helpr,k3hel,k4hel));
+	  }
+	}
+	V1decayMatrix[k1hel][k1helpr] = theElement;
+      }
+    }
+    Complex V1decayMatrix2(0.,0.);
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) V1decayMatrix2 += V1decayMatrix[k1hel][k1hel];
+
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+      for(unsigned int k5hel=0;k5hel<2;++k5hel) {
+	for(unsigned int k6hel=0;k6hel<2;++k6hel) {
+	  decayAmps(k2hel,k5hel,k6hel) = 
+	    ffv2->evaluate(EWScale_,k5[k5hel],k6[k6hel],v2[k2hel]);
+	}
+      }
+    }
+    Complex V2decayMatrix[3][3];
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+      for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	Complex theElement(0.,0.);
+	for(unsigned int k5hel=0;k5hel<2;++k5hel) {
+	  for(unsigned int k6hel=0;k6hel<2;++k6hel) {
+	    theElement += decayAmps(k2hel,k5hel,k6hel)
+	            *conj(decayAmps(k2helpr,k5hel,k6hel));
+	  }
+	}
+	V2decayMatrix[k2hel][k2helpr] = theElement;
+      }
+    }
+    Complex V2decayMatrix2(0.,0.);
+    for(unsigned int k2hel=0;k2hel<3;++k2hel) V2decayMatrix2 += V2decayMatrix[k2hel][k2hel];
+
+    // Contract the production matrix and the decay matrices:
+    Complex meTimesV1V2denominators(0.,0.);
+    for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+      for(unsigned int k1helpr=0;k1helpr<3;++k1helpr) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int k2helpr=0;k2helpr<3;++k2helpr) {
+	    meTimesV1V2denominators += 
+	      productionMatrix_[k1hel][k1helpr][k2hel][k2helpr]
+	      *V1decayMatrix[k1hel][k1helpr]
+	      *V2decayMatrix[k2hel][k2helpr];
+	  }
+	}
+      }
+    }
+
+    if(imag(meTimesV1V2denominators)/real(meTimesV1V2denominators)>1.e-7) 
+      cout << "MEPP2VVPowheg warning\n" 
+	   << "the matrix element's imaginary part is large " 
+	   << meTimesV1V2denominators << endl;  
+    if(imag(productionMatrix2)/real(productionMatrix2)>1.e-7) 
+      cout << "MEPP2VVPowheg warning\n" 
+	   << "the production matrix element's imaginary part is large " 
+	   << productionMatrix2 << endl;  
+    if(imag(V1decayMatrix2)/real(V1decayMatrix2)>1.e-7) 
+      cout << "MEPP2VVPowheg warning\n" 
+	   << "the V1 decay matrix element's imaginary part is large " 
+	   << V1decayMatrix2 << endl;  
+    if(imag(V2decayMatrix2)/real(V2decayMatrix2)>1.e-7) 
+      cout << "MEPP2VVPowheg warning\n" 
+	   << "the V2 decay matrix element's imaginary part is large " 
+	   << V2decayMatrix2 << endl;  
+
+    // Need branching ratio at least in here I would think --->
+    double decayWeight( real(meTimesV1V2denominators)
+		      / real(productionMatrix2*V1decayMatrix2*V2decayMatrix2));
+    if(decayWeight>1.)
+      cout << "MEPP2VVPowheg::recalculateVertex decayWeight > 1., decayWeight = "
+	   << decayWeight << endl;
+    if(decayWeight<0.)
+      cout << "MEPP2VVPowheg::recalculateVertex decayWeight < 0., decayWeight = "
+	   << decayWeight << endl;
+    if(UseRandom::rnd()<decayWeight) vetoed = false;
+    else vetoed = true;
+  }
+
+  return;
+
+}
+
+Energy2 MEPP2VVPowheg::triangleFn(Energy2 m12,Energy2 m22, Energy2 m32) {
+  Energy4 lambda2(m12*m12+m22*m22+m32*m32-2.*m12*m22-2.*m12*m32-2.*m22*m32);
+  if(lambda2>=ZERO) {
+    return sqrt(lambda2);
+  } else {
+    generator()->log() 
+      << "MEPP2VVPowheg::triangleFn "
+      << "kinematic instability, imaginary triangle function\n";
+    return -999999.*GeV2;
+  }
+}

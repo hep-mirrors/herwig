@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEqq2W2ff.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,12 +31,11 @@
 using namespace Herwig;
 
 MEqq2W2ff::MEqq2W2ff() : _maxflavour(5), _plusminus(0), _process(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEqq2W2ff::doinit() {
-  HwME2to2Base::doinit();
+  DrellYanBase::doinit();
   _wp=getParticleData(ThePEG::ParticleID::Wplus);
   _wm=getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
@@ -330,7 +329,6 @@ double MEqq2W2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2W2ff::constructVertex(tSubProPtr sub) {
-  SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
@@ -346,13 +344,11 @@ void MEqq2W2ff::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(fout,hard[order[2]],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[order[3]],outgoing,true ,true);
   qqbarME(fin,ain,fout,aout,true);
-  // get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
+  for(unsigned int ix=0;ix<4;++ix)
+    hard[order[ix]]->spinInfo()->productionVertex(hardvertex);
 }

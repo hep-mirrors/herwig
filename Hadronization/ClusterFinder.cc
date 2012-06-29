@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterFinder.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -20,11 +20,20 @@
 #include "CheckId.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Cluster.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-NoPIOClassDescription<ClusterFinder> ClusterFinder::initClusterFinder;
-// Definition of the static class description member.
+DescribeNoPIOClass<ClusterFinder,Interfaced>
+describeClusterFinder("Herwig::ClusterFinder","");
+
+IBPtr ClusterFinder::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterFinder::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterFinder::Init() {
 
@@ -43,7 +52,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
   ParticleSet inputParticles(partons.begin(),partons.end());
 
   ClusterVector clusters;
-
+  
   // Loop over all current particles.
   for(PVector::const_iterator pit=partons.begin();pit!=partons.end();++pit){
     // Skip to the next particle if it is not coloured or already examined.
@@ -61,9 +70,9 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
     // from a colour source, or ends in a colour sink. In the case of double
     // baryon violating decays, but with overall baryon conservation 
     //  ( for instance:
-    //       tilda_u_R -> dbar_1 + dbar_2 
-    //       tilda_u_R_star -> d1 + d2 
-    //    where tilda_u_R and tilda_u_R_star are colour connected )
+    //       tilde_u_R -> dbar_1 + dbar_2 
+    //       tilde_u_R_star -> d1 + d2 
+    //    where tilde_u_R and tilde_u_R_star are colour connected )
     // a special treatment is needed, because first we have to process all
     // partons in the current step, and then for each left pair of quarks which
     // stem from a colour source we have to find the corresponding pair of 
@@ -183,7 +192,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
       // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
 	if(!connected[i]->parents().empty()&&
-	   connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
+	   connected[i]->parents()[0]->id()==ParticleID::Remnant&&
 	   DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }
@@ -268,10 +277,20 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
       swap(vec[0],vec[2]);
       break;
     }
+
     tcPDPtr temp1  = vec[1]->dataPtr();
     tcPDPtr temp2  = vec[2]->dataPtr();
 
-   tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
+    
+    if(!dataDiquark) 
+      throw Exception() << "Could not make a diquark from"
+			<< temp1->PDGName() << " and "
+			<< temp2->PDGName() 
+			<< " in ClusterFinder::reduceToTwoComponents()"
+			<< Exception::eventerror;
+   
+
     // Create the new cluster (with two components) and assign to it the same
     // momentum and position of the original (with three components) one.
     // Furthermore, assign to the diquark component a momentum given by the
@@ -293,8 +312,8 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     vec[2]->addChild(diquark);
     ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
 
-    vec[0]->addChild(nclus);
-    diquark->addChild(nclus);
+    //vec[0]->addChild(nclus);
+    //diquark->addChild(nclus);
     (*cluIter)->addChild(nclus);
 
     nclus->set5Momentum((*cluIter)->momentum());

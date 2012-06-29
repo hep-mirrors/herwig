@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreeMesonDefaultCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -297,7 +297,31 @@ void ThreeMesonDefaultCurrent::Init() {
     ("The ThreeMesonDefaultCurrent class is designed to implement "
      "the three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, " 
      "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
-     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.");
+     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.",
+     "The three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, "
+     "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
+     "and pi- Kbar0 pi0, pi- pi0 eta "
+     "use the same currents as \\cite{Jadach:1993hs,Kuhn:1990ad,Decker:1992kj}.",
+     "%\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     "%\\cite{Kuhn:1990ad}\n"
+     "\\bibitem{Kuhn:1990ad}\n"
+     "  J.~H.~Kuhn and A.~Santamaria,\n"
+     "  %``Tau decays to pions,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 48}, 445 (1990).\n"
+     "  %%CITATION = ZEPYA,C48,445;%%\n"
+     "%\\cite{Decker:1992kj}\n"
+     "\\bibitem{Decker:1992kj}\n"
+     "  R.~Decker, E.~Mirkes, R.~Sauer and Z.~Was,\n"
+     "  %``Tau decays into three pseudoscalar mesons,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 58}, 445 (1993).\n"
+     "  %%CITATION = ZEPYA,C58,445;%%\n"
+     );
+
   
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF123RhoWgt
     ("F123RhoWeight",
@@ -522,6 +546,7 @@ ThreeMesonDefaultCurrent::FormFactors
 ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
 					       Energy2 q2, Energy2 s1, 
 					       Energy2 s2, Energy2 s3) const {
+  useMe();
   Complex F1, F2, F3, F4, F5;
   F1 = F2 = F3 = F4 = F5 = 0.0;
   // calculate the pi- pi- pi+ factor
@@ -933,90 +958,90 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
   if(create) output << "create Herwig::ThreeMesonDefaultCurrent " 
 		    << name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123wgts.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":F123KstarWeight " << ix << " " 
 	   << _kstarF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5wgts.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
   }
-  output << "set " << name() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
-  output << "set " << name() << ":Initializea1 "    << _initializea1    << "\n";
-  output << "set " << name() << ":RhoParameters "   << _rhoparameters   << "\n";
-  output << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
-  output << "set " << name() << ":a1Parameters "    << _a1parameters    << "\n";
-  output << "set " << name() << ":K1Parameters "    << _k1parameters    << "\n";
-  output << "set " << name() << ":a1WidthOption "   << _a1opt           << "\n";
+  output << "newdef " << name() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
+  output << "newdef " << name() << ":Initializea1 "    << _initializea1    << "\n";
+  output << "newdef " << name() << ":RhoParameters "   << _rhoparameters   << "\n";
+  output << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "newdef " << name() << ":a1Parameters "    << _a1parameters    << "\n";
+  output << "newdef " << name() << ":K1Parameters "    << _k1parameters    << "\n";
+  output << "newdef " << name() << ":a1WidthOption "   << _a1opt           << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    output << "set " << name() << ":a1RunningWidth " << ix 
+    output << "newdef " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    output << "set " << name() << ":a1RunningQ2 " << ix 
+    output << "newdef " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  output << "set " << name() << ":A1Width " << _a1width/GeV << "\n";
-  output << "set " << name() << ":A1Mass "  << _a1mass/GeV  << "\n";
-  output << "set " << name() << ":K1Width " << _k1width/GeV << "\n";
-  output << "set " << name() << ":K1Mass "  << _k1mass/GeV  << "\n";
-  output << "set " << name() << ":FPi "     << _fpi/MeV     << "\n";
+  output << "newdef " << name() << ":A1Width " << _a1width/GeV << "\n";
+  output << "newdef " << name() << ":A1Mass "  << _a1mass/GeV  << "\n";
+  output << "newdef " << name() << ":K1Width " << _k1width/GeV << "\n";
+  output << "newdef " << name() << ":K1Mass "  << _k1mass/GeV  << "\n";
+  output << "newdef " << name() << ":FPi "     << _fpi/MeV     << "\n";
   for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":rhoF123masses " << ix 
 	   << " " << _rhoF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF123widths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":rhoF123widths " << ix << " " 
 	   << _rhoF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":rhoF5masses " << ix << " " 
 	   << _rhoF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5widths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
     output << name() << ":rhoF5widths " << ix << " " 
 	   << _rhoF5widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123masses.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarF123masses " << ix << " " 
 	   << _kstarF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123widths.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarF123widths " << ix << " " 
 	   << _kstarF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5masses.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarF5masses " << ix << " " 
 	   << _kstarF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5widths.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
     output << name() << ":KstarF5widths " << ix << " " 
 	   << _kstarF5widths[ix]/GeV << "\n";
@@ -1072,4 +1097,23 @@ Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
   Complex ii(0.,1.);
   complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);
   return numer/denom;
+}
+
+double ThreeMesonDefaultCurrent::
+threeBodyMatrixElement(const int       , const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy    , 
+		       const Energy    , const Energy    ) const {
+  Energy2 mpi2(sqr(_mpi));
+  Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
+  // the matrix element
+  Energy2 output(ZERO); 
+  // first resonance
+  output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
+  // second resonance
+  output += ((s2-4.*mpi2) + 0.25*(s3-s1)*(s3-s1)/q2) * real(propa*conj(propa)); 
+  // the interference term 
+  output += (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+							      propb*conj(propa)); 
+  return output/sqr(_rhoF123masses[0]);
 }

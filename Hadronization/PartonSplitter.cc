@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartonSplitter.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,8 +21,17 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include "Herwig++/Utilities/Kinematics.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+IBPtr PartonSplitter::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr PartonSplitter::fullclone() const {
+  return new_ptr(*this);
+}
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _quarkSelector;
@@ -32,8 +41,8 @@ void PartonSplitter::persistentInput(PersistentIStream & is, int) {
   is >> _quarkSelector;
 }
 
-ClassDescription<PartonSplitter> PartonSplitter::initPartonSplitter;
-// Definition of the static class description member.
+DescribeClass<PartonSplitter,Interfaced> 
+describePartonSplitter("Herwig::PartonSplitter","");
 
 void PartonSplitter::Init() {
 
@@ -110,7 +119,7 @@ void PartonSplitter::doinit() {
   // calculate the probabilties for the gluon to branch into each quark type
   // based on the available phase-space, as in fortran.
   Energy mg=getParticleData(ParticleID::g)->constituentMass();
-  for(unsigned int ix=1;ix<6;++ix) {
+  for( int ix=1; ix<6; ++ix ) {
     PDPtr quark = getParticleData(ix);
     Energy pcm = Kinematics::pstarTwoBodyDecay(mg,quark->constituentMass(),
 					       quark->constituentMass());

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2HiggsPowheg.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-
+ 
 /**
  * The MEPP2HiggsPowheg class implements the matrix element for the process
  * pp->Higgs with different Higgs shape prescriptions (see details in hep-ph/9505211)
@@ -35,7 +35,6 @@ public:
    * The default constructor.
    */
   MEPP2HiggsPowheg();
-
 
 public:
 
@@ -260,13 +259,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 private:
@@ -292,17 +291,17 @@ private:
   /**
    *  The colour factors
    */
-  double CF_ , CA_ , TR_;
+  const double CF_ , CA_ , TR_;
 
   /**
    * Number of light flavours (in the beta function beta0_)
    */
-  double nlf_;
+  const int nlf_;
 
   /**
    * (Proportional to) The beta function
    */
-  double beta0_;
+  const double beta0_;
 
   /**
    *  Whether to generate the positive, negative or leading order contribution
@@ -450,7 +449,7 @@ struct ClassTraits<Herwig::MEPP2HiggsPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */

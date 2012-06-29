@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralTwoBodyDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -43,61 +43,15 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 
 void GeneralTwoBodyDecayer::doinit() {
   DecayIntegrator::doinit();
-  if(!_theVertex) throw InitException() << "GeneralTwoBodyDecayer::doinit() - "
-					<< "Null vertex pointer!\n";  
+  assert( _theVertex );
+  assert( _incoming && _outgoing.size()==2);
   _theVertex->init();
-  vector<double> wgt(0);  
-  tPDVector parents = _theVertex->getIncoming();
-  tPDVector::size_type np = parents.size();
+  //create phase space mode
   tPDVector extpart(3);
-  for( tPDVector::size_type i = 0; i < np; ++i ) {
-    tPDPtr inpart = parents[i];
-    long pid = inpart->id();
-    if( pid < 0 ) continue;
-    Energy m1 = inpart->mass();
-    tPDVector decaylist;
-    for(unsigned int il = 0; il< _thelist.size(); ++il) {
-       tPDVector temp = _theVertex->search(_thelist[il], pid);
-       decaylist.insert(decaylist.end(),temp.begin(),temp.end());
-    }
-    tPDVector::size_type ndec = decaylist.size();
-    for( tPDVector::size_type j = 0; j < ndec; j +=3 ) {
-      tPDPtr pa(decaylist[j]), pb(decaylist[j + 1]), pc(decaylist[j + 2]);
-      if( pb->id() == pid ) swap(pa, pb);
-      if( pc->id() == pid ) swap(pa, pc);
-      //allowed on-shell decay?
-      if( m1 <= pb->mass() + pc->mass() ) continue;
-      //vertices are defined with all particles incoming
-      if( pb->CC() ) pb = pb->CC();
-      if( pc->CC() ) pc = pc->CC();
-      //store ids so that the decayer knows what it is allowed to 
-      //decay
-      _inpart.push_back(pid); _outparta.push_back(pb->id());
-      _outpartb.push_back(pc->id());
-      //create phase space mode
-      extpart[0] = pa;
-      extpart[1] = pb;
-      extpart[2] = pc;
-      addMode(new_ptr(DecayPhaseSpaceMode(extpart, this)), 
-	      _maxweight[0], wgt);
-      
-    }
-  }
-  unsigned int isize(_inpart.size()), oasize(_outparta.size()),
-    obsize(_outpartb.size());
-  if(  isize == 0 ||  oasize == 0 || obsize == 0 )
-    throw InitException()
-      << "GeneralTwoBodyDecayer::doinit() - Atleast one of the particle "
-      << "vectors has zero size, cannot continue." 
-      << isize << " " << oasize << " " << obsize 
-      << Exception::abortnow;
-  
-  if(  isize != oasize || isize != obsize )
-    throw InitException()
-      << "GeneralTwoBodyDecayer::doinit() - The particle vectors have "
-      << "different sizes. " << isize << " " << oasize << " " << obsize
-      << Exception::abortnow;
-
+  extpart[0] = _incoming;
+  extpart[1] = _outgoing[0];
+  extpart[2] = _outgoing[1];
+  addMode(new_ptr(DecayPhaseSpaceMode(extpart, this)), _maxweight, vector<double>());
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
@@ -105,32 +59,22 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
   long parentID = parent->id();
   long id1 = children[0]->id();
   long id2 = children[1]->id();
-  int imode(-1);
-  unsigned ii(0), nipart(_inpart.size());
   cc = false;
-  do {
-    long listpid(_inpart[ii]), listid1(_outparta[ii]),
-      listid2(_outpartb[ii]);
-    if( parentID == listpid && 
-	((id1 == listid1 && id2 == listid2) || 
-	 (id1 == listid2 && id2 == listid1)) )
-      imode = ii;
-    //cc-mode
-    else if(parentID == -listpid) {
-      cc = true;
-      if((id1 == -listid1 && id2 == -listid2) || 
-	 (id1 == -listid2 && id2 == -listid1) ||
-	 (id1 == listid1 && id2 == -listid2)  || 
-	 (id1 == -listid1 && id2 == listid2)  ||
-	 (id1 == listid2 && id2 == -listid1)  || 
-	 (id1 == -listid2 && id2 == listid1) )
-	imode = ii;
-      else ++ii;
-    }
-    else ++ii;	
+  long out1 = _outgoing[0]->id();
+  long out2 = _outgoing[1]->id();
+  if( parentID == _incoming->id() && 
+      ((id1 == out1 && id2 == out2) || 
+       (id1 == out2 && id2 == out1)) ) {
+    return 0;
   }
-  while( imode < 0 && ii < nipart );
-  return imode;
+  else if(_incoming->CC() && parentID == _incoming->CC()->id()) {
+    cc = true;
+    if( _outgoing[0]->CC()) out1 = _outgoing[0]->CC()->id();
+    if( _outgoing[1]->CC()) out2 = _outgoing[1]->CC()->id();
+    if((id1 == out1 && id2 == out2) || 
+       (id1 == out2 && id2 == out1)) return 0;
+  }
+  return -1;
 }
 
 void GeneralTwoBodyDecayer::
@@ -139,8 +83,7 @@ colourConnections(const Particle & parent,
   PDT::Colour incColour(parent.data().iColour());
   PDT::Colour outaColour(out[0]->data().iColour());
   PDT::Colour outbColour(out[1]->data().iColour());
-  
-//incoming colour singlet
+  //incoming colour singlet
   if(incColour == PDT::Colour0) {
     // colour triplet-colourantitriplet
     if((outaColour == PDT::Colour3 && outbColour == PDT::Colour3bar) ||
@@ -230,12 +173,61 @@ colourConnections(const Particle & parent,
       out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
     }
+    // neutral octet
+    else if(outaColour == PDT::Colour0&&outbColour == PDT::Colour8) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else if(outbColour == PDT::Colour0&&outaColour == PDT::Colour8) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
-			<< "colour octet "
-			<< "in GeneralTwoBodyDecayer::colourConnections() "
-			<< outaColour << " " << outbColour
-			<< Exception::runerror;
+                        << "colour octet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
+  }
+  else if(incColour == PDT::Colour6) {
+    if(outaColour == PDT::Colour3 && outbColour == PDT::Colour3) {
+      tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(tempParent->colourInfo());
+
+      tColinePtr line1 = const_ptr_cast<tColinePtr>(parentColour->colourLines()[0]);
+      line1->addColoured(dynamic_ptr_cast<tPPtr>(out[0]));
+
+      tColinePtr line2 = const_ptr_cast<tColinePtr>(parentColour->colourLines()[1]);
+      line2->addColoured(dynamic_ptr_cast<tPPtr>(out[1]));
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+                        << "colour sextet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
+  }
+  else if(incColour == PDT::Colour6bar) {
+    if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour3bar) {
+     tPPtr tempParent = const_ptr_cast<tPPtr>(&parent);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(tempParent->colourInfo());
+
+      tColinePtr line1 = const_ptr_cast<tColinePtr>(parentColour->antiColourLines()[0]);
+      line1->addAntiColoured(dynamic_ptr_cast<tPPtr>(out[0]));
+
+      tColinePtr line2 = const_ptr_cast<tColinePtr>(parentColour->antiColourLines()[1]);
+      line2->addAntiColoured(dynamic_ptr_cast<tPPtr>(out[1]));
+    }
+    else
+      throw Exception() << "Unknown outgoing colours for decaying "
+                        << "colour anti-sextet "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
+                        << outaColour << " " << outbColour
+                        << Exception::runerror;
   }
   else
     throw Exception() << "Unknown incoming colour in "
@@ -246,42 +238,32 @@ colourConnections(const Particle & parent,
 
 bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 					  double & coupling) const {
-  long parent = dm.parent()->id();
+  assert(dm.parent()->id() == _incoming->id());
   ParticleMSet::const_iterator pit = dm.products().begin();
   long id1 = (*pit)->id();
   ++pit;
   long id2 = (*pit)->id();
-  bool order(false);
-  vector<int>::size_type ix(0);
-  do {
-    if( parent == _inpart[ix] ) {
-      long id1t(_outparta[ix]), id2t(_outpartb[ix]);
-      if( id1 == id1t && id2 == id2t ) {
-	order = true;
-	break;
-      }
-      if( id1 == id2t && id2 == id1t ) {
-	order = false;
-	break;
-      }
-    }
-    ++ix;
-  }
-  while( ix < _inpart.size() );
+  long id1t(_outgoing[0]->id()), id2t(_outgoing[1]->id());
   mecode = -1;
   coupling = 1.;
-  return order;
+  if( id1 == id1t && id2 == id2t ) {
+    return true;
+  }
+  else if( id1 == id2t && id2 == id1t ) {
+    return false;
+  }
+  else
+    assert(false);
+  return false;
 }
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _thelist << _theVertex << _inpart << _outparta << _outpartb
-     << _maxweight;
+  os << _theVertex << _incoming << _outgoing << _maxweight;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _thelist >> _theVertex >>_inpart >>_outparta >>_outpartb
-     >> _maxweight;
+  is >> _theVertex >> _incoming >> _outgoing >> _maxweight;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
@@ -293,35 +275,6 @@ void GeneralTwoBodyDecayer::Init() {
   static ClassDocumentation<GeneralTwoBodyDecayer> documentation
     ("This class is designed to be a base class for all 2 body decays"
      "in a general model");
-
-  static Reference<GeneralTwoBodyDecayer,Helicity::VertexBase> interfaceDecayVertex
-    ("DecayVertex",
-     "Pointer to decayer vertex",
-     &GeneralTwoBodyDecayer::_theVertex, false, false, true, false);
-  
-  static ParVector<GeneralTwoBodyDecayer,double> interfaceMaxWeight
-    ("MaxWeight",
-     "Maximum weight for integration",
-     &GeneralTwoBodyDecayer::_maxweight, 1.0, -1, 0, 0,
-     false, false, false,&GeneralTwoBodyDecayer::setWeight, 0 ,0, 0, 0);
-
-  static ParVector<GeneralTwoBodyDecayer,int> interfaceIncomingPart
-    ("Incoming",
-     "PDG Codes for incoming particles",
-     &GeneralTwoBodyDecayer::_inpart, 0, -1, 0, 0,
-     false, false, false);
-
-  static ParVector<GeneralTwoBodyDecayer,int> interfaceOutgoingPartA
-    ("OutgoingA",
-     "PDG Codes for first set of outgoing particles",
-     &GeneralTwoBodyDecayer::_outparta, 0, -1, 0, 0,
-     false, false, false);
-
-  static ParVector<GeneralTwoBodyDecayer,int> interfaceOutgoingPartB
-    ("OutgoingB",
-     "PDG Codes for second set of outgoing particles",
-     &GeneralTwoBodyDecayer::_outpartb, 0, -1, 0, 0,
-     false, false, false);
  
 }
 
@@ -434,6 +387,32 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
   }
+  else if(in->iColour()==PDT::Colour6) {
+    // colour sextet -> triplet triplet
+    if( out1->iColour()==PDT::Colour3 && out2->iColour()==PDT::Colour3 ) {
+      output *= 1.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour sextet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  else if(in->iColour()==PDT::Colour6bar) {
+    // colour sextet -> triplet triplet
+    if( out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour3bar ) {
+      output *= 1.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour anti-sextet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
   else
     throw Exception() << "Unknown colour for the decaying particle in "
 		      << "GeneralTwoBodyDecayer::colourFactor() for "
@@ -472,4 +451,13 @@ Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,
 					     outa.second, outb.second);
   return me/(8.*Constants::pi)*pcm;
+}
+
+void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
+					 VertexBasePtr vertex) {
+  _incoming=incoming;
+  _outgoing.clear();
+  _outgoing.push_back(outgoing.first );
+  _outgoing.push_back(outgoing.second);
+  _theVertex = vertex;
 }

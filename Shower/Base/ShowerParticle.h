@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerParticle.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -73,7 +73,7 @@ public:
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-      _scale(ZERO), _thePEGBase() {}
+      _scale(ZERO), _vMass(ZERO), _thePEGBase(), _evolutionScale2(), _radiationLine() {}
 
   /**
    * Copy constructor from a ThePEG Particle
@@ -85,7 +85,7 @@ public:
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
     : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-    _scale(ZERO), _thePEGBase(&x) {}
+    _scale(ZERO), _vMass(ZERO), _thePEGBase(&x), _evolutionScale2(), _radiationLine() {}
   //@}
 
 public:
@@ -142,7 +142,7 @@ public:
   /**
    * Set the ShowerKinematics object.
    */
-  void setShowerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
+  void showerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
   //@}
 
   /**
@@ -159,8 +159,17 @@ public:
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale
    */
-  void setEvolutionScale(Energy scale) { _scale = scale; }
+  void evolutionScale(Energy scale) { _scale = scale; }
 
+  /**
+   * Return the virtual mass\f$
+   */
+  Energy virtualMass() const { return _vMass; }
+
+  /**
+   *  Set the virtual mass
+   */
+  void virtualMass(Energy mass) { _vMass = mass; }
 
   /** 
    * Return the partner
@@ -171,7 +180,44 @@ public:
   /**
    * Set the partner
    */
-  void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
+  void partner(const tShowerParticlePtr partner) { _partner = partner; } 
+
+
+  /**
+   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
+   */
+  Energy evolutionScale2() const { return _evolutionScale2; }
+
+  /**
+   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
+   */
+  void evolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
+  
+  /**
+   *  Return the radiation line of a gluon
+   *  This is 0 for a particle with random radiation choice, 1 for the colour
+   *  line and 2 for the anti-colour line.
+   */
+  int radiationLine() { return _radiationLine; }
+
+  /**
+   *  Set the radiation line of a gluon
+   */   
+  void radiationLine(int radiationLine) { _radiationLine = radiationLine; }
+  
+  
+  /** 
+   * Return the progenitor of the shower
+   */
+  tShowerParticlePtr progenitor() const { return _progenitor; }
+
+
+  /**
+   * Set the progenitor of the shower
+   */
+  void progenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
+    
+
   //@}
 
   /**
@@ -189,12 +235,12 @@ public:
   /**
    *  Get the flag
    */
-  bool isReconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
+  bool reconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
 
   /**
    *  Set the flag
    */
-  void setReconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
+  void reconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
   //@}
 
   /**
@@ -217,7 +263,7 @@ public:
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  const tcPPtr getThePEGBase() const { return _thePEGBase; }
+  const tcPPtr thePEGBase() const { return _thePEGBase; }
 
 protected:
 
@@ -293,6 +339,11 @@ private:
   Energy _scale;
 
   /**
+   *  Virtual mass
+   */
+  Energy _vMass;
+
+  /**
    *  Partners
    */
   tShowerParticlePtr _partner;
@@ -301,6 +352,22 @@ private:
    *  Pointer to ThePEG Particle this ShowerParticle was created from
    */
   const tcPPtr _thePEGBase;
+  
+  /**
+   *  Second evolution scale
+   */  
+  Energy _evolutionScale2; 
+  
+  /**
+   *  Radiation Line
+   */
+  int _radiationLine;
+  
+  /**
+   *  Progenitor
+   */   
+  tShowerParticlePtr _progenitor;
+    
 };
 
 }

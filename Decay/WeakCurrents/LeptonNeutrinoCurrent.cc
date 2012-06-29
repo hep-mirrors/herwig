@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LeptonNeutrinoCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -40,10 +40,11 @@ void LeptonNeutrinoCurrent::Init() {
 
 
 // complete the construction of the decay mode for integration
-bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
+bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode_in,
 				       DecayPhaseSpaceModePtr mode,
 				       unsigned int iloc,unsigned int,
 				       DecayPhaseSpaceChannelPtr phase,Energy upp) {
+  int imode = imode_in;
   // make sure the the decays are kinematically allowed
   Energy min = getParticleData(11+2*imode)->mass()+getParticleData(12+2*imode)->mass();
   if(min>=upp) return false;
@@ -62,9 +63,10 @@ bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
+tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode_in,
 					  int,int)
 {
+  int imode = imode_in;
   tPDVector output(2);
   if(icharge==3)
     {

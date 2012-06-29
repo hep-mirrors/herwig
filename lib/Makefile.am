@@ -1,10 +1,7 @@
-## ugly hack to get linking done by CXX
-LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
-        $(AM_LDFLAGS) $(LDFLAGS) -o $@
-
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
-Herwig_la_LDFLAGS = -module -version-info 3:0:0
+Herwig_la_LIBTOOLFLAGS = --tag=CXX
+Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
@@ -18,7 +15,8 @@ $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
-$(top_builddir)/Looptools/libHwLooptoolsXFC.la \
+$(top_builddir)/Looptools/libHwLooptools.la \
+$(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
 
 all-local: done-all-links

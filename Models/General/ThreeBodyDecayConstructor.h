@@ -12,7 +12,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::VertexType;
+
 using Helicity::VertexBasePtr;
 
 /**
@@ -60,16 +60,22 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor() : 
-    _removeOnShell(true), _interopt(0), _widthopt(1), 
-    _minReleaseFraction(1e-3) {}
+  ThreeBodyDecayConstructor() : 
+    _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV),
+    intOpt_(1), relErr_(1e-2) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part);
+  virtual void DecayList(const set<PDPtr> & part);
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const { return 3; }
 
 protected:
 
@@ -82,7 +88,7 @@ protected:
    * @return A vector a decay modes
    */
   vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
-					unsigned int ilist);
+					    unsigned int ilist);
 
   /**
    * Expand the two body prototype to get the possible
@@ -99,7 +105,7 @@ protected:
    * @param diagrams The diagrams for the decay
    * @param inter Option for intermediates
    */
-  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
+  GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
 					   bool inter) const;
 
   /**
@@ -116,7 +122,7 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
+  void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
 
   /**
    * Get the correct colour factor matrix.
@@ -173,6 +179,18 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -192,7 +210,12 @@ private:
   /**
    *  Whether or not to remove on-shell diagrams
    */
-  bool _removeOnShell;
+  unsigned int _removeOnShell;
+
+  /**
+   *  Include on-shell for \f$t\to b W\f$
+   */
+  bool _includeTopOnShell;
 
   /**
    *  Option for the inclusion of intermediates
@@ -209,6 +232,41 @@ private:
    * fraction of the parent mass
    */
   double _minReleaseFraction;
+
+  /**
+   *  Maximum number of EW gauge bosons
+   */
+  unsigned int _maxBoson;
+
+  /**
+   *  Maximum number of particles from the decaying particle list
+   */
+  unsigned int _maxList;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedSet_;
+
+  /**
+   *  Cut off or decays via the weak current
+   */
+  Energy weakMassCut_;
+
+  /**
+   *  Option for the integration to get the partial width
+   */
+  unsigned int intOpt_;
+
+  /**
+   *  Relative error for partial width integration
+   */
+  double relErr_;
 };
 
 }

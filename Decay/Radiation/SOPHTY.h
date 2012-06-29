@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SOPHTY.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,13 +32,20 @@ class SOPHTY: public DecayRadiationGenerator {
 public:
 
   /**
+   *  Default constructor
+   */
+  SOPHTY() : colouredOption_(0) {}
+
+  /**
    *  Member to generate the photons in the decay. This must be implemented
    *  in classes inheriting from this one to produce the radiation.
    * @param p The decaying particle
    * @param children The decay products
+   * @param decayer The decayer for with decay mode
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children,
+					 tDecayIntegratorPtr decayer);
 
 public:
 
@@ -102,12 +109,17 @@ private:
   /**
    *  The final-final dipole
    */
-  FFDipolePtr _ffdipole;
+  FFDipolePtr FFDipole_;
 
   /**
    *  The initial-final dipole
    */
-  IFDipolePtr _ifdipole;
+  IFDipolePtr IFDipole_;
+
+  /**
+   *  Option for the treatment of radiation from coloured particles
+   */
+  unsigned int colouredOption_;
 };
 
 }
@@ -133,6 +145,10 @@ struct ClassTraits<Herwig::SOPHTY>
   : public ClassTraitsBase<Herwig::SOPHTY> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SOPHTY"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the DecayRadiationGenerator class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "HwSOPHTY.so"; }
 };
 
 /** @endcond */

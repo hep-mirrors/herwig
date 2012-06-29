@@ -1,10 +1,20 @@
-pkglib_LTLIBRARIES = HwPowhegME.la
-HwPowhegME_la_LDFLAGS = -module -version-info 1:0:0
-HwPowhegME_la_SOURCES = \
+pkglib_LTLIBRARIES = HwPowhegMEHadron.la HwPowhegMELepton.la
+HwPowhegMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:1
+HwPowhegMEHadron_la_SOURCES = \
 MEqq2gZ2ffPowheg.cc MEqq2gZ2ffPowheg.h \
 MEqq2W2ffPowheg.cc  MEqq2W2ffPowheg.h \
 MEPP2HiggsPowheg.cc  MEPP2HiggsPowheg.h \
 MEPP2WHPowheg.cc  MEPP2WHPowheg.h \
 MEPP2ZHPowheg.cc  MEPP2ZHPowheg.h \
 MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
-NLO2to2Kinematics.cc NLO2to2Kinematics.h
+VVKinematics.cc VVKinematics.h \
+MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
+MEPP2VGammaPowheg.cc  MEPP2VGammaPowheg.h \
+MEPP2VGammaNewPowheg.cc  MEPP2VGammaNewPowheg.h \
+MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
+MEqq2gZ2ffPowhegQED.h MEqq2gZ2ffPowhegQED.cc
+
+HwPowhegMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwPowhegMELepton_la_SOURCES = \
+MEee2gZ2qqPowheg.cc MEee2gZ2qqPowheg.h \
+MEee2gZ2llPowheg.cc MEee2gZ2llPowheg.h 

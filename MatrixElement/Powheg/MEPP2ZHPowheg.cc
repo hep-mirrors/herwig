@@ -18,22 +18,23 @@
 using namespace Herwig;
 
 MEPP2ZHPowheg::MEPP2ZHPowheg() 
- : _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
-   _fixedScale(100.*GeV), _scaleFact(1.)
+  : _gluon(), TR_(0.5), CF_(4./3.), 
+    _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+    _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
+    _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
 void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
-     << _TR        << _CF             << _scaleopt       
+     << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
 }
 
 void MEPP2ZHPowheg::persistentInput(PersistentIStream & is, int) {
   is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
-     >> _TR        >> _CF             >> _scaleopt 
+     >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
 
 }
@@ -44,7 +45,18 @@ ClassDescription<MEPP2ZHPowheg> MEPP2ZHPowheg::initMEPP2ZHPowheg;
 void MEPP2ZHPowheg::Init() {
 
   static ClassDocumentation<MEPP2ZHPowheg> documentation
-    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H");
+    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H",
+     "The PP$\\to$Z Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
+
+
 
    static Switch<MEPP2ZHPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -102,7 +114,7 @@ void MEPP2ZHPowheg::Init() {
   static Switch<MEPP2ZHPowheg,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
      "Option for the scale to be used",
-     &MEPP2ZHPowheg::_scaleopt, 0, false, false);
+     &MEPP2ZHPowheg::_scaleopt, 1, false, false);
   static SwitchOption interfaceScaleOptionFixed
     (interfaceFactorizationScaleOption,
      "Fixed",
@@ -111,7 +123,7 @@ void MEPP2ZHPowheg::Init() {
   static SwitchOption interfaceScaleOptionsHat
     (interfaceFactorizationScaleOption,
      "Dynamic",
-     "Used sHat as the scale",
+     "Use the mass of the vector boson-Higgs boson system",
      1);
 
   static Parameter<MEPP2ZHPowheg,Energy> interfaceFactorizationScaleValue
@@ -131,9 +143,6 @@ void MEPP2ZHPowheg::Init() {
 void MEPP2ZHPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEPP2ZH::doinit();
 }
 
@@ -161,6 +170,7 @@ CrossSection MEPP2ZHPowheg::dSigHatDR() const {
 double MEPP2ZHPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
+  useMe();
   // Get particle data for QCD particles:
   _parton_a=mePartonData()[0];
   _parton_b=mePartonData()[1];
@@ -266,7 +276,7 @@ double MEPP2ZHPowheg::Ltilde_gq(double x, double v) const {
 }
 
 double MEPP2ZHPowheg::Vtilde_qq() const {
-  return _alphaS2Pi*_CF*(-3.*log(_mu2/_mll2)+(2.*sqr(Constants::pi)/3.)-8.);
+  return _alphaS2Pi*CF_*(-3.*log(_mu2/_mll2)+(2.*sqr(Constants::pi)/3.)-8.);
 }
 
 double MEPP2ZHPowheg::Ccalbar_qg(double x) const {
@@ -274,11 +284,11 @@ double MEPP2ZHPowheg::Ccalbar_qg(double x) const {
 }
 
 double MEPP2ZHPowheg::Ctilde_qg(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_qg(x,v);
+  return  _alphaS2Pi*TR_ * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_qg(x,v);
 }
 
 double MEPP2ZHPowheg::Ctilde_gq(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_gq(x,v);
+  return  _alphaS2Pi*TR_ * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_gq(x,v);
 }
 
 double MEPP2ZHPowheg::Ctilde_qq(double x, double v) const {
@@ -288,7 +298,7 @@ double MEPP2ZHPowheg::Ctilde_qq(double x, double v) const {
     +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
     + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
     *log(_mll2/_mu2);
-  return _alphaS2Pi*_CF*(1.-xbar(v))*wgt;    
+  return _alphaS2Pi*CF_*(1.-xbar(v))*wgt;    
 }
 
 double MEPP2ZHPowheg::Fcal_qq(double x, double v) const {
@@ -306,12 +316,12 @@ double MEPP2ZHPowheg::Fcal_gq(double x, double v) const {
 }
 
 double MEPP2ZHPowheg::Ftilde_qg(double xt, double v) const {
-  return _alphaS2Pi*_TR*
+  return _alphaS2Pi*TR_*
     ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.) )/v;
 }
 
 double MEPP2ZHPowheg::Ftilde_gq(double xt, double v) const {
-  return _alphaS2Pi*_TR*
+  return _alphaS2Pi*TR_*
     ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.) )/(1.-v);
 }
 
@@ -320,7 +330,7 @@ double MEPP2ZHPowheg::Ftilde_qq(double xt, double v) const {
   // is emission into regular or singular region?
   if(xt>=0. && xt<1.-eps && v>eps && v<1.-eps) { 
     // x<1, v>0, v<1 (regular emission, neither soft or collinear):
-    return _alphaS2Pi*_CF*
+    return _alphaS2Pi*CF_*
       (( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)+
 	 ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v )/(1.-xt)
        + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
@@ -340,17 +350,17 @@ double MEPP2ZHPowheg::Ftilde_qq(double xt, double v) const {
       // x=1:
       if(v<=eps) {
 	// x==1, v=0 (soft and collinear with particle b):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
 	      );
       } else if(v>=1.-eps) {
 	// x==1, v=1 (soft and collinear with particle a):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
 	      );
       } else {
 	// x==1, 0<v<1 (soft wide angle emission):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
 	      + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
 	      );
@@ -359,14 +369,14 @@ double MEPP2ZHPowheg::Ftilde_qq(double xt, double v) const {
       // x<1:
       if(v<=eps) {
 	// x<1 but v=0 (collinear with particle b, but not soft):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
 	      )/(1.-xt)
 	    + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v) 
 	    );
       } else if(v>=1.-eps) {
 	// x<1 but v=1 (collinear with particle a, but not soft):
-	return _alphaS2Pi*_CF*
+	return _alphaS2Pi*CF_*
 	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v 
 	      )/(1.-xt)
 	    + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v 

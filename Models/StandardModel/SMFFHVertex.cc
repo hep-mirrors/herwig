@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMFFHVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,37 +19,40 @@
 
 using namespace Herwig;
 
+IBPtr SMFFHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SMFFHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+
 SMFFHVertex::SMFFHVertex()  {
-  // PDG codes for the particles
-  vector<long> first,second,third;
-  // the quarks
-  for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
-  }
-  // the leptons
-  for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
-  }
-  setList(first,second,third);
   // set up for the couplings
   _couplast=InvEnergy();
   _idlast=0;
   _q2last=ZERO;
   _masslast=ZERO;
   _mw=ZERO;
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void SMFFHVertex::doinit() {
+  // PDG codes for the particles
+  // the quarks
+  for(int ix=1;ix<7;++ix) {
+    addToList(-ix, ix, 25);
+  }
+  // the leptons
+  for(int ix=11;ix<17;ix+=2) {
+    addToList(-ix, ix, 25);
+  }
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) 
     throw InitException();
   _mw= getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  orderInGem(1);
-  orderInGs(0);
   FFSVertex::doinit();
 }
 
@@ -74,36 +77,23 @@ void SMFFHVertex::Init() {
   
 }
 
-void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
-  int iferm=abs(a->id());
+void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
+  int iferm=abs(aa->id());
   // left and right couplings set to one
-  setLeft(1.); setRight(1.);
+  left (1.);
+  right(1.);
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0./GeV) {
     _couplast = -0.5*weakCoupling(q2)/_mw;
     _q2last=q2;
     _idlast=iferm;
-    if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-      _masslast=_theSM->mass(q2,a);
-    }
-    else {
-      throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
-				       << "Unknown particle in Higgs vertex" 
-				       << Exception::warning;
-      _masslast = ZERO;
-    }
+    assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
+    _masslast=_theSM->mass(q2,aa);
   }
   else if(iferm!=_idlast) {
     _idlast=iferm;
-    if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-      _masslast=_theSM->mass(q2,a);
-    }
-    else {
-      throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
-				       << "Unknown particle in Higgs vertex" 
-				       << Exception::warning;
-      _masslast = ZERO;
-    }
+    assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
+    _masslast=_theSM->mass(q2,aa);
   }
-  setNorm(_couplast*_masslast);
+  norm(_couplast*_masslast);
 }

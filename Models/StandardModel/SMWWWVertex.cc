@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMWWWVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -38,44 +38,31 @@ void SMWWWVertex::Init() {
 }
     
 // couplings for the WWW vertex
-void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
-			      Direction d1,Direction d2,Direction d3) {
-  using ThePEG::Helicity::intermediate;
+void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   int ida=a->id();
   int idb=b->id();
   int idc=c->id();
-  if(abs(ida)!=24&&idb!=-idc) {
-    if(d2!=intermediate) idc=-idc;
-    if(d3!=intermediate) idb=-idb;
-  }
-  else if(abs(idb)!=24&&ida!=idc) {
-    if(d3!=intermediate) ida=-ida;
-    if(d1!=intermediate) idc=-idc;
-  }
-  else if(abs(idc)!=24&&ida!=-idb) {
-    if(d2!=intermediate) ida=-ida;
-    if(d1!=intermediate) idb=-idb;
-  }
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   // W- W+ photon and cylic perms
-  if((ida==-24 && idb== 24 && idc== 22) || (ida== 22 && idb==-24 && idc== 24) || 
-     (ida== 24 && idb== 22 && idc==-24) )          setNorm(_couplast);
+  if((ida==-24 && idb== 24 && idc== 22) || 
+     (ida== 22 && idb==-24 && idc== 24) || 
+     (ida== 24 && idb== 22 && idc==-24) )          norm(_couplast);
   // W+ W- photon (anticylic perms of above)
   else if((ida== 24 && idb==-24 && idc== 22) || 
           (ida== 22 && idb== 24 && idc==-24) || 
-          (ida==-24 && idb== 22 && idc== 24) )     setNorm(-_couplast);
+          (ida==-24 && idb== 22 && idc== 24) )     norm(-_couplast);
   // W- W+ Z and cylic perms
   else if((ida==-24 && idb== 24 && idc== 23) || 
           (ida== 23 && idb==-24 && idc== 24) || 
-          (ida== 24 && idb== 23 && idc==-24) )     setNorm(_couplast*_zfact);
+          (ida== 24 && idb== 23 && idc==-24) )     norm(_couplast*_zfact);
   // W+ W- Z (anticylic perms of above)
   else if((ida== 24 && idb==-24 && idc== 23) || 
           (ida== 23 && idb== 24 && idc==-24) || 
-          (ida==-24 && idb== 23 && idc== 24) )     setNorm(-_couplast*_zfact);
+          (ida==-24 && idb== 23 && idc== 24) )     norm(-_couplast*_zfact);
   else
     throw Helicity::HelicityConsistencyError() 
       << "SMWWWVertex::setCoupling "
@@ -86,22 +73,15 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
 
 SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.), 
 			     _q2last(sqr(Constants::MaxEnergy)) {
-  // particles
-  vector<long> first,second,third;
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(22);
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(23);
-  setList(first,second,third);
+  orderInGem(1);
+  orderInGs(0);
 }
 
 void SMWWWVertex::doinit() {
-  orderInGem(1);
-  orderInGs(0);
+  addToList(24, -24, 22);
+  addToList(24, -24, 23);
   VVVVertex::doinit();
   // factor for the Z vertex
-  double sw2=generator()->standardModel()->sin2ThetaW();
+  double sw2=sin2ThetaW();
   _zfact = sqrt((1.-sw2)/sw2);
 }

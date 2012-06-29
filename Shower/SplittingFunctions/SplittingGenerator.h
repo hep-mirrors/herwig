@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SplittingGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,72 +13,14 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "Herwig++/Shower/Base/Branching.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "ThePEG/Utilities/Rebinder.h"
-#include<vector>     
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-/**
- *  Forward declaration of the ShowerParticle class
- */
-class ShowerParticle;
-
-/**
- *  typedef to pair the SudakovFormFactor and the particles in a branching
- */
-typedef pair<SudakovPtr,IdList> BranchingElement;
-
-/**
- *  typedef to pair the PDG code of the particle and the BranchingElement
- */
-typedef multimap<long,BranchingElement> BranchingList;
-
-/**
- *  typedef to create a structure which can be inserted into a BranchingList
- */
-typedef pair<long, BranchingElement> BranchingInsert; 
-
-/** \ingroup Shower
- *  The branching struct is used to store information on the branching.
- *  The kinematics variable is a pointer to the ShowerKinematics for the branching
- *  The sudakov variable is a pointer to the SudakovFormFactor for the branching
- *  The ids  variable is the list of particles in the branching
- */
-struct Branching {
- 
-  /**
-   *  Pointer to the ShowerKinematics object for the branching
-   */
-  ShoKinPtr kinematics;
-  
-  /**
-   *  PDG codes of the particles in the branching
-   */
-  IdList ids; 
-
-  /**
-   *  The SudakovFormFactor for the branching
-   */
-  tSudakovPtr sudakov;
-
-  /**
-   *  Constructor for the struct
-   * @param a pointer to the ShowerKinematics object for the branching
-   * @param c PDG codes of the particles in the branching
-   * @param d The SudakovFormFactor for the branching
-   */
-  Branching(ShoKinPtr a, IdList c,tSudakovPtr d) : kinematics(a), ids(c), sudakov(d) {}
-
-  /**
-   *  Default constructor
-   */
-  Branching() {}
-};
 
 /** \ingroup Shower
  * 
@@ -143,10 +85,12 @@ public:
    *
    * @param particle The particle to be evolved
    * @param enhance The factor by which to ehnace the emission of radiation
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching chooseForwardBranching(ShowerParticle & particle,
-				   double enhance) const; 
+				   double enhance,
+				   ShowerInteraction::Type type) const; 
 
   /**
    * Select the next branching of a particles for the initial-state shower
@@ -155,11 +99,13 @@ public:
    * @param maxscale The maximum scale
    * @param minmass Minimum mass of the particle after the branching
    * @param enhance The factor by which to ehnace the emission of radiation
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
 				 Energy maxscale,
-				 Energy minmass,double enhance) const; 
+				 Energy minmass,double enhance,
+				 ShowerInteraction::Type type) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -177,14 +123,18 @@ public:
    *
    * @param particle The particle to be evolved
    * @param enhance The factor by which to ehnace the emission of radiation
-   * @param beam The beam particle
+   * @param beamparticle The beam particle
+   * @param beam The BeamParticleData object
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching 
   chooseBackwardBranching(ShowerParticle & particle,
-			  PPtr beam,
+			  PPtr beamparticle,
 			  double enhance,
-			  Ptr<BeamParticleData>::transient_const_pointer) const;
+			  Ptr<BeamParticleData>::transient_const_pointer beam,
+			  ShowerInteraction::Type type,
+			  tcPDFPtr , Energy ) const;
   //@}
 
 public:
@@ -218,6 +168,16 @@ public:
    *  Add an initial-state splitting
    */
   string addInitialSplitting(string arg) { return addSplitting(arg,false); }
+
+  /**
+   *  Add a final-state splitting
+   */
+  string deleteFinalSplitting(string arg) { return deleteSplitting(arg,true); }
+
+  /**
+   *  Add an initial-state splitting
+   */
+  string deleteInitialSplitting(string arg) { return deleteSplitting(arg,false); }
   //@}
 
   /**
@@ -313,6 +273,14 @@ private:
   void addToMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
 
   /**
+   * Remove a branching to the map
+   * @param ids PDG coeds of the particles in the branching
+   * @param sudakov The SudakovFormFactor for the branching
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  void deleteFromMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
+
+  /**
    * Obtain the reference vectors for a final-state particle
    * @param particle The particle
    * @param p The p reference vector
@@ -327,6 +295,13 @@ private:
    * @param final Whether this is an initial- or final-state branching 
    */
   string addSplitting(string in ,bool final);
+
+  /**
+   * Delete a splitting
+   * @param in string to be parsed
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  string deleteSplitting(string in ,bool final);
 
 private:
 
@@ -393,14 +368,6 @@ struct ClassTraits<Herwig::SplittingGenerator>
   : public ClassTraitsBase<Herwig::SplittingGenerator> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SplittingGenerator"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SplittingGenerator is implemented. It may also include several, space-separated,
-   * libraries if the class SplittingGenerator depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

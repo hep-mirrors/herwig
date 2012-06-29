@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSWWHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSWWHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -30,18 +29,10 @@ class SSWWHVertex: public VVSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSWWHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSWWHVertex();
-  //@}
 
 public:
 
@@ -87,13 +78,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -210,7 +201,5 @@ struct ClassTraits<Herwig::SSWWHVertex>
 /** @endcond */
 
 }
-
-#include "SSWWHVertex.icc"
 
 #endif /* HERWIG_SSWWHVertex_H */

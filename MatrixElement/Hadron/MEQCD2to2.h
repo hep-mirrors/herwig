@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEQCD2to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2 class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -26,12 +26,13 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /**
- * Here is the documentation of the MEQCD2to2 class.
+ * The MEQCD2to2 class provides the matrix elements for \f$2\to2\f$ 
+ * QCD scattering processes in hadron-hadron collisions.
  *
  * @see \ref MEQCD2to2Interfaces "The interfaces"
  * defined for MEQCD2to2.
  */
-class MEQCD2to2: public HwME2to2Base {
+class MEQCD2to2: public HwMEBase {
 
 public:
 
@@ -241,13 +242,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -377,7 +378,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEQCD2to2,1> {
   /** Typedef of the first base class of MEQCD2to2. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

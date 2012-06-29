@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SplittingGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -21,6 +21,8 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -82,6 +84,20 @@ void SplittingGenerator::Init() {
      "particle that is PRODUCED by the splitting. b is the initial state "
      "particle that is splitting in the shower.",
      &SplittingGenerator::addInitialSplitting);
+
+  static Command<SplittingGenerator> interfaceDeleteSplitting
+    ("DeleteFinalSplitting",
+     "Deletes a splitting from the list of splittings considered "
+     "in the shower. Command is a->b,c; Sudakov",
+     &SplittingGenerator::deleteFinalSplitting);
+
+  static Command<SplittingGenerator> interfaceDeleteInitialSplitting
+    ("DeleteInitialSplitting",
+     "Deletes a splitting from the list of initial splittings to consider "
+     "in the shower. Command is a->b,c; Sudakov. Here the particle a is the "
+     "particle that is PRODUCED by the splitting. b is the initial state "
+     "particle that is splitting in the shower.",
+     &SplittingGenerator::deleteInitialSplitting);
 }
 
 string SplittingGenerator::addSplitting(string arg, bool final) {
@@ -117,6 +133,39 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   return "";
 }
 
+string SplittingGenerator::deleteSplitting(string arg, bool final) {
+  string partons = StringUtils::car(arg);
+  string sudakov = StringUtils::cdr(arg);
+  vector<tPDPtr> products;
+  string::size_type next = partons.find("->");
+  if(next == string::npos) 
+    return "Error: Invalid string for splitting " + arg;
+  if(partons.find(';') == string::npos) 
+    return "Error: Invalid string for splitting " + arg;
+  tPDPtr parent = Repository::findParticle(partons.substr(0,next));
+  partons = partons.substr(next+2);
+  do {
+    next = min(partons.find(','), partons.find(';'));
+    tPDPtr pdp = Repository::findParticle(partons.substr(0,next));
+    partons = partons.substr(next+1);
+    if(pdp) products.push_back(pdp);
+    else return "Error: Could not create splitting from " + arg;
+  } while(partons[0] != ';' && partons.size());
+  SudakovPtr s;
+  s = dynamic_ptr_cast<SudakovPtr>(Repository::TraceObject(sudakov));
+  if(!s) return "Error: Could not load Sudakov " + sudakov + '\n';
+  IdList ids;
+  ids.push_back(parent->id());
+  for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
+    ids.push_back((*it)->id());
+  // check splitting can handle this
+  if(!s->splittingFn()->accept(ids)) 
+    return "Error: Sudakov " + sudakov + "can't handle particles\n";
+  // delete from map
+  deleteFromMap(ids,s,final);
+  return "";
+}
+
 void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool final) {
   if(isISRadiationON() && !final) {
     _bbranchings.insert(BranchingInsert(ids[1],BranchingElement(s,ids)));
@@ -128,8 +177,31 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
   }
 }
 
+void SplittingGenerator::deleteFromMap(const IdList &ids, 
+				       const SudakovPtr &s, bool final) {
+  if(isISRadiationON() && !final) {
+    pair<BranchingList::iterator,BranchingList::iterator> 
+      range = _bbranchings.equal_range(ids[1]);
+    for(BranchingList::iterator it=range.first;it!=range.second&&it->first==ids[1];++it) {
+      if(it->second.first==s&&it->second.second==ids)
+	_bbranchings.erase(it);
+    }
+    s->removeSplitting(ids);
+  }
+  if(isFSRadiationON() &&  final) {
+    pair<BranchingList::iterator,BranchingList::iterator> 
+      range = _fbranchings.equal_range(ids[0]);
+    for(BranchingList::iterator it=range.first;it!=range.second&&it->first==ids[0];++it) {
+      if(it->second.first==s&&it->second.second==ids)
+	_fbranchings.erase(it);
+    }
+    s->removeSplitting(ids);
+  }
+}
+
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
-						     double enhance) const {
+						     double enhance,
+						     ShowerInteraction::Type type) const {
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
   SudakovPtr sudakov=SudakovPtr();
@@ -142,6 +214,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
+    if(type!=cit->second.first->interactionType()) continue;
     // check size of scales beforehand...
     ShoKinPtr newKin= cit->second.first->
       generateNextTimeBranching(particle.evolutionScale(), 
@@ -165,10 +238,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   return Branching(kinematics, ids,sudakov);
 }
 
-Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
-						   Energy stoppingScale,
-						   Energy minmass,
-						   double enhance) const {
+Branching SplittingGenerator::
+chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
+		     Energy minmass, double enhance,
+		     ShowerInteraction::Type type) const {
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
   SudakovPtr sudakov;
@@ -181,6 +254,7 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
+    if(type!=cit->second.first->interactionType()) continue;
     ShoKinPtr newKin;
     if(particle.evolutionScale() < stoppingScale) 
       newKin = cit->second.first->
@@ -207,7 +281,9 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
 Branching SplittingGenerator::
 chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			double enhance,
-			Ptr<BeamParticleData>::transient_const_pointer beam) const {
+			Ptr<BeamParticleData>::transient_const_pointer beam,
+			ShowerInteraction::Type type,
+			tcPDFPtr pdf, Energy freeze) const {
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   SudakovPtr sudakov;
@@ -220,6 +296,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
+    if(type!=cit->second.first->interactionType()) continue;
+    cit->second.first->setPDF(pdf,freeze);
     ShoKinPtr newKin=cit->second.first->
       generateNextSpaceBranching(particle.evolutionScale(),
 				 cit->second.second, particle.x(),

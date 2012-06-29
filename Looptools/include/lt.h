@@ -1,7 +1,7 @@
 * lt.h
 * internal common blocks for the LoopTools routines
 * this file is part of LoopTools
-* last modified 23 Nov 05 th
+* last modified 21 Dec 10 th
 
 
 #include "ff.h"
@@ -15,17 +15,29 @@
 	integer ncaches
 	parameter (ncaches = 8)
 
-	integer*8 cacheptr(KIND,4,ncaches)
+	integer*8 cacheptr(4,KIND,ncaches)
 	integer*8 savedptr(2,ncaches)
 	double precision maxdev
-	integer serial, warndigits, errdigits, versionkey
+	integer warndigits, errdigits
+	integer serial, versionkey
 	integer debugkey, debugfrom, debugto
 
 	common /ltvars/
      &    cacheptr, savedptr,
      &    maxdev,
-     &    serial, warndigits, errdigits, versionkey,
+     &    warndigits, errdigits,
+     &    serial, versionkey,
      &    debugkey, debugfrom, debugto
+
+	integer cmpbits
+
+	common /ltcache/ cmpbits
 
 	double complex cache(2,ncaches)
 	equivalence (cacheptr, cache)
+
+#ifndef sig
+#define sig(c) int(sign(1D0,DBLE(r))
+#define DEBUGLEVEL ibits(debugkey,8,2)
+#endif
+
