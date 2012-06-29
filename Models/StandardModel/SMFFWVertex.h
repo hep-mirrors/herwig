@@ -1,13 +1,17 @@
 // -*- C++ -*-
+//
+// SMFFWVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMFFWVertex_H
 #define HERWIG_SMFFWVertex_H
 //
 // This is the declaration of the SMFFWVertex class.
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/StandardModel/CKMBase.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -24,13 +28,10 @@ class SMFFWVertex: public FFVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMFFWVertex();
-  //@}
+  SMFFWVertex();
   
 public:
   
@@ -72,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -88,7 +89,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   
 private:
   
@@ -103,16 +104,6 @@ private:
   SMFFWVertex & operator=(const SMFFWVertex &);
 
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theSM;
-
-  /**
-   * Pointer to the CKM object.
-   */
-  Ptr<CKMBase>::transient_pointer _theCKM;
 
   /**
    * Storage of the couplings.
@@ -135,8 +126,6 @@ private:
   //@}
 };
 }
-
-#include "SMFFWVertex.icc"
 
 namespace ThePEG {
 

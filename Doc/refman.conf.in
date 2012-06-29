@@ -1,5 +1,9 @@
-@INCLUDE=refmanThePEG.conf
+# @configure_input@
+@INCLUDE=@THEPEGPATH@/share/ThePEG/Doc/refman.conf
 PROJECT_NAME     = Herwig++
-INPUT            = ../
-GENERATE_TAGFILE = Herwig++-refman.tag
+PROJECT_NUMBER   = @VERSION@
+INPUT            = @top_builddir@ @top_srcdir@
+EXCLUDE          = @top_builddir@/include
+INCLUDE_PATH     = @top_builddir@/include @top_builddir@/Config
 TAGFILES         = tagfileThePEG.tag=file://@THEPEGPATH@/share/ThePEG/Doc/refman-html
+GENERATE_TAGFILE = Herwig++-refman.tag

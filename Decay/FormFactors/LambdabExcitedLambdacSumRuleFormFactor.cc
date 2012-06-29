@@ -7,36 +7,51 @@
 #include "LambdabExcitedLambdacSumRuleFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LambdabExcitedLambdacSumRuleFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
-LambdabExcitedLambdacSumRuleFormFactor::~LambdabExcitedLambdacSumRuleFormFactor() {}
+LambdabExcitedLambdacSumRuleFormFactor::LambdabExcitedLambdacSumRuleFormFactor() {
+  _xi1=0.29;
+  _rho2=2.01;
+  // modes handled by this form-factor
+  // lambda_b to lambda_c1
+  addFormFactor(5122,14122,2,2,1,2,5,4);
+  // lambda_b to lambda_c1*
+  addFormFactor(5122,4124 ,2,4,1,2,5,4);
+}
 
 void LambdabExcitedLambdacSumRuleFormFactor::
 persistentOutput(PersistentOStream & os) const {
   os << _xi1 << _rho2;
 }
 
-void LambdabExcitedLambdacSumRuleFormFactor::persistentInput(PersistentIStream & is, int) {
+void LambdabExcitedLambdacSumRuleFormFactor::
+persistentInput(PersistentIStream & is, int) {
   is >> _xi1 >> _rho2;
 }
 
-ClassDescription<LambdabExcitedLambdacSumRuleFormFactor> LambdabExcitedLambdacSumRuleFormFactor::initLambdabExcitedLambdacSumRuleFormFactor;
+ClassDescription<LambdabExcitedLambdacSumRuleFormFactor>
+LambdabExcitedLambdacSumRuleFormFactor::initLambdabExcitedLambdacSumRuleFormFactor;
 // Definition of the static class description member.
 
 void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 
   static ClassDocumentation<LambdabExcitedLambdacSumRuleFormFactor> documentation
     ("The LambdabExcitedLambdacSumRuleFormFactor class implements the"
-     " form-factors for Lambda_b to Lambda_c1(*) from hep-ph/0012114.");
+     " form-factors for Lambda_b to Lambda_c1(*) from hep-ph/0012114.",
+     "Lambda_b to Lambda_c1(*) used the formfactors from \\cite{Huang:2000xw}.",
+     "%\\cite{Huang:2000xw}\n"
+     "\\bibitem{Huang:2000xw}\n"
+     "  M.~Q.~Huang, J.~P.~Lee, C.~Liu and H.~S.~Song,\n"
+     "  %``Leading Isgur-Wise form factor of Lambda/b to Lambda/c1 transition  using\n"
+     "  %QCD sum rules,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 502}, 133 (2001)\n"
+     "  [arXiv:hep-ph/0012114].\n"
+     "  %%CITATION = PHLTA,B502,133;%%\n"
+     );
 
   static Parameter<LambdabExcitedLambdacSumRuleFormFactor,double> interfaceXi
     ("Xi",
@@ -55,8 +70,8 @@ void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 void LambdabExcitedLambdacSumRuleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
-			   Complex & f1a,Complex & f2a,Complex & f3a)
-{
+			   Complex & f1a,Complex & f2a,Complex & f3a) {
+  useMe();
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2)),orr(1./sqrt(3.));
   // the universal form-factor
   double xi=_xi1*(1.-_rho2*(omega-1.));
@@ -84,6 +99,7 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
 				 Complex & f1a,Complex & f2a,
 				 Complex & f3a,Complex & f4a )
 {
+  useMe();
   // the omega value
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2));
   // the universal form-factor
@@ -114,18 +130,12 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
 
 void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output,
 							    bool header,
-							    bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig::LambdabExcitedLambdacSumRuleFormFactor " 
-	    << fullName() << " \n";}
-  output << "set " << fullName() << ":Xi          " << _xi1          << " \n";
-  output << "set " << fullName() << ":Rho2        " << _rho2         << " \n";
+							    bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::LambdabExcitedLambdacSumRuleFormFactor " 
+		    << name() << " \n";
+  output << "newdef " << name() << ":Xi          " << _xi1          << " \n";
+  output << "newdef " << name() << ":Rho2        " << _rho2         << " \n";
   BaryonFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-
-
-}
-

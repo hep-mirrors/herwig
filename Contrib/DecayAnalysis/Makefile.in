@@ -1,0 +1,52 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find plugins here: INSERT URL
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE=
+HERWIGINCLUDE=
+GSLINCLUDE=
+LDFLAGS = 
+SHARED_FLAG = 
+INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
+#
+# C++ flags
+# 
+CXX = 
+CXXFLAGS = 
+
+ALLCCFILES=$(shell echo *.cc)
+
+default : HwDecayAnalysis.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
+
+HwDecayAnalysis.so: a1DecayAnalysis.o PScalarVectorFermionsAnalysis.o\
+                    BabarBDecayAnalysis.o SemiLeptonicDecayAnalysis.o\
+                    BeamCorrelationAnalysis.o SemiLeptonicDPiAnalysis.o\
+                    BranchingRatioAnalysis.o Upsilon4SMultiplicityCount.o\
+                    BtoSGammaAnalysis.o Upsilon4SSpectrumAnalysis.o\
+                    DDalitzAnalysis.o VectorPScalarFermionsAnalysis.o\
+                    EtaDecayAnalysis.o VffGammaAnalysis.o VPPGammaAnalysis.o\
+                    OmegaPhi3PionAnalysis.o OniumToOniumPiPiAnalysis.o\
+	            ZPhotonsAnalysis.o Pi4ElectronAnalysis.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
+		a1DecayAnalysis.o PScalarVectorFermionsAnalysis.o\
+		BabarBDecayAnalysis.o SemiLeptonicDecayAnalysis.o\
+		BeamCorrelationAnalysis.o SemiLeptonicDPiAnalysis.o\
+		BranchingRatioAnalysis.o Upsilon4SMultiplicityCount.o\
+		BtoSGammaAnalysis.o Upsilon4SSpectrumAnalysis.o\
+		DDalitzAnalysis.o VectorPScalarFermionsAnalysis.o\
+		EtaDecayAnalysis.o VffGammaAnalysis.o VPPGammaAnalysis.o\
+		OmegaPhi3PionAnalysis.o OniumToOniumPiPiAnalysis.o\
+		ZPhotonsAnalysis.o Pi4ElectronAnalysis.o $(SHARED_FLAG) $(LDFLAGS) -o HwDecayAnalysis.so
+
+clean:
+	rm -f $(ALLCCFILES:.cc=.o) HwDecayAnalysis.so

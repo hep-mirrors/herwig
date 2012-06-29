@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// a1SimpleDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the a1SimpleDecayer class.
 //
@@ -22,7 +29,7 @@ a1SimpleDecayer::a1SimpleDecayer()
   : _rhomass(3), _rhowidth(3), _rhowgts(3),_localparameters(true), 
     _coupling(47.95/GeV), _onemax(5.4474), _twomax(5.47784), 
     _threemax(5.40185), _onewgts(6), 
-    _twowgts(6), _threewgts(6), _mpi(0.*MeV) {
+    _twowgts(6), _threewgts(6), _mpi(ZERO) {
   // rho masses, widths and weights
   _rhomass[0] = 0.773*GeV; _rhowidth[0] = 0.145*GeV; _rhowgts[0] =  1.0;  
   _rhomass[1] = 1.370*GeV; _rhowidth[1] = 0.510*GeV; _rhowgts[1] = -0.145;
@@ -37,7 +44,7 @@ a1SimpleDecayer::a1SimpleDecayer()
   generateIntermediates(true);
 }
 
-void a1SimpleDecayer::doinit() throw(InitException) {
+void a1SimpleDecayer::doinit() {
   DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
@@ -52,7 +59,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
 		    getParticleData(30113)};
   tPDPtr rhom[3] = {getParticleData(-213),getParticleData(-100213),
 		    getParticleData(-30213)};
-  PDVector extpart(4);
+  tPDVector extpart(4);
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
   // decay mode a_1+ -> pi+ pi0 pi0
@@ -88,12 +95,12 @@ void a1SimpleDecayer::doinit() throw(InitException) {
     // first rho channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,2);
-    newchannel->addIntermediate(rhom[ix],0,0.0,1,3);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
     mode->addChannel(newchannel);
     // second channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,1);
-    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
+    newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
   }
   if(_twowgts.size()!=mode->numberChannels()) 
@@ -207,27 +214,27 @@ void a1SimpleDecayer::Init() {
      true);
   static SwitchOption interfaceLocalParametersDefault
     (interfaceLocalParameters,
-     "Default",
+     "ParticleData",
      "Use the values from the particleData objects",
      false);
 
   static Parameter<a1SimpleDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The overall coupling for the decay",
-     &a1SimpleDecayer::_coupling, 1./GeV, 47.95/GeV, 0.0/GeV, 100./GeV,
+     &a1SimpleDecayer::_coupling, 1./GeV, 47.95/GeV, ZERO, 100./GeV,
      false, false, Interface::limited);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1SimpleDecayer::_rhomass,
-     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1SimpleDecayer::_rhowidth,
-     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,double> interfaceRhoWeights
     ("RhoWeights",
@@ -277,12 +284,12 @@ void a1SimpleDecayer::Init() {
 }
 
 int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   if(children.size()!=3) return -1;
   int id(parent->id());
   // check the pions
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
@@ -311,22 +318,22 @@ int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-double a1SimpleDecayer::me2(bool vertex, const int ichan,
-			    const Particle & inpart,
-			    const ParticleVector & decay) const {
-  // wavefunctions of the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex){ 
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
+			    const ParticleVector & decay,MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   Lorentz5Vector<complex<Energy> > current;
   Energy2 s1 = (decay[1]->momentum()+decay[2]->momentum()).m2();
@@ -344,13 +351,10 @@ double a1SimpleDecayer::me2(bool vertex, const int ichan,
       rhoFormFactor(s1,-1)*(decay[1]->momentum()-decay[2]->momentum());
   }
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newME(ix,0,0,0)=_coupling*current.dot(invec[ix]);
-  }
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix)
+    ME()(ix,0,0,0)=_coupling*current.dot(_vectors[ix]);
   // matrix element and identical particle factor
-  double output=newME.contract(rhoin).real();
+  double output=ME().contract(_rho).real();
   if(imode()!=1) output*=0.5;
   // test the output
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
@@ -410,41 +414,61 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
-  output << "set " << fullName() << ":OneMax   " <<   _onemax << "\n";
-  output << "set " << fullName() << ":TwoMax   " <<   _twomax << "\n";
-  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Coupling " << _coupling*GeV << "\n";
+  output << "newdef " << name() << ":OneMax   " <<   _onemax << "\n";
+  output << "newdef " << name() << ":TwoMax   " <<   _twomax << "\n";
+  output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoWeights " << ix << " " 
+    if(ix<3) output << "newdef    " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoWeights " << ix << " " 
+    else     output << "insert " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << fullName() << ":OneChargedWeights " 
+    output << "newdef " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << fullName() << ":TwoChargedWeights " 
+    output << "newdef " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << fullName() << ":ThreeChargedWeights " 
+    output << "newdef " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+// functions to return the Breit-Wigners
+Complex a1SimpleDecayer::rhoFormFactor(Energy2 q2,int ires) const {
+  Complex output(0.),norm(0.);
+  for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix)
+    norm+=_rhowgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix) {
+      output+=_rhowgts[ix]*rhoBreitWigner(q2,ix);
+    }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rhowgts.size()&&temp<3)
+      output=_rhowgts[temp]*rhoBreitWigner(q2,temp);
+    else
+      output=0.;
+  }
+  return output/norm;
 }

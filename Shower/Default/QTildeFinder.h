@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// QTildeFinder.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_QTildeFinder_H
 #define HERWIG_QTildeFinder_H
 //
@@ -8,7 +15,6 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
-#include "QTildeFinder.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -29,8 +35,9 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeFinder();
-
+  QTildeFinder() :  _finalFinalConditions(0),
+		    _initialFinalDecayConditions(0),
+		    _initialInitialConditions(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -61,7 +68,7 @@ protected:
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
    * this method returns their initial evolution scales as a pair.
-   * If something wrong happens, it returns the null (Energy(),Energy()) pair. 
+   * If something wrong happens, it returns the null (ZERO,ZERO) pair. 
    * This method is used by the above setXXXInitialEvolutionScales 
    * methods.
    */
@@ -95,7 +102,8 @@ protected:
    * - 2 is maximal emmision from the anticoloured particle
    * - 3 is randomly selected maximal emmision
    */
-  inline unsigned int finalFinalConditions() const;
+  unsigned int finalFinalConditions() const 
+  {return _finalFinalConditions;}
 
   /**
    * Initial conditions for the shower of an initial-final decay colour connection
@@ -103,7 +111,8 @@ protected:
    * - 1 is maximal emission from the decay product
    * - 2 is the smooth choice
    */
-  inline unsigned int initialFinalDecayConditions() const;
+  unsigned int initialFinalDecayConditions() const
+  {return _initialFinalDecayConditions;}
   //@}
 
 protected:
@@ -114,13 +123,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -164,6 +173,17 @@ private:
    *     available for emissions from the charged child is fairly minimal.
    */
   unsigned int _initialFinalDecayConditions;
+
+  /**
+   * Initial conditions for the shower with an initial-initial colour
+   * connection. This is done according to the colour connection 
+   * calculation in JHEP12(2003)_045. The options act as follows:
+   *  0: This is the default 'symmetric' choice which more or less divides
+   *     the phase space evenly between the two incoming partons.
+   *  1: This increases the phase space for emission from "parton b".
+   *  2: This increases the phase space for emission from "parton c".
+   */
+  unsigned int _initialInitialConditions;
   //@}
 };
 
@@ -197,16 +217,11 @@ struct ClassTraits<Herwig::QTildeFinder>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "QTildeFinder.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeFinder.tcc"
-#endif
 
 #endif /* HERWIG_QTildeFinder_H */

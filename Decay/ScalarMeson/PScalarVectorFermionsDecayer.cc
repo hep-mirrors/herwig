@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// PScalarVectorFermionsDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the PScalarVectorFermionsDecayer class.
 //
@@ -19,6 +26,14 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+
+void PScalarVectorFermionsDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      _maxweight[ix]=mode(ix)->maxWeight();
+  }
+}
 
 PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer() 
   : _coupling(5), _incoming(5), _outgoingV(5), _outgoingf(5), 
@@ -58,7 +73,7 @@ PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer()
   generateIntermediates(false);
 }
 
-void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
+void PScalarVectorFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize=_coupling.size();
@@ -68,7 +83,7 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
     throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
 			  << Exception::abortnow;
   // create the integration channel for each mode 
-  PDVector extpart(4);
+  tPDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma));
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
@@ -96,14 +111,14 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
 }
 
 int PScalarVectorFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   int imode(-1);
   // must be three outgoing particles
   if(children.size()!=3) return imode;
   // ids of the particles
   int id0(parent->id()),idf[2],idv(0);
   unsigned int nf(0);
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   for( ;pit!=children.end();++pit) {
     if((**pit).iSpin()==PDT::Spin1) {
       idv=(**pit).id();
@@ -178,7 +193,7 @@ void PScalarVectorFermionsDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PScalarVectorFermionsDecayer::_coupling,
-     1/MeV, 0, 0/MeV, -10000000/MeV, 10000000/MeV, false, false, true);
+     1/MeV, 0, ZERO, -10000000/MeV, 10000000/MeV, false, false, true);
 
   static ParVector<PScalarVectorFermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -205,31 +220,47 @@ void PScalarVectorFermionsDecayer::Init() {
     ("VMDmass",
      "The mass to use for the particle in the VMD factor",
      &PScalarVectorFermionsDecayer::_VMDmass,
-     MeV, 0, 0*MeV, 0.*MeV, 10000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000.*MeV, false, false, true);
 
   static ParVector<PScalarVectorFermionsDecayer,Energy> interfaceVMDwidth
     ("VMDwidth",
      "The width to use for the particle in the VMD factor",
      &PScalarVectorFermionsDecayer::_VMDwidth,
-     MeV, 0, 0*MeV, 0.*MeV, 10000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000.*MeV, false, false, true);
 
 }
 
-double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
+double PScalarVectorFermionsDecayer::me2(const int,
 					 const Particle & inpart,
-					 const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // vectors containing the spinors and polarization vectors
-  vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  vector<LorentzPolarizationVector> vwave;
-  // set up the spin info for the outgoing particles
-  VectorWaveFunction(vwave     ,decay[0],outgoing,true,true,vertex);
-  SpinorBarWaveFunction(wavebar,decay[1],outgoing,true,vertex);
-  SpinorWaveFunction(   wave   ,decay[2],outgoing,true,vertex);
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  // initialization
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,
+			  PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    // set up the spin information for the decay products
+    VectorWaveFunction::
+      constructSpinInfo(_vectors,decay[0],outgoing,true,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[1],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[2],outgoing,true);
+    return 0.;
+  }
+  // calculate the spinors and polarization vectors
+  VectorWaveFunction::
+    calculateWaveFunctions(_vectors,decay[0],outgoing,true);
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[1],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[2],outgoing);
   // now compute the matrix element
   Complex ii(0.,1.);
   Lorentz5Momentum pff(decay[1]->momentum()+decay[2]->momentum());
@@ -246,21 +277,18 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
   LorentzVector<complex<Energy3> > eps;
   LorentzVector<complex<Energy> > fcurrent;
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   vector<unsigned int> ispin(4);ispin[0]=0;
   for(ispin[3]=0;ispin[3]<2;++ispin[3]) {
     for(ispin[2]=0;ispin[2]<2;++ispin[2]) {
-      fcurrent = wave[ispin[3]].vectorCurrent(wavebar[ispin[2]]);
+      fcurrent = _wave[ispin[3]].vectorCurrent(_wavebar[ispin[2]]);
       // compute the current for this part
       eps = epsilon(decay[0]->momentum(),pff,fcurrent);
       for(ispin[1]=0;ispin[1]<3;++ispin[1]) {
-	newME(ispin)=pre * vwave[ispin[1]].dot(eps);
+	ME()(ispin)=pre *_vectors[ispin[1]].dot(eps);
       }
     }	  
   }
-  ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);rhoin.average();
-  double me = newME.contract(rhoin).real();
+  double me = ME().contract(_rho).real();
 //   //code to test the matrix element against the analytic result
 //   Energy   m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
 //   Energy2 m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
@@ -371,45 +399,45 @@ void PScalarVectorFermionsDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming   " << ix << "  " 
+      output << "newdef " << name() << ":Incoming   " << ix << "  " 
 	     << _incoming[ix]   << "\n";
-      output << "set " << fullName() << ":OutgoingVector  " 
+      output << "newdef " << name() << ":OutgoingVector  " 
 	     << ix << "  " << _outgoingV[ix]  << "\n";
-      output << "set " << fullName() << ":OutgoingFermion  " 
+      output << "newdef " << name() << ":OutgoingFermion  " 
 	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "set " << fullName() << ":OutgoingAntiFermion " 
+      output << "newdef " << name() << ":OutgoingAntiFermion " 
 	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "set " << fullName() << ":Coupling   " << ix << "  " 
+      output << "newdef " << name() << ":Coupling   " << ix << "  " 
 	     << _coupling[ix]*MeV   << "\n";
-      output << "set " << fullName() << ":MaxWeight  " << ix << "  " 
+      output << "newdef " << name() << ":MaxWeight  " << ix << "  " 
 	     << _maxweight[ix]  << "\n";
-      output << "set " << fullName() << ":IncludeVMD " << ix << "  " 
+      output << "newdef " << name() << ":IncludeVMD " << ix << "  " 
 	     << _includeVMD[ix] << "\n";
-      output << "set " << fullName() << ":VMDID      " << ix << "  " 
+      output << "newdef " << name() << ":VMDID      " << ix << "  " 
 	     << _VMDid[ix]      << "\n";
-      output << "set " << fullName() << ":VMDmass    " << ix << "  " 
+      output << "newdef " << name() << ":VMDmass    " << ix << "  " 
 	     << _VMDmass[ix]/MeV    << "\n";
-      output << "set " << fullName() << ":VMDwidth   " << ix << "  " 
+      output << "newdef " << name() << ":VMDwidth   " << ix << "  " 
 	     << _VMDwidth[ix]/MeV   << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming   " << ix << "  " 
+      output << "insert " << name() << ":Incoming   " << ix << "  " 
 	     << _incoming[ix]   << "\n";
-      output << "insert " << fullName() << ":OutgoingVector  " 
+      output << "insert " << name() << ":OutgoingVector  " 
 	     << ix << "  " << _outgoingV[ix]  << "\n";
-      output << "insert " << fullName() << ":OutgoingFermion  " 
+      output << "insert " << name() << ":OutgoingFermion  " 
 	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "insert " << fullName() << ":OutgoingAntiFermion " 
+      output << "insert " << name() << ":OutgoingAntiFermion " 
 	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "insert " << fullName() << ":Coupling   " << ix << "  " 
+      output << "insert " << name() << ":Coupling   " << ix << "  " 
 	     << _coupling[ix]*MeV   << "\n";
-      output << "insert " << fullName() << ":IncludeVMD " << ix << "  " 
+      output << "insert " << name() << ":IncludeVMD " << ix << "  " 
 	     << _includeVMD[ix] << "\n";
-      output << "insert " << fullName() << ":VMDID      " << ix << "  " 
+      output << "insert " << name() << ":VMDID      " << ix << "  " 
 	     << _VMDid[ix]      << "\n";
-      output << "insert " << fullName() << ":VMDmass    " << ix << "  " 
+      output << "insert " << name() << ":VMDmass    " << ix << "  " 
 	     << _VMDmass[ix]/MeV    << "\n";
-      output << "insert " << fullName() << ":VMDwidth   " << ix << "  " 
+      output << "insert " << name() << ":VMDwidth   " << ix << "  " 
 	     << _VMDwidth[ix]/MeV   << "\n";
     }
   }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterHadronizationHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ClusterHadronizationHandler class.
 //
@@ -11,7 +18,6 @@
 #include <ThePEG/Interface/Parameter.h> 
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Handlers/EventHandler.h>
-#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Handlers/Hint.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
@@ -19,16 +25,23 @@
 #include <ThePEG/PDT/PDT.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Utilities/Throw.h>
-#include <ThePEG/PDT/RemnantDecayer.h>
-#include "Remnant.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
 #include "Cluster.h"  
-#include "Remnant.h"
-#include <iostream>
-#include <cassert>
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
+describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
+
+IBPtr ClusterHadronizationHandler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterHadronizationHandler::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
   const {
@@ -40,7 +53,6 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterDecayer
      << ounit(_minVirtuality2,GeV2)
      << ounit(_maxDisplacement,mm)
-     << _softUnderlyingEventMode
      << _underlyingEventHandler;
 }
 
@@ -54,18 +66,23 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterDecayer
      >> iunit(_minVirtuality2,GeV2)
      >> iunit(_maxDisplacement,mm)
-     >> _softUnderlyingEventMode
      >> _underlyingEventHandler;
 }
-
-ClassDescription<ClusterHadronizationHandler> ClusterHadronizationHandler::initClusterHadronizationHandler;
-// Definition of the static class description member.
 
 
 void ClusterHadronizationHandler::Init() {
 
   static ClassDocumentation<ClusterHadronizationHandler> documentation
-    ("This is the main handler class for the Cluster Hadronization");
+    ("This is the main handler class for the Cluster Hadronization",
+     "The hadronization was performed using the cluster model of \\cite{Webber:1983if}.",
+     "%\\cite{Webber:1983if}\n"
+     "\\bibitem{Webber:1983if}\n"
+     "  B.~R.~Webber,\n"
+     "  ``A QCD Model For Jet Fragmentation Including Soft Gluon Interference,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 238}, 492 (1984).\n"
+     "  %%CITATION = NUPHA,B238,492;%%\n"
+     // main manual
+     );
 
   static Reference<ClusterHadronizationHandler,PartonSplitter> 
     interfacePartonSplitter("PartonSplitter", 
@@ -106,7 +123,7 @@ void ClusterHadronizationHandler::Init() {
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2 
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
-     &ClusterHadronizationHandler::_minVirtuality2, GeV2, 0.1*GeV2, 0.0*GeV2, 10.0*GeV2,false,false,false);
+     &ClusterHadronizationHandler::_minVirtuality2, GeV2, 0.1*GeV2, ZERO, 10.0*GeV2,false,false,false);
   
   static Parameter<ClusterHadronizationHandler,Length> interfaceMaxDisplacement 
     ("MaxDisplacement",
@@ -114,36 +131,11 @@ void ClusterHadronizationHandler::Init() {
      &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm, 
      0.0*mm, 1.0e-9*mm,false,false,false);
 
-  static Switch<ClusterHadronizationHandler,bool> interfaceSoftUnderlyingEvent
-    ("SoftUnderlyingEvent",
-     "Set to On if soft underlying event should be run.",
-     &ClusterHadronizationHandler::_softUnderlyingEventMode, false, false, false);
-  static SwitchOption interfaceSoftUnderlyingEventOn
-    (interfaceSoftUnderlyingEvent,
-     "On",
-     "Enable soft underlying event.",
-     true);
-  static SwitchOption interfaceSoftUnderlyingEventOff
-    (interfaceSoftUnderlyingEvent,
-     "Off",
-     "Disable soft underlying event.",
-     false);
-
   static Reference<ClusterHadronizationHandler,StepHandler> interfaceUnderlyingEventHandler
     ("UnderlyingEventHandler",
      "Pointer to the handler for the Underlying Event. "
-     "This must be set when SoftUnderlyingEvent is On.",
+     "Set to NULL to disable.",
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
-}
-
-
-void ClusterHadronizationHandler::doinit() throw(InitException) {
-  HadronizationHandler::doinit();
-  // check that UEHandler is there when _softUnderlyingEventMode is true
-  if (!_underlyingEventHandler && isSoftUnderlyingEventON())
-    Throw<InitException>() << "SoftUnderlyingEvent is set to On, "
-			   << "this requires the pointer\n" 
-			   << name() << ":UnderlyingEventHandler to be set.";
 }
 
 void ClusterHadronizationHandler::doinitrun() {
@@ -167,12 +159,18 @@ namespace {
 
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
-       const Hint &) throw(Veto, Stop, Exception) {
-
+       const Hint &) {
+  useMe();
   PVector currentlist(tagged.begin(),tagged.end());
-
+  // set the scale for coloured particles to just above the gluon mass squared
+  // if less than this so they are classed as perturbative
+  Energy2 Q02 = 1.01*sqr(getParticleData(ParticleID::g)->constituentMass());
+  for(unsigned int ix=0;ix<currentlist.size();++ix) {
+    if(currentlist[ix]->scale()<Q02) currentlist[ix]->scale(Q02);
+  }
+  // split the gluons
   _partonSplitter->split(currentlist);
-
+  // form the clusters
   ClusterVector clusters =
     _clusterFinder->formClusters(currentlist);
 
@@ -186,12 +184,43 @@ handle(EventHandler & ch, const tPVector & tagged,
   tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
 
-    _colourReconnector->rearrange(ch,clusters);
+    // no colour reconnection with baryon-number-violating (BV) clusters
+    ClusterVector CRclusters, BVclusters;
+    CRclusters.reserve( clusters.size() );
+    BVclusters.reserve( clusters.size() );
+    for (size_t ic = 0; ic < clusters.size(); ++ic) {
+      ClusterPtr cl = clusters.at(ic);
+      bool hasClusterParent = false;
+      for (unsigned int ix=0; ix < cl->parents().size(); ++ix) {
+        if (cl->parents()[ix]->id() == ParticleID::Cluster) {
+          hasClusterParent = true;
+          break;
+        }
+      }
+      if (cl->numComponents() > 2 || hasClusterParent) BVclusters.push_back(cl);
+      else CRclusters.push_back(cl);
+    }
 
+    // colour reconnection
+    _colourReconnector->rearrange(CRclusters);
+
+    // tag new clusters as children of the partons to hadronize
+    _setChildren(CRclusters);
+
+    // recombine vectors of (possibly) reconnected and BV clusters
+    clusters.clear();
+    clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
+    clusters.insert( clusters.end(), BVclusters.begin(), BVclusters.end() );
+    
+    // fission of heavy clusters
+    // NB: during cluster fission, light hadrons might be produced straight away
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
 
     lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
 
+    // if the decay of the light clusters was not successful, undo the cluster
+    // fission and decay steps and revert to the original state of the event
+    // record
     if (!lightOK) {
       clusters = savedclusters;
       for_each(clusters.begin(), 
@@ -202,7 +231,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   if (!lightOK)
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
-
 
 
   // decay the remaining clusters
@@ -240,4 +268,46 @@ handle(EventHandler & ch, const tPVector & tagged,
     assert(_underlyingEventHandler);
     ch.performStep(_underlyingEventHandler,Hint::Default());
   }
+  // zero all positions
+  // extract all particles from the event
+  tEventPtr event=ch.currentEvent();
+  vector<tPPtr> particles;
+  particles.reserve(256);
+  event->select(back_inserter(particles), ThePEG::AllSelector());
+  // and the final-state particles
+  set<tPPtr> finalstate;
+  event->selectFinalState(inserter(finalstate));
+  for(vector<tPPtr>::const_iterator pit=particles.begin();
+      pit!=particles.end();++pit) {
+    // if a final-state particle just zero production
+    if(finalstate.find(*pit)!=finalstate.end()) {
+      (**pit).setVertex(LorentzPoint());
+    }
+    // if not zero the lot
+    else {
+      (**pit).setVertex(LorentzPoint());
+      (**pit).setLifeLength(LorentzDistance());
+    }
+  }
 }
+
+void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
+
+  // erase existing information about the partons' children
+  tPVector partons;
+  for (ClusterVector::const_iterator cl = clusters.begin();
+       cl != clusters.end(); cl++) {
+    partons.push_back( (*cl)->colParticle() );
+    partons.push_back( (*cl)->antiColParticle() );
+  }
+  for_each(partons.begin(), partons.end(), mem_fun(&Particle::undecay));
+
+  // give new parents to the clusters: their constituents
+  for (ClusterVector::iterator cl = clusters.begin();
+       cl != clusters.end(); cl++) {
+    (*cl)->colParticle()->addChild(*cl);
+    (*cl)->antiColParticle()->addChild(*cl);
+  }
+
+}
+

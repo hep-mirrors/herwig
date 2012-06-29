@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// LEPBMultiplicity.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_LEPBMultiplicity_H
 #define HERWIG_LEPBMultiplicity_H
 //
@@ -6,15 +13,76 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "MultiplicityCount.h"
-#include "LEPBMultiplicity.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
+
+/** \ingroup Analysis
+ *  Struct for the multiplcity data
+ */
+struct BranchingInfo {
+  /**
+   *  Default constructor
+   * @param mult  The observed multiplcity.
+   * @param error The error on the observed multiplicity
+   */
+  BranchingInfo(double mult=0.,double error=0.);
+
+  /**
+   *  The observed multiplicity
+   */
+  double obsBranching;
+
+  /**
+   *  The error on the observed multiplicity
+   */
+  double obsError;
+
+  /**
+   *  Number of particles of this type
+   */
+  long actualCount;
+
+  /**
+   *  Sum of squares of number per event for error
+   */
+  double sumofsquares;
+
+  /**
+   *  The average fraction per quark
+   * @param N The number of events
+   * @param den The denominator to give the fraction
+   */
+  double simBranching(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   *  The error on the average number per event
+   * @param N The number of events 
+   * @param den The denominator to give the fraction
+   */
+  double simError(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   * Is the result more than \f$3\sigma\f$ from the experimental result
+   * @param N The number of events
+   * @param den The denominator to give the fraction
+   */
+  double nSigma(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   * Plot standard error in a simple barchart
+   * @param N The number of events
+   * @param den The denominator to give the fraction
+   */
+  string bargraph(long N,BranchingInfo den=BranchingInfo());
+};
+
 /**
- * Here is the documentation of the LEPBMultiplicity class.
+ * The LEPBBMultiplicity class is designed to compare the production
+ * rates of \f$B^+\f$, \f$B^0\f$, \f$B^0_s\f$ and B-baryons in
+ * B events at LEP
  *
  * @see \ref LEPBMultiplicityInterfaces "The interfaces"
  * defined for LEPBMultiplicity.
@@ -26,7 +94,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LEPBMultiplicity();
+  LEPBMultiplicity();
 
 public:
 
@@ -70,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -107,29 +175,9 @@ private:
 private:
 
   /**
-   *  The PDG codes of the particles
-   */
-  vector<long> _particlecodes;
-
-  /**
-   * The multiplcity
-   */
-  vector<double> _multiplicity;
-
-  /**
-   * The error
-   */
-  vector<double> _error;
-
-  /**
-   * Species of particle
-   */
-  vector<unsigned int> _species;
-
-  /**
    *  Map of PDG codes to multiplicity info
    */
-  map<long,MultiplicityInfo> _data;
+  map<long,BranchingInfo> _data;
 };
 
 }
@@ -168,7 +216,5 @@ struct ClassTraits<Herwig::LEPBMultiplicity>
 /** @endcond */
 
 }
-
-#include "LEPBMultiplicity.icc"
 
 #endif /* HERWIG_LEPBMultiplicity_H */

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TensorMesonVectorPScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TensorMesonVectorPScalarDecayer class.
 //
@@ -18,9 +25,18 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void TensorMesonVectorPScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()){
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
   :  _incoming(31), _outgoingV(31), _outgoingP(31), 
      _coupling(31), _maxweight(31) {
+  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0));
   // a_2 -> rho pi
   _incoming[0] =  115; _outgoingV[0] =  213; _outgoingP[0] = -211; 
   _coupling[0] = 21.1/GeV2; _maxweight[0] = 10.; 
@@ -102,7 +118,7 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   generateIntermediates(false);
 }
 
-void TensorMesonVectorPScalarDecayer::doinit() throw(InitException) {
+void TensorMesonVectorPScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
@@ -113,7 +129,7 @@ void TensorMesonVectorPScalarDecayer::doinit() throw(InitException) {
   // set up the integration channels
   vector<double> wgt;
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0] = getParticleData(_incoming[ix]);
     extpart[1] = getParticleData(_outgoingV[ix]);
@@ -127,7 +143,7 @@ void TensorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 }
 
 int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc, tcPDPtr parent, 
-						const PDVector & children) const {
+						const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;
@@ -196,7 +212,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorPScalarDecayer::_coupling,
-     1/GeV2, 0, 0/GeV2, 0/GeV2, 100./GeV2, false, false, true);
+     1/GeV2, 0, ZERO, ZERO, 100./GeV2, false, false, true);
 
   static ParVector<TensorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -207,43 +223,41 @@ void TensorMesonVectorPScalarDecayer::Init() {
 }
 
 // matrix elememt for the process
-double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
-					    const Particle & inpart,
-					    const ParticleVector & decay) const {
-  // wave functions etc for the incoming particle
-  vector<LorentzTensor<double> > inten;
-  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
-  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
-		     true,false,vertex);
+double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & inpart,
+					    const ParticleVector & decay,
+					    MEOption meopt) const {
   // check for photons
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
-  // wavefunctions for the decay products
-  vector<LorentzPolarizationVector> vwave;
-  // scalar
-  // workaround for gcc 3.2.3 bug
-  // set up the spin information for ther decay products
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  // vector
-  VectorWaveFunction(vwave,decay[0],outgoing,true,photon,vertex);
+  // stuff for incoming particle
+  if(meopt==Initialize) {
+    _rho = RhoDMatrix(PDT::Spin2);
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+			     incoming,false);
+  }
+  if(meopt==Terminate) {
+    TensorWaveFunction::constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    VectorWaveFunction::constructSpinInfo(_vectors,decay[0],outgoing,true,photon);
+    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[0],outgoing,photon);
   InvEnergy3 fact(_coupling[imode()]/inpart.mass());
-  // set up the matrix element
-  DecayMatrixElement newME(PDT::Spin2,PDT::Spin1,PDT::Spin0);
   // calculate the matrix element
   for(unsigned int inhel=0;inhel<5;++inhel) {
     for(unsigned int vhel=0;vhel<3;++vhel){
-      if(vhel==1&&photon) newME(inhel,vhel,0)=0.;
+      if(vhel==1&&photon) ME()(inhel,vhel,0)=0.;
       else {
 	LorentzVector<complex<InvEnergy> > vtemp=
-	  fact*epsilon(decay[0]->momentum(),vwave[vhel],decay[1]->momentum());
-	newME(inhel,vhel,0)= (decay[1]->momentum()*inten[inhel]).dot(vtemp);
+	  fact*epsilon(decay[0]->momentum(),_vectors[vhel],decay[1]->momentum());
+	ME()(inhel,vhel,0)= (decay[1]->momentum()*_tensors[inhel]).dot(vtemp);
       }
     }
   }
-  ME(newME);
 //   // test of the answer
-//   double me = newME.contract(rhoin).real();
+//   double me = ME().contract(_rho).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					     decay[1]->mass());
 //   double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()])/80.;
@@ -251,7 +265,7 @@ double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 bool TensorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -304,29 +318,30 @@ void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingVector " << ix << " " 
+      output << "newdef " << name() << ":OutgoingVector " << ix << " " 
 	     << _outgoingV[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "newdef " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingP[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV2 << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingVector " << ix << " " 
+      output << "insert " << name() << ":OutgoingVector " << ix << " " 
 	     << _outgoingV[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "insert " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingP[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV2 << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

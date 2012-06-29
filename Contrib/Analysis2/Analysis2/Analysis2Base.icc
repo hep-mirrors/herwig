@@ -1,0 +1,127 @@
+// -*- C++ -*-
+
+// (C) 2007-2009 Simon Plaetzer -- sp@particle.uni-karlsruhe.de
+
+#include "ThePEG/Utilities/Rebinder.h"
+
+namespace Analysis2 {
+
+inline Analysis2Base::Analysis2Base()
+ : _output(Histogram2OutputPtr()), _histograms(map<string,Histogram2Ptr>()),
+   _outputOptions(map<string,Histogram2Options>()), _datachannels(map<string,string>()),
+   _normalisation(map<string,int>()),
+   _bookPerSubprocess(false), _lastEvent(tcEventPtr()), _minMult(0), _maxMult(0),
+   _parallel(false), _jetFinder(JetFinderPtr()), _eventExtractor() {}
+
+inline void Analysis2Base::insertObservable (const string& name, Histogram2Ptr histo,
+					     const Histogram2Options& options) {
+  // overwrite the histogram, but do not change any options
+  // to properly handle parallel runs
+  _histograms[name] = histo;
+  _outputOptions.insert(make_pair(name,options));
+  histo->setName(name);
+  if (!histo->haveChannel("MC"))
+    histo->insertChannel("MC",HistogramChannel(histo->numberOfBins()));
+}
+
+inline void Analysis2Base::insertObservable (const string& name,
+					     const string& dataName,
+					     const string& dataFile,
+					     const Histogram2Options& options) {
+  _histograms.insert(make_pair(name,new_ptr(Histogram2(dataFile,dataName))));
+  _outputOptions.insert(make_pair(name,options));
+  _datachannels.insert(make_pair(name,dataName));
+  _histograms.find(name)->second->setName(name);
+  _histograms.find(name)->second->insertChannel("MC");
+}
+
+inline tcHistogram2Ptr Analysis2Base::histogram (const string& name) const {
+  map<string,Histogram2Ptr>::const_iterator h = _histograms.find(name);
+  if (h != _histograms.end()) return h->second;
+  return tcHistogram2Ptr();
+}
+
+inline tcHistogram2OutputPtr Analysis2Base::output () const {
+  return _output;
+}
+
+inline tHistogram2Ptr Analysis2Base::histogram (const string& name) {
+  map<string,Histogram2Ptr>::iterator h = _histograms.find(name);
+  if (h != _histograms.end()) return h->second;
+  return tHistogram2Ptr();
+}
+
+inline tHistogram2OutputPtr Analysis2Base::output () {
+  return _output;
+}
+
+inline tcJetFinderPtr Analysis2Base::jetFinder () const {
+  return _jetFinder;
+}
+
+inline tJetFinderPtr Analysis2Base::jetFinder () {
+  return _jetFinder;
+}
+
+inline tcEventPtr Analysis2Base::lastEvent () const {
+  return _lastEvent;
+}
+
+inline unsigned int Analysis2Base::minMult () const {
+  return _minMult;
+}
+
+inline unsigned int Analysis2Base::maxMult () const {
+  return _maxMult;
+}
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+inline void Analysis2Base::finalize() {
+  for(map<string,Histogram2Ptr>::iterator h = _histograms.begin();
+      h != _histograms.end(); ++h) {
+    h->second->xSec(generator()->currentEventHandler()->histogramScale());
+    h->second->store(h->first);
+  }
+}
+
+inline void Analysis2Base::dofinish() {
+  AnalysisHandler::dofinish();
+  finalize();
+}
+
+inline void Analysis2Base::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  for(map<string,Histogram2Ptr>::iterator h = _histograms.begin();
+      h != _histograms.end(); ++h)
+    h->second = trans.translate(h->second);
+  AnalysisHandler::rebind(trans);
+}
+
+inline IVector Analysis2Base::getReferences() {
+  IVector ret = AnalysisHandler::getReferences();
+  // ret.push_back(dummy);
+  for(map<string,Histogram2Ptr>::iterator h = _histograms.begin();
+      h != _histograms.end(); ++h)
+    ret.push_back(h->second);
+  return ret;
+}
+
+inline string Analysis2Base::startCombine (string) {
+  doinit ();
+  _output->initialize ();
+  _backParallel = _parallel;
+  _parallel = false;
+  return "";
+}
+
+inline string Analysis2Base::finishCombine (string) {
+  _output->finalize();
+  _parallel = _backParallel;
+  return "";
+}
+
+}

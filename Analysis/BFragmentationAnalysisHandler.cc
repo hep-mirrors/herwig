@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BFragmentationAnalysisHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BFragmentationAnalysisHandler class.
 //
@@ -18,7 +25,7 @@ using namespace Herwig;
 void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
 					    int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
-
+  double weight = event->weight();
   ///////////////////////////
   // Hadron Level Analysis //
   ///////////////////////////
@@ -29,7 +36,7 @@ void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
   tPVector particles(allParticles.begin(),allParticles.end());
   // numerator
   _emax = 0.5*generator()->maximumCMEnergy();   
-  analyze(particles); 
+  analyze(particles,weight); 
 
   ////////////////////////////////////////
   // Parton Level Analysis (e+e-->bbar) //
@@ -41,20 +48,16 @@ void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
   // Finally go off down the b quark lines to find the b's just before they
   // hadronize (b_end and bbar_end respectively).
   ParticleSet pert=event->primaryCollision()->step(1)->all();
-  analyze_bquarks(pert);
+  analyze_bquarks(pert,weight);
 }
 
-void BFragmentationAnalysisHandler::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
+void BFragmentationAnalysisHandler::analyze(tPPtr part, double weight) {
+  _fragBxE ->addWeighted(part->momentum().e()/_emax, weight);
+  _fragBxEa->addWeighted(part->momentum().e()/_emax, weight);
 }
 
-void BFragmentationAnalysisHandler::analyze(tPPtr part) {
-  *_fragBxE  += part->momentum().e()/_emax;
-  *_fragBxEa += part->momentum().e()/_emax;
-}
-
-void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert) {
+void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert, 
+						    double weight) {
   ParticleSet::const_iterator pit;
   PPtr b_orig,bbar_orig,ZGamma,b_start,bbar_start,b_end,bbar_end;
   // First go through all the particles looking for b's coming out of Z/gamma's:
@@ -96,10 +99,14 @@ void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert) {
   b_end    = root_b[0];
   bbar_end = root_b[1];
   // Fill the energy fraction histograms with that of the b quarks.
-  *_fragbquarkxE  += b_end->momentum().e()/_emax;
-  *_fragbquarkxE  += bbar_end->momentum().e()/_emax;
-  *_fragbquarkjetmass += b_start->momentum().m()/GeV;
-  *_fragbquarkjetmass += bbar_start->momentum().m()/GeV;
+  _fragbquarkxE      ->
+    addWeighted( b_end->momentum().e()/_emax   ,weight);
+  _fragbquarkxE      ->
+    addWeighted( bbar_end->momentum().e()/_emax,weight);
+  _fragbquarkjetmass ->
+    addWeighted( b_start->momentum().m()/GeV   ,weight);
+  _fragbquarkjetmass ->
+    addWeighted( bbar_start->momentum().m()/GeV,weight);
 }
 
 NoPIOClassDescription<BFragmentationAnalysisHandler> 
@@ -110,11 +117,29 @@ void BFragmentationAnalysisHandler::Init() {
 
   static ClassDocumentation<BFragmentationAnalysisHandler> documentation
     ("The BFragmentationAnalysisHandler class performs analysis"
-     " of the B fragmentation function");
-  
+     " of the B fragmentation function",
+     "The B fragmentation function analysis uses data from \\cite{Heister:2001jg,Abe:2002iq}.",
+     "  %\\cite{Heister:2001jg}\n"
+     "\\bibitem{Heister:2001jg}\n"
+     "  A.~Heister {\\it et al.}  [ALEPH Collaboration],\n"
+     "  %``Study of the fragmentation of b quarks into B mesons at the Z peak,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 512}, 30 (2001)\n"
+     "  [arXiv:hep-ex/0106051].\n"
+     "  %%CITATION = PHLTA,B512,30;%%\n"
+     "%\\cite{Abe:2002iq}\n"
+     "\\bibitem{Abe:2002iq}\n"
+     "  K.~Abe {\\it et al.}  [SLD Collaboration],\n"
+     "  %``Measurement of the b-quark fragmentation function in Z0 decays,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 65}, 092006 (2002)\n"
+     "  [Erratum-ibid.\\  D {\\bf 66}, 079905 (2002)]\n"
+     "  [arXiv:hep-ex/0202031].\n"
+     "  %%CITATION = PHRVA,D65,092006;%%\n"
+     );
+
 }
 
 void BFragmentationAnalysisHandler::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   // output the histograms
   string fname = generator()->filename() + string("-") + name() + string(".top");

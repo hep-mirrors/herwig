@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// KPiCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the KPiCurrent class.
 //
@@ -20,7 +27,7 @@ using ThePEG::Helicity::ScalarWaveFunction;
 
 KPiCurrent::KPiCurrent() :
   _localparameters(true),_transverse(false), _cV(1.),_cS(0.2),
-  _mpi(0.*MeV), _mK(0.*MeV) {
+  _mpi(ZERO), _mK(ZERO) {
   // set up for the modes in the base class
   addDecayMode(2,-3);
   addDecayMode(2,-3);
@@ -59,7 +66,7 @@ void KPiCurrent::persistentInput(PersistentIStream & is, int) {
      >> _transverse;
 }
 
-void KPiCurrent::doinit() throw(InitException) {
+void KPiCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // check consistency of parametrers
   if(_vecmass.size()!=_vecwidth.size()||
@@ -159,7 +166,16 @@ ClassDescription<KPiCurrent> KPiCurrent::initKPiCurrent;
 void KPiCurrent::Init() {
 
   static ClassDocumentation<KPiCurrent> documentation
-    ("There is no documentation for the KPiCurrent class");
+    ("The KPiCurrent class",
+     "The K pi weak current has the form of \\cite{Finkemeier:1996dh}.",
+     "%\\cite{Finkemeier:1996dh}\n"
+     "\\bibitem{Finkemeier:1996dh}\n"
+     "  M.~Finkemeier and E.~Mirkes,\n"
+     "  %``The scalar contribution to tau --> K pi nu/tau,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 72}, 619 (1996)\n"
+     "  [arXiv:hep-ph/9601275].\n"
+     "  %%CITATION = ZEPYA,C72,619;%%\n"
+     );
 
   static Parameter<KPiCurrent,double> interfacecV
     ("cV",
@@ -231,25 +247,25 @@ void KPiCurrent::Init() {
   static ParVector<KPiCurrent,Energy> interfaceVectorMass
     ("VectorMass",
      "Masses of the vector resonances",
-     &KPiCurrent::_vecmass, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_vecmass, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceVectorWidth
     ("VectorWidth",
      "Widths of the vector resonances",
-     &KPiCurrent::_vecwidth, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_vecwidth, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceScalarMass
     ("ScalarMass",
      "Masses of the scalar resonances",
-     &KPiCurrent::_scamass, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_scamass, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceScalarWidth
     ("ScalarWidth",
      "Widths of the scalar resonances",
-     &KPiCurrent::_scawidth, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_scawidth, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -269,9 +285,9 @@ bool KPiCurrent::accept(vector<int> id) {
   return allowed;
 }
 
-PDVector KPiCurrent::particles(int icharge, unsigned int imode, int,int) {
-  if(abs(icharge)!=3) return PDVector();
-  PDVector output(2);
+tPDVector KPiCurrent::particles(int icharge, unsigned int imode, int,int) {
+  if(abs(icharge)!=3) return tPDVector();
+  tPDVector output(2);
   if(imode==0) {
     output[0]=getParticleData(ParticleID::Kplus);
     output[1]=getParticleData(ParticleID::pi0);
@@ -350,51 +366,59 @@ bool KPiCurrent::createMode(int icharge,unsigned int imode,
 void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 				bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::KPiCurrent " << fullName() 
+  if(create) output << "create Herwig::KPiCurrent " << name() 
 		    << " HeWeakCurrents.so\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Transverse "      << _transverse << "\n";
-  output << "set " << fullName() << ":cV " << _cV << "\n";
-  output << "set " << fullName() << ":cS " << _cS << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":Transverse "      << _transverse << "\n";
+  output << "newdef " << name() << ":cV " << _cV << "\n";
+  output << "newdef " << name() << ":cS " << _cS << "\n";
   for(unsigned int ix=0;ix<_vecmag.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":VectorMagnitude " << ix << " " << _vecmag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    output << name() << ":VectorMagnitude " << ix << " " << _vecmag[ix]   << "\n";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":VectorPhase "     << ix << " " << _vecphase[ix] << "\n";
+    output << name() << ":VectorPhase "     << ix << " " << _vecphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_scamag.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":ScalarMagnitude " << ix << " " << _scamag[ix]  << "\n";
-    if(ix<2) output << "set ";
+    output << name() << ":ScalarMagnitude " << ix << " " << _scamag[ix]  << "\n";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":ScalarPhase "     << ix << " " << _scaphase[ix] << "\n";
+    output << name() << ":ScalarPhase "     << ix << " " << _scaphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_vecmass.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
-    if(ix<2) output << "set ";
+    output << name() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
+    output << name() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_scamass.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
-    if(ix<2) output << "set ";
+    output << name() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
+    output << name() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 vector<LorentzPolarizationVectorE> 
-KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scale,
-		    const ParticleVector & decay) const {
+KPiCurrent::current(const int imode, const int ichan, Energy & scale,
+		    const ParticleVector & decay,
+		    DecayIntegrator::MEOption meopt) const {
+  useMe();
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
   Lorentz5Momentum psum (decay[0]->momentum()+decay[1]->momentum());
@@ -405,9 +429,9 @@ KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scal
   Energy2 dot(psum*pdiff);
   // contribution of the vector resonances
   Complex vnorm(0.),gterm(0.),sterm(0.),snorm(0.);
-  complex<InvEnergy2> qterm(0./MeV2);
+  complex<InvEnergy2> qterm(ZERO);
   for(unsigned int ix=0;ix<_vecwgt.size();++ix) {
-    vnorm+=_vecwgt[ix];
+    vnorm += _vecwgt[ix];
     if(ichan<0||_resmap[ix]==ichan) {
       Complex bw=_vecwgt[ix]*pWaveBreitWigner(q2,ix);
       gterm +=bw;
@@ -416,20 +440,16 @@ KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scal
   }
   // contribution of the scalar resonances
   for(unsigned int ix=0;ix<_scawgt.size();++ix) {
+    snorm += _scawgt[ix];
     if(ichan<0||_resmap[ix+_vecwgt.size()]==ichan) {
-      snorm+=_scawgt[ix];
       sterm+=_scawgt[ix]*sWaveBreitWigner(q2,ix);
     }
   }
   // compute the current
   gterm *=_cV/vnorm;
   Complex qtermnew = qterm*_cV*dot/vnorm;
-  sterm *=_cS/snorm;
+  sterm *= _cS/snorm;
   LorentzPolarizationVectorE output=gterm*pdiff+(-qtermnew+sterm)*psum;
-  for(unsigned int ix=0;ix<2;++ix) {
-    PPtr mytemp=decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  }
   // return the answer
   if(imode==0) output *= sqrt(0.5);
   return vector<LorentzPolarizationVectorE>(1,output);

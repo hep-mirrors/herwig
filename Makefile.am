@@ -1,12 +1,28 @@
-## include first, then all dirs, then lib, then src! 
-## Helicity and PDT before Decay!
 SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
-	Shower Hadronization MatrixElement \
-	UnderlyingEvent Interfaces Analysis Looptools \
-	lib src Doc
+	Shower DipoleShower Hadronization MatrixElement \
+	UnderlyingEvent Analysis Looptools Exsample2 \
+	lib src Doc Contrib Tests
 
-noinst_HEADERS = Config/Herwig.h Config/HepMCHelper_CLHEP.h \
-	Config/HepMCHelper_HepMC.h
-EXTRA_DIST=GUIDELINES
-## Doc # look at this later
+EXTRA_DIST = GUIDELINES
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH)
+
+ACLOCAL_AMFLAGS = -I m4
+
+DISTCLEANFILES = config.herwig
+
+libclean:
+	find . -name '*.la' -print0 | xargs -0 rm -rf
+	cd lib && $(MAKE) $(AM_MAKEFLAGS) clean
+	cd src && $(MAKE) $(AM_MAKEFLAGS) clean
+
+tests:
+	cd Tests && $(MAKE) $(AM_MAKEFLAGS) tests
+
+## ThePEG registration
+unregister:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) unregister
+
+register:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) register

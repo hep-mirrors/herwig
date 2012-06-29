@@ -1,14 +1,20 @@
 // -*- C++ -*-
+//
+// SMHPPVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHPPVertex_H
 #define HERWIG_SMHPPVertex_H
 //
 // This is the declaration of the SMHPPVertex class.
 //
 
-#include "Herwig++/Models/General/SVVLoopVertex.h"
+#include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "SMHPPVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -18,7 +24,7 @@ using namespace ThePEG;
  * setCoupling member for the Standard Model effective 
  * vertex Higgs-gamma-gamma. 
  */
-class SMHPPVertex: public SVVLoopVertex {
+class SMHPPVertex: public VVSLoopVertex {
 
 public:
 
@@ -27,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SMHPPVertex();
+  SMHPPVertex();
   //@}
 
   /** @name Functions used by the persistent I/O system. */
@@ -71,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
   /**
@@ -85,7 +91,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
 private:
   /**
@@ -133,12 +139,12 @@ private:
   /**
    * The minimum flavour number in quark loops
    */
-  unsigned int _minloop;
+  int _minloop;
 
   /**
    * The maximum flavour number in quark loops
    */
-  unsigned int _maxloop;
+  int _maxloop;
 
   /**
    * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
@@ -177,7 +183,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SMHPPVertex,1> {
   /** Typedef of the first base class of SMHPPVertex. */
-  typedef Herwig::SVVLoopVertex NthBase;
+  typedef Herwig::VVSLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -192,7 +198,5 @@ struct ClassTraits<Herwig::SMHPPVertex>
 /** @endcond */
 
 }
-
-#include "SMHPPVertex.icc"
 
 #endif /* HERWIG_SMHPPVertex_H */

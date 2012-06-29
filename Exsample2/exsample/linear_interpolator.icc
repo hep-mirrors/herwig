@@ -1,0 +1,111 @@
+// -*- C++ -*-
+//
+// linear_interpolator.icc is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
+//
+// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+//
+// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+namespace exsample {
+
+  inline linear_interpolator::linear_interpolator()
+    : interpolation_(), range_() {}
+
+  inline linear_interpolator::linear_interpolator(const std::map<double,double>& points)
+    : interpolation_(points) { 
+    reset();
+  }
+
+
+  inline void linear_interpolator::set_interpolation(double point, double value) {
+    interpolation_[point] = value;
+    if (value > range_.second)
+      range_.second = value;
+    if(value < range_.first)
+      range_.first = value;
+  }
+
+  
+  inline void linear_interpolator::reset() {
+    range_.first = interpolation_.begin()->second;
+    range_.second = interpolation_.begin()->second;
+    for (std::map<double,double>::const_iterator c = interpolation_.begin();
+	 c != interpolation_.end(); ++c) {
+      if (c->second < range_.first)
+	range_.first = c->second;
+      if (c->second > range_.second)
+	range_.second = c->second;
+    }
+  }
+
+  
+  inline double linear_interpolator::operator()(double x) const {
+    std::map<double, double>::const_iterator upper =
+      interpolation_.upper_bound(x);
+    if (upper == interpolation_.end()) {
+      upper = interpolation_.upper_bound(x-1e-10);
+    }
+    if (upper == interpolation_.end()) {
+      upper = interpolation_.upper_bound(x+1e-10);
+    }
+    assert(upper != interpolation_.begin() &&
+	   upper != interpolation_.end());
+    return ((upper->second-prior(upper)->second)*x +
+	    prior(upper)->second*upper->first - upper->second*prior(upper)->first)/
+      (upper->first - prior(upper)->first);
+  }
+
+  
+  inline double linear_interpolator::unique_inverse(double f) const {
+    if(!invertible(f)) throw inversion_has_no_solution();
+    std::map<double, double>::const_iterator lower = interpolation_.begin();
+    bool gotone = false;
+    for (; lower != --interpolation_.end(); ++lower)
+      if ((lower->second >= f && next(lower)->second <= f) ||
+	  (lower->second <= f && next(lower)->second >= f)) {
+	gotone = true;
+	break;
+      }
+    if(!gotone) throw inversion_has_no_solution();
+    if (lower->second == next(lower)->second) {
+      throw constant_interpolation(lower->first,next(lower)->first,lower->second);
+    }
+    double xdiff = next(lower)->first - lower->first;
+    double wdiff = next(lower)->second - lower->second;
+    double woffset = lower->second * next(lower)->first - next(lower)->second * lower->first;
+    return (xdiff/wdiff)*(f - woffset/xdiff);
+  }
+
+
+  template<class OStream>
+  void linear_interpolator::put(OStream& os) const {
+    os << interpolation_.size();
+    ostream_traits<OStream>::separator(os);
+    for (std::map<double, double>::const_iterator p
+	   = interpolation_.begin(); p != interpolation_.end(); ++p) {
+      os << p->first;
+      ostream_traits<OStream>::separator(os);
+      os << p->second;
+      ostream_traits<OStream>::separator(os);
+    }
+    os << range_.first;
+    ostream_traits<OStream>::separator(os);
+    os << range_.second;
+    ostream_traits<OStream>::separator(os);      
+  }
+
+  template<class IStream>
+  void linear_interpolator::get(IStream& is) {
+    std::size_t size;
+    is >> size;
+    std::pair<double,double> point;
+    for (std::size_t k = 0; k < size; ++k) {
+      is >> point.first >> point.second;
+      interpolation_.insert(point);
+    }
+    is >> range_.first >> range_.second; 
+  }
+
+}

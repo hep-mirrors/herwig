@@ -10,17 +10,10 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LPairAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-LPairAnalysis::~LPairAnalysis() {}
 
 namespace {
   inline Lorentz5Momentum getMomentum(tcPPtr particle) {
@@ -57,6 +50,41 @@ namespace {
   } 
 }
 
+LPairAnalysis::LPairAnalysis() :
+  _ptp(0.,250.,100), _ptm(0.,250.,100), _ptpair(0.,250.,100), 
+  _etp(0.,250.,100), _etm(0.,250.,100), _etpair(0.,250.,100), 
+  _ep(0.,1000.,100), _em(1.,3000.,100), _epair(0.,1500.,100), 
+  _rapp(-5.,5.,100), _rapm(-5.,5.,100), _rappair(-5.,5.,100), 
+  _phip(-Constants::pi,Constants::pi,50), 
+  _phim(-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), _mpair(0,750,100), 
+  _etsum(0.,400.,100), _ptsum(0.,400.,100)
+{}
+
+void LPairAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  using namespace HistogramOptions;
+  _ptp.topdrawOutput(outfile,Frame|Ylog,"RED","pt lp, lm");
+  _ptm.topdrawOutput(outfile,Ylog,"BLUE","");
+  _ptpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt pair");
+  _etp.topdrawOutput(outfile,Frame|Ylog,"RED","Et lp, lm");
+  _etm.topdrawOutput(outfile,Ylog,"BLUE","");
+  _etpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et pair");
+  _ep.topdrawOutput(outfile,Frame|Ylog,"RED","E lp, lm");
+  _em.topdrawOutput(outfile,Ylog,"BLUE","");
+  _epair.topdrawOutput(outfile,Frame|Ylog,"BLACK","E pair");
+  _rapp.topdrawOutput(outfile,Frame,"RED","y lp, lm");
+  _rapm.topdrawOutput(outfile,None,"BLUE","");
+  _rappair.topdrawOutput(outfile,Frame,"BLACK","y pair");
+  _phip.topdrawOutput(outfile,Frame,"RED","phi lp, lm");
+  _phim.topdrawOutput(outfile,None,"BLUE","");
+  _deltaphi.topdrawOutput(outfile,Frame,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","M pair");
+  _etsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt sum");
+  _ptsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et sum");
+}
 
 void LPairAnalysis::analyze(tEventPtr event, long, int, int) {
   Lorentz5Momentum ppair, plp, plm;  
@@ -116,26 +144,7 @@ void LPairAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-LorentzRotation LPairAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void LPairAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void LPairAnalysis::analyze(tPPtr) {}
-
-void LPairAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void LPairAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<LPairAnalysis> LPairAnalysis::initLPairAnalysis;
+NoPIOClassDescription<LPairAnalysis> LPairAnalysis::initLPairAnalysis;
 // Definition of the static class description member.
 
 void LPairAnalysis::Init() {

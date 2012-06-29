@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BtoSGammaDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BtoSGammaDecayer_H
 #define HERWIG_BtoSGammaDecayer_H
 //
@@ -7,7 +14,6 @@
 
 #include "PartonicDecayerBase.h"
 #include "Herwig++/Decay/FormFactors/BtoSGammaHadronicMass.h"
-#include "BtoSGammaDecayer.fh"
 
 namespace Herwig {
 
@@ -29,7 +35,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -38,7 +44,7 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -82,13 +88,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -145,7 +151,5 @@ struct ClassTraits<Herwig::BtoSGammaDecayer>
 /** @endcond */
 
 }
-
-#include "BtoSGammaDecayer.icc"
 
 #endif /* HERWIG_BtoSGammaDecayer_H */

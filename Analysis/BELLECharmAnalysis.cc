@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BELLECharmAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BELLECharmAnalysis class.
 //
@@ -16,6 +23,7 @@
 using namespace Herwig;
 
 void BELLECharmAnalysis::analyze(tEventPtr event, long, int, int) {
+  _weight = event->weight();
   _s = (event->incoming().first ->momentum()+
 	event->incoming().second->momentum()).m2();  
   set<tPPtr> particles;
@@ -45,28 +53,28 @@ void BELLECharmAnalysis::analyze(tPPtr particle) {
     sqrt(0.25*_s-sqr(particle->mass()));
   int id = abs(particle->id());
   if(id==ParticleID::Dstarplus) {
-    *_histDstarplus += xp;
-    _statDstar      += 1.;
+    _histDstarplus  ->addWeighted( xp,_weight);
+    _statDstar      += _weight;
   }
   else if(id==ParticleID::Dstar0) {
-    *_histDstar0    += xp;
-    _statDstar      += 1.;
+    _histDstar0     ->addWeighted( xp,_weight);
+    _statDstar      += _weight;
   }
   else if(id==ParticleID::D0) {
-    *_histD0        += xp;
-    _statD          += 1.;
+    _histD0         ->addWeighted( xp,_weight);
+    _statD          += _weight;
   }
   else if(id==ParticleID::Dplus) {
-    *_histDplus     += xp;
-    _statD          += 1.;
+    _histDplus      ->addWeighted( xp,_weight);
+    _statD          += _weight;
   }
   else if(id==ParticleID::D_splus) {
-    *_histDs        += xp;
-    _statDs         += 1.;
+    _histDs         ->addWeighted( xp,_weight);
+    _statDs         += _weight;
   }
   else if(id==ParticleID::Lambda_cplus) {
-    *_histLambda    += xp;
-    _statLambda     += 1.;
+    _histLambda     ->addWeighted( xp,_weight);
+    _statLambda     += _weight;
   }
 }
 
@@ -108,6 +116,7 @@ void BELLECharmAnalysis::Init() {
 }
 
 void BELLECharmAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + 
     string("-") + name() + string(".top");
@@ -372,9 +381,12 @@ void BELLECharmAnalysis::doinitrun() {
   double norm(0.);
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DstarResAdata[ix]+DstarResBdata[ix];
+      data[ix]  = DstarResAdata[ix]+DstarResBdata[ix]
+	        -(DstarContAdata[ix]+DstarContBdata[ix]);
       error[ix] = sqrt(sqr(DstarResAerror[ix])+sqr(DstarResAsyst[ix])+
-		       sqr(DstarResBerror[ix])+sqr(DstarResBsyst[ix]));
+		       sqr(DstarResBerror[ix])+sqr(DstarResBsyst[ix])+
+		       sqr(DstarContAerror[ix])+sqr(DstarContAsyst[ix])+
+		       sqr(DstarContBerror[ix])+sqr(DstarContBsyst[ix]));
     }
     else {
       data[ix]  = DstarContAdata[ix]+DstarContBdata[ix];
@@ -465,8 +477,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DstarResCdata[ix];
-      error[ix] = sqrt(sqr(DstarResCerror[ix])+sqr(DstarResCsyst[ix]));
+      data[ix]  = DstarResCdata[ix]-DstarContCdata[ix];
+      error[ix] = sqrt(sqr(DstarResCerror[ix])+sqr(DstarResCsyst[ix])+
+		       sqr(DstarContCerror[ix])+sqr(DstarContCsyst[ix]));
     }
     else {
       data[ix]  = DstarContCdata[ix];
@@ -556,8 +569,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = D0Resdata[ix];
-      error[ix] = sqrt(sqr(D0Reserror[ix])+sqr(D0Ressyst[ix]));
+      data[ix]  = D0Resdata[ix]-D0Contdata[ix];
+      error[ix] = sqrt(sqr(D0Reserror[ix])+sqr(D0Ressyst[ix])+
+		       sqr(D0Conterror[ix])+sqr(D0Contsyst[ix]));
     }
     else {
       data[ix]  = D0Contdata[ix];
@@ -647,8 +661,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DplusResdata[ix];
-      error[ix] = sqrt(sqr(DplusReserror[ix])+sqr(DplusRessyst[ix]));
+      data[ix]  = DplusResdata[ix]-DplusContdata[ix];
+      error[ix] = sqrt(sqr(DplusReserror[ix])+sqr(DplusRessyst[ix])+
+		       sqr(DplusConterror[ix])+sqr(DplusContsyst[ix]));
     }
     else {
       data[ix]  = DplusContdata[ix];
@@ -738,8 +753,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DsResdata[ix];
-      error[ix] = sqrt(sqr(DsReserror[ix])+sqr(DsRessyst[ix]));
+      data[ix]  = DsResdata[ix]-DsContdata[ix];
+      error[ix] = sqrt(sqr(DsReserror[ix])+sqr(DsRessyst[ix])+
+		       sqr(DsConterror[ix])+sqr(DsContsyst[ix]));
     }
     else {
       data[ix]  = DsContdata[ix];
@@ -829,8 +845,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = LambdaResdata[ix];
-      error[ix] = sqrt(sqr(LambdaReserror[ix])+sqr(LambdaRessyst[ix]));
+      data[ix]  = LambdaResdata[ix]-LambdaContdata[ix];
+      error[ix] = sqrt(sqr(LambdaReserror[ix])+sqr(LambdaRessyst[ix])+
+		       sqr(LambdaConterror[ix])+sqr(LambdaContsyst[ix]));
     }
     else {
       data[ix]  = LambdaContdata[ix];

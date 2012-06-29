@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralThreeBodyDecayer class.
+//
+#ifndef HERWIG_GeneralThreeBodyDecayer_FH
+#define HERWIG_GeneralThreeBodyDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class GeneralThreeBodyDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralThreeBodyDecayer,GeneralThreeBodyDecayerPtr);
+
+}
+
+#endif

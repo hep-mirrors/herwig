@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SSGSGSGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SSGSGSGVertex_H
 #define HERWIG_SSGSGSGVertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
-#include "SSGSGSGVertex.fh"
+#include "SusyBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -25,25 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SSGSGSGVertex();
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+  SSGSGSGVertex();
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -72,13 +60,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -91,7 +79,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -100,7 +88,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SSGSGSGVertex> initSSGSGSGVertex;
+  static NoPIOClassDescription<SSGSGSGVertex> initSSGSGSGVertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -109,11 +97,6 @@ private:
   SSGSGSGVertex & operator=(const SSGSGSGVertex &);
 
 private:
-  
-  /**
-   * Pointer to the model
-   */
-  tSusyBasePtr _theSS;
 
   /**
    * The value of the coupling when last evaluated
@@ -161,7 +144,5 @@ struct ClassTraits<Herwig::SSGSGSGVertex>
 /** @endcond */
 
 }
-
-#include "SSGSGSGVertex.icc"
 
 #endif /* HERWIG_SSGSGSGVertex_H */

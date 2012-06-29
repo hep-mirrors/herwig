@@ -1,0 +1,27 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Powheg.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 177.
+
+##################################################
+# select the analyses
+##################################################
+
+# OPAL event shapes and multiplicities at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LEP-Powheg-177 LEPGenerator

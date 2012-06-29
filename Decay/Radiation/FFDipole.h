@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// FFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_FFDipole_H
 #define HERWIG_FFDipole_H
 //
@@ -6,6 +13,7 @@
 //
 
 #include "ThePEG/Repository/EventGenerator.h"
+#include "Herwig++/Decay/DecayIntegrator.fh"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -20,21 +28,32 @@ using ThePEG::Constants::pi;
 /** \ingroup Decay
  *
  * The FFDipole class generates radiation from a final-final dipole for
- * the generation of photons in decay by the YODA algorithm.
+ * the generation of photons in decay by the SOPTHY algorithm.
  * 
- * @see YODA
+ * @see SOPTHY 
+ * @see \ref FFDipoleInterfaces "The interfaces"
+ * defined for FFDipole.
+
  */
 class FFDipole: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline FFDipole();
-  //@}
+  FFDipole() :
+    _emin(1.e-6*MeV), _eminrest(100*MeV), _eminlab(100*MeV), _emax(),
+    _multiplicity(), _m(3), _charge(), _qdrf(2),
+    _qnewdrf(2), _qprf(2), _qnewprf(2), _qlab(2), _qnewlab(2), _dipolewgt(),
+    _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(7.0), _mode(1), _maxtry(500),
+    _energyopt(1), _betaopt(4), _dipoleopt(), _nweight(0), _wgtsum(0.), _wgtsq(0.),
+    _weightOutput(false) {}
+
+  /**
+   *  Destructor
+   */
+  virtual ~FFDipole();
 
 public:
 
@@ -42,10 +61,12 @@ public:
    * Member to generate the photons from the dipole
    * @param p The decaying particle
    * @param children The decay products
+   * @param decayer The decayer for this mode
    * @return The decay products with additional radiation
    */
   virtual ParticleVector generatePhotons(const Particle & p,
-					 ParticleVector children);
+					 ParticleVector children,
+					 tDecayIntegratorPtr decayer);
 
 public:
 
@@ -81,24 +102,16 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
-
-  /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
 
   /**
    * Generate the momentum of a photon 
@@ -121,18 +134,41 @@ protected:
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
-  inline double exactDipoleWeight(double beta1,double ombeta1,
-				  double beta2,double ombeta2,unsigned int iphot);
-
+  double exactDipoleWeight(double beta1,double ombeta1,
+			   double beta2,double ombeta2,unsigned int iphot) {
+    double opbc,ombc;
+    // if cos is greater than zero use result accurate as cos->1
+    if(_cosphot[iphot]>0) {
+      opbc=1.+beta2*_cosphot[iphot];
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    }
+    // if cos is less    than zero use result accurate as cos->-1
+    else {
+      opbc=ombeta2+beta2*sqr(_sinphot[iphot])/(1.-_cosphot[iphot]);
+      ombc=1.-beta1*_cosphot[iphot];
+    }
+    return 0.5/(opbc*ombc)*(1.+beta1*beta2
+			    -0.5*ombeta1*(1.+beta1)*opbc/ombc		 
+			    -0.5*ombeta2*(1.+beta2)*ombc/opbc);
+  }
+  
   /**
    * Jacobian factor for the weight
    */
-  inline double jacobianWeight();
+  double jacobianWeight() {
+    Energy pcm1=Kinematics::pstarTwoBodyDecay(_m[0],_m[1],_m[2]);
+    Energy m12 =sqrt((_qnewdrf[0]+_qnewdrf[1]).m2())            ;
+    Energy pcm2=Kinematics::pstarTwoBodyDecay(m12,_m[1],_m[2])  ;
+    double betaprobeta = pcm2*_m[0]/pcm1/m12   ;
+    double spros       = sqr(m12/_m[0])        ;
+    double deltafn     = m12/(m12+_bigLdrf.e());
+    return betaprobeta*spros*deltafn           ;
+  }
 
   /**
    * Matrix element weight
    */
-  double meWeight(ParticleVector children);
+  double meWeight(const ParticleVector & children);
 
   /**
    * Member which generates the photons
@@ -140,7 +176,8 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Boost boost,ParticleVector children);
+  double makePhotons(const Boost & boost, 
+		     const ParticleVector & children);
 
   /**
    *  Boost all the momenta from the dipole rest frame via the parent rest frame
@@ -148,13 +185,34 @@ protected:
    * @param boost The boost vector from the rest frame to the lab
    * @return Whether or not it suceeded
    */
-  bool boostMomenta(Boost boost);
+  bool boostMomenta(const Boost & boost);
 
   /**
    *  Remove any photons which fail the energy cuts
    * @return Number of photons removed
    */
   unsigned int removePhotons();
+
+  /**
+   *  The real emission weight in the collinear limit
+   */
+  double collinearWeight(const ParticleVector & children);
+
+  /**
+   *  The vrtiual correction weight
+   */
+  double virtualWeight(const ParticleVector & children);
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
+  //@}
 
 private:
 
@@ -169,6 +227,15 @@ private:
    * In fact, it should not even be implemented.
    */
   FFDipole & operator=(const FFDipole &);
+
+private:
+
+  /**
+   * Debug output
+   **/
+  void printDebugInfo(const Particle & p,
+		      const ParticleVector & children,
+		      double wgt) const;
 
 private:
 
@@ -196,11 +263,6 @@ private:
    *  Photon multiplicity being generated
    */
   unsigned int _multiplicity;
-
-  /**
-   * Maximum number of photons to generate
-   */
-  unsigned int _nphotonmax;
 
   /**
    *  Masses of the particles involved
@@ -368,6 +430,41 @@ private:
    *  Option for the form of the primary distribution
    */
   unsigned int _dipoleopt;
+
+  /**
+   *  The decayer
+   */
+  tDecayIntegratorPtr _decayer;
+
+  /**
+   *  The decaying particle
+   */
+  tPPtr _parent;
+
+  /**
+   *  Storage of averages etc for testing
+   */
+  //@{
+  /**
+   *  Number of attempts
+   */
+  unsigned int _nweight;
+
+  /**
+   *  Sum of weights
+   */
+  double _wgtsum;
+
+  /**
+   *  Sum of squares of weights
+   */
+  double _wgtsq;
+
+  /**
+   *  Whether or not to output the averages
+   */
+  bool _weightOutput;
+  //@}
 };
 
 }
@@ -393,12 +490,14 @@ struct ClassTraits<Herwig::FFDipole>
   : public ClassTraitsBase<Herwig::FFDipole> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::FFDipole"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the DecayRadiationGenerator class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "HwSOPHTY.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "FFDipole.icc"
 
 #endif /* HERWIG_FFDipole_H */

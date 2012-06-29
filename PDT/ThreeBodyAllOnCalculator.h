@@ -1,10 +1,17 @@
 // -*- C++ -*-
+//
+// ThreeBodyAllOnCalculator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ThreeBodyAllOnCalculator_H
 #define HERWIG_ThreeBodyAllOnCalculator_H
 // This is the declaration of the ThreeBodyAllOnCalculator class.
 
 #include "WidthCalculatorBase.h"
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig++/Utilities/GSLIntegrator.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 
@@ -20,9 +27,9 @@ class ThreeBodyAllOnCalculator;
  *  The ThreeBodyAllOnCalculator class is designed to integrate 
  *  a three-body matrix element in which all the outgoing particles are
  *  on-shell to give the partial width. A multi-channel type approach is
- *  used together with gaussian quadrature.
+ *  used together with a GSL integration subroutine.
  *
- * @see GaussianIntegral
+ * @see GSLIntegrator
  * @see ThreeBodyAllOnOuter
  * @see ThreeBodyAllOnIner
  *
@@ -38,21 +45,27 @@ class ThreeBodyAllOnCalculator: public WidthCalculatorBase {
  *
  * @see ThreeBodyAllOnCalculator
  * @see ThreeBodyAllOnInner
- */
-struct Outer {
+ */ struct Outer {
  
   /**
    * Constructor with a pointer to the ThreeBodyAllOnCalculator
    */
-  inline Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer); 
+   Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer in,
+	 double relerr)
+    : _integrand(in), _integrator(1e-35,relerr,1000)
+  {}
   
   /**
    * Retreive function value
    */
-  inline Energy4 operator ()(double argument) const;
-  /** Argument type for the GaussianIntegrator */
+  Energy4 operator ()(double x) const {
+    Energy2 low, upp;
+    _integrand->outerVariables(x,low,upp);
+    return _integrator.value(*_integrand,low,upp);
+  }
+  /** Argument type for the GSLIntegrator */
   typedef double ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy4 ValType;
 
   /**
@@ -61,9 +74,9 @@ struct Outer {
   typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer _integrand;
   
   /**
-   * gaussian integrator
+   * GSL integration class
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
 };
 
 public:
@@ -89,13 +102,25 @@ public:
    * @param m2 The mass of the second particle.
    * @param m3 The mass of the third  particle.
    */
-  inline ThreeBodyAllOnCalculator(vector<double> inweights,
-				  vector<int> intype,
-				  vector<Energy> inmass,
-				  vector<Energy> inwidth,
-				  vector<double> inpow,
-				  T inme, int mode,
-				  Energy m1,Energy m2,Energy m3);
+  ThreeBodyAllOnCalculator(vector<double> inweights,
+			   vector<int> intype,
+			   vector<Energy> inmass,
+			   vector<Energy> inwidth,
+			   vector<double> inpow,
+			   T inme, int mode,
+			   Energy m1,Energy m2,Energy m3,
+			   double relerr=1e-3)
+    : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
+      _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
+      _thechannel(0),_souter(ZERO), _integrator(1e-35,relerr,1000),
+      _relerr(relerr) {
+    _m.resize(4);
+    _m[1]=m1;_m[2]=m2;_m[3]=m3;
+    _m2.resize(4);
+    for(int ix=1;ix<4;++ix) {
+      _m2[ix]=sqr(_m[ix]);
+    }
+  }
 
   /**
    * calculate the width for a given mass
@@ -111,7 +136,11 @@ public:
    * @param mass The new value.
    * @return The mass required.
    */
-  inline void resetMass(int imass,Energy mass);
+  void resetMass(int imass,Energy mass) {
+    assert(imass<4);
+    _m[imass]=mass;
+    _m2[imass]=mass*mass;
+  }
 
   /**
    * Get the mass of one of the decay products.  This must be 
@@ -119,7 +148,10 @@ public:
    * @param imass The mass required.
    * @return The mass required.
    */
-  inline Energy getMass(const int imass) const;
+  Energy getMass(const int imass) const {
+    assert(imass>=0&&imass<4);
+    return _m[imass];
+  }
 
   /**
    * Get the masses of all bar the one specified. Used to get the limits
@@ -127,7 +159,12 @@ public:
    * @param imass The particle not needed
    * @return The sum of the other masses.
    */
-  inline Energy otherMass(const int imass) const;
+  Energy otherMass(const int imass) const {
+    assert(imass>0&&imass<4);
+    if(imass==1)      return _m[2]+_m[3];
+    else if(imass==2) return _m[1]+_m[3];
+    else              return _m[1]+_m[2];
+  }
 
   /**
    * The integrand for the inner integrand.
@@ -135,9 +172,9 @@ public:
    * @return The value of the inner integrand.
    */
   Energy2 operator ()(Energy2 argument) const;
-  /** Argument type for the GaussianIntegrator */
+  /** Argument type for the GSLIntegrator */
   typedef Energy2 ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy2 ValType;
 
 
@@ -204,6 +241,11 @@ private:
   mutable int _thechannel;
 
   /**
+   *  The mapping currently in used
+   */
+  mutable int _mapping;
+
+  /**
    * the value of s for the outer integral
    */
   mutable Energy2 _souter;
@@ -221,11 +263,15 @@ private:
   /**
    * member to do the integration
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
+
+  /**
+   *  Relative error for the integration
+   */
+  double _relerr;
 };
 }
 
-#include "ThreeBodyAllOnCalculator.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
 #include "ThreeBodyAllOnCalculator.tcc"
 #endif

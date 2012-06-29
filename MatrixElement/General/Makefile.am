@@ -1,0 +1,20 @@
+noinst_LTLIBRARIES = libHwGeneralME.la
+libHwGeneralME_la_SOURCES = \
+GeneralHardME.cc GeneralHardME.h GeneralHardME.fh \
+MEvv2ff.cc MEvv2ff.h \
+MEvv2ss.cc MEvv2ss.h \
+MEfv2fs.cc MEfv2fs.h \
+MEff2ss.cc MEff2ss.h \
+MEff2ff.cc MEff2ff.h \
+MEff2vv.cc MEff2vv.h \
+MEfv2vf.cc MEfv2vf.h \
+MEff2vs.cc MEff2vs.h \
+MEff2sv.cc MEff2sv.h \
+MEvv2vv.cc MEvv2vv.h \
+MEvv2vs.cc MEvv2vs.h \
+MEff2tv.cc MEff2tv.h \
+MEvv2tv.cc MEvv2tv.h \
+MEfv2tf.cc MEfv2tf.h \
+GeneralfftoVH.cc GeneralfftoVH.h GeneralfftoVH.fh\
+GeneralfftoffH.cc GeneralfftoffH.h GeneralfftoffH.fh\
+GeneralQQHiggs.cc GeneralQQHiggs.h GeneralQQHiggs.fh

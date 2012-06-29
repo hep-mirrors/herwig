@@ -1,9 +1,17 @@
 // -*- C++ -*-
+//
+// PartonSplitter.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PartonSplitter_H
 #define HERWIG_PartonSplitter_H
 
 #include "CluHadConfig.h"
 #include <ThePEG/Interface/Interfaced.h>
+#include <ThePEG/Utilities/Selector.h>
 #include "PartonSplitter.fh"
 
 namespace Herwig {
@@ -75,21 +83,28 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+   virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+   virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<PartonSplitter> initPartonSplitter;
 
   /**
    * Private and non-existent assignment operator.
@@ -105,39 +120,15 @@ private:
    */
   void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
+private:
+
+  /**
+   *  The selector to pick the type of quark
+   */
+  Selector<PDPtr,double> _quarkSelector;
+
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of PartonSplitter.
- */
-template <>
-struct BaseClassTrait<Herwig::PartonSplitter,1> {
-  /** Typedef of the first base class of PartonSplitter. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::PartonSplitter>:
-    public ClassTraitsBase<Herwig::PartonSplitter> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::PartonSplitter"; }
-};
-
-/** @endcond */
-
-}
-
-#include "PartonSplitter.icc"
 
 #endif /* HERWIG_PartonSplitter_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BELLECharmAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BELLECharmAnalysis_H
 #define HERWIG_BELLECharmAnalysis_H
 //
@@ -7,14 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "BELLECharmAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the BELLECharmAnalysis class.
+/** \ingroup Analysis
+ * The BELLECharmAnalysis class is designed to compared the results of
+ * Herwig++ at 10.52 GeV with data from the BELLE experiment.
  *
  * @see \ref BELLECharmAnalysisInterfaces "The interfaces"
  * defined for BELLECharmAnalysis.
@@ -26,7 +33,9 @@ public:
   /**
    * The default constructor.
    */
-  inline BELLECharmAnalysis();
+  BELLECharmAnalysis() : _s(), _onshell(false), _ratioDstar(),
+			 _ratioDs(), _ratioLambda(), _weight()
+  {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -97,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -223,6 +232,11 @@ private:
    */
   Statistic _statLambda;
   //@}
+
+  /**
+   *  The weight for an event
+   */
+  double _weight;
 };
 
 }
@@ -255,13 +269,11 @@ struct ClassTraits<Herwig::BELLECharmAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "BELLECharmAnalysis.icc"
 
 #endif /* HERWIG_BELLECharmAnalysis_H */

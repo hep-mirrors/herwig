@@ -1,0 +1,207 @@
+###################################################################
+#
+# This is the main repository setup file for Herwig++. 
+#
+# It is read using the 'Herwig++ init' command which prepares the
+# default repository file 'HerwigDefaults.rpo'.
+#
+# The 'Herwig++ read' step allows additional configuration
+# instructions to be read from a run-specific file, to modify the 
+# default values. (We provide LEP.in, ILC.in, LHC.in and TVT.in as 
+# examples) 
+#
+# You will not need to change any settings here.
+# Any modifications can be made in your own input files.
+#
+###################################################################
+
+globallibrary Herwig.so
+
+###################################################################
+# The repository contains its own internal directory structure to
+# keep track of created objects. (This is entirely independent of 
+# the file system)
+###################################################################
+
+globallibrary Herwig.so
+
+# Make the root directory in the Repository
+rrmdir /Herwig
+mkdir /Herwig
+
+#####################################################################
+# The 'create' command creates an object in the repository from
+# a C++ class. The arguments are (1) the C++ class name, (2) your
+# chosen repository name, and optionally, (3) the library name where
+# the class can be found.
+#
+# Created objects are _not_ automatically associated to a run. They 
+# need to be assigned to it using a chain of 'set' or 'insert' 
+# commands (see below).
+#####################################################################
+
+# the default random number generator
+create ThePEG::StandardRandom /Herwig/Random
+
+# the default phase space sampler
+create ThePEG::ACDCSampler /Herwig/ACDCSampler ACDCSampler.so
+
+#####################################################################
+# Objects in the repository are influenced through 'interfaces'.
+# The most important ones can be found in these files, and the 
+# doxygen documentation provides complete lists.
+#
+# To set an interface to a new value, use the 'set' command:
+#  set object:interface value
+#
+# Note that only repository names can be used here. You must 'create'
+# objects before you can use them in a 'set' command
+#####################################################################
+
+newdef /Herwig/ACDCSampler:Margin  1.1
+
+###################################################################
+# The 'read' command includes external files in place, to reduce
+# clutter. You can also use it for blocks of settings you're likely 
+# to use again and again.
+###################################################################
+
+read Particles.in
+read QEDRadiation.in
+read Model.in
+read Partons.in
+read UnderlyingEvent.in
+read Shower.in
+read MatrixElements.in
+read Hadronization.in
+read Decays.in
+read BSM.in
+
+#######################################################################
+# The EventHandler is the most important object in a run. It 
+# (directly or indirectly) owns most of the objects that have been 
+# created up to now.
+#
+# Below we create one handler for LEP and one for LHC.
+#
+# Try to understand the following few lines (also look at the external
+# .in files if you can't find the 'create' line for an object).
+#
+# If you need to make modifications, it's best to make them in your
+# own input file (for the 'Herwig++ read' step) and not here.
+#######################################################################
+
+mkdir /Herwig/EventHandlers
+cd /Herwig/EventHandlers
+
+# Create LEPHandler
+create ThePEG::StandardEventHandler LEPHandler 
+create ThePEG::FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
+newdef FixedLEPLuminosity:Energy 91.2
+newdef LEPHandler:LuminosityFunction FixedLEPLuminosity
+insert LEPHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleEE
+newdef LEPHandler:BeamA /Herwig/Particles/e-
+newdef LEPHandler:BeamB /Herwig/Particles/e+
+newdef LEPHandler:Sampler /Herwig/ACDCSampler
+newdef LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
+# spin correlations for perturbative decays (in same step so shower works)
+insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+# QED radiation off Z decay products in hard process
+insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
+
+# Create LHCHandler
+create ThePEG::StandardEventHandler LHCHandler 
+create ThePEG::FixedCMSLuminosity FixedLHCLuminosity
+newdef FixedLHCLuminosity:Energy 8000.0
+newdef LHCHandler:LuminosityFunction FixedLHCLuminosity
+insert LHCHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleQCD
+newdef LHCHandler:BeamA /Herwig/Particles/p+
+newdef LHCHandler:BeamB /Herwig/Particles/p+
+newdef LHCHandler:Sampler /Herwig/ACDCSampler
+newdef LHCHandler:BinStrategy 2
+newdef LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
+# spin correlations for perturbative decays (in same step so shower works)
+insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+# QED radiation off W/Z decay products in hard process
+insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
+
+# Create DISHandler
+create ThePEG::StandardEventHandler DISHandler 
+create ThePEG::LuminosityFunction DISLuminosity
+newdef DISHandler:BeamA /Herwig/Particles/p+
+newdef DISLuminosity:BeamEMaxA 920.*GeV
+newdef DISHandler:BeamB /Herwig/Particles/e-
+newdef DISLuminosity:BeamEMaxB 30.*GeV
+newdef DISHandler:LuminosityFunction DISLuminosity
+insert DISHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
+newdef DISHandler:Sampler /Herwig/ACDCSampler
+newdef DISHandler:BinStrategy 2
+newdef DISHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef DISHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef DISHandler:DecayHandler /Herwig/Decays/DecayHandler
+
+mkdir /Herwig/Generators 
+cd /Herwig/Generators 
+
+#################################################################
+# Finally, the EventGenerator objects are responsible 
+# for the run. They tie together an EventHandler on the one side
+# with a physics model (Feynman rules, etc) and random number
+# generator on the other.
+#
+# In your own input files, it will be this EventGenerator object
+# that will be called with the 'run' command to start the event 
+# generation (see LEP.in, LHC.in, TVT.in or LHC.in for examples)
+#################################################################
+
+# The Strategy objects can be used for default settings
+# (see the Doxygen documentation)
+# Currently it only provides the LaTeX reference to Herwig++
+create Herwig::HerwigStrategy DefaultStrategy
+# set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Particles
+
+# Now the LEPGenerator
+create ThePEG::EventGenerator LEPGenerator
+newdef LEPGenerator:RandomNumberGenerator /Herwig/Random
+newdef LEPGenerator:StandardModelParameters /Herwig/Model
+newdef LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
+newdef LEPGenerator:Strategy DefaultStrategy
+newdef LEPGenerator:DumpPeriod -1
+
+# And the LHCGenerator
+create ThePEG::EventGenerator LHCGenerator
+newdef LHCGenerator:RandomNumberGenerator /Herwig/Random
+newdef LHCGenerator:StandardModelParameters /Herwig/Model
+newdef LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
+newdef LHCGenerator:Strategy DefaultStrategy
+newdef LHCGenerator:DumpPeriod -1
+
+# And the DISGenerator
+create ThePEG::EventGenerator DISGenerator
+newdef DISGenerator:RandomNumberGenerator /Herwig/Random
+newdef DISGenerator:StandardModelParameters /Herwig/Model
+newdef DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
+newdef DISGenerator:Strategy DefaultStrategy
+newdef DISGenerator:DumpPeriod -1
+
+############################################
+# The default cuts
+############################################
+read Cuts.in
+
+cd /Herwig/Generators
+newdef LEPGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
+newdef LHCGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+newdef DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
+
+##########################################
+# include some default analysis handlers
+##########################################
+read Analysis.in
+
+cd /

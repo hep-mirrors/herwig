@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// VSSDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_VSSDecayer_H
 #define HERWIG_VSSDecayer_H
 //
@@ -8,10 +15,10 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "VSSDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using Helicity::VSSVertexPtr;
 
 /** \ingroup Decay
  * The VSSDecayer class implements the decay of a vector
@@ -27,33 +34,23 @@ class VSSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline VSSDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~VSSDecayer();
-  //@}
-
-public:
+  VSSDecayer() {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Function to return partial Width
@@ -99,13 +96,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -117,7 +114,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -134,10 +131,27 @@ private:
    */
   VSSDecayer & operator=(const VSSDecayer &);
 
+private:
+
   /**
-   * A pointer to the VSSVertex
+   *  Abstract pointer to AbstractVSSVertex
    */
-  Ptr<Helicity::VSSVertex>::pointer _theVSSPtr;
+  AbstractVSSVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  VSSVertexPtr _perturbativeVertex;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decaying particle
+   */
+  mutable vector<Helicity::VectorWaveFunction> _vectors;
 };
 
 }
@@ -163,20 +177,11 @@ struct ClassTraits<Herwig::VSSDecayer>
   : public ClassTraitsBase<Herwig::VSSDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::VSSDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * VSSDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class VSSDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "VSSDecayer.icc"
 
 #endif /* HERWIG_VSSDecayer_H */

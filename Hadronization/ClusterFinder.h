@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusterFinder.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterFinder_H
 #define HERWIG_ClusterFinder_H
 
@@ -47,7 +54,7 @@ public:
    * at least one of its components is a beam remnant.
    */
   ClusterVector formClusters(const PVector & partons) 
-    throw(Veto, Stop, Exception);
+   ;
 
   /**
    * Reduces three component clusters into two components.
@@ -59,7 +66,7 @@ public:
    * This could be eliminated or changed in the future.
    */
   void reduceToTwoComponents(ClusterVector&) 
-    throw(Veto, Stop, Exception);
+   ;
 
 public:
 
@@ -88,11 +95,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<ClusterFinder> initClusterFinder;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ClusterFinder & operator=(const ClusterFinder &);
@@ -100,35 +102,5 @@ private:
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of ClusterFinder.
- */
-struct BaseClassTrait<Herwig::ClusterFinder,1> {
-  /** Typedef of the base class of ClusterFinder. */
-  typedef Interfaced NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ClusterFinder>: public ClassTraitsBase<Herwig::ClusterFinder> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::ClusterFinder"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ClusterFinder.icc"
 
 #endif /* HERWIG_ClusterFinder_H */

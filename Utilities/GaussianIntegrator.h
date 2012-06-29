@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GaussianIntegrator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GaussianIntegrator_H
 #define HERWIG_GaussianIntegrator_H
 //
@@ -32,8 +39,13 @@ public:
   /**
    * Default Constructor
    */
-  inline GaussianIntegrator();
-
+  GaussianIntegrator() 
+    : _abserr(1.E-35), _relerr(5.E-5), _binwidth(1.E-5), 
+      _maxint(100), _maxeval(100000) {
+    // setup the weights and abscissae
+    Init();
+  }
+  
   /**
    * Specify all the parameters.
    * @param abserr Absolute error.
@@ -42,8 +54,13 @@ public:
    * @param maxint Maximum number of intervals
    * @param maxeval Maximum number of function evaluations
    */
-  inline GaussianIntegrator(double abserr, double relerr, double binwidth,
-			    int maxint, int maxeval);
+  GaussianIntegrator(double abserr, double relerr, double binwidth,
+		     int maxint, int maxeval)
+    : _abserr(abserr), _relerr(relerr), _binwidth(binwidth), _maxint(maxint),
+      _maxeval(maxeval) {
+    // setup the weights and abscissae
+    Init();
+  }
 
   /**
    * The value of the integral
@@ -106,7 +123,6 @@ private:
 
 }
 
-#include "GaussianIntegrator.icc"
 #include "GaussianIntegrator.tcc"
 
 #endif /* HERWIG_GaussianIntegrator_H */

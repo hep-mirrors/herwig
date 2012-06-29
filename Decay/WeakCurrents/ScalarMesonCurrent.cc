@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ScalarMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ScalarMesonCurrent class.
 //
@@ -13,11 +20,16 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 using namespace ThePEG::Helicity;
-using Helicity::ScalarWaveFunction;
-using Helicity::outgoing;
+
+void ScalarMesonCurrent::doinit() {
+  unsigned int isize=numberOfModes();
+  if(_id.size()!=isize||_decay_constant.size()!=isize)
+    {throw InitException() << "Inconsistent parameters in ScalarMesonCurrent::doinit()"
+			   << Exception::abortnow;}
+  WeakDecayCurrent::doinit();
+}
 
 ScalarMesonCurrent::ScalarMesonCurrent() {
   // the eta/eta' mixing angle
@@ -114,9 +126,9 @@ bool ScalarMesonCurrent::createMode(int icharge,unsigned int imode,
 }
 
 // outgoing particles 
-PDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
+tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
   tPDPtr part(getParticleData(_id[imode]));
-  PDVector output;
+  tPDVector output;
   if(icharge==int(part->iCharge())) {
     if(icharge==0) {
       int iqb,iab; 
@@ -139,16 +151,15 @@ PDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
 }
 
 vector<LorentzPolarizationVectorE> 
-ScalarMesonCurrent::current(bool vertex, const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay) const {
+ScalarMesonCurrent::current(const int imode, const int, 
+			    Energy & scale,const ParticleVector & decay,
+			    DecayIntegrator::MEOption meopt) const {
   static const Complex ii(0.,1.);
+  if(meopt==DecayIntegrator::Terminate) {
+    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   scale = decay[0]->mass();
-  // workaround for gcc 3.2.3 bug*
-  // set up the spin information for the particle
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   Complex pre(-ii*_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
@@ -201,22 +212,22 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
     output << "update decayers set parameters=\"";
   }
   if(create) {
-    output << "create Herwig::ScalarMesonCurrent " << fullName() 
+    output << "create Herwig::ScalarMesonCurrent " << name() 
 	   << " HwWeakCurrents.so\n";
   }
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  output << "newdef " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   unsigned int ix;
   for(ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":ID " << ix 
+      output << "newdef " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << fullName() << ":Decay_Constant " << ix 
+      output << "newdef " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":ID " << ix 
+      output << "insert " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "insert " << fullName() << ":Decay_Constant " << ix 
+      output << "insert " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
   }
@@ -224,6 +235,4 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
   }
-}
-  
 }

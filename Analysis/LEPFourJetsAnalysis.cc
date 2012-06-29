@@ -1,32 +1,100 @@
 // -*- C++ -*-
 //
+// LEPFourJetsAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LepFourJetsAnalysis class.
 //
 
 #include "LEPFourJetsAnalysis.h"
+#include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/EventRecord/StandardSelectors.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-void LEPFourJetsAnalysis::analyze(const tPVector & particles) {
-  _kint.clearMap();
-  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles), 1, 1, 1);
-  // four jet distributions
-  ev.findJetsY(0.008); 
-  vector<KtJet::KtLorentzVector> ktjets = ev.getJetsE();
+namespace {
+
+  struct ChargedFinalState {
+    static bool AllCollisions() { return false; }
+    static bool AllSteps() { return false; }
+    // ===
+    // pick the last instance from the shower
+    static bool FinalState() { return true; }
+    static bool Intermediate() { return false; }
+    // ===
+    static bool Check(const Particle & p) { 
+      return ParticleTraits<Particle>::iCharge(p);
+    }
+  };
+  
+}
+
+void LEPFourJetsAnalysis::persistentOutput(PersistentOStream & os) const {
+  os << _charged;
+}
+
+void LEPFourJetsAnalysis::persistentInput(PersistentIStream & is, int) {
+  is >> _charged;
+}
+
+void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
+  tPVector particles;
+
+  if (_charged) {
+    event->select(back_inserter(particles),
+		  ThePEG::ParticleSelector<ChargedFinalState>());
+  } else {
+    event->select(back_inserter(particles),SelectFinalState());
+  }
+
+
+  //  copy fastjet particles from event record.  Templated fastjet
+  //  method might leave units ambigouos.  Loop with integer index
+  //  allows backtracing ThePEG particles if needed.
+  vector<fastjet::PseudoJet> fastjet_particles;
+
+  for (unsigned int j=0; j<particles.size(); j++) {
+    fastjet::PseudoJet p(particles[j]->momentum().x()/GeV, 
+			 particles[j]->momentum().y()/GeV, 
+			 particles[j]->momentum().z()/GeV, 
+			 particles[j]->momentum().e()/GeV);
+    p.set_user_index(j);
+    fastjet_particles.push_back(p);
+  }
+  
+  fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
+  fastjet::Strategy strategy = fastjet::Best;
+  fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, 
+				 recomb_scheme, strategy);
+  fastjet::ClusterSequence cs(fastjet_particles, jet_def);
+
+  vector<fastjet::PseudoJet> fastjets = cs.exclusive_jets_ycut(0.008);
+  vector<fastjet::PseudoJet> sorted = fastjet::sorted_by_E(fastjets); 
   vector<Lorentz5Momentum> jets;
 
-  if (ktjets.size() == 4) {
+  if (sorted.size() == 4) {
     for (int j=0; j<4; ++j) {
-      if (! ktjets[j].isJet()) {
+      if ((cs.constituents(sorted[j])).size() == 1) {
 	throw Exception() << "LEPFourJetsAnalysis: Trying to extract jet " 
 			  << "momenta from a single particle." 
 			  << Exception::warning;
       }
-      jets.push_back(KtJetInterface::convert(ktjets[j]));
+      LorentzMomentum newjet(sorted[j].px()*GeV, sorted[j].py()*GeV, 
+			     sorted[j].pz()*GeV, sorted[j].e()*GeV);
+      jets.push_back(newjet);
     }
     *_cchiBZ += abs(cosChiBZ(jets));
     *_cphiKSW += cosPhiKSW(jets);
@@ -35,18 +103,43 @@ void LEPFourJetsAnalysis::analyze(const tPVector & particles) {
   }
 }
 
-NoPIOClassDescription<LEPFourJetsAnalysis> 
+ClassDescription<LEPFourJetsAnalysis> 
 LEPFourJetsAnalysis::initLEPFourJetsAnalysis;
 // Definition of the static class description member.
 
 void LEPFourJetsAnalysis::Init() {
 
   static ClassDocumentation<LEPFourJetsAnalysis> documentation
-    ("There is no documentation for the LEPFourJetsAnalysis class");
+    ("The LEP FourJets Analysis class",
+     "The LEP FourJets analysis uses data from \\cite{Heister:2002tq}.",
+     "%\\cite{Heister:2002tq}\n"
+     "\\bibitem{Heister:2002tq}\n"
+     "  A.~Heister {\\it et al.}  [ALEPH Collaboration],\n"
+     "   ``Measurements of the strong coupling constant and the QCD colour factors\n"
+     "  %using four-jet observables from hadronic Z decays,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 27}, 1 (2003).\n"
+     "  %%CITATION = EPHJA,C27,1;%%\n"
+     );
+
+  static Switch<LEPFourJetsAnalysis,bool> interfaceChargedParticles
+    ("ChargedParticles",
+     "Wether or not to use charged particles only for this analysis",
+     &LEPFourJetsAnalysis::_charged, true, false, false);
+  static SwitchOption interfaceChargedParticlesYes
+    (interfaceChargedParticles,
+     "Yes",
+     "Use charged particles only",
+     true);
+  static SwitchOption interfaceChargedParticlesNo
+    (interfaceChargedParticles,
+     "No",
+     "Use all final state particles",
+     false);
 
 }
 
 void LEPFourJetsAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") 
     + name() + string(".top");

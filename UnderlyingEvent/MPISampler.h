@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MPISampler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef Herwig_MPISampler_H
 #define Herwig_MPISampler_H
 // This is the declaration of the MPISampler class.
@@ -8,7 +15,9 @@
 #include "ThePEG/Repository/RandomGenerator.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.xh"
-#include "MPIHandler.h"
+#include "MPISampler.fh"
+
+#include "ProcessHandler.h"
 
 namespace Herwig {
 
@@ -18,12 +27,12 @@ namespace Herwig {
    * This class inherits from SampleBase and implements
    * the Auto Compensating Divide-and-Conquer phase space generator,
    * ACDCGen. In contrast to a ThePEG::ACDCSampler, this
-   * class can be called by MPIHandler.
+   * class can be called by ProcessHandler.
    *
    * @see \ref MPISamplerInterfaces "The interfaces"
    * defined for MPISampler.
    * @see ACDCGen
-   * @see MPIHandler
+   * @see ProcessHandler
    */
 
 class MPISampler: public SamplerBase {
@@ -31,7 +40,7 @@ class MPISampler: public SamplerBase {
 public:
 
   /** Typedef the underlying ACDCGen class. */
-  typedef ACDCGenerator::ACDCGen<UseRandom,tMPIHPtr> SamplerType;
+  typedef ACDCGenerator::ACDCGen<UseRandom,tProHdlPtr> SamplerType;
 
   /** @name Standard constructors and destructors. */
   //@{
@@ -56,10 +65,10 @@ public:
   /** @name Virtual functions needed for SamplerBase */
   //@{
   /**
-   * Method to set the connected MPIHandler pointer
+   * Method to set the connected ProcessHandler pointer
    * 
    */
-  inline void setMPIHandler(tMPIHPtr mpih);
+  inline void setProcessHandler(tProHdlPtr mpih);
 
   /**
    * Initialize the sampler, possibly doing presampling of the
@@ -90,6 +99,17 @@ public:
    * Monte Carlo sampling so far.
    */
   virtual CrossSection integratedXSec() const;
+
+  /**
+   * Return the error on the total integrated cross section determined
+   * from the Monte Carlo sampling so far.
+   */
+  virtual CrossSection integratedXSecErr() const;
+
+  /**
+   * Return the overestimated integrated cross section.
+   */
+  virtual CrossSection maxXSec() const;
 
   /**
    * Return the sum of the weights returned by generate() so far (of
@@ -150,14 +170,14 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doupdate();
 
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  inline virtual void doinit();
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -181,7 +201,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this object.
@@ -198,9 +218,9 @@ private:
   SamplerType theSampler;
 
   /**
-   * The MPIHandler that calls us
+   * The ProcessHandler that calls us
    */
-  tMPIHPtr theMPIHandler;
+  tProHdlPtr theProcessHandler;
 
   /**
    * The smallest possible division allowed.
@@ -278,7 +298,7 @@ struct ClassTraits<Herwig::MPISampler>: public ClassTraitsBase<Herwig::MPISample
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwMPI.so"; }
+  static string library() { return "SimpleKTCut.so HwMPI.so"; }
 
 };
 
@@ -294,14 +314,14 @@ namespace ACDCGenerator {
  * EventHandler object to be sampled by ACDCGen.
  */
 template <>
-struct ACDCFncTraits<Herwig::tMPIHPtr>: public ACDCTraitsType {
+struct ACDCFncTraits<Herwig::tProHdlPtr>: public ACDCTraitsType {
   /** Convenient typdef. */
-  typedef Herwig::tMPIHPtr tMPIHPtr;
+  typedef Herwig::tProHdlPtr tProHdlPtr;
   /**
    * Call a function to be sampled by ACDCGen.
    * @return <code>(*f)(x)</code>.
    */
-  static inline double value(const tMPIHPtr & mpih, const DVector & x) {
+  static inline double value(const tProHdlPtr & mpih, const DVector & x) {
     using namespace ThePEG::Units;
     try {
       return mpih->dSigDR(x)/nanobarn;

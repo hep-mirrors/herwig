@@ -1,0 +1,99 @@
+// -*- C++ -*-
+//
+// ProcessHandler.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the ProcessHandler class.
+//
+namespace Herwig {
+
+inline tEHPtr ProcessHandler::eventHandler() const {
+  return theHandler;
+}
+
+inline tCutsPtr ProcessHandler::cuts() const {
+  return theCuts;
+}
+
+inline tSubHdlPtr ProcessHandler::subProcess() {
+  return theSubProcess;
+}
+
+inline long ProcessHandler::maxLoop() const {
+  return eventHandler()->maxLoop();
+}
+
+inline tSamplerPtr ProcessHandler::sampler() {
+  return theSampler;
+}
+
+inline tcSamplerPtr ProcessHandler::sampler() const {
+  return theSampler;
+}
+
+inline const cPDPair & ProcessHandler::incoming() const {
+  return eventHandler()->incoming();
+}
+
+inline const LuminosityFunction & ProcessHandler::lumiFn() const {
+  // Did that in that strange way, because lumiFn is protected
+  return *eventHandler()->lumiFnPtr();
+}
+
+inline int ProcessHandler::lumiDim() const {
+  return lumiFn().nDim(incoming());
+}
+
+inline int ProcessHandler::maxDim(int bin) const {
+  return theMaxDims[bin];
+}
+
+inline int ProcessHandler::nDim(int bin) const {
+  return lumiDim() + maxDim(bin);
+}
+
+inline int ProcessHandler::statLevel() const {
+  return eventHandler()->statLevel();
+}
+
+inline const ProcessHandler::XVector &
+ProcessHandler::xCombs() const {
+  return theXCombs;
+}
+
+inline ProcessHandler::XVector & ProcessHandler::xCombs() {
+  return theXCombs;
+}
+
+inline const ProcessHandler::XSVector &
+ProcessHandler::xSecs() const {
+  return theXSecs;
+}
+
+inline ProcessHandler::XSVector & ProcessHandler::xSecs() {
+  return theXSecs;
+}
+
+inline int ProcessHandler::binStrategy() const {
+  return theBinStrategy;
+}
+
+inline tStdXCombPtr ProcessHandler::generate() {
+  double wgt = sampler()->generate();
+  return select(sampler()->lastBin(), wgt);
+}
+
+inline IBPtr ProcessHandler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ProcessHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

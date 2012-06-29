@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// EtaPiPiGammaDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_EtaPiPiGammaDecayer_H
 #define HERWIG_EtaPiPiGammaDecayer_H
 // This is the declaration of the EtaPiPiGammaDecayer class.
@@ -7,7 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Interpolator.h"
-#include "EtaPiPiGammaDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -62,18 +69,18 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -138,13 +145,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -157,12 +164,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -184,14 +191,40 @@ private:
    * @param s The scale \f$s\f$.
    * @return The analytic Omnes function.
    */
-  inline Complex analyticOmnes(Energy2 s) const;
-
+  Complex analyticOmnes(Energy2 s) const {
+    Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
+    double root, pi2 = sqr(Constants::pi);
+    Complex f,ii(0.,1.);
+    double pre(mpi2/12./pi2/_fpi/_fpi);
+    if(s>4.*mpi2) {
+      // real piece
+      root=sqrt(1.-4.*mpi2/s);
+      f=(1.-0.25*s/mpi2)*root*log((root+1.)/(-root+1.))-2.;
+      f *=pre;
+      // imaginary piece
+      f += ii*s/mrho2*_rhoconst/8.*pow(root,3);
+    }
+    else {
+      root=sqrt(4.*mpi2/s-1.);
+      f=2.*(1.-0.25*s/mpi2)*root*atan2(1.,root)-2.;
+      f *=pre;
+    }
+    return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
+  }
+  
   /**
    * The experimental Omnes function, \f$D_1^{\rm exp}(s)\f$.
    * @param s The scale \f$s\f$.
    * @return The experimental Omnes function.
    */
-  inline Complex experimentalOmnes(Energy2 s) const;
+  Complex experimentalOmnes(Energy2 s) const {
+    if(!_oreal) {
+      _oreal = make_InterpolatorPtr(_omnesfunctionreal,_omnesenergy,3);
+      _oimag = make_InterpolatorPtr(_omnesfunctionimag,_omnesenergy,3);
+    }
+    Energy q(sqrt(s)); Complex ii(0.,1.);
+    return (*_oreal)(q)+ii*(*_oimag)(q);
+  }
 
 private:
 
@@ -319,7 +352,17 @@ private:
    * Size of the vectors for the interpolation tables
    */
   unsigned int _nsizeb;
- };
+
+  /**
+   *  Spin densit matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the photon
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+};
 
 }
 
@@ -375,17 +418,26 @@ struct OmnesIntegrand {
    * @param inter The interpolator for the phase shift
    * @param cut   The cut-off
    */
-  inline OmnesIntegrand(Interpolator<double,Energy>::Ptr inter, Energy2 cut);
+  OmnesIntegrand(Interpolator<double,Energy>::Ptr inter, Energy2 cut) {
+    _interpolator=inter;
+    _precision=cut;
+  }
 
   /**
    *  Set the scale
    */
-  inline void setScale(Energy2);
+  void setScale(Energy2 in) { _s=in;}
 
   /**
    *  get the value
    */
-  inline InvEnergy4 operator ()(Energy2) const;
+  InvEnergy4 operator ()(Energy2 xpoint) const {
+    InvEnergy4 output = InvEnergy4();
+    Energy q(sqrt(xpoint));
+    if(abs(xpoint-_s)>_precision) 
+      output= (*_interpolator)(q)/xpoint/(xpoint-_s);
+    return output;
+  }
   /** Return type for the GaussianIntegrator */
   typedef InvEnergy4 ValType;
   /** Argument type for the GaussianIntegrator */
@@ -407,7 +459,5 @@ struct OmnesIntegrand {
   Energy2 _precision; 
 };
 }
-
-#include "EtaPiPiGammaDecayer.icc"
 
 #endif /* HERWIG_EtaPiPiGammaDecayer_H */

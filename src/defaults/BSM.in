@@ -1,0 +1,129 @@
+#################################################
+# Create the BSM machinery
+# This only gets switched on in read if it is
+# requested by the user
+################################################
+mkdir /Herwig/NewPhysics
+cd /Herwig/NewPhysics
+create Herwig::ModelGenerator NewModel
+create Herwig::ResonantProcessConstructor ResConstructor
+create Herwig::TwoToTwoProcessConstructor HPConstructor
+create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
+create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
+create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
+create Herwig::DecayConstructor DecayConstructor
+newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
+create Herwig::TwoBodyDecayConstructor TwoBodyDC
+create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
+
+create Herwig::WeakCurrentDecayConstructor WeakDecayConstructor
+set  WeakDecayConstructor:InitPoints 10000
+set  WeakDecayConstructor:MassCut 2.
+# pi-
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-;
+insert WeakDecayConstructor:Normalisation 0 1.01386262897
+# pi-,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi0;
+insert WeakDecayConstructor:Normalisation 0 1.17616809738
+# e-,nu_ebar
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+insert WeakDecayConstructor:DecayModes 0 e-,nu_ebar;
+insert WeakDecayConstructor:Normalisation 0 1.
+# mu-,nu_mubar
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+insert WeakDecayConstructor:DecayModes 0 mu-,nu_mubar;
+insert WeakDecayConstructor:Normalisation 0 1.
+# tau-,nu_taubar
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+insert WeakDecayConstructor:DecayModes 0 tau-,nu_taubar;
+insert WeakDecayConstructor:Normalisation 0 1.
+# pi-,pi0,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi0,pi0;
+insert WeakDecayConstructor:Normalisation 0 1.65956712121
+# pi-,pi+,pi-
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi+,pi-;
+insert WeakDecayConstructor:Normalisation 0 1.62175791702
+# pi-,pi+,pi-,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau4PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi+,pi-,pi0;
+insert WeakDecayConstructor:Normalisation 0 1.09170097618
+# pi-,pi0,pi0,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau4PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi0,pi0,pi0;
+insert WeakDecayConstructor:Normalisation 0 1.
+# Kbar0,pi-
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
+insert WeakDecayConstructor:DecayModes 0 Kbar0,pi-;
+insert WeakDecayConstructor:Normalisation 0 1.17156865176
+# K-
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
+insert WeakDecayConstructor:DecayModes 0 K-;
+insert WeakDecayConstructor:Normalisation 0 0.938794564668
+# K-,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
+insert WeakDecayConstructor:DecayModes 0 K-,pi0;
+insert WeakDecayConstructor:Normalisation 0 1.12526014943
+# pi-,pi-,pi+,pi0,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi-,pi-,pi+,pi0,pi0;
+insert WeakDecayConstructor:Normalisation 0 0.954286993254
+# pi-,pi-,pi-,pi+,pi+
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi+,pi+,pi+,pi-,pi-;
+insert WeakDecayConstructor:Normalisation 0 0.435953860245
+# pi-,pi0,pi0,pi0,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+insert WeakDecayConstructor:DecayModes 0 pi+,pi0,pi0,pi0,pi0;
+insert WeakDecayConstructor:Normalisation 0 0.603378959531
+# K0,pi+,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:DecayModes 0 K0,pi+,pi0;
+insert WeakDecayConstructor:Normalisation 0 0.380268556539
+# K+,pi+,pi-
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:DecayModes 0 K+,pi+,pi-;
+insert WeakDecayConstructor:Normalisation 0 0.407904176498
+# K+,K-,pi+
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:DecayModes 0 K+,K-,pi+;
+insert WeakDecayConstructor:Normalisation 0 0.727416124384
+# K+,Kbar0,pi0 
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:DecayModes 0 K+,Kbar0,pi0;
+insert WeakDecayConstructor:Normalisation 0 0.945076580717
+# K_L0,K_S0,pi+
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:DecayModes 0 K_L0,K_S0,pi+;
+insert WeakDecayConstructor:Normalisation 0 1.10729951668
+# pi+,pi0,gamma
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonPhotonCurrent
+insert WeakDecayConstructor:DecayModes 0 pi+,pi0,gamma;
+insert WeakDecayConstructor:Normalisation 0 3.13799210805
+# eta,pi+,pi0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3MesonCurrent
+insert WeakDecayConstructor:DecayModes 0 eta,pi+,pi0;
+insert WeakDecayConstructor:Normalisation 0 0.880539616307
+# K+,Kbar0
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonCurrent
+insert WeakDecayConstructor:DecayModes 0 K+,Kbar0;
+insert WeakDecayConstructor:Normalisation 0 1.62501804004
+
+insert NewModel:HardProcessConstructors[0] HPConstructor
+insert NewModel:HardProcessConstructors[1] ResConstructor
+insert NewModel:HardProcessConstructors[2] HVConstructor
+insert NewModel:HardProcessConstructors[3] HiggsVBFConstructor
+insert NewModel:HardProcessConstructors[4] QQHiggsConstructor
+newdef NewModel:DecayConstructor DecayConstructor
+insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
+insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
+
+# Required to decay the particles before showering so as to keep
+# the spin correlations in the decay
+create Herwig::HwDecayHandler DecayHandler
+newdef DecayHandler:NewStep No
+insert DecayHandler:Excluded 0 /Herwig/Particles/tau-
+insert DecayHandler:Excluded 1 /Herwig/Particles/tau+

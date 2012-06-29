@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// FivePionCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the FivePionCurrent class.
 //
@@ -10,10 +17,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::ScalarSpinInfo;  
+using namespace ThePEG::Helicity;
 
 FivePionCurrent::FivePionCurrent() {
   // set the number of modes
@@ -44,9 +51,11 @@ FivePionCurrent::FivePionCurrent() {
   _garhopi=6.*GeV;
   _faaf=4.*GeV;
   _ffpipi=5.*GeV;
+  _presigma = ZERO;
+  _preomega = ZERO;
 }
 
-inline void FivePionCurrent::doinit() throw(InitException) {
+inline void FivePionCurrent::doinit() {
   WeakDecayCurrent::doinit();
   if(!_localparameters) {
     _rhomass    = getParticleData(ParticleID::rhominus)->mass();
@@ -96,7 +105,7 @@ void FivePionCurrent::Init() {
   static ClassDocumentation<FivePionCurrent> documentation
     ("The FivePionCurrent class implements the model of hep-ph/0602162",
      "The model of \\cite{Kuhn:2006nw} was used for the hadronic five pion current.",
-     "\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
+     "\\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
 
   static Parameter<FivePionCurrent,Energy> interfaceRhoMass
     ("RhoMass",
@@ -168,12 +177,12 @@ void FivePionCurrent::Init() {
      &FivePionCurrent::_rhoomega, true, false, false);
   static SwitchOption interfaceRhoOmegaInclude
     (interfaceRhoOmega,
-     "Include",
+     "Yes",
      "Include the rho Breit-Wigners",
      true);
   static SwitchOption interfaceRhoOmegaOmit
     (interfaceRhoOmega,
-     "Omit",
+     "No",
      "Don't include the rho Breit-Wigners",
      false);
 
@@ -244,7 +253,7 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
   // check the charge
   if(abs(icharge)!=3) return false;
   // check that the modes are kinematical allowed
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   // 3 pi- 2pi+
   if(imode==0) {
     min=5.*getParticleData(ParticleID::piplus)->mass();
@@ -576,13 +585,13 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int) {
+tPDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int) {
   // particle data objects for the pions
-  PDPtr piplus (getParticleData(ParticleID::piplus ));
-  PDPtr pi0    (getParticleData(ParticleID::pi0    ));
-  PDPtr piminus(getParticleData(ParticleID::piminus));
+  tPDPtr piplus (getParticleData(ParticleID::piplus ));
+  tPDPtr pi0    (getParticleData(ParticleID::pi0    ));
+  tPDPtr piminus(getParticleData(ParticleID::piminus));
   if(icharge==3) swap(piplus,piminus);
-  PDVector output(5);
+  tPDVector output(5);
   // all charged
   if(imode==0) {
     output[0]=piminus;
@@ -622,38 +631,40 @@ unsigned int FivePionCurrent::decayMode(vector<int> idout) {
 // output the information for the database
 void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::FivePionCurrent " << fullName() 
+  if(create) output << "create Herwig::FivePionCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":RhoMass "    << _rhomass/MeV << "\n";
-  output << "set " << fullName() << ":A1Mass  "    << _a1mass/MeV  << "\n";
-  output << "set " << fullName() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
-  output << "set " << fullName() << ":OmegaMass  " << _omegamass/MeV  << "\n";
-  output << "set " << fullName() << ":RhoWidth "    << _rhowidth/MeV << "\n";
-  output << "set " << fullName() << ":A1Width  "    << _a1width/MeV  << "\n";
-  output << "set " << fullName() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
-  output << "set " << fullName() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
-  output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << fullName() << ":RhoOmega " << _rhoomega << "\n";
-  output << "set " << fullName() << ":C " << _c/GeV2 << "\n";
-  output << "set " << fullName() << ":C0 " << _c0 << "\n";
-  output << "set " << fullName() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
-  output << "set " << fullName() << ":grhopipi " <<_grhopipi << "\n";
-  output << "set " << fullName() << ":garhopi " << _garhopi/GeV << "\n";
-  output << "set " << fullName() << ":faaf " <<_faaf/GeV << "\n";
-  output << "set " << fullName() << ":ffpipi " << _ffpipi/GeV << "\n";
+  output << "newdef " << name() << ":RhoMass "    << _rhomass/MeV << "\n";
+  output << "newdef " << name() << ":A1Mass  "    << _a1mass/MeV  << "\n";
+  output << "newdef " << name() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
+  output << "newdef " << name() << ":OmegaMass  " << _omegamass/MeV  << "\n";
+  output << "newdef " << name() << ":RhoWidth "    << _rhowidth/MeV << "\n";
+  output << "newdef " << name() << ":A1Width  "    << _a1width/MeV  << "\n";
+  output << "newdef " << name() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
+  output << "newdef " << name() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
+  output << "newdef " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "newdef " << name() << ":RhoOmega " << _rhoomega << "\n";
+  output << "newdef " << name() << ":C " << _c/GeV2 << "\n";
+  output << "newdef " << name() << ":C0 " << _c0 << "\n";
+  output << "newdef " << name() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
+  output << "newdef " << name() << ":grhopipi " <<_grhopipi << "\n";
+  output << "newdef " << name() << ":garhopi " << _garhopi/GeV << "\n";
+  output << "newdef " << name() << ":faaf " <<_faaf/GeV << "\n";
+  output << "newdef " << name() << ":ffpipi " << _ffpipi/GeV << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }
 
 vector<LorentzPolarizationVectorE> 
-FivePionCurrent::current(bool vertex, const int imode,const int ichan,
-			 Energy & scale,const ParticleVector & decay) const {
-  LorentzVector<complex<InvEnergy2> > output;
-  // construct the spininfo objects if needed
-  if(vertex) {
-    for(unsigned int ix=0;ix<decay.size();++ix)
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
+FivePionCurrent::current(const int imode,const int ichan,
+			 Energy & scale,const ParticleVector & decay,
+			 DecayIntegrator::MEOption meopt) const {
+  useMe();
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<5;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
   }
+  LorentzVector<complex<InvEnergy2> > output;
   Lorentz5Momentum q1(decay[0]->momentum());
   Lorentz5Momentum q2(decay[1]->momentum());
   Lorentz5Momentum q3(decay[2]->momentum());

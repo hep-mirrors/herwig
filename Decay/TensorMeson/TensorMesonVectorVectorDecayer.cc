@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TensorMesonVectorVectorDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TensorMesonVectorVectorDecayer class.
 //
@@ -16,7 +23,15 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
+void TensorMesonVectorVectorDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
+void TensorMesonVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
@@ -26,7 +41,7 @@ void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // set up the integration channels
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0]=getParticleData(_incoming[ix]);
@@ -43,6 +58,7 @@ void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
 TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
   : _incoming(22), _outgoing1(22), _outgoing2(22), 
     _coupling(22), _maxweight(22) {
+  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1));
   // a_2 -> gamma gamma
   _incoming[0] = 115; _outgoing1[0] =  22; _outgoing2[0] = 22; 
   _coupling[0] = 0.00727/GeV; _maxweight[0] = 1.7; 
@@ -103,7 +119,7 @@ TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer()
 }
 
 int TensorMesonVectorVectorDecayer::modeNumber(bool & cc, tcPDPtr parent, 
-						const PDVector & children) const {
+						const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;
@@ -173,7 +189,7 @@ void TensorMesonVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorVectorDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 1000./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 1000./GeV, false, false, true);
 
   static ParVector<TensorMesonVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -184,68 +200,74 @@ void TensorMesonVectorVectorDecayer::Init() {
 }
 
 // matrix elememt for the process
-double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
-					   const Particle & inpart,
-					   const ParticleVector & decay) const {
-  // wave functions etc for the incoming particle
-  vector<LorentzTensor<double> > inten;
-  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
-  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
-		     true,false,vertex);
-  // wave functions for the decay products
-  vector<LorentzPolarizationVector> pol[2];
+double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
+					   const ParticleVector & decay,
+					   MEOption meopt) const {
+  // photons ??
   bool photon[2];
-  for(unsigned int ix=0;ix<2;++ix) {
+  for(unsigned int ix=0;ix<2;++ix)
     photon[ix]=decay[ix]->id()==ParticleID::gamma;
-    // workaround for gcc 3.2.3 bug
-    //ALB VectorWaveFunction(pol[ix],decay[ix],outgoing,true,photon[ix],vertex);
-    vector<LorentzPolarizationVector> mytempLPV;
-    VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
-    pol[ix]=mytempLPV;
+  // stuff for incoming particle
+  if(meopt==Initialize) {
+    _rho = RhoDMatrix(PDT::Spin2);
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+			     incoming,false);
   }
+  if(meopt==Terminate) {
+    TensorWaveFunction::constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+					    outgoing,true,photon[ix]);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::calculateWaveFunctions(_vectors[ix],decay[ix],
+					       outgoing,photon[ix]);
   // compute some useful dot products etc
   complex<Energy> p1eps2[3],p2eps1[3];
   Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
   for(unsigned int ix=0;ix<3;++ix) {
-    p1eps2[ix]=pol[1][ix]*decay[0]->momentum();
-    p2eps1[ix]=pol[0][ix]*decay[1]->momentum();
+    p1eps2[ix]=_vectors[1][ix]*decay[0]->momentum();
+    p2eps1[ix]=_vectors[0][ix]*decay[1]->momentum();
   }
   // compute the traces and useful dot products
   Complex trace[5];
   complex<Energy2> pboth[5];
   LorentzPolarizationVectorE pleft[2][5],pright[2][5];
   for(unsigned int ix=0;ix<5;++ix) {
-    trace[ix]=inten[ix].xx() + inten[ix].yy() + inten[ix].zz() + inten[ix].tt();
-    pleft[0][ix] =(-decay[0]->momentum())*inten[ix];
-    pleft[1][ix] =(-decay[1]->momentum())*inten[ix];
-    pright[0][ix]=inten[ix]*(-decay[0]->momentum());
-    pright[1][ix]=inten[ix]*(-decay[1]->momentum());
+    trace[ix]=_tensors[ix].xx() + _tensors[ix].yy() + _tensors[ix].zz() + _tensors[ix].tt();
+    pleft[0][ix] =(-decay[0]->momentum())*_tensors[ix];
+    pleft[1][ix] =(-decay[1]->momentum())*_tensors[ix];
+    pright[0][ix]=_tensors[ix]*(-decay[0]->momentum());
+    pright[1][ix]=_tensors[ix]*(-decay[1]->momentum());
     pboth[ix]=((pleft[0][ix]+pright[0][ix])*decay[1]->momentum());
   }
   // loop to compute the matrix element
-  DecayMatrixElement newME(PDT::Spin2,PDT::Spin1,PDT::Spin1);
   Complex e1e2;
   LorentzTensor<Energy2> te1e2;
   InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   complex<Energy2> me;
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned iy=0;iy<3;++iy) {
-      e1e2=pol[0][ix].dot(pol[1][iy]);
-      te1e2=complex<Energy2>(p1p2)*(LorentzTensor<double>(pol[0][ix],pol[1][iy])
-				    +LorentzTensor<double>(pol[1][iy],pol[0][ix]));
+      e1e2=_vectors[0][ix].dot(_vectors[1][iy]);
+      te1e2=complex<Energy2>(p1p2)*
+	(LorentzTensor<double>(_vectors[0][ix],_vectors[1][iy])+
+	 LorentzTensor<double>(_vectors[1][iy],_vectors[0][ix]));
       for(unsigned int inhel=0;inhel<5;++inhel) {
-	me = (inten[inhel]*te1e2
-	      -p2eps1[ix]*(pol[1][iy].dot(pleft[0][inhel]+pright[0][inhel])) 
-	      -p1eps2[iy]*(pol[0][ix].dot(pleft[1][inhel]+pright[1][inhel]))
+	me = (_tensors[inhel]*te1e2
+	      -p2eps1[ix]*(_vectors[1][iy].dot(pleft[0][inhel]+pright[0][inhel])) 
+	      -p1eps2[iy]*(_vectors[0][ix].dot(pleft[1][inhel]+pright[1][inhel]))
 	      +pboth[inhel]*e1e2
 	      +(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel]);
-	newME(inhel,ix,iy)=fact*me;
+	ME()(inhel,ix,iy)=fact*me;
       }    
     }
   }
-  ME(newME);
 //   // testing the matrix element
-//   double metest = newME.contract(rhoin).real();
+//   double metest = ME().contract(_rho).real();
 //   Energy2 m02(sqr(inpart.mass())),m12(sqr(decay[0]->mass())),m22(sqr(decay[1]->mass()));
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					     decay[1]->mass());
@@ -256,7 +278,7 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << metest << " " << test <<  " " << (metest-test)/(metest+test) << endl;
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -270,26 +292,22 @@ bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & me
   ++pit;
   int id2((**pit).id());
   int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
-  unsigned int ix(0); bool order;
+  unsigned int ix(0);
   do {
     if(id   ==_incoming[ix]) {
       if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]) {
 	imode=ix;
-	order=true;
       }
       if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]) {
 	imode=ix;
-	order=false;
       }
     }
     if(idbar==_incoming[ix]&&imode<0) {
       if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]) {
 	imode=ix;
-	order=true;
       }
       if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]) {
 	imode=ix;
-	order=false;
       }
     }
     ++ix;
@@ -308,29 +326,30 @@ void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "newdef " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "newdef " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "insert " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "insert " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

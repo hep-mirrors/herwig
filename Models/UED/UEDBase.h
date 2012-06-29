@@ -1,14 +1,23 @@
 // -*- C++ -*-
+//
+// UEDBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_UEDBase_H
 #define HERWIG_UEDBase_H
 //
 // This is the declaration of the UEDBase class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "Herwig++/Models/General/BSMModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+
 #include "UEDBase.fh"
 
 namespace Herwig {
@@ -26,7 +35,7 @@ using namespace ThePEG;
  * @see \ref UEDBaseInterfaces "The interfaces"
  * defined for UEDBase.
  */
-class UEDBase: public StandardModel {
+class UEDBase: public BSMModel {
 
 public:
 
@@ -41,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  inline UEDBase();
+  UEDBase();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -74,7 +83,9 @@ public:
   /**
    * Return the compactification radius
    */
-  inline InvEnergy compactRadius() const;
+  InvEnergy compactRadius() const {
+    return 1./theInvRadius;
+  }
 
   /**
    * Return the Weinburg mixing angle for any level.
@@ -84,7 +95,9 @@ public:
   /**
    * Return the Weinburg mixing angle for \f$n = 1\f$
    */
-  inline double sinThetaOne() const;
+  double sinThetaOne() const {
+    return theSinThetaOne;
+  }
   //@}
 
 protected:
@@ -93,15 +106,19 @@ protected:
    * Add a new ID,mass pair to the mass storage
    * @param elem The element to add in to storage
    */
-  inline void addMassElement(IDMassPair elem);
+  void addMassElement(IDMassPair elem) {
+    theMasses.push_back(elem);
+  }
 
   /**
    * Add a new mixing angle to the storage
    * @param n The level
    * @param val The value
    */
-  inline void addMixingAngle(const unsigned int n, 
-			     const double val);
+  void addMixingAngle(const unsigned int n, 
+		      const double val) {
+    theMixingAngles.insert(make_pair(n, val));
+  }
   
 private:
 
@@ -111,7 +128,7 @@ private:
    * Calculate the radiative corrections to the masses of the KK excitations
    * @param n The KK-level for which to calculate the masses. 
    */
-  void calculateKKMasses(const unsigned int n) throw(InitException);
+  void calculateKKMasses(const unsigned int n);
 
   /**
    * Calculate the radiative corrections to the spin-0 and spin-1 
@@ -132,7 +149,7 @@ private:
    *@param id The id of the particles mass to reset
    *@param value The new mass
    */  
-  void resetMass(long id, Energy value) throw(InitException);
+  void resetMass(long id, Energy value);
 
   /**
    * Calculate the Weinburg Mixing angle for the appropriate level.
@@ -149,8 +166,10 @@ private:
   /**
    * A predicate for sorting the list of masses.
    */
-  static inline bool lowerMass(const pair<long, Energy> & p1, 
-			       const pair<long, Energy> & p2);
+  static bool lowerMass(const pair<long, Energy> & p1, 
+			const pair<long, Energy> & p2) {
+    return p1.second < p2.second;
+  }
   
 protected:
 
@@ -160,13 +179,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -174,7 +193,7 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -227,12 +246,7 @@ private:
    * Store the masses of the new particles
    */
   vector<IDMassPair> theMasses;
-
-  /**
-   * Name of the spectrum file
-   */
-  string theSpectrum;
-
+  
   /**
    * The value of the vacuum expectation value of the higgs field.
    */
@@ -243,67 +257,72 @@ private:
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}Z^{(0)}\f$
    */
-  Helicity::FFVVertexPtr theF1F1Z0Vertex;
+  AbstractFFVVertexPtr theF1F1Z0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}g^{(0)}\f$
    */
-  Helicity::FFVVertexPtr theF1F1G0Vertex;
+  AbstractFFVVertexPtr theF1F1G0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(0)}g^{(1)}\f$
    */
-  Helicity::FFVVertexPtr theF1F0G1Vertex;
+  AbstractFFVVertexPtr theF1F0G1Vertex;
 
   /**
    * The \f$g^{(1)}g^{(1)}g\f$ vertex
    */
-  Helicity::VVVVertexPtr theG1G1G0Vertex;
+  AbstractVVVVertexPtr theG1G1G0Vertex;
 
   /**
    * The \f$g\,g\,g^{(1)},g^{(1)}\f$ vertex
    */
-  Helicity::VVVVVertexPtr theG0G0G1G1Vertex;
+  AbstractVVVVVertexPtr theG0G0G1G1Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}\gamma\f$
    */
-  Helicity::FFVVertexPtr theF1F1P0Vertex;
+  AbstractFFVVertexPtr theF1F1P0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}W\f$
    */
-  Helicity::FFVVertexPtr theF1F1W0Vertex;
+  AbstractFFVVertexPtr theF1F1W0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(0)}W^{(1)}\f$
    */
-  Helicity::FFVVertexPtr theF1F0W1Vertex;
+  AbstractFFVVertexPtr theF1F0W1Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}H^{(1)}\f$
+   */
+  AbstractFFSVertexPtr theF1F0H1Vertex;
 
   /**
    * The \f$ A^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
    */
-  VSSVertexPtr theP0H1H1Vertex;
+  AbstractVSSVertexPtr theP0H1H1Vertex;
 
   /**
    * The \f$ Z^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
    */
-  VSSVertexPtr theZ0H1H1Vertex;
+  AbstractVSSVertexPtr theZ0H1H1Vertex;
 
   /**
    * The \f$ W^\pm_{\mu(0)}A_{(1)}H^\mp_{(1)}\f$
    */
-  VSSVertexPtr theW0A1H1Vertex;
+  AbstractVSSVertexPtr theW0A1H1Vertex;
 
   /**
    * The \f$ Z^\mu_{\mu(0)}A_{(1)}h_{(1)}\f$
    */
-  VSSVertexPtr theZ0A1h1Vertex;
+  AbstractVSSVertexPtr theZ0A1h1Vertex;
   
   /**
    * The \f$W^{(1)}Z^{(1)}W_{(0)}\f$ vertex
    */
-  Helicity::VVVVertexPtr theW0W1W1Vertex;
+  AbstractVVVVertexPtr theW0W1W1Vertex;
   //@}
 };
 
@@ -321,7 +340,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::UEDBase,1> {
   /** Typedef of the first base class of UEDBase. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -344,7 +363,5 @@ struct ClassTraits<Herwig::UEDBase>
 /** @endcond */
 
 }
-
-#include "UEDBase.icc"
 
 #endif /* HERWIG_UEDBase_H */

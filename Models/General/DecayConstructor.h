@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DecayConstructor_H
 #define HERWIG_DecayConstructor_H
 //
@@ -7,6 +14,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "NBodyDecayConstructorBase.h"
+#include "Herwig++/Decay/Radiation/DecayRadiationGenerator.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
@@ -14,10 +22,13 @@ using namespace ThePEG;
   
 /** 
  * The DecayConstructor class is an interfaced class that stores a 
- * vector of 2,3 body decay constructors and calls the appropriate 
- * function to create the decayers and decaymodes in the 
- * NBodyDecayConstructor
+ * vector of NBodyDecayConstructor objects and calls the appropriate 
+ * function to create the decayers and decaymodes. There is also an interface
+ * to add decay mode tags of the form a->b,c,...; which will not
+ * be created.
  * 
+ * @see \ref DecayConstructorInterfaces "The interfaces"
+ * defined for DecayConstructor. 
  * @see Interfaced
  */
 class DecayConstructor: public Interfaced {
@@ -27,7 +38,8 @@ public:
   /**
    * The default constructor.
    */
-  inline DecayConstructor();
+  DecayConstructor() : NBodyDecayConstructors_(0), 
+		       _disableDMTags(0), _minBR(0.) {}
 
 public:
 
@@ -57,10 +69,48 @@ public:
 
   /**
    * Function to create decayers
-   * @param part vector of ParticleData pointers to particles contained
+   * @param particles vector of ParticleData pointers to particles contained
    * in model
+   * @param minBR minimum branching ratio for modes
    */
-  void createDecayers(const vector<PDPtr> & part);
+  void createDecayers(const vector<PDPtr> & particles, double minBR);
+
+  /**
+   * Check whether the decay mode given is one that should not be
+   * created
+   * @param tag The decay mode tag, a->b,c,d,...;
+   */
+  bool disableDecayMode(string tag) const;
+
+  /**
+   *  QED Generator
+   */
+  DecayRadiationGeneratorPtr QEDGenerator() {return QEDGenerator_;}
+
+  /**
+   * Vector of references to the objects that will construct the N-Body
+   * decays.
+   */
+  const vector<NBodyDecayConstructorBasePtr> & decayConstructors() {
+    return NBodyDecayConstructors_;
+  }
+
+  /**
+   *  Get minimum branching ratio
+   */
+  double minimumBR() const { return _minBR;}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 protected:
 
@@ -70,13 +120,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -99,7 +149,22 @@ private:
    * Vector of references to the objects that will construct the N-Body
    * decays.
    */
-   vector<NBodyDecayConstructorBasePtr> _theNBodyDecayConstructors;
+   vector<NBodyDecayConstructorBasePtr> NBodyDecayConstructors_;
+
+  /**
+   * A list of DecayMode tags that are not to be created 
+   */
+  vector<string> _disableDMTags;
+
+  /**
+   *  The decay radiation generator to use for QED radiation
+   */
+  DecayRadiationGeneratorPtr QEDGenerator_;
+
+  /**
+   *  Minimum allowed branching ratio
+   */
+  double _minBR;
 };
 
 }
@@ -126,16 +191,10 @@ struct ClassTraits<Herwig::DecayConstructor>
   : public ClassTraitsBase<Herwig::DecayConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::DecayConstructor"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the DecayConstructor class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "DecayConstructor.icc"
 
 #endif /* HERWIG_DecayConstructor_H */

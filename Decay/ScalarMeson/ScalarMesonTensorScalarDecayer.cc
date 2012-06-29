@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ScalarMesonTensorScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ScalarMesonTensorScalarDecayer class.
 //
@@ -15,6 +22,14 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+
+void ScalarMesonTensorScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix) 
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
 
 ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer() 
   : _incoming(3), _outgoingT(3), _outgoingS(3), _coupling(3), _maxweight(3) {
@@ -32,7 +47,7 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
   generateIntermediates(false);
 }
 
-inline void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
+void ScalarMesonTensorScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
@@ -44,7 +59,7 @@ inline void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
   // set up the integration channels
   vector<double> wgt;
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0] = getParticleData(_incoming[ix]);
     extpart[1] = getParticleData(_outgoingT[ix]);
@@ -58,7 +73,7 @@ inline void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
 }
 
 int ScalarMesonTensorScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					       const PDVector & children) const {
+					       const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id0(parent->id());
   int id0bar = parent->CC() ? parent->CC()->id() : id0;
@@ -129,7 +144,7 @@ void ScalarMesonTensorScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarMesonTensorScalarDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 100./GeV, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -138,31 +153,33 @@ void ScalarMesonTensorScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
+double ScalarMesonTensorScalarDecayer::me2(const int,
 					   const Particle & inpart,
-					   const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
-  vector<LorentzTensor<double> > twave;
-  TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+					   const ParticleVector & decay,
+					   MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    TensorWaveFunction::constructSpinInfo(_tensors,decay[0],
+					  outgoing,true,false);
+    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+    return 0.;
+  }
+  TensorWaveFunction::
+    calculateWaveFunctions(_tensors,decay[0],outgoing,false);
   // calculate the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin2,PDT::Spin0);
   InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
-    vtemp = twave[ix]*inpart.momentum(); 
-    newME(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
+    vtemp = _tensors[ix]*inpart.momentum(); 
+    ME()(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
-  rhoin.average();
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
@@ -173,7 +190,7 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
@@ -228,27 +245,27 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingTensor " << ix << " " 
+      output << "newdef " << name() << ":OutgoingTensor " << ix << " " 
 	     << _outgoingT[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "newdef " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingTensor " << ix << " " 
+      output << "insert " << name() << ":OutgoingTensor " << ix << " " 
 	     << _outgoingT[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "insert " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

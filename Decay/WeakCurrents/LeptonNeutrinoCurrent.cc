@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// LeptonNeutrinoCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LeptonNeutrinoCurrent class.
 //
@@ -20,7 +27,8 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
-NoPIOClassDescription<LeptonNeutrinoCurrent> LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
+NoPIOClassDescription<LeptonNeutrinoCurrent> 
+LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
 // Definition of the static class description member.
 
 void LeptonNeutrinoCurrent::Init() {
@@ -32,10 +40,11 @@ void LeptonNeutrinoCurrent::Init() {
 
 
 // complete the construction of the decay mode for integration
-bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
+bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode_in,
 				       DecayPhaseSpaceModePtr mode,
 				       unsigned int iloc,unsigned int,
 				       DecayPhaseSpaceChannelPtr phase,Energy upp) {
+  int imode = imode_in;
   // make sure the the decays are kinematically allowed
   Energy min = getParticleData(11+2*imode)->mass()+getParticleData(12+2*imode)->mass();
   if(min>=upp) return false;
@@ -54,42 +63,59 @@ bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
+tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode_in,
 					  int,int)
 {
-  PDVector output(2);
+  int imode = imode_in;
+  tPDVector output(2);
   if(icharge==3)
     {
-      output[0]=getParticleData(-11-2*imode);
+      int id = -11-2*imode;
+      output[0]=getParticleData(id);
       output[1]=getParticleData(12+2*imode);
     }
   else if(icharge==-3)
     {
       output[0]=getParticleData(11+2*imode);
-      output[1]=getParticleData(-12-2*imode);
+      int id = -12-2*imode;
+      output[1]=getParticleData(id);
     }
   return output;
 }
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-LeptonNeutrinoCurrent::current(bool vertex, const int, const int,
-			       Energy & scale,const ParticleVector & outpart) const {
+LeptonNeutrinoCurrent::current(const int, const int,
+			       Energy & scale,const ParticleVector & outpart,
+			       DecayIntegrator::MEOption meopt) const {
   Lorentz5Momentum q(outpart[0]->momentum()+outpart[1]->momentum());q.rescaleMass();
   scale=q.mass();
   // storage for the currents
   vector<LorentzPolarizationVectorE> temp(4);
   vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  // construct the spin information objects for the  decay products and calculate
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar; 
   // their wavefunctions
   if(outpart[0]->id()>0) {
-    SpinorWaveFunction(   wave   ,outpart[1],outgoing,true,vertex);
-    SpinorBarWaveFunction(wavebar,outpart[0],outgoing,true,vertex);
+    SpinorWaveFunction   ::
+      calculateWaveFunctions(wave   ,outpart[1],outgoing);
+    SpinorBarWaveFunction::
+      calculateWaveFunctions(wavebar,outpart[0],outgoing);
   }
   else {
-    SpinorWaveFunction(   wave   ,outpart[0],outgoing,true,vertex);
-    SpinorBarWaveFunction(wavebar,outpart[1],outgoing,true,vertex);
+    SpinorWaveFunction   ::
+      calculateWaveFunctions(wave   ,outpart[0],outgoing);
+    SpinorBarWaveFunction::
+      calculateWaveFunctions(wavebar,outpart[1],outgoing);
+  }
+  if(meopt==DecayIntegrator::Terminate) {
+    if(outpart[0]->id()>0) {
+      SpinorWaveFunction   ::constructSpinInfo(wave   ,outpart[1],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(wavebar,outpart[0],outgoing,true);
+    }
+    else {
+      SpinorWaveFunction   ::constructSpinInfo(   wave,outpart[0],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(wavebar,outpart[1],outgoing,true);
+    }
   }
   // now compute the currents
   int iloc(0);
@@ -128,7 +154,7 @@ unsigned int LeptonNeutrinoCurrent::decayMode(vector<int> idout) {
 void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::LeptonNeutrinoCurrent " << fullName() 
+  if(create) output << "create Herwig::LeptonNeutrinoCurrent " << name() 
 		    << "  HwWeakCurrents.so\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;

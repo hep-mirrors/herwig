@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SSWSSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SSWSSVertex class.
 //
@@ -13,155 +20,122 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-inline SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
+SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
 				  _ulast(0), _dlast(0), _gblast(0),
 				  _factlast(0.) {
-  vector<int> first,second,third;
+  orderInGem(1);
+  orderInGs(0);
+}
+
+void SSWSSVertex::doinit() {
   //W-
   //LL-squarks
-  for(unsigned int ix=1000001;ix<1000006;ix+=2) {
-    first.push_back(-24);
-    second.push_back(ix+1);
-    third.push_back(-ix);
+  for(long ix=1000001;ix<1000006;ix+=2) {
+    addToList(-24,ix+1,-ix);
   }
   //1-2 stop sbottom
-  first.push_back(-24);
-  second.push_back(1000006);
-  third.push_back(-2000005);
+  addToList(-24,1000006,-2000005);
   //2-1 stop sbottom
-  first.push_back(-24);
-  second.push_back(2000006);
-  third.push_back(-1000005);
+  addToList(-24,2000006,-1000005);
   //2-2 stop sbottom
-  first.push_back(-24);
-  second.push_back(2000006);
-  third.push_back(-2000005);
+  addToList(-24,2000006,-2000005);
  
   //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
-    first.push_back(-24);
-    second.push_back(-ix);
-    third.push_back(ix+1);
+  for(long ix=1000011;ix<1000016;ix+=2) {
+    addToList(-24,-ix,ix+1);
   }
   //2-L stau
-  first.push_back(-24);
-  second.push_back(-2000015);
-  third.push_back(1000016);
+  addToList(-24,-2000015,1000016);
   //W+
-  for(unsigned int ix=1000001;ix<1000006;ix+=2) {
-    first.push_back(24);
-    second.push_back(-(ix+1));
-    third.push_back(ix);
+  for(long ix=1000001;ix<1000006;ix+=2) {
+    addToList(24,-(ix+1),ix);
   }
 
 //1-2 stop sbottom
-  first.push_back(24);
-  second.push_back(-1000006);
-  third.push_back(2000005);
+  addToList(24,-1000006,2000005);
   //2-1 stop sbottom
-  first.push_back(24);
-  second.push_back(-2000006);
-  third.push_back(1000005);
+  addToList(24,-2000006,1000005);
   //2-2 stop sbottom
-  first.push_back(24);
-  second.push_back(-2000006);
-  third.push_back(2000005);
+  addToList(24,-2000006,2000005);
 
   //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
-    first.push_back(24);
-    second.push_back(ix);
-    third.push_back(-ix-1);
+  for(long ix=1000011;ix<1000016;ix+=2) {
+    addToList(24,ix,-ix-1);
   }
   //2-L stau
-  first.push_back(24);
-  second.push_back(2000015);
-  third.push_back(-1000016);
+  addToList(24,2000015,-1000016);
   
   //---Z0----
 //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000017;++ix) {
-    first.push_back(23);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=1000011;ix<1000017;++ix) {
+    addToList(23,ix,-ix);
   }
   //RR-sleptons
-  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
-    first.push_back(23);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=2000011;ix<2000016;ix+=2) {
+    addToList(23,ix,-ix);
   }
   //L-Rbar stau
-  first.push_back(23);
-  second.push_back(1000015);
-  third.push_back(-2000015);
+  addToList(23,1000015,-2000015);
   //Lbar-R stau
-  first.push_back(23);
-  second.push_back(-1000015);
-  third.push_back(2000015);
+  addToList(23,-1000015,2000015);
    
   //LL squarks
-  for(unsigned int ix=1000001;ix<1000007;++ix) {
-    first.push_back(23);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=1000001;ix<1000007;++ix) {
+    addToList(23,ix,-ix);
   }
   //RR squarks
-  for(unsigned int ix=2000001;ix<2000007;++ix) {
-    first.push_back(23);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=2000001;ix<2000007;++ix) {
+    addToList(23,ix,-ix);
   }
  //L-Rbar stop
-  first.push_back(23);
-  second.push_back(1000006);
-  third.push_back(-2000006);
+  addToList(23,1000006,-2000006);
   //Lbar-R stop
-  first.push_back(23);
-  second.push_back(-1000006);
-  third.push_back(2000006);
+  addToList(23,-1000006,2000006);
 
   //L-Rbar sbottom
-  first.push_back(23);
-  second.push_back(1000005);
-  third.push_back(-2000005);
+  addToList(23,1000005,-2000005);
   //Lbar-R sbottom
-  first.push_back(23);
-  second.push_back(-1000005);
-  third.push_back(2000005);
+  addToList(23,-1000005,2000005);
   
   //----gamma----
   //sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
-    first.push_back(22);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=1000011;ix<1000016;ix+=2) {
+    addToList(22,ix,-ix);
   }
-  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
-    first.push_back(22);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=2000011;ix<2000016;ix+=2) {
+    addToList(22,ix,-ix);
   }
   //squarks
-  for(unsigned int ix=1000001;ix<1000007;++ix) {
-    first.push_back(22);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=1000001;ix<1000007;++ix) {
+    addToList(22,ix,-ix);
   }
-  for(unsigned int ix=2000001;ix<2000007;++ix) {
-    first.push_back(22);
-    second.push_back(ix);
-    third.push_back(-ix);
+  for(long ix=2000001;ix<2000007;++ix) {
+    addToList(22,ix,-ix);
   }
-  setList(first,second,third);
+  VSSVertex::doinit();
+  tMSSMPtr theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
+  if(!theSS)
+    throw InitException() << "SSWSSVertex::doinit() - "
+			  << "The model pointer is null."
+			  << Exception::abortnow;
+  _sw = sqrt(sin2ThetaW());
+  _cw = sqrt( 1. - sqr(_sw) );
+  _stop = theSS->stopMix();
+  _sbottom = theSS->sbottomMix();
+  _stau = theSS->stauMix();
+  if(!_stop || !_stau || !_sbottom)
+    throw InitException() << "SSWSSVertex::doinit() - "
+			  << "A mixing matrix pointer is null."
+			  << " stop: " << _stop << " sbottom: " << _sbottom
+			  << " stau: " << _stau << Exception::abortnow;
 }
 
 void SSWSSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw  << _cw << _stau << _stop << _sbottom;
+  os << _sw  << _cw << _stau << _stop << _sbottom;
 }
 
 void SSWSSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw >> _cw >> _stau >> _stop >> _sbottom;
+  is >> _sw >> _cw >> _stau >> _stop >> _sbottom;
 }
 
 ClassDescription<SSWSSVertex> SSWSSVertex::initSSWSSVertex;
@@ -183,7 +157,7 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     throw HelicityConsistencyError()
       << "SSWSSVertex::setCoupling() - The vector particle in this "
       << "vertex is not a W/Z. " << boson << Exception::warning;
-    setNorm(0.);
+    norm(0.);
   }
   long sf1(abs(part2->id())),sf2(abs(part3->id()));
   if( (sf1 > 1000006 && sf1 < 1000011 && sf1 > 1000016) ||
@@ -251,10 +225,10 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       }
     }
   }
-  if( q2 != _q2last ) {
+  if( q2 != _q2last || _couplast==0. ) {
     _q2last = q2;
-    _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
+    _couplast = electroMagneticCoupling(q2);
   }
-  setNorm(_couplast*_factlast);
+  norm(_couplast*_factlast);
 }
 

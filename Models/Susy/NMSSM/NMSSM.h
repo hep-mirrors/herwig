@@ -24,14 +24,19 @@ public:
   /**
    * The default constructor.
    */
-  inline NMSSM();
+  NMSSM() : _lambda(0.), _kappa(0.), _theAlambda(0.*MeV), 
+	    _theAkappa(0.*MeV), _lambdaVEV(0.*MeV),
+		_MQ3(0.*MeV), _MU2(0.*MeV) 
+  {}
 
 public:
 
   /**
    * Mixing matrix for the neutral CP-odd Higgs bosons
    */
-  inline const MixingMatrixPtr & CPoddHiggsMix() const;
+  const MixingMatrixPtr & CPoddHiggsMix() const {
+    return theHiggsAMix;
+  }
 
   /**
    *  The NMSSM couplings
@@ -40,12 +45,51 @@ public:
   /**
    *  Superpotential \f$\lambda\f$ term
    */
-  inline double lambda() const;
+  double lambda() const {
+    return _lambda;
+  }
 
   /**
    *  Superpotential \f$\kappa\f$ coupling
    */
-  inline double kappa() const;
+  double kappa() const {
+    return _kappa;
+  }
+
+  /**
+   *  The V.E.V of the extra singlet field scaled
+   * by \f$ lambda\f$, 
+   */
+  Energy lambdaVEV() const {
+    return _lambdaVEV;
+  }
+  
+  /**
+   * Soft trilinear \f$SH_2 H_1\f$ coupling
+   */
+  Energy trilinearLambda() const {
+    return _theAlambda;
+  }
+
+  /**
+   * Soft cubic \f$S\f$ coupling
+   */
+  Energy trilinearKappa() const {
+    return _theAkappa;
+  }
+      /**
+   *  left 3rd generation scalar quark mass
+   */
+  Energy MQ3() const {
+    return _MQ3;
+  }
+
+  /**
+   * right scalar top mass
+   */
+  Energy MU2() const {
+    return _MU2;
+  }
   //@}
 
 public:
@@ -73,7 +117,7 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
+  
 protected:
 
   /**
@@ -94,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -137,6 +181,31 @@ private:
    *  Superpotential \f$\kappa\f$ coupling
    */
   double _kappa;
+
+  /**
+   * Soft trilinear \f$SH_2 H_1\f$ coupling
+   */
+  Energy _theAlambda;
+
+  /**
+   * Soft cubic \f$S\f$ coupling
+   */
+  Energy _theAkappa;
+
+  /**
+   *  The V.E.V of the extra singlet field scaled
+   * by \f$ lambda\f$
+   */
+  Energy _lambdaVEV;
+      /**
+   * left 3rd generation scalar quark mass
+   */
+  Energy _MQ3;
+
+  /**
+   *  right scalar top mass
+   */
+  Energy _MU2;
   //@}
 };
 
@@ -176,7 +245,5 @@ struct ClassTraits<Herwig::NMSSM>
 /** @endcond */
 
 }
-
-#include "NMSSM.icc"
 
 #endif /* HERWIG_NMSSM_H */

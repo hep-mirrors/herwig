@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// FFVCurrentDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_FFVCurrentDecayer_H
 #define HERWIG_FFVCurrentDecayer_H
 //
@@ -8,7 +15,6 @@
 #include "GeneralCurrentDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "FFVCurrentDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -24,25 +30,18 @@ class FFVCurrentDecayer: public GeneralCurrentDecayer {
 
 public:
 
-  /**
-   * The default constructor.
-   */
-  inline FFVCurrentDecayer();
-  
-public:
-
   /** @name Virtual functions required by the Decayer class. */
   //@{
    /**
    * Return the matrix element squared for a given mode and phase-space channel.  
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Function to return partial Width
@@ -88,13 +87,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 
@@ -107,7 +106,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -118,17 +117,16 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+  virtual void rebind(const TranslationMap & trans)
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
-
 
 private:
 
@@ -150,6 +148,21 @@ private:
    * Pointer to FFVVertex
    */
   FFVVertexPtr _theFFVPtr;
+
+  /**
+   *  Spinr density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction>    _wave   ;
+
+  /**
+   *  Barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
 }
@@ -175,20 +188,11 @@ struct ClassTraits<Herwig::FFVCurrentDecayer>
   : public ClassTraitsBase<Herwig::FFVCurrentDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::FFVCurrentDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * FFVCurrentDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class FFVCurrentDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "FFVCurrentDecayer.icc"
 
 #endif /* HERWIG_FFVCurrentDecayer_H */

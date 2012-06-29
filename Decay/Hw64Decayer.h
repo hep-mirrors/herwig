@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Hw64Decayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Hw64Decayer_H
 #define HERWIG_Hw64Decayer_H
 //
@@ -41,20 +48,20 @@ public:
   /**
    * Default constructor
    */
-  inline Hw64Decayer();
+  Hw64Decayer() : MECode(0),_masstry(50) {} 
 
   /**
    * return true if this decayer can perfom the decay specified by the
    * given decay mode.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * for a given decay mode and a given particle instance, perform the
    * decay and return the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -94,13 +101,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -116,8 +123,12 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  inline void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
-				  const vector<Lorentz5Momentum> & moms) const;
+  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+			   const vector<Lorentz5Momentum> & moms) const {
+    unsigned int numProds = particles.size();
+    for(unsigned int ix=0;ix<numProds;++ix)
+      out.push_back(particles[ix]->produceParticle(moms[ix]));
+  }
 
 private:
 
@@ -178,7 +189,5 @@ struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Deca
 /** @endcond */
 
 }
-
-#include "Hw64Decayer.icc"
 
 #endif /* HERWIG_Hw64Decayer_H */

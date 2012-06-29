@@ -1,0 +1,21 @@
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 100000
+set LHCGenerator:EventHandler:StatLevel Full
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
+
+set /Herwig/Decays/DecayHandler:LifeTimeOption 0
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm

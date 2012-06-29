@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BtoSGammaDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BtoSGammaDecayer class.
 //
@@ -15,7 +22,15 @@
 
 using namespace Herwig;
 
-bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
+IBPtr BtoSGammaDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr BtoSGammaDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+bool BtoSGammaDecayer::accept(tcPDPtr , const tPDVector & children) const {
   // should be three decay products
   if(children.size()!=3) return false;
   // photon should be last
@@ -31,7 +46,7 @@ bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
 }
 
 ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
-				       const PDVector & prod) const {
+				       const tPDVector & prod) const {
   ParticleVector children;
   for(unsigned int ix=0;ix<prod.size();++ix) {
     children.push_back(prod[ix]->produceParticle());
@@ -40,7 +55,7 @@ ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
   Lorentz5Momentum pout[3],phad;
   pout[0].setMass(children[0]->dataPtr()->constituentMass());
   pout[1].setMass(children[1]->dataPtr()->constituentMass());
-  pout[2].setMass(0.*GeV);
+  pout[2].setMass(ZERO);
   // first calculate the hadronic mass spectrum
   phad.setMass(_hadronicmass->hadronicMass(parent.mass(),pout[0].mass()+pout[1].mass()));
   // two body decay to hadronic cluster and photon
@@ -97,8 +112,8 @@ void BtoSGammaDecayer::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
   _hadronicmass->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":HadronicMass " 
-	 << _hadronicmass->fullName() << " \n";
+  output << "newdef " << name() << ":HadronicMass " 
+	 << _hadronicmass->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

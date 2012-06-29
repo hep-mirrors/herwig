@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// KaonThreeMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the KaonThreeMesonCurrent class.
 //
@@ -154,9 +161,9 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   _omegaKstarwgt=1./sqrt(2.);
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.*MeV;_mK=0.*MeV;
-  _maxmass=0.*GeV;
-  _maxcalc=0.*GeV;
+  _mpi=ZERO;_mK=ZERO;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
 
@@ -196,7 +203,19 @@ ClassDescription<KaonThreeMesonCurrent> KaonThreeMesonCurrent::initKaonThreeMeso
 void KaonThreeMesonCurrent::Init() {
 
   static ClassDocumentation<KaonThreeMesonCurrent> documentation
-    ("There is no documentation for the KaonThreeMesonCurrent class");
+    ("The KaonThreeMesonCurrent class implements the model of "
+     "Z. Phys.  C 69 (1996) 243 [arXiv:hep-ph/9503474]"
+     " for the weak current with three "
+     "mesons, at least one of which is a kaon",
+     "The KaonThreeMesonCurrent class implements the model of "
+     "\\cite{Finkemeier:1995sr} for the weak current with three "
+     "mesons, at least one of which is a kaon.",
+     "\\bibitem{Finkemeier:1995sr}\n"
+     "M.~Finkemeier and E.~Mirkes,\n"
+     "Z.\\ Phys.\\  C {\\bf 69} (1996) 243 [arXiv:hep-ph/9503474].\n"
+     " %%CITATION = ZEPYA,C69,243;%%\n"
+
+);
 
   static Switch<KaonThreeMesonCurrent,bool> interfaceInitializea1
     ("Initializea1",
@@ -204,79 +223,79 @@ void KaonThreeMesonCurrent::Init() {
      &KaonThreeMesonCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
-     "Initialization",
+     "Yes",
      "Initialize the calculation",
      true);
   static SwitchOption interfaceInitializea1NoInitialization
     (interfaceInitializea1,
-     "NoInitialization",
+     "No",
      "Use the default values",
      false);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &KaonThreeMesonCurrent::_a1width, GeV, 0.599*GeV, 0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &KaonThreeMesonCurrent::_a1mass, GeV, 1.251*GeV, 0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &KaonThreeMesonCurrent::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &KaonThreeMesonCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialMasses
     ("RhoAxialMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialWidths
     ("RhoAxialWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorMasses
     ("RhoVectorMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorWidths
     ("RhoVectorWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialMasses
     ("KstarAxialMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialWidths
     ("KstarAxialWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorMasses
     ("KstarVectorMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorWidths
     ("KstarVectorWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,double> interfaceAxialRhoWeight
@@ -324,7 +343,7 @@ void KaonThreeMesonCurrent::Init() {
      &KaonThreeMesonCurrent::_kstarparameters, true, false, false);
   static SwitchOption interfaceKstarParameterstrue
     (interfaceKstarParameters,
-       "Local",
+     "Local",
      "Use local values of the parameters",
      true);
   static SwitchOption interfaceKstarParametersParticleData
@@ -375,33 +394,33 @@ void KaonThreeMesonCurrent::Init() {
      true);
   static SwitchOption interfacea1WidthOptionParam
     (interfacea1WidthOption,
+     "Kuhn",
      "Use the parameterization of Kuhn and Santamaria for default parameters."
      " This should only be used for testing vs TAUOLA",
-     "",
      false);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &KaonThreeMesonCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Masses
     ("K1Masses",
      "Masses of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_k1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Widths
     ("K1Widths",
      "Widths of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_k1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KaonThreeMesonCurrent,double> interfaceK1WeightKStarPi
@@ -425,25 +444,25 @@ void KaonThreeMesonCurrent::Init() {
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &KaonThreeMesonCurrent::_omegamass, GeV, 0.782*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The width of the omega meson",
-     &KaonThreeMesonCurrent::_omegawidth, GeV, 0.00843*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_omegawidth, GeV, 0.00843*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiMass
     ("PhiMass",
      "The mass of the phi meson",
-     &KaonThreeMesonCurrent::_phimass, GeV, 1.020*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_phimass, GeV, 1.020*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiWidth
     ("PhiWidth",
      "The width of the phi meson",
-     &KaonThreeMesonCurrent::_phiwidth, GeV, 0.00443*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_phiwidth, GeV, 0.00443*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,double> interfaceOmegaKStarWeight
@@ -472,7 +491,7 @@ void KaonThreeMesonCurrent::Init() {
 void KaonThreeMesonCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return; 
+    if(!_initializea1||_maxmass==ZERO) return; 
     // parameters for the table of values
     Energy2 step(sqr(_maxmass)/199.);
     // integrator to perform the integral
@@ -488,7 +507,7 @@ void KaonThreeMesonCurrent::inita1Width(int iopt) {
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
     _a1runq2.clear();_a1runwidth.clear();
-    for(Energy2 moff2 = 0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
+    for(Energy2 moff2 = ZERO; moff2<=sqr(_maxmass); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
@@ -513,8 +532,8 @@ bool KaonThreeMesonCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
-  PDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.*MeV);
+  tPDVector extpart(particles(1,imode,iq,ia));
+  Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -836,154 +855,155 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 					   bool header,bool create) const {
   if(header) os << "update decayers set parameters=\"";
   if(create) os << "create Herwig::KaonThreeMesonCurrent " 
-		<< fullName() << " HwWeakCurrents.so\n";
+		<< name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rho1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":AxialRhoWeight " << ix 
+      os << "newdef " << name() << ":AxialRhoWeight " << ix 
 	 << " " << _rho1wgts[ix] << "\n";
     }
     else {
-      os << "insert " << fullName() << ":AxialRhoWeight " << ix 
+      os << "insert " << name() << ":AxialRhoWeight " << ix 
 	 << " " << _rho1wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_kstar1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":AxialKStarWeight " << ix 
+      os << "newdef " << name() << ":AxialKStarWeight " << ix 
 	 << " " << _kstar1wgts[ix] << "\n";}
     else {
-      os << "insert " << fullName() << ":AxialKStarWeight " << ix 
+      os << "insert " << name() << ":AxialKStarWeight " << ix 
 	 << " " << _kstar1wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rho2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":VectorRhoWeight " << ix 
+      os << "newdef " << name() << ":VectorRhoWeight " << ix 
 	 << " " << _rho2wgts[ix] << "\n";
     }
     else {
-      os << "insert " << fullName() << ":VectorRhoWeight " << ix 
+      os << "insert " << name() << ":VectorRhoWeight " << ix 
 	 << " " << _rho2wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_kstar2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":VectorKStarWeight " << ix 
+      os << "newdef " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";}
     else {
-      os << "insert " << fullName() << ":VectorKStarWeight " << ix 
+      os << "insert " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";
     }
   }
-  os << "set " << fullName() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
-  os << "set " << fullName() << ":EpsOmega " << _epsomega << "\n";
-  os << "set " << fullName() << ":Initializea1 " << _initializea1 << "\n";
-  os << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  os << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
-  os << "set " << fullName() << ":a1Parameters " << _a1parameters << "\n";
-  os << "set " << fullName() << ":K1Parameters " << _k1parameters << "\n";
-  os << "set " << fullName() << ":OmegaParameters " << _omegaopt << "\n";
-  os << "set " << fullName() << ":a1WidthOption " << _a1opt << "\n";
+  os << "newdef " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
+  os << "newdef " << name() << ":EpsOmega " << _epsomega << "\n";
+  os << "newdef " << name() << ":Initializea1 " << _initializea1 << "\n";
+  os << "newdef " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  os << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  os << "newdef " << name() << ":a1Parameters " << _a1parameters << "\n";
+  os << "newdef " << name() << ":K1Parameters " << _k1parameters << "\n";
+  os << "newdef " << name() << ":OmegaParameters " << _omegaopt << "\n";
+  os << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    os << "set " << fullName() << ":a1RunningWidth " << ix 
+    os << "newdef " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    os << "set " << fullName() << ":a1RunningQ2 " << ix 
+    os << "newdef " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  os << "set " << fullName() << ":A1Width " << _a1width/GeV << "\n";
-  os << "set " << fullName() << ":A1Mass " << _a1mass/GeV << "\n";
-  os << "set " << fullName() << ":OmegaWidth " << _omegawidth/GeV << "\n";
-  os << "set " << fullName() << ":OmegaMass " << _omegamass/GeV << "\n";
-  os << "set " << fullName() << ":PhiWidth " << _phiwidth/GeV << "\n";
-  os << "set " << fullName() << ":PhiMass " << _phimass/GeV << "\n";
-  os << "set " << fullName() << ":FPi " << _fpi/MeV << "\n";
+  os << "newdef " << name() << ":A1Width " << _a1width/GeV << "\n";
+  os << "newdef " << name() << ":A1Mass " << _a1mass/GeV << "\n";
+  os << "newdef " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
+  os << "newdef " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
+  os << "newdef " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
+  os << "newdef " << name() << ":PhiMass " << _phimass/GeV << "\n";
+  os << "newdef " << name() << ":FPi " << _fpi/MeV << "\n";
   for(unsigned int ix=0;ix<_k1mass.size();++ix) {
     if(ix<2) {
-      os << "set " << fullName() << ":K1Masses " << ix 
+      os << "newdef " << name() << ":K1Masses " << ix 
 	 << " " << _k1mass[ix]/GeV << "\n";
     }
     else {
-      os << "insert " << fullName() << ":K1Masses " << ix 
+      os << "insert " << name() << ":K1Masses " << ix 
 	 << " " << _k1mass[ix]/GeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_k1width.size();++ix) {
     if(ix<2) {
-      os << "set " << fullName() << ":K1Widths " << ix 
+      os << "newdef " << name() << ":K1Widths " << ix 
 	 << " " << _k1width[ix]/GeV << "\n";
     }
     else {
-      os << "insert " << fullName() << ":K1Widths " << ix 
+      os << "insert " << name() << ":K1Widths " << ix 
 	 << " " << _k1width[ix]/GeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rho1mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoAxialMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoAxialMasses " << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": RhoAxialMasses" << ix 
+    else     os << "insert " << name() << ": RhoAxialMasses" << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho1width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoAxialWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":RhoAxialWidths " << ix 
+    else     os << "insert " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoVectorMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoVectorMasses " << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": RhoVectorMasses" << ix 
+    else     os << "insert " << name() << ": RhoVectorMasses" << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoVectorWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":RhoVectorWidths " << ix 
+    else     os << "insert " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarAxialMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarAxialMasses " << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": KstarAxialMasses" << ix 
+    else     os << "insert " << name() << ": KstarAxialMasses" << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarAxialWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":KstarAxialWidths " << ix 
+    else     os << "insert " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarVectorMasses " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarVectorMasses " << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": KstarVectorMasses" << ix 
+    else     os << "insert " << name() << ": KstarVectorMasses" << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarVectorWidths " << ix 
+    if(ix<3) os << "newdef " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":KstarVectorWidths " << ix 
+    else     os << "insert " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgta.size();++ix) {
-    if(ix<2) os << "set " << fullName() << ":K1WeightKStarPi " << ix
+    if(ix<2) os << "newdef " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
-    else     os << "insert " << fullName() << ":K1WeightKStarPi " << ix
+    else     os << "insert " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgtb.size();++ix) {
-    if(ix<2) os << "set " << fullName() << ":K1WeightRhoK " << ix
+    if(ix<2) os << "newdef " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
-    else     os << "insert " << fullName() << ":K1WeightRhoK " << ix
+    else     os << "insert " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
   }
   ThreeMesonCurrentBase::dataBaseOutput(os,false,false);
-  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+  if(header) os << "\n\" where BINARY ThePEGName=\"" 
+		<< fullName() << "\";" << endl;
 }  
 
-void KaonThreeMesonCurrent::doinit() throw(InitException) {
+void KaonThreeMesonCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
@@ -1104,6 +1124,7 @@ KaonThreeMesonCurrent::FormFactors
 KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 						 Energy2 q2,Energy2 s1,
 						 Energy2 s2,Energy2 s3) const {
+  useMe();
   Complex F1, F2, F5;
   // calculate the K- pi - K+ factor
   if(imode==2) {
@@ -1242,7 +1263,39 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
   }
   return FormFactors(F1 / _fpi,
 		     F2 / _fpi,
-		     0. / MeV,
-		     0. / MeV,
+		     InvEnergy(),
+		     InvEnergy(),
 		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }
+
+void KaonThreeMesonCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
+}
+
+void KaonThreeMesonCurrent::doupdate() {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
+
+double KaonThreeMesonCurrent::
+threeBodyMatrixElement(const int       , const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy    , 
+		       const Energy    , const Energy    ) const {
+  Energy2 mpi2(sqr(_mpi));
+  Complex propb(Trho1(s1,-1)),propa(Trho1(s2,-1)); 
+  // the matrix element
+  Energy2 output(ZERO); 
+  // first resonance
+  output+= ((s1-4.*mpi2)+0.25*(s3-s2)*(s3-s2)/q2)*real(propb*conj(propb)); 
+  // second resonance
+  output+= ((s2-4.*mpi2)+0.25*(s3-s1)*(s3-s1)/q2)*real(propa*conj(propa)); 
+  // the interference term 
+  output+= (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+							       propb*conj(propa)); 
+    return output / sqr(_rho1mass[0]);
+  }

@@ -1,0 +1,56 @@
+##################################################
+# Example generator based for MUED in lepton collisions
+#
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read MUED.model
+cd /Herwig/NewPhysics
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+
+# The UED parameters (these are the default)
+set MUED/Model:InverseRadius 300.*GeV
+set MUED/Model:LambdaR 20
+
+# --- Hard Process ----
+# The particle name can be found in the relevant model file
+# by searching for its PDG code and noting the text 
+# '/Herwig/Particles/###' where the hashes denote the name
+
+# Switch to decide whether to include EW diagrams in the 
+# hard process (On by default)
+set HPConstructor:IncludeEW Yes
+
+# Example hard process: Incoming leptons, outgoing kk bosons and leptons
+insert HPConstructor:Incoming 0 /Herwig/Particles/e+
+insert HPConstructor:Incoming 1 /Herwig/Particles/e-
+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/KK1_Z0
+insert HPConstructor:Outgoing 1 /Herwig/Particles/KK1_W+
+insert HPConstructor:Outgoing 2 /Herwig/Particles/KK1_e_L-
+insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_e_R-
+
+# Other parameters for run
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun ILC-MUED LEPGenerator

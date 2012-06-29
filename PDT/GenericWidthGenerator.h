@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GenericWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GenericWidthGenerator_H
 #define HERWIG_GenericWidthGenerator_H
 //
@@ -25,7 +32,7 @@ typedef Selector<tDMPtr> DecayMap;
 
 /** \ingroup PDT
  *
- * The <code>GenericWidthGenerator</code> class is designed to automatically
+ * The GenericWidthGenerator class is designed to automatically
  * calculate the running width for a given particle using information from
  * the decayModes and the Decayers to construct the running width.
  *
@@ -50,7 +57,10 @@ public:
   /**
    * Default constructor
    */
-  inline GenericWidthGenerator();
+  GenericWidthGenerator()
+    : mass_(), prefactor_(1.), initialize_(false),BRnorm_(true),npoints_(50),
+      BRminimum_(0.01), intOrder_(1)
+  {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -80,7 +90,11 @@ public:
    * @param part The particle data pointer of the particle.
    * @return True if this class can handle the particle and false otherwise
    */
-  inline virtual bool accept(const ParticleData & part) const;
+  virtual bool accept(const ParticleData & part) const {
+    if(!particle_) return false;
+    return part.id() == particle_->id() ||
+      ( part.CC() && part.CC()->id() == particle_->id() );
+  }
 
   /** @name Members to calculate the width and decay modes. */
   //@{
@@ -97,7 +111,9 @@ public:
    * @param part The particle data pointer of the particle.
    * @return The decay map
    */
-  inline virtual DecayMap rate(const ParticleData & part) const;
+  virtual DecayMap rate(const ParticleData & part) const {
+    return part.decaySelector();
+  }
 
   /**
    * Return a decay map for a given particle instance. This allows us to
@@ -113,7 +129,13 @@ public:
    * @param iloc The location of the mode in the list
    * @return The partial width for the mode.
    */
-  Energy partialWidth(int iloc,Energy m) const;
+  virtual Energy partialWidth(int iloc,Energy m) const;
+
+  /**
+   *  Return the total width and the sum of the partial widths for
+   *  modes which are used
+   */
+  virtual pair<Energy,Energy> width(Energy, const ParticleData &) const;
   //@}
 
   /**
@@ -123,15 +145,23 @@ public:
    **/
   virtual void dataBaseOutput(ofstream & output, bool header=true);
 
+  /**
+   * Given a particle type and a mass and a width of an instance of
+   * that particle type, generate a life time.
+   */
+  virtual Length lifeTime(const ParticleData &, Energy m, Energy w) const;
+
 protected:
 
   /**
    * The \f$1\to2\f$ width for on-shell particles
-   * @param m The mass, or scale, for the calculation
+   * @param q The mass, or scale, for the calculation
    * @param iloc The location of the mode in the list.
    * @return The partial width.
    */
-  inline Energy partial2BodyWidth(int iloc,Energy m) const;
+  Energy partial2BodyWidth(int iloc,Energy q) const {
+    return partial2BodyWidth(iloc,q,MEmass1_[iloc],MEmass2_[iloc]);
+  }
 
   /**
    * The \f$1\to2\f$ width for outgoing particles which can be off-shell.
@@ -141,7 +171,7 @@ protected:
    * @param m2 The mass of the second outgoing particle.
    * @return The partial width.
    */
-  inline virtual Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
+  virtual Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
 
   /**
    * Perform the set up for a mode in classes inheriting from this one
@@ -154,7 +184,7 @@ protected:
   /**
    *  Access to the particle dat for inheriting classes
    */
-  inline tPDPtr particle() const;
+  tPDPtr particle() const {return particle_;}
 
 protected:
 
@@ -164,13 +194,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -182,48 +212,74 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
+  virtual void doinit();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
   virtual void dofinish();
-  //@}
 
   /**
-   * set up the interpolators
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
    */
-  void setInterpolators();
+  virtual void rebind(const TranslationMap & trans)
+   ;
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
+  //@}
 
   /**
    *  Matrix element code for a given mode 
    * @param imode The mode.
    */
-  inline int MEcode(int imode) const;
+  int MEcode(int imode) const {return MEcode_[imode];}
 
   /**
    *  Coupling for a given mode
    * @param imode The mode.
    */
-  inline double MEcoupling(int imode) const;
+  double MEcoupling(int imode) const {return MEcoupling_[imode];}
 
 
   /**
    *  The on-shell mass of the particle
    */
-  inline Energy mass() const;
+  Energy mass() const {return mass_;}
 
   /**
    * Initialization option for use by the inheriting classes
    */
-  inline bool initialize() const;
+  bool initialize() const {return initialize_;}
+
+  /**
+   *  Access to the decay modes
+   */
+  vector<tDMPtr> decayModes() const {return decayModes_;}
+  
+
+private:
+
+  /**
+   * Helper function for the interface
+   */
+  void setParticle(string);
+
+  /**
+   * Helper function for the interface
+   */
+  string getParticle() const;
 
 private:
 
@@ -242,106 +298,106 @@ private:
   /**
    * The pointer to the ParticleData object for the particle for this width generator.
    */
-  PDPtr _theParticle;
+  tPDPtr particle_;
 
   /**
    * The decaymodes
    */
-  vector<DMPtr> _decaymodes;
+  vector<tDMPtr> decayModes_;
 
   /**
    *  The tags for the DecayMode s
    */
-  vector<string> _decaytags;
+  vector<string> decayTags_;
   
   /**
    *  The minimum mass of the decaying particle for which this decay mode is possible
    */
-  vector<Energy> _minmass;
+  vector<Energy> minMass_;
 
   /**
    * The on-shell mass of the particle
    */
-  Energy _mass;
+  Energy mass_;
 
   /**
    * Prefactor to get the on-shell width
    */
-  double _prefactor;
+  double prefactor_;
 
   /**
    * The type of ME, whether it is fixed, calculated by this class or interpolation
    */
-  vector<int> _MEtype;
+  vector<int> MEtype_;
 
   /**
    * The code for the matrix element
    */
-  vector<int> _MEcode;
+  vector<int> MEcode_;
 
   /**
    *  Mass of the first outgoing particle for the simple \f$1\to2\f$ ME's
    */
-  vector<Energy> _MEmass1;
+  vector<Energy> MEmass1_;
   /**
    *  Mass of the second outgoing particle for the simple \f$1\to2\f$ ME's
    */
-  vector<Energy> _MEmass2;
+  vector<Energy> MEmass2_;
 
   /**
    * the coupling for a given me
    */
-  vector<double> _MEcoupling; 
+  vector<double> MEcoupling_; 
 
   /**
    * is this mode used for the running width
    */
-  vector<bool> _modeon;
+  vector<bool> modeOn_;
 
   /**
    * storage of the massesto set up the interpolation tables
    */
-  vector<Energy> _intermasses;
+  vector<Energy> interMasses_;
 
   /**
    * storage of the widths to set up the interpolation tables
    */
-  vector<Energy> _interwidths;
+  vector<Energy> interWidths_;
 
   /**
    * the number of entries in the decay table for a particular mode
    */
-  vector<int> _noofentries;
+  vector<int> noOfEntries_;
 
   /**
    * initialize the generator using the particle data object
    */
-  bool _initialize;
+  bool initialize_;
 
   /**
    * normalise the terms so that the partial widths for an on-shell particle are correct
    */
-  bool _BRnorm;
+  bool BRnorm_;
 
   /**
    * number of points to use for interpolation tables
    */
-  int _npoints;
+  int npoints_;
 
   /**
    * intepolators for the running width
    */
-  vector<Interpolator<Energy,Energy>::Ptr> _interpolators;
+  vector<Interpolator<Energy,Energy>::Ptr> interpolators_;
 
   /**
    * minimum branching ratio for the inclusion in the total running width
    */
-  double _BRminimum;
+  double BRminimum_;
 
   /**
    *  Order of the interpolation for the tables
    */
-  unsigned int _intorder;
+  unsigned int intOrder_;
 };
 
 }
@@ -377,7 +433,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "GenericWidthGenerator.icc"
 
 #endif /* HERWIG_GenericWidthGenerator_H */

@@ -1,0 +1,74 @@
+##################################################
+# Example generator based on LEP parameters
+# usage: Herwig++ read LEP.in
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 100000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:EventHandler:Sampler:Ntry 10000
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+##################################################
+# Choice of phase-space generation for PDFs
+##################################################
+set /Herwig/Partons/QCDExtractor:FlatSHatY 0
+
+##################################################
+# Change the proton PDFs to those for photon radiation
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
+
+##################################################
+#  Cuts
+##################################################
+cd /Herwig/Cuts
+set QCDCuts:ScaleMin 0.0*GeV
+set QCDCuts:X1Min 0
+set QCDCuts:X2Min 0
+set QCDCuts:X1Max 1.
+set QCDCuts:X2Max 1.
+set QCDCuts:MHatMin 1.*GeV
+erase QCDCuts:MultiCuts 0
+set LeptonKtCut:MinKT 3*GeV
+
+##################################################
+# Selected the hard process
+##################################################
+cd /Herwig/MatrixElements
+
+# fermion-antifermion 
+insert SimpleQCD:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
+set /Herwig/MatrixElements/MEgg2ff:Process Muon
+# W+W-
+#insert SimpleQCD:MatrixElements 0 /Herwig/MatrixElements/MEgg2WW
+
+##################################################
+# LHC physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+###################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LHC-GammaGamma LHCGenerator

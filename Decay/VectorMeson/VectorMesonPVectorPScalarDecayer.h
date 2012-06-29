@@ -1,11 +1,18 @@
 // -*- C++ -*-
+//
+// VectorMesonPVectorPScalarDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_VectorMesonPVectorPScalarDecayer_H
 #define HERWIG_VectorMesonPVectorPScalarDecayer_H
 // This is the declaration of the VectorMesonPVectorPScalarDecayer class.
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "VectorMesonPVectorPScalarDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -41,18 +48,18 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -102,13 +109,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -120,12 +127,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -172,6 +179,16 @@ private:
    */
   unsigned int _initsize;
 
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the incoming and outgoing ferimons
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+
 };
 
 }
@@ -214,7 +231,5 @@ struct ClassTraits<Herwig::VectorMesonPVectorPScalarDecayer>
 /** @endcond */
 
 }
-
-#include "VectorMesonPVectorPScalarDecayer.icc"
 
 #endif /* HERWIG_VectorMesonPVectorPScalarDecayer_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DecayRadiationGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DecayRadiationGenerator_H
 #define HERWIG_DecayRadiationGenerator_H
 //
@@ -6,6 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "Herwig++/Decay/DecayIntegrator.fh"
 #include "DecayRadiationGenerator.fh"
 
 namespace Herwig {
@@ -30,9 +38,12 @@ public:
    *  in classes inheriting from this one to produce the radiation.
    * @param p The decaying particle
    * @param children The decay products
+   * @param decayer The decayer which would normally generate this decay
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children)=0;
+  virtual ParticleVector generatePhotons(const Particle & p,
+					 ParticleVector children,
+					 tDecayIntegratorPtr decayer)=0;
 
 public:
 
@@ -83,16 +94,10 @@ struct ClassTraits<Herwig::DecayRadiationGenerator>
   : public ClassTraitsBase<Herwig::DecayRadiationGenerator> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::DecayRadiationGenerator"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the DecayRadiationGenerator class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "DecayRadiationGenerator.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "DecayRadiationGenerator.icc"
 
 #endif /* HERWIG_DecayRadiationGenerator_H */

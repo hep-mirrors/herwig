@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SSGSGSGVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SSGSGSGVertex class.
 //
@@ -13,17 +20,12 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-void SSGSGSGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS;
+SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
+  orderInGs(1);
+  orderInGem(0);
 }
 
-void SSGSGSGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS;
-  _couplast = 0.;
-  _q2last = 0.*GeV2;
-}
-
-ClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
+NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
 // Definition of the static class description member.
 
 void SSGSGSGVertex::Init() {
@@ -41,12 +43,12 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       part3->id() == ParticleID::SUSY_g) ||
      (part3->id() == ParticleID::g && part1->id() == ParticleID::SUSY_g &&
       part2->id() == ParticleID::SUSY_g)) {
-    if(q2 != _q2last) {
-      _couplast = sqrt(4.*Constants::pi*_theSS->alphaS(q2));
+    if(q2 != _q2last || _couplast==0.) {
+      _couplast = strongCoupling(q2);
       _q2last = q2;
     }
-    setNorm(_couplast);
-    setLeft(1.);setRight(1.);
+    norm(_couplast);
+    left(1.);right(1.);
   }
   else {
     throw HelicityConsistencyError() 
@@ -54,7 +56,12 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       << part1->id() << "  " << part2->id()
       << "  " << part3->id()
       << Exception::warning;
-    setNorm(0.);
-    setLeft(0.); setRight(0);
+    norm(0.);
+    left(0.); right(0);
   }
+}
+
+void SSGSGSGVertex::doinit() {
+  addToList(1000021, 1000021, 21);
+  FFVVertex::doinit();
 }

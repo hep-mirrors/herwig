@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// TTbarAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TTbarAnalysis_H
 #define HERWIG_TTbarAnalysis_H
 //
@@ -7,14 +14,13 @@
        
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "TTbarAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The TTbarAnalysis class tries to find a top antitop pair in the final
  * state and books a number of histograms.  It only makes sense if
  * hadronization and decays are switched off.  However, if there is is
@@ -29,15 +35,10 @@ class TTbarAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline TTbarAnalysis();
-  //@}
-
-public:
+  TTbarAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -59,27 +60,6 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -100,13 +80,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -117,7 +97,7 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
 
 private:
 
@@ -213,10 +193,5 @@ struct ClassTraits<Herwig::TTbarAnalysis>
 /** @endcond */
 
 }
-
-#include "TTbarAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TTbarAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_TTbarAnalysis_H */

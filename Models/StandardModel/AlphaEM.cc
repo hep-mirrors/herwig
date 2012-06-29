@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// AlphaEM.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the AlphaEM class.
 //
@@ -13,6 +20,14 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
+
+IBPtr AlphaEM::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr AlphaEM::fullclone() const {
+  return new_ptr(*this);
+}
 
 void AlphaEM::persistentOutput(PersistentOStream & os) const {
   os << ounit(_me,GeV2) << ounit(_mmu,GeV2) 
@@ -39,7 +54,7 @@ void AlphaEM::Init() {
 
 }
 
-void AlphaEM::doinit() throw(InitException) {
+void AlphaEM::doinit() {
   AlphaEMBase::doinit();
   _me   = sqr(getParticleData(ParticleID::eminus)->mass());
   _mmu  = sqr(getParticleData(ParticleID::muminus)->mass());
@@ -70,6 +85,7 @@ double AlphaEM::realPi(double r) const {
 }
 
 double AlphaEM::value(Energy2 scale, const StandardModelBase & sm) const {
+  useMe();
   static double eps=1e-6;
   static double a1=0.0    ,b1=0.00835,c1=1.000;
   static double a2=0.0    ,b2=0.00238,c2=3.927;

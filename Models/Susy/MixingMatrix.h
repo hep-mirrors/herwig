@@ -1,6 +1,14 @@
 // -*- C++ -*-
+//
+// MixingMatrix.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MixingMatrix_H
 #define HERWIG_MixingMatrix_H
+
 //
 // This is the declaration of the MixingMatrix class.
 //
@@ -69,6 +77,9 @@ using namespace ThePEG;
  */
 class MixingMatrix: public Interfaced {
 
+  /** Exception class to indicate problem with mixing matrix .*/
+  class MixingMatrixError : public Exception {};
+
 public:
 
   /** @name Constructors */
@@ -78,17 +89,21 @@ public:
    * @param mix Mixing matrix
    * @param ids The ids of the mixing sparticles
    */
-  inline MixingMatrix(const CMatrix & mix,const vector<long> & ids);
+  MixingMatrix(const CMatrix & mix,const vector<long> & ids) : 
+    _theMixingMatrix(mix),_theIds(ids), _theSize(make_pair(mix.size(),mix[0].size())) 
+  {}
 
   /**
    * Contructor that initializes size of matrix
    */
-  inline MixingMatrix(unsigned int col, unsigned int row);
+  MixingMatrix(unsigned int row, unsigned int col) :
+    _theMixingMatrix(row,vector<Complex>(col,Complex(0.,0.))), _theSize(row,col)
+  {}
 
   /**
    * Standard Constructor.
    */
-   inline MixingMatrix();
+  MixingMatrix() {}
   //@}
 
 public:
@@ -123,23 +138,34 @@ public:
    * Set the mixing matrix
    * @param mixing The Mixing matrix stored as nested complex vector
    */
-  inline void setMatrix(const CMatrix & mixing);
+  void setMatrix(const CMatrix & mixing)  {
+    _theMixingMatrix = mixing;
+    _theSize = make_pair(mixing.size(),mixing[0].size());
+  }
 
   /**
    *Get the mixing matrix
    */
-  inline CMatrix getMatrix() const;
+  CMatrix getMatrix() const {return _theMixingMatrix;}
 
   /**
    * Set the vector containing mixing particles codes
    * @param mixingCodes vector containing PDG codes for mixing particles
    */
-  inline void setIds(const vector<long> & mixingCodes);
+  void setIds(const vector<long> & mixingCodes)  {
+    if(mixingCodes.size() != _theSize.first) {
+      throw MixingMatrixError() << "MixingMatrix::setIds() - The number "
+				<< "of PDG codes does not match the size of the "
+				<< "matrix" << Exception::warning;
+      return;
+    }
+    _theIds = mixingCodes;
+  }
   
   /**
    * Get the vector containing mixing particles codes
    */
-  inline const vector<long> & getIds() const;
+  const vector<long> & getIds() const {return _theIds;}
   //@}
   
   /**
@@ -151,29 +177,35 @@ public:
   /**
    * Access element of matrix
    */  
-  inline const Complex operator()(unsigned int row, 
-				  unsigned int col) const;
+  const Complex operator()(unsigned int row, unsigned int col) const {
+    return _theMixingMatrix.at(row).at(col);
+  }
 
   /**
    * Set element of matrix
    */
-  inline Complex & operator()(unsigned int row,
-			      unsigned int col) ;
-
+  Complex & operator()(unsigned int row, unsigned int col) {
+    return _theMixingMatrix.at(row).at(col);
+  }
+  
   /**
    * Add a PDG code to the stored vector
    */
-  inline void addCode(long id);
+  void addCode(long id) {
+    if(_theIds.size() >= _theSize.first) {
+      throw MixingMatrixError() << "MixingMatrix::addCode() - Trying to add a"
+				<< "PDG code but the vector already contains the "
+				<< "same number as the matrix size " 
+				<< Exception::warning;
+      return;
+    }
+    _theIds.push_back(id);
+  }
   
   /**
    * Return the size of the mixing matrix
    */
-  inline MatrixSize size() const;
-
-  // /**
-//    * Overloaded multiplication operator
-//    */ 
-//   inline MixingMatrix operator*(const MixingMatrix &) const;
+  MatrixSize size() const {return _theSize;}
   
 protected:
 
@@ -183,22 +215,16 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MixingMatrix> initMixingMatrix;
 
   /**
    * The assignment operator is private and must never be called.
@@ -231,42 +257,6 @@ private:
    * Output operator for the MixingMatrix
    */
   ostream & operator<<(ostream &,const MixingMatrix &);
-
-  /** Exception class to indicate problem with mixing matrix .*/
-  class MixingMatrixError : public Exception {};
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MixingMatrix. */
-template <>
-struct BaseClassTrait<Herwig::MixingMatrix,1> {
-  /** Typedef of the first base class of MixingMatrix. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MixingMatrix class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MixingMatrix>
-  : public ClassTraitsBase<Herwig::MixingMatrix> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MixingMatrix"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the MixingMatrix class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
-#include "MixingMatrix.icc"
 
 #endif /* HERWIG_MixingMatrix_H */

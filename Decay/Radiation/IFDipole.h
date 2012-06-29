@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// IFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_IFDipole_H
 #define HERWIG_IFDipole_H
 //
@@ -19,9 +26,11 @@ using ThePEG::Constants::pi;
 /** \ingroup Decay
  *
  * The IFDipole class generates radiation from a final-final dipole for
- * the generation of photons in decay by the YODA algorithm.
+ * the generation of photons in decay by the SOPTHY algorithm.
  * 
- * @see YODA
+ * @see SOPTHY 
+ * @see \ref IFDipoleInterfaces "The interfaces"
+ * defined for IFDipole.
  */
 class IFDipole: public Interfaced {
 
@@ -32,7 +41,13 @@ public:
   /**
    * The default constructor.
    */
-  inline IFDipole();
+  IFDipole() :
+    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(),
+    _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
+    _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
+    _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
+    _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()
+  {}
   //@}
 
 public:
@@ -79,13 +94,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -97,7 +112,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:
@@ -108,15 +123,10 @@ protected:
    * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$.
    * @return The average photon multiplicity
    */
-  inline double nbar(double beta1,double ombeta1);
-
-  /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
+  double nbar(double beta1,double ombeta1) {
+    return  _alpha/pi*_chrg1*_chrg2/beta1*
+      log((1.+beta1)/ombeta1)*log(_emax/_emin);
+  }
 
   /**
    * Generate the momentum of a photon 
@@ -134,16 +144,28 @@ protected:
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
-  inline double exactDipoleWeight(double beta1,double ombeta1,
-				  unsigned int iphot);
+  double exactDipoleWeight(double beta1,double ombeta1,
+			   unsigned int iphot) {
+    double ombc;
+    // if cos is greater than zero use result accurate as cos->1
+    if(_cosphot[iphot]>0.0)
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    // if cos is less    than zero use result accurate as cos->-1
+    else
+      ombc=1.-beta1*_cosphot[iphot];
+    return 1.0*sqr(beta1*_sinphot[iphot]/ombc);
+  }
 
   /**
    *  The crude YFS form factor for calculating the weight
-   * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
+   * @param b   Velocity of the first charged particle, \f$\beta_1\f$
+   * @param omb One minus the velocity of the first particle,  \f$1-\beta_1\f$
    * @return The YFS form factor
    */
-    inline double crudeYFSFormFactor(double beta1,double ombeta1);
+  double crudeYFSFormFactor(double b,double omb) {
+    double Y =-_alpha/pi*_chrg1*_chrg2 / b * log((1.+b)/omb) * log(_m[0]/(2.*_emin));
+    return exp(Y);
+  }
 
   /**
    *  The exact YFS form factor for calculating the weight
@@ -174,6 +196,14 @@ protected:
    */
   double makePhotons(Boost boost,ParticleVector children);
 
+  /**
+   *  Compute a Lorentz transform from p to q
+   * @param p Original momentum
+   * @param q Final momentum
+   */
+  LorentzRotation solveBoost(const Lorentz5Momentum & q, 
+			     const Lorentz5Momentum & p ) const;
+
 private:
 
   /**
@@ -190,11 +220,6 @@ private:
 
 private:
 
-#ifdef KEITH_DEBUG
-  inline void KFILL(int,double,double);
-  inline void LFILL(int,double,double,double);
-  void IF_FILL(int);
-#endif
   /**
    *  the fine structure constant at $q^2=0$
    */
@@ -214,11 +239,6 @@ private:
    *  Photon multiplicity being generated
    */
   unsigned int _multiplicity;
-
-  /**
-   * Maximum number of photons to generate
-   */
-  unsigned int _nphotonmax;
 
   /**
    *  Map from arguments of lists such that
@@ -394,7 +414,5 @@ struct ClassTraits<Herwig::IFDipole>
 /** @endcond */
 
 }
-
-#include "IFDipole.icc"
 
 #endif /* HERWIG_IFDipole_H */

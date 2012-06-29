@@ -4,7 +4,6 @@
 // This is the declaration of the NonLeptonicOmegaDecayer class.
 
 #include "Baryon1MesonDecayerBase.h"
-#include "NonLeptonicOmegaDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -25,25 +24,10 @@ class NonLeptonicOmegaDecayer: public Baryon1MesonDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline NonLeptonicOmegaDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline NonLeptonicOmegaDecayer(const NonLeptonicOmegaDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~NonLeptonicOmegaDecayer();
-  //@}
-
-public:
+  NonLeptonicOmegaDecayer();
 
   /**
    * Which of the possible decays is required
@@ -52,7 +36,7 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -111,13 +95,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -125,45 +109,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -207,7 +162,7 @@ private:
   /**
    * The \f$\mathcal{C}_{B^*}\f$ coupling of the \f$B^*\f$ multiplet to the decuplet.
    */
-  double _CBstar;
+  double _cbstar;
 
   /**
    * The \f$s_c\f$ coupling of the \f$R\f$ multiplet to the decuplet.
@@ -217,7 +172,7 @@ private:
   /**
    * The \f$\mathcal{C}\f$ coupling of the decuplet to the ground state baryons.
    */
-  double _C;
+  double _c;
 
   /**
    * The pion decay constant \f$f_\pi\f$.
@@ -247,22 +202,22 @@ private:
   /**
    * The mass of the \f$\Lambda^0\f$.
    */
-  Energy _Mlambda;
+  Energy _mlambda;
 
   /**
    * The mass of the \f$\Xi\f$.
    */
-  Energy _Mxi;
+  Energy _mxi;
 
   /**
    * The mass of the \f$\Omega\f$.
    */
-  Energy _Momega;
+  Energy _momega;
 
   /**
    * The mass of the \f$\Xi^*\f$.
    */
-  Energy _MXistar;
+  Energy _mxistar;
 
   /**
    * The mass of the \f$\pi^+\f$.
@@ -277,22 +232,22 @@ private:
   /**
    * The mass of the \f$K^+\f$.
    */
-  Energy _MKp;
+  Energy _mkp;
 
   /**
    * The mass of the \f$K^0\f$.
    */
-  Energy _MK0;
+  Energy _mk0;
 
   /**
    * The mass of the \f$B^*\f$ resonance, this is the \f$\frac12^+\f$ multiplet.
    */
-  Energy _MBstar;
+  Energy _mbstar;
 
   /**
    * The mass of the \f$R\f$ resonance, this is the \f$\frac12^-\f$ multiplet.
    */
-  Energy _MR;
+  Energy _mr;
 
   /**
    * use local values for the masses for the couplings
@@ -302,27 +257,27 @@ private:
   /**
    * The PDG code for the incoming baryon.
    */
-  int _incomingB;
+  long _incomingB;
 
   /**
    * The PDG code for the outgoing baryon.
    */
-  vector<int> _outgoingB;
+  vector<long> _outgoingB;
 
   /**
    *  The PDG code for the outgoing meson.
    */
-  vector<int> _outgoingM;
+  vector<long> _outgoingM;
 
   /**
    * The \f$A\f$ coefficient for the decays.
    */
-  vector<InvEnergy> _A;
+  vector<InvEnergy> _a;
 
   /**
    * The \f$B\f$ coefficient for the decays.
    */
-  vector<InvEnergy> _B;
+  vector<InvEnergy> _b;
 
   /**
    * The maximum weights for the decays.
@@ -370,7 +325,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "NonLeptonicOmegaDecayer.icc"
 
 #endif /* HERWIG_NonLeptonicOmegaDecayer_H */

@@ -1,0 +1,27 @@
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set /Herwig/Analysis/Basics:CheckQuark 0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
+set PowhegMEqq2gZ2ff:Process Electron
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+cd /Herwig/Shower
+# use the general recon for now
+set KinematicsReconstructor:ReconstructionOption General
+# switch treatment of hardest emission
+set Evolver:HardEmissionMode POWHEG
+cd /Herwig/Generators
+create Herwig::VTest VTest HadronJetTest.so
+insert LHCGenerator:AnalysisHandlers 0 VTest
+saverun LHC-ZShower-Powheg LHCGenerator

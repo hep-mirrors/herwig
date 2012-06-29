@@ -1,0 +1,401 @@
+##################################################
+# Common setup for the MSSM
+#
+# See LHC-MSSM.in or ILC-MSSM.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-MSSM.in
+#
+###################################################
+#
+#  Create particle content
+#
+###################################################
+cd /Herwig/Particles
+create ThePEG::ParticleData H0 
+setup H0 35 H0 500.0 0.0 0.0 0.0 0 0 1 0
+create ThePEG::ParticleData A0 
+setup A0 36 A0 500.0 0.0 0.0 0.0 0 0 1 0
+create ThePEG::ParticleData H+ 
+setup H+ 37 H+ 500.0 0.0 0.0 0.0 3 0 1 0
+create ThePEG::ParticleData H- 
+setup H- -37 H- 500.0 0.0 0.0 0.0 -3 0 1 0
+makeanti H+ H- 
+create ThePEG::ParticleData ~d_L 
+setup ~d_L 1000001 ~d_L 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~d_Lbar 
+setup ~d_Lbar -1000001 ~d_Lbar 500.0 0.0 0.0 0.0 1 -3 1 0 
+makeanti ~d_L ~d_Lbar 
+create ThePEG::ParticleData ~u_L 
+setup ~u_L 1000002 ~u_L 500.0 0.0 0.0 0.0 2 3 1 0 
+create ThePEG::ParticleData ~u_Lbar 
+setup ~u_Lbar -1000002 ~u_Lbar 500.0 0.0 0.0 0.0 -2 -3 1 0 
+makeanti ~u_L ~u_Lbar 
+create ThePEG::ParticleData ~s_L 
+setup ~s_L 1000003 ~s_L 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~s_Lbar 
+setup ~s_Lbar -1000003 ~s_Lbar 500.0 0.0 0.0 0.0 1 -3 1 0
+makeanti ~s_L ~s_Lbar 
+create ThePEG::ParticleData ~c_L 
+setup ~c_L 1000004 ~c_L 500.0 0.0 0.0 0.0 2 3 1 0
+create ThePEG::ParticleData ~c_Lbar 
+setup ~c_Lbar -1000004 ~c_Lbar 500.0 0.0 0.0 0.0 -2 -3 1 0 
+makeanti ~c_L ~c_Lbar 
+create ThePEG::ParticleData ~b_1 
+setup ~b_1 1000005 ~b_1 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~b_1bar 
+setup ~b_1bar -1000005 ~b_1bar 500.0 0.0 0.0 0.0 1 -3 1 0 
+makeanti ~b_1 ~b_1bar 
+create ThePEG::ParticleData ~t_1 
+setup ~t_1 1000006 ~t_1 500.0 0.0 0.0 0.0 2 3 1 0
+create ThePEG::ParticleData ~t_1bar 
+setup ~t_1bar -1000006 ~t_1bar 500.0 0.0 0.0 0.0 -2 -3 1 0 
+makeanti ~t_1 ~t_1bar 
+create ThePEG::ParticleData ~e_L- 
+setup ~e_L- 1000011 ~e_L- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~e_L+ 
+setup ~e_L+ -1000011 ~e_L+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~e_L- ~e_L+ 
+create ThePEG::ParticleData ~nu_eL 
+setup ~nu_eL 1000012 ~nu_eL 500.0 0.0 0.0 0.0 0 0 1 0
+create ThePEG::ParticleData ~nu_eLbar 
+setup ~nu_eLbar -1000012 ~nu_eLbar 500.0 0.0 0.0 0.0 0 0 1 0
+makeanti ~nu_eL ~nu_eLbar 
+create ThePEG::ParticleData ~mu_L- 
+setup ~mu_L- 1000013 ~mu_L- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~mu_L+ 
+setup ~mu_L+ -1000013 ~mu_L+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~mu_L- ~mu_L+ 
+create ThePEG::ParticleData ~nu_muL 
+setup ~nu_muL 1000014 ~nu_muL 500.0 0.0 0.0 0.0 0 0 1 0
+create ThePEG::ParticleData ~nu_muLbar 
+setup ~nu_muLbar -1000014 ~nu_muLbar 500.0 0.0 0.0 0.0 0 0 1 0
+makeanti ~nu_muL ~nu_muLbar 
+create ThePEG::ParticleData ~tau_1- 
+setup ~tau_1- 1000015 ~tau_1- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~tau_1+ 
+setup ~tau_1+ -1000015 ~tau_1+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~tau_1- ~tau_1+ 
+create ThePEG::ParticleData ~nu_tauL 
+setup ~nu_tauL 1000016 ~nu_tauL 500.0 0.0 0.0 0.0 0 0 1 0
+create ThePEG::ParticleData ~nu_tauLbar 
+setup ~nu_tauLbar -1000016 ~nu_tauLbar 500.0 0.0 0.0 0.0 0 0 1 0
+makeanti ~nu_tauL ~nu_tauLbar 
+create ThePEG::ParticleData ~g 
+setup ~g 1000021 ~g 500.0 0.0 0.0 0.0 0 8 2 0
+create ThePEG::ParticleData ~chi_10 
+setup ~chi_10 1000022 ~chi_10 500.0 0.0 0.0 0.0 0 0 2 0
+create ThePEG::ParticleData ~chi_20 
+setup ~chi_20 1000023 ~chi_20 500.0 0.0 0.0 0.0 0 0 2 0
+create ThePEG::ParticleData ~chi_1+ 
+setup ~chi_1+ 1000024 ~chi_1+ 500.0 0.0 0.0 0.0 3 0 2 0
+create ThePEG::ParticleData ~chi_1- 
+setup ~chi_1- -1000024 ~chi_1- 500.0 0.0 0.0 0.0 -3 0 2 0
+makeanti ~chi_1+ ~chi_1- 
+create ThePEG::ParticleData ~chi_30 
+setup ~chi_30 1000025 ~chi_30 500.0 0.0 0.0 0.0 0 0 2 0
+create ThePEG::ParticleData ~chi_40 
+setup ~chi_40 1000035 ~chi_40 500.0 0.0 0.0 0.0 0 0 2 0
+create ThePEG::ParticleData ~chi_2+ 
+setup ~chi_2+ 1000037 ~chi_2+ 500.0 0.0 0.0 0.0 3 0 2 0
+create ThePEG::ParticleData ~chi_2- 
+setup ~chi_2- -1000037 ~chi_2- 500.0 0.0 0.0 0.0 -3 0 2 0
+makeanti ~chi_2+ ~chi_2- 
+create ThePEG::ParticleData ~gravitino 
+setup ~gravitino 1000039 ~gravitino 500.0 0.0 0.000010 0.0 0 0 4 1
+create ThePEG::ParticleData ~d_R 
+setup ~d_R 2000001 ~d_R 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~d_Rbar 
+setup ~d_Rbar -2000001 ~d_Rbar 500.0 0.0 0.0 0.0 1 -3 1 0
+makeanti ~d_R ~d_Rbar 
+create ThePEG::ParticleData ~u_R 
+setup ~u_R 2000002 ~u_R 500.0 0.0 0.0 0.0 2 3 1 0
+create ThePEG::ParticleData ~u_Rbar 
+setup ~u_Rbar -2000002 ~u_Rbar 500.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti ~u_R ~u_Rbar 
+create ThePEG::ParticleData ~s_R 
+setup ~s_R 2000003 ~s_R 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~s_Rbar 
+setup ~s_Rbar -2000003 ~s_Rbar 500.0 0.0 0.0 0.0 1 -3 1 0 
+makeanti ~s_R ~s_Rbar 
+create ThePEG::ParticleData ~c_R 
+setup ~c_R 2000004 ~c_R 500.0 0.0 0.0 0.0 2 3 1 0
+create ThePEG::ParticleData ~c_Rbar 
+setup ~c_Rbar -2000004 ~c_Rbar 500.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti ~c_R ~c_Rbar 
+create ThePEG::ParticleData ~b_2 
+setup ~b_2 2000005 ~b_2 500.0 0.0 0.0 0.0 -1 3 1 0
+create ThePEG::ParticleData ~b_2bar 
+setup ~b_2bar -2000005 ~b_2bar 500.0 0.0 0.0 0.0 1 -3 1 0 
+makeanti ~b_2 ~b_2bar 
+create ThePEG::ParticleData ~t_2 
+setup ~t_2 2000006 ~t_2 500.0 0.0 0.0 0.0 2 3 1 0
+create ThePEG::ParticleData ~t_2bar 
+setup ~t_2bar -2000006 ~t_2bar 500.0 0.0 0.0 0.0 -2 -3 1 0
+makeanti ~t_2 ~t_2bar 
+create ThePEG::ParticleData ~e_R- 
+setup ~e_R- 2000011 ~e_R- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~e_R+ 
+setup ~e_R+ -2000011 ~e_R+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~e_R- ~e_R+ 
+create ThePEG::ParticleData ~nu_eR 
+setup ~nu_eR 2000012 ~nu_eR 500.0 0.0 0.000010 0.0 0 0 1 1
+create ThePEG::ParticleData ~nu_eRbar 
+setup ~nu_eRbar -2000012 ~nu_eRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+makeanti ~nu_eR ~nu_eRbar 
+create ThePEG::ParticleData ~mu_R- 
+setup ~mu_R- 2000013 ~mu_R- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~mu_R+ 
+setup ~mu_R+ -2000013 ~mu_R+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~mu_R- ~mu_R+ 
+create ThePEG::ParticleData ~nu_muR 
+setup ~nu_muR 2000014 ~nu_muR 500.0 0.0 0.000010 0.0 0 0 1 1
+create ThePEG::ParticleData ~nu_muRbar 
+setup ~nu_muRbar -2000014 ~nu_muRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+makeanti ~nu_muR ~nu_muRbar 
+create ThePEG::ParticleData ~tau_2- 
+setup ~tau_2- 2000015 ~tau_2- 500.0 0.0 0.0 0.0 -3 0 1 0
+create ThePEG::ParticleData ~tau_2+ 
+setup ~tau_2+ -2000015 ~tau_2+ 500.0 0.0 0.0 0.0 3 0 1 0
+makeanti ~tau_2- ~tau_2+ 
+create ThePEG::ParticleData ~nu_tauR 
+setup ~nu_tauR 2000016 ~nu_tauR 500.0 0.0 0.000010 0.0 0 0 1 1
+create ThePEG::ParticleData ~nu_tauRbar 
+setup ~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+makeanti ~nu_tauR ~nu_tauRbar 
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/MSSM
+cd /Herwig/NewPhysics/MSSM
+create Herwig::MSSM Model HwSusy.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create MSSM vertices
+mkdir /Herwig/Vertices/MSSM
+cd /Herwig/Vertices/MSSM
+# MSSM
+library HwSusy.so
+create Herwig::SSWSSVertex MSSM_WSS
+create Herwig::SSNFSVertex MSSM_NFS
+create Herwig::SSGFSVertex MSSM_GFS
+create Herwig::SSHSFSFVertex MSSM_HSS
+create Herwig::SSCFSVertex MSSM_CFS
+create Herwig::SSGSSVertex MSSM_GSS
+create Herwig::SSGNGVertex MSSM_GNG
+create Herwig::SSGGSQSQVertex MSSM_GGSS
+create Herwig::SSGSGSGVertex MSSM_GGOGO
+create Herwig::SSNNZVertex MSSM_NNZ
+create Herwig::SSNNPVertex MSSM_NNP
+create Herwig::SSCCZVertex MSSM_CCZ
+create Herwig::SSCNWVertex MSSM_CNW
+create Herwig::SSFFHVertex MSSM_FFH
+create Herwig::SSGOGOHVertex MSSM_GOGOH
+create Herwig::SSWWHVertex MSSM_WWH
+create Herwig::SSWHHVertex MSSM_WHH
+create Herwig::SSHHHVertex MSSM_HHH
+create Herwig::SSHGGVertex MSSM_HGG
+create Herwig::SSHPPVertex MSSM_HPP
+create Herwig::SSWWHHVertex MSSM_WWHH
+create Herwig::SSNCTVertex MSSM_NCT
+create Herwig::SSGVNHVertex MSSM_GVNH
+create Herwig::SSGVFSVertex MSSM_GVFS
+create Herwig::SSGVNVVertex MSSM_GVNV
+cd /Herwig/NewPhysics/MSSM
+# SM vertices
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+# MSSM feynman rules
+set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
+set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
+set Model:Vertex/GFSF   /Herwig/Vertices/MSSM/MSSM_GFS
+set Model:Vertex/HSFSF  /Herwig/Vertices/MSSM/MSSM_HSS
+set Model:Vertex/CFSF   /Herwig/Vertices/MSSM/MSSM_CFS
+set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
+set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
+set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
+set Model:Vertex/GNG    /Herwig/Vertices/MSSM/MSSM_GNG
+set Model:Vertex/NNZ    /Herwig/Vertices/MSSM/MSSM_NNZ
+set Model:Vertex/NNP    /Herwig/Vertices/MSSM/MSSM_NNP
+set Model:Vertex/CCZ    /Herwig/Vertices/MSSM/MSSM_CCZ
+set Model:Vertex/CNW    /Herwig/Vertices/MSSM/MSSM_CNW
+set Model:Vertex/FFH    /Herwig/Vertices/MSSM/MSSM_FFH
+set Model:Vertex/GOGOH  /Herwig/Vertices/MSSM/MSSM_GOGOH
+set Model:Vertex/WWH    /Herwig/Vertices/MSSM/MSSM_WWH
+set Model:Vertex/SSWHH  /Herwig/Vertices/MSSM/MSSM_WHH
+set Model:Vertex/HHH    /Herwig/Vertices/MSSM/MSSM_HHH
+set Model:Vertex/HGG    /Herwig/Vertices/MSSM/MSSM_HGG
+set Model:Vertex/HPP    /Herwig/Vertices/MSSM/MSSM_HPP
+set Model:Vertex/WWHH   /Herwig/Vertices/MSSM/MSSM_WWHH
+set Model:Vertex/NCT    /Herwig/Vertices/MSSM/MSSM_NCT
+set Model:Vertex/GVNH   /Herwig/Vertices/MSSM/MSSM_GVNH
+set Model:Vertex/GVFS   /Herwig/Vertices/MSSM/MSSM_GVFS
+set Model:Vertex/GVNV   /Herwig/Vertices/MSSM/MSSM_GVNV
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes No
+set ThreeBodyDC:CreateDecayModes No
+set WeakDecayConstructor:CreateDecayModes No
+# switch on decays via weak current
+insert DecayConstructor:NBodyDecayConstructors 0 WeakDecayConstructor
+# exclude gravitino and effective vertices from three body decays
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
+# and hard processes
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
+insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
+insert NewModel:DecayParticles 2 /Herwig/Particles/~s_L
+insert NewModel:DecayParticles 3 /Herwig/Particles/~c_L
+insert NewModel:DecayParticles 4 /Herwig/Particles/~b_1
+insert NewModel:DecayParticles 5 /Herwig/Particles/~t_1
+insert NewModel:DecayParticles 6 /Herwig/Particles/~d_R
+insert NewModel:DecayParticles 7 /Herwig/Particles/~u_R
+insert NewModel:DecayParticles 8 /Herwig/Particles/~s_R
+insert NewModel:DecayParticles 9 /Herwig/Particles/~c_R
+insert NewModel:DecayParticles 10 /Herwig/Particles/~b_2
+insert NewModel:DecayParticles 11 /Herwig/Particles/~t_2
+insert NewModel:DecayParticles 12 /Herwig/Particles/~e_L-
+insert NewModel:DecayParticles 13 /Herwig/Particles/~nu_eL
+insert NewModel:DecayParticles 14 /Herwig/Particles/~mu_L-
+insert NewModel:DecayParticles 15 /Herwig/Particles/~nu_muL
+insert NewModel:DecayParticles 16 /Herwig/Particles/~tau_1-
+insert NewModel:DecayParticles 17 /Herwig/Particles/~nu_tauL
+insert NewModel:DecayParticles 18 /Herwig/Particles/~e_R-
+insert NewModel:DecayParticles 19 /Herwig/Particles/~mu_R-
+insert NewModel:DecayParticles 20 /Herwig/Particles/~tau_2-
+insert NewModel:DecayParticles 21 /Herwig/Particles/~g
+insert NewModel:DecayParticles 22 /Herwig/Particles/~chi_10
+insert NewModel:DecayParticles 23 /Herwig/Particles/~chi_20
+insert NewModel:DecayParticles 24 /Herwig/Particles/~chi_30
+insert NewModel:DecayParticles 25 /Herwig/Particles/~chi_40
+insert NewModel:DecayParticles 26 /Herwig/Particles/~chi_1+
+insert NewModel:DecayParticles 27 /Herwig/Particles/~chi_2+
+insert NewModel:DecayParticles 28 /Herwig/Particles/h0
+insert NewModel:DecayParticles 29 /Herwig/Particles/H0
+insert NewModel:DecayParticles 30 /Herwig/Particles/A0
+insert NewModel:DecayParticles 31 /Herwig/Particles/H+
+###################################################
+#
+#  Shower stuff for coloured sparticles
+#
+###################################################
+cd /Herwig/Shower
+
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
+set PhitoPhiGSplitFn:InteractionType QCD
+set PhitoPhiGSplitFn:ColourStructure TripletTripletOctet
+
+create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
+set GluinotoGluinoGSplitFn:InteractionType QCD
+set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
+
+cp SudakovCommon PhitoPhiGSudakov
+set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
+
+cp SudakovCommon GluinotoGluinoGSudakov
+set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
+
+do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~c_L->~c_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~b_1->~b_1,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~t_1->~t_1,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~u_R->~u_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~d_R->~d_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~s_R->~s_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
+###################################################
+# Set up the bsm framework
+###################################################
+cd /Herwig/NewPhysics
+set MSSM/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose MSSM over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+
+###################################################
+#
+#  Get Shower to decay SUSY particles
+#
+###################################################
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000001 #  SUSY_d_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000002 #  SUSY_u_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000003 #  SUSY_s_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000004 #  SUSY_c_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000005 #  SUSY_b_1 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000006 #  SUSY_t_1 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000011 #  SUSY_e_Lminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000012 #  SUSY_nu_eL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000013 #  SUSY_mu_Lminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000014 #  SUSY_nu_muL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000015 #  SUSY_tau_1minus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000016 #  SUSY_nu_tauL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000021 #  SUSY_g 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000022 #  SUSY_chi_10 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000023 #  SUSY_chi_20 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000024 #  SUSY_chi_1plus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000025 #  SUSY_chi_30 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000035 #  SUSY_chi_40 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000037 #  SUSY_chi_2plus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000039 #  SUSY_gravitino 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000001 #  SUSY_d_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000002 #  SUSY_u_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000003 #  SUSY_s_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000004 #  SUSY_c_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000005 #  SUSY_b_2 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000006 #  SUSY_t_2 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000012 #  SUSY_nu_eR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000013 #  SUSY_mu_Rminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000014 #  SUSY_nu_muR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000016 #  SUSY_nu_tauR
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  35      #  H0
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  36      #  A0
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  37      #  H+

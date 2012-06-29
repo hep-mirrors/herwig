@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ShowerAlphaQCD.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ShowerAlphaQCD class.
 //
@@ -15,6 +22,14 @@
 #include "ThePEG/Utilities/Throw.h"
 
 using namespace Herwig;
+
+IBPtr ShowerAlphaQCD::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ShowerAlphaQCD::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
@@ -43,17 +58,17 @@ void ShowerAlphaQCD::Init() {
      "Behaviour of AlphaS in the NP region",
      &ShowerAlphaQCD::_asType, 1, false, false);
   static SwitchOption intAsTypeZero
-    (intAsType, "AsTypeZero","zero below Q_min", 1);
+    (intAsType, "Zero","zero below Q_min", 1);
   static SwitchOption intAsTypeConst
-    (intAsType, "AsTypeConst","const as(qmin) below Q_min", 2);
+    (intAsType, "Const","const as(qmin) below Q_min", 2);
   static SwitchOption intAsTypeLin
-    (intAsType, "AsTypeLin ","growing linearly below Q_min", 3);
+    (intAsType, "Linear","growing linearly below Q_min", 3);
   static SwitchOption intAsTypeQuad
-    (intAsType, "AsTypeQuad","growing quadratically below Q_min", 4);
+    (intAsType, "Quadratic","growing quadratically below Q_min", 4);
   static SwitchOption intAsTypeExx1
-    (intAsType, "AsTypeExx1 ", "quad from AlphaMaxNP down to as(Q_min)", 5);
+    (intAsType, "Exx1", "quadratic from AlphaMaxNP down to as(Q_min)", 5);
   static SwitchOption intAsTypeExx2
-    (intAsType, "AsTypeExx2 ", "const = AlphaMaxNP below Q_min", 6);
+    (intAsType, "Exx2", "const = AlphaMaxNP below Q_min", 6);
 
   // default such that as(qmin) = 1 in the current parametrization.
   // min = Lambda3
@@ -151,7 +166,7 @@ void ShowerAlphaQCD::Init() {
 
 }
 
-void ShowerAlphaQCD::doinit() throw(InitException) {
+void ShowerAlphaQCD::doinit() {
   ShowerAlpha::doinit();
   // calculate the value of 5-flavour lambda 
   // evaluate the initial
@@ -161,6 +176,7 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // otherwise it was an input parameter
   else{_lambda[2]=_lambdain;}
   // convert lambda to the Monte Carlo scheme if needed
+  using Constants::pi;
   if(_lambdaopt){_lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);}
   // compute the threshold matching
   // top threshold
@@ -278,3 +294,83 @@ double ShowerAlphaQCD::ratio(const Energy2 scale) const {
   // denominator 
   return val/_alphamin;  
 }
+
+string ShowerAlphaQCD::value (string scale) {
+  istringstream readscale(scale);
+  double inScale; readscale >> inScale;
+  Energy theScale = inScale * GeV;
+  initialize();
+  ostringstream showvalue ("");
+  showvalue << "alpha_s (" << theScale/GeV << " GeV) = "
+	    << value (sqr(theScale));
+  return showvalue.str();
+}
+
+pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) const {
+  short nf = 6;
+  // get lambda and nf according to the thresholds
+  if      (q < _thresholds[1]) nf = 3;
+  else if (q < _thresholds[2]) nf = 4;
+  else if (q < _thresholds[3]) nf = 5;
+  return pair<short,Energy>(nf, _lambda[nf-3]);
+}
+
+Energy ShowerAlphaQCD::computeLambda(Energy match,
+				     double alpha,
+				     unsigned int nflav) const {
+  Energy lamtest=200.0*MeV;
+  double xtest;
+  unsigned int ntry=0;
+  do
+    {
+      ++ntry;
+      xtest=log(sqr(match/lamtest));
+      xtest+= (alpha-alphaS(match,lamtest,nflav))/derivativealphaS(match,lamtest,nflav);
+      lamtest=match/exp(0.5*xtest);
+    }
+  while(abs(alpha-alphaS(match,lamtest,nflav)) > _tolerance && ntry < _maxtry);
+  return lamtest;
+}
+
+double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
+{
+  using Constants::pi;
+  double lx = log(sqr(q/lam));
+  double b0 = 11. - 2./3.*nf;
+  double b1 = 51. - 19./3.*nf;
+  double b2 = 2857. - 5033./9.*nf + 325./27.*sqr(nf);
+  if(_nloop==1)
+    return -4.*pi/(b0*sqr(lx));
+  else if(_nloop==2)
+    return -4.*pi/(b0*sqr(lx))*(1.-2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
+  else
+    return -4.*pi/(b0*sqr(lx))*(1.
+				- 2.*b1/sqr(b0)/lx*(1.-2.*log(lx))
+				+ 4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*
+				  (1.
+				   - 2.*log(lx)
+				   + 3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)
+				   )
+				);
+}
+
+double ShowerAlphaQCD::alphaS(Energy q, Energy lam, int nf) const {
+  using Constants::pi;
+  double lx(log(sqr(q/lam)));
+  double b0 = 11. - 2./3.*nf;
+  double b1 = 51. - 19./3.*nf;
+  double b2 = 2857. - 5033./9.*nf + 325./27.*sqr(nf);
+  // one loop
+  if(_nloop==1)
+    {return 4.*pi/(b0*lx);}
+  // two loop
+  else if(_nloop==2) {
+    return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx);
+  }
+  // three loop
+  else
+    {return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx + 
+			   4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*
+			   (sqr(log(lx) - 0.5) + b2*b0/(8.*sqr(b1)) - 5./4.));}
+}
+

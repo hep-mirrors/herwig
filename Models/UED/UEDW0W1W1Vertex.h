@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// UEDW0W1W1Vertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_UEDW0W1W1Vertex_H
 #define HERWIG_UEDW0W1W1Vertex_H
 //
@@ -6,11 +13,11 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Models/UED/UEDBase.h"
-#include "UEDW0W1W1Vertex.fh"
+#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::Direction;
 
 /**
  * The coupling for the \f$ W\,W^{(1)}Z^{(1)}\f$ and  \f$ W\,W^{(1)}\gamma^{(1)}\f$ 
@@ -61,9 +68,9 @@ public:
    *@param part2 The second interacting particle 
    *@param part3 The third interacting particle 
    */
-  virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-			   tcPDPtr part3);
-
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,
+			   tcPDPtr part2,tcPDPtr part3);
+  
 protected:
 
   /** @name Clone Methods. */
@@ -72,13 +79,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -91,7 +98,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -109,11 +116,6 @@ private:
   UEDW0W1W1Vertex & operator=(const UEDW0W1W1Vertex &);
 
 private:
-
-  /**
-   * A pointer to the UEDBase object.
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The value of \f$\sin\theta_W\f$.
@@ -196,7 +198,5 @@ struct ClassTraits<Herwig::UEDW0W1W1Vertex>
 /** @endcond */
 
 }
-
-#include "UEDW0W1W1Vertex.icc"
 
 #endif /* HERWIG_UEDW0W1W1Vertex_H */

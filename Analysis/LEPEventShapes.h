@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// LEPEventShapes.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_LEPEventShapes_H
 #define HERWIG_LEPEventShapes_H
 //
@@ -8,14 +15,13 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "EventShapes.h"
-#include "LEPEventShapes.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LEPEventShapes class performs the analysis of global event shapes and
  * compares with LEP data. This handler is solely intended as a slave
  * handler for the EventShapesMasterAnalysis class.
@@ -100,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -260,7 +266,5 @@ struct ClassTraits<Herwig::LEPEventShapes>
 /** @endcond */
 
 }
-
-#include "LEPEventShapes.icc"
 
 #endif /* HERWIG_LEPEventShapes_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MSSM.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MSSM_H
 #define HERWIG_MSSM_H
 //
@@ -13,7 +20,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MSSM class.
+ * The MSSM class provides the main model class to replace the Standard Model 
+ * when using the Minimal Supersymmetric Standard Model.
  *
  * @see \ref MSSMInterfaces "The interfaces"
  * defined for MSSM.
@@ -23,51 +31,44 @@ class MSSM: public SusyBase {
 public:
 
   /**
-   * The default constructor.
-   */
-  inline MSSM();
-
-public:
-
-  /**
    * Value of Higgs mixing angle \f$\alpha\f$.
    */
-  inline double higgsMixingAngle() const;
+  double higgsMixingAngle() const {return theAlpha;}
 
   /**
    * Value of up-type trilinear couplings
    */
-  inline const complex<Energy> & topTrilinear() const;
+  const complex<Energy> & topTrilinear() const {return theAtop;}
 
   /**
    * Value of down-type trilinear couplings
    */
-  inline const complex<Energy> & bottomTrilinear() const;
+  const complex<Energy> & bottomTrilinear() const {return theAbottom;}
 
   /**
    * Value of lepton trilinear couplings
    */
-  inline const complex<Energy> & tauTrilinear() const;
+  const complex<Energy> & tauTrilinear() const {return theAtau;}
 
   /**
    * The stop mixing matrix
    */
-  inline const MixingMatrixPtr & stopMix() const;
+  const MixingMatrixPtr & stopMix() const {return theStopMix;}
 
   /**
    * The sbottom chargino mixing matrix
    */
-  inline const MixingMatrixPtr & sbottomMix() const;
+  const MixingMatrixPtr & sbottomMix() const {return theSbotMix;}
 
   /**
    * The stau mixing matrix
    */
-  inline const MixingMatrixPtr & stauMix() const;
+  const MixingMatrixPtr & stauMix() const {return theStauMix;}
 
   /**
    * Mixing matrix for the neutral CP-even Higgs bosons
    */
-  inline const MixingMatrixPtr & CPevenHiggsMix() const;
+  const MixingMatrixPtr & CPevenHiggsMix() const {return theHiggsMix;}
 
 public:
 
@@ -103,13 +104,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -131,12 +132,6 @@ protected:
   virtual void adjustMixingMatrix(long id);
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MSSM> initMSSM;
 
   /**
    * The assignment operator is private and must never be called.
@@ -200,42 +195,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MSSM. */
-template <>
-struct BaseClassTrait<Herwig::MSSM,1> {
-  /** Typedef of the first base class of MSSM. */
-  typedef Herwig::SusyBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MSSM class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MSSM>
-  : public ClassTraitsBase<Herwig::MSSM> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MSSM"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MSSM is implemented. It may also include several, space-separated,
-   * libraries if the class MSSM depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
-#include "MSSM.icc"
 
 #endif /* HERWIG_MSSM_H */

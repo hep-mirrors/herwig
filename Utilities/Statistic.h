@@ -1,113 +1,108 @@
 // -*- C++ -*-
+//
+// Statistic.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Statistic_H
 #define HERWIG_Statistic_H
+#include <cmath>
+
 //
 // This is the declaration of the Statistic class.
 //
 
-#include "ThePEG/Interface/Interfaced.h"
-#include "Statistic.fh"
-
 namespace Herwig {
-
-using namespace ThePEG;
 
 /**
  * The Statistic class is a simple class designed to 
  * store a variable for statistical analysis
- *
- * @see \ref StatisticInterfaces "The interfaces"
- * defined for Statistic.
  */
-class Statistic: public Interfaced {
+class Statistic {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline Statistic();
+  Statistic() : _n(0), _xsum(0.), _x2sum(0.),
+		_min(-1e100), _max(1e100) {}
 
   /**
    *  The minimum value
    */
-  inline double minimum() const;
+  double minimum() const { return _min; }
 
   /**
    *  The maximum value
    */
-  inline double maximum() const;
+  double maximum() const { return _max; }
 
   /**
    *  Operator to add another point
    */
-  inline void operator+=(double);
+  void operator+=(double input) 
+  {
+    ++_n;
+    _xsum  += input;
+    _x2sum += input * input;
+    if (_min > input) _min = input;
+    if (_max < input) _max = input;
+  }
 
   /**
    *  Number of points
    */
-  inline unsigned int numberOfPoints() const;
+  unsigned int numberOfPoints() const { return _n; }
   
   /**
    *  Mean
    */
-  inline double mean() const;
+  double mean() const 
+  {
+    return _n > 0  ?  _xsum / _n : 0.; 
+  }
+
+  /**
+   *  Error on the mean estimate. Needed for example for Profile
+   *  histograms, where this should be used to compute a chi2
+   *  or significance level of deviation to data, rather than stdDeV.
+   *  This is obvious because the error on the estimate should go to 
+   *  zero for N -> infinity.
+   */
+  double mean_stdDev() const { return std::sqrt(mean_var()); }
+
+  /**
+   *  Variance on the mean estimate. Needed for example for Profile
+   *  histograms, where this should be used to compute a chi2
+   *  or significance level of deviation to data, rather than stdDeV
+   *  This is obvious because the error on the estimate should go to 
+   *  zero for N -> infinity.
+   */
+  double mean_var() const 
+  {
+    return _n > 1  ?  var() / _n : 0.; 
+  }
 
   /**
    *  Standard Deviation
    */
-  inline double stdDev() const;
+  double stdDev() const { return std::sqrt(var()); }
 
   /**
    *  Variance
    */
-  inline double var() const;
+  double var() const 
+  { 
+    return _n > 1  ?  ( _x2sum - _xsum*_xsum/_n ) / ( _n - 1 ) : 0.; 
+  }
 
   /**
    *  Total entry
    */
-  inline double total() const;
-
-public:
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr fullclone() const;
-  //@}
-
-private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<Statistic> initStatistic;
-
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  Statistic & operator=(const Statistic &);
+  double total() const { return _xsum; }
 
 private:
 
@@ -138,34 +133,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Statistic. */
-template <>
-struct BaseClassTrait<Herwig::Statistic,1> {
-  /** Typedef of the first base class of Statistic. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Statistic class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Statistic>
-  : public ClassTraitsBase<Herwig::Statistic> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Statistic"; }
-};
-
-/** @endcond */
-
-}
-
-#include "Statistic.icc"
 
 #endif /* HERWIG_Statistic_H */

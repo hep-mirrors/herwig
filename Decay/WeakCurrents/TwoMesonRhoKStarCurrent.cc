@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TwoMesonRhoKStarCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TwoMesonRhoKStarCurrent class.
 //
@@ -18,10 +25,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::ScalarWaveFunction;
 
 TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   // set up for the modes in the base class
@@ -50,7 +54,7 @@ TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   _kstarwidths.push_back(0.0513*GeV);_kstarwidths.push_back(0.235*GeV);
 }
 
-void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
+void TwoMesonRhoKStarCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // check consistency of parametrers
   if(_rhomasses.size()!=_rhowidths.size()||
@@ -168,25 +172,25 @@ void TwoMesonRhoKStarCurrent::Init() {
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhomasses, MeV, -1, 775.8*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoMesonRhoKStarCurrent::_rhomasses, MeV, -1, 775.8*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhowidths, MeV, -1, 150.3*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoMesonRhoKStarCurrent::_rhowidths, MeV, -1, 150.3*MeV, ZERO, 1000.*MeV,
      false, false, true);
   
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarMasses
     ("KstarMasses",
      "The masses of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_kstarmasses, MeV, -1, 891.66*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarmasses, MeV, -1, 891.66*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarWidths
     ("KstarWidths",
      "The widths of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_kstarwidths, MeV, -1, 50.8*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarwidths, MeV, -1, 50.8*MeV, ZERO, 1000.*MeV,
      false, false, true);
   
   static Switch<TwoMesonRhoKStarCurrent,bool> interfaceRhoParameters
@@ -280,7 +284,39 @@ void TwoMesonRhoKStarCurrent::Init() {
      "Lett. 21, 244 (1968).  The mixing parameters are taken from "
      "Phys. Rev. D61:112002,2000 (CLEO), although the PDG values for the "
      "masses and widths are used, for the decay pi+/- pi0."
-     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.");
+     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "The weak "
+     "decay current to two scalar mesons is implemented "
+     "using the models of either Kuhn and "
+     "Santamaria \\cite{Kuhn:1990ad} or Gounaris and Sakurai \\cite{Gounaris:1968mw}. "
+     "The mixing parameters are taken from "
+     "\\cite{Asner:1999kj}, although the PDG values for the "
+     "masses and widths are used, for the decay pi+/- pi0."
+     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "%\\cite{Kuhn:1990ad}\n"
+     "\\bibitem{Kuhn:1990ad}\n"
+     "  J.~H.~Kuhn and A.~Santamaria,\n"
+     "  %``Tau decays to pions,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 48}, 445 (1990).\n"
+     "  %%CITATION = ZEPYA,C48,445;%%\n"
+     "%\\cite{Gounaris:1968mw}\n"
+     "\\bibitem{Gounaris:1968mw}\n"
+     "  G.~J.~Gounaris and J.~J.~Sakurai,\n"
+     "   ``Finite width corrections to the vector meson dominance prediction for rho\n"
+     "  %$\\to$ e+ e-,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 21}, 244 (1968).\n"
+     "  %%CITATION = PRLTA,21,244;%%\n"
+     "%\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
+
+
 
 }
 
@@ -291,7 +327,6 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(abs(icharge)!=3) return false; 
   // make sure that the decays are kinematically allowed
-  bool kineallowed(true);
   tPDPtr part[2];
   if(imode==0) {
     part[0]=getParticleData(ParticleID::piplus);
@@ -312,9 +347,6 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
   else if(imode==4) {
     part[0]=getParticleData(ParticleID::eta);
     part[1]=getParticleData(ParticleID::Kplus);
-  }
-  else {
-    kineallowed=false;
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
@@ -372,10 +404,10 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
+tPDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
 					    int,int) {
-  if(abs(icharge)!=3) return PDVector();
-  PDVector output(2);
+  if(abs(icharge)!=3) return tPDVector();
+  tPDVector output(2);
   if(imode==0) {
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::pi0);
@@ -406,8 +438,15 @@ PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
-				 Energy & scale,const ParticleVector & outpart) const {
+TwoMesonRhoKStarCurrent::current(const int imode, const int ichan,
+				 Energy & scale,const ParticleVector & outpart,
+				 DecayIntegrator::MEOption meopt) const {
+  useMe();
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
   Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
@@ -457,13 +496,6 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   else if(imode==3)      FPI *= 1.       ;
   // the kaon eta mode
   else if(imode==4)      FPI *=sqrt(1.5);
-  // workaround for gcc 3.2.3 bug
-  // set up the spininfo for the decay products
-  //ALB for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
-  for(unsigned int ix=0;ix<2;++ix) {
-    PPtr mytemp=outpart[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  }
   // compute the current
   pdiff-=psum;
   return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);
@@ -515,6 +547,7 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
     }
     else if (idout[ix]==ParticleID::eta) {
       imode=4;
+      break;
     }
   }
   if(nkaon==2) imode=3;
@@ -526,48 +559,49 @@ void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
 					     bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::TwoMesonRhoKStarCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
+		    << name() << " HwWeakCurrents.so\n";
   unsigned int ix;
   for(ix=0;ix<_rhomasses.size();++ix) {
-    if(ix<3)  output << "set ";
+    if(ix<3)  output << "newdef ";
     else      output << "insert ";
-    output << fullName() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
+    output << name() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
+    output << name() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarmasses.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
+    output << name() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarwidths.size();++ix) {
-    if(ix<2) output << "set ";
+    if(ix<2) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
+    output << name() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
   }
-  output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "newdef " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  output << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
   for(ix=0;ix<_piwgt.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    output << name() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
+    output << name() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
   }
   for(ix=0;ix<_kwgt.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
-    if(ix<3) output << "set ";
+    output << name() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
+    output << name() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
   }
-  output << "set " << fullName() << ":PiModel " << _pimodel << "\n";
-  output << "set " << fullName() << ":KModel  " << _kmodel  << "\n";
+  output << "newdef " << name() << ":PiModel " << _pimodel << "\n";
+  output << "newdef " << name() << ":KModel  " << _kmodel  << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDF1F1G0Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDF1F1G0Vertex class.
 //
@@ -13,28 +20,13 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1G0Vertex::UEDF1F1G0Vertex() {
-  vector<int> anti, ferm, boson(12, 21);
-  //QQ
-    for(int i = 5100001; i < 6100007; ++i) {
-    if(i == 5100007) i += 999994;
-    anti.push_back(-i);
-    ferm.push_back(i);
-  }
-  setList(anti, ferm, boson);
+UEDF1F1G0Vertex::UEDF1F1G0Vertex() 
+  : theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(1);
+  orderInGem(0);
 }
 
-void UEDF1F1G0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDF1F1G0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-}
-
-ClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
+NoPIOClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
 // Definition of the static class description member.
 
 void UEDF1F1G0Vertex::Init() {
@@ -59,16 +51,26 @@ void UEDF1F1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << Exception::warning;
   if((iferm >= 5100001 && iferm <= 5100006) ||
      (iferm >= 6100001 && iferm <= 6100006)) {
-    if(q2 != theq2Last)
-      theCoupLast = -sqrt(4.*Constants::pi*(theUEDBase->alphaS(q2)));
-    
-    setNorm(theCoupLast);
-    setLeft(1.);
-    setRight(1.);
+    if(q2 != theq2Last || theCoupLast ==0. ) {
+      theCoupLast = -strongCoupling(q2);
+      theq2Last=q2;
+    }
+    norm(theCoupLast);
+    left(1.);
+    right(1.);
   }
   else
     throw HelicityLogicalError() << "UEDF1F1G0Vertex::setCoupling - "
 				 << "There is an unknown particle in this vertex! "
 				 << iferm
 				 << Exception::warning;
+}
+void UEDF1F1G0Vertex::doinit() {
+  long boson = 21;
+  //QQ
+  for(long i = 5100001; i < 6100007; ++i) {
+    if(i == 5100007) i += 999994;
+    addToList(-i, i, boson);
+  }
+  FFVVertex::doinit();
 }

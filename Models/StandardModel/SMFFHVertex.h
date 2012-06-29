@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMFFHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMFFHVertex_H
 #define HERWIG_SMFFHVertex_H
 //
@@ -23,14 +30,19 @@ class SMFFHVertex: public FFSVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMFFHVertex();
-
-  //@}  
+  SMFFHVertex();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+  */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 public:
   
@@ -54,17 +66,6 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   * @param ioff Which particle is off-shell
-  */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   int ioff);
 
 protected:
   
@@ -90,7 +91,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
 
 private:
   
@@ -103,6 +104,8 @@ private:
    * Private and non-existent assignment operator.
    */
   SMFFHVertex & operator=(const SMFFHVertex &);
+
+private:
 
   /**
    * Pointer to the SM object.
@@ -117,11 +120,6 @@ private:
    *  Last evaluation of the coupling
    */
   complex<InvEnergy> _couplast;
-
-  /**
-   *  The value of \f$\sin\theta_w\f$.
-   */
-  double _sw;
 
   /**
    *  The PDG code of the last fermion the coupling was evaluated for.
@@ -146,8 +144,6 @@ private:
 };  
 
 }
-
-#include "SMFFHVertex.icc"
 
 namespace ThePEG {
 

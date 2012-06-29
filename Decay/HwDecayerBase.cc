@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HwDecayerBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HwDecayerBase class.
 //
@@ -16,7 +23,7 @@ using namespace Herwig;
 
 bool HwDecayerBase::accept(const DecayMode & dm) const {
   // get the primary products
-  PDVector products=dm.orderedProducts();
+  tPDVector products=dm.orderedProducts();
   // add products for which the decay mode is all ready specified
   if(!dm.cascadeProducts().empty()) {
     for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
@@ -33,7 +40,7 @@ ParticleVector HwDecayerBase::decay(const DecayMode & dm,
   // handling of the decay including the special features of the
   // DecayMode  
   // get the primary products
-  PDVector products=dm.orderedProducts();
+  tPDVector products=dm.orderedProducts();
   // add products for which the decay mode is all ready specified
   if(!dm.cascadeProducts().empty()) {
     for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
@@ -64,11 +71,11 @@ ParticleVector HwDecayerBase::decay(const DecayMode & dm,
 }
 
 void HwDecayerBase::persistentOutput(PersistentOStream & os) const {
-  os << _initialize;
+  os << _initialize << _dbOutput;
 }
 
 void HwDecayerBase::persistentInput(PersistentIStream & is, int) {
-  is >> _initialize;
+  is >> _initialize >> _dbOutput;
 }
 
 AbstractClassDescription<HwDecayerBase> HwDecayerBase::initHwDecayerBase;
@@ -85,23 +92,43 @@ void HwDecayerBase::Init() {
      &HwDecayerBase::_initialize, false, false, false);
   static SwitchOption interfaceInitializeon
     (interfaceInitialize,
-     "on",
+     "Yes",
      "At initialisation find max weight and optimise the integration",
      true);
   static SwitchOption interfaceInitializeoff
     (interfaceInitialize,
-     "off",
+     "No",
      "Use the maximum weight and channel weights supplied for the integration",
      false);
 
+  static Switch<HwDecayerBase,bool> interfaceDatabaseOutput
+    ("DatabaseOutput",
+     "Whether to print the database information",
+     &HwDecayerBase::_dbOutput, false, false, false);
+  static SwitchOption interfaceDatabaseOutputYes
+    (interfaceDatabaseOutput,
+     "Yes",
+     "Output information on the decayer initialization",
+     true);
+  static SwitchOption interfaceDatabaseOutputNo
+    (interfaceDatabaseOutput,
+     "No",
+     "Do not output information about the decayer initialization",
+     false);
 }
 
 void HwDecayerBase::dofinish() {
   Decayer::dofinish();
-  if(initialize()) {
+  if(initialize() && databaseOutput()) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());
     dataBaseOutput(output,true);
   }
+}
+
+bool HwDecayerBase::softMatrixElementVeto(ShowerProgenitorPtr,
+					  ShowerParticlePtr,
+					  Branching) {
+  return false;
 }

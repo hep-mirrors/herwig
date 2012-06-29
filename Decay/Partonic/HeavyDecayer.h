@@ -1,14 +1,16 @@
 // -*- C++ -*-
+//
+// HeavyDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HeavyDecayer_H
 #define HERWIG_HeavyDecayer_H
 // This is the declaration of the HeavyDecayer class.
 
-#include <ThePEG/Config/ThePEG.h>
 #include <PartonicDecayerBase.h>
-#include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/Strategy.fh>
-#include <fstream>
 
 namespace Herwig {
 
@@ -49,7 +51,7 @@ public:
   /**
    * Default constructor
    */
-  inline HeavyDecayer();
+  HeavyDecayer();
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -57,7 +59,7 @@ public:
    * @param children The decay products
    * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
   
   /**
    *  Perform the decay of the particle to the specified decay products
@@ -66,7 +68,7 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
@@ -173,7 +175,5 @@ struct ClassTraits<Herwig::HeavyDecayer>: public ClassTraitsBase<Herwig::HeavyDe
 /** @endcond */
 
 }
-
-#include "HeavyDecayer.icc"
 
 #endif /* HERWIG_HeavyDecayer_H */

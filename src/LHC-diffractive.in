@@ -1,0 +1,101 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read LHC-diffractive.in
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:StatLevel Full
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+cd /Herwig/Partons
+# Set the PDFs for the beams
+# This is for double diffractive, comment out either the first or second
+# for single diffractive
+set QCDExtractor:FirstPDF  PomeronFlux
+set QCDExtractor:SecondPDF PomeronFlux
+
+## Reggeon Structure Function #################################
+# MUST HAVE LHAPDF linked with ThePEG
+#create ThePEG::LHAPDF PionPDF ThePEGLHAPDF.so
+#set PionPDF:PDFNumber 212
+#set PionPDF:PType PionOrVMD
+#set PionPDF:RangeException Freeze
+#
+#create ThePEG::SoftRemnantHandler PionRemnants
+#set PionRemnants:RemnantDecayer RemnantDecayer
+#set PionPDF:RemnantHandler /Herwig/Partons/PionRemnants
+#
+#create Herwig::ReggeonPDF ReggeonPDF HwReggeonPDF.so
+#set ReggeonPDF:PDF PionPDF 
+#set ReggeonPDF:RemnantHandler PionRemnants
+#set /Herwig/Particles/reggeon:PDF ReggeonPDF
+# uncomment to switch pomeron off if only reggeon required
+#set /Herwig/Particles/pomeron:PDF NULL
+#################################################################
+
+##################################################
+# Choice of phase-space generation for PDFs
+##################################################
+set QCDExtractor:FlatSHatY 0
+
+##################################################
+#  Cuts
+##################################################
+cd /Herwig/Cuts
+set QCDCuts:MHatMin 1.
+set QCDCuts:MHatMax 20000
+set QCDCuts:X2Min 1.0e-7
+set QCDCuts:X2Max 1.
+set QCDCuts:X1Min 1.0e-7
+set QCDCuts:X1Max 1.
+
+set JetKtCut:MinKT 10.
+set LeptonKtCut:MinKT 1.
+
+##################################################
+# Matrix Elements for diffractive collisions 
+# (by default on QCD 2->2 switched on)
+##################################################
+cd /Herwig/MatrixElements/
+
+insert SimpleQCD:MatrixElements[0] /Herwig/UnderlyingEvent/MEQCD2to2Fast
+
+cd /Herwig/Generators
+
+# MPI doesn't work
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+
+saverun LHC-diffractive LHCGenerator
+
+
+

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SingleParticleAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SingleParticleAnalysis_H
 #define HERWIG_SingleParticleAnalysis_H
 //
@@ -10,13 +17,12 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "EventShapes.h"
-#include "SingleParticleAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The SingleParticleAnalysis class performs the analysis for
  * single particle variables and is intended as a slave handler for the 
  *  EventShapesMasterAnalysis class.
@@ -73,13 +79,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -188,7 +194,5 @@ struct ClassTraits<Herwig::SingleParticleAnalysis>
 /** @endcond */
 
 }
-
-#include "SingleParticleAnalysis.icc"
 
 #endif /* HERWIG_SingleParticleAnalysis_H */

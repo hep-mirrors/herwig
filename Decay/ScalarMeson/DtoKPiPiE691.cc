@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DtoKPiPiE691.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DtoKPiPiE691 class.
 //
@@ -14,7 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
+
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
@@ -46,7 +53,7 @@ DtoKPiPiE691::DtoKPiPiE691() {
   generateIntermediates(true);
 }
 
-void DtoKPiPiE691::doinit() throw(InitException) {
+void DtoKPiPiE691::doinit() {
   DecayIntegrator::doinit();
   // complex amplitudes calculated from magnitudes and phases
   double fact = Constants::pi/180.;
@@ -72,7 +79,7 @@ void DtoKPiPiE691::doinit() throw(InitException) {
   tPDPtr rho0  = getParticleData(ParticleID::rho0);
   tPDPtr rhop  = getParticleData(ParticleID::rhoplus);
   // D+ -> K-pi+pi+
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::Dplus);
   extpart[1]=getParticleData(ParticleID::Kminus);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -411,79 +418,79 @@ void DtoKPiPiE691::Init() {
   static Parameter<DtoKPiPiE691,Energy> interfaceK8920Mass
     ("K8920Mass",
      "The mass of the K*(892)0",
-     &DtoKPiPiE691::_mK8920, GeV, 0.8961 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK8920, GeV, 0.8961 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK8920Width
     ("K8920Width",
      "The width of the K*(892)0",
-     &DtoKPiPiE691::_wK8920, GeV, 0.0505*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK8920, GeV, 0.0505*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusMass
     ("K892MinusMass",
      "The mass of the K*(892)-",
-     &DtoKPiPiE691::_mK892m, GeV, 0.89159*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK892m, GeV, 0.89159*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusWidth
     ("K892MinusWidth",
      "The width of the K*(892)-",
-     &DtoKPiPiE691::_wK892m, GeV, 0.0498*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK892m, GeV, 0.0498*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1680Mass
     ("K1680Mass",
      "The mass of the K*(1680)",
-     &DtoKPiPiE691::_mK1680, GeV, 1.714  *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK1680, GeV, 1.714  *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1680Width
     ("K1680Width",
      "The width of the K*(1680)",
-     &DtoKPiPiE691::_wK1680, GeV, 0.323 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK1680, GeV, 0.323 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1430Mass
     ("K1430Mass",
      "The mass of the K*(1430)",
-     &DtoKPiPiE691::_mK1430, GeV, 1.429  *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK1430, GeV, 1.429  *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1430Width
     ("K1430Width",
      "The width of the K*(1430)",
-     &DtoKPiPiE691::_wK1430, GeV, 0.287 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK1430, GeV, 0.287 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRho0Mass
     ("Rho0Mass",
      "The mass of the rho0",
-     &DtoKPiPiE691::_mrho0, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mrho0, GeV, 0.7681 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRho0Width
     ("Rho0Width",
      "The width of the rho0",
-     &DtoKPiPiE691::_wrho0, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wrho0, GeV, 0.1515*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+",
-     &DtoKPiPiE691::_mrhop, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mrhop, GeV, 0.7681 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+",
-     &DtoKPiPiE691::_wrhop, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wrhop, GeV, 0.1515*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiE691,double> interfaceMaximumWeights
     ("MaximumWeights",
      "The maximum weights for the unweighting of the decays",
-     &DtoKPiPiE691::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     &DtoKPiPiE691::_maxwgt, -1, 1.0, 0.0, 1.0e11,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiE691,double> interfaceWeights
@@ -494,14 +501,14 @@ void DtoKPiPiE691::Init() {
 }
 
 int DtoKPiPiE691::modeNumber(bool & cc,tcPDPtr parent,
-			     const PDVector & children) const {
+			     const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0 or D+
   if(abs(id0)!=ParticleID::D0&&abs(id0)!=ParticleID::Dplus) return -1;
   cc = id0<0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   int id;
   for( ;pit!=children.end();++pit) {
@@ -526,17 +533,23 @@ int DtoKPiPiE691::modeNumber(bool & cc,tcPDPtr parent,
   }
 }
 
-double DtoKPiPiE691::me2(bool vertex, const int ichan,
+double DtoKPiPiE691::me2(const int ichan,
 			 const Particle & inpart,
-			 const ParticleVector & decay) const {
+			 const ParticleVector & decay,
+			 MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   Complex amp;
   // D+ -> K-pi+pi+
@@ -623,10 +636,8 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
@@ -634,72 +645,87 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << fullName() << ":KmPipPipNonResonantMagnitude " 
+  output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " 
 	 << _a1NR      << "\n";
-  output << "set " << fullName() << ":KmPipPipNonResonantPhase     " 
+  output << "newdef " << name() << ":KmPipPipNonResonantPhase     " 
 	 << _phi1NR    << "\n";
-  output << "set " << fullName() << ":KmPipPipK892Magnitude        " 
+  output << "newdef " << name() << ":KmPipPipK892Magnitude        " 
 	 << _a1K892    << "\n";
-  output << "set " << fullName() << ":KmPipPipK892Phase            " 
+  output << "newdef " << name() << ":KmPipPipK892Phase            " 
 	 << _phi1K892  << "\n";
-  output << "set " << fullName() << ":KmPipPipK1430Magnitude       " 
+  output << "newdef " << name() << ":KmPipPipK1430Magnitude       " 
 	 << _a1K1430   << "\n";
-  output << "set " << fullName() << ":KmPipPipK1430Phase           " 
+  output << "newdef " << name() << ":KmPipPipK1430Phase           " 
 	 << _phi1K1430 << "\n";
-  output << "set " << fullName() << ":KmPipPipK1680Magnitude       " 
+  output << "newdef " << name() << ":KmPipPipK1680Magnitude       " 
 	 << _a1K1680   << "\n";
-  output << "set " << fullName() << ":KmPipPipK1680Phase           " 
+  output << "newdef " << name() << ":KmPipPipK1680Phase           " 
 	 << _phi1K1680 << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantMagnitude " 
+  output << "newdef " << name() << ":KmPipPi0NonResonantMagnitude " 
 	 << _a2NR      << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantPhase     " 
+  output << "newdef " << name() << ":KmPipPi0NonResonantPhase     " 
 	 << _phi2NR    << "\n";
-  output << "set " << fullName() << ":KmPipPi0K8920Magnitude       " 
+  output << "newdef " << name() << ":KmPipPi0K8920Magnitude       " 
 	 << _a2K8920   << "\n";
-  output << "set " << fullName() << ":KmPipPi0K8920Phase           " 
+  output << "newdef " << name() << ":KmPipPi0K8920Phase           " 
 	 << _phi2K8920 << "\n";
-  output << "set " << fullName() << ":KmPipPi0K892mMagnitude       " 
+  output << "newdef " << name() << ":KmPipPi0K892mMagnitude       " 
 	 << _a2K892m   << "\n";
-  output << "set " << fullName() << ":KmPipPi0K892mPhase           " 
+  output << "newdef " << name() << ":KmPipPi0K892mPhase           " 
 	 << _phi2K892m << "\n";
-  output << "set " << fullName() << ":KmPipPi0RhoMagnitude         " 
+  output << "newdef " << name() << ":KmPipPi0RhoMagnitude         " 
 	 << _a2rho     << "\n";
-  output << "set " << fullName() << ":KmPipPi0RhoPhase             " 
+  output << "newdef " << name() << ":KmPipPi0RhoPhase             " 
 	 << _phi2rho   << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantMagnitude " 
+  output << "newdef " << name() << ":K0PipPimNonResonantMagnitude " 
 	 << _a3NR      << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantPhase     " 
+  output << "newdef " << name() << ":K0PipPimNonResonantPhase     " 
 	 << _phi3NR    << "\n";
-  output << "set " << fullName() << ":K0PipPimK892Magnitude        " 
+  output << "newdef " << name() << ":K0PipPimK892Magnitude        " 
 	 << _a3K892    << "\n";
-  output << "set " << fullName() << ":K0PipPimK892Phase            " 
+  output << "newdef " << name() << ":K0PipPimK892Phase            " 
 	 << _phi3K892  << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoMagnitude         " 
+  output << "newdef " << name() << ":K0PipPimRhoMagnitude         " 
 	 << _a3rho     << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoPhase             " 
+  output << "newdef " << name() << ":K0PipPimRhoPhase             " 
 	 << _phi3rho   << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":K8920Mass      " << _mK8920/GeV << "\n";
-  output << "set " << fullName() << ":K8920Width     " << _wK8920/GeV << "\n";
-  output << "set " << fullName() << ":K892MinusMass  " << _mK892m/GeV << "\n";
-  output << "set " << fullName() << ":K892MinusWidth " << _wK892m/GeV << "\n";
-  output << "set " << fullName() << ":K1680Mass      " << _mK1680/GeV << "\n";
-  output << "set " << fullName() << ":K1680Width     " << _wK1680/GeV << "\n";
-  output << "set " << fullName() << ":K1430Mass      " << _mK1430/GeV << "\n";
-  output << "set " << fullName() << ":K1430Width     " << _wK1430/GeV << "\n";
-  output << "set " << fullName() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
-  output << "set " << fullName() << ":Rho0Width      " << _wrho0 /GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":K8920Mass      " << _mK8920/GeV << "\n";
+  output << "newdef " << name() << ":K8920Width     " << _wK8920/GeV << "\n";
+  output << "newdef " << name() << ":K892MinusMass  " << _mK892m/GeV << "\n";
+  output << "newdef " << name() << ":K892MinusWidth " << _wK892m/GeV << "\n";
+  output << "newdef " << name() << ":K1680Mass      " << _mK1680/GeV << "\n";
+  output << "newdef " << name() << ":K1680Width     " << _wK1680/GeV << "\n";
+  output << "newdef " << name() << ":K1430Mass      " << _mK1430/GeV << "\n";
+  output << "newdef " << name() << ":K1430Width     " << _wK1430/GeV << "\n";
+  output << "newdef " << name() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
+  output << "newdef " << name() << ":Rho0Width      " << _wrho0 /GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
+  output << "newdef " << name() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeights " 
+    output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights " 
+    output << "insert " << name() << ":Weights " 
 	   << ix << " " << _weights[ix] << "\n";
   }
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}
+
+void DtoKPiPiE691::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels()+
+		  mode(2)->numberChannels());
+  _maxwgt.resize(3);
+  unsigned int iy=0;
+  for(unsigned int ix=0;ix<3;++ix) {
+    _maxwgt[ix]=mode(ix)->maxWeight();
+    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
+      _weights[iy]=mode(ix)->channelWeight(iz);
+      ++iy;
+    }
   }
 }

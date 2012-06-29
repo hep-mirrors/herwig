@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SSFFHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SSFFHVertex_H
 #define HERWIG_SSFFHVertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSFFHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 
@@ -57,11 +63,9 @@ public:
    * @param particle1 The first particle in the vertex.
    * @param particle2 The second particle in the vertex.
    * @param particle3 The third particle in the vertex.
-   * @param iint The incoming particle(only needed for vertices with
-   * Majorana particles)
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			   tcPDPtr particle3, int iint);
+			   tcPDPtr particle3);
   
 protected:
 
@@ -71,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -89,7 +93,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -107,11 +111,11 @@ private:
   SSFFHVertex & operator=(const SSFFHVertex &);
 
 private:
-  
+
   /**
-   * A pointer to the MSSM object.
+   * Pointer to the SM object.
    */
-  tMSSMPtr theMSSM;
+  tcMSSMPtr theMSSM;
 
   /**
    * The value of \f$\tan\beta\f$.
@@ -146,32 +150,12 @@ private:
   /**
    * The value of \f$\cos\beta\f$ 
    */
-  double theCb;  
-  
-  /**
-   * The value of the coupling when it was last evaluated.
-   */
-  Complex theCoupLast;
-
-  /**
-   * The value of the left-coupling when it was last evaluated.
-   */
-  Complex theLLast;
-  
-  /**
-   * The value of the right-coupling when it was last evaluated.
-   */
-  Complex theRLast;
-
-  /**
-   * The ID of the last higgs for which the vertex was evaluated
-   */
-  long theHLast;
+  double theCb; 
 
   /**
    * The ID of the last fermion for which the vertex was evaluated
    */
-  long theFLast;
+  pair<long,long> theFLast;
     
   /**
    * The value of \f$ \frac{e}{\sin\theta_W} \f$ when it was last evaluated.
@@ -182,6 +166,11 @@ private:
    * The scale at which then coupling was last evaluated. 
    */
   Energy2 theq2last;
+
+  /**
+   *  Values of the masses
+   */
+  pair<Energy,Energy> theMassLast;
 };
 }
 
@@ -220,7 +209,5 @@ struct ClassTraits<Herwig::SSFFHVertex>
 /** @endcond */
 
 }
-
-#include "SSFFHVertex.icc"
 
 #endif /* HERWIG_SSFFHVertex_H */

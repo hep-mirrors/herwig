@@ -1,9 +1,15 @@
+if WANT_NMSSM
 pkglib_LTLIBRARIES = HwNMSSM.la
+endif
 HwNMSSM_la_SOURCES =  \
-NMSSM.cc  NMSSM.h  NMSSM.icc NMSSM.fh \
-NMSSMFFHVertex.h NMSSMFFHVertex.fh NMSSMFFHVertex.icc NMSSMFFHVertex.cc\
-NMSSMWWHVertex.h NMSSMWWHVertex.fh NMSSMWWHVertex.icc NMSSMWWHVertex.cc\
-NMSSMWHHVertex.h NMSSMWHHVertex.fh NMSSMWHHVertex.icc NMSSMWHHVertex.cc\
-NMSSMHSFSFVertex.h NMSSMHSFSFVertex.fh NMSSMHSFSFVertex.icc NMSSMHSFSFVertex.cc\
-NMSSMGOGOHVertex.h NMSSMGOGOHVertex.fh NMSSMGOGOHVertex.icc NMSSMGOGOHVertex.cc
-HwNMSSM_la_LDFLAGS = -module
+NMSSM.cc  NMSSM.h NMSSM.fh \
+NMSSMFFHVertex.h   NMSSMFFHVertex.cc   \
+NMSSMWWHVertex.h   NMSSMWWHVertex.cc   \
+NMSSMWHHVertex.h   NMSSMWHHVertex.cc   \
+NMSSMHSFSFVertex.h NMSSMHSFSFVertex.cc\
+NMSSMGOGOHVertex.h NMSSMGOGOHVertex.cc \
+NMSSMHHHVertex.h   NMSSMHHHVertex.cc   \
+NMSSMGGHVertex.h   NMSSMGGHVertex.cc \
+NMSSMPPHVertex.h   NMSSMPPHVertex.cc  \
+NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc 
+HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0

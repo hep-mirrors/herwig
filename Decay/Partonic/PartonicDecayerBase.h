@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// PartonicDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PartonicDecayerBase_H
 #define HERWIG_PartonicDecayerBase_H
 //
@@ -8,12 +15,10 @@
 #include "Herwig++/Decay/HwDecayerBase.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
 #include "Herwig++/Hadronization/ClusterFinder.h"
-#include "Herwig++/Hadronization/ColourReconnector.h"
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/LightClusterDecayer.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "Herwig++/Hadronization/Cluster.h"
-#include "PartonicDecayerBase.fh"
 
 namespace Herwig {
 
@@ -37,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PartonicDecayerBase();
+  PartonicDecayerBase();
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -47,7 +52,7 @@ public:
    * @param children The decay products
    * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const = 0;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const = 0;
   
   /**
    *  Perform the decay of the particle to the specified decay products
@@ -56,7 +61,7 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const = 0;
+			       const tPDVector & children) const = 0;
 
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
@@ -139,11 +144,6 @@ private:
   ClusterFinderPtr       _clusterFinder;
 
   /**
-   * This is a pointer to a Herwig::ColourReconnector object.
-   */
-  ColourReconnectorPtr   _colourReconnector;
-
-  /**
    * This is a pointer to a Herwig::ClusterFissioner object.
    */
   ClusterFissionerPtr    _clusterFissioner;
@@ -211,7 +211,5 @@ struct ClassTraits<Herwig::PartonicDecayerBase>
 /** @endcond */
 
 }
-
-#include "PartonicDecayerBase.icc"
 
 #endif /* HERWIG_PartonicDecayerBase_H */

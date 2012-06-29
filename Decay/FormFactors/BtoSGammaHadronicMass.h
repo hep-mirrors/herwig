@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BtoSGammaHadronicMass.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BtoSGammaHadronicMass_H
 #define HERWIG_BtoSGammaHadronicMass_H
 //
@@ -31,7 +38,7 @@ public:
   /**
    * The default constructor.
    */
-  inline BtoSGammaHadronicMass();
+  BtoSGammaHadronicMass() : _minMass(825*MeV),_maxMass(5300*MeV) {}
 
   /**
    * Virtual member which must be implemented in classes inheriting from this
@@ -84,12 +91,12 @@ protected:
   /**
    *  Minimum mass
    */
-  inline Energy minMass() const;
+  Energy minMass() const {return _minMass;}
 
   /**
    *  Maximum mass
    */
-  inline Energy maxMass() const;
+  Energy maxMass() const {return _maxMass;}
   //@}
 
   /** @name Functions for the fermi motion needed in classes inheriting from this */
@@ -104,8 +111,11 @@ protected:
    * @param norm The normalisation, \f$N\f$.
    * @param lambda1 Scale related to kinetic energy of b quark, \f$\lambda_1\f$.
    */
-  inline InvEnergy exponentialFermiFunction(Energy scale,Energy lambda, double a,
-					    InvEnergy norm,Energy2 lambda1 ) const;
+  InvEnergy exponentialFermiFunction(Energy scale,Energy lambda, double a,
+				     InvEnergy norm,Energy2 lambda1 ) const {
+    double x(scale/lambda);
+    return norm*pow(1.-x,a)*exp(-3.*sqr(lambda)/lambda1*x);
+  }
   //@}
 
 private:
@@ -164,7 +174,5 @@ struct ClassTraits<Herwig::BtoSGammaHadronicMass>
 /** @endcond */
 
 }
-
-#include "BtoSGammaHadronicMass.icc"
 
 #endif /* HERWIG_BtoSGammaHadronicMass_H */

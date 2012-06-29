@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HadronSelector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HadronSelector class.
 //
@@ -17,26 +24,26 @@
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/Repository/Repository.h>
 #include "CheckId.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
+DescribeAbstractClass<HadronSelector,Interfaced>
+describeHadronSelector("Herwig::HadronSelector","");
 
-  // debug helper
-  void dumpTable(const HadronSelector::HadronTable & tbl) {
-    typedef HadronSelector::HadronTable::const_iterator TableIter;
-    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
-      cerr << it->first.first << ' ' 
-	   << it->first.second << '\n';
-      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
-	   jt != it->second.end(); ++jt) {
-	cerr << '\t' << *jt << '\n';
-      }
-    }
-  }
+namespace {
+  // // debug helper
+  // void dumpTable(const HadronSelector::HadronTable & tbl) {
+  //   typedef HadronSelector::HadronTable::const_iterator TableIter;
+  //   for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+  //     cerr << it->first.first << ' ' 
+  // 	   << it->first.second << '\n';
+  //     for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+  // 	   jt != it->second.end(); ++jt) {
+  // 	cerr << '\t' << *jt << '\n';
+  //     }
+  //   }
+  // }
 
   bool weightIsLess (pair<tcPDPtr,double> a, pair<tcPDPtr,double> b) {
     return a.second < b.second;
@@ -118,9 +125,6 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _table;
 }
 
-AbstractClassDescription<HadronSelector> HadronSelector::initHadronSelector;
-// Definition of the static class description member.
-
 void HadronSelector::Init() {
 
   static ClassDocumentation<HadronSelector> documentation
@@ -180,7 +184,7 @@ void HadronSelector::Init() {
   // mixing angles
   //
   // the ideal mixing angle
-  const double idealAngleMix = atan( 1.0 / sqrt(2.0) ) * 180.0 / Constants::pi;
+  const double idealAngleMix = atan( sqrt(0.5) ) * 180.0 / Constants::pi;
 
   static Parameter<HadronSelector,double> interface11S0Mixing
     ("11S0Mixing",
@@ -376,11 +380,11 @@ double HadronSelector::mixingStateWeight(long id) {
   }
 }
 
-void HadronSelector::doinit() throw(InitException) {
+void HadronSelector::doinit() {
   Interfaced::doinit();
   // the default partons allowed
   // the quarks
-  for(unsigned int ix=1;ix<=5;++ix) {
+  for ( int ix=1; ix<=5; ++ix ) {
     _partons.push_back(getParticleData(ix));
   }
   // the diquarks
@@ -482,8 +486,10 @@ void HadronSelector::constructHadronTable() {
       continue;
     // Don't include non-hadrons or antiparticles
     if(pid < 100) continue;
-    // K_0S and K_0L not made make K0 and Kbar0
+    // remove diffractive particles
     if(pspin == 0) continue;
+    // K_0S and K_0L not made make K0 and Kbar0
+    if(pid==ParticleID::K_S0||pid==ParticleID::K_L0) continue;
     // Debugging options
     // Only include those with 2J+1 less than...5
     if(_trial==2 && pspin >= 5) continue;
@@ -491,6 +497,8 @@ void HadronSelector::constructHadronTable() {
     if(_trial==3 && pspin >= 7) continue;
     // Only include pions
     if(_trial==1 && pid!=111 && pid!=211) continue;
+    // shouldn't be coloured
+    if(particle->coloured()) continue;
     // Get the flavours
     const int x4 = (pid/1000)%10; 
     const int x3 = (pid/100 )%10;
@@ -707,7 +715,7 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
     //     the other one is a (anti-) diquark the sign is negative when both
     //     constituents are "anti", that is both with id < 0; positive otherwise.
     // meson
-    if(abs(idQ1->iColour())== 3 && abs(idQ2->iColour()) == 3 &&
+    if(abs(int(idQ1->iColour()))== 3 && abs(int(idQ2->iColour())) == 3 &&
       !DiquarkMatcher::Check(idQ1->id()) && !DiquarkMatcher::Check(idQ2->id()))
     {
       int idQa = abs(idQ1->id());
@@ -726,7 +734,9 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 	if (dominant < 0 || idHad%10 == 0) sign = +1;
 	else if(dominant > 0)              sign = -1;
       } 
-      else if(idQa==ParticleID::u && idQb==ParticleID::c) {
+      else if((idQa==ParticleID::u && idQb==ParticleID::c) ||
+	      (idQa==ParticleID::u && idQb==ParticleID::t) ||
+	      (idQa==ParticleID::c && idQb==ParticleID::t)) {
 	if     (dominant > 0) sign = +1;
 	else if(dominant < 0) sign = -1;
       } 
@@ -763,7 +773,7 @@ pair<tcPDPtr,tcPDPtr> HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr p
 
   tcPDPtr vIdHad1[2]={tcPDPtr(),tcPDPtr()},vIdHad2[2]={tcPDPtr(),tcPDPtr()};
   bool vOk[2] = {false, false};
-  Energy vMassPair[2] = { Energy(), Energy() };
+  Energy vMassPair[2] = { ZERO, ZERO };
   for (int i = 0; i < 2; i++) {
     tcPDPtr idPartner = i==0 ? getParticleData(ParticleID::d) : getParticleData(ParticleID::u);
     // Change sign to idPartner (transform it into a anti-quark) if it is not

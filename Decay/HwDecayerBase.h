@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HwDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HwDecayerBase_H
 #define HERWIG_HwDecayerBase_H
 //
@@ -6,6 +13,10 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
+#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {
@@ -20,6 +31,9 @@ using namespace ThePEG;
  * It also provide the option of specifying a class based on the DecayRadiationGenerator
  * which should be used to generate QED radiation in the decay
  *
+ * @see \ref HwDecayerBaseInterfaces "The interfaces"
+ * defined for HwDecayerBase.
+
  */
 class HwDecayerBase: public Decayer {
 
@@ -28,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline HwDecayerBase();
+  HwDecayerBase() : _initialize(false), _dbOutput(false) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -49,6 +63,54 @@ public:
   virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
   //@}
 
+public:
+
+  /**
+   *  Virtual members to be overridden by inheriting classes
+   *  which implement hard corrections 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return false;}
+
+  /**
+   *  Has an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return false;}
+
+  /**
+   *  Initialize the ME correction
+   */
+  virtual void initializeMECorrection(ShowerTreePtr , double & ,
+				      double & ) {}
+
+  /**
+   *  Apply the hard matrix element correction to a given hard process or decay
+   */
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr) {}
+
+  /**
+   * Apply the soft matrix element correction
+   * @param initial The particle from the hard process which started the 
+   * shower
+   * @param parent The initial particle in the current branching
+   * @param br The branching struct
+   * @return If true the emission should be vetoed
+   */
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
+				     ShowerParticlePtr parent,
+				     Branching br);
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr) {
+    return HardTreePtr();
+  }
+  //@}
+
 protected:
 
   /** @name Virtual functions to replaced those from the Decayer class. 
@@ -62,7 +124,7 @@ protected:
    * @param children The decay products
    * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const = 0;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const = 0;
   
   /**
    *  Perform the decay of the particle to the specified decay products
@@ -71,7 +133,7 @@ protected:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const = 0;
+			       const tPDVector & children) const = 0;
   //@}
 
 public:
@@ -116,7 +178,12 @@ public:
   /**
    *  Access to the initialize variable
    */
-  inline bool initialize() const;
+  bool initialize() const {return _initialize;}
+
+  /**
+   *  Access the database output variable
+   */
+  bool databaseOutput() const {return _dbOutput;}
   //@}
 
 protected:
@@ -151,6 +218,10 @@ private:
    */
   bool _initialize;
 
+  /**
+   * Print out database  
+   */
+  bool _dbOutput;
 };
 
 }
@@ -181,7 +252,5 @@ struct ClassTraits<Herwig::HwDecayerBase>
 /** @endcond */
 
 }
-
-#include "HwDecayerBase.icc"
 
 #endif /* HERWIG_HwDecayerBase_H */

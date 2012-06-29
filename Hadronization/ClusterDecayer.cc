@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ClusterDecayer class.
 //
@@ -17,8 +24,33 @@
 #include "CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
+#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
+
+DescribeClass<ClusterDecayer,Interfaced>
+describeClusterDecayer("Herwig::ClusterDecayer","");
+
+ClusterDecayer::ClusterDecayer() :
+  _clDirLight(1),	     
+  _clDirBottom(1),
+  _clDirCharm(1),
+  _clDirExotic(1),	     
+  _clSmrLight(0.0),	     
+  _clSmrBottom(0.0),
+  _clSmrCharm(0.0),
+  _clSmrExotic(0.0),
+  _onshell(false),
+  _masstry(20)
+{}
+
+IBPtr ClusterDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ClusterDecayer::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
@@ -33,9 +65,6 @@ void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
      >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
 }
 
-ClassDescription<ClusterDecayer> ClusterDecayer::initClusterDecayer;
-// Definition of the static class description member.
-
 
 void ClusterDecayer::Init() {
 
@@ -49,18 +78,70 @@ void ClusterDecayer::Init() {
 			     false, false, true, false);
 
   //ClDir for light, Bottom, Charm and exotic (e.g Susy) quarks
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirLight ("ClDirLight", "cluster direction for light quarks",
-                     &ClusterDecayer::_clDirLight, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirBottom ("ClDirBottom", "cluster direction for b quark",
-                     &ClusterDecayer::_clDirBottom, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirCharm ("ClDirCharm", "cluster direction for c quark",
-                     &ClusterDecayer::_clDirCharm, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirExotic ("ClDirExotic", "cluster direction for exotic quark",
-                     &ClusterDecayer::_clDirExotic, 0, 1 , 0 , 1,false,false,false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirLight
+    ("ClDirLight",
+     "Cluster direction for light quarks",
+     &ClusterDecayer::_clDirLight, true, false, false);
+  static SwitchOption interfaceClDirLightPreserve
+    (interfaceClDirLight,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirLightIsotropic
+    (interfaceClDirLight,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirBottom
+    ("ClDirBottom",
+     "Cluster direction for bottom quarks",
+     &ClusterDecayer::_clDirBottom, true, false, false);
+  static SwitchOption interfaceClDirBottomPreserve
+    (interfaceClDirBottom,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirBottomIsotropic
+    (interfaceClDirBottom,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirCharm
+    ("ClDirCharm",
+     "Cluster direction for charm quarks",
+     &ClusterDecayer::_clDirCharm, true, false, false);
+  static SwitchOption interfaceClDirCharmPreserve
+    (interfaceClDirCharm,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirCharmIsotropic
+    (interfaceClDirCharm,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirExotic
+    ("ClDirExotic",
+     "Cluster direction for exotic quarks",
+     &ClusterDecayer::_clDirExotic, true, false, false);
+  static SwitchOption interfaceClDirExoticPreserve
+    (interfaceClDirExotic,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirExoticIsotropic
+    (interfaceClDirExotic,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
 
   // ClSmr for ligth, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterDecayer,double> 
@@ -83,12 +164,12 @@ static Parameter<ClusterDecayer,double>
      &ClusterDecayer::_onshell, false, false, false);
   static SwitchOption interfaceOnShellOnShell
     (interfaceOnShell,
-     "OnShell",
+     "Yes",
      "Produce the hadrons on shell",
-     false);
+     true);
   static SwitchOption interfaceOnShellOffShell
     (interfaceOnShell,
-     "OffShell",
+     "No",
      "Generate the masses using the mass generator.",
      false);
 
@@ -103,7 +184,7 @@ static Parameter<ClusterDecayer,double>
 
 
 void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-  throw(Veto, Stop, Exception) {
+  {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
@@ -123,8 +204,9 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
 
 
 pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
-  throw(Veto, Stop, Exception) {
+  {
   using Constants::pi;
+  using Constants::twopi;
   // To decay the cluster into two hadrons one must distinguish between
   // constituent quarks (or diquarks) that originate from perturbative
   // processes (hard process or parton shower) from those that are generated
@@ -152,17 +234,16 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   }
      
   // Extract the id and particle pointer of the two components of the cluster.
-
-    tPPtr ptr1 = ptr->particle(0);
-    tPPtr ptr2 = ptr->particle(1);
-    tcPDPtr ptr1data = ptr1->dataPtr();
-    tcPDPtr ptr2data = ptr2->dataPtr();
+  tPPtr ptr1 = ptr->particle(0);
+  tPPtr ptr2 = ptr->particle(1);
+  tcPDPtr ptr1data = ptr1->dataPtr();
+  tcPDPtr ptr2data = ptr2->dataPtr();
   
   bool isHad1FlavSpecial    = false;
-  int cluDirHad1      = _clDirLight;
+  bool cluDirHad1      = _clDirLight;
   double cluSmearHad1 = _clSmrLight;
   bool isHad2FlavSpecial    = false;
-  int cluDirHad2      = _clDirLight;
+  bool cluDirHad2      = _clDirLight;
   double cluSmearHad2 = _clSmrLight;
 
   if (CheckId::isExotic(ptr1data)) {
@@ -215,22 +296,20 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   // we choose randomly, with equal probability, one of the two. 
 
   int priorityHad1 = 0;
-  if ( cluDirHad1 == 1  &&  isOrigin1Perturbative ) {
-    priorityHad1 = 1;
-    if (isHad1FlavSpecial) priorityHad1 = 2;
+  if ( cluDirHad1  &&  isOrigin1Perturbative ) {
+    priorityHad1 = isHad1FlavSpecial ? 2 : 1;
   }
   int priorityHad2 = 0;
-  if ( cluDirHad2 == 1  &&  isOrigin2Perturbative ) {
-    priorityHad2 = 1;
-    if (isHad2FlavSpecial) priorityHad2 = 2;
+  if ( cluDirHad2  &&  isOrigin2Perturbative ) {
+    priorityHad2 = isHad2FlavSpecial ? 2 : 1;
   }
   if ( priorityHad2  &&  priorityHad1 == priorityHad2  &&  UseRandom::rndbool() ) {
     priorityHad2 = 0;
   }
 
   Lorentz5Momentum pClu = ptr->momentum();
-  Axis uSmear_v3;
   bool secondHad = false;
+  Axis uSmear_v3;
   if ( priorityHad1  ||  priorityHad2 ) { 
 
     double cluSmear;
@@ -258,21 +337,28 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     // (always in the same parent cluster frame).
 
     pQ.boost( -pClu.boostVector() );    // boost from Lab to Cluster frame 
-    Axis u_v3 = unitVector(pQ.vect()); 
-    uSmear_v3 = u_v3;
-    if ( cluSmear > 0.001 ) {           // skip if cluSmear is too small
-      double cosThetaQ = pQ.cosTheta();    
-      double sinThetaQ = sqrt( 1.0 - cosThetaQ*cosThetaQ );
+    uSmear_v3 = pQ.vect().unit();
+    // skip if cluSmear is too small
+    if ( cluSmear > 0.001 ) {
+      // generate the smearing angle    
       double cosSmear;
-      do {
-	cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );            
-      } while ( cosSmear < -1.0 );
-      double sinSmear = sqrt( 1.0 - cosSmear*cosSmear );
-      // Determine now the theta angle of the smeared direction 
-      // w.r.t. to the usual x-y-z axes (rather than w.r.t. u_v3)
-      double cosTheta = cosThetaQ*cosSmear - sinThetaQ*sinSmear;
-      uSmear_v3.setTheta( acos( cosTheta ) );
-      uSmear_v3.rotate( UseRandom::rnd( -pi , pi ) , u_v3 );  // smear in phi around u_v3
+      do cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );
+      while ( cosSmear < -1.0 );
+      double sinSmear = sqrt( 1.0 - sqr(cosSmear) );
+      // calculate rotation to z axis
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(uSmear_v3.z())));
+      if(abs(uSmear_v3.perp2()/uSmear_v3.z())>1e-10)
+	rot.setRotate(-acos(uSmear_v3.z()),
+		      Axis(-uSmear_v3.y()/sinth,uSmear_v3.x()/sinth,0.));
+      // + random azimuthal rotation
+      rot.rotateZ(UseRandom::rnd()*twopi);
+      // set direction in rotated frame
+      Lorentz5Vector<double> ltemp(0.,sinSmear,cosSmear,0.);
+      // rotate back
+      rot.invert();
+      ltemp *= rot;
+      uSmear_v3 = ltemp.vect();
     }
   } 
   else {
@@ -308,7 +394,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     }
     while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
     // if fails produce on shell and issue warning (should never happen??)
-    if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass()) {
+    if( ptrHad1->mass() + ptrHad2->mass() > ptr->mass() ) {
       generator()->log() << "Failed to produce off-shell hadrons in "
 			 << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
 			 << "on-shell" << endl;

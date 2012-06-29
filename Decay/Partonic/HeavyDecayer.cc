@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HeavyDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HeavyDecayer class.
 //
@@ -17,6 +24,16 @@
 #include <ThePEG/Utilities/Maths.h>
 
 using namespace Herwig;
+
+HeavyDecayer::HeavyDecayer() : MECode(0) {} 
+
+IBPtr HeavyDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr HeavyDecayer::fullclone() const {
+  return new_ptr(*this);
+}
 
 void HeavyDecayer::Init() {
 
@@ -41,7 +58,7 @@ void HeavyDecayer::Init() {
 
 ClassDescription<HeavyDecayer> HeavyDecayer::initHeavyDecayer;
 
-bool HeavyDecayer::accept(tcPDPtr parent, const PDVector & children) const { 
+bool HeavyDecayer::accept(tcPDPtr parent, const tPDVector & children) const { 
   long id = parent->id();
   int flav1, flav2;
   if((id / 1000)%10) {
@@ -57,7 +74,7 @@ bool HeavyDecayer::accept(tcPDPtr parent, const PDVector & children) const {
 }
 
 ParticleVector HeavyDecayer::decay(const Particle & p,
-				   const PDVector & children) const {
+				   const tPDVector & children) const {
   ParticleVector partons;
   for(unsigned int ix=0;ix<children.size();++ix) {
     partons.push_back(children[ix]->produceParticle());
@@ -125,7 +142,7 @@ void HeavyDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  output << "newdef " << name() << ":MECode " << MECode << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

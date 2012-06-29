@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Hw64Decayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Hw64Decayer class.
 //
@@ -21,7 +28,17 @@ using namespace Herwig;
 void Hw64Decayer::Init() {
 
    static ClassDocumentation<Hw64Decayer> documentation
-     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");
+     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4",
+      "Some decays used the Fortran HERWIG decay algorithm \\cite{Corcella:2000bw}.",
+      "%\\cite{Corcella:2000bw}\n"
+      "\\bibitem{Corcella:2000bw}\n"
+      "  G.~Corcella {\\it et al.},\n"
+      "  %``HERWIG 6.5: an event generator for Hadron Emission Reactions With\n"
+      "  %Interfering Gluons (including supersymmetric processes),''\n"
+      "  JHEP {\\bf 0101} (2001) 010\n"
+      "  [arXiv:hep-ph/0011363].\n"
+      "  %%CITATION = JHEPA,0101,010;%%\n"
+      );
 
   static Switch<Hw64Decayer,int> interfaceMECode
     ("MECode",
@@ -35,7 +52,7 @@ void Hw64Decayer::Init() {
   static SwitchOption interfaceMECodeFreeVA
     (interfaceMECode,
      "FreeVA",
-     " Free Massless (V-A)*(V-A) ME",
+     "Free Massless (V-A)*(V-A) ME",
      100);
   static SwitchOption interfaceMECodeBoundVA
     (interfaceMECode,
@@ -54,17 +71,18 @@ void Hw64Decayer::Init() {
 
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
-bool Hw64Decayer::accept(tcPDPtr, const PDVector & children) const  {
-  return children.size()<=4;
+bool Hw64Decayer::accept(tcPDPtr, const tPDVector & children) const  {
+  return children.size() <= 3;
 }
 
 ParticleVector Hw64Decayer::decay(const Particle & p, 
-				  const PDVector & children) const {
+				  const tPDVector & children) const {
+  useMe();
   // storage for the decay products and number of decay products
   ParticleVector rval;
   unsigned int numProds(children.size());
   // check that it is possible to kinematically perform the decay
-  Energy minmass(0.*MeV);
+  Energy minmass(ZERO);
   vector<Energy> minmasses(numProds);
   vector<tcGenericMassGeneratorPtr> massgen(numProds,tcGenericMassGeneratorPtr());
   tcMassGenPtr mtemp;
@@ -91,7 +109,7 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
   if(numProds!=1) {
     do {
       unsigned int istart=UseRandom::irnd(numProds);
-      outmass=0.*MeV;
+      outmass=ZERO;
       for(unsigned int ix=istart;ix<numProds;++ix) { 
 	masses[ix] = massgen[ix] ?
 	  massgen[ix]->mass(*(children[ix]),minmasses[ix],
@@ -148,7 +166,7 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
       if(IPDG >= 1000)
 	m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
       else
-	m1 = 0.0*MeV;
+	m1 = ZERO;
       m2 = generator()->getParticleData((IPDG/100)%10)->mass();
       m3 = generator()->getParticleData((IPDG/10)%10)->mass();
       xs = 1.0 - Math::absmax<Energy>(m1, Math::absmax<Energy>(m2, m3))/(m1+m2+m3);
@@ -167,11 +185,6 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
 				 products[2]);
     }
   }  
-  // Four Body Decay
-  else if(numProds == 4) {
-    Kinematics::fourBodyDecay(p.momentum(), products[0], products[1], 
-			      products[2], products[3]);
-  }
   if(products[0] == Lorentz5Momentum()) return ParticleVector();
   cPDVector productParticles(numProds);
   for(unsigned int ix=0;ix<numProds;++ix) {
@@ -197,8 +210,8 @@ double Hw64Decayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
 void Hw64Decayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
-  output << "set " << fullName() << ":MECode "  << MECode << " \n";
-  output << "set " << fullName() << ":MassTry " << _masstry << " \n";
+  output << "newdef " << name() << ":MECode "  << MECode << " \n";
+  output << "newdef " << name() << ":MassTry " << _masstry << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

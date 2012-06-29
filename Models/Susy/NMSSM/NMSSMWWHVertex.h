@@ -7,11 +7,10 @@
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "NMSSMWWHVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Helicity
  * 
@@ -76,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -92,9 +91,8 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -112,11 +110,6 @@ private:
   NMSSMWWHVertex & operator=(const NMSSMWWHVertex &);
 
 private:
-  
-  /**
-   * Pointer to he Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.
@@ -141,11 +134,6 @@ private:
    *  The factor for the \f$Z\f$ vertex.
    */
   double _zfact;
-
-  /**
-   *  \f$\sin\theta_W\f$.
-   */
-  double _sw;
 
   /**
    *  \f$\sin\beta\f$
@@ -201,7 +189,5 @@ struct ClassTraits<Herwig::NMSSMWWHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMWWHVertex.icc"
 
 #endif /* HERWIG_NMSSMWWHVertex_H */

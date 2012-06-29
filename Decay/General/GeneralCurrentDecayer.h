@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GeneralCurrentDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GeneralCurrentDecayer_H
 #define HERWIG_GeneralCurrentDecayer_H
 //
@@ -28,7 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralCurrentDecayer();
+  GeneralCurrentDecayer() : 
+    _maxmass(5.*GeV), _wgtmax(0.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -38,18 +46,18 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual int modeNumber(bool & cc, tcPDPtr parent,const PDVector & children) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent,const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const = 0;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
    * Function to return partial Width
@@ -60,6 +68,13 @@ public:
   virtual Energy partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout) = 0;
   //@}
+
+  /**
+   *  set up the decay
+   */
+  void setDecayInfo(PDPtr in, PDPtr out, const vector<tPDPtr> & outCurrent,
+		    VertexBasePtr vertex, WeakDecayCurrentPtr current,
+		    Energy maxmass);
 
 public:
 
@@ -96,7 +111,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 protected:
@@ -112,23 +133,18 @@ protected:
    *  Access to the map between the number of the mode and the modes in
    *  the current
    */
-  inline vector<unsigned int> modeMap() const;
+  unsigned int mode() const { return _mode; }
 
   /**
    *  Access to the weak current
    */
-  inline WeakDecayCurrentPtr weakCurrent() const;
-
-  /**
-   *  Access to the Fermi constant
-   */
-  inline InvEnergy2 GF() const;  
+  WeakDecayCurrentPtr weakCurrent() const { return _current; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const;
+  VertexBasePtr getVertex() const { return _theVertex; }
 
 private:
 
@@ -152,14 +168,19 @@ private:
   VertexBasePtr _theVertex;
   
   /**
-   * PDG codes for all incoming particles
+   * Incoming particle
    **/
-  vector<int> _inpart;
+  PDPtr _inpart;
 
   /**
-   * PDG codes for the first outgoing particle
+   * First outgoing particle
    */
-  vector<int> _outpart;
+  PDPtr _outpart;
+
+  /**
+   *  Outgoing particles from the current
+   */
+  vector<tPDPtr> _currentOut; 
 
   /**
    * Pointer to the current
@@ -170,31 +191,21 @@ private:
    *  Maximum mass difference
    */
   Energy _maxmass;
-  
-  /**
-   * Fermi coupling constant, \f$G_F\f$.
-   */
-  InvEnergy2 _GF;
 
   /**
    * mapping of the modes to the currents
    */
-  vector<unsigned int> _modemap;
+  unsigned int _mode;
 
   /**
    * location of the weights
    */
-  vector<int> _wgtloc;
-
-  /**
-   *  location in the map
-   */
-  vector<unsigned int> _modestart;
+  int _wgtloc;
 
   /**
    * the maximum weight
    */
-  vector<double> _wgtmax;
+  double _wgtmax;
 
   /**
    *  The weights for the different channels
@@ -225,20 +236,11 @@ struct ClassTraits<Herwig::GeneralCurrentDecayer>
   : public ClassTraitsBase<Herwig::GeneralCurrentDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::GeneralCurrentDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * GeneralCurrentDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class GeneralCurrentDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "GeneralCurrentDecayer.icc"
 
 #endif /* HERWIG_GeneralCurrentDecayer_H */

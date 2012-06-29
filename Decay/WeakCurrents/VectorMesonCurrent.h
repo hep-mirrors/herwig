@@ -1,10 +1,16 @@
 // -*- C++ -*-
+//
+// VectorMesonCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef THEPEG_VectorMesonCurrent_H
 #define THEPEG_VectorMesonCurrent_H
 // This is the declaration of the VectorMesonCurrent class.
 
 #include "WeakDecayCurrent.h"
-#include "VectorMesonCurrent.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -32,11 +38,6 @@ public:
    * Default constructor
    */
   VectorMesonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline VectorMesonCurrent(const VectorMesonCurrent &);
   //@}
 
 public:
@@ -94,21 +95,21 @@ public:
    * @param ia The PDG code for the antiquark
    * @return The external particles for the current.
    */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
    * Hadronic current. This version returns the hadronic current described above.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,  
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan,Energy & scale,  
+	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the meson against the list
@@ -141,13 +142,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -159,7 +160,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -232,7 +233,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "VectorMesonCurrent.icc"
 
 #endif /* THEPEG_VectorMesonCurrent_H */

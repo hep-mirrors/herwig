@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ThreeMesonDefaultCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ThreeMesonDefaultCurrent class.
 //
@@ -24,7 +31,7 @@ namespace {
 ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.*MeV;_mK=0.*MeV;
+  _mpi=ZERO;_mK=ZERO;
   // set the initial weights for the resonances
   // the rho weights
   _rhoF123wgts.push_back(1.0);_rhoF123wgts.push_back(-0.145);
@@ -136,11 +143,11 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
 		 back_inserter(_a1runq2),
 		 timesGeV2);
 
-  _maxmass=0.*GeV;
-  _maxcalc=0.*GeV;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
-void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
+void ThreeMesonDefaultCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
@@ -290,7 +297,31 @@ void ThreeMesonDefaultCurrent::Init() {
     ("The ThreeMesonDefaultCurrent class is designed to implement "
      "the three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, " 
      "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
-     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.");
+     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.",
+     "The three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, "
+     "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
+     "and pi- Kbar0 pi0, pi- pi0 eta "
+     "use the same currents as \\cite{Jadach:1993hs,Kuhn:1990ad,Decker:1992kj}.",
+     "%\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     "%\\cite{Kuhn:1990ad}\n"
+     "\\bibitem{Kuhn:1990ad}\n"
+     "  J.~H.~Kuhn and A.~Santamaria,\n"
+     "  %``Tau decays to pions,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 48}, 445 (1990).\n"
+     "  %%CITATION = ZEPYA,C48,445;%%\n"
+     "%\\cite{Decker:1992kj}\n"
+     "\\bibitem{Decker:1992kj}\n"
+     "  R.~Decker, E.~Mirkes, R.~Sauer and Z.~Was,\n"
+     "  %``Tau decays into three pseudoscalar mesons,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 58}, 445 (1993).\n"
+     "  %%CITATION = ZEPYA,C58,445;%%\n"
+     );
+
   
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF123RhoWgt
     ("F123RhoWeight",
@@ -328,12 +359,12 @@ void ThreeMesonDefaultCurrent::Init() {
      &ThreeMesonDefaultCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
-     "Initialization",
+     "Yes",
      "Initialize the calculation",
      true);
   static SwitchOption interfaceInitializea1NoInitialization
     (interfaceInitializea1,
-     "NoInitialization",
+     "No",
      "Use the default values",
      false);
   
@@ -409,99 +440,99 @@ void ThreeMesonDefaultCurrent::Init() {
      true);
   static SwitchOption interfacea1WidthOptionParam
     (interfacea1WidthOption,
+     "Kuhn",
      "Use the parameterization of Kuhn and Santamaria for default parameters."
      " This should only be used for testing vs TAUOLA",
-     "",
      false);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
     
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Width
     ("K1Width",
      "The K_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_k1width, GeV, 0.174*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1width, GeV, 0.174*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Mass
     ("K1Mass",
      "The K_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_k1mass, GeV, 1.402*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1mass, GeV, 1.402*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123masses
     ("rhoF123masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123widths
     ("rhoF123widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5masses
     ("rhoF5masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5widths
     ("rhoF5widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123masses
     ("KstarF123masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123widths
     ("KstarF123widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5masses
     ("KstarF5masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5widths
     ("KstarF5widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 }
   
@@ -515,6 +546,7 @@ ThreeMesonDefaultCurrent::FormFactors
 ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
 					       Energy2 q2, Energy2 s1, 
 					       Energy2 s2, Energy2 s3) const {
+  useMe();
   Complex F1, F2, F3, F4, F5;
   F1 = F2 = F3 = F4 = F5 = 0.0;
   // calculate the pi- pi- pi+ factor
@@ -621,8 +653,8 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
-  PDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.*MeV);
+  tPDVector extpart(particles(1,imode,iq,ia));
+  Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -859,11 +891,21 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
     }
   }
   if(_rhoparameters) {
-    for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
-      if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],
-					   _rhoF123widths[ix]);
-      if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],
-					   _rhoF123widths[ix]);
+    if(imode!=8) {
+      for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+      }
+    }
+    else {
+      for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+      }
     }
   }
   // K star parameters in the base class
@@ -883,7 +925,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return;
+    if(!_initializea1||_maxmass==ZERO) return;
     // parameters for the table of values
     Energy2 step(sqr(_maxcalc)/199.);
     // integrator to perform the integral
@@ -899,7 +941,7 @@ void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
     _a1runq2.clear(); _a1runwidth.clear();
-    for(Energy2 moff2(0.*MeV2); moff2<=sqr(_maxcalc); moff2+=step) {
+    for(Energy2 moff2(ZERO); moff2<=sqr(_maxcalc); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
@@ -914,96 +956,164 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
 					      bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::ThreeMesonDefaultCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
+		    << name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
+    output << name() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123wgts.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":F123KstarWeight " << ix << " " 
+    output << name() << ":F123KstarWeight " << ix << " " 
 	   << _kstarF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
+    output << name() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5wgts.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
+    output << name() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
   }
-  output << "set " << fullName() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
-  output << "set " << fullName() << ":Initializea1 "    << _initializea1    << "\n";
-  output << "set " << fullName() << ":RhoParameters "   << _rhoparameters   << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
-  output << "set " << fullName() << ":a1Parameters "    << _a1parameters    << "\n";
-  output << "set " << fullName() << ":K1Parameters "    << _k1parameters    << "\n";
-  output << "set " << fullName() << ":a1WidthOption "   << _a1opt           << "\n";
+  output << "newdef " << name() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
+  output << "newdef " << name() << ":Initializea1 "    << _initializea1    << "\n";
+  output << "newdef " << name() << ":RhoParameters "   << _rhoparameters   << "\n";
+  output << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "newdef " << name() << ":a1Parameters "    << _a1parameters    << "\n";
+  output << "newdef " << name() << ":K1Parameters "    << _k1parameters    << "\n";
+  output << "newdef " << name() << ":a1WidthOption "   << _a1opt           << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    output << "set " << fullName() << ":a1RunningWidth " << ix 
+    output << "newdef " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    output << "set " << fullName() << ":a1RunningQ2 " << ix 
+    output << "newdef " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  output << "set " << fullName() << ":A1Width " << _a1width/GeV << "\n";
-  output << "set " << fullName() << ":A1Mass "  << _a1mass/GeV  << "\n";
-  output << "set " << fullName() << ":K1Width " << _k1width/GeV << "\n";
-  output << "set " << fullName() << ":K1Mass "  << _k1mass/GeV  << "\n";
-  output << "set " << fullName() << ":FPi "     << _fpi/MeV     << "\n";
+  output << "newdef " << name() << ":A1Width " << _a1width/GeV << "\n";
+  output << "newdef " << name() << ":A1Mass "  << _a1mass/GeV  << "\n";
+  output << "newdef " << name() << ":K1Width " << _k1width/GeV << "\n";
+  output << "newdef " << name() << ":K1Mass "  << _k1mass/GeV  << "\n";
+  output << "newdef " << name() << ":FPi "     << _fpi/MeV     << "\n";
   for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":rhoF123masses " << ix 
+    output << name() << ":rhoF123masses " << ix 
 	   << " " << _rhoF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF123widths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":rhoF123widths " << ix << " " 
+    output << name() << ":rhoF123widths " << ix << " " 
 	   << _rhoF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":rhoF5masses " << ix << " " 
+    output << name() << ":rhoF5masses " << ix << " " 
 	   << _rhoF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5widths.size();++ix) {
-    if(ix<3) output << "set ";
+    if(ix<3) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":rhoF5widths " << ix << " " 
+    output << name() << ":rhoF5widths " << ix << " " 
 	   << _rhoF5widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123masses.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarF123masses " << ix << " " 
+    output << name() << ":KstarF123masses " << ix << " " 
 	   << _kstarF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123widths.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarF123widths " << ix << " " 
+    output << name() << ":KstarF123widths " << ix << " " 
 	   << _kstarF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5masses.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarF5masses " << ix << " " 
+    output << name() << ":KstarF5masses " << ix << " " 
 	   << _kstarF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5widths.size();++ix) {
-    if(ix<1) output << "set ";
+    if(ix<1) output << "newdef ";
     else     output << "insert ";
-    output << fullName() << ":KstarF5widths " << ix << " " 
+    output << name() << ":KstarF5widths " << ix << " " 
 	   << _kstarF5widths[ix]/GeV << "\n";
   }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}
+
+void ThreeMesonDefaultCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
+}
+
+void ThreeMesonDefaultCurrent::doupdate() {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
+
+Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
+							 unsigned int ires) const {
+  Energy q(sqrt(q2)),mass,width,mout[2]={_mpi,_mpi};
+  // get the mass and width of the requested resonance
+  if(itype==0) {
+    mass=_rhoF123masses[ires];
+    width=_rhoF123widths[ires];
+  }
+  else if(itype==1) {
+    mass=_rhoF5masses[ires];
+    width=_rhoF5widths[ires];
+  }
+  else if(itype==2) {
+    mass=_kstarF123masses[ires];
+    width=_kstarF123widths[ires];
+  }
+  else if(itype==3) {
+    mass=_kstarF5masses[ires];
+    width=_kstarF5widths[ires];
+  }
+  else {
+    return 0.;
+  }
+  // calculate the momenta for the running widths
+  if(itype>1) mout[0]=_mK;
+  Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,mout[0],mout[1]));
+  Energy pcm(ZERO);
+  if(mout[0]+mout[1]<q){pcm=Kinematics::pstarTwoBodyDecay(q,mout[0],mout[1]);}
+  double ratio = Math::Pow<3>(pcm/pcm0);
+  Energy gamrun(width*mass*ratio/q);
+  Complex ii(0.,1.);
+  complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);
+  return numer/denom;
+}
+
+double ThreeMesonDefaultCurrent::
+threeBodyMatrixElement(const int       , const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy    , 
+		       const Energy    , const Energy    ) const {
+  Energy2 mpi2(sqr(_mpi));
+  Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
+  // the matrix element
+  Energy2 output(ZERO); 
+  // first resonance
+  output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
+  // second resonance
+  output += ((s2-4.*mpi2) + 0.25*(s3-s1)*(s3-s1)/q2) * real(propa*conj(propa)); 
+  // the interference term 
+  output += (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+							      propb*conj(propa)); 
+  return output/sqr(_rhoF123masses[0]);
 }

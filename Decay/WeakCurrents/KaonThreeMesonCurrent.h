@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// KaonThreeMesonCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_KaonThreeMesonCurrent_H
 #define HERWIG_KaonThreeMesonCurrent_H
 //
@@ -6,14 +13,16 @@
 //
 
 #include "ThreeMesonCurrentBase.h"
-#include "KaonThreeMesonCurrent.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the KaonThreeMesonCurrent class.
+ * The KaonThreeMesonCurrent class implements the model of M. Finkemeier 
+ * and E.~Mirkes, Z. Phys. C 69 (1996) 243 [arXiv:hep-ph/9503474],
+ * for the weak current for three mesons where at least one of the mesons is
+ * a kaon.
  *
  * @see \ref KaonThreeMesonCurrentInterfaces "The interfaces"
  * defined for KaonThreeMesonCurrent.
@@ -25,7 +34,7 @@ public:
   /**
    * The default constructor.
    */
-  inline KaonThreeMesonCurrent();
+  KaonThreeMesonCurrent();
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{  
@@ -58,7 +67,7 @@ public:
   
   /**
    * the matrix element for the \f$a_1\f$ decay to calculate the running width
-   * @param imode The mode to be integrated
+   * @param imode The mode for which the matrix element is needed.
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
@@ -68,10 +77,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-				       const Energy2 s3, const Energy2 s2, 
-				       const Energy2 s1, const Energy  m1, 
-				       const Energy  m2, const Energy  m3) const;
+  double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+				const Energy2 s3, const Energy2 s2, 
+				const Energy2 s1, const Energy  m1, 
+				const Energy  m2, const Energy  m3) const;
 
 protected:
 
@@ -128,13 +137,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -146,17 +155,17 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  virtual void doupdate();
   //@}
 
 private:
@@ -180,64 +189,164 @@ private:
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$\rho\f$ multiplet
    */
-  inline Complex Trho1(Energy2 q2,int ires) const;
+  Complex Trho1(Energy2 q2,int ires) const {
+    Complex output(0.);
+    double norm(0.);
+    for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) norm+=_rho1wgts[ix];
+    if(ires<0) {
+      for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) {
+	output+=_rho1wgts[ix]*BWrho1(q2,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_rho1wgts.size()) output=_rho1wgts[temp]*BWrho1(q2,temp);
+    }
+    return output/norm;
+  }
   
   /**
    *  The \f$\rho\f$ lineshape for the vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$\rho\f$ multiplet
    */
-  inline Complex Trho2(Energy2 q2,int ires) const;
-
+  Complex Trho2(Energy2 q2,int ires) const {
+    Complex output(0.);
+    double norm(0.);
+    for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) norm+=_rho2wgts[ix];
+    if(ires<0) {
+      for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) {
+	output+=_rho2wgts[ix]*BWrho2(q2,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_rho2wgts.size()) output=_rho2wgts[temp]*BWrho2(q2,temp);
+    }
+    return output/norm;
+  }
+  
   /**
    *  The \f$K^*\f$ lineshape for the axial-vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$K^*\f$ multiplet
    */
-  inline Complex TKstar1(Energy2 q2,int ires) const;
+  Complex TKstar1(Energy2 q2,int ires) const  {
+    Complex output(0.);
+    double norm(0.);
+    for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) norm+=_kstar1wgts[ix];
+    if(ires<0) {
+      for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) {
+	output+=_kstar1wgts[ix]*BWKstar1(q2,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_kstar1wgts.size()) output=_kstar1wgts[temp]*BWKstar1(q2,temp);
+    }
+    return output/norm;
+  }
   
   /**
    *  The \f$\rho\f$ lineshape for the vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$K^*\f$ multiplet
    */
-  inline Complex TKstar2(Energy2 q2,int ires) const;
+  Complex TKstar2(Energy2 q2,int ires) const {
+    Complex output(0.);
+    double norm(0.);
+    for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) norm+=_kstar2wgts[ix];
+    if(ires<0) {
+      for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) {
+	output+=_kstar2wgts[ix]*BWKstar2(q2,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_kstar2wgts.size()) output=_kstar2wgts[temp]*BWKstar2(q2,temp);
+    }
+    return output/norm;
+  }
 
   /**
    *  The \f$\rho\f$ Breit-Wigner for the axial-vector terms
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param ires Which \f$\rho\f$ multiplet
    */
-  inline Complex BWrho1(Energy2 q2, unsigned int ires) const;
-
+  Complex BWrho1(Energy2 q2, unsigned int ires) const {
+    if(ires>=_rho1mass.size()) return 0.;
+    Energy mass  = _rho1mass [ires];
+    Energy width = _rho1width[ires];
+    Energy q=sqrt(q2);
+    Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
+    Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+    double ratio = Math::powi(pcm/pcm0, 3);
+    Energy gam(width*mass*ratio/q);
+    return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+  } 
 
   /**
    *  The \f$\rho\f$ Breit-Wigner for the vector terms
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param ires Which \f$\rho\f$ multiplet
    */
-  inline Complex BWrho2(Energy2 q2, unsigned int ires) const;
-
+  Complex BWrho2(Energy2 q2, unsigned int ires) const {
+    if(ires>=_rho2mass.size()) return 0.;
+    Energy mass  = _rho2mass [ires];
+    Energy width = _rho2width[ires];
+    Energy q=sqrt(q2);
+    Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
+    Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+    double ratio(pcm/pcm0);ratio*=ratio*ratio;
+    Energy gam(width*mass*ratio/q);
+    return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+  }
+  
   /**
    * The \f$K^*\f$ Breit-Wigner for the axial-vector terms
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param ires Which \f$K^*\f$ multiplet
    */
-  inline Complex BWKstar1(Energy2 q2, unsigned int ires) const;
+  Complex BWKstar1(Energy2 q2, unsigned int ires) const {
+    if(ires>=_kstar1mass.size()) return 0.;
+    Energy mass  = _kstar1mass [ires];
+    Energy width = _kstar1width[ires];
+    Energy q=sqrt(q2);
+    Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
+    Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+    double ratio(pcm/pcm0);ratio*=ratio*ratio;
+    Energy gam(width*mass*ratio/q);
+    return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+  }
 
   /**
    * The \f$K^*\f$ Breit-Wigner for the vector terms
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param ires Which \f$K^*\f$ multiplet
    */
-  inline Complex BWKstar2(Energy2 q2, unsigned int ires) const;
+  Complex BWKstar2(Energy2 q2, unsigned int ires) const  {
+    if(ires>=_kstar2mass.size()) return 0.;
+    Energy mass  = _kstar2mass [ires];
+    Energy width = _kstar2width[ires];
+    Energy q=sqrt(q2);
+    Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
+    Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+    double ratio(pcm/pcm0);ratio*=ratio*ratio;
+    Energy gam(width*mass*ratio/q);
+    return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+  }
 
   /**
    * \f$a_1\f$ Breit-Wigner
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const;
+  Complex a1BreitWigner(Energy2 q2) const {
+    Complex ii(0.,1.);
+    Energy2 m2(_a1mass*_a1mass);
+    Energy  q(sqrt(q2));
+    return m2/(m2-q2-ii*q*a1Width(q2));
+  }
   
   /**
    *  The \f$K_1\f$ line shape
@@ -245,7 +354,33 @@ private:
    * @param iopt Whether this is \f$K^*\pi\f$ or \f$\rho K\f$.
    * @param ires the resonance
    */
-  inline Complex TK1(Energy2 q2,unsigned int iopt,int ires) const;
+  Complex TK1(Energy2 q2,unsigned int iopt,int ires) const {
+    Complex denom(0),num(0.);
+    if(iopt==0) {
+      for(unsigned int ix=0;ix<_k1wgta.size();++ix) denom+=_k1wgta[ix];
+      if(ires==-1) {
+	for(unsigned int ix=0;ix<_k1wgta.size();++ix) 
+	  num+=_k1wgta[ix]*K1BreitWigner(q2,ix);
+      }
+      else {	
+	num+=_k1wgta[ires]*K1BreitWigner(q2,ires);
+      }
+    }
+    else if(iopt==1) {
+      for(unsigned int ix=0;ix<_k1wgtb.size();++ix) denom+=_k1wgtb[ix];
+      if(ires==-1) {
+	for(unsigned int ix=0;ix<_k1wgtb.size();++ix) 
+	  num+=_k1wgtb[ix]*K1BreitWigner(q2,ix);
+      }
+      else {	
+	num+=_k1wgtb[ires]*K1BreitWigner(q2,ires);
+      }
+    }
+    else {
+      return 0.;
+    }
+    return num/denom;
+  }
 
   /**
    * The \f$K_1\f$ Breit-Wigner
@@ -253,20 +388,42 @@ private:
    * @param ires the resonance
    * @return The Breit-Wigner
    */
-  inline Complex K1BreitWigner(Energy2 q2,unsigned int ires) const;
+  Complex K1BreitWigner(Energy2 q2,unsigned int ires) const {
+    if(ires>=_k1mass.size()) return 0.;
+    Energy2 m2=sqr(_k1mass[ires]),mg=_k1mass[ires]*_k1width[ires];
+    return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
+  }
 
   /**
    * The \f$a_1\f$ running width
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
    */
-  inline Energy a1Width(Energy2 q2) const ;
+  Energy a1Width(Energy2 q2) const {
+    if(!_a1opt) return _a1mass*_a1width*g(q2)/g(_a1mass*_a1mass)/sqrt(q2);
+    else        return (*_a1runinter)(q2);
+  }
   
   /**
    *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
    */
-  inline double g(Energy2 q2) const;
-
+  double g(Energy2 q2) const {
+    double output;
+    if(q2<9.*_mpi*_mpi) {
+      output=0.;
+    }
+    else if(q2<sqr(_rho1mass[0]+_mpi)) {
+      double diff=(q2-9.*_mpi*_mpi)/GeV2;
+      
+      output=4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
+    }
+    else {
+      double ratio = q2/GeV2;
+      output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
+    }
+    return output;
+  }
+  
   /**
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
@@ -278,14 +435,32 @@ private:
    * @param q2 The scale
    * @param ires the resonance
    */
-  inline Complex Tomega(Energy2 q2, int ires) const;
+  Complex Tomega(Energy2 q2, int ires) const {
+    double denom=(1.+_epsomega);
+    Complex num(0.);
+    if(ires<0) num=OmegaPhiBreitWigner(q2,0)+_epsomega*OmegaPhiBreitWigner(q2,1);
+    else if(ires==0) num=OmegaPhiBreitWigner(q2,0);
+    else             num=OmegaPhiBreitWigner(q2,1);
+    return num/denom;
+  }
 
   /**
    *  The \f$\omega\f$ and \f$\phi\f$ Breit-Wigner
    * @param q2 The scale
    * @param ires the resonance
    */
-  inline Complex OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const;
+  Complex OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const {
+    Energy2 m2,mg;
+    if(ires==0) {
+      m2=sqr(_omegamass);
+      mg=_omegamass*_omegawidth;
+    }
+    else {
+      m2=sqr(_phimass);
+      mg=_phimass*_phiwidth;
+    }
+    return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
+  }
 
   /**
    * The \f$\omega-\phi\f$ \f$K^*\f$ form-factor for the \f$F_5\f$ form-factor
@@ -294,7 +469,13 @@ private:
    * @param ires Which resonances to use
    * @return The mixed Breit-Wigner
    */
-  inline Complex TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const;
+  Complex TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const {
+    Complex output;
+    if(ires<0)         output = _omegaKstarwgt*TKstar1(s1,-1)+Tomega(s2,-1);
+    else if(ires%2==0) output = _omegaKstarwgt*TKstar1(s1,ires/2);
+    else if(ires%2==1) output = Tomega(s2,ires/2);
+    return output/(1.+_omegaKstarwgt);
+  }
 
 private:
 
@@ -565,7 +746,5 @@ struct ClassTraits<Herwig::KaonThreeMesonCurrent>
 /** @endcond */
 
 }
-
-#include "KaonThreeMesonCurrent.icc"
 
 #endif /* HERWIG_KaonThreeMesonCurrent_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SSGOGOHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SSGOGOHVertex_H
 #define HERWIG_SSGOGOHVertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSGOGOHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 
@@ -22,18 +28,10 @@ class SSGOGOHVertex: public FFSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSGOGOHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSGOGOHVertex();
-  //@}
 
 public:
 
@@ -67,11 +65,9 @@ public:
    * @param particle1 The first particle in the vertex.
    * @param particle2 The second particle in the vertex.
    * @param particle3 The third particle in the vertex.
-   * @param iint The incoming particle(only needed for vertices with
-   * Majorana particles)
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			   tcPDPtr particle3, int iint);
+			   tcPDPtr particle3);
   
 protected:
 
@@ -81,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -100,7 +96,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -118,11 +114,6 @@ private:
   SSGOGOHVertex & operator=(const SSGOGOHVertex &);
 
 private:
-  
-  /**
-   * A pointer to the MSSM object.
-   */
-  tMSSMPtr theMSSM;
 
   /**
    * The mass of the \f$W\f$.
@@ -158,11 +149,6 @@ private:
    * The matrix \f$Q_{ij}^{''}\f$ 
    */
   vector<vector<Complex> > theQijdp; 
-
-  /**
-   * The value of \f$\sin\theta_W\f$
-   */
-  double theSw;
 
   /**
    * The value of \f$\sin\alpha\f$ 
@@ -256,7 +242,5 @@ struct ClassTraits<Herwig::SSGOGOHVertex>
 /** @endcond */
 
 }
-
-#include "SSGOGOHVertex.icc"
 
 #endif /* HERWIG_SSGOGOHVertex_H */

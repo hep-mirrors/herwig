@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// StandardCKM.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the StandardCKM class.
 //
@@ -10,10 +17,8 @@
 #include "ThePEG/Interface/Parameter.h"
 
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
-
-StandardCKM::~StandardCKM() {}
 
 IBPtr StandardCKM::clone() const {
   return new_ptr(*this);
@@ -119,6 +124,4 @@ void StandardCKM::Init() {
      "The phase angle in the standard "
      "parameterization of the CKM matrix",
      &StandardCKM::delta, 1.05, 0.0, Constants::twopi, false, false, true);
-}
-
 }

@@ -1,0 +1,22 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read StarBase.in
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+set /Herwig/Cuts/JetKtCut:MinKT 5.
+##################################################
+# select the analyses
+##################################################
+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2009_UE_HELEN
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun Star-Jets-2 LHCGenerator

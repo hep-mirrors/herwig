@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// SU2Helper.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+
+#include "SU2Helper.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/Repository/Repository.h"
+
+using namespace Herwig;
+
+tcPDPtr SU2Helper::SU2CC(tcPDPtr p) { 
+  if ( !isInSU2Doublet(p) )
+    return tcPDPtr();
+  PID idUp = p->id() < 0 ? p->id() + 1 : p->id() - 1;
+  PID idDown = p->id() < 0 ? p->id() - 1 : p->id() + 1;
+  if ( !CurrentGenerator::isVoid() )
+    return isSU2Up(p) ? 
+      CurrentGenerator::current().getParticleData(idUp) :
+      CurrentGenerator::current().getParticleData(idDown); 
+  return isSU2Up(p) ? 
+    Repository::defaultParticle(idUp) :
+    Repository::defaultParticle(idDown); 
+}

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TTbarAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TTbarAnalysis class.
 //
@@ -10,11 +17,6 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TTbarAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -43,6 +45,40 @@ namespace {
 
 }
 
+TTbarAnalysis::TTbarAnalysis() :
+  _pttop(0.,350.,100), _pttbar(0.,350.,100), _ptpair(0.,350.,100), 
+  _ettop(0.,350.,100), _ettbar(0.,350.,100), _etpair(0.,350.,100), 
+  _etop(0.,3000.,100), _etbar(0.,3000.,100), _epair(0.,6000.,100), 
+  _raptop(-5.,5.,100), _raptbar(-5.,5.,100), _rappair(-5.,5.,100), 
+  _phitop  (-Constants::pi,Constants::pi,50), 
+  _phitbar (-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), _mpair(300,1500,100), 
+  _etsum(0.,700.,100), _ptsum(0.,700.,100) {}
+
+void TTbarAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  using namespace HistogramOptions;
+  _pttop.topdrawOutput(outfile,Frame|Ylog,"RED","pt t, tbar");
+  _pttbar.topdrawOutput(outfile,Ylog,"BLUE","pt tbar");
+  _ptpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt pair");
+  _ettop.topdrawOutput(outfile,Frame|Ylog,"RED","Et t, tbar");
+  _ettbar.topdrawOutput(outfile,Ylog,"BLUE","Et tbar");
+  _etpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et pair");
+  _etop.topdrawOutput(outfile,Frame|Ylog,"RED","E t, tbar");
+  _etbar.topdrawOutput(outfile,Ylog,"BLUE","E tbar");
+  _epair.topdrawOutput(outfile,Frame|Ylog,"BLACK","E pair");
+  _raptop.topdrawOutput(outfile,Frame,"RED","y t, tbar");
+  _raptbar.topdrawOutput(outfile,None,"BLUE","y tbar");
+  _rappair.topdrawOutput(outfile,Frame,"BLACK","y pair");
+  _phitop.topdrawOutput(outfile,Frame,"RED","phi t, tbar");
+  _phitbar.topdrawOutput(outfile,None,"BLUE","phi tbar");
+  _deltaphi.topdrawOutput(outfile,Frame,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","M pair");
+  _etsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt sum");
+  _ptsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et sum");
+}
 
 void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
 
@@ -96,17 +132,6 @@ void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
 		       << *event;    
   }  
 }
-
-LorentzRotation TTbarAnalysis::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void TTbarAnalysis::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-}
-
-void TTbarAnalysis::analyze(tPPtr) {}
 
 NoPIOClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
 // Definition of the static class description member.

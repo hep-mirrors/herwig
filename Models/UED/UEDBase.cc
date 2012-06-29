@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDBase class.
 //
@@ -10,13 +17,19 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/Repository.h" 
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
-void UEDBase::doinit() throw(InitException) {
-  StandardModel::doinit();
+UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
+		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
+		     theVeV(246.*GeV) {}
+
+void UEDBase::doinit() {
+  readDecays(false);
+  BSMModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
   writeSpectrum();
@@ -29,31 +42,35 @@ void UEDBase::doinit() throw(InitException) {
   addVertex(theF1F1P0Vertex);
   addVertex(theF1F1W0Vertex);
   addVertex(theF1F0W1Vertex);
+  addVertex(theF1F0H1Vertex);
   addVertex(theP0H1H1Vertex);
   addVertex(theZ0H1H1Vertex);
   addVertex(theW0A1H1Vertex);
   addVertex(theZ0A1h1Vertex);
   addVertex(theW0W1W1Vertex);
+  readDecays(true);
+  if(decayFile()=="") return;
+  decayRead();
 }
 
 void UEDBase::persistentOutput(PersistentOStream & os) const {
   os << theRadCorr << ounit(theInvRadius, GeV) << theLambdaR 
      << theF1F1Z0Vertex << theF1F1G0Vertex << theF1F0G1Vertex
      << theG1G1G0Vertex << theG0G0G1G1Vertex << theF1F1P0Vertex
-     << theF1F1W0Vertex << theF1F0W1Vertex << theP0H1H1Vertex 
-     << theZ0H1H1Vertex << theW0A1H1Vertex << theZ0A1h1Vertex 
-     << theW0W1W1Vertex << ounit(theVeV,GeV) << ounit(theMbarH, GeV) 
-     << theSinThetaOne;
+     << theF1F1W0Vertex << theF1F0W1Vertex << theF1F0H1Vertex 
+     << theP0H1H1Vertex << theZ0H1H1Vertex << theW0A1H1Vertex 
+     << theZ0A1h1Vertex << theW0W1W1Vertex << ounit(theVeV,GeV) 
+     << ounit(theMbarH, GeV) << theSinThetaOne;
 }
 
 void UEDBase::persistentInput(PersistentIStream & is, int) {
   is >> theRadCorr >> iunit(theInvRadius, GeV) >> theLambdaR
      >> theF1F1Z0Vertex >> theF1F1G0Vertex >> theF1F0G1Vertex
      >> theG1G1G0Vertex >> theG0G0G1G1Vertex >> theF1F1P0Vertex
-     >> theF1F1W0Vertex >> theF1F0W1Vertex >> theP0H1H1Vertex 
-     >> theZ0H1H1Vertex >> theW0A1H1Vertex >> theZ0A1h1Vertex 
-     >> theW0W1W1Vertex >> iunit(theVeV,GeV) >> iunit(theMbarH, GeV) 
-     >> theSinThetaOne;
+     >> theF1F1W0Vertex >> theF1F0W1Vertex >> theF1F0H1Vertex 
+     >> theP0H1H1Vertex >> theZ0H1H1Vertex >> theW0A1H1Vertex 
+     >> theZ0A1h1Vertex >> theW0W1W1Vertex >> iunit(theVeV,GeV) 
+     >> iunit(theMbarH, GeV) >> theSinThetaOne;
 
 }
 
@@ -64,18 +81,43 @@ void UEDBase::Init() {
 
   static ClassDocumentation<UEDBase> documentation
     ("This class implements/stores the necessary information for the simulation"
-     " of a Universal Extra Dimensions model.");
+     " of a Universal Extra Dimensions model.",
+     "Universal extra dimensions model based on \\cite{Cheng:2002iz,Appelquist:2000nn}.",
+     "%\\cite{Cheng:2002iz}\n"
+     "\\bibitem{Cheng:2002iz}\n"
+     "  H.~C.~Cheng, K.~T.~Matchev and M.~Schmaltz,\n"
+     "  ``Radiative corrections to Kaluza-Klein masses,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 66}, 036005 (2002)\n"
+     "  [arXiv:hep-ph/0204342].\n"
+     "  %%CITATION = PHRVA,D66,036005;%%\n"
+     "%\\cite{Appelquist:2000nn}\n"
+     "\\bibitem{Appelquist:2000nn}\n"
+     "  T.~Appelquist, H.~C.~Cheng and B.~A.~Dobrescu,\n"
+     "  ``Bounds on universal extra dimensions,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 64}, 035002 (2001)\n"
+     "  [arXiv:hep-ph/0012100].\n"
+     "  %%CITATION = PHRVA,D64,035002;%%\n"
+   );
 
-  static Parameter<UEDBase,bool> interfaceRadiativeCorrections
+  static Switch<UEDBase,bool> interfaceRadiativeCorrections
     ("RadiativeCorrections",
-     "Switch for calculating the radiative corrections to the KK masses",
-     &UEDBase::theRadCorr, true, 0, 0,
-     false, false, Interface::nolimits);
+     "Calculate the radiative corrections to the masses",
+     &UEDBase::theRadCorr, true, false, false);
+  static SwitchOption interfaceRadiativeCorrectionsYes
+    (interfaceRadiativeCorrections,
+     "Yes",
+     "Calculate the radiative corrections to the masses",
+     true);
+  static SwitchOption interfaceRadiativeCorrectionsNo
+    (interfaceRadiativeCorrections,
+     "No",
+     "Leave the masses of the KK particles as n/R",
+     false);
 
   static Parameter<UEDBase,Energy> interfaceInverseRadius
     ("InverseRadius",
      "The inverse radius of the compactified dimension ",
-     &UEDBase::theInvRadius, GeV, 500.*GeV, 0.*GeV, 0*GeV,
+     &UEDBase::theInvRadius, GeV, 500.*GeV, ZERO, ZERO,
      true, false, Interface::nolimits);
 
   static Parameter<UEDBase,double> interfaceLambdaR
@@ -85,89 +127,90 @@ void UEDBase::Init() {
      false, false, Interface::lowerlim);
 
     static Parameter<UEDBase,Energy> interfaceBoundaryMass
-    ("BoundaryMass",
+    ("HiggsBoundaryMass",
      "The boundary mass for the Higgs",
-     &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     &UEDBase::theMbarH, GeV, ZERO, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
-  static Parameter<UEDBase,string> interfaceSPCFileName
-    ("SPCFileName",
-     "The name of the spectrum file",
-     &UEDBase::theSpectrum, "UEDMasses.out", false, false);
-
   static Parameter<UEDBase,Energy> interfaceVeV
-    ("VeV",
+    ("HiggsVEV",
      "The vacuum expectation value of the Higgs field",
-     &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
+     &UEDBase::theVeV, GeV, 246.*GeV, ZERO, ZERO,
      true, false, Interface::nolimits);
     
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1Z
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1Z
     ("Vertex/F1F1Z",
      "The F1F1Z UED Vertex",
      &UEDBase::theF1F1Z0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1G0
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1G0
     ("Vertex/F1F1G0",
      "The F1F1G UED Vertex",
      &UEDBase::theF1F1G0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0G1
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F0G1
     ("Vertex/F1F0G1",
      "The F1F0G0 UED Vertex",
      &UEDBase::theF1F0G1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVertex> interfaceG1G1G0
+  static Reference<UEDBase,Helicity::AbstractVVVVertex> interfaceG1G1G0
     ("Vertex/G1G1G0",
      "The G1G1G0 UED Vertex",
      &UEDBase::theG1G1G0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVVertex> interfaceG0G0G1G1
+  static Reference<UEDBase,Helicity::AbstractVVVVVertex> interfaceG0G0G1G1
     ("Vertex/G0G0G1G1",
      "The G0G0G1G1 UED Vertex",
      &UEDBase::theG0G0G1G1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1P
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1P
     ("Vertex/F1F1P",
      "The F1F1P UED Vertex",
      &UEDBase::theF1F1P0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1W
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1W
     ("Vertex/F1F1W",
      "The F1F1W UED Vertex",
      &UEDBase::theF1F1W0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0W1
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F0W1
     ("Vertex/F1F0W1",
      "The F1F0W1 UED Vertex",
      &UEDBase::theF1F0W1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceP0H1H1
+  static Reference<UEDBase,Helicity::AbstractFFSVertex> interfaceF1F0H1
+    ("Vertex/F1F0H1",
+     "The F1F0H1 UED Vertex",
+     &UEDBase::theF1F0H1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceP0H1H1
     ("Vertex/P0H1H1",
      "The P0H1H1 UED Vertex",
      &UEDBase::theP0H1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0H1H1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceZ0H1H1
     ("Vertex/Z0H1H1",
      "The Z0H1H1 UED Vertex",
      &UEDBase::theZ0H1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceW0A1H1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceW0A1H1
     ("Vertex/W0A1H1",
      "The W0A1H1 UED Vertex",
      &UEDBase::theW0A1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0A1h1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceZ0A1h1
     ("Vertex/Z0A1h1",
      "The W0A1H1 UED Vertex",
      &UEDBase::theZ0A1h1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVertex> interfaceW0W1W1
+  static Reference<UEDBase,Helicity::AbstractVVVVertex> interfaceW0W1W1
     ("Vertex/W0W1W1",
      "The W0W1W1 UED Vertex",
      &UEDBase::theW0W1W1Vertex, false, false, true, false, false);
 }
 
-void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
+void UEDBase::calculateKKMasses(const unsigned int n) {
+  useMe();
   if(n == 0)
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"
@@ -177,14 +220,17 @@ void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
       bosonMasses(n);
     }
     else {
-      cerr << "Warning! Radiative corrections have been turned off."
-	   << " Therefore the particle spectrum will be degenerate and "
-	   << "no decays will occur.\n";
+      cerr << 
+	"Warning: Radiative corrections to particle masses have been "
+	"turned off.\n  The masses will be set to (n/R + m_sm)^1/2 and "
+	"the spectrum will be\n  highly degenerate so that no decays "
+	"will occur.\n  This is only meant to be used for debugging "
+	"purposes.\n";
       //set masses to tree level for each kk mode
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;
       Energy2 ndmass2 = sqr(n*theInvRadius);
-      for(unsigned int i = 1; i < 38; ++i) {
+      for ( int i = 1; i < 38; ++i ) {
 	if(i == 7 || i == 17) i += 4;
 	if(i == 26) i += 10;
 	Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
@@ -222,7 +268,7 @@ void UEDBase::bosonMasses(const unsigned int n) {
 
   //Z and gamma are a mixture of Bn and W3n
   deltaGB = -g_em2*invRad2*norm*( 39.*zeta3/2./pi2 + nnlogLR/3. );
-  Energy2 mz2 = sqr(getParticleData(23)->mass());  
+  Energy2 mz2 = sqr(getParticleData(23)->mass());
   Energy2 fp = 0.5*(mz2 + deltaGB + deltaGW + 2.*nmass2);
   Energy2 sp = 0.5*sqrt( sqr(deltaGB - deltaGW - 2.*mw2 + mz2)
 			 - 4.*mw2*(mw2 - mz2) );
@@ -302,8 +348,9 @@ void UEDBase::fermionMasses(const unsigned int n) {
 
   for(long i = 1; i < 17; ) {
     if(i == 6) i += 5;
-    Energy2 new_m2, smMass2(sqr(getParticleData(i)->mass()));
+    Energy2 smMass2(sqr(getParticleData(i)->mass()));
     if(i < 6) {
+      Energy2 new_m2;
       if( i % 2 == 0)
 	new_m2 = smMass2 + shiftU;
       else 
@@ -321,7 +368,7 @@ void UEDBase::fermionMasses(const unsigned int n) {
 }
 
 
-void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
+void UEDBase::resetMass(long id, Energy mass) {
   theMasses.push_back(make_pair(id, mass));
   tPDPtr particle = getParticleData(id);
   if(!particle) {
@@ -351,19 +398,18 @@ void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
 
 void UEDBase::writeSpectrum() {
   sort(theMasses.begin(), theMasses.end(), lowerMass);
-  string filename = CurrentGenerator::current().filename() + 
-    string("-BSMModelInfo.out");
-  ofstream ofs(filename.c_str(), ios::out|ios::app);
+  ostream & ofs = CurrentGenerator::current().misc();
   ofs << "# MUED Model Particle Spectrum\n"
       << "# R^-1: " << theInvRadius/GeV << " GeV\n"
       << "# Lambda * R: " << theLambdaR << "\n"
-      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
-      << endl;
+      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV\n";
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
-  for(vector<IDMassPair>::iterator it = theMasses.begin(); 
-      it != theMasses.end();) {
-    ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
-    theMasses.erase(it);
+  while (!theMasses.empty()) {
+    IDMassPair tmp = theMasses.back();
+    tcPDPtr data = getParticleData(tmp.first);
+    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << "\t\t" << (data? data->PDGName() : "") 
+	<< endl;
+    theMasses.pop_back();
   }
   ofs << "#\n";
 }

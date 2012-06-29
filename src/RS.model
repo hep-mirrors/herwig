@@ -1,0 +1,91 @@
+##################################################
+# Common setup for Randall-Sundrum models
+#
+# See LHC-RS.in or ILC-RS.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-RS.in
+#
+###################################################
+#
+#  Particle Data object for the Gravition
+#
+###################################################
+cd /Herwig/Particles
+create /ThePEG/ParticleData Graviton
+setup Graviton 39 Graviton 500.0 0.0 0.0 0.0 0 0 5 0
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/RS
+cd /Herwig/NewPhysics/RS
+create Herwig::RSModel Model HwRSModel.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create RS model vertices
+mkdir /Herwig/Vertices/RS
+cd /Herwig/Vertices/RS
+library HwRSModel.so
+create Herwig::RSModelFFGRVertex RS_FFGRVertex
+create Herwig::RSModelFFGGRVertex RS_FFGGRVertex
+create Herwig::RSModelFFWGRVertex RS_FFWGRVertex
+create Herwig::RSModelSSGRVertex RS_SSGRVertex
+create Herwig::RSModelVVGRVertex RS_VVGRVertex
+create Herwig::RSModelGGGGRVertex RS_GGGGRVertex
+create Herwig::RSModelWWWGRVertex RS_WWWGRVertex
+cd /Herwig/NewPhysics/RS
+# SM vertices
+set Model:Vertex/FFZ  /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW  /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH  /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG  /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP  /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG  /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH  /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG  /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP  /Herwig/Vertices/HPPVertex
+# RS model vertices
+set Model:Vertex/FFGR  /Herwig/Vertices/RS/RS_FFGRVertex
+set Model:Vertex/FFGGR /Herwig/Vertices/RS/RS_FFGGRVertex
+set Model:Vertex/FFWGR /Herwig/Vertices/RS/RS_FFWGRVertex
+set Model:Vertex/SSGR  /Herwig/Vertices/RS/RS_SSGRVertex
+set Model:Vertex/VVGR  /Herwig/Vertices/RS/RS_VVGRVertex
+set Model:Vertex/GGGGR /Herwig/Vertices/RS/RS_GGGGRVertex
+set Model:Vertex/WWWGR /Herwig/Vertices/RS/RS_WWWGRVertex
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
+###################################################
+# Set up the model framework
+###################################################
+set RS/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose RS over SM
+#
+###################################################
+cd /Herwig/Generators
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/RS/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/RS/Model

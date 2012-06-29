@@ -1,16 +1,18 @@
 // -*- C++ -*-
+//
+// QuarkoniumDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_QuarkoniumDecayer_H
 #define HERWIG_QuarkoniumDecayer_H
 //
 // This is the declaration of the QuarkoniumDecayer class.
 //
 
-#include <ThePEG/Config/ThePEG.h>
 #include <PartonicDecayerBase.h>
-#include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/Strategy.fh>
-#include <fstream>
 
 namespace Herwig {
 using namespace ThePEG;
@@ -52,7 +54,7 @@ public:
   /**
    * Standard ctors and dtor
    */
-  inline QuarkoniumDecayer();
+  QuarkoniumDecayer();
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -60,7 +62,7 @@ public:
    * @param children The decay products
    * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
   
   /**
    *  Perform the decay of the particle to the specified decay products
@@ -69,7 +71,7 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
 
   /**
@@ -104,12 +106,12 @@ protected:
    /**
     * Standard clone methods
     */
-   inline virtual IBPtr clone() const;
+   virtual IBPtr clone() const;
 
    /**
     * Standard clone methods
     */
-   inline virtual IBPtr fullclone() const;
+   virtual IBPtr fullclone() const;
 
 private:
 
@@ -166,7 +168,5 @@ struct ClassTraits<Herwig::QuarkoniumDecayer>:
 /** @endcond */
 
 }
-
-#include "QuarkoniumDecayer.icc"
 
 #endif /* HERWIG_QuarkoniumDecayer_H */

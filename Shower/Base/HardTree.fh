@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HardTree class.
+//
+#ifndef HERWIG_HardTree_FH
+#define HERWIG_HardTree_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class HardTree;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::HardTree     ,HardTreePtr     );
+
+}
+
+#endif

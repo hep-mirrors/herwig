@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// LEPEventShapes.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LEPEventShapes class.
 //
@@ -15,7 +22,8 @@
 
 using namespace Herwig;
 
-void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
+void LEPEventShapes::analyze(tEventPtr event, long ieve,
+			     int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   if ( loop > 0 || state != 0 || !event ) return;
   // get the final-state particles
@@ -28,9 +36,8 @@ LorentzRotation LEPEventShapes::transform(tEventPtr) const {
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
 
-void LEPEventShapes::analyze(const tPVector & particles) {
+void LEPEventShapes::analyze(const tPVector & ) {
   double eventweight = generator()->currentEvent()->weight();
-  _shapes->reset(particles);
   _omthr ->addWeighted( 1.-_shapes->thrust() ,eventweight);
   _maj ->addWeighted( _shapes->thrustMajor() ,eventweight);
   _min ->addWeighted( _shapes->thrustMinor() ,eventweight);
@@ -64,7 +71,25 @@ void LEPEventShapes::Init() {
 
   static ClassDocumentation<LEPEventShapes> documentation
     ("The LEPEventShapes class compares event shapes at the Z mass"
-     "with experimental results");
+     "with experimental results",
+     "The LEP EventShapes analysis uses data from \\cite{Pfeifenschneider:1999rz,Abreu:1996na}.",
+     "%\\cite{Pfeifenschneider:1999rz}\n"
+     "\\bibitem{Pfeifenschneider:1999rz}\n"
+     "  P.~Pfeifenschneider {\\it et al.}  [JADE collaboration and OPAL\n"
+     "                  Collaboration],\n"
+     "   ``QCD analyses and determinations of alpha(s) in e+ e- annihilation at\n"
+     "  %energies between 35-GeV and 189-GeV,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 17}, 19 (2000)\n"
+     "  [arXiv:hep-ex/0001055].\n"
+     "  %%CITATION = EPHJA,C17,19;%%\n"
+     "%\\cite{Abreu:1996na}\n"
+     "\\bibitem{Abreu:1996na}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "   ``Tuning and test of fragmentation models based on identified particles  and\n"
+     "  %precision event shape data,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 73}, 11 (1996).\n"
+     "  %%CITATION = ZEPYA,C73,11;%%\n"
+     );
 
   static Reference<LEPEventShapes,EventShapes> interfaceEventShapes
     ("EventShapes",
@@ -74,6 +99,7 @@ void LEPEventShapes::Init() {
 }
 
 void LEPEventShapes::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + 
     string("-") + name() + string(".top");
@@ -399,8 +425,8 @@ void LEPEventShapes::doinitrun() {
   double error6syst[]={0.75	,0.55	,0.28	,0.176  ,0.098  ,
 		       0.056  ,0.035  ,0.0188 ,0.0118 ,0.0079 ,
 		       0.0043 ,0.0027 ,0.0014 ,0.00052,0.00018};
-  double error6[19];
-  for(unsigned int ix=0;ix<19;++ix){error6[ix]=sqrt(sqr(error6stat[ix])+
+  double error6[15];
+  for(unsigned int ix=0;ix<15;++ix){error6[ix]=sqrt(sqr(error6stat[ix])+
 						    sqr(error6syst[ix]));}
   bins  = vector<double>(vals6 ,vals6 +16);
   data  = vector<double>(data6 ,data6 +15);

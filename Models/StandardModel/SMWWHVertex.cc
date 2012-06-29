@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SMWWHVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the WWHVertex class.
 //
@@ -12,35 +19,27 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
-  : _couplast(0.), _q2last(), _mw(), _zfact(), _sw() {
-  // particles
-  vector<int> first,second,third;
-  first.push_back(24);first.push_back(23);
-  second.push_back(-24);second.push_back(23);
-  third.push_back(25);third.push_back(25);
-  setList(first,second,third);
-}
-
-void SMWWHVertex::doinit() throw(InitException) {
-  // parameters
-  _theSM = generator()->standardModel();
-  _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  _sw = _theSM->sin2ThetaW();
-  _zfact = 1./(1.-_sw);
-  _sw=sqrt(_sw);
-  // order in the couplings
+  : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
   orderInGem(1);
   orderInGs(0);
+}
+
+void SMWWHVertex::doinit() {
+  addToList(24,-24, 25);
+  addToList(23, 23, 25);
+  // parameters
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  _zfact = 1./(1.-sin2ThetaW());
   // base class
   VVSVertex::doinit();
 }
     
 void SMWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV) << _zfact << _sw;
+  os << ounit(_mw,GeV) << _zfact;
 }
 
 void SMWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw,GeV) >> _zfact >> _sw;
+  is >> iunit(_mw,GeV) >> _zfact;
 }
     
 ClassDescription<SMWWHVertex>SMWWHVertex::initSMWWHVertex;
@@ -53,21 +52,17 @@ void SMWWHVertex::Init() {
      " Model electroweak gauge bosons to the Higgs.");
 }
 
-void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
-  int ibos=abs(a->id());
+void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
+  int ibos=abs(aa->id());
   // first the overall normalisation
-  if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = UnitRemoval::InvE * 
-	sqrt(4.0*Constants::pi*alpha)*_mw/_sw;
+  if(q2!=_q2last||_couplast==0.) {
+    _couplast = weakCoupling(q2) * UnitRemoval::InvE * _mw;
     _q2last=q2;
   }
-  if(ibos==24)      setNorm(_couplast);
-  else if(ibos==23) setNorm(_couplast*_zfact);
-  else {
+  if(ibos==24)      norm(_couplast);
+  else if(ibos==23) norm(_couplast*_zfact);
+  else
     throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex" 
-				     << Exception::warning;
-    setNorm(0.);
-  }
+				     << Exception::runerror;
 }

@@ -1,18 +1,15 @@
 pkglib_LTLIBRARIES = HwPerturbativeDecay.la HwPerturbativeHiggsDecay.la
 
 HwPerturbativeDecay_la_SOURCES = \
- SMWZDecayer.cc  SMWZDecayer.fh  SMWZDecayer.h  SMWZDecayer.icc\
- SMWZGammaDecayer.cc  SMWZGammaDecayer.fh \
- SMWZGammaDecayer.h  SMWZGammaDecayer.icc\
- SMTopDecayer.cc SMTopDecayer.fh SMTopDecayer.h SMTopDecayer.icc
-HwPerturbativeDecay_la_LDFLAGS = -module -version-info 2:1:0
+ SMWDecayer.cc  SMWDecayer.h\
+ SMZDecayer.cc  SMZDecayer.h\
+ SMTopDecayer.cc SMTopDecayer.h
+HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 
 HwPerturbativeHiggsDecay_la_SOURCES = \
- SMHiggsFermionsDecayer.cc  SMHiggsFermionsDecayer.fh  \
- SMHiggsFermionsDecayer.h  SMHiggsFermionsDecayer.icc  \
- SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.fh \
- SMHiggsGGHiggsPPDecayer.h SMHiggsGGHiggsPPDecayer.icc\
- SMHiggsWWDecayer.cc  SMHiggsWWDecayer.fh  \
- SMHiggsWWDecayer.h  SMHiggsWWDecayer.icc  
-HwPerturbativeHiggsDecay_la_LDFLAGS = -module -version-info 2:0:0
+ SMHiggsFermionsDecayer.cc SMHiggsFermionsDecayer.h \
+ SMHiggsFermionsPOWHEGDecayer.cc SMHiggsFermionsPOWHEGDecayer.h \
+ SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.h\
+ SMHiggsWWDecayer.cc SMHiggsWWDecayer.h 
+HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 

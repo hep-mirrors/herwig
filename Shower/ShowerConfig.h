@@ -1,12 +1,20 @@
 // -*- C++ -*-
+//
+// ShowerConfig.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ShowerConfig_H
 #define HERWIG_ShowerConfig_H
 //
 // This is the declaration of the ShowerConfig class.
 
-#include "Herwig++/Config/Herwig.h"
+#include "ThePEG/Config/ThePEG.h"
 #include "Base/ShowerParticle.fh"
 #include "Base/ShowerKinematics.fh" 
+#include "Base/SudakovFormFactor.fh"
 
 namespace Herwig { 
 using namespace ThePEG;
@@ -16,11 +24,6 @@ using namespace ThePEG;
  *  Handy header file to be included in all Shower classes.
  *  It contains only some useful typedefs.
  */
-
-  /**
-   *  Forward declaration of the ColourLine of ThePEG
-   */
-  class ThePEG::ColourLine;
   
   /**
    * Pointer to a ColourLine
@@ -56,6 +59,28 @@ using namespace ThePEG;
    *  Definition of the IdList for branchings
    */
   typedef vector<long> IdList;
+
+  namespace ShowerInteraction {
+    /**
+     *  Enum for the type of interaction
+     */
+    enum Type { UNDEFINED=-1, QCD, QED };
+  }
+
+  /**
+   *  typedef to pair the SudakovFormFactor and the particles in a branching
+   */
+  typedef pair<SudakovPtr,IdList> BranchingElement;
+
+  /**
+   *  typedef to pair the PDG code of the particle and the BranchingElement
+   */
+  typedef multimap<long,BranchingElement> BranchingList;
+
+  /**
+   *  typedef to create a structure which can be inserted into a BranchingList
+   */
+  typedef pair<long, BranchingElement> BranchingInsert;
 
 }
 

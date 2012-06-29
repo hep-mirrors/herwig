@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SSWHHVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SSWHHVertex_H
 #define HERWIG_SSWHHVertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSWHHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -23,18 +29,10 @@ class SSWHHVertex: public VSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSWHHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSWHHVertex();
-  //@}
 
 public:
 
@@ -80,13 +78,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -98,7 +96,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -116,11 +114,6 @@ private:
   SSWHHVertex & operator=(const SSWHHVertex &);
 
 private:
-  
-  /**
-   * A pointer to the MSSM object. 
-   */
-  tMSSMPtr theMSSM;
   
   /**
    * The value of \f$\sin\theta_W\f$ 
@@ -148,21 +141,6 @@ private:
   double thecbma;
   
   /**
-   * The ID of the gauge boson when the vertex was last evaluated
-   */
-  long theGBlast;
-
-  /**
-   * The ID of the higgs when the vertex was last evaluated
-   */
-  long theHlast;
-
-  /**
-   * The value of the coupling when last evaluated
-   */
-  Complex theCouplast;
-  
-  /**
    * The scale at which the coupling  was last evaluated.
    */
   Energy2 theq2last;
@@ -171,7 +149,9 @@ private:
    * The value of the \f$\sqrt{4\pi\alpha}\f$  when last evaluated.
    */
   double theElast;
+
 };
+
 }
 
 
@@ -209,7 +189,5 @@ struct ClassTraits<Herwig::SSWHHVertex>
 /** @endcond */
 
 }
-
-#include "SSWHHVertex.icc"
 
 #endif /* HERWIG_SSWHHVertex_H */

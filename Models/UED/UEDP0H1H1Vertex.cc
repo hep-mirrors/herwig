@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDP0H1H1Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDP0H1H1Vertex class.
 //
@@ -10,20 +17,20 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace ThePEG::Helicity;
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-void UEDP0H1H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
+UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
+  orderInGs(0);
+  orderInGem(1);
 }
 
-void UEDP0H1H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
+void UEDP0H1H1Vertex::doinit() {
+  addToList(22, 5100037, -5100037);
+  VSSVertex::doinit();
 }
 
-ClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
+NoPIOClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
 // Definition of the static class description member.
 
 void UEDP0H1H1Vertex::Init() {
@@ -49,12 +56,11 @@ void UEDP0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     return;
   }
   if(kkhiggs == 5100037) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0.) {
       theq2Last = q2;
-      theCoupLast = 
-	Complex(0., 1.)*sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2));
+      theCoupLast = Complex(0., 1.)*electroMagneticCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else
     throw HelicityLogicalError() << "UEDP0H1H1Vertex::setCoupling - There is no "

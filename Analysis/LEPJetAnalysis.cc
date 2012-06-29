@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// LEPJetAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LEPJetAnalysis class.
 //
@@ -8,26 +15,48 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Utilities/HerwigStrategy.h"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 
 using namespace Herwig;
 
 void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   ++_nevent;
-  _kint.clearMap();
   tPVector particles;
   event->selectFinalState(back_inserter(particles));
-  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles), 1, 1, 1);
+
+  //  copy fastjet particles from event record.  Templated fastjet
+  //  method might leave units ambigouos.  Loop with integer index
+  //  allows backtracing ThePEG particles if needed.
+  vector<fastjet::PseudoJet> fastjet_particles;
+
+  for (unsigned int j=0; j<particles.size(); j++) {
+    fastjet::PseudoJet p(particles[j]->momentum().x()/GeV, 
+			 particles[j]->momentum().y()/GeV, 
+			 particles[j]->momentum().z()/GeV, 
+			 particles[j]->momentum().e()/GeV);
+    p.set_user_index(j);
+    fastjet_particles.push_back(p);
+  }
+  
+  fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
+  fastjet::Strategy strategy = fastjet::Best;
+  fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, 
+				 recomb_scheme, strategy);
+  fastjet::ClusterSequence cs(fastjet_particles, jet_def);
+  
   // ynm distributions
-  *_y23 += ev.getYMerge(2); 
-  *_y34 += ev.getYMerge(3); 
-  *_y45 += ev.getYMerge(4); 
-  *_y56 += ev.getYMerge(5); 
+  *_y23 += cs.exclusive_ymerge(2); 
+  *_y34 += cs.exclusive_ymerge(3); 
+  *_y45 += cs.exclusive_ymerge(4); 
+  *_y56 += cs.exclusive_ymerge(5); 
+
   const int entr_fr = 37;
   const int ddentr = 16;
   for(int j = 0; j<entr_fr; j++) {
-    ev.findJetsY(_yc_frac[j]);
-    int Nfound = ev.getNJets();
-    *_njet[j] += double(Nfound);
+    int Nfound = cs.n_exclusive_jets_ycut(_yc_frac[j]);
+    _njet[j] += double(Nfound);
     switch (Nfound) {	 
     case 0: break; 
     case 1:  _frac1[j]++; break;
@@ -40,19 +69,16 @@ void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   }
   // DnD-rates 
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d2dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d2dbins[j]);
     if (Nfound == 2) _d2dN2[j]++;
   }
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d3dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d3dbins[j]);
     if (Nfound == 2) _d3dN2[j]++;
-    else if (Nfound == 3) _d3dN2[j]++;
+    else if (Nfound == 3) _d3dN3[j]++;
   }
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d4dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d4dbins[j]);
     if (Nfound == 2) _d4dN2[j]++;
     else if (Nfound == 3) _d4dN3[j]++;
     else if (Nfound == 4) _d4dN4[j]++;
@@ -65,11 +91,30 @@ NoPIOClassDescription<LEPJetAnalysis> LEPJetAnalysis::initLEPJetAnalysis;
 void LEPJetAnalysis::Init() {
 
   static ClassDocumentation<LEPJetAnalysis> documentation
-    ("There is no documentation for the LEPJetAnalysis class");
+    ("LEP Jet data analysis",
+     "The LEP Jet analysis uses data from \\cite{Pfeifenschneider:1999rz,Abreu:1996na}. ",
+     "%\\cite{Pfeifenschneider:1999rz}\n"
+     "\\bibitem{Pfeifenschneider:1999rz}\n"
+     "  P.~Pfeifenschneider {\\it et al.}  [JADE collaboration and OPAL\n"
+     "                  Collaboration],\n"
+     "   ``QCD analyses and determinations of alpha(s) in e+ e- annihilation at\n"
+     "  %energies between 35-GeV and 189-GeV,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 17}, 19 (2000)\n"
+     "  [arXiv:hep-ex/0001055].\n"
+     "  %%CITATION = EPHJA,C17,19;%%\n"
+     "%\\cite{Abreu:1996na}\n"
+     "\\bibitem{Abreu:1996na}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "   ``Tuning and test of fragmentation models based on identified particles  and\n"
+     "  %precision event shape data,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 73}, 11 (1996).\n"
+     "  %%CITATION = ZEPYA,C73,11;%%\n"
+     );
 
 }
 
 void LEPJetAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") 
     + name() + string(".top");
@@ -281,8 +326,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"R0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigStrategy::version != "") {
+      output << "TITLE RIGHT \"" << HerwigStrategy::version << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
@@ -379,8 +424,8 @@ void LEPJetAnalysis::dofinish() {
   output << "CASE      \"  X    X\"\n";
   output << "TITLE LEFT \" <N0jets1>\"\n";
   output << "CASE       \"   X    X \"\n";
-  if (Histogram::versionstring != "") {
-    output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+  if (HerwigStrategy::version != "") {
+    output << "TITLE RIGHT \"" << HerwigStrategy::version << "\"\n";
     output << "CASE        \"\"\n";
   }
   output << "SET AXIS BOTTOM OFF\n";
@@ -389,7 +434,7 @@ void LEPJetAnalysis::dofinish() {
   output << "SET SCALE X LOG Y LOG\n";
   output << "SET LIMITS Y 2 16\n";
   for(unsigned int ix=1;ix<37;++ix) {
-    output << _yc_frac[ix] << "\t" << _njet[ix]->mean() << "\n";
+    output << _yc_frac[ix] << "\t" << _njet[ix].mean() << "\n";
   }
   output << "JOIN RED\n";
   for(unsigned int ix=0;ix<36;++ix) {
@@ -414,7 +459,7 @@ void LEPJetAnalysis::dofinish() {
   output << "join yellow fill yellow\n";
   for(unsigned int ix=1;ix<37;++ix) {
     output << _yc_frac[ix] << "\t" 
-	   << (_njet[ix]->mean()-njetdata[ix-1])/njetdata[ix-1] << "\n";
+	   << (_njet[ix].mean()-njetdata[ix-1])/njetdata[ix-1] << "\n";
   }
   output << "JOIN\n";
   output << "SET WINDOW X 1.6 8 Y 1.6 2.5\n";
@@ -429,16 +474,16 @@ void LEPJetAnalysis::dofinish() {
   npoint=0;
   for(unsigned int ix=1;ix<37;++ix) {
     double point = njetdata[ix-1]>0.&&njeterror[ix-1]>0. ? 
-      (_njet[ix]->mean()-njetdata[ix-1])/
-      sqrt(sqr(njeterror[ix-1])+_njet[ix]->var()/_njet[ix]->numberOfPoints()) : 0.;
+      (_njet[ix].mean()-njetdata[ix-1])/
+      sqrt(sqr(njeterror[ix-1])+_njet[ix].mean_var()) : 0.;
     if(point!=0.) ++npoint;
     if(point<ymin) ymin=point;
     if(point>ymax) ymax=point;
     output << _yc_frac[ix] << "\t" << point << "\n";
     if(point!=0.) {
       if(njeterror[ix-1]>0.05*njetdata[ix-1]) chisq+=sqr(point);
-      else chisq+=sqr(_njet[ix]->mean()-njetdata[ix-1])/
-	(sqr(0.05*njetdata[ix-1])+_njet[ix]->var()/_njet[ix]->numberOfPoints());
+      else chisq+=sqr(_njet[ix].mean()-njetdata[ix-1])/
+	(sqr(0.05*njetdata[ix-1])+_njet[ix].mean_var());
     }
   }
   output << "set limits y " << ymin << " " << ymax << "\n";
@@ -538,8 +583,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"D0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigStrategy::version != "") {
+      output << "TITLE RIGHT \"" << HerwigStrategy::version << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
@@ -733,7 +778,7 @@ void LEPJetAnalysis::doinitrun() {
   _frac5.resize(entr_fr,0);
   _frac6.resize(entr_fr,0);
   _njet.resize(entr_fr);
-  for(int ix=0;ix<entr_fr;++ix) _njet[ix]=new_ptr(Statistic());
+  _njet = vector<Statistic>(entr_fr);
   const int ddentr = 16;
   double d2dbins[] = {0.000, 0.010, 0.020, 0.030, 0.040, 
 		      0.050, 0.060, 0.080, 0.100, 0.120, 

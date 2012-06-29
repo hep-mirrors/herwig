@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ScalarFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ScalarFormFactor_H
 #define HERWIG_ScalarFormFactor_H
 //
@@ -94,7 +101,7 @@ public:
   /**
    * Default constructor
    */
-  inline ScalarFormFactor();
+  ScalarFormFactor() : _numbermodes(0) {}
 
 public:
 
@@ -127,13 +134,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 public:
@@ -148,15 +155,39 @@ public:
    * \param cc  particles or charge conjugates stored in form factor.
    * @return The location in the vectors storing the data. 
    */
-  inline int formFactorNumber(int in,int out,bool & cc) const;
-
+  int formFactorNumber(int in,int out,bool & cc) const  {
+    if(_incomingid.size()==0) return -1;
+    int output(-1);unsigned int ix(0);
+    do {
+      if(_incomingid[ix]== in && _outgoingid[ix]== out) {
+	cc=false;
+	output=ix;
+      }
+      else if (_incomingid[ix]==-in && _outgoingid[ix]==-out) {
+	cc=true;
+	output=ix;
+      }
+      else if(_incomingid[ix]==-in && _outgoingid[ix]==out &&
+	      (abs(_outgoingid[ix])/100)%10==(abs(_outgoingid[ix])/10)%10) {
+	cc=true;
+	output=ix;
+      }
+      ++ix;
+    }
+    while(ix<_incomingid.size()&&output<0);
+    return output;
+  }
+  
   /**
    * Get the particle ids for an entry.
    * @param iloc The location in the list.
    * @param id0 The PDG code for the incoming meson.
    * @param id1 The PDG code for the outgoing meson.
    */
-  inline void particleID(unsigned int iloc,int& id0,int& id1) const;
+  void particleID(unsigned int iloc,int& id0,int& id1) const {
+    id0=_incomingid[iloc];
+    id1=_outgoingid[iloc];
+  }
 
   /**
    * Information on the form factor.
@@ -166,8 +197,13 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(unsigned int & iloc,int & ispin,int & spect,int & inquark,
-			     int & outquark) const;
+  void formFactorInfo(unsigned int & iloc,int & ispin,int & spect,
+		      int & inquark, int & outquark) const {
+    ispin    = _outgoingJ[iloc];
+    spect    = _spectator[iloc];
+    inquark  = _inquark[iloc];
+    outquark = _outquark[iloc];
+  }
 
   /**
    * Information on the form factor.
@@ -178,13 +214,17 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(int in,int out,int & ispin,
-			     int & spect,int & inquark, int & outquark) const;
+  void formFactorInfo(int in,int out,int & ispin,
+		      int & spect,int & inquark, int & outquark) const {
+    bool dummy;
+    unsigned int ix(formFactorNumber(in,out,dummy));
+    formFactorInfo(ix,ispin,spect,inquark,outquark);
+  }
 
   /**
    * number of form factors
    */
-  inline unsigned int numberOfFactors() const;
+  unsigned int numberOfFactors() const {return _incomingid.size();}
   //@}
 
 public:
@@ -303,19 +343,26 @@ protected:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void addFormFactor(int in,int out,int spin, int spect, int inquark,
-			    int outquark);
+  void addFormFactor(int in,int out,int spin, int spect,
+		     int inquark, int outquark) {
+    _incomingid.push_back(in);
+    _outgoingid.push_back(out);
+    _outgoingJ.push_back(spin);
+    _spectator.push_back(spect);
+    _inquark.push_back(inquark);
+    _outquark.push_back(outquark);
+  }
 
   /**
    *  Set initial number of modes
    * @param nmodes The number of modes.
    */
-  inline void initialModes(unsigned int nmodes);
+  void initialModes(unsigned int nmodes) {_numbermodes=nmodes;}
 
   /**
    * Get the initial number of modes
    */
-  inline unsigned int initialModes() const;
+  unsigned int initialModes() const {return _numbermodes;}
 
 protected:
 
@@ -326,7 +373,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -412,7 +459,5 @@ struct ClassTraits<Herwig::ScalarFormFactor>
 /** @endcond */
 
 }
-
-#include "ScalarFormFactor.icc"
 
 #endif /* HERWIG_ScalarFormFactor_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BSMWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_BSMWidthGenerator_H
 #define HERWIG_BSMWidthGenerator_H
 //
@@ -24,20 +31,10 @@ class BSMWidthGenerator: public GenericWidthGenerator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline BSMWidthGenerator();
-
-  /**
-   * The destructor.
-   */
-  virtual ~BSMWidthGenerator();
-  //@}
-
-public:
+  BSMWidthGenerator() : theModes(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -92,13 +89,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -158,6 +155,5 @@ struct ClassTraits<Herwig::BSMWidthGenerator>
 
 }
 
-#include "BSMWidthGenerator.icc"
 
 #endif /* HERWIG_BSMWidthGenerator_H */

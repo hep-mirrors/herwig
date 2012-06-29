@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// TwoBodyAllOnCalculator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TwoBodyAllOnCalculator_H
 #define HERWIG_TwoBodyAllOnCalculator_H
 // This is the declaration of the TwoBodyAllOnCalculator class.
@@ -39,8 +46,10 @@ public:
    * @param m1 The mass of the first particle.
    * @param m2 The mass of the second particle.
    */
-  inline TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth,int imode,
-				Energy m1,Energy m2);
+  TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth,int imode,
+			 Energy m1,Energy m2)
+    : _mode(imode),_mass1(m1),_mass2(m2),_widthgen(inwidth)
+  {}
 
   /**
    * member to calculate the partial width.
@@ -56,7 +65,13 @@ public:
    * @param mass The new value.
    * @return The mass required.
    */
-  inline void resetMass(int imass,Energy mass);
+  void resetMass(int imass,Energy mass) {
+    if(imass==1)      _mass1=mass;
+    else if(imass==2) _mass2=mass;
+    else throw Exception() << "Unknown particle in " 
+			   << "TwoBodyAllOnCalculator::resetMass()"
+			   << Exception::runerror;
+  }
 
   /**
    * Get the mass of one of the decay products.  This must be 
@@ -64,7 +79,13 @@ public:
    * @param imass The mass required.
    * @return The mass required.
    */
-  inline Energy getMass(const int imass) const;
+  Energy getMass(const int imass) const {
+    if(imass==1)      return _mass1;
+    else if(imass==2) return _mass2;
+    else throw Exception() << "Unknown particle in " 
+			   << "TwoBodyAllOnCalculator::getMass()"
+			   << Exception::runerror;
+  }
 
   /**
    * Get the masses of all bar the one specified. Used to get the limits
@@ -72,7 +93,13 @@ public:
    * @param imass The particle not needed
    * @return The sum of the other masses.
    */
-  inline Energy otherMass(const int imass) const;
+  Energy otherMass(const int imass) const {
+    if(imass==1)      return _mass2;
+    else if(imass==2) return _mass1;
+    else throw Exception() << "Unknown particle in " 
+			   << "TwoBodyAllOnCalculator::otherMass()"
+			   << Exception::runerror;
+  }
 
 private:
 
@@ -106,7 +133,5 @@ private:
 };
 
 }
-
-#include "TwoBodyAllOnCalculator.icc"
 
 #endif /* HERWIG_TwoBodyAllOnCalculator_H */

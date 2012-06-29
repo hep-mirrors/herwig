@@ -1,4 +1,10 @@
-//++ -*-
+// -*- C++ -*-
+//
+// VSSDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 // This is the implementation of the non-inlined, non-templated member
 // functions of the VSSDecayer class.
@@ -14,22 +20,28 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
+using namespace ThePEG::Helicity;
 
+IBPtr VSSDecayer::clone() const {
+  return new_ptr(*this);
+}
 
-VSSDecayer::~VSSDecayer() {}
+IBPtr VSSDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void VSSDecayer::doinit() {
+  _perturbativeVertex = dynamic_ptr_cast<VSSVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVSSVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
 
 void VSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVSSPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void VSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVSSPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<VSSDecayer> VSSDecayer::initVSSDecayer;
@@ -42,48 +54,58 @@ void VSSDecayer::Init() {
 
 }
 
- double VSSDecayer::me2(bool vertex, const int , const Particle & inpart,
- 		       const ParticleVector & decay) const {
-   RhoDMatrix rhoin(PDT::Spin1);
-   rhoin.average();
-   vector<VectorWaveFunction> inwave;
-   VectorWaveFunction(inwave,const_ptr_cast<tPPtr>(&inpart),incoming,true,
-		      false,vertex);
-   ScalarWaveFunction sca1(decay[0],outgoing,true,vertex);
-   ScalarWaveFunction sca2(decay[1],outgoing,true,vertex);
-   Energy2 scale(inpart.mass()*inpart.mass());
-   DecayMatrixElement newme(PDT::Spin1,PDT::Spin0,PDT::Spin0);
-   for(unsigned int ix=0;ix<3;++ix) {
-     newme(ix,0,0) = _theVSSPtr->evaluate(scale,inwave[ix],sca1,sca2);
-   }
-   ME(newme);
-   double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-   if(decay[0]->id() == decay[1]->id()) {
-     output /= 2.;
-   }
-   if((decay[0]->data()).iColour()==PDT::Colour3) {
-     output *= 3.;
-   }
-   colourConnections(inpart, decay);
-   return output;
- }
+double VSSDecayer::me2(const int , const Particle & inpart,
+ 		       const ParticleVector & decay, 
+		       MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::
+	constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
+  ScalarWaveFunction sca1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
+  ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
+  Energy2 scale(sqr(inpart.mass()));
+  for(unsigned int ix=0;ix<3;++ix) {
+    ME()(ix,0,0) = _abstractVertex->evaluate(scale,_vectors[ix],sca1,sca2);
+  }
+  double output=(ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // return the answer
+  return output;
+}
 
 Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
-  _theVSSPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first,
-			  outb.first);
-  double mu1sq = sqr(outa.second/inpart.second);
-  double mu2sq = sqr(outb.second/inpart.second);
-  double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
-  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
-				      outb.second);
-  Energy output = -norm(_theVSSPtr->getNorm())*me2*pcm/(8.*Constants::pi);
-  if(outa.first->id() == outb.first->id())
-    output /= 2.;
-  int cola(outa.first->iColour()), colb(outa.first->iColour());
-  if( abs(cola) == 3 && abs(colb) == 3)
-    output *= 3.;
-  return output;
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
+  if(_perturbativeVertex) {
+    tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
+    _perturbativeVertex->setCoupling(sqr(inpart.second), in, outa.first,
+				     outb.first);
+    double mu1sq = sqr(outa.second/inpart.second);
+    double mu2sq = sqr(outb.second/inpart.second);
+    double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
+					outb.second);
+    Energy output = -norm(_perturbativeVertex->norm())*me2*pcm /
+      (24.*Constants::pi);
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }
 

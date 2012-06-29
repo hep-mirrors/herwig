@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ThreeMesonCurrentBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ThreeMesonCurrentBase class.
 //
@@ -9,13 +16,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::ScalarSpinInfo;
 
 ThreeMesonCurrentBase::ThreeMesonCurrentBase() {
   // the quarks for the different modes
@@ -51,16 +57,16 @@ void ThreeMesonCurrentBase::Init() {
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan, 
-			       Energy & scale,const ParticleVector & decay) const {
-  // spininfo for the particles
-  if(vertex) {
-    for(unsigned int ix=0;ix<3;++ix) {
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
-    }
+ThreeMesonCurrentBase::current(const int imode, const int ichan, 
+			       Energy & scale,const ParticleVector & decay,
+			       DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
   }
   // calculate q2,s1,s2,s3
-  Lorentz5Momentum q=0*MeV;
+  Lorentz5Momentum q;
   for(unsigned int ix=0;ix<decay.size();++ix){q+=decay[ix]->momentum();}
   q.rescaleMass();
   scale=q.mass();
@@ -79,7 +85,7 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F.F4-dot)*q;
-  if(F.F5!=0./MeV/MeV2) 
+  if(F.F5!=InvEnergy3()) 
     vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
 							       decay[1]->momentum(),
 							       decay[2]->momentum());
@@ -166,8 +172,8 @@ void ThreeMesonCurrentBase::dataBaseOutput(ofstream & output,bool header,
   WeakDecayCurrent::dataBaseOutput(output,header,create);
 }
 
-PDVector ThreeMesonCurrentBase::particles(int icharge, unsigned int imode,int,int) {
-  PDVector extpart(3);
+tPDVector ThreeMesonCurrentBase::particles(int icharge, unsigned int imode,int,int) {
+  tPDVector extpart(3);
   if(imode==0) {
     extpart[0]=getParticleData(ParticleID::piminus);
     extpart[1]=getParticleData(ParticleID::piminus);

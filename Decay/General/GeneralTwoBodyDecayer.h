@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GeneralTwoBodyDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GeneralTwoBodyDecayer_H
 #define HERWIG_GeneralTwoBodyDecayer_H
 //
@@ -40,28 +47,37 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralTwoBodyDecayer();
+  GeneralTwoBodyDecayer() : _maxweight(1.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const tPDVector & children) const;
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual int modeNumber(bool & cc, tcPDPtr parent,const PDVector & children) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent,const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const = 0;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
    * Function to return partial Width
@@ -70,7 +86,7 @@ public:
    * @param outb The other decay product.
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
-			      PMPair outb) const = 0;
+			      PMPair outb) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width 
@@ -84,28 +100,40 @@ public:
    */
   virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
 			     double & coupling) const;
+
+  /**
+   * An overidden member to calculate a branching ratio for a certain
+   * particle instance.
+   * @param dm The DecayMode of the particle
+   * @param p The particle object
+   * @param oldbrat The branching fraction given in the DecayMode object
+   */
+  virtual double brat(const DecayMode & dm, const Particle & p,
+		      double oldbrat) const;
   //@}
+
+  /**
+   *  Set the information on the decay
+   */
+  void setDecayInfo(PDPtr incoming,PDPair outgoing,
+		    VertexBasePtr);
 
 protected:
   
   /** @name Functions used by inheriting decayers. */
   //@{
-  /** Set list to search
-   * @param ilist 
-   */
-  inline void addToSearchList(unsigned int ilist);
   
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const;
+  VertexBasePtr getVertex() const { return _theVertex; }
 
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  inline void setWeight(const vector<double> & wgt); 
+  void setWeight(const double & wgt) { _maxweight = wgt; }
 
   /**
    * Set colour connections
@@ -115,6 +143,11 @@ protected:
    */
   void colourConnections(const Particle & parent, 
 			 const ParticleVector & out) const;
+
+  /**
+   *  Compute the spin and colour factor
+   */
+  double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
   //@}
 
 public:
@@ -152,7 +185,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -172,34 +211,24 @@ private:
 private:
 
   /**
-   * vector of ints as to which list(s) to search
+   *  Store the incoming particle
    */
-  vector<unsigned int> _thelist;
-  
-  /**
-   * Pointer to vertex set in inheriting class
-   */
-  VertexBasePtr _theVertex;
-  
-  /**
-   * PDG codes for all incoming particles
-   **/
-  vector<int> _inpart;
+  PDPtr _incoming;
 
   /**
-   * PDG codes for 1st set of outgoing particles
-   **/
-  vector<int> _outparta;
-   
+   *  Outgoing particles
+   */
+  vector<PDPtr> _outgoing;
+  
   /**
-   * PDG codes for 2nd set of outgoing particles
-   **/
-  vector<int> _outpartb;
+   * Pointer to vertex
+   */
+  VertexBasePtr _theVertex;
  
   /**
-   * Vector of maximum weights for integration
+   * Maximum weight for integration
    */
-  vector<double> _maxweight;
+  double _maxweight;
 };
 
 }
@@ -225,16 +254,11 @@ struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
   : public ClassTraitsBase<Herwig::GeneralTwoBodyDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::GeneralTwoBodyDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the GeneralTwoBodyDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "GeneralTwoBodyDecayer.icc"
 
 #endif /* HERWIG_GeneralTwoBodyDecayer_H */

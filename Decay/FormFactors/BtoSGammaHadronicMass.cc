@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BtoSGammaHadronicMass.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BtoSGammaHadronicMass class.
 //
@@ -48,9 +55,9 @@ void BtoSGammaHadronicMass::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BtoSGammaHadronicMass " 
-		    << fullName() << " \n";
-  output << "set " << fullName() << ":MinimumMass " << _minMass/GeV << " \n";
-  output << "set " << fullName() << ":MaximumMass " << _maxMass/GeV << " \n";
+		    << name() << " \n";
+  output << "newdef " << name() << ":MinimumMass " << _minMass/GeV << " \n";
+  output << "newdef " << name() << ":MaximumMass " << _maxMass/GeV << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

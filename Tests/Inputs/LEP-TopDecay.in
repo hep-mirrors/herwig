@@ -1,0 +1,18 @@
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 360.0
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+cd /Herwig/MatrixElements
+insert SimpleEE:MatrixElements 0 MEee2gZ2qq
+set MEee2gZ2qq:MinimumFlavour 6
+set MEee2gZ2qq:MaximumFlavour 6
+cd /Herwig/Generators
+create Herwig::TopDecay /Herwig/Analysis/TopDecay libfastjet.so LeptonJetTest.so
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/TopDecay 
+saverun LEP-TopDecay LEPGenerator
+

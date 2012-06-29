@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HPDiagram.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HPDiagram_H
 #define HERWIG_HPDiagram_H
 //
@@ -40,8 +47,18 @@ struct HPDiagram {
   /** Standard Constructor */
   HPDiagram() : incoming(make_pair(0, 0)), outgoing(make_pair(0, 0)),
 		ordered(make_pair(true,true)), channelType(UNDEFINED),
-		colourFlow(0) {}
-
+		colourFlow(0), ids(4, 0) {}
+  
+  /** Constructor taking ids as arguments.*/
+  HPDiagram(IDPair a, IDPair b) 
+  : incoming(a), outgoing(b), ordered(make_pair(true,true)), 
+    channelType(UNDEFINED), colourFlow(0), ids(4, 0){
+    ids[0] = incoming.first;
+    ids[1] = incoming.second;
+    ids[2] = outgoing.first;
+    ids[3] = outgoing.second;
+  }
+  
   /** Incoming particle id's */
   IDPair incoming;
   
@@ -63,19 +80,83 @@ struct HPDiagram {
   /** Store colour flow information */
   vector<CFPair> colourFlow;
 
-  /**
-   * Test whether this and x are identical
-   */
-  inline bool operator==(const HPDiagram & x) const;
+  /** Store the ids in a vector for easy use of comparison operator. */
+  vector<long> ids;
 
   /**
    * Test whether this and x are the same process
    * @param x The other process to check
    */
-  inline bool sameProcess(HPDiagram & x) const;
+  bool sameProcess(const HPDiagram & x) const  {
+    return ( x.incoming == incoming && x.outgoing == outgoing );
+  }
 };
+
+  /**
+   * Test whether two diagrams are identical.
+   */
+  inline bool operator==(const HPDiagram & x, const HPDiagram & y)  {
+    if( x.channelType != y.channelType ) return false;
+    if( x.incoming == y.incoming && x.outgoing == y.outgoing &&
+	x.ordered == y.ordered ) {
+      if( !y.intermediate && !x.intermediate ) return true;
+      if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
+	return true;
+    }
+    //diagram is also the same if the outgoing particles are
+    //swapped and the ordering is opposite
+    else if( x.incoming == y.incoming &&
+	     x.outgoing.first != x.outgoing.second &&
+	     y.outgoing.first != y.outgoing.second &&
+	     x.outgoing.first == y.outgoing.second && 
+	     x.outgoing.second == y.outgoing.first &&
+            x.channelType == y.channelType) {
+      if(x.channelType==HPDiagram::fourPoint) return true;
+      if(x.channelType==HPDiagram::tChannel&&
+        x.ordered.second != y.ordered.second) {
+       if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
+         return true;
+      }
+      if(x.channelType==HPDiagram::sChannel) {
+       if( y.intermediate->id() == x.intermediate->id() )
+         return true;
+      }
+    }
+    return false;
+  }
   
+  /**
+   * Test whether one diagram is 'less' than another. Does a 
+   * lexicographic comparison of the external states.
+   */
+  inline bool operator<(const HPDiagram & x, const HPDiagram & y) {
+    for( size_t i = 0; i < 4; ++i ) {
+      if( x.ids[i] < y.ids[i] )
+	return true;
+      else if( x.ids[i] > y.ids[i] )
+	return false;
+    }
+    return false;
+  }
   
+  /**
+   * Output to a stream 
+   */
+  inline ostream & operator<<(ostream & os, const HPDiagram & diag) {
+    os << diag.incoming.first << " " << diag.incoming.second << " -> ";
+    if(diag.intermediate)
+      os << diag.intermediate->id() << " -> ";
+    os << diag.outgoing.first << " " << diag.outgoing.second
+       << "  channel: " << diag.channelType << "  ";
+    if(diag.channelType == HPDiagram::tChannel)
+      os << "ordering " << diag.ordered.first << " " 
+	 << diag.ordered.second << "  ";
+    for(size_t cf = 0; cf < diag.colourFlow.size(); ++cf) 
+      os << "(" << diag.colourFlow[cf].first << "," 
+	 <<diag.colourFlow[cf].second << ")";
+    os << '\n';
+    return os;
+  }
   
   /** 
    * Output operator to allow the structure to be persistently written
@@ -83,17 +164,25 @@ struct HPDiagram {
    * @param x The HPDiagram 
    */
   inline PersistentOStream & operator<<(PersistentOStream & os, 
-					const HPDiagram  & x);
+					const HPDiagram  & x) {
+    os << x.incoming << x.outgoing << x.ordered << x.intermediate
+       << x.vertices << x.channelType << x.colourFlow << x.ids;
+    return os;
+  }
 
   /** 
    * Input operator to allow persistently written data to be read in
    * @param is The input stream
    * @param x The HPDiagram 
-  */
+   */
   inline PersistentIStream & operator>>(PersistentIStream & is,
-					HPDiagram & x);
+					HPDiagram & x) {
+    int chan = -1;
+    is >> x.incoming >> x.outgoing >> x.ordered >> x.intermediate
+       >> x.vertices >> chan >> x.colourFlow >> x.ids;
+    x.channelType = HPDiagram::Channel(chan);
+    return is;
+  }
 }
-
-#include "HPDiagram.icc"
 
 #endif /* HERWIG_HPDiagram_H */

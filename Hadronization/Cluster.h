@@ -1,13 +1,16 @@
 // -*- C++ -*-
+//
+// Cluster.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Cluster_H
 #define HERWIG_Cluster_H
 
-#include <ThePEG/Pointer/Ptr.h>
-#include <ThePEG/Pointer/PtrTraits.h>
-#include <ThePEG/Pointer/RCPtr.h>
 #include <ThePEG/EventRecord/Particle.h>
 #include "Herwig++/Utilities/EnumParticles.h"
-#include <iostream>
 #include "CluHadConfig.h"
 #include "ClusterHadronizationHandler.fh"
 #include "Cluster.fh"
@@ -56,7 +59,7 @@ using namespace ThePEG;
 class Cluster : public Particle {
   
 public:
-  
+
   /** @name Standard constructors and destructors. */
   //@{
   /**
@@ -78,53 +81,44 @@ public:
    * Also a constructor where a particle is given not a cluster.
    */
   Cluster(const Particle &);
-
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void * operator new(size_t);
-  
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void operator delete(void *, size_t);
   //@}
 
   /**
    * Set the static pointer to the ClusterHadronizationHandler object.
    * The pointer is set in ClusterHadronizationHandler::doinitrun().
    */ 
-  static inline void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
+  static void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
   
   /**
    * Number of quark (diquark) constituents (normally two).    
    */
-  inline int numComponents() const;
+  int numComponents() const
+  { return _numComp; }
   
   /**
    * Sum of the constituent masses of the components of the cluster.    
    */
   Energy sumConstituentMasses() const;
-  
-  /**
-   * Set cluster mass.
-   */
-  inline void setMass(const Energy inputMass);
-  
+    
   /**
    * Returns the ith constituent.
    */
   tPPtr particle(int i) const;
+
+  /**
+   * Returns the original constituent carrying colour
+   */
+  tPPtr colParticle(bool anti = false) const;
+
+  /**
+   * Returns the original constituent carrying anticolour
+   */
+  tPPtr antiColParticle() const;
   
   /**
    * Returns whether the ith constituent is from a perturbative process.
    */
   bool isPerturbative(int) const;
-  
-  /**
-   * Sets whether the ith constituent is from a perturbative process.
-   */
-  void setPerturbative(int,bool);
   
   /**
    * Indicates whether the ith constituent is a beam remnant.
@@ -144,20 +138,16 @@ public:
 public:
 
   /**
-   * Returns the cluster that was used for reshuffling.
-   */
-  inline tClusterPtr reshufflingPartnerCluster() const;
-  
-  /**
-   * Set the pointer to the reshuffling partner cluster.
-   */
-  inline void reshufflingPartnerCluster(const tClusterPtr inputCluPtr);
-  
-  /**
    * Returns true when a constituent is a beam remnant.
    */
   bool isBeamCluster() const;
   
+  /**
+   * Set the pointer to the reshuffling partner cluster.
+   */
+  void flagAsReshuffled()
+  { _hasReshuffled = true; }
+
   /**
    * Sets the component (if any) that points to "part" as a beam remnant.
    */
@@ -166,24 +156,28 @@ public:
   /**
    * Returns true if this cluster is to be handled by the hadronization.
    */
-  bool isAvailable() const;
+  bool isAvailable() const
+  { return _isAvailable; }
   
   /**
    * Sets the value of availability. 
    */
-  void isAvailable(bool inputAvailable);
+  void isAvailable(bool inputAvailable)
+  { _isAvailable = inputAvailable; }
   
   /**
    * Return true if the cluster does not have cluster parent.
    */
-  inline bool isStatusInitial() const;
+  bool isStatusInitial() const
+  { return parents().empty(); }
   
   /** 
    * Return true if the cluster does not have cluster children and 
    * it is not already decayed (i.e. it does not have hadron children)
    * (to be used only after the fission of heavy clusters).    
    */
-  inline bool isReadyToDecay() const;
+   bool isReadyToDecay() const
+  { return children().empty(); }
   
   /**
    * Return true if the cluster has one and only one cluster children
@@ -197,7 +191,10 @@ public:
    * In both cases, the unique cluster children is the new redefined 
    * cluster. The two cases can be distinguish by the next method.  
    */
-  inline bool isRedefined() const;
+  bool isRedefined() const { 
+    return ( children().size() == 1 
+	     && children()[0]->id() == ParticleID::Cluster );
+  }
   
   /**
    * Return true when it has a reshuffling partner.
@@ -205,7 +202,8 @@ public:
    *  isRedefined()  false: this is the case of a light cluster
    * that decays into a single hadron.
    */
-  inline bool hasBeenReshuffled() const;
+  bool hasBeenReshuffled() const
+  { return _hasReshuffled; }
   
   /**
    * Return true if the cluster has hadron children.
@@ -220,13 +218,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual PPtr clone() const;
+  virtual PPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual PPtr fullclone() const;
+  virtual PPtr fullclone() const;
   //@}
 
 private:   
@@ -264,7 +262,8 @@ private:
   /**
    * Determines whether constituent p is perturbative or not.
    */
-  bool initPerturbative(tPPtr p);
+  bool initPerturbative(tPPtr p)
+  { return p->scale() > _mg2; }
   
   /**
    * This is needed to determine if a cluster is from a perturbative quark.
@@ -272,12 +271,12 @@ private:
   static tcCluHadHdlPtr _clusterHadHandler;
   
   /**
-   * Describe an abstract base class with persistent data.
+   *  The gluon mass is needed to determine if a cluster is from a perturbative quark
    */
-  static ClassDescription<Cluster> initCluster; 
+  static Energy2 _mg2;
   
   bool        _isAvailable;        //!< Whether the cluster is hadronizing
-  tClusterPtr _reshufflingPartner; //!< The partner used in reshuffling
+  bool        _hasReshuffled;      //!< Whether the cluster has been reshuffled
   ParticleVector _component;       //!< The constituent partons
   tParticleVector _original;       //!< The original components
   vector<bool> _isBeamRemnant;     //!< Whether a parton is a beam remnant
@@ -287,38 +286,5 @@ private:
 };
   
 } // end namespace Herwig  
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of Cluster.
- */
-template <>
-struct BaseClassTrait<Herwig::Cluster,1> {
-  /** Typedef of the base class of Cluster. */
-  typedef Particle NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */ 
-template <>
-struct ClassTraits<Herwig::Cluster>:
-  public ClassTraitsBase<Herwig::Cluster> {
-  /** Return the class name. */
-  static string className() { return "Herwig::Cluster"; }
-};
-
-/** @endcond */
-
-}
-
-#include "Cluster.icc"
 
 #endif // HERWIG_Cluster_H 

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDF1F1P0Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDF1F1P0Vertex class.
 //
@@ -13,44 +20,42 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(),
+UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
 				     thefermLast(0), theLRLast(0.0), 
 				     theCharges(3) {
-  //lists
-  vector<int> ferm, anti, photon(18, 22);
+  orderInGs(0);
+  orderInGem(1);
+}
+
+void UEDF1F1P0Vertex::doinit() {
+  long photon = 22;
   //quarks
-  for(unsigned int i = 1; i < 7; ++i) {
+  for(long i = 1; i < 7; ++i) {
     //left
-    ferm.push_back(5100000 + i);
-    anti.push_back(-5100000 - i);
+    addToList(-5100000 - i, 5100000 + i, photon);
     //right
-    ferm.push_back(6100000 + i);
-    anti.push_back(-6100000 - i);
+    addToList(-6100000 - i, 6100000 + i, photon);
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  //leptons
+  for(long i = 11; i < 17; i += 2) {
     //left
-    ferm.push_back(5100000 + i);
-    anti.push_back(-5100000 - i);
+    addToList(-5100000 - i, 5100000 + i, photon);
     //right
-    ferm.push_back(6100000 + i);
-    anti.push_back(-6100000 - i);
+    addToList(-6100000 - i, 6100000 + i, photon);
   }
-  setList(anti, ferm, photon);
+  FFVVertex::doinit();
+  tUEDBasePtr UEDBase = 
+    dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase)
+    throw InitException() << "UEDF1F1P0Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  theCharges[0] = UEDBase->ee();
+  theCharges[1] = UEDBase->ed();
+  theCharges[2] = UEDBase->eu();
 }
 
-void UEDF1F1P0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDF1F1P0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theCoupLast = 0.;
-  theq2Last = 0.*GeV2;
-  thefermLast = 0;
-  theLRLast = 0.;
-}
-
-ClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;
+NoPIOClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;
 // Definition of the static class description member.
 
 void UEDF1F1P0Vertex::Init() {
@@ -75,33 +80,33 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is no "
 				 << "photon in this vertex!"
 				 << Exception::warning;
-    setNorm(0.0);
+    norm(0.0);
     return;
   }
   if((iferm >= 5100001 && iferm <= 5100006) || 
      (iferm >= 5100011 && iferm <= 5100016) ||
      (iferm >= 6100001 && iferm <= 6100006) || 
      (iferm >= 6100011 && iferm <= 6100016)) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0. ) {
       theq2Last = q2;
-      theCoupLast = sqrt(4.*Constants::pi*(theUEDBase->alphaEM(q2)));
+      theCoupLast = electroMagneticCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
     if(iferm != thefermLast) {
       thefermLast = iferm;
-      unsigned int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 51000000;
+      int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 5100000;
       if(smtype >= 11) 
 	theLRLast = theCharges[0];
       else
 	theLRLast = (smtype % 2 == 0) ? theCharges[2] : theCharges[1];
     }
-    setLeft(theLRLast);
-    setRight(theLRLast);
+    left(theLRLast);
+    right(theLRLast);
   }
   else {
     throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is an "
 				 << "unknown particle in this vertex " << iferm
 				 << Exception::warning;
-    setNorm(0.0);
+    norm(0.0);
   }
 }

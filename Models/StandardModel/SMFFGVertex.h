@@ -1,11 +1,18 @@
 // -*- C++ -*-
+//
+// SMFFGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMFFGVertex_H
 #define HERWIG_SMFFGVertex_H
 //
 // This is the declaration of the SMFFGVertex class.
 //
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/StandardModel/StandardModelBase.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -21,36 +28,10 @@ class SMFFGVertex: public FFVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMFFGVertex();
-  //@}  
-
-public:
-  
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-  
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
+  SMFFGVertex();
   
   /**
    * Calculate the couplings. 
@@ -60,6 +41,13 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+
+public:
+  
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
   
 protected:
   
@@ -69,13 +57,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -87,7 +75,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
   
 private:
@@ -95,7 +83,7 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<SMFFGVertex> initSMFFGVertex;
+  static NoPIOClassDescription<SMFFGVertex> initSMFFGVertex;
   
   /**
    * Private and non-existent assignment operator.
@@ -103,11 +91,6 @@ private:
   SMFFGVertex & operator=(const SMFFGVertex &);
   
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.
@@ -126,7 +109,6 @@ private:
 };   
 }
 
-#include "SMFFGVertex.icc"
 
 namespace ThePEG {
 
@@ -160,6 +142,5 @@ struct ClassTraits<Herwig::SMFFGVertex>
 /** @endcond */
   
 }
-
 
 #endif /* HERWIG_SMFFGVertex_H */

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MamboDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MamboDecayer class.
 //
@@ -18,7 +25,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-bool MamboDecayer::accept(tcPDPtr, const PDVector & ) const {
+bool MamboDecayer::accept(tcPDPtr, const tPDVector & ) const {
   return true;
 }
 
@@ -52,7 +59,7 @@ void MamboDecayer::Init() {
 }
 
 ParticleVector MamboDecayer::decay(const Particle & parent,
-				   const PDVector & children) const {
+				   const tPDVector & children) const {
   useMe();
   const int N = children.size();
   ParticleVector out(N);
@@ -60,14 +67,18 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
     out[0] = children[0]->produceParticle(parent.momentum());
     return out;
   }
-  Energy totalMass(0.0*MeV);
-  for(int i = 0; i < N; ++i)
+  Energy totalMass(ZERO);
+  for(int i = 0; i < N; ++i) {
     totalMass += children[i]->mass();
-
-  
+  }
   if(totalMass > parent.mass()) {
-    generator()->log() << "MamboDecayer: The Decay mode cannot "
-		       << "proceed, not enough phase space\n";
+    generator()->log() << "MamboDecayer::decay - The Decay mode " 
+		       << parent.PDGName() << "->";
+    for(int i = 0; i < N; ++i) 
+      generator()->log() << children[i]->PDGName() << " ";
+    generator()->log() << " cannot proceed as there is not "
+		       << "enough phase space.\n";
+
     out.clear();
     return out;
   }
@@ -83,7 +94,7 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
   
   //set output momenta
   int iter  =  0;
-  for(PDVector::const_iterator it=children.begin();iter<N;
+  for(tPDVector::const_iterator it=children.begin();iter<N;
       ++iter,++it) {
     out[iter] = (*it)->produceParticle(productMomentum[iter]);
   }
@@ -98,8 +109,8 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
 double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
 				       Energy comEn) const {
   const int N = mom.size();
-  Energy rmtot(0.0*GeV);
-  Energy2 rm2tot(0.0*GeV2);
+  Energy rmtot(ZERO);
+  Energy2 rm2tot(ZERO);
   for(int i = 0;i < N;++i) {
     rmtot += mom[i].mass();
     rm2tot += mom[i].mass2();
@@ -108,15 +119,15 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   Energy wmax = (2.0/3.0)*wb;
   const Energy tol(1e-12*MeV);
   long double r(0.), sf1(0.);
-  Energy2 sm2f2(0.*GeV2);
-  Energy sf(0.*MeV), sff1(0.*MeV), w(0.*MeV), 
-    wold(wmax), err(0.*MeV);
+  Energy2 sm2f2(ZERO);
+  Energy sf(ZERO), sff1(ZERO), w(ZERO), 
+    wold(wmax), err(ZERO);
   unsigned int iter(0), maxiter(50);
   do {
-    sf = 0.*MeV; sf1 = 0.; sff1 = 0.*MeV; sm2f2 = 0.*GeV2;        
+    sf = ZERO; sf1 = 0.; sff1 = ZERO; sm2f2 = ZERO;        
     for(int i = 0;i < N;++i) {
       r = abs(mom[i].mass()/wold);
-      Energy f(0.*MeV);
+      Energy f(ZERO);
       long double f1(0.);
       if (r == 0.0) {
 	f=2.*wold;
@@ -182,7 +193,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
 
   //Perform lorentz boost from k to q
   vector<Lorentz5Momentum> q(N);
-  Energy q0=0.*MeV, q1=0.*MeV, q2=0.*MeV, q3=0.*MeV;
+  Energy q0=ZERO, q1=ZERO, q2=ZERO, q3=ZERO;
   long double t=0.;
   vector<Energy2> qsq(N);
   for(int i = 0;i<N;++i){
@@ -200,7 +211,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   iter = 0;
   do {
     Energy f = -comEn;
-    Energy f1 = 0.0*MeV;
+    Energy f1 = ZERO;
     for(int i = 0; i < N; ++i)	    {
       en[i] = sqrt((xiold*xiold*qsq[i]) + mom[i].mass2());
       f += en[i];
@@ -218,7 +229,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   
   //Calculate weight of distribution
   double s1(1.);
-  Energy s2(0.*MeV),s3(0.*MeV);
+  Energy s2(ZERO),s3(ZERO);
   double wxi(0.);
   for(int i=0;i<N;++i) {
     s1 *= q[i].e()/mom[i].e();
@@ -243,61 +254,156 @@ void MamboDecayer::colourConnections(const Particle & parent,
   else if(parent.data().iColour() == PDT::Colour3 || 
 	  parent.data().iColour() == PDT::Colour3bar) {          
     PPtr pparent = const_ptr_cast<PPtr>(&parent);
-    if(N==2) {
-      if(out[0]->data().iColour() == parent.data().iColour()) {
-	out[0]->incomingColour(pparent,out[0]->id() < 0);
+    // find outgoing coloured particles
+    tParticleVector trip,anti,oct;
+    for(int i=0;i < N;++i) {
+      if(out[i]->data().iColour() == PDT::Colour3)
+	trip.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour3bar)
+	anti.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour8)
+	oct .push_back(out[i]);
+    }
+    // 3 -> 3 + neutral
+    if(parent.data().iColour() == PDT::Colour3&&trip.size()==1&&
+       oct.size()==0&&anti.size()==0) {
+      trip[0]->incomingColour(pparent);
+    }
+    // 3bar -> 3bar + neutral
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==0&&
+	    oct.size()==0&&anti.size()==1) {
+      anti[0]->incomingColour(pparent,true);
+    }
+    // sink
+    else if(parent.data().iColour() == PDT::Colour3 &&
+	    anti.size()==2 && oct.size()==0 && trip.size()==0) {
+      tColinePtr col[2] = {ColourLine::create(anti[0],true),
+			   ColourLine::create(anti[1],true)};
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+    }
+    // source
+    else if(parent.data().iColour() == PDT::Colour3bar &&
+	    trip.size()==2 && oct.size()==0 && anti.size()==0) {
+      tColinePtr col[2] = {ColourLine::create(trip[0]),
+			   ColourLine::create(trip[1])};
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
+    // 3 -> 3 + 8 + neutral
+    else if(parent.data().iColour() == PDT::Colour3&&trip.size()==1&&
+	    oct.size()==1&&anti.size()==0) {
+      oct [0]->incomingColour(pparent);
+      oct [0]->    colourNeighbour(trip[0]);
+      trip[0]->antiColourNeighbour(oct[0]);
+    }
+    // 3bar -> 3bar + 8 + neutral
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==0&&
+	    oct.size()==1&&anti.size()==1) {
+      oct [0]->incomingColour(pparent,true);
+      oct [0]->antiColourNeighbour(anti[0]);
+      anti[0]->    colourNeighbour(oct[0]);
+    }
+    // 3 -> 3 + 3 + 3bar
+    else if(parent.data().iColour() == PDT::Colour3&&trip.size()==2&&
+	    oct.size()==0&&anti.size()==1) {
+      int id1 = abs(pparent->id())%10;
+      int ip(0),io(1);
+      for(unsigned int ix=0;ix<trip.size();++ix) {
+	int id2 = abs(trip[ix]->id())%10;
+	if(id1==id2 || (id1%2==0&&id1==id2+1) ||
+	   (id1%2==1&&id2==id1+1)) {
+	  ip =   ix;
+	  io = 1-int(ix);
+	  break;
+	}
       }
-      else if(out[1]->data().iColour() == parent.data().iColour()) {
-	out[1]->incomingColour(pparent,out[1]->id() < 0);
+      trip[io]->antiColourNeighbour(anti[ 0]);
+      anti[0 ]->colourNeighbour(trip[io]);
+      trip[ip]->incomingColour(pparent);
+    }
+    // 3bar -> 3bar + 3 + 3bar
+    else if(parent.data().iColour() == PDT::Colour3bar&&trip.size()==1&&
+	    oct.size()==0&&anti.size()==2) {
+      int id1 = abs(pparent->id())%10;
+      int ip(0),io(1);
+      for(unsigned int ix=0;ix<anti.size();++ix) {
+	int id2 = abs(anti[ix]->id())%10;
+	if(id1==id2 || (id1%2==0&&id1==id2+1) ||
+	   (id1%2==1&&id2==id1+1)) {
+	  ip =   ix;
+	  io = 1-int(ix);
+	  break;
+	}
       }
-      else if(parent.data().iColour() == PDT::Colour3 &&
-	      out[0]->data().iColour() == PDT::Colour3bar &&
-	      out[1]->data().iColour() == PDT::Colour3bar) {
-	tColinePtr col[2] = {ColourLine::create(out[0],true),
-			     ColourLine::create(out[1],true)};
-	parent.colourLine()->setSinkNeighbours(col[0],col[1]);
-      }
-      else if(parent.data().iColour() == PDT::Colour3bar &&
-	      out[0]->data().iColour() == PDT::Colour3 &&
-	      out[1]->data().iColour() == PDT::Colour3) {
-	tColinePtr col[2] = {ColourLine::create(out[0]),
-			     ColourLine::create(out[1])};
-	parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
-      }
-      else {
-	throw Exception() << "MamboDecayer::decay() can't make colour connections for "
-			  << "the two-body decay of the coloured particle " 
-			  << parent << Exception::eventerror;
-      }
+      anti[io]->    colourNeighbour(trip[ 0]);
+      trip[0 ]->antiColourNeighbour(anti[io]);
+      anti[ip]->incomingColour(pparent,true);
     }
     else {
-      for(int i=0;i < N;++i){ 
-	if(out[i]->data().iColour() == PDT::Colour3 ||
-	   out[i]->data().iColour() == PDT::Colour3bar) {
-	  out[i]->incomingColour(pparent,out[i]->id() < 0);
-	}
-	else {
-	  if(out[i]->hasColour())
-	    out[i]->antiColourNeighbour(out[i + 1]);
-	  if ( out[i]->hasAntiColour() )
-	    out[i]->colourNeighbour(out[i + 1]);
-	  ++i;
-	}
-      }
+      ostringstream dec;
+      for(unsigned int ix=0;ix<out.size();++ix) dec << out[ix]->PDGName() << " ";
+      throw Exception() << "Unknown colour for 3/3bar decay in MamboDecayer"
+			<< pparent->PDGName() << " -> " << dec.str()
+			<< Exception::runerror;
     }
   }
   //incoming octet
   else if(parent.data().iColour() == PDT::Colour8) {
     PPtr pparent = const_ptr_cast<PPtr>(&parent);
-    for(int i=0; i < N;++i) {
-      if(out[i]->data().iColour() == PDT::Colour8) {
-	out[i]->incomingColour(pparent);
-	out[i]->incomingAntiColour(pparent);
+    tParticleVector trip,anti,oct;
+    for(int i=0;i < N;++i) {
+      if(out[i]->data().iColour() == PDT::Colour3)
+	trip.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour3bar)
+	anti.push_back(out[i]);
+      else if(out[i]->data().iColour() == PDT::Colour8)
+	oct .push_back(out[i]);
+    }
+    // decay to one octet
+    if(oct.size()==1&&trip.empty()&&anti.empty()) {
+      oct[0]->incomingColour(pparent);
+      oct[0]->incomingAntiColour(pparent);
+    }
+    // decay ot triplet/antitriplet
+    else if(trip.size()==1&&anti.size()==1&&oct.empty()) {
+      trip[0]->incomingColour(pparent,false);
+      anti[0]->incomingColour(pparent,true );
+    }
+    // baryon number violating decay to quarks
+    else if(trip.size()==3&&anti.empty()&&oct.empty()) {
+      unsigned int iloc = UseRandom::irnd(3);
+      tColinePtr col[2];
+      for(unsigned int ix=0;ix<trip.size();++ix) {
+	if(ix==iloc) {
+	  trip[ix]->incomingColour(pparent);
+	}
+	else {
+	  if(col[0]) col[1] = ColourLine::create(trip[ix]);
+	  else       col[0] = ColourLine::create(trip[ix]);
+	}
       }
-      else if(out[i]->data().iColour() == PDT::Colour3 ||
-	      out[i]->data().iColour() == PDT::Colour3bar) {
-	out[i]->incomingColour(pparent,out[i]->id() < 0);
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
+    // baryon number violating decay to antiquarks
+    else if(anti.size()==3&&trip.empty()&&oct.empty()) {
+      unsigned int iloc = UseRandom::irnd(3);
+      tColinePtr col[2];
+      for(unsigned int ix=0;ix<anti.size();++ix) {
+	if(ix==iloc) {
+	  anti[ix]->incomingColour(pparent,true);
+	}
+	else {
+	  if(col[0]) col[1] = ColourLine::create(anti[ix],true);
+	  else       col[0] = ColourLine::create(anti[ix],true);
+	}
       }
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+    }
+    else {
+      ostringstream dec;
+      for(unsigned int ix=0;ix<out.size();++ix) dec << out[ix]->PDGName() << " ";
+      throw Exception() << "Unknown colour for octet decay in MamboDecayer"
+			<< pparent->PDGName() << " -> " << dec.str()
+			<< Exception::runerror;
     }
   }
   else if(N==3 && parent.data().iColour() == PDT::Colour0&&
@@ -342,7 +448,32 @@ void MamboDecayer::colourConnections(const Particle & parent,
 void MamboDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
-  output << "set " << fullName() << ":MaxWeight "  << _maxweight << " \n";
+  output << "newdef " << name() << ":MaxWeight "  << _maxweight << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+void MamboDecayer::doinitrun() {
+  HwDecayerBase::doinitrun();
+  _a0[0] = 0.5;
+  _a0[1] = 0.375;
+  _a0[2] = 0.375;
+  _a0[3] = 0.4921875;
+  _a0[4] = 0.84375;
+  _a0[5] = 1.854492188,
+  _a0[6] = 5.0625;
+  _a0[7] = 16.58578491;
+  _a0[8] = 63.33398438; 
+  _a0[9] = 275.6161079;
+
+  _a1[0] = 0.5;
+  _a1[1] = 0.75;
+  _a1[2] = 1.125;
+  _a1[3] = 1.96875;
+  _a1[4] = 4.21875;
+  _a1[5] = 11.12695313;
+  _a1[6] = 35.4375;
+  _a1[7] = 132.6862793;
+  _a1[8] = 570.0058594;
+  _a1[9] = 2756.161079;
 }

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// UEDP0H1H1Vertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_UEDP0H1H1Vertex_H
 #define HERWIG_UEDP0H1H1Vertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/UED/UEDBase.h"
-#include "UEDP0H1H1Vertex.fh"
+#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -26,25 +32,9 @@ public:
   /**
    * The default constructor.
    */
-  inline UEDP0H1H1Vertex();
+  UEDP0H1H1Vertex();
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -71,13 +61,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -89,7 +79,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -98,7 +88,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<UEDP0H1H1Vertex> initUEDP0H1H1Vertex;
+  static NoPIOClassDescription<UEDP0H1H1Vertex> initUEDP0H1H1Vertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -107,11 +97,6 @@ private:
   UEDP0H1H1Vertex & operator=(const UEDP0H1H1Vertex &);
 
 private:
-
-  /**
-   * A pointer to the UEDBase object .
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The scale at which the coupling was last evaluated. 
@@ -160,7 +145,5 @@ struct ClassTraits<Herwig::UEDP0H1H1Vertex>
 /** @endcond */
 
 }
-
-#include "UEDP0H1H1Vertex.icc"
 
 #endif /* HERWIG_UEDP0H1H1Vertex_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ShowerModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ShowerModel_H
 #define HERWIG_ShowerModel_H
 //
@@ -8,14 +15,14 @@
 #include "KinematicsReconstructor.fh"
 #include "PartnerFinder.fh"
 #include "SudakovFormFactor.fh"
-#include "MECorrectionBase.fh"
 #include "ShowerModel.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Shower
+ *
  *  The ShowerModel class is a container for all the objects needed to implement a
  *  specific model of the shower evolution, as opposed to those which are independent
  *  of the evolution.
@@ -28,8 +35,6 @@ using namespace ThePEG;
  * - A vector of SudakovFormFactor objects which will usually all be instances
  *   of a class implementing the SudakovFormFactor for a specific model with
  *   different splitting functions for different branchings
- * - A vector of MECorrectionBase objects which may be empty with implement the
- *   matrix element corrections for specific processes.
  *
  *  For each model the checkConsistency member must be implemented to check that
  *  the correct objects for the model are used.
@@ -39,17 +44,7 @@ using namespace ThePEG;
  */
 class ShowerModel: public Interfaced {
 
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline ShowerModel();
-
-  /**
-   * The destructor
-   */
-  virtual ~ShowerModel();
+public:  
 
   /**
    *  Access methods to access the objects
@@ -58,22 +53,17 @@ public:
   /**
    *  Access to the KinematicsReconstructor object
    */
-  inline tKinematicsReconstructorPtr kinematicsReconstructor() const;
+  tKinematicsReconstructorPtr kinematicsReconstructor() const { return _reconstructor; }
 
   /**
    *  Access to the PartnerFinder object
    */
-  inline tPartnerFinderPtr partnerFinder() const;
+  tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
 
   /**
    *  Access to the SudakovFormFactor objects
    */
-  inline const vector<SudakovPtr> & sudakovFormFactors() const;
-
-  /**
-   *  Access to the MECorrection objects
-   */
-  inline const vector<MECorrectionPtr> & meCorrections() const;
+  const vector<SudakovPtr> & sudakovFormFactors() const { return _sudakovs; }
   //@}
 
 public:
@@ -109,7 +99,7 @@ protected:
    *  The checkConsitency member which must be implemented in classes
    *  inheriting from this one.
    */
-  virtual void checkConsistency() throw(InitException) =0;
+  virtual void checkConsistency() =0;
 
   /** @name Standard Interfaced functions. */
   //@{
@@ -118,7 +108,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -155,11 +145,6 @@ private:
    *  Pointers to the SudakovFormFactor objects
    */
   vector<SudakovPtr> _sudakovs;
-
-  /**
-   *  Pointers to the MECorrection base objects
-   */
-  vector<MECorrectionPtr> _mecorrections;
   //@}
 
 };
@@ -194,16 +179,11 @@ struct ClassTraits<Herwig::ShowerModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerModel.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerModel.tcc"
-#endif
 
 #endif /* HERWIG_ShowerModel_H */

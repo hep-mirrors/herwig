@@ -12,11 +12,20 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-StrongHeavyBaryonDecayer::StrongHeavyBaryonDecayer() 
-{
+void StrongHeavyBaryonDecayer::doinitrun() {
+  Baryon1MesonDecayerBase::doinitrun();
+  if(initialize()) {
+    _maxweight.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      if(mode(ix)) _maxweight.push_back(mode(ix)->maxWeight());
+      else         _maxweight.push_back(1.);
+    }
+  }
+}
+
+StrongHeavyBaryonDecayer::StrongHeavyBaryonDecayer() {
   // strong couplings of the baryons to pions
   // coupling of the sigma_c to lambda_c pi
   _gsigma_clambda_cpi = 8.88/GeV;
@@ -217,170 +226,146 @@ StrongHeavyBaryonDecayer::StrongHeavyBaryonDecayer()
   generateIntermediates(false);
 }
 
-void StrongHeavyBaryonDecayer::doinit() throw(InitException) {
+void StrongHeavyBaryonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   unsigned int isize(_incoming.size());
   if(isize!=_outgoingB.size()||isize!=_outgoingM.size()||isize!=_maxweight.size())
-    {throw InitException() << "Inconsistent parameters in StrongHeavyBaryonDecayer"
-			   << "::doinit()" << Exception::abortnow;}
+    throw InitException() << "Inconsistent parameters in StrongHeavyBaryonDecayer"
+			  << "::doinit()" << Exception::abortnow;
   // add the various decay modes
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
+  double or2(1./sqrt(2.)),or3(1./sqrt(3.)),or6(1./sqrt(6.));
   // the decay modes
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0]=getParticleData(_incoming[ix]);
-      extpart[1]=getParticleData(_outgoingB[ix]);
-      extpart[2]=getParticleData(_outgoingM[ix]);
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0]=getParticleData(_incoming[ix]);
+    extpart[1]=getParticleData(_outgoingB[ix]);
+    extpart[2]=getParticleData(_outgoingM[ix]);
+    if(extpart[0]&&extpart[1]) {
       mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       addMode(mode,_maxweight[ix],wgt);
-      if(_outgoingB[ix]==4122&&((_incoming[ix]==4222&&_outgoingM[ix]==211)||
-				(_incoming[ix]==4212&&_outgoingM[ix]==111)||
-				(_incoming[ix]==4112&&_outgoingM[ix]==-211)))
-	{_prefactor.push_back(-_gsigma_clambda_cpi*GeV/sqrt(3.));}
-      else if((_incoming[ix]==4322&&((_outgoingB[ix]==4232&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==4132&&_outgoingM[ix]==211)))||
-	      (_incoming[ix]==4312&&((_outgoingB[ix]==4132&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==4232&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(0.5*_gxistar_cxi_cpi*GeV/sqrt(3.));}
-	  else{_prefactor.push_back(_gxistar_cxi_cpi*GeV/sqrt(6.));}
-	}
-      else if(_outgoingB[ix]==4122&&((_incoming[ix]==4224&&_outgoingM[ix]== 211)||
-				     (_incoming[ix]==4214&&_outgoingM[ix]== 111)||
-				     (_incoming[ix]==4114&&_outgoingM[ix]==-211)))
-	{_prefactor.push_back(_gsigma_clambda_cpi*GeV);}
-      else if((_incoming[ix]==4324&&((_outgoingB[ix]==4232&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==4132&&_outgoingM[ix]==211)))||
-	      (_incoming[ix]==4314&&((_outgoingB[ix]==4132&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==4232&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(0.5*_gxistar_cxi_cpi*GeV);}
-	  else{_prefactor.push_back(_gxistar_cxi_cpi/sqrt(2.)*GeV);}
-	}
-      else if(_incoming[ix]==14122&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
-				     (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
-				     (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
-	{_prefactor.push_back(_flambda_c1sigma_cpi);}
-      else if(_incoming[ix]== 4124&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
-				     (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
-				     (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
-	{_prefactor.push_back(_flambda_c1starsigma_cpi/sqrt(3.)*GeV2);}
-      else if((_incoming[ix]==14324&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==14314&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(_fxi_c1starxi_cpi/sqrt(24.)*GeV2);}
-	  else
-	    {_prefactor.push_back(_fxi_c1starxi_cpi/sqrt(12.)*GeV2);}
-	}
-      else if((_incoming[ix]==14324&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==14314&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(_fxi_c1xi_cpi/sqrt(8.));}
-	  else{_prefactor.push_back(_fxi_c1xi_cpi/sqrt(4.));}
-	}
-      else if((_incoming[ix]==14322&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==14312&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(_fxi_c1xi_cpi/sqrt(8.));}
-	  else{_prefactor.push_back(_fxi_c1xi_cpi/sqrt(4.));}
-	}
-      else if((_incoming[ix]==14322&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==14312&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(_fxi_c1starxi_cpi/sqrt(24.)*GeV2);}
-	  else
-	    {_prefactor.push_back(_fxi_c1starxi_cpi/sqrt(12.)*GeV2);}
-	}
-      else if(_outgoingB[ix]==5122&&((_incoming[ix]==5222&&_outgoingM[ix]==211)||
-				     (_incoming[ix]==5212&&_outgoingM[ix]==111)||
-				     (_incoming[ix]==5112&&_outgoingM[ix]==-211)))
-	{_prefactor.push_back(_gsigma_blambda_bpi*GeV/sqrt(3.));}
-      else if((_incoming[ix]==5322&&((_outgoingB[ix]==5232&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==5132&&_outgoingM[ix]==211)))||
-	      (_incoming[ix]==5312&&((_outgoingB[ix]==5132&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==5232&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(0.5*_gxistar_bxi_bpi*GeV/sqrt(3.));}
-	  else
-	    {_prefactor.push_back(_gxistar_bxi_bpi*GeV/sqrt(6.));}
-	}
-      else if(_outgoingB[ix]==5122&&((_incoming[ix]==5224&&_outgoingM[ix]== 211)||
-				     (_incoming[ix]==5214&&_outgoingM[ix]== 111)||
-				     (_incoming[ix]==5114&&_outgoingM[ix]==-211)))
-	{_prefactor.push_back(-_gsigma_blambda_bpi*GeV);}
-      else if((_incoming[ix]==5324&&((_outgoingB[ix]==5232&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==5132&&_outgoingM[ix]==211)))||
-	      (_incoming[ix]==5314&&((_outgoingB[ix]==5132&&_outgoingM[ix]==111)||
-				     (_outgoingB[ix]==5232&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(-0.5*_gxistar_bxi_bpi*GeV);}
-	  else{_prefactor.push_back(_gxistar_bxi_bpi/sqrt(2.)*GeV);}
-	}
-      else if(_incoming[ix]==15122&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
-				     (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
-				     (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
-	{_prefactor.push_back(_flambda_b1sigma_bpi);}
-      else if(_incoming[ix]== 5124&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
-				     (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
-				     (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
-	{_prefactor.push_back(_flambda_b1starsigma_bpi/sqrt(3.)*GeV*GeV);}
-      else if((_incoming[ix]==15324&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==15314&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(_fxi_b1starxi_bpi/sqrt(24.)*GeV2);}
-	  else
-	    {_prefactor.push_back(_fxi_b1starxi_bpi/sqrt(12.)*GeV2);}
-	}
-      else if((_incoming[ix]==15324&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==15314&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(_fxi_b1xi_bpi/sqrt(8.));}
-	  else{_prefactor.push_back(_fxi_b1xi_bpi/sqrt(4.));}
-	}
-      else if((_incoming[ix]==15322&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==15312&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111){_prefactor.push_back(_fxi_b1xi_bpi/sqrt(8.));}
-	  else{_prefactor.push_back(_fxi_b1xi_bpi/sqrt(4.));}
-	}
-      else if((_incoming[ix]==15322&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
-	      (_incoming[ix]==15312&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
-				      (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
-	{
-	  if(_outgoingM[ix]==111)
-	    {_prefactor.push_back(_fxi_b1starxi_bpi/sqrt(24.)*GeV2);}
-	  else
-	    {_prefactor.push_back(_fxi_b1starxi_bpi/sqrt(12.)*GeV2);}
-	}
-      else
-	{throw InitException() << "Unknown mode in StrongHeavyBaryonDecayer::doinit()"
-			       << Exception::abortnow;}
     }
+    else {
+      addMode(DecayPhaseSpaceModePtr(),_maxweight[ix],wgt);
+    }
+    if(_outgoingB[ix]==4122&&((_incoming[ix]==4222&&_outgoingM[ix]==211)||
+			      (_incoming[ix]==4212&&_outgoingM[ix]==111)||
+			      (_incoming[ix]==4112&&_outgoingM[ix]==-211)))
+      _prefactor.push_back(-_gsigma_clambda_cpi*GeV*or3);
+    else if((_incoming[ix]==4322&&((_outgoingB[ix]==4232&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==4132&&_outgoingM[ix]==211)))||
+	    (_incoming[ix]==4312&&((_outgoingB[ix]==4132&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==4232&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   0.5*_gxistar_cxi_cpi*GeV*or3 :
+			   _gxistar_cxi_cpi*GeV*or6);
+    else if(_outgoingB[ix]==4122&&((_incoming[ix]==4224&&_outgoingM[ix]== 211)||
+				   (_incoming[ix]==4214&&_outgoingM[ix]== 111)||
+				   (_incoming[ix]==4114&&_outgoingM[ix]==-211)))
+      _prefactor.push_back(_gsigma_clambda_cpi*GeV);
+    else if((_incoming[ix]==4324&&((_outgoingB[ix]==4232&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==4132&&_outgoingM[ix]==211)))||
+	    (_incoming[ix]==4314&&((_outgoingB[ix]==4132&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==4232&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 0.5*_gxistar_cxi_cpi*GeV :
+			   _gxistar_cxi_cpi*or2*GeV);
+    else if(_incoming[ix]==14122&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
+				   (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
+				   (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
+      _prefactor.push_back(_flambda_c1sigma_cpi);
+    else if(_incoming[ix]== 4124&&((_outgoingB[ix]==4222&&_outgoingM[ix]==-211)||
+				   (_outgoingB[ix]==4212&&_outgoingM[ix]== 111)||
+				   (_outgoingB[ix]==4112&&_outgoingM[ix]== 211)))
+      _prefactor.push_back(_flambda_c1starsigma_cpi*or3*GeV2);
+    else if((_incoming[ix]==14324&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==14314&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_c1starxi_cpi*0.5*or6*GeV2 :
+			   _fxi_c1starxi_cpi*0.5*or3*GeV2);
+    else if((_incoming[ix]==14324&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==14314&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_c1xi_cpi*0.5*or2 :
+			   _fxi_c1xi_cpi*0.5);
+    else if((_incoming[ix]==14322&&((_outgoingB[ix]==4322&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==14312&&((_outgoingB[ix]==4312&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4322&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? _fxi_c1xi_cpi*0.5*or2 :
+			   _fxi_c1xi_cpi*0.5);
+    else if((_incoming[ix]==14322&&((_outgoingB[ix]==4324&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==14312&&((_outgoingB[ix]==4314&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==4324&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_c1starxi_cpi*0.5*or6*GeV2 :
+			   _fxi_c1starxi_cpi*0.5*or3*GeV2);
+    else if(_outgoingB[ix]==5122&&((_incoming[ix]==5222&&_outgoingM[ix]==211)||
+				   (_incoming[ix]==5212&&_outgoingM[ix]==111)||
+				   (_incoming[ix]==5112&&_outgoingM[ix]==-211)))
+      _prefactor.push_back(_gsigma_blambda_bpi*GeV*or3);
+    else if((_incoming[ix]==5322&&((_outgoingB[ix]==5232&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==5132&&_outgoingM[ix]==211)))||
+	    (_incoming[ix]==5312&&((_outgoingB[ix]==5132&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==5232&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   0.5*_gxistar_bxi_bpi*GeV*or3 : 
+			   _gxistar_bxi_bpi*GeV*or6);
+    else if(_outgoingB[ix]==5122&&((_incoming[ix]==5224&&_outgoingM[ix]== 211)||
+				   (_incoming[ix]==5214&&_outgoingM[ix]== 111)||
+				   (_incoming[ix]==5114&&_outgoingM[ix]==-211)))
+      _prefactor.push_back(-_gsigma_blambda_bpi*GeV);
+    else if((_incoming[ix]==5324&&((_outgoingB[ix]==5232&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==5132&&_outgoingM[ix]==211)))||
+	    (_incoming[ix]==5314&&((_outgoingB[ix]==5132&&_outgoingM[ix]==111)||
+				   (_outgoingB[ix]==5232&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   -0.5*_gxistar_bxi_bpi*GeV : 
+			   _gxistar_bxi_bpi*or2*GeV);
+    else if(_incoming[ix]==15122&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
+				   (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
+				   (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
+      _prefactor.push_back(_flambda_b1sigma_bpi);
+    else if(_incoming[ix]== 5124&&((_outgoingB[ix]==5222&&_outgoingM[ix]==-211)||
+				   (_outgoingB[ix]==5212&&_outgoingM[ix]== 111)||
+				   (_outgoingB[ix]==5112&&_outgoingM[ix]== 211)))
+      _prefactor.push_back(_flambda_b1starsigma_bpi*or3*GeV*GeV);
+    else if((_incoming[ix]==15324&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==15314&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_b1starxi_bpi*0.5*or6*GeV2 :
+			   _fxi_b1starxi_bpi*0.5*or3*GeV2);
+    else if((_incoming[ix]==15324&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==15314&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? _fxi_b1xi_bpi*0.5*or2 :
+			   _fxi_b1xi_bpi*0.5);
+    else if((_incoming[ix]==15322&&((_outgoingB[ix]==5322&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5312&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==15312&&((_outgoingB[ix]==5312&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5322&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_b1xi_bpi*0.5*or2 : _fxi_b1xi_bpi*0.5);
+    else if((_incoming[ix]==15322&&((_outgoingB[ix]==5324&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5314&&_outgoingM[ix]== 211)))||
+	    (_incoming[ix]==15312&&((_outgoingB[ix]==5314&&_outgoingM[ix]== 111)||
+				    (_outgoingB[ix]==5324&&_outgoingM[ix]==-211))))
+      _prefactor.push_back(_outgoingM[ix]==111 ? 
+			   _fxi_b1starxi_bpi*0.5*or6*GeV2 :
+			   _fxi_b1starxi_bpi*0.5*or3*GeV2);
+    else
+      throw InitException() << "Unknown mode in StrongHeavyBaryonDecayer::doinit()"
+			    << Exception::abortnow;
+  }
 }
-
-StrongHeavyBaryonDecayer::~StrongHeavyBaryonDecayer() {}
 
 void StrongHeavyBaryonDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_gsigma_clambda_cpi,1./GeV) << ounit(_gxistar_cxi_cpi,1./GeV) 
@@ -403,7 +388,7 @@ void StrongHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
 }
 
 int StrongHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   if(children.size()!=2){return imode;}
   // ids of the particles
@@ -412,47 +397,61 @@ int StrongHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
   int id2(children[1]->id());
   unsigned int ix(0);
   cc =false;
-  do
-    {
-      if(id0==_incoming[ix])
-	{
-	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;cc=false;}
-	}
-      else if(id0==-_incoming[ix])
-	{
-	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;cc=true;}
-	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
-	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
-	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;cc=true;}
-	}
-      ++ix;
+  do {
+    if(id0==_incoming[ix]) {
+      if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
+	 (id2==_outgoingB[ix]&&id1==_outgoingM[ix])) {
+	imode=ix;
+	cc=false;
+      }
     }
+    else if(id0==-_incoming[ix]) {
+      if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
+	 (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])) {
+	imode=ix;
+	cc=true;
+      }
+      if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
+	  (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
+	 (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
+	  _outgoingM[ix]==223||_outgoingM[ix]==333)) {
+	imode=ix;
+	cc=true;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }
 
-ClassDescription<StrongHeavyBaryonDecayer> StrongHeavyBaryonDecayer::initStrongHeavyBaryonDecayer;
+ClassDescription<StrongHeavyBaryonDecayer> 
+StrongHeavyBaryonDecayer::initStrongHeavyBaryonDecayer;
 // Definition of the static class description member.
 
 void StrongHeavyBaryonDecayer::Init() {
 
   static ClassDocumentation<StrongHeavyBaryonDecayer> documentation
     ("The StrongHeavyBaryonDecayer class performs the strong decays of"
-     " baryons containing a heavy quark.");
+     " baryons containing a heavy quark using the results of hep-ph/9904421.",
+     "The strong decays of the heavy baryons were simulated using the results of"
+     "\\cite{Ivanov:1999bk}.",
+     "\\bibitem{Ivanov:1999bk}\n"
+     "M.~A.~Ivanov, J.~G.~Korner, V.~E.~Lyubovitskij and A.~G.~Rusetsky,\n"
+     "Phys.\\ Rev.\\  D {\\bf 60} (1999) 094002\n"
+     "[arXiv:hep-ph/9904421].\n"
+     "%%CITATION = PHRVA,D60,094002;%%\n");
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegSigma_cLambda_cPi
     ("gSigma_cLambda_cPi",
      "The coupling of the Sigma_c to Lambda_c pi",
-     &StrongHeavyBaryonDecayer::_gsigma_clambda_cpi, 1./GeV, 8.8/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gsigma_clambda_cpi, 1./GeV, 8.8/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegXiStar_cXi_cPi
     ("gXiStar_cXi_cPi",
      "The coupling of the Xi*_c to Xi_c pi",
-     &StrongHeavyBaryonDecayer::_gxistar_cxi_cpi, 1./GeV, 8.34/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gxistar_cxi_cpi, 1./GeV, 8.34/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,double> interfacefLambda_c1Sigma_cPi
@@ -471,26 +470,26 @@ void StrongHeavyBaryonDecayer::Init() {
     ("fLambda_c1*Sigma_cPi",
      "The coupling of Lambda_c1* to Sigma_c and pi",
      &StrongHeavyBaryonDecayer::_flambda_c1starsigma_cpi, 1./GeV2, 21.5/GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegSigma_bLambda_bPi
     ("gSigma_bLambda_bPi",
      "The coupling of the Sigma_b to Lambda_b pi",
-     &StrongHeavyBaryonDecayer::_gsigma_blambda_bpi, 1./GeV, 8.8/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gsigma_blambda_bpi, 1./GeV, 8.8/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy2> interfacefXi_c1starXi_cPi
     ("fXi_c1*Xi_cPi",
      "The coupling of Xi_c1* to Xi_c and pi",
      &StrongHeavyBaryonDecayer::_fxi_c1starxi_cpi, 1./GeV2, 20./GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegXiStar_bXi_bPi
     ("gXiStar_bXi_bPi",
      "The coupling of the Xi*_b to Xi_b pi",
-     &StrongHeavyBaryonDecayer::_gxistar_bxi_bpi, 1./GeV, 8.34/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gxistar_bxi_bpi, 1./GeV, 8.34/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,double> interfacefLambda_b1Sigma_bPi
@@ -509,14 +508,14 @@ void StrongHeavyBaryonDecayer::Init() {
     ("fLambda_b1*Sigma_bPi",
      "The coupling of Lambda_b1* to Sigma_b and pi",
      &StrongHeavyBaryonDecayer::_flambda_b1starsigma_bpi, 1./GeV2, 21.5/GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy2> interfacefXi_b1starXi_bPi
     ("fXi_b1*Xi_bPi",
      "The coupling of Xi_b1* to Xi_b and pi",
      &StrongHeavyBaryonDecayer::_fxi_b1starxi_bpi, 1./GeV2, 20./GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static ParVector<StrongHeavyBaryonDecayer,int> interfaceIncoming
@@ -554,117 +553,133 @@ void StrongHeavyBaryonDecayer::Init() {
 // couplings for spin-1/2 to spin-1/2 spin-0
 void StrongHeavyBaryonDecayer::
 halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
-		       Complex & A,Complex & B) const
-{
-  if(_modetype[imode]==0)
-    {A = _prefactor[imode];B = 0.;}
-  else if(_modetype[imode]==1)
-    {A = 0.;B = 0.5*_prefactor[imode]*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV;}
+		       Complex & A,Complex & B) const {
+  useMe();
+  if(_modetype[imode]==0) {
+    A = _prefactor[imode];
+    B = 0.;
+  }
+  else if(_modetype[imode]==1) {
+    A = 0.;
+    B = 0.5*_prefactor[imode]*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV;
+  }
   else
-    {throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
-				  << "halfHalfScalarCoupling() " << Exception::abortnow;}
+    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+				 << "halfHalfScalarCoupling() " 
+				 << Exception::abortnow;
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
 void StrongHeavyBaryonDecayer::
 halfThreeHalfScalarCoupling(int imode, Energy m0, Energy m1, Energy m2,
-			    Complex& A,Complex& B) const
-{
-  if(_modetype[imode]==1)
-    {A = _prefactor[imode]*(m0+m1)/GeV;B = 0.;}
-  else if(_modetype[imode]==2)
-    {A = 0.;B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;}
-  else
-    {throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
-				  << "halfThreeHalfScalarCoupling() " 
-				  << Exception::abortnow;}
+			    Complex& A,Complex& B) const {
+  useMe();
+  if(_modetype[imode]==1) {
+    A = _prefactor[imode]*(m0+m1)/GeV;
+    B = 0.;
+  }
+  else if(_modetype[imode]==2) {
+    A = 0.;
+    B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;
+  }
+  else {
+    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+				 << "halfThreeHalfScalarCoupling() " 
+				 << Exception::abortnow;
+  }
 }
 
 // couplings for spin-3/2 to spin-3/2 spin-0
 void StrongHeavyBaryonDecayer::
 threeHalfThreeHalfScalarCoupling(int imode,Energy,Energy,Energy,
-				 Complex& A1,Complex& A2,Complex& B1,Complex& B2) const
-{
-  if(_modetype[imode]==0)
-    {A1 = _prefactor[imode];B1 = 0.;A2=0.;B2=0.;}
-  else
-    {throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
-				  << "threeHalfThreeHalfScalarCoupling() " 
-				  << Exception::abortnow;}
+				 Complex& A1,Complex& A2,Complex& B1,Complex& B2) const {
+  useMe();
+  if(_modetype[imode]==0) {
+    A1 = _prefactor[imode];
+    B1 = 0.;
+    A2=0.;
+    B2=0.;
+  }
+  else {
+    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+				 << "threeHalfThreeHalfScalarCoupling() " 
+				 << Exception::abortnow;
+  }
 }
 
 // couplings for spin-3/2 to spin-1/2 spin-0
 void StrongHeavyBaryonDecayer::
 threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
-			    Complex& A,Complex& B) const
-{
-  if(_modetype[imode]==1)
-    {A = _prefactor[imode]*(m0+m1)/GeV;B = 0.;}
-  else if(_modetype[imode]==2)
-    {A = 0.;B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;}
-  else
-    {throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
-				  << "threeHalfHalfScalarCoupling() " 
-				  << Exception::abortnow;}
+			    Complex& A,Complex& B) const {
+  useMe();
+  if(_modetype[imode]==1) {
+    A = _prefactor[imode]*(m0+m1)/GeV;
+    B = 0.;
+  }
+  else if(_modetype[imode]==2) {
+    A = 0.;
+    B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;
+  }
+  else {
+    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+				 << "threeHalfHalfScalarCoupling() " 
+				 << Exception::abortnow;
+  }
 }
 
-void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":gSigma_cLambda_cPi " 
+  output << "newdef " << name() << ":gSigma_cLambda_cPi " 
 	 << _gsigma_clambda_cpi*GeV << "\n";
-  output << "set " << fullName() << ":gXiStar_cXi_cPi " 
+  output << "newdef " << name() << ":gXiStar_cXi_cPi " 
 	 << _gxistar_cxi_cpi*GeV << "\n";
-  output << "set " << fullName() << ":fLambda_c1Sigma_cPi " 
+  output << "newdef " << name() << ":fLambda_c1Sigma_cPi " 
 	 << _flambda_c1sigma_cpi << "\n";
-  output << "set " << fullName() << ":fXi_c1Xi_cPi " 
+  output << "newdef " << name() << ":fXi_c1Xi_cPi " 
 	 << _fxi_c1xi_cpi << "\n";
-  output << "set " << fullName() << ":fLambda_c1*Sigma_cPi " 
+  output << "newdef " << name() << ":fLambda_c1*Sigma_cPi " 
 	 << _flambda_c1starsigma_cpi*GeV2 << "\n";
-  output << "set " << fullName() << ":fXi_c1*Xi_cPi " 
+  output << "newdef " << name() << ":fXi_c1*Xi_cPi " 
 	 << _fxi_c1starxi_cpi*GeV2 << "\n";
-  output << "set " << fullName() << ":gSigma_bLambda_bPi " 
+  output << "newdef " << name() << ":gSigma_bLambda_bPi " 
 	 << _gsigma_blambda_bpi*GeV << "\n";
-  output << "set " << fullName() << ":gXiStar_bXi_bPi " 
+  output << "newdef " << name() << ":gXiStar_bXi_bPi " 
 	 << _gxistar_bxi_bpi*GeV << "\n";
-  output << "set " << fullName() << ":fLambda_b1Sigma_bPi " 
+  output << "newdef " << name() << ":fLambda_b1Sigma_bPi " 
 	 << _flambda_b1sigma_bpi << "\n";
-  output << "set " << fullName() << ":fXi_b1Xi_bPi " 
+  output << "newdef " << name() << ":fXi_b1Xi_bPi " 
 	 << _fxi_b1xi_bpi << "\n";
-  output << "set " << fullName() << ":fLambda_b1*Sigma_bPi " 
+  output << "newdef " << name() << ":fLambda_b1*Sigma_bPi " 
 	 << _flambda_b1starsigma_bpi*GeV2 << "\n";
-  output << "set " << fullName() << ":fXi_b1*Xi_bPi " 
+  output << "newdef " << name() << ":fXi_b1*Xi_bPi " 
 	 << _fxi_b1starxi_bpi*GeV2 << "\n";
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming " 
-		 << ix << " " << _incoming[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingB " 
-		 << ix << " " << _outgoingB[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingM " 
-		 << ix << " " << _outgoingM[ix] << "\n";
-	  output << "set " << fullName() << ":ModeType " 
-		 << ix << " " << _modetype[ix] << "\n";
-	  output << "set " << fullName() << ":MaxWeight " 
-		 << ix << " " << _maxweight[ix] << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming " 
-		 << ix << " " << _incoming[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingB " 
-		 << ix << " " << _outgoingB[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingM " 
-		 << ix << " " << _outgoingM[ix] << "\n";
-	  output << "insert " << fullName() << ":ModeType " 
-		 << ix << " " << _modetype[ix] << "\n";
-	  output << "insert " << fullName() << ":MaxWeight " 
-		 << ix << " " << _maxweight[ix] << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "newdef " << name() << ":Incoming " 
+	     << ix << " " << _incoming[ix] << "\n";
+      output << "newdef " << name() << ":OutgoingB " 
+	     << ix << " " << _outgoingB[ix] << "\n";
+      output << "newdef " << name() << ":OutgoingM " 
+	     << ix << " " << _outgoingM[ix] << "\n";
+      output << "newdef " << name() << ":ModeType " 
+	     << ix << " " << _modetype[ix] << "\n";
+      output << "newdef " << name() << ":MaxWeight " 
+	     << ix << " " << _maxweight[ix] << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+    else {
+      output << "insert " << name() << ":Incoming " 
+	     << ix << " " << _incoming[ix] << "\n";
+      output << "insert " << name() << ":OutgoingB " 
+	     << ix << " " << _outgoingB[ix] << "\n";
+      output << "insert " << name() << ":OutgoingM " 
+	     << ix << " " << _outgoingM[ix] << "\n";
+      output << "insert " << name() << ":ModeType " 
+	     << ix << " " << _modetype[ix] << "\n";
+      output << "insert " << name() << ":MaxWeight " 
+	     << ix << " " << _maxweight[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDF1F1W0Vertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDF1F1W0Vertex class.
 //
@@ -13,67 +20,49 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theSinThW(0.), theRadius(),
-				    theQ2Last(), theCoupLast(0.), 
-				    theLeftLast(0.), thefermALast(0),
-				    thefermBLast(0) {
-  vector<int> anti, ferm, wboson;
-  //outgoing W+
-  for(unsigned int i = 2; i < 7; i += 2) {
-    for(unsigned int j = 1; j < 6; j += 2) {
-      anti.push_back(-(5100000 + i));
-      ferm.push_back(5100000 + j);
-      wboson.push_back(24);
-    }
-  }
-  for(unsigned int i = 2; i < 7; i += 2) {
-    for(unsigned int j = 1; j < 6; j += 2) {
-      anti.push_back(-(6100000 + i));
-      ferm.push_back(6100000 + j);
-      wboson.push_back(24);
-    }
-  }
-  for(unsigned int i = 11; i < 17; i += 2) {
-    anti.push_back(-(5100001 + i));
-    ferm.push_back(5100000 + i);
-    wboson.push_back(24);
-  }
-  //outgoing W-
-  for(unsigned int i = 1; i < 6; i += 2) {
-     for(unsigned int j = 2 ; j < 7; j += 2) {
-       anti.push_back(-(5100000 + i));
-       ferm.push_back(5100000 + j);
-       wboson.push_back(-24);
-     }
-  }
-  for(unsigned int i = 11; i < 17; i += 2) {
-    anti.push_back(-(5100000 + i));
-    ferm.push_back(5100001 + i);
-    wboson.push_back(-24);
-  }
-  for(unsigned int i = 1; i < 6; i += 2) {
-     for(unsigned int j = 2 ; j < 7; j += 2) {
-       anti.push_back(-(6100000 + i));
-       ferm.push_back(6100000 + j);
-       wboson.push_back(-24);
-     }
-  }
-  //NO MIXING YET
-  setList(anti, ferm, wboson);
+UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
+				    theCoupLast(0.), 
+				    thefermALast(0), thefermBLast(0) {
+  orderInGs(0);
+  orderInGem(1);
 }
 
+void UEDF1F1W0Vertex::doinit() {
+  //outgoing W+
+  for( long i = 2; i < 17; i += 2 ) {
+    if( i == 7 ) i += 5;
+    addToList(-5100000 - i, 5100000 + i - 1, 24);
+    if( i < 7 ) {
+      addToList(-6100000 - i, 6100000 + i - 1, 24);
+    }
+  }
+  addToList(-6100006, 5100005, 24);
+  addToList(-5100006, 6100005, 24);
+  //outgoing W-
+  for( long i = 1; i < 16; i += 2 ) {
+    if( i == 6 ) i += 5;
+    addToList(-5100000 - i, 5100001 + i, -24);
+    if( i < 6 ) {
+      addToList(-6100000 - i, 6100001 + i, -24);
+    }
+  }
+  addToList(-6100005, 5100006, -24);
+  addToList(-5100005, 6100006, -24);
+  FFVVertex::doinit();
+  tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!model)
+    throw InitException() << "UEDF1F1W0Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  theRadius = model->compactRadius();
+}
 
 void UEDF1F1W0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinThW << ounit(theRadius,1/GeV);
+  os << ounit(theRadius,1/GeV);
 }
 
 void UEDF1F1W0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinThW >> iunit(theRadius,1/GeV);
-  theQ2Last = 0.0*GeV2;
-  theCoupLast = 0.0;
-  theLeftLast = 0.0;
-  thefermALast = 0;
-  thefermBLast = 0;
+  is >> iunit(theRadius,1/GeV);
 }
 
 ClassDescription<UEDF1F1W0Vertex> UEDF1F1W0Vertex::initUEDF1F1W0Vertex;
@@ -88,28 +77,13 @@ void UEDF1F1W0Vertex::Init() {
 }
 
 void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+#ifndef NDEBUG
 				  tcPDPtr part3) {
-  long iferm(0), ianti(0);
-  if(abs(part1->id()) == ParticleID::Wplus) {
-    iferm = part2->id();
-    ianti = part3->id();
-    if(iferm < 0) swap(iferm, ianti);
-  }
-  else if(abs(part2->id()) == ParticleID::Wplus) {
-    iferm = part1->id();
-    ianti = part3->id();
-    if(iferm < 0) swap(iferm, ianti);
-  }
-  else if(abs(part3->id()) == ParticleID::Wplus) {
-    iferm = part2->id();
-    ianti = part1->id();
-    if(iferm < 0) swap(iferm, ianti);
-  }
-  else
-    throw HelicityConsistencyError() << "UEDFFW0Vertex::setCoupling - "
-				     << "There is no W boson in this vertex!"
-				     << Exception::runerror;
-  ianti = abs(ianti);
+#else
+				  tcPDPtr) {
+#endif
+  long ianti(abs(part1->id())), iferm(abs(part2->id()));
+  assert( abs(part3->id()) == 24 );
   bool ferma = (iferm >= 5100001 && iferm <= 5100006) ||
     (iferm >= 6100001 && iferm <= 6100006) || 
     (iferm >= 5100011 && iferm <= 5100016) ||
@@ -118,47 +92,64 @@ void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     (ianti >= 6100001 && ianti <= 6100006) || 
     (ianti >= 5100011 && ianti <= 5100016) ||
     (ianti >= 6100011 && ianti <= 6100016);
-  if(ferma && fermb) {
-    if(q2 != theQ2Last) {
-      theQ2Last = q2;
-	theCoupLast = 
-	  sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2)/2.)/theSinThW;
-    }
-    if(iferm != thefermALast || ianti != thefermBLast) {
-      thefermALast = iferm;
-      thefermBLast = ianti;
-      int stateA = ianti/1000000;
-      int stateB = iferm/1000000;
-      long smID = (stateA == 6) ? iferm - 6100000 : iferm - 5100000;
-	// L/R mixing
-      double beta = getParticleData(smID)->mass()*theRadius;
-      double gamma = beta*beta/(1. + beta*beta);
-      double sin2alU = 0.5 - 0.5*sqrt(1. - gamma);
-      double cos2alU = 1. - sin2alU; 
-
-      smID = (stateA == 6) ? ianti - 6100000 : ianti - 5100000;
-      beta = getParticleData(smID)->mass()*theRadius;
-      gamma = beta*beta/(1. + beta*beta);
-      double sin2alD = 0.5 - 0.5*sqrt(1. - gamma);
-      double cos2alD = 1. - sin2alD;
-      if(stateA == 5 && stateB == 5)
-	theLeftLast = sqrt(cos2alU*cos2alD);
-      else if(stateA == 6 && stateB == 6)
-	theLeftLast = sqrt(sin2alU*sin2alD);
-      else {}//CHECK MIXING FEYNMAN RULE	
-    }
-    setNorm(theCoupLast);
-    setLeft(theLeftLast);
-    setRight(theLeftLast);
-  }
-  else {
+  if( !ferma || !fermb ) 
     throw HelicityLogicalError() << "UEDF1F1W0Vertex::setCoupling - "
 				 << "There is an unknown particle(s) in the "
 				 << "UED F^(1) F^(1) W^(0) vertex. ID: " 
 				 << ianti << " " << iferm 
-				 << Exception::warning;      
-    setNorm(0.0);
-    setLeft(0.0);
-    setRight(0.0);  
-}
+				 << Exception::runerror;
+  if(q2 != theQ2Last || theCoupLast == 0. ) {
+    theQ2Last = q2;
+    theCoupLast = sqrt(0.5)*weakCoupling(q2);
+  }
+  if(iferm != thefermALast || ianti != thefermBLast) {
+    thefermALast = iferm;
+    thefermBLast = ianti;
+    int stateA(ianti/1000000), stateB(iferm/1000000);
+    long sma = (stateA == 6) ? ianti - 6100000 : ianti - 5100000;
+    long smb = (stateB == 6) ? iferm - 6100000 : iferm - 5100000;
+    double afu(0.), afd(0.);
+    if( sma % 2 == 0 ) {
+      afu = atan(getParticleData(sma)->mass()*theRadius)/2.;
+      afd = atan(getParticleData(smb)->mass()*theRadius)/2.;
+    }
+    else {
+      afd = atan(getParticleData(sma)->mass()*theRadius)/2.;
+      afu = atan(getParticleData(smb)->mass()*theRadius)/2.;
+      
+    }
+    if( stateA == stateB ) {
+      if( stateA == 5 ) {
+	left(cos(afu)*cos(afd));
+	right(cos(afu)*cos(afd));
+      }
+      else {
+	left(sin(afu)*sin(afd));
+	right(sin(afu)*sin(afd));
+      }
+    }
+    else {
+      if( sma % 2 == 0 ) {
+	if( stateA == 5 ) {
+	  left(cos(afu)*sin(afd));
+	  right(-cos(afu)*sin(afd));
+	}
+	else {
+	  left(sin(afu)*cos(afd));
+	  right(-sin(afu)*cos(afd));
+	}
+      }
+      else {
+	if( stateA == 5 ) {
+	  left(sin(afu)*cos(afd));
+	  right(-sin(afu)*cos(afd));
+	}
+	else {
+	  left(cos(afu)*sin(afd));
+	  right(-cos(afu)*sin(afd));
+	}
+      }
+    }
+  }
+  norm(theCoupLast);
 }

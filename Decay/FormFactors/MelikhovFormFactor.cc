@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MelikhovFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MelikhovFormFactor class.
 //
@@ -16,8 +23,8 @@
 using namespace Herwig;
 
 MelikhovFormFactor::MelikhovFormFactor() : 
-  _ifit(1), _Rplus0(0), _Mplus(0*MeV), _nplus(0), _RV0(0), _MV(0*MeV), _nV(0),
-  _R10(0), _M1(0*MeV), _n1(0), _R20(0), _M2(0*MeV), _n2(0) {
+  _ifit(1), _Rplus0(0), _Mplus(ZERO), _nplus(0), _RV0(0), _MV(ZERO), _nV(0),
+  _R10(0), _M1(ZERO), _n1(0), _R20(0), _M2(ZERO), _n2(0) {
   // the possible modes
   // B to rho
   addFormFactor(-521, 113,1,2,5,2);
@@ -33,7 +40,7 @@ MelikhovFormFactor::MelikhovFormFactor() :
   initialModes(numberOfFactors());
 }
 
-void MelikhovFormFactor::doinit() throw(InitException) {
+void MelikhovFormFactor::doinit() {
   ScalarFormFactor::doinit();
   // the parameters for the different fits
   double Rplus0[4]={0.29    ,0.20    ,0.21    ,0.26    };
@@ -140,8 +147,9 @@ void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 void MelikhovFormFactor::dataBaseOutput(ofstream & output,bool header,
 					bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::MelikhovFormFactor " << fullName() << " \n";
-  output << "set " << fullName() << ":Fit " << _ifit << " \n";
+  if(create) output << "create Herwig::MelikhovFormFactor " << name() << " \n";
+  output << "newdef " << name() << ":Fit " << _ifit << " \n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

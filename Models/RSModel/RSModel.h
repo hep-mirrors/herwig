@@ -1,14 +1,21 @@
 // -*- C++ -*-
+//
+// RSModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RSModel_H
 #define HERWIG_RSModel_H
 // This is the declaration of the RSModel class.
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "Herwig++/Models/General/BSMModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVTVertex.h"
 #include "RSModel.fh"
 
 namespace Herwig {
@@ -20,19 +27,27 @@ using namespace ThePEG::Helicity;
  *  This is the class to be used instead of the Standard Model class for
  *  the Randell Sundrum model.
  *
- *
+ * @see \ref RSModelInterfaces "The interfaces"
+ * defined for RSModel.
  * @see StandardModel
  * @see StandardModelBase
  * 
  */
-class RSModel: public StandardModel {
+class RSModel: public BSMModel {
 
 public:
+
+  /**
+   * The default constructor 
+   */
+  RSModel(): Lambda_pi_(10000*GeV) {
+    useMe();
+  }
   
   /**
    * Return the gravition coupling
    */
-  inline Energy lambda_pi() const;
+  Energy lambda_pi() const {return Lambda_pi_;}
 
 
   /** @name Vertices */
@@ -40,27 +55,37 @@ public:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  inline tFFTVertexPtr   vertexFFGR() const;
+  tAbstractFFTVertexPtr   vertexFFGR() const {return FFGRVertex_;}
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  inline tVVTVertexPtr   vertexVVGR() const;
+  tAbstractVVTVertexPtr   vertexVVGR() const {return VVGRVertex_;}
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  inline tSSTVertexPtr   vertexSSGR() const;
+  tAbstractSSTVertexPtr   vertexSSGR() const {return SSGRVertex_;}
 
   /**
-   * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
+   * Pointer to the object handling the \f$G\to f\bar{f}g\f$ vertex.
    */
-  inline tFFVTVertexPtr  vertexFFVGR() const;
+  tAbstractFFVTVertexPtr  vertexFFGGR() const {return FFGGRVertex_;}
 
   /**
-   * Pointer to the object handling the \f$G\to VVV\f$ vertex.
+   * Pointer to the object handling the \f$G\to f\bar{f}W^\pm/Z^0/\gamma\f$ vertex.
    */
-  inline tVVVTVertexPtr  vertexVVVGR() const;
+  tAbstractFFVTVertexPtr  vertexFFWGR() const {return FFWGRVertex_;}
+
+  /**
+   * Pointer to the object handling the \f$G\to W^+W^-Z^0/\gamma\f$ vertex.
+   */
+  tAbstractVVVTVertexPtr  vertexWWWGR() const {return WWWGRVertex_;}
+
+  /**
+   * Pointer to the object handling the \f$G\to ggg\f$ vertex.
+   */
+  tAbstractVVVTVertexPtr  vertexGGGGR() const {return GGGGRVertex_;}
   //@}
   
 public:
@@ -95,7 +120,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
   
 protected:
@@ -106,13 +131,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -126,41 +151,51 @@ private:
      * Private and non-existent assignment operator.
      */
   RSModel & operator=(const RSModel &);
+
+private:
   
   /**
    * Coupling of the graviton
    */
-  Energy _theLambda_pi;
+  Energy Lambda_pi_;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  FFTVertexPtr  _theFFGRVertex;
+  AbstractFFTVertexPtr  FFGRVertex_;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  VVTVertexPtr  _theVVGRVertex;
+  AbstractVVTVertexPtr  VVGRVertex_;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  SSTVertexPtr  _theSSGRVertex;
+  AbstractSSTVertexPtr  SSGRVertex_;
 
   /**
-   * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
+   * Pointer to the object handling the \f$G\to f\bar{f}g\f$ vertex.
    */
-  FFVTVertexPtr _theFFVGRVertex;
+  AbstractFFVTVertexPtr FFGGRVertex_;
 
   /**
-   * Pointer to the object handling the \f$G\to VVV\f$ vertex.
+   * Pointer to the object handling the \f$G\to f\bar{f}W/Z^0\gamma\f$ vertex.
    */
-  VVVTVertexPtr _theVVVGRVertex;
+  AbstractFFVTVertexPtr FFWGRVertex_;
+
+  /**
+   * Pointer to the object handling the \f$G\to W^+W^-Z^0\gamma\f$ vertex.
+   */
+  AbstractVVVTVertexPtr WWWGRVertex_;
+
+  /**
+   * Pointer to the object handling the \f$G\to ggg\f$ vertex.
+   */
+  AbstractVVVTVertexPtr GGGGRVertex_;
   
 };
 }
-#include "RSModel.icc"
-
 
 namespace ThePEG {
 
@@ -173,7 +208,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::RSModel,1> {
   /** Typedef of the base class of RSModel. */
-  typedef Herwig::StandardModel NthBase;
+  typedef Herwig::BSMModel NthBase;
 };
 
 /**

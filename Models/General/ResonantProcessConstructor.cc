@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ResonantProcessConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ResonantProcessConstructor class.
 //
@@ -9,18 +16,27 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
-#include "Herwig++/MatrixElement/GeneralHardME.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
+IBPtr ResonantProcessConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ResonantProcessConstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << theIncoming << theIntermediates << theOutgoing << theModel 
-     << theSubProcess;
+  os << incoming_ << intermediates_ << outgoing_ 
+     << processOption_ << scaleFactor_;
 }
 
 void ResonantProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> theIncoming >> theIntermediates >> theOutgoing >> theModel 
-     >> theSubProcess;
+  is >> incoming_ >> intermediates_ >> outgoing_ 
+     >> processOption_ >> scaleFactor_;
 }
 
 ClassDescription<ResonantProcessConstructor> 
@@ -34,77 +50,136 @@ void ResonantProcessConstructor::Init() {
      "a provided set of intermediate particles");
   
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOffshell
-    ("intermediates",
+    ("Intermediates",
      "A vector of offshell particles for resonant diagrams",
-     &ResonantProcessConstructor::theIntermediates, -1, false, false, true, 
+     &ResonantProcessConstructor::intermediates_, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceIncoming
-    ("incoming",
+    ("Incoming",
      "A vector of incoming particles for resonant diagrams",
-     &ResonantProcessConstructor::theIncoming, -1, false, false, true, 
+     &ResonantProcessConstructor::incoming_, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOutgoing
-    ("outgoing",
-     "A vector of outgoin particles for resonant diagrams",
-     &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
+    ("Outgoing",
+     "A vector of outgoing particles for resonant diagrams",
+     &ResonantProcessConstructor::outgoing_, -1, false, false, true, 
      false);
+
+  static Switch<ResonantProcessConstructor,unsigned int> interfaceProcesses
+    ("Processes",
+     "Whether to generate inclusive or exclusive processes",
+     &ResonantProcessConstructor::processOption_, 0, false, false);
+  static SwitchOption interfaceProcessesSingleParticleInclusive
+    (interfaceProcesses,
+     "SingleParticleInclusive",
+     "Require at least one particle from the list of outgoing particles"
+     " in the hard process",
+     0);
+  static SwitchOption interfaceProcessesTwoParticleInclusive
+    (interfaceProcesses,
+     "TwoParticleInclusive",
+     "Require that both the particles in the hard processes are in the"
+     " list of outgoing particles",
+     1);
+  static SwitchOption interfaceProcessesExclusive
+    (interfaceProcesses,
+     "Exclusive",
+     "Require that both the particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     2);
+  static SwitchOption interfaceProcessesInclusive
+    (interfaceProcesses,
+     "Inclusive",
+     "Generate all modes which are allowed for the on-shell intermediate particle",
+     3);
+
+  static Parameter<ResonantProcessConstructor,double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The prefactor used in the scale calculation. The scale used is"
+     " sHat multiplied by this prefactor",
+     &ResonantProcessConstructor::scaleFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 
 }
 
-void ResonantProcessConstructor::constructResonances() {
-  size_t ninc = theIncoming.size() , ninter = theIntermediates.size();
-  if(ninc == 0 || ninter == 0 || theOutgoing.size() == 0) return;
-  //Remove matrix elements already present
-  EGPtr eg = generator();
-  int nme = theSubProcess->MEs().size();
-  for(int ix = nme - 1; ix >= 0; --ix)
-    eg->preinitInterface(theSubProcess, "MatrixElements", ix, "erase", "");
-    // Get a pointer to the model in use
-  theModel->init();
-  size_t nvertices = theModel->numberOfVertices(); 
-  //init the vertices
-  for(size_t iv = 0; iv < nvertices; ++iv)
-    theModel->vertex(iv)->init();
+void ResonantProcessConstructor::doinit() {
+  HardProcessConstructor::doinit();
+  if(processOption_==2&&outgoing_.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two outgoing particles but " << outgoing_.size()
+      << "have been inserted in ResonantProcessConstructor::doinit()."
+      << Exception::runerror;
+}
+
+namespace {
+  // Helper functor for find_if in duplicate function.
+  class SameIncomingAs {
+  public:
+    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
+    bool operator()(tPDPair ppair) const {
+      long id1(ppair.first->id()), id2(ppair.second->id());
+      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
+    }
+  private:
+    long a, b;
+  };
+
+  bool duplicateIncoming(tPDPair ppair,const vector<tPDPair> &incPairs) {
+    vector<tPDPair>::const_iterator it = 
+      find_if( incPairs.begin(), incPairs.end(), SameIncomingAs(ppair) );
+    return it != incPairs.end(); 
+  }
+}
+
+void ResonantProcessConstructor::constructDiagrams() {
+  size_t ninc = incoming_.size() , ninter = intermediates_.size();
+  if(ninc == 0 || ninter == 0  || !subProcess() ) return;
+  // find the incoming particle pairs
+  vector<tPDPair> incPairs;
+  for(PDVector::size_type i = 0; i < ninc; ++i) {
+    for(PDVector::size_type j = 0; j < ninc; ++j) {
+      tPDPair inc = make_pair(incoming_[i], incoming_[j]);
+      if( (inc.first->iSpin() > inc.second->iSpin()) ||
+	  (inc.first->iSpin() == inc.second->iSpin() &&
+	   inc.first->id() < inc.second->id()) )
+	swap(inc.first, inc.second);
+      if( !duplicateIncoming(inc,incPairs) ) {
+	incPairs.push_back(inc);
+      }
+    }
+  }
+  size_t nvertices = model()->numberOfVertices(); 
   //To construct resonant diagrams loop over the incoming particles, intermediates
   //and vertices to find allowed diagrams. Need to exclude the diagrams that have 
-  //the intermediate as an external particle aswell
-  for(vector<PDPtr>::size_type ii = 0; ii < ninc; ++ii) {
-    tcPDPtr parta = theIncoming[ii];
-    for(vector<PDPtr>::size_type ij = ii; ij < ninc; ++ij) {
-      tcPDPtr partb = theIncoming[ij];
-      for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
-	long ipart = theIntermediates[ik]->id();
-	for(size_t iv = 0; iv < nvertices; ++iv) {
-	  VBPtr vertex = theModel->vertex(iv);
-	  if(vertex->getNpoint() > 3) continue;
-	  long part1 = parta->CC() ? -parta->id() : parta->id();
-	  long part2 = partb->CC() ? -partb->id() : partb->id();
-	  if(vertex->allowed(part1, part2, ipart) || 
-	     vertex->allowed(part1, ipart, part2) ||
-	     vertex->allowed(part2, part1, ipart) ||
-	     vertex->allowed(part2, ipart, part1) ||
-	     vertex->allowed(ipart, part1, part2) ||
-	     vertex->allowed(ipart, part2, part1) ) {
-	    constructVertex2(make_pair(parta->id(), partb->id()), vertex, 
-			     theIntermediates[ik]);
-	  }
+  //the intermediate as an external particle as well
+  for(vector<tcPDPair>::size_type is = 0; is < incPairs.size(); ++is) {
+    tPDPair ppi = incPairs[is]; 
+    for(vector<PDPtr>::size_type ik = 0; ik < ninter ; ++ik) {
+      long ipart = intermediates_[ik]->id();
+      for(size_t iv = 0; iv < nvertices; ++iv) {
+	VBPtr vertex = model()->vertex(iv);
+	if(vertex->getNpoint() > 3) continue;
+	long part1 = ppi.first->CC() ? -ppi.first->id() : ppi.first->id();
+	long part2 = ppi.second->CC() ? -ppi.second->id() : ppi.second->id();
+	if(vertex->allowed(part1, part2, ipart) || 
+	   vertex->allowed(part1, ipart, part2) ||
+	   vertex->allowed(part2, part1, ipart) ||
+	   vertex->allowed(part2, ipart, part1) ||
+	   vertex->allowed(ipart, part1, part2) ||
+	   vertex->allowed(ipart, part2, part1) ) {
+	  constructVertex2(make_pair(ppi.first->id(), ppi.second->id()), vertex, 
+			   intermediates_[ik]);
 	}
       }
     }
   }
-//   cout << "Created " << theDiagrams.size() << " resonant processes\n";
-//   for(HPDVector::size_type ix = 0; ix < theDiagrams.size(); ++ix)
-//     cout << getParticleData(theDiagrams[ix].incoming.first)->PDGName() << ","
-// 	 << getParticleData(theDiagrams[ix].incoming.second)->PDGName()  << "->"
-// 	 << theDiagrams[ix].intermediate->PDGName() << "->" 
-// 	 << getParticleData(theDiagrams[ix].outgoing.first)->PDGName() << ","
-// 	 << getParticleData(theDiagrams[ix].outgoing.second)->PDGName()  << "\n";
   //Create matrix element for each process
-  const HPDVector::size_type ndiags = theDiagrams.size();
+  const HPDVector::size_type ndiags = diagrams_.size();
   for(HPDVector::size_type ix = 0; ix < ndiags; ++ix)
-    createMatrixElement(theDiagrams[ix]);
+    createMatrixElement(diagrams_[ix]);
 }
 
 void ResonantProcessConstructor::
@@ -112,52 +187,90 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
 		 PDPtr partc) {
   //We have the left hand part of the diagram, just need all the possibilities
   //for the RHS
-  size_t nvertices = theModel->numberOfVertices(); 
-  for(size_t io = 0; io < theOutgoing.size(); ++io) {
-    tcPDPtr outa = theOutgoing[io];
+  size_t nvertices = model()->numberOfVertices(); 
+  if(processOption_!=3) {
+    for(size_t io = 0; io < outgoing_.size(); ++io) {
+      tcPDPtr outa = outgoing_[io];
+      for(size_t iv = 0; iv < nvertices; ++iv) {
+	VBPtr vertex2 = model()->vertex(iv);
+	if(vertex2->getNpoint() > 3) continue;
+	tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing, 
+			     outgoing);
+	for(tPDSet::const_iterator ita = outb.begin(); ita != outb.end(); ++ita)
+	  makeResonantDiagram(in, partc, outa->id(),(**ita).id(), 
+			      make_pair(vertex, vertex2));
+      }
+    }
+  }
+  else {
     for(size_t iv = 0; iv < nvertices; ++iv) {
-      VBPtr vertex2 = theModel->vertex(iv);
+      VBPtr vertex2 = model()->vertex(iv);
       if(vertex2->getNpoint() > 3) continue;
-      PDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
-			  outgoing);
-      makeResonantDiagrams(in, partc, outa->id(), outb, 
-			   make_pair(vertex, vertex2));
+      for(unsigned int ix = 0;ix < 3; ++ix) {
+	vector<long> pdlist = vertex2->search(ix, partc->id());
+	for(unsigned int iy=0;iy<pdlist.size();iy+=3) {
+	  long out1 = ix==0 ? pdlist.at(iy+1) : pdlist.at(iy  );
+	  long out2 = ix==2 ? pdlist.at(iy+1) : pdlist.at(iy+2);
+	  if(partc->mass() < getParticleData(out1)->mass() + 
+	     getParticleData(out2)->mass()) continue;
+	  makeResonantDiagram(in, partc, out1, out2, 
+			      make_pair(vertex, vertex2));
+	}
+      }
     }
   }
 }
 
 void ResonantProcessConstructor::
-makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const PDSet & out, 
+makeResonantDiagram(IDPair in, PDPtr offshell, long outa, long outb, 
 		     VBPair vertpair) {
-  for(PDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
-    if( abs(outa) == abs(offshell->id()) || 
-	abs((*ita)->id()) == abs(offshell->id())) continue;
-    HPDiagram newdiag;
-    newdiag.incoming = in;
-    newdiag.outgoing  = make_pair(outa, (*ita)->id()); 
-    newdiag.intermediate = offshell;
-    newdiag.vertices = vertpair;
-    newdiag.channelType = HPDiagram::sChannel;
-    newdiag.colourFlow = vector<CFPair>(1, make_pair(1, 1.));
-    theDiagrams.push_back(newdiag);
+  assert(vertpair.first && vertpair.second);
+  if( abs(outa) == abs(offshell->id()) || 
+      abs(outb) == abs(offshell->id())) return;
+  HPDiagram newdiag(in,make_pair(outa,outb));
+  newdiag.intermediate = offshell;
+  newdiag.vertices = vertpair;
+  newdiag.channelType = HPDiagram::sChannel;
+  fixFSOrder(newdiag);
+  assignToCF(newdiag);
+  if(duplicate(newdiag,diagrams_)) return;
+  // if inclusive enforce the exclusivity
+  if(processOption_==1) {
+    PDVector::const_iterator loc = 
+      std::find(outgoing_.begin(),outgoing_.end(),
+		getParticleData(newdiag.outgoing. first));
+    if(loc==outgoing_.end()) return;
+    loc = 
+      std::find(outgoing_.begin(),outgoing_.end(),
+		getParticleData(newdiag.outgoing.second));
+    if(loc==outgoing_.end()) return;
   }
+  else if(processOption_==2) {
+    if(!((newdiag.outgoing. first==outgoing_[0]->id()&&
+	  newdiag.outgoing.second==outgoing_[1]->id())||
+	 (newdiag.outgoing. first==outgoing_[1]->id()&&
+	  newdiag.outgoing.second==outgoing_[0]->id())))
+      return;
+  }
+  // add to the list
+  diagrams_.push_back(newdiag);
 }
 	
-set<PDPtr> 
+set<tPDPtr> 
 ResonantProcessConstructor::search(VBPtr vertex, long part1, direction d1, 
 				   long part2, direction d2, direction d3) {
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
-  PDVector ext;
-  PDSet third;
+  vector<long> ext;
+  tPDSet third;
   for(unsigned int ix = 0;ix < 3; ++ix) {
-    PDVector pdlist = vertex->search(ix, part1);
+    vector<long> pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0; ix < ext.size(); ix += 3) {
-    long id0 = ext.at(ix)->id();
-    long id1 = ext.at(ix+1)->id();
-    long id2 = ext.at(ix+2)->id();
+    long id0 = ext.at(ix);
+    long id1 = ext.at(ix+1);
+    long id2 = ext.at(ix+2);
     int pos;
     if((id0 == part1 && id1 == part2) ||
        (id0 == part2 && id1 == part1))
@@ -171,8 +284,9 @@ ResonantProcessConstructor::search(VBPtr vertex, long part1, direction d1,
     else
       pos = -1;
     if(pos >= 0) {
-      if(d3 == incoming && ext.at(pos)->CC()) ext.at(pos) = ext.at(pos)->CC();
-      third.insert(ext.at(pos));
+      tPDPtr p = getParticleData(ext[pos]);
+      if(d3 == incoming && p->CC()) p = p->CC();
+      third.insert(p);
     }
   }
   
@@ -206,30 +320,33 @@ createMatrixElement(const HPDiagram & diag) const {
   extpart[1] = getParticleData(diag.incoming.second);
   extpart[2] = getParticleData(diag.outgoing.first);
   extpart[3] = getParticleData(diag.outgoing.second);
-  string objectname ("/Defaults/MatrixElements/");
-  string classname = MEClassname(extpart, objectname);
+  string objectname ("/Herwig/MatrixElements/");
+  string classname = MEClassname(extpart, diag.intermediate, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
     (generator()->preinitCreate(classname, objectname));
-  if(matrixElement) {
-    matrixElement->setProcessInfo(HPDVector(1, diag),
-				  colourFactor(extpart), 1);
-    generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				  theSubProcess->MEs().size(),
-				  "insert", matrixElement->fullName()); 
-  }
-  else 
+  if( !matrixElement ) {
     throw RPConstructorError() 
-      << "createMatrixElement - No matrix element object could be created for "
-      << "the process " << extpart[0]->PDGName() << "," 
-      << extpart[1]->PDGName() << "->" << extpart[2]->PDGName() 
-      << "," << extpart[3]->PDGName() << ".  No class for this spin-structure "
-      << "exists! \n"
+      << "ResonantProcessConstructor::createMatrixElement "
+      << "- No matrix element object could be created for "
+      << "the process " 
+      << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
+      << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
+      << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
+      << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
+      << ".  Constructed class name: \"" << classname << "\"\n"
       << Exception::warning;
-
+    return;
+  }
+  matrixElement->setProcessInfo(HPDVector(1, diag),
+				colourFlow(extpart), debug(),0,scaleFactor_);
+  generator()->preinitInterface(subProcess(), "MatrixElements", 
+				subProcess()->MEs().size(),
+				"insert", matrixElement->fullName()); 
 }
 
-string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
-					       string & objname) const {
+string ResonantProcessConstructor::
+MEClassname(const vector<tcPDPtr> & extpart, tcPDPtr inter,
+	    string & objname) const {
  string classname("Herwig::ME");
   for(vector<tcPDPtr>::size_type ix = 0; ix < extpart.size(); ++ix) {
     if(ix == 2) classname += "2";
@@ -238,35 +355,13 @@ string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else
-      throw RPConstructorError() << "MEClassname() : Encountered an "
-				 << "unknown spin while constructing "
-				 << "MatrixElement classname " 
-				 << extpart[ix]->iSpin()
-				 << Exception::runerror;
+      throw RPConstructorError()
+	<< "MEClassname() : Encountered an unknown spin for "
+	<< extpart[ix]->PDGName() << " while constructing MatrixElement "
+	<< "classname " << extpart[ix]->iSpin() << Exception::warning;
   }
-  objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2" 
+  objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2"
+    + inter->PDGName() + "2"
     + extpart[2]->PDGName() + extpart[3]->PDGName();
   return classname;  
-}
-
-vector<DVector> ResonantProcessConstructor::
-colourFactor(const tcPDVector & extpart) const {
-  vector<DVector > cfactor(1, DVector(1, 0.));
-
-  if(extpart[0]->iColour() == PDT::Colour3 ||
-     extpart[1]->iColour() == PDT::Colour3) {
-    if(extpart[2]->iColour() == PDT::Colour3 || 
-       extpart[3]->iColour() == PDT::Colour3)
-      cfactor[0][0] = 9.;
-    else
-      cfactor[0][0] = 3.;
-  }
-  else if(extpart[0]->iColour() == PDT::Colour8) {
-    if(extpart[2]->iColour() == PDT::Colour3 || 
-       extpart[3]->iColour() == PDT::Colour3)
-      cfactor[0][0] = 24.;
-    else 
-      cfactor[0][0] = 8.;
-  }
-  return cfactor;
 }

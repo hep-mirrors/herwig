@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// PVectorMesonVectorPScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the PVectorMesonVectorPScalarDecayer class.
 //
@@ -15,8 +22,16 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+ 
+void PVectorMesonVectorPScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
 
-void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
+void PVectorMesonVectorPScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
@@ -27,7 +42,7 @@ void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // set up the integration channels
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0]=getParticleData(_incoming[ix]);
@@ -44,6 +59,7 @@ void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer() 
   : _coupling(67), _incoming(67), _outgoingV(67), _outgoingP(67), 
     _maxweight(67) {
+  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0));
   // decay mode h'_1 to K K*
   _incoming[0] =  10333; _outgoingV[0] =  313; _outgoingP[0] = -311; 
   _coupling[0] = 4.889/GeV; _maxweight[0] = 11.; 
@@ -215,7 +231,7 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
 }
 
 int PVectorMesonVectorPScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-						 const PDVector & children) const {
+						 const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;
@@ -286,7 +302,7 @@ void PVectorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PVectorMesonVectorPScalarDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 100./GeV, false, false, true);
 
   static ParVector<PVectorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -297,40 +313,41 @@ void PVectorMesonVectorPScalarDecayer::Init() {
 }
 
 
-double PVectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
+double PVectorMesonVectorPScalarDecayer::me2(const int,
 					     const Particle & inpart,
-					     const ParticleVector & decay) const {
-  // wavefunction for the decaying vector
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
+					     const ParticleVector& decay,
+					     MEOption meopt) const {
   // is the vector massless
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
-  // set up the spin information for the decay products
-  vector<LorentzPolarizationVector> vout;
-  VectorWaveFunction(vout,decay[0],outgoing,true,photon,vertex);
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
+					  outgoing,true,photon);
+    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors[1],decay[0],outgoing,photon);
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
-  complex<Energy> epsdot(0.*MeV);
+  complex<Energy> epsdot(ZERO);
   InvEnergy2 pre(_coupling[imode()]/inpart.mass());
   for(unsigned ix=0;ix<3;++ix) {
     if(ix==1&&photon) {
-      for(unsigned int iy=0;iy<3;++iy) newME(iy,ix,0)=0.;
+      for(unsigned int iy=0;iy<3;++iy) ME()(iy,ix,0)=0.;
     }
     else {
-      epsdot=vout[ix]*inpart.momentum();
+      epsdot=_vectors[1][ix]*inpart.momentum();
       for(unsigned int iy=0;iy<3;++iy)
-	newME(iy,ix,0)=pre*invec[iy].dot(p0dotpv*vout[ix]
+	ME()(iy,ix,0)=pre*_vectors[0][iy].dot(p0dotpv*_vectors[1][ix]
 					 -epsdot*decay[0]->momentum());
     }
   }
-  ME(newME);
   // test of the matrix element
 //   double me = newME.contract(rhoin).real();
 //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
@@ -340,7 +357,7 @@ double PVectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 bool PVectorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,
@@ -393,27 +410,27 @@ void PVectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " "
+      output << "newdef " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingVector " << ix << " "
+      output << "newdef " << name() << ":OutgoingVector " << ix << " "
 	     << _outgoingV[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
+      output << "newdef " << name() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " "
+      output << "newdef " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix]*GeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " "
+      output << "newdef " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming "  << ix << " "
+      output << "insert " << name() << ":Incoming "  << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingVector " << ix << " "
+      output << "insert " << name() << ":OutgoingVector " << ix << " "
 	     << _outgoingV[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
+      output << "insert " << name() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " "
+      output << "insert " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix]*GeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " "
+      output << "insert " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
   }

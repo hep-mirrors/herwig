@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the JetFinder class.
+//
+#ifndef Analysis2_JetFinder_FH
+#define Analysis2_JetFinder_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Analysis2 {
+
+class JetFinder;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Analysis2::JetFinder,JetFinderPtr);
+
+}
+
+#endif

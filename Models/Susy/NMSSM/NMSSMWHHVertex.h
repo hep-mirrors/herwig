@@ -6,13 +6,12 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMWHHVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
  * The NMSSMWHHVertex class implements the coupling of an electroweak"
@@ -28,7 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  inline NMSSMWHHVertex();
+  NMSSMWHHVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -72,13 +71,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -88,9 +87,8 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -149,11 +147,6 @@ private:
    */
   MixingMatrixPtr _mixP;
 
-  /**
-   * Pointer to the SM object.
-   */
-  tcHwSMPtr _theSM;
-
 };
 }
 
@@ -178,7 +171,7 @@ template <>
 struct ClassTraits<Herwig::NMSSMWHHVertex>
   : public ClassTraitsBase<Herwig::NMSSMWHHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig+::NMSSMWHHVertex"; }
+  static string className() { return "Herwig::NMSSMWHHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * NMSSMWHHVertex is implemented. It may also include several, space-separated,
@@ -192,7 +185,5 @@ struct ClassTraits<Herwig::NMSSMWHHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMWHHVertex.icc"
 
 #endif /* HERWIG_NMSSMWHHVertex_H */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SSCNWVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SSCNWVertex_H
 #define HERWIG_SSCNWVertex_H
 //
@@ -6,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
-#include "SSCNWVertex.fh"
+#include "SusyBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -73,13 +79,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -91,16 +97,10 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSCNWVertex> initSSCNWVertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -109,11 +109,6 @@ private:
   SSCNWVertex & operator=(const SSCNWVertex &);
 
 private:
-
-  /**
-   * A pointer to the Susy Model object
-   */
-  tSusyBasePtr _theSS;
 
   /**
    * Store \f$sin(\theta_W)\f$
@@ -166,43 +161,5 @@ private:
   Complex _rightlast;
 };
 }
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSCNWVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSCNWVertex,1> {
-  /** Typedef of the first base class of SSCNWVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSCNWVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSCNWVertex>
-  : public ClassTraitsBase<Herwig::SSCNWVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSCNWVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSCNWVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSCNWVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
-#include "SSCNWVertex.icc"
 
 #endif /* HERWIG_SSCNWVertex_H */

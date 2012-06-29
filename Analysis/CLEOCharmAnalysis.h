@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// CLEOCharmAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_CLEOCharmAnalysis_H
 #define HERWIG_CLEOCharmAnalysis_H
 //
@@ -7,14 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "CLEOCharmAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the CLEOCharmAnalysis class.
+/** \ingroup Analysis
+ * The CLEOCharmAnalysis class compares the results of Herwig++ at 10.52 GeV
+ * with data on Charm hadron spectra from the CLEO experiment
  *
  * @see \ref CLEOCharmAnalysisInterfaces "The interfaces"
  * defined for CLEOCharmAnalysis.
@@ -26,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline CLEOCharmAnalysis();
+  CLEOCharmAnalysis() : _s() {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -50,17 +57,13 @@ public:
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
   /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
    * Analyze the given particle.
    * @param particle pointer to the particle to be analyzed.
+   * @param weight The weight for the event
    */
-  virtual void analyze(tPPtr particle);
+  virtual void analyze(tPPtr particle, double weight);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -81,13 +84,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -184,13 +187,11 @@ struct ClassTraits<Herwig::CLEOCharmAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "CLEOCharmAnalysis.icc"
 
 #endif /* HERWIG_CLEOCharmAnalysis_H */

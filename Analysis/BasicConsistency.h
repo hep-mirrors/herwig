@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// BasicConsistency.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef THEPEG_BasicConsistency_H
 #define THEPEG_BasicConsistency_H
 //
@@ -6,13 +13,14 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "BasicConsistency.fh"
 
 namespace Herwig {
-  using namespace ThePEG;
+using namespace ThePEG;
 
-/**
- * Here is the documentation of the BasicConsistency class.
+/** \ingroup Analysis
+ * The BasicConsistency class is a simple analysis which performs a basic
+ * analysis of the event checking that energy, momentum and charge are
+ * conserved and no quarks or clusters are final-state particles.
  *
  * @see \ref BasicConsistencyInterfaces "The interfaces"
  * defined for BasicConsistency.
@@ -24,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline BasicConsistency();
+  BasicConsistency();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -82,13 +90,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -96,10 +104,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -137,6 +151,22 @@ private:
    *  Check for clusters in  the final-state
    */
   bool _checkcluster;
+
+  /**
+   *  Check the branching ratios
+   */
+  bool _checkBR;
+
+  /**
+   *  Maximum absolute momentum deviation before warning
+   */
+  Energy _absolutemomentumtolerance;
+
+  /**
+   *  Maximum momentum deviation relative to beam energy before warning
+   */
+  double _relativemomentumtolerance;
+
 };
 
 }
@@ -171,7 +201,5 @@ struct ClassTraits<Herwig::BasicConsistency>
 /** @endcond */
 
 }
-
-#include "BasicConsistency.icc"
 
 #endif /* THEPEG_BasicConsistency_H */

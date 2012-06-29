@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Interpolator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Interpolator_H
 #define HERWIG_Interpolator_H
 //
@@ -6,6 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include <cassert>
 
 namespace Herwig {
 
@@ -17,8 +25,6 @@ using namespace ThePEG;
  *  This class implments a polynominal interpolation of a table of values, it is
  *  based on the interpolation code in FORTRAN HERWIG. 
  *
- * @see \ref InterpolatorInterfaces "The interfaces"
- * defined for Interpolator.
  */
 
 template <typename ValT, typename ArgT>
@@ -36,21 +42,42 @@ public:
   /**
    * The default constructor.
    */
-  Interpolator() : _order(3) {}
+  Interpolator() : _order(3), _copyx(5),_copyfun(5) {}
 
   /**
    * Constructor with data as vectors.
    */
-  Interpolator(vector<ValT> f, vector<ArgT> x, unsigned int order);
+  Interpolator(const vector<ValT> & f, 
+	       const vector<ArgT> & x, 
+	       unsigned int order) 
+    : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
+      _funit(TypeTraits<ValT>::baseunit), 
+      _xunit(TypeTraits<ArgT>::baseunit),
+      _copyx(order+2),_copyfun(order+2) {
+    assert(_order>0);
+    assert(x.size() == f.size());
+    for (size_t i = 0; i < f.size(); ++i) {
+      _fun [i] = f[i] / _funit;
+      _xval[i] = x[i] / _xunit;
+    }
+  }
   //@}
 
   /**
    * Constructor from bare arrays
    */
   Interpolator(size_t size, 
-	       double f[], ValT funit,
-	       double x[], ArgT xunit,
-	       unsigned int order);
+	       const double f[], ValT funit,
+	       const double x[], ArgT xunit,
+	       unsigned int order) 
+    : _fun(size,0.0),_xval(size,0.0),_order(order),
+      _funit(funit),_xunit(xunit), _copyx(order+2),_copyfun(order+2) {
+    assert(_order>0);
+    for (size_t i = 0; i < size; ++i) {
+      _fun [i] = f[i];
+      _xval[i] = x[i];
+    }
+  }
   //@}
 
   /**
@@ -146,6 +173,16 @@ private:
    */
   ArgT _xunit;
 
+  /**
+   *  Temporary storage vector
+   */
+  mutable vector<double> _copyx;
+
+  /**
+   *  Temporary storage vector
+   */
+  mutable vector<double> _copyfun;
+
 };
 
 /**
@@ -155,8 +192,8 @@ private:
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
 make_InterpolatorPtr(size_t size, 
-		     double f[], ValT funit,
-		     double x[], ArgT xunit,
+		     const double f[], ValT funit,
+		     const double x[], ArgT xunit,
 		     unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(size,
@@ -171,8 +208,8 @@ make_InterpolatorPtr(size_t size,
  */
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
-make_InterpolatorPtr(typename std::vector<ValT> f, 
-		     typename std::vector<ArgT> x, 
+make_InterpolatorPtr(const typename std::vector<ValT> & f, 
+		     const typename std::vector<ArgT> & x, 
 		     unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
@@ -201,8 +238,8 @@ struct ClassTraits<Herwig::Interpolator<ValT,ArgT> >
   : public ClassTraitsBase<Herwig::Interpolator<ValT,ArgT> > {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::Interpolator<"
-				+ ClassTraits<ValT>::className() + ","
-				+ ClassTraits<ArgT>::className() + ">"; }
+                               + ClassTraits<ValT>::className() + ","
+                               + ClassTraits<ArgT>::className() + ">"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Interpolator is implemented. It may also include several, space-separated,

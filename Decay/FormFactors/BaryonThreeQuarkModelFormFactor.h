@@ -5,7 +5,6 @@
 // This is the declaration of the BaryonThreeQuarkModelFormFactor class.
 //
 #include "BaryonFormFactor.h"
-#include "BaryonThreeQuarkModelFormFactor.fh"
 #include "ThePEG/PDT/ParticleData.h"
 
 namespace Herwig {
@@ -27,11 +26,6 @@ using namespace ThePEG;
  * @see BaryonFormFactor
  */
 class BaryonThreeQuarkModelFormFactor: public BaryonFormFactor {
-
-  /**
-   *  friend class for the integration of the expansion coefficents
-   */
-  friend class BaryonCFunction;
   
 public:
 
@@ -69,13 +63,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 public:
@@ -136,6 +130,33 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
 
+  /**
+   *  The integrand for the coefficients of the expansion. This is a function of the
+   * integration variable \f$x\f$ which is chosen to transform the integrand over \f$y\f$
+   * which is from \f$0\f$ to \f$\infty\f$ to an integral between 0 and 1. This means
+   * that \f$y=\frac{1-x}{x}\f$.
+   * @param x The integration variable.
+   */
+  double operator ()(double x) const;
+  /** Argument type for GaussianIntegrator */
+  typedef double ArgType;
+  /** Return type for GaussianIntegrator */
+  typedef double ValType;
+
+  /**
+   * The integrand for the semi-analytic calculation of the semi-leptonic width.
+   * This is included for testing purposes.
+   * @param omega The \f$\omega\f$ parameter of the heavy quark form-factors.
+   * @param m0 The mass of the incoming baryon.
+   * @param m1 The mass of the outgoing baryon.
+   * @param type The type of the decay 
+   * @param imass The baryonic mass parameter to use.
+   * @param id0 PDG code for the decaying particle
+   * @param id1 PDG code for the decay product
+   */
+  Energy widthIntegrand(double omega,Energy m0, Energy m1, int type, int imass,
+			int id0,int id1);
+
 protected:
 
   /** @name Function needed to calculate the form factors */
@@ -144,7 +165,7 @@ protected:
    * Returns the function \f$\Phi_N\f$ function of PRD56, 348 as a function
    * of \f$\omega\f$. 
    */
-  inline vector<double> phiFunction(double);
+  vector<double> phiFunction(double);
 
   /**
    * The integral of a power of the the \f$S\f$ function of PRD56, 348 with respect
@@ -157,16 +178,7 @@ protected:
    * @param SNm2 The integral with the function raised to the power \f$N/2-1\f$.
    * @param SN The integral with the function raised to the power \f$N\f$.  
    */
-  inline void SN(double y,int N,double & SNm2,double & SN);
-
-  /**
-   *  The integrand for the coefficients of the expansion. This is a function of the
-   * integration variable \f$x\f$ which is chosen to transform the integrand over \f$y\f$
-   * which is from \f$0\f$ to \f$\infty\f$ to an integral between 0 and 1. This means
-   * that \f$y=\frac{1-x}{x}\f$.
-   * @param x The integration variable.
-   */
-  inline double integrandC(double x);
+  void SN(double y,int N,double & SNm2,double & SN) const;
   //@}
 
 protected:
@@ -179,7 +191,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -314,39 +326,5 @@ template <>
 /** @endcond */
 
 }
-
-
-namespace Herwig {
-
-/**\ingroup Decay
- *  This is a function which can access the integrandC
- * member of the BaryonThreeQuarkModelFormFactor class. This function can then
- * be integrated to give the coefficients.
- */
-struct BaryonCFunction {
-
-  /**
-   *  The constructor
-   */
-  inline BaryonCFunction(BaryonThreeQuarkModelFormFactorPtr);
-  
-  /**
-   *  Return the value
-   */
-  inline double operator ()(double argument) const;
-  /** Argument type for GaussianIntegrator */
-  typedef double ArgType;
-  /** Return type for GaussianIntegrator */
-  typedef double ValType;
-  
-  /**
-   *  A pointer to the form factor to supply the integrand.
-   */
-  BaryonThreeQuarkModelFormFactorPtr _formFactor;
-
-};
-}
-
-#include "BaryonThreeQuarkModelFormFactor.icc"
 
 #endif /* HERWIG_BaryonThreeQuarkModelFormFactor_H */

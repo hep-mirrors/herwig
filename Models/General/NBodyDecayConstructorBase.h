@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// NBodyDecayConstructorBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_NBodyDecayConstructorBase_H
 #define HERWIG_NBodyDecayConstructorBase_H
 //
@@ -7,17 +14,44 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Utilities/Exception.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "NBodyDecayConstructorBase.fh"
+#include "DecayConstructor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
+
+
+/**
+ *  A struct to order the particles in the same way as in the DecayMode's
+ */
+struct ParticleOrdering {
+  /**
+   *  Operator for the ordering
+   * @param p1 The first ParticleData object
+   * @param p2 The second ParticleData object
+   */
+  bool operator()(PDPtr p1, PDPtr p2) {
+    return abs(p1->id()) > abs(p2->id()) ||
+      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+  }
+};
+
+/**
+ * A set of ParticleData objects ordered as for the DecayMode's
+ */
+typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
+
 /**
  * This is the base class for NBodyDecayConstructors. An N-body 
  * decay constructor should inherit from this and implement the 
  * DecayList virtual funtcion to create the decays and decayers.  
- * 
+ *
+ * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
+ * defined for NBodyDecayConstructor. 
  */
 class NBodyDecayConstructorBase: public Interfaced {
 
@@ -26,14 +60,80 @@ public:
   /**
    * The default constructor.
    */
-  inline NBodyDecayConstructorBase();
+  NBodyDecayConstructorBase() : 
+    _init(true),_iteration(1), _points(1000), _info(false), 
+    _createmodes(true) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
-   *@param part vector of ParticleData pointers containing particles in model
+   * @param particles vector of ParticleData pointers containing 
+   * particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part)=0;
+  virtual void DecayList(const set<PDPtr> & particles) = 0;
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const = 0;
+
+  /**
+   * Set the pointer to the DecayConstrcutor
+   */
+  void decayConstructor(tDecayConstructorPtr d) { 
+    _decayConstructor = d;
+  }
+
+protected:
+  
+  /**
+   * Set the branching ratio of this mode. This requires 
+   * calculating a new width for the decaying particle and reweighting
+   * the current branching fractions.
+   * @param dm The decaymode for which to set the branching ratio
+   * @param pwidth The calculated width of the mode
+   */
+  void setBranchingRatio(tDMPtr dm, Energy pwidth);
+
+  /**
+   * Set the interfaces of the decayers depending on the flags stored.
+   * @param name Fullname of the decayer in the EventGenerator
+   * including the path
+   */
+  void setDecayerInterfaces(string name) const;
+
+  /**
+   * Whether to initialize decayers or not
+   */
+  bool initialize() const { return _init; }
+  
+  /**
+   * Number of iterations if initializing (default 1)
+   */
+  int iteration() const { return _iteration; }
+
+  /**
+   * Number of points to do in initialization
+   */
+  int points() const { return _points; }
+
+  /**
+   * Whether to output information on the decayers 
+   */
+  bool info() const { return _info; }
+
+  /**
+   * Whether to create the DecayModes as well as the Decayer objects 
+   */
+  bool createDecayModes() const { return _createmodes; }
+
+  /**
+   * Get the pointer to the DecayConstructor object
+   */
+  tDecayConstructorPtr decayConstructor() const { 
+    return _decayConstructor;
+  }
+
 
 public:
 
@@ -67,7 +167,8 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
-  static AbstractClassDescription<NBodyDecayConstructorBase> initNBodyDecayConstructorBase;
+  static AbstractClassDescription<NBodyDecayConstructorBase> 
+  initNBodyDecayConstructorBase;
 
   /**
    * The assignment operator is private and must never be called.
@@ -75,11 +176,51 @@ private:
    */
   NBodyDecayConstructorBase & operator=(const NBodyDecayConstructorBase &);
 
+private:
+
+  /**
+   * Whether to initialize decayers or not
+   */
+  bool _init;
+  
+  /**
+   * Number of iterations if initializing (default 1)
+   */
+  int _iteration;
+
+  /**
+   * Number of points to do in initialization
+   */
+  int _points;
+
+  /**
+   * Whether to output information on the decayers 
+   */
+  bool _info;
+
+  /**
+   * Whether to create the DecayModes as well as the Decayer objects 
+   */
+  bool _createmodes;
+  
+  /**
+   * A pointer to the DecayConstructor object 
+   */
+  tDecayConstructorPtr _decayConstructor;
 };
 
   /** An Exception class that can be used by all inheriting classes to
    * indicate a setup problem. */
-  class NBodyDecayConstructorError : public Exception {};
+  class NBodyDecayConstructorError : public Exception {
+
+  public:
+
+    NBodyDecayConstructorError() : Exception() {}
+    
+    NBodyDecayConstructorError(const string & str,
+			       Severity sev) : Exception(str,sev)
+    {}
+  };
 
 }
 
@@ -103,16 +244,11 @@ template <>
 struct ClassTraits<Herwig::NBodyDecayConstructorBase>
   : public ClassTraitsBase<Herwig::NBodyDecayConstructorBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::NBodyDecayConstructorBase"; }      /** Return the name of the shared library be loaded to get
-   *  access to the NBodyDecayConstructorBase class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
+  static string className() { return "Herwig::NBodyDecayConstructorBase"; }
 };
 
 /** @endcond */
 
 }
-
-#include "NBodyDecayConstructorBase.icc"
 
 #endif /* HERWIG_NBodyDecayConstructorBase_H */

@@ -1,0 +1,32 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Powheg.in
+
+create ThePEG::LuminosityFunction BFactoryLuminosity
+set BFactoryLuminosity:BeamEMaxA 5.225
+set BFactoryLuminosity:BeamEMaxB 5.225
+set /Herwig/Cuts/EECuts:MHatMin 9.99
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/EventHandlers/LEPHandler:LuminosityFunction BFactoryLuminosity
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MinimumFlavour 1
+set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4
+##################################################
+# select the analyses 
+##################################################
+
+# BELLE charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun BFactory-Powheg-10.45 LEPGenerator

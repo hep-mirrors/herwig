@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// a1ThreePionCLEODecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_a1ThreePionCLEODecayer_H
 #define HERWIG_a1ThreePionCLEODecayer_H
 //
@@ -7,8 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
-// #include "a1ThreePionCLEODecayer.fh"
-// #include "a1ThreePionCLEODecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -153,18 +159,18 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -229,13 +235,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const { return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const { return new_ptr(*this);}
   //@}
   
 protected:
@@ -247,7 +253,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -276,7 +282,16 @@ private:
    * @param icharge Which pion masses to use for the momentum calculation
    * @return The Breit-Wigner
    */
-  inline Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const;
+  Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    Complex ii(0.,1.);
+    double ratio = icharge==0 ? 
+      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_prhocc[ires] :
+      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpi0)/_prhoc0[ires];
+    Energy gamrun=_rhowidth[ires]*pow(ratio,3)*_rhomass[ires]/q;
+    return sqr(_rhomass[ires])
+      /(sqr(_rhomass[ires])-q2-ii*_rhomass[ires]*gamrun);
+  }
 
   /**
    * Breit wigner for the \f$\sigma\f$, \f$B^S_\sigma(q^2)\f$.
@@ -284,7 +299,15 @@ private:
    * @param icharge Which pion masses to use for the momentum calculation
    * @return The Breit-Wigner
    */
-  inline Complex sigmaBreitWigner(Energy2 q2,int icharge) const;
+  Complex sigmaBreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    Complex ii(0.,1.);
+    double ratio = icharge==0 ? 
+      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_psigmacc :
+      Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_psigma00;
+    Energy gamrun=_sigmawidth*ratio*_sigmamass/q;
+    return sqr(_sigmamass)/(sqr(_sigmamass)-q2-ii*_sigmamass*gamrun);
+  }
   
   /**
    * Breit wigner for the \f$f_0(1370)\f$, \f$B^S_{f_0}(q^2)\f$.
@@ -292,15 +315,31 @@ private:
    * @param icharge Which pion masses to use for the momentum calculation
    * @return The Breit-Wigner
    */
-  inline Complex f0BreitWigner(Energy2 q2,int icharge) const;
-
+  Complex f0BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    Complex ii(0.,1.);
+    double ratio = icharge==0 ? 
+      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf0cc :
+      Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf000;
+    Energy gamrun=_f0width*ratio*_f0mass/q;
+    return sqr(_f0mass)/(sqr(_f0mass)-q2-ii*_f0mass*gamrun);
+  }
+  
   /**
    * Breit wigner for the \f$f_2\f$, \f$B^D_{f_2}(q^2)\f$.
    * @param q2 The scale, \f$q^2\f$.
    * @param icharge Which pion masses to use for the momentum calculation
    * @return The Breit-Wigner
    */
-  inline Complex f2BreitWigner(Energy2 q2,int icharge) const;
+  Complex f2BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    Complex ii(0.,1.);
+    double ratio = icharge==0 ?
+      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf2cc :
+      Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf200;
+    Energy gamrun=_f2width*pow(ratio,5)*_f2mass/q;
+    return sqr(_f2mass)/(sqr(_f2mass)-q2-ii*_f2mass*gamrun);
+  }
   
   /**
    * Calculate the form factors
@@ -552,6 +591,16 @@ private:
    * Maximum weight for the three charged pion channel.
    */
   mutable double _threemax;
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
 };
   
 }
@@ -592,7 +641,5 @@ struct ClassTraits<Herwig::a1ThreePionCLEODecayer>
 /** @endcond */
   
 }
-
-#include "a1ThreePionCLEODecayer.icc"
 
 #endif /* HERWIG_a1ThreePionCLEODecayer_H */

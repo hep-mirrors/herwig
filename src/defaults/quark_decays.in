@@ -1,0 +1,21 @@
+#
+# file containing the decays for the quarks
+#
+#
+decaymode t->dbar,u,b; 0.321586 1 /Herwig/Decays/Top
+decaymode t->sbar,c,b; 0.320957 1 /Herwig/Decays/Top
+decaymode t->mu+,nu_mu,b; 0.108059 1 /Herwig/Decays/Top
+decaymode t->e+,nu_e,b; 0.108059 1 /Herwig/Decays/Top
+decaymode t->tau+,nu_tau,b; 0.10798 1 /Herwig/Decays/Top
+decaymode t->sbar,u,b; 0.01644 1 /Herwig/Decays/Top
+decaymode t->dbar,c,b; 0.016407 1 /Herwig/Decays/Top
+decaymode t->bbar,c,b; 0.000512 1 /Herwig/Decays/Top
+#
+decaymode tbar->d,ubar,bbar; 0.321586 1 /Herwig/Decays/Top
+decaymode tbar->s,cbar,bbar; 0.320957 1 /Herwig/Decays/Top
+decaymode tbar->e-,nu_ebar,bbar; 0.108059 1 /Herwig/Decays/Top
+decaymode tbar->mu-,nu_mubar,bbar; 0.108059 1 /Herwig/Decays/Top
+decaymode tbar->tau-,nu_taubar,bbar; 0.10798 1 /Herwig/Decays/Top
+decaymode tbar->s,ubar,bbar; 0.01644 1 /Herwig/Decays/Top
+decaymode tbar->d,cbar,bbar; 0.016407 1 /Herwig/Decays/Top
+decaymode tbar->b,cbar,bbar; 0.000512 1 /Herwig/Decays/Top

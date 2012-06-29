@@ -1,0 +1,45 @@
+##################################################
+# Example generator based on Tevatron parameters
+# usage: Herwig++ read TVT.in
+#
+# Since most parameters are identical to LHC,
+# we use the default LHCGenerator and adapt only
+# for the differences
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 100000
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+
+##################################################
+#  Need to use an NLO PDF
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+
+##################################################
+#  and strong coupling
+##################################################
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
+
+##################################################
+#  Setup the POWHEG shower
+##################################################
+cd /Herwig/Shower
+set Evolver:HardEmissionMode POWHEG
+set Evolver:IntrinsicPtGaussian 2.2*GeV
+
+##################################################
+#  Create the Herwig analysis
+##################################################
+cd /Herwig/Generators
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis

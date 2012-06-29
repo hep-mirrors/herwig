@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ScalarScalarScalarDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ScalarScalarScalarDecayer class.
 //
@@ -14,6 +21,14 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+
+void ScalarScalarScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix) )_maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
 
 ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
   : _incoming(78), _outgoing1(78), _outgoing2(78), 
@@ -220,7 +235,7 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   generateIntermediates(false);
 }
 
-inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
+void ScalarScalarScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize(_coupling.size());
@@ -231,7 +246,7 @@ inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
   // set up the integration channels
   vector<double> wgt;
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0] = getParticleData(_incoming[ix]);
     extpart[1] = getParticleData(_outgoing1[ix]);
@@ -245,7 +260,7 @@ inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
 }
 
 int ScalarScalarScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id0(parent->id());
   int id0bar = parent->CC() ? parent->CC()->id() : id0;
@@ -317,7 +332,7 @@ void ScalarScalarScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarScalarScalarDecayer::_coupling,
-     MeV, 0, 0*MeV, 0.0*MeV, 1000000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 1000000.*MeV, false, false, true);
 
   static ParVector<ScalarScalarScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -327,24 +342,25 @@ void ScalarScalarScalarDecayer::Init() {
 
 }
 
-double ScalarScalarScalarDecayer::me2(bool vertex, const int,
-				   const Particle & inpart,
-				   const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
-  for (unsigned int ix=0;ix<2;++ix) {
-    //ALB gcc 3.2.3 {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+double ScalarScalarScalarDecayer::me2(const int,
+				      const Particle & inpart,
+				      const ParticleVector & decay,
+				      MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0));
   }
-  // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0);
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
   double fact(_coupling[imode()]/inpart.mass());
-  newME(0,0,0) = fact;
-  ME(newME);
+  ME()(0,0,0) = fact;
   return sqr(fact);
 }
 
@@ -399,27 +415,27 @@ void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "newdef " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "newdef " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "newdef " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "newdef " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]/MeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "newdef " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
+      output << "insert " << name() << ":FirstOutgoing " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
+      output << "insert " << name() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]/MeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

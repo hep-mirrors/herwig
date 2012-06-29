@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusterDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterDecayer_H
 #define HERWIG_ClusterDecayer_H
 
@@ -10,8 +17,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-
-class ThePEG::Particle;   // forward declaration
 
 /** \ingroup Hadronization
  *  \class ClusterDecayer
@@ -38,7 +43,7 @@ public:
   /**
    * Default constructor.
    */
-  inline ClusterDecayer();  
+  ClusterDecayer();  
   //@}
 
   /** Decays all remaining clusters into hadrons. 
@@ -49,7 +54,7 @@ public:
    * the other functions.
    */
   void decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-    throw(Veto, Stop, Exception);
+   ;
 
 public:
 
@@ -88,11 +93,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ClusterDecayer> initClusterDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ClusterDecayer & operator=(const ClusterDecayer &);
@@ -110,8 +110,7 @@ public:
    *  where \f$ S \f$ is a parameter of the model and \f$ r_1 \f$ is a random
    *  number [0,1].
    */
-  pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr) 
-    throw(Veto, Stop, Exception);
+  pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr);
 
 private:
 
@@ -134,10 +133,10 @@ private:
   /**
    * Whether a cluster decays along the perturbative parton direction.
    */
-  int _clDirLight;
-  int _clDirBottom;
-  int _clDirCharm;
-  int _clDirExotic;
+  bool _clDirLight;
+  bool _clDirBottom;
+  bool _clDirCharm;
+  bool _clDirExotic;
 
    /**
    * The S parameter from decayIntoTwoHadrons
@@ -163,40 +162,5 @@ private:
 
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/** 
- * The following template specialization informs ThePEG about the
- * base class of ClusterDecayer.
- */
-struct BaseClassTrait<Herwig::ClusterDecayer,1> {
-  /** Typedef of the base class of ClusterDecayer. */
-  typedef Interfaced NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::ClusterDecayer>
-  : public ClassTraitsBase<Herwig::ClusterDecayer> {
-  /** Return the class name. */
-  static string className() { return "Herwig::ClusterDecayer"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ClusterDecayer.icc"
 
 #endif /* HERWIG_ClusterDecayer_H */

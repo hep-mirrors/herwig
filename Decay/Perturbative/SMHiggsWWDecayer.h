@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsWWDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsWWDecayer_H
 #define HERWIG_SMHiggsWWDecayer_H
 //
@@ -7,9 +14,10 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
-#include "SMHiggsWWDecayer.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
 namespace Herwig {
 
@@ -46,7 +54,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -55,23 +63,30 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Which of the possible decays is required
    */
-  virtual int modeNumber(bool &, tcPDPtr, const PDVector & ) const {return -1;}
+  virtual int modeNumber(bool &, tcPDPtr, const tPDVector & ) const {return -1;}
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -107,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -125,7 +140,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 
@@ -152,17 +173,17 @@ private:
   /**
    *  Pointer to the fermion-femion-W vertex
    */
-  FFVVertexPtr _theFFWVertex;
+  AbstractFFVVertexPtr _theFFWVertex;
 
   /**
    *  Pointer to the fermion-femion-Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
 
   /**
    *  Pointer to the higgs-WW/ZZ vertex
    */
-  VVSVertexPtr _theHVVVertex;
+  AbstractVVSVertexPtr _theHVVVertex;
   //@}
 
   /**
@@ -192,28 +213,43 @@ private:
   /**
    *  Maximum weight for \f$H\to W^+W^-\f$ decays
    */
-  double _wmax;
+  vector<double> _wmax;
 
   /**
    *  Maximum weight for \f$H\to Z^0Z^0\f$ decays
    */
-  double _zmax;
+  vector<double> _zmax;
   //@}
 
   /**
-   *  Parameters for the generation of the boson masses
+   *  Spin density matrix
    */
-  //@{
-  /**
-   *  Generate using a Breit-Wigner or a power law
-   */
-  bool _breit;
+  mutable RhoDMatrix _rho;
 
   /**
-   *  Power for the power law
+   *  Scalar wavefunction
    */
-  double _power;
-  //@}
+  mutable ScalarWaveFunction _swave;
+
+  /**
+   *  1st spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction   > _awave1;
+
+  /**
+   *  2nd spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction   > _awave2;
+
+  /**
+   *  1st barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _fwave1;
+
+  /**
+   *  2nd barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _fwave2;
 };
 
 }
@@ -252,7 +288,5 @@ struct ClassTraits<Herwig::SMHiggsWWDecayer>
 /** @endcond */
 
 }
-
-#include "SMHiggsWWDecayer.icc"
 
 #endif /* HERWIG_SMHiggsWWDecayer_H */

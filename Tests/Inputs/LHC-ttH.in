@@ -1,0 +1,30 @@
+read LHC.common
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+set /Herwig/Particles/t:Stable Stable
+set /Herwig/Particles/tbar:Stable Stable
+set /Herwig/Particles/h0:Stable Stable
+cd /Herwig/Partons
+create ThePEG::LHAPDF LHAPDF ThePEGLHAPDF.so
+set LHAPDF:PType Nucleon
+set LHAPDF:PDFName cteq5l.LHgrid
+set LHAPDF:PDFNumber 19070
+set LHAPDF:RemnantHandler HadronRemnants
+set /Herwig/Particles/p+:PDF LHAPDF
+set /Herwig/Particles/pbar-:PDF LHAPDF
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:StatLevel Full
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 100000
+set /Herwig/Model:EW/Sin2ThetaW 0.22254916
+cd /Herwig/MatrixElements/
+set MEPP2ttbarH:ShapeScheme OnShell
+insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
+set /Herwig/RunningMass:TopBottomCharmMass Pole
+cd /Herwig/Generators
+set /Herwig/Analysis/Basics:CheckQuark 0
+create Herwig::QQHTest ttHTest HadronTest.so
+set ttHTest:QuarkFlavour Top
+insert LHCGenerator:AnalysisHandlers 0 ttHTest
+saverun LHC-ttH LHCGenerator

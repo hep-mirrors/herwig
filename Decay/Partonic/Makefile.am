@@ -1,11 +1,9 @@
 pkglib_LTLIBRARIES = HwPartonicDecay.la
 HwPartonicDecay_la_SOURCES = \
-QuarkoniumDecayer.h QuarkoniumDecayer.icc QuarkoniumDecayer.cc \
-HeavyDecayer.h      HeavyDecayer.icc      HeavyDecayer.cc \
-WeakPartonicDecayer.h WeakPartonicDecayer.icc \
-WeakPartonicDecayer.cc WeakPartonicDecayer.fh \
-BtoSGammaDecayer.h BtoSGammaDecayer.icc \
-BtoSGammaDecayer.cc BtoSGammaDecayer.fh  \
-PartonicDecayerBase.h PartonicDecayerBase.icc \
-PartonicDecayerBase.cc PartonicDecayerBase.fh 
-HwPartonicDecay_la_LDFLAGS = -module -version-info 2:0:0
+QuarkoniumDecayer.h   QuarkoniumDecayer.cc \
+HeavyDecayer.h        HeavyDecayer.cc \
+WeakPartonicDecayer.h WeakPartonicDecayer.cc\
+BtoSGammaDecayer.h    BtoSGammaDecayer.cc\
+PartonicDecayerBase.h PartonicDecayerBase.cc 
+
+HwPartonicDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0

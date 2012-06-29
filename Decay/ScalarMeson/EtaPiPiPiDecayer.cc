@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// EtaPiPiPiDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the EtaPiPiPiDecayer class.
 //
@@ -15,6 +22,14 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+
+void EtaPiPiPiDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
 
 EtaPiPiPiDecayer::EtaPiPiPiDecayer() 
   : _incoming(6), _outgoing(6), _charged(6), _prefactor(6),
@@ -49,7 +64,7 @@ EtaPiPiPiDecayer::EtaPiPiPiDecayer()
   generateIntermediates(false);
 }
  
-void EtaPiPiPiDecayer::doinit() throw(InitException) {
+void EtaPiPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the parameters
   unsigned int isize(_incoming.size());
@@ -59,7 +74,7 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
     throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
 			  << Exception::runerror;
   // external particles for the modes
-  PDVector extneut(4),extcharged(4);
+  tPDVector extneut(4),extcharged(4);
   extneut[1]    = getParticleData(ParticleID::pi0);
   extneut[2]    = getParticleData(ParticleID::pi0);
   extcharged[1] = getParticleData(ParticleID::piplus);
@@ -95,10 +110,10 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
 }
 
 int EtaPiPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				 const PDVector & children) const {
+				 const tPDVector & children) const {
   if(children.size()!=3) return -1;
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)           ++npip;
@@ -144,7 +159,30 @@ void EtaPiPiPiDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiPiDecayer> documentation
     ("The EtaPiPiPiDecayer class performs the decay of a scalar meson to"
-     " two pions and another meson using a simple paramterisation of the dalitz plot.");
+     " two pions and another meson using a simple paramterisation of the dalitz plot.",
+     "The decay of eta to two pions follows \\cite{Beisert:2003zs,Gormley:1970qz,Tippens:2001fm}.",
+     "%\\cite{Beisert:2003zs}\n"
+     "\\bibitem{Beisert:2003zs}\n"
+     "  N.~Beisert and B.~Borasoy,\n"
+     "  %``Hadronic decays of eta and eta' with coupled channels,''\n"
+     "  Nucl.\\ Phys.\\  A {\\bf 716}, 186 (2003)\n"
+     "  [arXiv:hep-ph/0301058].\n"
+     "  %%CITATION = NUPHA,A716,186;%%\n"
+     "%\\cite{Gormley:1970qz}\n"
+     "\\bibitem{Gormley:1970qz}\n"
+     "  M.~Gormley, E.~Hyman, W.~Y.~Lee, T.~Nash, J.~Peoples, C.~Schultz and S.~Stein,\n"
+     "   ``Experimental determination of the dalitz-plot distribution of the decays\n"
+     "   eta $\\to$ pi+ pi- pi0 and eta $\\to$ pi+ pi- gamma, and the branching ratio\n"
+     "  %eta $\\to$ pi+ pi- gamma/eta $\\to$ pi+,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 2}, 501 (1970).\n"
+     "  %%CITATION = PHRVA,D2,501;%%\n"
+     "%\\cite{Tippens:2001fm}\n"
+     "\\bibitem{Tippens:2001fm}\n"
+     "  W.~B.~Tippens {\\it et al.}  [Crystal Ball Collaboration],\n"
+     "  %``Determination of the quadratic slope parameter in eta $\\to$ 3pi0 decay,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 87}, 192001 (2001).\n"
+     "  %%CITATION = PRLTA,87,192001;%%\n"
+     );
 
   static ParVector<EtaPiPiPiDecayer,int> interfaceIncoming
     ("Incoming",
@@ -196,16 +234,22 @@ void EtaPiPiPiDecayer::Init() {
 
 }
 
-double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
-			     const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  // construct spin info objects (this is pretty much a waste of time)
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  for(unsigned int ix=0;ix<decay.size();++ix) {
-    //ALB ScalarWaveFunction(decay[ix],outgoing,true,vertex);
-    PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+double EtaPiPiPiDecayer::me2(const int,const Particle & inpart,
+			     const ParticleVector & decay,
+			     MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // calculate the matrix element
   // compute the variables we need
@@ -221,9 +265,7 @@ double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
   double x(0.5*sqrt(3.)*(u-t)/inpart.mass()/Q),x2(x*x);
   double y(0.5*msum/inpart.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
   double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=sqrt(me);
-  ME(newME);
+  ME()(0,0,0,0)=sqrt(me);
   return me;
 }
 
@@ -271,7 +313,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
   WidthCalculatorBasePtr 
     temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
-		 (1,-1000.*MeV,0.0*MeV,0.0,*this,imode,m[0],m[1],m[2])));
+		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
   if(_outgoing[imode]==ParticleID::eta) {
     tcGenericMassGeneratorPtr test;
     tGenericMassGeneratorPtr massptr;
@@ -282,7 +324,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
     }
     if(massptr) {
       massptr->init();
-      return new_ptr(OneOffShellCalculator(3,temp,massptr,0.*MeV));
+      return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
     }
   }
   return temp;
@@ -295,39 +337,39 @@ void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming   " << ix << " "
+      output << "newdef " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << fullName() << ":Outgoing  " << ix << " "
+      output << "newdef " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "set " << fullName() << ":Charged " << ix << " "
+      output << "newdef " << name() << ":Charged " << ix << " "
 		 << _charged[ix]  << "\n";
-      output << "set " << fullName() << ":Prefactor " << ix << " "
+      output << "newdef " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "set " << fullName() << ":a " << ix << " "
+      output << "newdef " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "set " << fullName() << ":b " << ix << " "
+      output << "newdef " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "set " << fullName() << ":c " << ix << " "
+      output << "newdef " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "set " << fullName() << ":MaxWeight  " << ix << " "
+      output << "newdef " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming   " << ix << " "
+      output << "insert " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "insert " << fullName() << ":Outgoing  " << ix << " "
+      output << "insert " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "insert " << fullName() << ":Charged " << ix << " "
+      output << "insert " << name() << ":Charged " << ix << " "
 	     << _charged[ix]  << "\n";
-      output << "insert " << fullName() << ":Prefactor " << ix << " "
+      output << "insert " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "insert " << fullName() << ":a " << ix << " "
+      output << "insert " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "insert " << fullName() << ":b " << ix << " "
+      output << "insert " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "insert " << fullName() << ":c " << ix << " "
+      output << "insert " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "insert " << fullName() << ":MaxWeight  " << ix << " "
+      output << "insert " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
   }

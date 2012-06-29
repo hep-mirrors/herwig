@@ -7,14 +7,13 @@
 
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "LPairAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LPairAnalysis class is designed to analyse lepton pairs.
  * Therefore the lepton and antilepton with highest pt are selected from
  * the event and some observables are computed and booked into
@@ -32,20 +31,10 @@ class LPairAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline LPairAnalysis();
-
-  /**
-   * The destructor.
-   */
-  virtual ~LPairAnalysis();
-  //@}
-
-public:
+  LPairAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -67,46 +56,9 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -124,13 +76,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -141,15 +93,15 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
 
 private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Indicates that this is a concrete class without persistent data.
    */
-  static ClassDescription<LPairAnalysis> initLPairAnalysis;
+  static NoPIOClassDescription<LPairAnalysis> initLPairAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
@@ -237,10 +189,5 @@ struct ClassTraits<Herwig::LPairAnalysis>
 /** @endcond */
 
 }
-
-#include "LPairAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LPairAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_LPairAnalysis_H */

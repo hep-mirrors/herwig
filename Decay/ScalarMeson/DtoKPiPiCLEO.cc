@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DtoKPiPiCLEO.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DtoKPiPiCLEO class.
 //
@@ -14,12 +21,16 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
+
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-DtoKPiPiCLEO::DtoKPiPiCLEO() {
+DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(), 
+			       _c1K1430m(), _c1K14300(), _c1rho1700(), _c1K1680(), 
+			       _c2Kstarp(), _c2rho(), _c2omega(), _c2Kstarm(),
+			       _c2f980(), _c2f2(), _c2f1370(), _c2K14300(),
+			       _c2K14302(), _c2K1680(), _c2NR(), _rD0(), _rres() {
   // use local values for masses and widths
   _localparameters=true;
   // masses and widths
@@ -58,13 +69,18 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() {
   _a2K14302   = 1.0/GeV2 ; _phi2K14302 = 335;
   _a2K1680    = 5.6      ; _phi2K1680  = 174;
   _a2NR       = 1.1      ; _phi2NR     = 340;
+  // radial sizes
+  _rD0  = 5.0/GeV;
+  _rres = 1.5/GeV;
   // zero masses
-  _mpi=0.*MeV;
-  _mkp=0.*MeV;
-  _mk0=0.*MeV;
+  _mpi=ZERO;
+  _mkp=ZERO;
+  _mk0=ZERO;
+  // intermediates
+  generateIntermediates(true);
 }
 
-void DtoKPiPiCLEO::doinit() throw(InitException) {
+void DtoKPiPiCLEO::doinit() {
   DecayIntegrator::doinit();
   // complex amplitudes for K-pi+pi0
   double fact = Constants::pi/180.;
@@ -88,9 +104,6 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   _c2K14302  = _a2K14302*Complex(cos(_phi2K14302*fact),sin(_phi2K14302*fact));
   _c2K1680   = _a2K1680 *Complex(cos(_phi2K1680 *fact),sin(_phi2K1680 *fact));
   _c2NR      = _a2NR    *Complex(cos(_phi2NR    *fact),sin(_phi2NR    *fact));
-  // radial sizes
-  _rD0  = 5.0/GeV;
-  _rres = 1.5/GeV;
   // pion and kaon masses
   _mpi = getParticleData(ParticleID::piplus)->mass();
   _mkp = getParticleData(ParticleID::Kplus )->mass();
@@ -112,7 +125,7 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   tPDPtr f2      = getParticleData(ParticleID::f_2);
   DecayPhaseSpaceChannelPtr newchannel;
   // D0 -> K- pi+ pi0
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::D0);
   extpart[1]=getParticleData(ParticleID::Kminus);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -263,8 +276,6 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   }
   else {
     wtemp=vector<double>(iy-ix,1./double(iy-ix));
-    for(unsigned int iz=0;iz<wtemp.size();++iz) {
-    }
   }
   if(_maxwgt.size()<2) _maxwgt.push_back(1.);
   addMode(mode2,_maxwgt[1],wtemp);
@@ -408,157 +419,157 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &DtoKPiPiCLEO::_momega, MeV, 782.57*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_momega, MeV, 782.57*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef980Mass
     ("f980Mass",
      "The mass of the f_0(980) meson",
-     &DtoKPiPiCLEO::_mf980, MeV, 977.00*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf980, MeV, 977.00*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef_2Mass
     ("f_2Mass",
      "The mass of the f_2 meson",
-     &DtoKPiPiCLEO::_mf2, MeV, 1275.4 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf2, MeV, 1275.4 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef1370Mass
     ("f1370Mass",
      "The mass of the f_0(1370) meson",
-     &DtoKPiPiCLEO::_mf1370, MeV, 1310   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf1370, MeV, 1310   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_01430Mass
     ("K_01430Mass",
      "The mass of the K_0(1430) meson",
-     &DtoKPiPiCLEO::_mK14300, MeV, 1412   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK14300, MeV, 1412   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_21430Mass
     ("K_21430Mass",
      "The mass of the K_2(1430) meson",
-     &DtoKPiPiCLEO::_mK14302, MeV, 1425.6 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK14302, MeV, 1425.6 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar1680Mass
     ("Kstar1680Mass",
      "The mass of the K*(1680) meson",
-     &DtoKPiPiCLEO::_mK1680, MeV, 1717   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK1680, MeV, 1717   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho1700Mass
     ("rho1700Mass",
      "The mass of the rho(1700) meson",
-     &DtoKPiPiCLEO::_mrho1700, MeV, 1700   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrho1700, MeV, 1700   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar0892Mass
     ("Kstar0892Mass",
      "The mass of the K*0(892) meson",
-     &DtoKPiPiCLEO::_mK8920, MeV, 896.1 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK8920, MeV, 896.1 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892AMass
     ("KstarPlus892AMass",
      "The mass of the K*+(892) meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_mK892A, MeV, 891.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK892A, MeV, 891.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892BMass
     ("KstarPlus892BMass",
      "The mass of the K*+(892) meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_mK892B, MeV, 891.66*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK892B, MeV, 891.66*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+ meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_mrhoA, MeV, 770   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrhoA, MeV, 770   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho0Mass
     ("Rho0Mass",
      "The mass of the rho+ meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_mrhoB, MeV, 769.3 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrhoB, MeV, 769.3 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The width of the omega meson",
-     &DtoKPiPiCLEO::_womega, MeV, 8.44*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_womega, MeV, 8.44*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef980Width
     ("f980Width",
      "The width of the f_0(980) meson",
-     &DtoKPiPiCLEO::_wf980, MeV,  50.  *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf980, MeV,  50.  *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef_2Width
     ("f_2Width",
      "The width of the f_2 meson",
-     &DtoKPiPiCLEO::_wf2, MeV, 185.1 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf2, MeV, 185.1 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef1370Width
     ("f1370Width",
      "The width of the f_0(1370) meson",
-     &DtoKPiPiCLEO::_wf1370, MeV, 272.0 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf1370, MeV, 272.0 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_01430Width
     ("K_01430Width",
      "The width of the K_0(1430) meson",
-     &DtoKPiPiCLEO::_wK14300, MeV, 294   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK14300, MeV, 294   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_21430Width
     ("K_21430Width",
      "The width of the K_2(1430) meson",
-     &DtoKPiPiCLEO::_wK14302, MeV,  98.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK14302, MeV,  98.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar1680Width
     ("Kstar1680Width",
      "The width of the K*(1680) meson",
-     &DtoKPiPiCLEO::_wK1680, MeV, 322   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK1680, MeV, 322   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho1700Width
     ("rho1700Width",
      "The width of the rho(1700) meson",
-     &DtoKPiPiCLEO::_wrho1700, MeV, 240   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrho1700, MeV, 240   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar0892Width
     ("Kstar0892Width",
      "The width of the K*0(892) meson",
-     &DtoKPiPiCLEO::_wK8920, MeV, 50.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK8920, MeV, 50.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892AWidth
     ("KstarPlus892AWidth",
      "The width of the K*+(892) meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_wK892A, MeV,  50   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK892A, MeV,  50   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892BWidth
     ("KstarPlus892BWidth",
      "The width of the K*+(892) meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_wK892B, MeV, 50.8 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK892B, MeV, 50.8 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+ meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_wrhoA, MeV, 150.7 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrhoA, MeV, 150.7 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho0Width
     ("Rho0Width",
      "The width of the rho+ meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_wrhoB, MeV, 150.2 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrhoB, MeV, 150.2 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfacegPi
@@ -639,7 +650,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceChargedK_0MinusAmplitude
     ("ChargedK_0MinusAmplitude",
      "Amplitude for the K_0(1430)- component for D0 -> K- pi+ pi0",
-     &DtoKPiPiCLEO::_a1K1430m, GeV2, 0.77*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a1K1430m, GeV2, 0.77*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceChargedK_0MinusPhase
@@ -651,7 +662,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceChargedK_00Amplitude
     ("ChargedK_00Amplitude",
      "Amplitude for the K_0(1430)0 component for D0 -> K- pi+ pi0",
-     &DtoKPiPiCLEO::_a1K14300, GeV2, 0.85*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a1K14300, GeV2, 0.85*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceChargedK_00Phase
@@ -735,7 +746,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralf980Amplitude
     ("Neutralf980Amplitude",
      "Amplitude for the f_0(980) component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f980, GeV2, 0.34*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2f980, GeV2, 0.34*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf980Phase
@@ -747,7 +758,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy2> interfaceNeutralf2Amplitude
     ("Neutralf2Amplitude",
      "Amplitude for the f_2 component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f2, 1./GeV2, 0.7/GeV2, 0.0/GeV2, 10.0/GeV2,
+     &DtoKPiPiCLEO::_a2f2, 1./GeV2, 0.7/GeV2, ZERO, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf2Phase
@@ -759,7 +770,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralf1370Amplitude
     ("Neutralf1370Amplitude",
      "Amplitude for the f_0(1370) component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f1370, GeV2, 1.8*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2f1370, GeV2, 1.8*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf1370Phase
@@ -771,7 +782,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralKK_0MinusAmplitude
     ("NeutralKK_0MinusAmplitude",
      "Amplitude for the K_0(1430)- component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2K14300, GeV2, 2.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2K14300, GeV2, 2.0*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralKK_0MinusPhase
@@ -783,7 +794,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy2> interfaceNeutralKK_2MinusAmplitude
     ("NeutralKK_2MinusAmplitude",
      "Amplitude for the K_2(1430)- component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2K14302, 1./GeV2, 1.0/GeV2, 0.0/GeV2, 10.0/GeV2,
+     &DtoKPiPiCLEO::_a2K14302, 1./GeV2, 1.0/GeV2, ZERO, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralKK_2MinusPhase
@@ -819,20 +830,20 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy> interfaceDRadius
     ("DRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
-     &DtoKPiPiCLEO::_rD0, 1./GeV, 5./GeV, 0./GeV, 10./GeV,
+     &DtoKPiPiCLEO::_rD0, 1./GeV, 5./GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,InvEnergy> interfaceResonanceRadius
     ("ResonanceRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the"
      "intermediate resonances",
-     &DtoKPiPiCLEO::_rres, 1./GeV, 1.5/GeV, 0./GeV, 10./GeV,
+     &DtoKPiPiCLEO::_rres, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiCLEO,double> interfaceMaximumWeights
     ("MaximumWeights",
      "The maximum weights for the unweighting of the decays",
-     &DtoKPiPiCLEO::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     &DtoKPiPiCLEO::_maxwgt, -1, 1.0, 0.0, 1.0e11,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiCLEO,double> interfaceWeights
@@ -843,14 +854,14 @@ void DtoKPiPiCLEO::Init() {
 }
 
 int DtoKPiPiCLEO::modeNumber(bool & cc,tcPDPtr parent,
-			     const PDVector & children) const {
+			     const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0
   if(abs(id0)!=ParticleID::D0) return -1;
   cc = id0==ParticleID::Dbar0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   for( ;pit!=children.end();++pit) {
     id0=(**pit).id();
@@ -867,17 +878,23 @@ int DtoKPiPiCLEO::modeNumber(bool & cc,tcPDPtr parent,
   else                        return -1;
 }
 
-double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
-			    const Particle & inpart,
-			    const ParticleVector & decay) const {
+double DtoKPiPiCLEO::me2(const int ichan,
+			 const Particle & inpart,
+			 const ParticleVector & decay,
+			 MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the invariant masses needed to calulate the amplitudes
   Energy mD  = inpart.mass();
@@ -969,10 +986,8 @@ double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
@@ -980,89 +995,151 @@ void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":OmegaMass "          << _momega/MeV   << "\n";
-  output << "set " << fullName() << ":f980Mass "           << _mf980/MeV    << "\n";
-  output << "set " << fullName() << ":f_2Mass "            << _mf2/MeV      << "\n";
-  output << "set " << fullName() << ":f1370Mass "          << _mf1370/MeV   << "\n";
-  output << "set " << fullName() << ":K_01430Mass "        << _mK14300/MeV  << "\n";
-  output << "set " << fullName() << ":K_21430Mass "        << _mK14302/MeV  << "\n";
-  output << "set " << fullName() << ":Kstar1680Mass "      << _mK1680/MeV   << "\n";
-  output << "set " << fullName() << ":rho1700Mass "        << _mrho1700/MeV << "\n";
-  output << "set " << fullName() << ":Kstar0892Mass "      << _mK8920/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892AMass "  << _mK892A/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892BMass "  << _mK892B/MeV   << "\n";
-  output << "set " << fullName() << ":RhoPlusMass "        << _mrhoA/MeV    << "\n";
-  output << "set " << fullName() << ":Rho0Mass "           << _mrhoB/MeV    << "\n";
-  output << "set " << fullName() << ":OmegaWidth "         << _womega/MeV   << "\n";
-  output << "set " << fullName() << ":f980Width "          << _wf980/MeV    << "\n";
-  output << "set " << fullName() << ":f_2Width "           << _wf2/MeV      << "\n";
-  output << "set " << fullName() << ":f1370Width "         << _wf1370/MeV   << "\n";
-  output << "set " << fullName() << ":K_01430Width "       << _wK14300/MeV  << "\n";
-  output << "set " << fullName() << ":K_21430Width "       << _wK14302/MeV  << "\n";
-  output << "set " << fullName() << ":Kstar1680Width "     << _wK1680/MeV   << "\n";
-  output << "set " << fullName() << ":rho1700Width "       << _wrho1700/MeV << "\n";
-  output << "set " << fullName() << ":Kstar0892Width "     << _wK8920/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892AWidth " << _wK892A/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892BWidth " << _wK892B/MeV   << "\n";
-  output << "set " << fullName() << ":RhoPlusWidth "       << _wrhoA/MeV    << "\n";
-  output << "set " << fullName() << ":Rho0Width "          << _wrhoB/MeV    << "\n";
-  output << "set " << fullName() << ":gPi " << _gpi << "\n";
-  output << "set " << fullName() << ":gK " << _gK << "\n";
-  output << "set " << fullName() << ":f0Option " << _f0opt << "\n";
-  output << "set " << fullName() << ":ChargedNonResonantAmplitude " << _a1NR << "\n";
-  output << "set " << fullName() << ":ChargedNonResonantPhase " << _phi1NR<< "\n";
-  output << "set " << fullName() << ":ChargedRhoAmplitude " << _a1rho<< "\n";
-  output << "set " << fullName() << ":ChargedRhoPhase " << _phi1rho<< "\n";
-  output << "set " << fullName() << ":ChargedKStarMinusAmplitude " << _a1Kstarm<< "\n";
-  output << "set " << fullName() << ":ChargedKStarMinusPhase " << _phi1Kstarm<< "\n";
-  output << "set " << fullName() << ":ChargedKStar0Amplitude " << _a1Kstar0<< "\n";
-  output << "set " << fullName() << ":ChargedKStar0Phase " << _phi1Kstar0<< "\n";
-  output << "set " << fullName() << ":ChargedK_0MinusAmplitude " 
+  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "newdef " << name() << ":OmegaMass "          << _momega/MeV   << "\n";
+  output << "newdef " << name() << ":f980Mass "           << _mf980/MeV    << "\n";
+  output << "newdef " << name() << ":f_2Mass "            << _mf2/MeV      << "\n";
+  output << "newdef " << name() << ":f1370Mass "          << _mf1370/MeV   << "\n";
+  output << "newdef " << name() << ":K_01430Mass "        << _mK14300/MeV  << "\n";
+  output << "newdef " << name() << ":K_21430Mass "        << _mK14302/MeV  << "\n";
+  output << "newdef " << name() << ":Kstar1680Mass "      << _mK1680/MeV   << "\n";
+  output << "newdef " << name() << ":rho1700Mass "        << _mrho1700/MeV << "\n";
+  output << "newdef " << name() << ":Kstar0892Mass "      << _mK8920/MeV   << "\n";
+  output << "newdef " << name() << ":KstarPlus892AMass "  << _mK892A/MeV   << "\n";
+  output << "newdef " << name() << ":KstarPlus892BMass "  << _mK892B/MeV   << "\n";
+  output << "newdef " << name() << ":RhoPlusMass "        << _mrhoA/MeV    << "\n";
+  output << "newdef " << name() << ":Rho0Mass "           << _mrhoB/MeV    << "\n";
+  output << "newdef " << name() << ":OmegaWidth "         << _womega/MeV   << "\n";
+  output << "newdef " << name() << ":f980Width "          << _wf980/MeV    << "\n";
+  output << "newdef " << name() << ":f_2Width "           << _wf2/MeV      << "\n";
+  output << "newdef " << name() << ":f1370Width "         << _wf1370/MeV   << "\n";
+  output << "newdef " << name() << ":K_01430Width "       << _wK14300/MeV  << "\n";
+  output << "newdef " << name() << ":K_21430Width "       << _wK14302/MeV  << "\n";
+  output << "newdef " << name() << ":Kstar1680Width "     << _wK1680/MeV   << "\n";
+  output << "newdef " << name() << ":rho1700Width "       << _wrho1700/MeV << "\n";
+  output << "newdef " << name() << ":Kstar0892Width "     << _wK8920/MeV   << "\n";
+  output << "newdef " << name() << ":KstarPlus892AWidth " << _wK892A/MeV   << "\n";
+  output << "newdef " << name() << ":KstarPlus892BWidth " << _wK892B/MeV   << "\n";
+  output << "newdef " << name() << ":RhoPlusWidth "       << _wrhoA/MeV    << "\n";
+  output << "newdef " << name() << ":Rho0Width "          << _wrhoB/MeV    << "\n";
+  output << "newdef " << name() << ":gPi " << _gpi << "\n";
+  output << "newdef " << name() << ":gK " << _gK << "\n";
+  output << "newdef " << name() << ":f0Option " << _f0opt << "\n";
+  output << "newdef " << name() << ":ChargedNonResonantAmplitude " << _a1NR << "\n";
+  output << "newdef " << name() << ":ChargedNonResonantPhase " << _phi1NR<< "\n";
+  output << "newdef " << name() << ":ChargedRhoAmplitude " << _a1rho<< "\n";
+  output << "newdef " << name() << ":ChargedRhoPhase " << _phi1rho<< "\n";
+  output << "newdef " << name() << ":ChargedKStarMinusAmplitude " << _a1Kstarm<< "\n";
+  output << "newdef " << name() << ":ChargedKStarMinusPhase " << _phi1Kstarm<< "\n";
+  output << "newdef " << name() << ":ChargedKStar0Amplitude " << _a1Kstar0<< "\n";
+  output << "newdef " << name() << ":ChargedKStar0Phase " << _phi1Kstar0<< "\n";
+  output << "newdef " << name() << ":ChargedK_0MinusAmplitude " 
 	 << _a1K1430m/GeV2 << "\n";
-  output << "set " << fullName() << ":ChargedK_0MinusPhase " << _phi1K1430m<< "\n";
-  output << "set " << fullName() << ":ChargedK_00Amplitude " 
+  output << "newdef " << name() << ":ChargedK_0MinusPhase " << _phi1K1430m<< "\n";
+  output << "newdef " << name() << ":ChargedK_00Amplitude " 
 	 << _a1K14300/GeV2 << "\n";
-  output << "set " << fullName() << ":ChargedK_00Phase " << _phi1K14300<< "\n";
-  output << "set " << fullName() << ":ChargedRho1700Amplitude " << _a1rho1700<< "\n";
-  output << "set " << fullName() << ":ChargedRho1700Phase " << _phi1rho1700<< "\n";
-  output << "set " << fullName() << ":ChargedK1680MinusAmplitude " << _a1K1680<< "\n";
-  output << "set " << fullName() << ":ChargedK1680MinusPhase " << _phi1K1680<< "\n";
-  output << "set " << fullName() << ":NeutralKStarPlusAmplitude " << _a2Kstarp<< "\n";
-  output << "set " << fullName() << ":NeutralKStarPlusPhase " << _phi2Kstarp<< "\n";
-  output << "set " << fullName() << ":NeutralRhoAmplitude " << _a2rho<< "\n";
-  output << "set " << fullName() << ":NeutralRhoPhase " << _phi2rho<< "\n";
-  output << "set " << fullName() << ":NeutralOmegaAmplitude " << _a2omega<< "\n";
-  output << "set " << fullName() << ":NeutralOmegaPhase " <<_phi2omega << "\n";
-  output << "set " << fullName() << ":NeutralKStarMinusAmplitude " << _a2Kstarm<< "\n";
-  output << "set " << fullName() << ":NeutralKStarMinusPhase " << _phi2Kstarm<< "\n";
-  output << "set " << fullName() << ":Neutralf980Amplitude " << _a2f980/GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf980Phase " << _phi2f980<< "\n";
-  output << "set " << fullName() << ":Neutralf2Amplitude " << _a2f2*GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf2Phase " << _phi2f2<< "\n";
-  output << "set " << fullName() << ":Neutralf1370Amplitude " << _a2f1370/GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf1370Phase " << _phi2f1370<< "\n";
-  output << "set " << fullName() << ":NeutralKK_0MinusAmplitude " 
+  output << "newdef " << name() << ":ChargedK_00Phase " << _phi1K14300<< "\n";
+  output << "newdef " << name() << ":ChargedRho1700Amplitude " << _a1rho1700<< "\n";
+  output << "newdef " << name() << ":ChargedRho1700Phase " << _phi1rho1700<< "\n";
+  output << "newdef " << name() << ":ChargedK1680MinusAmplitude " << _a1K1680<< "\n";
+  output << "newdef " << name() << ":ChargedK1680MinusPhase " << _phi1K1680<< "\n";
+  output << "newdef " << name() << ":NeutralKStarPlusAmplitude " << _a2Kstarp<< "\n";
+  output << "newdef " << name() << ":NeutralKStarPlusPhase " << _phi2Kstarp<< "\n";
+  output << "newdef " << name() << ":NeutralRhoAmplitude " << _a2rho<< "\n";
+  output << "newdef " << name() << ":NeutralRhoPhase " << _phi2rho<< "\n";
+  output << "newdef " << name() << ":NeutralOmegaAmplitude " << _a2omega<< "\n";
+  output << "newdef " << name() << ":NeutralOmegaPhase " <<_phi2omega << "\n";
+  output << "newdef " << name() << ":NeutralKStarMinusAmplitude " << _a2Kstarm<< "\n";
+  output << "newdef " << name() << ":NeutralKStarMinusPhase " << _phi2Kstarm<< "\n";
+  output << "newdef " << name() << ":Neutralf980Amplitude " << _a2f980/GeV2<< "\n";
+  output << "newdef " << name() << ":Neutralf980Phase " << _phi2f980<< "\n";
+  output << "newdef " << name() << ":Neutralf2Amplitude " << _a2f2*GeV2<< "\n";
+  output << "newdef " << name() << ":Neutralf2Phase " << _phi2f2<< "\n";
+  output << "newdef " << name() << ":Neutralf1370Amplitude " << _a2f1370/GeV2<< "\n";
+  output << "newdef " << name() << ":Neutralf1370Phase " << _phi2f1370<< "\n";
+  output << "newdef " << name() << ":NeutralKK_0MinusAmplitude " 
 	 << _a2K14300/GeV2 << "\n";
-  output << "set " << fullName() << ":NeutralKK_0MinusPhase " << _phi2K14300 << "\n";
-  output << "set " << fullName() << ":NeutralKK_2MinusAmplitude " 
+  output << "newdef " << name() << ":NeutralKK_0MinusPhase " << _phi2K14300 << "\n";
+  output << "newdef " << name() << ":NeutralKK_2MinusAmplitude " 
 	 << _a2K14302*GeV2<< "\n";
-  output << "set " << fullName() << ":NeutralKK_2MinusPhase " << _phi2K14302 << "\n";
-  output << "set " << fullName() << ":NeutralK1680MinusAmplitude " << _a2K1680<< "\n";
-  output << "set " << fullName() << ":NeutralK1680MinusPhase " << _phi2K1680<< "\n";
-  output << "set " << fullName() << ":NeutralNonResonantAmplitude " << _a2NR<< "\n";
-  output << "set " << fullName() << ":NeutralNonResonantPhase " << _phi2NR << "\n";
-  output << "set " << fullName() << ":DRadius " << _rD0*GeV << "\n";
-  output << "set " << fullName() << ":ResonanceRadius " << _rres*GeV << "\n";
+  output << "newdef " << name() << ":NeutralKK_2MinusPhase " << _phi2K14302 << "\n";
+  output << "newdef " << name() << ":NeutralK1680MinusAmplitude " << _a2K1680<< "\n";
+  output << "newdef " << name() << ":NeutralK1680MinusPhase " << _phi2K1680<< "\n";
+  output << "newdef " << name() << ":NeutralNonResonantAmplitude " << _a2NR<< "\n";
+  output << "newdef " << name() << ":NeutralNonResonantPhase " << _phi2NR << "\n";
+  output << "newdef " << name() << ":DRadius " << _rD0*GeV << "\n";
+  output << "newdef " << name() << ":ResonanceRadius " << _rres*GeV << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeights " 
+    output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights " 
+    output << "insert " << name() << ":Weights " 
 	   << ix << " " << _weights[ix] << "\n";
   }
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
   }
+}
+
+void DtoKPiPiCLEO::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels());
+  _maxwgt.resize(2);
+  unsigned int iy=0;
+  for(unsigned int ix=0;ix<2;++ix) {
+    _maxwgt[ix]=mode(ix)->maxWeight();
+    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
+      _weights[iy]=mode(ix)->channelWeight(iz);
+      ++iy;
+    }
+  }
+}
+
+Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
+					Energy mA , Energy mB , Energy mC ,
+					Energy mAB, Energy mAC, Energy mBC,
+					Energy mres, Energy wres) const{
+  // compute the production momenta
+  Energy pDR  = Kinematics::pstarTwoBodyDecay(mD,mres,mC);
+  Energy pDAB = Kinematics::pstarTwoBodyDecay(mD,mAB ,mC);
+  // and the decay momenta
+  Energy pAB = Kinematics::pstarTwoBodyDecay(mAB ,mA,mB);
+  Energy pR  = Kinematics::pstarTwoBodyDecay(mres,mA,mB);
+  double Fd(1.),Fr(1.),s(1.);
+  switch(ispin) {
+  case 0:
+    // default values of parameters are correct
+    break;
+  case 1:
+    Fr = sqrt((1.+sqr(_rres*pR ))/(1.+sqr(_rres*pAB )));
+    Fd = sqrt((1.+sqr(_rD0 *pDR))/(1.+sqr(_rD0 *pDAB)));
+    s = ((mAC-mBC)*(mAC+mBC)+(mD-mC)*(mD+mC)*(mB-mA)*(mB+mA)/sqr(mres))/GeV2;
+    break;
+  case 2:
+    Fr = sqrt((9.+3.*sqr(_rres*pR  )+Math::powi(_rres*pR  ,4))/
+	      (9.+3.*sqr(_rres*pAB )+Math::powi(_rres*pAB ,4)));
+    Fd = sqrt((9.+3.*sqr(_rD0 *pDR )+Math::powi(_rD0 *pDR ,4))/
+	      (9.+3.*sqr(_rD0 *pDAB)+Math::powi(_rD0 *pDAB,4)));
+    s = sqr(((mBC-mAC)*(mBC+mAC)+(mD-mC)*(mD+mC)*(mA-mB)*(mA+mB)/sqr(mres))/GeV2)
+      -(mAB*mAB-2.*mD*mD-2.*mC*mC+sqr((mD-mC)*(mD+mC))/sqr(mres))*
+       (mAB*mAB-2.*mA*mA-2.*mB*mB+sqr((mA-mB)*(mA+mB))/sqr(mres))/3./GeV2/GeV2;
+    break;
+  default:
+    throw Exception() << "D0toKPiPiCLEO::amplitude spin is too high ispin = " 
+		      << ispin << Exception::runerror;
+  }
+  // calculate the width term
+  complex<Energy2> bw;
+  if(!f0) {
+    Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres)/mAB;
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(ZERO,mwid);
+  }
+  else {
+    Energy Gamma_pi = _gpi*sqrt(0.25*sqr(mAB)-sqr(_mpi));
+    Energy Gamma_K  = 0.5*_gK *(sqrt(0.25*sqr(mAB)-sqr(_mkp))+
+				sqrt(0.25*sqr(mAB)-sqr(_mk0)));
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(ZERO,mres*(Gamma_pi+Gamma_K));
+  }
+  return s*Fr*Fd*GeV2/bw;
 }
