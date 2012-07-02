@@ -97,12 +97,6 @@ public:
    */
   static void Init();
 
-protected:
-  /**
-   * Should the default vertices be considered for generic diagrams
-   */
-  virtual bool registerDefaultVertices() const { return true; }
-
 public:
   
   /**
@@ -272,18 +266,14 @@ public:
    *  Total number of vertices
    */
   unsigned int numberOfVertices() const {
-    return vertexList_.size() + extraVertices_.size();
+    return vertexList_.size();
   }
 
   /**
    * Access to a vertex from the list
    */
-  tVertexBasePtr vertex(size_t ix) const {
-    const size_t S = vertexList_.size();
-    if ( ix < S )
-      return vertexList_[ix];
-    else
-      return extraVertices_[ix - S];
+  tVertexBasePtr vertex(unsigned int ix) const {
+    return vertexList_[ix];
   }
   //@}  
 
@@ -336,8 +326,7 @@ protected:
    *  Add a vertex to the list
    */
   void addVertex(VertexBasePtr in) {
-    if ( in )
-      vertexList_.push_back(in);
+    vertexList_.push_back(in);
   }
 
 private:
@@ -433,11 +422,6 @@ private:
    *  Full list of vertices as a vector to allow searching
    */
   vector<VertexBasePtr> vertexList_;
-
-  /**
-   * Additional vertices to be considered in automatic ME construction
-   */
-  vector<VertexBasePtr> extraVertices_;
   //@}
 
   /**

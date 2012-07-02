@@ -258,7 +258,6 @@ cd /Herwig/NewPhysics
 set TwoBodyDC:CreateDecayModes No
 set ThreeBodyDC:CreateDecayModes No
 set WeakDecayConstructor:CreateDecayModes No
-set FourBodyDC:CreateDecayModes No
 # switch on decays via weak current
 insert DecayConstructor:NBodyDecayConstructors 0 WeakDecayConstructor
 # exclude gravitino and effective vertices from three body decays
@@ -270,15 +269,6 @@ insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
-# and four body decays
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 # and hard processes
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
@@ -288,11 +278,6 @@ insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
-# exclude intermediate higgs from 4 body decays
-insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/h0
-insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H0
-insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/A0
-insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H+
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L

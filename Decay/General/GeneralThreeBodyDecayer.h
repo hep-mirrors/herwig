@@ -54,6 +54,17 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent,const tPDVector & children) const;
+
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel
+   * @param ichan The channel we are calculating the matrix element for.
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
+   * @return The matrix element squared for the phase-space configuration.
+   */
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
    * The matrix element to be integrated for the three-body decays as a function
@@ -98,9 +109,11 @@ public:
   /**
    *  Set the diagrams
    */
-  bool setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
+  void setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
 		    const vector<TBDiagram> & process,
-		    double symfac);
+		    const vector<DVector> & factors,
+		    const vector<DVector> & Ncfactors,
+		    const unsigned int ncf);
 
 public:
 
@@ -164,11 +177,6 @@ protected:
    *  Number of colour flows
    */
   unsigned int numberOfFlows() const { return _nflow; }
-
-  /**
-   * Set up the colour factors
-   */
-  bool setColourFactors(double symfac);
 
   /**
    * Return the matrix of colour factors 

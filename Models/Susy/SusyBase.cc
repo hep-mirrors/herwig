@@ -384,16 +384,8 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
       }
       istringstream is(line);
       long index;
-      double value;
-      if(name.find("rvlam")!= string::npos||
-	 name=="rvt" || name=="rvtp" || name=="rvtpp") {
-	int i,j,k;
-	is >> i >> j >> k >> value;
-	index = i*100+j*10+k;
-      }
-      else {
-	is >> index >> value;
-      }
+      double value;   
+      is >> index >> value;
       store.insert(make_pair(index, value));
     }
   }
@@ -596,19 +588,9 @@ void SusyBase::extractParameters(bool checkmodel) {
   pit=parameters_.find("extpar");
   // extract tan beta
   tanBeta_ = -1.;
-  if(tanBeta_<0.) {
-    pit=parameters_.find("hmix");
-    if(pit!=parameters_.end()) {
-      it = pit->second.find(2);
-      if(it!=pit->second.end()) tanBeta_ = it->second;
-    }
-  }
-  if(tanBeta_<0.) {
-    pit=parameters_.find("extpar");
-    if(pit!=parameters_.end()) {
-      it = pit->second.find(25);
-      if(it!=pit->second.end()) tanBeta_ = it->second;
-    }
+  if(pit!=parameters_.end()) {
+    it = pit->second.find(25);
+    if(it!=pit->second.end()) tanBeta_ = it->second;
   }
   // otherwise from minpar
   if(tanBeta_<0.) {
@@ -619,8 +601,7 @@ void SusyBase::extractParameters(bool checkmodel) {
     }
   }
   if(tanBeta_<0.) 
-    throw Exception() << "SusyBase::extractParameters() "
-		      << "Can't find tan beta in BLOCK MINPAR"
+    throw Exception() << "Can't find tan beta in BLOCK MINPAR"
 		      << " or BLOCK EXTPAR " << Exception::runerror;
   if(tanBeta_==0.)
     throw Exception() << "Tan(beta) = 0 in SusyBase::extractParameters()"
@@ -628,42 +609,43 @@ void SusyBase::extractParameters(bool checkmodel) {
   // extract parameters from hmix
   pit=parameters_.find("hmix");
   if(pit==parameters_.end()) {
-    if(generator())
-      generator()->logWarning(Exception("SusyBase::extractParameters() BLOCK HMIX not found setting mu to zero\n",
-					Exception::warning));
-    else
-      cerr << "SusyBase::extractParameters() BLOCK HMIX not found setting mu to zero\n";
+    cerr << "BLOCK HMIX not found setting mu to zero\n";
     mu_=ZERO;
   }
   else {
-    mu_=findValue(pit,1,"HMIX","mu")*GeV;
+    it = pit->second.find(1);
+    if(it==pit->second.end()) {
+      cerr << "mu not found in BLOCK HMIX setting to zero\n";
+    }
+    else {
+      mu_=it->second*GeV;
+    }
   }
   pit = parameters_.find("msoft");
   if( pit == parameters_.end() )
-    throw Exception() << "SusyBase::extractParameters() "
-		      << "BLOCK MSOFT not found in " 
+    throw Exception() << "BLOCK MSOFT not found in " 
 		      << "SusyBase::extractParameters()"
 		      << Exception::runerror;
-  M1_    = findValue(pit,1 ,"MSOFT","M_1"   )*GeV;
-  M2_    = findValue(pit,2 ,"MSOFT","M_2"   )*GeV;
-  M3_    = findValue(pit,3 ,"MSOFT","M_3"   )*GeV;
-  mH12_  = findValue(pit,21,"MSOFT","m_H1^2")*GeV2;
-  mH22_  = findValue(pit,22,"MSOFT","m_H2^2")*GeV2;
-  meL_   = findValue(pit,31,"MSOFT","M_eL"  )*GeV;
-  mmuL_  = findValue(pit,32,"MSOFT","M_muL" )*GeV;
-  mtauL_ = findValue(pit,33,"MSOFT","M_tauL")*GeV; 
-  meR_   = findValue(pit,34,"MSOFT","M_eR"  )*GeV;
-  mmuR_  = findValue(pit,35,"MSOFT","M_muR" )*GeV;
-  mtauR_ = findValue(pit,36,"MSOFT","M_tauR")*GeV; 
-  mq1L_  = findValue(pit,41,"MSOFT","M_q1L" )*GeV;
-  mq2L_  = findValue(pit,42,"MSOFT","M_q2L" )*GeV;
-  mq3L_  = findValue(pit,43,"MSOFT","M_q3L" )*GeV; 
-  muR_   = findValue(pit,44,"MSOFT","M_uR"  )*GeV;
-  mcR_   = findValue(pit,45,"MSOFT","M_cR"  )*GeV;
-  mtR_   = findValue(pit,46,"MSOFT","M_tR"  )*GeV;
-  mdR_   = findValue(pit,47,"MSOFT","M_dR"  )*GeV;
-  msR_   = findValue(pit,48,"MSOFT","M_sR"  )*GeV;
-  mbR_   = findValue(pit,49,"MSOFT","M_bR"  )*GeV;
+  M1_    = pit->second.find(1 )->second*GeV;
+  M2_    = pit->second.find(2 )->second*GeV;
+  M3_    = pit->second.find(3 )->second*GeV;
+  mH12_  = pit->second.find(21)->second*GeV2;
+  mH22_  = pit->second.find(22)->second*GeV2;
+  meL_   = pit->second.find(31)->second*GeV;
+  mmuL_  = pit->second.find(32)->second*GeV;
+  mtauL_ = pit->second.find(33)->second*GeV; 
+  meR_   = pit->second.find(34)->second*GeV;
+  mmuR_  = pit->second.find(35)->second*GeV;
+  mtauR_ = pit->second.find(36)->second*GeV; 
+  mq1L_  = pit->second.find(41)->second*GeV;
+  mq2L_  = pit->second.find(42)->second*GeV;
+  mq3L_  = pit->second.find(43)->second*GeV; 
+  muR_   = pit->second.find(44)->second*GeV;
+  mcR_   = pit->second.find(45)->second*GeV;
+  mtR_   = pit->second.find(46)->second*GeV;
+  mdR_   = pit->second.find(47)->second*GeV;
+  msR_   = pit->second.find(48)->second*GeV;
+  mbR_   = pit->second.find(49)->second*GeV;
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"

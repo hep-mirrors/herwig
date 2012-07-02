@@ -132,7 +132,7 @@ private:
   long _id1last;
 
   /**
-   * Store the id of the 2nd neutralino when the coupling was last evaluated
+   * Store the id of the 1st neutralino when the coupling was last evaluated
    */
   long _id2last;
 
