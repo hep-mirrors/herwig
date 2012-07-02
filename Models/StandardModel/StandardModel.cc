@@ -14,7 +14,6 @@
 #include "StandardModel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
-#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -37,7 +36,7 @@ StandardModel::StandardModel(const StandardModel & x)
     WWWWVertex_(x.WWWWVertex_), HGGVertex_ (x.HGGVertex_) ,
     HPPVertex_ (x.HPPVertex_) , HHHVertex_ (x.HHHVertex_) ,
     WWHHVertex_ (x.WWHHVertex_) ,
-    vertexList_(x.vertexList_), extraVertices_(x.extraVertices_),
+    vertexList_(x.vertexList_),
     runningMass_(x.runningMass_),modelGenerator_(x.modelGenerator_) 
 {}
 
@@ -54,22 +53,20 @@ void StandardModel::doinit() {
     runningMass_->init();
   }
   //add Standard Model vertices
-  if ( registerDefaultVertices() ) {
-    addVertex(FFZVertex_);
-    addVertex(FFPVertex_);
-    addVertex(FFGVertex_);
-    addVertex(FFWVertex_);
-    addVertex(vertexFFH());
-    addVertex(vertexWWH());
-    addVertex(GGGVertex_);
-    addVertex(WWWVertex_);
-    addVertex(GGGGVertex_);
-    addVertex(WWWWVertex_);
-    addVertex(vertexHGG());
-    addVertex(HPPVertex_);
-    if(HHHVertex_ ) addVertex(HHHVertex_);
-    if(WWHHVertex_) addVertex(WWHHVertex_);
-  }
+  addVertex(vertexFFZ());
+  addVertex(vertexFFP());
+  addVertex(vertexFFG());
+  addVertex(vertexFFW());
+  addVertex(vertexFFH());
+  addVertex(vertexWWH());
+  addVertex(GGGVertex_);
+  addVertex(WWWVertex_);
+  addVertex(GGGGVertex_);
+  addVertex(WWWWVertex_);
+  addVertex(vertexHGG());
+  addVertex(HPPVertex_);
+  if(HHHVertex_ ) addVertex(HHHVertex_);
+  if(WWHHVertex_) addVertex(WWHHVertex_);
   StandardModelBase::doinit();
 }
 
@@ -78,7 +75,7 @@ void StandardModel::persistentOutput(PersistentOStream & os) const {
      << FFHVertex_ << WWHVertex_ << GGGGVertex_ << WWWWVertex_
      << GGGVertex_ << WWWVertex_  << HGGVertex_  << HPPVertex_ 
      << HHHVertex_ << WWHHVertex_ 
-     << runningMass_ << vertexList_ << extraVertices_ << modelGenerator_;
+     << runningMass_ << vertexList_ << modelGenerator_;
 }
 
 void StandardModel::persistentInput(PersistentIStream & is, int) {
@@ -86,7 +83,7 @@ void StandardModel::persistentInput(PersistentIStream & is, int) {
      >> FFHVertex_ >> WWHVertex_ >> GGGGVertex_ >> WWWWVertex_
      >> GGGVertex_ >> WWWVertex_ >> HGGVertex_  >> HPPVertex_ 
      >> HHHVertex_ >> WWHHVertex_ 
-     >> runningMass_ >> vertexList_ >> extraVertices_ >> modelGenerator_;
+     >> runningMass_ >> vertexList_ >> modelGenerator_;
 }
 
 ClassDescription<StandardModel> StandardModel::initStandardModel;
@@ -122,12 +119,12 @@ void StandardModel::Init() {
   static Reference<StandardModel,AbstractVVVVertex> interfaceVertexGGG
     ("Vertex/GGG",
      "Reference to the Standard Model GGG Vertex",
-     &StandardModel::GGGVertex_, false, false, true, false);
+     &StandardModel::GGGVertex_, false, false, true, false, false);
   
   static Reference<StandardModel,AbstractVVVVertex> interfaceVertexWWW
     ("Vertex/WWW",
      "Reference to the Standard Model WWW Vertex",
-     &StandardModel::WWWVertex_, false, false, true, false);
+     &StandardModel::WWWVertex_, false, false, true, false, false);
   
   static Reference<StandardModel,AbstractVVSVertex> interfaceVertexWWH
     ("Vertex/WWH",
@@ -157,17 +154,12 @@ void StandardModel::Init() {
   static Reference<StandardModel,AbstractSSSVertex> interfaceVertexHHH
     ("Vertex/HHH",
      "Reference to the Standard Model HHHVertex",
-     &StandardModel::HHHVertex_, false, false, true, true);
+     &StandardModel::HHHVertex_, false, false, true, true, false);
 
   static Reference<StandardModel,AbstractVVSSVertex> interfaceVertexWWHH
     ("Vertex/WWHH",
      "Reference to the Standard Model WWHHVertex",
-     &StandardModel::WWHHVertex_, false, false, true, true);
-
-  static RefVector<StandardModel,VertexBase> interfaceExtraVertices
-    ("ExtraVertices",
-     "Additional vertices to be considered in automatic ME construction.",
-     &StandardModel::extraVertices_, -1, true, false, true, false, false);
+     &StandardModel::WWHHVertex_, false, false, true, true, false);
 
   static Reference<StandardModel,RunningMassBase> interfaceRunningMass
     ("RunningMass",

@@ -109,6 +109,10 @@ void NMSSM::extractParameters(bool checkmodel) {
 		      << "in the extracted parameters list. The model cannot "
 		      << "be used without these." << Exception::runerror;
   }
+
+
+
+
   pit=parameters().find("msoft");
   if( pit != parameters().end() ) {
     ParamMap::const_iterator it;

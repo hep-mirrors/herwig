@@ -108,18 +108,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/Susy/RPV/Makefile
-		Models/Susy/MatrixElements/Makefile
 		Models/UED/Makefile
-		Models/LH/Makefile
-		Models/LHTP/Makefile
-		Models/HiddenValley/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
 		Models/TTbAsymm/Makefile
-		Models/AnomalousCouplings/Makefile
-		Models/Feynrules/Makefile
-		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
 		Decay/Makefile

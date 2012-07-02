@@ -121,60 +121,6 @@ public:
 
 public:
 
-  /**@name Functions to access specific vertices.*/
-  //@{
-  /**
-   *  Pointer to the electroweak gauge boson sfermion-sfermion vertex
-   */
-  virtual tAbstractVSSVertexPtr vertexWSFSF() const {
-    return WSFSFVertex_;
-  }
-
-  /**
-   *  Pointer to the neutralino-neutralino-Z vertex
-   */
-  virtual tAbstractFFVVertexPtr vertexNNZ() const {
-    return NNZVertex_;
-  }
-
-  /**
-   *  Pointer to the chargino-chargino-Z vertex
-   */
-  virtual tAbstractFFVVertexPtr vertexCCZ() const {
-    return CCZVertex_;
-  }
-
-  /**
-   *  Pointer to the chargino-neutralino-W vertex
-   */
-  virtual tAbstractFFVVertexPtr vertexCNW() const {
-    return CNWVertex_;
-  }
-
-  /**
-   *  Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
-   */
-  virtual tAbstractFFSVertexPtr vertexCFSF() const {
-    return CFSFVertex_;
-  }
-
-  /**
-   *  Pointer to the fermion-sfermion-neutralino vertex
-   */
-  virtual tAbstractFFSVertexPtr vertexNFSF() const {
-    return NFSFVertex_;
-  }
-
-  /**
-   *  Pointer to the gluon squark-squark vertex
-   */
-  virtual tAbstractVSSVertexPtr vertexGSFSF() const {
-    return GSFSFVertex_;
-  }
-  //@}
-
-public:
-
   /**
    *  Soft breaking parameters
    */
