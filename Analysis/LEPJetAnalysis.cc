@@ -20,7 +20,6 @@
 #include "fastjet/ClusterSequence.hh"
 
 using namespace Herwig;
-using namespace fastjet;
 
 void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   ++_nevent;
