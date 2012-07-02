@@ -4,6 +4,7 @@ Analysis2 \
 AnomalousHVV \
 DecayAnalysis \
 LeptonME \
+MCPWNLO \
 PGSInterface \
 RadiativeZPrime \
 TauAnalysis \

@@ -1,0 +1,138 @@
+# This will read in all the standard hadron decay modes and add
+# the new particles that are used in HERWIG 6.4, but not in ThePEG
+#read Decays.in
+#
+#cd /Herwig/
+#set theGlobalParameters:EffectiveGluonMass 0.750*GeV
+#set theGlobalParameters:HadronizationScale 0.5*GeV
+#set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
+#set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
+#set theGlobalParameters:MinVirtuality2 0.1*GeV2
+#set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+#
+set /Herwig/Particles/B0:Stable 0
+set /Herwig/Particles/B+:Stable 0
+set /Herwig/Particles/B_s0:Stable 0
+set /Herwig/Particles/Lambda_b0:Stable 0
+set /Herwig/Particles/Xi_b0:Stable 0
+set /Herwig/Particles/Xi_b-:Stable 0
+set /Herwig/Particles/Omega_b-:Stable 0
+
+#
+mkdir LesHouches
+cd LesHouches
+library LesHouches.so
+cd /Herwig/EventHandlers
+create ThePEG::LesHouchesFileReader Reader2  LesHouches.so
+set Reader2:FileName EPEM.dat 
+set Reader2:BeamA 11
+set Reader2:BeamB -11
+set Reader2:EBeamA 45.6
+set Reader2:EBeamB 45.6
+set Reader2:PDFA /Herwig/Partons/LeptonPDF
+set Reader2:PDFB /Herwig/Partons/LeptonPDF
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 0.00001
+set QCDCuts:X2Min 0.00001
+set QCDCuts:MHatMin 20.*GeV
+set QCDCuts:X1Max 0.9
+set QCDCuts:X2Max 0.9
+create ThePEG::LesHouchesEventHandler LesHouchesHandler
+insert LesHouchesHandler:LesHouchesReaders[0] Reader2
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/EEExtractor
+set LesHouchesHandler:StatLevel 2
+set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+#set LesHouchesHandler:WeightOption VarNegWeight
+# MCatNLO option
+set LesHouchesHandler:WeightOption NegUnitWeight
+# POWHEG option
+#set LesHouchesHandler:WeightOption UnitWeight
+# insert LesHouchesHandler:PostSubProcessHandlers [0] /Herwig/QEDRadiation/QEDRadHandler
+
+cd /Herwig/Generators 
+create ThePEG::EventGenerator MGGenerator
+set MGGenerator:RandomNumberGenerator /Herwig/Random
+set MGGenerator:StandardModelParameters /Herwig/Model
+set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
+
+cd /Herwig/Generators
+set MGGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
+
+cd /Herwig/MatrixElements/
+
+#e+e- 
+insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+
+
+set MEee2gZ2qq:MinimumFlavour 1
+set MEee2gZ2qq:MaximumFlavour 5
+
+cd /Herwig/Generators
+
+cd /Herwig/Analysis
+create Herwig::MyMultiplicityCount MyMultiplicity MyMultiplicityCount.so
+create Herwig::MyLEPBMultiplicity MyBMultiplicity MyLEPBMultiplicity.so
+create Herwig::MyBFragmentationAnalysisHandler MyBFrag MyBFragmentationAnalysisHandler.so
+create Herwig::MyEventShapes MyLEPShapes MyEventShapes.so
+create Herwig::MyEventShapesMasterAnalysis MyShapes MyEventShapesMasterAnalysis.so
+create Herwig::MyLEPEventShapes MyLEPEvent MyLEPEventShapes.so
+create Herwig::MyIdentifiedParticleAnalysis MyLEPIdent MyIdentifiedParticleAnalysis.so
+create Herwig::MySingleParticleAnalysis MyLEPSingle MySingleParticleAnalysis.so
+
+set MyShapes:MyEventShapes MyLEPShapes MyEventShapes.so
+set MyLEPEvent:MyEventShapes MyLEPShapes MyEventShapes.so
+set MyLEPSingle:MyEventShapes MyLEPShapes MyEventShapes.so
+insert MyShapes:Slaves 0 MyLEPEvent 
+insert MyShapes:Slaves 0 MyLEPSingle
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyMultiplicity 
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyBMultiplicity
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyBFrag
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyShapes 
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyLEPIdent
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyLEPEvent
+
+#cd /Herwig/Shower
+# HardVetoMode : 0 (All off), 1 (All on), 2 (only IS emissions vetoed), 
+#3 (only FS emissions vetoed).
+# HardVetoMode = 1 for POWHEG
+##################################################################
+set /Herwig/Shower/Evolver:HardVetoMode 1
+##################################################################
+# PHPartnerFinder = 1 for POWHEG
+##################################################################
+set /Herwig/Shower/PartnerFinder:PHPartnerFinder 1
+##################################################################
+# HardVetoRead. Set to 1 for POWHEG.
+##################################################################
+set /Herwig/Shower/Evolver:HardVetoScaleSource 1
+##################################################################
+
+set /Herwig/Shower/Evolver:MECorrMode 0
+
+##################################################################
+#For MC@NLO, use these settings...
+##################################################################
+set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
+set /Herwig/Shower/SudakovCommon:cutoffKinScale 2.45*GeV
+##################################################################
+#For POWHEG use these settings...
+##################################################################
+#set /Herwig/Shower/AlphaQCD:AlphaMZ 0.127
+#set /Herwig/Shower/SudakovCommon:cutoffKinScale 2.60*GeV
+##################################################################
+
+cd /Herwig/Generators/
+set MGGenerator:NumberOfEvents 1000000
+set MGGenerator:RandomNumberGenerator:Seed 31122001
+set MGGenerator:PrintEvent 10
+set MGGenerator:MaxErrors 100000000
+set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+#set MGGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+#set MGGenerator:Strategy /Herwig/ThePEGStrategy
+#set MGGenerator:EventHandler:LuminosityFunction:Energy 500
+#
+saverun MG MGGenerator
+
