@@ -65,8 +65,6 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       ip!=particles.end();++ip) {
     tPDPtr parent = *ip;
     for(unsigned int iv = 0; iv < nv; ++iv) {
-      if(excluded(model->vertex(iv)) || 
-	 model->vertex(iv)->getNpoint()>3) continue;
       for(unsigned int il = 0; il < 3; ++il) { 
 	set<TwoBodyDecay> decays = 
 	  createModes(parent, model->vertex(iv), il);

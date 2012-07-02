@@ -8,13 +8,40 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
-#include "PrototypeVertex.h"
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 using Helicity::VertexBasePtr;
+
+/**
+ * A two body decay mode which is a prototype for the 
+ * three body mode
+ */
+struct TwoBodyPrototype {
+
+  /**
+   *  Constructor
+   */
+  TwoBodyPrototype(tPDPtr in, tPDPair out, VertexBasePtr v) :
+    incoming(in), outgoing(out), vertex(v) {}
+
+  /**
+   *  Incoming particle
+   */
+  tPDPtr incoming;
+
+  /**
+   *  Outgoing particles
+   */
+  tPDPair outgoing;
+
+  /**
+   *  The vertex for the interaction
+   */
+  VertexBasePtr vertex;
+};
 
 /**
  * The ThreeBodyDecayConstructor class inherits from the dummy base class
@@ -34,7 +61,8 @@ public:
    * The default constructor.
    */
   ThreeBodyDecayConstructor() : 
-    interOpt_(0), widthOpt_(1), weakMassCut_(-GeV),
+    _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
+    _minReleaseFraction(1e-3), _maxBoson(1), _maxList(1), weakMassCut_(-GeV),
     intOpt_(1), relErr_(1e-2) {}
 
   /**
@@ -51,13 +79,34 @@ public:
 
 protected:
 
+
+  /**
+   * Create the two body prototypes for the decays
+   * @param inpart Incoming particle 
+   * @param vert The vertex to create decays for
+   * @param ilist Which list to search
+   * @return A vector a decay modes
+   */
+  vector<TwoBodyPrototype> createPrototypes(tPDPtr inpart, VertexBasePtr vert,
+					    unsigned int ilist);
+
+  /**
+   * Expand the two body prototype to get the possible
+   * threebody diagrams
+   * @param proto The two body prototype
+   * @param vert The vertex to create decays for
+   * @param ilist Which list to search
+   */
+  vector<TBDiagram> expandPrototype(TwoBodyPrototype proto, VertexBasePtr vert,
+				    unsigned int ilist);
+
   /**
    * Create the decayer
    * @param diagrams The diagrams for the decay
    * @param inter Option for intermediates
    */
   GeneralThreeBodyDecayerPtr createDecayer(vector<TBDiagram> & diagrams, 
-					   bool inter,double symfac) const;
+					   bool inter) const;
 
   /**
    * Contruct the classname and object name for the Decayer
@@ -73,9 +122,19 @@ protected:
    * @param diagrams The diagrams
    * @param inter Option for intermediates
    */
-  virtual void createDecayMode(vector<NBDiagram> & mode,
-			       bool possibleOnShell,
-			       double symfac);
+  void createDecayMode(vector<TBDiagram> & diagrams, bool inter);
+
+  /**
+   * Get the correct colour factor matrix.
+   * @param incoming The incoming particle
+   * @param outgoing The outgoing particles
+   * @param diagrams The diagrams
+   * @param ncf Set the number of colourflows.
+   */
+  pair<vector<DVector>,vector<DVector> >
+  getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
+		   const vector<TBDiagram> & diagrams,
+		   unsigned int & ncf) const;
 
 public:
 
@@ -120,6 +179,18 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -137,14 +208,50 @@ private:
 private:
 
   /**
+   *  Whether or not to remove on-shell diagrams
+   */
+  unsigned int _removeOnShell;
+
+  /**
+   *  Include on-shell for \f$t\to b W\f$
+   */
+  bool _includeTopOnShell;
+
+  /**
    *  Option for the inclusion of intermediates
    */
-  unsigned int interOpt_;
+  unsigned int _interopt;
 
   /**
    *  How to treat the widths of the intermediate particles
    */
-  unsigned int widthOpt_;
+  unsigned int _widthopt;
+
+  /**
+   * The minimum energy release for a three-body decay as a 
+   * fraction of the parent mass
+   */
+  double _minReleaseFraction;
+
+  /**
+   *  Maximum number of EW gauge bosons
+   */
+  unsigned int _maxBoson;
+
+  /**
+   *  Maximum number of particles from the decaying particle list
+   */
+  unsigned int _maxList;
+
+  /**
+   *  Excluded Vertices
+   */
+  vector<VertexBasePtr> excludedVector_;
+
+  /**
+   *  Excluded Vertices
+   */
+  set<VertexBasePtr> excludedSet_;
 
   /**
    *  Cut off or decays via the weak current

@@ -81,8 +81,6 @@ tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma 
 	    test-LHC-HiggsJet test-LHC-QCDFast test-LHC-QCD test-LHC-Top
 endif
 
-tests-Anomalous : test-LHC-ZZ-Anomalous
-
 tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 
 if WANT_LIBFASTJET 

@@ -127,11 +127,6 @@ colourConnections(const Particle & parent,
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
       out[0]->antiColourNeighbour(out[1]);
     }
-    else if(outaColour == PDT::Colour3bar && outaColour == PDT::Colour3bar) {
-      tColinePtr col[2] = {ColourLine::create(out[0],true),
-			   ColourLine::create(out[1],true)};
-      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
-    }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour triplet in "
@@ -158,11 +153,6 @@ colourConnections(const Particle & parent,
     else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour3bar) {
       out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
       out[1]->colourNeighbour(out[0]);
-    }
-    else if(outaColour == PDT::Colour3 && outbColour == PDT::Colour3) {
-      tColinePtr col[2] = {ColourLine::create(out[0]),
-			   ColourLine::create(out[1])};
-      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
     }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
@@ -350,11 +340,6 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 	    (out1->iColour()==PDT::Colour3 && out2->iColour()==PDT::Colour8) ) {
       output *= 4./3.;
     }
-    // colour anti triplet anti triplet
-    else if(out1->iColour()==PDT::Colour3bar && 
-	    out2->iColour()==PDT::Colour3bar) {
-      output *= 2.;
-    }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour triplet particle in "
@@ -374,11 +359,6 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
     else if((out1->iColour()==PDT::Colour8    && out2->iColour()==PDT::Colour3bar ) ||
 	    (out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour8    ) ) {
       output *= 4./3.;
-    }
-    // colour triplet triplet
-    else if(out1->iColour()==PDT::Colour3 && 
-	    out2->iColour()==PDT::Colour3) {
-      output *= 2.;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -434,8 +414,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 			<< Exception::runerror;
   }
   else
-    throw Exception() << "Unknown colour "
-		      << in->iColour() << " for the decaying particle in "
+    throw Exception() << "Unknown colour for the decaying particle in "
 		      << "GeneralTwoBodyDecayer::colourFactor() for "
 		      << in->PDGName() << " -> "
 		      << out1->PDGName() << " " << out2->PDGName() 

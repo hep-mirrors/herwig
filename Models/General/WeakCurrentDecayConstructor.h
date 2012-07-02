@@ -40,7 +40,7 @@ public:
    * The default constructor.
    */
   WeakCurrentDecayConstructor() : _masscut(5.*GeV) {}
-  
+
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.

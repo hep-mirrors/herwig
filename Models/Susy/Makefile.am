@@ -1,4 +1,4 @@
-SUBDIRS = NMSSM RPV MatrixElements
+SUBDIRS = NMSSM
 if WANT_MSSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif
