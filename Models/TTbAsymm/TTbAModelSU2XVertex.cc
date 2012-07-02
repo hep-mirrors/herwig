@@ -173,7 +173,7 @@ void TTbAModelSU2XVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
 
 
   //If this model is not selected set coupling to zero.
-  if(_models!=3) { _cR = 0; }
+  if(_models!=3) { _cR = 1E-10; }
  
 
   right(_cR);

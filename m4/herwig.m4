@@ -347,7 +347,7 @@ LOAD_TTBA=""
 LOAD_ZPRIME=""
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet lh lhtp rpv  leptoquarks) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet lh lhtp rpv) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )

@@ -1659,4 +1659,3 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     decayTree->transform(boost,true);
   }
 }
-

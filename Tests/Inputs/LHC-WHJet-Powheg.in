@@ -55,3 +55,4 @@ set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
 set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
 set /Herwig/Particles/Z0/Z0->u,ubar;:OnOff Off
 saverun LHC-WHJet-Powheg LHCGenerator
+

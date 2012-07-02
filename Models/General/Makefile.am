@@ -26,4 +26,3 @@ BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
 PrototypeVertex.h PrototypeVertex.cc \
 TBDiagram.h TwoBodyDecay.h\
 BSMModel.h BSMModel.cc
-

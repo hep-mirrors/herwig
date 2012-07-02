@@ -93,7 +93,7 @@ void TTbAModelAGQQVertex::setCoupling(Energy2 q2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr
     
   }
 
-  if(_models!=2) { _cL = 0; _cR = 0; }
+  if(_models!=2) { _cL = 1E-10; _cR = 1E-10; }
   left(_cL);
   right(_cR);
   

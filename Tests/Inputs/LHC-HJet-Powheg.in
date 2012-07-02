@@ -25,4 +25,3 @@ cd /Herwig/Generators
 create Herwig::HTest HTest HadronJetTest.so
 insert LHCGenerator:AnalysisHandlers 0 HTest
 saverun LHC-HJet-Powheg LHCGenerator
-
