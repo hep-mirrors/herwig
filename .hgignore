@@ -6,7 +6,9 @@
 .*/.*\.l[ao]
 .*/.*\.so\.*
 .*/.*\.o
+Tests/.*\.aida
 .*~
+.*\.tar\.(gz|bz2)
 autom4te.cache
 config.herwig
 config.log
@@ -21,6 +23,7 @@ Config/depcomp
 Config/install-sh
 Config/missing
 Config/stamp-h1
+Config/ar-lib
 Contrib/make_makefiles.sh
 Doc/HerwigDefaults.in
 Doc/fixinterfaces.pl
@@ -42,7 +45,7 @@ src/herwigopts.h
 src/herwigopts.c
 src/defaults/Analysis.in
 src/herwig-config
-src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg)
+src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg|hepmc)
 lib/done-all-links
 src/Herwig\+\+
 src/defaults/PDF.in

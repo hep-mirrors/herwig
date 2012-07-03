@@ -226,7 +226,6 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
        newKin->scale() <= particle.evolutionScale()) {
       kinematics=newKin;
       newQ = newKin->scale();
-      sudakov = cit->second.first;
       ids = cit->second.second;
       sudakov=cit->second.first;
     }
