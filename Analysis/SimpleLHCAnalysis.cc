@@ -65,7 +65,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	sumMomenta(pz,*iter);
 	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptZ[1].addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) _ptZ[2].addWeighted(pt,event->weight());
 	else if (mz>100.)         _ptZ[3].addWeighted(pt,event->weight());
@@ -79,7 +79,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	sumMomenta(pz,*iter);
 	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        _ptWp[1].addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) _ptWp[2].addWeighted(pt,event->weight());
 	else if (mz>100.)         _ptWp[3].addWeighted(pt,event->weight());
@@ -93,7 +93,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	sumMomenta(pz,*iter);
 	pz.rescaleMass();
 	double pt = pz.perp()/GeV;
-	double mz = pz.mass()/GeV;
+	double mz = pz.m()/GeV;
 	if(mz>20.&&mz<80.)        (_ptWm[1]).addWeighted(pt,event->weight());
 	else if (mz>80.&&mz<100.) (_ptWm[2]).addWeighted(pt,event->weight());
 	else if (mz>100.)         (_ptWm[3]).addWeighted(pt,event->weight());
