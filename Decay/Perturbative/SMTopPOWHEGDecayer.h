@@ -77,6 +77,30 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+
+protected:
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  double matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
+
+protected:
+
+  /**
+   *  Calculate momenta of t, b, W, g
+   */
+  bool calcMomenta(int j, double pT, double y, double phi,
+		   double& x_g, double& x_w,
+		   vector<Lorentz5Momentum>& particleMomenta);
+
+protected:
+
+  /**
+   *  Check the calculated momenta are physical
+   */
+  bool psCheck(double x_g, double x_w);
+
 protected:
 
   /**
