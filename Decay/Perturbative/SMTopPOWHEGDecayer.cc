@@ -62,7 +62,7 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr) {
   remove("weights.top");
   unsigned int npoint=1000000;
   ofstream file("dalitz.top");
-
+ 
   for(unsigned int ix=0; ix < npoint; ++ix) {
     vector<Lorentz5Momentum> momenta = hardMomenta();
     if (momenta.size()==4){
@@ -78,27 +78,27 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr) {
 
 vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
 
-  double mt = getParticleData(ParticleID::t)->mass() / 1000.;
-  double w  = getParticleData(ParticleID::Wplus)->mass() / 1000. / mt;
-  double b  = getParticleData(ParticleID::b)->mass() / 1000. / mt;
+  Energy mt = getParticleData(ParticleID::t)->mass();
+  double w  = getParticleData(ParticleID::Wplus)->mass() / mt;
+  double b  = getParticleData(ParticleID::b)->mass() / mt;
   
-  double pTmin = 1.;
+  Energy pTmin = 1.*GeV;
 
   vector<Lorentz5Momentum> particleMomenta (4);
   double ymin = -10.;
   double ymax = 10.;
   double C = 1.;
-  double lambda = sqr(mt)* sqrt( 1. + pow(w,4) + pow(b,4) - 
+  Energy2 lambda = sqr(mt)* sqrt( 1. + pow(w,4) + pow(b,4) - 
 			         2.*sqr(w) - 2.*sqr(b) - 2.*sqr(w*b));    
 
-  //Calculate A 
-  double A = (ymax - ymin) * C * (standardModel()->alphaS(sqr(pTmin*GeV)) / 
-				  (2.*Constants::pi));
-  double pTmax = mt* (sqr(1.-w) - sqr(b)) / (2.*(1.-w));
-  
+  //Calculate A
+  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / 
+				 (2.*Constants::pi));
+  Energy pTmax = mt* (sqr(1.-w) - sqr(b)) / (2.*(1.-w));
+
   while (pTmax >= pTmin){  
     //Generate pT, y and phi values
-    double pT = pTmax * pow(UseRandom::rnd() , (1./A));  
+    Energy pT = pTmax * pow(UseRandom::rnd() , (1./A));  
     if (pT < pTmin) {
       particleMomenta.clear(); 
       break;
@@ -113,24 +113,22 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       //Check if the momenta are physical
       bool physical = calcMomenta(j, pT, y, phi, xg, xw[j], particleMomenta);
       if (not physical) continue;
-
+      
       //Check if point lies within phase space
       bool inPS = psCheck(xg, xw[j]);
       if (not inPS) continue;
-    
+      
       //Calculate the ratio R/B
-      double meRatio = matrixElementRatio (particleMomenta);
-
+      Energy2 meRatio = matrixElementRatio (particleMomenta);
+      
       //Calculate jacobian 
       double J = (sqr(mt) * particleMomenta[2].vect().mag2()) / 
 	         (8. * pow(Constants::pi,3) * lambda * 
 		 (particleMomenta[2].vect().mag()*(mt-particleMomenta[3].e()) -
 		  particleMomenta[2].e()*particleMomenta[3].z()));
-
-      //Calculate weight	
-      weight[j] = meRatio * sqr(pT) * fabs(J) * (1./C)  * 
-	(standardModel()->alphaS(sqr(pT*GeV)) / 
-	 standardModel()->alphaS(sqr(pTmin*GeV)));
+      
+      //Calculate weight
+      weight[j] = (sqr(pT)/meRatio) * fabs(J) * coupling()->ratio(pT*pT) / C;
     }
 
     ofstream weights;
@@ -151,48 +149,47 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       }
       break;   
     }
-    //If no splitting happens lower the pT
+    //If there's no splitting lower the pT
     pTmax = pT; 
   }
   return particleMomenta;
 }
 
 
-double SMTopPOWHEGDecayer::matrixElementRatio(
+Energy2 SMTopPOWHEGDecayer::matrixElementRatio(
 			   vector<Lorentz5Momentum> particleMomenta){
 
-
-  double mt = getParticleData(ParticleID::t)->mass() / 1000.;
-  double w  = getParticleData(ParticleID::Wplus)->mass() / 1000. / mt;
-  double b  = getParticleData(ParticleID::b)->mass() / 1000. / mt;
+  Energy mt = getParticleData(ParticleID::t)->mass();
+  double w  = getParticleData(ParticleID::Wplus)->mass() / mt;
+  double b  = getParticleData(ParticleID::b)->mass() / mt;
              
-  double f = sqr(mt) * (1. + pow(b,4) - 2.*pow(w,4) + 
+  Energy2 f = sqr(mt) * (1. + pow(b,4) - 2.*pow(w,4) + 
 			sqr(w) + sqr(w*b) - 2.*sqr(b));
   double Nc = standardModel()->Nc();
   double Cf = (sqr(Nc) - 1.) / (2.*Nc);  
-  double B = (1./(2.*sqr(w)))*f;  
+  Energy2 B = (1./(2.*sqr(w)))*f;  
   double Norm = sqr(Constants::pi)*Cf/2.;
 
-  double PbPg = particleMomenta[1].dot(particleMomenta[3]);
-  double PtPg = particleMomenta[0].dot(particleMomenta[3]);
-  double PtPb = particleMomenta[0].dot(particleMomenta[1]);
+  Energy2 PbPg = particleMomenta[1]*particleMomenta[3];
+  Energy2 PtPg = particleMomenta[0]*particleMomenta[3];
+  Energy2 PtPb = particleMomenta[0]*particleMomenta[1];
 
   double R = Norm * ( (-4.*f/sqr(w)) * 
           ((sqr(mt*b)/sqr(PbPg)) + (sqr(mt)/sqr(PtPg)) -2.*(PtPb/(PbPg*PtPg))) +
           (16. + 8.*sqr(1./w) + 8.*sqr(b/w))* ((PtPg/PbPg) + (PbPg/PtPg)) -
 	  (16./sqr(w)) * (1. + sqr(b)) ); 
    
-  return R/B;
+  return B/R;
 }
 
 
-bool SMTopPOWHEGDecayer::calcMomenta(int j, double pT, double y, double phi,
+bool SMTopPOWHEGDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 				     double& xg, double& xw, 
 				     vector<Lorentz5Momentum>& particleMomenta){
 
-  double mt = getParticleData(ParticleID::t)->mass() / 1000.;
-  double w  = getParticleData(ParticleID::Wplus)->mass() / 1000. / mt;
-  double b  = getParticleData(ParticleID::b)->mass() / 1000. / mt;
+  Energy mt = getParticleData(ParticleID::t)->mass();
+  double w  = getParticleData(ParticleID::Wplus)->mass() / mt;
+  double b  = getParticleData(ParticleID::b)->mass() / mt;
 
   //Calculate xg
   xg = 2.*pT*cosh(y) / mt;
@@ -237,27 +234,33 @@ bool SMTopPOWHEGDecayer::calcMomenta(int j, double pT, double y, double phi,
   if (fabs((sqr(xb) - sqr(xT) - sqr(xb_z) - 4.*sqr(b)))>1.e-6) return false;
 
   //Calculate 4 momenta
-  particleMomenta[0] = Lorentz5Momentum(0., 0., 0., mt);
+  particleMomenta[0].setE(mt);
+  particleMomenta[0].setMass(mt);
 
-  particleMomenta[1] = Lorentz5Momentum(-pT*cos(phi), -pT*sin(phi), 
-					(mt/2.)*xb_z, (mt/2.)*xb);
+  particleMomenta[1].setE((mt/2.)*xb);
+  particleMomenta[1].setX(-pT*cos(phi));
+  particleMomenta[1].setY(-pT*sin(phi));
+  particleMomenta[1].setZ((mt/2.)*xb_z);
+  particleMomenta[1].setMass(mt*b);
 
-  particleMomenta[2] = Lorentz5Momentum(0., 0., 
-					-(mt/2.)*sqrt(sqr(xw) - 4.*sqr(w)), 
-					(mt/2.)*xw);
+  particleMomenta[2].setE((mt/2.)*xw);
+  particleMomenta[2].setZ(-(mt/2.)*sqrt(sqr(xw) - 4.*sqr(w)));
+  particleMomenta[2].setMass(mt*w);
 
-  particleMomenta[3] = Lorentz5Momentum(pT*cos(phi), pT*sin(phi),
-					pT*sinh(y), pT*cosh(y));
+  particleMomenta[3].setE(pT*cosh(y));
+  particleMomenta[3].setX(pT*cos(phi));
+  particleMomenta[3].setY(pT*sin(phi));
+  particleMomenta[3].setZ(pT*sinh(y));
+ 
   return true;
 }
 
 
 bool SMTopPOWHEGDecayer::psCheck(double xg, double xw){
   
-  double mt = getParticleData(ParticleID::t)->mass() / 1000.;
-  double w  = getParticleData(ParticleID::Wplus)->mass() / 1000. / mt;
-  double b  = getParticleData(ParticleID::b)->mass() / 1000. / mt;
-    
+  Energy mt = getParticleData(ParticleID::t)->mass();
+  double w  = getParticleData(ParticleID::Wplus)->mass() / mt;
+  double b  = getParticleData(ParticleID::b)->mass() / mt;
             
   //Check is point is in allowed region of phase space
   double xb_star = (1. - sqr(w) + sqr(b) - xg) / sqrt(1. - xg);

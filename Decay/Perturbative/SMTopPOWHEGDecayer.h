@@ -81,18 +81,17 @@ protected:
 protected:
 
   /**
-   *  Calculate matrix element ratio R/B
+   *  Calculate matrix element ratio B/R
    */
-  double matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
+  Energy2 matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
 
 protected:
 
   /**
    *  Calculate momenta of t, b, W, g
    */
-  bool calcMomenta(int j, double pT, double y, double phi,
-		   double& x_g, double& x_w,
-		   vector<Lorentz5Momentum>& particleMomenta);
+  bool calcMomenta(int j, Energy pT, double y, double phi, double& x_g, 
+		   double& x_w, vector<Lorentz5Momentum>& particleMomenta);
 
 protected:
 
