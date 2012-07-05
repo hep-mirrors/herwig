@@ -27,11 +27,6 @@ public:
   SMTopPOWHEGDecayer();
 
   /**
-   *  Virtual members to be overridden by inheriting classes
-   *  which implement hard corrections 
-   */
-  //@{
-  /**
    *  Has a POWHEG style correction
    */
   virtual bool hasPOWHEGCorrection() {return true;}
@@ -40,9 +35,6 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual HardTreePtr generateHardest(ShowerTreePtr);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -85,10 +77,12 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
+  /**
+   *  Return the momenta including the hard emission
+   */
+  vector<Lorentz5Momentum> hardMomenta();
 
 private:
 

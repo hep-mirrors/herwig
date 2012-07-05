@@ -26,6 +26,16 @@ read boson_decays.in
 read lepton_decays.in
 read meson_decays.in
 
+# these must be stable
+set /Herwig/Particles/mu-:Stable   Stable
+set /Herwig/Particles/mu+:Stable   Stable
+set /Herwig/Particles/pi-:Stable   Stable
+set /Herwig/Particles/pi+:Stable   Stable
+set /Herwig/Particles/K-:Stable    Stable
+set /Herwig/Particles/K+:Stable    Stable
+set /Herwig/Particles/n0:Stable    Stable
+set /Herwig/Particles/nbar0:Stable Stable
+
 cd /Herwig/Hadronization
 # with new decays these should not be made by the hadronization
 # particles only as intermediates in certain decays
