@@ -18,8 +18,7 @@
 using namespace Herwig;
 
 
-SMTopPOWHEGDecayer::SMTopPOWHEGDecayer() 
-  : mt_(ZERO), w_(0.), b_(0.), pTmin_(GeV), pT_(ZERO)
+SMTopPOWHEGDecayer::SMTopPOWHEGDecayer() : mt_(ZERO), w_(0.), b_(0.), pTmin_(GeV), pT_(ZERO)
 {}
 
 IBPtr SMTopPOWHEGDecayer::clone() const {
@@ -30,6 +29,7 @@ IBPtr SMTopPOWHEGDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
+
 void SMTopPOWHEGDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(pTmin_,GeV);
 }
@@ -37,6 +37,7 @@ void SMTopPOWHEGDecayer::persistentOutput(PersistentOStream & os) const {
 void SMTopPOWHEGDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(pTmin_,GeV);
 }
+
 
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments
@@ -77,19 +78,39 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   Lorentz5Momentum pspectator = eventFrame*WProgenitor->progenitor()->momentum();
   eventFrame.rotateZ( -pspectator.phi() );
   eventFrame.rotateY( -pspectator.theta() - Constants::pi );
+
+
+
+//   cerr << "testing " << *topProgenitor->progenitor() << "\n";
+//   cerr << "testing " << *bProgenitor  ->progenitor() << "\n";
+//   cerr << "testing " << *WProgenitor  ->progenitor() << "\n";
+
+
+//   cerr << "testing " << eventFrame*(topProgenitor->progenitor()->momentum())/GeV << "\n";
+//   cerr << "testing " << eventFrame*(bProgenitor  ->progenitor()->momentum())/GeV << "\n";
+//   cerr << "testing " << eventFrame*(WProgenitor  ->progenitor()->momentum())/GeV << "\n";
+
+
   // invert it
   eventFrame.invert();
   // generate the hard emission
   vector<Lorentz5Momentum> momenta = hardMomenta();
   // if no emission return
   if(momenta.empty()) {
+    ofstream file("empty.top", ios::app);
+    file << "empty" << endl;
+    file.close();
     topProgenitor->maximumpT(pTmin_);
     bProgenitor  ->maximumpT(pTmin_);
     return HardTreePtr();
   }
   // rotate momenta back to the lab
+//   cerr << "testing size " << momenta.size() << "\n";
   for(unsigned int ix=0;ix<momenta.size();++ix) {
     momenta[ix] *= eventFrame;
+//     cerr << "new " 
+// 	 << momenta[ix]/GeV << " " << momenta[ix].mass()/GeV << " "<<  momenta[ix].m()/GeV 
+// 	 << "\n";
   }
   // get ParticleData objects
   tcPDPtr top    = topProgenitor->progenitor()->dataPtr();
@@ -151,37 +172,43 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
+
+//   cerr << *hardtree << "\n";
+//   exit(0);
   // return the tree
   return hardtree;
 }
 
 
 vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
+  vector<Lorentz5Momentum> particleMomenta (4);
   double ymin = -10.;
   double ymax = 10.;
-  double C = 1.;
+  double C = 4.;
   Energy2 lambda = sqr(mt_)* sqrt( 1. + pow(w_,4) + pow(b_,4) - 
-				   2.*sqr(w_) - 2.*sqr(b_) - 2.*sqr(w_*b_));    
+			         2.*sqr(w_) - 2.*sqr(b_) - 2.*sqr(w_*b_));    
 
   //Calculate A
-  double A = (ymax - ymin) * C * coupling()->overestimateValue() / Constants::twopi;
+  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / 
+				 (2.*Constants::pi));
   Energy pTmax = mt_* (sqr(1.-w_) - sqr(b_)) / (2.*(1.-w_));
 
   while (pTmax >= pTmin_){  
     //Generate pT, y and phi values
     Energy pT = pTmax * pow(UseRandom::rnd() , (1./A));  
-    if (pT < pTmin_) break;
+    if (pT < pTmin_) {
+      particleMomenta.clear(); 
+      break;
+    }
     double phi = UseRandom::rnd() * Constants::twopi;
     double y = ymin + UseRandom::rnd() * (ymax-ymin);
     
     double weight[2] = {0.,0.};
     double xw[2], xg;
     
-    vector<Lorentz5Momentum> particleMomenta[2]={vector<Lorentz5Momentum>(4),
-						 vector<Lorentz5Momentum>(4)};
     for (unsigned int j=0; j<2; j++) {
       //Check if the momenta are physical
-      bool physical = calcMomenta(j, pT, y, phi, xg, xw[j], particleMomenta[j]);
+      bool physical = calcMomenta(j, pT, y, phi, xg, xw[j], particleMomenta);
       if (not physical) continue;
       
       //Check if point lies within phase space
@@ -189,16 +216,16 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       if (not inPS) continue;
       
       //Calculate the ratio R/B
-      Energy2 meRatio = matrixElementRatio (particleMomenta[j]);
+      InvEnergy2 meRatio = matrixElementRatio (particleMomenta);
       
       //Calculate jacobian 
-      double J = (sqr(mt_) * particleMomenta[j][2].vect().mag2()) / 
+      double J = (sqr(mt_) * particleMomenta[2].vect().mag2()) / 
 	         (8. * pow(Constants::pi,3) * lambda * 
-		 (particleMomenta[j][2].vect().mag()*(mt_-particleMomenta[j][3].e()) -
-		  particleMomenta[j][2].e()*particleMomenta[j][3].z()));
+		 (particleMomenta[2].vect().mag()*(mt_-particleMomenta[3].e()) -
+		  particleMomenta[2].e()*particleMomenta[3].z()));
       
       //Calculate weight
-      weight[j] = (sqr(pT)/meRatio) * fabs(J) * coupling()->ratio(pT*pT) / C;
+      weight[j] = sqr(pT) * meRatio * fabs(J) * coupling()->ratio(pT*pT) / C;
     }
 
     ofstream weights;
@@ -209,22 +236,25 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
 
     //Accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
-      pT_ = pT;
       if (weight[0] > (weight[0] + weight[1])*UseRandom::rnd()) {
-	return particleMomenta[0];
+	particleMomenta[2].setE((mt_/2.)*xw[0]);
+	particleMomenta[2].setZ(-(mt_/2.)*sqrt(sqr(xw[0])-4.*sqr(w_)));
       }
       else {
-	return particleMomenta[1];
+	particleMomenta[2].setE((mt_/2.)*xw[1]);
+	particleMomenta[2].setZ(-(mt_/2.)*sqrt(sqr(xw[1])-4.*sqr(w_)));
       }
+      pT_ = pT;
+      break;   
     }
     //If there's no splitting lower the pT
     pTmax = pT; 
   }
-  return vector<Lorentz5Momentum>();
+  return particleMomenta;
 }
 
 
-Energy2 SMTopPOWHEGDecayer::matrixElementRatio(
+InvEnergy2 SMTopPOWHEGDecayer::matrixElementRatio(
 			   vector<Lorentz5Momentum> particleMomenta) {
              
   Energy2 f = sqr(mt_) * (1. + pow(b_,4) - 2.*pow(w_,4) + 
@@ -243,7 +273,7 @@ Energy2 SMTopPOWHEGDecayer::matrixElementRatio(
           (16. + 8.*sqr(1./w_) + 8.*sqr(b_/w_))* ((PtPg/PbPg) + (PbPg/PtPg)) -
 	  (16./sqr(w_)) * (1. + sqr(b_)) ); 
    
-  return B/R;
+  return R/B;
 }
 
 
@@ -282,7 +312,7 @@ bool SMTopPOWHEGDecayer::calcMomenta(int j, Energy pT, double y, double phi,
                        sqrt(sqr(xb) - 4.*sqr(b_) - sqr(xT));
 
   if (fabs(epsilon_p) < 1.e-6){
-    xb_z =  sqrt(sqr(xb) - 4.*sqr(b_) - sqr(xT));
+    xb_z = sqrt(sqr(xb) - 4.*sqr(b_) - sqr(xT));
   }
   else if (fabs(epsilon_m) < 1.e-6){
     xb_z = -sqrt(sqr(xb) - 4.*sqr(b_) - sqr(xT));

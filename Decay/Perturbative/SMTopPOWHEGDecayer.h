@@ -83,7 +83,7 @@ protected:
   /**
    *  Calculate matrix element ratio B/R
    */
-  Energy2 matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
+  InvEnergy2 matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
 
 protected:
 
