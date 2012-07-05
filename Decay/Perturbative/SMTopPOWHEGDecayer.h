@@ -115,6 +115,33 @@ private:
    */
   SMTopPOWHEGDecayer & operator=(const SMTopPOWHEGDecayer &);
 
+private:
+
+  /**
+   *  Top quark mass
+   */
+  Energy mt_;
+
+  /**
+   *  Reduced \f$W^\pm\f$ mass
+   */
+  double w_;
+
+  /**
+   * Reduced bottom mass
+   */
+  double b_;
+
+  /**
+   *  Minimum \f$p_T\f$
+   */
+  Energy pTmin_;
+
+  /**
+   *  Transverse momentum of the emission
+   */
+  Energy pT_;
+
 };
 
 }
