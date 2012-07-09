@@ -445,6 +445,11 @@ private:
   unsigned int QEDContributions_;
 
   /**
+   *  How to organize the QED dipoles subtraction in Bbar
+   */
+  unsigned int DipoleSum_;
+
+  /**
    *  Include incoming photons?
    */
   bool incomingPhotons_;

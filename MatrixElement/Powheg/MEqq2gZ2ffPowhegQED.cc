@@ -30,6 +30,7 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 MEqq2gZ2ffPowhegQED::MEqq2gZ2ffPowhegQED() 
   : corrections_(1), QEDContributions_(0), incomingPhotons_(true),
+    DipoleSum_(0),
     contrib_(1), power_(0.6), zPow_(0.5), yPow_(0.9),
     alphaS_(0.118), alphaEM_(1./137.), fixedCouplings_(false),
     supressionFunction_(0), 
@@ -423,7 +424,7 @@ void MEqq2gZ2ffPowhegQED::persistentOutput(PersistentOStream & os) const {
      << ounit(minpTQEDII_,GeV) << ounit(minpTQEDIF_,GeV) << ounit(minpTQEDFF_,GeV) 
      << alphaQCD_ << alphaQED_
      << FFGVertex_ << oneLoopVertex_ << QCDRadiationType_
-     << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_;
+     << Z0_ << gamma_ << process_ << maxFlavour_ << QEDContributions_ << DipoleSum_;
 }
 
 void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
@@ -437,7 +438,7 @@ void MEqq2gZ2ffPowhegQED::persistentInput(PersistentIStream & is, int) {
      >> iunit(minpTQEDII_,GeV) >> iunit(minpTQEDIF_,GeV) >> iunit(minpTQEDFF_,GeV) 
      >> alphaQCD_ >> alphaQED_
      >> FFGVertex_ >> oneLoopVertex_ >> QCDRadiationType_
-     >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_;
+     >> Z0_ >> gamma_ >> process_ >> maxFlavour_ >> QEDContributions_ >> DipoleSum_;
 }
 
 void MEqq2gZ2ffPowhegQED::doinit() {
@@ -804,11 +805,26 @@ void MEqq2gZ2ffPowhegQED::Init() {
      "Only include inital- and final-state QED radiation, no intereference",
      3);
 
+  static Switch<MEqq2gZ2ffPowhegQED,unsigned int> interfaceDipoleSum
+    ("DipoleSum",
+     "Organization of QED dipoles subtraction",
+     &MEqq2gZ2ffPowhegQED::DipoleSum_, 0, false, false);
+
+  static SwitchOption interfaceDipoleSum0
+    (interfaceDipoleSum,
+     "0",
+     "(R-Sum(D-))*|D+|/Sum|D|",
+     0);
+  static SwitchOption interfaceDipoleSum1
+    (interfaceDipoleSum,
+     "1",
+     "R*|D|/Sum|D|",
+     1);
+
   static Reference<MEqq2gZ2ffPowhegQED,OneLoopFFAWZVertex> interfaceOneLoopVertex
     ("OneLoopVertex",
      "The vertex include the one-loop corrections",
      &MEqq2gZ2ffPowhegQED::oneLoopVertex_, false, false, true, false, false);
-
 
   static Switch<MEqq2gZ2ffPowhegQED,int> interfaceQCDRadiationType
     ("QCDRadiationType",
@@ -1080,6 +1096,12 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
   if(corrections_==2||corrections_==4||corrections_==5) {
     // ISR
     if(QEDContributions_!=2) {
+//       cout<<"====II======="<<endl;
+//       cout<<mePartonData()[0]->PDGName()<<" "<<
+// 	mePartonData()[1]->PDGName()<<" "<<
+// 	mePartonData()[2]->PDGName()<<" "<<
+// 	mePartonData()[3]->PDGName()<<" "<<endl;
+
       realQED1 = subtractedRealQED(x,z. first,zJac. first,
 				   oldqPDF. first,newqPDF. first,
 				   newpPDF. first, II12);
@@ -1090,6 +1112,12 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     }
     // FSR
     if(QEDContributions_!=1) {
+//       cout<<"====FF======="<<endl;
+//       cout<<mePartonData()[0]->PDGName()<<" "<<
+// 	mePartonData()[1]->PDGName()<<" "<<
+// 	mePartonData()[2]->PDGName()<<" "<<
+// 	mePartonData()[3]->PDGName()<<" "<<endl;
+
       realQED3 = subtractedRealQED(x,zTilde_,1.,oldqPDF. first,
 				   oldqPDF. first,0.,FF34);
       realQED4 = subtractedRealQED(x,zTilde_,1.,oldqPDF. first,
@@ -1098,22 +1126,52 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     }
     // ISR/FSR interference
     if(QEDContributions_==0) {
-      if(mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
+      cout<<"====IF======="<<endl;
+//       cout<<mePartonData()[0]->PDGName()<<" "<<
+// 	mePartonData()[1]->PDGName()<<" "<<
+// 	mePartonData()[2]->PDGName()<<" "<<
+// 	mePartonData()[3]->PDGName()<<" "<<endl;
+      
+      if(DipoleSum_==0) {
+	if(mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
+	  realQED5 = subtractedRealQED(x,z. first,zJac. first,
+				       oldqPDF. first,newqPDF. first,
+				       newpPDF. first, IF13);
+	if(mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
+	  realQED6 = subtractedRealQED(x,z. first,zJac. first,
+				       oldqPDF. first,newqPDF. first,
+				       newpPDF. first, IF14);
+	if(mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
+	  realQED7 = subtractedRealQED(x,z.second,zJac.second, 
+				       oldqPDF.second,newqPDF.second,
+				       newpPDF.second, IF23);
+	if(mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
+	  realQED8 = subtractedRealQED(x,z.second,zJac.second, 
+				       oldqPDF.second,newqPDF.second,
+				       newpPDF.second, IF24);
+      }
+      else if(DipoleSum_==1) {
+	cout<<"=IF13="<<endl;
 	realQED5 = subtractedRealQED(x,z. first,zJac. first,
 				     oldqPDF. first,newqPDF. first,
 				     newpPDF. first, IF13);
-      if(mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
+	cout<<"=IF14="<<endl;
 	realQED6 = subtractedRealQED(x,z. first,zJac. first,
-				     oldqPDF. first,newqPDF. first,
-				     newpPDF. first, IF14);
-      if(mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
-	realQED7 = subtractedRealQED(x,z.second,zJac.second, 
-				     oldqPDF.second,newqPDF.second,
-				     newpPDF.second, IF23);
-      if(mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
-	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
-				     oldqPDF.second,newqPDF.second,
-				     newpPDF.second, IF24);
+				       oldqPDF. first,newqPDF. first,
+				       newpPDF. first, IF14);
+	cout<<"=IF23="<<endl;
+	realQED7 = subtractedRealQED(x,z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,
+				       newpPDF.second, IF23);
+	cout<<"=IF24="<<endl;
+	realQED8 = subtractedRealQED(x,z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,
+				       newpPDF.second, IF24);
+      }
+      else {
+	generator()->log() << "invalid value for DipoleSum_ "<<"\n";
+      }
+//       cout<<"realqed= "<<realQED5[0]<<" "<<realQED6[0]<<" "<<realQED7[0]<<" "<<realQED8[0]<<" "<<endl;
       wgt += (realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0] );
     }
   }
@@ -1858,6 +1916,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   /////////// compute the two II dipole terms ////////////////////////////
   InvEnergy2 DII[2] = {ZERO,ZERO};
   if(QEDContributions_!=2) {
+    //    cout<<"doing II dipoles"<<endl;
     double x = (p[0]*p[1]-p[4]*p[1]-p[4]*p[0])/(p[0]*p[1]);
     Lorentz5Momentum Kt = p[0]+p[1]-p[4];
     vector<Lorentz5Momentum> pa(4),pb(4);
@@ -1896,6 +1955,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   InvEnergy2 DFF[2]={ZERO,ZERO};
   Energy2 pT2final[2]={ZERO,ZERO};
   if(QEDContributions_!=1) {
+    //cout<<"doing FF dipoles"<<endl;
     Lorentz5Momentum q = p[0]+p[1];
     Energy2 Q2=q.m2();
     Energy2 lambda = sqrt((Q2-sqr(p[2].mass()+p[3].mass()))*
@@ -1954,6 +2014,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
   InvEnergy2 negativeDipoles(ZERO);
   if(QEDContributions_==0) {
+    cout<<"doing IF dipoles"<<endl;
     for(unsigned int ix=0;ix<4;++ix) {
       // incoming and outgoing particles in the dipole
       unsigned int iin  = ix<2 ? 0 :1;
@@ -1994,11 +2055,21 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       // so revert the sign of the
       // 'color' operator of the outgoing parton
       InvEnergy2 Dipole= + lo*charge*split; 
-      if(charge>0)
+      if(DipoleSum_==0) {
+// 	cout<<"DS0"<<endl;
+	if(charge>0)
+	  DIF[ix]          = Dipole;
+	else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
+	  negativeDipoles += Dipole;
+      }
+      else if (DipoleSum_==1) {
 	DIF[ix]          = Dipole;
-      else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
-	negativeDipoles += Dipole;
+//  	cout<<ix<<"|    "<<GeV2*DIF[ix]<<endl;
+      }
       if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
+
+      if(int(ix)==int(dipole)-int(IF13))
+	cout<<int(ix)<<" "<<int(dipole)<<" "<<int(IF13)<<" "<<endl;
     }
   }
   // supression function
@@ -2058,6 +2129,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     assert(dipole==II12 || dipole ==II21);
     meout = me[0];
     den = abs(DII[0])+abs(DII[1]);
+    //    negativeDipoles=ZERO; //!ER:
   }
   // FSR 
   else if(QEDContributions_==2 ||
@@ -2065,6 +2137,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     assert(dipole==FF34 || dipole ==FF43);
     meout = me[1];
     den = abs(DFF[0])+abs(DFF[1]);
+    //    negativeDipoles=ZERO; //!ER:
   }
   // full result
   else if(QEDContributions_==0) {
@@ -2078,8 +2151,17 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   pair<double,double> output = make_pair(0.,0.);
   if(den>ZERO) {
     if(subtract) {
-      output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
-			     abs(num)/den*supressionFactor.first -num);
+      if(DipoleSum_==0) {
+// 	cout<<"neg dipoles= "<<GeV2*negativeDipoles<<endl;
+	output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
+			       abs(num)/den*supressionFactor.first -num);
+      }
+      else if(DipoleSum_==1) {
+// 	cout<<"num= "<<GeV2*num<<endl;
+// 	cout<<"me2= "<<meout<<endl;
+	output.first  = scale*((UnitRemoval::InvE2*meout)*
+			       abs(num)/den*supressionFactor.first -num);
+      }
     }
     else {
       output.first  = scale* UnitRemoval::InvE2*meout*
