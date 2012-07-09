@@ -28,6 +28,11 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 
+#include <boost/progress.hpp>
+
+#include <iterator>
+using std::ostream_iterator;
+
 using namespace Herwig;
 using std::ostream_iterator;
 
@@ -58,6 +63,9 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
 
   if ( diagramGenerator() && !me->diagramGenerator() )
     me->diagramGenerator(diagramGenerator());
+
+  if ( processData() && !me->processData() )
+    me->processData(processData());
 
   if ( me->nLight() == 0 )
     me->nLight(nLight());
@@ -106,25 +114,50 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
   typedef vector<pair<int,pair<int,int> > > QNKey;
 
+  generator()->log() << "determining subprocesses for ";
+  copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
+  generator()->log() << flush;
+
   map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > > ampProcs;
   set<PDVector> processes = makeSubProcesses(proc);
+
+  vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
   for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
 	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
     (**amp).orderInGs(orderas);
     (**amp).orderInGem(orderInAlphaEW());
     if ( (**amp).orderInGs() != orderas ||
-	 (**amp).orderInGem() != orderInAlphaEW() )
+	 (**amp).orderInGem() != orderInAlphaEW() ) {
       continue;
+    }
+    matchAmplitudes.push_back(*amp);
+  }
+
+  size_t combinations = processes.size()*matchAmplitudes.size();
+  size_t procCount = 0;
+
+  boost::progress_display * progressBar = 
+    new boost::progress_display(combinations,generator()->log());
+
+  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	  = matchAmplitudes.begin(); amp != matchAmplitudes.end(); ++amp ) {
+    (**amp).orderInGs(orderas);
+    (**amp).orderInGem(orderInAlphaEW());
     for ( set<PDVector>::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
+      ++(*progressBar);
       if ( !(**amp).canHandle(*p) )
 	continue;
       QNKey key;
+      ++procCount;
       transform(p->begin(),p->end(),back_inserter(key),ProjectQN());
       ampProcs[*amp][key].push_back(*p);
     }
   }
+
+  delete progressBar;
+  generator()->log() << flush;
 
   vector<Ptr<MatchboxMEBase>::ptr> res;
   for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > >::const_iterator
@@ -140,6 +173,12 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
       res.push_back(me);
     }
   }
+
+  generator()->log() << "created " << res.size()
+		     << " matrix element objects for "
+		     << procCount << " subprocesses.\n";
+  generator()->log() << "--------------------------------------------------------------------------------\n"
+		     << flush;
 
   return res;
 
@@ -157,7 +196,9 @@ void MatchboxFactory::setup() {
 	  g != particleGroups().end(); ++g )
       for ( PDVector::iterator p = g->second.begin();
 	    p != g->second.end(); ++p ) {
+#ifndef NDEBUG
 	long checkid = (**p).id();
+#endif
 	*p = getParticleData((**p).id());
 	assert((**p).id() == checkid);
       }
@@ -282,7 +323,14 @@ void MatchboxFactory::setup() {
 
   if ( bornContributions() && virtualContributions() ) {
 
+    generator()->log() << "preparing Born "
+		       << (virtualContributions() ? "and virtual" : "")
+		       << " matrix elements." << flush;
+
     bornVirtualMEs().clear();
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(bornMEs().size(),generator()->log());
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
@@ -317,17 +365,29 @@ void MatchboxFactory::setup() {
       bornVirtualMEs().push_back(nlo);
       MEs().push_back(nlo);
 
+      ++(*progressBar);
+
     }
+
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
 
   }
 
   if ( realContributions() ) {
+
+    generator()->log() << "preparing real emission matrix elements." << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
 	theSubtractionData += "/";
 
     subtractedMEs().clear();    
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(realEmissionMEs().size(),generator()->log());
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
@@ -361,9 +421,18 @@ void MatchboxFactory::setup() {
 
       MEs().push_back(sub);
 
+      ++(*progressBar);
+
     }
 
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
+
   }
+
+  generator()->log() << "process setup finished.\n" << flush;
 
 }
 
@@ -387,6 +456,8 @@ void MatchboxFactory::print(ostream& os) const {
 	}
 	os << "\n";
       }
+      if ( (**m).processData() )
+	(**m).subProcesses().clear();
     }
     os << flush;
     os << " generated real emission matrix elements:\n";
@@ -404,6 +475,8 @@ void MatchboxFactory::print(ostream& os) const {
 	}
 	os << "\n";
       }
+      if ( (**m).processData() )
+	(**m).subProcesses().clear();
     }
     os << flush;
   }
@@ -437,7 +510,7 @@ void MatchboxFactory::doinit() {
 
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
-  os << theDiagramGenerator 
+  os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theSubProcessGroups
@@ -452,7 +525,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
-  is >> theDiagramGenerator 
+  is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theSubProcessGroups
@@ -570,6 +643,10 @@ void MatchboxFactory::Init() {
      "Set the diagram generator.",
      &MatchboxFactory::theDiagramGenerator, false, false, true, true, false);
 
+  static Reference<MatchboxFactory,ProcessData> interfaceProcessData
+    ("ProcessData",
+     "Set the process data object to be used.",
+     &MatchboxFactory::theProcessData, false, false, true, true, false);
 
   static Parameter<MatchboxFactory,unsigned int> interfaceOrderInAlphaS
     ("OrderInAlphaS",

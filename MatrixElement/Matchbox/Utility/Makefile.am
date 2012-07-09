@@ -15,6 +15,8 @@ MatchboxLeptonMassScale.h \
 MatchboxLeptonMassScale.cc \
 MatchboxScaleChoice.cc \
 MatchboxScaleChoice.h \
+ProcessData.h \
+ProcessData.cc \
 SimpleColourBasis.cc \
 SimpleColourBasis.h \
 SpinCorrelationTensor.h \

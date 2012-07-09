@@ -14,6 +14,7 @@
 #include "TreePhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -46,9 +47,9 @@ void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
 
   theLastXComb = xco;
 
-  lastChannelsIterator = channelMap.find(lastXCombPtr());
+  lastChannelsIterator = channelMap().find(lastXCombPtr());
 
-  if ( lastChannelsIterator == channelMap.end() ) {
+  if ( lastChannelsIterator == channelMap().end() ) {
     map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> channels;
     for ( StandardXComb::DiagramVector::const_iterator d =
 	    lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
@@ -58,8 +59,8 @@ void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
       tree.setup(*diag);
       channels[diag] = tree;
     }
-    channelMap[lastXCombPtr()] = channels;
-    lastChannelsIterator = channelMap.find(lastXCombPtr());
+    channelMap()[lastXCombPtr()] = channels;
+    lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
 
   lastPhasespaceInfo.sHat = lastXComb().lastSHat();
@@ -121,33 +122,11 @@ void TreePhasespace::doinitrun() {
 }
 
 void TreePhasespace::persistentOutput(PersistentOStream & os) const {
-  os << channelMap.size();
-  for ( map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> >::const_iterator k =
-	  channelMap.begin(); k != channelMap.end(); ++k ) {
-    os << k->first << k->second.size();
-    for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree>::const_iterator l = 
-	    k->second.begin(); l != k->second.end(); ++l ) {
-      os << l->first;
-      l->second.put(os);
-    }
-  }
-  os << x0 << xc;
+  os << theChannelMap << x0 << xc;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
-  size_t nk; is >> nk;
-  for ( size_t k = 0; k < nk; ++k ) {
-    tStdXCombPtr xc; is >> xc;
-    size_t nl; is >> nl;
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> cm;
-    for ( size_t l = 0; l < nl; ++l ) {
-      Ptr<Tree2toNDiagram>::ptr ci; is >> ci;
-      PhasespaceTree cp; cp.get(is);
-      cm[ci] = cp;
-    }
-    channelMap[xc] = cm;
-  }
-  is >> x0 >> xc;
+  is >> theChannelMap >> x0 >> xc;
 }
 
 
@@ -165,6 +144,12 @@ void TreePhasespace::Init() {
     ("TreePhasespace is a multichannel phasespace generator "
      "adapting to singularity structures as determined from the matrix "
      "elements diagrams.");
+
+
+  static Reference<TreePhasespace,TreePhasespaceChannels> interfaceChannelMap
+    ("ChannelMap",
+     "Set the object storing the channels.",
+     &TreePhasespace::theChannelMap, false, false, true, false, false);
 
 
   static Parameter<TreePhasespace,double> interfaceX0
