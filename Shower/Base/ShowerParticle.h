@@ -59,6 +59,31 @@ class ShowerParticle: public Particle {
 
 public:
 
+  /**
+   *  Struct for all the info on an evolution partner
+   */
+  struct EvolutionPartner {
+    /**
+     * The partner
+     */
+    tShowerParticlePtr partner;
+
+    /**
+     *  Weight
+     */
+    double weight;
+
+    /**
+     *  Type
+     */
+    ShowerPartnerType::Type type;
+
+    /**
+     *  The assoicated evolution scale
+     */
+    Energy scale;
+  };
+
   /** @name Construction and descruction functions. */
   //@{
 
@@ -176,12 +201,20 @@ public:
    */
   tShowerParticlePtr partner() const { return _partner; }
 
-
   /**
    * Set the partner
    */
   void partner(const tShowerParticlePtr partner) { _partner = partner; } 
 
+  /**
+   *  Get the possible partners 
+   */
+  vector<EvolutionPartner> partners() const { return partners_; }
+
+  /**
+   *  Add a possible partners 
+   */
+  void addPartner(const EvolutionPartner & in ) { partners_.push_back(in); }
 
   /**
    * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
@@ -367,6 +400,11 @@ private:
    *  Progenitor
    */   
   tShowerParticlePtr _progenitor;
+
+  /**
+   *  Partners
+   */
+  vector<EvolutionPartner> partners_;
     
 };
 

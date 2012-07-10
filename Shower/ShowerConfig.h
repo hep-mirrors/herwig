@@ -67,6 +67,13 @@ using namespace ThePEG;
     enum Type { UNDEFINED=-1, QCD, QED };
   }
 
+  namespace ShowerPartnerType {
+    /**
+     *  Enum for the type of shower partner
+     */
+    enum Type {QCDColourLine,QCDAntiColourLine,QED};
+  }
+
   /**
    *  typedef to pair the SudakovFormFactor and the particles in a branching
    */

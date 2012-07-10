@@ -161,7 +161,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if(!(*cit)->data().coloured()) continue;
       // We now have a coloured particle
-      vector< pair<PartnerType, tShowerParticlePtr> > partners = 
+      vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
 	findQCDPartners(*cit,particles);
       if(partners.empty()) {
         throw Exception() << "`Failed to make colour connections in " 
@@ -224,9 +224,9 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
         }
         if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){
 	  // Set radiation lines for hard octets
-	  if(partners[position].first==QCDColourLine)
+	  if(partners[position].first==ShowerPartnerType::QCDColourLine)
 	    (*cit)->radiationLine(1);
-	  else if(partners[position].first==QCDAntiColourLine)
+	  else if(partners[position].first==ShowerPartnerType::QCDAntiColourLine)
 	    (*cit)->radiationLine(2);
 	  else
 	    assert(false);
@@ -360,10 +360,10 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     return calculateInitialInitialScales(particlePair);
 }
 
-vector< pair<PartnerFinder::PartnerType, tShowerParticlePtr> > 
+vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
 PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles) {
-  vector< pair<PartnerType, tShowerParticlePtr> > partners;
+  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners;
   ShowerParticleVector::const_iterator cjt;
   for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
     if(!(*cjt)->data().coloured() || particle==*cjt) continue;
@@ -373,7 +373,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(unsigned int ix=0; ix<CLSIZE(particle); ++ix) {
 	for(unsigned int jx=0; jx<CLSIZE(*cjt); ++jx) {
 	  if((CL(particle,ix) && CL(particle,ix)==CL(*cjt,jx))) {
-	    partners.push_back(make_pair(    QCDColourLine,*cjt));
+	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
 	  }
 	}
       }
@@ -381,7 +381,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix) {
 	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx) {
 	  if((ACL(particle,ix) && ACL(particle,ix)==ACL(*cjt,jx))) {
-	    partners.push_back(make_pair(QCDAntiColourLine,*cjt));
+	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
 	  }
 	}
       }
@@ -392,7 +392,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(unsigned int ix=0; ix<CLSIZE(particle); ++ix){
 	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx){
 	  if(CL(particle,ix) && CL(particle,ix)==ACL(*cjt,jx)) {
-	    partners.push_back(make_pair(    QCDColourLine,*cjt));
+	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
 	  }
 	}
       }
@@ -400,7 +400,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix){
 	for(unsigned int jx=0; jx<CLSIZE(*cjt); jx++){
 	  if(ACL(particle,ix) && ACL(particle,ix)==CL(*cjt,jx)) {
-	    partners.push_back(make_pair(QCDAntiColourLine,*cjt));
+	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
 	  }
 	}
       }
@@ -415,7 +415,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt)  == cpair.second))||
 	   (!FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt) == cpair.second ))) {
-	  partners.push_back(make_pair(    QCDColourLine,*cjt));
+	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
 	}
       }
     }
@@ -424,7 +424,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
 	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second))) {
-	  partners.push_back(make_pair(    QCDColourLine,*cjt));    
+	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));    
 	}
       }
     }
@@ -434,7 +434,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
 	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second ))) {
-	  partners.push_back(make_pair(QCDAntiColourLine,*cjt));  
+	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));  
 	}
       }
     }
@@ -443,7 +443,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt) == cpair.second))||
 	   (!FS(*cjt) && (ACL(*cjt) == cpair.first ||ACL(*cjt) == cpair.second))) {
-	  partners.push_back(make_pair(QCDAntiColourLine,*cjt));     
+	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));     
 	}
       }
     }
