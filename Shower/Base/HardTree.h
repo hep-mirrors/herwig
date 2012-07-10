@@ -64,6 +64,7 @@ public:
   set<HardBranchingPtr> & incoming() {return spacelike_;}
 
   /**
+   *  Type of interaction
    */
   ShowerInteraction::Type interaction() {return interaction_;}
 

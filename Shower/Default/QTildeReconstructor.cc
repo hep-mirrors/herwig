@@ -2101,7 +2101,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;
   HardBranchingPtr initial;
-  Energy mc;
+  Energy mc(ZERO);
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // final-state parton
     if(jets[ix]->status()==HardBranching::Outgoing) {

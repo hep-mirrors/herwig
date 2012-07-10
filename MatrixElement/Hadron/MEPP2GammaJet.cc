@@ -234,8 +234,8 @@ double MEPP2GammaJet::me2() const {
     // calculate the matrix element
     me = qqbarME(fin,ain,gout,pout,false)/9.;
 //       Energy2 mt(scale());
-//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt)*
-// 	sqr(mePartonData()[0]->charge());
+//     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt)*
+//       sqr(mePartonData()[0]->iCharge()/3.);
 //       Energy2 t(tHat()),u(uHat());
 //       double me2=8./9./u/t*(t*t+u*u)*coupling;
 //       cerr << "testing matrix element A" 
@@ -265,10 +265,10 @@ double MEPP2GammaJet::me2() const {
     // calculate the matrix element
     me = qgME(fin,gin,pout,fout,false)/24.;
 //       Energy2 mt(scale());
-//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
+//     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
 //       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
-// 	sqr(mePartonData()[0]->charge());
+//       sqr(mePartonData()[0]->iCharge()/3.);
 //       cerr << "testing matrix element B" 
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
@@ -296,10 +296,10 @@ double MEPP2GammaJet::me2() const {
     // calculate the matrix element
     me=qbargME(ain,gin,pout,aout,false)/24.;
 //       Energy2 mt(scale());
-//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
+//     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
 //       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
-// 	sqr(mePartonData()[0]->charge());
+//       sqr(mePartonData()[0]->iCharge()/3.);
 //       cerr << "testing matrix element C" 
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
