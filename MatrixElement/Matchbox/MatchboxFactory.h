@@ -16,6 +16,7 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
@@ -68,6 +69,16 @@ public:
    * Set the diagram generator.
    */
   void diagramGenerator(Ptr<Tree2toNGenerator>::ptr dg) { theDiagramGenerator = dg; }
+
+  /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
 
   /**
    * Return the number of light flavours, this matrix
@@ -426,6 +437,11 @@ private:
    * The diagram generator.
    */
   Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
+
+  /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
 
   /**
    * The number of light flavours, this matrix

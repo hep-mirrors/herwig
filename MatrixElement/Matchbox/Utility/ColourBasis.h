@@ -432,6 +432,11 @@ private:
   bool readBasis(const vector<PDT::Colour>&);
 
   /**
+   * Gather any implementation dependend details when reading a basis
+   */
+  virtual void readBasisDetails(const vector<PDT::Colour>&) {}
+
+  /**
    * Write out symmetric matrices.
    */
   void write(const symmetric_matrix<double,upper>&, ostream&) const;

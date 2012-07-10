@@ -106,6 +106,12 @@ private:
 private:
 
   /**
+   * True, if a diagonal CKM matrix should be assumed. This ignores
+   * the CKM object of the StandardModel.
+   */
+  bool _diagonal;
+
+  /**
    * Storage of the couplings.
    */
   //@{

@@ -29,20 +29,19 @@ using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
   : Amplitude(), theColourBasisDim(0),
+    amplitudesCleanedUp(false), oneLoopAmplitudesCleanedUp(false),
     calculateTrees(true), calculateLoops(true) {}
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theColourBasisDim
-     << theCrossingMap << theColourMap << theCrossingSigns 
-     << theAmplitudePartonData << theNLight;
+  os << theLastXComb << theProcessData << theColourBasis << theColourBasisDim
+     << theNLight;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis >> theColourBasisDim
-     >> theCrossingMap >> theColourMap >> theCrossingSigns
-     >> theAmplitudePartonData >> theNLight;
+  is >> theLastXComb >> theProcessData >> theColourBasis >> theColourBasisDim
+     >> theNLight;
 }
 
 void MatchboxAmplitude::cloneDependencies(const std::string&) {
@@ -258,6 +257,38 @@ void MatchboxAmplitude::prepareAmplitudes() {
       amp->second(k) = evaluate(k,amp->first,lamp->second(k));
   }
 
+  if ( !amplitudesCleanedUp ) {
+    map<vector<int>,CVector> clean;
+    for ( map<vector<int>,CVector>::const_iterator amp = lastAmplitudes().begin();
+	  amp != lastAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+	if ( amp->second(k) != Complex(0.0) ) {
+	  nonZero = true;
+	  break;
+	}
+      }
+      if ( nonZero )
+	clean.insert(*amp);
+    }
+    theLastAmplitudes = clean;
+    clean.clear();
+    for ( map<vector<int>,CVector>::const_iterator amp = lastLargeNAmplitudes().begin();
+	  amp != lastLargeNAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+	if ( amp->second(k) != Complex(0.0) ) {
+	  nonZero = true;
+	  break;
+	}
+      }
+      if ( nonZero )
+	clean.insert(*amp);
+    }
+    theLastLargeNAmplitudes = clean;
+    amplitudesCleanedUp = true;
+  }
+
   calculateTrees = false;
 
 }
@@ -278,6 +309,24 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes() {
 	amp != lastOneLoopAmplitudes().end(); ++amp ) {
     for ( size_t k = 0; k < colourBasisDim(); ++k )
       amp->second(k) = evaluateOneLoop(k,amp->first);
+  }
+
+  if ( !oneLoopAmplitudesCleanedUp ) {
+    map<vector<int>,CVector> clean;
+    for ( map<vector<int>,CVector>::const_iterator amp = lastOneLoopAmplitudes().begin();
+	  amp != lastOneLoopAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+	if ( amp->second(k) != Complex(0.0) ) {
+	  nonZero = true;
+	  break;
+	}
+      }
+      if ( nonZero )
+	clean.insert(*amp);
+    }
+    theLastOneLoopAmplitudes = clean;
+    oneLoopAmplitudesCleanedUp = true;
   }
 
   calculateLoops = false;
@@ -381,6 +430,11 @@ void MatchboxAmplitude::Init() {
     ("ColourBasis",
      "Set the colour basis implementation.",
      &MatchboxAmplitude::theColourBasis, false, false, true, true, false);
+
+  static Reference<MatchboxAmplitude,ProcessData> interfaceProcessData
+    ("ProcessData",
+     "Set the process data object.",
+     &MatchboxAmplitude::theProcessData, false, false, true, true, false);
 
 }
 

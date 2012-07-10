@@ -45,15 +45,21 @@ MatchboxMEBase::~MatchboxMEBase() {}
 
 void MatchboxMEBase::getDiagrams() const {
 
-  if ( diagramGenerator() ) {
+  if ( diagramGenerator() && processData() ) {
 
     vector<Ptr<Tree2toNDiagram>::ptr> diags;
     for ( vector<PDVector>::const_iterator p = subProcesses().begin();
 	  p != subProcesses().end(); ++p ) {
-      vector<Ptr<Tree2toNDiagram>::ptr> res =
-	diagramGenerator()->generate(*p,orderInAlphaS(),orderInAlphaEW());
+      vector<Ptr<Tree2toNDiagram>::ptr>& res =
+	theProcessData->diagramMap()[*p];
+      if ( res.empty() ) {
+	res = diagramGenerator()->generate(*p,orderInAlphaS(),orderInAlphaEW());
+      }
       copy(res.begin(),res.end(),back_inserter(diags));
     }
+
+    if ( !verbose() )
+      theSubprocesses.clear();
 
     if ( diags.empty() )
       return;
@@ -108,7 +114,8 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
     if ( !matchboxAmplitude()->haveColourFlows() )
       throw Exception() << "A colour flow implementation is not present."
 			<< Exception::abortnow;
-    matchboxAmplitude()->prepareAmplitudes();
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes();
     return matchboxAmplitude()->colourGeometries(diag);
   }
 
@@ -336,7 +343,8 @@ double MatchboxMEBase::me2() const {
     if ( !calculateME2(res) )
       return res;
 
-    matchboxAmplitude()->prepareAmplitudes();
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes();
 
     lastME2(matchboxAmplitude()->me2()*
 	    matchboxAmplitude()->lastCrossingSign()*
@@ -522,7 +530,8 @@ double MatchboxMEBase::oneLoopInterference() const {
     if ( !calculateME2(res,make_pair<int,int>(-1,-1)) )
       return res;
 
-    matchboxAmplitude()->prepareOneLoopAmplitudes();
+    if ( matchboxAmplitude()->oneLoopAmplitudes() )
+      matchboxAmplitude()->prepareOneLoopAmplitudes();
     lastME2(matchboxAmplitude()->oneLoopInterference()*
 	    matchboxAmplitude()->lastCrossingSign()*
 	    me2Norm(1));
@@ -646,7 +655,8 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
     if ( !calculateME2(res,ij) )
       return res;
 
-    matchboxAmplitude()->prepareAmplitudes();
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes();
     lastME2(matchboxAmplitude()->colourCorrelatedME2(ij)*
 	    matchboxAmplitude()->lastCrossingSign()*
 	    me2Norm());
@@ -675,7 +685,8 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
     if ( !calculateME2(res,ij) )
       return res;
 
-    matchboxAmplitude()->prepareAmplitudes();
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes();
     lastME2(matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
 	    matchboxAmplitude()->lastCrossingSign()*
 	    me2Norm());
@@ -885,6 +896,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     amplitude(myAmplitude);
     matchboxAmplitude()->orderInGs(orderInAlphaS());
     matchboxAmplitude()->orderInGem(orderInAlphaEW());
+    matchboxAmplitude()->processData(processData());
   }
 
   if ( scaleChoice() ) {
@@ -911,7 +923,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theReweights << thePhasespace << theAmplitude << theScaleChoice
-     << theDiagramGenerator << theSubprocesses
+     << theDiagramGenerator << theProcessData << theSubprocesses
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theVerbose << theCache << theFixedCouplings
      << theNLight << theGetColourCorrelatedMEs << symmetryFactors;
@@ -919,7 +931,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theReweights >> thePhasespace >> theAmplitude >> theScaleChoice
-     >> theDiagramGenerator >> theSubprocesses
+     >> theDiagramGenerator >> theProcessData >> theSubprocesses
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theVerbose >> theCache >> theFixedCouplings
      >> theNLight >> theGetColourCorrelatedMEs >> symmetryFactors;
@@ -946,6 +958,11 @@ void MatchboxMEBase::Init() {
     ("DiagramGenerator",
      "Set the diagram generator to be used.",
      &MatchboxMEBase::theDiagramGenerator, false, false, true, true, false);
+
+  static Reference<MatchboxMEBase,ProcessData> interfaceProcessData
+    ("ProcessData",
+     "Set the process data object to be used.",
+     &MatchboxMEBase::theProcessData, false, false, true, true, false);
 
   static Reference<MatchboxMEBase,MatchboxScaleChoice> interfaceScaleChoice
     ("ScaleChoice",

@@ -13,7 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/PhasespaceHelpers.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TreePhasespaceChannels.h"
 
 namespace Herwig {
 
@@ -138,9 +138,15 @@ protected:
 private:
 
   /**
+   * The object storing channel maps
+   */
+  Ptr<TreePhasespaceChannels>::ptr theChannelMap;
+
+  /**
    * Map xcomb's to channel vectors indexed by diagram id.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> > channelMap;
+  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >&
+  channelMap() { return theChannelMap->channelMap(); }
 
   /**
    * The currently active channels.
