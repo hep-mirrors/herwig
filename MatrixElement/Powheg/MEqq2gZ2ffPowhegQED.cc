@@ -1132,22 +1132,22 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 // 	mePartonData()[2]->PDGName()<<" "<<
 // 	mePartonData()[3]->PDGName()<<" "<<endl;
       
-      if(DipoleSum_==0 ||
+      if(DipoleSum_!=0 || 
 	 mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
 	realQED5 = subtractedRealQED(x,z. first,zJac. first,
 				     oldqPDF. first,newqPDF. first,
 				     newpPDF. first, IF13);
-      if(DipoleSum_==0 ||
+      if(DipoleSum_!=0 || 
 	 mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
 	realQED6 = subtractedRealQED(x,z. first,zJac. first,
 				     oldqPDF. first,newqPDF. first,
 				     newpPDF. first, IF14);
-      if(DipoleSum_==0 ||
+      if(DipoleSum_!=0 || 
 	 mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
 	realQED7 = subtractedRealQED(x,z.second,zJac.second, 
 				     oldqPDF.second,newqPDF.second,
 				     newpPDF.second, IF23);
-      if(DipoleSum_==0 ||
+      if(DipoleSum_!=0 || 
 	 mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
 	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
 				     oldqPDF.second,newqPDF.second,
@@ -2036,7 +2036,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       // so revert the sign of the
       // 'color' operator of the outgoing parton
       InvEnergy2 Dipole= + lo*charge*split; 
-      if(DipoleSum_!=0 || charge>0)
+      if(DipoleSum_ !=0 || charge>0)
 	DIF[ix]          = Dipole;
       else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
 	negativeDipoles += Dipole;
