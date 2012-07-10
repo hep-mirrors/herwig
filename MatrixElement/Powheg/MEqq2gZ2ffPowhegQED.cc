@@ -1132,46 +1132,27 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 // 	mePartonData()[2]->PDGName()<<" "<<
 // 	mePartonData()[3]->PDGName()<<" "<<endl;
       
-      if(DipoleSum_==0) {
-	if(mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
-	  realQED5 = subtractedRealQED(x,z. first,zJac. first,
-				       oldqPDF. first,newqPDF. first,
-				       newpPDF. first, IF13);
-	if(mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
-	  realQED6 = subtractedRealQED(x,z. first,zJac. first,
-				       oldqPDF. first,newqPDF. first,
-				       newpPDF. first, IF14);
-	if(mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
-	  realQED7 = subtractedRealQED(x,z.second,zJac.second, 
-				       oldqPDF.second,newqPDF.second,
-				       newpPDF.second, IF23);
-	if(mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
-	  realQED8 = subtractedRealQED(x,z.second,zJac.second, 
-				       oldqPDF.second,newqPDF.second,
-				       newpPDF.second, IF24);
-      }
-      else if(DipoleSum_==1) {
-// 	cout<<"=IF13="<<endl;
+      if(DipoleSum_==0 ||
+	 mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
 	realQED5 = subtractedRealQED(x,z. first,zJac. first,
 				     oldqPDF. first,newqPDF. first,
 				     newpPDF. first, IF13);
-// 	cout<<"=IF14="<<endl;
+      if(DipoleSum_==0 ||
+	 mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
 	realQED6 = subtractedRealQED(x,z. first,zJac. first,
-				       oldqPDF. first,newqPDF. first,
-				       newpPDF. first, IF14);
-// 	cout<<"=IF23="<<endl;
-	realQED7 = subtractedRealQED(x,z.second,zJac.second,
-				       oldqPDF.second,newqPDF.second,
-				       newpPDF.second, IF23);
-// 	cout<<"=IF24="<<endl;
-	realQED8 = subtractedRealQED(x,z.second,zJac.second,
-				       oldqPDF.second,newqPDF.second,
-				       newpPDF.second, IF24);
-      }
-      else {
-	generator()->log() << "invalid value for DipoleSum_ "<<"\n";
-      }
-//       cout<<"realqed= "<<realQED5[0]<<" "<<realQED6[0]<<" "<<realQED7[0]<<" "<<realQED8[0]<<" "<<endl;
+				     oldqPDF. first,newqPDF. first,
+				     newpPDF. first, IF14);
+      if(DipoleSum_==0 ||
+	 mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
+	realQED7 = subtractedRealQED(x,z.second,zJac.second, 
+				     oldqPDF.second,newqPDF.second,
+				     newpPDF.second, IF23);
+      if(DipoleSum_==0 ||
+	 mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
+	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
+				     oldqPDF.second,newqPDF.second,
+				     newpPDF.second, IF24);
+      //       cout<<"realqed= "<<realQED5[0]<<" "<<realQED6[0]<<" "<<realQED7[0]<<" "<<realQED8[0]<<" "<<endl;
       wgt += (realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0] );
     }
   }
@@ -2055,17 +2036,10 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
       // so revert the sign of the
       // 'color' operator of the outgoing parton
       InvEnergy2 Dipole= + lo*charge*split; 
-      if(DipoleSum_==0) {
-// 	cout<<"DS0"<<endl;
-	if(charge>0)
-	  DIF[ix]          = Dipole;
-	else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
-	  negativeDipoles += Dipole;
-      }
-      else if (DipoleSum_==1) {
+      if(DipoleSum_!=0 || charge>0)
 	DIF[ix]          = Dipole;
-//  	cout<<ix<<"|    "<<GeV2*DIF[ix]<<endl;
-      }
+      else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
+	negativeDipoles += Dipole;
       if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
     }
   }
@@ -2148,17 +2122,8 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   pair<double,double> output = make_pair(0.,0.);
   if(den>ZERO) {
     if(subtract) {
-      if(DipoleSum_==0) {
-// 	cout<<"neg dipoles= "<<GeV2*negativeDipoles<<endl;
-	output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
-			       abs(num)/den*supressionFactor.first -num);
-      }
-      else if(DipoleSum_==1) {
-// 	cout<<"num= "<<GeV2*num<<endl;
-// 	cout<<"me2= "<<meout<<endl;
-	output.first  = scale*((UnitRemoval::InvE2*meout)*
-			       abs(num)/den*supressionFactor.first -num);
-      }
+      output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
+			     abs(num)/den*supressionFactor.first -num);
     }
     else {
       output.first  = scale* UnitRemoval::InvE2*meout*
