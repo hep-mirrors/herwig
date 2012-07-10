@@ -1126,7 +1126,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     }
     // ISR/FSR interference
     if(QEDContributions_==0) {
-      cout<<"====IF======="<<endl;
+//       cout<<"====IF======="<<endl;
 //       cout<<mePartonData()[0]->PDGName()<<" "<<
 // 	mePartonData()[1]->PDGName()<<" "<<
 // 	mePartonData()[2]->PDGName()<<" "<<
@@ -1151,19 +1151,19 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 				       newpPDF.second, IF24);
       }
       else if(DipoleSum_==1) {
-	cout<<"=IF13="<<endl;
+// 	cout<<"=IF13="<<endl;
 	realQED5 = subtractedRealQED(x,z. first,zJac. first,
 				     oldqPDF. first,newqPDF. first,
 				     newpPDF. first, IF13);
-	cout<<"=IF14="<<endl;
+// 	cout<<"=IF14="<<endl;
 	realQED6 = subtractedRealQED(x,z. first,zJac. first,
 				       oldqPDF. first,newqPDF. first,
 				       newpPDF. first, IF14);
-	cout<<"=IF23="<<endl;
+// 	cout<<"=IF23="<<endl;
 	realQED7 = subtractedRealQED(x,z.second,zJac.second,
 				       oldqPDF.second,newqPDF.second,
 				       newpPDF.second, IF23);
-	cout<<"=IF24="<<endl;
+// 	cout<<"=IF24="<<endl;
 	realQED8 = subtractedRealQED(x,z.second,zJac.second,
 				       oldqPDF.second,newqPDF.second,
 				       newpPDF.second, IF24);
@@ -2014,7 +2014,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
   InvEnergy2 negativeDipoles(ZERO);
   if(QEDContributions_==0) {
-    cout<<"doing IF dipoles"<<endl;
+//     cout<<"doing IF dipoles"<<endl;
     for(unsigned int ix=0;ix<4;++ix) {
       // incoming and outgoing particles in the dipole
       unsigned int iin  = ix<2 ? 0 :1;
@@ -2067,9 +2067,6 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
 //  	cout<<ix<<"|    "<<GeV2*DIF[ix]<<endl;
       }
       if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
-
-      if(int(ix)==int(dipole)-int(IF13))
-	cout<<int(ix)<<" "<<int(dipole)<<" "<<int(IF13)<<" "<<endl;
     }
   }
   // supression function
