@@ -62,7 +62,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
      << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
+     << _vetoes << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt
      << interaction_<< interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
@@ -75,7 +75,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
      >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
-     >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
+     >> _vetoes >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt
      >> interaction_ >> isize;
   interactions_.resize(isize);
@@ -249,22 +249,6 @@ void Evolver::Init() {
      "OneEmission",
      "Allow one emission in either the final state or initial state, but not both",
      4);
-
-  static Switch<Evolver,bool> interfaceHardOnly
-    ("HardOnly",
-     "Only generate the emission supplied by the hardest emission"
-     " generator, for testing only.",
-     &Evolver::_hardonly, false, false, false);
-  static SwitchOption interfaceHardOnlyNo
-    (interfaceHardOnly,
-     "No",
-     "Generate full shower",
-     false);
-  static SwitchOption interfaceHardOnlyYes
-    (interfaceHardOnly,
-     "Yes",
-     "Only the hardest emission",
-     true);
 
   static Switch<Evolver,bool> interfaceTruncMode
     ("TruncatedShower", "Include the truncated shower?", 
@@ -591,7 +575,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 			     ShowerInteraction::Type type,
 			     bool first) {
   // don't do anything if not needed
-  if(_limitEmissions == 1 || _limitEmissions == 3 || 
+  if(_limitEmissions == 1 || hardOnly() || 
      ( _limitEmissions == 2 && _nfs != 0) ||
      ( _limitEmissions == 4 && _nfs + _nis != 0) ) return false;  
   // octet -> octet octet reduction factor 
@@ -670,7 +654,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
   Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
   // don't do anything if not needed
-  if(_limitEmissions == 2  || _limitEmissions == 3  ||
+  if(_limitEmissions == 2  || hardOnly() ||
      ( _limitEmissions == 1 && _nis != 0 ) ||
      ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) return false;
   // octet -> octet octet reduction factor 
