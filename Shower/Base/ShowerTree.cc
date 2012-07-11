@@ -1110,3 +1110,16 @@ void ShowerTree::fixColour(tShowerParticlePtr part) {
     }
   }
 }
+
+vector<ShowerParticlePtr> ShowerTree::extractProgenitorParticles() {
+  vector<ShowerParticlePtr> particles;
+  // incoming particles
+  for(map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator 
+	cit=incomingLines().begin(); cit!=incomingLines().end();++cit)
+    particles.push_back(cit->first->progenitor());
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	cjt=outgoingLines().begin(); cjt!=outgoingLines().end();++cjt)
+    particles.push_back(cjt->first->progenitor());
+  return particles;
+}

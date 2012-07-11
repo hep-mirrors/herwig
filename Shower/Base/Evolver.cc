@@ -99,6 +99,9 @@ void Evolver::doinit() {
   else if(interaction_==3) {
     interactions_.push_back(ShowerInteraction::QED);
   }
+  else if(interaction_==4) {
+    interactions_.push_back(ShowerInteraction::Both);
+  }
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -312,6 +315,11 @@ void Evolver::Init() {
      "QEDOnly",
      "Only QED",
      3);
+  static SwitchOption interfaceInteractionsBothAtOnce
+    (interfaceInteractions,
+     "BothAtOnce",
+     "Generate both at the same time",
+     4);
 
   static Switch<Evolver,unsigned int> interfaceReconstructionOption
     ("ReconstructionOption",
@@ -745,23 +753,11 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // set the initial colour partners
   setEvolutionPartners(hard,_hardtree ? 
 		       _hardtree->interaction() : interactions_[0]);
-  // get the particles to be showered
-  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   // generate hard me if needed
   if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
   // get the particles to be showered
-  vector<ShowerProgenitorPtr> particlesToShower;
-  // incoming particles
-  for(cit=currentTree()->incomingLines().begin();
-      cit!=currentTree()->incomingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
-  assert((particlesToShower.size()==1&&!hard)||
-	 (particlesToShower.size()==2&&hard));
-  // outgoing particles
-  for(cjt=currentTree()->outgoingLines().begin();
-      cjt!=currentTree()->outgoingLines().end();++cjt)
-    particlesToShower.push_back(((*cjt).first));
+  vector<ShowerProgenitorPtr> particlesToShower = 
+    currentTree()->extractProgenitors();
   // remake the colour partners if needed
   if(_hardEmissionMode==0 && _currenttree->hardMatrixElementCorrection()) {
     setEvolutionPartners(hard,interactions_[0]);
@@ -772,22 +768,15 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
 }
 
 void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
-  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  vector<ShowerParticlePtr> particles;
   // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
 		      << "Evolver::setEvolutionPartners()"
 		      << Exception::eventerror;
+  // extract the progenitors
+  vector<ShowerParticlePtr> particles = 
+    currentTree()->extractProgenitorParticles();
   // sort out the colour partners
-  for(cit=currentTree()->incomingLines().begin();
-      cit!=currentTree()->incomingLines().end();++cit)
-    particles.push_back(cit->first->progenitor());
-  // outgoing particles
-  for(cjt=currentTree()->outgoingLines().begin();
-      cjt!=currentTree()->outgoingLines().end();++cjt)
-    particles.push_back(cjt->first->progenitor());
   if(hardTree()) {
     // find the partner
     for(unsigned int ix=0;ix<particles.size();++ix) {
@@ -1670,18 +1659,7 @@ bool Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
   // set the charge partners
   setEvolutionPartners(true,inter);
   // get the particles to be showered
-  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  particlesToShower.clear();
-  // incoming particles
-  for(cit=currentTree()->incomingLines().begin();
-      cit!=currentTree()->incomingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
-  assert(particlesToShower.size()==2);
-  // outgoing particles
-  for(cjt=currentTree()->outgoingLines().begin();
-      cjt!=currentTree()->outgoingLines().end();++cjt)
-    particlesToShower.push_back(((*cjt).first));
+  particlesToShower = currentTree()->extractProgenitors();
   // reset momenta
   if(hardTree()) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
@@ -1903,7 +1881,7 @@ void Evolver::doShowering(bool hard) {
   // zero number of emissions
   _nis = _nfs = 0;
   // extract particles to shower
-  vector<ShowerProgenitorPtr> particlesToShower=setupShower(hard);
+  vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
   // setup the maximum scales for the shower
   setupMaximumScales(particlesToShower);
   // specifc stuff for hard processes and decays
