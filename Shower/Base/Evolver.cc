@@ -353,14 +353,15 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
   }
 }
 
-void Evolver::setupMaximumScales(ShowerTreePtr hard, 
-				 vector<ShowerProgenitorPtr> p) {
+void Evolver::setupMaximumScales(vector<ShowerProgenitorPtr> & p) {
+  // return if no vetos
+  if (!hardVetoOn()) return; 
   // find out if hard partonic subprocess.
   bool isPartonic(false); 
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
     cit = _currenttree->incomingLines().begin();
   Lorentz5Momentum pcm;
-  for(; cit!=hard->incomingLines().end(); ++cit) {
+  for(; cit!=currentTree()->incomingLines().end(); ++cit) {
     pcm += cit->first->progenitor()->momentum();
     isPartonic |= cit->first->progenitor()->coloured();
   }
@@ -374,12 +375,12 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
       (hardVetoReadOption()&&
        !ShowerHandler::currentHandler()->firstInteraction())) {
     // scattering process
-    if(hard->isHard()) {
+    if(currentTree()->isHard()) {
       // coloured incoming particles
       if (isPartonic) {
 	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-	  cjt = hard->outgoingLines().begin();
-	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
+	  cjt = currentTree()->outgoingLines().begin();
+	for(; cjt!=currentTree()->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured())
 	    ptmax = max(ptmax,cjt->first->progenitor()->momentum().mt());
 	}
@@ -393,7 +394,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     } 
     // decay, incoming() is the decaying particle.
     else { 
-      ptmax = hard->incomingLines().begin()->first
+      ptmax = currentTree()->incomingLines().begin()->first
 	->progenitor()->momentum().mass(); 
     }
   }
@@ -424,86 +425,11 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   hardTree(HardTreePtr());
   // number of attempts if more than one interaction switched on
   unsigned int interactionTry=0;
-  bool showerOrder(true);
   do {
     try {
-      // zero number of emissions
-      _nis = _nfs = 0;
-      // extract particles to shower
-      vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
-      // setup the maximum scales for the shower, given by the hard process
-      if (hardVetoOn()) setupMaximumScales(currentTree(), particlesToShower);
-      // generate the intrinsic p_T once and for all
-      generateIntrinsicpT(particlesToShower);
-      // loop over possible interactions
-      if(hardTree()) {
-	if(hardTree()->interaction()!=interactions_[0]) {
-	  showerOrder = false;
-	  swap(interactions_[0],interactions_[1]);
-	}
-      }
-      for(unsigned int inter=0;inter<interactions_.size();++inter) {
- 	// zero pt so only added first time round
- 	if(inter!=0) intrinsicpT().clear();
- 	// set up for second pass if required
- 	if(inter!=0) constructHardTree(particlesToShower,interactions_[inter]);
- 	// main shower loop
- 	unsigned int ntry(0);
- 	do {
- 	  // clear results of last attempt if needed
- 	  if(ntry!=0) {
- 	    currentTree()->clear();
- 	    setEvolutionPartners(true,interactions_[inter]);
-	    _nis = _nfs = 0;
- 	  }
-	  // generate the shower
-	  // pick random starting point 
- 	  unsigned int istart=UseRandom::irnd(particlesToShower.size());
- 	  unsigned int istop = particlesToShower.size();
- 	  // loop over particles with random starting point
- 	  for(unsigned int ix=istart;ix<=istop;++ix) {
- 	    if(ix==particlesToShower.size()) {
- 	      if(istart!=0) {
- 		istop = istart-1;
- 		ix=0;
- 	      }
- 	      else break;
- 	    }
-	    // set the progenitor
-	    _progenitor=particlesToShower[ix];
-	    // initial-state
-	    if(!_progenitor->progenitor()->isFinalState()) {
-	      if(!isISRadiationON()) continue;
-	      // get the PDF
-	      setBeamParticle(_progenitor->beam());
-	      assert(beamParticle());
-	      // perform the shower
-	      // set the beam particle
-	      tPPtr beamparticle=progenitor()->original();
-	      if(!beamparticle->parents().empty()) 
-		beamparticle=beamparticle->parents()[0];
-	      // generate the shower
-	      progenitor()->hasEmitted(startSpaceLikeShower(beamparticle,
-							    interactions_[inter]));
-	    }
- 	    // final-state
- 	    else {
- 	      if(!isFSRadiationON()) continue;
- 	      // perform shower
- 	      progenitor()->hasEmitted(startTimeLikeShower(interactions_[inter]));
- 	    }
-	  }
- 	}
- 	while(!showerModel()->kinematicsReconstructor()->
- 	      reconstructHardJets(hard,intrinsicpT(),
-				  interactions_[inter])&&
- 	      maximumTries()>++ntry);
-	if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
-      }
-      // the tree has now showered
-      _currenttree->hasShowered(true);
-      if(!showerOrder) swap(interactions_[0],interactions_[1]);
-      hardTree(HardTreePtr());
+      // generate the showering
+      doShowering(true);
+      // if no vetos return
       return;
     }
     catch (InteractionVeto) {
@@ -747,97 +673,11 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   decay->applyTransforms();
   hardTree(HardTreePtr());
   unsigned int interactionTry=0;
-  bool showerOrder(true);
   do {
     try {
-      // extract particles to be shower, set scales and 
-      // perform hard matrix element correction
-      vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
-      setupMaximumScales(currentTree(), particlesToShower);
-      // compute the minimum mass of the final-state
-      Energy minmass(ZERO), mIn(ZERO);
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-	if(particlesToShower[ix]->progenitor()->isFinalState()) {
-	  minmass += max( particlesToShower[ix]->progenitor()->mass(),
-			  particlesToShower[ix]->progenitor()->dataPtr()->constituentMass() );
-	}
-	else {
-	  mIn = particlesToShower[ix]->progenitor()->mass();
-	}
-      }
-
-      if ( minmass > mIn ) {
-	throw Exception() << "Evolver.cc: Mass of decaying particle is "
-			  << "below constituent masses of decay products."
-			  << Exception::eventerror;
-      }
-      // loop over possible interactions
-      if(hardTree()) {
-	if(hardTree()->interaction()!=interactions_[0]) {
-	  showerOrder = false;
-	  swap(interactions_[0],interactions_[1]);
-	}
-      }
-      for(unsigned int inter=0;inter<interactions_.size();++inter) {
- 	// set up for second pass if required
- 	if(inter!=0) {
- 	  // construct the decay tree and return if not possible
- 	  if(!constructDecayTree(particlesToShower,interactions_[inter]))
- 	    throw InteractionVeto();
- 	}
-	// main showering loop
-	unsigned int ntry(0);
-	do {
-	  // clear results of last attempt
- 	  if(ntry!=0) {
- 	    currentTree()->clear();
- 	    setEvolutionPartners(false,interactions_[inter]);
- 	  }unsigned int istart=UseRandom::irnd(particlesToShower.size());
-	  unsigned int istop = particlesToShower.size();
-	  // loop over particles with random starting point
-	  for(unsigned int ix=istart;ix<=istop;++ix) {
-	    if(ix==particlesToShower.size()) {
-	      if(istart!=0) {
-		istop = istart-1;
-		ix=0;
-	      }
-	      else break;
-	    }
- 	    // extract the progenitor
- 	    progenitor(particlesToShower[ix]);
- 	    // final-state radiation
- 	    if(progenitor()->progenitor()->isFinalState()) {
- 	      if(!isFSRadiationON()) continue;
- 	      // perform shower
- 	      progenitor()->hasEmitted(startTimeLikeShower(interactions_[inter]));
- 	    }
- 	    // initial-state radiation
- 	    else {
- 	      if(!isISRadiationON()) continue;
- 	      // perform shower
- 	      // set the scales correctly. The current scale is the maximum scale for
- 	      // emission not the starting scale
- 	      Energy maxscale=progenitor()->progenitor()->evolutionScale();
- 	      Energy startScale=progenitor()->progenitor()->mass();
- 	      progenitor()->progenitor()->evolutionScale(startScale);
- 	      // perform the shower
- 	      progenitor()->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
- 								 interactions_[inter])); 
- 	    }
-	  }
-	}
-	while(!showerModel()->kinematicsReconstructor()->
-	      reconstructDecayJets(decay,interactions_[inter])&&
-	      maximumTries()>++ntry);
-	if(maximumTries()==ntry) 
-	  throw Exception() << "Failed to generate the shower after "
-			    << ntry << " attempts in Evolver::showerDecay()"
-			    << Exception::eventerror;
-      }
-      // tree has now showered
-      _currenttree->hasShowered(true);
-      if(!showerOrder) swap(interactions_[0],interactions_[1]);
-      hardTree(HardTreePtr());
+      // generate the showering
+      doShowering(false);
+      // if no vetos return
       return;
     }
     catch (InteractionVeto) {
@@ -846,7 +686,6 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     }
   }
   while(interactionTry<=5);
-  if(!showerOrder) swap(interactions_[0],interactions_[1]);
   throw Exception() << "Too many tries for QED shower in Evolver::showerDecay()"
 		    << Exception::eventerror;
 }
@@ -1760,7 +1599,7 @@ bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower
   return true;
 }
 
-void Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+bool Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
 				ShowerInteraction::Type inter) {
   bool noEmission = true;
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
@@ -1854,6 +1693,7 @@ void Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
       }
     }
   }
+  return true;
 }
 
 void Evolver::constructTimeLikeLine(tHardBranchingPtr branch,
@@ -2055,4 +1895,142 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     boost.boost          (-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
     decayTree->transform(boost,true);
   }
+}
+
+void Evolver::doShowering(bool hard) {
+  // order of the interactions
+  bool showerOrder(true);
+  // zero number of emissions
+  _nis = _nfs = 0;
+  // extract particles to shower
+  vector<ShowerProgenitorPtr> particlesToShower=setupShower(hard);
+  // setup the maximum scales for the shower
+  setupMaximumScales(particlesToShower);
+  // specifc stuff for hard processes and decays
+  Energy minmass(ZERO), mIn(ZERO);
+  // hard process generate the intrinsic p_T once and for all
+  if(hard) {
+    generateIntrinsicpT(particlesToShower);
+  }
+  // decay compute the minimum mass of the final-state
+  else {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(particlesToShower[ix]->progenitor()->isFinalState()) {
+	minmass += max( particlesToShower[ix]->progenitor()->mass(),
+			particlesToShower[ix]->progenitor()->dataPtr()->constituentMass() );
+      }
+      else {
+	mIn = particlesToShower[ix]->progenitor()->mass();
+      }
+    }
+    // throw exception if decay can'ty happen
+    if ( minmass > mIn ) {
+      throw Exception() << "Evolver.cc: Mass of decaying particle is "
+			<< "below constituent masses of decay products."
+			<< Exception::eventerror;
+    }
+  }
+  // check if interactions in right order
+  if(hardTree()) {
+    if(hardTree()->interaction()!=interactions_[0]) {
+      showerOrder = false;
+      swap(interactions_[0],interactions_[1]);
+    }
+  }
+  // loop over possible interactions
+  for(unsigned int inter=0;inter<interactions_.size();++inter) {
+    // set up for second pass if required
+    if(inter!=0) {
+      // zero intrinsic pt so only added first time round
+      intrinsicpT().clear();
+      // construct the tree and throw veto if not possible
+      if(!(hard ? 
+	   constructHardTree (particlesToShower,interactions_[inter]) :
+	   constructDecayTree(particlesToShower,interactions_[inter]))) 
+	throw InteractionVeto();
+    }
+    // main shower loop
+    unsigned int ntry(0);
+    bool reconstructed = false;
+    do {
+      // clear results of last attempt if needed
+      if(ntry!=0) {
+	currentTree()->clear();
+	setEvolutionPartners(hard,interactions_[inter]);
+	_nis = _nfs = 0;
+      }
+      // generate the shower
+      // pick random starting point 
+      unsigned int istart=UseRandom::irnd(particlesToShower.size());
+      unsigned int istop = particlesToShower.size();
+      // loop over particles with random starting point
+      for(unsigned int ix=istart;ix<=istop;++ix) {
+	if(ix==particlesToShower.size()) {
+	  if(istart!=0) {
+	    istop = istart-1;
+	    ix=0;
+	  }
+	  else break;
+	}
+	// extract the progenitor
+	progenitor(particlesToShower[ix]);
+	// final-state radiation
+	if(progenitor()->progenitor()->isFinalState()) {
+	  if(!isFSRadiationON()) continue;
+	  // perform shower
+	  progenitor()->hasEmitted(startTimeLikeShower(interactions_[inter]));
+	}
+	// initial-state radiation
+	else {
+	  if(!isISRadiationON()) continue;
+	  // hard process
+	  if(hard) {
+	    // get the PDF
+	    setBeamParticle(_progenitor->beam());
+	    assert(beamParticle());
+	    // perform the shower
+	    // set the beam particle
+	    tPPtr beamparticle=progenitor()->original();
+	    if(!beamparticle->parents().empty()) 
+	      beamparticle=beamparticle->parents()[0];
+	    // generate the shower
+	    progenitor()->hasEmitted(startSpaceLikeShower(beamparticle,
+							  interactions_[inter]));
+	  }
+	  // decay
+	  else {
+	    // perform shower
+	    // set the scales correctly. The current scale is the maximum scale for
+	    // emission not the starting scale
+	    Energy maxscale=progenitor()->progenitor()->evolutionScale();
+	    Energy startScale=progenitor()->progenitor()->mass();
+	    progenitor()->progenitor()->evolutionScale(startScale);
+	    // perform the shower
+	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
+							       interactions_[inter])); 
+	  }
+	}
+      }
+      // do the kinematic reconstruction, checking if it worked
+      reconstructed = hard ?
+	showerModel()->kinematicsReconstructor()->
+	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter]) :
+	showerModel()->kinematicsReconstructor()->
+	reconstructDecayJets(currentTree(),interactions_[inter]);
+    }
+    while(!reconstructed&&maximumTries()>++ntry);
+    // check if failed to generate the shower
+    if(ntry==maximumTries()) {
+      if(hard)
+	throw ShowerHandler::ShowerTriesVeto(ntry);
+      else
+	throw Exception() << "Failed to generate the shower after "
+			  << ntry << " attempts in Evolver::showerDecay()"
+			  << Exception::eventerror;
+    }
+  }
+  // tree has now showered
+  _currenttree->hasShowered(true);
+  if(!showerOrder) swap(interactions_[0],interactions_[1]);
+  hardTree(HardTreePtr());
 }

@@ -150,6 +150,11 @@ public:
 protected:
 
   /**
+   *   Perform the shower
+   */
+  void doShowering(bool hard);
+
+  /**
    *  Generate the hard matrix element correction
    */
   virtual void hardMatrixElementCorrection(bool);
@@ -433,7 +438,7 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+  void setupMaximumScales(vector<ShowerProgenitorPtr> &);
 
 protected:
 
@@ -488,7 +493,7 @@ protected:
   /**
    *  Construct the tree for a scattering process
    */
-  void constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+  bool constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
 			 ShowerInteraction::Type inter);
 
   /**
