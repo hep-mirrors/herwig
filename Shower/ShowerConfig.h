@@ -64,7 +64,7 @@ using namespace ThePEG;
     /**
      *  Enum for the type of interaction
      */
-    enum Type { UNDEFINED=-1, QCD, QED };
+    enum Type { UNDEFINED=-1, QCD, QED, Both };
   }
 
   namespace ShowerPartnerType {
