@@ -96,7 +96,7 @@ public:
    * @param tls Whether or not the particle initiates a time-like shower
    */
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
-    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+    : Particle(x), _isFinalState(fs),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
       _scale(ZERO), _vMass(ZERO), _thePEGBase(), _evolutionScale2(), _radiationLine() {}
 
@@ -108,7 +108,7 @@ public:
    * @param tls Whether or not the particle initiates a time-like shower
    */
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
-    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+    : Particle(x), _isFinalState(fs),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
     _scale(ZERO), _vMass(ZERO), _thePEGBase(&x), _evolutionScale2(), _radiationLine() {}
   //@}
@@ -237,44 +237,18 @@ public:
    *  Set the radiation line of a gluon
    */   
   void radiationLine(int radiationLine) { _radiationLine = radiationLine; }
-  
-  
+    
   /** 
    * Return the progenitor of the shower
    */
   tShowerParticlePtr progenitor() const { return _progenitor; }
 
-
   /**
    * Set the progenitor of the shower
    */
   void progenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
-    
-
   //@}
 
-  /**
-   * Access/Set the flag that tells if the particle should be
-   * treated in a special way during the kinematics reconstruction
-   * (see KinematicsReconstructor class). 
-   * In practice, it returns true when either the particle is childless, 
-   * or is a on-shell decaying particle (in which case we have to set the flag to
-   * true before the showering of this particle: it is not enough to check 
-   * if decayer() is not null, because if it emits radiation
-   * the decays products will be "transferred" to the particle
-   * instance after the showering).
-   */
-  //@{
-  /**
-   *  Get the flag
-   */
-  bool reconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
-
-  /**
-   *  Set the flag
-   */
-  void reconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
-  //@}
 
   /**
    *  Members to store and provide access to variables for a specific
@@ -330,11 +304,6 @@ private:
    *  Whether the particle is in the final or initial state
    */
   bool _isFinalState;
-
-  /**
-   *  Whether the particle is a reconstruction fixed point
-   */
-  bool _reconstructionFixedPoint;
 
   /**
    *  Whether the particle came from 
