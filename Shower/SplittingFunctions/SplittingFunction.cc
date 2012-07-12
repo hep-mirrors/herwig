@@ -12,9 +12,9 @@
 //
 
 #include "SplittingFunction.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Utilities/EnumIO.h"
@@ -22,8 +22,9 @@
 
 using namespace Herwig;
 
-AbstractClassDescription<SplittingFunction> SplittingFunction::initSplittingFunction;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeAbstractClass<SplittingFunction,Interfaced>
+describeThePEGSplittingFunction("Herwig::SplittingFunction", "Herwig.so");
 
 void SplittingFunction::Init() {
 
@@ -90,7 +91,6 @@ void SplittingFunction::Init() {
     (interfaceInteractionType,
      "QED","QED",ShowerInteraction::QED);
 
-
   static Switch<SplittingFunction,int> interfaceSplittingColourMethod
     ("SplittingColourMethod",
      "Choice of assigning colour in 8->88 splittings.",
@@ -110,20 +110,38 @@ void SplittingFunction::Init() {
      "RandomRecord",
      "Choose colour assignments randomly and record the result.",
      2);
+
+
+  static Switch<SplittingFunction,bool> interfaceAngularOrdered
+    ("AngularOrdered",
+     "Whether or not this interaction is angular ordered, "
+     "normally only g->q qbar and gamma-> f fbar are the only ones which aren't.",
+     &SplittingFunction::angularOrdered_, true, false, false);
+  static SwitchOption interfaceAngularOrderedYes
+    (interfaceAngularOrdered,
+     "Yes",
+     "Interaction is angular ordered",
+     true);
+  static SwitchOption interfaceAngularOrderedNo
+    (interfaceAngularOrdered,
+     "No",
+     "Interaction isn't angular ordered",
+     false);
+
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
   using namespace ShowerInteraction;
-   os << oenum(_interactionType) << _interactionorder 
+   os << oenum(_interactionType) << _interactionOrder 
       << oenum(_colourStructure) << _colourFactor
-      << _splittingColourMethod;
+      << angularOrdered_ << _splittingColourMethod;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
   using namespace ShowerInteraction;
-  is >> ienum(_interactionType) >> _interactionorder 
+  is >> ienum(_interactionType) >> _interactionOrder 
      >>	ienum(_colourStructure) >> _colourFactor
-     >> _splittingColourMethod;
+     >> angularOrdered_ >> _splittingColourMethod;
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,

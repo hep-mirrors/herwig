@@ -72,8 +72,9 @@ public:
    */
   SplittingFunction(unsigned int b)
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
-      _interactionorder(b), 
+      _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
+      angularOrdered_(true),
       _splittingColourMethod(0) {}
 public:
 
@@ -89,7 +90,7 @@ public:
   /**
    *  Return the order of the splitting function in the interaction
    */
-  unsigned int interactionOrder() const {return _interactionorder;}
+  unsigned int interactionOrder() const {return _interactionOrder;}
 
   /**
    *  Return the colour structure
@@ -209,6 +210,11 @@ public:
 				tShowerParticlePtr second,
 				const bool back) const;
 
+  /**
+   *  Whether or not the interaction is angular ordered
+   */
+  bool angularOrdered() const {return angularOrdered_;}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -257,12 +263,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class without persistent data.
-   */
-  static AbstractClassDescription<SplittingFunction> initSplittingFunction;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -278,7 +278,7 @@ private:
   /**
    *  The order of the splitting function in the coupling
    */
-  unsigned int _interactionorder;
+  unsigned int _interactionOrder;
 
   /**
    *  The colour structure
@@ -289,6 +289,11 @@ private:
    *  The colour factor
    */
   double _colourFactor;
+
+  /**
+   *  Whether or not this interaction is angular-ordered
+   */
+  bool angularOrdered_;
   
   /**
    *  The method for assigning colour
@@ -301,33 +306,6 @@ private:
    */
    int _splittingColourMethod;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SplittingFunction. */
-template <>
-struct BaseClassTrait<Herwig::SplittingFunction,1> {
-  /** Typedef of the first base class of SplittingFunction. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SplittingFunction class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SplittingFunction>
-  : public ClassTraitsBase<Herwig::SplittingFunction> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SplittingFunction"; }
-};
-
-/** @endcond */
 
 }
 
