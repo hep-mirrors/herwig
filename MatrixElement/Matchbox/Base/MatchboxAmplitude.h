@@ -17,6 +17,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 
 namespace Herwig {
 
@@ -82,6 +83,16 @@ public:
   virtual Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
 
   /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
+
+  /**
    * Return the amplitude parton data.
    */
   const cPDVector& lastAmplitudePartonData() const { return theLastAmplitudePartonData->second; }
@@ -94,7 +105,7 @@ public:
   /**
    * Access the amplitude parton data.
    */
-  map<tStdXCombPtr,cPDVector>& amplitudePartonData() { return theAmplitudePartonData; }
+  map<tStdXCombPtr,cPDVector>& amplitudePartonData() { return processData()->amplitudePartonData(); }
 
   /**
    * Return the number of light flavours
@@ -198,7 +209,7 @@ public:
   /**
    * Access the colour crossing information.
    */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return theColourMap; }
+  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return processData()->colourMap(); }
 
   //@}
 
@@ -250,12 +261,12 @@ public:
   /**
    * Access the crossing information.
    */
-  map<tStdXCombPtr,vector<int> >& crossingMap() { return theCrossingMap; }
+  map<tStdXCombPtr,vector<int> >& crossingMap() { return processData()->crossingMap(); }
 
   /**
    * Access the crossing signs.
    */
-  map<tStdXCombPtr,double>& crossingSigns() { return theCrossingSigns; }
+  map<tStdXCombPtr,double>& crossingSigns() { return processData()->crossingSigns(); }
 
   /**
    * Generate the helicity combinations.
@@ -314,6 +325,11 @@ public:
 
 
   /**
+   * Return true, if tree-level contributions will be evaluated at amplitude level.
+   */
+  virtual bool treeAmplitudes() const { return true; }
+
+  /**
    * Evaluate the amplitude for the given colour tensor id and
    * helicity assignment
    */
@@ -335,6 +351,11 @@ public:
    * one-loop (QCD) corrections.
    */
   virtual bool onlyOneLoop() const { return false; }
+
+  /**
+   * Return true, if one-loop contributions will be evaluated at amplitude level.
+   */
+  virtual bool oneLoopAmplitudes() const { return true; }
 
   /**
    * Return true, if one loop corrections have been calculated in
@@ -470,6 +491,11 @@ private:
   Ptr<StandardModel>::tcptr theStandardModel;
 
   /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
+
+  /**
    * The number of light flavours to be used.
    */
   unsigned int theNLight;
@@ -492,6 +518,11 @@ private:
   map<vector<int>,CVector> theLastAmplitudes;
 
   /**
+   * True, if amplitudes have been cleaned up from vanishing helicity combinations.
+   */
+  bool amplitudesCleanedUp;
+
+  /**
    * References to the leading N amplitude values which have been
    * contributing to the last call of prepareAmplitudes.
    */
@@ -504,27 +535,9 @@ private:
   map<vector<int>,CVector> theLastOneLoopAmplitudes;
 
   /**
-   * The crossing information as filled by the last call to
-   * fillCrossingMap()
+   * True, if one-loop amplitudes have been cleaned up from vanishing helicity combinations.
    */
-  map<tStdXCombPtr,vector<int> > theCrossingMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theColourMap;
-
-  /**
-   * The crossing signs as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,double> theCrossingSigns;
-
-  /**
-   * The amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector> theAmplitudePartonData;
+  bool oneLoopAmplitudesCleanedUp;
 
   /**
    * The crossing information as filled by the last call to

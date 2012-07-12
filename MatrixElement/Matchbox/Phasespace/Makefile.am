@@ -33,4 +33,6 @@ RandomHelpers.h \
 TildeKinematics.cc \
 TildeKinematics.h \
 TreePhasespace.cc \
-TreePhasespace.h
+TreePhasespace.h \
+TreePhasespaceChannels.cc \
+TreePhasespaceChannels.h

@@ -6,6 +6,7 @@
 .*/.*\.l[ao]
 .*/.*\.so\.*
 .*/.*\.o
+Tests/.*\.aida
 .*~
 .*\.tar\.(gz|bz2)
 autom4te.cache

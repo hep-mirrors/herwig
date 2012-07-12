@@ -61,7 +61,9 @@ mkdir Phasespace
 cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
+create Herwig::TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
+set TreePhasespace:ChannelMap TreePhasespaceChannels
 
 ################################################################################
 # Scale choices
@@ -129,12 +131,15 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
 
 create Herwig::MatchboxMECache Cache
 
+create Herwig::ProcessData ProcessData
+
 create Herwig::MatchboxFactory Factory
 
 set Factory:DiagramGenerator /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator
 set Factory:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 set Factory:Cache /Herwig/MatrixElements/Matchbox/Utility/Cache
+set Factory:ProcessData ProcessData 
 
 do Factory:StartParticleGroup p
 insert Factory:ParticleGroup 0 /Herwig/Particles/u
@@ -221,6 +226,7 @@ cd Builtin
 
 create Herwig::MatchboxMEllbar2qqbar MEllbar2qqbar
 set MEllbar2qqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEllbar2qqbar:ProcessData /Herwig/MatrixElements/Utility/ProcessData
 insert MEllbar2qqbar:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEllbar2qqbar:QuarkFlavours[0] /Herwig/Particles/d
 insert MEllbar2qqbar:QuarkFlavours[1] /Herwig/Particles/u
@@ -230,6 +236,7 @@ insert MEllbar2qqbar:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMEllbar2qqbarg MEllbar2qqbarg
 set MEllbar2qqbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEllbar2qqbarg:ProcessData /Herwig/MatrixElements/Utility/ProcessData
 insert MEllbar2qqbarg:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEllbar2qqbarg:QuarkFlavours[0] /Herwig/Particles/d
 insert MEllbar2qqbarg:QuarkFlavours[1] /Herwig/Particles/u
@@ -267,6 +274,7 @@ set MEllbar2JetJetNLOInclusive:BornScreening Off
 
 create Herwig::MatchboxMElP2lJet MElq2lq
 set MElq2lq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MElq2lq:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MElq2lq:LeptonFlavours[0] /Herwig/Particles/e+
 insert MElq2lq:LeptonFlavours[1] /Herwig/Particles/e-
 insert MElq2lq:QuarkFlavours[0] /Herwig/Particles/d
@@ -277,6 +285,7 @@ insert MElq2lq:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMElP2lJet MElqbar2lqbar
 set MElqbar2lqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MElqbar2lqbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MElqbar2lqbar:LeptonFlavours[0] /Herwig/Particles/e+
 insert MElqbar2lqbar:LeptonFlavours[1] /Herwig/Particles/e-
 insert MElqbar2lqbar:QuarkFlavours[0] /Herwig/Particles/dbar
@@ -287,6 +296,7 @@ insert MElqbar2lqbar:QuarkFlavours[4] /Herwig/Particles/bbar
 
 create Herwig::MatchboxMElq2lqg MElq2lqg
 set MElq2lqg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MElq2lqg:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MElq2lqg:LeptonFlavours[0] /Herwig/Particles/e+
 insert MElq2lqg:LeptonFlavours[1] /Herwig/Particles/e-
 insert MElq2lqg:QuarkFlavours[0] /Herwig/Particles/d
@@ -297,6 +307,7 @@ insert MElq2lqg:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMElq2lqg MElqbar2lqbarg
 set MElqbar2lqbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MElqbar2lqbarg:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MElqbar2lqbarg:LeptonFlavours[0] /Herwig/Particles/e+
 insert MElqbar2lqbarg:LeptonFlavours[1] /Herwig/Particles/e-
 insert MElqbar2lqbarg:QuarkFlavours[0] /Herwig/Particles/dbar
@@ -307,6 +318,7 @@ insert MElqbar2lqbarg:QuarkFlavours[4] /Herwig/Particles/bbar
 
 create Herwig::MatchboxMElg2lqqbar MElg2lqqbar
 set MElg2lqqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MElg2lqqbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MElg2lqqbar:LeptonFlavours[0] /Herwig/Particles/e+
 insert MElg2lqqbar:LeptonFlavours[1] /Herwig/Particles/e-
 insert MElg2lqqbar:QuarkFlavours[0] /Herwig/Particles/d
@@ -343,6 +355,7 @@ set MElP2lJetNLOInclusive:MatchboxFactory MElP2lJetNLO
 
 create Herwig::MatchboxMEPP2llbar MEqqbar2llbar
 set MEqqbar2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqqbar2llbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MEqqbar2llbar:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqqbar2llbar:QuarkFlavours[0] /Herwig/Particles/d
 insert MEqqbar2llbar:QuarkFlavours[1] /Herwig/Particles/u
@@ -352,6 +365,7 @@ insert MEqqbar2llbar:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMEPP2llbar MEqbarq2llbar
 set MEqbarq2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqbarq2llbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MEqbarq2llbar:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqbarq2llbar:QuarkFlavours[0] /Herwig/Particles/dbar
 insert MEqbarq2llbar:QuarkFlavours[1] /Herwig/Particles/ubar
@@ -361,6 +375,7 @@ insert MEqbarq2llbar:QuarkFlavours[4] /Herwig/Particles/bbar
 
 create Herwig::MatchboxMEqqbar2llbarg MEqqbar2llbarg
 set MEqqbar2llbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqqbar2llbarg:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MEqqbar2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqqbar2llbarg:QuarkFlavours[0] /Herwig/Particles/d
 insert MEqqbar2llbarg:QuarkFlavours[1] /Herwig/Particles/u
@@ -370,6 +385,7 @@ insert MEqqbar2llbarg:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMEqqbar2llbarg MEqbarq2llbarg
 set MEqbarq2llbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqbarq2llbarg:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 insert MEqbarq2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqbarq2llbarg:QuarkFlavours[0] /Herwig/Particles/dbar
 insert MEqbarq2llbarg:QuarkFlavours[1] /Herwig/Particles/ubar
@@ -379,6 +395,7 @@ insert MEqbarq2llbarg:QuarkFlavours[4] /Herwig/Particles/bbar
 
 create Herwig::MatchboxMEqg2llbarq MEqg2llbarq
 set MEqg2llbarq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqg2llbarq:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 set MEqg2llbarq:WhichGluon 1
 insert MEqg2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqg2llbarq:QuarkFlavours[0] /Herwig/Particles/d
@@ -389,6 +406,7 @@ insert MEqg2llbarq:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMEqg2llbarq MEgq2llbarq
 set MEgq2llbarq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEgq2llbarq:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 set MEgq2llbarq:WhichGluon 0
 insert MEgq2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEgq2llbarq:QuarkFlavours[0] /Herwig/Particles/d
@@ -399,6 +417,7 @@ insert MEgq2llbarq:QuarkFlavours[4] /Herwig/Particles/b
 
 create Herwig::MatchboxMEqg2llbarq MEqbarg2llbarqbar
 set MEqbarg2llbarqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEqbarg2llbarqbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 set MEqbarg2llbarqbar:WhichGluon 1
 insert MEqbarg2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEqbarg2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
@@ -409,6 +428,7 @@ insert MEqbarg2llbarqbar:QuarkFlavours[4] /Herwig/Particles/bbar
 
 create Herwig::MatchboxMEqg2llbarq MEgqbar2llbarqbar
 set MEgqbar2llbarqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
+set MEgqbar2llbarqbar:ProcessData /Herwig/MatrixElements/Matchbox/ProcessData
 set MEgqbar2llbarqbar:WhichGluon 0
 insert MEgqbar2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
 insert MEgqbar2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
