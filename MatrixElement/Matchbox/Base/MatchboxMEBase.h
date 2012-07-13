@@ -17,6 +17,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
@@ -93,6 +94,16 @@ public:
    * Set the diagram generator.
    */
   void diagramGenerator(Ptr<Tree2toNGenerator>::ptr gen) { theDiagramGenerator = gen; }
+
+  /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
 
   /**
    * Return true, if this matrix element does not want to
@@ -724,6 +735,11 @@ private:
   Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
 
   /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
+
+  /**
    * The scale choice object
    */
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
@@ -737,7 +753,7 @@ private:
    * The subprocesses to be considered, if a diagram generator is
    * present.
    */
-  vector<PDVector> theSubprocesses;
+  mutable vector<PDVector> theSubprocesses;
 
   /**
    * The factorization scale factor.
