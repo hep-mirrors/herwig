@@ -643,7 +643,8 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->evolutionScale(br.kinematics->scale());
+  parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
+		       ShowerPartnerType::QCDColourLine,br.kinematics->scale());
   return true;
 }
 

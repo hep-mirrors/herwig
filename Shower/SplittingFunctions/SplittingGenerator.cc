@@ -233,7 +233,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       assert(false);
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
-      // special for 
+      // special for octets
       if(particle.dataPtr()->iColour()==PDT::Colour8) {
 	// octet -> octet octet
 	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
@@ -263,10 +263,11 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	    generateNextTimeBranching(startingScale, 
 				      cit->second.second,particle.id()!=cit->first,
 				      enhance);
-	  type = UseRandom::rndbool() ? 
+	  type = cit->second.second[0]<0 ? 
 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	}
       }
+      // everything else
       else {
 	type = particle.hasColour() ? 
 	  ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
@@ -349,29 +350,92 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			tcPDFPtr pdf, Energy freeze) const {
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
+  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
   SudakovPtr sudakov;
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.id());
   // if no possible branching return
   if(_bbranchings.find(index) == _bbranchings.end())
-    return Branching(ShoKinPtr(), IdList(),sudakov,
-		     ShowerPartnerType::Undefined);
-  // select the branching
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
+  // otherwise select branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
-    if(type!=cit->second.first->interactionType()) continue;
+    // check either right interaction or doing both
+    if(type != cit->second.first->interactionType() &&
+       type != ShowerInteraction::Both ) continue;
+    // setup the PDF
     cit->second.first->setPDF(pdf,freeze);
-    ShoKinPtr newKin=cit->second.first->
-      generateNextSpaceBranching(particle.evolutionScale(),
-				 cit->second.second, particle.x(),
-				 particle.id()!=cit->first,enhance,beam);
+    // whether or not this interaction should be angular ordered
+    bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
+    ShoKinPtr newKin;
+    ShowerPartnerType::Type type;
+    if(cit->second.first->interactionType()==ShowerInteraction::QED) {
+      type = ShowerPartnerType::QED;
+      newKin=cit->second.first->
+	generateNextSpaceBranching(particle.evolutionScale(angularOrdered,type),
+				   cit->second.second, particle.x(),
+				   particle.id()!=cit->first,enhance,beam);
+      cerr << "testing in QED " << particle << "\n";
+      assert(false);
+    }
+    else if(cit->second.first->interactionType()==ShowerInteraction::QCD) { 
+      // special for octets
+      if(particle.dataPtr()->iColour()==PDT::Colour8) {
+	// octet -> octet octet
+	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
+	  type = ShowerPartnerType::QCDColourLine;
+	  newKin=cit->second.first->
+	    generateNextSpaceBranching(particle.evolutionScale(angularOrdered,type),
+				       cit->second.second, particle.x(),
+				       particle.id()!=cit->first,0.5*enhance,beam);
+	  ShoKinPtr newKin2 = cit->second.first->
+	    generateNextSpaceBranching(particle.evolutionScale(angularOrdered,
+							       ShowerPartnerType::QCDAntiColourLine),
+				       cit->second.second, particle.x(),
+				       particle.id()!=cit->first,0.5*enhance,beam);
+	  // pick the one with the highest scale
+	  if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
+	      (!newKin&&newKin2) ) {
+	    newKin = newKin2;
+	    type = ShowerPartnerType::QCDAntiColourLine;
+	  }
+	}
+	// other
+	else {
+	  Energy startingScale = 
+	    max(particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDColourLine),
+		particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDAntiColourLine));
+	  type = UseRandom::rndbool() ? 
+	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	  newKin=cit->second.first->
+	    generateNextSpaceBranching(particle.evolutionScale(angularOrdered,type),
+				       cit->second.second, particle.x(),
+				       particle.id()!=cit->first,enhance,beam);
+	}
+      }
+      // everything else
+      else {
+	type = particle.hasColour() ? 
+	  ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	newKin=cit->second.first->
+	  generateNextSpaceBranching(particle.evolutionScale(angularOrdered,type),
+				     cit->second.second, particle.x(),
+				     particle.id()!=cit->first,enhance,beam);
+      }
+    }
+    // shouldn't be anything else
+    else
+      assert(false);
+    // if no kinematics contine
     if(!newKin) continue;
+    // select highest scale
     if(newKin->scale() > newQ) {
       newQ = newKin->scale();
       kinematics=newKin;
       ids = cit->second.second;
       sudakov=cit->second.first;
+      partnerType = type;
     }
   }
   // return empty branching if nothing happened
@@ -381,8 +445,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // and return it
   kinematics->initialize(particle,beamparticle);
   // return the answer
-  assert(false);
-  return Branching(kinematics, ids,sudakov,ShowerPartnerType::Undefined);
+  return Branching(kinematics, ids,sudakov,partnerType);
 }
 
 void SplittingGenerator::rebind(const TranslationMap & trans)

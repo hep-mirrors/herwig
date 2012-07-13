@@ -574,7 +574,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     // if not vetoed break
     if(!spaceLikeVetoed(bb,particle,type)) break;
     // otherwise reset scale and continue
-    particle->evolutionScale(bb.kinematics->scale());
+    particle->vetoEmission(bb.type,bb.kinematics->scale());
   }
   // assign the splitting function and shower kinematics
   particle->showerKinematics(bb.kinematics);

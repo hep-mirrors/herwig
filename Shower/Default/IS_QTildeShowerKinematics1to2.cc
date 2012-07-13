@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/Debug.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -49,29 +50,124 @@ updateChildren( const tShowerParticlePtr theParent,
 
 
 void IS_QTildeShowerKinematics1to2::
-updateParent(const tShowerParticlePtr theParent, 
-	     const ShowerParticleVector & theChildren,
+updateParent(const tShowerParticlePtr parent, 
+	     const ShowerParticleVector & children,
 	     ShowerPartnerType::Type partnerType, 
 	     bool angularOrder) const {
-  // no z for angular ordering in backward branchings
-  theParent->evolutionScale(scale());
-  if(angularOrder)
-    theChildren[1]->evolutionScale((1.-z())*scale());
-  else
-    theChildren[1]->evolutionScale(scale());
+  // scale for time-like child
+  Energy AOScale = (angularOrder ? (1.-z()) : 1. )*scale();
+  // scales for parent if same as spacelike child
+  if(parent->id()==children[0]->id()) {
+    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	  it = children[0]->evolutionScales().begin();
+	it!=children[0]->evolutionScales().end();++it) {
+      parent->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
+						 min(scale(),it->second.second)));
+    }
+    if(partnerType==ShowerPartnerType::QED) {
+      children[1]->evolutionScale(partnerType,make_pair(AOScale,scale()));
+    }
+    PDT::Colour childColour = children[1]->dataPtr()->iColour();
+    if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
+      children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+    }
+    if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
+      children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+    }
+  }
+  // scales if parent same as timelike child
+  else if(parent->id()==children[1]->id()) {
+    if(parent->dataPtr()->charged()) {
+      parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale(),scale()));
+      children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+    }
+    PDT::Colour childColour = children[1]->dataPtr()->iColour();
+    if(partnerType==ShowerPartnerType::QED) {
+      if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
+	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(scale(),scale()));
+	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+      }
+      if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
+	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(scale(),scale()));
+	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+      }
+    }
+    else {
+      if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
+	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine,0);
+	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,
+				    make_pair(min(scale(),pScale.first ),
+					      min(scale(),pScale.second)));
+	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+      }
+      if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
+	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,0);
+	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				    make_pair(min(scale(),pScale.first ),
+					      min(scale(),pScale.second)));
+	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+      }
+    }
+  }
+  // g -> q qbar, or gamma -> e+e-
+  else if(children[0]->id()==-children[1]->id()) {
+    PDT::Colour childColour = children[1]->dataPtr()->iColour();
+    if(partnerType==ShowerPartnerType::QED) {
+      parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale(),scale()));
+      children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+      if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
+	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,0);
+	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
+				    make_pair(min(AOScale,pScale.first ),
+					      min(AOScale,pScale.second)));
+      }
+      if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
+	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine    ,0);
+	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				    make_pair(min(AOScale,pScale.first ),
+					      min(AOScale,pScale.second)));
+      }
+    }
+    else {
+      pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QED,0);
+      children[1]->evolutionScale(ShowerPartnerType::QED,
+				  make_pair(min(AOScale,pScale.first ),
+					    min(AOScale,pScale.second)));
+      if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
+	pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,0);
+	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
+				    make_pair(min(AOScale,pScale.first ),
+					      min(AOScale,pScale.second)));
+      }
+      if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
+	pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine    ,0);
+	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				    make_pair(min(AOScale,pScale.first ),
+					      min(AOScale,pScale.second)));
+      }
+      parent->evolutionScale(ShowerPartnerType::QCDColourLine,
+			     make_pair(min(scale(),pScale.first ),
+				       min(scale(),pScale.second)));
+      parent->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+			     make_pair(min(scale(),pScale.first ),
+				       min(scale(),pScale.second)));
+    }
+  }
+  // debugging printout if needed
+  if(Debug::level >= 10 ) printScales(parent,children[0],children[1]);
   // set proper colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],
+  splittingFn()->colourConnection(parent,children[0],children[1],
 				  partnerType,true);
   // set proper parent/child relationships
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
-  theParent->x(theChildren[0]->x()/z());
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
+  parent->x(children[0]->x()/z());
   // create the storage for the shower variables
-  theParent->showerVariables().resize(3);
-  theParent->showerParameters().resize(2);
-  if(theChildren[0]->showerVariables().empty()) {
-    theChildren[0]->showerVariables().resize(3);
-    theChildren[0]->showerParameters().resize(2);
+  parent->showerVariables().resize(3);
+  parent->showerParameters().resize(2);
+  if(children[0]->showerVariables().empty()) {
+    children[0]->showerVariables().resize(3);
+    children[0]->showerParameters().resize(2);
   }
 }
 

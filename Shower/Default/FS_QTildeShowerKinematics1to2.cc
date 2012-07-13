@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/Debug.h"
 
 using namespace Herwig;
 
@@ -150,6 +151,8 @@ updateChildren(const tShowerParticlePtr parent,
       emitted->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[1],scale()));
     }
   }
+  // debugging printout ifd needed
+  if(Debug::level >= 10 ) printScales(parent,children[0],children[1]);
   // determine alphas of children according to interpretation of z
   children[0]->showerParameters()[0]=     z() *parent->showerParameters()[0];
   children[1]->showerParameters()[0]= (1.-z())*parent->showerParameters()[0];
