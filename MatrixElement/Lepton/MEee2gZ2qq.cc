@@ -857,6 +857,13 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
 						       HardBranchingPtr(),
 						       HardBranching::Outgoing)));
+  if(force==ShowerInteraction::QED) {
+    emitterBranch->type(ShowerPartnerType::QED);
+  }
+  else {
+    emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
+  }
   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit], 
  						SudakovPtr(),HardBranchingPtr(),
  						HardBranching::Outgoing)));

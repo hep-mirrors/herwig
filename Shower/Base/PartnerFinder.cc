@@ -253,17 +253,54 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       }
     }
   }
-  // partners all ready set only do the scales
+  // primary partner set, set the others and do the scale
   else {
-    // \todo think about this
     for(ShowerParticleVector::const_iterator cit = particles.begin();
         cit != particles.end(); ++cit) {
-      if(!(**cit).dataPtr()->coloured()) continue;
-      tShowerParticlePtr partner = (**cit).partner();
-      pair<Energy,Energy> pairScales = 
-        calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
-                                        isDecayCase);
-      (*cit)->evolutionScale(pairScales.first);
+      // Skip colourless particles
+      if(!(*cit)->data().coloured()) continue;
+      // find the partners
+      vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
+	findQCDPartners(*cit,particles);
+      // must have a partner
+      if(partners.empty()) {
+        throw Exception() << "`Failed to make colour connections in " 
+                          << "PartnerFinder::setQCDInitialEvolutionScales"
+                          << (**cit)
+                          << Exception::eventerror;
+      }
+      // Calculate the evolution scales for all possible pairs of of particles
+      vector<pair<Energy,Energy> > scales;
+      int position(-1);
+      for(unsigned int ix=0;ix< partners.size();++ix) {
+	if(partners[ix].second) position = ix;
+	scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+							 isDecayCase));
+      }
+      assert(position>=0);
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	(**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
+							    1.,partners[ix].first,
+							    scales[ix].first));
+      }
+      // now scales
+      // set scales for all interactions to that of the partner, default
+      if(scaleChoice_==0) {
+	pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
+	for(unsigned int ix=0;ix<partners.size();++ix) {
+	  (**cit).evolutionScale(partners[ix].first,scalePair);
+	}
+      }
+      // leave them as is
+      else {
+	for(unsigned int ix=0;ix<partners.size();++ix) {
+	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first,0);
+	  if(scales[ix].first<=scale.first)
+	    continue;
+	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
+							      scales[ix].first));
+	}
+      }
     }
   }
   return true;

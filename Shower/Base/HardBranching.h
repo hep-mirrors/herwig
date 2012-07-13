@@ -249,6 +249,22 @@ public:
 
   //@}
 
+  /**
+   *  Type of branching
+   */
+  ShowerPartnerType::Type type() const {
+    assert(type_!=ShowerPartnerType::Undefined);
+    return type_;
+  }
+
+  /**
+   *  Type of branching
+   */
+  void type(ShowerPartnerType::Type in) {
+    type_ = in;
+    assert(type_!=ShowerPartnerType::Undefined);
+  }
+
 private:
 
   /**
@@ -341,6 +357,10 @@ private:
    */
   tHardBranchingPtr _partner;
 
+  /**
+   *  The type of branching
+   */
+  ShowerPartnerType::Type type_;
 };
 
 }

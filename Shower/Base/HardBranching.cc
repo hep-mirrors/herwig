@@ -102,7 +102,7 @@ HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
   : _particle(particle), _original(), _p(particle->momentum()), _n(), _qt(),
     _shower(particle->momentum()), _pt(ZERO), _x_frac(0.),
     _status(status), _scale(ZERO), _z(0.),_phi(0.), _parent(parent),
-    _sudakov(sudakov)
+    _sudakov(sudakov), type_(ShowerPartnerType::Undefined)
 {}
 
 void HardBranching::fixColours() {

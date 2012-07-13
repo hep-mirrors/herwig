@@ -1006,7 +1006,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       // apply the vetos for the truncated shower
       // no flavour changing branchings
       if(iout==0) {
-	particle->evolutionScale(fb.kinematics->scale());
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
@@ -1015,18 +1015,18 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       if(type==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto
 	   fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
-	  particle->evolutionScale(fb.kinematics->scale());
+	  particle->vetoEmission(fb.type,fb.kinematics->scale());
 	  continue;
 	}
       }
       // pt veto
       if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
-	particle->evolutionScale(fb.kinematics->scale());
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
       // should do base class vetos as well
       if(timeLikeVetoed(fb,particle,type)) {
-	particle->evolutionScale(fb.kinematics->scale());
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
       break;
@@ -1039,14 +1039,13 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 						     branch->children()[0]->z(),
 						     branch->phi(),
 						     branch->children()[0]->pT());
-      particle->evolutionScale(branch->scale() );
+      particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
       showerKin->initialize( *particle,PPtr() );
       IdList idlist(3);
       idlist[0] = particle->id();
       idlist[1] = branch->children()[0]->branchingParticle()->id();
       idlist[2] = branch->children()[1]->branchingParticle()->id();
-      assert(false);
-      fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine );
+      fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
       // Assign the shower kinematics to the emitting particle.
       particle->showerKinematics( fb.kinematics );
       // Assign the splitting function to the emitting particle. 

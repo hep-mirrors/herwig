@@ -300,16 +300,6 @@ public:
 
   Energy evolutionScale() const { assert(false); return ZERO; }
   void evolutionScale(Energy ) { assert(false); }
-
-  /**
-   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
-   */
-  Energy evolutionScale2() const { assert(false); return ZERO; }
-  
-  /**
-   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
-   */
-  void evolutionScale2(Energy ) { assert(false); }
   //@}
 
 protected:
