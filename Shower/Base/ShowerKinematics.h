@@ -64,26 +64,30 @@ public:
    * (backward) evolution --- the kinematical variables of the
    * branching products are calculated and updated from the knowledge
    * of the parent kinematics. 
-   * @param theParent   The parent
-   * @param theChildren The children
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
    * @param angularOrder Whether or not to apply angular ordering
    */
-  virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector & theChildren,
+  virtual void updateChildren(const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children,
+			      ShowerPartnerType::Type partnerType, 
 			      bool angularOrder) const;
 
-  virtual void resetChildren( const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector & theChildren) const;
+  virtual void resetChildren( const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
-   * @param theParent   The parent
-   * @param theChildren The children
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
    * @param angularOrder Whether or not to apply angular ordering
    */
-  virtual void updateParent(const tShowerParticlePtr theParent,
-			    const ShowerParticleVector & theChildren,
+  virtual void updateParent(const tShowerParticlePtr parent,
+			    const ShowerParticleVector & children,
+			    ShowerPartnerType::Type partnerType, 
 			    bool angularOrder) const;
 
   /**
@@ -91,11 +95,11 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
-   * @param theLast The particle.
+   * @param last The particle.
    * @param px The \f$x\f$ component of the \f$p_T\f$.
    * @param py The \f$y\f$ component of the \f$p_T\f$.
    */
-  virtual void updateLast(const tShowerParticlePtr theLast,
+  virtual void updateLast(const tShowerParticlePtr last,
 			  Energy px, Energy py) const;
   //@}
 
@@ -110,33 +114,33 @@ public:
    * (backward) evolution --- the kinematical variables of the
    * branching products are calculated and updated from the knowledge
    * of the parent kinematics. 
-   * @param theParent   The parent
-   * @param theChildren The children
+   * @param parent   The parent
+   * @param children The children
    */
-  virtual void reconstructChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector & theChildren) const;
+  virtual void reconstructChildren(const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
 
   /**
    * Reconstruct the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
-   * @param theParent   The parent
-   * @param theChildren The children
+   * @param parent   The parent
+   * @param children The children
    */
-  virtual void reconstructParent(const tShowerParticlePtr theParent, 
-				 const ParticleVector & theChildren) const;
+  virtual void reconstructParent(const tShowerParticlePtr parent, 
+				 const ParticleVector & children) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
-   * @param theLast The particle.
+   * @param last The particle.
    * @param iopt The option for the momentum reconstruction 
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
    * @param mass The mass to be used, if less than zero on-shell
    */
-  virtual void reconstructLast(const tShowerParticlePtr theLast,
+  virtual void reconstructLast(const tShowerParticlePtr last,
 			       unsigned int iopt, Energy mass=-1.*GeV) const;
 
   /**

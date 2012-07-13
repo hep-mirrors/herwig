@@ -50,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0), _partnerMethod(0), QEDPartner_(0) {}
+  PartnerFinder() : partnerMethod_(0), QEDPartner_(0), scaleChoice_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -177,11 +177,6 @@ protected:
 							  const bool isDecayCase)=0;
   //@}
 
-  /**
-   *  The approach for the colour partners
-   */
-  bool approach() const {return _approach;}
-
 private:
 
   /**
@@ -199,19 +194,19 @@ private:
 private:
 
   /**
-   *  Approach to use for setting the colour partners in the random approach
-   */
-  int _approach;
-
-  /**
    *  Method for choosing colour partner
    */
-   int _partnerMethod;
+   int partnerMethod_;
 
   /**
    *  Choice for the QED radiation partner
    */
   int QEDPartner_;
+
+  /**
+   *  Choice of the scale
+   */
+  int scaleChoice_;
 };
 
 }

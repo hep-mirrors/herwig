@@ -55,25 +55,28 @@ public:
    * branching products are calculated and updated from the knowledge
    * of the parent kinematics.  This method is used by the
    * ForwardShowerEvolver.  
-   * ***ACHTUNG*** Might be extended to update colour connections as well.
-   * @param theParent The branching particle
-   * @param theChildren The particles produced in the branching
+   * @param parent The branching particle
+   * @param children The particles produced in the branching
+   * @param partnerType The type of evolution partner
    * @param angularOrder Whether or not to apply angular ordering
    */
-  virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector & theChildren,
+  virtual void updateChildren( const tShowerParticlePtr parent, 
+			       const ShowerParticleVector & children,
+			       ShowerPartnerType::Type partnerType, 
 			       bool angularOrder) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the 
    * KinematicsReconstructor.
-   * @param theParent The branching particle
-   * @param theChildren The particles produced in the branching
+   * @param parent The branching particle
+   * @param children The particles produced in the branching
+   * @param partnerType The type of evolution partner
    * @param angularOrder Whether or not to apply angular ordering
    */
-  virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ShowerParticleVector & theChildren,
+  virtual void updateParent( const tShowerParticlePtr parent, 
+			     const ShowerParticleVector & children,
+			     ShowerPartnerType::Type partnerType, 
 			     bool angularOrder ) const;
 
   /**
@@ -81,8 +84,8 @@ public:
    * of the children. This method will be used by the 
    * KinematicsReconstructor.
    */
-  virtual void reconstructParent( const tShowerParticlePtr theParent, 
-				  const ParticleVector & theChildren ) const;
+  virtual void reconstructParent( const tShowerParticlePtr parent, 
+				  const ParticleVector & children ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction

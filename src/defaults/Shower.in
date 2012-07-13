@@ -98,12 +98,14 @@ set GtoGGSplitFn:AngularOrdered Yes
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
-set GtoQQbarSplitFn:AngularOrdered No
+#set GtoQQbarSplitFn:AngularOrdered No
+set GtoQQbarSplitFn:AngularOrdered Yes
 
 create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
 newdef GammatoQQbarSplitFn:InteractionType QED
 newdef GammatoQQbarSplitFn:ColourStructure NeutralChargedCharged
-set GammatoQQbarSplitFn:AngularOrdered No
+#set GammatoQQbarSplitFn:AngularOrdered No
+set GammatoQQbarSplitFn:AngularOrdered Yes
 
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
 newdef QtoGQSplitFn:InteractionType QCD

@@ -20,54 +20,54 @@
 using namespace Herwig;
 
 void Decay_QTildeShowerKinematics1to2::
-updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector & theChildren,
+updateChildren(const tShowerParticlePtr parent, 
+	       const ShowerParticleVector & children,
+	       ShowerPartnerType::Type partnerType, 
 	       bool angularOrder ) const {
-  if(theChildren.size() != 2)
-    throw Exception() <<  "Decay_QTildeShowerKinematics1to2::updateChildren() " 
- 		      << "Warning! too many children!" << Exception::eventerror;
+  assert(false);
+  assert(children.size() == 2);
   // copy scales etc
   Energy dqtilde = scale();
   double dz = z(); 
   double dphi = phi();
   // set the values
-  if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3);
-    theParent->showerParameters().resize(2);
-    theParent->showerParameters()[0]=1.;
+  if(parent->showerVariables().empty()) {
+    parent->showerVariables().resize(3);
+    parent->showerParameters().resize(2);
+    parent->showerParameters()[0]=1.;
   }
   for(unsigned int ix=0;ix<2;++ix) {
-    theChildren[ix]->showerVariables() .resize(3);
-    theChildren[ix]->showerParameters().resize(2);
+    children[ix]->showerVariables() .resize(3);
+    children[ix]->showerParameters().resize(2);
   }
   if(angularOrder) {
-    theChildren[0]->evolutionScale(        dqtilde);
-    theChildren[1]->evolutionScale((1.-dz)*dqtilde);
+    children[0]->evolutionScale(        dqtilde);
+    children[1]->evolutionScale((1.-dz)*dqtilde);
   }
   else {
-    theChildren[0]->evolutionScale(        dqtilde);
-    theChildren[1]->evolutionScale(        dqtilde);
+    children[0]->evolutionScale(        dqtilde);
+    children[1]->evolutionScale(        dqtilde);
   }
   // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 
-  theChildren[1]->showerParameters()[0]=(1.-dz)*theParent->showerParameters()[0];
-  theChildren[0]->showerVariables()[0]=   pT()*cos(dphi) +     
-    dz *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   pT()*sin(dphi) + 
-    dz *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= - pT()*cos(dphi) + 
-    (1.-dz)*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= - pT()*sin(dphi) + 
-    (1.-dz)*theParent->showerVariables()[1];
+  children[0]->showerParameters()[0]=    dz *parent->showerParameters()[0]; 
+  children[1]->showerParameters()[0]=(1.-dz)*parent->showerParameters()[0];
+  children[0]->showerVariables()[0]=   pT()*cos(dphi) +     
+    dz *parent->showerVariables()[0];
+  children[0]->showerVariables()[1]=   pT()*sin(dphi) + 
+    dz *parent->showerVariables()[1];
+  children[1]->showerVariables()[0]= - pT()*cos(dphi) + 
+    (1.-dz)*parent->showerVariables()[0];
+  children[1]->showerVariables()[1]= - pT()*sin(dphi) + 
+    (1.-dz)*parent->showerVariables()[1];
   for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
+    children[ix]->showerVariables()[2]=
+      sqrt(sqr(children[ix]->showerVariables()[0])+
+	   sqr(children[ix]->showerVariables()[1]));
   // set up the colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
 }
 
 void Decay_QTildeShowerKinematics1to2::

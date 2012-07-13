@@ -491,7 +491,8 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   }
   // check it is in the phase space
   if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
-    parent->evolutionScale(br.kinematics->scale());
+    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
+			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
     return true;
   }
   double k1 = getKfromX(x, xb);
@@ -514,7 +515,10 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // if not vetoed reset max
   if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->evolutionScale(br.kinematics->scale());
+  if(veto) {
+    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
+			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
+  }
   // return the veto
   return veto;
 }

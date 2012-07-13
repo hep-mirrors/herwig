@@ -29,3 +29,14 @@ PPtr ShowerParticle::fullclone() const {
 ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 
+void ShowerParticle::vetoEmission(ShowerPartnerType::Type type, Energy scale) {
+  for(map<ShowerPartnerType::Type ,pair<Energy,Energy> >::iterator
+	it=evolutionScales_.begin();it!=evolutionScales_.end();++it) {
+    if(it->first==type || (it->first!=ShowerPartnerType::QED &&
+			   type     !=ShowerPartnerType::QED)) {
+      it->second = make_pair(scale,scale);
+    }
+    else
+      assert(false);
+  }
+}

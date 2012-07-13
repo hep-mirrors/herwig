@@ -203,11 +203,13 @@ public:
    * @param parent The parent for the branching
    * @param first  The first  branching product
    * @param second The second branching product
+   * @param partnerType The type of evolution partner
    * @param back Whether this is foward or backward evolution.
    */
   virtual void colourConnection(tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
+				ShowerPartnerType::Type partnerType, 
 				const bool back) const;
 
   /**

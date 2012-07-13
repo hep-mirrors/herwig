@@ -19,68 +19,172 @@
 using namespace Herwig;
 
 void FS_QTildeShowerKinematics1to2::
-updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector & theChildren,
+updateChildren(const tShowerParticlePtr parent, 
+	       const ShowerParticleVector & children,
+	       ShowerPartnerType::Type partnerType, 
 	       bool angularOrder) const {
-  if(theChildren.size() != 2)
-    throw Exception() <<  "FS_QTildeShowerKinematics1to2::updateChildren() " 
-		      << "Warning! too many children!" << Exception::eventerror;
-  // copy scales etc
-  Energy dqtilde = scale();
+  assert(children.size()==2);
   // resize the parameter vectors
-  if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3);
-    theParent->showerParameters().resize(2);
-    theParent->showerParameters()[0]=1.;
+  if(parent->showerVariables().empty()) {
+    parent->showerVariables().resize(3);
+    parent->showerParameters().resize(2);
+    parent->showerParameters()[0]=1.;
   }
-  theChildren[0]->showerVariables() .resize(3);
-  theChildren[0]->showerParameters().resize(2);
-  theChildren[1]->showerVariables() .resize(3);
-  theChildren[1]->showerParameters().resize(2);
-  // note that 1st child gets z, 2nd gets (1-z) by our convention.
+  children[0]->showerVariables() .resize(3);
+  children[0]->showerParameters().resize(2);
+  children[1]->showerVariables() .resize(3);
+  children[1]->showerParameters().resize(2);
+  // identify emittor and spectator
+  tShowerParticlePtr emittor = children[0];
+  tShowerParticlePtr emitted = children[1];
+  double zChild[2] = {z(),1.-z()};
+  bool bosonSplitting(false);
+  // special for g -> gg, particle highest z is emittor
+  if(emittor->id()==emitted->id()&&emittor->id()==parent->id()) {
+    if(zChild[1]>zChild[0]) {
+      swap(zChild[0],zChild[1]);
+      swap(emitted,emittor);
+    }
+  }
+  // otherwise if particle ID same
+  else if(emitted->id()==parent->id()) {
+    swap(zChild[0],zChild[1]);
+    swap(emitted,emittor);
+  }
+  // no real emittor/eemitted
+  else if(emittor->id()!=parent->id()) {
+    bosonSplitting = true;
+  }
+  // scales for angular ordering
+  Energy AOScale[2];
   if(angularOrder) {
-    theChildren[0]->evolutionScale(z()*dqtilde);
-    theChildren[1]->evolutionScale((1.-z())*dqtilde);
+    for(unsigned int ix=0;ix<2;++ix) AOScale [ix] = zChild[ix]*scale(); 
   }
   else {
-    theChildren[0]->evolutionScale(dqtilde);
-    theChildren[1]->evolutionScale(dqtilde);
+    for(unsigned int ix=0;ix<2;++ix) AOScale [ix] =            scale();
+  }
+  // if not these cases doesn't matter
+  // now the various scales
+  if(partnerType==ShowerPartnerType::QED) {
+    // normal case
+    if(!bosonSplitting) {
+      for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	    it = parent->evolutionScales().begin();
+	  it!=parent->evolutionScales().end();++it) {
+	emittor->evolutionScale(it->first,make_pair(min(AOScale[0],it->second.first ),
+						    min(scale()   ,it->second.second)));
+	if(it->first==ShowerPartnerType::QED) {
+	  emitted->evolutionScale(it->first,make_pair(min(AOScale[1],it->second.first ),
+						      min(scale()   ,it->second.second)));
+	}
+      }
+    }
+    // gamma -> f fbar
+    else {
+      // set QED scales as normal
+      for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	    it = parent->evolutionScales().begin();
+	  it!=parent->evolutionScales().end();++it) {
+	assert(it->first==ShowerPartnerType::QED);
+	emittor->evolutionScale(it->first,make_pair(AOScale[0],scale()));
+	emitted->evolutionScale(it->first,make_pair(AOScale[1],scale()));
+      }
+      // and any QCD scales needed
+      PDT::Colour emittorColour = emittor->dataPtr()->iColour();
+      if(emittorColour==PDT::Colour3||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6) {
+	emittor->evolutionScale(ShowerPartnerType::QCDColourLine,
+				make_pair(AOScale[0],scale()));
+      }
+      if(emittorColour==PDT::Colour3bar||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6bar) {
+	emittor->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				make_pair(AOScale[0],scale()));
+      }
+      PDT::Colour emittedColour = emitted->dataPtr()->iColour();
+      if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
+	emitted->evolutionScale(ShowerPartnerType::QCDColourLine,
+				make_pair(AOScale[1],scale()));
+      }
+      if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
+	emitted->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				make_pair(AOScale[1],scale()));
+      }
+    }
+  }
+  else {
+    // normal case
+    if(!bosonSplitting) {
+      // scales for the emittor
+      for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	    it = parent->evolutionScales().begin();
+	  it!=parent->evolutionScales().end();++it) {
+	emittor->evolutionScale(it->first,make_pair(min(AOScale[0],it->second.first ),
+						    min(scale()   ,it->second.second)));
+      }
+    }
+    else {
+      // QCD scales needed
+      PDT::Colour emittorColour = emittor->dataPtr()->iColour();
+      if(emittorColour==PDT::Colour3||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6) {
+	emittor->evolutionScale(ShowerPartnerType::QCDColourLine,
+				make_pair(AOScale[0],scale()));
+      }
+      if(emittorColour==PDT::Colour3bar||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6bar) {
+	emittor->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				make_pair(AOScale[0],scale()));
+      }
+      // QED scales
+      if(emittor->dataPtr()->charged()) {
+	emittor->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[0],scale()));
+      }
+    }
+    PDT::Colour emittedColour = emitted->dataPtr()->iColour();
+    if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
+      emitted->evolutionScale(ShowerPartnerType::QCDColourLine,
+			      make_pair(AOScale[1],scale()));
+    }
+    if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
+      emitted->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+			      make_pair(AOScale[1],scale()));
+    }
+    if(emitted->dataPtr()->charged()) {
+      emitted->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[1],scale()));
+    }
   }
   // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters()[0]=     z() *theParent->showerParameters()[0];
-  theChildren[1]->showerParameters()[0]= (1.-z())*theParent->showerParameters()[0];
+  children[0]->showerParameters()[0]=     z() *parent->showerParameters()[0];
+  children[1]->showerParameters()[0]= (1.-z())*parent->showerParameters()[0];
   // set the values
-  theChildren[0]->showerVariables()[0]=   
-    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   
-    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= 
-    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= 
-    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
+  children[0]->showerVariables()[0]=   
+    pT()*cos(phi()) +     z() *parent->showerVariables()[0];
+  children[0]->showerVariables()[1]=   
+    pT()*sin(phi()) +     z() *parent->showerVariables()[1];
+  children[1]->showerVariables()[0]= 
+    - pT()*cos(phi()) + (1.-z())*parent->showerVariables()[0];
+  children[1]->showerVariables()[1]= 
+    - pT()*sin(phi()) + (1.-z())*parent->showerVariables()[1];
   for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
+    children[ix]->showerVariables()[2]=
+      sqrt(sqr(children[ix]->showerVariables()[0])+
+	   sqr(children[ix]->showerVariables()[1]));
   // set up the colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
 }
 
 void FS_QTildeShowerKinematics1to2::
-reconstructParent(const tShowerParticlePtr theParent, 
-	     const ParticleVector & theChildren ) const {
-  if(theChildren.size() != 2) 
+reconstructParent(const tShowerParticlePtr parent, 
+	     const ParticleVector & children ) const {
+  if(children.size() != 2) 
     throw Exception() << "FS_QTildeShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 
 		      << Exception::eventerror;
-  ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
-  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
-  theParent->showerParameters()[1]= 
+  ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(children[0]);
+  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
+  parent->showerParameters()[1]= 
     c1->showerParameters()[1] + c2->showerParameters()[1]; 
-  theParent->set5Momentum( c1->momentum() + c2->momentum() );
+  parent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
 void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
@@ -153,6 +257,7 @@ void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
+						 ShowerPartnerType::Type, 
 						 bool) const {
   IdList ids(3);
   ids[0] = parent->id();
@@ -180,27 +285,27 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
 }
 
 void FS_QTildeShowerKinematics1to2::
-resetChildren(const tShowerParticlePtr theParent, 
-	      const ShowerParticleVector & theChildren) const {
+resetChildren(const tShowerParticlePtr parent, 
+	      const ShowerParticleVector & children) const {
   // set the values
-  theChildren[0]->showerVariables()[0]=   
-    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   
-    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= 
-    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= 
-    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
+  children[0]->showerVariables()[0]=   
+    pT()*cos(phi()) +     z() *parent->showerVariables()[0];
+  children[0]->showerVariables()[1]=   
+    pT()*sin(phi()) +     z() *parent->showerVariables()[1];
+  children[1]->showerVariables()[0]= 
+    - pT()*cos(phi()) + (1.-z())*parent->showerVariables()[0];
+  children[1]->showerVariables()[1]= 
+    - pT()*sin(phi()) + (1.-z())*parent->showerVariables()[1];
   for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
-  for(unsigned int ix=0;ix<theChildren.size();++ix) {
-    if(theChildren[ix]->children().empty()) continue;
-    ShowerParticleVector children;
-    for(unsigned int iy=0;iy<theChildren[ix]->children().size();++iy)
-      children.push_back(dynamic_ptr_cast<ShowerParticlePtr>
-			 (theChildren[ix]->children()[iy]));
-    theChildren[ix]->showerKinematics()->resetChildren(theChildren[ix],children);
+    children[ix]->showerVariables()[2]=
+      sqrt(sqr(children[ix]->showerVariables()[0])+
+	   sqr(children[ix]->showerVariables()[1]));
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    if(children[ix]->children().empty()) continue;
+    ShowerParticleVector newChildren;
+    for(unsigned int iy=0;iy<children[ix]->children().size();++iy)
+      newChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+			    (children[ix]->children()[iy]));
+    children[ix]->showerKinematics()->resetChildren(children[ix],newChildren);
   }
 }

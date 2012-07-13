@@ -63,11 +63,19 @@ public:
    *  Struct for all the info on an evolution partner
    */
   struct EvolutionPartner {
+
+    /**
+     *  Constructor
+     */
+    EvolutionPartner(tShowerParticlePtr p,double w, ShowerPartnerType::Type t,
+		     Energy s) : partner(p), weight(w), type(t), scale(s)
+    {}
+
     /**
      * The partner
      */
     tShowerParticlePtr partner;
-
+    
     /**
      *  Weight
      */
@@ -98,7 +106,7 @@ public:
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
     : Particle(x), _isFinalState(fs),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-      _scale(ZERO), _vMass(ZERO), _thePEGBase(), _evolutionScale2(), _radiationLine() {}
+      _vMass(ZERO), _thePEGBase() {}
 
   /**
    * Copy constructor from a ThePEG Particle
@@ -110,7 +118,7 @@ public:
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
     : Particle(x), _isFinalState(fs),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-    _scale(ZERO), _vMass(ZERO), _thePEGBase(&x), _evolutionScale2(), _radiationLine() {}
+    _vMass(ZERO), _thePEGBase(&x) {}
   //@}
 
 public:
@@ -175,16 +183,49 @@ public:
    */
   //@{
   /**
+   * Return the evolution scale \f$\tilde{q}\f$, the first value
+   * includes angular ordering, while the second does not.
+   */
+  pair<Energy,Energy> evolutionScale(ShowerPartnerType::Type type,int ) const {
+    map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+      it = evolutionScales_.find(type);
+    if(it!=evolutionScales_.end()) 
+      return it->second;
+    else
+      return make_pair(ZERO,ZERO); 
+  }
+
+  /**
    * Return the evolution scale \f$\tilde{q}\f$
    */
-  Energy evolutionScale() const { return _scale; }
+  Energy evolutionScale(bool AO, ShowerPartnerType::Type type) const {
+    map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+      it = evolutionScales_.find(type);
+    if(it!=evolutionScales_.end()) {
+      return AO ? it->second.first : it->second.second;
+    }
+    else
+      return ZERO;
+  }
 
-
+  /**
+   *  Veto emission at a given scale 
+   */
+  void vetoEmission(ShowerPartnerType::Type type, Energy scale);
 
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale
    */
-  void evolutionScale(Energy scale) { _scale = scale; }
+  void evolutionScale(ShowerPartnerType::Type type, pair<Energy,Energy> scale) {
+    evolutionScales_[type] = scale;
+  }
+
+  /**
+   *  Access to the map of evolution scales
+   */
+  map<ShowerPartnerType::Type,pair<Energy,Energy> > & evolutionScales() {
+    return evolutionScales_;
+  }
 
   /**
    * Return the virtual mass\f$
@@ -215,28 +256,6 @@ public:
    *  Add a possible partners 
    */
   void addPartner(const EvolutionPartner & in ) { partners_.push_back(in); }
-
-  /**
-   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
-   */
-  Energy evolutionScale2() const { return _evolutionScale2; }
-
-  /**
-   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
-   */
-  void evolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
-  
-  /**
-   *  Return the radiation line of a gluon
-   *  This is 0 for a particle with random radiation choice, 1 for the colour
-   *  line and 2 for the anti-colour line.
-   */
-  int radiationLine() { return _radiationLine; }
-
-  /**
-   *  Set the radiation line of a gluon
-   */   
-  void radiationLine(int radiationLine) { _radiationLine = radiationLine; }
     
   /** 
    * Return the progenitor of the shower
@@ -271,6 +290,27 @@ public:
    *  it came from
    */
   const tcPPtr thePEGBase() const { return _thePEGBase; }
+
+public:
+
+  /**
+   *  Members to be reomved, keep so code still compiles while working
+   */
+  //@{
+
+  Energy evolutionScale() const { assert(false); return ZERO; }
+  void evolutionScale(Energy ) { assert(false); }
+
+  /**
+   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
+   */
+  Energy evolutionScale2() const { assert(false); return ZERO; }
+  
+  /**
+   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
+   */
+  void evolutionScale2(Energy ) { assert(false); }
+  //@}
 
 protected:
 
@@ -336,9 +376,9 @@ private:
   ShoKinPtr _showerKinematics;
 
   /**
-   *  Evolution scales
+   *  Storage of the evolution scales
    */
-  Energy _scale;
+  map<ShowerPartnerType::Type ,pair<Energy,Energy> > evolutionScales_;
 
   /**
    *  Virtual mass
@@ -354,16 +394,6 @@ private:
    *  Pointer to ThePEG Particle this ShowerParticle was created from
    */
   const tcPPtr _thePEGBase;
-  
-  /**
-   *  Second evolution scale
-   */  
-  Energy _evolutionScale2; 
-  
-  /**
-   *  Radiation Line
-   */
-  int _radiationLine;
   
   /**
    *  Progenitor

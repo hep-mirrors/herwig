@@ -204,38 +204,99 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     ShowerInteraction::Type type) const {
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
-  SudakovPtr sudakov=SudakovPtr();
+  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
+  SudakovPtr sudakov   = SudakovPtr();
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
-  if(_fbranchings.find(index) == _fbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList(),SudakovPtr());
+  if( _fbranchings.find(index) == _fbranchings.end() ) 
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
-    if(type!=cit->second.first->interactionType()) continue;
-    // check size of scales beforehand...
-    ShoKinPtr newKin= cit->second.first->
-      generateNextTimeBranching(particle.evolutionScale(), 
-				cit->second.second,particle.id()!=cit->first,
-				enhance);
+    // check either right interaction or doing both
+    if(type != cit->second.first->interactionType() &&
+       type != ShowerInteraction::Both ) continue;
+    // whether or not this interaction should be angular ordered
+    bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
+    ShoKinPtr newKin;
+    ShowerPartnerType::Type type;
+    // work out which starting scale we need
+    if(cit->second.first->interactionType()==ShowerInteraction::QED) {
+      type = ShowerPartnerType::QED;
+      newKin = cit->second.first->
+	generateNextTimeBranching(particle.evolutionScale(angularOrdered,type), 
+				  cit->second.second,particle.id()!=cit->first,
+				  enhance);
+      cerr << "testing in QED " << particle << "\n";
+      assert(false);
+    }
+    else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
+      // special for 
+      if(particle.dataPtr()->iColour()==PDT::Colour8) {
+	// octet -> octet octet
+	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
+	  type = ShowerPartnerType::QCDColourLine;
+	  newKin= cit->second.first->
+	    generateNextTimeBranching(particle.evolutionScale(angularOrdered,type),
+				      cit->second.second,particle.id()!=cit->first,
+				      0.5*enhance);
+	  ShoKinPtr newKin2 = cit->second.first->
+	    generateNextTimeBranching(particle.evolutionScale(angularOrdered,
+							      ShowerPartnerType::QCDAntiColourLine),
+				      cit->second.second,particle.id()!=cit->first,
+				      0.5*enhance);
+	  // pick the one with the highest scale
+	  if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
+	      (!newKin&&newKin2) ) {
+	    newKin = newKin2;
+	    type = ShowerPartnerType::QCDAntiColourLine;
+	  }
+	}
+	// other
+	else {
+	  Energy startingScale = 
+	    max(particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDColourLine),
+		particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDAntiColourLine));
+	  newKin= cit->second.first->
+	    generateNextTimeBranching(startingScale, 
+				      cit->second.second,particle.id()!=cit->first,
+				      enhance);
+	  type = UseRandom::rndbool() ? 
+	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	}
+      }
+      else {
+	type = particle.hasColour() ? 
+	  ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	newKin= cit->second.first->
+	  generateNextTimeBranching(particle.evolutionScale(angularOrdered,type),
+				    cit->second.second,
+				    particle.id()!=cit->first,enhance);
+      }
+    }
+    // shouldn't be anything else
+    else
+      assert(false);
+    // if no kinematics contine
     if(!newKin) continue;
     // select highest scale 
-    if(newKin->scale() > newQ && 
-       newKin->scale() <= particle.evolutionScale()) {
-      kinematics=newKin;
-      newQ = newKin->scale();
-      ids = cit->second.second;
-      sudakov=cit->second.first;
+    if( newKin->scale() > newQ ) {
+      kinematics  = newKin;
+      newQ        = newKin->scale();
+      ids         = cit->second.second;
+      sudakov     = cit->second.first;
+      partnerType = type;
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr());
+  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
+				    ShowerPartnerType::Undefined);
   // If a branching has been selected initialize it
   kinematics->initialize(particle,PPtr());
   // and return it
-  return Branching(kinematics, ids,sudakov);
+  return Branching(kinematics, ids,sudakov,partnerType);
 }
 
 Branching SplittingGenerator::
@@ -250,7 +311,7 @@ chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
   if(_fbranchings.find(index) == _fbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList(),SudakovPtr());
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr(),ShowerPartnerType::Undefined);
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
@@ -271,11 +332,13 @@ chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr());
+  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
+				    ShowerPartnerType::Undefined);
   // initialize the branching
   kinematics->initialize(particle,PPtr());
   // and return it
-  return Branching(kinematics, ids,sudakov);
+  assert(false);
+  return Branching(kinematics, ids,sudakov,ShowerPartnerType::Undefined);
 }
 
 Branching SplittingGenerator::
@@ -292,7 +355,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   long index = abs(particle.id());
   // if no possible branching return
   if(_bbranchings.find(index) == _bbranchings.end())
-    return Branching(ShoKinPtr(), IdList(),sudakov);
+    return Branching(ShoKinPtr(), IdList(),sudakov,
+		     ShowerPartnerType::Undefined);
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
@@ -311,12 +375,14 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics) return Branching(ShoKinPtr(), IdList(),SudakovPtr());
+  if(!kinematics) return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
+				   ShowerPartnerType::Undefined);
   // initialize the ShowerKinematics 
   // and return it
   kinematics->initialize(particle,beamparticle);
   // return the answer
-  return Branching(kinematics, ids,sudakov);
+  assert(false);
+  return Branching(kinematics, ids,sudakov,ShowerPartnerType::Undefined);
 }
 
 void SplittingGenerator::rebind(const TranslationMap & trans)

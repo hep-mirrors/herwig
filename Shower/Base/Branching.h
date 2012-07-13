@@ -32,6 +32,11 @@ using namespace ThePEG;
      *  The SudakovFormFactor for the branching
      */
     tSudakovPtr sudakov;
+
+    /**
+     *  The type of radiation line
+     */
+    ShowerPartnerType::Type type;
     
     /**
      *  Constructor for the struct
@@ -39,7 +44,8 @@ using namespace ThePEG;
      * @param c PDG codes of the particles in the branching
      * @param d The SudakovFormFactor for the branching
      */
-    Branching(ShoKinPtr a, IdList c,tSudakovPtr d) : kinematics(a), ids(c), sudakov(d) {}
+    Branching(ShoKinPtr a, IdList c,tSudakovPtr d,ShowerPartnerType::Type t) 
+      : kinematics(a), ids(c), sudakov(d), type(t) {}
     
     /**
      *  Default constructor

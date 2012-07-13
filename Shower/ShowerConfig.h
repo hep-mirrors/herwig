@@ -71,7 +71,7 @@ using namespace ThePEG;
     /**
      *  Enum for the type of shower partner
      */
-    enum Type {QCDColourLine,QCDAntiColourLine,QED};
+    enum Type {Undefined,QCDColourLine,QCDAntiColourLine,QED};
   }
 
   /**

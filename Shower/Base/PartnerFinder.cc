@@ -57,11 +57,11 @@ namespace {
 }
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  os << _approach << _partnerMethod;
+  os << partnerMethod_ << QEDPartner_ << scaleChoice_;
 }
 
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _approach >> _partnerMethod;
+  is >> partnerMethod_ >> QEDPartner_ >> scaleChoice_;
 }
 
 AbstractClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;
@@ -74,16 +74,10 @@ void PartnerFinder::Init() {
      "and within the evolution scale range specified by the ShowerVariables ",
      "then to determine the initial evolution scales for each pair of partners.");
 
-  static Parameter<PartnerFinder,int> approach
-    ("Approximation",
-     "This is a test variable to consider the different approaches of "
-     "which colour dipoles of a hard process will shower.",
-     &PartnerFinder::_approach, 0, 1, 0,false,false,false);
-
   static Switch<PartnerFinder,int> interfacePartnerMethod
     ("PartnerMethod",
      "Choice of partner finding method for gluon evolution.",
-     &PartnerFinder::_partnerMethod, 0, false, false);
+     &PartnerFinder::partnerMethod_, 0, false, false);
   static SwitchOption interfacePartnerMethodRandom
     (interfacePartnerMethod,
      "Random",
@@ -115,6 +109,21 @@ void PartnerFinder::Init() {
      "IF",
      "Only allow initial-final combinations",
      2);
+
+  static Switch<PartnerFinder,int> interfaceScaleChoice
+    ("ScaleChoice",
+     "The choice of the evolution scales",
+     &PartnerFinder::scaleChoice_, 0, false, false);
+  static SwitchOption interfaceScaleChoicePartner
+    (interfaceScaleChoice,
+     "Partner",
+     "Scale of all interactions is that of the evolution partner",
+     0);
+  static SwitchOption interfaceScaleChoiceDifferent
+    (interfaceScaleChoice,
+     "Different",
+     "Allow each interaction to have different scales",
+     1);
 
 }
 
@@ -159,15 +168,23 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
     // (this means that no modifications of the following loop is needed!)
     ShowerParticleVector::const_iterator cit, cjt;
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
+      // Skip colourless particles
       if(!(*cit)->data().coloured()) continue;
-      // We now have a coloured particle
+      // find the partners
       vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
 	findQCDPartners(*cit,particles);
+      // must have a partner
       if(partners.empty()) {
         throw Exception() << "`Failed to make colour connections in " 
                           << "PartnerFinder::setQCDInitialEvolutionScales"
                           << (**cit)
                           << Exception::eventerror;
+      }
+      // Calculate the evolution scales for all possible pairs of of particles
+      vector<pair<Energy,Energy> > scales;
+      for(unsigned int ix=0;ix< partners.size();++ix) {
+	scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+							 isDecayCase));
       }
       // In the case of more than one candidate colour partners,
       //	       there are now two approaches to choosing the partner. The
@@ -181,101 +198,64 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       //                  does not have to be necessarily "i".
       // 	      The second method always chooses the furthest partner
       //	      for hard gluons and gluinos.
-      // First make a random choice of partner
-      int position = UseRandom::irnd(partners.size());   
-      // Set the scale from the random partner
-      pair<Energy,Energy> pairScales = 
-	calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position].second),
-					isDecayCase);
-      pair<Energy,Energy> pairScales2;
-      // if taking one with largest angle
-      if (_partnerMethod == 1){
-        // Override choice of partner for octets
-       	if ( (*cit)->perturbative() == 1 && 
-	     getParticleData((*cit)->id())->iColour()==PDT::Colour8) {
+      // store the choice
+      int position(-1);
+      // random choice
+      if( partnerMethod_ == 0 ) {
+	// random choice of partner
+	position = UseRandom::irnd(partners.size());
+      }
+      // take the one with largest angle
+      else if (partnerMethod_ == 1 ) {
+	if ((*cit)->perturbative() == 1 && 
+	    (*cit)->dataPtr()->iColour()==PDT::Colour8 ) {
+	  assert(partners.size()==2);
 	  // Determine largest angle
 	  double maxAngle(0.);
 	  for(unsigned int ix=0;ix<partners.size();++ix) {
-	    double angle = (*cit)->momentum().vect().angle(partners[ix].second->momentum().vect());
+	    double angle = (*cit)->momentum().vect().
+	      angle(partners[ix].second->momentum().vect());
 	    if(angle>maxAngle) {
 	      maxAngle = angle;
 	      position = ix;
 	    }
 	  }
-	}      
-        // Override scale for hard octet
-        if (position==1){
-	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1].second),
-						       isDecayCase);
-	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){
-	    // Set the second scale for hard octets			
-	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0].second),
-							  isDecayCase);  
-	  }
-	}
-   	else {
-	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0].second),
-						       isDecayCase);
-	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){	
-	    // Set the second scale for hard octets
-	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1].second),
-							  isDecayCase);	
-	  }				
-        }
-        if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){
-	  // Set radiation lines for hard octets
-	  if(partners[position].first==ShowerPartnerType::QCDColourLine)
-	    (*cit)->radiationLine(1);
-	  else if(partners[position].first==ShowerPartnerType::QCDAntiColourLine)
-	    (*cit)->radiationLine(2);
-	  else
-	    assert(false);
-	  if( !(*cit)->progenitor() ){
-	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->progenitor(*cit);
-	    // Set the second evolution scale of the progenitor
-	    (*cit)->evolutionScale2(pairScales2.first);
-	  }
-	}
-	else if ((*cit)->perturbative() == 1 && 
-		 (getParticleData((*cit)->id())->iColour()==PDT::Colour3 ||
-		  getParticleData((*cit)->id())->iColour()==PDT::Colour3bar)){
-	  // Set radiation lines for hard triplets
-	  if( !(*cit)->progenitor() ){
-	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->progenitor(*cit);
-	    // Set the second evolution scale of the progenitor
-	    (*cit)->evolutionScale2(pairScales2.first);
-	    // Set the radiation line
-	    (*cit)->radiationLine(0);
-	  }		         
 	}
       }
-
-      switch(_approach) {
-      case 0: // Totally random (unless chosen above)
-	(*cit)->evolutionScale(pairScales.first);
-	(*cit)->partner(partners[position].second);
-	break;
-      case 1: // Partner is also set, if it has already been set, pick 50/50
-        if(!(*cit)->partner() || UseRandom::rndbool()) {
-          (*cit)->evolutionScale(pairScales.first);
-          (*cit)->partner(partners[position].second);
-        }
-        if(!partners[position].second->partner() || UseRandom::rndbool()) {
-          partners[position].second->evolutionScale(pairScales.second);
-          partners[position].second->partner(*cit);
-        }
-        break;
-      default:
-        throw Exception() << "Invalid approach for setting colour partner in"
-                          << " PartnerFinder::setQCDInitialEvolutionScale()"
-                          << Exception::abortnow;
+      else
+	assert(false);
+      // set the evolution partner
+      (*cit)->partner(partners[position].second);
+      // store all the possible partners
+      assert((*cit)->partners().empty());
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	(**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
+							    1.,partners[ix].first,
+							    scales[ix].first));
+      }
+      // now scales
+      // set scales for all interactions to that of the partner, default
+      if(scaleChoice_==0) {
+	pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
+	for(unsigned int ix=0;ix<partners.size();++ix) {
+	  (**cit).evolutionScale(partners[ix].first,scalePair);
+	}
+      }
+      // leave them as is
+      else {
+	for(unsigned int ix=0;ix<partners.size();++ix) {
+	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first,0);
+	  if(scales[ix].first<=scale.first)
+	    continue;
+	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
+							      scales[ix].first));
+	}
       }
     }
   }
   // partners all ready set only do the scales
   else {
+    // \todo think about this
     for(ShowerParticleVector::const_iterator cit = particles.begin();
         cit != particles.end(); ++cit) {
       if(!(**cit).dataPtr()->coloured()) continue;

@@ -22,6 +22,7 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
+		ShowerPartnerType::Type, 
 		bool ) const {
   theChildren[1]->showerVariables().resize(3);
   theChildren[1]->showerParameters().resize(2);
@@ -50,6 +51,7 @@ updateChildren( const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
 	     const ShowerParticleVector & theChildren,
+	     ShowerPartnerType::Type partnerType, 
 	     bool angularOrder) const {
   // no z for angular ordering in backward branchings
   theParent->evolutionScale(scale());
@@ -58,7 +60,8 @@ updateParent(const tShowerParticlePtr theParent,
   else
     theChildren[1]->evolutionScale(scale());
   // set proper colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
+  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],
+				  partnerType,true);
   // set proper parent/child relationships
   theParent->addChild(theChildren[0]);
   theParent->addChild(theChildren[1]);

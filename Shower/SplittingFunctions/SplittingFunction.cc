@@ -147,14 +147,17 @@ void SplittingFunction::persistentInput(PersistentIStream & is, int) {
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,
                                          tShowerParticlePtr second,
+					 ShowerPartnerType::Type partnerType, 
                                          const bool back) const {
   if(_colourStructure==TripletTripletOctet) {
     if(!back) {
       ColinePair cparent = ColinePair(parent->colourLine(), 
                                       parent->antiColourLine());
       // ensure input consistency
-      assert((!cparent.first &&  cparent.second) || 
-             ( cparent.first && !cparent.second));
+      assert((  cparent.first && !cparent.second && 
+		partnerType==ShowerPartnerType::QCDColourLine) || 
+             ( !cparent.first &&  cparent.second && 
+		partnerType==ShowerPartnerType::QCDAntiColourLine));
       // q -> q g
       if(cparent.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -172,16 +175,15 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       first->progenitor(parent->progenitor());
       second->progenitor(parent->progenitor());
-      // Random radiation choice
-      first->radiationLine(0);
-      second->radiationLine(0);      
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
                                      first->antiColourLine());
       // ensure input consistency
-      assert(( cfirst.first && !cfirst.second) ||
-             (!cfirst.first &&  cfirst.second)); 
+      assert((  cfirst.first && !cfirst.second && 
+		partnerType==ShowerPartnerType::QCDColourLine) || 
+             ( !cfirst.first &&  cfirst.second && 
+		partnerType==ShowerPartnerType::QCDAntiColourLine));
       // q -> q g
       if(cfirst.first) {
         ColinePtr newline=new_ptr(ColourLine());
@@ -199,9 +201,6 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       parent->progenitor(first->progenitor());
       second->progenitor(first->progenitor());
-      // Random radiation choice
-      parent->radiationLine(0);
-      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==OctetOctetOctet) {
@@ -210,185 +209,52 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
                                       parent->antiColourLine());
       // ensure input consistency
       assert(cparent.first&&cparent.second);
-      // The choice of colour line is determined by the
-      // radiation line of the parent. 
-      // If the radiation line is non-zero and the
-      // scale of the parent is above the second scale of the 
-      // progenitor it will only radiate from the chosen radiation
-      // line. Otherwise the parent will radiate randomly.
-      // Initializing radiation lines
-      first->radiationLine(0);
-      second->radiationLine(0);
-      // Switch to choose random or non-random choice of lines
-      bool randomchoice = 0;
-      // Radiation line
-      int radiationLine = 0;
-      if (_splittingColourMethod == 1){
-        // Choose the appropriate colour lines
-        if ((parent->radiationLine() == 1 || parent->radiationLine() == 2)  && parent->progenitor() ) {
-          if (parent->evolutionScale() > parent->progenitor()->evolutionScale2()){
-	    // Parent has a radiation line, so the line which should
-	    // radiate, and therefore the choice of which colour line
-	    // to pass onto which child, is already determined.
-	    randomchoice = 1;
-            if(parent->radiationLine() == 2) {
-              // The anti-colour line is radiating
-      	      ColinePtr newline=new_ptr(ColourLine());
-      	      cparent.first->addColoured(first);
-      	      cparent.second->addAntiColoured(second);
-      	      newline->addColoured(second);
-      	      newline->addAntiColoured(first);
-	      // Set the radiation line for the children
-	      radiationLine = parent->radiationLine();
-            }	
-            else {
-              // The colour line is radiating
-      	      ColinePtr newline=new_ptr(ColourLine());
-      	      cparent.first->addColoured(second);
-      	      cparent.second->addAntiColoured(first);
-      	      newline->addColoured(first);
-      	      newline->addAntiColoured(second);
-      	      // Set the radiation line for the children
-	      radiationLine = parent->radiationLine();
-            } 
-	  } 	
-        }
+      // ensure first gluon is hardest
+      if( first->id()==second->id() && parent->showerKinematics()->z()<0.5 ) 
+	swap(first,second);
+      // colour line radiates
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	// The colour line is radiating
+	ColinePtr newline=new_ptr(ColourLine());
+	cparent.first->addColoured(second);
+	cparent.second->addAntiColoured(first);
+	newline->addColoured(first);
+	newline->addAntiColoured(second);
       }
-      if (randomchoice == 0) {
-        // Randomly decide which of the two gluon products take the
-        // colour line passing for the colour of the parent gluon
-        // (the other will take the one passing for the anticolour of
-        //  the parent gluon).
-        if(UseRandom::rndbool()) {
-      	  ColinePtr newline=new_ptr(ColourLine());
-      	  cparent.first->addColoured(first);
-      	  cparent.second->addAntiColoured(second);
-      	  newline->addColoured(second);
-      	  newline->addAntiColoured(first);
-	  if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-	    if (parent->radiationLine() == 1 || parent->radiationLine() == 2){
-	      // Record which line radiates
-	      radiationLine = 2;
-	    }
-	  }
-        }	
-        else {
-      	  ColinePtr newline=new_ptr(ColourLine());
-      	  cparent.first->addColoured(second);
-      	  cparent.second->addAntiColoured(first);
-      	  newline->addColoured(first);
-          newline->addAntiColoured(second);
-	  if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-	    if (parent->radiationLine() == 1 || parent->radiationLine() == 2){
-	      // Record which line radiates
-	      radiationLine = 1;
-	    }
-	  }
-        }    
+      // anti colour line radiates
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cparent.first->addColoured(first);
+	cparent.second->addAntiColoured(second);
+	newline->addColoured(second);
+	newline->addAntiColoured(first);
       }
-      if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-	if (parent->radiationLine() == 1 || parent->radiationLine() == 2){
-      	  // Set the radiation line for the children
-      	  first->radiationLine(radiationLine);
-	  second->radiationLine(0);
-	  // Set the progenitors for the children
-	  first->progenitor(parent->progenitor());
-	  second->progenitor(parent->progenitor()); 
-	}    
-      }            
+      else
+	assert(false);
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
                                      first->antiColourLine());
       // ensure input consistency
       assert(cfirst.first&&cfirst.second);
-      // The choice of colour line is determined by the
-      // radiation line of the parent. 
-      // If the radiation line is non-zero and the
-      // scale of the parent is above the second scale of the 
-      // progenitor it will only radiate from the chosen radiation
-      // line. Otherwise the parent will radiate randomly.           
-      // Initializing radiation lines
-      parent->radiationLine(0);
-      second->radiationLine(0);
-      // Switch to choose random or non-random choice of lines
-      bool randomchoice = 0;
-      // Radiation line
-      int radiationLine = 0;
-      if (_splittingColourMethod == 1){
-        // Choose the appropriate colour lines
-        if ((first->radiationLine() == 1 || first->radiationLine() == 2) && first->progenitor()) {
-          if (first->evolutionScale() > first->progenitor()->evolutionScale2()){
-            // Parent has a radiation line, so the line which should
-	    // radiate, and therefore the choice of which colour line
-	    // to pass onto which child, is already determined.  
-	    randomchoice = 1;
-    	    if (first->radiationLine() == 2) {
-	      // The anti-colour line is radiating
-      	      ColinePtr newline=new_ptr(ColourLine());
-      	      cfirst.first->addColoured(parent);
-      	      cfirst.second->addColoured(second);
-      	      newline->addAntiColoured(second);
-      	      newline->addAntiColoured(parent);
-              // Set the radiation line for the children
-      	      radiationLine = first->radiationLine();
-
-            }    
-            else {
-	      // The colour line is radiating
-      	      ColinePtr newline=new_ptr(ColourLine());
-      	      cfirst.first->addAntiColoured(second);
-      	      cfirst.second->addAntiColoured(parent);
-      	      newline->addColoured(parent);
-      	      newline->addColoured(second);
-	      // Set the radiation line for the children
-	      radiationLine = first->radiationLine();
-            }    
-	  }
-        }
+      // The colour line is radiating
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cfirst.first->addAntiColoured(second);
+	cfirst.second->addAntiColoured(parent);
+	newline->addColoured(parent);
+	newline->addColoured(second);
       }
-      if (randomchoice == 0) {
-        // Randomly decide which of the two gluon products take the
-        // colour line passing for the colour of the parent gluon
-        // (the other will take the one passing for the anticolour of
-        //  the parent gluon).
-        if (UseRandom::rndbool()) {
-      	  ColinePtr newline=new_ptr(ColourLine());
-      	  cfirst.first->addColoured(parent);
-      	  cfirst.second->addColoured(second);
-      	  newline->addAntiColoured(second);
-      	  newline->addAntiColoured(parent);
-	  if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-	    if (first->radiationLine() == 1 || first->radiationLine() == 2){
-	      // Record which line radiates
-	      radiationLine = 2;
-	    }
-	  }
-        }   
-        else {
-       	  ColinePtr newline=new_ptr(ColourLine());
-      	  cfirst.first->addAntiColoured(second);
-      	  cfirst.second->addAntiColoured(parent);
-      	  newline->addColoured(parent);
-      	  newline->addColoured(second);
-	  if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-	    if (first->radiationLine() == 1 || first->radiationLine() == 2){
-	      // Record which line radiates
-	      radiationLine = 1;
-	    }
-	  }
-        }         
+      // anti colour line radiates
+      else if(partnerType==ShowerPartnerType::QCDAntiColourLine) {
+	ColinePtr newline=new_ptr(ColourLine());
+	cfirst.first->addColoured(parent);
+	cfirst.second->addColoured(second);
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);
       }
-      if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
-        if (first->radiationLine() == 1 || first->radiationLine() == 2){
-	  // Set the radiation line for the children
-     	  parent->radiationLine(radiationLine);
-	  second->radiationLine(0);
-	  // Set the progenitors for the children
-	  parent->progenitor(first->progenitor());
-	  second->progenitor(first->progenitor()); 	  
-	}   	      
-      }
+      else
+	assert(false);
     }    
   }
   else if(_colourStructure == OctetTripletTriplet) {
@@ -402,9 +268,6 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       first->progenitor(parent->progenitor());
       second->progenitor(parent->progenitor());
-      // Random radiation choice
-      first->radiationLine(0);
-      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -429,9 +292,6 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       parent->progenitor(first->progenitor());
       second->progenitor(first->progenitor());
-      // Random radiation choice
-      parent->radiationLine(0);
-      second->radiationLine(0); 
     }
   }
   else if(_colourStructure == TripletOctetTriplet) {
@@ -458,9 +318,6 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       first->progenitor(parent->progenitor());
       second->progenitor(parent->progenitor());
-      // Random radiation choice
-      first->radiationLine(0);
-      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -479,9 +336,6 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // Set progenitor
       parent->progenitor(first->progenitor());
       second->progenitor(first->progenitor());
-      // Random radiation choice
-      parent->radiationLine(0);
-      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==SextetSextetOctet) {
