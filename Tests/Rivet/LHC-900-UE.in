@@ -62,6 +62,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
 # LHC K0s/Lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
+# ATLAS Azimuthal ordering of charged hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
