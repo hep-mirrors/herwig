@@ -854,11 +854,18 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(br.kinematics->scale());
+  parent->evolutionScale(br.kinematics->scale());
   return true;
 }
 
-HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
+HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
+					vector<ShowerInteraction::Type> inter) {
+  bool found = false;
+  // check if generating QCD radiation
+  for(unsigned int ix=0;ix<inter.size();++ix) {
+    found |= inter[ix]==ShowerInteraction::QCD;
+  }
+  if(!found) return HardTreePtr();
   if(tree->incomingLines().begin()->second->id()!=ParticleID::g) 
     return HardTreePtr();
   useMe();
@@ -894,7 +901,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_);
+      particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
@@ -968,8 +975,8 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree) {
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if( pt_ < minpT_ ) particlesToShower[ix]->maximumpT(minpT_);
-    else particlesToShower[ix]->maximumpT(pt_);
+    if( pt_ < minpT_ ) particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QCD);
+    else particlesToShower[ix]->maximumpT(pt_,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
  	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&

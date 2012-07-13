@@ -3745,7 +3745,13 @@ double MEPP2VVPowheg::lo_me() const {
   return sum_hel_amps_sqr;
 }
 
-HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
+HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
+					   vector<ShowerInteraction::Type> inter) {
+  // check QCD emission switched on
+  bool QCD=false;
+  for(unsigned int ix=0;ix<inter.size();++ix) 
+    QCD |= inter[ix]==ShowerInteraction::QCD;
+  if(!QCD) return HardTreePtr();
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:
   vector<ShowerProgenitorPtr> particlesToShower;
@@ -3873,8 +3879,10 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree) {
   if(!getEvent(theRealMomenta,channel_)) return HardTreePtr();
 
   // Set the maximum pT for subsequent emissions:
-  pT_ < min_pT_ ? qProgenitor_ ->maximumpT(min_pT_) : qProgenitor_ ->maximumpT(pT_); 
-  pT_ < min_pT_ ? qbProgenitor_->maximumpT(min_pT_) : qbProgenitor_->maximumpT(pT_); 
+  pT_ < min_pT_ ? qProgenitor_ ->maximumpT(min_pT_,ShowerInteraction::QCD) : 
+                  qProgenitor_ ->maximumpT(pT_    ,ShowerInteraction::QCD); 
+  pT_ < min_pT_ ? qbProgenitor_->maximumpT(min_pT_,ShowerInteraction::QCD) :
+                  qbProgenitor_->maximumpT(pT_    ,ShowerInteraction::QCD); 
 
   // Determine whether the quark or antiquark emitted:
   fermionNumberOfMother_=0;

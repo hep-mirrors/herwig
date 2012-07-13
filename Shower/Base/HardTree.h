@@ -78,6 +78,16 @@ public:
    */
   void showerRot( LorentzRotation r ) { showerRot_ = r; }
 
+  /**
+   *  Whether or not the evolution partners are set
+   */
+  bool partnersSet() const {return partnersSet_;}
+
+  /**
+   *  Whether or not the evolution partners are set
+   */
+  void partnersSet(bool in) {partnersSet_=in;}
+
 private:
 
   /**
@@ -109,6 +119,11 @@ private:
    * Rotation to shower frame
    */
   LorentzRotation showerRot_;
+
+  /**
+   *  Whether or not partners are set
+   */
+  bool partnersSet_;
 
 };
 

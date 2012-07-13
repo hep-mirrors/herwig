@@ -19,6 +19,9 @@ set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/Evolver:MECorrMode 0
+
 ##################################################
 #  Create the Herwig analysis
 ##################################################

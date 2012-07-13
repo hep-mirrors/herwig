@@ -62,7 +62,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
       Axis axis(p_bb.vect().unit());
       LorentzRotation rot;
       if(axis.perp2()>0.) {
-	double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    	double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
     	rot.setRotate(-acos(axis.z()),
 		      Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     	vect.transform(rot);

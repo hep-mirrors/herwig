@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DzeroZpTAnalysis class.
+//
+#ifndef HEWIG_DzeroZpTAnalysis_FH
+#define HERWIG_DzeroZpTAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DzeroZpTAnalysis;
+
+}
+
+
+#endif

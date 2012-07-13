@@ -3,6 +3,7 @@ pkglib_LTLIBRARIES = HwPerturbativeDecay.la HwPerturbativeHiggsDecay.la
 HwPerturbativeDecay_la_SOURCES = \
  SMWDecayer.cc  SMWDecayer.h\
  SMZDecayer.cc  SMZDecayer.h\
+ SMZDecayerPOWHEG.h SMZDecayerPOWHEG.cc\
  SMTopDecayer.cc SMTopDecayer.h
 HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 

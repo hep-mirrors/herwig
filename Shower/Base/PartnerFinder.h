@@ -50,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0), _partnerMethod(0) {}
+  PartnerFinder() : _approach(0), _partnerMethod(0), QEDPartner_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -120,7 +120,29 @@ protected:
 					    const bool isDecayCase,
 					    const bool setPartners=true);
 
+  /**
+   *  Set initial scales for a QED interaction
+   */
+  virtual bool setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+					    const bool isDecayCase,
+					    const bool setPartners=true);
   //@}
+
+  /**
+   *  Find the QCD partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+  findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
+  /**
+   *  Find the QED partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<double, tShowerParticlePtr> > 
+  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
@@ -186,6 +208,10 @@ private:
    */
    int _partnerMethod;
 
+  /**
+   *  Choice for the QED radiation partner
+   */
+  int QEDPartner_;
 };
 
 }

@@ -33,26 +33,26 @@ namespace {
 
   // return colour line pointer 
   inline Ptr<ThePEG::ColourLine>::transient_pointer  
-  CL(const ShowerParticleVector::const_iterator & a, unsigned int index=0) {
-    return (*a)->colourInfo()->colourLines().empty() ? ThePEG::tColinePtr() :
-      const_ptr_cast<ThePEG::tColinePtr>((*a)->colourInfo()->colourLines()[index]);
+  CL(const tShowerParticlePtr a, unsigned int index=0) {
+    return a->colourInfo()->colourLines().empty() ? ThePEG::tColinePtr() :
+      const_ptr_cast<ThePEG::tColinePtr>(a->colourInfo()->colourLines()[index]);
   }
 
   // return colour line size
   inline unsigned int
-  CLSIZE(const ShowerParticleVector::const_iterator & a) {
-    return (*a)->colourInfo()->colourLines().size();
+  CLSIZE(const tShowerParticlePtr a) {
+    return a->colourInfo()->colourLines().size();
   }
   
   inline Ptr<ThePEG::ColourLine>::transient_pointer
-  ACL(const ShowerParticleVector::const_iterator & a, unsigned int index=0) {
-    return (*a)->colourInfo()->antiColourLines().empty() ?  ThePEG::tColinePtr() :
-      const_ptr_cast<ThePEG::tColinePtr>((*a)->colourInfo()->antiColourLines()[index]);
+  ACL(const tShowerParticlePtr a, unsigned int index=0) {
+    return a->colourInfo()->antiColourLines().empty() ?  ThePEG::tColinePtr() :
+      const_ptr_cast<ThePEG::tColinePtr>(a->colourInfo()->antiColourLines()[index]);
   }
 
   inline unsigned int
-  ACLSIZE(const ShowerParticleVector::const_iterator & a) {
-    return (*a)->colourInfo()->antiColourLines().size();
+  ACLSIZE(const tShowerParticlePtr a) {
+    return a->colourInfo()->antiColourLines().size();
   }
 }
 
@@ -94,18 +94,45 @@ void PartnerFinder::Init() {
      "Maximum",
      "Choose partner of gluon with largest angle.",
      1);
+
+  static Switch<PartnerFinder,int> interfaceQEDPartner
+    ("QEDPartner",
+     "Control of which particles to use as the partner for QED radiation",
+     &PartnerFinder::QEDPartner_, 0, false, false);
+  static SwitchOption interfaceQEDPartnerAll
+    (interfaceQEDPartner,
+     "All",
+     "Consider all possible choices which give a positive contribution"
+     " in the soft limit.",
+     0);
+  static SwitchOption interfaceQEDPartnerIIandFF
+    (interfaceQEDPartner,
+     "IIandFF",
+     "Only allow initial-initial or final-final combinations",
+     1);
+  static SwitchOption interfaceQEDPartnerIF
+    (interfaceQEDPartner,
+     "IF",
+     "Only allow initial-final combinations",
+     2);
+
 }
 
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
                                               const bool isDecayCase,
-#ifndef NDEBUG
                                               ShowerInteraction::Type type,
-#else
-                                              ShowerInteraction::Type,
-#endif
                                               const bool setPartners) {
-  assert(type==ShowerInteraction::QCD); 
-  return setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+  if(type==ShowerInteraction::QCD) {
+    return setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+  }
+  else if(type==ShowerInteraction::QED) {
+    return setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
+  }
+  else {
+    throw Exception() << "Must be either QCD or QED in "
+		      << "PartnerFinder::setInitialEvolutionScales()\n"
+		      << Exception::runerror;
+  }
 }
 
 bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
@@ -131,126 +158,17 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
     // without candidate colour partners, and that we will be treated a part later
     // (this means that no modifications of the following loop is needed!)
     ShowerParticleVector::const_iterator cit, cjt;
-    // Define variables needed for angular and radiation line analysis
-    double angle[2] = { 0.0, 0.0 }; 	
-    int radiationLine[2] = { 0, 0 };    
-    int ait = 0;    
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if(!(*cit)->data().coloured()) continue;
       // We now have a coloured particle
-      tShowerParticleVector partners;
-      if (_partnerMethod == 1){
- 	// Angular analysis need to be reset for each particle     
-	angle[0] = 0;
-	angle[1] = 0;	
-	radiationLine[0] = 0;
-	radiationLine[1] = 0;
-	ait = 0;	
-      }
-      for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
-	if(!(*cjt)->data().coloured()||cit==cjt) continue;
-	bool isPartner = false;
-	if(FS(*cit) != FS(*cjt)){
-          //loop over all the colours of both particles
-          for(unsigned int ix=0; ix<CLSIZE(cit); ++ix){
-            for(unsigned int jx=0; jx<CLSIZE(cjt); ++jx){
-              if((CL(cit,ix) && CL(cit,ix)==CL(cjt,jx))) {
-                isPartner = true; 
-	      }
-            }
-          }
-          if(!isPartner){
-            //loop over all the anti-colours of both particles
-            for(unsigned int ix=0; ix<ACLSIZE(cit); ++ix){
-              for(unsigned int jx=0; jx<ACLSIZE(cjt); ++jx){
-                if((ACL(cit,ix) && ACL(cit,ix)==ACL(cjt,jx))) {
-                  isPartner = true; 
-		}
-              }
-            }
-          }
-        }
-        else {
-          //loop over the colours of the first particle and the anti-colours of the other
-          for(unsigned int ix=0; ix<CLSIZE(cit); ++ix){
-            for(unsigned int jx=0; jx<ACLSIZE(cjt); ++jx){
-              if(CL(cit,ix) && CL(cit,ix)==ACL(cjt,jx)) {
-                isPartner = true;
-	      }
-            }
-          }
-          if(!isPartner){
-            //loop over the anti-colours of the first particle and the colours of the other
-            for(unsigned int ix=0; ix<ACLSIZE(cit); ++ix){
-              for(unsigned int jx=0; jx<CLSIZE(cjt); jx++){
-                if(ACL(cit,ix) && ACL(cit,ix)==CL(cjt,jx)) {
-                  isPartner = true;
-		}
-              }
-            }
-          }
-        }
-	if(isPartner) {
-	  if (_partnerMethod == 1 && ACLSIZE(cit)<=1&&CLSIZE(cjt)<=1) {
-	    // Find the angle to the potential partner
-	    angle[ait] = (*cit)->momentum().vect().angle((*cjt)->momentum().vect());	 
-	    // Find out which colour line is connected to the partner
-	    // Colour line has value 1, anti-colour line has value 2
-	    if( CL(cit) == CL(cjt) ||  CL(cit) == ACL(cjt)) radiationLine[ait] = 1;
-	    if(ACL(cit) == CL(cjt) || ACL(cit) == ACL(cjt)) radiationLine[ait] = 2;	
-	    ait++;
-	  }
-	  partners.push_back(*cjt);
-	}
-      }
-      if (partners.empty()) {
-        // special for RPV
-        tColinePtr col = CL(cit); 
-        if(FS(*cit)&&col&&col->sourceNeighbours().first) {
-          tColinePair cpair = col->sourceNeighbours();
-          for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-            if(( FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt)  == cpair.second))||
-               (!FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt) == cpair.second ))) {
-              partners.push_back(*cjt);
-            }
-          }
-        }
-        else if(col&&col->sinkNeighbours().first) {
-          tColinePair cpair = col->sinkNeighbours();
-          for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-            if(( FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt)  == cpair.second))||
-               (!FS(*cjt) && ( CL(cjt) == cpair.first ||  CL(cjt) == cpair.second))) {
-              partners.push_back(*cjt);    
-            }
-          }
-        }
-        col = ACL(cit);
-        if(FS(*cit)&&col&&col->sinkNeighbours().first) {
-          tColinePair cpair = col->sinkNeighbours();
-          for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-            if(( FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt)  == cpair.second))||
-               (!FS(*cjt) && ( CL(cjt) == cpair.first ||  CL(cjt) == cpair.second ))) {
-              partners.push_back(*cjt);  
-            }
-          }
-        }
-        else if(col&&col->sourceNeighbours().first) {
-          tColinePair cpair = col->sourceNeighbours();
-          for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-            if(( FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt) == cpair.second))||
-               (!FS(*cjt) && (ACL(cjt) == cpair.first ||ACL(cjt) == cpair.second))) {
-              partners.push_back(*cjt);     
-            }
-          }
-        }
-      }
-      
+      vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
+	findQCDPartners(*cit,particles);
       if(partners.empty()) {
         throw Exception() << "`Failed to make colour connections in " 
                           << "PartnerFinder::setQCDInitialEvolutionScales"
                           << (**cit)
                           << Exception::eventerror;
-      } 
+      }
       // In the case of more than one candidate colour partners,
       //	       there are now two approaches to choosing the partner. The
       //	       first method is based on two assumptions:
@@ -263,78 +181,90 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       //                  does not have to be necessarily "i".
       // 	      The second method always chooses the furthest partner
       //	      for hard gluons and gluinos.
-      
       // First make a random choice of partner
       int position = UseRandom::irnd(partners.size());   
       // Set the scale from the random partner
       pair<Energy,Energy> pairScales = 
-	calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position]),
+	calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position].second),
 					isDecayCase);
       pair<Energy,Energy> pairScales2;
+      // if taking one with largest angle
       if (_partnerMethod == 1){
-        // Override choice of partner  
-      	if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){     
-          // Parton is a hard octet
+        // Override choice of partner for octets
+       	if ( (*cit)->perturbative() == 1 && 
+	     getParticleData((*cit)->id())->iColour()==PDT::Colour8) {
 	  // Determine largest angle
-      	  if (angle[1]>0 && angle[0]<angle[1]) position=1;
-          else position=0;
+	  double maxAngle(0.);
+	  for(unsigned int ix=0;ix<partners.size();++ix) {
+	    double angle = (*cit)->momentum().vect().angle(partners[ix].second->momentum().vect());
+	    if(angle>maxAngle) {
+	      maxAngle = angle;
+	      position = ix;
+	    }
+	  }
 	}      
         // Override scale for hard octet
         if (position==1){
-	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1]),
+	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1].second),
 						       isDecayCase);
 	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){
 	    // Set the second scale for hard octets			
-	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0]),
+	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0].second),
 							  isDecayCase);  
 	  }
 	}
    	else {
-	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0]),
+	  pairScales = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[0].second),
 						       isDecayCase);
 	  if (getParticleData((*cit)->id())->iColour()==PDT::Colour8){	
 	    // Set the second scale for hard octets
-	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1]),
+	    pairScales2 = calculateInitialEvolutionScales(ShowerPPair(*cit,partners[1].second),
 							  isDecayCase);	
 	  }				
         }
         if ((*cit)->perturbative() == 1 && getParticleData((*cit)->id())->iColour()==PDT::Colour8){
 	  // Set radiation lines for hard octets
-	  (*cit)->setRadiationLine(radiationLine[position]);
+	  if(partners[position].first==ShowerPartnerType::QCDColourLine)
+	    (*cit)->radiationLine(1);
+	  else if(partners[position].first==ShowerPartnerType::QCDAntiColourLine)
+	    (*cit)->radiationLine(2);
+	  else
+	    assert(false);
 	  if( !(*cit)->progenitor() ){
 	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->setProgenitor(*cit);
+	    (*cit)->progenitor(*cit);
 	    // Set the second evolution scale of the progenitor
-	    (*cit)->setEvolutionScale2(pairScales2.first);
-	  }		
+	    (*cit)->evolutionScale2(pairScales2.first);
+	  }
 	}
-	else if ((*cit)->perturbative() == 1 && (getParticleData((*cit)->id())->iColour()==PDT::Colour3 ||
-						 getParticleData((*cit)->id())->iColour()==PDT::Colour3bar)){
+	else if ((*cit)->perturbative() == 1 && 
+		 (getParticleData((*cit)->id())->iColour()==PDT::Colour3 ||
+		  getParticleData((*cit)->id())->iColour()==PDT::Colour3bar)){
 	  // Set radiation lines for hard triplets
 	  if( !(*cit)->progenitor() ){
 	    // Set the hard partons to be the progenitors of the shower
-	    (*cit)->setProgenitor(*cit);
+	    (*cit)->progenitor(*cit);
 	    // Set the second evolution scale of the progenitor
-	    (*cit)->setEvolutionScale2(pairScales2.first);
+	    (*cit)->evolutionScale2(pairScales2.first);
 	    // Set the radiation line
-	    (*cit)->setRadiationLine(0);
+	    (*cit)->radiationLine(0);
 	  }		         
 	}
       }
 
       switch(_approach) {
       case 0: // Totally random (unless chosen above)
-	(*cit)->setEvolutionScale(pairScales.first);
-	(*cit)->setPartner(partners[position]);
+	(*cit)->evolutionScale(pairScales.first);
+	(*cit)->partner(partners[position].second);
 	break;
       case 1: // Partner is also set, if it has already been set, pick 50/50
         if(!(*cit)->partner() || UseRandom::rndbool()) {
-          (*cit)->setEvolutionScale(pairScales.first);
-          (*cit)->setPartner(partners[position]);
+          (*cit)->evolutionScale(pairScales.first);
+          (*cit)->partner(partners[position].second);
         }
-        if(!partners[position]->partner() || UseRandom::rndbool()) {
-          partners[position]->setEvolutionScale(pairScales.second);
-          partners[position]->setPartner(*cit);
+        if(!partners[position].second->partner() || UseRandom::rndbool()) {
+          partners[position].second->evolutionScale(pairScales.second);
+          partners[position].second->partner(*cit);
         }
         break;
       default:
@@ -353,7 +283,60 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
         calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
                                         isDecayCase);
-      (*cit)->setEvolutionScale(pairScales.first);
+      (*cit)->evolutionScale(pairScales.first);
+    }
+  }
+  return true;
+}
+
+bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+						 const bool isDecayCase,
+						 const bool setPartners) {
+  // set the partners and the scales
+  if(setPartners) {
+    ShowerParticleVector::const_iterator cit;
+    for(cit = particles.begin(); cit != particles.end(); ++cit) {
+      if(!(*cit)->data().charged()) continue;
+      // We now have a charged particle
+      vector<pair<double,tShowerParticlePtr> > partners = 
+	findQEDPartners(*cit,particles);
+      if(partners.empty()) {
+	throw Exception() << "Failed to partner in " 
+			  << "PartnerFinder::setQEDInitialEvolutionScales"
+			  << (**cit) << Exception::eventerror;
+      }
+      double prob(0.);
+      for(unsigned int ix=0;ix<partners.size();++ix) prob +=partners[ix].first;
+      prob *= UseRandom::rnd();
+      tShowerParticlePtr partner;
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	if(partners[ix].first>prob) {
+	  partner = partners[ix].second;
+	  break;
+	}
+	prob -= partners[ix].first;
+      }
+      if(!partner) 
+	throw Exception() << "Failed to partner in " 
+			  << "PartnerFinder::setQEDInitialEvolutionScales"
+			  << (**cit) << Exception::eventerror;
+      pair<Energy,Energy> pairScales = 
+	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
+					isDecayCase);
+      (*cit)->evolutionScale(pairScales.first);
+      (*cit)->partner(partner);
+    }
+  }
+  // partners all ready set only do the scales
+  else {
+    for(ShowerParticleVector::const_iterator cit = particles.begin();
+	cit != particles.end(); ++cit) {
+      if(!(**cit).dataPtr()->charged()) continue;
+      tShowerParticlePtr partner = (**cit).partner();
+      pair<Energy,Energy> pairScales = 
+	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
+					isDecayCase);
+      (*cit)->evolutionScale(pairScales.first);
     }
   }
   return true;
@@ -375,4 +358,119 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     return calculateInitialFinalScales(particlePair,isDecayCase);
   else
     return calculateInitialInitialScales(particlePair);
+}
+
+vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
+			       const ShowerParticleVector &particles) {
+  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners;
+  ShowerParticleVector::const_iterator cjt;
+  for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+    if(!(*cjt)->data().coloured() || particle==*cjt) continue;
+    // one initial-state and one final-state particle
+    if(FS(particle) != FS(*cjt)) {
+      // loop over all the colours of both particles
+      for(unsigned int ix=0; ix<CLSIZE(particle); ++ix) {
+	for(unsigned int jx=0; jx<CLSIZE(*cjt); ++jx) {
+	  if((CL(particle,ix) && CL(particle,ix)==CL(*cjt,jx))) {
+	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+	  }
+	}
+      }
+      //loop over all the anti-colours of both particles
+      for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix) {
+	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx) {
+	  if((ACL(particle,ix) && ACL(particle,ix)==ACL(*cjt,jx))) {
+	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
+	  }
+	}
+      }
+    }
+    // two initial-state or two final-state particles
+    else {
+      //loop over the colours of the first particle and the anti-colours of the other
+      for(unsigned int ix=0; ix<CLSIZE(particle); ++ix){
+	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx){
+	  if(CL(particle,ix) && CL(particle,ix)==ACL(*cjt,jx)) {
+	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+	  }
+	}
+      }
+      //loop over the anti-colours of the first particle and the colours of the other
+      for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix){
+	for(unsigned int jx=0; jx<CLSIZE(*cjt); jx++){
+	  if(ACL(particle,ix) && ACL(particle,ix)==CL(*cjt,jx)) {
+	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
+	  }
+	}
+      }
+    }
+  }
+  // if we haven't found any partners look for RPV
+  if (partners.empty()) {
+    // special for RPV
+    tColinePtr col = CL(particle); 
+    if(FS(particle)&&col&&col->sourceNeighbours().first) {
+      tColinePair cpair = col->sourceNeighbours();
+      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt)  == cpair.second))||
+	   (!FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt) == cpair.second ))) {
+	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+	}
+      }
+    }
+    else if(col&&col->sinkNeighbours().first) {
+      tColinePair cpair = col->sinkNeighbours();
+      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
+	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second))) {
+	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));    
+	}
+      }
+    }
+    col = ACL(particle);
+    if(FS(particle)&&col&&col->sinkNeighbours().first) {
+      tColinePair cpair = col->sinkNeighbours();
+      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
+	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second ))) {
+	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));  
+	}
+      }
+    }
+    else if(col&&col->sourceNeighbours().first) {
+      tColinePair cpair = col->sourceNeighbours();
+      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt) == cpair.second))||
+	   (!FS(*cjt) && (ACL(*cjt) == cpair.first ||ACL(*cjt) == cpair.second))) {
+	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));     
+	}
+      }
+    }
+  }
+  // return the partners
+  return partners;
+}
+
+vector< pair<double, tShowerParticlePtr> > 
+PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
+			       const ShowerParticleVector &particles) {
+  vector< pair<double, tShowerParticlePtr> > partners;
+  ShowerParticleVector::const_iterator cjt;
+  for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+    if(!(*cjt)->data().charged() || particle == *cjt) continue;
+    double charge = double(particle->data().iCharge()*(*cjt)->data().iCharge());
+    if( FS(particle) != FS(*cjt) ) charge *=-1.;
+    if( QEDPartner_ != 0 ) {
+      // only include II and FF as requested
+      if( QEDPartner_ == 1 && FS(particle) != FS(*cjt) )
+	continue;
+      // ony include IF is requested
+      else if(QEDPartner_ == 2 && FS(particle) == FS(*cjt) )
+	continue;
+    }
+    // only keep positive dipoles
+    if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
+  }
+  return partners;
 }

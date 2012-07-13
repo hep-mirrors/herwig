@@ -41,12 +41,12 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[ix]->showerParameters().resize(2);
   }
   if(angularOrder) {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+    theChildren[0]->evolutionScale(        dqtilde);
+    theChildren[1]->evolutionScale((1.-dz)*dqtilde);
   }
   else {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale(        dqtilde);
+    theChildren[0]->evolutionScale(        dqtilde);
+    theChildren[1]->evolutionScale(        dqtilde);
   }
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 
@@ -102,7 +102,7 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
     // reomved to make inverse recon work properly
-    //if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    //if(partner->thePEGBase()) ppartner=partner->thePEGBase()->momentum();
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
     pcm.boost(boost);

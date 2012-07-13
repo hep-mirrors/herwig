@@ -59,6 +59,31 @@ class ShowerParticle: public Particle {
 
 public:
 
+  /**
+   *  Struct for all the info on an evolution partner
+   */
+  struct EvolutionPartner {
+    /**
+     * The partner
+     */
+    tShowerParticlePtr partner;
+
+    /**
+     *  Weight
+     */
+    double weight;
+
+    /**
+     *  Type
+     */
+    ShowerPartnerType::Type type;
+
+    /**
+     *  The assoicated evolution scale
+     */
+    Energy scale;
+  };
+
   /** @name Construction and descruction functions. */
   //@{
 
@@ -142,7 +167,7 @@ public:
   /**
    * Set the ShowerKinematics object.
    */
-  void setShowerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
+  void showerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
   //@}
 
   /**
@@ -159,7 +184,7 @@ public:
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale
    */
-  void setEvolutionScale(Energy scale) { _scale = scale; }
+  void evolutionScale(Energy scale) { _scale = scale; }
 
   /**
    * Return the virtual mass\f$
@@ -169,19 +194,27 @@ public:
   /**
    *  Set the virtual mass
    */
-  void setVirtualMass(Energy mass) { _vMass = mass; }
+  void virtualMass(Energy mass) { _vMass = mass; }
 
   /** 
    * Return the partner
    */
   tShowerParticlePtr partner() const { return _partner; }
 
-
   /**
    * Set the partner
    */
-  void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
+  void partner(const tShowerParticlePtr partner) { _partner = partner; } 
 
+  /**
+   *  Get the possible partners 
+   */
+  vector<EvolutionPartner> partners() const { return partners_; }
+
+  /**
+   *  Add a possible partners 
+   */
+  void addPartner(const EvolutionPartner & in ) { partners_.push_back(in); }
 
   /**
    * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
@@ -191,7 +224,7 @@ public:
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
    */
-  void setEvolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
+  void evolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
   
   /**
    *  Return the radiation line of a gluon
@@ -203,7 +236,7 @@ public:
   /**
    *  Set the radiation line of a gluon
    */   
-  void setRadiationLine(int radiationLine) { _radiationLine = radiationLine; }
+  void radiationLine(int radiationLine) { _radiationLine = radiationLine; }
   
   
   /** 
@@ -215,7 +248,7 @@ public:
   /**
    * Set the progenitor of the shower
    */
-  void setProgenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
+  void progenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
     
 
   //@}
@@ -235,12 +268,12 @@ public:
   /**
    *  Get the flag
    */
-  bool isReconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
+  bool reconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
 
   /**
    *  Set the flag
    */
-  void setReconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
+  void reconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
   //@}
 
   /**
@@ -263,7 +296,7 @@ public:
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  const tcPPtr getThePEGBase() const { return _thePEGBase; }
+  const tcPPtr thePEGBase() const { return _thePEGBase; }
 
 protected:
 
@@ -367,6 +400,11 @@ private:
    *  Progenitor
    */   
   tShowerParticlePtr _progenitor;
+
+  /**
+   *  Partners
+   */
+  vector<EvolutionPartner> partners_;
     
 };
 

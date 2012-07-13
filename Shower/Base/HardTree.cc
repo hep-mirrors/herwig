@@ -15,22 +15,14 @@ HardTree::HardTree(vector<HardBranchingPtr> branchings,
 		   ShowerInteraction::Type type) 
   : interaction_(type),
     branchings_(branchings.begin(),branchings.end()),
-    spacelike_ (spacelike .begin(),spacelike .end())
+    spacelike_ (spacelike .begin(),spacelike .end()),
+    partnersSet_(false)
 {}
 
 bool HardTree::connect(ShowerTreePtr shower) {
   particles_.clear();
   // extract the progenitors from the ShowerTree
   vector<ShowerProgenitorPtr> progenitors = shower->extractProgenitors();
-  // KMH - 120809 - Added boolean vector to hold on to which progenitors have
-  // already been connected to a branching. If connectedProgenitors[ix] = true 
-  // it means progenitors[ix] was already connected to something and so it is
-  // skipped in the loop over progenitors. This guards against the possiblility
-  // of using the same progenitor twice. This can, wrongly, cause events to fail.
-  // This was noticed at a rate of around 1 event in 20 for Powheg ZZ production
-  // - both Z's would sometimes get associated with the same progenitor. There
-  // is still no doubt room for further improvement but using this bool vector
-  // already seemed like a good start.
   vector<bool> connectedProgenitors(progenitors.size(),false);
   // connect the trees up
   for( set<HardBranchingPtr>::iterator it = branchings().begin();
@@ -67,8 +59,8 @@ bool HardTree::connect(ShowerTreePtr shower) {
       partner->x(z);
     }
   }
-  assert( particles().size() == progenitors.size() );
-  return true;
+  if( particles().size() == progenitors.size() ) return  true;
+  else                                           return false;
 }
 
 ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
@@ -78,8 +70,10 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
     os << "Hard Particle: " << *(**it).branchingParticle() << " has Sudakov " 
        << (**it).sudakov() << " pT = " << (**it).pT()/GeV
        << " scale = " << (**it).scale()/GeV << "\n";
-    os << "It's colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
+    os << "Its colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
        <<  (**it).branchingParticle()->antiColourLine() << "\n";
+    os << "Its basis vectors are " << (**it).pVector()/GeV 
+       << " " << (**it).nVector()/GeV << "\n";
     for(unsigned int iy=0;iy<(**it).children().size();++iy) {
       os << "\t Children : " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";

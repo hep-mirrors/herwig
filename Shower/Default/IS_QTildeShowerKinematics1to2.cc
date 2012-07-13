@@ -52,11 +52,11 @@ updateParent(const tShowerParticlePtr theParent,
 	     const ShowerParticleVector & theChildren,
 	     bool angularOrder) const {
   // no z for angular ordering in backward branchings
-  theParent->setEvolutionScale(scale());
+  theParent->evolutionScale(scale());
   if(angularOrder)
-    theChildren[1]->setEvolutionScale((1.-z())*scale());
+    theChildren[1]->evolutionScale((1.-z())*scale());
   else
-    theChildren[1]->setEvolutionScale(scale());
+    theChildren[1]->evolutionScale(scale());
   // set proper colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
   // set proper parent/child relationships

@@ -61,6 +61,21 @@ void SplittingFunction::Init() {
      "6 -> 6 8",
      SextetSextetOctet);
   
+  static SwitchOption interfaceColourStructureChargedChargedNeutral
+    (interfaceColourStructure,
+     "ChargedChargedNeutral",
+     "q -> q 0",
+     ChargedChargedNeutral);
+  static SwitchOption interfaceColourStructureNeutralChargedCharged
+    (interfaceColourStructure,
+     "NeutralChargedCharged",
+     "0 -> q qbar",
+     NeutralChargedCharged);
+  static SwitchOption interfaceColourStructureChargedNeutralCharged
+    (interfaceColourStructure,
+     "ChargedNeutralCharged",
+     "q -> 0 q",
+     ChargedNeutralCharged);
 
   static Switch<SplittingFunction,ShowerInteraction::Type> 
     interfaceInteractionType
@@ -71,6 +86,9 @@ void SplittingFunction::Init() {
   static SwitchOption interfaceInteractionTypeQCD
     (interfaceInteractionType,
      "QCD","QCD",ShowerInteraction::QCD);
+  static SwitchOption interfaceInteractionTypeQED
+    (interfaceInteractionType,
+     "QED","QED",ShowerInteraction::QED);
 
 
   static Switch<SplittingFunction,int> interfaceSplittingColourMethod
@@ -134,11 +152,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addAntiColoured(first);
       }
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0);      
+      first->radiationLine(0);
+      second->radiationLine(0);      
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -161,11 +179,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addAntiColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==OctetOctetOctet) {
@@ -181,8 +199,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // progenitor it will only radiate from the chosen radiation
       // line. Otherwise the parent will radiate randomly.
       // Initializing radiation lines
-      first->setRadiationLine(0);
-      second->setRadiationLine(0);
+      first->radiationLine(0);
+      second->radiationLine(0);
       // Switch to choose random or non-random choice of lines
       bool randomchoice = 0;
       // Radiation line
@@ -253,11 +271,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
 	if (parent->radiationLine() == 1 || parent->radiationLine() == 2){
       	  // Set the radiation line for the children
-      	  first->setRadiationLine(radiationLine);
-	  second->setRadiationLine(0);
+      	  first->radiationLine(radiationLine);
+	  second->radiationLine(0);
 	  // Set the progenitors for the children
-	  first->setProgenitor(parent->progenitor());
-	  second->setProgenitor(parent->progenitor()); 
+	  first->progenitor(parent->progenitor());
+	  second->progenitor(parent->progenitor()); 
 	}    
       }            
     }
@@ -273,8 +291,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       // progenitor it will only radiate from the chosen radiation
       // line. Otherwise the parent will radiate randomly.           
       // Initializing radiation lines
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0);
+      parent->radiationLine(0);
+      second->radiationLine(0);
       // Switch to choose random or non-random choice of lines
       bool randomchoice = 0;
       // Radiation line
@@ -346,11 +364,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       if (_splittingColourMethod == 1 || _splittingColourMethod == 2){
         if (first->radiationLine() == 1 || first->radiationLine() == 2){
 	  // Set the radiation line for the children
-     	  parent->setRadiationLine(radiationLine);
-	  second->setRadiationLine(0);
+     	  parent->radiationLine(radiationLine);
+	  second->radiationLine(0);
 	  // Set the progenitors for the children
-	  parent->setProgenitor(first->progenitor());
-	  second->setProgenitor(first->progenitor()); 	  
+	  parent->progenitor(first->progenitor());
+	  second->progenitor(first->progenitor()); 	  
 	}   	      
       }
     }    
@@ -364,11 +382,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       cparent.first ->addColoured    ( first);
       cparent.second->addAntiColoured(second);
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      first->radiationLine(0);
+      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -391,11 +409,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         newline->addColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure == TripletOctetTriplet) {
@@ -420,11 +438,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 	newline->addAntiColoured(second);	
       }
       // Set progenitor
-      first->setProgenitor(parent->progenitor());
-      second->setProgenitor(parent->progenitor());
+      first->progenitor(parent->progenitor());
+      second->progenitor(parent->progenitor());
       // Random radiation choice
-      first->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      first->radiationLine(0);
+      second->radiationLine(0); 
     }
     else {
       ColinePair cfirst = ColinePair(first->colourLine(), 
@@ -441,11 +459,11 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
         cfirst.second->addAntiColoured(parent);
       }
       // Set progenitor
-      parent->setProgenitor(first->progenitor());
-      second->setProgenitor(first->progenitor());
+      parent->progenitor(first->progenitor());
+      second->progenitor(first->progenitor());
       // Random radiation choice
-      parent->setRadiationLine(0);
-      second->setRadiationLine(0); 
+      parent->radiationLine(0);
+      second->radiationLine(0); 
     }
   }
   else if(_colourStructure==SextetSextetOctet) {
@@ -537,6 +555,91 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
       }
     }   
   }
+  else if(_colourStructure == ChargedChargedNeutral) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(first);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(first);
+      }
+    }
+    else {
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // q -> q g
+      if(cfirst.first) {
+	cfirst.first->addColoured(parent);
+      }
+      // qbar -> qbar g
+      if(cfirst.second) {
+	cfirst.second->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(_colourStructure == ChargedNeutralCharged) {
+    if(!parent->data().coloured()) return;
+    if(!back) {
+      ColinePair cparent = ColinePair(parent->colourLine(), 
+				      parent->antiColourLine());
+      // q -> q g
+      if(cparent.first) {
+	cparent.first->addColoured(second);
+      }
+      // qbar -> qbar g
+      if(cparent.second) {
+	cparent.second->addAntiColoured(second);
+      }
+    }
+    else {
+      if (second->dataPtr()->iColour()==PDT::Colour3 ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addColoured(second);
+	newline->addColoured(parent);
+      }
+      else if (second->dataPtr()->iColour()==PDT::Colour3bar ) {
+	ColinePtr newline=new_ptr(ColourLine());
+	newline->addAntiColoured(second);
+	newline->addAntiColoured(parent);
+      }
+    }
+  }
+  else if(_colourStructure == NeutralChargedCharged ) {
+    if(!back) {
+      if(first->dataPtr()->coloured()) {
+	ColinePtr newline=new_ptr(ColourLine());
+	if(first->dataPtr()->iColour()==PDT::Colour3) {
+	  newline->addColoured    (first );
+	  newline->addAntiColoured(second);
+	}
+	else if (first->dataPtr()->iColour()==PDT::Colour3bar) {
+	  newline->addColoured    (second);
+	  newline->addAntiColoured(first );
+	}
+	else
+	  assert(false);
+      }
+    }
+    else {   
+      ColinePair cfirst = ColinePair(first->colourLine(), 
+				     first->antiColourLine());
+      // gamma -> q qbar
+      if(cfirst.first) {
+	cfirst.first->addAntiColoured(second);
+      }
+      // gamma -> qbar q
+      else if(cfirst.second) {
+	cfirst.second->addColoured(second);
+      }
+      else 
+	assert(false);
+    }
+  }
   else {
     assert(false);
   }
@@ -545,6 +648,8 @@ void SplittingFunction::colourConnection(tShowerParticlePtr parent,
 void SplittingFunction::doinit() {
   Interfaced::doinit();
   assert(_interactionType!=ShowerInteraction::UNDEFINED);
+  assert((_colourStructure>0&&_interactionType==ShowerInteraction::QCD) ||
+	 (_colourStructure<0&&_interactionType==ShowerInteraction::QED) );
   if(_colourFactor>0.) return;
   // compute the colour factors if need
   if(_colourStructure==TripletTripletOctet) {
@@ -561,6 +666,9 @@ void SplittingFunction::doinit() {
   }
   else if(_colourStructure==SextetSextetOctet) {
     _colourFactor = 10./3.;
+  }
+  else if(_colourStructure<0) {
+    _colourFactor = 1.;
   }
   else {
     assert(false);
@@ -602,7 +710,25 @@ bool SplittingFunction::checkColours(const IdList & ids) const {
     if((pd[0]->iColour()==PDT::Colour6 || pd[0]->iColour()==PDT::Colour6bar) &&
        pd[2]->iColour()==PDT::Colour8) return true;
     return false;
-  }    
+  }
+  else if(_colourStructure==ChargedChargedNeutral) {
+    if(ids[0]!=ids[1]) return false;
+    if(pd[2]->iCharge()!=0) return false;
+    if(pd[0]->iCharge()==pd[1]->iCharge()) return true;
+    return false;
+  }
+  else if(_colourStructure==ChargedNeutralCharged) {
+    if(ids[0]!=ids[2]) return false;
+    if(pd[1]->iCharge()!=0) return false;
+    if(pd[0]->iCharge()==pd[2]->iCharge()) return true;
+    return false;
+  }
+  else if(_colourStructure==NeutralChargedCharged) {
+    if(ids[1]!=-ids[2]) return false;
+    if(pd[0]->iCharge()!=0) return false;
+    if(pd[1]->iCharge()==-pd[2]->iCharge()) return true;
+    return false;
+  }
   else {
     assert(false);
   }

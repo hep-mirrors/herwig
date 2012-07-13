@@ -37,6 +37,7 @@ insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 #set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 #set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
 #insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
+#insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2ll
 
 
 ##################################################

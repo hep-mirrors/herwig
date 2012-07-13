@@ -168,7 +168,7 @@ using namespace Herwig;
 //     cerr << "testing ratio B " << old/test1 << "\n";
 //   }
 // }
-//}
+// }
 
 MEPP2HiggsVBF::MEPP2HiggsVBF() : comptonWeight_(8.), BGFWeight_(30.), 
 				 pTmin_(1.*GeV),initial_(10.),final_(8.),
@@ -351,7 +351,14 @@ void MEPP2HiggsVBF::Init() {
 
 }
 
-HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
+HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
+					   vector<ShowerInteraction::Type> inter) {
+  bool found = false;
+  // check if generating QCD radiation
+  for(unsigned int ix=0;ix<inter.size();++ix) {
+    found |= inter[ix]==ShowerInteraction::QCD;
+  }
+  if(!found) return HardTreePtr();
   pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
   pair<tcBeamPtr,tcBeamPtr> beams;
   pair<tPPtr,tPPtr> hadrons;
@@ -459,12 +466,12 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
     for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	  cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
       if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-	cit->first->maximumpT(pTmin_);
+	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
     }
     for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
 	  cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
       if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-	cit->first->maximumpT(pTmin_);
+	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
     }
     return HardTreePtr();
   }
@@ -600,7 +607,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
     if(cit->first->progenitor()==first.first) {
       ++cjt;++cjt;++cjt;
@@ -620,7 +627,7 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree) {
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if((*cjt)->branchingParticle()->isFinalState()&&
@@ -756,13 +763,9 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
   // electroweak parameters
-  //Energy2 mz2 = sqr(Z0()->mass());
-  //Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
-  //Energy2 mb2;
   // W
   if(partons_[system][0]->id()!=partons_[system][1]->id()) {
-    //mb2 = mw2;
     c0L = sqrt(0.5);
     c0R = 0;
     c1L = sqrt(0.5);
@@ -770,7 +773,6 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   }
   // Z
   else {
-    //mb2 = mz2;
     if(abs(partons_[system][0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
@@ -811,7 +813,6 @@ double MEPP2HiggsVBF::comptonME(unsigned int system, double xT,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  //Energy4 term1,term2,term3,loME;
   Energy4 term1,term2,loME;
   if(partons_[system][0]->id()>0) {
     if(partons_[system][2]->id()>0) {
@@ -966,13 +967,9 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   Lorentz5Momentum r2 =  p1/x2;
   Lorentz5Momentum r3 = -p2/x3;
   // electroweak parameters
-  //Energy2 mz2 = sqr(Z0()->mass());
-  //Energy2 mw2 = sqr(WPlus()->mass());
   double c0L,c1L,c0R,c1R;
-  //Energy2 mb2;
   // W
   if(partons_[system][0]->id()!=partons_[system][1]->id()) {
-    //mb2 = mw2;
     c0L = sqrt(0.5);
     c0R = 0;
     c1L = sqrt(0.5);
@@ -980,7 +977,6 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   }
   // Z
   else {
-    //mb2 = mz2;
     if(abs(partons_[system][0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
@@ -1021,7 +1017,6 @@ double MEPP2HiggsVBF::BGFME(unsigned int system, double xT,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  //Energy4 term1,term2,term3,loME;
   Energy4 term2,term3,loME;
   if(partons_[system][0]->id()>0) {
     if(partons_[system][2]->id()>0) {
@@ -1546,7 +1541,7 @@ bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(br.kinematics->scale());
+  parent->evolutionScale(br.kinematics->scale());
   return true;
 }
 

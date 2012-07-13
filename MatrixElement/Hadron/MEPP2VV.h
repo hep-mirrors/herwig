@@ -261,6 +261,12 @@ private:
    *  The matrix element
    */
   mutable ProductionMatrixElement me_;
+
+  /**
+   *  Interfaced flag to invoke debugging (comparison with MCFM).
+   */
+  unsigned int debugMCFM_;
+
 };
 
 }

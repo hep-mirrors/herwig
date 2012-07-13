@@ -95,7 +95,8 @@ public:
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
-				   pair<Energy,double> > & pt) const;
+				   pair<Energy,double> > & pt,
+				   ShowerInteraction::Type type) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -105,7 +106,8 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
+  virtual bool reconstructDecayJets(ShowerTreePtr decay,
+				    ShowerInteraction::Type type) const;
   //@}
 
   /**
@@ -228,7 +230,7 @@ protected:
    *  particles
    */
   void reconstructInitialInitialSystem(bool & applyBoost,
-				       LorentzRotation & toRest,
+				       LorentzRotation &   toRest,
 				       LorentzRotation & fromRest,
 				       vector<ShowerProgenitorPtr>) const;
   //@}
@@ -242,7 +244,7 @@ protected:
    *  Perform the inverse reconstruction of a system with only final-state
    *  particles
    */
-  void deconstructFinalStateSystem(const LorentzRotation & toRest,
+  void deconstructFinalStateSystem(const LorentzRotation &   toRest,
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
@@ -254,7 +256,7 @@ protected:
    *  particles
    */
   void deconstructInitialInitialSystem(bool & applyBoost,
-				       LorentzRotation & toRest,
+				       LorentzRotation &   toRest,
 				       LorentzRotation & fromRest,
 				       HardTreePtr,
 				       vector<HardBranchingPtr>,

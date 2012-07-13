@@ -517,12 +517,12 @@ void SMTopDecayer::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   for(cjt = tree->incomingLines().begin();
       cjt!= tree->incomingLines().end();++cjt) {
     if(abs(cjt->first->progenitor()->id())==6)
-      ktb=sqr(cjt->first->progenitor()->evolutionScale()/_mt); 
+      ktb=sqr(cjt->first->progenitor()->evolutionScale()/_mt);
   }
   for(cit = tree->outgoingLines().begin();
       cit!= tree->outgoingLines().end();++cit) {
     if(abs(cit->first->progenitor()->id())==5)
-      ktc=sqr(cit->first->progenitor()->evolutionScale()/_mt); 
+      ktc=sqr(cit->first->progenitor()->evolutionScale()/_mt);
   }
   if (ktb<=0.||ktc<=0.) {
     throw Exception() 
@@ -795,7 +795,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	  if(!veto) initial->highestpT(pt);
 	}
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(br.kinematics->scale());
+      if(veto) parent->evolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }
@@ -819,7 +819,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 			     << "\nz =  " << z  << "\nkappa = " << kappa
 			     << "\nxa = " << xa 
 			     << "\nroot^2= " << root;
-	  parent->setEvolutionScale(br.kinematics->scale());
+	  parent->evolutionScale(br.kinematics->scale());
 	  return true;
       } 
       root=sqrt(root);
@@ -843,7 +843,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not vetoed reset max
       if(!veto) initial->highestpT(pt);
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(br.kinematics->scale());
+      if(veto) parent->evolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }

@@ -31,6 +31,12 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/**\ingroup Shower
+ * Exception class
+ * used to communicate failure of QED shower
+ */
+struct InteractionVeto {};
+
 /** \ingroup Shower
  * The Evolver class class performs the sohwer evolution of hard scattering 
  * and decay processes in Herwig++.
@@ -61,6 +67,7 @@ public:
 	      _hardVetoRead(0), _reconOpt(0), _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
+	       interaction_(1),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
 	      _colourEvolutionMethod(0)
   {}
@@ -113,7 +120,7 @@ public:
   /**
    *  Connect the Hard and Shower trees
    */
-  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
+  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
 
 public:
 
@@ -455,22 +462,54 @@ protected:
   /**
    *  Vetos for the timelike shower
    */
-  virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr);
+  virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr,
+			      ShowerInteraction::Type);
 
   /**
    *  Vetos for the spacelike shower
    */
-  virtual bool spaceLikeVetoed(const Branching &,ShowerParticlePtr);
+  virtual bool spaceLikeVetoed(const Branching &,ShowerParticlePtr,
+			       ShowerInteraction::Type);
 
   /**
    *  Vetos for the spacelike shower
    */
-  virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
+  virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr,
+				    ShowerInteraction::Type);
 
   /**
    *  Only generate the hard emission, for testing only.
    */
   bool hardOnly() const {return _hardonly;}
+
+  /**
+   *  Members to construct the HardTree from the shower if needed
+   */
+  //@{
+  /**
+   *  Construct the tree for a scattering process
+   */
+  void constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			 ShowerInteraction::Type inter);
+
+  /**
+   *  Construct the tree for a decay process
+   */  
+  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			  ShowerInteraction::Type inter);
+
+  /**
+   *  Construct a time-like line
+   */
+  void constructTimeLikeLine(tHardBranchingPtr branch,tShowerParticlePtr particle);
+
+  /**
+   *  Construct a space-like line
+   */
+  void constructSpaceLikeLine(tShowerParticlePtr particle,
+			      HardBranchingPtr & first, HardBranchingPtr & last,
+			      SudakovPtr sud,PPtr beam);
+  //@}
 
 protected:
 
@@ -487,6 +526,18 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+  //@} 
+
+protected:
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -644,6 +695,16 @@ private:
    *  Number of FS emissions
    */
   unsigned int _nfs;
+
+  /**
+   *  The option for wqhich interactions to use
+   */
+  unsigned int interaction_;
+
+  /**
+   *  Interactions allowed in the shower
+   */
+  vector<ShowerInteraction::Type> interactions_;
 
   /**
    *  Only generate the emission from the hardest emission

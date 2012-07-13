@@ -36,7 +36,6 @@ public:
    */
   MEPP2HiggsPowheg();
 
-
 public:
 
   /** @name Virtual functions required by the MEBase class. */

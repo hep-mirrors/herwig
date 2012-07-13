@@ -9,6 +9,7 @@ $(top_builddir)/PDF/libHwMPIPDF.la
 HwShower_la_SOURCES =  \
 UEBase.h UEBase.cc UEBase.fh \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
+Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc
 
 
