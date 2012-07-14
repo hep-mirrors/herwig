@@ -186,7 +186,7 @@ public:
    * Return the evolution scale \f$\tilde{q}\f$, the first value
    * includes angular ordering, while the second does not.
    */
-  pair<Energy,Energy> evolutionScale(ShowerPartnerType::Type type,int ) const {
+  pair<Energy,Energy> evolutionScale(ShowerPartnerType::Type type) const {
     map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
       it = evolutionScales_.find(type);
     if(it!=evolutionScales_.end()) 
@@ -295,17 +295,6 @@ public:
    *  it came from
    */
   const tcPPtr thePEGBase() const { return _thePEGBase; }
-
-public:
-
-  /**
-   *  Members to be reomved, keep so code still compiles while working
-   */
-  //@{
-
-  Energy evolutionScale() const { assert(false); return ZERO; }
-  void evolutionScale(Energy ) { assert(false); }
-  //@}
 
 protected:
 

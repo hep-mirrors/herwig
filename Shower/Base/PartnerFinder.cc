@@ -244,7 +244,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       // leave them as is
       else {
 	for(unsigned int ix=0;ix<partners.size();++ix) {
-	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first,0);
+	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first);
 	  if(scales[ix].first<=scale.first)
 	    continue;
 	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
@@ -294,7 +294,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       // leave them as is
       else {
 	for(unsigned int ix=0;ix<partners.size();++ix) {
-	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first,0);
+	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first);
 	  if(scales[ix].first<=scale.first)
 	    continue;
 	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
@@ -340,7 +340,8 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
 					isDecayCase);
-      (*cit)->evolutionScale(pairScales.first);
+      assert(false);
+//       (*cit)->evolutionScale(pairScales.first);
       (*cit)->partner(partner);
     }
   }
@@ -353,7 +354,8 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
 					isDecayCase);
-      (*cit)->evolutionScale(pairScales.first);
+      assert(false);
+//       (*cit)->evolutionScale(pairScales.first);
     }
   }
   return true;
