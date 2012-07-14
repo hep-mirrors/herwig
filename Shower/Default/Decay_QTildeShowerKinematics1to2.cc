@@ -24,12 +24,7 @@ updateChildren(const tShowerParticlePtr parent,
 	       const ShowerParticleVector & children,
 	       ShowerPartnerType::Type partnerType, 
 	       bool angularOrder ) const {
-  assert(false);
   assert(children.size() == 2);
-  // copy scales etc
-  Energy dqtilde = scale();
-  double dz = z(); 
-  double dphi = phi();
   // set the values
   if(parent->showerVariables().empty()) {
     parent->showerVariables().resize(3);
@@ -40,25 +35,54 @@ updateChildren(const tShowerParticlePtr parent,
     children[ix]->showerVariables() .resize(3);
     children[ix]->showerParameters().resize(2);
   }
-  if(angularOrder) {
-    children[0]->evolutionScale(        dqtilde);
-    children[1]->evolutionScale((1.-dz)*dqtilde);
+  // angular-ordered scale for 2nd child
+  Energy AOScale = angularOrder ? (1.-z())*scale() : scale();
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	  it = parent->evolutionScales().begin();
+	it!=parent->evolutionScales().end();++it) {
+      children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
+						      min(scale(),it->second.second)));
+      if(it->first==ShowerPartnerType::QED) {
+	children[1]->evolutionScale(it->first,make_pair(min(AOScale,it->second.first ),
+							min(scale(),it->second.second)));
+      }
+    }
   }
+  // QCD
   else {
-    children[0]->evolutionScale(        dqtilde);
-    children[1]->evolutionScale(        dqtilde);
+    // scales for the emittor
+    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	  it = parent->evolutionScales().begin();
+	it!=parent->evolutionScales().end();++it) {
+      children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
+						      min(scale(),it->second.second)));
+    }
+    PDT::Colour emittedColour = children[1]->dataPtr()->iColour();
+    if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
+      children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
+				  make_pair(AOScale,scale()));
+    }
+    if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
+      children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
+				  make_pair(AOScale,scale()));
+    }
+    if(children[1]->dataPtr()->charged()) {
+      children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+    }
   }
   // determine alphas of children according to interpretation of z
-  children[0]->showerParameters()[0]=    dz *parent->showerParameters()[0]; 
-  children[1]->showerParameters()[0]=(1.-dz)*parent->showerParameters()[0];
-  children[0]->showerVariables()[0]=   pT()*cos(dphi) +     
-    dz *parent->showerVariables()[0];
-  children[0]->showerVariables()[1]=   pT()*sin(dphi) + 
-    dz *parent->showerVariables()[1];
-  children[1]->showerVariables()[0]= - pT()*cos(dphi) + 
-    (1.-dz)*parent->showerVariables()[0];
-  children[1]->showerVariables()[1]= - pT()*sin(dphi) + 
-    (1.-dz)*parent->showerVariables()[1];
+  children[0]->showerParameters()[0]=    z() *parent->showerParameters()[0]; 
+  children[1]->showerParameters()[0]=(1.-z())*parent->showerParameters()[0];
+  children[0]->showerVariables()[0]=   pT()*cos(phi()) +     
+    z() *parent->showerVariables()[0];
+  children[0]->showerVariables()[1]=   pT()*sin(phi()) + 
+    z() *parent->showerVariables()[1];
+  children[1]->showerVariables()[0]= - pT()*cos(phi()) + 
+    (1.-z())*parent->showerVariables()[0];
+  children[1]->showerVariables()[1]= - pT()*sin(phi()) + 
+    (1.-z())*parent->showerVariables()[1];
   for(unsigned int ix=0;ix<2;++ix)
     children[ix]->showerVariables()[2]=
       sqrt(sqr(children[ix]->showerVariables()[0])+

@@ -797,7 +797,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   // if not vetoed reset max
   if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->evolutionScale(br.kinematics->scale());
+  if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
   // return the veto
   return veto;
 }
@@ -984,8 +984,8 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   double contrib[2][2];
   // storage of the real emmision momenta
   vector<Lorentz5Momentum> realMomenta[2][2]=
-    {{vector<Lorentz5Momentum>(3),vector<Lorentz5Momentum>(3)},
-     {vector<Lorentz5Momentum>(3),vector<Lorentz5Momentum>(3)}};
+    {{vector<Lorentz5Momentum>(4),vector<Lorentz5Momentum>(4)},
+     {vector<Lorentz5Momentum>(4),vector<Lorentz5Momentum>(4)}};
   for(unsigned int ix=0;ix<2;++ix)
     for(unsigned int iy=0;iy<2;++iy)
       realMomenta[ix][iy][0] = loMomenta_[0];
@@ -1064,8 +1064,9 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
 			     -z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
 	}
 	// boost the momenta back to the lab
-	for(unsigned int iz=2;iz<4;++iz)
+	for(unsigned int iz=1;iz<4;++iz) {
 	  realMomenta[ix][iy][iz] *= eventFrame;
+	}
 	// jacobian and prefactors for the weight
 	Energy J = M/sqrt(xT2)*abs(-x1[ix][iy]*x2[ix][iy]+2.*mu22*x1[ix][iy]
 				   +x2[ix][iy]+x2[ix][iy]*mu12+mu22*x2[ix][iy]
@@ -1115,11 +1116,11 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;
   for(unsigned int ix=0;ix<partons_.size();++ix) {
-    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
+    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=1)));
     hardParticles.back()->set5Momentum(emmision[ix]);
   }
   ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
-  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
+  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[3]);
   parentMomentum.setMass(partons_[iemit]->mass());
   parent->set5Momentum(parentMomentum);
   // Create the vectors of HardBranchings to create the HardTree:
@@ -1142,6 +1143,8 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[3],
  						SudakovPtr(),HardBranchingPtr(),
  						HardBranching::Outgoing)));
+  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+		      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
   if(iemit==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
@@ -1199,8 +1202,9 @@ double SMZDecayer::meRatio(vector<cPDPtr> partons,
     double muj = momenta[1+iemit ].mass()/sqrt(Q2);
     double muk = momenta[1+ispect].mass()/sqrt(Q2);
     double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
-    double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
-      /(1.-y)/(1.-sqr(muj)-sqr(muk));
+    double v = sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk);
+    if(v<=0.) return 0.;
+    v  = sqrt(v)/(1.-y)/(1.-sqr(muj)-sqr(muk));
     // dipole term
     D[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
 			 -vt/v*(2.-z+sqr(momenta[1+iemit].mass())/pipj));
@@ -1236,7 +1240,7 @@ double SMZDecayer::meRatio(vector<cPDPtr> partons,
 
 Energy2 SMZDecayer::loME(const vector<cPDPtr> & partons, 
 			const vector<Lorentz5Momentum> & momenta,
-			bool first) const {
+			bool ) const {
   // compute the spinors
   vector<SpinorWaveFunction> aout;
   vector<SpinorBarWaveFunction>  fout;

@@ -132,6 +132,8 @@ generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
+  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+		      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
   allBranchings.push_back(emitterBranch);
   allBranchings.push_back(spectatorBranch);
   if(iemitter==1) swap(allBranchings[0],allBranchings[1]);

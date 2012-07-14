@@ -3988,6 +3988,8 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
   // it the other way round in accordance with PowhegEvolver::checkShowerMomentum.
   spacelikeSonBranching->addChild(motherBranching);
   spacelikeSonBranching->addChild(timelikeSonBranching);
+  spacelikeSonBranching->type(motherBranching->branchingParticle()->id()>0 ? 
+			      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
   motherBranching->colourPartner(spectatorBranching);
   spectatorBranching->colourPartner(motherBranching);
 

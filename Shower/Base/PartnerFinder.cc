@@ -227,7 +227,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       // set the evolution partner
       (*cit)->partner(partners[position].second);
       // store all the possible partners
-      assert((*cit)->partners().empty());
+      (*cit)->clearPartners();
       for(unsigned int ix=0;ix<partners.size();++ix) {
 	(**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
 							    1.,partners[ix].first,

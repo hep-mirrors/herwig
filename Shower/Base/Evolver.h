@@ -213,10 +213,10 @@ protected:
    * @param maxscale    The maximum scale for the shower.
    * @param minimumMass The minimum mass of the final-state system
    */
-  virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
-				    Energy maxscale,
-				    Energy minimumMass,
-				    ShowerInteraction::Type);
+  virtual bool 
+  spaceLikeDecayShower(tShowerParticlePtr particle,
+		       const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+		       Energy minimumMass,ShowerInteraction::Type);
 
   /**
    * Truncated shower from a time-like particle
@@ -236,8 +236,8 @@ protected:
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
-					     Energy maxscale, Energy minimumMass,
-					     HardBranchingPtr branch,
+					     const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+					     Energy minimumMass, HardBranchingPtr branch,
 					     ShowerInteraction::Type type);
   //@}
 
@@ -460,8 +460,9 @@ protected:
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
-					 ShowerInteraction::Type);
+  virtual bool 
+  startSpaceLikeDecayShower(const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+			    Energy minimumMass,ShowerInteraction::Type);
 
   /**
    *  Vetos for the timelike shower

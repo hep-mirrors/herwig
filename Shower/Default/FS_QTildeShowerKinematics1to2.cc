@@ -151,7 +151,7 @@ updateChildren(const tShowerParticlePtr parent,
       emitted->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[1],scale()));
     }
   }
-  // debugging printout ifd needed
+  // debugging printout if needed
   if(Debug::level >= 10 ) printScales(parent,children[0],children[1]);
   // determine alphas of children according to interpretation of z
   children[0]->showerParameters()[0]=     z() *parent->showerParameters()[0];

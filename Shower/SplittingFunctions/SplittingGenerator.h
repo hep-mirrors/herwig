@@ -103,7 +103,7 @@ public:
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
-				 Energy maxscale,
+				 const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
 				 Energy minmass,double enhance,
 				 ShowerInteraction::Type type) const; 
 

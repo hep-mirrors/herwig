@@ -643,8 +643,7 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
-		       ShowerPartnerType::QCDColourLine,br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
@@ -755,6 +754,8 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					    inBranch[iemit],HardBranching::Incoming)));
   inBranch[iemit]->addChild(hardBranch.back());
+  inBranch[iemit]->type(hardBranch.back()->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
   // create the branching for the emitted jet
   inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 						 inBranch[iemit],HardBranching::Outgoing)));

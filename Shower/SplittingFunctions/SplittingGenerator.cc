@@ -301,12 +301,14 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 }
 
 Branching SplittingGenerator::
-chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
+chooseDecayBranching(ShowerParticle &particle,
+		     const map<ShowerPartnerType::Type,pair<Energy,Energy> > & stoppingScales,
 		     Energy minmass, double enhance,
-		     ShowerInteraction::Type type) const {
+		     ShowerInteraction::Type interaction) const {
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
   SudakovPtr sudakov;
+  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
   IdList ids;
   // First, find the eventual branching, corresponding to the lowest scale.
   long index = abs(particle.data().id());
@@ -316,20 +318,100 @@ chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
-    if(type!=cit->second.first->interactionType()) continue;
+    // check either right interaction or doing both
+    if(interaction != cit->second.first->interactionType() &&
+       interaction != ShowerInteraction::Both ) continue;
+    // whether or not this interaction should be angular ordered
+    bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
-    if(particle.evolutionScale() < stoppingScale) 
-      newKin = cit->second.first->
-	generateNextDecayBranching(particle.evolutionScale(),
-				   stoppingScale,minmass,
-				   cit->second.second,
-				   particle.id()!=cit->first,enhance);
+    ShowerPartnerType::Type type;
+    // work out which starting scale we need
+    if(cit->second.first->interactionType()==ShowerInteraction::QED) {
+      type = ShowerPartnerType::QED;
+      map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	it=stoppingScales.find(type);
+      if(it==stoppingScales.end()) continue;
+      Energy stoppingScale = angularOrdered ? it->second.first : it->second.second;
+      if(particle.evolutionScale(angularOrdered,type) < stoppingScale ) { 
+	newKin = cit->second.first->
+	  generateNextDecayBranching(particle.evolutionScale(angularOrdered,type),
+				     stoppingScale,minmass,cit->second.second,
+				     particle.id()!=cit->first,enhance);
+	cerr << "testing in QED " << particle << "\n";
+	assert(false);
+      }
+    }
+    else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
+      // special for octets
+      if(particle.dataPtr()->iColour()==PDT::Colour8) {
+	map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	  it=stoppingScales.find(ShowerPartnerType::QCDColourLine);
+	if(it==stoppingScales.end()) continue;
+	Energy stoppingColour = angularOrdered ? it->second.first : it->second.second;
+	it=stoppingScales.find(ShowerPartnerType::QCDAntiColourLine);
+	Energy stoppingAnti = angularOrdered ? it->second.first : it->second.second;
+	// octet -> octet octet
+	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
+	  type = ShowerPartnerType::QCDColourLine;
+	  newKin= cit->second.first->	
+	    generateNextDecayBranching(particle.evolutionScale(angularOrdered,type),
+				       stoppingColour,minmass,
+				       cit->second.second,
+				       particle.id()!=cit->first,0.5*enhance);
+	  ShoKinPtr newKin2 = cit->second.first->
+	    generateNextDecayBranching(particle.evolutionScale(angularOrdered,
+							       ShowerPartnerType::QCDAntiColourLine),
+				       stoppingAnti,minmass,
+				       cit->second.second,
+				       particle.id()!=cit->first,0.5*enhance);
+	  // pick the one with the lowest scale
+	  if( (newKin&&newKin2&&newKin2->scale()<newKin->scale()) ||
+	      (!newKin&&newKin2) ) {
+	    newKin = newKin2;
+	    type = ShowerPartnerType::QCDAntiColourLine;
+	  }
+	}
+	// other
+	else {
+	  Energy startingScale = 
+	    min(particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDColourLine),
+		particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDAntiColourLine));
+	  newKin = cit->second.first->
+	    generateNextDecayBranching(startingScale,
+				       max(stoppingColour,stoppingAnti),minmass,
+				       cit->second.second,
+				       particle.id()!=cit->first,enhance);
+	  type = cit->second.second[0]<0 ? 
+	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	}
+      }
+      // everything else
+      else {
+	type = particle.hasColour() ? 
+	  ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+	  it=stoppingScales.find(type);
+	if(it==stoppingScales.end()) continue;
+	Energy stoppingScale = angularOrdered ? it->second.first : it->second.second;
+	if(particle.evolutionScale(angularOrdered,type) < stoppingScale ) { 
+	  newKin = cit->second.first->
+	    generateNextDecayBranching(particle.evolutionScale(angularOrdered,type),
+				       stoppingScale,minmass,cit->second.second,
+				       particle.id()!=cit->first,enhance);
+	}
+      }
+    }
+    // shouldn't be anything else
+    else
+      assert(false);
     if(!newKin) continue;
-    if(newKin->scale() < newQ && newKin->scale() > particle.evolutionScale()) {
+    // select highest scale
+    if(newKin->scale() < newQ ) {
       newQ = newKin->scale();
       ids = cit->second.second;
       kinematics=newKin;
       sudakov=cit->second.first;
+      partnerType = type;
     }
   }
   // return empty branching if nothing happened
@@ -338,8 +420,7 @@ chooseDecayBranching(ShowerParticle &particle, Energy stoppingScale,
   // initialize the branching
   kinematics->initialize(particle,PPtr());
   // and return it
-  assert(false);
-  return Branching(kinematics, ids,sudakov,ShowerPartnerType::Undefined);
+  return Branching(kinematics, ids,sudakov,partnerType);
 }
 
 Branching SplittingGenerator::

@@ -670,18 +670,18 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 }
 
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
-				   Energy maxscale,
+				   const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
 				   Energy minmass,ShowerInteraction::Type type) {
   Branching fb;
   while (true) {
-    fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
+    fb=_splittingGenerator->chooseDecayBranching(*particle,maxScales,minmass,
 						 _initialenhance,type);
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break
     if(!spaceLikeDecayVetoed(fb,particle,type)) break;
     // otherwise reset scale and continue
-    particle->evolutionScale(fb.kinematics->scale());
+    particle->vetoEmission(fb.type,fb.kinematics->scale());
   }
   // has emitted
   // Assign the shower kinematics to the emitting particle.
@@ -710,7 +710,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   _currenttree->updateInitialStateShowerProduct(_progenitor,theChildren[0]);
   _currenttree->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
   // shower the first  particle
-  spaceLikeDecayShower(theChildren[0],maxscale,minmass,type);
+  spaceLikeDecayShower(theChildren[0],maxScales,minmass,type);
   // shower the second particle
   timeLikeShower(theChildren[1],type,true);
   // branching has happened
@@ -819,8 +819,9 @@ bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
     spaceLikeShower(progenitor()->progenitor(),parent,type);
 }
 
-bool Evolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
-					ShowerInteraction::Type type) {
+bool Evolver::
+startSpaceLikeDecayShower(const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+			  Energy minimumMass,ShowerInteraction::Type type) {
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -828,12 +829,12 @@ bool Evolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
     if( mit != eit && mit->second->parent() ) {
       HardBranchingPtr branch=mit->second;
       while(branch->parent()) branch=branch->parent();
-      return truncatedSpaceLikeDecayShower(progenitor()->progenitor(),maxscale,
+      return truncatedSpaceLikeDecayShower(progenitor()->progenitor(),maxScales,
 					   minimumMass, branch ,type);
     }
   }
   return  hardOnly() ? false :
-    spaceLikeDecayShower(progenitor()->progenitor(),maxscale,minimumMass,type);
+    spaceLikeDecayShower(progenitor()->progenitor(),maxScales,minimumMass,type);
 }
 
 bool Evolver::timeLikeVetoed(const Branching & fb,
@@ -1173,19 +1174,19 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       // if doesn't carry most of momentum
       if(type==branch->sudakov()->interactionType() &&
 	 zsplit < 0.5) {
-	particle->evolutionScale(bb.kinematics->scale() );
+	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
       // others
       if( part[0]->id() != particle->id() || // if particle changes type
 	  bb.kinematics->pT() > progenitor()->maximumpT(type) ||   // pt veto
 	  bb.kinematics->scale() < branch->scale()) { // angular ordering veto
-	particle->evolutionScale(bb.kinematics->scale() );
+	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
       // and those from the base class
       if(spaceLikeVetoed(bb,particle,type)) {
-	particle->evolutionScale(bb.kinematics->scale() );
+	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
       break;
@@ -1211,7 +1212,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
     particle->showerKinematics()->
-      updateParent( newParent, theChildren, bb.type,
+      updateParent( newParent, theChildren, branch->type(),
 		    type==branch->sudakov()->interactionType() );
     // update the history if needed
     currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
@@ -1293,7 +1294,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 }
 
 bool Evolver::
-truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
+truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, 
+			      const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
 			      Energy minmass, HardBranchingPtr branch,
 			      ShowerInteraction::Type type) {
   Branching fb;
@@ -1302,7 +1304,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   while (true) {
     // no truncated shower break
     if(!isTruncatedShowerON()||hardOnly()) break;
-    fb=splittingGenerator()->chooseDecayBranching(*particle,maxscale,minmass,1.,type);
+    fb=splittingGenerator()->chooseDecayBranching(*particle,maxScales,minmass,1.,type);
     // return if no radiation
     if(!fb.kinematics) break;
     // check haven't evolved too far
@@ -1331,29 +1333,29 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
     // apply the vetos for the truncated shower
     // no flavour changing branchings
     if(iout==0) {
-      particle->evolutionScale(fb.kinematics->scale());
+      particle->vetoEmission(fb.type,fb.kinematics->scale());
       continue;
     }
     double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
     if(type==branch->sudakov()->interactionType()) {
       if(zsplit < 0.5 || // hardest line veto
 	 fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
-	particle->evolutionScale(fb.kinematics->scale());
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
     }
     // pt veto
     if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
-      particle->evolutionScale(fb.kinematics->scale());
+      particle->vetoEmission(fb.type,fb.kinematics->scale());
       continue;
     }
     // should do base class vetos as well
     // if not vetoed break
     if(!spaceLikeDecayVetoed(fb,particle,type)) break;
     // otherwise reset scale and continue
-    particle->evolutionScale(fb.kinematics->scale());
+    particle->vetoEmission(fb.type,fb.kinematics->scale());
   }
-  // if no branching set decay matrix and return
+  // if no branching insert hard emission and continue
   if(!fb.kinematics) {
     // construct the kinematics for the hard emission
     ShoKinPtr showerKin=
@@ -1361,7 +1363,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
 					      branch->children()[0]->z(),
 					      branch->phi(),
 					      branch->children()[0]->pT());
-    particle->evolutionScale(branch->scale() );
+    particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
     showerKin->initialize( *particle,PPtr() );
     IdList idlist(3);
     idlist[0] = particle->id();
@@ -1390,10 +1392,10 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
       currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
       // shower the space-like particle
       if( branch->children()[0]->children().empty() ) {
-	if( ! hardOnly() ) spaceLikeDecayShower(theChildren[0],maxscale,minmass,type);
+	if( ! hardOnly() ) spaceLikeDecayShower(theChildren[0],maxScales,minmass,type);
       }
       else {
-	truncatedSpaceLikeDecayShower( theChildren[0],maxscale,minmass,
+	truncatedSpaceLikeDecayShower( theChildren[0],maxScales,minmass,
 				       branch->children()[0],type);
       }
       // shower the second particle
@@ -1410,10 +1412,10 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
       currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
       // shower the space-like particle
       if( branch->children()[1]->children().empty() ) {
-	if( ! hardOnly() ) spaceLikeDecayShower(theChildren[1],maxscale,minmass,type);
+	if( ! hardOnly() ) spaceLikeDecayShower(theChildren[1],maxScales,minmass,type);
       }
       else {
-	truncatedSpaceLikeDecayShower( theChildren[1],maxscale,minmass,
+	truncatedSpaceLikeDecayShower( theChildren[1],maxScales,minmass,
 				       branch->children()[1],type);
       }
       // shower the second particle
@@ -1443,7 +1445,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   currentTree()->updateInitialStateShowerProduct(progenitor(),theChildren[0]);
   currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
   // shower the first  particle
-  truncatedSpaceLikeDecayShower(theChildren[0],maxscale,minmass,branch,type);
+  truncatedSpaceLikeDecayShower(theChildren[0],maxScales,minmass,branch,type);
   // shower the second particle
   timeLikeShower(theChildren[1],type,true);
   // branching has happened
@@ -1953,15 +1955,25 @@ void Evolver::doShowering(bool hard) {
 	  }
 	  // decay
 	  else {
-	    // perform shower
-	    // set the scales correctly. The current scale is the maximum scale for
-	    // emission not the starting scale
-	    Energy maxscale=progenitor()->progenitor()->evolutionScale();
-	    Energy startScale=progenitor()->progenitor()->mass();
-	    progenitor()->progenitor()->evolutionScale(startScale);
+	    // skip colour and electrically neutral particles
+	    if(!progenitor()->progenitor()->dataPtr()->coloured() &&
+	       !progenitor()->progenitor()->dataPtr()->charged()) {
+	      progenitor()->hasEmitted(false);
+	      continue;
+	    }
+ 	    // perform shower
+ 	    // set the scales correctly. The current scale is the maximum scale for
+ 	    // emission not the starting scale
+	    map<ShowerPartnerType::Type,pair<Energy,Energy> > 
+	      maxScales = progenitor()->progenitor()->evolutionScales();
+	    // starting scale is mass
+ 	    Energy startScale=progenitor()->progenitor()->mass();
+	    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::iterator it=maxScales.begin();
+		it!=maxScales.end();++it) 
+	      progenitor()->progenitor()->evolutionScale(it->first,make_pair(startScale,startScale));
 	    // perform the shower
-	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
-							       interactions_[inter])); 
+	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
+							       interactions_[inter]));
 	  }
 	}
       }

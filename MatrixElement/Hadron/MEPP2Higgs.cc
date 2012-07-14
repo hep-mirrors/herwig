@@ -854,7 +854,7 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->evolutionScale(br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
@@ -951,16 +951,23 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
   newparticles.back()->set5Momentum(poff);
   vector<HardBranchingPtr> inBranch,hardBranch; // create the branchings for the incoming particles
   inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
+					   HardBranchingPtr(),HardBranching::Incoming)));
   inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
+					   HardBranchingPtr(),HardBranching::Incoming)));
   // create the branching for the emitted jet
   inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-						 inBranch[iemit],HardBranching::Outgoing)));
+						  inBranch[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
   hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					    inBranch[iemit],HardBranching::Incoming)));
+					     inBranch[iemit],HardBranching::Incoming)));
   inBranch[iemit]->addChild(hardBranch.back());
+  if(newparticles[3]->id()<0||
+     (newparticles[3]->id()==ParticleID::g&&UseRandom::rndbool())) {
+    inBranch[iemit]->type(ShowerPartnerType::QCDColourLine);
+  }
+  else {
+    inBranch[iemit]->type(ShowerPartnerType::QCDAntiColourLine);
+  }
   // set the colour partners
   hardBranch.back()->colourPartner(inBranch[iemit==0 ? 1 : 0]);
   inBranch[iemit==0 ? 1 : 0]->colourPartner(hardBranch.back());
@@ -968,7 +975,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
   hardBranch.push_back(inBranch[iemit==0 ? 1 : 0]);
   // outgoing Higgs boson
   hardBranch.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-					    HardBranchingPtr(),HardBranching::Outgoing)));
+					     HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
   HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings

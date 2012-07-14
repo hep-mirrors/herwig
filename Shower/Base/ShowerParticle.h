@@ -256,6 +256,11 @@ public:
    *  Add a possible partners 
    */
   void addPartner(const EvolutionPartner & in ) { partners_.push_back(in); }
+
+  /**
+   *  Clear the evolution partners
+   */
+  void clearPartners() { partners_.clear(); }
     
   /** 
    * Return the progenitor of the shower
