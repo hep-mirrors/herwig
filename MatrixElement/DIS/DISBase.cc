@@ -699,7 +699,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->evolutionScale(br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
@@ -981,6 +981,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
       HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),spaceBranch,
 					       HardBranching::Outgoing)));
       spaceBranch->addChild(g);
+      spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),
 						       HardBranchingPtr(),
 						       HardBranching::Outgoing)));
@@ -1012,6 +1014,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
 						       HardBranching::Outgoing)));
       offBranch->addChild(outBranch);
       offBranch->addChild(g);
+      offBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		       ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);	 
@@ -1042,6 +1046,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
 						HardBranching::Outgoing)));
     spaceBranch->addChild(offBranch);
     spaceBranch->addChild(qbar);
+    spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		     ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
     HardBranchingPtr outBranch(new_ptr(HardBranching(newq,SudakovPtr(),
 						     HardBranchingPtr(),
 						     HardBranching::Outgoing)));
@@ -1092,34 +1098,6 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
       }
     }
   }
-  // set the evolution partners and scales
-  ShowerParticleVector particles;
-  for(set<HardBranchingPtr>::iterator cit=newTree->branchings().begin();
-      cit!=newTree->branchings().end();++cit) {
-    particles.push_back((*cit)->branchingParticle());
-  }
-//   evolver()->showerModel()->partnerFinder()->
-//     setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
-//   // Calculate the shower variables:
-//   evolver()->showerModel()->kinematicsReconstructor()->
-//     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
-//   for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin(); 
-//       cjt!=newTree->branchings().end();++cjt) { 
-//     if(cjt==newTree->branchings().begin()) { 
-//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
-//       ++cjt; 
-//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
-//       ++cjt;
-//     } 
-//     // incoming 
-//     if((**cjt).status()==HardBranching::Incoming) { 
-//       quark[0]->set5Momentum((**cjt).showerMomentum()); 
-//     } 
-//     // outgoing 
-//     else { 
-//       quark[1]->set5Momentum((**cjt).showerMomentum()); 
-//     } 
-//   } 
   return newTree;
 }
 
