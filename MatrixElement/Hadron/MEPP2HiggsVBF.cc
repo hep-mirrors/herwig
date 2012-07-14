@@ -532,6 +532,8 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
       HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),spaceBranch,
 					       HardBranching::Outgoing)));
       spaceBranch->addChild(g);
+      spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),
 						       HardBranchingPtr(),
 						       HardBranching::Outgoing)));
@@ -557,6 +559,8 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
 						       HardBranching::Outgoing)));
       offBranch->addChild(outBranch);
       offBranch->addChild(g);
+      offBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		       ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);
@@ -587,6 +591,8 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
 						HardBranching::Outgoing)));
     spaceBranch->addChild(offBranch);
     spaceBranch->addChild(qbar);
+    spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		     ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
     HardBranchingPtr outBranch(new_ptr(HardBranching(newq,SudakovPtr(),
 						     HardBranchingPtr(),
 						     HardBranching::Outgoing)));
@@ -1541,7 +1547,7 @@ bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->evolutionScale(br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
