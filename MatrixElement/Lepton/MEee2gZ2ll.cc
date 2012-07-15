@@ -388,6 +388,7 @@ HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,
   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[4],
  						SudakovPtr(),HardBranchingPtr(),
  						HardBranching::Outgoing)));
+  emitterBranch->type(ShowerPartnerType::QED);
   if(iemit==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
@@ -726,6 +727,9 @@ Energy MEee2gZ2ll::generateHard(ShowerTreePtr tree,
   }
   // now pick the emmision with highest pT
   Energy pTemit(ZERO);
+  // no emission
+  if(pT[0]<ZERO&&pT[1]<ZERO) return -GeV;
+  // which one emitted
   if(pT[0]>pT[1]) {
     iemit  = 2;
     ispect = 3;

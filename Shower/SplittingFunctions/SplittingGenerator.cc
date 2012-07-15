@@ -229,8 +229,6 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	generateNextTimeBranching(particle.evolutionScale(angularOrdered,type), 
 				  cit->second.second,particle.id()!=cit->first,
 				  enhance);
-      cerr << "testing in QED " << particle << "\n";
-      assert(false);
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
       // special for octets
