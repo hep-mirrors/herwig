@@ -35,43 +35,9 @@ updateChildren(const tShowerParticlePtr parent,
     children[ix]->showerVariables() .resize(3);
     children[ix]->showerParameters().resize(2);
   }
-  // angular-ordered scale for 2nd child
-  Energy AOScale = angularOrder ? (1.-z())*scale() : scale();
-  // QED
-  if(partnerType==ShowerPartnerType::QED) {
-    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-	  it = parent->evolutionScales().begin();
-	it!=parent->evolutionScales().end();++it) {
-      children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
-						      min(scale(),it->second.second)));
-      if(it->first==ShowerPartnerType::QED) {
-	children[1]->evolutionScale(it->first,make_pair(min(AOScale,it->second.first ),
-							min(scale(),it->second.second)));
-      }
-    }
-  }
-  // QCD
-  else {
-    // scales for the emittor
-    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-	  it = parent->evolutionScales().begin();
-	it!=parent->evolutionScales().end();++it) {
-      children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
-						      min(scale(),it->second.second)));
-    }
-    PDT::Colour emittedColour = children[1]->dataPtr()->iColour();
-    if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
-      children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
-				  make_pair(AOScale,scale()));
-    }
-    if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
-      children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-				  make_pair(AOScale,scale()));
-    }
-    if(children[1]->dataPtr()->charged()) {
-      children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
-    }
-  }
+  // calculate the scales
+  splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
+				     children[0],children[1]);
   // determine alphas of children according to interpretation of z
   children[0]->showerParameters()[0]=    z() *parent->showerParameters()[0]; 
   children[1]->showerParameters()[0]=(1.-z())*parent->showerParameters()[0];

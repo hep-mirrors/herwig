@@ -513,22 +513,23 @@ void SMTopDecayer::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
   // of the dead zone.
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cjt;
-  for(cjt = tree->incomingLines().begin();
-      cjt!= tree->incomingLines().end();++cjt) {
-    if(abs(cjt->first->progenitor()->id())==6)
-      _ktb=sqr(cjt->first->progenitor()->
-	      evolutionScale(true,cjt->first->progenitor()->id()>0 ?
-			     ShowerPartnerType::QCDColourLine :
-			     ShowerPartnerType::QCDAntiColourLine)/_mt);
-  }
-  for(cit = tree->outgoingLines().begin();
-      cit!= tree->outgoingLines().end();++cit) {
-    if(abs(cit->first->progenitor()->id())==5)
-      _ktc=sqr(cit->first->progenitor()->
-	      evolutionScale(true,cit->first->progenitor()->id()>0 ?
-			     ShowerPartnerType::QCDColourLine :
-			     ShowerPartnerType::QCDAntiColourLine)/_mt);
-  }
+  // for(cjt = tree->incomingLines().begin();
+  //     cjt!= tree->incomingLines().end();++cjt) {
+  //   if(abs(cjt->first->progenitor()->id())==6)
+  //     _ktb=sqr(cjt->first->progenitor()->
+  // 	      evolutionScale(true,cjt->first->progenitor()->id()>0 ?
+  // 			     ShowerPartnerType::QCDColourLine :
+  // 			     ShowerPartnerType::QCDAntiColourLine)/_mt);
+  // }
+  // for(cit = tree->outgoingLines().begin();
+  //     cit!= tree->outgoingLines().end();++cit) {
+  //   if(abs(cit->first->progenitor()->id())==5)
+  //     _ktc=sqr(cit->first->progenitor()->
+  // 	      evolutionScale(true,cit->first->progenitor()->id()>0 ?
+  // 			     ShowerPartnerType::QCDColourLine :
+  // 			     ShowerPartnerType::QCDAntiColourLine)/_mt);
+  // }
+  assert(false);
   if (_ktb<=0.||_ktc<=0.) {
     throw Exception() 
       << "SMTopDecayer::applyHardMatrixElementCorrection()"

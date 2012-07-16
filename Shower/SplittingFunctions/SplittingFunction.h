@@ -217,6 +217,38 @@ public:
    */
   bool angularOrdered() const {return angularOrdered_;}
 
+  /**
+   *  Functions to state scales after branching happens
+   */
+  //@{
+  /**
+   *  Sort out scales for final-state emission
+   */
+  void evaluateFinalStateScales(ShowerPartnerType::Type type,
+				Energy scale, double z,
+				tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second);
+
+  /**
+   *  Sort out scales for initial-state emission
+   */
+  void evaluateInitialStateScales(ShowerPartnerType::Type type,
+				  Energy scale, double z,
+				  tShowerParticlePtr parent,
+				  tShowerParticlePtr first,
+				  tShowerParticlePtr second);
+
+  /**
+   *  Sort out scales for decay emission
+   */
+  void evaluateDecayScales(ShowerPartnerType::Type type,
+			   Energy scale, double z,
+			   tShowerParticlePtr parent,
+			   tShowerParticlePtr first,
+			   tShowerParticlePtr second);
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

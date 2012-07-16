@@ -92,6 +92,51 @@ public:
     Energy scale;
   };
 
+  /**
+   *  Struct to store the evolution scales
+   */
+  struct EvolutionScales {
+
+    /**
+     *  Constructor
+     */
+    EvolutionScales() : QED(),QCD_c(),QCD_ac(),
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
+    {}
+
+    /**
+     *  QED scale
+     */
+    Energy QED;
+
+    /**
+     * QCD colour scale
+     */
+    Energy QCD_c;
+
+    /**
+     *  QCD anticolour scale
+     */
+    Energy QCD_ac;
+
+    /**
+     *  QED scale
+     */
+    Energy QED_noAO;
+
+    /**
+     * QCD colour scale
+     */
+    Energy QCD_c_noAO;
+
+    /**
+     *  QCD anticolour scale
+     */
+    Energy QCD_ac_noAO;
+
+  };
+
+
   /** @name Construction and descruction functions. */
   //@{
 
@@ -183,49 +228,19 @@ public:
    */
   //@{
   /**
-   * Return the evolution scale \f$\tilde{q}\f$, the first value
-   * includes angular ordering, while the second does not.
-   */
-  pair<Energy,Energy> evolutionScale(ShowerPartnerType::Type type) const {
-    map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-      it = evolutionScales_.find(type);
-    if(it!=evolutionScales_.end()) 
-      return it->second;
-    else
-      return make_pair(ZERO,ZERO); 
-  }
-
-  /**
-   * Return the evolution scale \f$\tilde{q}\f$
-   */
-  Energy evolutionScale(bool AO, ShowerPartnerType::Type type) const {
-    map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-      it = evolutionScales_.find(type);
-    if(it!=evolutionScales_.end()) {
-      return AO ? it->second.first : it->second.second;
-    }
-    else
-      return ZERO;
-  }
-
-  /**
    *  Veto emission at a given scale 
    */
   void vetoEmission(ShowerPartnerType::Type type, Energy scale);
 
   /**
-   *  Set the evolution \f$\tilde{q}\f$ scale
+   *  Access to the evolution scales
    */
-  void evolutionScale(ShowerPartnerType::Type type, pair<Energy,Energy> scale) {
-    evolutionScales_[type] = scale;
-  }
+  const EvolutionScales & scales() const {return scales_;} 
 
   /**
-   *  Access to the map of evolution scales
+   *  Access to the evolution scales
    */
-  map<ShowerPartnerType::Type,pair<Energy,Energy> > & evolutionScales() {
-    return evolutionScales_;
-  }
+  EvolutionScales & scales() {return scales_;} 
 
   /**
    * Return the virtual mass\f$
@@ -362,7 +377,7 @@ private:
   /**
    *  Storage of the evolution scales
    */
-  map<ShowerPartnerType::Type ,pair<Energy,Energy> > evolutionScales_;
+  EvolutionScales scales_;
 
   /**
    *  Virtual mass

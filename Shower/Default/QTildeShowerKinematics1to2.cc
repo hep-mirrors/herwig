@@ -106,27 +106,28 @@ sudakov2Momentum(double alpha, double beta, Energy px,
 void QTildeShowerKinematics1to2::printScales(tShowerParticlePtr parent,
 					     tShowerParticlePtr child1,
 					     tShowerParticlePtr child2) const {
-  CurrentGenerator::log() << *parent << "\n" << *child1 << " "
-			  << *child2 << "\n";
-  CurrentGenerator::log() << "testing parent\n";
-  for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-	it = parent->evolutionScales().begin();
-      it!=parent->evolutionScales().end();++it) {
-    CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
-			    << it->second.second/GeV << "\n";
-  }
-  CurrentGenerator::log() << "testing child[0]\n";
-  for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-	it = child1->evolutionScales().begin();
-      it!=child1->evolutionScales().end();++it) {
-    CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
-			    << it->second.second/GeV << "\n";
-  }
-  CurrentGenerator::log() << "testing child[1]\n";
-  for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-	it = child2->evolutionScales().begin();
-      it!=child2->evolutionScales().end();++it) {
-    CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
-			    << it->second.second/GeV << "\n";
-  }
+  assert(false);
+  // CurrentGenerator::log() << *parent << "\n" << *child1 << " "
+  // 			  << *child2 << "\n";
+  // CurrentGenerator::log() << "testing parent\n";
+  // for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+  // 	it = parent->evolutionScales().begin();
+  //     it!=parent->evolutionScales().end();++it) {
+  //   CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
+  // 			    << it->second.second/GeV << "\n";
+  // }
+  // CurrentGenerator::log() << "testing child[0]\n";
+  // for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+  // 	it = child1->evolutionScales().begin();
+  //     it!=child1->evolutionScales().end();++it) {
+  //   CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
+  // 			    << it->second.second/GeV << "\n";
+  // }
+  // CurrentGenerator::log() << "testing child[1]\n";
+  // for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
+  // 	it = child2->evolutionScales().begin();
+  //     it!=child2->evolutionScales().end();++it) {
+  //   CurrentGenerator::log() << it->first << " " << it->second.first/GeV << " " 
+  // 			    << it->second.second/GeV << "\n";
+  // }
 }

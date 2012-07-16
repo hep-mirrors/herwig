@@ -1044,7 +1044,8 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 						     branch->children()[0]->z(),
 						     branch->phi(),
 						     branch->children()[0]->pT());
-      particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
+      // particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
+      assert(false);
       showerKin->initialize( *particle,PPtr() );
       IdList idlist(3);
       idlist[0] = particle->id();
@@ -1367,7 +1368,8 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 					      branch->children()[0]->z(),
 					      branch->phi(),
 					      branch->children()[0]->pT());
-    particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
+    // particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
+    assert(false);
     showerKin->initialize( *particle,PPtr() );
     IdList idlist(3);
     idlist[0] = particle->id();
@@ -2009,13 +2011,15 @@ void Evolver::doShowering(bool hard) {
  	    // perform shower
  	    // set the scales correctly. The current scale is the maximum scale for
  	    // emission not the starting scale
-	    map<ShowerPartnerType::Type,pair<Energy,Energy> > 
-	      maxScales = progenitor()->progenitor()->evolutionScales();
-	    // starting scale is mass
- 	    Energy startScale=progenitor()->progenitor()->mass();
-	    for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::iterator it=maxScales.begin();
-		it!=maxScales.end();++it) 
-	      progenitor()->progenitor()->evolutionScale(it->first,make_pair(startScale,startScale));
+	    map<ShowerPartnerType::Type,pair<Energy,Energy> > maxScales;
+	    // map<ShowerPartnerType::Type,pair<Energy,Energy> > 
+	    //   maxScales = progenitor()->progenitor()->evolutionScales();
+	    // // starting scale is mass
+ 	    // Energy startScale=progenitor()->progenitor()->mass();
+	    // for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::iterator it=maxScales.begin();
+	    // 	it!=maxScales.end();++it) 
+	    //   progenitor()->progenitor()->evolutionScale(it->first,make_pair(startScale,startScale));
+	    assert(false);
 	    // perform the shower
 	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
 							       interactions_[inter]));
