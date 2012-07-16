@@ -250,12 +250,12 @@ public:
   /**
    *  Get the possible partners 
    */
-  vector<EvolutionPartner> partners() const { return partners_; }
+  vector<EvolutionPartner> & partners() { return partners_; }
 
   /**
    *  Add a possible partners 
    */
-  void addPartner(const EvolutionPartner & in ) { partners_.push_back(in); }
+  void addPartner(EvolutionPartner in );
 
   /**
    *  Clear the evolution partners

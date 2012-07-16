@@ -20,6 +20,7 @@
 #include "ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Utilities/Debug.h"
 
 using namespace Herwig;
 
@@ -127,24 +128,44 @@ void PartnerFinder::Init() {
 
 }
 
-bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
-                                              const bool isDecayCase,
-                                              ShowerInteraction::Type type,
-                                              const bool setPartners) {
+void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
+					      const bool isDecayCase,
+					      ShowerInteraction::Type type,
+					      const bool setPartners) {
+  // clear the existing partners
+  for(ShowerParticleVector::const_iterator cit = particles.begin();
+      cit != particles.end(); ++cit) (*cit)->clearPartners();
+  // set them
   if(type==ShowerInteraction::QCD) {
-    return setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+    setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
   }
   else if(type==ShowerInteraction::QED) {
-    return setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
+    setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
   }
   else {
-    throw Exception() << "Must be either QCD or QED in "
-		      << "PartnerFinder::setInitialEvolutionScales()\n"
-		      << Exception::runerror;
+    setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+    setInitialQEDEvolutionScales(particles,isDecayCase,false);
+  }
+  // print out for debugging
+  if(Debug::level>=10) {
+    for(ShowerParticleVector::const_iterator cit = particles.begin();
+	cit != particles.end(); ++cit) {
+      generator()->log() << "Particle: " << **cit << "\n";
+      if(!(**cit).partner()) continue;
+      generator()->log() << "Primary partner: " << *(**cit).partner() << "\n";
+      for(vector<ShowerParticle::EvolutionPartner>::const_iterator it= (**cit).partners().begin();
+	  it!=(**cit).partners().end();++it) {
+	generator()->log() << it->type << " " << it->weight << " " 
+			   << it->scale/GeV << " " 
+ 			   << *(it->partner) 
+			   << "\n";
+      }
+    }
+    generator()->log() << flush;
   }
 }
 
-bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
+void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
                                                  const bool isDecayCase,
                                                  const bool setPartners) {
   // set the partners and the scales
@@ -226,8 +247,6 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	assert(false);
       // set the evolution partner
       (*cit)->partner(partners[position].second);
-      // store all the possible partners
-      (*cit)->clearPartners();
       for(unsigned int ix=0;ix<partners.size();++ix) {
 	(**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
 							    1.,partners[ix].first,
@@ -303,10 +322,9 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       }
     }
   }
-  return true;
 }
 
-bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
   // loop over all the particles
@@ -328,7 +346,7 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     for(unsigned int ix=0;ix<partners.size();++ix) partners[ix].first /= prob;
     // set the partner if required
     int position(-1);
-    if(setPartners) {
+    if(setPartners||!(*cit)->partner()) {
       prob = UseRandom::rnd();
       for(unsigned int ix=0;ix<partners.size();++ix) {
  	if(partners[ix].first>prob) {
@@ -359,7 +377,6 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 						       isDecayCase));
     }
     // store all the possible partners
-    (*cit)->clearPartners(); 
     for(unsigned int ix=0;ix<partners.size();++ix) {
       (**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
 							  partners[ix].first,
@@ -370,7 +387,6 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
     (**cit).evolutionScale(ShowerPartnerType::QED,scalePair);
   }
-  return true;
 }
 
 pair<Energy,Energy> PartnerFinder::

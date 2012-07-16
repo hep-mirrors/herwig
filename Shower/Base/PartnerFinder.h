@@ -75,7 +75,7 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    * @param setPartners Whether to set the colour partners or just the scales
    */
-  virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
+  virtual void setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
 					 ShowerInteraction::Type,
 					 const bool setPartners=true);
@@ -116,14 +116,14 @@ protected:
   /**
    *  Set initial scales for a QCD interaction
    */
-  virtual bool setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
+  virtual void setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
 					    const bool isDecayCase,
 					    const bool setPartners=true);
 
   /**
    *  Set initial scales for a QED interaction
    */
-  virtual bool setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+  virtual void setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
 					    const bool isDecayCase,
 					    const bool setPartners=true);
   //@}

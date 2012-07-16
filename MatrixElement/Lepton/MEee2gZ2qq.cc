@@ -812,6 +812,11 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     = generateHard(tree,emmision,iemit,ispect,false,inter);
   Energy pTveto = output.first;
   ShowerInteraction::Type force = output.second;
+  // incoming progenitors
+  ShowerProgenitorPtr 
+    ePProgenitor = tree->incomingLines().begin() ->first,
+    eMProgenitor = tree->incomingLines().rbegin()->first;
+  if(eMProgenitor->id()<0) swap(eMProgenitor,ePProgenitor);
   // outgoing progenitors
   ShowerProgenitorPtr 
     qkProgenitor = tree->outgoingLines().begin() ->first,
@@ -889,6 +894,14 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
 					  force));
   hardtree->partnersSet(true);
   // Connect the particles with the branchings in the HardTree
+  hardtree->connect( eMProgenitor->progenitor(), allBranchings[0] );
+  tPPtr beam = eMProgenitor->original();
+  if(!beam->parents().empty()) beam = beam->parents()[0];
+  allBranchings[0]->beam(beam);
+  hardtree->connect( ePProgenitor->progenitor(), allBranchings[1] );
+  beam = ePProgenitor->original();
+  if(!beam->parents().empty()) beam = beam->parents()[0];
+  allBranchings[1]->beam(beam);
   hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
   hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
   // colour flow

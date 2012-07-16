@@ -13,6 +13,7 @@
 
 #include "ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -40,4 +41,8 @@ void ShowerParticle::vetoEmission(ShowerPartnerType::Type type, Energy scale) {
       if(it->second.second>scale) it->second.second = scale;
     }
   }
+}
+
+void ShowerParticle::addPartner(EvolutionPartner in ) {
+  partners_.push_back(in); 
 }

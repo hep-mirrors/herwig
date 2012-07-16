@@ -952,10 +952,14 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 void Evolver::hardestEmission(bool hard) {
   if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
       (_decayme && _decayme->hasPOWHEGCorrection())) {
-    if(_hardme)
+    if(_hardme) {
+      assert(hard);
       _hardtree =  _hardme->generateHardest( currentTree(),interactions_ );
-    else
+    }
+    else {
+      assert(!hard);
       _hardtree = _decayme->generateHardest( currentTree() );
+    }
     if(!_hardtree) return;
     // join up the two trees
     connectTrees(currentTree(),_hardtree,hard);
@@ -1671,6 +1675,49 @@ void Evolver::constructTimeLikeLine(tHardBranchingPtr branch,
       branch->addChild(newBranch);
     }
   }
+  // sort out the type of interaction
+  if(!branch->children().empty()) {
+    if(branch->branchingParticle()->id()==ParticleID::gamma ||
+       branch->children()[0]->branchingParticle()->id()==ParticleID::gamma ||
+       branch->children()[1]->branchingParticle()->id()==ParticleID::gamma)
+      branch->type(ShowerPartnerType::QED);
+    else {
+      if(branch->branchingParticle()->id()==
+	 branch->children()[0]->branchingParticle()->id()) {
+	if(branch->branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
+	  tShowerParticlePtr emittor = 
+	    branch->branchingParticle()->showerKinematics()->z()>0.5 ?
+	    branch->children()[0]->branchingParticle() : 
+	    branch->children()[1]->branchingParticle();
+	  if(branch->branchingParticle()->colourLine()==emittor->colourLine())
+	    branch->type(ShowerPartnerType::QCDAntiColourLine);
+	  else if(branch->branchingParticle()->antiColourLine()==emittor->antiColourLine())
+	    branch->type(ShowerPartnerType::QCDColourLine);
+	  else
+	    assert(false);
+	}
+	else if(branch->branchingParticle()->colourLine()) {
+	  branch->type(ShowerPartnerType::QCDColourLine);
+	}
+	else if(branch->branchingParticle()->antiColourLine()) {
+	  branch->type(ShowerPartnerType::QCDAntiColourLine);
+	}
+	else
+	  assert(false);
+      }
+      else if(branch->branchingParticle()->id()==ParticleID::g &&
+	      branch->children()[0]->branchingParticle()->id()== 
+	      -branch->children()[1]->branchingParticle()->id()) {
+	if(branch->branchingParticle()->showerKinematics()->z()>0.5)
+	  branch->type(ShowerPartnerType::QCDAntiColourLine);
+	else
+	  branch->type(ShowerPartnerType::QCDColourLine);
+	
+      }
+      else
+	assert(false);
+    }
+  }
 }
 
 void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
@@ -1887,11 +1934,9 @@ void Evolver::doShowering(bool hard) {
     }
   }
   // check if interactions in right order
-  if(hardTree()) {
-    if(hardTree()->interaction()!=interactions_[0]) {
-      showerOrder = false;
-      swap(interactions_[0],interactions_[1]);
-    }
+  if(hardTree() && hardTree()->interaction()!=interactions_[0]) {
+    showerOrder = false;
+    swap(interactions_[0],interactions_[1]);
   }
   // loop over possible interactions
   for(unsigned int inter=0;inter<interactions_.size();++inter) {
