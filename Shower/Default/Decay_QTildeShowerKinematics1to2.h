@@ -50,12 +50,10 @@ public:
    * @param parent The branching particle
    * @param children The particles produced in the branching
    * @param partnerType The type of evolution partner
-   * @param angularOrder Whether or not to apply angular ordering
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType, 
-			       bool angularOrder ) const;
+			       ShowerPartnerType::Type partnerType) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics

@@ -22,8 +22,7 @@ using namespace Herwig;
 void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType, 
-	       bool angularOrder) const {
+	       ShowerPartnerType::Type partnerType) const {
   assert(children.size()==2);
   // resize the parameter vectors
   if(parent->showerVariables().empty()) {
@@ -147,8 +146,7 @@ void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
-						 ShowerPartnerType::Type, 
-						 bool) const {
+						 ShowerPartnerType::Type) const {
   IdList ids(3);
   ids[0] = parent->id();
   ids[1] = children[0]->id();

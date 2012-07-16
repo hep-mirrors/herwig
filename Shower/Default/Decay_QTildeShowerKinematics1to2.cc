@@ -22,8 +22,7 @@ using namespace Herwig;
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType, 
-	       bool angularOrder ) const {
+	       ShowerPartnerType::Type partnerType) const {
   assert(children.size() == 2);
   // set the values
   if(parent->showerVariables().empty()) {

@@ -518,8 +518,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
     theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true)));
     // update the children
-    particle->showerKinematics()->updateChildren(particle, theChildren,
-						 fb.type,true);
+    particle->showerKinematics()->
+      updateChildren(particle, theChildren,fb.type);
     // update number of emissions
     ++_nfs;
     if(_limitEmissions!=0) return true;
@@ -530,8 +530,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // that's if for old approach
     if(_reconOpt==0) break;
     // branching has happened
-    particle->showerKinematics()->updateParent(particle, theChildren,
-					       fb.type,true);
+    particle->showerKinematics()->
+      updateParent(particle, theChildren,fb.type);
     // clean up the vetoed emission
     if(particle->virtualMass()==ZERO) {
       particle->showerKinematics(ShoKinPtr());
@@ -594,8 +594,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   theChildren.push_back(particle); 
   theChildren.push_back(otherChild);
   //this updates the evolution scale
-  particle->showerKinematics()->updateParent(newParent, theChildren,
-					     bb.type,true);
+  particle->showerKinematics()->
+    updateParent(newParent, theChildren,bb.type);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
@@ -617,8 +617,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 				kt.first*sin(kt.second));
     }
   }
-  particle->showerKinematics()->updateChildren(newParent, theChildren,
-					       bb.type,true);
+  particle->showerKinematics()->
+    updateChildren(newParent, theChildren,bb.type);
   if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,true);
@@ -702,8 +702,8 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
   theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
   // some code moved to updateChildren
-  particle->showerKinematics()->updateChildren(particle, theChildren,
-					       fb.type,true);
+  particle->showerKinematics()->
+    updateChildren(particle, theChildren, fb.type);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
   // update the history if needed
@@ -1063,8 +1063,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       theChildren.push_back(new_ptr(ShowerParticle(branch->children()[1]->
 						   branchingParticle()->dataPtr(),true)));
       particle->showerKinematics()->
-	updateChildren(particle, theChildren,fb.type,
-		       type==branch->sudakov()->interactionType());
+	updateChildren(particle, theChildren,fb.type);
       // shower the first  particle
       if( branch->children()[0]->children().empty() ) {
 	if( ! hardOnly() )
@@ -1084,8 +1083,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       // that's if for old approach
       if(_reconOpt==0) return true;
       // branching has happened
-      particle->showerKinematics()->updateParent(particle, theChildren,
-						 fb.type,true);
+      particle->showerKinematics()->updateParent(particle, theChildren,fb.type);
       // clean up the vetoed emission
       if(particle->virtualMass()==ZERO) {
 	particle->showerKinematics(ShoKinPtr());
@@ -1107,7 +1105,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     theChildren.push_back( new_ptr( ShowerParticle( pdata[0], true ) ) ); 
     theChildren.push_back( new_ptr( ShowerParticle( pdata[1], true ) ) );
     particle->showerKinematics()->
-      updateChildren( particle, theChildren , fb.type, true);
+      updateChildren( particle, theChildren , fb.type);
     // shower the first  particle
     if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
     else            timeLikeShower( theChildren[0]  , type,false);
@@ -1117,7 +1115,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     // that's if for old approach
     if(_reconOpt==0) return true;
     // branching has happened
-    particle->showerKinematics()->updateParent(particle, theChildren,fb.type,true);
+    particle->showerKinematics()->updateParent(particle, theChildren,fb.type);
     // clean up the vetoed emission
     if(particle->virtualMass()==ZERO) {
       particle->showerKinematics(ShoKinPtr());
@@ -1215,8 +1213,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
     particle->showerKinematics()->
-      updateParent( newParent, theChildren, branch->type(),
-		    type==branch->sudakov()->interactionType() );
+      updateParent( newParent, theChildren, branch->type());
     // update the history if needed
     currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
     currentTree()->addInitialStateBranching( particle, newParent, otherChild );
@@ -1244,8 +1241,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       }
     }
     particle->showerKinematics()->
-      updateChildren( newParent, theChildren,bb.type,
-		      type==branch->sudakov()->interactionType() );
+      updateChildren( newParent, theChildren,bb.type);
     if(hardOnly()) return true;
     // perform the shower of the final-state particle
     if( timelike->children().empty() ) {
@@ -1267,8 +1263,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   ShowerParticleVector theChildren; 
   theChildren.push_back( particle ); 
   theChildren.push_back( otherChild );
-  particle->showerKinematics()->updateParent( newParent, theChildren ,
-					      bb.type, true);
+  particle->showerKinematics()->
+    updateParent( newParent, theChildren, bb.type);
   // update the history if needed
   currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
   currentTree()->addInitialStateBranching( particle, newParent, otherChild );
@@ -1288,8 +1284,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 				 kt.first*sin( kt.second ) );
     }
   }
-  particle->showerKinematics()->updateChildren( newParent, theChildren ,
-						bb.type, true);
+  particle->showerKinematics()->
+    updateChildren( newParent, theChildren, bb.type);
   // perform the shower of the final-state particle
   timeLikeShower( otherChild , type,true);
   // return the emitted
@@ -1388,8 +1384,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
     theChildren.push_back(new_ptr(ShowerParticle(branch->children()[1]->
 						 branchingParticle()->dataPtr(),true)));
     particle->showerKinematics()->
-      updateChildren(particle, theChildren,fb.type,
-		     type==branch->sudakov()->interactionType());
+      updateChildren(particle, theChildren,fb.type);
     if(theChildren[0]->id()==particle->id()) {
       // update the history if needed
       currentTree()->updateInitialStateShowerProduct(progenitor(),theChildren[0]);
@@ -1442,7 +1437,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   ShowerParticleVector theChildren; 
   theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
   theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true)));
-  particle->showerKinematics()->updateChildren(particle, theChildren,fb.type,true);
+  particle->showerKinematics()->updateChildren(particle, theChildren,fb.type);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
   // update the history if needed
