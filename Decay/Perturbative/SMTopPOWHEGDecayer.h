@@ -83,22 +83,23 @@ protected:
   /**
    *  Calculate matrix element ratio B/R
    */
-  InvEnergy2 matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
+  double matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
 
 protected:
 
   /**
    *  Calculate momenta of t, b, W, g
    */
-  bool calcMomenta(int j, Energy pT, double y, double phi, double& x_g, 
-		   double& x_w, vector<Lorentz5Momentum>& particleMomenta);
+  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
+		   double& xw, double& xb, double& xb_z, 
+		   vector<Lorentz5Momentum>& particleMomenta);
 
 protected:
 
   /**
    *  Check the calculated momenta are physical
    */
-  bool psCheck(double x_g, double x_w);
+  bool psCheck(double xg, double xw);
 
 protected:
 
@@ -131,6 +132,16 @@ private:
    * Reduced bottom mass
    */
   double b_;
+
+  /**
+   *  Reduced \f$W^\pm\f$ mass squared
+   */
+  double w2_;
+
+  /**
+   * Reduced bottom mass squared
+   */
+  double b2_;
 
   /**
    *  Minimum \f$p_T\f$

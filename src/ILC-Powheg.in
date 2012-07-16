@@ -49,6 +49,7 @@ set PowhegMEee2gZ2qq:MaximumFlavour 6
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
+
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
@@ -57,7 +58,7 @@ set LEPGenerator:MaxErrors 10000
 ##################################################
 # ILC physics parameters (override defaults) 
 ##################################################
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 360.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################
