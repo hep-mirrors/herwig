@@ -381,10 +381,9 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 							  ShowerPartnerType::QED,
 							  scales[ix].first));
     }
-    // set scales 
-    // pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
-    // (**cit).evolutionScale(ShowerPartnerType::QED,scalePair);
-    assert(false);
+    // set scales
+    (**cit).scales().QED      = scales[position].first;
+    (**cit).scales().QED_noAO = scales[position].first;
   }
 }
 
