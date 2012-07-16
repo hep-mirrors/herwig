@@ -607,128 +607,145 @@ bool SplittingFunction::checkColours(const IdList & ids) const {
   return false;
 }
 
-void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type type,
+namespace {
+
+  bool hasColour(tPPtr p) {
+    PDT::Colour colour = p->dataPtr()->iColour();
+    return colour==PDT::Colour3 || colour==PDT::Colour8 || colour == PDT::Colour6;
+  }
+
+  bool hasAntiColour(tPPtr p) {
+    PDT::Colour colour = p->dataPtr()->iColour();
+    return colour==PDT::Colour3bar || colour==PDT::Colour8 || colour == PDT::Colour6bar;
+  }
+  
+}
+
+void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partnerType,
 						 Energy scale, double z,
 						 tShowerParticlePtr parent,
-						 tShowerParticlePtr first,
-						 tShowerParticlePtr second) {
-  // // identify emittor and spectator
-  // tShowerParticlePtr emittor = children[0];
-  // tShowerParticlePtr emitted = children[1];
-  // double zChild[2] = {z(),1.-z()};
-  // bool bosonSplitting(false);
-  // // special for g -> gg, particle highest z is emittor
-  // if(emittor->id()==emitted->id()&&emittor->id()==parent->id()) {
-  //   if(zChild[1]>zChild[0]) {
-  //     swap(zChild[0],zChild[1]);
-  //     swap(emitted,emittor);
-  //   }
-  // }
-  // // otherwise if particle ID same
-  // else if(emitted->id()==parent->id()) {
-  //   swap(zChild[0],zChild[1]);
-  //   swap(emitted,emittor);
-  // }
-  // // no real emittor/eemitted
-  // else if(emittor->id()!=parent->id()) {
-  //   bosonSplitting = true;
-  // }
-  // // scales for angular ordering
-  // Energy AOScale[2];
-  // if(angularOrder) {
-  //   for(unsigned int ix=0;ix<2;++ix) AOScale [ix] = zChild[ix]*scale(); 
-  // }
-  // else {
-  //   for(unsigned int ix=0;ix<2;++ix) AOScale [ix] =            scale();
-  // }
-  // // if not these cases doesn't matter
-  // // now the various scales
-  // if(partnerType==ShowerPartnerType::QED) {
-  //   // normal case
-  //   if(!bosonSplitting) {
-  //     for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	    it = parent->evolutionScales().begin();
-  // 	  it!=parent->evolutionScales().end();++it) {
-  // 	emittor->evolutionScale(it->first,make_pair(min(AOScale[0],it->second.first ),
-  // 						    min(scale()   ,it->second.second)));
-  // 	if(it->first==ShowerPartnerType::QED) {
-  // 	  emitted->evolutionScale(it->first,make_pair(min(AOScale[1],it->second.first ),
-  // 						      min(scale()   ,it->second.second)));
-  // 	}
-  //     }
-  //   }
-  //   // gamma -> f fbar
-  //   else {
-  //     // set QED scales as normal
-  //     for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	    it = parent->evolutionScales().begin();
-  // 	  it!=parent->evolutionScales().end();++it) {
-  // 	assert(it->first==ShowerPartnerType::QED);
-  // 	emittor->evolutionScale(it->first,make_pair(AOScale[0],scale()));
-  // 	emitted->evolutionScale(it->first,make_pair(AOScale[1],scale()));
-  //     }
-  //     // and any QCD scales needed
-  //     PDT::Colour emittorColour = emittor->dataPtr()->iColour();
-  //     if(emittorColour==PDT::Colour3||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6) {
-  // 	emittor->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				make_pair(AOScale[0],scale()));
-  //     }
-  //     if(emittorColour==PDT::Colour3bar||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6bar) {
-  // 	emittor->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				make_pair(AOScale[0],scale()));
-  //     }
-  //     PDT::Colour emittedColour = emitted->dataPtr()->iColour();
-  //     if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
-  // 	emitted->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				make_pair(AOScale[1],scale()));
-  //     }
-  //     if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
-  // 	emitted->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				make_pair(AOScale[1],scale()));
-  //     }
-  //   }
-  // }
-  // else {
-  //   // normal case
-  //   if(!bosonSplitting) {
-  //     // scales for the emittor
-  //     for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	    it = parent->evolutionScales().begin();
-  // 	  it!=parent->evolutionScales().end();++it) {
-  // 	emittor->evolutionScale(it->first,make_pair(min(AOScale[0],it->second.first ),
-  // 						    min(scale()   ,it->second.second)));
-  //     }
-  //   }
-  //   else {
-  //     // QCD scales needed
-  //     PDT::Colour emittorColour = emittor->dataPtr()->iColour();
-  //     if(emittorColour==PDT::Colour3||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6) {
-  // 	emittor->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				make_pair(AOScale[0],scale()));
-  //     }
-  //     if(emittorColour==PDT::Colour3bar||emittorColour==PDT::Colour8||emittorColour==PDT::Colour6bar) {
-  // 	emittor->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				make_pair(AOScale[0],scale()));
-  //     }
-  //     // QED scales
-  //     if(emittor->dataPtr()->charged()) {
-  // 	emittor->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[0],scale()));
-  //     }
-  //   }
-  //   PDT::Colour emittedColour = emitted->dataPtr()->iColour();
-  //   if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
-  //     emitted->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 			      make_pair(AOScale[1],scale()));
-  //   }
-  //   if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
-  //     emitted->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 			      make_pair(AOScale[1],scale()));
-  //   }
-  //   if(emitted->dataPtr()->charged()) {
-  //     emitted->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale[1],scale()));
-  //   }
-  // }
-  assert(false);
+						 tShowerParticlePtr emitter,
+						 tShowerParticlePtr emitted) {
+  // identify emitter and emitted
+  double zEmitter = z, zEmitted = 1.-z;
+  bool bosonSplitting(false);
+  // special for g -> gg, particle highest z is emitter
+  if(emitter->id() == emitted->id() && emitter->id() == parent->id() &&
+     zEmitted > zEmitter) {
+    swap(zEmitted,zEmitter);
+    swap( emitted, emitter);
+  }
+  // otherwise if particle ID same
+  else if(emitted->id()==parent->id()) {
+    swap(zEmitted,zEmitter);
+    swap( emitted, emitter);
+  }
+  // no real emitter/emitted
+  else if(emitter->id()!=parent->id()) {
+    bosonSplitting = true;
+  }
+  // may need to add angularOrder flag here
+  // now the various scales
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    assert(colourStructure()==ChargedChargedNeutral ||
+	   colourStructure()==ChargedNeutralCharged ||
+	   colourStructure()==NeutralChargedCharged );
+    // normal case
+    if(!bosonSplitting) {
+      assert(colourStructure()==ChargedChargedNeutral ||
+	     colourStructure()==ChargedNeutralCharged );
+      // set the scales
+      // emitter
+      emitter->scales().QED         = zEmitter*scale;
+      emitter->scales().QED_noAO    =          scale;
+      emitter->scales().QCD_c       = min(scale,parent->scales().QCD_c      );
+      emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
+      emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
+      emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
+      // emitted 
+      emitted->scales().QED         = zEmitted*scale;
+      emitted->scales().QED_noAO    =          scale;
+      emitted->scales().QCD_c       = ZERO;
+      emitted->scales().QCD_c_noAO  = ZERO;
+      emitted->scales().QCD_ac      = ZERO;
+      emitted->scales().QCD_ac_noAO = ZERO;
+    }
+    // gamma -> f fbar
+    else {
+      assert(colourStructure()==NeutralChargedCharged );
+      // emitter
+      emitter->scales().QED         = zEmitter*scale;
+      emitter->scales().QED_noAO    =          scale;
+      if(hasColour(emitter)) {
+	emitter->scales().QCD_c       = zEmitter*scale;
+	emitter->scales().QCD_c_noAO  =          scale;
+      }
+      if(hasAntiColour(emitter)) {
+	emitter->scales().QCD_ac      = zEmitter*scale;
+	emitter->scales().QCD_ac_noAO =          scale;
+      }
+      // emitted 
+      emitted->scales().QED         = zEmitted*scale;
+      emitted->scales().QED_noAO    =          scale;
+      if(hasColour(emitted)) {
+	emitted->scales().QCD_c       = zEmitted*scale;
+	emitted->scales().QCD_c_noAO  =          scale;
+      }
+      if(hasAntiColour(emitted)) {
+	emitted->scales().QCD_ac      = zEmitted*scale;
+	emitted->scales().QCD_ac_noAO =          scale;
+      }
+    }
+  }
+  // QCD
+  else {
+   // normal case eg q -> q g and g -> g g
+    if(!bosonSplitting) {
+      emitter->scales().QED         = min(scale,parent->scales().QED     );
+      emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      if(partnerType==ShowerPartnerType::QCDColourLine) {
+	emitter->scales().QCD_c       = zEmitter*scale;
+	emitter->scales().QCD_c_noAO  =          scale;
+	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
+	emitter->scales().QCD_ac_noAO = min(         scale,parent->scales().QCD_ac_noAO);
+      }
+      else {
+	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+	emitter->scales().QCD_c_noAO  = min(         scale,parent->scales().QCD_c_noAO );
+	emitter->scales().QCD_ac      = zEmitter*scale;
+	emitter->scales().QCD_ac_noAO =          scale;
+      }
+      // emitted 
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+    }
+    // g -> q qbar
+    else {
+      // emitter
+      if(emitter->dataPtr()->charged()) {
+	emitter->scales().QED         = zEmitter*scale;
+	emitter->scales().QED_noAO    =          scale;
+      }
+      emitter->scales().QCD_c       = zEmitter*scale;
+      emitter->scales().QCD_c_noAO  =          scale;
+      emitter->scales().QCD_ac      = zEmitter*scale;
+      emitter->scales().QCD_ac_noAO =          scale;
+      // emitted 
+      if(emitted->dataPtr()->charged()) {
+	emitted->scales().QED         = zEmitted*scale;
+	emitted->scales().QED_noAO    =          scale;
+      }
+      emitted->scales().QCD_c       = zEmitted*scale;
+      emitted->scales().QCD_c_noAO  =          scale;
+      emitted->scales().QCD_ac      = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO =          scale;
+    }
+  }
 }
 
 void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type type,
@@ -736,58 +753,79 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type type,
 						   tShowerParticlePtr parent,
 						   tShowerParticlePtr first,
 						   tShowerParticlePtr second) {
+
+
+
+
+
+      // emitter->scales().QED         = ;
+      // emitter->scales().QED_noAO    = ;
+      // emitter->scales().QCD_c       = ;
+      // emitter->scales().QCD_c_noAO  = ;
+      // emitter->scales().QCD_ac      = ;
+      // emitter->scales().QCD_ac_noAO = ;
+      // // emitted 
+      // emitted->scales().QED         = ;
+      // emitted->scales().QED_noAO    = ;
+      // emitted->scales().QCD_c       = ;
+      // emitted->scales().QCD_c_noAO  = ;
+      // emitted->scales().QCD_ac      = ;
+      // emitted->scales().QCD_ac_noAO = ;
+
+
+
   // // scale for time-like child
-  // Energy AOScale = (angularOrder ? (1.-z()) : 1. )*scale();
+  // Energy AOScale = (angularOrder ? (1.-z()) : 1. )*scale;
   // // scales for parent if same as spacelike child
   // if(parent->id()==children[0]->id()) {
   //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
   // 	  it = children[0]->evolutionScales().begin();
   // 	it!=children[0]->evolutionScales().end();++it) {
-  //     parent->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
-  // 						 min(scale(),it->second.second)));
+  //     parent->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
+  // 						 min(scale,it->second.second)));
   //   }
   //   if(partnerType==ShowerPartnerType::QED) {
-  //     children[1]->evolutionScale(partnerType,make_pair(AOScale,scale()));
+  //     children[1]->evolutionScale(partnerType,make_pair(AOScale,scale));
   //   }
   //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
   //   if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+  //     children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
   //   }
   //   if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+  //     children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
   //   }
   // }
   // // scales if parent same as timelike child
   // else if(parent->id()==children[1]->id()) {
   //   if(parent->dataPtr()->charged()) {
-  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale(),scale()));
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale,scale));
+  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
   //   }
   //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
   //   if(partnerType==ShowerPartnerType::QED) {
   //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(scale(),scale()));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+  // 	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(scale,scale));
+  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
   //     }
   //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(scale(),scale()));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+  // 	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(scale,scale));
+  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
   //     }
   //   }
   //   else {
   //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
   // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine);
   // 	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				    make_pair(min(scale(),pScale.first ),
-  // 					      min(scale(),pScale.second)));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale()));
+  // 				    make_pair(min(scale,pScale.first ),
+  // 					      min(scale,pScale.second)));
+  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
   //     }
   //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
   // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine);
   // 	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				    make_pair(min(scale(),pScale.first ),
-  // 					      min(scale(),pScale.second)));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale()));
+  // 				    make_pair(min(scale,pScale.first ),
+  // 					      min(scale,pScale.second)));
+  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
   //     }
   //   }
   // }
@@ -795,8 +833,8 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type type,
   // else if(children[0]->id()==-children[1]->id()) {
   //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
   //   if(partnerType==ShowerPartnerType::QED) {
-  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale(),scale()));
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale,scale));
+  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
   //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
   // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine);
   // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
@@ -828,11 +866,11 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type type,
   // 					      min(AOScale,pScale.second)));
   //     }
   //     parent->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 			     make_pair(min(scale(),pScale.first ),
-  // 				       min(scale(),pScale.second)));
+  // 			     make_pair(min(scale,pScale.first ),
+  // 				       min(scale,pScale.second)));
   //     parent->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 			     make_pair(min(scale(),pScale.first ),
-  // 				       min(scale(),pScale.second)));
+  // 			     make_pair(min(scale,pScale.first ),
+  // 				       min(scale,pScale.second)));
   //   }
   // }
   assert(false);
@@ -844,40 +882,40 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type type,
 					    tShowerParticlePtr first,
 					    tShowerParticlePtr second) {
   // // angular-ordered scale for 2nd child
-  // Energy AOScale = angularOrder ? (1.-z())*scale() : scale();
+  // Energy AOScale = angularOrder ? (1.-z())*scale : scale;
   // // QED
   // if(partnerType==ShowerPartnerType::QED) {
   //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
   // 	  it = parent->evolutionScales().begin();
   // 	it!=parent->evolutionScales().end();++it) {
-  //     children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
-  // 						      min(scale(),it->second.second)));
+  //     children[0]->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
+  // 						      min(scale,it->second.second)));
   //     if(it->first==ShowerPartnerType::QED) {
   // 	children[1]->evolutionScale(it->first,make_pair(min(AOScale,it->second.first ),
-  // 							min(scale(),it->second.second)));
+  // 							min(scale,it->second.second)));
   //     }
   //   }
   // }
   // // QCD
   // else {
-  //   // scales for the emittor
+  //   // scales for the emitter
   //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
   // 	  it = parent->evolutionScales().begin();
   // 	it!=parent->evolutionScales().end();++it) {
-  //     children[0]->evolutionScale(it->first,make_pair(min(scale(),it->second.first ),
-  // 						      min(scale(),it->second.second)));
+  //     children[0]->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
+  // 						      min(scale,it->second.second)));
   //   }
   //   PDT::Colour emittedColour = children[1]->dataPtr()->iColour();
   //   if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
   //     children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				  make_pair(AOScale,scale()));
+  // 				  make_pair(AOScale,scale));
   //   }
   //   if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
   //     children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				  make_pair(AOScale,scale()));
+  // 				  make_pair(AOScale,scale));
   //   }
   //   if(children[1]->dataPtr()->charged()) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale()));
+  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
   //   }
   // }
   assert(false);

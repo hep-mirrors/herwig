@@ -252,22 +252,22 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 							    1.,partners[ix].first,
 							    scales[ix].first));
       }
-      // now scales
       // set scales for all interactions to that of the partner, default
-      assert(false);
-      // if(scaleChoice_==0) {
-      // 	pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
-      // 	for(unsigned int ix=0;ix<partners.size();++ix) {
-      // 	  (**cit).evolutionScale(partners[ix].first,scalePair);
-      // 	}
-      // }
-      // // leave them as is
-      // else {
-      // 	for(unsigned int ix=0;ix<partners.size();++ix) {
-      // 	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
-      // 							      scales[ix].first));
-      // 	}
-      // }
+      Energy scale = scales[position].first;
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	if(partners[ix].first==ShowerPartnerType::QCDColourLine) {
+	  (**cit).scales().QCD_c = 
+	    (**cit).scales().QCD_c_noAO = 
+	    (scaleChoice_==0 ? scale : scales[ix].first);
+	}
+	else if(partners[ix].first==ShowerPartnerType::QCDAntiColourLine) {
+	  (**cit).scales().QCD_ac = 
+	    (**cit).scales().QCD_ac_noAO =
+	    (scaleChoice_==0 ? scale : scales[ix].first);
+	}
+	else
+	  assert(false);
+      }
     }
   }
   // primary partner set, set the others and do the scale
@@ -300,25 +300,22 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 							    1.,partners[ix].first,
 							    scales[ix].first));
       }
-      // now scales
-      // // set scales for all interactions to that of the partner, default
-      // if(scaleChoice_==0) {
-      // 	pair<Energy,Energy> scalePair(scales[position].first,scales[position].first);
-      // 	for(unsigned int ix=0;ix<partners.size();++ix) {
-      // 	  (**cit).evolutionScale(partners[ix].first,scalePair);
-      // 	}
-      // }
-      // // leave them as is
-      // else {
-      // 	for(unsigned int ix=0;ix<partners.size();++ix) {
-      // 	  pair<Energy,Energy> scale = (**cit).evolutionScale(partners[ix].first);
-      // 	  if(scales[ix].first<=scale.first)
-      // 	    continue;
-      // 	  (**cit).evolutionScale(partners[ix].first,make_pair(scales[ix].first,
-      // 							      scales[ix].first));
-      // 	}
-      // }
-      assert(false);
+      // set scales for all interactions to that of the partner, default
+      Energy scale = scales[position].first;
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	if(partners[ix].first==ShowerPartnerType::QCDColourLine) {
+	  (**cit).scales().QCD_c = 
+	    (**cit).scales().QCD_c_noAO = 
+	    (scaleChoice_==0 ? scale : scales[ix].first);
+	}
+	else if(partners[ix].first==ShowerPartnerType::QCDAntiColourLine) {
+	  (**cit).scales().QCD_ac = 
+	    (**cit).scales().QCD_ac_noAO =
+	    (scaleChoice_==0 ? scale : scales[ix].first);
+	}
+	else
+	  assert(false);
+      }
     }
   }
 }

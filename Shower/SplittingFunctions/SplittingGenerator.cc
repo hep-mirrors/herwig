@@ -222,63 +222,66 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
     ShowerPartnerType::Type type;
-    // // work out which starting scale we need
-    // if(cit->second.first->interactionType()==ShowerInteraction::QED) {
-    //   type = ShowerPartnerType::QED;
-    //   newKin = cit->second.first->
-    // 	generateNextTimeBranching(particle.evolutionScale(angularOrdered,type), 
-    // 				  cit->second.second,particle.id()!=cit->first,
-    // 				  enhance);
-    // }
-    // else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
-    //   // special for octets
-    //   if(particle.dataPtr()->iColour()==PDT::Colour8) {
-    // 	// octet -> octet octet
-    // 	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
-    // 	  type = ShowerPartnerType::QCDColourLine;
-    // 	  newKin= cit->second.first->
-    // 	    generateNextTimeBranching(particle.evolutionScale(angularOrdered,type),
-    // 				      cit->second.second,particle.id()!=cit->first,
-    // 				      0.5*enhance);
-    // 	  ShoKinPtr newKin2 = cit->second.first->
-    // 	    generateNextTimeBranching(particle.evolutionScale(angularOrdered,
-    // 							      ShowerPartnerType::QCDAntiColourLine),
-    // 				      cit->second.second,particle.id()!=cit->first,
-    // 				      0.5*enhance);
-    // 	  // pick the one with the highest scale
-    // 	  if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
-    // 	      (!newKin&&newKin2) ) {
-    // 	    newKin = newKin2;
-    // 	    type = ShowerPartnerType::QCDAntiColourLine;
-    // 	  }
-    // 	}
-    // 	// other
-    // 	else {
-    // 	  Energy startingScale = 
-    // 	    max(particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDColourLine),
-    // 		particle.evolutionScale(angularOrdered,ShowerPartnerType::QCDAntiColourLine));
-    // 	  newKin= cit->second.first->
-    // 	    generateNextTimeBranching(startingScale, 
-    // 				      cit->second.second,particle.id()!=cit->first,
-    // 				      enhance);
-    // 	  type = cit->second.second[0]<0 ? 
-    // 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
-    // 	}
-    //   }
-    //   // everything else
-    //   else {
-    // 	type = particle.hasColour() ? 
-    // 	  ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
-    // 	newKin= cit->second.first->
-    // 	  generateNextTimeBranching(particle.evolutionScale(angularOrdered,type),
-    // 				    cit->second.second,
-    // 				    particle.id()!=cit->first,enhance);
-    //   }
-    // }
-    // // shouldn't be anything else
-    // else
-    //   assert(false);
-    assert(false);
+    // work out which starting scale we need
+    if(cit->second.first->interactionType()==ShowerInteraction::QED) {
+      type = ShowerPartnerType::QED;
+      Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
+      newKin = cit->second.first->
+    	generateNextTimeBranching(startingScale,cit->second.second,
+				  particle.id()!=cit->first,enhance);
+    }
+    else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
+      // special for octets
+      if(particle.dataPtr()->iColour()==PDT::Colour8) {
+	// octet -> octet octet
+	if(cit->second.first->splittingFn()->colourStructure()==OctetOctetOctet) {
+    	  type = ShowerPartnerType::QCDColourLine;
+	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
+    	  newKin= cit->second.first->
+    	    generateNextTimeBranching(startingScale,cit->second.second,
+				      particle.id()!=cit->first,0.5*enhance);
+	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
+    	  ShoKinPtr newKin2 = cit->second.first->
+	    generateNextTimeBranching(startingScale,cit->second.second,
+				      particle.id()!=cit->first,0.5*enhance);
+    	  // pick the one with the highest scale
+    	  if( ( newKin && newKin2 && newKin2->scale() > newKin->scale()) ||
+    	      (!newKin && newKin2) ) {
+    	    newKin = newKin2;
+    	    type = ShowerPartnerType::QCDAntiColourLine;
+    	  }
+    	}
+     	// other g -> q qbar
+     	else {
+     	  Energy startingScale = angularOrdered ? 
+	    max(particle.scales().QCD_c     , particle.scales().QCD_ac    ) : 
+	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_c_noAO);
+    	  newKin= cit->second.first->
+    	    generateNextTimeBranching(startingScale, cit->second.second,
+				      particle.id()!=cit->first,enhance);
+    	  type = UseRandom::rndbool() ? 
+    	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
+	}
+      }
+      // everything else q-> qg etc
+      else {
+	Energy startingScale;
+	if(particle.hasColour()) {
+	  type = ShowerPartnerType::QCDColourLine;
+	  startingScale = angularOrdered ? particle.scales().QCD_c  : particle.scales().QCD_c_noAO;
+	}
+	else {
+	  type = ShowerPartnerType::QCDAntiColourLine;
+	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
+	}
+	newKin= cit->second.first->
+	  generateNextTimeBranching(startingScale,cit->second.second,
+				    particle.id()!=cit->first,enhance);
+      }
+    }
+    // shouldn't be anything else
+    else
+      assert(false);
     // if no kinematics contine
     if(!newKin) continue;
     // select highest scale 

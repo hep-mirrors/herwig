@@ -31,17 +31,12 @@ ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 
 void ShowerParticle::vetoEmission(ShowerPartnerType::Type type, Energy scale) {
-  // for(map<ShowerPartnerType::Type ,pair<Energy,Energy> >::iterator
-  // 	it=evolutionScales_.begin();it!=evolutionScales_.end();++it) {
-  //   if(it->first==type) {
-  //     it->second = make_pair(scale,scale);
-  //   }
-  //   else {
-  //     if(it->second.first >scale) it->second.first  = scale;
-  //     if(it->second.second>scale) it->second.second = scale;
-  //   }
-  // }
-  assert(false);
+  scales_.QED         = min(scale,scales_.QED        );
+  scales_.QED_noAO    = min(scale,scales_.QED_noAO   );
+  scales_.QCD_c       = min(scale,scales_.QCD_c      );
+  scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
+  scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
+  scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
 }
 
 void ShowerParticle::addPartner(EvolutionPartner in ) {
