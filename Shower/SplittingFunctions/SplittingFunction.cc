@@ -748,175 +748,150 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
   }
 }
 
-void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type type,
+void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partnerType,
 						   Energy scale, double z,
 						   tShowerParticlePtr parent,
-						   tShowerParticlePtr first,
-						   tShowerParticlePtr second) {
-
-
-
-
-
-      // emitter->scales().QED         = ;
-      // emitter->scales().QED_noAO    = ;
-      // emitter->scales().QCD_c       = ;
-      // emitter->scales().QCD_c_noAO  = ;
-      // emitter->scales().QCD_ac      = ;
-      // emitter->scales().QCD_ac_noAO = ;
-      // // emitted 
-      // emitted->scales().QED         = ;
-      // emitted->scales().QED_noAO    = ;
-      // emitted->scales().QCD_c       = ;
-      // emitted->scales().QCD_c_noAO  = ;
-      // emitted->scales().QCD_ac      = ;
-      // emitted->scales().QCD_ac_noAO = ;
-
-
-
-  // // scale for time-like child
-  // Energy AOScale = (angularOrder ? (1.-z()) : 1. )*scale;
-  // // scales for parent if same as spacelike child
-  // if(parent->id()==children[0]->id()) {
-  //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	  it = children[0]->evolutionScales().begin();
-  // 	it!=children[0]->evolutionScales().end();++it) {
-  //     parent->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
-  // 						 min(scale,it->second.second)));
-  //   }
-  //   if(partnerType==ShowerPartnerType::QED) {
-  //     children[1]->evolutionScale(partnerType,make_pair(AOScale,scale));
-  //   }
-  //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
-  //   if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
-  //   }
-  //   if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
-  //   }
-  // }
-  // // scales if parent same as timelike child
-  // else if(parent->id()==children[1]->id()) {
-  //   if(parent->dataPtr()->charged()) {
-  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale,scale));
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
-  //   }
-  //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
-  //   if(partnerType==ShowerPartnerType::QED) {
-  //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(scale,scale));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
-  //     }
-  //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(scale,scale));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
-  //     }
-  //   }
-  //   else {
-  //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine);
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				    make_pair(min(scale,pScale.first ),
-  // 					      min(scale,pScale.second)));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,make_pair(AOScale,scale));
-  //     }
-  //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine);
-  // 	parent     ->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				    make_pair(min(scale,pScale.first ),
-  // 					      min(scale,pScale.second)));
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,make_pair(AOScale,scale));
-  //     }
-  //   }
-  // }
-  // // g -> q qbar, or gamma -> e+e-
-  // else if(children[0]->id()==-children[1]->id()) {
-  //   PDT::Colour childColour = children[1]->dataPtr()->iColour();
-  //   if(partnerType==ShowerPartnerType::QED) {
-  //     parent     ->evolutionScale(ShowerPartnerType::QED,make_pair(scale,scale));
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
-  //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine);
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				    make_pair(min(AOScale,pScale.first ),
-  // 					      min(AOScale,pScale.second)));
-  //     }
-  //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  // 	pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine    );
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				    make_pair(min(AOScale,pScale.first ),
-  // 					      min(AOScale,pScale.second)));
-  //     }
-  //   }
-  //   else {
-  //     pair<Energy,Energy> pScale = children[0]->evolutionScale(ShowerPartnerType::QED);
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,
-  // 				  make_pair(min(AOScale,pScale.first ),
-  // 					    min(AOScale,pScale.second)));
-  //     if(childColour==PDT::Colour3||childColour==PDT::Colour8||childColour==PDT::Colour6) {
-  // 	pScale = children[0]->evolutionScale(ShowerPartnerType::QCDAntiColourLine);
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				    make_pair(min(AOScale,pScale.first ),
-  // 					      min(AOScale,pScale.second)));
-  //     }
-  //     if(childColour==PDT::Colour3bar||childColour==PDT::Colour8||childColour==PDT::Colour6bar) {
-  // 	pScale = children[0]->evolutionScale(ShowerPartnerType::QCDColourLine    );
-  // 	children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				    make_pair(min(AOScale,pScale.first ),
-  // 					      min(AOScale,pScale.second)));
-  //     }
-  //     parent->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 			     make_pair(min(scale,pScale.first ),
-  // 				       min(scale,pScale.second)));
-  //     parent->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 			     make_pair(min(scale,pScale.first ),
-  // 				       min(scale,pScale.second)));
-  //   }
-  // }
-  assert(false);
+						   tShowerParticlePtr spacelike,
+						   tShowerParticlePtr timelike) {
+  // scale for time-like child
+  Energy AOScale = (1.-z)*scale;
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    if(parent->id()==spacelike->id()) {
+      // parent
+      parent   ->scales().QED         =   scale;
+      parent   ->scales().QED_noAO    =   scale;
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c      );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+      // timelike
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      timelike->scales().QCD_c       =    ZERO;
+      timelike->scales().QCD_c_noAO  =    ZERO;
+      timelike->scales().QCD_ac      =    ZERO;
+      timelike->scales().QCD_ac_noAO =    ZERO;
+    }
+    else if(parent->id()==timelike->id()) {
+      parent   ->scales().QED         =   scale;
+      parent   ->scales().QED_noAO    =   scale;
+      if(hasColour(parent)) {
+	parent   ->scales().QCD_c       = scale;
+	parent   ->scales().QCD_c_noAO  = scale;
+      }
+      if(hasAntiColour(parent)) {
+	parent   ->scales().QCD_ac      = scale;
+	parent   ->scales().QCD_ac_noAO = scale;
+      }
+      // timelike 
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      if(hasColour(timelike)) {
+	timelike->scales().QCD_c       = AOScale;
+	timelike->scales().QCD_c_noAO  =   scale;
+      }
+      if(hasAntiColour(timelike)) {
+	timelike->scales().QCD_ac      = AOScale;
+	timelike->scales().QCD_ac_noAO =   scale;
+      }
+    }
+    else {
+      parent   ->scales().QED         = scale;
+      parent   ->scales().QED_noAO    = scale;
+      parent   ->scales().QCD_c       = ZERO ;
+      parent   ->scales().QCD_c_noAO  = ZERO ;
+      parent   ->scales().QCD_ac      = ZERO ;
+      parent   ->scales().QCD_ac_noAO = ZERO ;
+      // timelike 
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+      if(hasColour(timelike)) {
+	timelike->scales().QCD_c       = min(AOScale,spacelike->scales().QCD_ac     );
+	timelike->scales().QCD_c_noAO  = min(  scale,spacelike->scales().QCD_ac_noAO);
+      }
+      if(hasAntiColour(timelike)) {
+	timelike->scales().QCD_ac      = min(AOScale,spacelike->scales().QCD_c      );
+	timelike->scales().QCD_ac_noAO = min(  scale,spacelike->scales().QCD_c_noAO );
+      }
+    }
+  }
+  // QCD
+  else {
+    // timelike 
+    if(timelike->dataPtr()->charged()) {
+      timelike->scales().QED         = AOScale;
+      timelike->scales().QED_noAO    =   scale;
+    }
+    if(hasColour(timelike)) {
+      timelike->scales().QCD_c       = AOScale;
+      timelike->scales().QCD_c_noAO  =   scale;
+    }
+    if(hasAntiColour(timelike)) {
+      timelike->scales().QCD_ac      = AOScale;
+      timelike->scales().QCD_ac_noAO =   scale;
+    }
+    if(parent->id()==spacelike->id()) {
+      parent   ->scales().QED         = min(scale,spacelike->scales().QED        );
+      parent   ->scales().QED_noAO    = min(scale,spacelike->scales().QED_noAO   );
+      parent   ->scales().QCD_c       = min(scale,spacelike->scales().QCD_c      );
+      parent   ->scales().QCD_c_noAO  = min(scale,spacelike->scales().QCD_c_noAO );
+      parent   ->scales().QCD_ac      = min(scale,spacelike->scales().QCD_ac     );
+      parent   ->scales().QCD_ac_noAO = min(scale,spacelike->scales().QCD_ac_noAO);
+    }
+    else {
+      if(parent->dataPtr()->charged()) {
+	parent   ->scales().QED         = scale;
+	parent   ->scales().QED_noAO    = scale;
+      }
+      if(hasColour(parent)) {
+	parent   ->scales().QCD_c      = scale;
+	parent   ->scales().QCD_c_noAO  = scale;
+      }
+      if(hasAntiColour(parent)) {
+	parent   ->scales().QCD_ac      = scale;
+	parent   ->scales().QCD_ac_noAO = scale;
+      }
+    }
+  }
 }
 
-void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type type,
+void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
 					    Energy scale, double z,
 					    tShowerParticlePtr parent,
-					    tShowerParticlePtr first,
-					    tShowerParticlePtr second) {
-  // // angular-ordered scale for 2nd child
-  // Energy AOScale = angularOrder ? (1.-z())*scale : scale;
-  // // QED
-  // if(partnerType==ShowerPartnerType::QED) {
-  //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	  it = parent->evolutionScales().begin();
-  // 	it!=parent->evolutionScales().end();++it) {
-  //     children[0]->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
-  // 						      min(scale,it->second.second)));
-  //     if(it->first==ShowerPartnerType::QED) {
-  // 	children[1]->evolutionScale(it->first,make_pair(min(AOScale,it->second.first ),
-  // 							min(scale,it->second.second)));
-  //     }
-  //   }
-  // }
-  // // QCD
-  // else {
-  //   // scales for the emitter
-  //   for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::const_iterator 
-  // 	  it = parent->evolutionScales().begin();
-  // 	it!=parent->evolutionScales().end();++it) {
-  //     children[0]->evolutionScale(it->first,make_pair(min(scale,it->second.first ),
-  // 						      min(scale,it->second.second)));
-  //   }
-  //   PDT::Colour emittedColour = children[1]->dataPtr()->iColour();
-  //   if(emittedColour==PDT::Colour3||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDColourLine,
-  // 				  make_pair(AOScale,scale));
-  //   }
-  //   if(emittedColour==PDT::Colour3bar||emittedColour==PDT::Colour8||emittedColour==PDT::Colour6bar) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QCDAntiColourLine,
-  // 				  make_pair(AOScale,scale));
-  //   }
-  //   if(children[1]->dataPtr()->charged()) {
-  //     children[1]->evolutionScale(ShowerPartnerType::QED,make_pair(AOScale,scale));
-  //   }
-  // }
-  assert(false);
+					    tShowerParticlePtr spacelike,
+					    tShowerParticlePtr timelike) {
+  assert(parent->id()==spacelike->id());
+  // angular-ordered scale for 2nd child
+  Energy AOScale = (1.-z)*scale;
+  // QED
+  if(partnerType==ShowerPartnerType::QED) {
+    // timelike
+    timelike->scales().QED         = AOScale;
+    timelike->scales().QED_noAO    =   scale;
+    timelike->scales().QCD_c       =    ZERO;
+    timelike->scales().QCD_c_noAO  =    ZERO;
+    timelike->scales().QCD_ac      =    ZERO;
+    timelike->scales().QCD_ac_noAO =    ZERO;
+    // spacelike
+    spacelike->scales().QED         =   scale;
+    spacelike->scales().QED_noAO    =   scale;
+  }
+  // QCD
+  else {
+    // timelike 
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    timelike->scales().QCD_c       = AOScale;
+    timelike->scales().QCD_c_noAO  =   scale;
+    timelike->scales().QCD_ac      = AOScale;
+    timelike->scales().QCD_ac_noAO =   scale;
+    // spacelike
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+  }
+  spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
+  spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
+  spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );
+  spacelike->scales().QCD_ac_noAO = max(scale,parent->scales().QCD_ac_noAO);
 }

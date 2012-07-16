@@ -512,24 +512,24 @@ void SMTopDecayer::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // Get the starting scales for the showers $\tilde{\kappa}_{b}$
   // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
   // of the dead zone.
+  _ktb = _ktc = -1.;
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cjt;
-  // for(cjt = tree->incomingLines().begin();
-  //     cjt!= tree->incomingLines().end();++cjt) {
-  //   if(abs(cjt->first->progenitor()->id())==6)
-  //     _ktb=sqr(cjt->first->progenitor()->
-  // 	      evolutionScale(true,cjt->first->progenitor()->id()>0 ?
-  // 			     ShowerPartnerType::QCDColourLine :
-  // 			     ShowerPartnerType::QCDAntiColourLine)/_mt);
-  // }
-  // for(cit = tree->outgoingLines().begin();
-  //     cit!= tree->outgoingLines().end();++cit) {
-  //   if(abs(cit->first->progenitor()->id())==5)
-  //     _ktc=sqr(cit->first->progenitor()->
-  // 	      evolutionScale(true,cit->first->progenitor()->id()>0 ?
-  // 			     ShowerPartnerType::QCDColourLine :
-  // 			     ShowerPartnerType::QCDAntiColourLine)/_mt);
-  // }
-  assert(false);
+  for(cjt = tree->incomingLines().begin();
+      cjt!= tree->incomingLines().end();++cjt) {
+    if(abs(cjt->first->progenitor()->id())!=6) continue;
+    if(cjt->first->progenitor()->id()>0)
+      _ktb=sqr(cjt->first->progenitor()->scales().QCD_c /_mt);
+    else
+      _ktb=sqr(cjt->first->progenitor()->scales().QCD_ac/_mt); 
+  } 
+  for(cit = tree->outgoingLines().begin();
+      cit!= tree->outgoingLines().end();++cit) {
+    if(abs(cit->first->progenitor()->id())!=5) continue;
+    if(cit->first->progenitor()->id()>0)
+      _ktc=sqr(cit->first->progenitor()->scales().QCD_c /_mt);
+    else
+      _ktc=sqr(cit->first->progenitor()->scales().QCD_ac/_mt); 
+  }
   if (_ktb<=0.||_ktc<=0.) {
     throw Exception() 
       << "SMTopDecayer::applyHardMatrixElementCorrection()"

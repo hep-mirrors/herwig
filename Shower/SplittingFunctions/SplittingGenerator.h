@@ -16,6 +16,7 @@
 #include "Herwig++/Shower/Base/Branching.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
 
 namespace Herwig {
@@ -103,7 +104,7 @@ public:
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
-				 const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+				 const ShowerParticle::EvolutionScales & maxScales,
 				 Energy minmass,double enhance,
 				 ShowerInteraction::Type type) const; 
 

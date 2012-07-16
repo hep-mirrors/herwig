@@ -670,7 +670,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 }
 
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
-				   const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+				   const ShowerParticle::EvolutionScales & maxScales,
 				   Energy minmass,ShowerInteraction::Type type) {
   Branching fb;
   while (true) {
@@ -820,7 +820,7 @@ bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
 }
 
 bool Evolver::
-startSpaceLikeDecayShower(const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			  Energy minimumMass,ShowerInteraction::Type type) {
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
@@ -1044,8 +1044,6 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 						     branch->children()[0]->z(),
 						     branch->phi(),
 						     branch->children()[0]->pT());
-      // particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
-      assert(false);
       showerKin->initialize( *particle,PPtr() );
       IdList idlist(3);
       idlist[0] = particle->id();
@@ -1300,7 +1298,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 
 bool Evolver::
 truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, 
-			      const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+			      const ShowerParticle::EvolutionScales & maxScales,
 			      Energy minmass, HardBranchingPtr branch,
 			      ShowerInteraction::Type type) {
   Branching fb;
@@ -2011,15 +2009,20 @@ void Evolver::doShowering(bool hard) {
  	    // perform shower
  	    // set the scales correctly. The current scale is the maximum scale for
  	    // emission not the starting scale
-	    map<ShowerPartnerType::Type,pair<Energy,Energy> > maxScales;
-	    // map<ShowerPartnerType::Type,pair<Energy,Energy> > 
-	    //   maxScales = progenitor()->progenitor()->evolutionScales();
-	    // // starting scale is mass
- 	    // Energy startScale=progenitor()->progenitor()->mass();
-	    // for(map<ShowerPartnerType::Type,pair<Energy,Energy> >::iterator it=maxScales.begin();
-	    // 	it!=maxScales.end();++it) 
-	    //   progenitor()->progenitor()->evolutionScale(it->first,make_pair(startScale,startScale));
-	    assert(false);
+	    ShowerParticle::EvolutionScales maxScales(progenitor()->progenitor()->scales());
+	    progenitor()->progenitor()->scales() = ShowerParticle::EvolutionScales();
+	    if(progenitor()->progenitor()->dataPtr()->charged()) {
+	      progenitor()->progenitor()->scales().QED      = progenitor()->progenitor()->mass();
+	      progenitor()->progenitor()->scales().QED_noAO = progenitor()->progenitor()->mass();
+	    }
+	    if(progenitor()->progenitor()->hasColour()) {
+	      progenitor()->progenitor()->scales().QCD_c       = progenitor()->progenitor()->mass();
+	      progenitor()->progenitor()->scales().QCD_c_noAO  = progenitor()->progenitor()->mass();
+	    }
+	    if(progenitor()->progenitor()->hasAntiColour()) {
+	      progenitor()->progenitor()->scales().QCD_ac      = progenitor()->progenitor()->mass();
+	      progenitor()->progenitor()->scales().QCD_ac_noAO = progenitor()->progenitor()->mass();
+	    }
 	    // perform the shower
 	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
 							       interactions_[inter]));

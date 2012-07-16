@@ -215,7 +215,7 @@ protected:
    */
   virtual bool 
   spaceLikeDecayShower(tShowerParticlePtr particle,
-		       const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+		       const ShowerParticle::EvolutionScales & maxScales,
 		       Energy minimumMass,ShowerInteraction::Type);
 
   /**
@@ -236,7 +236,7 @@ protected:
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
-					     const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+					     const ShowerParticle::EvolutionScales & maxScales,
 					     Energy minimumMass, HardBranchingPtr branch,
 					     ShowerInteraction::Type type);
   //@}
@@ -461,7 +461,7 @@ protected:
    *  Start the shower of a spacelike particle
    */
   virtual bool 
-  startSpaceLikeDecayShower(const map<ShowerPartnerType::Type,pair<Energy,Energy> > & maxScales,
+  startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			    Energy minimumMass,ShowerInteraction::Type);
 
   /**

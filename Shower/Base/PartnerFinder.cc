@@ -313,8 +313,10 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	    (**cit).scales().QCD_ac_noAO =
 	    (scaleChoice_==0 ? scale : scales[ix].first);
 	}
-	else
+	else {
+	  cerr << "testing B\n";
 	  assert(false);
+	}
       }
     }
   }
