@@ -1,0 +1,29 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Powheg.in
+
+# select h0 -> b bbar decays
+do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;
+# leptonic W decays
+do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+; W+->nu_mu,mu+;
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+
+##################################################
+# select the analyses
+##################################################
+
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_VH2BB
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Powheg-WH LHCGenerator
