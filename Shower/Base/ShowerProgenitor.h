@@ -117,6 +117,7 @@ public:
    *  Access the maximum \f$p_T\f$ for radiation
    */
   Energy maximumpT(ShowerInteraction::Type type) const {
+    assert(type!=ShowerInteraction::Both);
     map<ShowerInteraction::Type,Energy>::const_iterator it = _maxpT.find(type);
     return it !=_maxpT.end() ? it->second : Constants::MaxEnergy; 
   }

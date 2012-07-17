@@ -495,7 +495,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       // no emission return
       if(!fb.kinematics) return false;
       // if emission OK break
-      if(!timeLikeVetoed(fb,particle,type)) break;
+      if(!timeLikeVetoed(fb,particle)) break;
       // otherwise reset scale and continue - SO IS involved in veto algorithm
       particle->vetoEmission(fb.type,fb.kinematics->scale());
     }
@@ -572,7 +572,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     // return if no emission
     if(!bb.kinematics) return false;
     // if not vetoed break
-    if(!spaceLikeVetoed(bb,particle,type)) break;
+    if(!spaceLikeVetoed(bb,particle)) break;
     // otherwise reset scale and continue
     particle->vetoEmission(bb.type,bb.kinematics->scale());
   }
@@ -679,7 +679,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle,type)) break;
+    if(!spaceLikeDecayVetoed(fb,particle)) break;
     // otherwise reset scale and continue
     particle->vetoEmission(fb.type,fb.kinematics->scale());
   }
@@ -838,8 +838,10 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 }
 
 bool Evolver::timeLikeVetoed(const Branching & fb,
-			     ShowerParticlePtr particle,
-			     ShowerInteraction::Type type) {
+			     ShowerParticlePtr particle) {
+  // work out type of interaction
+  ShowerInteraction::Type type = fb.type==ShowerPartnerType::QED ? 
+    ShowerInteraction::QED : ShowerInteraction::QCD;
   // check whether emission was harder than largest pt of hard subprocess
   if ( hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
@@ -879,8 +881,11 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
   return false;
 }
 
-bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle,
-			      ShowerInteraction::Type type) {
+bool Evolver::spaceLikeVetoed(const Branching & bb,
+			      ShowerParticlePtr particle) {
+  // work out type of interaction
+  ShowerInteraction::Type type = bb.type==ShowerPartnerType::QED ? 
+    ShowerInteraction::QED : ShowerInteraction::QCD;
   // check whether emission was harder than largest pt of hard subprocess
   if (hardVetoIS() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
@@ -917,8 +922,10 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle,
 }
 
 bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
-				    ShowerParticlePtr particle,
-				    ShowerInteraction::Type type ) {
+				    ShowerParticlePtr particle) {
+  // work out type of interaction
+  ShowerInteraction::Type type = fb.type==ShowerPartnerType::QED ? 
+    ShowerInteraction::QED : ShowerInteraction::QCD;
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
     if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
@@ -954,7 +961,15 @@ void Evolver::hardestEmission(bool hard) {
       (_decayme && _decayme->hasPOWHEGCorrection())) {
     if(_hardme) {
       assert(hard);
-      _hardtree =  _hardme->generateHardest( currentTree(),interactions_ );
+      if(interaction_==4) {
+	vector<ShowerInteraction::Type> inter(2);
+	inter[0] = ShowerInteraction::QCD;
+	inter[1] = ShowerInteraction::QED;
+	_hardtree =  _hardme->generateHardest( currentTree(),inter         );
+      }
+      else {
+	_hardtree =  _hardme->generateHardest( currentTree(),interactions_ );
+      }
     }
     else {
       assert(!hard);
@@ -1016,8 +1031,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
       // only if same interaction for forced branching 
+      ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ? 
+	ShowerInteraction::QED : ShowerInteraction::QCD;
       // and evolution
-      if(type==branch->sudakov()->interactionType()) {
+      if(type2==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto
 	   fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
 	  particle->vetoEmission(fb.type,fb.kinematics->scale());
@@ -1025,12 +1042,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	}
       }
       // pt veto
-      if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
+      if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
       // should do base class vetos as well
-      if(timeLikeVetoed(fb,particle,type)) {
+      if(timeLikeVetoed(fb,particle)) {
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
@@ -1173,20 +1190,22 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       double zsplit = bb.kinematics->z();
       // apply the vetos for the truncated shower
       // if doesn't carry most of momentum
-      if(type==branch->sudakov()->interactionType() &&
+      ShowerInteraction::Type type2 = bb.type==ShowerPartnerType::QED ? 
+	ShowerInteraction::QED : ShowerInteraction::QCD;
+      if(type2==branch->sudakov()->interactionType() &&
 	 zsplit < 0.5) {
 	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
       // others
       if( part[0]->id() != particle->id() || // if particle changes type
-	  bb.kinematics->pT() > progenitor()->maximumpT(type) ||   // pt veto
+	  bb.kinematics->pT() > progenitor()->maximumpT(type2) ||   // pt veto
 	  bb.kinematics->scale() < branch->scale()) { // angular ordering veto
 	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
       // and those from the base class
-      if(spaceLikeVetoed(bb,particle,type)) {
+      if(spaceLikeVetoed(bb,particle)) {
 	particle->vetoEmission(bb.type,bb.kinematics->scale());
 	continue;
       }
@@ -1335,8 +1354,10 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
       particle->vetoEmission(fb.type,fb.kinematics->scale());
       continue;
     }
+    ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ? 
+      ShowerInteraction::QED : ShowerInteraction::QCD;
     double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
-    if(type==branch->sudakov()->interactionType()) {
+    if(type2==branch->sudakov()->interactionType()) {
       if(zsplit < 0.5 || // hardest line veto
 	 fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
@@ -1344,13 +1365,13 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
       }
     }
     // pt veto
-    if(fb.kinematics->pT() > progenitor()->maximumpT(type)) {
+    if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
       particle->vetoEmission(fb.type,fb.kinematics->scale());
       continue;
     }
     // should do base class vetos as well
     // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle,type)) break;
+    if(!spaceLikeDecayVetoed(fb,particle)) break;
     // otherwise reset scale and continue
     particle->vetoEmission(fb.type,fb.kinematics->scale());
   }
@@ -1362,8 +1383,6 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 					      branch->children()[0]->z(),
 					      branch->phi(),
 					      branch->children()[0]->pT());
-    // particle->evolutionScale(branch->type(),make_pair(branch->scale(),branch->scale()));
-    assert(false);
     showerKin->initialize( *particle,PPtr() );
     IdList idlist(3);
     idlist[0] = particle->id();
@@ -1929,7 +1948,9 @@ void Evolver::doShowering(bool hard) {
     }
   }
   // check if interactions in right order
-  if(hardTree() && hardTree()->interaction()!=interactions_[0]) {
+  if(hardTree() && interaction_!=4 && 
+     hardTree()->interaction()!=interactions_[0]) {
+    assert(interactions_.size()==2);
     showerOrder = false;
     swap(interactions_[0],interactions_[1]);
   }

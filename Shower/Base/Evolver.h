@@ -467,20 +467,17 @@ protected:
   /**
    *  Vetos for the timelike shower
    */
-  virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr,
-			      ShowerInteraction::Type);
+  virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr);
 
   /**
    *  Vetos for the spacelike shower
    */
-  virtual bool spaceLikeVetoed(const Branching &,ShowerParticlePtr,
-			       ShowerInteraction::Type);
+  virtual bool spaceLikeVetoed(const Branching &,ShowerParticlePtr);
 
   /**
    *  Vetos for the spacelike shower
    */
-  virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr,
-				    ShowerInteraction::Type);
+  virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
   /**
    *  Only generate the hard emission, for testing only.
