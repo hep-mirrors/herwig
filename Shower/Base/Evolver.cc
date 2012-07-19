@@ -1735,9 +1735,9 @@ void Evolver::constructTimeLikeLine(tHardBranchingPtr branch,
 }
 
 void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
-					HardBranchingPtr & first,
-					HardBranchingPtr & last,
-					SudakovPtr sud,PPtr beam) {
+				     HardBranchingPtr & first,
+				     HardBranchingPtr & last,
+				     SudakovPtr sud,PPtr beam) {
   if(!particle) return;
   if(!particle->parents().empty()) {
     tShowerParticlePtr parent = 
@@ -1769,6 +1769,50 @@ void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
       new_ptr(HardBranching(timeChild,SudakovPtr(),last,HardBranching::Outgoing));
   }
   last->addChild(timeBranch);
+  // sort out the type
+  if(last->branchingParticle()      ->id() == ParticleID::gamma ||
+     newBranch->branchingParticle() ->id() == ParticleID::gamma ||
+     timeBranch->branchingParticle()->id() == ParticleID::gamma) {
+    last->type(ShowerPartnerType::QED);
+  }
+  else if(last->branchingParticle()->id()==newBranch->branchingParticle()->id()) {
+    if(last->branchingParticle()->id()==ParticleID::g) {
+      if(last->branchingParticle()->colourLine()==
+	 newBranch->branchingParticle()->colourLine()) {
+	last->type(ShowerPartnerType::QCDAntiColourLine);
+      }
+      else {
+	last->type(ShowerPartnerType::QCDColourLine);
+      }
+    }
+    else if(last->branchingParticle()->hasColour()) {
+      last->type(ShowerPartnerType::QCDColourLine);
+    }
+    else if(last->branchingParticle()->hasAntiColour()) {
+      last->type(ShowerPartnerType::QCDAntiColourLine);
+    }
+    else
+      assert(false);
+  }
+  else if(newBranch->branchingParticle()->id()==ParticleID::g) { 
+    if(last->branchingParticle()->hasColour()) {
+      last->type(ShowerPartnerType::QCDAntiColourLine);
+    }
+    else if(last->branchingParticle()->hasAntiColour()) {
+      last->type(ShowerPartnerType::QCDColourLine);
+    }
+    else
+      assert(false);
+  }
+  else if(newBranch->branchingParticle()->hasColour()) {
+    last->type(ShowerPartnerType::QCDColourLine);
+  }
+  else if(newBranch->branchingParticle()->hasAntiColour()) {
+    last->type(ShowerPartnerType::QCDAntiColourLine);
+  }
+  else {
+    assert(false);
+  }
   last=newBranch;
 }
 
