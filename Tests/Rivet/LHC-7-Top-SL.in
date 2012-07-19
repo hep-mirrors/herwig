@@ -9,8 +9,8 @@ read LHCBase.in
 cd /Herwig/MatrixElements
 set MEHeavyQuark:QuarkType Top
 insert SimpleQCD:MatrixElements[0] MEHeavyQuark
-set /Herwig/Particles/t:Synchronized No
-set /Herwig/Particles/tbar:Synchronized No
+set /Herwig/Particles/t:Synchronized Not_synchronized
+set /Herwig/Particles/tbar:Synchronized Not_synchronized
 do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;
 do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;
 
