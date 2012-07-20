@@ -1369,7 +1369,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
 LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q, 
 						const Lorentz5Momentum & p ) const {
   Energy modp = p.vect().mag();
-  Energy modq = q.vect().mag();
+  Energy modq = q.vect().mag();  
   double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
   Boost beta = -betam*q.vect().unit();
   ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
@@ -1740,6 +1740,8 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   pin.rescaleMass();
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
+  if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
+
   // now calculate the p reference vectors 
   for(cit=jets.begin();cit!=jets.end();++cit){
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
@@ -1854,7 +1856,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     }
     // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
     // for the simple case Z->q qbar g this was checked against analytic formulae.
-    // compute the boost
+    // compute the boost    
     LorentzRotation R=solveBoost(qnew,
 				 toRest*(*cjt)->branchingParticle()->momentum())*toRest;
     (*cjt)->setMomenta(R,1.0,Lorentz5Momentum());  

@@ -61,6 +61,7 @@ void SMTopPOWHEGDecayer::Init() {
 
 
 HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
+
   // get the bottom and W
   assert(tree->outgoingLines().size()==2);
   ShowerProgenitorPtr 
@@ -83,24 +84,37 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   eventFrame.rotateZ( -pspectator.phi() );
   eventFrame.rotateY( -pspectator.theta() - Constants::pi );
 
-//   cerr << "testing " << *topProgenitor->progenitor() << "\n";
-//   cerr << "testing " << *bProgenitor  ->progenitor() << "\n";
-//   cerr << "testing " << *WProgenitor  ->progenitor() << "\n";
-
-
-//   cerr << "testing " << eventFrame*(topProgenitor->progenitor()->momentum())/GeV << "\n";
-//   cerr << "testing " << eventFrame*(bProgenitor  ->progenitor()->momentum())/GeV << "\n";
-//   cerr << "testing " << eventFrame*(WProgenitor  ->progenitor()->momentum())/GeV << "\n";
-
-  // invert it
+  //invert it
   eventFrame.invert();
-  // generate the hard emission
+  
+  //count number of events which give gluons in the dead region 
+  // ofstream dead("dead.top");
+  // ofstream count("count.top");
+  // for (unsigned int iy=0; iy<100000; ++iy){   
+  // vector<Lorentz5Momentum> momenta = hardMomenta();
+  // if(momenta.empty()) continue;
+  // double xw = 2.*momenta[2].e()/momenta[0].mass();
+  // double xg = 2.*momenta[3].e()/momenta[0].mass();
+  // count << "1\n";
+  // if(not deadZoneCheck(xw, xg)) continue;
+  // dead << xg << "\t" << xw << "\n";
+  // }
+
+
+  //generate the hard emission
   vector<Lorentz5Momentum> momenta = hardMomenta();
 
-  //if (not momenta.empty()){
-  //ofstream output("output.top", ios::app);
-  //output << "1\n";
-  //}
+  //
+   // if (!momenta.empty()){
+   //   ofstream output("PS.top", ios::app);
+   //   double xw = 2.*momenta[2].e()/momenta[0].mass();
+   //   double xg = 2.*momenta[3].e()/momenta[0].mass();
+   //   output << xg << "\t" << xw << "\n";
+   //   if (deadZoneCheck(xw, xg)) {
+   //     ofstream dead2("dead2.top", ios::app);
+   //     dead2 << "1\n";
+   //   }
+   // }
 
   // if no emission return
   if(momenta.empty()) {
@@ -108,13 +122,11 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
     bProgenitor  ->maximumpT(pTmin_);    
     return HardTreePtr();
   }
+  
   // rotate momenta back to the lab
-//   cerr << "testing size " << momenta.size() << "\n";
   for(unsigned int ix=0;ix<momenta.size();++ix) {
     momenta[ix] *= eventFrame;
-//     cerr << "new " 
-// 	 << momenta[ix]/GeV << " " << momenta[ix].mass()/GeV << " "<<  momenta[ix].m()/GeV 
-// 	 << "\n";
+  
   }
   // get ParticleData objects
   tcPDPtr top    = topProgenitor->progenitor()->dataPtr();
@@ -171,22 +183,19 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   ColinePtr newline=new_ptr(ColourLine());
   for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
       cit!=hardtree->branchings().end();++cit) {
+
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
       newline->addColoured((**cit).branchingParticle());
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
 
-//   cerr << *hardtree << "\n";
-//   exit(0);
-  // return the tree
+  //return the tree
   return hardtree;
 }
 
 
 vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
-  //ofstream output("output.top", ios::app);
-  //ofstream count("count.top", ios::app);
 
   double C    = 6.3;
   double ymax = 10.;
@@ -199,7 +208,7 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
   //Calculate A
   double A = (ymax - ymin) * C * (coupling()->overestimateValue() / 
   				 (2.*Constants::pi));
- 
+   
   Energy pTmax = mt_* (sqr(1.-w_) - b2_) / (2.*(1.-w_));
   if (pTmax < pTmin_) particleMomenta.clear();
 
@@ -234,10 +243,9 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
 		       particleMomenta[2].e() * particleMomenta[3].z(); 
 
       InvEnergy2 J  = (particleMomenta[2].vect().mag2()) / (2.* lambda * denom);
-      
       //Calculate weight
-      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C;
-    }
+      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C;    
+     }
 
     ofstream weights;
     if (weight[0] + weight[1] > 1.){
@@ -266,6 +274,45 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
     pTmax = pT; 
   }
   return particleMomenta;
+}
+
+bool SMTopPOWHEGDecayer::deadZoneCheck(double xw, double xg){
+
+  //veto events not in the dead cone 
+  double Lambda = sqrt(1. + sqr(w2_) + sqr(b2_) - 2.*w2_ - 2.*b2_ - 2.*w2_*b2_);
+  double kappa = b2_ + 0.5*(1. - w2_ + b2_ + Lambda);
+  //invert xw for z values
+  double A =  1.;
+  double B = -1.;
+  double C =  (1.+w2_-b2_-xw)/kappa;
+  if((sqr(B) - 4.*A*C) >= 0.){
+    double z[2];
+    z[0] = (-B + sqrt(sqr(B) - 4.*A*C))/(2.*A);
+    z[1] = (-B - sqrt(sqr(B) - 4.*A*C))/(2.*A);
+    double r = 0.5*(1. + b2_/(1. + w2_- xw));
+    double xg_lims [2];
+    xg_lims[0] = (2. - xw)*(1.-r) - (z[0]-r)*sqrt(sqr(xw) - 4.*w2_);
+    xg_lims[1] = (2. - xw)*(1.-r) - (z[1]-r)*sqrt(sqr(xw) - 4.*w2_);
+    double xg_low_lim = min(xg_lims[0], xg_lims[1]);
+    double xg_upp_lim = max(xg_lims[0], xg_lims[1]);
+    if (xg>=xg_low_lim && xg<=xg_upp_lim) return false;
+  }
+
+  double kappa_t = 1. + 0.5*(1. - w2_ + b2_ + Lambda);
+  double z = 1. - xg/kappa_t; 
+  double u = 1. + w2_ - b2_ - (1.-z)*kappa_t;
+  double y = 1. - (1.-z)*(kappa_t-1.);
+  if (sqr(u) - 4.*w2_*y*z >= 0.){
+    double v = sqrt(sqr(u) - 4.*w2_*y*z);
+    double xw_lim = (u + v) / (2.*y) + (u - v) / (2.*z);
+    if (xw <= xw_lim) return false;
+  }
+  else if (sqr(u) - 4.*w2_*y*z < 0.){
+    double xg_lim = (8.*w2_ -2.*xw*(1-b2_+w2_))/(4.*w2_-2.*xw);
+    if (xg>=xg_lim) return false;
+  }
+
+  return true;
 }
 
 
@@ -368,7 +415,6 @@ bool SMTopPOWHEGDecayer::psCheck(double xg, double xw) {
   double xb_star = (1. - w2_ + b2_ - xg) / sqrt(1. - xg);
   double xg_star = xg / sqrt(1. - xg);
 
-  //new
   if ((sqr(xb_star) - 4.*b2_) < 1e-10) return false;
   double xw_max = (4. + 4.*w2_ - sqr(xb_star + xg_star) + 
 		   sqr(sqrt(sqr(xb_star) - 4.*b2_) + xg_star)) / 4.;
@@ -376,6 +422,7 @@ bool SMTopPOWHEGDecayer::psCheck(double xg, double xw) {
 		   sqr(sqrt(sqr(xb_star) - 4.*b2_) - xg_star)) / 4.;
 
   if (xw < xw_min || xw > xw_max) return false;
+
   return true;
 }
 
