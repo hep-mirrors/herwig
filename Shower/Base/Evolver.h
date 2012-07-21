@@ -175,7 +175,8 @@ protected:
   /**
    *  set the colour partners
    */
-  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type);
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type,
+				    bool clear);
 
   /**
    *  Methods to perform the evolution of an individual particle, including

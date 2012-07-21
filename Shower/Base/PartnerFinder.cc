@@ -314,7 +314,6 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	    (scaleChoice_==0 ? scale : scales[ix].first);
 	}
 	else {
-	  cerr << "testing B\n";
 	  assert(false);
 	}
       }
@@ -344,7 +343,17 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     for(unsigned int ix=0;ix<partners.size();++ix) partners[ix].first /= prob;
     // set the partner if required
     int position(-1);
-    if(setPartners||!(*cit)->partner()) {
+    // use QCD partner if set
+    if(!setPartners&&(*cit)->partner()) {
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	if((*cit)->partner()==partners[ix].second) {
+	  position = ix;
+	  break;
+	}
+      }
+    }
+    // set the partner
+    if(setPartners||!(*cit)->partner()||position<0) {
       prob = UseRandom::rnd();
       for(unsigned int ix=0;ix<partners.size();++ix) {
  	if(partners[ix].first>prob) {
@@ -353,15 +362,8 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 	}
 	prob -= partners[ix].first;
       }
-      if(position>=0) (*cit)->partner(partners[position].second);
-    }
-    // partner set, find it
-    else {
-      for(unsigned int ix=0;ix<partners.size();++ix) {
-	if((*cit)->partner()==partners[ix].second) {
-	  position = ix;
-	  break;
-	}
+      if(position>=0&&(setPartners||!(*cit)->partner())) {
+	(*cit)->partner(partners[position].second);
       }
     }
     // must have a partner

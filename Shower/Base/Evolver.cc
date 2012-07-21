@@ -722,7 +722,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   if(_hardEmissionMode==1) hardestEmission(hard);
   // set the initial colour partners
   setEvolutionPartners(hard,_hardtree ? 
-		       _hardtree->interaction() : interactions_[0]);
+		       _hardtree->interaction() : interactions_[0],false);
   // generate hard me if needed
   if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
   // get the particles to be showered
@@ -730,14 +730,15 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
     currentTree()->extractProgenitors();
   // remake the colour partners if needed
   if(_hardEmissionMode==0 && _currenttree->hardMatrixElementCorrection()) {
-    setEvolutionPartners(hard,interactions_[0]);
+    setEvolutionPartners(hard,interactions_[0],true);
     _currenttree->resetShowerProducts();
   }
   // return the answer
   return particlesToShower;
 }
 
-void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
+void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
+				   bool clear) {
   // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
@@ -765,6 +766,12 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
     }
   }
   // Set the initial evolution scales
+  if(clear) {
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      particles[ix]->partner(ShowerParticlePtr());
+      particles[ix]->clearPartners();
+    }
+  }
   showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
@@ -1556,7 +1563,7 @@ bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower
   // set the hard tree
   hardTree(QCDTree);
   // set the charge partners
-  setEvolutionPartners(false,inter);
+  setEvolutionPartners(false,inter,false);
   // get the particles to be showered
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -1653,7 +1660,7 @@ bool Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
   // clear the old shower
   currentTree()->clear();
   // set the charge partners
-  setEvolutionPartners(true,inter);
+  setEvolutionPartners(true,inter,false);
   // get the particles to be showered
   particlesToShower = currentTree()->extractProgenitors();
   // reset momenta
@@ -2017,7 +2024,7 @@ void Evolver::doShowering(bool hard) {
       // clear results of last attempt if needed
       if(ntry!=0) {
 	currentTree()->clear();
-	setEvolutionPartners(hard,interactions_[inter]);
+	setEvolutionPartners(hard,interactions_[inter],false);
 	_nis = _nfs = 0;
       }
       // generate the shower
