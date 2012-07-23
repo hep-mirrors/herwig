@@ -336,7 +336,8 @@ reconstructHardJets(ShowerTreePtr hard,
 	    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					    systems[ix].jets);
 	}
-	if(type==ShowerInteraction::QED) {
+	if(type==ShowerInteraction::QED||
+	   type==ShowerInteraction::Both) {
 	  combineFinalStateSystem(systems);
 	  general=false;
 	}
@@ -533,7 +534,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq,
 
 bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay,
-		     ShowerInteraction::Type type) const {
+		     ShowerInteraction::Type) const {
   _currentTree = decay;
   try {
     // extract the particles from the ShowerTree
