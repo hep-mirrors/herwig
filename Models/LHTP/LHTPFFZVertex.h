@@ -6,17 +6,15 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "LHTPFFZVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LHTPFFZVertex class.
- *
- * @see \ref LHTPFFZVertexInterfaces "The interfaces"
- * defined for LHTPFFZVertex.
+ * The LHTPFFZVertex class implements the couples of the \f$Z^0\f$
+ * boson and its heavy partner to the fermions in the Little Higgs
+ * model with T-parity.
  */
 class LHTPFFZVertex: public Helicity::FFVVertex {
 
@@ -94,12 +92,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPFFZVertex> initLHTPFFZVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -163,41 +155,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPFFZVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHTPFFZVertex,1> {
-  /** Typedef of the first base class of LHTPFFZVertex. */
-  typedef Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPFFZVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPFFZVertex>
-  : public ClassTraitsBase<Herwig::LHTPFFZVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPFFZVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPFFZVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPFFZVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 

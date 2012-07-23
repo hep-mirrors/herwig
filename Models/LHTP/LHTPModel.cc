@@ -8,6 +8,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -78,9 +79,10 @@ void LHTPModel::persistentInput(PersistentIStream & is, int) {
      >> _kappa >> iunit(_v,GeV) >> _g >> _gp >> _sthetaH >> _cthetaH;
 }
 
-ClassDescription<LHTPModel> 
-LHTPModel::initLHTPModel;
-// Definition of the static class description member.
+
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHTPModel,StandardModel>
+describeHerwigLHTPModel("Herwig::LHTPModel", "HwLHTPModel.so");
 
 void LHTPModel::Init() {
 

@@ -6,6 +6,7 @@
 
 #include "LHTPFFGVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -19,14 +20,15 @@ IBPtr LHTPFFGVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<LHTPFFGVertex> 
-LHTPFFGVertex::initLHTPFFGVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeNoPIOClass<LHTPFFGVertex,FFVVertex>
+describeHerwigLHTPFFGVertex("Herwig::LHTPFFGVertex", "HwLHTPModel.so");
 
 void LHTPFFGVertex::Init() {
 
   static ClassDocumentation<LHTPFFGVertex> documentation
-    ("There is no documentation for the LHTPFFGVertex class");
+    ("The LHTPFFGVertex class implements the couples of the fermions "
+     "to the gluons in the Little Higgs model with T-parity.");
 
 }
 

@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "LHTPWWWVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -18,23 +17,15 @@ using ThePEG::Helicity::Direction;
  * Littlest Higgs model with T-parity. It inherits from the 
  * Standard Model WWW vertex to use its setCoupling member
  * for the SM gauge boson self-couplings.
- *
- * @see \ref LHTPWWWVertexInterfaces "The interfaces"
- * defined for LHTPWWWVertex.
  */
 class LHTPWWWVertex: public VVVVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   LHTPWWWVertex();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -104,12 +95,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPWWWVertex> initLHTPWWWVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -132,41 +117,6 @@ private:
    */
   vector<double> couplings_;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPWWWVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHTPWWWVertex,1> {
-  /** Typedef of the first base class of LHTPWWWVertex. */
-  typedef Helicity::VVVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPWWWVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPWWWVertex>
-  : public ClassTraitsBase<Herwig::LHTPWWWVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPWWWVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPWWWVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPWWWVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 

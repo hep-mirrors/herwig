@@ -34,16 +34,6 @@ insert HPConstructor:Incoming 3 /Herwig/Particles/d
 insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
 insert HPConstructor:Outgoing 0 /Herwig/Particles/TpT
-# --- Perturbative Decays ---
-
-# Particles that are specified in the 'DecayParticles' 
-# interface will have spin correlations included
-# when they are decayed. If a decay table in SLHA
-# format is not available then set the above 
-# 'CreateDecayModes' interface to 'Yes' and the
-# particles list here will have decay modes
-# created also.
-insert NewModel:DecayParticles 0 /Herwig/Particles/TpT
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV

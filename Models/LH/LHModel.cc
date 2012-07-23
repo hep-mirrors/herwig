@@ -11,6 +11,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -39,8 +40,9 @@ void LHModel::persistentInput(PersistentIStream & is, int) {
      >> WHHVertex_;
 }
 
-ClassDescription<LHModel> LHModel::initLHModel;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHModel,StandardModel>
+describeThePEGLHModel("Herwig::LHModel", "HwLHModel.so");
 
 void LHModel::Init() {
 

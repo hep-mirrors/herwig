@@ -8,6 +8,7 @@
 #include "LHTPModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -29,13 +30,16 @@ void LHTPFFZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _gl >> _gr >> _tl >> _tr >> _coupd >> _coupu >> _coupe >> _coupnu;
 }
 
-ClassDescription<LHTPFFZVertex> LHTPFFZVertex::initLHTPFFZVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHTPFFZVertex,FFVVertex>
+describeHerwigLHTPFFZVertex("Herwig::LHTPFFZVertex", "HwLHTPModel.so");
 
 void LHTPFFZVertex::Init() {
 
   static ClassDocumentation<LHTPFFZVertex> documentation
-    ("There is no documentation for the LHTPFFZVertex class");
+    ("The LHTPFFZVertex class implements the couplings of "
+     "the fermions to the Z boson and its heavy partner in the"
+     " Little Higgs model with T-parity.");
 
 }
 

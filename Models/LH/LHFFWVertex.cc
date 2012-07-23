@@ -7,6 +7,7 @@
 #include "LHFFWVertex.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
@@ -60,8 +61,9 @@ void LHFFWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH >> _tHcorrL >> _tHcorrH;
 }
 
-ClassDescription<LHFFWVertex> LHFFWVertex::initLHFFWVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHFFWVertex,FFVVertex>
+describeHerwigLHFFWVertex("Herwig::LHFFWVertex", "HwLHModel.so");
 
 void LHFFWVertex::Init() {
 

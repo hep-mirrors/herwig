@@ -16,9 +16,6 @@ using namespace ThePEG;
  * The LHWWHVertex class implements the couplings of two electroweak
  * gauge bosons to a Higgs boson in the Little Higgs model including the additional
  * heavy photon, Z and W bosons in the model and the triplet Higgs bosons.
- *
- * @see \ref LHWWHVertexInterfaces "The interfaces"
- * defined for LHWWHVertex.
  */
 class LHWWHVertex: public Helicity::VVSVertex {
 
@@ -96,12 +93,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHWWHVertex> initLHWWHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -130,41 +121,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHWWHVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHWWHVertex,1> {
-  /** Typedef of the first base class of LHWWHVertex. */
-  typedef Helicity::VVSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHWWHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHWWHVertex>
-  : public ClassTraitsBase<Herwig::LHWWHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHWWHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHWWHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHWWHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHModel.so"; }
-};
-
-/** @endcond */
 
 }
 

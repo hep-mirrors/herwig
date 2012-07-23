@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "LHTPWWHVertex.fh"
 
 namespace Herwig {
 
@@ -17,9 +16,6 @@ using namespace ThePEG;
  * gauge bosons to a Higgs boson in the Little Higgs model with T-parity
  * including the additional
  * heavy photon, Z and W bosons in the model and the triplet Higgs bosons.
- *
- * @see \ref LHTPWWHVertexInterfaces "The interfaces"
- * defined for LHTPWWHVertex.
  */
   class LHTPWWHVertex: public Helicity::VVSVertex {
 
@@ -97,12 +93,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPWWHVertex> initLHTPWWHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -131,41 +121,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPWWHVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHTPWWHVertex,1> {
-  /** Typedef of the first base class of LHTPWWHVertex. */
-  typedef Helicity::VVSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPWWHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPWWHVertex>
-  : public ClassTraitsBase<Herwig::LHTPWWHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPWWHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPWWHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPWWHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 

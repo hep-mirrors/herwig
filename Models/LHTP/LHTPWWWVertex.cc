@@ -6,6 +6,7 @@
 
 #include "LHTPWWWVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "LHTPModel.h"
@@ -42,13 +43,16 @@ void LHTPWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> couplings_;
 }
 
-ClassDescription<LHTPWWWVertex> LHTPWWWVertex::initLHTPWWWVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHTPWWWVertex,VVVVertex>
+describeHerwigLHTPWWWVertex("Herwig::LHTPWWWVertex", "HwLHTPModel.so");
 
 void LHTPWWWVertex::Init() {
 
   static ClassDocumentation<LHTPWWWVertex> documentation
-    ("There is no documentation for the LHTPWWWVertex class");
+    ("The LHTPWWWVertex class implements the coupling of three "
+     "electroweak gauge bosons and their heavy partners in the "
+     "Little Higgs model with T-parity.");
 
 }
 

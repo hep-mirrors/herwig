@@ -12,55 +12,34 @@
 #
 ###################################################
 cd /Herwig/Particles
-set h0:Width_generator NULL
-set h0:Mass_generator NULL
-
-set h0/h0->b,bbar;:OnOff Off
-set h0/h0->b,bbar;:BranchingRatio 0.0
-set h0/h0->W+,W-;:OnOff Off
-set h0/h0->W+,W-;:BranchingRatio 0.0
-set h0/h0->tau-,tau+;:OnOff Off 
-set h0/h0->tau-,tau+;:BranchingRatio 0.0 
-set h0/h0->g,g;:OnOff Off 
-set h0/h0->g,g;:BranchingRatio 0.0 
-set h0/h0->c,cbar;:OnOff Off
-set h0/h0->c,cbar;:BranchingRatio 0.0
-set h0/h0->Z0,Z0;:OnOff Off
-set h0/h0->Z0,Z0;:BranchingRatio 0.0
-set h0/h0->gamma,gamma;:OnOff Off
-set h0/h0->gamma,gamma;:BranchingRatio 0.0
-set h0/h0->mu-,mu+;:OnOff Off
-set h0/h0->mu-,mu+;:BranchingRatio 0.0
-set h0/h0->t,tbar;:OnOff Off
-set h0/h0->t,tbar;:BranchingRatio 0.0
 
 create ThePEG::ParticleData A_H
-setup A_H 32 A_H 500.0 0. 0. 0.0 0 0 3 0
+setup A_H 32 A_H 500.0 0. 0. 0.0 0 0 3 1
 create ThePEG::ParticleData Z_H 
-setup Z_H 33 Z_H 900.0 0.0 0.0 0.0 0 0 3 0
+setup Z_H 33 Z_H 900.0 0.0 0.0 0.0 0 0 3 1
 create ThePEG::ParticleData W_H+ 
-setup W_H+ 34 W_H+ 500.0 0. 0. 0.0 3 0 3 0
+setup W_H+ 34 W_H+ 500.0 0. 0. 0.0 3 0 3 1
 create ThePEG::ParticleData W_H- 
-setup W_H- -34 W_H- 500.0 0. 0. 0.0 -3 0 3 0
+setup W_H- -34 W_H- 500.0 0. 0. 0.0 -3 0 3 1
 makeanti W_H+ W_H- 
 create ThePEG::ParticleData T 
-setup T 8 T 1000.0 0.0 0.0 0.0 2 3 2 0
+setup T 8 T 1000.0 0.0 0.0 0.0 2 3 2 1
 create ThePEG::ParticleData Tbar 
-setup Tbar -8 Tbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+setup Tbar -8 Tbar 1000.0 0.0 0.0 0.0 -2 -3 2 1
 makeanti T Tbar  
 create ThePEG::ParticleData Phi0
-setup Phi0 35 Phi0 1000.0 0. 0. 0.0 0 0 1 0
+setup Phi0 35 Phi0 1000.0 0. 0. 0.0 0 0 1 1
 create ThePEG::ParticleData PhiP
-setup PhiP 36 PhiP 1000.0 0. 0. 0.0 0 0 1 0
+setup PhiP 36 PhiP 1000.0 0. 0. 0.0 0 0 1 1
 create ThePEG::ParticleData Phi+
-setup Phi+ 37 Phi+ 1000.0 0. 0. 0.0 3 0 1 0
+setup Phi+ 37 Phi+ 1000.0 0. 0. 0.0 3 0 1 1
 create ThePEG::ParticleData Phi-
-setup Phi- -37 Phi- 1000.0 0. 0. 0.0 -3 0 1 0
+setup Phi- -37 Phi- 1000.0 0. 0. 0.0 -3 0 1 1
 makeanti Phi+ Phi-
 create ThePEG::ParticleData Phi++
-setup Phi++ 38 Phi++ 1000.0 0. 0. 0.0 +6 0 1 0
+setup Phi++ 38 Phi++ 1000.0 0. 0. 0.0 +6 0 1 1
 create ThePEG::ParticleData Phi--
-setup Phi-- -38 Phi-- 1000.0 0. 0. 0.0 -6 0 1 0
+setup Phi-- -38 Phi-- 1000.0 0. 0. 0.0 -6 0 1 1
 makeanti Phi++ Phi--
 
 ###################################################
@@ -122,6 +101,16 @@ set Model:Vertex/WWHH /Herwig/Vertices/LH/WWHHVertex
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
 insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
+
+# Set the particel to be decayed
+insert NewModel:DecayParticles 0 /Herwig/Particles/A_H
+insert NewModel:DecayParticles 0 /Herwig/Particles/Z_H 
+insert NewModel:DecayParticles 0 /Herwig/Particles/W_H+
+insert NewModel:DecayParticles 0 /Herwig/Particles/T
+insert NewModel:DecayParticles 0 /Herwig/Particles/Phi0
+insert NewModel:DecayParticles 0 /Herwig/Particles/PhiP
+insert NewModel:DecayParticles 0 /Herwig/Particles/Phi+
+insert NewModel:DecayParticles 0 /Herwig/Particles/Phi++
 
 # Set up the model framework
 set LH/Model:ModelGenerator NewModel

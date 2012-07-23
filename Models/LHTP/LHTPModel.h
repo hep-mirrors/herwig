@@ -147,12 +147,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPModel> initLHTPModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -231,41 +225,6 @@ private:
    */
   double _gp;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPModel. */
-template <>
-struct BaseClassTrait<Herwig::LHTPModel,1> {
-  /** Typedef of the first base class of LHTPModel. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPModel>
-  : public ClassTraitsBase<Herwig::LHTPModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPModel is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 
