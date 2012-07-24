@@ -141,13 +141,6 @@ public:
 
 protected:
 
-  /**
-   *  Reset the mass of a ParticleData object
-   */
-  void resetMass(long id, Energy mass);
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**

@@ -33,42 +33,42 @@ public:
   /**
    *  The vacuum expection value
    */
-  Energy vev() const { return _v; }
+  Energy vev() const { return v_; }
 
   /**
    *  The \f$f\f$ scale of the non-linear \f$\sigma\f$-model
    */
-  Energy f() const { return _f; }
+  Energy f() const { return f_; }
 
   /**
    *  \f$\sin\alpha\f$
    */
-  double sinAlpha() const { return _salpha; }
+  double sinAlpha() const { return salpha_; }
 
   /**
    *  \f$\cos\alpha\f$
    */
-  double cosAlpha() const { return _calpha; }
+  double cosAlpha() const { return calpha_; }
 
   /**
    *  \f$\sin\beta\f$
    */
-  double sinBeta() const { return _sbeta; }
+  double sinBeta() const { return sbeta_; }
 
   /**
    *  \f$\cos\beta\f$
    */
-  double cosBeta() const { return _cbeta; }
+  double cosBeta() const { return cbeta_; }
 
   /**
    *  \f$\sin\theta_H\f$
    */
-  double sinThetaH() const { return _sthetaH; }
+  double sinThetaH() const { return sthetaH_; }
 
   /**
    *  \f$\cos\theta_H\f$
    */
-  double cosThetaH() const { return _cthetaH; }
+  double cosThetaH() const { return cthetaH_; }
   //@}
 
 public:
@@ -96,13 +96,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-protected:
-
-  /**
-   *  Reset the mass of a ParticleData object
-   */
-  void resetMass(long id, Energy mass);
 
 protected:
 
@@ -157,7 +150,7 @@ private:
   /**
    *  The constant for the non-linear \f$\sigma\f$ model
    */
-  Energy _f;
+  Energy f_;
 
   /**
    *  @name The mixing in the top quark sector
@@ -166,22 +159,22 @@ private:
   /**
    *  \f$\sin\alpha\f$, taken as an input
    */
-  double _salpha;
+  double salpha_;
 
   /**
    *  \f$\cos\alpha\f$
    */
-  double _calpha;
+  double calpha_;
 
   /**
    *  \f$\sin\beta\f$
    */
-  double _sbeta;
+  double sbeta_;
 
   /**
    *  \f$\cos\beta\f$
    */
-  double _cbeta;
+  double cbeta_;
   //@}
 
   /**
@@ -191,39 +184,45 @@ private:
   /**
    *  \f$\sin\theta_H\f$
    */
-  double _sthetaH;
+  double sthetaH_;
 
   /**
    *  \f$\cos\theta_H\f$
    */
-  double _cthetaH;
+  double cthetaH_;
   //@}
 
   /**
-   *  The \f$\kappa\f$ parameter which controls the properties of the
-   *  T-odd fermions
+   *  The \f$\kappa_q\f$ parameter which controls the properties of the
+   *  T-odd quarks
    */
-  double _kappa;
+  double kappaQuark_;
+
+  /**
+   *  The \f$\kappa_\ell\f$ parameter which controls the properties of the
+   *  T-odd leptons
+   */
+  double kappaLepton_;
 
   /**
    *  The mass of the Standard Model higgs
    */
-  Energy _mh;
+  Energy mh_;
 
   /**
    *  The vacuum expection valve
    */
-  Energy _v;
+  Energy v_;
 
   /**
    *  The \f$g\f$ coupling
    */
-  double _g;
+  double g_;
 
   /**
    *  the \f$g'\f$ coupling
    */
-  double _gp;
+  double gp_;
 };
 
 }

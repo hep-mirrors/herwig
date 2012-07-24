@@ -5,7 +5,6 @@
 //
 
 #include "LHModel.h"
-#include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -152,14 +151,4 @@ void LHModel::doinit() {
   resetMass(-37,sqrt(MPhi2));
   resetMass( 38,sqrt(MPhi2));
   resetMass(-38,sqrt(MPhi2));
-}
-
-void LHModel::resetMass(long id, Energy mass) {
-  tPDPtr part = getParticleData(id);
-  if(!part) return;
-  part->init();
-  const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-  ostringstream os;
-  os << abs(mass/GeV);
-  ifb->exec(*part, "set", os.str());
 }

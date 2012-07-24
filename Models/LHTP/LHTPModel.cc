@@ -6,7 +6,6 @@
 
 #include "LHTPModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -58,8 +57,10 @@ int top_equation(const gsl_vector * x, void *params, gsl_vector *f ) {
 }
 
 LHTPModel::LHTPModel()
-  : _f(0.5*TeV), _salpha(sqrt(0.500)), _calpha(0.), _sbeta(0.), _cbeta(0.),
-    _kappa(1.), _mh(120.*GeV), _v(246.*GeV),_g(sqrt(0.43)), _gp(sqrt(0.12)) {}
+  : f_(0.5*TeV), salpha_(sqrt(0.5)), calpha_(sqrt(0.5)), sbeta_(0.), cbeta_(0.),
+    kappaQuark_(1.), kappaLepton_(1.), mh_(120.*GeV), v_(246.*GeV),
+    g_(sqrt(0.43)), gp_(sqrt(0.12)) 
+{}
 
 IBPtr LHTPModel::clone() const {
   return new_ptr(*this);
@@ -70,13 +71,15 @@ IBPtr LHTPModel::fullclone() const {
 }
 
 void LHTPModel::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_f,TeV) << _salpha << _calpha << _sbeta << _cbeta
-     << _kappa << ounit(_v,GeV) << _g << _gp << _sthetaH << _cthetaH;
+  os << ounit(f_,TeV) << salpha_ << calpha_ << sbeta_ << cbeta_
+     << kappaQuark_ << kappaLepton_ << ounit(v_,GeV) 
+     << g_ << gp_ << sthetaH_ << cthetaH_;
 }
 
 void LHTPModel::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_f,TeV) >> _salpha >> _calpha >> _sbeta >> _cbeta
-     >> _kappa >> iunit(_v,GeV) >> _g >> _gp >> _sthetaH >> _cthetaH;
+  is >> iunit(f_,TeV) >> salpha_ >> calpha_ >> sbeta_ >> cbeta_
+     >> kappaQuark_ >> kappaLeptopn_>> iunit(v_,GeV)
+     >> g_ >> gp_ >> sthetaH_ >> cthetaH_;
 }
 
 
@@ -93,36 +96,32 @@ void LHTPModel::Init() {
   static Parameter<LHTPModel,Energy> interfacef
     ("f",
      "The scale of the non-linear sigma-model",
-     &LHTPModel::_f, TeV, 1.*TeV, 0.0*TeV, 10.0*TeV,
+     &LHTPModel::f_, TeV, 1.*TeV, 0.0*TeV, 10.0*TeV,
      true, false, Interface::limited);
 
   static Parameter<LHTPModel,double> interfaceSinAlpha
     ("SinAlpha",
      "The parameter controlling the mixing in the top quark sector of the model",
-     &LHTPModel::_salpha, sqrt(0.5), 0.0, 10.0,
+     &LHTPModel::salpha_, sqrt(0.5), 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<LHTPModel,double> interfaceKappa
-    ("Kappa",
-     "The parameter controlling the masses of the T-odd fermions",
-     &LHTPModel::_kappa, 1.0, 0.0, 10.0,
+  static Parameter<LHTPModel,double> interfaceKappaQuark
+    ("KappaQuark",
+     "The parameter controlling the masses of the T-odd quarks",
+     &LHTPModel::kappaQuark_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<LHTPModel,double> interfaceKappaLepton
+    ("KappaLepton",
+     "The parameter controlling the masses of the T-odd leptons",
+     &LHTPModel::kappaLepton_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<LHTPModel,Energy> interfaceHiggsMass
     ("HiggsMass",
      "The mass of the lightest Higgs boson",
-     &LHTPModel::_mh, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
+     &LHTPModel::mh_, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
      false, false, Interface::limited);
-}
-
-void LHTPModel::resetMass(long id, Energy mass) {
-  tPDPtr part = getParticleData(id);
-  if(!part) return;
-  //  part->init();
-  const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-  ostringstream os;
-  os << abs(mass/GeV);
-  ifb->exec(*part, "set", os.str());
 }
 
 void LHTPModel::doinit() {
@@ -139,29 +138,29 @@ void LHTPModel::doinit() {
   double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
   double sw2(sin2ThetaW()),cw2(1.-sin2ThetaW());
   double sw(sqrt(sw2)),cw(sqrt(cw2));
-  _g  = ee/sw;
-  _gp = ee/cw;
+  g_  = ee/sw;
+  gp_ = ee/cw;
   // vev
-  _v = 2.*mw/_g;
-  double vf(sqr(_v/_f));
+  v_ = 2.*mw/g_;
+  double vf(sqr(v_/f_));
   // calculate masses of the new particles from input
   // and SM parameters
   // masses of the new gauge bosons (MWH = MZH)
-  Energy MAH = _gp*_f*sqrt(0.2)*(1.-0.625*vf);
-  Energy MZH = _g *_f*          (1.-0.125*vf);
+  Energy MAH = gp_*f_*sqrt(0.2)*(1.-0.625*vf);
+  Energy MZH = g_ *f_*          (1.-0.125*vf);
   // mixings
-  _sthetaH = 1.25*_g*_gp/(5.*sqr(_g)-sqr(_gp))*vf;
-  _cthetaH = sqrt(1.-sqr(_sthetaH));
+  sthetaH_ = 1.25*g_*gp_/(5.*sqr(g_)-sqr(gp_))*vf;
+  cthetaH_ = sqrt(1.-sqr(sthetaH_));
   // masses of the new top quarks
   Energy MTp,MTm;
   topMixing(MTp,MTm);
   // masses of the T-odd fermions
-  Energy Mdm = sqrt(2.)*_kappa*_f;
-  Energy Mum = sqrt(2.)*_kappa*_f*(1.-0.125*vf);
-  Energy Mlm = sqrt(2.)*_kappa*_f;
-  Energy Mnm = sqrt(2.)*_kappa*_f*(1.-0.125*vf);
+  Energy Mdm = sqrt(2.)*kappaQuark_ *f_;
+  Energy Mum = sqrt(2.)*kappaQuark_ *f_*(1.-0.125*vf);
+  Energy Mlm = sqrt(2.)*kappaLepton_*f_;
+  Energy Mnm = sqrt(2.)*kappaLepton_*f_*(1.-0.125*vf);
   // masses of the triplet higgs
-  Energy MPhi = sqrt(2.)*_mh*_f/_v;
+  Energy MPhi = sqrt(2.)*mh_*f_/v_;
   // set the masses of the new particles
   // new gauge bosons
   resetMass( 32      , MAH  );
@@ -174,7 +173,7 @@ void LHTPModel::doinit() {
   resetMass(  4000008, MTm  );
   resetMass( -4000008, MTm  );
   //  masses of the Higgs bosons
-  resetMass( 25      , _mh  );
+  resetMass( 25      , mh_  );
   resetMass( 35      , MPhi );
   resetMass( 36      , MPhi );
   resetMass( 37      , MPhi );
@@ -211,30 +210,30 @@ void LHTPModel::doinit() {
 
 void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
   Energy mt = getParticleData(ParticleID::t)->mass();
-  _calpha = sqrt(1.-sqr(_salpha));
-  double sv(sin(sqrt(2.)*_v/_f)),cv(cos(sqrt(2.)*_v/_f));
+  calpha_ = sqrt(1.-sqr(salpha_));
+  double sv(sin(sqrt(2.)*v_/f_)),cv(cos(sqrt(2.)*v_/f_));
   // first guess for Yukawa's based on leading order in v/f expansion
-  double lambda1(mt/_v/_calpha), lambda2(mt/_salpha/_v);
-  MTp = lambda1/_salpha*_f;
-  MTm = lambda1/_salpha*_calpha*_f;
+  double lambda1(mt/v_/calpha_), lambda2(mt/salpha_/v_);
+  MTp = lambda1/salpha_*f_;
+  MTm = lambda1/salpha_*calpha_*f_;
   // special case where denominator of tan 2 alpha eqn is zero
-  if(abs(_salpha-sqrt(0.5))<1e-4) {
+  if(abs(salpha_-sqrt(0.5))<1e-4) {
     double a = 0.25*(2.*sqr(sv)+sqr(1.+cv));
     double b = 0.5*(a+0.5*(sqr(sv)+0.5*sqr(1.+cv)));
-    lambda1 = mt/_f*sqrt(1./b/(1.-sqrt(1-0.5*a*sqr(sv/b))));
+    lambda1 = mt/f_*sqrt(1./b/(1.-sqrt(1-0.5*a*sqr(sv/b))));
     lambda2 = sqrt(a)*lambda1;
   }
   // general case using GSL
   else {
-    double ca = sqrt(1.-sqr(_salpha));
-    double ta = _salpha/ca;
+    double ca = sqrt(1.-sqr(salpha_));
+    double ta = salpha_/ca;
     double tan2a = 2.*ta/(1.-sqr(ta));
     const gsl_multiroot_fsolver_type *T;
     gsl_multiroot_fsolver *s;
     int status;
     size_t iter=0;
     const size_t n=2;
-    struct tparams p = {_v,_f,mt,tan2a};
+    struct tparams p = {v_,f_,mt,tan2a};
     gsl_multiroot_function f = {&top_equation, n, &p};
     gsl_vector *x = gsl_vector_alloc(n);
     gsl_vector_set(x,0,lambda1);
@@ -257,11 +256,11 @@ void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
   // calculate the heavy top masses using full result
   double delta = 0.5*(sqr(lambda2)+0.5*sqr(lambda1)*(sqr(sv)+0.5*sqr(1.+cv)));
   double det = sqrt(1.-0.5*sqr(lambda1*lambda2*sv/delta));
-  MTp = sqrt(sqr(_f)*delta*(1.+det));
-  MTm = lambda2*_f;
+  MTp = sqrt(sqr(f_)*delta*(1.+det));
+  MTm = lambda2*f_;
   // beta mixing angle
   double beta = 0.5*atan(2.*sqrt(2.)*sqr(lambda1)*sv*(1.+cv)/
 			 (4.*sqr(lambda2)+sqr(1.+cv)*sqr(lambda1)-2.*sqr(lambda1)*sv));
-  _sbeta = sin(beta);
-  _cbeta = cos(beta);
+  sbeta_ = sin(beta);
+  cbeta_ = cos(beta);
 }
