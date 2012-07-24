@@ -255,12 +255,12 @@ protected:
   /**
    *  Generate hard QCD emission
    */
-  HardTreePtr hardQCDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+  HardTreePtr hardQCDEmission(vector<ShowerProgenitorPtr>);
 
   /**
    *  Generate hard QED emission 
    */
-  HardTreePtr hardQEDEmission(vector<ShowerProgenitorPtr>,ShowerTreePtr);
+  HardTreePtr hardQEDEmission(vector<ShowerProgenitorPtr>);
 
   /**
    *  The supression function

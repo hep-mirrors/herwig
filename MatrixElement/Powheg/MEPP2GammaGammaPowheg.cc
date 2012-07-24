@@ -1621,9 +1621,20 @@ void MEPP2GammaGammaPowheg::doinit() {
 
 HardTreePtr MEPP2GammaGammaPowheg::
 generateHardest(ShowerTreePtr tree,
-		vector<ShowerInteraction::Type>) {
+		vector<ShowerInteraction::Type> interactions) {
   beams_.clear();
   partons_.clear();
+  bool QCDAllowed(false),QEDAllowed(false);
+  for(unsigned int ix=0;ix<interactions.size();++ix) {
+    if(interactions[ix]==ShowerInteraction::QED)
+      QEDAllowed = true;
+    else if(interactions[ix]==ShowerInteraction::QCD)
+      QCDAllowed = true;
+    else if(interactions[ix]==ShowerInteraction::Both) {
+      QEDAllowed = true;
+      QCDAllowed = true;
+    }
+  }
   // find the incoming particles
   ShowerParticleVector incoming;
   // get the particles to be showered
@@ -1660,15 +1671,17 @@ generateHardest(ShowerTreePtr tree,
   if(particlesToShower.size()!=4) return HardTreePtr();
   if(particlesToShower[2]->id()!=ParticleID::gamma)
     swap(particlesToShower[2],particlesToShower[3]);
-  if(particlesToShower[3]->progenitor()->id()==ParticleID::gamma)
-    return hardQCDEmission(particlesToShower,tree);
-  else
-    return hardQEDEmission(particlesToShower,tree);
+  if(particlesToShower[3]->progenitor()->id()==ParticleID::gamma) {
+    if(QCDAllowed) return hardQCDEmission(particlesToShower);
+  }
+  else {
+    if(QEDAllowed) return hardQEDEmission(particlesToShower);
+  }
+  return HardTreePtr();
 }
 
 HardTreePtr MEPP2GammaGammaPowheg::
-hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
-		ShowerTreePtr tree) {
+hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   Energy rootS = sqrt(lastS());
   // limits on the rapidity of the jet
   double minyj = -8.0,maxyj = 8.0;
@@ -1807,14 +1820,18 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 					  HardBranchingPtr(),HardBranching::Incoming)));
   inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					  HardBranchingPtr(),HardBranching::Incoming)));
+  // intermediate IS particle
+  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					     inBranch[iemit%2],HardBranching::Incoming)));
+  inBranch[iemit%2]->addChild(hardBranch.back());
+  if(newparticles[3]->id()>0)
+    inBranch[iemit%2]->type(ShowerPartnerType::QCDColourLine    );
+  else
+    inBranch[iemit%2]->type(ShowerPartnerType::QCDAntiColourLine);
   // create the branching for the emitted jet
   inBranch[iemit%2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 						   inBranch[iemit%2],
 						   HardBranching::Outgoing)));
-  // intermediate IS particle
-  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					    inBranch[iemit%2],HardBranching::Incoming)));
-  inBranch[iemit%2]->addChild(hardBranch.back());
   // set the colour partners
   hardBranch.back()->colourPartner(inBranch[iemit%2==0 ? 1 : 0]);
   inBranch[iemit%2==0 ? 1 : 0]->colourPartner(hardBranch.back());
@@ -1865,8 +1882,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower,
 }
 
 HardTreePtr MEPP2GammaGammaPowheg::
-hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
-		ShowerTreePtr tree) {
+hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   // return if not emission from quark
   if(particlesToShower[0]->progenitor()->id()!=ParticleID::g &&
      particlesToShower[1]->progenitor()->id()!=ParticleID::g )
@@ -2052,14 +2068,15 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
     int icharged = iemit;
     if(icharged==2) icharged = particlesToShower[0]->progenitor()->
 		      dataPtr()->charged() ? 0 : 1;
-    // create the branching for the emitted jet
-    inBranch[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						      inBranch[icharged],
-						      HardBranching::Outgoing)));
     // intermediate IS particle
     hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					      inBranch[icharged],HardBranching::Incoming)));
     inBranch[icharged]->addChild(hardBranch.back());
+    inBranch[icharged]->type(ShowerPartnerType::QED);
+    // create the branching for the emitted jet
+    inBranch[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
+						      inBranch[icharged],
+						      HardBranching::Outgoing)));
     // set the colour partners
     if(iemit<2) {
       hardBranch.back()->colourPartner(inBranch[icharged==0 ? 1 : 0]);
@@ -2087,6 +2104,7 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower,
     hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					       HardBranchingPtr(),
 					       HardBranching::Outgoing)));
+    hardBranch.back()->type(ShowerPartnerType::QED);
     hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
 						      HardBranchingPtr(),
 						      HardBranching::Outgoing)));
