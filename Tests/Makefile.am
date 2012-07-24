@@ -194,13 +194,17 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
                             TVT-Powheg-Run-I-{W,Z,WZ}.aida -o TVT-Powheg-WZ.aida
 	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
 
-Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton Rivet-TVT-Run-II-PromptPhoton
+Rivet-TVT-Photon: Rivet-TVT-Run-II-PromptPhoton \
+ 		  Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet
+ 		  Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
+	python/add-aida Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet --add -o TVT-Run-II-DiPhoton.aida
+	python/add-aida Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet --add -o TVT-Powheg-Run-II-DiPhoton.aida
 	python/merge-aida TVT-Run-II-DiPhoton.aida TVT-Run-II-PromptPhoton.aida\
                            -o TVT-Photon.aida
 	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.aida:Hw++
-
+	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.aida:Hw++  TVT-Powheg-Run-II-DiPhoton.aida:Hw++-Powheg
 
 Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
                 Rivet-TVT-Run-II-Jets-3  Rivet-TVT-Run-II-Jets-4 \
@@ -268,14 +272,18 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
 	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
-Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton \
+                  Rivet-LHC-7-DiPhoton-GammaGamma        Rivet-LHC-7-DiPhoton-GammaJet \
+		  Rivet-LHC-Powheg-7-DiPhoton-GammaGamma Rivet-LHC-Powheg-7-DiPhoton-GammaJet
 	rm -rf Rivet-LHC-Photon 
+	python/add-aida LHC-7-DiPhoton-GammaGamma.aida LHC-7-DiPhoton-GammaJet.aida --add -o LHC-7-DiPhoton.aida
+	python/add-aida LHC-Powheg-7-DiPhoton-GammaGamma.aida LHC-7-Powheg-DiPhoton-GammaJet.aida --add -o LHC-Powheg-7-DiPhoton.aida
 	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
-	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
+	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++ LHC-Powheg-7-DiPhoton.aida:Hw++-Powheg
 
-Rivet-LHC-Higgs: Rivet-LHC-ZH Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
-#Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
-#		 Rivet-LHC-Powheg-VBF Rivet-LHC-VBF Rivet-LHC-WH Rivet-LHC-ZH Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
+Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
+		 Rivet-LHC-Powheg-VBF Rivet-LHC-VBF Rivet-LHC-WH Rivet-LHC-ZH \
+		 Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
 	rm -rf Rivet-LHC-Higgs
 	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.aida:gg-Powheg LHC-ggH.aida:gg LHC-ggHJet.aida:HJet \
 		 LHC-Powheg-VBF.aida:VBF-Powheg LHC-VBF.aida:VBF LHC-WH.aida:WH LHC-ZH.aida:ZH \

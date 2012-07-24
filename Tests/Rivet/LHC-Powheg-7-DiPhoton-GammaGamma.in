@@ -1,0 +1,40 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Powheg.in
+set /Herwig/EventHandlers/LHCHandler:StatLevel 4
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# diphoton
+insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg
+set MEGammaGammaPowheg:Process GammaGamma
+insert SimpleQCD:MatrixElements[0] MEGammaGamma
+set MEGammaGamma:Process gg
+
+# switch QED on (shower)
+set /Herwig/Shower/Evolver:Interactions BothAtOnce
+
+# photon cuts
+set /Herwig/Cuts/PhotonKtCut:MinKT 5.
+set /Herwig/Cuts/JetKtCut:MinKT 5.
+
+# No QED radiation (YFS)
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9120807
+# MC diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DIPHOTON
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Powheg-7-DiPhoton-GammaGamma LHCGenerator
