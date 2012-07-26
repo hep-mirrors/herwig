@@ -102,43 +102,24 @@ private:
    */
   //@{
   /**
-   *  Top mixing angles
+   *  Left mixings
    */
-  //@{
-  /**
-   *  \f$\sin\alpha\f$, taken as an input
-   */
-  double _salpha;
-
-  /**
-   *  \f$\cos\alpha\f$
-   */
-  double _calpha;
-
-  /**
-   *  \f$\sin\alpha\f$
-   */
-  double _sbeta;
-
-  /**
-   *  \f$\cos\beta\f$
-   */
-  double _cbeta;
+  double sL_,cL_;
 
   /**
    *  The elements of the CKM matrix.
    */
-  vector<vector<Complex> > _ckm;
+  vector<vector<Complex> > ckm_;
 
   /**
    *  The last value of the electroweak coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 };
 
