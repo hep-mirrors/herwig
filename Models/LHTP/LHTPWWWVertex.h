@@ -105,12 +105,12 @@ private:
   /**
    * The value of the coupling when it was last evaluated.
    */
-  Complex couplast_;
+  Complex coupLast_;
 
   /**
    * The scale where the coulpling was last evaluated 
    */
-  Energy2 q2last_;
+  Energy2 q2Last_;
 
   /**
    * The couplings for the various possible interactions
