@@ -76,12 +76,12 @@ private:
   /**
    *  The last value of the strong coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 
 };

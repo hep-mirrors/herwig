@@ -33,7 +33,7 @@ void LHTPFFGVertex::Init() {
 }
 
 LHTPFFGVertex::LHTPFFGVertex() 
-  : _couplast(0.), _q2last(0.*GeV2) {
+  : coupLast_(0.), q2Last_(0.*GeV2) {
   orderInGs(1);
   orderInGem(0);
   // SM quarks
@@ -52,20 +52,18 @@ LHTPFFGVertex::LHTPFFGVertex()
 // coupling for FFG vertex
 void LHTPFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
-    _couplast = -strongCoupling(q2);
-    _q2last=q2;
+  if(q2!=q2Last_) {
+    coupLast_ = -strongCoupling(q2);
+    q2Last_=q2;
   }
-  norm(_couplast);
+  norm(coupLast_);
   // the left and right couplings
   int iferm=abs(a->id());
   if( iferm > 8 ) iferm -= 4000000;
   if((iferm>=1 && iferm<=8)) {
-    left(1.);
+    left (1.);
     right(1.);
   }
   else
-    throw HelicityConsistencyError() << "LHTPFFGVertex::setCoupling" 
-				     << "Unknown particle in gluon vertex" 
-				     << Exception::runerror;
+    assert(false);
 }
