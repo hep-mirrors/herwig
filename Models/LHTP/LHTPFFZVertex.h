@@ -106,52 +106,62 @@ private:
   /**
    *  The left couplings of the Standard Model fermions.
    */
-  vector<double> _gl;
+  vector<double> gl_;
 
   /**
    *  The right couplings of the Standard Model fermions.
    */
-  vector<double> _gr;
+  vector<double> gr_;
 
   /**
    *  The left couplings to the Z for the extended top sector
    */
-  vector<double> _tl;
+  vector<double> tl_;
 
   /**
    *  The right couplings to the Z for the extended top sector
    */
-  vector<double> _tr;
+  vector<double> tr_;
 
   /**
    *  Coupling of \f$dd_-Z_H\f$
    */
-  double _coupd;
+  double coupd_;
 
   /**
    *  Coupling of \f$uu_-Z_H\f$
    */
-  double _coupu;
+  double coupu_;
 
   /**
    *  Coupling of \f$ee_-Z_H\f$
    */
-  double _coupe;
+  double coupe_;
 
   /**
    *  Coupling of \f$\nu\nu_-Z_H\f$
    */
-  double _coupnu;
+  double coupnu_;
+
+  /**
+   *  Left mixings
+   */
+  double sL_,cL_;
+
+  /**
+   *  Right mixings
+   */
+  double sR_,cR_;
 
   /**
    *  The last value of the electroweak coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 
 };
