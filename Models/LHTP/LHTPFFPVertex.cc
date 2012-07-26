@@ -51,6 +51,9 @@ LHTPFFPVertex::LHTPFFPVertex() :
   TPreFactor_(0.), sL_(0.), cL_(1.), sR_(0.), cR_(1.) {
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHTPFFPVertex::doinit() {
   // interactions with the photon
   // the quarks
   for(unsigned int ix = 1; ix < 7; ++ix) {
@@ -92,9 +95,6 @@ LHTPFFPVertex::LHTPFFPVertex() :
   // T-tA_H
   addToList(-4000006,       8, 32);
   addToList(      -8, 4000006, 32);
-}
-
-void LHTPFFPVertex::doinit() {
   // charges
   for(int ix = 1; ix < 16; ++ix) {
     tcPDPtr ptemp = getParticleData(ix);

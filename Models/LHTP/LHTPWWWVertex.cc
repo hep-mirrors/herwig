@@ -17,21 +17,6 @@ LHTPWWWVertex::LHTPWWWVertex() : coupLast_(0.), q2Last_(ZERO),
 				 couplings_(3 ,0.) {
   orderInGem(1);
   orderInGs(0);
-  //SM interactions
-  addToList( 24, -24,  22);
-  addToList( 24, -24,  23);
-
-  //LHTP
-  //W_H W_H A_L
-  addToList( 34, -34,  22);
-  //W_H W_H Z_L
-  addToList( 34, -34,  23);
-  //W_H W_L A_H
-  addToList( 34, -24,  32);
-  addToList( 24,  34,  32); 
-  //W_H W_L Z_H
-  addToList( 34, -24,  33);
-  addToList( 24, -34,  33);
 }
 
 void LHTPWWWVertex::persistentOutput(PersistentOStream & os) const {
@@ -56,6 +41,20 @@ void LHTPWWWVertex::Init() {
 }
 
 void LHTPWWWVertex::doinit() {
+  //SM interactions
+  addToList( 24, -24,  22);
+  addToList( 24, -24,  23);
+  //LHTP
+  //W_H W_H A_L
+  addToList( 34, -34,  22);
+  //W_H W_H Z_L
+  addToList( 34, -34,  23);
+  //W_H W_L A_H
+  addToList( 34, -24,  32);
+  addToList( 24, -34,  32); 
+  //W_H W_L Z_H
+  addToList( 34, -24,  33);
+  addToList( 24, -34,  33);
   VVVVertex::doinit();
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());

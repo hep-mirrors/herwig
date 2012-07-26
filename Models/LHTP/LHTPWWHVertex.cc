@@ -47,6 +47,9 @@ LHTPWWHVertex::LHTPWWHVertex() : coupLast_(0.), q2Last_(0.*GeV2) {
   // order in the couplings
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHTPWWHVertex::doinit() {
   // W_L W_L H
   addToList(  24,  -24,    25);
   // Z_L Z_L H
@@ -81,12 +84,9 @@ LHTPWWHVertex::LHTPWWHVertex() : coupLast_(0.), q2Last_(0.*GeV2) {
   // W_L W_L Phi --/++
   addToList(  24,   24,   -38);
   addToList( -24,  -24,    38);
-}
-
-void LHTPWWHVertex::doinit() {
   // model
- cLHTPModelPtr model = 
-   dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
+  cLHTPModelPtr model = 
+    dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must be using the LHTPModel "
 			  << " in LHTPWWHVertex::doinit()"

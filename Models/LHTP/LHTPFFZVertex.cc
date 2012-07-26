@@ -52,6 +52,9 @@ LHTPFFZVertex::LHTPFFZVertex()
     coupLast_(0.0), q2Last_(0.*GeV2) {
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHTPFFZVertex::doinit() {
   // Z
   // the quarks
   for(int ix = 1; ix < 7; ++ix) {
@@ -90,9 +93,6 @@ LHTPFFZVertex::LHTPFFZVertex()
     addToList(-ix-4000000,    ix,    33);
     addToList(-ix,    ix+4000000,    33);
   }
-}
-
-void LHTPFFZVertex::doinit() {
   // model
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());

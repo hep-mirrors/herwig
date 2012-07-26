@@ -45,41 +45,6 @@ void LHTPFFWVertex::Init() {
 }
 
 void LHTPFFWVertex::doinit() {
-  ThePEG::Helicity::FFVVertex::doinit();
-  Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
-  // cast the CKM object to the HERWIG one
-  ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
-    hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
-    transient_const_pointer>(CKM);
-  if(hwCKM) {
-    vector< vector<Complex > > CKM;
-    CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
-    for(unsigned int ix=0;ix<3;++ix) {
-      for(unsigned int iy=0;iy<3;++iy) {
-	ckm_[ix][iy]=CKM[ix][iy];
-      }
-    }
-  }
-  else {
-    throw InitException() << "Must have access to the Herwig::StandardCKM object"
-			  << "for the CKM matrix in LHTPFFWVertex::doinit()"
-			  << Exception::runerror;
-  }
-  // model
-  cLHTPModelPtr model = 
-    dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
-  if(!model) throw InitException() << "Must be using the LHTPModel "
-				   << " in LHTPFFWVertex::doinit()"
-				   << Exception::runerror;
-  sL_ = model->sinThetaL();
-  cL_ = model->cosThetaL();
-}
-
-LHTPFFWVertex::LHTPFFWVertex()
-  : sL_(0.), cL_(1.), ckm_(3,vector<Complex>(3,0.0)),
-    coupLast_(0.),q2Last_(ZERO) {
-  orderInGem(1);
-  orderInGs(0);
   // particles for outgoing W-
   // quarks
   for(int ix = 1; ix < 6; ix += 2) {
@@ -146,6 +111,41 @@ LHTPFFWVertex::LHTPFFWVertex()
     addToList(-ix - 4000001,    ix,    34);
     addToList(-ix - 1,    ix + 4000000,    34);
   }
+  ThePEG::Helicity::FFVVertex::doinit();
+  Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
+  // cast the CKM object to the HERWIG one
+  ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
+    hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
+    transient_const_pointer>(CKM);
+  if(hwCKM) {
+    vector< vector<Complex > > CKM;
+    CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
+    for(unsigned int ix=0;ix<3;++ix) {
+      for(unsigned int iy=0;iy<3;++iy) {
+	ckm_[ix][iy]=CKM[ix][iy];
+      }
+    }
+  }
+  else {
+    throw InitException() << "Must have access to the Herwig::StandardCKM object"
+			  << "for the CKM matrix in LHTPFFWVertex::doinit()"
+			  << Exception::runerror;
+  }
+  // model
+  cLHTPModelPtr model = 
+    dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
+  if(!model) throw InitException() << "Must be using the LHTPModel "
+				   << " in LHTPFFWVertex::doinit()"
+				   << Exception::runerror;
+  sL_ = model->sinThetaL();
+  cL_ = model->cosThetaL();
+}
+
+LHTPFFWVertex::LHTPFFWVertex()
+  : sL_(0.), cL_(1.), ckm_(3,vector<Complex>(3,0.0)),
+    coupLast_(0.),q2Last_(ZERO) {
+  orderInGem(1);
+  orderInGs(0);
 }
 
 // coupling for FFW vertex
