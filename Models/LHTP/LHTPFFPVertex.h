@@ -102,17 +102,17 @@ private:
   /**
    *  The charge of the Standard Model fermions.
    */
-  vector<double> _charge;
+  vector<double> charge_;
 
   /**
    *  The last value of the coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 
   /**
@@ -122,32 +122,37 @@ private:
   /**
    *  Coupling of \f$dd_-A_H\f$
    */
-  double _coupd;
+  double coupd_;
 
   /**
    *  Coupling of \f$uu_-A_H\f$
    */
-  double _coupu;
+  double coupu_;
 
   /**
    *  Coupling of \f$ee_-A_H\f$
    */
-  double _coupe;
+  double coupe_;
 
   /**
    *  Coupling of \f$\nu\nu_-A_H\f$
    */
-  double _coupnu;
+  double coupnu_;
 
   /**
-   *  Coupling of \f$T_-T_+A_H\f$
+   *  Coupling of heavy top
    */
-  double _tmtpL,_tmtpR;
+  double TPreFactor_;
 
   /**
-   *  Coupling of \f$T_-tA_H\f$
+   *  Left mixings
    */
-  double _tmtL,_tmtR;
+  double sL_,cL_;
+
+  /**
+   *  Right mixings
+   */
+  double sR_,cR_;
   //@}
 };
 
