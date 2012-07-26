@@ -69,6 +69,26 @@ public:
    *  \f$\cos\theta_H\f$
    */
   double cosThetaH() const { return cthetaH_; }
+
+  /**
+   *  \f$\sin\theta_L\f$
+   */
+  double sinThetaL() const { return sL_;}
+
+  /**
+   *  \f$\cos\theta_L\f$
+   */
+  double cosThetaL() const { return cL_;}
+
+  /**
+   *  \f$\sin\theta_R\f$
+   */
+  double sinThetaR() const { return sR_;}
+
+  /**
+   *  \f$\cos\theta_R\f$
+   */
+  double cosThetaR() const { return cR_;}
   //@}
 
 public:
@@ -193,6 +213,31 @@ private:
   //@}
 
   /**
+   *  @name Mixings in the top sector
+   */
+  //@{
+  /**
+   *  \f$\sin\theta_L\f$
+   */
+  double sL_;
+
+  /**
+   *  \f$\cos\theta_L\f$
+   */
+  double cL_;
+
+  /**
+   *  \f$\sin\theta_R\f$
+   */
+  double sR_;
+
+  /**
+   *  \f$\cos\theta_R\f$
+   */
+  double cR_;
+  //@}
+
+  /**
    *  The \f$\kappa_q\f$ parameter which controls the properties of the
    *  T-odd quarks
    */
@@ -223,6 +268,11 @@ private:
    *  the \f$g'\f$ coupling
    */
   double gp_;
+
+  /**
+   *  Method for evaluating the masses
+   */
+  bool approximate_;
 };
 
 }

@@ -8,6 +8,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -57,9 +58,10 @@ int top_equation(const gsl_vector * x, void *params, gsl_vector *f ) {
 }
 
 LHTPModel::LHTPModel()
-  : f_(0.5*TeV), salpha_(sqrt(0.5)), calpha_(sqrt(0.5)), sbeta_(0.), cbeta_(0.),
-    kappaQuark_(1.), kappaLepton_(1.), mh_(120.*GeV), v_(246.*GeV),
-    g_(sqrt(0.43)), gp_(sqrt(0.12)) 
+  : f_(0.5*TeV), salpha_(sqrt(0.5)), calpha_(sqrt(0.5)), sbeta_(0.), cbeta_(0.), 
+    sL_(0.), cL_(1.), sR_(0.), cR_(0.),
+    kappaQuark_(1.), kappaLepton_(1.), mh_(125.*GeV), v_(246.*GeV),
+    g_(sqrt(0.43)), gp_(sqrt(0.12)), approximate_(false)
 {}
 
 IBPtr LHTPModel::clone() const {
@@ -73,13 +75,15 @@ IBPtr LHTPModel::fullclone() const {
 void LHTPModel::persistentOutput(PersistentOStream & os) const {
   os << ounit(f_,TeV) << salpha_ << calpha_ << sbeta_ << cbeta_
      << kappaQuark_ << kappaLepton_ << ounit(v_,GeV) 
-     << g_ << gp_ << sthetaH_ << cthetaH_;
+     << g_ << gp_ << sthetaH_ << cthetaH_ << approximate_
+     << sL_ << cL_ << sR_ << cR_;
 }
 
 void LHTPModel::persistentInput(PersistentIStream & is, int) {
   is >> iunit(f_,TeV) >> salpha_ >> calpha_ >> sbeta_ >> cbeta_
-     >> kappaQuark_ >> kappaLeptopn_>> iunit(v_,GeV)
-     >> g_ >> gp_ >> sthetaH_ >> cthetaH_;
+     >> kappaQuark_ >> kappaLepton_>> iunit(v_,GeV)
+     >> g_ >> gp_ >> sthetaH_ >> cthetaH_ >> approximate_
+     >> sL_ >> cL_ >> sR_ >> cR_;
 }
 
 
@@ -122,22 +126,35 @@ void LHTPModel::Init() {
      "The mass of the lightest Higgs boson",
      &LHTPModel::mh_, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
      false, false, Interface::limited);
+
+  static Switch<LHTPModel,bool> interfaceApproximate
+    ("Approximate",
+     "Whether to use the full expression for the mases of the top quark"
+     " and its partners or the second-order expansion in v/f.",
+     &LHTPModel::approximate_, false, false, false);
+  static SwitchOption interfaceApproximateYes
+    (interfaceApproximate,
+     "Yes",
+     "Approximate",
+     true);
+  static SwitchOption interfaceApproximateNo
+    (interfaceApproximate,
+     "No",
+     "Don't approximate",
+     false);
+
 }
 
 void LHTPModel::doinit() {
   StandardModel::doinit();
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
   using Constants::pi;
   // compute the parameters of the model
   // W and Z masses
-  Energy mw(getParticleData(ParticleID::Wplus)->mass()),
-    mz(getParticleData(ParticleID::Z0)->mass());
+  Energy mw(getParticleData(ParticleID::Wplus)->mass());
+  Energy mz(getParticleData(ParticleID::Z0)->mass());
   // couplings g and g'
   double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
-  double sw2(sin2ThetaW()),cw2(1.-sin2ThetaW());
-  double sw(sqrt(sw2)),cw(sqrt(cw2));
+  double sw(sqrt(sin2ThetaW())),cw(sqrt(1.-sin2ThetaW()));
   g_  = ee/sw;
   gp_ = ee/cw;
   // vev
@@ -154,6 +171,11 @@ void LHTPModel::doinit() {
   // masses of the new top quarks
   Energy MTp,MTm;
   topMixing(MTp,MTm);
+  // mixings in the top sector
+  sL_ = sqr(salpha_)*v_/f_;
+  cL_ = sqrt(1.-sqr(sL_));
+  sR_ = salpha_*(1.-0.5*sqr(calpha_)*(sqr(calpha_)-sqr(salpha_))*vf);
+  cR_ = sqrt(1.-sqr(sR_));
   // masses of the T-odd fermions
   Energy Mdm = sqrt(2.)*kappaQuark_ *f_;
   Energy Mum = sqrt(2.)*kappaQuark_ *f_*(1.-0.125*vf);
@@ -209,58 +231,72 @@ void LHTPModel::doinit() {
 }
 
 void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
+  double vf(sqr(v_/f_));
   Energy mt = getParticleData(ParticleID::t)->mass();
   calpha_ = sqrt(1.-sqr(salpha_));
   double sv(sin(sqrt(2.)*v_/f_)),cv(cos(sqrt(2.)*v_/f_));
-  // first guess for Yukawa's based on leading order in v/f expansion
-  double lambda1(mt/v_/calpha_), lambda2(mt/salpha_/v_);
-  MTp = lambda1/salpha_*f_;
-  MTm = lambda1/salpha_*calpha_*f_;
-  // special case where denominator of tan 2 alpha eqn is zero
-  if(abs(salpha_-sqrt(0.5))<1e-4) {
-    double a = 0.25*(2.*sqr(sv)+sqr(1.+cv));
-    double b = 0.5*(a+0.5*(sqr(sv)+0.5*sqr(1.+cv)));
-    lambda1 = mt/f_*sqrt(1./b/(1.-sqrt(1-0.5*a*sqr(sv/b))));
-    lambda2 = sqrt(a)*lambda1;
-  }
-  // general case using GSL
-  else {
-    double ca = sqrt(1.-sqr(salpha_));
-    double ta = salpha_/ca;
-    double tan2a = 2.*ta/(1.-sqr(ta));
-    const gsl_multiroot_fsolver_type *T;
-    gsl_multiroot_fsolver *s;
-    int status;
-    size_t iter=0;
-    const size_t n=2;
-    struct tparams p = {v_,f_,mt,tan2a};
-    gsl_multiroot_function f = {&top_equation, n, &p};
-    gsl_vector *x = gsl_vector_alloc(n);
-    gsl_vector_set(x,0,lambda1);
-    gsl_vector_set(x,1,lambda2);
-    T = gsl_multiroot_fsolver_hybrids;
-    s = gsl_multiroot_fsolver_alloc(T,2);
-    gsl_multiroot_fsolver_set(s, &f,x);
-    do {
-      iter++;
-      status = gsl_multiroot_fsolver_iterate(s);
-      if(status) break;
-      status = gsl_multiroot_test_residual(s->f,1e-7);
-    }
-    while (status==GSL_CONTINUE && iter < 1000);
-    gsl_multiroot_fsolver_free(s);
-    lambda1 = gsl_vector_get(s->x,0);
-    lambda2 = gsl_vector_get(s->x,1);
-    gsl_vector_free(x);
-  }
-  // calculate the heavy top masses using full result
-  double delta = 0.5*(sqr(lambda2)+0.5*sqr(lambda1)*(sqr(sv)+0.5*sqr(1.+cv)));
-  double det = sqrt(1.-0.5*sqr(lambda1*lambda2*sv/delta));
-  MTp = sqrt(sqr(f_)*delta*(1.+det));
+  // first guess for Yukawa's based on second-order in v/f expansion
+  double lambda1 = mt/v_/calpha_*(1.+(2.-3.*pow(salpha_,4))*vf/6.);
+  double lambda2 = mt/v_/salpha_*(1.+(2.-3.*pow(calpha_,4))*vf/6.);
+  // first guess for masses
+  MTp = sqrt(sqr(lambda1)+sqr(lambda2))*f_*(1-0.5*vf*sqr(calpha_*salpha_));
   MTm = lambda2*f_;
+  cerr << "before solve " << lambda1 << " " << lambda2 << "\n";
+  cerr << "testing masses MTm " << MTm/GeV << "  MTp " << MTp/GeV << "\n";
+  double mtcorr = 0.25*(1.-2.*sqr(salpha_*calpha_))*vf; 
+  cerr << "testing COMPHEP " 
+       << mt/calpha_/v_*(1.+mtcorr) << " "
+       << mt/salpha_/v_*(1.+mtcorr) << "\n";    
+  if(!approximate_) {
+    // special case where denominator of tan 2 alpha eqn is zero
+    if(abs(salpha_-sqrt(0.5))<1e-4) {
+      cerr << "testing did special case?\n";
+      double a = 0.25*(2.*sqr(sv)+sqr(1.+cv));
+      double b = 0.5*(a+0.5*(sqr(sv)+0.5*sqr(1.+cv)));
+      lambda1 = mt/f_*sqrt(1./b/(1.-sqrt(1.-0.5*a*sqr(sv/b))));
+      lambda2 = sqrt(a)*lambda1;
+    }
+    // general case using GSL
+    else {
+      double ca = sqrt(1.-sqr(salpha_));
+      double ta = salpha_/ca;
+      double tan2a = 2.*ta/(1.-sqr(ta));
+      const gsl_multiroot_fsolver_type *T;
+      gsl_multiroot_fsolver *s;
+      int status;
+      size_t iter=0;
+      const size_t n=2;
+      struct tparams p = {v_,f_,mt,tan2a};
+      gsl_multiroot_function f = {&top_equation, n, &p};
+      gsl_vector *x = gsl_vector_alloc(n);
+      gsl_vector_set(x,0,lambda1);
+      gsl_vector_set(x,1,lambda2);
+      T = gsl_multiroot_fsolver_hybrids;
+      s = gsl_multiroot_fsolver_alloc(T,2);
+      gsl_multiroot_fsolver_set(s, &f,x);
+      do {
+	iter++;
+	status = gsl_multiroot_fsolver_iterate(s);
+	if(status) break;
+	status = gsl_multiroot_test_residual(s->f,1e-7);
+      }
+      while (status==GSL_CONTINUE && iter < 1000);
+      gsl_multiroot_fsolver_free(s);
+      lambda1 = gsl_vector_get(s->x,0);
+      lambda2 = gsl_vector_get(s->x,1);
+      gsl_vector_free(x);
+    }
+    // calculate the heavy top masses using full result
+    double delta = 0.5*(sqr(lambda2)+0.5*sqr(lambda1)*(sqr(sv)+0.5*sqr(1.+cv)));
+    double det = sqrt(1.-0.5*sqr(lambda1*lambda2*sv/delta));
+    MTp = sqrt(sqr(f_)*delta*(1.+det));
+    MTm = lambda2*f_;
+  }
   // beta mixing angle
   double beta = 0.5*atan(2.*sqrt(2.)*sqr(lambda1)*sv*(1.+cv)/
 			 (4.*sqr(lambda2)+sqr(1.+cv)*sqr(lambda1)-2.*sqr(lambda1)*sv));
   sbeta_ = sin(beta);
   cbeta_ = cos(beta);
+  cerr << "testing after solve " << lambda1 << " " << lambda2 << "\n";
+  cerr << "testing masses MTm " << MTm/GeV << "  MTp " << MTp/GeV << "\n";
 }
