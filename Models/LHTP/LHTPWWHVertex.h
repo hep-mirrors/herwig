@@ -107,17 +107,17 @@ private:
   /**
    *  The last value of the electroweak coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
 
   /**
    *  Couplings for the different interactions
    */
-  vector<Energy> _coup;
+  vector<Energy> coup_;
   //@}
 
 };
