@@ -146,6 +146,7 @@ create Herwig::LHTPFFWVertex FFWVertex
 create Herwig::LHTPFFZVertex FFZVertex
 create Herwig::LHTPWWHVertex WWHVertex
 create Herwig::LHTPWWWVertex WWWVertex
+create Herwig::LHTPHHHVertex HHHVertex
 
 cd /Herwig/NewPhysics/LHTP
 set Model:Vertex/FFG /Herwig/Vertices/LHTP/FFGVertex
@@ -154,6 +155,7 @@ set Model:Vertex/FFW /Herwig/Vertices/LHTP/FFWVertex
 set Model:Vertex/FFP /Herwig/Vertices/LHTP/FFPVertex
 set Model:Vertex/WWH /Herwig/Vertices/LHTP/WWHVertex
 set Model:Vertex/WWW /Herwig/Vertices/LHTP/WWWVertex
+set Model:Vertex/HHH /Herwig/Vertices/LHTP/HHHVertex
 
 # Not implemented LHTP yet
 set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
@@ -163,7 +165,6 @@ set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 
 ## Also vertices that have no SM equivalent
 # - WHH
-# - HHH
 
 # No LHTP equivalent
 set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
