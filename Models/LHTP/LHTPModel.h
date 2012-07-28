@@ -91,6 +91,22 @@ public:
   double cosThetaR() const { return cR_;}
   //@}
 
+  /**
+   *  Yukwawa for T-odd fermions
+   */
+  //@{
+  /**
+   *  The \f$\kappa_q\f$ parameter which controls the properties of the
+   *  T-odd quarks
+   */
+  double kappaQuark() const { return kappaQuark_;}
+
+  /**
+   *  The \f$\kappa_\ell\f$ parameter which controls the properties of the
+   *  T-odd leptons
+   */
+  double kappaLepton() const { return kappaLepton_;}
+  //@}
 public:
 
   /** @name Functions used by the persistent I/O system. */
