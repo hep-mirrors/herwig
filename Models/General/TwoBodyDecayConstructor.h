@@ -124,6 +124,20 @@ private:
    */
   void createDecayMode(set<TwoBodyDecay> & decays);
   //@}
+
+  /**
+   * Get the vertex for QCD radiation
+   */
+  VertexBasePtr radiationVertex(tPDPtr particle);
+
+private:
+
+  /**
+   *  Map of particles and the vertices which generate their QCD
+   *  radiation
+   */
+  map<tPDPtr,VertexBasePtr> radiationVertices_;
+
 };
   
 }

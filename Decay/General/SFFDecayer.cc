@@ -131,3 +131,6 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   }
 }
 
+double SFFDecayer::threeBodyME(const ParticleVector & particles) {
+  assert(false);
+}

@@ -210,7 +210,12 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
       <<  "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
       << decay.children_.second->PDGName();
-  decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_);
+  VertexBasePtr inRad = radiationVertex(decay.parent_);
+  vector<VertexBasePtr> outRad;
+  outRad.push_back(radiationVertex(decay.children_.first ));
+  outRad.push_back(radiationVertex(decay.children_.second));
+  decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_,
+			inRad,outRad);
   decayer->init();
   setDecayerInterfaces(fullname.str());
   return decayer;
@@ -279,4 +284,38 @@ createDecayMode(set<TwoBodyDecay> & decays) {
   }
   // update CC mode if it exists
   if( inpart->CC() ) inpart->CC()->synchronize();
+}
+
+
+/**
+ * Get the vertex for QCD radiation
+ */
+VertexBasePtr TwoBodyDecayConstructor::radiationVertex(tPDPtr particle) {
+  tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
+  map<tPDPtr,VertexBasePtr>::iterator rit = radiationVertices_.find(particle);
+  tPDPtr cc = particle->CC() ? particle->CC() : particle;
+  if(rit!=radiationVertices_.end()) return rit->second;
+  unsigned int nv(model->numberOfVertices());
+  tPDPtr gluon = getParticleData(ParticleID::g);
+  // loop over all vertices
+  for(unsigned int iv=0;iv<nv;++iv) {
+    VertexBasePtr vertex = model->vertex(iv);
+    if( !vertex->isIncoming(particle) ||  vertex->getNpoint() != 3 ||
+	!vertex->isOutgoing(particle) || !vertex->isOutgoing(gluon)) continue;
+    for(unsigned int list=0;list<3;++list) {
+      tPDVector decaylist = vertex->search(list, particle);
+      for( tPDVector::size_type i = 0; i < decaylist.size(); i += 3 ) {
+	tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
+	if( pb->id() == ParticleID::g ) swap(pa, pb);
+	if( pc->id() == ParticleID::g ) swap(pa, pc);
+	if( pb->id() != particle->id()) swap(pb, pc);
+	if(pa->id()  != ParticleID::g) continue;
+	if(pb != particle) continue;
+	if(pc != cc) continue;
+	radiationVertices_[particle] = vertex; 
+	return vertex;
+      }
+    }
+  }
+  return VertexBasePtr();
 }

@@ -110,13 +110,29 @@ public:
    */
   virtual double brat(const DecayMode & dm, const Particle & p,
 		      double oldbrat) const;
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return false;}
+
+  /**
+   *  Member to generate the hardest emission in the POWHEG scheme
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const ParticleVector & particles);
   //@}
 
   /**
    *  Set the information on the decay
    */
   void setDecayInfo(PDPtr incoming,PDPair outgoing,
-		    VertexBasePtr);
+		    VertexBasePtr,VertexBasePtr,
+		    const vector<VertexBasePtr> &);
 
 protected:
   
@@ -127,7 +143,7 @@ protected:
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr getVertex() const { return vertex_; }
 
   /**
    * Set integration weight
@@ -223,7 +239,17 @@ private:
   /**
    * Pointer to vertex
    */
-  VertexBasePtr _theVertex;
+  VertexBasePtr vertex_;
+
+  /**
+   *  Pointer to vertex for radiation from the incoming particle
+   */
+  VertexBasePtr incomingVertex_;
+
+  /**
+   *  Pointer to the vertices for radiation from the outgoing particles
+   */
+  vector<VertexBasePtr> outgoingVertices_; 
  
   /**
    * Maximum weight for integration

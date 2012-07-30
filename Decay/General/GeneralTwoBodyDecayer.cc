@@ -43,9 +43,9 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 
 void GeneralTwoBodyDecayer::doinit() {
   DecayIntegrator::doinit();
-  assert( _theVertex );
+  assert( vertex_ );
   assert( _incoming && _outgoing.size()==2);
-  _theVertex->init();
+  vertex_->init();
   //create phase space mode
   tPDVector extpart(3);
   extpart[0] = _incoming;
@@ -259,11 +259,11 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVertex << _incoming << _outgoing << _maxweight;
+  os << vertex_ << _incoming << _outgoing << _maxweight;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVertex >> _incoming >> _outgoing >> _maxweight;
+  is >> vertex_ >> _incoming >> _outgoing >> _maxweight;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
@@ -454,10 +454,26 @@ Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
 }
 
 void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
-					 VertexBasePtr vertex) {
+					 VertexBasePtr vertex, VertexBasePtr inV,
+					 const vector<VertexBasePtr> & outV) {
   _incoming=incoming;
   _outgoing.clear();
   _outgoing.push_back(outgoing.first );
   _outgoing.push_back(outgoing.second);
-  _theVertex = vertex;
+  vertex_ = vertex;
+  incomingVertex_ = inV;
+  outgoingVertices_ = outV;
+}
+
+HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr) {
+  cerr << _incoming->PDGName() << "\n";
+  cerr << _outgoing[0]->PDGName() << " " << _outgoing[1]->PDGName() << "\n";
+  assert(false);
+}
+
+double GeneralTwoBodyDecayer::threeBodyME(const ParticleVector & ) {
+  throw Exception() << "Base class  GeneralTwoBodyDecayer::threeBodyME() "
+		    << "called, should have an implementation in the inheriting class"
+		    << Exception::runerror;
+  return 0.;
 }

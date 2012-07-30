@@ -171,3 +171,6 @@ void FFVDecayer::Init() {
 
 }
 
+double  FFVDecayer::threeBodyME(const ParticleVector & particles) {
+  assert(false);
+}
