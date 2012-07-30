@@ -195,7 +195,7 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
 	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-PromptPhoton \
- 		  Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet
+ 		  Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet \
  		  Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
