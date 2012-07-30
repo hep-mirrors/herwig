@@ -43,7 +43,7 @@ void MatchboxPhasespace::dumpInfo(const string& prefix) const {
 
 pair<double,Lorentz5Momentum> 
 MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
-				   int branch) const {
+				   int branch, double flatCut) const {
 
   pair<int,int> children = diag.children(branch);
 
@@ -52,10 +52,10 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   }
 
   pair<double,Lorentz5Momentum> res
-    = timeLikeWeight(diag,children.first);
+    = timeLikeWeight(diag,children.first,flatCut);
 
   pair<double,Lorentz5Momentum> other
-    = timeLikeWeight(diag,children.second);
+    = timeLikeWeight(diag,children.second,flatCut);
 
   res.first *= other.first;
   res.second += other.second;
@@ -63,9 +63,15 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
-  res.first /=
-    sqr((res.second.m2()-mass2)/lastSHat()) +
-    mass2*width2/sqr(lastSHat());
+  if ( width2 == ZERO ) {
+    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+      res.first /=
+	abs((res.second.m2()-mass2)/lastSHat());
+  } else {
+    res.first /=
+      sqr((res.second.m2()-mass2)/lastSHat()) +
+      mass2*width2/sqr(lastSHat());
+  }
 
   return res;
 
@@ -73,7 +79,7 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
 
 double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 					   const Lorentz5Momentum& incoming,
-					   int branch) const {
+					   int branch, double flatCut) const {
 
   if ( branch == -1 )
     return 1.;
@@ -81,7 +87,7 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   pair<int,int> children = diag.children(branch);
 
   pair<double,Lorentz5Momentum> res =
-    timeLikeWeight(diag,children.second);
+    timeLikeWeight(diag,children.second,flatCut);
 
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
@@ -92,23 +98,29 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
-  res.first /=
-    sqr((res.second.m2()-mass2)/lastSHat()) +
-    mass2*width2/sqr(lastSHat());
+  if ( width2 == ZERO ) {
+    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+      res.first /=
+	abs((res.second.m2()-mass2)/lastSHat());
+  } else {
+    res.first /=
+      sqr((res.second.m2()-mass2)/lastSHat()) +
+      mass2*width2/sqr(lastSHat());
+  }
 
   return
-    res.first * spaceLikeWeight(diag,res.second,children.first);
+    res.first * spaceLikeWeight(diag,res.second,children.first,flatCut);
 
 }
 
-void MatchboxPhasespace::fillDiagramWeights() {
+void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
   diagramWeights.clear();
 
   for ( StandardXComb::DiagramVector::const_iterator d =
 	  lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
     diagramWeights[(**d).id()] = 
-      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(**d),meMomenta()[0],0);
+      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(**d),meMomenta()[0],0,flatCut);
   }
 
 }
