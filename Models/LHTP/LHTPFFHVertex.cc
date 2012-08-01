@@ -94,26 +94,32 @@ void LHTPFFHVertex::doinit() {
   addToList( -4000006,       8,  36);
   addToList( -4000008,       8,  36);
   // phi +/-
-  addToList( -1      , 4000002,  37);
-  addToList( -3      , 4000004,  37);
-  addToList( -5      , 4000006,  37);
-  addToList( -4000001,       1,  37);
-  addToList( -4000003,       3,  37);
-  addToList( -4000005,       6,  37);
-  addToList( -4000005,       8,  37);
-  addToList( -4000002,       1, -37);
-  addToList( -4000004,       3, -37);
-  addToList( -4000006,       5, -37);
-  addToList( -1      , 4000001,  37);
-  addToList( -3      , 4000003,  37);
+  addToList( -1      , 4000002, -37);
+  addToList( -3      , 4000004, -37);
+  addToList( -5      , 4000006, -37);
+  addToList( -4000001,       2, -37);
+  addToList( -4000003,       4, -37);
+  addToList( -4000005,       6, -37);
+  addToList( -4000005,       8, -37);
+  addToList( -4000002,       1,  37);
+  addToList( -4000004,       3,  37);
+  addToList( -4000006,       5,  37);
+  addToList( -2      , 4000001,  37);
+  addToList( -4      , 4000003,  37);
   addToList( -6      , 4000005,  37);
   addToList( -8      , 4000005,  37);
-  addToList( -11     , 4000012,  37);
-  addToList( -13     , 4000014,  37);
-  addToList( -15     , 4000016,  37);
+  addToList( -11     , 4000012, -37);
+  addToList( -13     , 4000014, -37);
+  addToList( -15     , 4000016, -37);
   addToList( -4000011,      12, -37);
   addToList( -4000013,      14, -37);
   addToList( -4000015,      16, -37);
+  addToList( -4000012, 11     ,  37);
+  addToList( -4000014, 13     ,  37);
+  addToList( -4000016, 15     ,  37);
+  addToList(      -12, 4000011,  37);
+  addToList(      -14, 4000013,  37);
+  addToList(      -16, 4000015,  37);
   model_ = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
   if(!model_)   throw InitException() << "Must be using the LHModel "
@@ -139,13 +145,14 @@ void LHTPFFHVertex::doinit() {
   cL_[4]   =  cR_[4] = 0.5*sqrt(0.5)/f*model_->kappaLepton();
   // Phi0
   // quark, T-odd quark
-  cL_[5]   = sqrt(0.5)/v;
+  cL_[5]   = sqrt(0.5)/f;
   cR_[5]   = ZERO;
   // and top quarks
   cL_[6]   = sqrt(0.5)*model_->cosThetaR()/f/ca;
   cR_[6]   = ZERO;
   cL_[7]   = sqrt(0.5)*model_->sinThetaR()/f/ca;
   cR_[7]   = ZERO;
+// del*lam1/Sqrt2*cR*P_L
   // PhiP
   // quark, T-odd quark
   cL_[8] = vf/f*model_->kappaQuark()/12;
@@ -244,37 +251,39 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // Phi0
   else if(c->id()==ParticleID::H0 ||
 	  c->id()==ParticleID::A0) {
-    if(iferm>4000000) swap(iferm,ianti);
+    tcPDPtr ferm = a;
+    if(iferm>4000000) {
+      swap(iferm,ianti);
+      ferm = b;
+    }
     if(q2!=q2Last_||idLast_[0]!=iferm) {
       q2Last_ = q2;
       idLast_[0] = iferm;
       assert((idLast_[0]>=1  && idLast_[0]<=8 ) || 
 	     (idLast_[0]>=11 && idLast_[0]<=16));
       if(idLast_[0]!=8)
-	massLast_[0] = model_->mass(q2,a);
+	massLast_[0] = model_->mass(q2,ferm);
       else
 	massLast_[0] = model_->mass(q2,getParticleData(ParticleID::t));
     }
     if(c->id()==ParticleID::H0 ) {
-      if(iferm<=5) {
-	unsigned int      iloc = 5;
-	if(iferm==6)      iloc = 6;
-	else if(iferm==8) iloc = 7;
-	if( (a->id()>=1&&a->id()<=8) || (b->id()>=1&&b->id()<=8) ) {
-	  left ( Complex(cR_[iloc]*massLast_[0]));
-	  right( Complex(cL_[iloc]*massLast_[0]));
-	}
-	else {
-	  left ( Complex(cL_[iloc]*massLast_[0]));
-	  right( Complex(cR_[iloc]*massLast_[0]));
-	}
+      unsigned int      iloc = 5;
+      if(iferm==6)      iloc = 6;
+      else if(iferm==8) iloc = 7;
+      if( (a->id()>=1&&a->id()<=8) || (b->id()>=1&&b->id()<=8) ) {
+	left ( Complex(cR_[iloc]*massLast_[0]));
+	right( Complex(cL_[iloc]*massLast_[0]));
+      }
+      else {
+	left ( Complex(cL_[iloc]*massLast_[0]));
+	right( Complex(cR_[iloc]*massLast_[0]));
       }
     }
     // PhiP
     else if(c->id()==ParticleID::A0) {
       if(iferm<=5) {
 	if( (a->id()>=1&&a->id()<=5) || (b->id()>=1&&b->id()<=5) ) {
-	  if(iferm%2==2) {
+	  if(iferm%2==0) {
 	    left (Complex(0., 1.)*model_->vev()*cL_[8]);
 	    right(Complex(0.,-1.)*massLast_[0] *cR_[8]);
 	  }
@@ -284,7 +293,7 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
 	  }
 	}
 	else {
-	  if(iferm%2==2) {
+	  if(iferm%2==0) {
 	    right(Complex(0.,-1.)*model_->vev()*cL_[8]);
 	    right(Complex(0., 1.)*massLast_[0] *cR_[8]);
 	  }
@@ -307,7 +316,7 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       else {
 	if(ianti==4000008) {
 	  unsigned int iloc = (iferm+14)/2;
-	  if( (a->id()==6&&a->id()==8) || (b->id()==6&&b->id()==8) ) {
+	  if( (a->id()==6||a->id()==8) || (b->id()==6||b->id()==8) ) {
 	    left (Complex(0., 1.)*massLast_[0]*cR_[iloc]);
 	    right(Complex(0., 1.)*massLast_[0]*cL_[iloc]);
 	  }
@@ -318,8 +327,7 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
 	}
 	else {
 	  unsigned int iloc = (iferm+18)/2;
-	  
-	  if( (a->id()==6&&a->id()==8) || (b->id()==6&&b->id()==8) ) {
+	  if( (a->id()==6||a->id()==8) || (b->id()==6||b->id()==8) ) {
 	    left (Complex(0., 1.)*model_->vev()*cL_[iloc]);
 	    right(Complex(0.,-1.)*massLast_[0] *cR_[iloc]);
 	  }
@@ -332,34 +340,38 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     }
   }
   else if(abs(c->id())==ParticleID::Hplus) {
-    if(iferm>4000000) swap(iferm,ianti);
+    tcPDPtr ferm = a;
+    if(iferm>4000000) {
+      swap(iferm,ianti);
+      ferm = b;
+    }
     if(q2!=q2Last_||idLast_[0]!=iferm) {
       q2Last_ = q2;
       idLast_[0] = iferm;
       assert((idLast_[0]>=1  && idLast_[0]<=8 ) || 
 	     (idLast_[0]>=11 && idLast_[0]<=16));
       if(idLast_[0]!=8)
-	massLast_[0] = model_->mass(q2,a);
+	massLast_[0] = model_->mass(q2,ferm);
       else
 	massLast_[0] = model_->mass(q2,getParticleData(ParticleID::t));
     }
     Complex cleft(0.),cright(0.);
     // lepton and T-odd lepton
     if(iferm>=11&&iferm<=16) {
-      cleft  = cR_[14]*massLast_[0];
-      cright = cL_[14]*model_->vev(); 
+      cright =-cR_[14]*massLast_[0];
+      cleft  =-cL_[14]*model_->vev(); 
     }
     else if(iferm>=1&&iferm<=6) {
-      cleft  = cR_[15]*massLast_[0];
-      cright = cL_[15]*model_->vev(); 
+      cright =-cR_[15]*massLast_[0];
+      cleft  =-cL_[15]*model_->vev();
     }
     else if(iferm==6) {
-      cleft  = cR_[16]*massLast_[0];
-      cright = cL_[16]*model_->vev(); 
+      cright =-cR_[16]*massLast_[0];
+      cleft  =-cL_[16]*model_->vev(); 
     }
     else if(iferm==8) {
-      cleft  = cR_[17]*massLast_[0];
-      cright = cL_[17]*model_->vev(); 
+      cright =-cR_[17]*massLast_[0];
+      cleft  =-cL_[17]*model_->vev(); 
     }
     if((a->id()>=1&&a->id()<=16) ||(b->id()>=1&&b->id()<=16) ) {
       swap(cleft,cright);

@@ -7,6 +7,7 @@
 #include "LHTPModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -76,14 +77,14 @@ void LHTPModel::persistentOutput(PersistentOStream & os) const {
   os << ounit(f_,TeV) << salpha_ << calpha_ << sbeta_ << cbeta_
      << kappaQuark_ << kappaLepton_ << ounit(v_,GeV) 
      << g_ << gp_ << sthetaH_ << cthetaH_ << approximate_
-     << sL_ << cL_ << sR_ << cR_;
+     << sL_ << cL_ << sR_ << cR_ << WHHVertex_;
 }
 
 void LHTPModel::persistentInput(PersistentIStream & is, int) {
   is >> iunit(f_,TeV) >> salpha_ >> calpha_ >> sbeta_ >> cbeta_
      >> kappaQuark_ >> kappaLepton_>> iunit(v_,GeV)
      >> g_ >> gp_ >> sthetaH_ >> cthetaH_ >> approximate_
-     >> sL_ >> cL_ >> sR_ >> cR_;
+     >> sL_ >> cL_ >> sR_ >> cR_ >> WHHVertex_;
 }
 
 
@@ -143,9 +144,16 @@ void LHTPModel::Init() {
      "Don't approximate",
      false);
 
+  static Reference<LHTPModel,AbstractVSSVertex> interfaceVertexWHH
+    ("Vertex/WHH",
+     "Vertex for the interactions of the electroweak gauge"
+     " bosons and two Higgs bosons.",
+     &LHTPModel::WHHVertex_, false, false, true, false, false);
+
 }
 
 void LHTPModel::doinit() {
+  addVertex(WHHVertex_);
   StandardModel::doinit();
   using Constants::pi;
   // compute the parameters of the model
@@ -153,7 +161,8 @@ void LHTPModel::doinit() {
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
   Energy mz(getParticleData(ParticleID::Z0)->mass());
   // couplings g and g'
-  double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
+//   double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
+  double ee = sqrt(4.*pi*alphaEMMZ());
   double sw(sqrt(sin2ThetaW())),cw(sqrt(1.-sin2ThetaW()));
   g_  = ee/sw;
   gp_ = ee/cw;
@@ -241,16 +250,9 @@ void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
   // first guess for masses
   MTp = sqrt(sqr(lambda1)+sqr(lambda2))*f_*(1-0.5*vf*sqr(calpha_*salpha_));
   MTm = lambda2*f_;
-  cerr << "before solve " << lambda1 << " " << lambda2 << "\n";
-  cerr << "testing masses MTm " << MTm/GeV << "  MTp " << MTp/GeV << "\n";
-  double mtcorr = 0.25*(1.-2.*sqr(salpha_*calpha_))*vf; 
-  cerr << "testing COMPHEP " 
-       << mt/calpha_/v_*(1.+mtcorr) << " "
-       << mt/salpha_/v_*(1.+mtcorr) << "\n";    
   if(!approximate_) {
     // special case where denominator of tan 2 alpha eqn is zero
     if(abs(salpha_-sqrt(0.5))<1e-4) {
-      cerr << "testing did special case?\n";
       double a = 0.25*(2.*sqr(sv)+sqr(1.+cv));
       double b = 0.5*(a+0.5*(sqr(sv)+0.5*sqr(1.+cv)));
       lambda1 = mt/f_*sqrt(1./b/(1.-sqrt(1.-0.5*a*sqr(sv/b))));
@@ -297,6 +299,4 @@ void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
 			 (4.*sqr(lambda2)+sqr(1.+cv)*sqr(lambda1)-2.*sqr(lambda1)*sv));
   sbeta_ = sin(beta);
   cbeta_ = cos(beta);
-  cerr << "testing after solve " << lambda1 << " " << lambda2 << "\n";
-  cerr << "testing masses MTm " << MTm/GeV << "  MTp " << MTp/GeV << "\n";
 }

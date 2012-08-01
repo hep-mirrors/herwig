@@ -75,12 +75,12 @@ void LHTPFFZVertex::doinit() {
   }
   addToList(-4000008,  +4000008,  23);
   // the T-odd leptons
-  for(long ix = 4000011;ix<17;++ix) {
+  for(long ix = 11;ix<17;++ix) {
     addToList(-ix-4000000,    ix+4000000,    23);
   }
   // Z_H
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     addToList(-ix-4000000,    ix,    33);
     addToList(-ix,    ix+4000000,    33);
   }  
@@ -89,7 +89,7 @@ void LHTPFFZVertex::doinit() {
   addToList(      -6,  +4000008,  33);
   addToList(       6,  -4000008,  33);
   // the leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(int ix=11;ix<17;++ix) {
     addToList(-ix-4000000,    ix,    33);
     addToList(-ix,    ix+4000000,    33);
   }
@@ -169,7 +169,7 @@ void LHTPFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
 	left (tl_[0]);
 	right(tr_[0]);
       }
-      if(iferm == 8 && ianti == 8) {
+      else if(iferm == 8 && ianti == 8) {
 	left (tl_[1]);
 	right(tr_[1]);
       }

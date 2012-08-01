@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "LHTPModel.fh"
 
 namespace Herwig {
@@ -289,6 +290,11 @@ private:
    *  Method for evaluating the masses
    */
   bool approximate_;
+
+  /**
+   *  WHH Vertex
+   */
+  AbstractVSSVertexPtr WHHVertex_;
 };
 
 }

@@ -56,11 +56,11 @@ LHTPFFPVertex::LHTPFFPVertex() :
 void LHTPFFPVertex::doinit() {
   // interactions with the photon
   // the quarks
-  for(unsigned int ix = 1; ix < 7; ++ix) {
+  for(int ix = 1; ix < 7; ++ix) {
     addToList(-ix,    ix, 22);
   }
   // the leptons
-  for(unsigned int ix = 11; ix < 17; ix += 2) {
+  for(int ix = 11; ix < 17; ix += 2) {
     addToList(-ix,    ix, 22);
   }
   // extra top quark
@@ -179,13 +179,14 @@ void LHTPFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     else if(iferm <= 5) {
       if(iferm % 2 == 0) left(coupu_);
       else               left(coupd_);
+      right(0.);
     }
     // leptons
     else {
       if(iferm %2 == 0) left(coupnu_);
       else              left(coupe_ );
+      right(0.);
     }
-    right(0.);
   }
   else
     assert(false);

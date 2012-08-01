@@ -81,9 +81,9 @@ void LHTPWWHVertex::doinit() {
   // W_H A_L Phi+/- 
   addToList(  34,   22,   -37);
   addToList( -34,   22,    37);
-  // W_L W_L Phi --/++
-  addToList(  24,   24,   -38);
-  addToList( -24,  -24,    38);
+  // W_L W_H Phi --/++
+  addToList(  24,   34,   -38);
+  addToList( -24,  -34,    38);
   // model
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());
@@ -97,7 +97,6 @@ void LHTPWWHVertex::doinit() {
   Energy fact = 0.5*model->vev()/model->sin2ThetaW();
   double sw(sqrt(model->sin2ThetaW())),cw(sqrt(1.-model->sin2ThetaW()));
   double vf(model->vev()/model->f());
-  Energy vh = model->vev()*(1.+sqr(vf)/12.);
   double r2(sqrt(2.));
   coup_.resize(14);
   // H 
@@ -166,8 +165,9 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
   }
   else if(ih == 37) {
     if((ibos[0] == 34 && ibos[1] == 23) ||
-       (ibos[0] == 23 && ibos[1] == 34)    ) 
+       (ibos[0] == 23 && ibos[1] == 34)    ) {
       norm(UnitRemoval::InvE *coupLast_*coup_[ 9]);
+    }
     else if((ibos[0] == 24 && ibos[1] == 32) ||
 	    (ibos[0] == 32 && ibos[1] == 24)    ) 
       norm(UnitRemoval::InvE *coupLast_*coup_[10]);
