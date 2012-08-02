@@ -164,6 +164,11 @@ protected:
    *  Compute the spin and colour factor
    */
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
+
+  /**
+   *  Coupling for the generation of hard radiation
+   */
+  ShowerAlphaPtr coupling() {return coupling_;}
   //@}
 
 public:
@@ -255,6 +260,11 @@ private:
    * Maximum weight for integration
    */
   double _maxweight;
+
+  /**
+   *  Coupling for the generation of hard radiation
+   */
+  ShowerAlphaPtr coupling_;
 };
 
 }

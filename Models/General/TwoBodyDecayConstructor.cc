@@ -210,21 +210,25 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
       <<  "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
       << decay.children_.second->PDGName();
+  // set the strong coupling for radiation
+  generator()->preinitInterface(decayer, "Coupling", "set", showerAlpha_);
+  // get the vertices for radiation from the external legs
   VertexBasePtr inRad = radiationVertex(decay.parent_);
   vector<VertexBasePtr> outRad;
   outRad.push_back(radiationVertex(decay.children_.first ));
   outRad.push_back(radiationVertex(decay.children_.second));
+  // sert info on decay
   decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_,
 			inRad,outRad);
-  decayer->init();
+  // initialised the decayer
   setDecayerInterfaces(fullname.str());
+  decayer->init();
   return decayer;
 }
 
 void TwoBodyDecayConstructor::
 createDecayMode(set<TwoBodyDecay> & decays) {
   tPDPtr inpart = decays.begin()->parent_;
-  tEGPtr eg = generator();
   set<TwoBodyDecay>::iterator dend = decays.end();
   for( set<TwoBodyDecay>::iterator dit = decays.begin();
        dit != dend; ++dit ) {
@@ -232,27 +236,27 @@ createDecayMode(set<TwoBodyDecay> & decays) {
     string tag = inpart->name() + "->" + pb->name() + "," + 
       pc->name() + ";";
     // Does it exist already ?
-    tDMPtr dm = eg->findDecayMode(tag);
+    tDMPtr dm = generator()->findDecayMode(tag);
     // Check if tag is one that should be disabled
     if( decayConstructor()->disableDecayMode(tag) ) {
       // If mode alread exists, ie has been read from file, 
       // disable it
       if( dm ) {
-	eg->preinitInterface(dm, "BranchingRatio", "set", "0.0");
-	eg->preinitInterface(dm, "OnOff", "set", "Off");
+	generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
+	generator()->preinitInterface(dm, "OnOff", "set", "Off");
       }
       continue;
     }
     // now create DecayMode objects that do not already exist      
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
-      tDMPtr ndm = eg->preinitCreateDecayMode(tag);
+      tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
       if(ndm) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	if(!decayer) continue;
-	eg->preinitInterface(ndm, "Decayer", "set",
+	generator()->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
-	eg->preinitInterface(ndm, "OnOff", "set", "On");
+	generator()->preinitInterface(ndm, "OnOff", "set", "On");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 
@@ -277,8 +281,8 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	if(!decayer) continue;
-	eg->preinitInterface(dm, "Decayer", "set", 
-			     decayer->fullName());
+	generator()->preinitInterface(dm, "Decayer", "set", 
+				      decayer->fullName());
       }
     }
   }

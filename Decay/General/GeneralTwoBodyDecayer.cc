@@ -14,8 +14,6 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
-#include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -259,11 +257,11 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << vertex_ << _incoming << _outgoing << _maxweight;
+  os << vertex_ << _incoming << _outgoing << _maxweight << coupling_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> vertex_ >> _incoming >> _outgoing >> _maxweight;
+  is >> vertex_ >> _incoming >> _outgoing >> _maxweight >> coupling_;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
@@ -276,6 +274,11 @@ void GeneralTwoBodyDecayer::Init() {
     ("This class is designed to be a base class for all 2 body decays"
      "in a general model");
  
+  static Reference<GeneralTwoBodyDecayer,ShowerAlpha> interfaceCoupling
+    ("Coupling",
+     "Object for the coupling in the generation of hard radiation",
+     &GeneralTwoBodyDecayer::coupling_, false, false, true, false, false);
+
 }
 
 double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
@@ -468,6 +471,7 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr) {
   cerr << _incoming->PDGName() << "\n";
   cerr << _outgoing[0]->PDGName() << " " << _outgoing[1]->PDGName() << "\n";
+  cerr << coupling() << "\n";
   assert(false);
 }
 
