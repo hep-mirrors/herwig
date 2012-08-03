@@ -16,9 +16,6 @@ using namespace ThePEG;
  *  The LHFFPVertex class implements the couplings of the fermions,
  *  both of the Standard Model and the additional heavy top to the 
  *  photon and \f$A_H\f$ bosons in the Little Higgs model.
- *
- * @see \ref LHFFPVertexInterfaces "The interfaces"
- * defined for LHFFPVertex.
  */
 class LHFFPVertex: public Helicity::FFVVertex {
 
@@ -94,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHFFPVertex> initLHFFPVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -138,41 +129,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHFFPVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHFFPVertex,1> {
-  /** Typedef of the first base class of LHFFPVertex. */
-  typedef Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHFFPVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHFFPVertex>
-  : public ClassTraitsBase<Herwig::LHFFPVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHFFPVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHFFPVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHFFPVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHModel.so"; }
-};
-
-/** @endcond */
 
 }
 

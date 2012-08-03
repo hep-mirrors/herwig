@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "LHTPModel.fh"
 
 namespace Herwig {
@@ -33,44 +34,80 @@ public:
   /**
    *  The vacuum expection value
    */
-  Energy vev() const { return _v; }
+  Energy vev() const { return v_; }
 
   /**
    *  The \f$f\f$ scale of the non-linear \f$\sigma\f$-model
    */
-  Energy f() const { return _f; }
+  Energy f() const { return f_; }
 
   /**
    *  \f$\sin\alpha\f$
    */
-  double sinAlpha() const { return _salpha; }
+  double sinAlpha() const { return salpha_; }
 
   /**
    *  \f$\cos\alpha\f$
    */
-  double cosAlpha() const { return _calpha; }
+  double cosAlpha() const { return calpha_; }
 
   /**
    *  \f$\sin\beta\f$
    */
-  double sinBeta() const { return _sbeta; }
+  double sinBeta() const { return sbeta_; }
 
   /**
    *  \f$\cos\beta\f$
    */
-  double cosBeta() const { return _cbeta; }
+  double cosBeta() const { return cbeta_; }
 
   /**
    *  \f$\sin\theta_H\f$
    */
-  double sinThetaH() const { return _sthetaH; }
+  double sinThetaH() const { return sthetaH_; }
 
   /**
    *  \f$\cos\theta_H\f$
    */
-  double cosThetaH() const { return _cthetaH; }
+  double cosThetaH() const { return cthetaH_; }
+
+  /**
+   *  \f$\sin\theta_L\f$
+   */
+  double sinThetaL() const { return sL_;}
+
+  /**
+   *  \f$\cos\theta_L\f$
+   */
+  double cosThetaL() const { return cL_;}
+
+  /**
+   *  \f$\sin\theta_R\f$
+   */
+  double sinThetaR() const { return sR_;}
+
+  /**
+   *  \f$\cos\theta_R\f$
+   */
+  double cosThetaR() const { return cR_;}
   //@}
 
+  /**
+   *  Yukwawa for T-odd fermions
+   */
+  //@{
+  /**
+   *  The \f$\kappa_q\f$ parameter which controls the properties of the
+   *  T-odd quarks
+   */
+  double kappaQuark() const { return kappaQuark_;}
+
+  /**
+   *  The \f$\kappa_\ell\f$ parameter which controls the properties of the
+   *  T-odd leptons
+   */
+  double kappaLepton() const { return kappaLepton_;}
+  //@}
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -96,13 +133,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-protected:
-
-  /**
-   *  Reset the mass of a ParticleData object
-   */
-  void resetMass(long id, Energy mass);
 
 protected:
 
@@ -147,12 +177,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPModel> initLHTPModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -163,7 +187,7 @@ private:
   /**
    *  The constant for the non-linear \f$\sigma\f$ model
    */
-  Energy _f;
+  Energy f_;
 
   /**
    *  @name The mixing in the top quark sector
@@ -172,22 +196,22 @@ private:
   /**
    *  \f$\sin\alpha\f$, taken as an input
    */
-  double _salpha;
+  double salpha_;
 
   /**
    *  \f$\cos\alpha\f$
    */
-  double _calpha;
+  double calpha_;
 
   /**
    *  \f$\sin\beta\f$
    */
-  double _sbeta;
+  double sbeta_;
 
   /**
    *  \f$\cos\beta\f$
    */
-  double _cbeta;
+  double cbeta_;
   //@}
 
   /**
@@ -197,75 +221,81 @@ private:
   /**
    *  \f$\sin\theta_H\f$
    */
-  double _sthetaH;
+  double sthetaH_;
 
   /**
    *  \f$\cos\theta_H\f$
    */
-  double _cthetaH;
+  double cthetaH_;
   //@}
 
   /**
-   *  The \f$\kappa\f$ parameter which controls the properties of the
-   *  T-odd fermions
+   *  @name Mixings in the top sector
    */
-  double _kappa;
+  //@{
+  /**
+   *  \f$\sin\theta_L\f$
+   */
+  double sL_;
+
+  /**
+   *  \f$\cos\theta_L\f$
+   */
+  double cL_;
+
+  /**
+   *  \f$\sin\theta_R\f$
+   */
+  double sR_;
+
+  /**
+   *  \f$\cos\theta_R\f$
+   */
+  double cR_;
+  //@}
+
+  /**
+   *  The \f$\kappa_q\f$ parameter which controls the properties of the
+   *  T-odd quarks
+   */
+  double kappaQuark_;
+
+  /**
+   *  The \f$\kappa_\ell\f$ parameter which controls the properties of the
+   *  T-odd leptons
+   */
+  double kappaLepton_;
 
   /**
    *  The mass of the Standard Model higgs
    */
-  Energy _mh;
+  Energy mh_;
 
   /**
    *  The vacuum expection valve
    */
-  Energy _v;
+  Energy v_;
 
   /**
    *  The \f$g\f$ coupling
    */
-  double _g;
+  double g_;
 
   /**
    *  the \f$g'\f$ coupling
    */
-  double _gp;
-};
+  double gp_;
 
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPModel. */
-template <>
-struct BaseClassTrait<Herwig::LHTPModel,1> {
-  /** Typedef of the first base class of LHTPModel. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPModel>
-  : public ClassTraitsBase<Herwig::LHTPModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPModel"; }
   /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPModel is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
+   *  Method for evaluating the masses
    */
-  static string library() { return "HwLHTPModel.so"; }
-};
+  bool approximate_;
 
-/** @endcond */
+  /**
+   *  WHH Vertex
+   */
+  AbstractVSSVertexPtr WHHVertex_;
+};
 
 }
 

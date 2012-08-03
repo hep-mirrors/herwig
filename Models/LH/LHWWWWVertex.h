@@ -13,10 +13,8 @@ using namespace ThePEG;
   using namespace ThePEG::Helicity;
 
 /**
- * Here is the documentation of the LHWWWWVertex class.
- *
- * @see \ref LHWWWWVertexInterfaces "The interfaces"
- * defined for LHWWWWVertex.
+ * The LHWWWWVertex class implements the quartic self-couplings of electroweak
+ * gauge bosons in the Little Higgs model.
  */
 class LHWWWWVertex: public VVVVVertex {
 
@@ -94,12 +92,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHWWWWVertex> initLHWWWWVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -128,41 +120,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHWWWWVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHWWWWVertex,1> {
-  /** Typedef of the first base class of LHWWWWVertex. */
-  typedef Helicity::VVVVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHWWWWVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHWWWWVertex>
-  : public ClassTraitsBase<Herwig::LHWWWWVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHWWWWVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHWWWWVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHWWWWVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHModel.so"; }
-};
-
-/** @endcond */
 
 }
 

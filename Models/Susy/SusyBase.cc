@@ -509,12 +509,9 @@ void SusyBase::resetRepositoryMasses() {
 	   << part->PDGName() << " using SLHA "
 	   << "file,\nthis can affect parts of the Standard Model simulation and"
 	   << " is strongly discouraged.\n";
-    //Find interface nominal mass interface
-    const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-    ostringstream os;
-    os.precision(12);
-    os << abs(it->second);
-    ifb->exec(*part, "set", os.str());
+    // reset the masses
+    resetMass(it->first,it->second*GeV,part);
+
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }

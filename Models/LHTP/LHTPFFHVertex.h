@@ -1,30 +1,29 @@
 // -*- C++ -*-
-#ifndef HERWIG_LHTPFFWVertex_H
-#define HERWIG_LHTPFFWVertex_H
+#ifndef HERWIG_LHTPFFHVertex_H
+#define HERWIG_LHTPFFHVertex_H
 //
-// This is the declaration of the LHTPFFWVertex class.
+// This is the declaration of the LHTPFFHVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "LHTPModel.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The LHTPFFWVertex class implements the coupling of the \f$W^\pm\f$
- * and \f$W^\pm_H\f$ bosons of the Little Higgs model with T-parity to fermions.
- * For simplicity the coupling are assumed to be flavour diagonal.
+ * The LHTPFFHVertex class implements the couplings of the fermions to 
+ * the Higgs bosons of the Little Higgs model with T-parity.
  */
-class LHTPFFWVertex: public Helicity::FFVVertex {
-
+class LHTPFFHVertex: public Helicity::FFSVertex {
+  
 public:
-
+  
   /**
    * The default constructor.
    */
-  LHTPFFWVertex();
+  LHTPFFHVertex();
   
   /**
    * Calculate the couplings. 
@@ -32,11 +31,12 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
+   * @param ioff Which particle is off-shell
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
-
+  
 public:
-
+  
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -69,17 +69,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
-
+  
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
@@ -93,36 +93,51 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHTPFFWVertex & operator=(const LHTPFFWVertex &);
+  LHTPFFHVertex & operator=(const LHTPFFHVertex &);
 
 private:
 
   /**
-   * @name Storage of the couplings.
+   * Pointer to the SM object.
+   */
+  tcLHTPModelPtr model_;
+
+  /**
+   * Storage of the couplings.
    */
   //@{
   /**
-   *  Left mixings
+   *  The PDG code of the last fermion the coupling was evaluated for.
    */
-  double sL_,cL_;
+  int idLast_[2];
 
   /**
-   *  The elements of the CKM matrix.
-   */
-  vector<vector<Complex> > ckm_;
-
-  /**
-   *  The last value of the electroweak coupling calculated.
-   */
-  Complex coupLast_;
-
-  /**
-   *  The scale \f$q^2\f$ at which the coupling was last evaluated.
+   *  The last \f$q^2\f$ the coupling was evaluated at.
    */
   Energy2 q2Last_;
+
+  /**
+   * The mass of the last fermion for which the coupling was evaluated.
+   */
+  Energy massLast_[2];
+
+  /**
+   *  The factors for the individual interactions
+   */
+  vector<complex<InvEnergy> > coup_;
+
+  /**
+   *  Left coupling
+   */
+  vector<complex<InvEnergy> > cL_;
+
+  /**
+   *  Right coupling
+   */
+  vector<complex<InvEnergy> > cR_;
   //@}
 };
 
 }
 
-#endif /* HERWIG_LHTPFFWVertex_H */
+#endif /* HERWIG_LHTPFFHVertex_H */

@@ -6,15 +6,14 @@
 
 #include "LHFFGVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<LHFFGVertex> 
-LHFFGVertex::initLHFFGVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeNoPIOClass<LHFFGVertex,FFVVertex>
+describeHerwigLHFFGVertex("Herwig::LHFFGVertex", "HwLHModel.so");
 
 void LHFFGVertex::Init() {
 

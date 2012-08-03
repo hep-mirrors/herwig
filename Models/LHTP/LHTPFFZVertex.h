@@ -6,17 +6,15 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "LHTPFFZVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LHTPFFZVertex class.
- *
- * @see \ref LHTPFFZVertexInterfaces "The interfaces"
- * defined for LHTPFFZVertex.
+ * The LHTPFFZVertex class implements the couples of the \f$Z^0\f$
+ * boson and its heavy partner to the fermions in the Little Higgs
+ * model with T-parity.
  */
 class LHTPFFZVertex: public Helicity::FFVVertex {
 
@@ -94,12 +92,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHTPFFZVertex> initLHTPFFZVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -114,90 +106,65 @@ private:
   /**
    *  The left couplings of the Standard Model fermions.
    */
-  vector<double> _gl;
+  vector<double> gl_;
 
   /**
    *  The right couplings of the Standard Model fermions.
    */
-  vector<double> _gr;
+  vector<double> gr_;
 
   /**
    *  The left couplings to the Z for the extended top sector
    */
-  vector<double> _tl;
+  vector<double> tl_;
 
   /**
    *  The right couplings to the Z for the extended top sector
    */
-  vector<double> _tr;
+  vector<double> tr_;
 
   /**
    *  Coupling of \f$dd_-Z_H\f$
    */
-  double _coupd;
+  double coupd_;
 
   /**
    *  Coupling of \f$uu_-Z_H\f$
    */
-  double _coupu;
+  double coupu_;
 
   /**
    *  Coupling of \f$ee_-Z_H\f$
    */
-  double _coupe;
+  double coupe_;
 
   /**
    *  Coupling of \f$\nu\nu_-Z_H\f$
    */
-  double _coupnu;
+  double coupnu_;
+
+  /**
+   *  Left mixings
+   */
+  double sL_,cL_;
+
+  /**
+   *  Right mixings
+   */
+  double sR_,cR_;
 
   /**
    *  The last value of the electroweak coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPFFZVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHTPFFZVertex,1> {
-  /** Typedef of the first base class of LHTPFFZVertex. */
-  typedef Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPFFZVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPFFZVertex>
-  : public ClassTraitsBase<Herwig::LHTPFFZVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPFFZVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPFFZVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPFFZVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 

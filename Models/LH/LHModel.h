@@ -15,7 +15,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LHModel class.
+ * The LHModel class is the main class for the implementation of the Little Higgs model in Herwig++.
+ * In inherits from the StandardModel class and implements the calcuation of the couplings 
+ * and masses in the Little Higgs model and storage of the additional couplings.
  *
  * @see \ref LHModelInterfaces "The interfaces"
  * defined for LHModel.
@@ -139,13 +141,6 @@ public:
 
 protected:
 
-  /**
-   *  Reset the mass of a ParticleData object
-   */
-  void resetMass(long id, Energy mass);
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
@@ -174,12 +169,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LHModel> initLHModel;
 
   /**
    * The assignment operator is private and must never be called.
@@ -294,41 +283,6 @@ private:
   AbstractVSSVertexPtr WHHVertex_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHModel. */
-template <>
-struct BaseClassTrait<Herwig::LHModel,1> {
-  /** Typedef of the first base class of LHModel. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHModel>
-  : public ClassTraitsBase<Herwig::LHModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHModel is implemented. It may also include several, space-separated,
-   * libraries if the class LHModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHModel.so"; }
-};
-
-/** @endcond */
 
 }
 

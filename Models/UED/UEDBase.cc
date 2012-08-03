@@ -367,33 +367,9 @@ void UEDBase::fermionMasses(const unsigned int n) {
 
 }
 
-
 void UEDBase::resetMass(long id, Energy mass) {
   theMasses.push_back(make_pair(id, mass));
-  tPDPtr particle = getParticleData(id);
-  if(!particle) {
-    throw InitException() << "UEDBase::resetMass - Trying to reset a mass for "
-			  << "a ParticleData object that does not exist. ID: "
-			  << id << Exception::warning;
-    return;
-  }
-  //find the correct interface
-  const InterfaceBase * ifc = 
-    Repository::FindInterface(particle, "NominalMass");
-  if(!ifc)
-    throw InitException() << "UEDBase::resetMass - There was an error while "
-			  << "retrieving the NominalMass interface for "
-			  << particle->fullName() 
-			  << Exception::abortnow;
-  //put value into a stream
-  ostringstream oss;
-  oss << ounit(mass, GeV);
-  if(!oss)
-    throw InitException() << "UEDBase::resetMass - There was an error while "
-			  << "reading the new mass  into a stream for "
-			  << particle->fullName() 
-			  << Exception::abortnow;
-  ifc->exec(*particle, "set", oss.str());
+  StandardModel::resetMass(id,mass);
 }
 
 void UEDBase::writeSpectrum() {

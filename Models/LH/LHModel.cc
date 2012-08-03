@@ -5,12 +5,12 @@
 //
 
 #include "LHModel.h"
-#include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -39,8 +39,9 @@ void LHModel::persistentInput(PersistentIStream & is, int) {
      >> WHHVertex_;
 }
 
-ClassDescription<LHModel> LHModel::initLHModel;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHModel,StandardModel>
+describeThePEGLHModel("Herwig::LHModel", "HwLHModel.so");
 
 void LHModel::Init() {
 
@@ -150,14 +151,4 @@ void LHModel::doinit() {
   resetMass(-37,sqrt(MPhi2));
   resetMass( 38,sqrt(MPhi2));
   resetMass(-38,sqrt(MPhi2));
-}
-
-void LHModel::resetMass(long id, Energy mass) {
-  tPDPtr part = getParticleData(id);
-  if(!part) return;
-  part->init();
-  const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-  ostringstream os;
-  os << abs(mass/GeV);
-  ifb->exec(*part, "set", os.str());
 }

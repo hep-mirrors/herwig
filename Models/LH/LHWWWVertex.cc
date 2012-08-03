@@ -6,6 +6,7 @@
 
 #include "LHWWWVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -19,8 +20,9 @@ void LHWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _corr; 
 }
 
-ClassDescription<LHWWWVertex> LHWWWVertex::initLHWWWVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHWWWVertex,VVVVertex>
+describeHerwigLHWWWVertex("Herwig::LHWWWVertex", "HwLHModel.so");
 
 void LHWWWVertex::Init() {
 

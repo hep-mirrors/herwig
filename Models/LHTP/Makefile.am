@@ -3,12 +3,15 @@ pkglib_LTLIBRARIES = HwLHTPModel.la
 endif
 HwLHTPModel_la_SOURCES = \
 LHTPModel.fh     LHTPModel.cc      LHTPModel.h \
-LHTPWWHVertex.fh LHTPWWHVertex.cc  LHTPWWHVertex.h \
-LHTPFFGVertex.fh LHTPFFGVertex.cc  LHTPFFGVertex.h \
-LHTPFFPVertex.fh LHTPFFPVertex.cc  LHTPFFPVertex.h \
-LHTPFFWVertex.fh LHTPFFWVertex.cc  LHTPFFWVertex.h \
-LHTPFFZVertex.fh LHTPFFZVertex.cc  LHTPFFZVertex.h \
-LHTPWWWVertex.fh LHTPWWWVertex.cc  LHTPWWWVertex.h
+LHTPWWHVertex.cc  LHTPWWHVertex.h \
+LHTPFFGVertex.cc  LHTPFFGVertex.h \
+LHTPFFPVertex.cc  LHTPFFPVertex.h \
+LHTPFFWVertex.cc  LHTPFFWVertex.h \
+LHTPFFZVertex.cc  LHTPFFZVertex.h \
+LHTPWWWVertex.cc  LHTPWWWVertex.h \
+LHTPHHHVertex.cc  LHTPHHHVertex.h \
+LHTPWHHVertex.cc  LHTPWHHVertex.h \
+LHTPFFHVertex.cc  LHTPFFHVertex.h
 HwLHTPModel_la_LDFLAGS = -module -version-info 3:0:0
 HwLHTPModel_la_LIBADD= $(GSLLIBS)
 HwLHTPModel_la_CPPFLAGS= $(AM_CPPFLAGS) $(GSLINCLUDE)

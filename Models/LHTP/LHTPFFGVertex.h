@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "LHTPFFGVertex.fh"
 
 namespace Herwig {
 
@@ -16,9 +15,6 @@ using namespace ThePEG;
  * The LHTPFFGVertex class implements the coupling of the 
  * gluon to the coloured fermions, the SM quarks, the extra top-like quark
  * and the T-parity odd quarks of the Little Higgs model with T-parity.
- *
- * @see \ref LHTPFFGVertexInterfaces "The interfaces"
- * defined for LHTPFFGVertex.
  */
 class LHTPFFGVertex: public Helicity::FFVVertex {
 
@@ -63,13 +59,19 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-private:
+protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
-  static NoPIOClassDescription<LHTPFFGVertex> initLHTPFFGVertex;
+  virtual void doinit();
+  //@}
+
+private:
 
   /**
    * The assignment operator is private and must never be called.
@@ -86,50 +88,15 @@ private:
   /**
    *  The last value of the strong coupling calculated.
    */
-  Complex _couplast;
+  Complex coupLast_;
 
   /**
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
-  Energy2 _q2last;
+  Energy2 q2Last_;
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LHTPFFGVertex. */
-template <>
-struct BaseClassTrait<Herwig::LHTPFFGVertex,1> {
-  /** Typedef of the first base class of LHTPFFGVertex. */
-  typedef Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LHTPFFGVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LHTPFFGVertex>
-  : public ClassTraitsBase<Herwig::LHTPFFGVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPFFGVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LHTPFFGVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPFFGVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLHTPModel.so"; }
-};
-
-/** @endcond */
 
 }
 
