@@ -147,7 +147,8 @@ create Herwig::LHTPFFZVertex FFZVertex
 create Herwig::LHTPWWHVertex WWHVertex
 create Herwig::LHTPWWWVertex WWWVertex
 create Herwig::LHTPHHHVertex HHHVertex
-create Herwig::LHTPHHHVertex WHHVertex
+create Herwig::LHTPWHHVertex WHHVertex
+create Herwig::LHTPFFHVertex FFHVertex
 
 cd /Herwig/NewPhysics/LHTP
 set Model:Vertex/FFG /Herwig/Vertices/LHTP/FFGVertex
@@ -157,16 +158,13 @@ set Model:Vertex/FFP /Herwig/Vertices/LHTP/FFPVertex
 set Model:Vertex/WWH /Herwig/Vertices/LHTP/WWHVertex
 set Model:Vertex/WWW /Herwig/Vertices/LHTP/WWWVertex
 set Model:Vertex/HHH /Herwig/Vertices/LHTP/HHHVertex
-set Model:Vertex/HHH /Herwig/Vertices/LHTP/WHHVertex
+set Model:Vertex/WHH /Herwig/Vertices/LHTP/WHHVertex
+set Model:Vertex/FFH /Herwig/Vertices/LHTP/FFHVertex
 
 # Not implemented LHTP yet
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
-
-## Also vertices that have no SM equivalent
-# - WHH
 
 # No LHTP equivalent
 set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
@@ -181,6 +179,7 @@ insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 set LHTP/Model:ModelGenerator NewModel
 
 # --- Perturbative Decays ---
+insert NewModel:DecayParticles 0 /Herwig/Particles/h0
 insert NewModel:DecayParticles 0 /Herwig/Particles/A_H
 insert NewModel:DecayParticles 0 /Herwig/Particles/Z_H
 insert NewModel:DecayParticles 0 /Herwig/Particles/W_H+
