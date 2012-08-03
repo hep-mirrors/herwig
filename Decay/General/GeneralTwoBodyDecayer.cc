@@ -257,11 +257,13 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << vertex_ << _incoming << _outgoing << _maxweight << coupling_;
+  os << vertex_ << _incoming << _outgoing << _maxweight << ounit(pTmin_,GeV)
+     << coupling_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> vertex_ >> _incoming >> _outgoing >> _maxweight >> coupling_;
+  is >> vertex_ >> _incoming >> _outgoing >> _maxweight >> iunit(pTmin_,GeV) 
+     >> coupling_;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
@@ -273,6 +275,12 @@ void GeneralTwoBodyDecayer::Init() {
   static ClassDocumentation<GeneralTwoBodyDecayer> documentation
     ("This class is designed to be a base class for all 2 body decays"
      "in a general model");
+
+  static Parameter<GeneralTwoBodyDecayer,Energy> interfacepTmin
+    ("pTmin",
+     "Minimum transverse momentum from gluon radiation",
+     &GeneralTwoBodyDecayer::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
  
   static Reference<GeneralTwoBodyDecayer,ShowerAlpha> interfaceCoupling
     ("Coupling",
@@ -468,11 +476,142 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
   outgoingVertices_ = outV;
 }
 
-HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr) {
-  cerr << _incoming->PDGName() << "\n";
-  cerr << _outgoing[0]->PDGName() << " " << _outgoing[1]->PDGName() << "\n";
-  cerr << coupling() << "\n";
-  assert(false);
+HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
+
+  if (tree->outgoingLines().size()!=2){
+  
+    vector<ShowerProgenitorPtr> check = tree->extractProgenitors();
+    cerr << check.size() << endl;
+    ShowerProgenitorPtr gProg = check[0];
+    ShowerProgenitorPtr hProg = check[1];
+    ShowerProgenitorPtr iProg = check[2];
+    ShowerProgenitorPtr jProg = check[3];
+  
+    cerr << gProg->progenitor()->dataPtr()->PDGName() << "\t->\t"
+	 << hProg->progenitor()->dataPtr()->PDGName() << "\t"
+	 << iProg->progenitor()->dataPtr()->PDGName() << "\t"
+	 << jProg->progenitor()->dataPtr()->PDGName() << endl;
+
+    gProg  ->maximumpT(pTmin_);
+    hProg  ->maximumpT(pTmin_);
+    iProg  ->maximumpT(pTmin_);
+    jProg  ->maximumpT(pTmin_);
+    return HardTreePtr();
+  }
+
+  //for decay b -> a c where a is the colour singlet
+  assert(tree->outgoingLines().size()==2);
+  
+  ShowerProgenitorPtr 
+    cProgenitor = tree->outgoingLines(). begin()->first,
+    aProgenitor = tree->outgoingLines().rbegin()->first;
+  
+  if((aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 || 
+      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) &&
+      cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0) 
+    swap(cProgenitor,aProgenitor);
+  // Get the decaying particle
+  ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
+
+  //  cerr << bProgenitor->progenitor()->dataPtr()->PDGName() << "\t->\t"
+  //   << cProgenitor->progenitor()->dataPtr()->PDGName() << "\t"
+  //   << aProgenitor->progenitor()->dataPtr()->PDGName() << endl;
+
+  // masses of the particles
+  mb_ = bProgenitor  ->progenitor()->momentum().mass();
+  a_  = aProgenitor  ->progenitor()->momentum().mass() / mb_;
+  c_  = cProgenitor  ->progenitor()->momentum().mass() / mb_; 
+  a2_ = sqr(a_);
+  c2_ = sqr(c_);
+
+  // find rotation fgrom lab to frame with a along -z
+  LorentzRotation eventFrame( bProgenitor->progenitor()->momentum().findBoostToCM() );
+  Lorentz5Momentum pspectator = eventFrame*aProgenitor->progenitor()->momentum();
+  eventFrame.rotateZ( -pspectator.phi() );
+  eventFrame.rotateY( -pspectator.theta() - Constants::pi );
+
+  //invert it
+  eventFrame.invert();
+  
+  //generate the hard emission
+  vector<Lorentz5Momentum> momenta = hardMomenta();
+
+  // if no emission return
+  if(momenta.empty()) {
+    bProgenitor  ->maximumpT(pTmin_);
+    cProgenitor  ->maximumpT(pTmin_);
+    return HardTreePtr();
+  }
+  
+  // rotate momenta back to the lab
+  for(unsigned int ix=0;ix<momenta.size();++ix) {
+    momenta[ix] *= eventFrame;
+  
+  }
+  // get ParticleData objects
+  tcPDPtr b = bProgenitor  ->progenitor()->dataPtr();
+  tcPDPtr c = cProgenitor  ->progenitor()->dataPtr();
+  tcPDPtr a = aProgenitor  ->progenitor()->dataPtr();
+  tcPDPtr gluon  = getParticleData(ParticleID::g);
+  // create new ShowerParticles
+  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(c,true )));
+  ShowerParticlePtr spectator(new_ptr(ShowerParticle(a,true )));
+  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon ,true )));
+  ShowerParticlePtr incoming (new_ptr(ShowerParticle(b   ,false)));
+  ShowerParticlePtr parent   (new_ptr(ShowerParticle(c,true )));
+  // set momenta
+  emitter  ->set5Momentum(momenta[1]); 
+  spectator->set5Momentum(momenta[2]);  
+  gauge    ->set5Momentum(momenta[3]); 
+  incoming ->set5Momentum(bProgenitor->progenitor()->momentum());  
+  Lorentz5Momentum parentMomentum(momenta[1]+momenta[3]);
+  parentMomentum.rescaleMass();
+  parent->set5Momentum(parentMomentum);
+  // Create the vectors of HardBranchings to create the HardTree:
+  vector<HardBranchingPtr> spaceBranchings,allBranchings;
+  // Incoming particle b
+  spaceBranchings.push_back(new_ptr(HardBranching(incoming,SudakovPtr(),
+						  HardBranchingPtr(),
+						  HardBranching::Incoming)));
+  // Outgoing particles from hard emission:
+  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
+							 HardBranchingPtr(),
+							 HardBranching::Outgoing)));
+  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
+						       HardBranchingPtr(),
+						       HardBranching::Outgoing)));
+  emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
+						HardBranchingPtr(),
+						HardBranching::Outgoing)));
+  emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
+						HardBranchingPtr(),
+						HardBranching::Outgoing)));
+  allBranchings.push_back(spaceBranchings[0]);
+  allBranchings.push_back(emitterBranch);
+  allBranchings.push_back(spectatorBranch);
+  // Make the HardTree from the HardBranching vectors.
+  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
+					  ShowerInteraction::QCD));
+  // Set the maximum pt for all other emissions
+  bProgenitor->maximumpT(pT_);
+  cProgenitor  ->maximumpT(pT_);
+  // Connect the particles with the branchings in the HardTree
+  hardtree->connect( bProgenitor->progenitor(), spaceBranchings[0] );
+  hardtree->connect( cProgenitor->progenitor(),   allBranchings[1] );
+  hardtree->connect( aProgenitor->progenitor(),   allBranchings[2] );
+  // colour flow
+  ColinePtr newline=new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
+
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+      newline->addColoured((**cit).branchingParticle());
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+      newline->addAntiColoured((**cit).branchingParticle());
+  }
+
+  //return the tree
+  return hardtree;
 }
 
 double GeneralTwoBodyDecayer::threeBodyME(const ParticleVector & ) {
@@ -480,4 +619,180 @@ double GeneralTwoBodyDecayer::threeBodyME(const ParticleVector & ) {
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;
   return 0.;
+}
+
+vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta() {
+
+  double C    = 6.3;
+  double ymax = 10.;
+  double ymin = -ymax;
+  
+  vector<Lorentz5Momentum> particleMomenta (4);
+  Energy2 lambda = sqr(mb_)* sqrt( 1. + sqr(a2_) + sqr(c2_) -
+			           2.*a2_ - 2.*c2_ - 2.*a2_*c2_);    
+
+  //Calculate A
+  double A = (ymax - ymin) * C * (coupling_->overestimateValue() / 
+				  (2.*Constants::pi));
+ 
+  Energy pTmax = mb_* (sqr(1.-a_) - c2_) / (2.*(1.-a_));
+  if (pTmax < pTmin_) particleMomenta.clear();
+
+  while (pTmax >= pTmin_) {  
+    //Generate pT, y and phi values
+    Energy pT = pTmax * pow(UseRandom::rnd() , (1./A));  
+    
+    if (pT < pTmin_) {particleMomenta.clear(); break;}
+
+    double phi = UseRandom::rnd() * Constants::twopi;
+    double y   = ymin + UseRandom::rnd() * (ymax-ymin);
+
+    double weight[2] = {0.,0.};
+    double xa[2], xc[2], xc_z[2], xg;
+    
+    for (unsigned int j=0; j<2; j++) {
+      //Check if the momenta are physical
+      bool physical = calcMomenta(j, pT, y, phi, xg, xa[j], xc[j], xc_z[j], 
+				  particleMomenta);
+      if (not physical) continue;
+      
+      //Check if point lies within phase space
+      bool inPS = psCheck(xg, xa[j]);
+      if (not inPS) continue;
+      
+      //Calculate the ratio R/B
+      double meRatio = matrixElementRatio();
+      
+      //Calculate jacobian
+      Energy2 denom = (mb_ - particleMomenta[3].e()) * 
+	               particleMomenta[2].vect().mag() -
+		       particleMomenta[2].e() * particleMomenta[3].z(); 
+
+      InvEnergy2 J  = (particleMomenta[2].vect().mag2()) / (2.* lambda * denom);
+     
+      //Calculate weight
+      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C;          
+     }
+
+    //    ofstream weights;
+    //if (weight[0] + weight[1] > 1.){
+    //weights.open("weights.top", ios::app);
+    //weights << weight[0]+weight[1] << endl;
+    //}
+
+    //Accept point if weight > R
+    if (weight[0] + weight[1] > UseRandom::rnd()) {
+      if (weight[0] > (weight[0] + weight[1])*UseRandom::rnd()) {
+	particleMomenta[1].setE( (mb_/2.)*xc  [0]);
+	particleMomenta[1].setZ( (mb_/2.)*xc_z[0]);
+	particleMomenta[2].setE( (mb_/2.)*xa  [0]);
+	particleMomenta[2].setZ(-(mb_/2.)*sqrt(sqr(xa[0])-4.*a2_));
+      }
+      else {
+	particleMomenta[1].setE( (mb_/2.)*xc  [1]);
+	particleMomenta[1].setZ( (mb_/2.)*xc_z[1]);
+	particleMomenta[2].setE( (mb_/2.)*xa  [1]);
+	particleMomenta[2].setZ(-(mb_/2.)*sqrt(sqr(xa[1])-4.*a2_));
+      }
+      pT_ = pT;
+      break;   
+    }
+    //If there's no splitting lower the pT
+    pTmax = pT; 
+  }
+  return particleMomenta;
+}
+
+double GeneralTwoBodyDecayer::matrixElementRatio() {
+  
+  return 1.;
+}
+
+bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
+   		        double& xg, double& xa, double& xc, double& xc_z,
+			vector<Lorentz5Momentum>& particleMomenta){
+  
+  //Calculate xg
+  xg = 2.*pT*cosh(y) / mb_;
+  if (xg>(1. - sqr(c_ + a_)) || xg<0.) return false;
+
+  //Calculate xa
+  double xT  = 2.*pT / mb_;
+  double A   = 4. - 4.*xg + sqr(xT);
+  double B   = 4.*(3.*xg - 2. + 2.*c2_ - 2.*a2_ - sqr(xg) - xg*c2_ + xg*a2_);
+  double L   = 1. + sqr(a2_) + sqr(c2_) - 2.*a2_ - 2.*c2_ - 2.*a2_*c2_;
+  double det = 16.*( -L*sqr(xT) + pow(xT,4)*a2_ + 2.*xg*sqr(xT)*(1.-a2_-c2_) + 
+		      L*sqr(xg) - sqr(xg*xT)*(1. + a2_) + pow(xg,4) + 
+		      2.*pow(xg,3)*(- 1. + a2_ + c2_) );
+
+  if (det<0.) return false;
+  if (j==0) xa = (-B + sqrt(det))/(2.*A);
+  if (j==1) xa = (-B - sqrt(det))/(2.*A);  
+  if (xa>(1. + a2_ - c2_) || xa<2.*a_) return false;
+
+  //Calculate xc
+  xc = 2. - xa - xg;     
+  if (xc>(1. + c2_ - a2_) || xc<2.*c_) return false;       
+
+  //Calculate xc_z  
+  double epsilon_p =  -sqrt(sqr(xa) - 4.*a2_) + xT*sinh(y) +
+                       sqrt(sqr(xc) - 4.*c2_  - sqr(xT));
+  double epsilon_m =  -sqrt(sqr(xa) - 4.*a2_) + xT*sinh(y) - 
+                       sqrt(sqr(xc) - 4.*c2_  - sqr(xT));
+
+  if (fabs(epsilon_p) < 1.e-10){
+    xc_z =  sqrt(sqr(xc) - 4.*c2_ - sqr(xT));
+  }
+  else if (fabs(epsilon_m) < 1.e-10){
+    xc_z = -sqrt(sqr(xc) - 4.*c2_ - sqr(xT));
+  }
+  else return false;
+
+  //Check b is on shell
+  if (fabs((sqr(xc) - sqr(xT) - sqr(xc_z) - 4.*c2_))>1.e-10) return false;
+
+  //Calculate 4 momenta
+  particleMomenta[0].setE   ( mb_);
+  particleMomenta[0].setX   ( ZERO);
+  particleMomenta[0].setY   ( ZERO);
+  particleMomenta[0].setZ   ( ZERO);
+  particleMomenta[0].setMass( mb_);
+
+  particleMomenta[1].setE   ( mb_*xc/2.);
+  particleMomenta[1].setX   (-pT*cos(phi));
+  particleMomenta[1].setY   (-pT*sin(phi));
+  particleMomenta[1].setZ   ( mb_*xc_z/2.);
+  particleMomenta[1].setMass( mb_*c_);
+
+  particleMomenta[2].setE   ( mb_*xa/2.);
+  particleMomenta[2].setX   ( ZERO);
+  particleMomenta[2].setY   ( ZERO);
+  particleMomenta[2].setZ   (-mb_*sqrt(sqr(xa) - 4.*a2_)/2.);
+  particleMomenta[2].setMass( mb_*a_);
+
+  particleMomenta[3].setE   ( pT*cosh(y));
+  particleMomenta[3].setX   ( pT*cos(phi));
+  particleMomenta[3].setY   ( pT*sin(phi));
+  particleMomenta[3].setZ   ( pT*sinh(y));
+  particleMomenta[3].setMass( ZERO);
+ 
+  return true;
+}
+
+
+bool GeneralTwoBodyDecayer::psCheck(double xg, double xa) {
+  
+  //Check is point is in allowed region of phase space
+  double xc_star = (1. - a2_ + c2_ - xg) / sqrt(1. - xg);
+  double xg_star = xg / sqrt(1. - xg);
+
+  if ((sqr(xc_star) - 4.*c2_) < 1e-10) return false;
+  double xa_max = (4. + 4.*a2_ - sqr(xc_star + xg_star) + 
+		   sqr(sqrt(sqr(xc_star) - 4.*c2_) + xg_star)) / 4.;
+  double xa_min = (4. + 4.*a2_ - sqr(xc_star + xg_star) + 
+		   sqr(sqrt(sqr(xc_star) - 4.*c2_) - xg_star)) / 4.;
+
+  if (xa < xa_min || xa > xa_max) return false;
+
+  return true;
 }

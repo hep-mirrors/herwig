@@ -47,7 +47,9 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.) {}
+  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), a_(0.), c_(0.), a2_(0.), c2_(0.), pTmin_(GeV), pT_(ZERO)
+{}
+
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -166,6 +168,28 @@ protected:
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
 
   /**
+   *  Calculate matrix element ratio B/R
+   */
+  double matrixElementRatio();
+
+  /**
+   *  Calculate momenta of a, b, c, g
+   */
+  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
+		   double& xa, double& xc, double& xc_z, 
+		   vector<Lorentz5Momentum>& particleMomenta);
+
+  /**
+   *  Check the calculated momenta are physical
+   */
+  bool psCheck(double xg, double xa);
+
+  /**
+   *  Return the momenta including the hard emission
+   */
+  vector<Lorentz5Momentum> hardMomenta();
+
+  /**
    *  Coupling for the generation of hard radiation
    */
   ShowerAlphaPtr coupling() {return coupling_;}
@@ -260,6 +284,41 @@ private:
    * Maximum weight for integration
    */
   double _maxweight;
+
+  /**
+   *  Mass of decaying particle
+   */
+  Energy mb_;
+
+  /**
+   *  Reduced mass of colour singlet child particle
+   */
+  double a_;
+
+  /**
+   * Reduced mass of coloured child particle
+   */
+  double c_;
+
+  /**
+   *  Reduced of colour singlet child particle squared
+   */
+  double a2_;
+
+  /**
+   * Reduced mass of coloured child particle squared
+   */
+  double c2_;
+
+  /**
+   *  Minimum \f$p_T\f$
+   */
+  Energy pTmin_;
+
+  /**
+   *  Transverse momentum of the emission
+   */
+  Energy pT_;
 
   /**
    *  Coupling for the generation of hard radiation

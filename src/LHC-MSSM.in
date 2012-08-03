@@ -26,6 +26,8 @@ cd /Herwig/NewPhysics
 # hard process (On by default)
 set HPConstructor:IncludeEW No
 
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+
 # Example hard process: Incoming proton, outgoing squarks
 insert HPConstructor:Incoming 0 /Herwig/Particles/g
 insert HPConstructor:Incoming 1 /Herwig/Particles/u
