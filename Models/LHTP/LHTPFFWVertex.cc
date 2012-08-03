@@ -191,14 +191,9 @@ void LHTPFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
     }
   }
   else {
-    if(ia==6||ib==6)      left(cL_);
-    else if(ia==8||ib==8) left(sL_);
-    else                  left(1. );
-
-
-
-
-    
+    if(ia==6||ib==6)      left(-cL_);
+    else if(ia==8||ib==8) left(-sL_);
+    else                  left(-1. );
     right(0.);
   }
 }
