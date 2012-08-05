@@ -241,6 +241,25 @@ private:
   Ptr<BinSampler>::tptr lastSampler;
 
   /**
+   * The number of events after which cross sections should truly be
+   * updated. This is used to prevent exhaustive combination of
+   * statistics when HepMC events are written out.
+   */
+  size_t theUpdateAfter;
+
+  /**
+   * The number of calls to currentCrossSections since the last
+   * update.
+   */
+  mutable size_t crossSectionCalls;
+
+  /**
+   * True, if currentCrossSections has been called since the last call
+   * to generate.
+   */
+  mutable bool gotCrossSections;
+
+  /**
    * The integrated cross section in nanobarn
    */
   mutable double theIntegratedXSec;

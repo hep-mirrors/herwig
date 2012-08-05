@@ -32,7 +32,8 @@ PomeronPDF::PomeronPDF() :
   fileName_(3),
   nxPoints_(100),
   nqPoints_(88),
-  PDFFit_(0)
+  PDFFit_(0),
+  boundary_(0)
 {}
 
 bool PomeronPDF::canHandleParticle(tcPDPtr particle) const {

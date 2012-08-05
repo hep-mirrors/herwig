@@ -93,7 +93,7 @@ double TreePhasespace::generateKinematics(const double* random,
     return 0.;
   }
 
-  fillDiagramWeights();
+  fillDiagramWeights(x0);
 
   double sum = 0.;
   for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::const_iterator d
