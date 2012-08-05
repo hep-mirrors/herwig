@@ -588,15 +588,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour38to13:
     static ColourLines f38to13[2]={ColourLines("1 2 -3, 3 5"),
-				   ColourLines("1-2, 2 3 5" )};
-    if(current.channelType == HPDiagram::tChannel)
+				   ColourLines("1 -2, 2 3 5")};
+    if(current.channelType == HPDiagram::tChannel) {
       sel.insert(1.,&f38to13[0]);
-    else
+    }
+    else {
       sel.insert(1.,&f38to13[1]);
+    }
     break;
   case Colour38to31:
     static ColourLines f38to31[2]={ColourLines("1 2 -3, 3 4"),
-				   ColourLines("1-2, 2 3 4 ")};
+				   ColourLines("1 -2, 2 3 4 ")};
     if(current.channelType == HPDiagram::tChannel)
       sel.insert(1.,&f38to31[0]);
     else	        
