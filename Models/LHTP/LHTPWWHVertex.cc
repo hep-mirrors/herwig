@@ -113,7 +113,7 @@ void LHTPWWHVertex::doinit() {
   coup_[ 8] = fact*vf/r2*sw/sqr(cw);
   // Phi+
   coup_[ 9] = fact*vf/6./cw*(1.+2.*sqr(sw));
-  coup_[10] =-fact*vf*sw/cw*0.5;
+  coup_[10] = fact*vf*sw/cw*0.5;
   coup_[11] = fact*vf*5./6.;
   coup_[12] =-fact*vf*sw/3.;
   // Phi++
@@ -148,7 +148,7 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
       assert(false);
   }
   else if(ih == 36) {
-    if( ibos[0] == 34 || ibos[1] == 34) 
+    if( a->id() == 34 || b->id() == 34) 
       norm( Complex(0.,1.)*UnitRemoval::InvE *coupLast_*coup_[6]);
     else
       norm(-Complex(0.,1.)*UnitRemoval::InvE *coupLast_*coup_[6]);
@@ -172,7 +172,7 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
 	    (ibos[0] == 32 && ibos[1] == 24)    ) 
       norm(UnitRemoval::InvE *coupLast_*coup_[10]);
     else if((ibos[0] == 24 && ibos[1] == 33) ||
-       (ibos[0] == 33 && ibos[1] == 24)    ) 
+	    (ibos[0] == 33 && ibos[1] == 24)    ) 
       norm(UnitRemoval::InvE *coupLast_*coup_[11]);
     else if((ibos[0] == 34 && ibos[1] == 22) ||
 	    (ibos[0] == 22 && ibos[1] == 34)    ) 

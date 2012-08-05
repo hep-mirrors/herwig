@@ -284,33 +284,33 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       if(iferm<=5) {
 	if( (a->id()>=1&&a->id()<=5) || (b->id()>=1&&b->id()<=5) ) {
 	  if(iferm%2==0) {
-	    left (Complex(0., 1.)*model_->vev()*cL_[8]);
-	    right(Complex(0.,-1.)*massLast_[0] *cR_[8]);
+	    right(Complex(0., 1.)*model_->vev()*cL_[8]);
+	    left (Complex(0.,-1.)*massLast_[0] *cR_[8]);
 	  }
 	  else {
-	    left (Complex(ZERO));
-	    right(Complex(0., 1.)*massLast_[0] *cR_[8]);
+	    right(Complex(ZERO));
+	    left (Complex(0., 1.)*massLast_[0] *cR_[8]);
 	  }
 	}
 	else {
 	  if(iferm%2==0) {
-	    right(Complex(0.,-1.)*model_->vev()*cL_[8]);
+	    left (Complex(0.,-1.)*model_->vev()*cL_[8]);
 	    right(Complex(0., 1.)*massLast_[0] *cR_[8]);
 	  }
 	  else {
-	    right(Complex(ZERO));
+	    left (Complex(ZERO));
 	    right(Complex(0.,-1.)*massLast_[0] *cR_[8]);
 	  }
 	}
       }
       else if(iferm>=12) {
 	if( (a->id()>=11&&a->id()<=16) || (b->id()>=11&&b->id()<=16) ) {
-	  left (Complex(0., 1.)*model_->vev()*cL_[9]);
-	  right(Complex(0., 1.)*massLast_[0] *cR_[9]);
+	  right(Complex(0., 1.)*model_->vev()*cL_[9]);
+	  left (Complex(0.,-1.)*massLast_[0] *cR_[9]);
 	}
 	else {
-	  left (Complex(0.,-1.)*massLast_[0] *cR_[9]);
-	  right(Complex(0.,-1.)*model_->vev()*cL_[9]);
+	  right(Complex(0.,-1.)*massLast_[0] *cR_[9]);
+	  left (Complex(0., 1.)*model_->vev()*cL_[9]);
 	}
       }
       else {

@@ -137,13 +137,13 @@ void LHTPWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       norm(coup_[5]*coupLast_);
     else if(isc1==36)
       norm(coup_[6]*coupLast_);
-    else if(isc1==38)
+    else if(isc1==-38)
       norm(-coup_[7]*coupLast_);
     else if(isc2==35)
       norm(-coup_[5]*coupLast_);
     else if(isc2==36)
       norm(-coup_[6]*coupLast_);
-    else if(isc2==38)
+    else if(isc2==-38)
       norm( coup_[7]*coupLast_);
     else
       assert(false);

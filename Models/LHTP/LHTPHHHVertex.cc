@@ -57,7 +57,7 @@ void LHTPHHHVertex::doinit() {
   addToList(25,36, 36);
   addToList(25,37,-37);
   SSSVertex::doinit();
-  ratio_ = -1.5*sqr(getParticleData(ParticleID::h0)->mass())/
+  ratio_ = sqr(getParticleData(ParticleID::h0)->mass())/
     getParticleData(ParticleID::Wplus)->mass();
 }
 
@@ -67,9 +67,9 @@ void LHTPHHHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr) 
     q2Last_=q2;
   }
   long id = part2->id()!=ParticleID::h0 ? abs(part2->id()) : abs(part1->id());
-  if(id==ParticleID::h0) norm(     coupLast_);
-  else if(id==35)        norm(-12.*coupLast_);
-  else if(id==36)        norm(-12.*coupLast_);
-  else if(id==37)        norm(- 6.*coupLast_);
+  if(id==ParticleID::h0) norm(    -coupLast_);
+  else if(id==35)        norm(  3.*coupLast_);
+  else if(id==36)        norm(  3.*coupLast_);
+  else if(id==37)        norm(1.5*coupLast_);
   else assert(false);
 }
