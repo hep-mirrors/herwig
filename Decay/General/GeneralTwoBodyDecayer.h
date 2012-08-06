@@ -47,7 +47,8 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), a_(0.), c_(0.), a2_(0.), c2_(0.), pTmin_(GeV), pT_(ZERO)
+  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), a_(0.), c_(0.), a2_(0.), c2_(0.), pTmin_(GeV), pT_(ZERO),
+			    colour_(1,DVector(1,1.)), colourFlows_(3,vector<pair<int,double > >(1,make_pair(0,1.)))
 {}
 
 
@@ -256,6 +257,24 @@ protected:
   virtual void doinitrun();
   //@}
 
+protected:
+
+  /**
+   *  Member for the generation of additional hard radiation
+   */
+  //@{
+  /**
+   * Return the matrix of colour factors 
+   */
+  const vector<DVector> & getColourFactors() const {
+    return colour_;
+  }
+  
+  const vector<vector<pair<int,double > > > & colourFlows() const {
+    return colourFlows_;
+  }
+  //@}
+
 private:
 
   /**
@@ -345,6 +364,16 @@ private:
    *  Coupling for the generation of hard radiation
    */
   ShowerAlphaPtr coupling_;
+
+  /**
+   * Store colour factors for ME calc.
+   */
+  vector<DVector> colour_;
+
+  /**
+   *  Mapping for which colour flows a diagram conributes to
+   */
+  vector<vector<pair<int,double > > > colourFlows_;
 };
 
 }
