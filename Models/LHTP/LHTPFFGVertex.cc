@@ -46,7 +46,7 @@ void LHTPFFGVertex::doinit() {
   // additional top quark
   addToList(-8,  8, 21);
   // T odd quarks
-  for(long ix = 4000001; ix < 4000006; ++ix) {
+  for(long ix = 4000001; ix <= 4000006; ++ix) {
     addToList(-ix,     ix, 21);
   }
   addToList(-4000008,   4000008, 21);
