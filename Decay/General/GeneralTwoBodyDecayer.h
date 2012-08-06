@@ -147,6 +147,23 @@ protected:
    */
   VertexBasePtr getVertex() const { return vertex_; }
 
+  //-----------------------------------------------------------
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation off the decaying particle
+   */
+  VertexBasePtr getIncomingVertex() const { return  incomingVertex_; }
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation off the decay products
+   */
+  vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
+
+  //-----------------------------------------------------------
+
+
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
@@ -270,6 +287,7 @@ private:
    */
   VertexBasePtr vertex_;
 
+  //----------------------------------------------------------
   /**
    *  Pointer to vertex for radiation from the incoming particle
    */
@@ -279,6 +297,9 @@ private:
    *  Pointer to the vertices for radiation from the outgoing particles
    */
   vector<VertexBasePtr> outgoingVertices_; 
+
+
+  //----------------------------------------------------------
  
   /**
    * Maximum weight for integration

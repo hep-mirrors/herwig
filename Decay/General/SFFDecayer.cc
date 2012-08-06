@@ -35,15 +35,30 @@ IBPtr SFFDecayer::fullclone() const {
 void SFFDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<FFSVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractFFSVertexPtr>(getVertex());
+
+  _perturbativeIncomingVertex = dynamic_ptr_cast<VSSVertexPtr>        
+    (getIncomingVertex());
+  _abstractIncomingVertex     = dynamic_ptr_cast<AbstractVSSVertexPtr>
+    (getIncomingVertex());
+
+  //  _perturbativeOutgoingVertices = dynamic_ptr_cast<FFVVertexPtr>       
+  //(getOutgoingVertices());
+  //_abstractOutgoingVertices     = dynamic_ptr_cast<AbstractFFVVertexPtr>
+  //(getOutgoingVertices());
+
   GeneralTwoBodyDecayer::doinit();
 }
 
 void SFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _abstractVertex << _perturbativeVertex;
+  os << _abstractVertex           << _perturbativeVertex 
+     << _abstractIncomingVertex   << _perturbativeIncomingVertex ;
+    // << _abstractOutgoingVertices << _perturbativeOutgoingVertices;
 }
 
 void SFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _abstractVertex >> _perturbativeVertex;
+  is >> _abstractVertex           >> _perturbativeVertex 
+     >> _abstractIncomingVertex   >> _perturbativeIncomingVertex ;
+    //>> _abstractOutgoingVertices >> _perturbativeOutgoingVertices;
 }
 
 ClassDescription<SFFDecayer> SFFDecayer::initSFFDecayer;
@@ -131,6 +146,73 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   }
 }
 
-double SFFDecayer::threeBodyME(const ParticleVector & particles) {
+double SFFDecayer::threeBodyME(const int , const Particle & inpart,
+		       const ParticleVector & decay,MEOption meopt) {
+
+  // work out which is the fermion, antifermion and gluon
+  int iferm(-1),ianti(-1),iglu(-1);
+  int itype[3];
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(decay[ix]->dataPtr()->CC()) itype[ix] = decay[ix]->id()>0 ? 0:1;
+    else if (decay[ix]->dataPtr()->id() == ParticleID::g) itype[ix] = 3;
+    else                           itype[ix] = 2;
+  }
+  //
+  for(unsigned int iy=0;iy<3;++iy) {
+    if(itype[iy]==3)              iglu =iy;
+    if(itype[iy]==0 && iferm==-1) iferm=iy;
+    if(itype[iy]==1 && ianti==-1) ianti=iy;
+    if(itype[iy]==0 && iferm!=-1) {ianti=iy; swap(ianti,iferm);}
+    if(itype[iy]==1 && ianti!=-1) {iferm=iy; swap(ianti,iferm);}
+    if(itype[iy]==2 && iferm!=-1) ianti=iy;
+    if(itype[iy]==2 && ianti!=-1) iferm=iy;
+    if(itype[iy]==2 && iferm==-1 && ianti==-1) iferm=iy;
+  }
+   
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave3 = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::
+      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar3 ,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave3    ,decay[ianti],outgoing,true);
+    VectorWaveFunction::
+      constructSpinInfo(_vwavebar3,decay[iglu ],outgoing,true,false);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar3, decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave3   , decay[ianti],outgoing);
+  VectorWaveFunction::
+    calculateWaveFunctions(_vwavebar3,decay[iglu ],outgoing,true);
+
+  tcPDPtr Scalar=getParticleData(inpart.id());;
+  ScalarWaveFunction inter;
+  Energy2 scale(sqr(inpart.mass()));
+  for(unsigned int ifm = 0; ifm < 2; ++ifm){
+    for(unsigned int ia = 0; ia < 2; ++ia) {
+
+      inter = _abstractVertex->evaluate(scale,1,Scalar,_wave3[ia],
+      			  _wavebar3[ifm]);
+      for(unsigned int iv = 0; iv < 2; ++iv) {
+	ME()(ia, ifm, iv) = _abstractIncomingVertex->evaluate(scale,
+					       _vwavebar3[iv],_swave3,inter);
+     	
+      }
+    }
+  }
+  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  // colour and identical particle factors
+  //output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+  //			 decay[1]->dataPtr(),decay[0]->dataPtr());
+  // return the answer
+  return output;
   assert(false);
 }

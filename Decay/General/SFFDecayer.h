@@ -15,6 +15,8 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -68,7 +70,8 @@ public:
   /**
    *  Three-body matrix element including additional QCD radiation
    */
-  virtual double threeBodyME(const ParticleVector & particles);
+  virtual double threeBodyME(const int , const Particle & inpart,
+		       const ParticleVector & decay,MEOption meopt);
   //@}
 
 public:
@@ -152,6 +155,31 @@ private:
    */
   FFSVertexPtr _perturbativeVertex;
 
+  //--------------------------------------------------------------------
+
+  /**
+   *  Abstract pointer to AbstractVSSVertex
+   */
+  AbstractVSSVertexPtr _abstractIncomingVertex;
+
+  /**
+   * Pointer to the perturbative vertex for QCD radiation from decaying particle
+   */
+  VSSVertexPtr _perturbativeIncomingVertex;
+ 
+  /**
+   *  Abstract pointer to AbstractFFVVertex
+   */
+  AbstractFFVVertexPtr _abstractOutgoingVertex;
+
+  /**
+   * Pointer to the perturbative vertex for QCD radiation from decaying particle
+   */
+  FFVVertexPtr _perturbativeOutgoingVertex;
+
+
+  //--------------------------------------------------------------------
+
   /**
    *  Spin density matrix
    */
@@ -171,6 +199,27 @@ private:
    *  Barred spinor wavefunction
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
+
+  //------------------------------------------------------
+  /**
+   *  Scalar wavefunction
+   */
+  mutable ScalarWaveFunction _swave3;
+
+  /**
+   *  Spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction> _wave3;
+
+  /**
+   *  Barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar3;
+
+    /**
+   *  Barred vector wavefunction
+   */
+  mutable vector<VectorWaveFunction> _vwavebar3;
 
   
 };

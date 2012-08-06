@@ -258,12 +258,12 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << vertex_ << _incoming << _outgoing << _maxweight << ounit(pTmin_,GeV)
-     << coupling_;
+     << coupling_ << incomingVertex_ << outgoingVertices_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> vertex_ >> _incoming >> _outgoing >> _maxweight >> iunit(pTmin_,GeV) 
-     >> coupling_;
+     >> coupling_ >> incomingVertex_ >> outgoingVertices_;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
