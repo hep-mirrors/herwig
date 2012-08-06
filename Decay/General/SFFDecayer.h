@@ -163,21 +163,15 @@ private:
   AbstractVSSVertexPtr _abstractIncomingVertex;
 
   /**
-   * Pointer to the perturbative vertex for QCD radiation from decaying particle
+   *  Abstract pointer to AbstractFFVVertex
    */
-  VSSVertexPtr _perturbativeIncomingVertex;
- 
+  AbstractFFVVertexPtr _abstractOutgoingVertex1;
+
+
   /**
    *  Abstract pointer to AbstractFFVVertex
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertex;
-
-  /**
-   * Pointer to the perturbative vertex for QCD radiation from decaying particle
-   */
-  FFVVertexPtr _perturbativeOutgoingVertex;
-
-
+  AbstractFFVVertexPtr _abstractOutgoingVertex2;
   //--------------------------------------------------------------------
 
   /**
@@ -217,9 +211,9 @@ private:
   mutable vector<SpinorBarWaveFunction> _wavebar3;
 
     /**
-   *  Barred vector wavefunction
+   *  Vector wavefunction
    */
-  mutable vector<VectorWaveFunction> _vwavebar3;
+  mutable vector<VectorWaveFunction> _vwave3;
 
   
 };
