@@ -152,7 +152,6 @@ void LHTPFFHVertex::doinit() {
   cR_[6]   = ZERO;
   cL_[7]   = sqrt(0.5)*model_->sinThetaR()/f/ca;
   cR_[7]   = ZERO;
-// del*lam1/Sqrt2*cR*P_L
   // PhiP
   // quark, T-odd quark
   cL_[8] = vf/f*model_->kappaQuark()/12;
