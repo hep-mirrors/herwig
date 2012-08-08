@@ -90,7 +90,7 @@ void LHTPWHHVertex::doinit() {
   coup_[ 5] = sqrt(0.5)/sw;
   coup_[ 6] = Complex(0.,1.)/sw*sqrt(0.5);
   coup_[ 7] = 1./sw;
-  coup_[ 8] =-Complex(0.,1)*sqrt(0.5)*vf/3./cw;
+  coup_[ 8] = Complex(0.,1)*sqrt(0.5)*vf/3./cw;
   coup_[ 9] = Complex(0.,1)*sqrt(0.5)*vf/3./sw;
   coup_[10] =-vf/6./sw;
 }
