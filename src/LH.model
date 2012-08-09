@@ -102,7 +102,7 @@ cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
 insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 
-# Set the particel to be decayed
+# Set the particles to be decayed
 insert NewModel:DecayParticles 0 /Herwig/Particles/A_H
 insert NewModel:DecayParticles 0 /Herwig/Particles/Z_H 
 insert NewModel:DecayParticles 0 /Herwig/Particles/W_H+
@@ -114,6 +114,10 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/Phi++
 
 # Set up the model framework
 set LH/Model:ModelGenerator NewModel
+
+# Shower stuff for coloured particles
+cd /Herwig/Shower
+do SplittingGenerator:AddFinalSplitting T->T,g; QtoQGSudakov
 
 cd /Herwig/Generators
 # Choose Little Higgs over SM
