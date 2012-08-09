@@ -115,8 +115,8 @@ void LHWWHVertex::doinit() {
   // base class
   VVSVertex::doinit();
   // calculate the couplings for the different combinations of particles
-  Energy fact = 0.5*model->vev()/sin2ThetaW();
   double sw(sqrt(sin2ThetaW())),cw(sqrt(1.-sin2ThetaW()));
+  Energy fact = getParticleData(ParticleID::Wplus)->mass()/sw;
   double vf(sqr(model->vev()/model->f()));
   double vr(model->vevPrime()/model->vev());
   double r2(sqrt(2.));

@@ -112,17 +112,17 @@ void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // get the particles in the interaction
   int ineut,nh(0);
   if(ia==0) {
-    ineut=ia;
+    ineut=ida;
     if(abs(idb)==34) ++nh;
     if(abs(idc)==34) ++nh;
   }
   else if(ib==0) {
-    ineut=ib;
+    ineut=idb;
     if(abs(ida)==34) ++nh;
     if(abs(idc)==34) ++nh;
   }
   else {
-    ineut=ic;
+    ineut=idc;
     if(abs(ida)==34) ++nh;
     if(abs(idb)==34) ++nh;
   }
