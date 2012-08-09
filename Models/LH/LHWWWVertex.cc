@@ -35,6 +35,9 @@ void LHWWWVertex::Init() {
 LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHWWWVertex::doinit() {
   // particles
   addToList(24,  -24,  22);
   addToList(24,  -24,  23);
@@ -53,9 +56,6 @@ LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(ZERO) {
   addToList(34,  -34,  23);
   addToList(34,  -34,  32);
   addToList(34,  -34,  33);
-}
-
-void LHWWWVertex::doinit() {
   // model
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

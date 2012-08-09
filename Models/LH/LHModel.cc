@@ -116,10 +116,10 @@ void LHModel::doinit() {
   double xH = 2.5*g*gp*_s*_c*_sp*_cp*(sqr(_c*_sp)+sqr(_s*_cp))/
     (5.*sqr(g*_sp*_cp)-sqr(gp*_s*_c));
   double vf(sqr(_v/_f));
-  // masses of the neutral gauge bosons (Eqn A37)
+  // masses of the neutral gauge bosons (Eqn 21,22,A37)
   Energy2 MAH2 = sqr(mz)*sw2*(0.2/sqr(_sp*_cp)/vf-1.+0.25*xH*cw2/sqr(_s*_c)/sw2);
   Energy2 MZH2 = sqr(mw)*(1./sqr(_s*_c)/vf-1.-xH*sw2/sqr(_sp*_cp)/cw2);
-  // mass of the heavy charged gauge boson (Eqn. A33) 
+  // mass of the heavy charged gauge boson (Eqn. 19/A33) 
   Energy2 MWH2 = sqr(mw)*(1./sqr(_s*_c)/vf-1.);
   // top and heavy top yukawas (from Eqns 26,27)
   Energy mt = getParticleData(ParticleID::t)->mass();
@@ -128,16 +128,16 @@ void LHModel::doinit() {
   _lambda1 = _lamratio*_lambda2;
   // masses of the Higgs bosons (Eqns 12 and 13)
   double r = 8.*_f/_v*_vacratio;
-  double lamh = 2.*sqr(_mH/_v)/(1./r-0.25*r)/r;
+  double lamh = 2.*sqr(_mH/_v)/(1.-0.25*sqr(r));
   Energy2 MPhi2 = lamh*sqr(_f);
-  // from Eqn A28
-  _s0 = 2.*sqrt(2.)*_vacratio;
-  _c0 = 1.-4.*sqr(_vacratio);
   // from Eqn A27
   _sP    = 2.*sqrt(2.)*_vacratio;
   _cP    = 1.-4.*sqr(_vacratio);
   _sPlus = 2.*_vacratio;
   _cPlus = 1.-2.*sqr(_vacratio);
+  // from Eqn A28
+  _s0 = 2.*sqrt(2.)*_vacratio;
+  _c0 = 1.-4.*sqr(_vacratio);
   // set the masses of the new particles
   resetMass( 32,sqrt(MAH2));
   resetMass( 33,sqrt(MZH2));

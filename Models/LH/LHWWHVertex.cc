@@ -38,6 +38,9 @@ LHWWHVertex::LHWWHVertex()
   // order in the couplings
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHWWHVertex::doinit() {
   // W_L W_L H
   addToList(  24,  -24,    25);
   // Z_L Z_L H
@@ -103,16 +106,12 @@ LHWWHVertex::LHWWHVertex()
   // W_L W_H Phi--
   addToList(  24,   34,   -38);
   addToList( -24,  -34,    38);
-}
-
-void LHWWHVertex::doinit() {
   // model
- cLHModelPtr model = 
-   dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
-  if(!model) 
-    throw InitException() << "Must be using the LHModel "
-			  << " in LHWWHVertex::doinit()"
-			  << Exception::runerror;
+  cLHModelPtr model = 
+    dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
+  if(!model) throw InitException() << "Must be using the LHModel "
+				   << " in LHWWHVertex::doinit()"
+				   << Exception::runerror;
   // base class
   VVSVertex::doinit();
   // calculate the couplings for the different combinations of particles
@@ -134,7 +133,7 @@ void LHWWHVertex::doinit() {
   _coup[ 2] =-fact;
   _coup[ 3] =-fact;
   _coup[ 4] =-fact*sqr(sw/cw);
-  _coup[ 5] =-fact*0.5*(sqr(c)-sqr(s))/s/c;
+  _coup[ 5] =-fact*   0.5*(sqr(c)-sqr(s))/s/c;
   _coup[ 6] =-fact/cw*0.5*(sqr(c)-sqr(s))/s/c;
   _coup[ 7] =-fact/sqr(cw)*sw*0.5*(sqr(cp)-sqr(sp))/sp/cp;
   _coup[ 8] =-fact/cw*sw*0.5/s/c/sp/cp*(sqr(c*sp)+sqr(s*cp));
@@ -148,15 +147,14 @@ void LHWWHVertex::doinit() {
   _coup[16] = fact*sw/cw*0.5/s/c/sp/cp*(s0*(sqr(c*sp)+sqr(s*cp))
 					+2.*r2*(sqr(c)-sqr(s))*(sqr(cp)-sqr(sp))*vr);
   _coup[17] = fact*sqr(sw/cw)*(s0+r2*vr*sqr(sqr(cp)-sqr(sp))/sqr(sp*cp));
-
   _coup[18] =-2.*fact/cw*vr;
   _coup[19] = fact/cw*(sqr(c)-sqr(s))/s/c*vr;
   _coup[20] =-fact*sw/cw*0.5*(sqr(cp)-sqr(sp))/sp/cp*(sPlus-4.*vr);
   _coup[21] =-fact*sw/cw*(sqr(c*cp)+sqr(s*sp))/s/c/sp/cp*vr;
   _coup[22] = fact*(sqr(c)-sqr(s))/s/c*vr;
-  _coup[23] =-fact*(pow(c,4)+pow(s,4))/sqr(s)/sqr(c)*vr;
+  _coup[23] =-fact*(pow(c,4)+pow(s,4))/sqr(s*c)*vr;
   _coup[24] = fact*4.*vr;
-  _coup[25] = fact*2.*(pow(c,4)+pow(s,4))/sqr(s)/sqr(c)*vr;
+  _coup[25] = fact*2.*(pow(c,4)+pow(s,4))/sqr(s*c)*vr;
   _coup[26] =-fact*2.*vr*(sqr(c)-sqr(s))/s/c;
 }
 

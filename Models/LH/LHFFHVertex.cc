@@ -40,31 +40,48 @@ LHFFHVertex::LHFFHVertex()
   _masslast[1] = 0.*GeV;
   _idlast[0] = 0;
   _idlast[1] = 0;
-  // SM like higgs
-  addToList(  -5,   5,  25);
-  addToList(  -6,   6,  25);
-  addToList(  -6,   8,  25);
-  addToList(  -8,   6,  25);
-  addToList(  -8,   8,  25);
-  addToList( -15,  15,  25);
-  // phi0
-  addToList(  -5,   5,  35);
-  addToList(  -6,   8,  35);
-  addToList(  -8,   6,  35);
-  addToList( -15,  15,  35);
-  // phiP
-  addToList(  -5,   5,  36);
-  addToList(  -6,   8,  36);
-  addToList(  -8,   6,  36);
-  addToList( -15,  15,  36);
-  // phi +/-
-  addToList( -8 ,   5,  37);
-  addToList( -16,  15,  37);
-  addToList( -5 ,   8, -37);
-  addToList( -15,  16, -37);
 }
 
 void LHFFHVertex::doinit() {
+  // SM like higgs
+  for (int ix=1;ix<=6;++ix) {
+    addToList(  -ix,  ix,  25);
+  }
+  addToList(  -6,   8,  25);
+  addToList(  -8,   6,  25);
+  addToList(  -8,   8,  25);
+  for(int ix=11;ix<16;ix+=2) {
+    addToList( -ix,  ix,  25);
+  }
+  // phi0
+  for (int ix=1;ix<=6;++ix) {
+    addToList(  -ix,  ix,  35);
+  }
+  addToList(  -6,   8,  35);
+  addToList(  -8,   6,  35);
+  for(int ix=11;ix<16;ix+=2) {
+    addToList( -ix,  ix,  35);
+  }
+  // phiP
+  for (int ix=1;ix<=6;++ix) {
+    addToList(  -ix,  ix,  36);
+  }
+  addToList(  -6,   8,  36);
+  addToList(  -8,   6,  36);
+  for(int ix=11;ix<16;ix+=2) {
+    addToList( -ix,  ix,  36);
+  }
+  // phi +/-
+  for(int ix=1;ix<6;ix+=2) {
+    addToList( -ix-1,   ix,  37);
+    addToList( -ix  , ix+1, -37);
+  }
+  addToList( -8 ,   5,  37);
+  addToList( -5 ,   8, -37);
+  for(int ix=11;ix<16;ix+=2) {
+    addToList( -ix-1,   ix,  37);
+    addToList( -ix  , ix+1, -37);
+  }
   _model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!_model)   throw InitException() << "Must be using the LHModel "
@@ -86,10 +103,10 @@ void LHFFHVertex::doinit() {
   // couplings to top quark
   _coup[1] = (1.-0.5*s02+vf*s0/sqrt(2.)-2./3.*sqr(vf)+sqr(vf)*xL*(1.+xL))/v;
   // couplings to the T quark
-  _coup[2] = xR*(1.+xL)*vf/mT;
+  _coup[2] =-xR*(1.+xL)*vf/mT;
   // couplings to tT
-  _coup[3] = Complex(0.,1.)*xR/mT;
-  _coup[4] = Complex(0.,1.)*vf/v*(1.+xL);
+  _coup[3] = xR/mT;
+  _coup[4] = vf/v*(1.+xL);
   // phi 0
   // light particles
   _coup[5] = sqrt(0.5)/v*(vf-sqrt(2.)*s0);
@@ -107,7 +124,6 @@ void LHFFHVertex::doinit() {
 void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   int iferm=abs(a->id());
   int ianti=abs(b->id());
-  //  int ihigg=abs(c->id());
   // left and right couplings set to one
   left (1.);
   right(1.);
@@ -152,59 +168,53 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       else assert(false);
     }
     else {
-      if( (iferm == 6 && ianti == 8 ) ||
-	  (ianti == 6 && iferm == 8 )) {
-	Complex cleft,cright;
-	if(iferm==6) {
-	  cleft  = -_coup[3]*b->mass();
-	  cright = -_coup[4]*_masslast[0];
-	}
-	else {
-	  cleft  = -_coup[3]*a->mass();
-	  cright = -_coup[4]*_masslast[0];
-	}
-	if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
-	  cright = conj(cleft);
-	  cleft = 0.;
-	}
-	left (cleft );
-	right(cright);
-	norm(1.);
+      assert( (iferm == 6 && ianti == 8 ) ||
+	      (ianti == 6 && iferm == 8 ));
+      Complex cleft,cright;
+      if(iferm==6) {
+	cleft  = -_coup[3]*b->mass();
+	cright = -_coup[4]*_masslast[0];
       }
       else {
-	assert(false);
+	cleft  = -_coup[3]*a->mass();
+	cright = -_coup[4]*_masslast[0];
       }
+      if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
+	cright = conj(cleft);
+	cleft = 0.;
+      }
+      left (cleft );
+      right(cright);
+      norm(1.);
     }
   }
   else if(c->id()==ParticleID::H0) {
     if(iferm==ianti) {
-      if((iferm>=1  && iferm<=5 ) || 
+      if((iferm>=1  && iferm<=6 ) || 
 	 (iferm>=11 && iferm<=16)) {
 	norm(-Complex(_coup[5]*_masslast[0]));
       }
       else assert(false);
     }
     else {
-      if( (iferm == 6 && ianti == 8 ) ||
-	  (iferm == 8 && ianti == 6 )) {
-	Complex cleft  = Complex(_coup[6]*_masslast[0]);
-	Complex cright = 0.;
-	if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
-	  cright = conj(cleft);
-	  cleft = 0.;
-	}
-	left (cleft );
-	right(cright);
-	norm(1.);
+      assert( (iferm == 6 && ianti == 8 ) ||
+	      (iferm == 8 && ianti == 6 ) );
+      Complex cleft  = Complex(_coup[6]*_masslast[0]);
+      Complex cright = 0.;
+      if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
+	cright = conj(cleft);
+	cleft = 0.;
       }
-      else assert(false);
+      left (cleft );
+      right(cright);
+      norm(1.);
     }
   }
   else if(c->id()==ParticleID::A0) {
     left(-1.);
     right(1.);
     if(iferm==ianti) {
-      if((iferm>=1  && iferm<=5 ) || 
+      if((iferm>=1  && iferm<=6 ) || 
 	 (iferm>=11 && iferm<=16)) {
 	if(iferm%2==0)
 	  norm(-Complex( _coup[7]*_masslast[0]));
@@ -214,19 +224,17 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       else assert(false);
     }
     else {
-      if( (iferm == 6 && ianti == 8 ) ||
-	  (iferm == 8 && ianti == 6 )) {
-	Complex cleft  = Complex(_coup[8]*_masslast[0]);
-	Complex cright = 0.;
-	if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
-	  cright = conj(cleft);
-	  cleft = 0.;
-	}
-	left (cleft );
-	right(cright);
-	norm(1.);
+      assert( (iferm == 6 && ianti == 8 ) ||
+	      (iferm == 8 && ianti == 6 ));
+      Complex cleft  = Complex(_coup[8]*_masslast[0]);
+      Complex cright = 0.;
+      if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
+	cright = conj(cleft);
+	cleft = 0.;
       }
-      else assert(false);
+      left (cleft );
+      right(cright);
+      norm(1.);
     }
   }
   else if(c->id()==ParticleID::Hplus) {

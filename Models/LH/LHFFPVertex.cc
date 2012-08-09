@@ -18,20 +18,6 @@ LHFFPVertex::LHFFPVertex()
   // order in strong and em coupling
   orderInGem(1);
   orderInGs(0);
-  // the quarks
-  for(int ix=1;ix<7;++ix) {
-    addToList(-ix,    ix,    22);
-    addToList(-ix,    ix,    32);
-  }
-  addToList( -8,   8,  22);
-  addToList( -8,   8,  32);
-  addToList( -6,   8,  32);
-  addToList( -8,   6,  32);
-  // the leptons
-  for(int ix=11;ix<17;++ix) {
-    addToList(-ix,    ix,    22);
-    addToList(-ix,    ix,    32);
-  }
 }
 
 void LHFFPVertex::persistentOutput(PersistentOStream & os) const {
@@ -55,6 +41,20 @@ void LHFFPVertex::Init() {
 }
 
 void LHFFPVertex::doinit() {
+  // the quarks
+  for(int ix=1;ix<7;++ix) {
+    addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
+  }
+  addToList( -8,   8,  22);
+  addToList( -8,   8,  32);
+  addToList( -6,   8,  32);
+  addToList( -8,   6,  32);
+  // the leptons
+  for(int ix=11;ix<17;++ix) {
+    if(ix%2!=0) addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
+  }
   FFVVertex::doinit();
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
@@ -72,7 +72,7 @@ void LHFFPVertex::doinit() {
   }
   _charge[8] =  model->eu();
   // couplings for the heavy photon taken from table IX
-  double cw  = sqrt(sin2ThetaW());
+  double cw  = sqrt(1.-sin2ThetaW());
   double xL  = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
   double cp2 = sqr(model->cosThetaPrime());
   double yu  = -0.4;
@@ -80,7 +80,7 @@ void LHFFPVertex::doinit() {
   // prefactor after removal of -e
   double pre = -0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
   // down type quarks
-  double gvd   = pre*(2.*yu+11./15.+1./6.*cp2);
+  double gvd   = pre*(2.*yu+11./15.+cp2/6);
   double gad   = pre*(-0.2+0.5*cp2);
   // up type quarks
   double gvu   = pre*(2.*yu+17./15.-5./6.*cp2);
@@ -142,10 +142,11 @@ void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   }
   // heavy photon
   else {
+    assert(c->id()==32);
     int ianti = abs(b->id());
     if(ianti==iferm) {
-      left (-_gl[iferm]);
-      right(-_gr[iferm]);
+      left (_gl[iferm]);
+      right(_gr[iferm]);
     }
     else {
       left (_gl[7]);

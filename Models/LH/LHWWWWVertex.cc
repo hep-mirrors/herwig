@@ -18,6 +18,37 @@ LHWWWWVertex::LHWWWWVertex() :
   // order in the couplings
   orderInGem(2);
   orderInGs(0);
+}
+
+IBPtr LHWWWWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHWWWWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+void LHWWWWVertex::persistentOutput(PersistentOStream & os) const {
+  os << _coup;
+}
+
+void LHWWWWVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _coup;
+}
+
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHWWWWVertex,VVVVVertex>
+describeHerwigLHWWWWVertex("Herwig::LHWWWWVertex", "HwLHModel.so");
+
+void LHWWWWVertex::Init() {
+
+  static ClassDocumentation<LHWWWWVertex> documentation
+    ("The LHWWWWVertex class implements the quartic electroweak"
+     " boson couplings in the Little Higgs Model");
+
+}
+
+void LHWWWWVertex::doinit() {
   // all charge W's
   addToList(24, -24, 24, -24);
   addToList(34, -34, 34, -34);
@@ -65,37 +96,6 @@ LHWWWWVertex::LHWWWWVertex() :
   addToList(33,  34, 32, -24);
   addToList(22,  34, 33, -24);
   addToList(23,  34, 33, -24);
-}
-
-IBPtr LHWWWWVertex::clone() const {
-  return new_ptr(*this);
-}
-
-IBPtr LHWWWWVertex::fullclone() const {
-  return new_ptr(*this);
-}
-
-void LHWWWWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _coup;
-}
-
-void LHWWWWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _coup;
-}
-
-// Static variable needed for the type description system in ThePEG.
-DescribeClass<LHWWWWVertex,VVVVVertex>
-describeHerwigLHWWWWVertex("Herwig::LHWWWWVertex", "HwLHModel.so");
-
-void LHWWWWVertex::Init() {
-
-  static ClassDocumentation<LHWWWWVertex> documentation
-    ("The LHWWWWVertex class implements the quartic electroweak"
-     " boson couplings in the Little Higgs Model");
-
-}
-
-void LHWWWWVertex::doinit() {
   // model
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

@@ -20,6 +20,30 @@ LHFFWVertex::LHFFWVertex()
   // order of vertex in couplings
   orderInGem(1);
   orderInGs(0);
+}
+
+void LHFFWVertex::persistentOutput(PersistentOStream & os) const {
+  os << _ckm << _corrL << _corrH << _tcorrL << _tcorrH << _tHcorrL << _tHcorrH;
+}
+
+void LHFFWVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH >> _tHcorrL >> _tHcorrH;
+}
+
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHFFWVertex,FFVVertex>
+describeHerwigLHFFWVertex("Herwig::LHFFWVertex", "HwLHModel.so");
+
+void LHFFWVertex::Init() {
+
+  static ClassDocumentation<LHFFWVertex> documentation
+    ("The LHFFWVertex class implements the vertices for"
+     " the coupling of the W and heavy W to the Standard Model "
+     "fermions and the heavy top quark in the Little Higgs model");
+
+}
+  
+void LHFFWVertex::doinit() {
   // particles for outgoing W-
   // quarks
   for(int ix=1;ix<6;ix+=2) {
@@ -51,30 +75,6 @@ LHFFWVertex::LHFFWVertex()
   addToList(-5,  8,  -34);
   addToList(-8,  5,  24);
   addToList(-8,  5,  34);
-}
-
-void LHFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _ckm << _corrL << _corrH << _tcorrL << _tcorrH << _tHcorrL << _tHcorrH;
-}
-
-void LHFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH >> _tHcorrL >> _tHcorrH;
-}
-
-// Static variable needed for the type description system in ThePEG.
-DescribeClass<LHFFWVertex,FFVVertex>
-describeHerwigLHFFWVertex("Herwig::LHFFWVertex", "HwLHModel.so");
-
-void LHFFWVertex::Init() {
-
-  static ClassDocumentation<LHFFWVertex> documentation
-    ("The LHFFWVertex class implements the vertices for"
-     " the coupling of the W and heavy W to the Standard Model "
-     "fermions and the heavy top quark in the Little Higgs model");
-
-}
-  
-void LHFFWVertex::doinit() {
   ThePEG::Helicity::FFVVertex::doinit();
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
@@ -140,7 +140,6 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
     }
     assert( iu>=1 && iu<=3 && id>=1 && id<=3);
     left(_ckm[iu-1][id-1]);
-    right(0.);
   }
   // leptons
   else if(iferm>=11 && iferm <=16) {

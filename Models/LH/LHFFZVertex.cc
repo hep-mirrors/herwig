@@ -35,27 +35,25 @@ void LHFFZVertex::Init() {
 }
 
 LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
-  // the quarks
-  for(int ix=1;ix<7;++ix) {
-    addToList(-ix,    ix,    23);
-    addToList(-ix,    ix,    33);
-  }
-  addToList( -8,   8,  23);
-  addToList( -6,   8,  23);
-  addToList( -8,   6,  23);
-  addToList( -6,   8,  33);
-  addToList( -8,   6,  33);
-  // the leptons
-  for(int ix=11;ix<17;++ix) {
-    addToList(-ix,    ix,    23);
-    addToList(-ix,    ix,    33);
-  }
   // set order in the couplings
   orderInGem(1);
   orderInGs(0);
 }
 
 void LHFFZVertex::doinit() {
+  for(int ib=23;ib<34;ib+=10) {
+    // the quarks
+    for(int ix=1;ix<7;++ix) {
+      addToList(-ix,    ix,    ib);
+    }
+    addToList( -8,   8,  ib);
+    addToList( -6,   8,  ib);
+    addToList( -8,   6,  ib);
+    // the leptons
+    for(int ix=11;ix<17;++ix) {
+      addToList(-ix,    ix,   ib);
+    }
+  }
   FFVVertex::doinit();
   cLHModelPtr model = dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) throw InitException() << "Must be using the LHModel "

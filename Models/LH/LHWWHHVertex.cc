@@ -17,6 +17,38 @@ LHWWHHVertex::LHWWHHVertex() :
   couplast_(0.), q2last_(ZERO), coup_(107) {
   orderInGs(0);
   orderInGem(2);
+}
+
+IBPtr LHWWHHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHWWHHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+void LHWWHHVertex::persistentOutput(PersistentOStream & os) const {
+  os << coup_;
+}
+
+void LHWWHHVertex::persistentInput(PersistentIStream & is, int) {
+  is >> coup_;
+}
+
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<LHWWHHVertex,VVSSVertex>
+describeHerwigLHWWHHVertex("Herwig::LHWWHHVertex", "HwLHModel.so");
+
+void LHWWHHVertex::Init() {
+
+  static ClassDocumentation<LHWWHHVertex> documentation
+    ("The LHWWHHVertex class implements the couplings of a pair"
+     " of electroweak gauge bosons and a pair of Higgs bosons in"
+     " the Little Higgs model.");
+
+}
+
+void LHWWHHVertex::doinit() {
   // VVHH
   addToList(  24,  -24,  25,  25);
   addToList(  23,   23,  25,  25);
@@ -178,38 +210,6 @@ LHWWHHVertex::LHWWHHVertex() :
   addToList( -24,  -34,  36,  38);
   addToList(  34,   34,  36, -38);
   addToList( -34,  -34,  36,  38);
-}
-
-IBPtr LHWWHHVertex::clone() const {
-  return new_ptr(*this);
-}
-
-IBPtr LHWWHHVertex::fullclone() const {
-  return new_ptr(*this);
-}
-
-void LHWWHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << coup_;
-}
-
-void LHWWHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> coup_;
-}
-
-// Static variable needed for the type description system in ThePEG.
-DescribeClass<LHWWHHVertex,VVSSVertex>
-describeHerwigLHWWHHVertex("Herwig::LHWWHHVertex", "HwLHModel.so");
-
-void LHWWHHVertex::Init() {
-
-  static ClassDocumentation<LHWWHHVertex> documentation
-    ("The LHWWHHVertex class implements the couplings of a pair"
-     " of electroweak gauge bosons and a pair of Higgs bosons in"
-     " the Little Higgs model.");
-
-}
-
-void LHWWHHVertex::doinit() {
   VVSSVertex::doinit();
   // model
   cLHModelPtr model = 
