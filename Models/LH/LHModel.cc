@@ -63,7 +63,7 @@ void LHModel::Init() {
   static Parameter<LHModel,Energy> interfacef
     ("f",
      "The scale of the non-linear sigma-model",
-     &LHModel::_f, TeV, 3.*TeV, 0.0*TeV, 10.0*TeV,
+     &LHModel::_f, TeV, 3.*TeV, 0.0*TeV, 100.0*TeV,
      true, false, Interface::limited);
 
   static Parameter<LHModel,double> interfaceLambdaRatio
@@ -129,6 +129,10 @@ void LHModel::doinit() {
   // masses of the Higgs bosons (Eqns 12 and 13)
   double r = 8.*_f/_v*_vacratio;
   double lamh = 2.*sqr(_mH/_v)/(1.-0.25*sqr(r));
+  if(lamh<0.) {
+    throw Exception() << "Higgs trilinear coupling negative, reduce f or v'\n"
+		      << Exception::runerror;
+  }
   Energy2 MPhi2 = lamh*sqr(_f);
   // from Eqn A27
   _sP    = 2.*sqrt(2.)*_vacratio;
