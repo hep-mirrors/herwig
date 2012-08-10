@@ -79,7 +79,7 @@ public:
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(const int ichan, const Particle & part,
+  virtual double me2(const int , const Particle & part,
 		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
@@ -127,7 +127,8 @@ public:
   /**
    *  Three-body matrix element including additional QCD radiation
    */
-  virtual double threeBodyME(const ParticleVector & particles);
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay, MEOption meopt);
   //@}
 
   /**
@@ -148,8 +149,6 @@ protected:
    */
   VertexBasePtr getVertex() const { return vertex_; }
 
-  //-----------------------------------------------------------
-
   /**
    * Get vertex pointer
    * @return a pointer to the vertex for QCD radiation off the decaying particle
@@ -161,9 +160,6 @@ protected:
    * @return a pointer to the vertex for QCD radiation off the decay products
    */
   vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
-
-  //-----------------------------------------------------------
-
 
   /**
    * Set integration weight
@@ -188,7 +184,8 @@ protected:
   /**
    *  Calculate matrix element ratio B/R
    */
-  double matrixElementRatio();
+  double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+			    const ParticleVector & decay3, MEOption meopt);
 
   /**
    *  Calculate momenta of a, b, c, g
@@ -205,7 +202,7 @@ protected:
   /**
    *  Return the momenta including the hard emission
    */
-  vector<Lorentz5Momentum> hardMomenta();
+  vector<Lorentz5Momentum> hardMomenta(tcPDPtr in, tcPDPtr out1, tcPDPtr out2);
 
   /**
    *  Coupling for the generation of hard radiation
@@ -266,6 +263,11 @@ protected:
   /**
    * Return the matrix of colour factors 
    */
+
+  const vector<DVector> & getColourFactors2(const Particle & inpart, 
+					   const ParticleVector & decay, 
+					   unsigned int & nflow); 
+
   const vector<DVector> & getColourFactors() const {
     return colour_;
   }
@@ -306,7 +308,6 @@ private:
    */
   VertexBasePtr vertex_;
 
-  //----------------------------------------------------------
   /**
    *  Pointer to vertex for radiation from the incoming particle
    */
@@ -317,9 +318,6 @@ private:
    */
   vector<VertexBasePtr> outgoingVertices_; 
 
-
-  //----------------------------------------------------------
- 
   /**
    * Maximum weight for integration
    */

@@ -481,7 +481,6 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   if (tree->outgoingLines().size()!=2){
   
     vector<ShowerProgenitorPtr> check = tree->extractProgenitors();
-    cerr << check.size() << endl;
     ShowerProgenitorPtr gProg = check[0];
     ShowerProgenitorPtr hProg = check[1];
     ShowerProgenitorPtr iProg = check[2];
@@ -510,12 +509,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) &&
       cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0) 
     swap(cProgenitor,aProgenitor);
+
   // Get the decaying particle
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
-
-  //  cerr << bProgenitor->progenitor()->dataPtr()->PDGName() << "\t->\t"
-  //   << cProgenitor->progenitor()->dataPtr()->PDGName() << "\t"
-  //   << aProgenitor->progenitor()->dataPtr()->PDGName() << endl;
 
   // masses of the particles
   mb_ = bProgenitor  ->progenitor()->momentum().mass();
@@ -534,7 +530,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   eventFrame.invert();
   
   //generate the hard emission
-  vector<Lorentz5Momentum> momenta = hardMomenta();
+  vector<Lorentz5Momentum> momenta = hardMomenta(bProgenitor->progenitor()->dataPtr(),
+						 cProgenitor->progenitor()->dataPtr(),
+						 aProgenitor->progenitor()->dataPtr());
 
   // if no emission return
   if(momenta.empty()) {
@@ -554,11 +552,11 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   tcPDPtr a = aProgenitor  ->progenitor()->dataPtr();
   tcPDPtr gluon  = getParticleData(ParticleID::g);
   // create new ShowerParticles
-  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(c,true )));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(a,true )));
-  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon ,true )));
-  ShowerParticlePtr incoming (new_ptr(ShowerParticle(b   ,false)));
-  ShowerParticlePtr parent   (new_ptr(ShowerParticle(c,true )));
+  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(c,     true )));
+  ShowerParticlePtr spectator(new_ptr(ShowerParticle(a,     true )));
+  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon, true )));
+  ShowerParticlePtr incoming (new_ptr(ShowerParticle(b,     false)));
+  ShowerParticlePtr parent   (new_ptr(ShowerParticle(c,     true )));
   // set momenta
   emitter  ->set5Momentum(momenta[1]); 
   spectator->set5Momentum(momenta[2]);  
@@ -593,7 +591,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					  ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
-  bProgenitor->maximumpT(pT_);
+  bProgenitor  ->maximumpT(pT_);
   cProgenitor  ->maximumpT(pT_);
   // Connect the particles with the branchings in the HardTree
   hardtree->connect( bProgenitor->progenitor(), spaceBranchings[0] );
@@ -614,14 +612,16 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   return hardtree;
 }
 
-double GeneralTwoBodyDecayer::threeBodyME(const ParticleVector & ) {
+double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle & inpart,
+					  const ParticleVector & decay,MEOption meopt) {
   throw Exception() << "Base class  GeneralTwoBodyDecayer::threeBodyME() "
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;
   return 0.;
 }
 
-vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta() {
+vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr out1, 
+							     tcPDPtr out2) {
 
   double C    = 6.3;
   double ymax = 10.;
@@ -661,7 +661,26 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta() {
       if (not inPS) continue;
       
       //Calculate the ratio R/B
-      double meRatio = matrixElementRatio();
+      Particle inpart=Particle(in); inpart.set5Momentum(particleMomenta[0]);    
+      //decay products for 3 body decay
+      Particle outpart1=Particle(out1); outpart1.set5Momentum(particleMomenta[1]);
+      Particle outpart2=Particle(out2); outpart2.set5Momentum(particleMomenta[2]);
+      Particle g=Particle(getParticleData(ParticleID::g)); g.set5Momentum(particleMomenta[3]);
+      ParticleVector decay3;
+      decay3.push_back(&outpart1);decay3.push_back(&outpart2);decay3.push_back(&g);
+      
+      //decay products for 2 body decay
+      Lorentz5Momentum pa; 
+      pa.setE((mb_/2.)*(1.+a2_-c2_)); pa.setX(ZERO); pa.setY(ZERO); pa.setZ(-lambda/2./mb_);
+      pa.setMass(mb_*a_);
+      Lorentz5Momentum pc; 
+      pc.setE((mb_/2.)*(1.+c2_-a2_)); pc.setX(ZERO); pc.setY(ZERO); pc.setZ( lambda/2./mb_);
+      pc.setMass(mb_*c_);     
+      Particle outpartc=Particle(out1); outpartc.set5Momentum(pc);
+      Particle outparta=Particle(out2); outparta.set5Momentum(pa);
+      ParticleVector decay2; decay2.push_back(&outpartc); decay2.push_back(&outparta);
+
+      double meRatio = matrixElementRatio(inpart,decay2,decay3,Initialize);
       
       //Calculate jacobian
       Energy2 denom = (mb_ - particleMomenta[3].e()) * 
@@ -703,9 +722,17 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta() {
   return particleMomenta;
 }
 
-double GeneralTwoBodyDecayer::matrixElementRatio() {
-  
-  return 1.;
+double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart, 
+						 const ParticleVector & decay2,
+						 const ParticleVector & decay3, 
+						 MEOption meopt) {
+
+  double B = me2(0, inpart, decay2, meopt);
+  cerr << "B " << B << endl;
+  double R = threeBodyME(0, inpart, decay3, meopt);
+  cerr << "R " << R << endl;
+
+  return R/B;
 }
 
 bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
@@ -795,4 +822,86 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xa) {
   if (xa < xa_min || xa > xa_max) return false;
 
   return true;
+}
+
+
+const vector<DVector> & GeneralTwoBodyDecayer::
+getColourFactors2(const Particle & inpart, const ParticleVector & decay, 
+		 unsigned int & nflow){
+  
+  vector<int> sing,trip,atrip,oct;
+  
+  for(unsigned int it=0;it<decay.size();++it) {
+    if     (decay[it]->dataPtr()->iColour() == PDT::Colour0    ) sing. push_back(it);
+    else if(decay[it]->dataPtr()->iColour() == PDT::Colour3    ) trip. push_back(it);
+    else if(decay[it]->dataPtr()->iColour() == PDT::Colour3bar ) atrip.push_back(it);
+    else if(decay[it]->dataPtr()->iColour() == PDT::Colour8    ) oct.  push_back(it);
+  }
+  //require a gluon
+  assert(oct.size()>=1);
+
+  colour_ = vector<DVector>(1,DVector(1,1));
+  
+  //decaying colour singlet   
+  if(inpart.dataPtr()->iColour() == PDT::Colour0) {
+    if(trip.size()==1 && atrip.size()==1 && oct.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,4.));
+    }
+  }
+  //decaying colour triplet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour3) {
+    if(trip.size()==1 && sing.size()==1 && oct.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,4./3.));
+    }
+    else if(trip.size()==1 && oct.size()==2) {
+      nflow = 2;
+      colour_ .resize(2,DVector(2,0.));
+      colour_[0][0] = 16./3.; colour_[0][1] = -2./9.;
+      colour_[1][0] = -2./9.; colour_[1][1] = 16./3.;
+    }
+  }
+  //decaying anti-triplet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour3bar) {
+    if(atrip.size()==1 && sing.size()==1 && oct.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,4./3.));
+    }
+    else if(atrip.size()==1 && oct.size()==2){
+      nflow = 2;
+      colour_ .resize(2,DVector(2,0.));
+      colour_[0][0] = 16./9.; colour_[0][1] = -2./9.;
+      colour_[1][0] = -2./9.; colour_[1][1] = 16./9.;
+    }
+  }
+  //decaying octet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour8) {
+    if(oct.size()==2 && sing.size() == 1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,3.));
+    }
+    else if(oct.size()==1 && trip.size()==1 && atrip.size()==1) {
+      nflow = 2;
+      colour_ .resize(2,DVector(2,0.));
+      colour_[0][0] =  2./3. ; colour_[0][1] = -1./12.;
+      colour_[1][0] = -1./12.; colour_[1][1] =  2./3. ;
+    }
+  }
+  //decaying sextet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour6) {
+    if(oct.size()==1 && trip.size()==2) {
+      nflow = 1;
+      //colour_ = vector<DVector>(1,DVector(1,0));
+    }
+  }
+  //decaying anti-sextet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour6bar) {
+    if(oct.size()==1 && atrip.size()==2) {
+      nflow = 1;
+      //colour_ = vector<DVector>(1,DVector(1,0));
+    }
+  }
+
+  return colour_;
 }

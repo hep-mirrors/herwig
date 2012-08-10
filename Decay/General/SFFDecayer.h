@@ -155,24 +155,20 @@ private:
    */
   FFSVertexPtr _perturbativeVertex;
 
-  //--------------------------------------------------------------------
-
   /**
-   *  Abstract pointer to AbstractVSSVertex
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
    */
   AbstractVSSVertexPtr _abstractIncomingVertex;
 
   /**
-   *  Abstract pointer to AbstractFFVVertex
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
   AbstractFFVVertexPtr _abstractOutgoingVertex1;
 
-
   /**
-   *  Abstract pointer to AbstractFFVVertex
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
   AbstractFFVVertexPtr _abstractOutgoingVertex2;
-  //--------------------------------------------------------------------
 
   /**
    *  Spin density matrix
@@ -194,24 +190,28 @@ private:
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
 
-  //------------------------------------------------------
+ /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
   /**
-   *  Scalar wavefunction
+   *  Scalar wavefunction for 3 body decay
    */
   mutable ScalarWaveFunction _swave3;
 
   /**
-   *  Spinor wavefunction
+   *  Spinor wavefunction for 3 body decay
    */
   mutable vector<SpinorWaveFunction> _wave3;
 
   /**
-   *  Barred spinor wavefunction
+   *  Barred spinor wavefunction for 3 body decay
    */
   mutable vector<SpinorBarWaveFunction> _wavebar3;
 
     /**
-   *  Vector wavefunction
+   *  Vector wavefunction for 3 body decay
    */
   mutable vector<VectorWaveFunction> _vwave3;
 

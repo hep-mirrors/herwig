@@ -194,9 +194,7 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   return hardtree;
 }
 
-
 vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
-
   double C    = 6.3;
   double ymax = 10.;
   double ymin = -ymax;
