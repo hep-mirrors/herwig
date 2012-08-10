@@ -172,8 +172,6 @@ set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 
 
 cd /Herwig/NewPhysics
-insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
-insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/HPPVertex
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/HGGVertex
 
