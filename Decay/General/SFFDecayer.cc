@@ -284,11 +284,20 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     for(unsigned int ia = 0; ia < 2; ++ia) {
       for(unsigned int iv = 0; iv < 2; ++iv) {
 	// radiation from the incoming scalar
+
+
+	Complex test = _abstractVertex->evaluate(scale,_wave3[ia],
+						 _wavebar3[ifm],_swave3);
+	cerr << "test LO " << test << "\n";
+
 	if(inpart.dataPtr()->coloured()) {
 	  assert(_abstractIncomingVertex);
+	  cerr << "Incoming vertex " << _abstractIncomingVertex->fullName() << "\n";
 	  ScalarWaveFunction scalarInter = 
 	    _abstractIncomingVertex->evaluate(scale,3,inpart.dataPtr(),
 					      _vwave3[2*iv],_swave3,inpart.mass());
+	  cerr << "offshell wavefunction " << scalarInter.wave() << " " << _abstractIncomingVertex->strongCoupling(scale)
+	       << "\n";
 	  Complex diag = _abstractVertex->evaluate(scale,_wave3[ia],
 						   _wavebar3[ifm],scalarInter);
 	  for(unsigned int ix=0;ix<colourFlows()[0].size();++ix) {
@@ -306,9 +315,29 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	//radiation from outgoing fermion
 	if(decay[iferm]->dataPtr()->coloured()) {
 	  assert(abstractOutgoingVertexF);
+	  cerr << "Outgoing vertex F" << abstractOutgoingVertexF->fullName() << "\n";
+	  tcPDPtr off = decay[iferm]->dataPtr();
+	  if(off->CC()) off = off->CC();
+	  cerr << "testing " <<  _wavebar3[ifm].particle()->PDGName() << "\n";
+
 	  SpinorBarWaveFunction interS = 
-	    abstractOutgoingVertexF->evaluate(scale,3,decay[iferm]->dataPtr(),_wavebar3[ifm],
+	    abstractOutgoingVertexF->evaluate(scale,3,off,_wavebar3[ifm],
 					       _vwave3[2*iv],decay[iferm]->mass());
+
+	  cerr << "testing " <<  interS.particle()->PDGName() << "\n";
+
+
+	  cerr << "testing wave A " 
+	       << _wavebar3[ifm].s1() << " " << _wavebar3[ifm].s2() << " "
+	       << _wavebar3[ifm].s3() << " " << _wavebar3[ifm].s4() << "\n";
+	  cerr << "testing wave B " 
+	       <<interS.s1() << " " <<interS.s2() << " "
+	       <<interS.s3() << " " <<interS.s4() << "\n";
+	  cerr << "testing wave C " 
+	       <<interS.s1()/ _wavebar3[ifm].s1() << " " <<interS.s2()/ _wavebar3[ifm].s2() << " "
+	       <<interS.s3()/ _wavebar3[ifm].s3() << " " <<interS.s4()/ _wavebar3[ifm].s4() << "\n";
+
+
 	  Complex diag = _abstractVertex->evaluate(scale,_wave3[ia],
 						   interS,_swave3);
 	  for(unsigned int ix=0;ix<colourFlows()[1].size();++ix) {
@@ -326,6 +355,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	//radiation from outgoing antifermion
 	if(decay[ianti]->dataPtr()->coloured()) {
 	  assert(abstractOutgoingVertexA);
+	  cerr << "Outgoing vertex A" << abstractOutgoingVertexA->fullName() << "\n";
 	  SpinorWaveFunction  interS = 
 	    abstractOutgoingVertexA->evaluate(scale,3,decay[ianti]->dataPtr(),_wave3[ia],
 					       _vwave3[2*iv],decay[ianti]->mass());

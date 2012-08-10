@@ -12,6 +12,9 @@
 read MSSM.model
 cd /Herwig/NewPhysics
 
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+
 ##################################################
 #
 # This section contains the user defined settings

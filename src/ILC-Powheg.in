@@ -36,6 +36,13 @@ set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
 insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
 set PowhegMEee2gZ2qq:MinimumFlavour 6
 set PowhegMEee2gZ2qq:MaximumFlavour 6
+
+# only do the hardest emission
+set /Herwig/Shower/Evolver:HardOnly Yes
+set /Herwig/Shower/Evolver:LimitEmissions HardOnly
+
+
+
 # e+e- > l+l-
 # insert SimpleEE:MatrixElements[0] MEee2gZ2ll
 # e+e- > W+W- ZZ
