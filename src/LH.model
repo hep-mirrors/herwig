@@ -109,6 +109,7 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/Phi0
 insert NewModel:DecayParticles 0 /Herwig/Particles/PhiP
 insert NewModel:DecayParticles 0 /Herwig/Particles/Phi+
 insert NewModel:DecayParticles 0 /Herwig/Particles/Phi++
+insert NewModel:DecayParticles 0 /Herwig/Particles/h0
 
 # Set up the model framework
 set LH/Model:ModelGenerator NewModel
