@@ -230,7 +230,8 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
 	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
                 Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
                 Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
-                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top \
+                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top-L \
+		Rivet-LHC-7-Top-SL \
 	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long \
                 Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 
 	rm -rf Rivet-LHC-Jets
@@ -271,6 +272,14 @@ Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
 	rm -rf Rivet-LHC-Photon 
 	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
+
+Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
+		 Rivet-LHC-Powheg-VBF Rivet-LHC-VBF Rivet-LHC-WH Rivet-LHC-ZH \
+		 Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
+	rm -rf Rivet-LHC-Higgs
+	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.aida:gg-Powheg LHC-ggH.aida:gg LHC-ggHJet.aida:HJet \
+		 LHC-Powheg-VBF.aida:VBF-Powheg LHC-VBF.aida:VBF LHC-WH.aida:WH LHC-ZH.aida:ZH \
+                 LHC-Powheg-WH.aida:WH-Powheg LHC-Powheg-ZH.aida:ZH-Powheg
 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<

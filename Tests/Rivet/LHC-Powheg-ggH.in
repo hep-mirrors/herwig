@@ -1,0 +1,34 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Powheg.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+
+# select h0 -> tau+ tau- decays
+do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;
+set /Herwig/Particles/tau-:Stable Stable
+set /Herwig/Particles/h0:NominalMass 120.
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+cd /Herwig/MatrixElements
+##################################################
+#  gg -> Higgs
+##################################################
+insert SimpleQCD:MatrixElements[0] PowhegMEHiggs
+
+##################################################
+# select the analyses
+##################################################
+
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_HJETS
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Powheg-ggH LHCGenerator

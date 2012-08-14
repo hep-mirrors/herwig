@@ -25,6 +25,8 @@ RS.model \
 Sextet.model \
 TTBA.model \
 Zprime.model \
+LH.model \
+LHTP.model \
 RPV-LLE.slha \
 RPV-LQD.slha \
 RPV-UDD.slha
@@ -59,7 +61,9 @@ LHC-ZP.in \
 TVT.in \
 TVT-Matchbox.in \
 TVT-Powheg.in \
-TVT-TTBA.in
+TVT-TTBA.in \
+LHC-LH.in \
+LHC-LHTP.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules

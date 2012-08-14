@@ -517,12 +517,9 @@ void SusyBase::resetRepositoryMasses() {
 	   << part->PDGName() << " using SLHA "
 	   << "file,\nthis can affect parts of the Standard Model simulation and"
 	   << " is strongly discouraged.\n";
-    //Find interface nominal mass interface
-    const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-    ostringstream os;
-    os.precision(12);
-    os << abs(it->second);
-    ifb->exec(*part, "set", os.str());
+    // reset the masses
+    resetMass(it->first,it->second*GeV,part);
+
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }
@@ -592,8 +589,7 @@ void SusyBase::createMixingMatrices() {
 void SusyBase::extractParameters(bool checkmodel) {
   map<string,ParamMap>::const_iterator pit;
   ParamMap::const_iterator it;
-  // try and get tan beta from extpar first
-  pit=parameters_.find("extpar");
+  // try and get tan beta from hmin and extpar first
   // extract tan beta
   tanBeta_ = -1.;
   if(tanBeta_<0.) {
@@ -633,7 +629,7 @@ void SusyBase::extractParameters(bool checkmodel) {
 					Exception::warning));
     else
       cerr << "SusyBase::extractParameters() BLOCK HMIX not found setting mu to zero\n";
-    mu_=ZERO;
+     mu_=ZERO;
   }
   else {
     mu_=findValue(pit,1,"HMIX","mu")*GeV;

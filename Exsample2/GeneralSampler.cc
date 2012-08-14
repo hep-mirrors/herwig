@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/LoopGuard.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -30,7 +31,8 @@ using namespace Herwig;
 
 GeneralSampler::GeneralSampler() 
   : theVerbose(false), theFlatSubprocesses(false), 
-    isSampling(false),
+    isSampling(false), theUpdateAfter(1),
+    crossSectionCalls(0), gotCrossSections(false),
     theIntegratedXSec(0.), theIntegratedXSecErr(0.),
     theSumWeights(0.), norm(0.) {}
 
@@ -96,6 +98,8 @@ double GeneralSampler::generate() {
 
   long tries = 0;
   long excptTries = 0;
+
+  gotCrossSections = false;
 
   if ( !theFlatSubprocesses )
     lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
@@ -215,6 +219,13 @@ void GeneralSampler::currentCrossSections() const {
   if ( !isSampling )
     return;
 
+  if ( gotCrossSections )
+    return;
+
+  if ( ++crossSectionCalls == theUpdateAfter ) {
+    crossSectionCalls = 0;
+  } else return;
+
   double xsec = 0.;
   double var = 0.;
 
@@ -226,6 +237,8 @@ void GeneralSampler::currentCrossSections() const {
 
   theIntegratedXSec = xsec;
   theIntegratedXSecErr = sqrt(var);
+
+  gotCrossSections = true;
 
 }
 
@@ -344,14 +357,14 @@ IVector GeneralSampler::getReferences() {
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theVerbose << theFlatSubprocesses 
-     << samplers << lastSampler
+     << samplers << lastSampler << theUpdateAfter
      << theIntegratedXSec << theIntegratedXSecErr << theSumWeights
      << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theVerbose >> theFlatSubprocesses 
-     >> samplers >> lastSampler
+     >> samplers >> lastSampler >> theUpdateAfter
      >> theIntegratedXSec >> theIntegratedXSecErr >> theSumWeights
      >> norm;
 }
@@ -375,6 +388,13 @@ void GeneralSampler::Init() {
     ("BinSampler",
      "The bin sampler to be used.",
      &GeneralSampler::theBinSampler, false, false, true, false, false);
+
+
+  static Parameter<GeneralSampler,size_t> interfaceUpdateAfter
+    ("UpdateAfter",
+     "Update cross sections every number of events.",
+     &GeneralSampler::theUpdateAfter, 1, 1, 0,
+     false, false, Interface::lowerlim);
 
 
   static Switch<GeneralSampler,bool> interfaceVerbose

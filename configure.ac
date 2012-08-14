@@ -109,6 +109,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/Susy/RPV/Makefile
 		Models/UED/Makefile
+		Models/LH/Makefile
+		Models/LHTP/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
@@ -147,6 +149,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Powheg/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Processes/Makefile
+                MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
 		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile

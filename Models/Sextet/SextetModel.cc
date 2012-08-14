@@ -226,24 +226,3 @@ string SextetModel::doEnable(string args) {
   else
     return "";
 }
-
-//     
-//   Scalar Singlet Y =  4/3
-//   Scalar Singlet Y = -1/3
-//   Scalar Singlet Y = -2/3
-//   Scalar Triplet Y =  1/3
-//   Vector Doublet Y = -1/6
-//   Vector Doublet Y =  5/6
-
-  /**
-   *  Pointer to the object handling the coupling of two quarks
-   *  to a vector sextet
-   */
-  AbstractFFVVertexPtr FFVVertex_;
-
-  /**
-   *  Pointer to the object handling the coupling of two quarks
-   *  to a scalar sextet
-   */
-  AbstractFFSVertexPtr FFSVertex_;
-//@}

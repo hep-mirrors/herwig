@@ -6,6 +6,7 @@
 .*/.*\.l[ao]
 .*/.*\.so\.*
 .*/.*\.o
+Tests/.*\.aida
 .*~
 .*\.tar\.(gz|bz2)
 autom4te.cache
@@ -54,3 +55,6 @@ src/tune
 src/tests/.*\.(time|mult|Bmult|chisq)
 Tests/.*/.*\.(top|ps|pyc|info)
 Tests/.*\.(top|run|tex|mult|Bmult)
+Tests/Rivet.*
+Tests/plots
+
