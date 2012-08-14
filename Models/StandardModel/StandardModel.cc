@@ -18,6 +18,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/General/ModelGenerator.h"
+#include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
 
@@ -176,4 +177,13 @@ void StandardModel::Init() {
      "and supplies additional couplings and access to the StandardModel"
      "vertices for helicity amplitude calculations" );
   
+}
+
+void StandardModel::resetMass(long id, Energy mass,tPDPtr part) {
+  if(!part) part = getParticleData(id);
+  if(!part) return;
+  const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
+  ostringstream os;
+  os << abs(mass/GeV);
+  ifb->exec(*part, "set", os.str());
 }

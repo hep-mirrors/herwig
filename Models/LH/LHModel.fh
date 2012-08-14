@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LHModel class.
+//
+#ifndef HERWIG_LHModel_FH
+#define HERWIG_LHModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LHModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LHModel,LHModelPtr);
+
+}
+
+#endif
