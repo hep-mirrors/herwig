@@ -478,24 +478,27 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
-  if (tree->outgoingLines().size()!=2){
-  
-    vector<ShowerProgenitorPtr> check = tree->extractProgenitors();
-    ShowerProgenitorPtr gProg = check[0];
-    ShowerProgenitorPtr hProg = check[1];
-    ShowerProgenitorPtr iProg = check[2];
-    ShowerProgenitorPtr jProg = check[3];
-  
-    cerr << gProg->progenitor()->dataPtr()->PDGName() << "\t->\t"
-	 << hProg->progenitor()->dataPtr()->PDGName() << "\t"
-	 << iProg->progenitor()->dataPtr()->PDGName() << "\t"
-	 << jProg->progenitor()->dataPtr()->PDGName() << endl;
+  bool colouredParticles=false;
+  vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
+  for (unsigned int it=0; it<Progenitors.size(); ++it){
+    if (Progenitors[it]->progenitor()->dataPtr()->coloured()){
+      colouredParticles=true;
+      break;
+    }
+  }
 
-    gProg  ->maximumpT(pTmin_);
-    hProg  ->maximumpT(pTmin_);
-    iProg  ->maximumpT(pTmin_);
-    jProg  ->maximumpT(pTmin_);
+  if (not colouredParticles){
+    for (unsigned int it=0; it<Progenitors.size(); ++it){ 
+      Progenitors[it]->maximumpT(pTmin_);
+    }
     return HardTreePtr();
+  }
+
+  if (tree->outgoingLines().size()!=2){
+    throw Exception()
+      << "Number of outgoing particles is not equal to 2 in "
+      << "GeneralTwoBodyDecayer::generateHardest()" 
+      << Exception::runerror;
   }
 
   //for decay b -> a c where a is the colour singlet
@@ -504,14 +507,22 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr 
     cProgenitor = tree->outgoingLines(). begin()->first,
     aProgenitor = tree->outgoingLines().rbegin()->first;
+
+  // Get the decaying particle
+  ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
+
+  // if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0) {
+  //   if ((aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+  // 	 cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
+  // 	(aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+  // 	 cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3))      
+  // }
   
   if((aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 || 
       aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) &&
       cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0) 
     swap(cProgenitor,aProgenitor);
 
-  // Get the decaying particle
-  ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
 
   // masses of the particles
   mb_ = bProgenitor  ->progenitor()->momentum().mass();
@@ -728,10 +739,9 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 						 MEOption meopt) {
 
   double B = me2(0, inpart, decay2, meopt);
-  cerr << "B " << B << endl;
   double R = threeBodyME(0, inpart, decay3, meopt);
-  cerr << "R " << R << endl;
-
+  //  if (abs(R)>1e-6)
+  //cerr << "R " << R << endl;
   return R/B;
 }
 
@@ -825,9 +835,9 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xa) {
 }
 
 
-const vector<DVector> & GeneralTwoBodyDecayer::
-getColourFactors2(const Particle & inpart, const ParticleVector & decay, 
-		 unsigned int & nflow){
+const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
+								const ParticleVector & decay,
+								unsigned int & nflow){
   
   vector<int> sing,trip,atrip,oct;
   
@@ -848,6 +858,15 @@ getColourFactors2(const Particle & inpart, const ParticleVector & decay,
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,4.));
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour scalar particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
   //decaying colour triplet
   else if(inpart.dataPtr()->iColour() == PDT::Colour3) {
@@ -861,6 +880,15 @@ getColourFactors2(const Particle & inpart, const ParticleVector & decay,
       colour_[0][0] = 16./3.; colour_[0][1] = -2./9.;
       colour_[1][0] = -2./9.; colour_[1][1] = 16./3.;
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour triplet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
   //decaying anti-triplet
   else if(inpart.dataPtr()->iColour() == PDT::Colour3bar) {
@@ -874,6 +902,15 @@ getColourFactors2(const Particle & inpart, const ParticleVector & decay,
       colour_[0][0] = 16./9.; colour_[0][1] = -2./9.;
       colour_[1][0] = -2./9.; colour_[1][1] = 16./9.;
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour anti-triplet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
   //decaying octet
   else if(inpart.dataPtr()->iColour() == PDT::Colour8) {
@@ -887,21 +924,56 @@ getColourFactors2(const Particle & inpart, const ParticleVector & decay,
       colour_[0][0] =  2./3. ; colour_[0][1] = -1./12.;
       colour_[1][0] = -1./12.; colour_[1][1] =  2./3. ;
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour octet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
   //decaying sextet
   else if(inpart.dataPtr()->iColour() == PDT::Colour6) {
     if(oct.size()==1 && trip.size()==2) {
       nflow = 1;
-      //colour_ = vector<DVector>(1,DVector(1,0));
+      //colour_ = vector<DVector>(1,DVector(1,1));
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour sextet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
   //decaying anti-sextet
   else if(inpart.dataPtr()->iColour() == PDT::Colour6bar) {
     if(oct.size()==1 && atrip.size()==2) {
       nflow = 1;
-      //colour_ = vector<DVector>(1,DVector(1,0));
+      //colour_ = vector<DVector>(1,DVector(1,1));
     }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour anti-sextet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
   }
-
+  else
+    throw Exception() << "Unknown colour for the decaying particle in "
+  		      << "GeneralTwoBodyDecayer::getColourFactors() for "
+  		      << inpart.   dataPtr()->PDGName() << " -> "
+		      << decay[0]->dataPtr()->PDGName() << " " 
+		      << decay[1]->dataPtr()->PDGName() << " "  
+		      << decay[2]->dataPtr()->PDGName() 
+  		      << Exception::runerror;
+  
   return colour_;
 }

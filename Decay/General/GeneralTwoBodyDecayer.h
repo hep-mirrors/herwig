@@ -264,13 +264,13 @@ protected:
    * Return the matrix of colour factors 
    */
 
-  const vector<DVector> & getColourFactors2(const Particle & inpart, 
+  const vector<DVector> & getColourFactors(const Particle & inpart, 
 					   const ParticleVector & decay, 
 					   unsigned int & nflow); 
 
-  const vector<DVector> & getColourFactors() const {
-    return colour_;
-  }
+  // const vector<DVector> & getColourFactors() const {
+  //   return colour_;
+  // }
   
   const vector<vector<pair<int,double > > > & colourFlows() const {
     return colourFlows_;
