@@ -69,7 +69,6 @@ protected:
   virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
-
 protected:
 
   /** @name Standard Interfaced functions. */
