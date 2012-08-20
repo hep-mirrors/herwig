@@ -36,7 +36,7 @@ void BSMModel::persistentInput(PersistentIStream & is, int) {
 }
 
 DescribeAbstractClass<BSMModel,Herwig::StandardModel>
-  describeHerwigBSMModel("Herwig::BSMModel", "");
+describeHerwigBSMModel("Herwig::BSMModel", "Herwig.so");
 
 void BSMModel::Init() {
 
@@ -156,7 +156,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   istringstream iss(decay);
   string dummy;
   iss >> dummy >> parent >> iunit(width, GeV);
-  PDPtr inpart = getParticleData(parent);
+  PDPtr inpart = getBSMParticleData(parent);
   if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
     cfile.readline();
     return;
@@ -205,7 +205,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	  << "as the parent particle. Please check the SLHA file.\n"
   	  << Exception::runerror;
       }
-      tcPDPtr p = getParticleData(t);
+      tcPDPtr p = getBSMParticleData(t);
       charge += p->iCharge();
       if( !p ) {
   	throw SetupException()

@@ -9,6 +9,15 @@
 # load MSSM first
 read MSSM.model
 
+# Create Majorana neutrinos
+cd /Herwig/Particles
+create ThePEG::ParticleData nu_1
+setup nu_1 17 nu_1 0 0.  0 0 0 0 2 1 
+create ThePEG::ParticleData nu_2
+setup nu_2 18 nu_2 0 0.  0 0 0 0 2 1 
+create ThePEG::ParticleData nu_3
+setup nu_3 19 nu_3 0 0.  0 0 0 0 2 1 
+
 ###################################################
 #
 #  Main directory and model object

@@ -93,6 +93,11 @@ public:
   const Complex & gluinoPhase() const {return gluinoPhase_;}
   //@}
 
+  /**
+   *  Treatment of neutrinos
+   */
+  bool majoranaNeutrinos() const {return majoranaNeutrinos_;}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -392,7 +397,7 @@ private:
 private:
 
   /**
-   *  Whether or not the SLHA fiel has been read
+   *  Whether or not the SLHA file has been read
    */
   bool readFile_;
 
@@ -406,6 +411,11 @@ private:
    */
   bool gravitino_;
 
+  /**
+   *  Treatment of the neutrinos
+   */
+  bool majoranaNeutrinos_;
+ 
   /*
    * Storage of the parameters.
    */

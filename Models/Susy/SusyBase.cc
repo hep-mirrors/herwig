@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 SusyBase::SusyBase() : readFile_(false), MPlanck_(2.4e18*GeV),
-		       gravitino_(false),
+		       gravitino_(false), majoranaNeutrinos_(false),
 		       tanBeta_(0), mu_(ZERO), 
 		       M1_(ZERO), M2_(ZERO), M3_(ZERO),
 		       mH12_(ZERO),mH22_(ZERO),
@@ -71,6 +71,11 @@ void SusyBase::doinit() {
     if(GVNHVertex_) addVertex(GVNHVertex_);
     if(GVNVVertex_) addVertex(GVNVVertex_);
     if(GVFSVertex_) addVertex(GVFSVertex_);
+  }
+  if(majoranaNeutrinos()) {
+    idMap().insert(make_pair(12,17));
+    idMap().insert(make_pair(14,18));
+    idMap().insert(make_pair(16,19));
   }
   BSMModel::doinit();
 }
@@ -139,7 +144,6 @@ void SusyBase::Init() {
      "  [arXiv:0801.0045 [hep-ph]].\n"
      "  %%CITATION = CPHCB,180,8;%%\n"
      );
-
 
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
@@ -245,6 +249,21 @@ void SusyBase::Init() {
      "The Planck mass for GMSB models",
      &SusyBase::MPlanck_, GeV, 2.4e18*GeV, 1.e16*GeV, 1.e20*GeV,
      false, false, Interface::limited);
+
+  static Switch<SusyBase,bool> interfaceMajoranaNeutrinos
+    ("MajoranaNeutrinos",
+     "Whether or not the neutrinos should be treated as Majorana particles",
+     &SusyBase::majoranaNeutrinos_, false, false, false);
+  static SwitchOption interfaceMajoranaNeutrinosYes
+    (interfaceMajoranaNeutrinos,
+     "Yes",
+     "Neutrinos are Majorana",
+     true);
+  static SwitchOption interfaceMajoranaNeutrinosNo
+    (interfaceMajoranaNeutrinos,
+     "No",
+     "Neutrinos are Dirac fermions",
+     false);
 
 }
 
@@ -458,7 +477,7 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids.resize(7);
     ids[0] = 12; ids[1] = 14; ids[2] = 16; 
     ids[3] = 1000022; ids[4] = 1000023; 
-    ids[5] = 1000025; ids[6] = 1000035; 
+    ids[5] = 1000025; ids[6] = 1000035;
   }
   else if(name == "rpvmix") {
     ids.resize(5);
@@ -468,7 +487,7 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else if(name == "umix" || name == "vmix") {
     ids.resize(2);
-    ids[0] = 1000024; ids[1] = 1000037; 
+    ids[0] = 1000024; ids[1] = 1000037;
   }
   else if(name == "rvumix" || name == "rvvmix" ) {
     ids.resize(5);
@@ -477,15 +496,15 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else if(name == "stopmix") {
     ids.resize(2);
-    ids[0] = 1000006; ids[1] = 2000006; 
+    ids[0] = 1000006; ids[1] = 2000006;
   }
   else if(name == "sbotmix") {
     ids.resize(2);
-    ids[0] = 1000005; ids[1] = 2000005; 
+    ids[0] = 1000005; ids[1] = 2000005;
   }
   else if(name == "staumix") {
     ids.resize(2);
-    ids[0] = 1000015; ids[1] = 2000015; 
+    ids[0] = 1000015; ids[1] = 2000015;
   }
   else if(name == "nmhmix") {
     ids.resize(3);
@@ -504,7 +523,7 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   else if(name == "rvhmix") {
     ids.resize(5);
     ids[0] = 25; ids[1] = 35;
-    ids[2] = 1000012; ids[3] = 1000014; ids[5] = 1000016;
+    ids[2] = 1000012; ids[3] = 1000014; ids[4] = 1000016;
   }
   else if(name == "rvlmix") {
     ids.resize(8);
@@ -551,7 +570,6 @@ void SusyBase::resetRepositoryMasses() {
 	   << " is strongly discouraged.\n";
     // reset the masses
     resetMass(it->first,it->second*GeV,part);
-
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }

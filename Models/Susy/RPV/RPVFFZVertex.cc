@@ -127,9 +127,16 @@ void RPVFFZVertex::doinit() {
     neu[0] =  1000022; neu[1] = 1000023;
     neu[2] =  1000025; neu[3] = 1000035;
     if(_theN->size().first==7) {
-      neu.push_back(12);
-      neu.push_back(14);
-      neu.push_back(16);
+      if(model->majoranaNeutrinos()) {
+	neu.push_back(17);
+	neu.push_back(18);
+	neu.push_back(19);
+      }
+      else {
+	neu.push_back(12);
+	neu.push_back(14);
+	neu.push_back(16);
+      }
     }
     for(unsigned int i = 0; i < neu.size(); ++i) {
       for(unsigned int j = 0; j < neu.size(); ++j) {

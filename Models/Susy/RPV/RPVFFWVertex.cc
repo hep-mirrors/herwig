@@ -78,9 +78,16 @@ void RPVFFWVertex::doinit() {
     neu[0] = 1000022; neu[1] = 1000023;
     neu[2] = 1000025; neu[3] = 1000035;
     if(_theN->size().first==7) {
-      neu.push_back(12);
-      neu.push_back(14);
-      neu.push_back(16);
+      if(model->majoranaNeutrinos()) {
+	neu.push_back(17);
+	neu.push_back(18);
+	neu.push_back(19);
+      }
+      else {
+	neu.push_back(12);
+	neu.push_back(14);
+	neu.push_back(16);
+      }
     }
     vector<long> cha(2);
     cha[0] = 1000024; cha[1] = 1000037;
