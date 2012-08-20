@@ -440,58 +440,87 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   matrix = new_ptr(MixingMatrix(size.first,size.second));
   for(unsigned int ix=0; ix < values.size(); ++ix)
     (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
-  
+  vector<long> ids;
   if(name == "nmix") {
-    vector<long> ids(4);
+    ids.resize(4);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035; 
-    matrix->setIds(ids);
   }
   else if(name == "nmnmix") {
-    vector<long> ids(5);
+    ids.resize(5);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035;
-    ids[4] = 1000045; 
-    matrix->setIds(ids);
+    ids[4] = 1000045;
   }
-  else if(name == "umix") {
-    vector<long> ids(2);
-    ids[0] = 1000024; ids[1] = 1000037; 
-    matrix->setIds(ids);
+  else if(name == "rvnmix") {
+    ids.resize(7);
+    ids[0] = 12; ids[1] = 14; ids[2] = 16; 
+    ids[3] = 1000022; ids[4] = 1000023; 
+    ids[5] = 1000025; ids[6] = 1000035; 
   }
-  else if(name == "vmix") {
-    vector<long> ids(2);
+  else if(name == "rpvmix") {
+    ids.resize(5);
+    ids[0] = 1000022; ids[1] = 1000023; 
+    ids[2] = 1000025; ids[3] = 1000035;
+    ids[4] = 1000045;
+  }
+  else if(name == "umix" || name == "vmix") {
+    ids.resize(2);
     ids[0] = 1000024; ids[1] = 1000037; 
-    matrix->setIds(ids);
+  }
+  else if(name == "rvumix" || name == "rvvmix" ) {
+    ids.resize(5);
+    ids[0] = 1000024; ids[1] = 1000037; 
+    ids[2] = -11; ids[3] = -13; ids[4] = -15;
   }
   else if(name == "stopmix") {
-    vector<long> ids(2);
+    ids.resize(2);
     ids[0] = 1000006; ids[1] = 2000006; 
-    matrix->setIds(ids);
   }
   else if(name == "sbotmix") {
-    vector<long> ids(2);
+    ids.resize(2);
     ids[0] = 1000005; ids[1] = 2000005; 
-    matrix->setIds(ids);
   }
   else if(name == "staumix") {
-    vector<long> ids(2);
+    ids.resize(2);
     ids[0] = 1000015; ids[1] = 2000015; 
-    matrix->setIds(ids);
   }
   else if(name == "nmhmix") {
-    vector<long> ids(3);
+    ids.resize(3);
     ids[0] = 25; ids[1] = 35; ids[2] = 45;
-    matrix->setIds(ids);
   }
   else if(name == "nmamix") {
-    vector<long> ids(2);
+    ids.resize(2);
     ids[0] = 36; ids[1] = 46;
-    matrix->setIds(ids);
   }
-  else
-    throw SetupException() << "Cannot find correct title for mixing matrix "
+  else if(name == "rvamix") {
+    ids.resize(5);
+    ids[0] = 36; ids[1] = 1000017;
+    ids[2] = 1000018; ids[3] = 1000019;
+    ids[4] = 0;
+  }
+  else if(name == "rvhmix") {
+    ids.resize(5);
+    ids[0] = 25; ids[1] = 35;
+    ids[2] = 1000012; ids[3] = 1000014; ids[5] = 1000016;
+  }
+  else if(name == "rvlmix") {
+    ids.resize(8);
+    ids[0] = 37;
+    ids[1] = -1000011;
+    ids[2] = -1000013;
+    ids[3] = -1000015;
+    ids[4] = -2000011;
+    ids[5] = -2000013;
+    ids[6] = -2000015;
+    ids[7] = 0;
+  }
+  else {
+    throw SetupException() << "SusyBase::createMixingMatrix() "
+			   << "cannot find correct title for mixing matrix "
 			   << name << Exception::runerror;
+  }
+  matrix->setIds(ids);
 }
 
 void SusyBase::resetRepositoryMasses() {
@@ -512,7 +541,8 @@ void SusyBase::resetRepositoryMasses() {
     if(!part) throw SetupException() 
       << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
       << " not found." << Exception::warning;
-    if(abs(id)<=5||abs(id)==23||abs(id)==24)
+    if(abs(id)<=5||abs(id)==23||abs(id)==24||
+       (abs(id)>=11&&abs(id)<=16))
       cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
 	   << part->PDGName() << " using SLHA "
 	   << "file,\nthis can affect parts of the Standard Model simulation and"
@@ -536,7 +566,10 @@ void SusyBase::adjustMixingMatrix(long id) {
   case 1000023 :
   case 1000025 :
   case 1000035 : 
-  case 1000045 : 
+  case 1000045 :
+  case 12 :
+  case 14 :
+  case 16 : 
     if(NMix_)
       NMix_->adjustPhase(id);
     else 
@@ -574,13 +607,13 @@ void SusyBase::createMixingMatrices() {
   for(it=mixings_.begin();it!=mixings_.end();++it) {
     string name=it->first;
     // create the gaugino mixing matrices
-    if(name == "nmix" || name == "nmnmix" ){
+    if(name == "nmix" || name == "nmnmix" || name == "rvnmix" ) {
       createMixingMatrix(NMix_,name,it->second.second,it->second.first);
     }
-    else if (name == "umix" ) {
+    else if (name == "umix" || name == "rvumix" ) {
       createMixingMatrix(UMix_,name,it->second.second,it->second.first);
     }
-    else if (name == "vmix") {
+    else if (name == "vmix" || name == "rvvmix" ) {
       createMixingMatrix(VMix_,name,it->second.second,it->second.first);
     }
   }

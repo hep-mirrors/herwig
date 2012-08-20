@@ -136,14 +136,12 @@ void RPV::createMixingMatrices() {
   map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;
-    cerr << "testing in mixings loop " << name << "\n";
+    cerr << "testing in mixing loop " << name << "\n";
     // pseudo-scalar higgs mixing
     if (name == "rvamix") {
-      cerr << "testing in mixing create A\n";
       createMixingMatrix(HiggsAMix_,name,it->second.second,it->second.first);
     }
     else if (name == "rvlmix") {
-      cerr << "testing in mixing create C\n";
       createMixingMatrix(HiggsPMix_,name,it->second.second,it->second.first);
     }
   }

@@ -77,7 +77,7 @@ void MSSM::createMixingMatrices() {
       createMixingMatrix(theStauMix,name,it->second.second,it->second.first);
     }
     // Higgs mixing matrix in extended models
-    else if (name == "nmhmix") {
+    else if (name == "nmhmix" || name == "rvhmix") {
       createMixingMatrix(theHiggsMix,name,it->second.second,it->second.first);
     }
   }
