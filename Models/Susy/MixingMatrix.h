@@ -90,14 +90,14 @@ public:
    * @param ids The ids of the mixing sparticles
    */
   MixingMatrix(const CMatrix & mix,const vector<long> & ids) : 
-    _theMixingMatrix(mix),_theIds(ids), _theSize(make_pair(mix.size(),mix[0].size())) 
+    mixingMatrix_(mix),ids_(ids), size_(make_pair(mix.size(),mix[0].size())) 
   {}
 
   /**
    * Contructor that initializes size of matrix
    */
   MixingMatrix(unsigned int row, unsigned int col) :
-    _theMixingMatrix(row,vector<Complex>(col,Complex(0.,0.))), _theSize(row,col)
+    mixingMatrix_(row,vector<Complex>(col,Complex(0.,0.))), size_(row,col)
   {}
 
   /**
@@ -139,33 +139,35 @@ public:
    * @param mixing The Mixing matrix stored as nested complex vector
    */
   void setMatrix(const CMatrix & mixing)  {
-    _theMixingMatrix = mixing;
-    _theSize = make_pair(mixing.size(),mixing[0].size());
+    mixingMatrix_ = mixing;
+    size_ = make_pair(mixing.size(),mixing[0].size());
   }
 
   /**
    *Get the mixing matrix
    */
-  CMatrix getMatrix() const {return _theMixingMatrix;}
+  CMatrix getMatrix() const {return mixingMatrix_;}
 
   /**
    * Set the vector containing mixing particles codes
    * @param mixingCodes vector containing PDG codes for mixing particles
    */
   void setIds(const vector<long> & mixingCodes)  {
-    if(mixingCodes.size() != _theSize.first) {
+    if(mixingCodes.size() != size_.first) {
       throw MixingMatrixError() << "MixingMatrix::setIds() - The number "
-				<< "of PDG codes does not match the size of the "
-				<< "matrix" << Exception::warning;
+				<< "of PDG codes (" << mixingCodes.size()
+				<< ") does not match the size of the "
+				<< "matrix (" << size_.first
+				<< ")" << Exception::warning;
       return;
     }
-    _theIds = mixingCodes;
+    ids_ = mixingCodes;
   }
   
   /**
    * Get the vector containing mixing particles codes
    */
-  const vector<long> & getIds() const {return _theIds;}
+  const vector<long> & getIds() const {return ids_;}
   //@}
   
   /**
@@ -178,34 +180,34 @@ public:
    * Access element of matrix
    */  
   const Complex operator()(unsigned int row, unsigned int col) const {
-    return _theMixingMatrix.at(row).at(col);
+    return mixingMatrix_.at(row).at(col);
   }
 
   /**
    * Set element of matrix
    */
   Complex & operator()(unsigned int row, unsigned int col) {
-    return _theMixingMatrix.at(row).at(col);
+    return mixingMatrix_.at(row).at(col);
   }
   
   /**
    * Add a PDG code to the stored vector
    */
   void addCode(long id) {
-    if(_theIds.size() >= _theSize.first) {
+    if(ids_.size() >= size_.first) {
       throw MixingMatrixError() << "MixingMatrix::addCode() - Trying to add a"
 				<< "PDG code but the vector already contains the "
 				<< "same number as the matrix size " 
 				<< Exception::warning;
       return;
     }
-    _theIds.push_back(id);
+    ids_.push_back(id);
   }
   
   /**
    * Return the size of the mixing matrix
    */
-  MatrixSize size() const {return _theSize;}
+  MatrixSize size() const {return size_;}
   
 protected:
 
@@ -235,17 +237,17 @@ private:
   /**
    * The mixing matrix
    */
-  CMatrix _theMixingMatrix;
+  CMatrix mixingMatrix_;
 
   /**
    * The PDG codes of the mixing particles
    */
-  vector<long> _theIds;
+  vector<long> ids_;
 
   /**
    * Size of matrix
    */
-  pair<unsigned int,unsigned int> _theSize;
+  pair<unsigned int,unsigned int> size_;
   
   /**
    * Print the matrix to the stream
