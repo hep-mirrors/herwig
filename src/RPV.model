@@ -30,9 +30,9 @@ set Model:RunningMass /Herwig/RunningMass
 # create RPV MSSM vertices
 mkdir /Herwig/Vertices/RPV
 cd /Herwig/Vertices/RPV
-create Herwig::LLEVertex RPV_LLE
-create Herwig::LQDVertex RPV_LQD
-create Herwig::UDDVertex RPV_UDD
+create Herwig::RPVLLEVertex RPV_LLE
+create Herwig::RPVLQDVertex RPV_LQD
+create Herwig::RPVUDDVertex RPV_UDD
 # set the vertices
 cd /Herwig/NewPhysics/RPV
 # SM vertices

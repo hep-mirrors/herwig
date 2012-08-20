@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_LLEVertex_H
-#define HERWIG_LLEVertex_H
+#ifndef HERWIG_RPVUDDVertex_H
+#define HERWIG_RPVUDDVertex_H
 //
-// This is the declaration of the LLEVertex class.
+// This is the declaration of the RPVUDDVertex class.
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
@@ -13,19 +13,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LLEVertex class.
+ * Here is the documentation of the RPVUDDVertex class.
  *
- * @see \ref LLEVertexInterfaces "The interfaces"
- * defined for LLEVertex.
+ * @see \ref RPVUDDVertexInterfaces "The interfaces"
+ * defined for RPVUDDVertex.
  */
-class LLEVertex: public FFSVertex {
+class RPVUDDVertex: public FFSVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  LLEVertex();
+  RPVUDDVertex();
 
   /**
    * Calculate the couplings.
@@ -95,16 +95,10 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LLEVertex> initLLEVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LLEVertex & operator=(const LLEVertex &);
+  RPVUDDVertex & operator=(const RPVUDDVertex &);
 
 private:
 
@@ -114,47 +108,17 @@ private:
   vector<vector<vector<double > > > lambda_;
 
   /**
-   * Pointer to the stau mixing matrix
+   * Pointer to the stop mixing matrix
    */
-  tMixingMatrixPtr stau_;
+  tMixingMatrixPtr stop_;
 
-};
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LLEVertex. */
-template <>
-struct BaseClassTrait<Herwig::LLEVertex,1> {
-  /** Typedef of the first base class of LLEVertex. */
-  typedef FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LLEVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LLEVertex>
-  : public ClassTraitsBase<Herwig::LLEVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LLEVertex"; }
   /**
-   * The name of a file containing the dynamic library where the class
-   * LLEVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LLEVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
+   * Pointer to the sbottom mixing matrix
    */
-  static string library() { return "LLEVertex.so"; }
-};
+  tMixingMatrixPtr sbot_;
 
-/** @endcond */
+};
 
 }
 
-#endif /* HERWIG_LLEVertex_H */
+#endif /* HERWIG_RPVUDDVertex_H */

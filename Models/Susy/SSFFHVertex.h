@@ -99,12 +99,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSFFHVertex> initSSFFHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -172,42 +166,6 @@ private:
    */
   pair<Energy,Energy> theMassLast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSFFHVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSFFHVertex,1> {
-  /** Typedef of the first base class of SSFFHVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSFFHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSFFHVertex>
-  : public ClassTraitsBase<Herwig::SSFFHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSFFHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSFFHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSFFHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSFFHVertex_H */

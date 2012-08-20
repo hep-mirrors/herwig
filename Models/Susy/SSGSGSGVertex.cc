@@ -12,6 +12,7 @@
 //
 
 #include "SSGSGSGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -25,8 +26,9 @@ SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
   orderInGem(0);
 }
 
-NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeNoPIOClass<SSGSGSGVertex,FFVVertex>
+describeHerwigSSGSGSGVertex("Herwig::SSGSGSGVertex", "HwSusy.so");
 
 void SSGSGSGVertex::Init() {
 

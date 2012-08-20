@@ -12,6 +12,7 @@
 //
 
 #include "SSGNGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -66,8 +67,9 @@ void SSGNGVertex::persistentInput(PersistentIStream & is, int) {
      >> _stop >> _sbot;
 }
 
-ClassDescription<SSGNGVertex> SSGNGVertex::initSSGNGVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSGNGVertex,GeneralFFVVertex>
+describeHerwigSSGNGVertex("Herwig::SSGNGVertex", "HwSusy.so");
 
 void SSGNGVertex::Init() {
 

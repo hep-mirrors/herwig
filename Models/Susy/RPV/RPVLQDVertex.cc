@@ -1,10 +1,11 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LQDVertex class.
+// functions of the RPVLQDVertex class.
 //
 
-#include "LQDVertex.h"
+#include "RPVLQDVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -14,43 +15,44 @@
 
 using namespace Herwig;
 
-LQDVertex::LQDVertex() {
+RPVLQDVertex::RPVLQDVertex() {
   orderInGem(1);
   orderInGs(0);
 }
 
-IBPtr LQDVertex::clone() const {
+IBPtr RPVLQDVertex::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr LQDVertex::fullclone() const {
+IBPtr RPVLQDVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void LQDVertex::persistentOutput(PersistentOStream & os) const {
+void RPVLQDVertex::persistentOutput(PersistentOStream & os) const {
   os << lambda_ << stop_ << sbot_ << stau_;
 }
 
-void LQDVertex::persistentInput(PersistentIStream & is, int) {
+void RPVLQDVertex::persistentInput(PersistentIStream & is, int) {
   is >> lambda_ >> stop_ >> sbot_ >> stau_;
 }
 
-ClassDescription<LQDVertex> LQDVertex::initLQDVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<RPVLQDVertex,FFSVertex>
+describeHerwigRPVLQDVertex("Herwig::RPVLQDVertex", "HwSusy.so HwRPV.so");
 
-void LQDVertex::Init() {
+void RPVLQDVertex::Init() {
 
-  static ClassDocumentation<LQDVertex> documentation
-    ("The LQDVertex class implements the trilinear LQD"
+  static ClassDocumentation<RPVLQDVertex> documentation
+    ("The RPVLQDVertex class implements the trilinear LQD"
      " coupling in R-parity violating models.");
 
 }
 
-void LQDVertex::doinit() {
+void RPVLQDVertex::doinit() {
   RPVPtr rpv = dynamic_ptr_cast<RPVPtr>(generator()->standardModel());
   if(!rpv)
     throw InitException() << "Must have the RPV model in"
-			  << " LQDVertex::doinit()"
+			  << " RPVLQDVertex::doinit()"
 			  << Exception::abortnow;
   // get the coupling
   lambda_ = rpv->lambdaLQD();
@@ -107,8 +109,8 @@ void LQDVertex::doinit() {
   FFSVertex::doinit();
 }
 
-void LQDVertex::setCoupling(Energy2, tcPDPtr part1,
-			    tcPDPtr part2, tcPDPtr part3) {
+void RPVLQDVertex::setCoupling(Energy2, tcPDPtr part1,
+			       tcPDPtr part2, tcPDPtr part3) {
   int islep = part3->id();
   int i(-1),j(-1),k(-1);
   Complex mix(1.);

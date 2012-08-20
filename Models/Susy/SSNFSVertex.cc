@@ -12,6 +12,7 @@
 //
 
 #include "SSNFSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -87,8 +88,9 @@ void SSNFSVertex::doinit() {
   _cb = sqrt(1 - sqr(_sb));
 }
 
-ClassDescription<SSNFSVertex> SSNFSVertex::initSSNFSVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSNFSVertex,FFSVertex>
+describeHerwigSSNFSVertex("Herwig::SSNFSVertex", "HwSusy.so");
 
 void SSNFSVertex::Init() {
 

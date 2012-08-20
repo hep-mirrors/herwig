@@ -12,6 +12,7 @@
 //
 
 #include "SSGVFSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -63,8 +64,9 @@ void SSGVFSVertex::doinit() {
   stau_ = model->stauMix();
 }
 
-ClassDescription<SSGVFSVertex> SSGVFSVertex::initSSGVFSVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSGVFSVertex,RFSVertex>
+describeHerwigSSGVFSVertex("Herwig::SSGVFSVertex", "libHwSusy.so");
 
 void SSGVFSVertex::Init() {
 

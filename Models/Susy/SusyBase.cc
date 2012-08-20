@@ -12,6 +12,7 @@
 //
 
 #include "SusyBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -112,8 +113,9 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> gluinoPhase_ >> iunit(MPlanck_,GeV);
 }
 
-ClassDescription<SusyBase> SusyBase::initSusyBase;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SusyBase,BSMModel>
+describeHerwigSusyBase("Herwig::SusyBase", "HwSusy.so");
 
 void SusyBase::Init() {
 

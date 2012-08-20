@@ -4,7 +4,8 @@
 // functions of the UDDVertex class.
 //
 
-#include "UDDVertex.h"
+#include "RPVUDDVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -16,43 +17,44 @@
 
 using namespace Herwig;
 
-UDDVertex::UDDVertex() {
+RPVUDDVertex::RPVUDDVertex() {
   orderInGem(1);
   orderInGs(0);
 }
 
-IBPtr UDDVertex::clone() const {
+IBPtr RPVUDDVertex::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr UDDVertex::fullclone() const {
+IBPtr RPVUDDVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void UDDVertex::persistentOutput(PersistentOStream & os) const {
+void RPVUDDVertex::persistentOutput(PersistentOStream & os) const {
   os << lambda_ << stop_ << sbot_;
 }
 
-void UDDVertex::persistentInput(PersistentIStream & is, int) {
+void RPVUDDVertex::persistentInput(PersistentIStream & is, int) {
   is >> lambda_ >> stop_ >> sbot_;
 }
 
-ClassDescription<UDDVertex> UDDVertex::initUDDVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<RPVUDDVertex,FFSVertex>
+describeHerwigRPVUDDVertex("Herwig::RPVUDDVertex", "HwSusy.so HwRPV.so");
 
-void UDDVertex::Init() {
+void RPVUDDVertex::Init() {
 
-  static ClassDocumentation<UDDVertex> documentation
-    ("The UDDVertex class implements the trilinear UDD"
+  static ClassDocumentation<RPVUDDVertex> documentation
+    ("The RPVUDDVertex class implements the trilinear UDD"
      " coupling in R-parity violating models.");
 
 }
 
-void UDDVertex::doinit() {
+void RPVUDDVertex::doinit() {
   RPVPtr rpv = dynamic_ptr_cast<RPVPtr>(generator()->standardModel());
   if(!rpv)
     throw InitException() << "Must have the RPV model in"
-			  << " UDDVertex::doinit()"
+			  << " RPVUDDVertex::doinit()"
 			  << Exception::abortnow;
   // get the coupling
   lambda_ = rpv->lambdaUDD();
@@ -87,8 +89,8 @@ void UDDVertex::doinit() {
   FFSVertex::doinit();
 }
 
-void UDDVertex::setCoupling(Energy2, tcPDPtr part1,
-			    tcPDPtr part2, tcPDPtr part3) {
+void RPVUDDVertex::setCoupling(Energy2, tcPDPtr part1,
+			       tcPDPtr part2, tcPDPtr part3) {
   int islep = part3->id();
   int i(-1),j(-1),k(-1);
   Complex mix(1.);

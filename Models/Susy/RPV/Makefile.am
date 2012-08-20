@@ -3,9 +3,9 @@ pkglib_LTLIBRARIES = HwRPV.la
 endif
 HwRPV_la_SOURCES =  \
 RPV.cc  RPV.h RPV.fh \
-LLEVertex.h LLEVertex.cc\
-LQDVertex.h LQDVertex.cc\
-UDDVertex.h UDDVertex.cc\
+RPVLLEVertex.h RPVLLEVertex.cc\
+RPVLQDVertex.h RPVLQDVertex.cc\
+RPVUDDVertex.h RPVUDDVertex.cc\
 RPVFFZVertex.h RPVFFZVertex.cc\
 RPVFFWVertex.h RPVFFWVertex.cc\
 RPVWSSVertex.h RPVWSSVertex.cc\

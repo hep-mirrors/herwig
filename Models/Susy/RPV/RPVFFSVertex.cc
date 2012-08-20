@@ -388,7 +388,7 @@ void RPVFFSVertex::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<RPVFFSVertex,Helicity::FFSVertex>
-  describeHerwigRPVFFSVertex("Herwig::RPVFFSVertex", "RPVFFSVertex.so");
+  describeHerwigRPVFFSVertex("Herwig::RPVFFSVertex", "HwSusy.so HwRPV.so");
 
 void RPVFFSVertex::Init() {
 

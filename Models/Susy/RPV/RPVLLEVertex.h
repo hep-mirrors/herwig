@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_UDDVertex_H
-#define HERWIG_UDDVertex_H
+#ifndef HERWIG_LLEVertex_H
+#define HERWIG_LLEVertex_H
 //
-// This is the declaration of the UDDVertex class.
+// This is the declaration of the RPVLLEVertex class.
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
@@ -13,19 +13,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the UDDVertex class.
+ * Here is the documentation of the RPVLLEVertex class.
  *
- * @see \ref UDDVertexInterfaces "The interfaces"
- * defined for UDDVertex.
+ * @see \ref RPVLLEVertexInterfaces "The interfaces"
+ * defined for RPVLLEVertex.
  */
-class UDDVertex: public FFSVertex {
+class RPVLLEVertex: public FFSVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  UDDVertex();
+  RPVLLEVertex();
 
   /**
    * Calculate the couplings.
@@ -95,16 +95,10 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<UDDVertex> initUDDVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  UDDVertex & operator=(const UDDVertex &);
+  RPVLLEVertex & operator=(const RPVLLEVertex &);
 
 private:
 
@@ -114,52 +108,12 @@ private:
   vector<vector<vector<double > > > lambda_;
 
   /**
-   * Pointer to the stop mixing matrix
+   * Pointer to the stau mixing matrix
    */
-  tMixingMatrixPtr stop_;
-
-  /**
-   * Pointer to the sbottom mixing matrix
-   */
-  tMixingMatrixPtr sbot_;
+  tMixingMatrixPtr stau_;
 
 };
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of UDDVertex. */
-template <>
-struct BaseClassTrait<Herwig::UDDVertex,1> {
-  /** Typedef of the first base class of UDDVertex. */
-  typedef FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the UDDVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::UDDVertex>
-  : public ClassTraitsBase<Herwig::UDDVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::UDDVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * UDDVertex is implemented. It may also include several, space-separated,
-   * libraries if the class UDDVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "UDDVertex.so"; }
-};
-
-/** @endcond */
-
-}
-
-#endif /* HERWIG_UDDVertex_H */
+#endif /* HERWIG_RPVLLEVertex_H */

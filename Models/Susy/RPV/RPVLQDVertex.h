@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_LQDVertex_H
-#define HERWIG_LQDVertex_H
+#ifndef HERWIG_RPVLQDVertex_H
+#define HERWIG_RPVLQDVertex_H
 //
-// This is the declaration of the LQDVertex class.
+// This is the declaration of the RPVLQDVertex class.
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
@@ -13,19 +13,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LQDVertex class.
+ * Here is the documentation of the RPVLQDVertex class.
  *
- * @see \ref LQDVertexInterfaces "The interfaces"
- * defined for LQDVertex.
+ * @see \ref RPVLQDVertexInterfaces "The interfaces"
+ * defined for RPVLQDVertex.
  */
-class LQDVertex: public FFSVertex {
+class RPVLQDVertex: public FFSVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  LQDVertex();
+  RPVLQDVertex();
 
   /**
    * Calculate the couplings.
@@ -95,16 +95,10 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LQDVertex> initLQDVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LQDVertex & operator=(const LQDVertex &);
+  RPVLQDVertex & operator=(const RPVLQDVertex &);
 
 private:
 
@@ -132,39 +126,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LQDVertex. */
-template <>
-struct BaseClassTrait<Herwig::LQDVertex,1> {
-  /** Typedef of the first base class of LQDVertex. */
-  typedef FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LQDVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LQDVertex>
-  : public ClassTraitsBase<Herwig::LQDVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LQDVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LQDVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LQDVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "LQDVertex.so"; }
-};
-
-/** @endcond */
-
-}
-
-#endif /* HERWIG_LQDVertex_H */
+#endif /* HERWIG_RPVLQDVertex_H */

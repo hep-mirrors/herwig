@@ -5,6 +5,7 @@
 //
 
 #include "RPV.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -24,8 +25,9 @@ void RPV::persistentInput(PersistentIStream & is, int) {
      >> HiggsAMix_ >> HiggsPMix_;
 }
 
-ClassDescription<RPV> RPV::initRPV;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<RPV,MSSM>
+describeHerwigRPV("Herwig::RPV", "HwSusy.so HwRPV.so");
 
 void RPV::Init() {
 

@@ -114,12 +114,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSGNGVertex> initSSGNGVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -192,42 +186,6 @@ private:
    */
   complex<InvEnergy> _rightlast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSGNGVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSGNGVertex,1> {
-  /** Typedef of the first base class of SSGNGVertex. */
-  typedef ThePEG::Helicity::GeneralFFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSGNGVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSGNGVertex>
-  : public ClassTraitsBase<Herwig::SSGNGVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSGNGVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSGNGVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSGNGVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSGNGVertex_H */

@@ -1,10 +1,11 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LLEVertex class.
+// functions of the RPVLLEVertex class.
 //
 
-#include "LLEVertex.h"
+#include "RPVLLEVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -14,43 +15,44 @@
 
 using namespace Herwig;
 
-LLEVertex::LLEVertex() {
+RPVLLEVertex::RPVLLEVertex() {
   orderInGem(1);
   orderInGs(0);
 }
 
-IBPtr LLEVertex::clone() const {
+IBPtr RPVLLEVertex::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr LLEVertex::fullclone() const {
+IBPtr RPVLLEVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void LLEVertex::persistentOutput(PersistentOStream & os) const {
+void RPVLLEVertex::persistentOutput(PersistentOStream & os) const {
   os << lambda_ << stau_;
 }
 
-void LLEVertex::persistentInput(PersistentIStream & is, int) {
+void RPVLLEVertex::persistentInput(PersistentIStream & is, int) {
   is >> lambda_ >> stau_;
 }
 
-ClassDescription<LLEVertex> LLEVertex::initLLEVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<RPVLLEVertex,FFSVertex>
+describeHerwigRPVLLEVertex("Herwig::RPVLLEVertex", "HwSusy.so HwRPV.so");
 
-void LLEVertex::Init() {
+void RPVLLEVertex::Init() {
 
-  static ClassDocumentation<LLEVertex> documentation
-    ("The LLEVertex class implements the trilinear LLE"
+  static ClassDocumentation<RPVLLEVertex> documentation
+    ("The RPVLLEVertex class implements the trilinear LLE"
      " coupling in R-parity violating models.");
 
 }
 
-void LLEVertex::doinit() {
+void RPVLLEVertex::doinit() {
   RPVPtr rpv = dynamic_ptr_cast<RPVPtr>(generator()->standardModel());
   if(!rpv)
     throw InitException() << "Must have the RPV model in"
-			  << " LLEVertex::doinit()"
+			  << " RPVLLEVertex::doinit()"
 			  << Exception::abortnow;
   // get the coupling
   lambda_ = rpv->lambdaLLE();
@@ -85,8 +87,8 @@ void LLEVertex::doinit() {
   FFSVertex::doinit();
 }
 
-void LLEVertex::setCoupling(Energy2, tcPDPtr part1,
-			    tcPDPtr part2, tcPDPtr part3) {
+void RPVLLEVertex::setCoupling(Energy2, tcPDPtr part1,
+			       tcPDPtr part2, tcPDPtr part3) {
   int islep = part3->id();
   int i(-1),j(-1),k(-1);
   Complex mix=1.;
