@@ -124,6 +124,7 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   if(particle.perturbative()==1) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
+    assert(partner);
     if(partner->isFinalState()) {
       Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
       Lorentz5Momentum pb =  particle.momentum();

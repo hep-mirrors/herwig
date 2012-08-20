@@ -860,7 +860,6 @@ double MEPP2GammaGammaPowheg::loGammaGammaME(const cPDVector & particles,
   double output(0.);
   // analytic formula for speed
   if(!first) {
-    Energy2 sh = (momenta[0]+momenta[1]).m2();
     Energy2 th = (momenta[0]-momenta[2]).m2();
     Energy2 uh = (momenta[0]-momenta[3]).m2();
     output = 4./3.*Constants::pi*SM().alphaEM(ZERO)*(th/uh+uh/th)*
@@ -1045,7 +1044,6 @@ double MEPP2GammaGammaPowheg::loGammaqbarME(const cPDVector & particles,
     Complex diag[2];
     SpinorWaveFunction inters;
     SpinorBarWaveFunction interb;
-    Energy2 _scale=scale();
     for(unsigned int ihel1=0;ihel1<2;++ihel1) {
       for(unsigned int ihel2=0;ihel2<2;++ihel2) {
 	for(unsigned int ohel1=0;ohel1<2;++ohel1) {
@@ -1887,7 +1885,6 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   if(particlesToShower[0]->progenitor()->id()!=ParticleID::g &&
      particlesToShower[1]->progenitor()->id()!=ParticleID::g )
     return HardTreePtr();
-  Energy rootS = sqrt(lastS());
   // generate the hard emission
   pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
 				    particlesToShower[1]->progenitor()->x());
@@ -2148,9 +2145,11 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   }
   ColinePtr newline1 = new_ptr(ColourLine());
   ColinePtr newline2 = new_ptr(ColourLine());
+  HardBranchingPtr gluon,quark,antiQuark;
   for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
       cit!=hardtree->branchings().end();++cit) {
     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
+      gluon = *cit;
       if((**cit).status()==HardBranching::Incoming) {
 	newline1->addColoured    ((**cit).branchingParticle());
 	newline2->addAntiColoured((**cit).branchingParticle());
@@ -2161,18 +2160,28 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
       }
     }
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-      if((**cit).status()==HardBranching::Incoming) 
+      if((**cit).status()==HardBranching::Incoming) {
+	antiQuark = *cit;
 	newline2->addColoured((**cit).branchingParticle());
-      else 
+      }
+      else {
+	quark = *cit;
 	newline1->addColoured((**cit).branchingParticle());
+      }
     }
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar) {
-      if((**cit).status()==HardBranching::Incoming) 
+      if((**cit).status()==HardBranching::Incoming) {
+	quark = *cit;
 	newline1->addAntiColoured((**cit).branchingParticle());
-      else 
+      }
+      else {
+	antiQuark = *cit;
 	newline2->addAntiColoured((**cit).branchingParticle());
+      }
     }
   }
+  assert(quark&&antiQuark&&gluon);
+  gluon->colourPartner(UseRandom::rndbool() ? quark : antiQuark);
   // return the tree
   return hardtree;
 }
