@@ -8,6 +8,7 @@
 .*/.*\.o
 Tests/.*\.aida
 .*~
+.*.codereplace
 .*\.tar\.(gz|bz2)
 autom4te.cache
 config.herwig
