@@ -17,7 +17,7 @@
 
 using namespace Herwig;
 
-RPVFFWVertex::RPVFFWVertex() : _ckm(3,vector<Complex>(3,0.0)),
+RPVFFWVertex::RPVFFWVertex() : _diagonal(false), _ckm(3,vector<Complex>(3,0.0)),
 			       _sw(0.), _couplast(0.), _q2last(ZERO), 
 			       _id1last(0), _id2last(0), _leftlast(0.),
 			       _rightlast(0.), _interactions(0) {
@@ -53,6 +53,9 @@ void RPVFFWVertex::doinit() {
     // quarks
     for(int ix=1;ix<6;ix+=2) {
       for(int iy=2;iy<7;iy+=2) {
+	bool isOff = iy/2 != (ix+1)/2;
+	if ( isOff && _diagonal )
+	  continue;
 	addToList(-ix, iy, -24);
       }
     }
@@ -64,6 +67,9 @@ void RPVFFWVertex::doinit() {
     // quarks
     for(int ix=2;ix<7;ix+=2) {
       for(int iy=1;iy<6;iy+=2) {
+	bool isOff = ix/2 != (iy+1)/2;
+	if ( isOff && _diagonal )
+	  continue;
 	addToList(-ix, iy, 24);
       }
     }
@@ -108,34 +114,36 @@ void RPVFFWVertex::doinit() {
   }
   Helicity::FFVVertex::doinit();
   // CKM matric
-  Ptr<CKMBase>::transient_pointer CKM = model->CKM();
-  // cast the CKM object to the HERWIG one
-  ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
-    hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
-    transient_const_pointer>(CKM);
-  if(hwCKM) {
-    vector< vector<Complex > > CKM;
-    CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
-    for(unsigned int ix=0;ix<3;++ix) {
-      for(unsigned int iy=0;iy<3;++iy) {
-	_ckm[ix][iy]=CKM[ix][iy];
+  if ( !_diagonal ) {
+    Ptr<CKMBase>::transient_pointer CKM = model->CKM();
+    // cast the CKM object to the HERWIG one
+    ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
+      hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
+					transient_const_pointer>(CKM);
+    if(hwCKM) {
+      vector< vector<Complex > > CKM;
+      CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
+      for(unsigned int ix=0;ix<3;++ix) {
+	for(unsigned int iy=0;iy<3;++iy) {
+	  _ckm[ix][iy]=CKM[ix][iy];
+	}
       }
     }
-  }
-  else {
-    throw Exception() << "Must have access to the Herwig::StandardCKM object"
-		      << "for the CKM matrix in SMFFWVertex::doinit()"
-		      << Exception::runerror;
+    else {
+      throw Exception() << "Must have access to the Herwig::StandardCKM object"
+			<< "for the CKM matrix in RPVFFWVertex::doinit()"
+			<< Exception::runerror;
+    }
   }
   _sw = sqrt(sin2ThetaW());
 }
 
 void RPVFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _sw << _theN << _theU << _theV << _ckm << _interactions;
+  os << _sw << _theN << _theU << _theV  << _diagonal << _ckm << _interactions;
 }
 
 void RPVFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _sw >> _theN >> _theU >> _theV >> _ckm >> _interactions;
+  is >> _sw >> _theN >> _theU >> _theV  >> _diagonal >> _ckm >> _interactions;
 }
 
 
@@ -152,7 +160,6 @@ void RPVFFWVertex::Init() {
   static ClassDocumentation<RPVFFWVertex> documentation
     ("The couplings of the fermions to the W boson in the RPV model"
      " with bilinear R-parity violation");
-
 
   static Switch<RPVFFWVertex,unsigned int> interfaceInteractions
     ("Interactions",
@@ -173,6 +180,21 @@ void RPVFFWVertex::Init() {
      "SUSY",
      "Include the neutralino/chargino terms",
      2);
+
+  static Switch<RPVFFWVertex,bool> interfaceDiagonal
+    ("Diagonal",
+     "Use a diagonal CKM matrix (ignoring the CKM object of the StandardModel).",
+     &RPVFFWVertex::_diagonal, false, false, false);
+  static SwitchOption interfaceDiagonalYes
+    (interfaceDiagonal,
+     "Yes",
+     "Use a diagonal CKM matrix.",
+     true);
+  static SwitchOption interfaceDiagonalNo
+    (interfaceDiagonal,
+     "No",
+     "Use the CKM object as used by the StandardModel.",
+     false);
 
 }
 

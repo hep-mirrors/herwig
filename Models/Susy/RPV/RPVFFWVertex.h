@@ -103,11 +103,20 @@ private:
 
 private:
 
+  /** @name Quark flavour parameters */
+  //@{ 
+  /**
+   * True, if a diagonal CKM matrix should be assumed. This ignores
+   * the CKM object of the StandardModel.
+   */
+  bool _diagonal;
+  
   /**
    *  The elements of the CKM matrix.
    */
   vector<vector<Complex> > _ckm;
-
+  //@}
+  
   /**
    * Store \f$sin(\theta_W)\f$
    */

@@ -382,18 +382,17 @@ void RPVFFSVertex::persistentInput(PersistentIStream & is, int) {
      >> OCCHL_ >> ONNHL_ >> ONNAL_;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<RPVFFSVertex,Helicity::FFSVertex>
-  describeHerwigRPVFFSVertex("Herwig::RPVFFSVertex", "HwSusy.so HwRPV.so");
+describeHerwigRPVFFSVertex("Herwig::RPVFFSVertex", "HwSusy.so HwRPV.so");
 
 void RPVFFSVertex::Init() {
 
   static ClassDocumentation<RPVFFSVertex> documentation
-    ("There is no documentation for the RPVFFSVertex class");
+    ("The RPVFFSVertex class implements all the couplings of fermion-antiferion to scalars"
+     " in R-Parity violating models, including sfermion fermion gaugino, SM ferimon antiferimon Higgs "
+     "and gaugino-gaugino Higgs.");
 
   static Switch<RPVFFSVertex,unsigned int> interfaceInteractions
     ("Interactions",
