@@ -92,12 +92,7 @@ protected:
   virtual void doinit();
   
 private:
-  
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMFFWVertex> initSMFFWVertex;
-  
+
   /**
    * Private and non-existent assignment operator.
    */
@@ -131,39 +126,6 @@ private:
   Energy2 _q2last;
   //@}
 };
-}
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMFFWVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::SMFFWVertex,1> {
-  /** Typedef of the base class of SMFFWVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::SMFFWVertex>
-  : public ClassTraitsBase<Herwig::SMFFWVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::SMFFWVertex"; }
-  
-};
-
-/** @endcond */
-  
 }
 
 #endif /* HERWIG_SMFFWVertex_H */
