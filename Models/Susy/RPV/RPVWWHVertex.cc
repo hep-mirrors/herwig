@@ -46,7 +46,7 @@ void RPVWWHVertex::doinit() {
   Energy mw = getParticleData(ParticleID::Wplus)->mass();
   Energy mz = getParticleData(ParticleID::Z0)->mass();
   double sw = sqrt(sin2ThetaW());
-  double cw = sqrt(1.-sqr(sw));
+  double cw = sqrt(1.-sin2ThetaW());
   vector<Energy> vnu = model->sneutrinoVEVs();
   Energy v = 2.*mw/electroMagneticCoupling(sqr(mw))*sw;
   double tanb = model->tanBeta();
@@ -61,7 +61,6 @@ void RPVWWHVertex::doinit() {
     coup[1] = c/v*mz/cw;
     couplings_.push_back(coup);
   }
-  cerr << "testing vev " << v/GeV << "\n";
 }
 
 IBPtr RPVWWHVertex::clone() const {
@@ -72,7 +71,6 @@ IBPtr RPVWWHVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-
 void RPVWWHVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(couplings_,GeV);
 }
@@ -81,19 +79,16 @@ void RPVWWHVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(couplings_,GeV);
 }
 
-
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<RPVWWHVertex,Helicity::VVSVertex>
-  describeHerwigRPVWWHVertex("Herwig::RPVWWHVertex", "HwSusy.so HwRPV.so");
+describeHerwigRPVWWHVertex("Herwig::RPVWWHVertex", "HwSusy.so HwRPV.so");
 
 void RPVWWHVertex::Init() {
 
   static ClassDocumentation<RPVWWHVertex> documentation
-    ("There is no documentation for the RPVWWHVertex class");
+    ("The RPVWWHVertex class implements the couplings of a pair of electroweak"
+     " gauge bosons to the higgs boson in he R-parity violating MSSM.");
 
 }
 

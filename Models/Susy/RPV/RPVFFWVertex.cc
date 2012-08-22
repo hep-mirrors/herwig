@@ -98,9 +98,9 @@ void RPVFFWVertex::doinit() {
     vector<long> cha(2);
     cha[0] = 1000024; cha[1] = 1000037;
     if(_theV->size().first==5) {
-      cha.push_back(11);
-      cha.push_back(13);
-      cha.push_back(15);
+      cha.push_back(-11);
+      cha.push_back(-13);
+      cha.push_back(-15);
     }
     // sign == -1 outgoing W-, sign == +1 outgoing W+
     for(int sign = -1; sign < 2; sign += 2) {

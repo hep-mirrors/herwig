@@ -1,35 +1,37 @@
 // -*- C++ -*-
-#ifndef Herwig_RPVWWHVertex_H
-#define Herwig_RPVWWHVertex_H
+#ifndef Herwig_RPVHGGVertex_H
+#define Herwig_RPVHGGVertex_H
 //
-// This is the declaration of the RPVWWHVertex class.
+// This is the declaration of the RPVHGGVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "Herwig++/Models/General/VVSLoopVertex.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The RPVWWHVertex class implements the couplings of a pair of gauge bosons to scalars in 
- * the R-parity violating MSSM.
+ * Here is the documentation of the RPVHGGVertex class.
+ *
+ * @see \ref RPVHGGVertexInterfaces "The interfaces"
+ * defined for RPVHGGVertex.
  */
-class RPVWWHVertex: public Helicity::VVSVertex {
+class RPVHGGVertex: public VVSLoopVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  RPVWWHVertex();
-
-  /**
-   * Calculate the coupling for the vertex
-   * @param q2 The scale to at which evaluate the coupling.
-   * @param particle1 The first particle in the vertex.
-   * @param particle2 The second particle in the vertex.
-   * @param particle3 The third particle in the vertex.
+  RPVHGGVertex();
+  
+  /** 
+   * Calculate couplings
+   *@param q2 Scale at which to evaluate coupling
+   *@param particle1 ParticleData pointer to first particle
+   *@param particle2 ParticleData pointer to second particle
+   *@param particle3 ParticleData pointer to third particle
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
 			   tcPDPtr particle3);
@@ -77,17 +79,10 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
+// If needed, insert declarations of virtual function defined in the
+// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
 
 private:
 
@@ -95,27 +90,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  RPVWWHVertex & operator=(const RPVWWHVertex &);
-
-private:
-
-  /**
-   *  The factors for the various interactions
-   */
-  vector<vector<complex<Energy> > > couplings_; 
-
-  /**
-   *  last value of the coupling
-   */
-  double coupLast_;
-
-  /**
-   *  last value of the scale
-   */
-  Energy2 q2Last_;
+  RPVHGGVertex & operator=(const RPVHGGVertex &);
 
 };
 
 }
 
-#endif /* Herwig_RPVWWHVertex_H */
+#endif /* Herwig_RPVHGGVertex_H */

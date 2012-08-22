@@ -92,6 +92,30 @@ protected:
   virtual void doinit();
   //@}
 
+protected:
+
+  /**
+   *    Neutralino-sfermion-fermion
+   */
+  void neutralinoSfermionCoupling(Energy2 q2, tcPDPtr fermion, tcPDPtr gaugino,
+				  tcPDPtr sfermion);
+
+  /**
+   *    Chargino-sfermion-fermion
+   */
+  void charginoSfermionCoupling(Energy2 q2, tcPDPtr fermion, tcPDPtr gaugino,
+				tcPDPtr sfermion);
+
+  /**
+   *  Higgs to SM fermions
+   */
+  void higgsFermionCoupling(Energy2 q2, tcPDPtr f1, tcPDPtr f2, tcPDPtr higgs);
+
+  /**
+   *  Higgs to gauginos (general slepton case with mixing)
+   */
+  void higgsGauginoCoupling(Energy2 q2, tcPDPtr f1, tcPDPtr f2, tcPDPtr higgs);
+
 private:
 
   /**
@@ -254,9 +278,24 @@ private:
   vector<vector<vector<Complex> > > ONNHL_;
 
   /**
+   *  OCCAL
+   */
+  vector<vector<vector<Complex> > > OCCAL_;
+
+  /**
    *  ONNAL
    */
   vector<vector<vector<Complex> > > ONNAL_;
+
+  /**
+   *  OCNSL
+   */
+  vector<vector<vector<Complex> > > OCNSL_;
+
+  /**
+   *   OCNSR
+   */
+  vector<vector<vector<Complex> > > OCNSR_;
 };
 
 }

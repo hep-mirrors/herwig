@@ -188,7 +188,6 @@ void RPVWSSVertex::doinit() {
 			  << " stop: " << _stop << " sbottom: " << _sbottom
 			  << Exception::abortnow;
   _stau = model->stauMix();
-  cerr << "testing mixing " << _mixC << "\n";
   if(!_stau && (!_mixC || _mixC->size().first<2))
     throw InitException() << "RPVWSSVertex::doinit() either the stau"
 			  << " mixing matrix must be set or the stau"

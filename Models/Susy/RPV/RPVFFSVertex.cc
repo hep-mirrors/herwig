@@ -16,6 +16,17 @@
 
 using namespace Herwig;
 
+namespace {
+
+  unsigned int neutralinoIndex(long id) {
+    return id> 1000000 ?  (id<1000025 ? id-1000022 : (id-1000005)/10) : (abs(id)-4)/2;
+  }
+  
+  unsigned int charginoIndex(long id) {
+    return abs(id)>1000000 ? (abs(id)-1000024)/13 : (abs(id)-7)/2;
+  }
+}
+
 RPVFFSVertex::RPVFFSVertex() : interactions_(0), mw_(ZERO),
 			       _q2last(ZERO), _couplast(0.),
 			       _leftlast(0.),_rightlast(0.),
@@ -26,29 +37,7 @@ RPVFFSVertex::RPVFFSVertex() : interactions_(0), mw_(ZERO),
 			       _massLast(make_pair(ZERO,ZERO)) {
   orderInGem(1);
   orderInGs(0);
-}
-
-
-// GOGOH
-
-// :theSij(2, vector<Complex>(2,0.0)),
-// 				 theQij(2, vector<Complex>(2,0.0)),
-// 				 theQijLp(4, vector<Complex>(2,0.0)),
-// 				 theQijRp(4, vector<Complex>(2,0.0)),
-// 				 theSijdp(4, vector<Complex>(4,0.0)),
-// 				 theQijdp(4, vector<Complex>(4,0.0)),
-// 				 theSa(0.0), theSb(0.0),
-// 				 theCa(0.0), theCb(0.0)
-// 				 theLLast(0.0), theRLast(0.0), theHLast(0),
-// 				 theID1Last(0), theID2Last(0)
-
-// FFH
-
-//  thetanb(0.0)
-// 			     theSa(0.0), theSb(0.0),
-// 			     theCa(0.0), theCb(0.0),
-// 			     theFLast(make_pair(0,0)), theGlast(0.),
-// 			    
+}  
 
 IBPtr RPVFFSVertex::clone() const {
   return new_ptr(*this);
@@ -60,20 +49,20 @@ IBPtr RPVFFSVertex::fullclone() const {
 
 void RPVFFSVertex::doinit() {
   // cast the model to the RPV one
-  tRPVPtr model = dynamic_ptr_cast<tRPVPtr>(generator()->standardModel());
-  if( !model ) throw InitException() << "RPVFFSVertex::doinit() - "
-				     << "The pointer to the MSSM object is null!"
-				     << Exception::abortnow;
+  model_ = dynamic_ptr_cast<tRPVPtr>(generator()->standardModel());
+  if( !model_ ) throw InitException() << "RPVFFSVertex::doinit() - "
+				      << "The pointer to the MSSM object is null!"
+				      << Exception::abortnow;
   // get the various mixing matrices
-  _stop = model->stopMix();
-  _sbot = model->sbottomMix();
-  _stau = model->stauMix();
-  _nmix = model->neutralinoMix();
-  _umix = model->charginoUMix();
-  _vmix = model->charginoVMix();
-  _mixH = model->CPevenHiggsMix();
-  _mixP = model->CPoddHiggsMix();
-  _mixC = model->ChargedHiggsMix();
+  _stop = model_->stopMix();
+  _sbot = model_->sbottomMix();
+  _stau = model_->stauMix();
+  _nmix = model_->neutralinoMix();
+  _umix = model_->charginoUMix();
+  _vmix = model_->charginoVMix();
+  _mixH = model_->CPevenHiggsMix();
+  _mixP = model_->CPoddHiggsMix();
+  _mixC = model_->ChargedHiggsMix();
   if(!_stop || !_sbot ) throw InitException() << "RPVFFSVertex::doinit() - "
 					      << "A squark mixing matrix pointer is null."
 					      << " stop: " << _stop << " sbottom: "
@@ -89,7 +78,7 @@ void RPVFFSVertex::doinit() {
 			  << Exception::abortnow;
   // various interactions
   // scalar Higgs bosons
-  vector<long> h0(3);
+  vector<long> h0(2);
   h0[0] = 25; h0[1] = 35; 
   if(_mixH&&_mixH->size().first>2) {
     h0.push_back(1000012); h0.push_back(1000014); h0.push_back(1000016);
@@ -240,14 +229,14 @@ void RPVFFSVertex::doinit() {
       for(long ix = 1; ix < 7; ++ix) {
 	if( ix % 2 == 0 ) {
 	  addToList(-chg[ic], ix,-( 999999+ix));
-	  addToList(-chg[ic], ix,-(1999999+ix));	  
-	  addToList( chg[ic],-ix,   999999+ix );	  
+	  addToList(-chg[ic], ix,-(1999999+ix));
+	  addToList( chg[ic],-ix,   999999+ix );
 	  addToList( chg[ic],-ix,  1999999+ix );
 	}
 	else {
-	  addToList(-chg[ic],-ix,  1000001+ix );	  
-	  addToList(-chg[ic],-ix,  2000001+ix );	  
-	  addToList( chg[ic], ix,-(1000001+ix));	  
+	  addToList(-chg[ic],-ix,  1000001+ix );
+	  addToList(-chg[ic],-ix,  2000001+ix );
+	  addToList( chg[ic], ix,-(1000001+ix));
 	  addToList( chg[ic], ix,-(2000001+ix));
 	}
       }
@@ -281,7 +270,7 @@ void RPVFFSVertex::doinit() {
   _cw = sqrt(1. - sqr(_sw));
   _sb = tb/sqrt(1 + sqr(tb));
   _cb = sqrt(1 - sqr(_sb));
-  vector<Energy> vnu = model->sneutrinoVEVs();
+  vector<Energy> vnu = model_->sneutrinoVEVs();
   double g = electroMagneticCoupling(sqr(mw_))/_sw;
   Energy v = 2.*mw_/g;
   vd_ = sqrt((sqr(v)-sqr(vnu[0])-sqr(vnu[1])-sqr(vnu[2]))/
@@ -291,6 +280,7 @@ void RPVFFSVertex::doinit() {
   Energy me   = getParticleData(ParticleID::eminus  )->mass();
   Energy mmu  = getParticleData(ParticleID::muminus )->mass();
   Energy mtau = getParticleData(ParticleID::tauminus)->mass();
+  double h_E[3] = {me/vd_,mmu /vd_,mtau/vd_};
   for(unsigned int ih=0;ih<_mixH->size().first;++ih ) {
     OCCHL_.push_back(vector<vector<Complex> >
 		     (_umix->size().first,vector<Complex>(_umix->size().first,0.)));
@@ -299,17 +289,10 @@ void RPVFFSVertex::doinit() {
 	OCCHL_[ih][i][j]    = -sqrt(0.5)*
 	  ( (*_mixH)(ih,0)*(*_vmix)(i,0)*(*_umix)(j,1) +
 	    (*_mixH)(ih,1)*(*_vmix)(i,1)*(*_umix)(j,0));
-	if(_umix->size().first>2) {
-	  OCCHL_[ih][i][j] -= sqrt(0.5)*
-	    ( (*_mixH)(ih,2)*(*_vmix)(i,0)*(*_umix)(j,2) + 
-	      (*_mixH)(ih,3)*(*_vmix)(i,0)*(*_umix)(j,3) +
-	      (*_mixH)(ih,4)*(*_vmix)(i,0)*(*_umix)(j,4) ) +
-	    ( me  *(*_umix)(j,2)*(*_vmix)(i,2) +
-	      mmu *(*_umix)(j,3)*(*_vmix)(i,3) +
-	      mtau*(*_umix)(j,4)*(*_vmix)(i,4))/vd_*(*_mixH)(ih,0)
-	    -me  /vd_*(*_umix)(j,1)*(*_vmix)(i,2)
-	    -mmu /vd_*(*_umix)(j,1)*(*_vmix)(i,3)
-	    -mtau/vd_*(*_umix)(j,1)*(*_vmix)(i,4);
+	for(unsigned int k=2;k<_umix->size().first;++k) {
+	  OCCHL_[ih][i][j] -= sqrt(0.5)*(*_mixH)(ih,k)*(*_vmix)(i,0)*(*_umix)(j,k)
+	    +h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixH)(ih,0)
+	    -h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixH)(ih,k);
 	}
       }
     }
@@ -325,11 +308,9 @@ void RPVFFSVertex::doinit() {
 	for(unsigned int in=2;in<_nmix->size().first;++in) {
 	  double sign = in!=3 ? 1. : -1.;
 	  ONNHL_[ih][i][j] += 0.5*sign*(*_mixH)(ih,in-2)*
-	    ( -    (*_nmix)(i,1)*(*_nmix)(j,in) 
-	      -    (*_nmix)(j,1)*(*_nmix)(i,in)
-	      + tw*(*_nmix)(i,0)*(*_nmix)(j,in)
-	      + tw*(*_nmix)(j,0)*(*_nmix)(i,in));
-	}
+	    ( + (tw*(*_nmix)(i,0) - (*_nmix)(i,1) )*(*_nmix)(j,in)
+	      + (tw*(*_nmix)(j,0) - (*_nmix)(j,1) )*(*_nmix)(i,in) );
+	} 
       }
     }
   }
@@ -343,43 +324,69 @@ void RPVFFSVertex::doinit() {
 	for(unsigned int in=2;in<_nmix->size().first;++in) {
 	  double sign = in!=3 ? 1. : -1.;
 	  ONNAL_[ih][i][j] += -0.5*sign*(*_mixP)(ih,in-2)*
-	    ( -    (*_nmix)(i,1)*(*_nmix)(j,in) 
-	      -    (*_nmix)(j,1)*(*_nmix)(i,in)
-	      + tw*(*_nmix)(i,0)*(*_nmix)(j,in)
-	      + tw*(*_nmix)(j,0)*(*_nmix)(i,in));
+	    ( + (tw*(*_nmix)(i,0) - (*_nmix)(i,1) )*(*_nmix)(j,in)
+	      + (tw*(*_nmix)(j,0) - (*_nmix)(j,1) )*(*_nmix)(i,in) );
 	}
       }
     }
   }
+  // couplings of the neutral pseudoscalar higgs to charginos
+  for(unsigned int ih=0;ih<_mixP->size().first;++ih) {
+    OCCAL_.push_back(vector<vector<Complex> >
+		     (_umix->size().first,vector<Complex>(_umix->size().first,0.)));
+    for(unsigned int i=0;i<_umix->size().first;++i) {
+      for(unsigned int j=0;j<_umix->size().first;++j) {
+	OCCAL_[ih][i][j] = 
+	  (*_mixP)(ih,0)*(*_vmix)(i,0)*(*_umix)(j,1)+
+	  (*_mixP)(ih,1)*(*_vmix)(i,1)*(*_umix)(j,0);
+	for(unsigned int k=2;k<_umix->size().first;++k) {
+	  OCCAL_[ih][i][j] += (*_mixP)(ih,k)*(*_vmix)(i,0)*(*_umix)(j,k)
+	    +h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixP)(ih,0)
+	    -h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixP)(ih,k);
+	}
+	OCCAL_[ih][i][j] *= sqrt(0.5);
+      }
+    }
+  }
+  // couplings for the charged higgs
+  for(unsigned int ih=0;ih<_mixC->size().first;++ih) {
+    OCNSL_.push_back(vector<vector<Complex> >
+		     (_nmix->size().first,vector<Complex>(_umix->size().first,0.)));
+    OCNSR_.push_back(vector<vector<Complex> >
+		     (_nmix->size().first,vector<Complex>(_umix->size().first,0.)));
+    for(unsigned int i = 0; i < _nmix->size().first; ++i) {
+      for(unsigned int j=0;j<_umix->size().first;++j) {
+	OCNSL_[ih][i][j] = (*_mixC)(ih,1)*conj((*_nmix)(i, 3)*(*_vmix)(j,0)
+					       +((*_nmix)(i,1) + (*_nmix)(i,0)*tw)*(*_vmix)(j,1)/sqrt(2));
 
-//   for(unsigned int i = 0; i < 4; ++i) {
-//     for(unsigned int j = 0; j < 4; ++j) {
-//       if( j < 2 ) {
-// 	theQijLp[i][j] = conj(nmix(i, 3)*vmix(j,0) 
-// 			      + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2));
-// 	theQijRp[i][j] = nmix(i, 2)*umix(j,0) 
-// 	  - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2);
-//       }
-//       theQijdp[i][j] = 0.5*( nmix(i,2)*( nmix(j,1) - tw*nmix(j,0) )
-// 		 	      + nmix(j,2)*( nmix(i,1) - tw*nmix(i,0) ) );
-//       theSijdp[i][j] = 0.5*( nmix(i,3)*( nmix(j,1) - tw*nmix(j,0) )
-// 			     + nmix(j,3)*( nmix(i,1) - tw*nmix(i,0) ) );
-//     }
-//   }
+
+	OCNSR_[ih][i][j] = (*_mixC)(ih,0)*    ((*_nmix)(i, 2)*(*_umix)(j,0)
+					       -((*_nmix)(i,1) + (*_nmix)(i,0)*tw)*(*_umix)(j,1)/sqrt(2));
+	for(unsigned int k=2;k<_umix->size().first;++k) {
+	  OCNSL_[ih][i][j] += -h_E[k-2]*(*_mixC)(ih,0)*conj((*_nmix)(i,2+k)*(*_vmix)(j,k))
+	    +(*_mixC)(ih,k  )*h_E[k-2]*conj((*_nmix)(i, 2)*(*_vmix)(j,k))
+	    +(*_mixC)(ih,k+3)*tw*sqrt(2.)*conj((*_nmix)(i,0)*(*_vmix)(j,k));
+	  OCNSR_[ih][i][j] += (*_mixC)(ih,k)*((*_nmix)(i,2+k)*(*_umix)(j,0)
+					      -((*_nmix)(i,1) + (*_nmix)(i,0)*tw)*(*_umix)(j,k)/sqrt(2))
+	    -(*_mixC)(ih,k+3)*h_E[k-2]*((*_nmix)(i,k+2)*(*_umix)(j,1)-(*_nmix)(i,2)*(*_umix)(j,k));
+	}
+      }
+    }
+  }
 }
 
 void RPVFFSVertex::persistentOutput(PersistentOStream & os) const {
   os << interactions_ << _stop << _sbot << _stau << _umix << _vmix
      << _nmix << _mixH << _mixP << _mixC << ounit(mw_,GeV) << yukawa_
      << model_  << _sw << _cw << _sb << _cb << ounit(vd_,GeV) << ounit(vu_,GeV)
-     << OCCHL_ << ONNHL_ << ONNAL_;
+     << OCCHL_ << ONNHL_ << ONNAL_ << OCCAL_ << OCNSL_ << OCNSR_;
 }
 
 void RPVFFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> interactions_ >> _stop >> _sbot >> _stau >> _umix >> _vmix
      >> _nmix >> _mixH >> _mixP >> _mixC >> iunit(mw_,GeV) >> yukawa_
      >> model_ >> _sw >> _cw  >> _sb >> _cb >> iunit(vd_,GeV) >> iunit(vu_,GeV)
-     >> OCCHL_ >> ONNHL_ >> ONNAL_;
+     >> OCCHL_ >> ONNHL_ >> ONNAL_ >> OCCAL_ >> OCNSL_ >> OCNSR_;
 }
 
 // The following static variable is needed for the type
@@ -440,347 +447,357 @@ void RPVFFSVertex::Init() {
      false);
 }
 
+void RPVFFSVertex::neutralinoSfermionCoupling(Energy2 q2, tcPDPtr fermion,
+					      tcPDPtr gaugino, tcPDPtr sfermion) {
+  long ism(abs(fermion->id())),ig(abs(gaugino->id())),isc(sfermion->id());
+  if( ig != _id1last || ism != _id2last || isc != _id3last ) {
+    _id1last = ig;
+    _id2last = ism;
+    _id3last = isc;
+    // sfermion mass eigenstate
+    unsigned int alpha(abs(isc)/1000000 - 1);
+    // neutralino state
+    unsigned int nl = neutralinoIndex(ig);
+    assert(nl<=6);
+    // common primed neutralino matrices
+    Complex n2prime = (*_nmix)(nl,1)*_cw - (*_nmix)(nl,0)*_sw;
+    //handle neutrinos first
+    if( ism == 12 || ism == 14 || ism == 16 ) {
+      _leftlast = Complex(0., 0.);
+      _rightlast = -sqrt(0.5)*n2prime/_cw;
+    }
+    else {
+      Complex n1prime = (*_nmix)(nl,0)*_cw + (*_nmix)(nl,1)*_sw;
+      tcPDPtr smf = getParticleData(ism);
+      double qf = smf->charge()/eplus;
+      Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
+      double y = yukawa_ ? double(model_->mass(q2, smf)/2./mw_) : 0.;
+      double lambda(0.);
+      //neutralino mixing element
+      Complex nlf(0.);
+      if( ism % 2 == 0 ) {
+	y /= _sb;
+	lambda = -0.5 + qf*sqr(_sw);
+	nlf = (*_nmix)(nl,3);
+      }
+      else { 
+	y /= _cb;
+	lambda = 0.5 + qf*sqr(_sw);
+	nlf = (*_nmix)(nl,2);
+      }
+      Complex bracketr = _sw*qf*n1prime - n2prime*lambda/_cw;
+      //heavy quarks/sleptons
+      if( ism == 5 || ism == 6 || ism == 15 ) {
+	Complex ma1(0.), ma2(0.);
+	if( ism == 5 ) {
+	  ma1 = (*_sbot)(alpha,0);
+	  ma2 = (*_sbot)(alpha,1);
+	} 
+	else if( ism == 6 ) {
+	  ma1 = (*_stop)(alpha,0);
+	  ma2 = (*_stop)(alpha,1);
+	} 
+	else {
+	  ma1 = (*_stau)(alpha,0);
+	  ma2 = (*_stau)(alpha,1);
+	}
+	_leftlast = y*conj(nlf)*ma1 - ma2*bracketl;
+	_rightlast = y*nlf*ma2 + ma1*bracketr;
+      }
+      else {
+	if( alpha == 0 ) {
+	  _leftlast = y*conj(nlf);
+	  _rightlast = bracketr;
+	} 
+	else {
+	  _leftlast = -bracketl;
+	  _rightlast = y*nlf;
+	}
+      }
+      _leftlast  *= -sqrt(2.);
+      _rightlast *= -sqrt(2.);
+    }
+  }
+  //determine the helicity order of the vertex
+  if( fermion->id() < 0 ) {
+    left (conj(_rightlast));
+    right(conj( _leftlast));
+  }
+  else {
+    left ( _leftlast);
+    right(_rightlast);
+  }
+  norm(_couplast);
+}
+
+void RPVFFSVertex::charginoSfermionCoupling(Energy2 q2, tcPDPtr fermion,
+					    tcPDPtr gaugino, tcPDPtr sfermion) {
+  long ism(abs(fermion->id())),ig(abs(gaugino->id())),isc(sfermion->id());
+  if( ig != _id1last || ism != _id2last || isc != _id3last ) {
+    _id1last = ig;
+    _id2last = ism;
+    _id3last = isc;
+    // sfermion mass eigenstate
+    unsigned int alpha(abs(isc)/1000000 - 1);
+    // get the type of chargino
+    unsigned int ch = charginoIndex(ig);
+    assert(ch<=4);
+    // various mixing matrix elements
+    Complex ul1 = (*_umix)(ch,0), ul2 = (*_umix)(ch,1);
+    Complex vl1 = (*_vmix)(ch,0), vl2 = (*_vmix)(ch,1);
+    // lepton/slepton
+    if( ism >= 11 && ism <= 16 ) {
+      long lept = ( ism % 2 == 0 ) ? ism - 1 : ism;
+      double y = yukawa_ ? 
+	double(model_->mass(q2, getParticleData(lept))/mw_/sqrt(2)/_cb) : 0.;
+      if( ism == 12 || ism == 14 ) {
+	_leftlast = 0.;
+	_rightlast = alpha == 0 ? - ul1 : y*ul2;
+      }
+      else if( ism == 16 ) {
+	_leftlast = 0.;
+	_rightlast = -ul1*(*_stau)(alpha, 0) + y*(*_stau)(alpha,1)*ul2;
+      }
+      else if( ism == 11 || ism == 13 || ism == 15 ) {
+	_leftlast = y*conj(ul2);
+	_rightlast = -vl1;
+      }
+    }
+    // squark/quark
+    else {
+      double yd(0.), yu(0.);
+      if(yukawa_) {
+	if( ism % 2 == 0) {
+	  yu = model_->mass(q2, getParticleData(ism))/mw_/sqrt(2)/_sb;
+	  yd = model_->mass(q2, getParticleData(ism - 1))/mw_/sqrt(2)/_cb;
+	}
+	else {
+	  yu = model_->mass(q2, getParticleData(ism + 1))/mw_/sqrt(2)/_sb;
+	  yd = model_->mass(q2, getParticleData(ism))/mw_/sqrt(2)/_cb;
+	}
+      }
+      //heavy quarks
+      if( ism == 5 ) {
+	_leftlast =  yd*conj(ul2)*(*_stop)(alpha,0);
+	_rightlast = -vl1*(*_stop)(alpha, 0) + yu*vl2*(*_stop)(alpha,1);
+      }
+      else if( ism == 6 ) {
+	_leftlast =  yu*conj(vl2)*(*_sbot)(alpha,0);
+	_rightlast = -ul1*(*_sbot)(alpha, 0) + yd*ul2*(*_sbot)(alpha,1);
+      }
+      else {
+	if( alpha == 0 ) {
+	  _leftlast  = (ism % 2 == 0) ? yu*conj(vl2) : yd*conj(ul2);
+	  _rightlast = (ism % 2 == 0) ? -ul1 : -vl1;
+	}
+	else {
+	  _leftlast = 0.;
+	  _rightlast = (ism % 2 == 0) ? yd*ul2 : yu*vl2;
+	}
+      }
+    }
+  }
+  //determine the helicity order of the vertex
+  if( fermion->id() < 0 ) {
+    left (conj(_rightlast));
+    right(conj( _leftlast));
+  }
+  else {
+    left ( _leftlast);
+    right(_rightlast);
+  }
+  norm(_couplast);
+}
+
+void RPVFFSVertex::higgsFermionCoupling(Energy2 q2, tcPDPtr f1,
+					tcPDPtr f2, tcPDPtr higgs) {
+  long f1ID(f1->id()), f2ID(f2->id()), isc(higgs->id());
+  // running fermion masses
+  if( q2 != _q2last || _id1last  != f1ID) {
+    _massLast.first  = model_->mass(q2,f1);
+    _id1last  = f1ID;
+  }
+  if( q2 != _q2last || _id2last != f2ID) {
+    _massLast.second = model_->mass(q2,f2);
+    _id2last = f2ID;
+  }
+  if( q2 != _q2last) _id3last = isc;
+  Complex fact(0.);
+  // scalar neutral Higgs
+  if(isc == ParticleID::h0         || isc  == ParticleID::H0         ||
+     isc == ParticleID::SUSY_nu_eL || isc == ParticleID::SUSY_nu_muL ||
+     isc == ParticleID::SUSY_nu_tauL ) {
+    unsigned int ih = isc < 1000000 ? (isc-25)/10 : (isc-1000008)/2;
+    unsigned int id = abs(f1ID);
+    fact = -_massLast.first*
+      ((id%2==0) ? (*_mixH)(ih,1)/vu_ : (*_mixH)(ih,0)/vd_);
+    left (1.);
+    right(1.);
+  }
+  // pseudoscalar neutral Higgs
+  else if(isc == ParticleID::A0 || isc == 1000017 || isc == 1000018 ||
+	  isc == 1000019 ) {
+    unsigned int ih = isc < 1000000 ? 0 : (isc-1000016);
+    unsigned int id = abs(f1ID);
+    if(_mixP) {
+      fact = -Complex(0., 1.)*_massLast.first*
+	( (id%2==0) ?  (*_mixP)(ih,1)/vu_ : (*_mixP)(ih,0)/vd_);
+    }
+    else {
+      fact = -Complex(0., 1.)*_massLast.first*
+	( (id%2==0) ?  _cb/vu_ : _sb/vd_);
+    }
+    left ( 1.);
+    right(-1.);
+  }
+  // charged higgs
+  else {
+    if(!_mixC) {
+      if( abs(f1ID) % 2 == 0 ) {
+	_leftlast  =  _massLast.first /vu_*_cb;
+	_rightlast =  _massLast.second/vd_*_sb;
+      }
+      else {
+	_leftlast  =  _massLast.second/vu_*_cb;
+	_rightlast =  _massLast.first /vd_*_sb;
+      }
+    }
+    else {
+      unsigned int ih;
+      if(abs(isc)==ParticleID::Hplus) {
+	ih = 0;
+      }
+      else {
+	isc *= -1;
+	ih = abs(isc)<2000000 ? (abs(isc)-1000009)/2 : (abs(isc)-2000003)/2;
+      }
+      if( abs(f1ID) % 2 == 0 ) {
+	_leftlast  =  _massLast.first /vu_*(*_mixC)(ih,1);
+	_rightlast = -_massLast.second/vd_*(*_mixC)(ih,0);
+      }
+      else {
+	_leftlast  =  _massLast.second/vu_*(*_mixC)(ih,1);
+	_rightlast = -_massLast.first /vd_*(*_mixC)(ih,0);
+      }
+    }
+    if( isc > 0 ) swap(_leftlast,_rightlast);
+    fact = sqrt(2.);
+    left ( _leftlast);
+    right(_rightlast);
+  }
+  norm(fact);
+}
+
+void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
+					tcPDPtr f2, tcPDPtr higgs) {
+  long f1ID(f1->id()), f2ID(f2->id()), isc(higgs->id());
+  if( isc == _id3last && f1ID == _id1last && f2ID == _id2last ) {
+    left ( _leftlast);
+    right(_rightlast);
+  }
+  else {
+    _id1last = f1ID;
+    _id2last = f2ID;
+    _id3last = isc;
+    // scalar neutral Higgs
+    if(isc == ParticleID::h0         || isc  == ParticleID::H0         ||
+       isc == ParticleID::SUSY_nu_eL || isc == ParticleID::SUSY_nu_muL ||
+       isc == ParticleID::SUSY_nu_tauL ) {
+      unsigned int ih = isc < 1000000 ? (isc-25)/10 : (isc-1000008)/2;
+      // charginos
+      if(f1->charged()) {
+	unsigned int ei = charginoIndex(f1ID);
+	unsigned int ej = charginoIndex(f2ID); 
+	_leftlast  = conj(OCCHL_[ih][ej][ei]);
+	_rightlast =      OCCHL_[ih][ei][ej] ;
+      }
+      // neutralinos
+      else {
+	unsigned int ei = neutralinoIndex(f1ID);
+	unsigned int ej = neutralinoIndex(f2ID);
+	_leftlast  = conj(ONNHL_[ih][ej][ei]);
+	_rightlast =      ONNHL_[ih][ei][ej] ;
+      }
+    }
+    // pseudoscalar neutral Higgs
+    else if(isc == ParticleID::A0 || isc == 1000017 || isc == 1000018 ||
+	    isc == 1000019 ) {
+      unsigned int ih = isc < 1000000 ? 0 : (isc-1000016);
+      // charginos
+      if(f1->charged()) {
+	unsigned int ei = charginoIndex(f1ID);
+	unsigned int ej = charginoIndex(f2ID);
+	_leftlast  =  Complex(0.,1.)*conj(OCCAL_[ih][ej][ei]);
+	_rightlast = -Complex(0.,1.)*     OCCAL_[ih][ei][ej] ;
+      }
+      // neutralinos
+      else {
+	unsigned int ei = neutralinoIndex(f1ID);
+	unsigned int ej = neutralinoIndex(f2ID);
+	_leftlast  =  Complex(0.,1.)*conj(ONNAL_[ih][ej][ei]);
+	_rightlast = -Complex(0.,1.)*     ONNAL_[ih][ei][ej] ;
+      }
+    }
+    // charged higgs
+    else {
+      unsigned int ih = abs(isc) < 1000000 ? 0 : 
+	(abs(isc) < 2000000 ? (abs(isc)-1000009)/2 : (abs(isc)-2000003)/2);
+      long chg(f2ID), neu(f1ID);
+      if(f1->charged()) swap(chg, neu);
+      unsigned int ei = neutralinoIndex(neu);
+      unsigned int ej = charginoIndex(chg);
+      _leftlast  = -OCNSL_[ih][ei][ej];
+      _rightlast = -OCNSR_[ih][ei][ej];
+      if( isc < 0 ) {
+	Complex tmp = _leftlast;
+	_leftlast  = conj(_rightlast);
+	_rightlast = conj(tmp);
+      }
+    }
+    left ( _leftlast);
+    right(_rightlast);
+  }
+  norm(_couplast);
+}
 
 void RPVFFSVertex::setCoupling(Energy2 q2, tcPDPtr part1, 
 			       tcPDPtr part2,tcPDPtr part3) {
-  long f1ID(part1->id()), f2ID(part2->id()), isc(part3->id());
-  // gaugino sfermion
-  long ism(abs(part1->id())),ig(abs(part2->id()));
-  tcPDPtr smfermion = part1, gaugino = part2;
-  if( ism / 1000000 == 1 )  {
-    swap( ism, ig);
-    swap(smfermion,gaugino);
+  // overall normalisation
+  if(q2!=_q2last || _couplast==0.) {
+    _couplast = weakCoupling(q2);
+    _q2last=q2;
   }
-  // squarks and sleptons + neutralino/chargino
-  if(((abs(isc)>=1000000&&abs(isc)<=1000006) ||
-      (abs(isc)>=2000000&&abs(isc)<=2000006)) ||
-     (((abs(isc)>=1000011&&abs(isc)<=1000016) ||
-       (abs(isc)>=2000011&&abs(isc)<=2000016)) && 
-      (!_mixC || _mixC->size().first<=1 || 
-       !_mixP || _mixP->size().first<=1 ))) { 
-    if( ig != _id1last || ism != _id2last || isc != _id3last ) {
-      _id1last = ig;
-      _id2last = ism;
-      _id3last = isc;
-      // sfermion mass eigenstate
-      unsigned int alpha(isc/1000000 - 1);
-      // chargino
-      if(gaugino->charged()) {
-	// chargino
-	unsigned int ch = ig>1000000 ? (ig-1000024)/13 : (ig-9)/2;
-	Complex ul1 = (*_umix)(ch,0);
-	Complex ul2 = (*_umix)(ch,1);
-	Complex vl1 = (*_vmix)(ch,0);
-	Complex vl2 = (*_vmix)(ch,1);
-	if( ism >= 11 && ism <= 16 ) {
-	  long lept = ( ism % 2 == 0 ) ? ism - 1 : ism;
-	  double y = yukawa_ ? 
-	    double(model_->mass(q2, getParticleData(lept))/mw_/sqrt(2)/_cb) : 0.;
-	  if( ism == 12 || ism == 14 ) {
-	    _leftlast = 0.;
-	    _rightlast = alpha == 0 ? - ul1 : y*ul2;
-	  }
-	  else if( ism == 16 ) {
-	    _leftlast = 0.;
-	    _rightlast = -ul1*(*_stau)(alpha, 0) + y*(*_stau)(alpha,1)*ul2;
-	  }
-	  else if( ism == 11 || ism == 13 || ism == 15 ) {
-	    _leftlast = y*conj(ul2);
-	    _rightlast = -vl1;
-	  }
-	}
-	else {
-	  double yd(0.), yu(0.);
-	  if(yukawa_) {
-	    if( ism % 2 == 0) {
-	      yu = model_->mass(q2, getParticleData(ism))/mw_/sqrt(2)/_sb;
-	      yd = model_->mass(q2, getParticleData(ism - 1))/mw_/sqrt(2)/_cb;
-	    }
-	    else {
-	      yu = model_->mass(q2, getParticleData(ism + 1))/mw_/sqrt(2)/_sb;
-	      yd = model_->mass(q2, getParticleData(ism))/mw_/sqrt(2)/_cb;
-	    }
-	  }
-	  //heavy quarks
-	  if( ism == 5 ) {
-	    _leftlast =  yd*conj(ul2)*(*_stop)(alpha,0);
-	    _rightlast = -vl1*(*_stop)(alpha, 0) + yu*vl2*(*_stop)(alpha,1);
-	  }
-	  else if( ism == 6 ) {
-	    _leftlast =  yu*conj(vl2)*(*_sbot)(alpha,0);
-	    _rightlast = -ul1*(*_sbot)(alpha, 0) + yd*ul2*(*_sbot)(alpha,1);
-	  }
-	  else {
-	    if( alpha == 0 ) {
-	      _leftlast  = (ism % 2 == 0) ? yu*conj(vl2) : yd*conj(ul2);
-	      _rightlast = (ism % 2 == 0) ? -ul1 : -vl1;
-	    }
-	    else {
-	      _leftlast = 0.;
-	      _rightlast = (ism % 2 == 0) ? yd*ul2 : yu*vl2;
-	    }
-	  }
-	}
-      }
-      // neutralino
-      else {
-	unsigned int nl = ig> 1000000 ? 
-	  (ig<1000025 ? ig-1000022 : (ig-1000005)/10) : (ig-4)/2;
-	// common primed neutralino matrices
-	Complex n2prime = (*_nmix)(nl,1)*_cw - (*_nmix)(nl,0)*_sw;
-	//handle neutrinos first
-	if( ism == 12 || ism == 14 || ism == 16 ) {
-	  _leftlast = Complex(0., 0.);
-	  _rightlast = -sqrt(0.5)*n2prime/_cw;
-	}
-	else {
-	  Complex n1prime = (*_nmix)(nl,0)*_cw + (*_nmix)(nl,1)*_sw;
-	  tcPDPtr smf = getParticleData(ism);
-	  double qf = smf->charge()/eplus;
-	  Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
-	  double y = yukawa_ ? double(model_->mass(q2, smf)/2./mw_) : 0.;
-	  double lambda(0.);
-	  //neutralino mixing element
-	  Complex nlf(0.);
-	  if( ism % 2 == 0 ) {
-	    y /= _sb;
-	    lambda = -0.5 + qf*sqr(_sw);
-	    nlf = (*_nmix)(nl,3);
-	  }
-	  else { 
-	    y /= _cb;
-	    lambda = 0.5 + qf*sqr(_sw);
-	    nlf = (*_nmix)(nl,2);
-	  }
-	  Complex bracketr = _sw*qf*n1prime - n2prime*lambda/_cw;
-	  //heavy quarks/sleptons
-	  if( ism == 5 || ism == 6 || ism == 15 ) {
-	    Complex ma1(0.), ma2(0.);
-	    if( ism == 5 ) {
-	      ma1 = (*_sbot)(alpha,0);
-	      ma2 = (*_sbot)(alpha,1); 
-	    } 
-	    else if( ism == 6 ) {
-	      ma1 = (*_stop)(alpha,0);
-	      ma2 = (*_stop)(alpha,1);
-	    } 
-	    else {
-	      ma1 = (*_stau)(alpha,0);
-	      ma2 = (*_stau)(alpha,1);
-	    }
-	    _leftlast = y*conj(nlf)*ma1 - ma2*bracketl;
-	    _rightlast = y*nlf*ma2 + ma1*bracketr;
-	  }
-	  else {
-	    if( alpha == 0 ) {
-	      _leftlast = y*conj(nlf);
-	      _rightlast = bracketr;
-	    } 
-	    else {
-	      _leftlast = -bracketl;
-	      _rightlast = y*nlf;
-	    }
-	  }
-	  _leftlast  *= -sqrt(2.);
-	  _rightlast *= -sqrt(2.);
-	}
-      }
-    }
-    //determine the helicity order of the vertex
-    if( smfermion->id() < 0 ) {
-      left (conj(_rightlast));
-      right(conj( _leftlast));
-    }
-    else {
-      left ( _leftlast);
-      right(_rightlast);
-    }
-    norm(1.);
+  long f1ID(part1->id()), f2ID(part2->id()), isc(abs(part3->id()));
+  // squark quark
+  if(part3->coloured()) {
+    tcPDPtr smfermion = part1, gaugino = part2;
+    if(gaugino->coloured()) swap(smfermion,gaugino);
+    if(gaugino->charged())
+      charginoSfermionCoupling(q2,smfermion,gaugino,part3);
+    else
+      neutralinoSfermionCoupling(q2,smfermion,gaugino,part3);
+  }
+  // slepton/lepton without mixing
+  else if((( isc >= 1000011 && isc <= 1000016) ||
+	   ( isc >= 2000011 && isc <= 2000016)) && 
+	  (!_mixC || _mixC->size().first<=1 || 
+	   !_mixP || _mixP->size().first<=1 )) {
+    tcPDPtr smfermion = part1, gaugino = part2;
+    if(abs(gaugino->id())<1000000) swap(smfermion,gaugino);
+    if(gaugino->charged())
+      charginoSfermionCoupling(q2,smfermion,gaugino,part3);
+    else
+      neutralinoSfermionCoupling(q2,smfermion,gaugino,part3);
   }
   // SM quarks and Higgs
   else if((abs(f1ID) <=  6 && abs(f2ID) <=  6) ||
 	  ((abs(f1ID) >= 11 && abs(f1ID) <= 16) &&
 	   (abs(f2ID) >= 11 && abs(f2ID) <= 16) && 
 	   _umix->size().first==2) ) {
-    if( q2 != _q2last || _id1last  != f1ID) {
-      _massLast.first  = model_->mass(q2,part1);
-      _id1last  = f1ID;
-    }
-    if( q2 != _q2last || _id2last != f2ID) {
-      _massLast.second = model_->mass(q2,part2);
-      _id2last = f2ID;
-    }
-    if( q2 != _q2last) _id3last = isc;
-    Complex fact(0.);
-    // scalar neutral Higgs
-    if(isc == ParticleID::h0         || isc  == ParticleID::H0         ||
-       isc == ParticleID::SUSY_nu_eL || isc == ParticleID::SUSY_nu_muL ||
-       isc == ParticleID::SUSY_nu_tauL ) {
-      unsigned int ih = isc < 1000000 ? (isc-25)/10 : (isc-1000008)/2;
-      unsigned int id = abs(f1ID);
-      fact = -_massLast.first*
-	((id%2==0) ? (*_mixH)(ih,1)/vu_ : (*_mixH)(ih,0)/vd_);
-      left (1.);
-      right(1.);
-    }
-    // pseudoscalar neutral Higgs
-    else if(isc == ParticleID::A0 || isc == 1000017 || isc == 1000018 ||
-	    isc == 1000019 ) {
-      unsigned int ih = isc < 1000000 ? 0 : (isc-1000016);
-      unsigned int id = abs(f1ID);
-      if(_mixP) {
-	fact = -Complex(0., 1.)*_massLast.first*
-	  ( (id%2==0) ?  (*_mixP)(ih,1)/vu_ : (*_mixP)(ih,0)/vd_);
-      }
-      else {
-	fact = -Complex(0., 1.)*_massLast.first*
-	  ( (id%2==0) ?  _cb/vu_ : _sb/vd_);
-      }
-      left ( 1.);
-      right(-1.);
-    }
-    // charged higgs
-    else {
-      if(!_mixC) {
-	if( abs(f1ID) % 2 == 0 ) {
-	  _leftlast  =  _massLast.first /vu_*_cb;
-	  _rightlast =  _massLast.second/vd_*_sb;
-	}
-	else {
-	  _leftlast  =  _massLast.second/vu_*_cb;
-	  _rightlast =  _massLast.first /vd_*_sb;
-	}
-      }
-      else {
-	unsigned int ih;
-	if(abs(isc)==ParticleID::Hplus) {
-	  ih = 0;
-	}
-	else {
-	  isc *= -1;
-	  ih = abs(isc)<2000000 ? (abs(isc)-1000009)/2 : (abs(isc)-2000003)/2;
-	}
-	if( abs(f1ID) % 2 == 0 ) {
-	  _leftlast  =  _massLast.first /vu_*(*_mixC)(ih,1);
-	  _rightlast = -_massLast.second/vd_*(*_mixC)(ih,0);
-	}
-	else {
-	  _leftlast  =  _massLast.second/vu_*(*_mixC)(ih,1);
-	  _rightlast = -_massLast.first /vd_*(*_mixC)(ih,0);
-	}
-      }
-      if( isc > 0 ) swap(_leftlast,_rightlast);
-      fact = sqrt(2.);
-      left ( _leftlast);
-      right(_rightlast);
-    }
-    norm(fact);
+    higgsFermionCoupling(q2,part1,part2,part3);
   }
-  // gauginos and the Higgs
+  // gauginos and the Higgs (general case for sleptons)
   else {
-    if( isc == _id3last && f1ID == _id1last && f2ID == _id2last ) {
-      norm(_couplast);
-      left ( _leftlast);
-      right(_rightlast);
-    }
-    else {
-      _id1last = f1ID;
-      _id2last = f2ID;
-      _id3last = isc;
-      // scalar neutral Higgs
-      if(isc == ParticleID::h0         || isc  == ParticleID::H0         ||
-	 isc == ParticleID::SUSY_nu_eL || isc == ParticleID::SUSY_nu_muL ||
-	 isc == ParticleID::SUSY_nu_tauL ) {
-	unsigned int ih = isc < 1000000 ? (isc-25)/10 : (isc-1000008)/2;
-	// charginos
-	if(part1->charged()) {
-	  unsigned int ei = abs(f1ID)>1000000 ? (abs(f1ID)-1000024)/13 : (abs(f1ID)-9)/2;
-	  unsigned int ej = abs(f2ID)>1000000 ? (abs(f2ID)-1000024)/13 : (abs(f2ID)-9)/2;
-	  _leftlast  = conj(OCCHL_[ih][ej][ei]);
-	  _rightlast =      OCCHL_[ih][ei][ej] ;
-	}
-	// neutralinos
-	else {
-	  unsigned int ei = f1ID> 1000000 ? 
-	    (f1ID<1000025 ? f1ID-1000022 : (f1ID-1000005)/10) : (f1ID-4)/2;
-	  unsigned int ej = f2ID> 1000000 ? 
-	    (f2ID<1000025 ? f2ID-1000022 : (f2ID-1000005)/10) : (f2ID-4)/2;
-	  _leftlast  = conj(ONNHL_[ih][ej][ei]);
-	  _rightlast =      ONNHL_[ih][ei][ej] ;
-	}
-      }
-      // pseudoscalar neutral Higgs
-      else if(isc == ParticleID::A0 || isc == 1000017 || isc == 1000018 ||
-	      isc == 1000019 ) {
-	unsigned int ih = isc < 1000000 ? 0 : (isc-1000016);
-	// charginos
-	if(part1->charged()) {
-	  assert(false);
-
-//   else if( isc == ParticleID::A0 ) {
-//     if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
-// 	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {
-//       unsigned int ei = (abs(f1ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-//       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-
-//       theLLast = Complex(0.,1.)*( conj(theQij[ej][ei])*theSb 
-// 				  + conj(theSij[ej][ei])*theCb );
-//       theRLast = -Complex(0.,1.)*(theQij[ei][ej]*theSb + theSij[ei][ej]*theCb);
-//     }
-//     //neutralinos
-//     else {
-	}
-	// neutralinos
-	else {
-	  unsigned int ei = f1ID> 1000000 ? 
-	    (f1ID<1000025 ? f1ID-1000022 : (f1ID-1000005)/10) : (f1ID-4)/2;
-	  unsigned int ej = f2ID> 1000000 ? 
-	    (f2ID<1000025 ? f2ID-1000022 : (f2ID-1000005)/10) : (f2ID-4)/2;
-
-//       theLLast = Complex(0.,1.)*( conj(theQijdp[ej][ei])*theSb 
-// 				  - conj(theSijdp[ej][ei])*theCb );
-//       theRLast = -Complex(0.,1.)*(theQijdp[ei][ej]*theSb - theSijdp[ei][ej]*theCb);
-//     }
-//   }
-	}
-      }
-      // charged higgs
-      else {
-
-//     unsigned int ei(0),ej(0);
-//     long chg(f2ID), neu(f1ID);
-//     if( abs(neu) == ParticleID::SUSY_chi_1plus || 
-// 	abs(neu) == ParticleID::SUSY_chi_2plus ) swap(chg, neu);
-//     ej = ( abs(chg) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-//     ei = neu - ParticleID::SUSY_chi_10;
-//     if( ei > 1 ) ei = ( ei == 13 ) ? 3 : 2;
-//     theLLast = -theQijLp[ei][ej]*theCb;
-//     theRLast = -theQijRp[ei][ej]*theSb;
-//     if( isc < 0 ) {
-//       Complex tmp = theLLast;
-//       theLLast = conj(theRLast);
-//       theRLast = conj(tmp);
-//     }
-//   }
-
-      }
-
-
-
-
-
-
-
-
-
-      left ( _leftlast);
-      right(_rightlast);
-    }
+    higgsGauginoCoupling(q2,part1,part2,part3);
   }
-  // overall normalisation
-  if(q2!=_q2last || _couplast==0.) {
-    _couplast = weakCoupling(q2);
-    _q2last=q2;
-  }
-  norm(_couplast*norm());
 }

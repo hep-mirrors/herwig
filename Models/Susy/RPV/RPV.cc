@@ -138,7 +138,6 @@ void RPV::createMixingMatrices() {
   map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;
-    cerr << "testing in mixing loop " << name << "\n";
     // pseudo-scalar higgs mixing
     if (name == "rvamix") {
       createMixingMatrix(HiggsAMix_,name,it->second.second,it->second.first);
@@ -149,6 +148,152 @@ void RPV::createMixingMatrices() {
   }
   // base class for neutralinos and charginos
   MSSM::createMixingMatrices();
+  // now adjust the mixing matrices to have our structure
+  // first bloodly SPHENO as it doesn't obey the SLHA  
+  map<string,StringMap>::const_iterator sit = info().find("spinfo");
+  string program;
+  if(sit!=info().end()) {
+    StringMap::const_iterator pit = sit->second.find(1);
+    if(pit!=sit->second.end()) program = pit->second;
+  }
+  if(program=="SPheno") {
+    map<string,ParamMap>::const_iterator fit=parameters().find("mass");
+    if(fit==parameters().end()) 
+      throw Exception() << "BLOCK MASS not found in input file"
+			<< " can't set masses of SUSY particles"
+			<< Exception::runerror;
+    // adjust the charged scalars
+    map<double,long> massMap;
+    massMap[findValue(fit,     37,"mass",     "37")] =      37;
+    massMap[findValue(fit,1000011,"mass","1000011")] = 1000011;
+    massMap[findValue(fit,1000013,"mass","1000013")] = 1000013;
+    massMap[findValue(fit,1000015,"mass","1000015")] = 1000015;
+    massMap[findValue(fit,2000011,"mass","2000011")] = 2000011;
+    massMap[findValue(fit,2000013,"mass","2000013")] = 2000013;
+    massMap[findValue(fit,2000015,"mass","2000015")] = 2000015;
+    vector<int> move(1,7);
+    for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
+      if     (mit->second==     37) move.push_back(0);
+      else if(mit->second==1000011) move.push_back(1);
+      else if(mit->second==1000013) move.push_back(2);
+      else if(mit->second==1000015) move.push_back(3);
+      else if(mit->second==2000011) move.push_back(4);
+      else if(mit->second==2000013) move.push_back(5);
+      else if(mit->second==2000015) move.push_back(6);
+    }
+    CMatrix oldMat = ChargedHiggsMix()->getMatrix();
+    CMatrix newMat(8,vector<Complex>(8,0.));
+    for(unsigned int ix=0;ix<8;++ix) {
+      for(unsigned int iy=0;iy<8;++iy)
+	newMat[move[ix]][iy] = oldMat[ix][iy];
+    }
+    HiggsPMix_ = new_ptr(MixingMatrix(newMat,ChargedHiggsMix()->getIds()));
+    // adjust the pseudoscalars
+    massMap.clear();
+    massMap[findValue(fit,     36,"mass",     "36")] =      36;
+    massMap[findValue(fit,2000012,"mass","2000012")] = 1000017;
+    massMap[findValue(fit,2000014,"mass","2000014")] = 1000018;
+    massMap[findValue(fit,2000016,"mass","2000016")] = 1000019;
+    move.clear(); move.push_back(4);
+    for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
+      if     (mit->second==     36) move.push_back(0);
+      else if(mit->second==1000017) move.push_back(1);
+      else if(mit->second==1000018) move.push_back(2);
+      else if(mit->second==1000019) move.push_back(3);
+    }
+    oldMat = CPoddHiggsMix()->getMatrix();
+    newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[move[ix]][iy] = oldMat[ix][iy];
+    }
+    HiggsAMix_ = new_ptr(MixingMatrix(newMat,CPevenHiggsMix()->getIds()));
+    // adjust the neutral scalars
+    massMap.clear();
+    massMap[findValue(fit,     25,"mass",     "25")] =      25;
+    massMap[findValue(fit,     35,"mass",     "35")] =      35;
+    massMap[findValue(fit,1000012,"mass","1000012")] = 1000012;
+    massMap[findValue(fit,1000014,"mass","1000014")] = 1000014;
+    massMap[findValue(fit,1000016,"mass","1000016")] = 1000016;
+    move.clear();
+    for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
+      if     (mit->second==     25) move.push_back(0);
+      else if(mit->second==     35) move.push_back(1);
+      else if(mit->second==1000012) move.push_back(2);
+      else if(mit->second==1000014) move.push_back(3);
+      else if(mit->second==1000016) move.push_back(4);
+    }
+    oldMat = CPevenHiggsMix()->getMatrix();
+    newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[move[ix]][iy] = oldMat[ix][iy];
+    }
+    CPevenHiggsMix(new_ptr(MixingMatrix(newMat,CPevenHiggsMix()->getIds())));
+    // neutralino mixing
+    move.resize(7);
+    move[0] = 3; move[1] = 4; move[2] = 5; move[3] = 6;
+    move[4] = 0; move[5] = 1; move[6] = 2;
+    oldMat = neutralinoMix()->getMatrix();
+    newMat = CMatrix(7,vector<Complex>(7,0.));
+    for(unsigned int ix=0;ix<7;++ix) {
+      for(unsigned int iy=0;iy<7;++iy)
+	newMat[ix][move[iy]] = oldMat[ix][iy];
+    }
+    neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
+    // chargino mixing
+    move.resize(5);
+    move[0] = 3; move[1] = 4;
+    move[2] = 0; move[3] = 1; move[4] = 2;
+    oldMat = charginoUMix()->getMatrix();
+    newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[ix][move[iy]] = oldMat[ix][iy];
+    }
+    charginoUMix(new_ptr(MixingMatrix(newMat,charginoUMix()->getIds())));
+    oldMat = charginoVMix()->getMatrix();
+    newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[ix][move[iy]] = oldMat[ix][iy];
+    }
+    charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
+    // changeb bthe ids for the pseudoscalars to those from the SLHA
+    idMap().insert(make_pair(2000012,1000017));
+    idMap().insert(make_pair(2000014,1000018));
+    idMap().insert(make_pair(2000016,1000019));
+  }
+  // we don't want neutrinos first then neutralinos so swap them
+  // neutralinos first then neutrinos
+  vector<int> move(7);
+  move[0] = 4; move[1] = 5; move[2] = 6;
+  move[3] = 0; move[4] = 1; move[5] = 2; move[6] = 3;
+  CMatrix oldMat = neutralinoMix()->getMatrix();
+  CMatrix newMat(7,vector<Complex>(7,0.));
+  for(unsigned int ix=0;ix<7;++ix) {
+    for(unsigned int iy=0;iy<7;++iy)
+      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+  }
+  neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
+  // charginos the same
+  move.resize(5);
+  move[0] = 2; move[1] = 3; move[2] = 4;
+  move[3] = 0; move[4] = 1;
+  oldMat = charginoUMix()->getMatrix();
+  newMat = CMatrix(5,vector<Complex>(5,0.));
+  for(unsigned int ix=0;ix<5;++ix) {
+    for(unsigned int iy=0;iy<5;++iy)
+      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+  }
+  charginoUMix(new_ptr(MixingMatrix(newMat,charginoUMix()->getIds())));
+  oldMat = charginoVMix()->getMatrix();
+  newMat = CMatrix(5,vector<Complex>(5,0.));
+  for(unsigned int ix=0;ix<5;++ix) {
+    for(unsigned int iy=0;iy<5;++iy)
+      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+  }
+  charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
 }
 
 void RPV::doinit() {

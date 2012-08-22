@@ -137,7 +137,7 @@ void RPVFFZVertex::doinit() {
     }
     for(unsigned int i = 0; i < neu.size(); ++i) {
       for(unsigned int j = 0; j < neu.size(); ++j) {
-	if(i>3&&i==j) addToList(neu[i], neu[j], 23);
+	if(!(i>3&&i==j)) addToList(neu[i], neu[j], 23);
       }
     }
   }
@@ -148,13 +148,13 @@ void RPVFFZVertex::doinit() {
     vector<long> cha(2);
     cha[0] = 1000024; cha[1] = 1000037;
     if(_theV->size().first==5) {
-      cha.push_back(11);
-      cha.push_back(13);
-      cha.push_back(15);
+      cha.push_back(-11);
+      cha.push_back(-13);
+      cha.push_back(-15);
     }
     for(unsigned int i = 0; i < cha.size(); ++i) {
       for(unsigned int j = 0; j < cha.size(); ++j) {
-	if(i>1&&i==j) addToList(cha[i], cha[j], 23);
+	if(!(i>1&&i==j)) addToList(-cha[i], cha[j], 23);
       }
     }
   }
@@ -197,11 +197,10 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   // coupling to the Z
   else {
     assert(part3->id()==ParticleID::Z0);
-    _couplast /= _sw*_cw;
     // quarks
     if(iferm<=6) {
-      _leftlast  = _gl[iferm];
-      _rightlast = _gr[iferm];
+      _leftlast  = _gl[iferm]/(_sw*_cw);
+      _rightlast = _gr[iferm]/(_sw*_cw);
     }
     // charged leptons and charginos
     else if(part1->iCharge()!=0) {
@@ -237,6 +236,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	  _leftlast  = -_rightlast;
 	  _rightlast = -temp;
 	}
+	_leftlast  /= _sw*_cw;
+	_rightlast /= _sw*_cw;
       }
     }
     // neutrinos and neutralinos
@@ -244,8 +245,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       // case where only 4x4 matrix and neutrino
       if(_theN->size().first==4&&iferm<=16) {
 	assert(iferm==12||iferm==14||iferm==16);
-	_leftlast  = _gl[iferm];
-	_rightlast = _gr[iferm];
+	_leftlast  = _gl[iferm]/(_sw*_cw);
+	_rightlast = _gr[iferm]/(_sw*_cw);
       }
       // neutralino
       else {
@@ -271,6 +272,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	      _leftlast -= 0.5*(*_theN)(neu1, 4+k)*conj((*_theN)(neu2, 4+k));
 	  }
 	  _rightlast = -conj(_leftlast);
+	  _leftlast  /= _sw*_cw;
+	  _rightlast /= _sw*_cw;
 	}
       }
     }
