@@ -72,11 +72,6 @@ void SMZDecayer::doinit() {
     for(int ix=1;ix<7;++ix) {
       int iy=istep+ix;
       if(iy==6) continue;
-      // check that the combination of particles is allowed
-      if(!FFZvertex_->allowed(-iy,iy,ParticleID::Z0))
-	throw InitException() << "SMZDecayer::doinit() the Z vertex " 
-			      << "cannot handle all the modes" 
-			      << Exception::abortnow;
       extpart[1] = getParticleData(-iy);
       extpart[2] = getParticleData( iy);
       mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
