@@ -77,8 +77,8 @@ void  RPVSSSVertex::doinit() {
 
 }
 
-void RPVSSSVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
-			      tcPDPtr particle2,tcPDPtr particle3) {
+void RPVSSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
+			      tcPDPtr part2,tcPDPtr part3) {
 
   assert(false);
 }

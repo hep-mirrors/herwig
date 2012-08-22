@@ -253,7 +253,7 @@ void RPVWSSVertex::Init() {
 
 
 void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-			      tcPDPtr part2,tcPDPtr part3){
+			      tcPDPtr part2,tcPDPtr part3) {
   long gboson = part1->id();
   assert(     gboson  == ParticleID::Z0    ||
 	      gboson  == ParticleID::gamma || 

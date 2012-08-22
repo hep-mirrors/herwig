@@ -18,6 +18,26 @@
 
 using namespace Herwig;
 
+namespace {
+
+  unsigned int neutralinoIndex(long id) {
+    if(id> 1000000) {
+      return id<1000025 ? id-1000022 : (id-1000005)/10;
+    }
+    else if(abs(id)<=16) {
+      return (abs(id)-4)/2;
+    }
+    else {
+      return id-13;
+    }
+  }
+  
+  unsigned int charginoIndex(long id) {
+    return abs(id)>1000000 ? (abs(id)-1000024)/13 : (abs(id)-7)/2;
+  }
+
+}
+
 RPVFFZVertex::RPVFFZVertex()  : _sw(0.), _cw(0.), _id1last(0), 
 				_id2last(0), _q2last(), _couplast(0.),
 				_leftlast(0.), _rightlast(0.),
@@ -213,10 +233,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	  _rightlast = -_gl[iferm];
 	}
 	else {
-	  unsigned int ic1 = abs(iferm1) < 16 ? (abs(iferm1)-11)/2+2 : 
-	    (abs(iferm1)-1000024)/13;
-	  unsigned int ic2 = abs(iferm2) < 16 ? (abs(iferm2)-11)/2+2 : 
-	    (abs(iferm2)-1000024)/13;
+	  unsigned int ic1 = charginoIndex(iferm1);
+	  unsigned int ic2 = charginoIndex(iferm2);
 	  _leftlast = -(*_theV)(ic1, 0)*conj((*_theV)(ic2, 0)) - 
 	    0.5*(*_theV)(ic1, 1)*conj((*_theV)(ic2, 1));
 	  _rightlast = -conj((*_theU)(ic1, 0))*(*_theU)(ic2, 0) - 
@@ -254,17 +272,17 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	long ic2 = part1->id();
 	assert(ic1 == ParticleID::SUSY_chi_10 || ic1 == ParticleID::SUSY_chi_20 ||
 	       ic1 == ParticleID::SUSY_chi_30 || ic1 == ParticleID::SUSY_chi_40 ||
-	       abs(ic1) == 12 || abs(ic1) == 14 || abs(ic1) == 16 );
+	       abs(ic1) == 12 || abs(ic1) == 14 || abs(ic1) == 16 ||
+	       abs(ic1) == 17 || abs(ic1) == 18 || abs(ic1) == 19 );
 	assert(ic2 == ParticleID::SUSY_chi_10 || ic2 == ParticleID::SUSY_chi_20 ||
 	       ic2 == ParticleID::SUSY_chi_30 || ic2 == ParticleID::SUSY_chi_40 ||
-	       abs(ic2) == 12 || abs(ic2) == 14 || abs(ic2) == 16 );
+	       abs(ic2) == 12 || abs(ic2) == 14 || abs(ic2) == 16 ||
+	       abs(ic2) == 17 || abs(ic2) == 18 || abs(ic2) == 19 );
 	if(ic1 != _id1last || ic2 != _id2last) {
 	  _id1last = ic1;
 	  _id2last = ic2;
-	  unsigned int neu1 = ic1<=16 ? 4+(abs(ic1)-12)/2 :
-	    (ic1<1000025 ? ic1 - 1000022 : (ic1-1000025)/10+2);
-	  unsigned int neu2 = ic2<=16 ? 4+(abs(ic2)-12)/2 :
-	    (ic2<1000025 ? ic2 - 1000022 : (ic2-1000025)/10+2);
+	  unsigned int neu1 = neutralinoIndex(ic1);
+	  unsigned int neu2 = neutralinoIndex(ic2);
 	  _leftlast = 0.5*( (*_theN)(neu1, 3)*conj((*_theN)(neu2, 3)) -
 			    (*_theN)(neu1, 2)*conj((*_theN)(neu2, 2)) );
 	  if(_theN->size().first>4) {

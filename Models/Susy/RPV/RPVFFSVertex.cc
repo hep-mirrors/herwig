@@ -19,12 +19,18 @@ using namespace Herwig;
 namespace {
 
   unsigned int neutralinoIndex(long id) {
-    return id> 1000000 ?  (id<1000025 ? id-1000022 : (id-1000005)/10) : (abs(id)-4)/2;
+    if(id> 1000000)
+      return id<1000025 ? id-1000022 : (id-1000005)/10;
+    else if(abs(id)<=16) 
+      return (abs(id)-4)/2;
+    else
+      return id-13;
   }
   
   unsigned int charginoIndex(long id) {
     return abs(id)>1000000 ? (abs(id)-1000024)/13 : (abs(id)-7)/2;
   }
+
 }
 
 RPVFFSVertex::RPVFFSVertex() : interactions_(0), mw_(ZERO),
@@ -99,7 +105,16 @@ void RPVFFSVertex::doinit() {
   neu[0] = 1000022; neu[1] = 1000023;
   neu[2] = 1000025; neu[3] = 1000035;
   if(_nmix->size().first>4) {
-    neu.push_back(12); neu.push_back(14); neu.push_back(16);
+    if(model_->majoranaNeutrinos()) {
+      neu.push_back(17);
+      neu.push_back(18);
+      neu.push_back(19);
+    }
+    else {
+      neu.push_back(12);
+      neu.push_back(14);
+      neu.push_back(16);
+    }
   }
   // charginos
   vector<long> chg(2);
