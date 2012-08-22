@@ -31,6 +31,11 @@ using namespace ThePEG;
    * Map to hold key, parameter pairs. 
    */
   typedef map<long, double> ParamMap;
+
+  /**
+   * Map to hold key, string pairs
+   */
+  typedef map<long,string> StringMap;
   //@}
 
 /** \ingroup Models
@@ -254,7 +259,8 @@ private:
    * @param name The name of the block
    * @param line The line defining the block
    */
-  void readBlock(CFileLineReader & ifs,string name,string line);
+  void readBlock(CFileLineReader & ifs,string name,string line,
+		 bool stringBlock);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -309,6 +315,13 @@ protected:
    */
   const map<string,ParamMap> & parameters() const {
     return parameters_;
+  }
+
+  /**
+   *  Info blocks
+   */
+  const map<string,StringMap> & info() const {
+    return info_;
   }
 
   /**
@@ -424,6 +437,11 @@ private:
    *  Parameter blocks
    */
   map<string,ParamMap> parameters_;
+
+  /**
+   *  Info blocks
+   */
+  map<string,StringMap> info_;
 
   /**
    *  Mixing blocks

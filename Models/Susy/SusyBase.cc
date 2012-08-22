@@ -269,6 +269,11 @@ void SusyBase::Init() {
 
 void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  if(majoranaNeutrinos()) {
+    idMap().insert(make_pair(12,17));
+    idMap().insert(make_pair(14,18));
+    idMap().insert(make_pair(16,19));
+  }
   filename = StringUtils::stripws(filename);
   if(readFile_)
     throw SetupException() 
@@ -331,8 +336,11 @@ void SusyBase::readSetup(istream & is) {
 	if(scale>1e10) continue;
 	mixings_[name] = make_pair(make_pair(row,col),vals);
       }
+      else if( name == "spinfo" ) {
+	readBlock(cfile,name,line,true);
+      }
       else if( name.find("info") == string::npos) {
-	readBlock(cfile,name,line);
+	readBlock(cfile,name,line,false);
       }
       else {
 	if(!cfile.readline()) break;
@@ -358,14 +366,15 @@ void SusyBase::readSetup(istream & is) {
   readFile_=true;
 }
 
-void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
-  if(!cfile)
-    throw SetupException() 
-      << "SusyBase::readBlock() - The input stream is in a bad state"
-      << Exception::runerror;
+void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein,
+			 bool stringBlock) {
+  if(!cfile) throw SetupException() << "SusyBase::readBlock() - "
+				    << "The input stream is in a bad state"
+				    << Exception::runerror;
   // storage or the parameters
   string test = StringUtils::car(linein, "#");
-  ParamMap store;
+  ParamMap  storeParam;
+  StringMap storeString;
   bool set = true;
   // special for the alpha block
   if(name.find("alpha") == 0 ) {
@@ -374,37 +383,39 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
     string line = cfile.getline();
     istringstream iss(line);
     iss >> alpha;
-    store.insert(make_pair(1,alpha));
+    storeParam.insert(make_pair(1,alpha));
+    parameters_[name]=storeParam;
+    return;
   }
-  else {
-    // extract the scale from the block if present
-    if(test.find("=")!= string::npos) { 
-      while(test.find("=")!=string::npos)
-	test= StringUtils::cdr(test,"=");
-      istringstream is(test);
-      double scale;
-      is >> scale;
-      // only store the lowest scale block
-      if(parameters_.find(name)!=parameters_.end()) {
-	set = scale < parameters_[name][-1];
-      }
-      else {
-	store.insert(make_pair(-1,scale));
-      }
+  // extract the scale from the block if present
+  if(test.find("=")!= string::npos) { 
+    while(test.find("=")!=string::npos)
+      test= StringUtils::cdr(test,"=");
+    istringstream is(test);
+    double scale;
+    is >> scale;
+    // only store the lowest scale block
+    if(parameters_.find(name)!=parameters_.end()) {
+      set = scale < parameters_[name][-1];
     }
-    while(cfile.readline()) {
-      string line = cfile.getline();
-      // skip comments
-      if(line[0] == '#') continue;
-      // reached the end
-      if( line[0] == 'B' || line[0] == 'b' ||
-	  line[0] == 'D' || line[0] == 'd' ||
-	  line[0] == '<' ) {
-	cfile.resetline();
-	break;
-      }
-      istringstream is(line);
-      long index;
+    else {
+      storeParam.insert(make_pair(-1,scale));
+    }
+  }
+  while(cfile.readline()) {
+    string line = cfile.getline();
+    // skip comments
+    if(line[0] == '#') continue;
+    // reached the end
+    if( line[0] == 'B' || line[0] == 'b' ||
+	line[0] == 'D' || line[0] == 'd' ||
+	line[0] == '<' ) {
+      cfile.resetline();
+      break;
+    }
+    istringstream is(line);
+    long index;
+    if(!stringBlock) {
       double value;
       if(name.find("rvlam")!= string::npos||
 	 name=="rvt" || name=="rvtp" || name=="rvtpp") {
@@ -415,10 +426,18 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
       else {
 	is >> index >> value;
       }
-      store.insert(make_pair(index, value));
+      storeParam.insert(make_pair(index, value));
+    }
+    else {
+      string value;
+      is >> index >> value;
+      storeString.insert(make_pair(index,value));
     }
   }
-  if(set) parameters_[name]=store;
+  if(set) {
+    if(stringBlock) info_      [name] = storeString;
+    else            parameters_[name] = storeParam ;
+  }
 }
 
 const MixingVector
@@ -554,6 +573,8 @@ void SusyBase::resetRepositoryMasses() {
   for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end(); 
       ++it) {
     long id = it->first;
+    map<long,long>::const_iterator dit = idMap().find(id);
+    if(dit!=idMap().end()) id = dit->second;
     double mass = it->second;
     //a negative mass requires an adjustment to the 
     //associated mixing matrix by a factor of i
