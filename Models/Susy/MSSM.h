@@ -131,6 +131,11 @@ protected:
    */
   virtual void adjustMixingMatrix(long id);
 
+  /**
+   * Mixing matrix for the neutral CP-even Higgs bosons
+   */
+  void CPevenHiggsMix(MixingMatrixPtr in) {theHiggsMix = in;}
+
 private:
 
   /**
