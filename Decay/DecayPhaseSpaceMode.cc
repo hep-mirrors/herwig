@@ -137,8 +137,8 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	}
       }
       if(wgt>_maxweight) _maxweight=wgt;
-      wsum=wsum+wgt;
-      wsqsum=wsqsum+wgt*wgt;
+      wsum   += wgt;
+      wsqsum += sqr(wgt);
     }
     wsum=wsum/_npoint;
     wsqsum=wsqsum/_npoint-sqr(wsum);
