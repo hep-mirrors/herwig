@@ -688,11 +688,11 @@ void RPVFFSVertex::higgsFermionCoupling(Energy2 q2, tcPDPtr f1,
       }
       if( abs(f1ID) % 2 == 0 ) {
 	_leftlast  =  _massLast.first /vu_*(*_mixC)(ih,1);
-	_rightlast = -_massLast.second/vd_*(*_mixC)(ih,0);
+	_rightlast =  _massLast.second/vd_*(*_mixC)(ih,0);
       }
       else {
 	_leftlast  =  _massLast.second/vu_*(*_mixC)(ih,1);
-	_rightlast = -_massLast.first /vd_*(*_mixC)(ih,0);
+	_rightlast =  _massLast.first /vd_*(*_mixC)(ih,0);
       }
     }
     if( isc > 0 ) swap(_leftlast,_rightlast);
