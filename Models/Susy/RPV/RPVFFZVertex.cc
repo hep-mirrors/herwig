@@ -245,7 +245,7 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	  }
 	  if(_theV->size().first==5) {
 	    for(unsigned int ix=0;ix<3;++ix) {
-	      _leftlast += -0.5*(*_theV)(ic1, 2+ix)*conj((*_theV)(ic2, 2+ix));
+	      _rightlast += -0.5*(*_theU)(ic1, 2+ix)*conj((*_theU)(ic2, 2+ix));
 	    }
 	  }
 	}

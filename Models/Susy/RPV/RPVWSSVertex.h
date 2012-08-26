@@ -113,21 +113,6 @@ private:
   double _cw;
 
   /**
-   *  Neutral scalar Higgs mixing matrix
-   */
-  MixingMatrixPtr _mixH;
-
-  /**
-   *  Neutral pseudoscalar Higgs mixing matrix
-   */
-  MixingMatrixPtr _mixP;
-
-  /**
-   *  Charged Higgs mixing matrix
-   */
-  MixingMatrixPtr _mixC;
-
-  /**
    * Stau mixing matrix
    */
   tMixingMatrixPtr _stau;
@@ -153,15 +138,25 @@ private:
   double _c2w;
 
   /**
-   * The value of \f$\sin(\beta - \alpha)\f$ 
+   *  Coupling of Z to scalar and pseudoscalar
    */
-  double _sbma;
+  vector<vector<Complex> > Cijeo_;
 
   /**
-   * The value of \f$\cos(\beta - \alpha)\f$ 
+   *  Coupling of W to scalar charged
    */
-  double _cbma;
+  vector<vector<Complex> > Cijec_;
+
+  /**
+   *  Coupling of W to pseudoscalar charged
+   */
+  vector<vector<Complex> > Cijco_;
   
+  /**
+   *  Coupling of Z to charged Higgs
+   */
+  vector<vector<Complex> > Cijc_;
+
   /**
    *  Which interactions to include 
    */

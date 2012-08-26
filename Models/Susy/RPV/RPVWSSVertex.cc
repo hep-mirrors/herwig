@@ -17,8 +17,7 @@
 
 using namespace Herwig;
 
-RPVWSSVertex::RPVWSSVertex() :_sw(0.), _cw(0.), 
-			      _s2w(0.), _c2w(0.), _sbma(0.), _cbma(0.),
+RPVWSSVertex::RPVWSSVertex() :_sw(0.), _cw(0.), _s2w(0.), _c2w(0.),
 			      _interactions(0), _q2last(), 
 			      _ulast(0), _dlast(0), _gblast(0),
 			      _factlast(0.), _couplast(0.) {
@@ -42,9 +41,33 @@ void RPVWSSVertex::doinit() {
 				     << " pointer to the RPV object is null!"
 				     << Exception::abortnow;
   // get the mixing matrices
-  _mixH = model->CPevenHiggsMix() ;
-  _mixP = model->CPoddHiggsMix()  ;
-  _mixC = model->ChargedHiggsMix();
+  MixingMatrixPtr mixH = model->CPevenHiggsMix() ;
+  MixingMatrixPtr mixP = model->CPoddHiggsMix()  ;
+  MixingMatrixPtr mixC = model->ChargedHiggsMix();
+  // find the codes for the Higgs bosons
+  vector<long> pseudo(1,36);
+  vector<long> scalar(2);
+  vector<long> charged(1,37);
+  scalar[0] = 25;
+  scalar[1] = 35;
+  if(mixH&&mixH->size().first>2) {
+    scalar.push_back(1000012);
+    scalar.push_back(1000014);
+    scalar.push_back(1000016);
+  }
+  if(mixP&&mixP->size().first>1) {
+    pseudo.push_back(1000017);
+    pseudo.push_back(1000018);
+    pseudo.push_back(1000019);
+  }
+  if(mixC&&mixC->size().first>2) {
+    charged.push_back(-1000011);
+    charged.push_back(-1000013);
+    charged.push_back(-1000015);
+    charged.push_back(-2000011);
+    charged.push_back(-2000013);
+    charged.push_back(-2000015);
+  }
   // sfermion interactions
   if(_interactions==0||_interactions==1) {
     // squarks
@@ -94,17 +117,19 @@ void RPVWSSVertex::doinit() {
       addToList(22,ix,-ix);
     }
     //sleptons
+    // gamma
     for(long ix=1000011;ix<1000016;ix+=2) {
       addToList(22,ix,-ix);
     }
     for(long ix=2000011;ix<2000016;ix+=2) {
       addToList(22,ix,-ix);
     }
+    // Z
     //LL-sleptons
-    for(long ix=1000011;ix<1000017;++ix) {
+    for(long ix=1000011;ix<1000017;ix+=2) {
       addToList(23,ix,-ix);
     }
-    //RR-sleptons
+    // RR-sleptons
     for(long ix=2000011;ix<2000016;ix+=2) {
       addToList(23,ix,-ix);
     }
@@ -112,60 +137,47 @@ void RPVWSSVertex::doinit() {
     addToList(23,1000015,-2000015);
     //Lbar-R stau
     addToList(23,-1000015,2000015);
-    //LL-sleptons
-    for(long ix=1000011;ix<1000016;ix+=2) {
-      addToList(-24,-ix,ix+1);
+    if(mixH&&mixH->size().first>2) {
+      for(long ix=1000012;ix<1000017;ix+=2) {
+	// sneutrinos
+	addToList(23,ix,-ix);
+	//LL-sleptons
+	for(long ix=1000011;ix<1000016;ix+=2) {
+	  addToList(-24,-ix,ix+1);
+	}
+	//2-L stau
+	addToList(-24,-2000015,1000016);
+	//LL-sleptons
+	for(long ix=1000011;ix<1000016;ix+=2) {
+	  addToList(24,ix,-ix-1);
+	}
+	//2-L stau
+	addToList(24,2000015,-1000016);
+      }
     }
-    //2-L stau
-    addToList(-24,-2000015,1000016);
-    //LL-sleptons
-    for(long ix=1000011;ix<1000016;ix+=2) {
-      addToList(24,ix,-ix-1);
-    }
-    //2-L stau
-    addToList(24,2000015,-1000016);
   }
   if(_interactions==0||_interactions==2) {
-    vector<long> pseudo(1,36);
-    vector<long> scalar(2);
-    scalar[0] = 25; scalar[1] = 35;
-    vector<long> charged(1,37);
-    if(_mixH&&_mixH->size().first>2) {
-      scalar.push_back(1000012);
-      scalar.push_back(1000014);
-      scalar.push_back(1000016);
-    }
-    if(_mixP&&_mixP->size().first>1) {
-      pseudo.push_back(1000017);
-      pseudo.push_back(1000018);
-      pseudo.push_back(1000019);
-    }
-    if(_mixC&&_mixC->size().first>2) {
-      charged.push_back(-1000011);
-      charged.push_back(-1000013);
-      charged.push_back(-1000015);
-      charged.push_back(-2000011);
-      charged.push_back(-2000013);
-      charged.push_back(-2000015);
-    }
     // charged Higgs and photon
     addToList(22,37,-37);
-    // charged higgs and Z
+    // charged Higgs and Z
     for(unsigned int ix=0;ix<charged.size();++ix) {
       for(unsigned int iy=0;iy<charged.size();++iy) {
 	if(abs(charged[ix])>1000000&&abs(charged[iy])>100000 && 
 	   ( charged[ix]==charged[iy] ||
-	     (abs(charged[ix])/1000000==15&&abs(charged[iy])/1000000==15)))
+	     (abs(charged[ix])%1000000==15&&abs(charged[iy])%1000000==15)))
 	  continue;
 	addToList(23,charged[ix],-charged[iy]);
+      }
+    }
+    // neutral Higgs and Z
+    for(unsigned int ix=0;ix<scalar.size();++ix) {
+      for(unsigned int iy=0;iy<pseudo.size();++iy) {
+	addToList(23,scalar[ix],pseudo[iy]);
       }
     }
     // charged higss, scalar higgs and W
     for(unsigned int ix=0;ix<charged.size();++ix) {
       for(unsigned int iy=0;iy<scalar.size();++iy) {
-	if(abs(charged[ix])>1000000&&abs(scalar[iy])>100000 &&
-	   abs(scalar[iy])/1000000-1==abs(charged[iy])/1000000)
-	  continue;
 	addToList( 24,-charged[ix],scalar[iy]);
 	addToList(-24, charged[ix],scalar[iy]);
       }
@@ -175,6 +187,10 @@ void RPVWSSVertex::doinit() {
       for(unsigned int iy=0;iy<pseudo.size();++iy) {
 	addToList( 24,-charged[ix],pseudo[iy]);
 	addToList(-24, charged[ix],pseudo[iy]);
+      }
+      for(unsigned int iy=0;iy<scalar.size();++iy) {
+	addToList( 24,-charged[ix],scalar[iy]);
+	addToList(-24, charged[ix],scalar[iy]);
       }
     }
   }
@@ -188,33 +204,70 @@ void RPVWSSVertex::doinit() {
 			  << " stop: " << _stop << " sbottom: " << _sbottom
 			  << Exception::abortnow;
   _stau = model->stauMix();
-  if(!_stau && (!_mixC || _mixC->size().first<2))
+  if(!_stau && (!mixC || mixC->size().first<2))
     throw InitException() << "RPVWSSVertex::doinit() either the stau"
 			  << " mixing matrix must be set or the stau"
 			  << " included in mixing with the"
 			  << " charged Higgs bosons" << Exception::abortnow;
   // weak mixing
   _sw = sqrt(sin2ThetaW());
-  _cw = sqrt( 1. - sqr(_sw) );
+  _cw = sqrt( 1. - sin2ThetaW() );
   _s2w = 2.*_cw*_sw;
-  _c2w = sqr(_cw) - sqr(_sw);
-  double sina = sin(model->higgsMixingAngle());
-  double cosa =  sqrt(1. - sqr(sina));
-  double tanb = model->tanBeta();
-  double sinb = tanb/sqrt(1. + sqr(tanb));
-  double cosb = sqrt( 1. - sqr(sinb) );
-  _sbma = sinb*cosa - sina*cosb;
-  _cbma = cosa*cosb + sina*sinb;
+  _c2w = 1. - 2.*sin2ThetaW();
+
+  // Coupling of Z to scalar and pseudoscalar
+  Cijeo_.resize(pseudo.size(),vector<Complex>(scalar.size(),0.));
+  for(unsigned int i=0;i<pseudo.size();++i) {
+    for(unsigned int j=0;j<scalar.size();++j) {
+      for(unsigned int ix=0;ix<mixH->size().second;++ix) {
+	double sign = ix!=1 ? 1. : -1.;
+	Cijeo_[i][j] += sign*(*mixP)(i,ix)*(*mixH)(j,ix);
+      }
+    }
+  }
+  // Coupling of W to scalar charged
+  Cijec_.resize(scalar.size(),vector<Complex>(charged.size(),0.));
+  for(unsigned int i=0;i<scalar.size();++i) {
+    for(unsigned int j=0;j<charged.size();++j) {
+      for(unsigned int ix=0;ix<mixH->size().second;++ix) {
+	double sign = ix!=1 ? 1. : -1.;
+	Cijec_[i][j] += sign*(*mixH)(i,ix)*(*mixC)(j,ix);
+      }
+    }
+  }
+  // Coupling of W to pseudopseudo charged
+  Cijco_.resize(pseudo.size(),vector<Complex>(charged.size(),0.));
+  for(unsigned int i=0;i<pseudo.size();++i) {
+    for(unsigned int j=0;j<charged.size();++j) {
+      for(unsigned int ix=0;ix<mixP->size().second;++ix) {
+	// not sure about this need it to get agreement with SPheno
+	//double sign = ix!=1 ? 1. : -1.;
+	double sign = 1.;
+	Cijco_[i][j] += sign*(*mixP)(i,ix)*(*mixC)(j,ix);
+      }
+    }
+  }
+  // Coupling of Z to charged Higgs
+  Cijc_.resize(charged.size(),vector<Complex>(charged.size(),0.));
+  for(unsigned int i=0;i<charged.size();++i) {
+    for(unsigned int j=0;j<charged.size();++j) {
+      for(unsigned int ix=5;ix<mixC->size().second;++ix) {
+	Cijc_[i][j] += (*mixC)(i,ix)*(*mixC)(j,ix);
+      }
+    }
+  }
 }
 
 void RPVWSSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _interactions << _mixH << _mixP << _mixC << _sw  << _cw
-     << _stau << _stop << _sbottom << _s2w << _c2w << _sbma << _cbma;
+  os << _interactions << _sw  << _cw
+     << _stau << _stop << _sbottom << _s2w << _c2w
+     << Cijeo_ << Cijec_ << Cijco_ << Cijc_;
 }
 
 void RPVWSSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _interactions >> _mixH >> _mixP >> _mixC >> _sw >> _cw
-     >> _stau >> _stop >> _sbottom >> _s2w >> _c2w >> _sbma >> _cbma;
+  is >> _interactions >> _sw >> _cw
+     >> _stau >> _stop >> _sbottom >> _s2w >> _c2w
+     >> Cijeo_ >> Cijec_ >> Cijco_ >> Cijc_;
 }
 
 
@@ -265,8 +318,7 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       (abs(h1ID)>=2000001&&abs(h1ID)<=2000006)) ||
      (((abs(h1ID)>=1000011&&abs(h1ID)<=1000016)||
        (abs(h1ID)>=2000011&&abs(h1ID)<=2000016))&&
-      (!_mixP||!_mixC||!_mixH||_mixP->size().first==1||
-       _mixC->size().first==1||_mixH->size().first<=2))) {
+      Cijeo_.size()==1)) {
     long sf1(abs(part2->id())),sf2(abs(part3->id()));
     if( sf1 % 2 != 0 ) swap(sf1, sf2);
     if( sf1 != _ulast || sf2 != _dlast || gboson != _gblast) {
@@ -300,7 +352,7 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	else
 	  m1b = (beta == 0) ? Complex(1.) : Complex(0.);
 	//W boson
-	if( gboson == ParticleID::Wplus ) {
+	if( abs(gboson) == ParticleID::Wplus ) {
 	  _factlast = m1a*m1b/sqrt(2)/_sw;
 	}
 	//Z boson
@@ -322,7 +374,6 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	}
       }
     }
-    norm(_factlast);
   }
   // Higgs bosons
   else {
@@ -331,39 +382,56 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     _dlast = h2ID;
     _factlast = 0.;
     if( gboson == ParticleID::Z0 ) {
-//     if( abs(h1ID) == ParticleID::Hplus ) {
-//       coup = theC2w/theS2w;
-//       if(h1ID<0) coup *= -1.;
-//     }
-//     else if( h1ID == ParticleID::h0 ||  
-// 	     h2ID == ParticleID::h0 ) {
-//       coup = Complex(0., 1.)*thecbma/theS2w;
-//     }
-//     else {
-//       coup =-Complex(0., 1.)*thesbma/theS2w;
-//     }
-//     if(h2ID==ParticleID::A0) coup *=-1.;
+      if( part2->charged() ) {
+	unsigned int c1 = abs(h1ID) < 1000000 ? 0 : 
+	  (abs(h1ID) < 2000000 ? (abs(h1ID)-1000009)/2 : (abs(h1ID)-2000003)/2);
+	unsigned int c2 = abs(h2ID) < 1000000 ? 0 : 
+	  (abs(h2ID) < 2000000 ? (abs(h2ID)-1000009)/2 : (abs(h2ID)-2000003)/2);
+	if(c1==c2) _factlast = (_c2w-Cijc_[c1][c2])/_s2w;
+	else       _factlast = -Cijc_[c1][c2]/_s2w;
+	if(part2->iCharge()<0) _factlast *= -1.;
+      }
+      else {
+	if(h1ID == ParticleID::h0         || h1ID  == ParticleID::H0         ||
+	   h1ID == ParticleID::SUSY_nu_eL || h1ID == ParticleID::SUSY_nu_muL ||
+	   h1ID == ParticleID::SUSY_nu_tauL ) {
+	  unsigned int is = h1ID < 1000000 ? (h1ID-25)/10 : (h1ID-1000008)/2;
+	  unsigned int ip = h2ID < 1000000 ? 0 : (h2ID-1000016);
+	  _factlast =  Complex(0.,1.)*Cijeo_[ip][is]/_s2w;
+	}
+	else {
+	  unsigned int is = h2ID < 1000000 ? (h2ID-25)/10 : (h2ID-1000008)/2;
+	  unsigned int ip = h1ID < 1000000 ? 0 : (h1ID-1000016);
+	  _factlast = -Complex(0.,1.)*Cijeo_[ip][is]/_s2w;
+	}
+
+      }
     }
     else if( gboson == ParticleID::gamma ) {
       _factlast = part2->iCharge()/3;
     }
     else {
-//     long higgs = abs(h1ID) == ParticleID::Hplus ? h2ID : h1ID;
-//     if( higgs == ParticleID::h0 ) {
-//       coup =  0.5*thecbma/theSw;
-//     }
-//     else if( higgs == ParticleID::H0) 
-//       coup = -0.5*thesbma/theSw;
-//     else 
-//       coup = Complex(0., 0.5)/theSw;
-//     if(abs(h2ID) == ParticleID::Hplus ) coup *= -1.;
-//     if(gboson<0&&higgs!=ParticleID::A0) coup *= -1.;
+      long scalar  = part2->charged() ? h2ID : h1ID;
+      long charged = part2->charged() ? h1ID : h2ID;
+      unsigned int ic = abs(charged) < 1000000 ? 0 : 
+	(abs(charged) < 2000000 ? (abs(charged)-1000009)/2 : (abs(charged)-2000003)/2);
+      if(scalar == ParticleID::h0         || scalar  == ParticleID::H0         ||
+	 scalar == ParticleID::SUSY_nu_eL || scalar == ParticleID::SUSY_nu_muL ||
+	 scalar == ParticleID::SUSY_nu_tauL ) {
+	unsigned int ih = scalar < 1000000 ? (scalar-25)/10 : (scalar-1000008)/2;
+	_factlast =  0.5*Cijec_[ih][ic]/_sw;
+	if(gboson<0) _factlast *= -1.;
+      }
+      else {
+	unsigned int ih = scalar < 1000000 ? 0 : (scalar-1000016);
+	_factlast = Complex(0., 0.5)*Cijco_[ih][ic]/_sw;
+      } 
+      if(part3->charged()) _factlast *= -1.;
     }
-    norm(_factlast);
   }
   if( q2 != _q2last || _couplast==0. ) {
     _q2last = q2;
     _couplast = electroMagneticCoupling(q2);
   }
-  norm(_couplast*norm());
+  norm(_couplast*_factlast);
 }

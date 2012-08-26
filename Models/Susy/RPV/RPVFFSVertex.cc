@@ -147,7 +147,7 @@ void RPVFFSVertex::doinit() {
     } 
     // charged leptons neutral pseudoscalar
     for ( unsigned int h = 0; h < a0.size(); ++h ) {
-      for(long ix=12;ix<16;ix+=2) addToList(-ix,ix,a0[h]);
+      for(long ix=11;ix<16;ix+=2) addToList(-ix,ix,a0[h]);
     }
     // charged higgs to leptons, no mixing
     if(_nmix->size().first<=4) {
@@ -289,13 +289,13 @@ void RPVFFSVertex::doinit() {
   double g = electroMagneticCoupling(sqr(mw_))/_sw;
   Energy v = 2.*mw_/g;
   vd_ = sqrt((sqr(v)-sqr(vnu[0])-sqr(vnu[1])-sqr(vnu[2]))/
-		   (1.+sqr(tb)))*g;
+		   (1.+sqr(tb)));
   vu_ = vd_*tb;
   // couplings of the neutral scalar Higgs to charginos
-  Energy me   = getParticleData(ParticleID::eminus  )->mass();
-  Energy mmu  = getParticleData(ParticleID::muminus )->mass();
-  Energy mtau = getParticleData(ParticleID::tauminus)->mass();
-  double h_E[3] = {me/vd_,mmu /vd_,mtau/vd_};
+  Energy me   = model_->mass(sqr(mw_),getParticleData(ParticleID::eminus  ));
+  Energy mmu  = model_->mass(sqr(mw_),getParticleData(ParticleID::muminus ));
+  Energy mtau = model_->mass(sqr(mw_),getParticleData(ParticleID::tauminus));
+  double h_E[3] = {sqrt(2.)*me/vd_/g,sqrt(2.)*mmu /vd_/g,sqrt(2.)*mtau/vd_/g};
   for(unsigned int ih=0;ih<_mixH->size().first;++ih ) {
     OCCHL_.push_back(vector<vector<Complex> >
 		     (_umix->size().first,vector<Complex>(_umix->size().first,0.)));
@@ -305,9 +305,9 @@ void RPVFFSVertex::doinit() {
 	  ( (*_mixH)(ih,0)*(*_vmix)(i,0)*(*_umix)(j,1) +
 	    (*_mixH)(ih,1)*(*_vmix)(i,1)*(*_umix)(j,0));
 	for(unsigned int k=2;k<_umix->size().first;++k) {
-	  OCCHL_[ih][i][j] -= sqrt(0.5)*(*_mixH)(ih,k)*(*_vmix)(i,0)*(*_umix)(j,k)
-	    +h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixH)(ih,0)
-	    -h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixH)(ih,k);
+	  OCCHL_[ih][i][j] -= sqrt(0.5)*(+(*_mixH)(ih,k)*(*_vmix)(i,0)*(*_umix)(j,k)
+					 +h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixH)(ih,0)
+					 -h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixH)(ih,k));
 	}
       }
     }
@@ -356,8 +356,8 @@ void RPVFFSVertex::doinit() {
 	  (*_mixP)(ih,1)*(*_vmix)(i,1)*(*_umix)(j,0);
 	for(unsigned int k=2;k<_umix->size().first;++k) {
 	  OCCAL_[ih][i][j] += (*_mixP)(ih,k)*(*_vmix)(i,0)*(*_umix)(j,k)
-	    +h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixP)(ih,0)
-	    -h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixP)(ih,k);
+	    -h_E[k-2]*(*_umix)(j,k)*(*_vmix)(i,k)*(*_mixP)(ih,0)
+	    +h_E[k-2]*(*_umix)(j,1)*(*_vmix)(i,k)*(*_mixP)(ih,k);
 	}
 	OCCAL_[ih][i][j] *= sqrt(0.5);
       }
