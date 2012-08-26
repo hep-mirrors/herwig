@@ -392,9 +392,9 @@ namespace {
 void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
   if(decayOutput_==0) return;
   set<tcDMPtr,DecayModeOrdering> modes;
-  for(Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
-      dit != parent->decaySelector().end(); ++dit) {
-    modes.insert((*dit).second);
+  for(set<tDMPtr>::const_iterator dit = parent->decayModes().begin();
+      dit != parent->decayModes().end(); ++dit) {
+    if((**dit).on()) modes.insert((*dit));
   }
   if(decayOutput_==1) {
     os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 

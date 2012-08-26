@@ -80,7 +80,7 @@ set<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list) {
   int id = inpart->id();
-  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
+  if( !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return set<TwoBodyDecay>();
   Energy m1(inpart->mass());
   tPDVector decaylist = vertex->search(list, inpart);

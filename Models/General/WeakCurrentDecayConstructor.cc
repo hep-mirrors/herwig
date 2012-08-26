@@ -125,7 +125,7 @@ vector<TwoBodyDecay> WeakCurrentDecayConstructor::createModes(const PDPtr inpart
 							      const VertexBasePtr vert,
 							      unsigned int ilist) {
   int id = inpart->id();
-  if( id < 0 || !vert->isIncoming(inpart) || vert->getNpoint() != 3 )
+  if( !vert->isIncoming(inpart) || vert->getNpoint() != 3 )
     return vector<TwoBodyDecay>();
   Energy m1(inpart->mass());
   vector<tPDPtr> decaylist;
