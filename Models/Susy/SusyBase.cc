@@ -494,9 +494,9 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else if(name == "rvnmix") {
     ids.resize(7);
-    ids[0] = 12; ids[1] = 14; ids[2] = 16; 
-    ids[3] = 1000022; ids[4] = 1000023; 
-    ids[5] = 1000025; ids[6] = 1000035;
+    ids[0] = 1000022; ids[1] = 1000023; 
+    ids[2] = 1000025; ids[3] = 1000035;
+    ids[4] = 12; ids[5] = 14; ids[6] = 16; 
   }
   else if(name == "rpvmix") {
     ids.resize(5);
@@ -510,8 +510,8 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else if(name == "rvumix" || name == "rvvmix" ) {
     ids.resize(5);
-    ids[0] = 1000024; ids[1] = 1000037; 
-    ids[2] = -11; ids[3] = -13; ids[4] = -15;
+    ids[3] = 1000024; ids[4] = 1000037; 
+    ids[0] = -11; ids[1] = -13; ids[2] = -15;
   }
   else if(name == "stopmix") {
     ids.resize(2);
