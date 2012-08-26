@@ -184,6 +184,6 @@ void StandardModel::resetMass(long id, Energy mass,tPDPtr part) {
   if(!part) return;
   const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
   ostringstream os;
-  os << abs(mass/GeV);
+  os << setprecision(12) << abs(mass/GeV);
   ifb->exec(*part, "set", os.str());
 }
