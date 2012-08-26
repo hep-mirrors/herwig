@@ -15,14 +15,12 @@ using namespace Herwig;
 
 void RPV::persistentOutput(PersistentOStream & os ) const {
   os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_ << ounit(vnu_,GeV)
-     << LLEVertex_ << LQDVertex_ << UDDVertex_
-     << HiggsAMix_ << HiggsPMix_;
+     << LLEVertex_ << LQDVertex_ << UDDVertex_;
 }
 
 void RPV::persistentInput(PersistentIStream & is, int) {
   is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_ >> iunit(vnu_,GeV)
-     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_
-     >> HiggsAMix_ >> HiggsPMix_;
+     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_;
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -140,10 +138,15 @@ void RPV::createMixingMatrices() {
     string name=it->first;
     // pseudo-scalar higgs mixing
     if (name == "rvamix") {
-      createMixingMatrix(HiggsAMix_,name,it->second.second,it->second.first);
+      MixingMatrixPtr temp;
+      createMixingMatrix(temp,name,it->second.second,it->second.first);
+      CPoddHiggsMix(temp); 
+      
     }
     else if (name == "rvlmix") {
-      createMixingMatrix(HiggsPMix_,name,it->second.second,it->second.first);
+      MixingMatrixPtr temp;
+      createMixingMatrix(temp,name,it->second.second,it->second.first);
+      ChargedHiggsMix(temp);
     }
   }
   // base class for neutralinos and charginos
@@ -187,13 +190,33 @@ void RPV::createMixingMatrices() {
       for(unsigned int iy=0;iy<8;++iy)
 	newMat[move[ix]][iy] = oldMat[ix][iy];
     }
-    HiggsPMix_ = new_ptr(MixingMatrix(newMat,ChargedHiggsMix()->getIds()));
+    ChargedHiggsMix(new_ptr(MixingMatrix(newMat,ChargedHiggsMix()->getIds())));
     // adjust the pseudoscalars
     massMap.clear();
     massMap[findValue(fit,     36,"mass",     "36")] =      36;
-    massMap[findValue(fit,2000012,"mass","2000012")] = 1000017;
-    massMap[findValue(fit,2000014,"mass","2000014")] = 1000018;
-    massMap[findValue(fit,2000016,"mass","2000016")] = 1000019;
+    // extract the pseudoscalar masses and change the ids for the pseudoscalars
+    // to those from the SLHA if needed
+    if(fit->second.find(2000012)!=fit->second.end()) {
+      massMap[findValue(fit,2000012,"mass","2000012")] = 1000017;
+      idMap().insert(make_pair(2000012,1000017));
+    }
+    else {
+      massMap[findValue(fit,1000017,"mass","1000017")] = 1000017;
+    }
+    if(fit->second.find(2000014)!=fit->second.end()) {
+      massMap[findValue(fit,2000014,"mass","2000014")] = 1000018;
+      idMap().insert(make_pair(2000014,1000018));
+    }
+    else {
+      massMap[findValue(fit,1000018,"mass","1000018")] = 1000018;
+    }
+    if(fit->second.find(2000016)!=fit->second.end()) {
+      massMap[findValue(fit,2000016,"mass","2000016")] = 1000019;
+      idMap().insert(make_pair(2000016,1000019));
+    }
+    else {
+      massMap[findValue(fit,1000019,"mass","1000019")] = 1000019;
+    }
     move.clear(); move.push_back(4);
     for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
       if     (mit->second==     36) move.push_back(0);
@@ -207,7 +230,7 @@ void RPV::createMixingMatrices() {
       for(unsigned int iy=0;iy<5;++iy)
 	newMat[move[ix]][iy] = oldMat[ix][iy];
     }
-    HiggsAMix_ = new_ptr(MixingMatrix(newMat,CPevenHiggsMix()->getIds()));
+    CPoddHiggsMix(new_ptr(MixingMatrix(newMat,CPoddHiggsMix()->getIds())));
     // adjust the neutral scalars
     massMap.clear();
     massMap[findValue(fit,     25,"mass",     "25")] =      25;
@@ -259,10 +282,6 @@ void RPV::createMixingMatrices() {
 	newMat[ix][move[iy]] = oldMat[ix][iy];
     }
     charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
-    // changeb bthe ids for the pseudoscalars to those from the SLHA
-    idMap().insert(make_pair(2000012,1000017));
-    idMap().insert(make_pair(2000014,1000018));
-    idMap().insert(make_pair(2000016,1000019));
   }
   // we don't want neutrinos first then neutralinos so swap them
   // neutralinos first then neutrinos

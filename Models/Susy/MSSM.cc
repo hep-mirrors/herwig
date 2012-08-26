@@ -22,13 +22,13 @@ using namespace Herwig;
 void MSSM::persistentOutput(PersistentOStream & os) const {
   os << theStopMix << theSbotMix << theStauMix << theAlpha 
      << ounit(theAtop,GeV) << ounit(theAbottom,GeV) << ounit(theAtau,GeV) 
-     << theHiggsMix;
+     << theHiggsMix << HiggsAMix_ << HiggsPMix_;
 }
 
 void MSSM::persistentInput(PersistentIStream & is, int) {
   is >> theStopMix >> theSbotMix >> theStauMix >> theAlpha 
      >> iunit(theAtop,GeV) >> iunit(theAbottom,GeV) >> iunit(theAtau,GeV) 
-     >> theHiggsMix;
+     >> theHiggsMix >> HiggsAMix_ >> HiggsPMix_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -84,14 +84,22 @@ void MSSM::createMixingMatrices() {
   // neutral higgs mixing if not already set
   if(!theHiggsMix) {
     MixingVector hmix;
-    hmix.push_back(MixingElement(1,1, cos(theAlpha)));
-    hmix.push_back(MixingElement(1,2, sin(theAlpha)));
-    hmix.push_back(MixingElement(2,1,-sin(theAlpha)));
-    hmix.push_back(MixingElement(2,2, cos(theAlpha)));
+    hmix.push_back(MixingElement(1,1,-sin(theAlpha)));
+    hmix.push_back(MixingElement(1,2, cos(theAlpha)));
+    hmix.push_back(MixingElement(2,1, cos(theAlpha)));
+    hmix.push_back(MixingElement(2,2, sin(theAlpha)));
     vector<long> ids(2);
     ids[0] = 25; ids[1] = 35;
     theHiggsMix = new_ptr(MixingMatrix(2,2));
     (*theHiggsMix).setIds(ids);
+    hmix.clear();
+    double beta = atan(tanBeta());
+    hmix.push_back(MixingElement(1,1,sin(beta)));
+    hmix.push_back(MixingElement(1,2,cos(beta)));
+    ids.resize(1,37);
+    HiggsPMix_ = new_ptr(MixingMatrix(1,2));
+    ids.resize(1,36);
+    HiggsAMix_ = new_ptr(MixingMatrix(1,2));
   }
   // base class for neutralinos and charginos
   SusyBase::createMixingMatrices();

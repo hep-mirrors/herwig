@@ -51,20 +51,6 @@ public:
    */
   const vector<Energy> & sneutrinoVEVs() {return vnu_;}
 
-  /**
-   * Mixing matrix for the neutral CP-odd Higgs bosons
-   */
-  const MixingMatrixPtr & CPoddHiggsMix() const {
-    return HiggsAMix_;
-  }
-
-  /**
-   * Mixing matrix for the charged Higgs bosons
-   */
-  const MixingMatrixPtr & ChargedHiggsMix() const {
-    return HiggsPMix_;
-  }
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -185,21 +171,6 @@ private:
    *  UDD vertex
    */
   AbstractFFSVertexPtr UDDVertex_;
-  //@}
-
-  /**
-   *  Mixing matrices
-   */
-  //@{
-  /**
-   *  Pseudoscalar Higgs mixing
-   */
-  MixingMatrixPtr HiggsAMix_;
-
-  /**
-   *  Charged Higgs mixing
-   */
-  MixingMatrixPtr HiggsPMix_;
   //@}
 
 };

@@ -70,6 +70,20 @@ public:
    */
   const MixingMatrixPtr & CPevenHiggsMix() const {return theHiggsMix;}
 
+  /**
+   * Mixing matrix for the neutral CP-odd Higgs bosons
+   */
+  const MixingMatrixPtr & CPoddHiggsMix() const {
+    return HiggsAMix_;
+  }
+
+  /**
+   * Mixing matrix for the charged Higgs bosons
+   */
+  const MixingMatrixPtr & ChargedHiggsMix() const {
+    return HiggsPMix_;
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -136,6 +150,16 @@ protected:
    */
   void CPevenHiggsMix(MixingMatrixPtr in) {theHiggsMix = in;}
 
+  /**
+   * Mixing matrix for the neutral CP-odd Higgs bosons
+   */
+  void CPoddHiggsMix(MixingMatrixPtr in) {HiggsAMix_ = in;}
+
+  /**
+   * Mixing matrix for the charged Higgs bosons
+   */
+  void ChargedHiggsMix(MixingMatrixPtr in) {HiggsPMix_ = in;}
+
 private:
 
   /**
@@ -193,9 +217,23 @@ private:
   double theAlpha;
 
   /**
-   *  Higgs mixing matrix
+   *  Higgs boson mixing matrices
+   */
+  //@{
+  /**
+   *  Scalar Higgs mixing matrix
    */
   MixingMatrixPtr theHiggsMix;
+  /**
+   *  Pseudoscalar Higgs mixing
+   */
+  MixingMatrixPtr HiggsAMix_;
+
+  /**
+   *  Charged Higgs mixing
+   */
+  MixingMatrixPtr HiggsPMix_;
+  //@}
 
 };
 
