@@ -20,7 +20,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This class implements the coupling of a photon to a pair of neutralinos
+ * This class implements the coupling of a gluon to a gluino and a neutralino
  * via loop diagrams
  * It inherits from GeneralFFVertex and implements the setCoupling method.
  *
@@ -109,6 +109,18 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -120,6 +132,11 @@ private:
   SSGNGVertex & operator=(const SSGNGVertex &);
 
 private:
+
+  /**
+   *  Whether of not to include on-shell intermediate states
+   */
+  bool _includeOnShell;
 
   /**
    * Pointer to the stop mixing matrix
