@@ -395,7 +395,8 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
 	  // t-channel
 	  for(unsigned int ix=0;ix<3;++ix) {
 	    SpinorWaveFunction inter = 
-	      FFWvertex_->evaluate(scale(),5,tc[ix],f1[ihel1],v1[ohel1]);
+	      FFWvertex_->evaluate(scale(),(abs(tc[ix]->id())!=6 ? 5 : 1),
+	    			   tc[ix],f1[ihel1],v1[ohel1]);
 	    diag[ix] = 
 	      FFWvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
 	  }

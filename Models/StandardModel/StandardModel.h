@@ -329,6 +329,12 @@ protected:
     vertexList_.push_back(in);
   }
 
+  /**
+   *  Helper function to reset the mass of a ParticleData object
+   *  in BSM models.
+   */
+  void resetMass(long id, Energy mass,tPDPtr particle=tPDPtr());
+
 private:
   
   /**

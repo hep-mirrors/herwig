@@ -164,6 +164,7 @@ double MEPP2HiggsPowheg::me2() const {
     // NB - lo_ggME_ equals sqr(alphaS/(pi*vev))*
     // sqr(p2_)/576. _ALL_IN_MeVs_!
     lo_ggME_ = output;
+    if(output==0.) return 0.;
     output *= NLOweight();
   }
   return output;

@@ -24,7 +24,9 @@ NMSSM.model \
 RS.model \
 Sextet.model \
 TTBA.model \
-Zprime.model
+Zprime.model \
+LH.model \
+LHTP.model
 
 INPUTFILES = \
 DIS.in \
@@ -56,7 +58,9 @@ LHC-ZP.in \
 TVT.in \
 TVT-Matchbox.in \
 TVT-Powheg.in \
-TVT-TTBA.in
+TVT-TTBA.in \
+LHC-LH.in \
+LHC-LHTP.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
@@ -87,6 +91,12 @@ endif
 if WANT_RS
 check_BSM += check-LHC-RS
 check_BSM_Full += check-LHC-RS
+endif
+if WANT_LH
+check_BSM_Full += check-LHC-LH
+endif
+if WANT_LHTP
+check_BSM_Full += check-LHC-LHTP
 endif
 if WANT_TRP
 check_BSM_Full += check-LHC-TRP
