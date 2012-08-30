@@ -241,8 +241,6 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
 				complex<InvEnergy2> & I, complex<InvEnergy2> & J,
 				complex<InvEnergy2> & K, complex<InvEnergy2> & I2) {
-  static const Complex ii(0.,1.);
-  static const Energy eps(100.*MeV);
   Energy2 m2(sqr(m)),M2(sqr(M)),Mi2(sqr(Mi)),Mj2(sqr(Mj));
   double min2  = Mj2*UnitRemoval::InvE2;
   double mout2 = Mi2*UnitRemoval::InvE2;

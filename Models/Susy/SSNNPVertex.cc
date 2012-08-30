@@ -12,18 +12,21 @@
 //
 
 #include "SSNNPVertex.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Looptools/clooptools.h"
 #include "Herwig++/Utilities/Maths.h"
 
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSNNPVertex::SSNNPVertex() : _sw(0.), _cw(0.), _id1last(0), 
+SSNNPVertex::SSNNPVertex() : _includeOnShell(false),
+			     _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(ZERO), _couplast(0.),
 			     _leftlast(ZERO), _rightlast(ZERO) {
   orderInGem(3);
@@ -31,6 +34,7 @@ SSNNPVertex::SSNNPVertex() : _sw(0.), _cw(0.), _id1last(0),
 }
 
 void SSNNPVertex::doinit() {
+  Looptools::ltini();
   int ineu[5] = {1000022,1000023,1000025,1000035,1000045};
   for(unsigned int i = 0; i < 5; ++i) {
     for(unsigned int j = 0; j < 5; ++j) {
@@ -60,30 +64,53 @@ void SSNNPVertex::doinit() {
   _stop = theSS->stopMix();
   _sbot = theSS->sbottomMix();
   _stau = theSS->stauMix();
+  Looptools::ltexi();
+}
+
+void SSNNPVertex::dofinish() {
+  Looptools::ltexi();
+  GeneralFFVVertex::dofinish();
+}
+
+void SSNNPVertex::doinitrun() {
+  Looptools::ltini();
+  GeneralFFVVertex::doinitrun();
 }
 
 void SSNNPVertex::persistentOutput(PersistentOStream & os) const {
   os << _sw << _cw << _theN << ounit(_mw,GeV) << _sb << _cb
-     << _stop << _sbot << _stau << _theU << _theV;
+     << _stop << _sbot << _stau << _theU << _theV << _includeOnShell;
 }
 
 void SSNNPVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN >> iunit(_mw,GeV) >> _sb >> _cb
-     >> _stop >> _sbot >> _stau >> _theU >> _theV;
+     >> _stop >> _sbot >> _stau >> _theU >> _theV >> _includeOnShell;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<SSNNPVertex,Helicity::GeneralFFVVertex>
 describeSSNNPVertex("Herwig::SSNNPVertex", "HwSusy.so");
 
 void SSNNPVertex::Init() {
 
   static ClassDocumentation<SSNNPVertex> documentation
-    ("The coupling of a Z-boson to a pair of neutralinos");
+    ("The loop-mediated coupling of the photon to a pair of neutralinos");
+
+  static Switch<SSNNPVertex,bool> interfaceIncludeOnShellIntermediates
+    ("IncludeOnShellIntermediates",
+     "Whether or not to include on-shell intermediate states",
+     &SSNNPVertex::_includeOnShell, false, false, false);
+  static SwitchOption interfaceIncludeOnShellIntermediatesYes
+    (interfaceIncludeOnShellIntermediates,
+     "Yes",
+     "Include them",
+     true);
+  static SwitchOption interfaceIncludeOnShellIntermediatesNo
+    (interfaceIncludeOnShellIntermediates,
+     "No",
+     "Don't incldue them",
+     false);
 
 }
 
@@ -304,54 +331,13 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 void SSNNPVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
 				complex<InvEnergy2> & I, complex<InvEnergy2> & J,
 				complex<InvEnergy2> & K, complex<InvEnergy2> & I2) {
-  static const Complex ii(0.,1.);
-  static const Energy eps(100.*MeV);
   Energy2 m2(sqr(m)),M2(sqr(M)),Mi2(sqr(Mi)),Mj2(sqr(Mj));
-  using Math::Li2;
-  // general form
-  if(m>eps) {
-    Energy4 li = sqr(m2+M2-Mi2)-4.*sqr(m*M);
-    complex<Energy2> rli = li<ZERO ? ii*sqrt(-li) : sqrt(li); 
-    Energy4 lj = sqr(m2+M2-Mj2)-4.*sqr(m*M);
-    complex<Energy2> rlj = lj<ZERO ? ii*sqrt(-lj) : sqrt(lj);
-    Complex arg[6]={0.5/m2*(Mj2+m2-M2+rlj) ,0.5/m2*(Mj2+m2-M2-rlj),
-		    0.5/m2*(Mi2+m2-M2+rli) ,0.5/m2*(Mi2+m2-M2-rli),
-		    0.5/m/M*(m2+M2-Mj2+rlj),0.5/m/M*(m2+M2-Mi2+rli)};
-    I  = 1./(Mi2-Mj2)*(Li2(arg[0])+Li2(arg[1])-
-		       Li2(arg[2])-Li2(arg[3]));
-    J  = 1./(Mj2-Mi2)*(sqr(log(arg[4]))-sqr(log(arg[5])))-I;
-    Complex Itest[2];
-    for(unsigned int ix=0;ix<2;++ix) {
-      Complex a,b;
-      if(ix==0) {
-	a = 0.5*(M2+Mj2-m2)/Mj2;
-	b = 0.5*rlj/Mj2;
-      }
-      else {
-	a = 0.5*(M2+Mi2-m2)/Mi2; 
-	b = 0.5*rli/Mi2;
-      }
-      Itest[ix] = -b*log(b-a)+a*log(b-a)+log(-a-b)*a
-	+log(-a-b)*b+log(1.+b-a)+log(1.+b-a)*b-log(1.+b-a)*a+log(1.-a-b)
-	-log(1.-a-b)*a-log(1.-a-b)*b-2.;
-    }
-    I2 = (Itest[0]-Itest[1]+log(Mj2/Mi2))/(Mj2-Mi2);
-//     I2 = (M2-m2)/Mi2/Mj2*log(m/M)
-//       +1./(Mj2-Mi2)*(0.5*rlj/Mj2*log((m2+M2-Mj2-rlj)/
-// 				     (m2+M2-Mj2+rlj))-
-// 		     0.5*rli/Mi2*log((m2+M2-Mi2-rli)/
-// 				     (m2+M2-Mi2+rli)));
-    K = 1./(Mi2-Mj2)*(1.+Complex(m2*I+M2*J-Mj2*I2));
-  }
-  // leading term for small m
-  else {
-    I  = 1./(Mj2-Mi2)*(-Li2(double(Mj2/(Mj2-M2)))+Li2(double(Mi2/(Mi2-M2)))
-		       -2.*log(m/M)*log((M2-Mj2)/(M2-Mi2))
-		       +0.5*sqr(log((M2-Mj2)/M2))-0.5*sqr(log((M2-Mi2)/M2)));
-    J  = 1./(Mj2-Mi2)*(Li2(double(Mj2/(Mj2-M2)))-Li2(double(Mi2/(Mi2-M2)))
-		       -0.5*sqr(log((M2-Mi2)/M2))+0.5*sqr(log((M2-Mj2)/M2)));
-    I2 = 1./(Mj2-Mi2)*log((M2-Mj2)/(M2-Mi2))
-      +M2/(Mj2-Mi2)/sqr(Mi*Mj)*(Mj2*log((M2-Mi2)/M2)-Mi2*log((M2-Mj2)/M2));
-    K  = 1./(Mi2-Mj2)*(1.+Complex(M2*J)-Complex(Mj2*I2));
-  }
+  double min2  = Mj2*UnitRemoval::InvE2;
+  double mout2 = Mi2*UnitRemoval::InvE2;
+  double mf2   = m2 *UnitRemoval::InvE2;
+  double ms2   = M2 *UnitRemoval::InvE2;
+  I  = Looptools::C0i(Looptools::cc0,min2,mout2,0.,mf2,ms2,mf2)*UnitRemoval::InvE2;
+  J  = Looptools::C0i(Looptools::cc0,min2,mout2,0.,ms2,mf2,ms2)*UnitRemoval::InvE2;
+  I2 =-Looptools::C0i(Looptools::cc1,min2,mout2,0.,mf2,ms2,mf2)*UnitRemoval::InvE2;
+  K  = (1.+Complex(m2*I+M2*J-Mj2*I2))/(Mi2-Mj2);
 }
