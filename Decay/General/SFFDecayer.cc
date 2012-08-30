@@ -65,6 +65,7 @@ void SFFDecayer::Init() {
 
 double SFFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,MEOption meopt) const {
+
   // work out which is the fermion and antifermion
   int iferm(1),ianti(0);
   int itype[2];
@@ -73,6 +74,7 @@ double SFFDecayer::me2(const int , const Particle & inpart,
     else                           itype[ix] = 2;
   }
   if(itype[0]==0||itype[1]==1||(itype[0]==2&&itype[1]==2)) swap(iferm,ianti);
+
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
@@ -101,11 +103,11 @@ double SFFDecayer::me2(const int , const Particle & inpart,
       }
       else {
 	ME()(0, ifm, ia) = _abstractVertex->evaluate(scale,_wave[ia],
-						     _wavebar[ifm],_swave);
-	
+						     _wavebar[ifm],_swave);	
       }
     }
   }
+
   double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
@@ -172,9 +174,6 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     return 0.;
   }
 
-
-  //unsigned int nflow = getColourFactors().size();
-
   unsigned int nflow;
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
 
@@ -199,11 +198,6 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   //}
   //}
 
-  //cerr << inpart.PDGName() << " -> " 
-  //   << decay[iferm]->dataPtr()->PDGName() << " " 
-  //   << decay[ianti]->dataPtr()->PDGName() << " " 
-  //   << decay[iglu ]->dataPtr()->PDGName() << endl;
-
   AbstractFFVVertexPtr abstractOutgoingVertexF;
   AbstractFFVVertexPtr abstractOutgoingVertexA;
   
@@ -225,20 +219,22 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     abstractOutgoingVertexA = _abstractOutgoingVertex2;
   }
 
-  if (not (_abstractIncomingVertex  && (abstractOutgoingVertexF || abstractOutgoingVertexA) ||
-	  ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
+  if (not ((_abstractIncomingVertex  && (abstractOutgoingVertexF || abstractOutgoingVertexA)) ||
+	   ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
     throw Exception()
     << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::threeBodyME"
     << Exception::runerror;
 
   tcPDPtr Scalar=getParticleData(inpart.id());
   Energy2 scale(sqr(inpart.mass()));
+  double gs=0;
   for(unsigned int ifm = 0; ifm < 2; ++ifm) {
     for(unsigned int ia = 0; ia < 2; ++ia) {
       for(unsigned int iv = 0; iv < 2; ++iv) {
 	// radiation from the incoming scalar
 	if(inpart.dataPtr()->coloured()) {
 	  assert(_abstractIncomingVertex);
+
 	  ScalarWaveFunction scalarInter = 
 	    _abstractIncomingVertex->evaluate(scale,3,inpart.dataPtr(),
 					      _vwave3[2*iv],_swave3,inpart.mass());
@@ -249,9 +245,10 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << scalarInter.particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
+	  gs = _abstractIncomingVertex->strongCoupling(scale);
 	  double sign  = inpart.dataPtr()->id()>0 ? 1:-1;
 	  Complex diag = sign * _abstractVertex->evaluate(scale,_wave3[ia],
-							  _wavebar3[ifm],scalarInter);
+							  _wavebar3[ifm],scalarInter)/gs;
 	  for(unsigned int ix=0;ix<colourFlows()[0].size();++ix) {
 	    ME[colourFlows()[0][ix].first](0, ia, ifm, iv) += colourFlows()[0][ix].second*diag;
 	  }
@@ -272,8 +269,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << interS        .particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
+	  gs = abstractOutgoingVertexF->strongCoupling(scale);
 	  Complex diag = _abstractVertex->evaluate(scale,_wave3[ia],
-						   interS,_swave3);
+						   interS,_swave3)/gs;
 	  for(unsigned int ix=0;ix<colourFlows()[1].size();++ix) {
 	    ME[colourFlows()[1][ix].first](0, ia, ifm, iv) += colourFlows()[1][ix].second*diag;
 	  }
@@ -294,8 +292,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << interS    .particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
+	  gs = abstractOutgoingVertexA->strongCoupling(scale);
 	  Complex diag =  _abstractVertex->evaluate(scale,interS,
-						    _wavebar3[ifm],_swave3);
+						    _wavebar3[ifm],_swave3)/gs;
 	  for(unsigned int ix=0;ix<colourFlows()[2].size();++ix) {
 	    ME[colourFlows()[2][ix].first](0, ia, ifm, iv) += colourFlows()[2][ix].second*diag; 
 	  }
@@ -303,14 +302,27 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
       }
     }
   }
-  
-  // colour and identical particle factors
+
+  //divide by alphaS
+  //double alphaS = sqr(gs) /4. /Constants::pi; 
+
+  //colour and identical particle factors
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();   
+      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
     }
   }
+  output*=(4.*Constants::pi);
   // return the answer
+
+  // if (abs(output)>1e-8){
+  //   cerr << "R " << output << endl;
+  //   cerr << inpart.PDGName() << " -> " 
+  // 	 << decay[iferm]->dataPtr()->PDGName() << " " 
+  // 	 << decay[ianti]->dataPtr()->PDGName() << " " 
+  // 	 << decay[iglu ]->dataPtr()->PDGName() << endl;
+  // }
+
   return output;
 }

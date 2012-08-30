@@ -339,9 +339,9 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   probTemp[0][0]=probTemp[0][1]=probTemp[1][0]=probTemp[1][1]=0.;
   double x1Solution[2][2] = {{0.,0.},{0.,0.}};
   double x2Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x3Solution[2]     = {0.,0.};
-  Energy pT[2]                 = {pTmax,pTmax};
-  double yTemp[2]           ={0.,0.};
+  double x3Solution[2]    =  {0.,0.};
+  Energy pT[2]            =  {pTmax,pTmax};
+  double yTemp[2]         =  {0.,0.};
   for(int i=0; i<2; i++) {
     do {
       // reject the emission
