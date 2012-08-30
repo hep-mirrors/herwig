@@ -21,10 +21,10 @@ cd /Herwig/NewPhysics
 # Example hard process: Incoming proton,resonant gravition
 
 insert ResConstructor:Incoming 0 /Herwig/Particles/g
-insert ResConstructor:Incoming 1 /Herwig/Particles/u
-insert ResConstructor:Incoming 2 /Herwig/Particles/ubar
-insert ResConstructor:Incoming 3 /Herwig/Particles/d
-insert ResConstructor:Incoming 4 /Herwig/Particles/dbar
+insert ResConstructor:Incoming 0 /Herwig/Particles/u
+insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 0 /Herwig/Particles/d
+insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
 
 insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
 

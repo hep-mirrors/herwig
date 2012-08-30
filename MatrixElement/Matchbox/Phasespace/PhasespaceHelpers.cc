@@ -150,48 +150,50 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
 					    const Lorentz5Momentum& p2,
 					    Energy pt) {
 
-  if ( (p1+p2).m2() <= ZERO ) {
-    cerr << "cannot boost ... " << ((p1+p2).m2()/GeV2) << "\n";
-    throw Veto();
-  }
-  Boost beta = (p1+p2).findBoostToCM();
-      
-  Lorentz5Momentum p1c = p1;
-
-  if (beta.mag2() > Constants::epsilon) {
-    p1c.boost(beta);
-  }
-      
-  Lorentz5Momentum k (0.*GeV,0.*GeV,0.*GeV,0.*GeV);
-      
-  double ct = p1c.vect().unit().z();
-  double st = sqrt(1.-ct*ct);
-  
   double phi = 2.*Constants::pi*rnd();
-  weight *= 2.*Constants::pi;
-  double cphi = cos(phi);
-  double sphi = sqrt(1.-cphi*cphi);
-  if (phi  > Constants::pi) sphi = -sphi;
-  
-  // adding an output somewhere around here results in the correct behaviour
-  // when compiling with g++-4.6.1 -O3
-  // cerr << "bla\n" << flush;
-  if (st > Constants::epsilon) {
-    double cchi = p1c.vect().unit().x()/st;
-    double schi = p1c.vect().unit().y()/st;
-    k.setX((cphi*cchi*ct-sphi*schi)*pt);
-    k.setY((cphi*schi*ct+sphi*cchi)*pt);
-    k.setZ(-cphi*st*pt);
-  } else {
-    k.setX(pt*cphi);
-    k.setY(pt*sphi);
-    k.setZ(0.*GeV);
-  }
-  
-  if (beta.mag2() > Constants::epsilon)
-    k.boost(-beta);
-    
-  return k;
+
+  Lorentz5Momentum P = p1 + p2;
+
+  Energy2 Q2 = abs(P.m2());
+
+  Lorentz5Momentum Q = 
+    Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2));
+
+  bool boost =
+    abs((P-Q).vect().mag2()/GeV2) > 1e-10 ||
+    abs((P-Q).t()/GeV) > 1e-5;
+
+  Lorentz5Momentum inFrame1;
+  if ( boost )
+    inFrame1 = p1 + ((P*p1-Q*p1)/(P*Q-Q.mass2()))*(P-Q);
+  else
+    inFrame1 = p1;
+
+  Energy ptx = inFrame1.x();
+  Energy pty = inFrame1.y();
+  Energy q = 2.*inFrame1.z();
+
+  Energy Qp = sqrt(4.*(sqr(ptx)+sqr(pty))+sqr(q));
+  Energy Qy = sqrt(4.*sqr(pty)+sqr(q));
+
+  double cPhi = cos(phi);
+  double sPhi = sqrt(1.-sqr(cPhi));
+  if ( phi > Constants::pi )
+    sPhi = -sPhi;
+
+  Lorentz5Momentum kt;
+
+  kt.setT(ZERO);
+  kt.setX(pt*Qy*cPhi/Qp);
+  kt.setY(-pt*(4*ptx*pty*cPhi/Qp+q*sPhi)/Qy);
+  kt.setZ(2.*pt*(-ptx*q*cPhi/Qp + pty*sPhi)/Qy);
+
+  if ( boost )
+    kt = kt + ((P*kt-Q*kt)/(P*Q-Q.mass2()))*(P-Q);
+  kt.setMass(-pt);
+  kt.rescaleRho();
+
+  return kt;
 
 }
 

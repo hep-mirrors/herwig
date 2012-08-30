@@ -131,7 +131,7 @@ public:
    * branch of the diagram.
    */
   pair<double,Lorentz5Momentum> timeLikeWeight(const Tree2toNDiagram& diag,
-					       int branch) const;
+					       int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given spacelike branch of
@@ -139,7 +139,7 @@ public:
    */
   double spaceLikeWeight(const Tree2toNDiagram& diag,
 			 const Lorentz5Momentum& incoming,
-			 int branch) const;
+			 int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given diagram.
@@ -152,7 +152,7 @@ public:
   /**
    * Fill the diagram weights.
    */
-  void fillDiagramWeights();
+  void fillDiagramWeights(double flatCut = 0.0);
 
   /**
    * Clone this phase space generator.

@@ -1,0 +1,56 @@
+##################################################
+# Example generator for the Little Higgs model with
+# T-parity
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read LHTP.model
+cd /Herwig/NewPhysics
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# --- Hard Process ----
+# The particle name can be found in the relevant model file
+# by searching for its PDG code and noting the text 
+# '/Herwig/Particles/###' where the hashes denote the name
+
+# Switch to decide whether to include EW diagrams in the 
+# hard process (On by default)
+set HPConstructor:IncludeEW No
+
+# Example hard process: Incoming proton, outgoing squarks
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/d
+insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/c
+insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/s
+insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/b
+insert HPConstructor:Incoming 0 /Herwig/Particles/bbar
+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/TpT
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+# Other parameters for run
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-LHTP LHCGenerator
