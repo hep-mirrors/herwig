@@ -113,14 +113,14 @@ void MEee2gZ2qq::persistentOutput(PersistentOStream & os) const {
   os << FFZVertex_ << FFPVertex_ << FFGVertex_ 
      << Z0_ << gamma_ << gluon_ << minflav_ 
      << maxflav_ << massopt_ << alphaQCD_ << alphaQED_ 
-     << ounit(pTmin_,GeV) << preFactor_;
+     << ounit(pTminQED_,GeV) << ounit(pTminQCD_,GeV) << preFactor_;
 }
 
 void MEee2gZ2qq::persistentInput(PersistentIStream & is, int) {
   is >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ 
      >> Z0_ >> gamma_ >> gluon_ >> minflav_ 
      >> maxflav_ >> massopt_ >> alphaQCD_ >> alphaQED_
-     >> iunit(pTmin_,GeV) >> preFactor_;
+     >> iunit(pTminQED_,GeV)  >> iunit(pTminQCD_,GeV) >> preFactor_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -163,10 +163,16 @@ void MEee2gZ2qq::Init() {
      "The top is generated off-shell using the mass and width generator.",
      2);
 
-  static Parameter<MEee2gZ2qq,Energy> interfacepTMin
-    ("pTMin",
-     "Minimum pT for hard radiation",
-     &MEee2gZ2qq::pTmin_, GeV, 1.0*GeV, 0.001*GeV, 10.0*GeV,
+  static Parameter<MEee2gZ2qq,Energy> interfacepTMinQED
+    ("pTMinQED",
+     "Minimum pT for hard QED radiation",
+     &MEee2gZ2qq::pTminQED_, GeV, 1.0*GeV, 0.001*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<MEee2gZ2qq,Energy> interfacepTMinQCD
+    ("pTMinQCD",
+     "Minimum pT for hard QCD radiation",
+     &MEee2gZ2qq::pTminQCD_, GeV, 1.0*GeV, 0.001*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<MEee2gZ2qq,double> interfacePrefactor
@@ -361,9 +367,8 @@ void MEee2gZ2qq::initializeMECorrection(ShowerTreePtr , double &  initial,
 void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  pair<Energy,ShowerInteraction::Type>  output = 
-    generateHard(tree,emission,iemit,ispect,true,
-		 vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
+  generateHard(tree,emission,iemit,ispect,true,
+	       vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
   if(emission.empty()) return;
   // get the quark and antiquark
   ParticleVector qq; 
@@ -599,20 +604,24 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   Energy pTmax = 0.5*sqrt(M2)*
     (1.-sqr(loMomenta_[2].mass()+loMomenta_[3].mass())/M2);
   // max y
-  if ( pTmax < pTmin_ ) return make_pair(ZERO,ShowerInteraction::QCD);
-  double ymax = acosh(pTmax/pTmin_);
+  if ( pTmax < pTminQED_ && pTmax < pTminQCD_ ) return make_pair(ZERO,ShowerInteraction::QCD);
   vector<Energy> pTemit;
   vector<vector<Lorentz5Momentum> > emittedMomenta;;
   vector<unsigned int> iemitter,ispectater;
   for(unsigned int iinter=0;iinter<inter.size();++iinter) {
-    double a;
+    Energy pTmin(ZERO);
+    double a,ymax;
     if(inter[iinter]==ShowerInteraction::QCD) {
+      pTmin = pTminQCD_;
+      ymax = acosh(pTmax/pTmin);
       partons_[4] = gluon_;
       // prefactor for the overestimate of the Sudakov
       a = 4./3.*alphaQCD_->overestimateValue()/Constants::twopi*
 	2.*ymax*preFactor_;
     }
     else {
+      pTmin = pTminQED_;
+      ymax = acosh(pTmax/pTmin);
       partons_[4] = gamma_;
       a =       alphaQED_->overestimateValue()/Constants::twopi*
 	2.*ymax*preFactor_*sqr(double(mePartonData()[2]->iCharge())/3.);
@@ -641,7 +650,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
       do {
 	// generate pT
 	pT[ix] *= pow(UseRandom::rnd(),1./a);
-	if(pT[ix]<pTmin_) {
+	if(pT[ix]<pTmin) {
 	  pT[ix] = -GeV;
 	  break;
 	}
@@ -749,7 +758,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
 	reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
       }
       while (reject);
-      if(pT[ix]<pTmin_)
+      if(pT[ix]<pTmin)
 	pT[ix] = -GeV;
     }
     // pt of emission
@@ -825,8 +834,14 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   // maximum pT of emission
   if(emmision.empty()) {
     for(unsigned int ix=0;ix<inter.size();++ix) {
-      qkProgenitor->maximumpT(pTmin_,inter[ix]);
-      qbProgenitor->maximumpT(pTmin_,inter[ix]);
+      if(inter[ix]==ShowerInteraction::QCD) {
+	qkProgenitor->maximumpT(pTminQCD_,inter[ix]);
+	qbProgenitor->maximumpT(pTminQCD_,inter[ix]);
+      }
+      else {
+	qkProgenitor->maximumpT(pTminQED_,inter[ix]);
+	qbProgenitor->maximumpT(pTminQED_,inter[ix]);
+      }
     }
     return HardTreePtr();
   }

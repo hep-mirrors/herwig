@@ -41,7 +41,8 @@ public:
   /**
    * The default constructor.
    */
-  MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1), pTmin_(GeV),
+  MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1),
+		 pTminQED_(GeV), pTminQCD_(GeV),
 		 preFactor_(6.)
   {}
 
@@ -464,9 +465,13 @@ private:
    */
   //@{
   /**
-   *  The cut off on pt, assuming massless quarks.
+   *  The cut off on pt for QED, assuming massless quarks.
    */
-  Energy pTmin_;
+  Energy pTminQED_;
+  /**
+   *  The cut off on pt for QCD, assuming massless quarks.
+   */
+  Energy pTminQCD_;
 
   /**
    *  Overestimate for the prefactor

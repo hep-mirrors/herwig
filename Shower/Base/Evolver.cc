@@ -720,9 +720,12 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
   if(_hardEmissionMode==1) hardestEmission(hard);
+  ShowerInteraction::Type inter = interactions_[0];
+  if(_hardtree&&inter!=ShowerInteraction::Both) {
+    inter = _hardtree->interaction();
+  }
   // set the initial colour partners
-  setEvolutionPartners(hard,_hardtree ? 
-		       _hardtree->interaction() : interactions_[0],false);
+  setEvolutionPartners(hard,inter,false);
   // generate hard me if needed
   if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
   // get the particles to be showered
@@ -1993,7 +1996,7 @@ void Evolver::doShowering(bool hard) {
 	mIn = particlesToShower[ix]->progenitor()->mass();
       }
     }
-    // throw exception if decay can'ty happen
+    // throw exception if decay can't happen
     if ( minmass > mIn ) {
       throw Exception() << "Evolver.cc: Mass of decaying particle is "
 			<< "below constituent masses of decay products."
