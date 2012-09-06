@@ -188,7 +188,7 @@ for f in aidafiles:
         ptmin=80.
     elif(file.find("-7-Heavy-5.aida")>0) :
         ptmin=110.
-    elif(file.find("-7-Top-SL.aida")>0 or file.find("-7-Top-L.aida")>0:
+    elif(file.find("-7-Top-SL.aida")>0 or file.find("-7-Top-L.aida")>0):
         ptmin=0.
     elif(file.find("-7-Jets-All-1")>0) :
         ptmin=25.
