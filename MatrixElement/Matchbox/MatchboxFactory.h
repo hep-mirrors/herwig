@@ -211,6 +211,16 @@ public:
   void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
 
   /**
+   * Return true, if fixed couplings are used.
+   */
+  bool fixedQEDCouplings() const { return theFixedQEDCouplings; }
+
+  /**
+   * Switch on fixed couplings.
+   */
+  void setFixedQEDCouplings(bool on = true) { theFixedQEDCouplings = on; }
+
+  /**
    * Return true, if veto scales should be set
    * for the real emission
    */
@@ -358,6 +368,16 @@ public:
    * Set the subtraction data prefix.
    */
   void subtractionData(const string& s) { theSubtractionData = s; }
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return theCheckPoles; }
+
+  /**
+   * Switch on checking of epsilon pole cancellation.
+   */
+  void doCheckPoles() { theCheckPoles = true; }
 
   //@}
 
@@ -508,6 +528,11 @@ private:
   bool theFixedCouplings;
 
   /**
+   * Use non-running couplings.
+   */
+  bool theFixedQEDCouplings;
+
+  /**
    * True, if veto scales should be set
    * for the real emission
    */
@@ -557,6 +582,11 @@ private:
    * Prefix for subtraction data
    */
   string theSubtractionData;
+
+  /**
+   * True, if cancellationn of epsilon poles should be checked.
+   */
+  bool theCheckPoles;
 
   /**
    * Particle groups.

@@ -94,13 +94,19 @@ void PowhegSplittingKernel::setXComb(tStdXCombPtr real) {
 
 }
 
+void PowhegSplittingKernel::flushCaches() {
+  if ( realME() )
+    realME()->flushCaches();
+  if ( projectionDipole() )
+    projectionDipole()->flushCaches();
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d =
+	  dipoles().begin(); d != dipoles().end(); ++d )
+    (**d).flushCaches();
+}
+
 tSubProPtr PowhegSplittingKernel::construct(Energy pt) {
 
-  // only cluster real emission
-
-  if ( lastCuts().jetFinder() )
-    lastCuts().jetFinder()->minOutgoing(lastXComb().mePartonData().size()-2);
-
+  lastXCombPtr()->matrixElement()->flushCaches();
   tSubProPtr subpro = lastXCombPtr()->construct();
 
   if ( projectionDipole()->realEmitter() == 0 ||
@@ -143,8 +149,11 @@ double PowhegSplittingKernel::evaluate() const {
     generator()->log() << "'" << name() << "' evaluating\n";
 
   if ( !projectionDipole()->underlyingBornME()->
-       lastXCombPtr()->willPassCuts() )
+       lastXCombPtr()->willPassCuts() ) {
+    if ( projectionDipole()->verbose() )
+      generator()->log() << "Born did not pass the cuts\n";
     return 0.;
+  }
 
   double fscaleFactor =
     projectionDipole()->realEmissionME()->factorizationScaleFactor();
@@ -154,6 +163,7 @@ double PowhegSplittingKernel::evaluate() const {
 
   double dummy;
   double ratio = ME2byDipoles::evaluate(dummy);
+  assert(ratio >= 0.);
 
   Energy2 bornSHat =
     projectionDipole()->underlyingBornME()->lastXComb().lastSHat();
@@ -177,7 +187,8 @@ double PowhegSplittingKernel::evaluate() const {
     born += sqr(hbarc) * scaledBornScreen() * bornJacobian / (2.*bornSHat);
   }
 
-  ratio *= ( projectionDipole()->dSigHatDR(fscale) / born );
+  CrossSection dip = projectionDipole()->dSigHatDR(fscale);
+  ratio *= ( dip / born );
 
   double rscaleFactor =
     projectionDipole()->realEmissionME()->renormalizationScaleFactor();
@@ -270,6 +281,8 @@ void PowhegSplittingKernel::stopPresampling() {
 
 double PowhegSplittingKernel::evaluate(const vector<double>& p) {
 
+  flushCaches();
+
   try {
 
     if ( projectionDipole()->verbose() )
@@ -306,12 +319,19 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
     assert(depXComb);
     depXComb->setProcess();
     if ( !projectionDipole()->generateKinematics(rad) ) {
+      if ( projectionDipole()->verbose() )
+	generator()->log() << "failed to generate radiation kinematics\n";
       return 0.0;
     }
     depXComb->remakeIncoming();
     depXComb->setIncomingPartons();
 
-    return evaluate();
+    double res = evaluate();
+
+    if ( res < 0. )
+      generator()->log() << "negative splitting kernel: " << res << "\n";
+
+    return res >= 0. ? res : 0.;
 
   } catch (...) {
     if ( presampling() )

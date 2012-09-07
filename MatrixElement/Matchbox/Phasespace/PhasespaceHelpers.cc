@@ -151,6 +151,7 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
 					    Energy pt) {
 
   double phi = 2.*Constants::pi*rnd();
+  weight *= 2.*Constants::pi;
 
   Lorentz5Momentum P = p1 + p2;
 
@@ -160,8 +161,8 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
     Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2));
 
   bool boost =
-    abs((P-Q).vect().mag2()/GeV2) > 1e-10 ||
-    abs((P-Q).t()/GeV) > 1e-5;
+    abs((P-Q).vect().mag2()/GeV2) > 1e-8 ||
+    abs((P-Q).t()/GeV) > 1e-4;
 
   Lorentz5Momentum inFrame1;
   if ( boost )
@@ -241,9 +242,9 @@ void PhasespaceTree::init(const vector<Lorentz5Momentum>& meMomenta) {
   if ( children.empty() ) {
     massRange.first = meMomenta[externalId].mass();
     massRange.second = massRange.first;
-    momentum.setMass(meMomenta[externalId].mass());
     if ( externalId == 1 )
       momentum = meMomenta[1];
+    momentum.setMass(meMomenta[externalId].mass());
     return;
   }
 

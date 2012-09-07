@@ -50,6 +50,12 @@ public:
 public:
 
   /**
+   * Return true, if this phasespace generator will generate incoming
+   * partons itself.
+   */
+  virtual bool haveX1X2() const { return false; }
+
+  /**
    * Prepare a phase space generator for the given xcomb object.
    */
   virtual void prepare(tStdXCombPtr, bool verbose = false);
@@ -65,6 +71,8 @@ public:
    * multiplicity final state.
    */
   virtual int nDim(int nFinal) const {
+    if ( nFinal == 1 )
+      return 1;
     return 3*(nFinal - 1); // one additional number needed for channel selection
   }
 

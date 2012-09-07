@@ -57,6 +57,11 @@ struct SU2Helper {
    */
   static tcPDPtr SU2CC(tcPDPtr p);
 
+  /**
+   * Return the family
+   */
+  static int family(tcPDPtr p);
+
 };
 
 

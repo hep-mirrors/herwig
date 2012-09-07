@@ -604,15 +604,12 @@ public:
    * point is about to be generated, so all caches should
    * be flushed.
    */
-  virtual void flushCaches() {
-    theUnderlyingBornME->flushCaches();
-    theRealEmissionME->flushCaches();
-  }  
+  virtual void flushCaches();
 
   /**
    * Indicate that the subtraction is being tested.
    */
-  void testSubtraction() { theSubtractionTest = true; }
+  void doTestSubtraction() { theSubtractionTest = true; }
 
   /**
    * Return true, if the subtraction is being tested.
@@ -657,11 +654,6 @@ public:
    * for dsigdr evaluation
    */
   void logDSigHatDR(double effectiveJac) const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 

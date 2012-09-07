@@ -199,17 +199,33 @@ public:
    * Return the colour crossing information as filled by the last call to
    * fillCrossingMap(...), mapping amplitude ids to colour basis ids.
    */
-  const map<size_t,size_t>& lastColourMap() const { return theLastColourMap->second; }
+  const map<size_t,size_t>& lastAmplitudeToColourMap() const { return theLastAmplitudeToColourMap->second; }
 
   /**
    * Access the colour crossing information.
    */
-  map<size_t,size_t>& lastColourMap() { return theLastColourMap->second; }  
+  map<size_t,size_t>& lastAmplitudeToColourMap() { return theLastAmplitudeToColourMap->second; }  
 
   /**
    * Access the colour crossing information.
    */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return processData()->colourMap(); }
+  map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() { return processData()->amplitudeToColourMap(); }
+
+  /**
+   * Return the colour crossing information as filled by the last call to
+   * fillCrossingMap(...), mapping amplitude ids to colour basis ids.
+   */
+  const map<size_t,size_t>& lastColourToAmplitudeMap() const { return theLastColourToAmplitudeMap->second; }
+
+  /**
+   * Access the colour crossing information.
+   */
+  map<size_t,size_t>& lastColourToAmplitudeMap() { return theLastColourToAmplitudeMap->second; }  
+
+  /**
+   * Access the colour crossing information.
+   */
+  map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() { return processData()->colourToAmplitudeMap(); }
 
   //@}
 
@@ -282,27 +298,27 @@ public:
    * Calculate the tree level amplitudes for the phasespace point
    * stored in lastXComb.
    */
-  virtual void prepareAmplitudes();
+  virtual void prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr);
 
   /**
    * Return last evaluated helicity amplitudes.
    */
-  const AmplitudeMap& lastAmplitudes() const { return theLastAmplitudes; }
+  const AmplitudeMap& lastAmplitudes() const { return theLastAmplitudes->second; }
 
   /**
    * Access the last evaluated helicity amplitudes.
    */
-  AmplitudeMap& lastAmplitudes() { return theLastAmplitudes; }
+  AmplitudeMap& lastAmplitudes() { return theLastAmplitudes->second; }
 
   /**
    * Return last evaluated, leading colour helicity amplitudes.
    */
-  const AmplitudeMap& lastLargeNAmplitudes() const { return theLastLargeNAmplitudes; }
+  const AmplitudeMap& lastLargeNAmplitudes() const { return theLastLargeNAmplitudes->second; }
 
   /**
    * Access the last evaluated, leading colour helicity amplitudes.
    */
-  AmplitudeMap& lastLargeNAmplitudes() { return theLastLargeNAmplitudes; }
+  AmplitudeMap& lastLargeNAmplitudes() { return theLastLargeNAmplitudes->second; }
 
   /**
    * Return the matrix element squared.
@@ -363,13 +379,25 @@ public:
    * regularization is assumed. Note that renormalization is always
    * assumed to be MSbar.
    */
-  bool isDR() const { return false; }
+  virtual bool isDR() const { return false; }
 
   /**
    * Return true, if one loop corrections are given in the conventions
    * of the integrated dipoles.
    */
-  bool isCS() const { return false; }
+  virtual bool isCS() const { return false; }
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of BDK.
+   */
+  virtual bool isBDK() const { return false; }
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of everything expanded.
+   */
+  virtual bool isExpanded() const { return false; }
 
   /**
    * Return the value of the dimensional regularization
@@ -379,20 +407,30 @@ public:
   virtual Energy2 mu2() const { return 0.*GeV2; }
 
   /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const { return 0.; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const { return 0.; }
+
+  /**
    * Calculate the one-loop amplitudes for the phasespace point
    * stored in lastXComb, if provided.
    */
-  virtual void prepareOneLoopAmplitudes();
+  virtual void prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr);
 
   /**
    * Return last evaluated one-loop helicity amplitudes.
    */
-  const AmplitudeMap& lastOneLoopAmplitudes() const { return theLastOneLoopAmplitudes; }
+  const AmplitudeMap& lastOneLoopAmplitudes() const { return theLastOneLoopAmplitudes->second; }
 
   /**
    * Access the last evaluated one-loop helicity amplitudes.
    */
-  AmplitudeMap& lastOneLoopAmplitudes() { return theLastOneLoopAmplitudes; }
+  AmplitudeMap& lastOneLoopAmplitudes() { return theLastOneLoopAmplitudes->second; }
 
   /**
    * Return the one-loop/tree interference.
@@ -433,16 +471,6 @@ public:
    * Clone the dependencies, using a given prefix.
    */
   virtual void cloneDependencies(const std::string& prefix = "");
-
-  //@}
-
-  /** @name Diagnostic information */
-  //@{
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -515,29 +543,37 @@ private:
    * References to the amplitude values which have been contributing
    * to the last call of prepareAmplitudes.
    */
-  map<vector<int>,CVector> theLastAmplitudes;
-
-  /**
-   * True, if amplitudes have been cleaned up from vanishing helicity combinations.
-   */
-  bool amplitudesCleanedUp;
+  map<tStdXCombPtr,map<vector<int>,CVector> > theLastAmplitudeMap;
 
   /**
    * References to the leading N amplitude values which have been
    * contributing to the last call of prepareAmplitudes.
    */
-  map<vector<int>,CVector> theLastLargeNAmplitudes;
+  map<tStdXCombPtr,map<vector<int>,CVector> > theLastLargeNAmplitudeMap;
 
   /**
    * References to the one-loop amplitude values which have been contributing
    * to the last call of prepareAmplitudes.
    */
-  map<vector<int>,CVector> theLastOneLoopAmplitudes;
+  map<tStdXCombPtr,map<vector<int>,CVector> > theLastOneLoopAmplitudeMap;
 
   /**
-   * True, if one-loop amplitudes have been cleaned up from vanishing helicity combinations.
+   * References to the amplitude values which have been contributing
+   * to the last call of prepareAmplitudes.
    */
-  bool oneLoopAmplitudesCleanedUp;
+  map<tStdXCombPtr,map<vector<int>,CVector> >::iterator theLastAmplitudes;
+
+  /**
+   * References to the leading N amplitude values which have been
+   * contributing to the last call of prepareAmplitudes.
+   */
+  map<tStdXCombPtr,map<vector<int>,CVector> >::iterator theLastLargeNAmplitudes;
+
+  /**
+   * References to the one-loop amplitude values which have been contributing
+   * to the last call of prepareAmplitudes.
+   */
+  map<tStdXCombPtr,map<vector<int>,CVector> >::iterator theLastOneLoopAmplitudes;
 
   /**
    * The crossing information as filled by the last call to
@@ -549,7 +585,13 @@ private:
    * The colour crossing information as filled by the last call to
    * fillCrossingMap()
    */
-  map<tStdXCombPtr,map<size_t,size_t> >::iterator theLastColourMap;
+  map<tStdXCombPtr,map<size_t,size_t> >::iterator theLastAmplitudeToColourMap;
+
+  /**
+   * The colour crossing information as filled by the last call to
+   * fillCrossingMap()
+   */
+  map<tStdXCombPtr,map<size_t,size_t> >::iterator theLastColourToAmplitudeMap;
 
   /**
    * The amplitude parton data.
@@ -562,6 +604,14 @@ private:
   double theLastCrossingSign;
 
   /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  MatchboxAmplitude & operator=(const MatchboxAmplitude &);
+
+protected:
+
+  /**
    * True, if tree amplitudes need to be recalculated.
    */
   bool calculateTrees;
@@ -570,12 +620,6 @@ private:
    * True, if loop amplitudes need to be recalculated.
    */
   bool calculateLoops;
-
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  MatchboxAmplitude & operator=(const MatchboxAmplitude &);
 
 };
 

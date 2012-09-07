@@ -9,12 +9,14 @@ DiagramDrawer.cc \
 DiagramDrawer.h \
 MatchboxMECache.cc \
 MatchboxMECache.h \
-MatchboxPtScale.h \
-MatchboxPtScale.cc \
 MatchboxLeptonMassScale.h \
 MatchboxLeptonMassScale.cc \
+MatchboxLeptonPtScale.h \
+MatchboxLeptonPtScale.cc \
 MatchboxScaleChoice.cc \
 MatchboxScaleChoice.h \
+MatchboxPtScale.h \
+MatchboxPtScale.cc \
 ProcessData.h \
 ProcessData.cc \
 SimpleColourBasis.cc \

@@ -329,6 +329,15 @@ SubtractionDipole::selectColourGeometry(tcDiagPtr diag) const {
     underlyingBornME()->selectColourGeometry(diag);
 }
 
+void SubtractionDipole::flushCaches() {
+  theUnderlyingBornME->flushCaches();
+  theRealEmissionME->flushCaches();
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator r =
+	  reweights().begin(); r != reweights().end(); ++r ) {
+    (**r).flushCaches();
+  }
+}
+
 void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   if ( !xc ) {
     theApply = false;
@@ -583,6 +592,8 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     return ZERO;
   }
 
+  lastME2(xme2);
+
   if ( splitting() )
     xme2 = abs(xme2);
 
@@ -751,42 +762,6 @@ void SubtractionDipole::logDSigHatDR(double effectiveJac) const {
 		     << (lastMECrossSection()/nanobarn) << "\n" << flush;
 
 }
-
-void SubtractionDipole::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  generator()->log() << prefix << "  | Applies? "
-		     << (apply() ? "yes" : "no")
-		     << "\n";
-  generator()->log() << prefix << "  | Splitting? "
-		     << (splitting() ? "yes" : "no")
-		     << "\n";
-  generator()->log() << prefix << "  | Real emission ME\n";
-  realEmissionME()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Born ME\n";
-  underlyingBornME()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Tilde kinematics\n";
-  tildeKinematics()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Inverted tilde kinematics\n";
-  invertedTildeKinematics()->dumpInfo(prefix+"  | ");
-  if ( !reweights().empty() ) {
-    generator()->log() << prefix << "  | Reweights\n";
-    for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator r =
-	    reweights().begin(); r != reweights().end(); ++r ) {
-      (**r).dumpInfo(prefix+"  | ");
-    }
-  }
-}
-
 
 void SubtractionDipole::logGenerateTildeKinematics() const {
 

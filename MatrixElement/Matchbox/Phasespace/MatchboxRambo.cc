@@ -13,18 +13,22 @@
 
 #include "MatchboxRambo.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig++/Utilities/GSLBisection.h"
+#include "ThePEG/Cuts/Cuts.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-MatchboxRambo::MatchboxRambo() {}
+MatchboxRambo::MatchboxRambo() 
+  : needToReshuffle(false), theMakeReferenceSample(false),
+    referenceSample(0) {}
 
 MatchboxRambo::~MatchboxRambo() {}
 
@@ -61,8 +65,50 @@ void MatchboxRambo::prepare(tStdXCombPtr xc, bool) {
   }
 }
 
+void MatchboxRambo::dumpReference(const vector<Lorentz5Momentum>& momenta, double weight) const {
+  *referenceSample << lastX1() << " " << lastX2() << " ";
+  Boost toLab = (lastPartons().first->momentum() + 
+		 lastPartons().second->momentum()).boostVector();
+  for ( vector<Lorentz5Momentum>::const_iterator p = momenta.begin();
+	p != momenta.end(); ++p ) {
+    Lorentz5Momentum pl = *p;
+    if ( toLab.mag2() > Constants::epsilon )
+      pl.boost(toLab);
+    *referenceSample 
+      << (pl.x()/GeV) << " "
+      << (pl.y()/GeV) << " "
+      << (pl.z()/GeV) << " "
+      << (pl.t()/GeV) << " "
+      << (pl.mass()/GeV) << " ";
+  }
+  double ymax = lastCuts().yHatMax();
+  double ymin = lastCuts().yHatMin();
+  double km = log(lastCuts().sHatMax()/lastCuts().sHatMin());
+  ymax = min(ymax, log(lastCuts().x1Max()*sqrt(lastS()/lastSHat())));
+  ymin = max(ymin, -log(lastCuts().x2Max()*sqrt(lastS()/lastSHat())));
+  *referenceSample << weight*km*(ymax-ymin)/(lastX1()*lastX2()) << "\n" << flush;
+}
+
 double MatchboxRambo::generateKinematics(const double* r,
 					 vector<Lorentz5Momentum>& momenta) {
+
+  if ( theMakeReferenceSample ) {
+    map<cPDVector,ofstream*>::iterator ref =
+      referenceSamples.find(mePartonData());
+    if ( ref == referenceSamples.end() ) {
+      ostringstream refname;
+      for ( cPDVector::const_iterator p = mePartonData().begin();
+	    p != mePartonData().end(); ++p ) {
+	refname << (**p).PDGName();
+      }
+      refname << ".rambo";
+      referenceSamples[mePartonData()] = new ofstream(refname.str().c_str());
+      ref = referenceSamples.find(mePartonData());
+      *(ref->second) << setprecision(26);
+    }
+    assert(ref != referenceSamples.end());
+    referenceSample = ref->second;
+  }
 
   size_t offset = dynamic_cast<const Tree2toNDiagram&>(*lastXComb().diagrams().front()).nSpace() > 0 ? 2 : 1;
 
@@ -106,7 +152,11 @@ double MatchboxRambo::generateKinematics(const double* r,
   double weight = weights[n];
 
   if ( !needToReshuffle ) {
+    if ( !matchConstraints(momenta) )
+      return 0.;
     fillDiagramWeights();
+    if ( theMakeReferenceSample )
+      dumpReference(momenta, weight);
     return weight;
   }
 
@@ -142,10 +192,16 @@ double MatchboxRambo::generateKinematics(const double* r,
     (*k).setMass((**d).mass());
   }
 
+  if ( !matchConstraints(momenta) )
+    return 0.;
+
   weight *= num/den;
 
   fillDiagramWeights();
 
+  if ( theMakeReferenceSample )
+    dumpReference(momenta, weight);
+  
   return weight;
 
 }
@@ -165,10 +221,12 @@ Energy MatchboxRambo::ReshuffleEquation::operator() (double xi) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MatchboxRambo::persistentOutput(PersistentOStream &) const {
+void MatchboxRambo::persistentOutput(PersistentOStream & os) const {
+  os << theMakeReferenceSample;
 }
 
-void MatchboxRambo::persistentInput(PersistentIStream &, int) {
+void MatchboxRambo::persistentInput(PersistentIStream & is, int) {
+  is >> theMakeReferenceSample;
 }
 
 
@@ -184,6 +242,22 @@ void MatchboxRambo::Init() {
 
   static ClassDocumentation<MatchboxRambo> documentation
     ("MatchboxRambo implements RAMBO phase space generation.");
+
+
+  static Switch<MatchboxRambo,bool> interfaceMakeReferenceSample
+    ("MakeReferenceSample",
+     "Switch on generation of a reference sample of phasespace points.",
+     &MatchboxRambo::theMakeReferenceSample, false, false, false);
+  static SwitchOption interfaceMakeReferenceSampleOn
+    (interfaceMakeReferenceSample,
+     "On",
+     "Generate a reference sample.",
+     true);
+  static SwitchOption interfaceMakeReferenceSampleOff
+    (interfaceMakeReferenceSample,
+     "Off",
+     "Do not generate a reference sample.",
+     false);
 
 }
 

@@ -72,37 +72,75 @@ void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
 double TreePhasespace::generateKinematics(const double* random,
 					  vector<Lorentz5Momentum>& momenta) {
 
-  size_t nchannels = lastXComb().diagrams().size();
-  map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::iterator ds =
-    lastChannels().begin();
-  advance(ds,(size_t)(random[0]*nchannels));
-  Ptr<Tree2toNDiagram>::ptr channel = ds->first;
-  ++random;
-
-  lastPhasespaceInfo.rnd.numbers = random;
-  lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
-
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = momenta.begin();
   for ( ; pd != mePartonData().end(); ++pd, ++p )
     p->setMass((**pd).mass());
 
-  try {
-    lastChannels()[channel].generateKinematics(lastPhasespaceInfo,momenta);
-  } catch (Veto) {
-    return 0.;
+  if ( momenta.size() > 3 ) {
+
+    size_t nchannels = lastXComb().diagrams().size();
+    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::iterator ds =
+      lastChannels().begin();
+    advance(ds,(size_t)(random[0]*nchannels));
+    Ptr<Tree2toNDiagram>::ptr channel = ds->first;
+    ++random;
+
+    lastPhasespaceInfo.rnd.numbers = random;
+    lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
+
+    try {
+      lastChannels()[channel].generateKinematics(lastPhasespaceInfo,momenta);
+    } catch (Veto) {
+      return 0.;
+    }
+
+    if ( !matchConstraints(momenta) )
+      return 0.;
+
+    fillDiagramWeights(x0);
+
+    double sum = 0.;
+    for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::const_iterator d
+	    = lastChannels().begin(); d != lastChannels().end(); ++d )
+      sum += diagramWeight(*(d->first));
+
+    double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
+
+    for ( vector<Lorentz5Momentum>::iterator k = momenta.begin();
+	  k != momenta.end(); ++k )
+      k->rescaleRho();
+
+    return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
+
   }
 
-  fillDiagramWeights(x0);
+  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
+  double ltau = log(tau)/2.;
+  double y = ltau - 2.*random[0]*ltau;
+  double x1 = sqrt(tau)*exp(y);
+  double x2 = sqrt(tau)*exp(-y);
 
-  double sum = 0.;
-  for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::const_iterator d
-	  = lastChannels().begin(); d != lastChannels().end(); ++d )
-    sum += diagramWeight(*(d->first));
+  ThreeVector<Energy> p1 =
+    x1*(lastXCombPtr()->lastParticles().first->momentum().vect());
 
-  double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
+  ThreeVector<Energy> p2 =
+    x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
 
-  return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
+  ThreeVector<Energy> q = p1 + p2;
+
+  momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
+  momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
+  momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
+
+  lastXCombPtr()->lastX1X2(make_pair(x1,x2));
+  lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
+
+  fillDiagramWeights();
+
+  double weight = -4.*Constants::pi*ltau;
+
+  return weight;
 
 }
 

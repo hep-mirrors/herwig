@@ -14,6 +14,7 @@
 #include "MatchboxPtScale.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -38,12 +39,21 @@ IBPtr MatchboxPtScale::fullclone() const {
 }
 
 Energy2 MatchboxPtScale::renormalizationScale() const {
-  cPDVector::const_iterator pd = mePartonData().begin() + 2;
-  vector<Lorentz5Momentum>::const_iterator p = meMomenta().begin() + 2;
+  tcPDVector pd (mePartonData().begin() + 2, mePartonData().end());
+  vector<LorentzMomentum> p (meMomenta().begin() + 2, meMomenta().end());
+  tcPDPtr t1 = mePartonData()[0];
+  tcPDPtr t2 = mePartonData()[1];
+  tcCutsPtr cuts = lastCutsPtr();
+
+  theJetFinder->cluster(pd, p, cuts, t1, t2);
+
   Energy2 maxpt2 = ZERO;
-  for ( ; p != meMomenta().end(); ++p, ++pd )
-    if ( (**pd).coloured() )
-      maxpt2 = max(maxpt2,(*p).perp2());
+  tcPDVector::const_iterator itpd = pd.begin();
+  for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
+       itp != p.end(); ++itp, ++itpd )
+    if ( (**itpd).coloured() )
+      maxpt2 = max(maxpt2,(*itp).perp2());
+
   return maxpt2;
 }
 
@@ -55,9 +65,13 @@ Energy2 MatchboxPtScale::factorizationScale() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MatchboxPtScale::persistentOutput(PersistentOStream &) const {}
+void MatchboxPtScale::persistentOutput(PersistentOStream & os) const {
+  os << theJetFinder;
+}
 
-void MatchboxPtScale::persistentInput(PersistentIStream &, int) {}
+void MatchboxPtScale::persistentInput(PersistentIStream & is, int) {
+  is >> theJetFinder;
+}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -73,6 +87,10 @@ void MatchboxPtScale::Init() {
   static ClassDocumentation<MatchboxPtScale> documentation
     ("MatchboxPtScale implements scale choices related to transverse momenta.");
 
+  static Reference<MatchboxPtScale,JetFinder> interfaceJetFinder
+    ("JetFinder",
+     "A reference to the jet finder.",
+     &MatchboxPtScale::theJetFinder, false, false, true, false, false);
 
 }
 

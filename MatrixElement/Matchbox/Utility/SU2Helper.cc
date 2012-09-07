@@ -26,3 +26,20 @@ tcPDPtr SU2Helper::SU2CC(tcPDPtr p) {
     Repository::defaultParticle(idUp) :
     Repository::defaultParticle(idDown); 
 }
+
+int SU2Helper::family(tcPDPtr p) {
+
+  long id = abs(p->id());
+
+  if ( id > 20 )
+    return 0;
+
+  if ( id > 10 )
+    id = id - 10;
+
+  if ( id % 2 != 0 )
+    id = id + 1;
+
+  return id/2;
+
+}
