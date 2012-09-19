@@ -23,27 +23,15 @@ IBPtr VVSLoopVertex::fullclone() const {
 }
 
 void VVSLoopVertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(masses,GeV) << type << couplings << theNpart;
+  os << ounit(masses,GeV) << type << couplings << Npart_;
 }
 
 void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(masses,GeV) >> type >> couplings >> theNpart;
+  is >> iunit(masses,GeV) >> type >> couplings >> Npart_;
 }
-
-void VVSLoopVertex::doinit() {
-  // ffini needed here for BSM initialization code!
-  Looptools::ltini();
-  GeneralVVSVertex::doinit();
-}
-
 void VVSLoopVertex::dofinish() {
-  Looptools::ltexi();
+  if(loopToolsInit_) Looptools::ltexi();
   GeneralVVSVertex::dofinish();
-}
-
-void VVSLoopVertex::doinitrun() {
-  Looptools::ltini();
-  GeneralVVSVertex::doinitrun();
 }
 
 ClassDescription<VVSLoopVertex> VVSLoopVertex::initVVSLoopVertex;
@@ -58,12 +46,16 @@ void VVSLoopVertex::Init() {
 }
 
 void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
+  if(!loopToolsInit_) {
+    Looptools::ltini();
+    loopToolsInit_ = true;
+  }
   //Kinematic invariants
   double ps2 = invariant(0,0) / MeV2;
   double pv1s = invariant(1,1) / MeV2;
   double pv2s = invariant(2,2) / MeV2;
   Complex a(0.),b(0.),c(0.),d(0.),e(0.),f(0.);
-  for(unsigned int i = 0; i< theNpart;++i) {
+  for(unsigned int i = 0; i< Npart_;++i) {
     double lmass = masses[i] / MeV;
     double mls = sqr(lmass);
     Complex lc = couplings[i].first;

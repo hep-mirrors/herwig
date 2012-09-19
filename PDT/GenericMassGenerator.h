@@ -21,6 +21,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
+  /**
+   *  Declare ModelGenerator class as must be friend to set the particle
+   */
+  class ModelGenerator;
+
 /** \ingroup PDT
  *
  *  The <code>GenericMassGenerator</code> class is a simple class for the
@@ -48,6 +53,11 @@ using namespace ThePEG;
  * 
  */
 class GenericMassGenerator: public MassGenerator {
+
+  /**
+   *  ModelGenerator class as must be friend to set the particle
+   */
+  friend class ModelGenerator;
 
 public:
 
@@ -284,6 +294,11 @@ protected:
    *  Accesss to the particle
    */
   tcPDPtr particle() const {return particle_;}
+
+  /**
+   * Set the particle
+   */
+  void particle(tPDPtr in) {particle_ = in;}
 
 protected:
 

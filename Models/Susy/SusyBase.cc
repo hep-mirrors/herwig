@@ -22,8 +22,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/PDT/MassGenerator.h"
-#include "ThePEG/PDT/WidthGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
