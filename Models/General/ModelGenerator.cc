@@ -437,8 +437,8 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
     (generator()->preinitCreate("Herwig::BSMWidthGenerator", wn));
 
   //set the particle interface
-  generator()->preinitInterface(mgen, "Particle", "set", p->fullName());
-  generator()->preinitInterface(wgen, "Particle", "set", p->fullName());
+  mgen->particle(p);
+  wgen->particle(p);
 
   //set the generator interfaces in the ParticleData object
   generator()->preinitInterface(p, "Mass_generator","set", mn);

@@ -24,10 +24,15 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
- * Typedef to define a DecayMoap
- */
-typedef Selector<tDMPtr> DecayMap;
+  /**
+   *  Declare ModelGenerator class as must be friend to set the particle
+   */
+  class ModelGenerator;
+
+  /**
+   * Typedef to define a DecayMoap
+   */
+  typedef Selector<tDMPtr> DecayMap;
 
 
 /** \ingroup PDT
@@ -44,6 +49,11 @@ typedef Selector<tDMPtr> DecayMap;
  * @see GenericMassGenerator
  */
 class GenericWidthGenerator: public WidthGenerator {
+
+  /**
+   *  ModelGenerator class as must be friend to set the particle
+   */
+  friend class ModelGenerator;
 
 public:
 
@@ -185,6 +195,11 @@ protected:
    *  Access to the particle dat for inheriting classes
    */
   tPDPtr particle() const {return particle_;}
+
+  /**
+   * Set the particle
+   */
+  void particle(tPDPtr in) {particle_ = in;}
 
 protected:
 
