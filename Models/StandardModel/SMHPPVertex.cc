@@ -276,6 +276,6 @@ void SMHPPVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(electroMagneticCoupling(sqr(mh))))
 //     /1024./pow(Constants::pi,5)/16.*sqr(mh/_mw)*mh*std::norm(I);
 //   cerr << "testing anal " << width/GeV << "\n";
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 

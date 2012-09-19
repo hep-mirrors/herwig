@@ -81,7 +81,7 @@ void NMSSMGGHVertex::doinit()  {
   couplings.resize(6);
 
   VVSLoopVertex::doinit();
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 void NMSSMGGHVertex::persistentOutput(PersistentOStream & os) const {

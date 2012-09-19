@@ -59,7 +59,7 @@ void SMHGGVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(strongCoupling(sqr(mh))))/36./8.*sqr(mh/_mw)*mh
 //     /sqr(4.*sqr(Constants::pi))*std::norm(I)/Constants::pi;
 //   cerr << "testing anal " << width/GeV << "\n";
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
