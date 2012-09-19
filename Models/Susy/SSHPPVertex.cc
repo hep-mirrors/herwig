@@ -574,6 +574,6 @@ void SSHPPVertex::doinit() {
 // 	 << pre*std::norm(Isb1+Isb2+Ist1+Ist2+Istau1+Istau2+
 // 			  Itop+Ibot+Itau+Ih+IW+IC[0]+IC[1])/GeV << "\n";
 //   }
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
  

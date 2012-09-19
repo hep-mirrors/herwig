@@ -115,6 +115,11 @@ protected:
    */
   void setNParticles(unsigned int npart) { Npart_ = npart; }
 
+  /**
+   *  Is loopTools initialized
+   */
+  bool loopToolsInitialized() { return loopToolsInit_; }
+
 private:
 
   /**
