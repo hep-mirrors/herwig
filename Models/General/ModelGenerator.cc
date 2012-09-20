@@ -38,13 +38,13 @@ IBPtr ModelGenerator::fullclone() const {
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << hardProcessConstructors_ << _theDecayConstructor << particles_ 
-     << offshell_ << Offsel_ << BRnorm_
+     << offshell_ << Offsel_ << BRnorm_ << twoBodyOnly_
      << Npoints_ << Iorder_ << BWshape_ << brMin_ << decayOutput_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
-     >> offshell_ >> Offsel_ >> BRnorm_
+     >> offshell_ >> Offsel_ >> BRnorm_ >> twoBodyOnly_
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
@@ -161,6 +161,21 @@ void ModelGenerator::Init() {
      "NoNumerator",
      "Neglect the numerator factors",
      3);
+
+  static Switch<ModelGenerator,bool> interfaceTwoBodyOnly
+    ("TwoBodyOnly",
+     "Whether to use only two-body or all modes in the running width calculation",
+     &ModelGenerator::twoBodyOnly_, false, false, false);
+  static SwitchOption interfaceTwoBodyOnlyYes
+    (interfaceTwoBodyOnly,
+     "Yes",
+     "Only use two-body modes",
+     true);
+  static SwitchOption interfaceTwoBodyOnlyNo
+    (interfaceTwoBodyOnly,
+     "No",
+     "Use all modes",
+     false);
   
   static Parameter<ModelGenerator,double> interfaceMinimumBR
     ("MinimumBR",
@@ -453,6 +468,8 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
 
   string norm = BRnorm_ ? "Yes" : "No";
   generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
+  string twob = twoBodyOnly_ ? "Yes" : "No";
+  generator()->preinitInterface(wgen, "TwoBodyOnly", "set", twob);
   ostringstream os;
   os << Npoints_;
   generator()->preinitInterface(wgen, "InterpolationPoints", "set", 

@@ -69,7 +69,7 @@ public:
    */
   GenericWidthGenerator()
     : mass_(), prefactor_(1.), initialize_(false),BRnorm_(true),npoints_(50),
-      BRminimum_(0.01), intOrder_(1)
+      BRminimum_(0.01), intOrder_(1), twoBodyOnly_(false)
   {}
 
   /** @name Functions used by the persistent I/O system. */
@@ -413,6 +413,12 @@ private:
    *  Order of the interpolation for the tables
    */
   unsigned int intOrder_;
+
+  /**
+   *  Whether or not to only include 2 body modes in the running
+   * width calculation, higher modes flat
+   */
+  bool twoBodyOnly_;
 };
 
 }
