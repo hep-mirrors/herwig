@@ -31,7 +31,7 @@ void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << particle_ << ounit(mass_,GeV) << prefactor_ << MEtype_ << MEcode_
      << ounit(MEmass1_,GeV) << ounit(MEmass2_,GeV) << MEcoupling_ << modeOn_
      << ounit(interMasses_,GeV) << ounit(interWidths_,GeV) 
-     << noOfEntries_ << initialize_ << BRnorm_
+     << noOfEntries_ << initialize_ << BRnorm_ << twoBodyOnly_
      << npoints_ << decayModes_ << decayTags_ << ounit(minMass_,GeV) 
      << BRminimum_ << intOrder_ << interpolators_;
 }
@@ -40,7 +40,7 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> particle_ >> iunit(mass_,GeV) >> prefactor_ >> MEtype_ >> MEcode_ 
      >> iunit(MEmass1_,GeV) >> iunit(MEmass2_,GeV) >> MEcoupling_ >>modeOn_
      >> iunit(interMasses_,GeV) >> iunit(interWidths_,GeV)
-     >> noOfEntries_ >> initialize_ >> BRnorm_
+     >> noOfEntries_ >> initialize_ >> BRnorm_ >> twoBodyOnly_
      >> npoints_ >> decayModes_ >> decayTags_ >> iunit(minMass_,GeV)
      >> BRminimum_ >> intOrder_ >> interpolators_;
 }
@@ -199,6 +199,22 @@ void GenericWidthGenerator::Init() {
      "The interpolation order for the tables",
      &GenericWidthGenerator::intOrder_, 1, 1, 5,
      false, false, Interface::limited);
+
+  static Switch<GenericWidthGenerator,bool> interfaceTwoBodyOnly
+    ("TwoBodyOnly",
+     "Only Use two-body modes for the calculation of the running "
+     "width, higher multiplicity modes fixed partial width",
+     &GenericWidthGenerator::twoBodyOnly_, false, false, false);
+  static SwitchOption interfaceTwoBodyOnlyYes
+    (interfaceTwoBodyOnly,
+     "Yes",
+     "Only include two-body modes",
+     true);
+  static SwitchOption interfaceTwoBodyOnlyNo
+    (interfaceTwoBodyOnly,
+     "No",
+     "Include all modes",
+     false);
 
 }
 
@@ -423,7 +439,7 @@ void GenericWidthGenerator::doinit() {
       // higher multiplicities
       else {
 	setupMode(mode,decayer,MEcode_.size());
-	widthptr=decayer->threeBodyMEIntegrator(*mode);
+	widthptr = twoBodyOnly_ ? WidthCalculatorBasePtr() : decayer->threeBodyMEIntegrator(*mode);
 	if(!widthptr) {
 	  MEtype_.push_back(0);
 	  MEcode_.push_back(0);
@@ -523,7 +539,8 @@ void GenericWidthGenerator::doinit() {
     decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(decayModes_[ix]->decayer());
     if(!decayer) continue;
     decayer->init();
-    decayer->setPartialWidth(*decayModes_[ix],ix);
+    if(particle_->widthGenerator() && 
+       particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
   }
   // code to output plots
 //   string fname = CurrentGenerator::current().filename() + 
