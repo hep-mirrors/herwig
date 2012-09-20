@@ -108,6 +108,9 @@ cd /Herwig/NewPhysics
 set TwoBodyDC:CreateDecayModes Yes
 set ThreeBodyDC:CreateDecayModes No
 
+# which particles get the off-shell treatment
+set NewModel:WhichOffshell All
+# particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/Zp
 
 ###################################################

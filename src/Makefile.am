@@ -81,7 +81,6 @@ if WANT_NMSSM
 check_BSM_Full += check-LHC-NMSSM
 endif
 if WANT_UED
-check_BSM += check-LHC-MUED
 check_BSM_Full += check-LHC-MUED
 endif
 if WANT_RS
