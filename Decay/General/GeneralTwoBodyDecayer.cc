@@ -764,11 +764,9 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
       double meRatio = matrixElementRatio(inpart,decay2,decay3,Initialize);
 
       if (dipoleNo==2){
-	InvEnergy2 dipoleSum =  abs(calculateDipole(dipoleNo, xc[j], xa[j])) +
-	                        abs(calculateDipole(dipoleNo, xa[j], xc[j]));
-	InvEnergy2 dipole;
-	if      (i==0) dipole = abs(calculateDipole(dipoleNo, xc[j], xa[j]));
-	else if (i==1) dipole = abs(calculateDipole(dipoleNo, xa[j], xc[j]));
+	InvEnergy2 dipoleSum = abs(calculateDipole(dipoleNo, xc[j], xa[j])) +
+	                       abs(calculateDipole(dipoleNo, xa[j], xc[j]));
+	InvEnergy2 dipole    = abs(calculateDipole(dipoleNo, xc[j], xa[j]));
 	meRatio *= (3./4.)*(dipole/dipoleSum);	
       }
 
