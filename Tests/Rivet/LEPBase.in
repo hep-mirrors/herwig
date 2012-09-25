@@ -24,8 +24,6 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 ##################################################
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-set /Herwig/Analysis/HepMCFile:PrintEvent 10000
 
 ##################################################
 #  Use the q qbar matrix element

@@ -43,5 +43,3 @@ set Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-set /Herwig/Analysis/HepMCFile:PrintEvent 10000
