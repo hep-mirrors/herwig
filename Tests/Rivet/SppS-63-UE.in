@@ -18,6 +18,8 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 63.0
 ##################################################
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+set /Herwig/Analysis/HepMCFile:PrintEvent 10000
 set /Herwig/Analysis/RivetAnalysis:Debug No
 
 set /Herwig/Decays/DecayHandler:LifeTimeOption 0
