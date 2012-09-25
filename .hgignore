@@ -6,7 +6,6 @@
 .*/.*\.l[ao]
 .*/.*\.so\.*
 .*/.*\.o
-Tests/.*\.aida
 .*~
 .*\.tar\.(gz|bz2)
 autom4te.cache
@@ -53,8 +52,8 @@ src/defaults/done-all-links
 src/versionstring.h
 src/tune
 src/tests/.*\.(time|mult|Bmult|chisq)
-Tests/.*/.*\.(top|ps|pyc|info)
-Tests/.*\.(top|run|tex|mult|Bmult)
+Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)
+Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)
 Tests/Rivet.*
 Tests/plots
-
+Tests/.*index.html
