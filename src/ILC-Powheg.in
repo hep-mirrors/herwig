@@ -33,9 +33,12 @@ create Herwig::O2AlphaS O2AlphaS
 set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
-insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
-set PowhegMEee2gZ2qq:MinimumFlavour 6
-set PowhegMEee2gZ2qq:MaximumFlavour 6
+
+set /Herwig/Particles/h0:NominalMass 116.871*GeV
+
+#insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
+#set PowhegMEee2gZ2qq:MinimumFlavour 6
+#set PowhegMEee2gZ2qq:MaximumFlavour 6
 
 # only do the hardest emission
 #set /Herwig/Shower/Evolver:HardOnly Yes
@@ -46,7 +49,8 @@ set PowhegMEee2gZ2qq:MaximumFlavour 6
 # e+e- > W+W- ZZ
 # insert SimpleEE:MatrixElements[0] MEee2VV
 # higgs+Z
-# insert SimpleEE:MatrixElements[0] MEee2ZH
+insert SimpleEE:MatrixElements[0] MEee2ZH
+
 # higgs+e+e-/nu_enu_ebar via VBF
 # insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
 

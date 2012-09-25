@@ -11,17 +11,20 @@
 
 
 ##################################################
-read MSSM.model
-cd /Herwig/NewPhysics
 
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers[0]
+#set /Herwig/QEDRadiation/QEDRadiationHandler:DecayingParticles 2 NULL
+#set /Herwig/QEDRadiation/QEDRadiationHandler:RadiationGenerator NULL
+
+#set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
-
-#set /Herwig/Shower/Evolver:LimitEmissions OneFinalStateEmission
 
 #testing
 #set /Herwig/Shower/Evolver:HardOnly Yes
 #set /Herwig/Shower/Evolver:LimitEmissions HardOnly
+
+read MSSM.model
+cd /Herwig/NewPhysics
 ##################################################
 #
 # This section contains the user defined settings
@@ -74,11 +77,11 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 # Other parameters for run
 cd /Herwig/Generators
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
-#set /Herwig/Analysis/Plot:EventNumber 87218
+#set /Herwig/Analysis/Plot:EventNumber 82584
 
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
+set LHCGenerator:MaxErrors 100000
 
 saverun LHC-MSSM LHCGenerator

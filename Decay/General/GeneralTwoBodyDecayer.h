@@ -202,39 +202,18 @@ protected:
   /**
    *  Return the momenta including the hard emission
    */
-  vector<Lorentz5Momentum> hardMomenta(tcPDPtr in, tcPDPtr out1, tcPDPtr out2);
+  vector<Lorentz5Momentum> hardMomenta(tcPDPtr in, tcPDPtr outc, tcPDPtr outa, 
+				       int dipoleNo, int i);
+  /**
+   *  Return the momenta including the hard emission
+   */
+  InvEnergy2 calculateDipole(int dipoleNo, double x1, double x2);
 
   /**
    *  Coupling for the generation of hard radiation
    */
   ShowerAlphaPtr coupling() {return coupling_;}
   //@}
-
-  /**
-   *  Dipole subtraction term
-   */
-  InvEnergy2 dipoleSubtractionTerm(double x1, double x2) const;
-
-  /**
-   *  Real emission term
-   */
-  InvEnergy2 calculateRealEmission(double x1, double x2) const;
-
-
-  /**
-   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
-   */
-  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
-
-  /**
-   *  Calculate the Jacobian
-   */
-  InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
-
-  /**
-   *  Generate a real emission event
-   */
-  bool getEvent();
 
 
 public:
@@ -399,22 +378,6 @@ private:
    *  Mapping for which colour flows a diagram conributes to
    */
   vector<vector<pair<int,double > > > colourFlows_;
-
-  /**
-   *  The ParticleData objects for the fermions
-   */
-  vector<tcPDPtr> partons_;
-
-  /**
-   * The fermion momenta
-   */
-  vector<Lorentz5Momentum> quark_;
-
-  /**
-   *  The momentum of the radiated gauge boson
-   */
-  Lorentz5Momentum gauge_;
-
 
 };
 

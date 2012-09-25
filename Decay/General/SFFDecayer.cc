@@ -156,7 +156,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     swap(iferm, ianti);
   if(itype[0]==1 && itype[1]==1 && decay[0]->dataPtr()->id()<decay[1]->dataPtr()->id()) 
     swap(iferm, ianti);
-   
+
+  
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho3,const_ptr_cast<tPPtr>(&inpart),incoming);
@@ -303,9 +304,6 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     }
   }
 
-  //divide by alphaS
-  //double alphaS = sqr(gs) /4. /Constants::pi; 
-
   //colour and identical particle factors
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
@@ -315,14 +313,5 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   }
   output*=(4.*Constants::pi);
   // return the answer
-
-  // if (abs(output)>1e-8){
-  //   cerr << "R " << output << endl;
-  //   cerr << inpart.PDGName() << " -> " 
-  // 	 << decay[iferm]->dataPtr()->PDGName() << " " 
-  // 	 << decay[ianti]->dataPtr()->PDGName() << " " 
-  // 	 << decay[iglu ]->dataPtr()->PDGName() << endl;
-  // }
-
   return output;
 }

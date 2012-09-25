@@ -8,6 +8,7 @@
 #
 # The second section contains the user settings.
 ###################################################
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 
 read MSSM.model
 cd /Herwig/NewPhysics
@@ -30,10 +31,9 @@ set HPConstructor:IncludeEW Yes
 insert HPConstructor:Incoming 0 /Herwig/Particles/e+
 insert HPConstructor:Incoming 1 /Herwig/Particles/e-
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/~chi_20
-insert HPConstructor:Outgoing 1 /Herwig/Particles/~chi_1+
-insert HPConstructor:Outgoing 2 /Herwig/Particles/~chi_2+
-insert HPConstructor:Outgoing 3 /Herwig/Particles/~chi_30
+set HPConstructor:Processes Exclusive
+insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -49,7 +49,7 @@ set LEPGenerator:NumberOfEvents 10000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 2550.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 saverun ILC-MSSM LEPGenerator

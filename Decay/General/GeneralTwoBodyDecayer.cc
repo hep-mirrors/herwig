@@ -479,6 +479,7 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
+
   bool colouredParticles=false;
   vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
   for (unsigned int it=0; it<Progenitors.size(); ++it){
@@ -510,126 +511,129 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
   // Get the decaying particle
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
-
-  //for decays 3->30 make a the colour singlet
+  
+  int dipoleNo  = -1; 
+  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)
+      dipoleNo=2;
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo=2;
+      swap(aProgenitor, cProgenitor);
+    }
+  }
   if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3) {
-    if (aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)
-      swap(cProgenitor,aProgenitor);
+    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)
+      dipoleNo=1;
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo=1;
+      swap(aProgenitor, cProgenitor);      
+    }
+
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)
+      dipoleNo=3;
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+      dipoleNo=3;
+      swap(aProgenitor, cProgenitor);
+    }
   }
+
   else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) {
-    if (aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-  	cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)
-      swap(cProgenitor,aProgenitor);
+    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0))
+      dipoleNo=1;
+    else if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
+	      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)){
+      dipoleNo=1;
+      swap(aProgenitor, cProgenitor);      
+    }
+
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)
+      dipoleNo=3;
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+      dipoleNo=3;
+      swap(aProgenitor, cProgenitor);
+    }
   }
 
-  vector<Lorentz5Momentum> momenta (4);
+  if (dipoleNo==-1) 
+    throw Exception() << "Unknown colour structure in 3 boday decay in "
+  		      << "GeneralTwoBodyDecayer::generateHardest()"
+  		      << Exception::runerror;
 
-  if (bProgenitor->progenitor()->dataPtr()->id() == ParticleID::h0 &&
-      cProgenitor->progenitor()->dataPtr()->id() ==-aProgenitor->progenitor()->dataPtr()->id()){
-
-    //set a to be the quark, c to be the anti-quark
-    if(aProgenitor->id()<0) swap( aProgenitor, cProgenitor );
-
-    partons_.resize(2);
-    partons_[0] = aProgenitor->progenitor()->dataPtr();
-    partons_[1] = cProgenitor->progenitor()->dataPtr();
-    // momentum of the partons
-    quark_.resize(2);
-    quark_[0] = aProgenitor->copy()->momentum();
-    quark_[1] = cProgenitor->copy()->momentum();
-    // Set the existing mass entries in partons 5 vectors 
-    quark_[0].setMass(partons_[0]->mass());
-    quark_[1].setMass(partons_[1]->mass());
-    gauge_.setMass(0.*MeV);
-
-    mb_  = bProgenitor  ->progenitor()->momentum().mass();       
-    a_   = aProgenitor  ->progenitor()->momentum().mass() / mb_; 
-    a2_  = sqr(a_);
-
-    // Generate emission and set _quark[0,1] and _gauge to be the 
-    // momenta of q, qbar and g after the hardest emission:
-    if(!getEvent()) {
-      aProgenitor->maximumpT(pTmin_);
-      cProgenitor->maximumpT(pTmin_);
-      return HardTreePtr();
-    }
-
-    // Ensure the energies are greater than the constituent masses:
-    for (int i=0; i<2; i++) {
-      if(quark_[i].e()<partons_[i]                   ->constituentMass()) return HardTreePtr();
-      if(gauge_.e()   <getParticleData(ParticleID::g)->constituentMass()) return HardTreePtr();
-    }
-
-    // assign the emitter based on evolution scales
-    unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 1 : 0;
-    unsigned int ispectator = iemitter==1                         ? 0 : 1;
+  
+  Energy pT_temp=pTmin_;
+  Lorentz5Momentum pspectator;
+  LorentzRotation eventFrame;
+  LorentzRotation temp_eventFrame;
+  vector<Lorentz5Momentum> momenta;
+  vector<Lorentz5Momentum> temp_momenta(4);
     
-    if (iemitter==0) swap(aProgenitor,cProgenitor);
+  for (int i=0; i<dipoleNo; ++i){
+    if(dipoleNo==2 && i==1) swap(aProgenitor, cProgenitor);    
+    //if(dipoleNo==3 && i==2) swap(aProgenitor, cProgenitor);   
 
-    momenta.clear();
-    momenta[0] = bProgenitor->progenitor()->momentum();
-    momenta[1] = quark_[iemitter];
-    momenta[2] = quark_[ispectator];
-    momenta[3] = gauge_;
-
-    aProgenitor->maximumpT(pT_);
-    cProgenitor->maximumpT(pT_);
-  }
-   
-  else if ((bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 ||
-	    bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) &&
-	    aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0     &&
-	   (cProgenitor->progenitor()->dataPtr()->iColour()==
-	    bProgenitor->progenitor()->dataPtr()->iColour())){
-                
     // masses of the particles
-    mb_  = bProgenitor  ->progenitor()->momentum().mass();
-    a_   = aProgenitor  ->progenitor()->momentum().mass() / mb_;
-    c_   = cProgenitor  ->progenitor()->momentum().mass() / mb_;
+    mb_  = bProgenitor->progenitor()->momentum().mass();
+    a_   = aProgenitor->progenitor()->momentum().mass() / mb_;
+    c_   = cProgenitor->progenitor()->momentum().mass() / mb_;
     a2_  = sqr(a_);
     c2_  = sqr(c_);
     
     // find rotation from lab to frame with a along -z
-    LorentzRotation eventFrame( bProgenitor->progenitor()->momentum().findBoostToCM() );
-    Lorentz5Momentum pspectator = eventFrame*aProgenitor->progenitor()->momentum();
-    eventFrame.rotateZ( -pspectator.phi() );
-    eventFrame.rotateY( -pspectator.theta() - Constants::pi );
+    temp_eventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
+    pspectator = temp_eventFrame*aProgenitor->progenitor()->momentum();
+    temp_eventFrame.rotateZ( -pspectator.phi() );
+    temp_eventFrame.rotateY( -pspectator.theta() - Constants::pi );
 
     //invert it
-    eventFrame.invert();
+    temp_eventFrame.invert();
 
-    momenta.clear();
-    momenta = hardMomenta(bProgenitor->progenitor()->dataPtr(),
-			  cProgenitor->progenitor()->dataPtr(),
-			  aProgenitor->progenitor()->dataPtr());
-  
-    // if no emission return
-    if(momenta.empty()) {
-      bProgenitor->maximumpT(pTmin_);
-      cProgenitor->maximumpT(pTmin_);
-      return HardTreePtr();
+    temp_momenta.clear();
+    temp_momenta = hardMomenta(bProgenitor->progenitor()->dataPtr(),
+			       cProgenitor->progenitor()->dataPtr(),
+			       aProgenitor->progenitor()->dataPtr(), dipoleNo, i);
+
+    if(not temp_momenta.empty() && pT_>pT_temp){
+      pT_temp=pT_;
+      momenta=temp_momenta;
+      eventFrame=temp_eventFrame;
     }
+    else if ((temp_momenta.empty() || pT_<pT_temp) && dipoleNo==2 && i==1) 
+      swap(aProgenitor, cProgenitor);
+    //else if ((temp_momenta.empty() || pT_<pT_temp) && dipoleNo==3 && i==2) 
+    //swap(aProgenitor, cProgenitor);
+  }  
+  pT_=pT_temp;
 
-    // rotate momenta back to the lab
-    for(unsigned int ix=0;ix<momenta.size();++ix) {
-      momenta[ix] *= eventFrame;
-    }
-
-    bProgenitor->maximumpT(pT_);
-    cProgenitor->maximumpT(pT_);
-  }
-  else {
+  // if no emission return
+  if(momenta.empty()) {
     bProgenitor->maximumpT(pTmin_);
-    aProgenitor->maximumpT(pTmin_);
     cProgenitor->maximumpT(pTmin_);
-    return HardTreePtr();    
+    aProgenitor->maximumpT(pTmin_);
+    return HardTreePtr();
   }
 
+  // rotate momenta back to the lab
+  for(unsigned int ix=0;ix<momenta.size();++ix) {
+    momenta[ix] *= eventFrame;
+  }
+  
+  bProgenitor->maximumpT(pT_);
+  cProgenitor->maximumpT(pT_);
+  aProgenitor->maximumpT(pT_);
+  
   // get ParticleData objects
-  tcPDPtr b = bProgenitor  ->progenitor()->dataPtr();
-  tcPDPtr c = cProgenitor  ->progenitor()->dataPtr();
-  tcPDPtr a = aProgenitor  ->progenitor()->dataPtr();
+  tcPDPtr b = bProgenitor->progenitor()->dataPtr();
+  tcPDPtr c = cProgenitor->progenitor()->dataPtr();
+  tcPDPtr a = aProgenitor->progenitor()->dataPtr();
   tcPDPtr gluon  = getParticleData(ParticleID::g);
 
   // create new ShowerParticles
@@ -700,8 +704,9 @@ double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle & inpart,
   return 0.;
 }
 
-vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr out1, 
-							     tcPDPtr out2) {
+vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr outc, 
+							     tcPDPtr outa, int dipoleNo,
+							     int i) {
   double C    = 6.3;
   double ymax = 10.;
   double ymin = -ymax;
@@ -718,7 +723,6 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
   while (pTmax >= pTmin_) {  
     //Generate pT, y and phi values
     Energy pT = pTmax * pow(UseRandom::rnd() , (1./A));  
-    
     if (pT < pTmin_) {particleMomenta.clear(); break;}
 
     double phi = UseRandom::rnd() * Constants::twopi;
@@ -728,6 +732,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
     double xa[2], xc[2], xc_z[2], xg;
     
     for (unsigned int j=0; j<2; j++) {
+
       //Check if the momenta are physical
       bool physical = calcMomenta(j, pT, y, phi, xg, xa[j], xc[j], xc_z[j], particleMomenta);
       if (not physical) continue;
@@ -739,8 +744,8 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
       //Calculate the ratio R/B
       Particle inpart=Particle(in); inpart.set5Momentum(particleMomenta[0]);    
       //decay products for 3 body decay
-      Particle outpart1=Particle(out1); outpart1.set5Momentum(particleMomenta[1]);
-      Particle outpart2=Particle(out2); outpart2.set5Momentum(particleMomenta[2]);
+      Particle outpart1=Particle(outc); outpart1.set5Momentum(particleMomenta[1]);
+      Particle outpart2=Particle(outa); outpart2.set5Momentum(particleMomenta[2]);
       Particle g=Particle(getParticleData(ParticleID::g)); g.set5Momentum(particleMomenta[3]);
       ParticleVector decay3;
       decay3.push_back(&outpart1);decay3.push_back(&outpart2);decay3.push_back(&g);
@@ -752,12 +757,21 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
       Lorentz5Momentum pc; 
       pc.setE((mb_/2.)*(1.+c2_-a2_)); pc.setX(ZERO); pc.setY(ZERO); pc.setZ( lambda/2./mb_);
       pc.setMass(mb_*c_);     
-      Particle outpartc=Particle(out1); outpartc.set5Momentum(pc);
-      Particle outparta=Particle(out2); outparta.set5Momentum(pa);
+      Particle outpartc=Particle(outc); outpartc.set5Momentum(pc);
+      Particle outparta=Particle(outa); outparta.set5Momentum(pa);
       ParticleVector decay2; decay2.push_back(&outpartc); decay2.push_back(&outparta);
 
       double meRatio = matrixElementRatio(inpart,decay2,decay3,Initialize);
-      
+
+      if (dipoleNo==2){
+	InvEnergy2 dipoleSum =  abs(calculateDipole(dipoleNo, xc[j], xa[j])) +
+	                        abs(calculateDipole(dipoleNo, xa[j], xc[j]));
+	InvEnergy2 dipole;
+	if      (i==0) dipole = abs(calculateDipole(dipoleNo, xc[j], xa[j]));
+	else if (i==1) dipole = abs(calculateDipole(dipoleNo, xa[j], xc[j]));
+	meRatio *= (3./4.)*(dipole/dipoleSum);	
+      }
+
       //Calculate jacobian
       Energy2 denom = (mb_ - particleMomenta[3].e()) * particleMomenta[2].vect().mag() -
 		       particleMomenta[2].e() * particleMomenta[3].z(); 
@@ -765,7 +779,12 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
       InvEnergy2  J  = (particleMomenta[2].vect().mag2()) / (lambda * denom);
      
       //Calculate weight
-      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C / Constants::twopi;   
+      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C / Constants::twopi; 
+
+      //ofstream output1("output1.top", ios::app);
+      //if(in->id()==ParticleID::h0){ 
+      //output1 << "weight[j]/alpha ratio " << weight[j]/coupling_->ratio(pT*pT) << endl;
+      //}
      }
 
     //ofstream weights;
@@ -793,6 +812,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
     }
     //If there's no splitting lower the pT
     pTmax = pT; 
+    
   }
   return particleMomenta;
 }
@@ -893,6 +913,17 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xa) {
   return true;
 }
 
+InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(int dipoleNo, double x1, double x2){
+
+  InvEnergy2 dipole=1./GeV/GeV;
+  if (dipoleNo==2){
+    InvEnergy2 commonPrefactor = 4./3.*8.*Constants::pi/sqr(mb_);
+    dipole = commonPrefactor/(1.-x2)*(2.*(1.-2.*a2_)/(2.-x1-x2)-sqrt((1.-4.*a2_)/
+                             (sqr(x2)-4.*a2_))*(x2-2.*a2_)*(2.+(x1-1.)/(x2-2.*a2_)+
+			      2.*a2_/(1.-x2))/(1.-2.*a2_));
+  }
+  return dipole;
+}
 
 const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
 								const ParticleVector & decay,
@@ -1036,202 +1067,3 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   return colour_;
 }
 
-//functions for h->q qbar  
-//calculates the dipole subtraction term for x1, D31,2 (Dij,k),
-// 2 is the spectator anti-fermion and 3 is the gluon
-InvEnergy2 GeneralTwoBodyDecayer::dipoleSubtractionTerm(double x1, double x2) const{
-  InvEnergy2 commonPrefactor = 4./3.*8.*Constants::pi*SM().alphaS(sqr(mb_))/sqr(mb_);
-  return commonPrefactor/(1.-x2)*
-    (2.*(1.-2.*a2_)/(2.-x1-x2)- 
-     sqrt((1.-4.*a2_)/(sqr(x2)-4.*a2_))*
-     (x2-2.*a2_)*(2.+(x1-1.)/(x2-2.*a2_)+2.*a2_/(1.-x2))/(1.-2.*a2_));
-}
-
-//return ME for real emission
-InvEnergy2 GeneralTwoBodyDecayer::calculateRealEmission(double x1, double x2) const {
-  InvEnergy2 prefactor = 4./3.*8.*Constants::pi*SM().alphaS(sqr(mb_))/sqr(mb_)/(1.-4.*a2_);
-  return prefactor*(2. + (1.-x1)/(1.-x2) + (1.-x2)/(1.-x1) 
-                    + 2.*(1.-2.*a2_)*(1.-4.*a2_)/(1.-x1)/(1.-x2)
-                    - 2.*(1.-4.*a2_)*(1./(1.-x2)+1./(1.-x1)) 
-                    - 2.*a2_*(1.-4.*a2_)*(1./sqr(1.-x2)+1./sqr(1.-x1)));
-}
-
-
-bool GeneralTwoBodyDecayer::getEvent() {
-  // max pT
-  Energy pTmax = 0.5*mb_;
-  // Define over valued y_max & y_min according to the associated pt_min cut.
-  double ymax  =  acosh(pTmax/pTmin_);
-  double ymin  = -ymax;
-  // pt of the emmission
-  pT_ = pTmax;
-  // prefactor
-  double overEst = 4.;
-  double prefactor = overEst*coupling_->overestimateValue()*4./3./Constants::twopi;
-  // loop to generate the pt and rapidity
-  bool reject;
-  
-  //arrays to hold the temporary  probabilities whilst the for loop progresses
-  double probTemp[2][2]={{0.,0.},{0.,0.}};
-  probTemp[0][0]=probTemp[0][1]=probTemp[1][0]=probTemp[1][1]=0.;
-  double x1Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x2Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x3Solution[2]    =  {0.,0.};
-  Energy pT[2]            =  {pTmax,pTmax};
-  double yTemp[2]         =  {0.,0.};
-  for(int i=0; i<2; i++) {
-    do {
-      // reject the emission
-      reject = true;
-      // generate pt
-      pT[i] *= pow(UseRandom::rnd(),1./(prefactor*(ymax-ymin)));
-      Energy2 pT2 = sqr(pT[i]);
-      if(pT[i]<pTmin_) {
-        pT[i] = -GeV;
-        break;
-      }
-      // generate y
-      yTemp[i] = ymin + UseRandom::rnd()*(ymax-ymin);
-      //generate x3 & x1 from pT & y
-      double x1Plus  = 1.;
-      double x1Minus = 2.*a_;
-      x3Solution[i] = 2.*pT[i]*cosh(yTemp[i])/mb_;
-      // prefactor
-      Energy2 weightPrefactor = sqr(mb_)/16./sqr(Constants::pi)/sqrt(1.-4.*a2_);
-      weightPrefactor /= prefactor;
-      // calculate x1 & x2 solutions
-      Energy4 discrim2 = (sqr(x3Solution[i]*mb_) - 4.*pT2)*
-        (sqr(mb_)*(x3Solution[i]-1.)*(4.*a2_+x3Solution[i]-1.)-4.*a2_*pT2);
-      //check discriminant2 is > 0
-      if( discrim2 < ZERO) continue;
-      Energy2 discriminant = sqrt(discrim2);
-      Energy2 fact1 = 3.*sqr(mb_)*x3Solution[i]-2.*sqr(mb_)+2.*pT2*x3Solution[i]-4.*pT2-sqr(mb_)*sqr(x3Solution[i]);
-      Energy2 fact2 = 2.*sqr(mb_)*(x3Solution[i]-1.)-2.*pT2;
-      // two solns for x1
-      x1Solution[i][0] = (fact1 + discriminant)/fact2;
-      x1Solution[i][1] = (fact1  - discriminant)/fact2;
-      x2Solution[i][0] = 2.-x3Solution[i]-x1Solution[i][0];
-      x2Solution[i][1] = 2.-x3Solution[i]-x1Solution[i][1];
-      bool found = false;
-      for(unsigned int j=0;j<2;++j) {
-        if(x1Solution[i][j]>=x1Minus && x1Solution[i][j]<=x1Plus &&
-           checkZMomenta(x1Solution[i][j], x2Solution[i][j], x3Solution[i], yTemp[i], pT[i])) {
-          InvEnergy2 D1 = dipoleSubtractionTerm( x1Solution[i][j], x2Solution[i][j]); 
-          InvEnergy2 D2 = dipoleSubtractionTerm( x2Solution[i][j], x1Solution[i][j]);
-          double dipoleFactor = abs(D1)/(abs(D1) + abs(D2));
-          probTemp[i][j] = weightPrefactor*pT[i]*dipoleFactor*
-            calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i])*
-            calculateRealEmission(x1Solution[i][j], x2Solution[i][j]);
-          found = true;
-        }
-        else {
-          probTemp[i][j] = 0.;
-        }
-      }
-      if(!found) continue;
-      // alpha S piece
-      double wgt = (probTemp[i][0]+probTemp[i][1])*coupling_->value(sqr(pT[i]))/
-	            SM().alphaS(sqr(mb_));
-      // matrix element weight
-      reject = UseRandom::rnd()>wgt;
-    }
-    while(reject);
-  } //end of emitter for loop
-  // no emission
-  if(pT[0]<ZERO&&pT[1]<ZERO) return false;
-  //pick the spectator and x1 x2 values
-  double x1,x2,y;
-  //particle 1 emits, particle 2 spectates
-  unsigned int iemit=0;
-  if(pT[0]>pT[1]){ 
-    pT_ = pT[0];
-    y=yTemp[0];
-    if(probTemp[0][0]>UseRandom::rnd()*(probTemp[0][0]+probTemp[0][1])) {
-      x1 = x1Solution[0][0];
-      x2 = x2Solution[0][0];
-    }
-    else {
-      x1 = x1Solution[0][1];
-      x2 = x2Solution[0][1];
-    }
-  }
-  //particle 2 emits, particle 1 spectates
-  else {
-    iemit=1;
-    pT_ = pT[1];
-    y=yTemp[1];
-    if(probTemp[1][0]>UseRandom::rnd()*(probTemp[1][0]+probTemp[1][1])) {
-      x1 = x1Solution[1][0];
-      x2 = x2Solution[1][0];
-    }
-    else {
-      x1 = x1Solution[1][1];
-      x2 = x2Solution[1][1];
-    }
-  }
-  // find spectator
-  unsigned int ispect = iemit == 0 ? 1 : 0;
-  // Find the boost from the lab to the c.o.m with the spectator 
-  // along the -z axis, and then invert it.
-
-  LorentzRotation eventFrame( ( quark_[0] + quark_[1] ).findBoostToCM() );
-  Lorentz5Momentum spectator = eventFrame*quark_[ispect];
-  eventFrame.rotateZ( -spectator.phi() );
-  eventFrame.rotateY( -spectator.theta() - Constants::pi );
-  eventFrame.invert();
-  //generation of phi
-  double phi = UseRandom::rnd() * Constants::twopi;
-  // spectator
-  quark_[ispect].setT( 0.5*x2*mb_ );
-  quark_[ispect].setX( ZERO );
-  quark_[ispect].setY( ZERO );
-  quark_[ispect].setZ( -sqrt(0.25*sqr(mb_)*x2*x2-sqr(mb_)*a2_) );
-  // gluon
-  gauge_.setT( pT_*cosh(y)  );
-  gauge_.setX( pT_*cos(phi) );
-  gauge_.setY( pT_*sin(phi)  );
-  gauge_.setZ( pT_*sinh(y)  );
-  gauge_.setMass(ZERO);
-  // emitter reconstructed from gluon & spectator
-  quark_[iemit] = - gauge_ - quark_[ispect];
-  quark_[iemit].setT( 0.5*mb_*x1 );
-  // boost constructed vectors into the event frame
-  quark_[0] = eventFrame * quark_[0];
-  quark_[1] = eventFrame * quark_[1];
-  gauge_    = eventFrame * gauge_;
-
-  // need to reset masses because for whatever reason the boost  
-  // touches the mass component of the five-vector and can make  
-  // zero mass objects acquire a floating point negative mass(!).
-  gauge_.setMass( ZERO );
-  quark_[iemit] .setMass(partons_[iemit ]->mass());
-  quark_[ispect].setMass(partons_[ispect]->mass());
-
-  return true;
-}
-
-InvEnergy GeneralTwoBodyDecayer::calculateJacobian(double x1, double x2, Energy pT) const{
-  double xPerp = abs(2.*pT/mb_);
-  Energy jac = mb_*fabs((x1*x2-2.*a2_*(x1+x2)+sqr(x2)-x2)/xPerp/pow(sqr(x2)-4.*a2_,1.5));   
-  return 1./jac; //jacobian as defined is dptdy=jac*dx1dx2, therefore we have to divide by it
-}
-
-bool GeneralTwoBodyDecayer::checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const {
-  double xPerp2 = 4.*pT*pT/mb_/mb_;
-  static double tolerance = 1e-6; 
-  bool isMomentaReconstructed = false;  
-
-  if(pT*sinh(y)>ZERO) {
-    if(abs(-sqrt(sqr(x2)-4.*a2_)+sqrt(sqr(x3)-xPerp2) + sqrt(sqr(x1)-xPerp2 - 4.*a2_)) <= tolerance ||
-       abs(-sqrt(sqr(x2)-4.*a2_)+sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*a2_))  <= tolerance) isMomentaReconstructed=true;
-  }
-  else if(pT*sinh(y) < ZERO){
-      if(abs(-sqrt(sqr(x2)-4.*a2_)-sqrt(sqr(x3)-xPerp2) + sqrt(sqr(x1)-xPerp2 - 4.*a2_)) <= tolerance ||
-         abs(-sqrt(sqr(x2)-4.*a2_)-sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*a2_))  <= tolerance) isMomentaReconstructed=true;
-  }
-  else 
-    if(abs(-sqrt(sqr(x2)-4.*a2_)+ sqrt(sqr(x1)-xPerp2 - 4.*a2_)) <= tolerance) isMomentaReconstructed=true;
-      
-  return isMomentaReconstructed;
-}
-  
