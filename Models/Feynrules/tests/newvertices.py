@@ -1,13 +1,109 @@
 #! /usr/bin/env python
 from __future__ import with_statement
-import Model as FR
-import cmath, string
+import cmath, string, os, sys, fileinput
+from optparse import OptionParser
 
+
+# set up the option parser for command line input 
+parser = OptionParser(usage="%prog -d [UFO model directory] -n [custom model nametag]")
+
+parser.add_option("-d", "--directory", dest="MODELDIR",
+                  default="Model", help="UFO model directory.")
+
+parser.add_option("-n", "--name", dest="MODELNAME",
+                  default="FeynRulesModel", help="custom model nametag.")
+opts, args = parser.parse_args()
+
+# check if the given "Model" path exists 
+if(os.path.exists(os.getcwd() + '/'+opts.MODELDIR) is False):
+    print 'Path', os.getcwd() + '/'+ opts.MODELDIR, 'does not exist, exiting'
+    sys.exit()
+
+# if the Model path exists, then import the UFO FeynRules module
+FR = __import__(opts.MODELDIR)
+
+# function that replaces ** with pow(,): used in PyMathToThePEGMath below
+def powstring(stringrep,power):
+    return 'pow(' + stringrep.replace('**','') + ',' + power + ')'
+
+# function that converts the vertex expressions in Python math format to
+# format that can be calculated using ThePEG 
+def PyMathToThePEGMath(stringin, paramsin):
+
+    # add '**' to the end of paramsin[ss], the array of given parameters of the model
+    for ss in range(0,len(paramsin)):
+        paramsin[ss] = paramsin[ss] + '**'
+        
+    # define an array that contains the numbers 0-9 in string form
+    numbersarray = ['0','1','2','3','4','5','6','7','8','9']
+
+    # define counters and variables used to detect the positions of powers
+    ii = 0
+    pos = ''
+    posnew = ''
+    powpos = ''
+    pow_ddg = 0
+    power = ''
+    powerchange = []
+  
+    # loop over the array of the model parameters and search for them in the given mathematical expression
+    # each time a new position with the ** notation is found, replace with the C++ pow(,) notation
+    for xx in range(0,len(paramsin)):
+        # powerchange contains information on the positions
+        # of necessary changes. OBSOLETE: for testing purposes only
+        powerchange.append([])
+        # reset counter for next variable and position variables
+        ii = 0
+        pos = 0
+        posnew = 0
+        # save the length of the string at the beginning of the loop for a parameter
+        initial_string_length = len(stringin)
+        # scan the string from right to left
+        while (initial_string_length-ii >= 0):
+            # set the new position of the found 
+            posnew = stringin.find(paramsin[xx],initial_string_length-ii)
+            # if the position is new, do stuff
+            if(posnew is not pos and posnew is not -1):
+                # get the position of the power
+                powpos = posnew + len(paramsin[xx]) 
+                # check if power is single or double digit
+                # i.e. -> assuming there are no powers beyond "99"
+                power = stringin[powpos]
+                if(powpos+1 < initial_string_length):
+                    if(stringin[powpos+1] in numbersarray):
+                        #print 'power is double digit ', (stringin[powpos+1])
+                        pow_ddg = 1
+                        power = stringin[powpos] + stringin[powpos+1]
+                powerchange[xx].append([ posnew, power ])
+                # do the replacement of the ** to pow(,)
+                stringin = stringin[:posnew] + stringin[posnew:posnew+len(paramsin[xx])+len(power)].replace(paramsin[xx]+power,powstring(paramsin[xx],power)) + stringin[posnew+len(paramsin[xx])+len(power):]
+            # reset position variable for next point in string
+            # increment the counter for the position in string
+            pos = posnew
+            ii += 1
+    # do replacements of 'complex'
+    # integers multiplying stuff (add the "." 
+    stringin = stringin.replace('complex','Complex')
+    stringin = stringin.replace('cmath.', '')
+    stringin = stringin.replace('-(','(-1.)*(')
+    for nn in range(0,len(numbersarray)):
+        numbersnn = numbersarray[nn]
+        stringin = stringin.replace(numbersnn +' *', numbersnn +'. *')
+        stringin = stringin.replace(numbersnn+'*Complex',numbersnn+'.*Complex')
+    # print 'final string:'
+    # print stringin
+    # reset the parameters with ** for next run of function and return
+    for ss in range(0,len(paramsin)):
+        paramsin[ss] = paramsin[ss].replace('**','')
+    return stringin
+
+# function to get template
 def getTemplate(basename):
     with open('../%s.template' % basename, 'r') as f:
         templateText = f.read()
     return string.Template( templateText )
 
+# write a filename
 def writeFile(filename, text):
     with open(filename,'w') as f:
         f.write(text)
@@ -27,24 +123,41 @@ class CheckUnique:
 ##################################################
 ##################################################
 
+# get templates for Model header and .cc file,
+# Herwig++ run input file
 MODEL_H  = getTemplate('Model.h')
 MODEL_CC = getTemplate('Model.cc')
+MODEL_HWIN = getTemplate('LHC-FR.in')
 
+# get the Model name from the arguments
+ModelName = opts.MODELNAME
+
+# copy the Makefile-FR to current directory,
+# replace with the ModelName for compilation
+os.system('cp ../Makefile-FR Makefile')
+for line in fileinput.input('Makefile', inplace = 1):
+      print line.replace("FeynRulesModel.so", ModelName+".so"),
+
+
+# define arrays and variables     
 allplist = ""
-
 parmdecls = []
 parmgetters = []
 parmconstr = []
+parmextinter = []
+parmfuncmap = []
+paramsforev = []
 
+# get external parameters for printing
 parmsubs = dict( [ (p.name, float(p.value)) 
                    for p in FR.all_parameters 
                    if p.nature == 'external' ] ) 
 
 
-print parmsubs
-print
+#print parmsubs
+#print
 
-
+# evaluate python cmath
 def evaluate(x):
     return eval(x, 
                 {'cmath':cmath,
@@ -52,23 +165,68 @@ def evaluate(x):
                 parmsubs)
 
 
+# get internal, external and all params into arrays
 internal = [ p 
              for p in FR.all_parameters 
-             if p.nature == 'internal' ] 
+             if p.nature == 'internal' ]
 
-print internal
-print
+external = [ p 
+             for p in FR.all_parameters 
+             if p.nature == 'external' ]
 
+allparams =  [ p.name 
+             for p in FR.all_parameters ]
+
+#print 'external parms:'
+#print external
+#print
+
+#print 'internal parms:'
+#print internal
+#print
+
+# calculate internal parameters
 for p in internal:
     print p.name,'=',p.value
     newval = evaluate(p.value)
     parmsubs.update( { p.name : newval } )
 
-print parmsubs
-print
+#print parmsubs
+#print
 
+# put external parameters into list of parameters to be interfaced
+for p in external:
+    print p.name,'=',p.value
+    extinter = '%s' % (p.name)
+
+#print 'NUMBER OF PARAMS', len(FR.all_parameters)
+#print 'PARAMETER NAMES'
+    
+# more arrays used for substitution in templates 
+paramvertexcalc = []
+paramsforstream = []
+parmmodelconstr = []
+parmnumber = 0
+
+# loop over parameters and fill in template stuff according to internal/external and complex/real
+# WARNING: Complex external parameter input not tested!
 for p in FR.all_parameters:
     value = parmsubs[p.name]
+    extinter = ''
+    print p.name
+    if (p.nature == 'external' and p.type == 'real'):
+    #extinter = '%s' % (p.name)
+       extinter = 'static Parameter<%s, double> interfaceg%s' % (ModelName, p.name)
+       extinter += '\n'+' ("%s",' % (p.name)
+       extinter += '\n'+' "The interface to the parameter %s",' % (p.name)
+       extinter += '\n'+' &%s::%s, %s, -10000., 10000.,' % (ModelName, p.name, value)
+       extinter += '\n'+' false, false, Interface::limited);\n'
+    if (p.nature == 'external' and p.type == 'complex'):
+        #extinter = '%s' % (p.name)
+       extinter = 'static Parameter<%s, Complex> interfaceg%s' % (ModelName, p.name)
+       extinter += '\n'+' ("%s",' % (p.name)
+       extinter += '\n'+' "The interface to the parameter %s",' % (p.name)
+       extinter += '\n'+' false, false, Interface::limited);\n'
     if p.type == 'real':
         try:
             assert( value.imag < 1.0e-16 )
@@ -76,23 +234,43 @@ for p in FR.all_parameters:
         except:
             pass
         parmsubs[p.name] = value
-        decl = '  double %s_;' % p.name
-        constr = '%s_(%s)' % (p.name, value)
-        getter = '  double %s() { return %s_; }' % (p.name, p.name)
+        decl = '  double %s;' % p.name
+        constr = '%s(%s)' % (p.name, value)
+        if(p.nature == 'external'):
+            modelconstr = 'set ' + ModelName + ':%s %s' % (p.name, value) 
+        getter = '  double %s_() const { return %s; }' % (p.name, p.name)
+        funcmap = '   case %s:  return %s_();' % (parmnumber, p.name)
+        forev = '%s' % p.name
+        funcvertex = '%s = hw%s_ptr->%s_();' % (p.name, ModelName, p.name)
+        parmnumber += 1
     elif p.type == 'complex':
         value = complex(value)
         parmsubs[p.name] = value
-        decl = '  Complex %s_;' % p.name
-        constr = '%s_(%s,%s)' % (p.name, value.real, value.imag)
-        getter = '  Complex %s() { return %s_; }' % (p.name, p.name)
+        decl = '  Complex %s;' % p.name
+        constr = '%s(%s,%s)' % (p.name, value.real, value.imag)
+        if(p.nature == 'external'):
+            modelconstr = 'set ' + ModelName + ':%s (%s,%s)' % (p.name, value.real, value.imag)
+        getter = '  Complex %s_() const { return %s; }' % (p.name, p.name)
+        funcmap = '   case %s:  return %s_();' % (parmnumber, p.name)
+        forev = '%s' % p.name
+        funcvertex = '%s = hw%s_ptr->%s_();' % (p.name, ModelName, p.name)
+        parmnumber += 1
     else:
         raise Exception('Unknown data type "%s".' % p.type)
 
     # do calc in C++, add interfaces for externals
-
+    paramvertexcalc.append(funcvertex)    
     parmdecls.append(decl)
     parmgetters.append(getter)
     parmconstr.append(constr)
+    if(p.nature == 'external'):
+        parmmodelconstr.append(modelconstr)
+    parmextinter.append(extinter)
+    parmfuncmap.append(funcmap)
+    paramsforev.append(forev)
+    paramsforstream.append(forev)
+    if extinter != '':
+        parmextinter.append('\n')
 
 parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'parmdecls' : '\n'.join(parmdecls),
@@ -100,20 +278,28 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
-                 'ostream' : '',
-                 'istream' : '',
-                 'refs' : ''
+                 'ostream' : '\n\t<< '.join(paramsforstream),
+                 'istream' : '\n\t>> '.join(paramsforstream),
+                 'refs' : '',
+                 'parmextinter': ''.join(parmextinter),
+                 'num_params': len(FR.all_parameters),
+                 'parmfuncmap': '\n'.join(parmfuncmap),
+                 'paramsforev': ','.join(paramsforev),
+                 'ModelName': ModelName
                  }
+
+
+
 for k,v in parmtextsubs.iteritems():
     print k
     print v
     print
 
-writeFile( 'FeynRulesModel.h', MODEL_H.substitute(parmtextsubs) )
-writeFile( 'FeynRulesModel.cc', MODEL_CC.substitute(parmtextsubs) )
+# write the files from templates according to the above subs
+writeFile( ModelName + '.h', MODEL_H.substitute(parmtextsubs) )
+writeFile( ModelName +'.cc', MODEL_CC.substitute(parmtextsubs) )
+writeFile( 'LHC-' + ModelName +'.in', MODEL_HWIN.substitute(parmtextsubs) )
 
-
-#exit(0)
 ##################################################
 ##################################################
 ##################################################
@@ -157,7 +343,6 @@ SMPARTICLES = {
 -24:'W-',
 
 }
-
 
 
 
@@ -246,17 +431,14 @@ def get_lorentztag(spin):
 ##################################################
 ##################################################
 
-
+# get vertex template
 VERTEX = getTemplate('Vertex.cc')
 
 def produce_vertex_file(subs):
-    newname = 'FR' + subs['classname'] + '.cc'
+    newname = ModelName + subs['classname'] + '.cc'
     writeFile( newname, VERTEX.substitute(subs) )
 
-
-
-
-
+# loop over all vertices
 for v in FR.all_vertices:
 
     print v.name
@@ -297,11 +479,10 @@ for v in FR.all_vertices:
 #        print pdgcode[j]
 
 # if the Vertex is not self-conjugate, then add the conjugate vertex
-# WARNING:
-# TO DO: What if the coupling is complex? Need to add the complex conjugate of that coupling in that case
+# automatically
     scfac = [1,1,1,1]
     if(selfconjugate == 0):
-#first find the self-conjugate particles
+        #first find the self-conjugate particles
         for u in range(len(v.particles)):
               if(v.particles[u].selfconjugate == 0):
                   scfac[u] = -1
@@ -311,7 +492,7 @@ for v in FR.all_vertices:
         plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
         if(len(v.particles) is 4):                                                                                                                      
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
-        print 'Conjugate vertex:', plistarray[1]
+        #print 'Conjugate vertex:', plistarray[1]
     
     ### Colour structure
     if v.color == '1': qcdord = '0'
@@ -326,13 +507,13 @@ for v in FR.all_vertices:
     
     coup_left  = []
     coup_right = []
-
     coup_norm = []
  
     for (ci,li),C in v.couplings.iteritems():
         qed = C.order.get('QED',0)
         qcd = C.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
+        # Is there a better way to treat this?
         if(qed == 0 and qcd == 0): qed = 1
         unique_qcd( qed )
         unique_qed( qcd )
@@ -375,36 +556,33 @@ for v in FR.all_vertices:
     print 'Norm:',normcontent
     print '---------------'
   
-    leftcontent = complex(evaluate(leftcontent))
-    rightcontent = complex(evaluate(rightcontent))
-    normcontent = complex(evaluate(normcontent))
-
-    print 'Left:',leftcontent
-    print 'Right:',rightcontent
-    print 'Norm:',normcontent
-
     ### do we need left/right?
     if 'FF' in lt:
-        left  = 'left(Complex(%s,%s));'  % (leftcontent.real,leftcontent.imag)
-        right = 'right(Complex(%s,%s));' % (rightcontent.real,rightcontent.imag)
+        leftcalc = PyMathToThePEGMath(leftcontent, allparams)
+        rightcalc = PyMathToThePEGMath(rightcontent, allparams)
+        left = 'left(' + leftcalc + ');'
+        right = 'right(' + rightcalc + ');'
     else:
         left = ''
         right = ''
+        leftcalc = ''
+        rightcalc = ''
+        
+    normcalc = PyMathToThePEGMath(normcontent, allparams)
+    norm = 'norm(' + normcalc + ');'
 
     if(plistarray[1] is ''):
         plist2 = ''
     else:
         plist2 = 'addToList(%s);' % plistarray[1]
+    
         
-    norm = 'norm(Complex(%s,%s));' % (normcontent.real,normcontent.imag)
-
-
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lt,                   # ok
              'classname'  : classname,            # ok
              'left'       : left,                 # doesn't always exist in base
              'right'      : right,                 # doesn't always exist in base 
-              'norm'      : norm,                 # needs norm, too
+             'norm'      : norm,                 # needs norm, too
 
              #################### need survey which different setter methods exist in base classes
 
@@ -416,7 +594,20 @@ for v in FR.all_vertices:
              'qcdorder' : qcd,
              'q2'        :  '',
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
-             'spindirectory' : spind}             # ok
+             'spindirectory' : spind,
+             'ModelName' : ModelName,
+             'num_params' : len(FR.all_parameters),
+             'leftcontent' : leftcontent,
+             'rightcontent' : rightcontent,
+             'normcontent' : normcontent,
+             'leftcalc': leftcalc,
+             'rightcalc' : rightcalc,
+             'normcalc' : normcalc,
+             'paramdecl': '\n'.join(parmdecls),
+             'ostream' : ' << '.join(paramsforstream),
+             'istream' : ' >> '.join(paramsforstream),
+             'paramvertexcalc': '\n\t'.join(paramvertexcalc)
+             }             # ok
 
 
     print plistarray[0]
@@ -443,30 +634,33 @@ for v in FR.all_vertices:
 
 vertexline = string.Template("""\
 create $classname $name
-insert FRModel:ExtraVertices 0 $name
+insert ${ModelName}:ExtraVertices 0 $name
 """)
 
 
 def get_vertices():
-    vlist = 'library FeynrulesModel.so\n'
+    vlist = 'library ' + ModelName + '.so\n'
     for v in FR.all_vertices:
         for l in v.lorentz:
             lt = get_lorentztag(l.spins)
             print lt
         if("U" not in lt and v.include == 1):
             vlist += vertexline.substitute(
-                { 'classname' : 'Herwig::FRV_%03d' % int(v.name[2:]),
-                  'name' : '/Herwig/Feynrules/%s'%v.name } )
+                { 'classname' : 'Herwig::' + ModelName + 'V_%03d' % int(v.name[2:]),
+                'name' : '/Herwig/' + ModelName + '/%s'%v.name, 'ModelName' : ModelName } )
     return vlist
 
 
 modelfilesubs = { 'plist' : get_all_thepeg_particles(),
-                  'vlist' : get_vertices() }
+                  'vlist' : get_vertices(),
+                  'setcouplings': '\n'.join(parmmodelconstr),
+                  'ModelName': ModelName
+                  }
 
 print get_all_thepeg_particles()
 
 MODELINFILE = getTemplate('FR.model')
 
-writeFile( 'FR.model', MODELINFILE.substitute(modelfilesubs) )
+writeFile( ModelName +'.model', MODELINFILE.substitute(modelfilesubs) )
 
 print len(FR.all_vertices)

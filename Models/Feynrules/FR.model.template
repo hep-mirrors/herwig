@@ -3,10 +3,10 @@
 #  Particle Data objects
 #
 ###################################################
-mkdir /Herwig/Feynrules
+mkdir /Herwig/${ModelName}
 
-mkdir /Herwig/Feynrules/Particles
-cd /Herwig/Feynrules/Particles
+mkdir /Herwig/${ModelName}/Particles
+cd /Herwig/${ModelName}/Particles
 ${plist}
 
 
@@ -16,20 +16,24 @@ ${plist}
 #  Main directory and model object
 #
 ###################################################
-mkdir /Herwig/Feynrules
-cd /Herwig/Feynrules
+mkdir /Herwig/${ModelName}
+cd /Herwig/${ModelName}
 
-library FeynrulesModel.so
+library ${ModelName}.so
 
-#### create Herwig::FeynRulesModel FRModel
-create Herwig::FeynRulesModel FRModel
-# cp /Herwig/Model FRModel
+#### create Herwig::${ModelName} ${ModelName}
+create Herwig::${ModelName} ${ModelName}
+# cp /Herwig/Model ${ModelName}
 
 # SM couplings
-set FRModel:QCD/RunningAlphaS /Herwig/AlphaS
-set FRModel:EW/RunningAlphaEM /Herwig/AlphaEM
-set FRModel:EW/CKM /Herwig/CKM
-set FRModel:RunningMass /Herwig/RunningMass
+
+set ${ModelName}:QCD/RunningAlphaS /Herwig/AlphaS
+set ${ModelName}:EW/RunningAlphaEM /Herwig/AlphaEM
+set ${ModelName}:EW/CKM /Herwig/CKM
+set ${ModelName}:RunningMass /Herwig/RunningMass
+
+${setcouplings}
+
 ###################################################
 #
 #  Vertices
@@ -38,18 +42,18 @@ set FRModel:RunningMass /Herwig/RunningMass
 # create FR model vertices
 
 # SM vertices
-set FRModel:Vertex/FFZ /Herwig/Vertices/FFZVertex
-set FRModel:Vertex/FFW /Herwig/Vertices/FFWVertex
-set FRModel:Vertex/FFH /Herwig/Vertices/FFHVertex
-set FRModel:Vertex/FFG /Herwig/Vertices/FFGVertex
-set FRModel:Vertex/FFP /Herwig/Vertices/FFPVertex
-set FRModel:Vertex/GGG /Herwig/Vertices/GGGVertex
-set FRModel:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set FRModel:Vertex/WWH /Herwig/Vertices/WWHVertex
-set FRModel:Vertex/WWW /Herwig/Vertices/WWWVertex
-set FRModel:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set FRModel:Vertex/HGG /Herwig/Vertices/HGGVertex
-set FRModel:Vertex/HPP /Herwig/Vertices/HPPVertex
+set ${ModelName}:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set ${ModelName}:Vertex/FFW /Herwig/Vertices/FFWVertex
+set ${ModelName}:Vertex/FFH /Herwig/Vertices/FFHVertex
+set ${ModelName}:Vertex/FFG /Herwig/Vertices/FFGVertex
+set ${ModelName}:Vertex/FFP /Herwig/Vertices/FFPVertex
+set ${ModelName}:Vertex/GGG /Herwig/Vertices/GGGVertex
+set ${ModelName}:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set ${ModelName}:Vertex/WWH /Herwig/Vertices/WWHVertex
+set ${ModelName}:Vertex/WWW /Herwig/Vertices/WWWVertex
+set ${ModelName}:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set ${ModelName}:Vertex/HGG /Herwig/Vertices/HGGVertex
+set ${ModelName}:Vertex/HPP /Herwig/Vertices/HPPVertex
 
 ${vlist}
 
@@ -65,7 +69,7 @@ set TwoBodyDC:CreateDecayModes Yes
 ###################################################
 # Set up the model framework
 ###################################################
-set /Herwig/Feynrules/FRModel:ModelGenerator NewModel
+set /Herwig/${ModelName}/${ModelName}:ModelGenerator NewModel
 ###################################################
 #
 #  Choose FR over SM
@@ -74,7 +78,7 @@ set /Herwig/Feynrules/FRModel:ModelGenerator NewModel
 cd /Herwig/Generators
 
 erase DefaultStrategy:DefaultParticlesDirs[0]
-insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Feynrules/Particles
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/${ModelName}/Particles
 
-set LEPGenerator:StandardModelParameters  /Herwig/Feynrules/FRModel
-set LHCGenerator:StandardModelParameters  /Herwig/Feynrules/FRModel
+set LEPGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}
+set LHCGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}

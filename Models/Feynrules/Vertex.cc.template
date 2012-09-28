@@ -1,29 +1,51 @@
 // -*- C++ -*-
 //
-// FR${classname}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ${ModelName}${classname}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 
+#include "${ModelName}.h"
 #include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-// #include "ThePEG/Persistency/PersistentOStream.h"
-// #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig 
 {
   using namespace ThePEG;
   using namespace ThePEG::Helicity;
 
-  class FR${classname}: public ${lorentztag}Vertex {
+  class ${ModelName}${classname}: public ${lorentztag}Vertex {
   public:
-    FR${classname}();
+    ${ModelName}${classname}();
     virtual void setCoupling(Energy2${couplingptrs});
-
+    Complex params_array_v[$num_params];
+    ${paramdecl}
+    /** @name Functions used by the persistent I/O system. */
+    //@{
+    /**
+     * Function used to write out object persistently.
+     * @param os the persistent output stream written to.
+     */
+    void persistentOutput(PersistentOStream & os) const;
+    
+    /**
+     * Function used to read in object persistently.
+     * @param is the persistent input stream read from.
+     * @param version the version number of the object when written.
+     */
+    void persistentInput(PersistentIStream & is, int version);
+    //@}
+  
   public:
     static void Init();
+    /**
+     * Pointer to the model object.
+     */
+    tcSMPtr _theModel;
 
   protected:
     virtual IBPtr clone() const { return new_ptr(*this); }
@@ -31,8 +53,10 @@ namespace Herwig
     virtual void doinit();
   
   private:
-    static NoPIOClassDescription<FR${classname}> initFR${classname};
-    FR${classname} & operator=(const FR${classname} &);
+    static ClassDescription<${ModelName}${classname}> init${ModelName}${classname};
+    ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
+    Complex leftval, rightval, normval;
+
 
   };
 }
@@ -40,30 +64,30 @@ namespace Herwig
 namespace ThePEG 
 {
   template <>
-  struct BaseClassTrait<Herwig::FR${classname},1> {
+  struct BaseClassTrait<Herwig::${ModelName}${classname},1> {
     typedef ThePEG::Helicity::${lorentztag}Vertex NthBase;
   };
   template <>
-  struct ClassTraits<Herwig::FR${classname}>
-    : public ClassTraitsBase<Herwig::FR${classname}> {
-      static string className() { return "Herwig::FR${classname}"; }
-      static string library() { return "FeynrulesModel.so"; }
+  struct ClassTraits<Herwig::${ModelName}${classname}>
+    : public ClassTraitsBase<Herwig::${ModelName}${classname}> {
+      static string className() { return "Herwig::${ModelName}${classname}"; }
+      static string library() { return "${ModelName}.so"; }
     };
 }
 
 namespace Herwig {
 using namespace ThePEG;
 
-NoPIOClassDescription<FR${classname}> 
-FR${classname}::initFR${classname};
+ClassDescription<${ModelName}${classname}> 
+${ModelName}${classname}::init${ModelName}${classname};
 
-void FR${classname}::Init() {
-  static ClassDocumentation<FR${classname}> documentation
-    ("The FR${classname} class is the implementation of"
+void ${ModelName}${classname}::Init() {
+  static ClassDocumentation<${ModelName}${classname}> documentation
+    ("The ${ModelName}${classname} class is the implementation of"
      "the coupling of the Z boson to the Standard Model fermions");
 }
 
-  void FR${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
+  void ${ModelName}${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
   // first the overall normalisation
   ${norm}
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -72,17 +96,39 @@ void FR${classname}::Init() {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
-FR${classname}::FR${classname}() {
+${ModelName}${classname}::${ModelName}${classname}() {
   ${addToPlist}
   ${addToPlist2}
 }
 
-void FR${classname}::doinit() {
-  ${parameters}
-  ${setCouplings}
-  orderInGem(${qedorder});
-  orderInGs(${qcdorder});
-  ${lorentztag}Vertex::doinit();
+void ${ModelName}${classname}::persistentOutput(PersistentOStream & os) const {
+  os << _theModel << $ostream;
+}
+
+void ${ModelName}${classname}::persistentInput(PersistentIStream & is, int) {
+  is >> _theModel >> $istream;
+}
+
+void ${ModelName}${classname}::doinit() {
+
+
+   _theModel = generator()->standardModel();
+   tcHw${ModelName}Ptr hw${ModelName}_ptr =dynamic_ptr_cast<tcHw${ModelName}Ptr>(_theModel);
+   
+  for(int ppm = 0; ppm < ${num_params}; ppm++) { 
+    params_array_v[ppm] = hw${ModelName}_ptr->callfunction(ppm);
+  } 
+
+   Complex testval = hw${ModelName}_ptr->test();
+   if(hw${ModelName}_ptr) { 
+     ${paramvertexcalc}
+   }
+
+   ${parameters}
+   ${setCouplings}
+   orderInGem(${qedorder});
+   orderInGs(${qcdorder});
+   ${lorentztag}Vertex::doinit();
 }
 
 }
