@@ -377,20 +377,6 @@ public:
   virtual bool wantCMS () const { return realEmissionME()->wantCMS(); }
 
   /**
-   * If this is a dependent matrix element in a ME group, return true,
-   * if cuts should be inherited from the head matrix element, i.e. no
-   * cut is being applied to the dependent matrix element if the head
-   * configuration has passed the cuts.
-   */
-  virtual bool headCuts() const { return testSubtraction(); }
-
-  /**
-   * If this is a dependent matrix element in a ME group, return true,
-   * if cuts should be ignored.
-   */
-  virtual bool ignoreCuts() const { return splitting(); }
-
-  /**
    * Clear the information previously provided by a call to
    * setKinematics(...).
    */
