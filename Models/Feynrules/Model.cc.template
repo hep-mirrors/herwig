@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// ${ModelName}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FeynRulesModel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the ${ModelName} class.
+// functions of the FeynRulesModel class.
 //
 
-#include "${ModelName}.h"
+#include "FeynRulesModel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -22,48 +22,41 @@
 using namespace ThePEG;
 using namespace Herwig;
 
-${ModelName}::${ModelName}()
+FeynRulesModel::FeynRulesModel()
 ${parmconstr}
 {}
 
-IBPtr ${ModelName}::clone() const {
+IBPtr FeynRulesModel::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr ${ModelName}::fullclone() const {
+IBPtr FeynRulesModel::fullclone() const {
   return new_ptr(*this);
 }
 
-void ${ModelName}::doinit() {
+void FeynRulesModel::doinit() {
   StandardModel::doinit();
   $addVertex
-
-  for(int ppm = 0; ppm < ${num_params}; ppm++) { 
-    params_array[ppm] = callfunction(ppm);
-  } 
-
 }
 
-void ${ModelName}::persistentOutput(PersistentOStream & os) const {
-  os << $ostream ;
+void FeynRulesModel::persistentOutput(PersistentOStream & os) const {
+  $ostream ;
 }
 
-void ${ModelName}::persistentInput(PersistentIStream & is, int) {
-  is >> $istream ;
+void FeynRulesModel::persistentInput(PersistentIStream & is, int) {
+  $istream ;
 }
 
-ClassDescription<${ModelName}> ${ModelName}::init${ModelName};
+ClassDescription<FeynRulesModel> FeynRulesModel::initFeynRulesModel;
 // Definition of the static class description member.
 
-void ${ModelName}::Init() {
+void FeynRulesModel::Init() {
 $refs
 
-static ClassDocumentation<${ModelName}> documentation
-  ("The ${ModelName} class inherits from StandardModel"
-   "and supplies additional couplings and access to the ${ModelName}"
+static ClassDocumentation<FeynRulesModel> documentation
+  ("The FeynRulesModel class inherits from StandardModel"
+   "and supplies additional couplings and access to the FeynRulesModel"
    "vertices for helicity amplitude calculations" );
-
- ${parmextinter}
 
 }
 

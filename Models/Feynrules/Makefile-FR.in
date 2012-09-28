@@ -23,7 +23,7 @@ CXXFLAGS = -g -W -Wall -ansi -pedantic @CXXFLAGS@
 CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@
 
 # add additional libraries here
-LDFLAGS = @APPLE_DSO_FLAGS@ -L/home/itp/andreasp/python/lib -lpthread -ldl -lutil -lm -lpython2.7 -Xlinker -export-dynamic 
+LDFLAGS = @APPLE_DSO_FLAGS@
 
 ALLCCFILES=$(shell echo *.cc)
 all : FeynrulesModel.so 
@@ -38,5 +38,3 @@ ALLOBJFILES=$(ALLCCFILES:.cc=.o)
 clean:
 	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
 	rm -f *.{run,log,out,tex,dot,svg,model,spc}
-	rm Makefile
-	rm *.in
