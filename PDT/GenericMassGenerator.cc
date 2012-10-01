@@ -142,6 +142,7 @@ bool GenericMassGenerator::accept(const ParticleData & in) const {
 
 void GenericMassGenerator::doinit() {
   MassGenerator::doinit();
+  if(particle_->massGenerator()!=this) return;
   // the width generator
   particle_->init();
   widthGen_=particle_->widthGenerator();
