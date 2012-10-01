@@ -312,7 +312,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
   	 << " from the spectrum file does not sum to 1. The branching fractions"
   	 << " will be rescaled.\n";
-    cerr << setprecision(13) << abs(brsum - 1.) << "\n";
+    cerr << "Difference from 1 is " << setprecision(13) << abs(brsum - 1.) << "\n";
   }
   if(nmode>0) {
     inpart->update();
