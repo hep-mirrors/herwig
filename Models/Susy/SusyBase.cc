@@ -430,7 +430,19 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   matrix = new_ptr(MixingMatrix(size.first,size.second));
   for(unsigned int ix=0; ix < values.size(); ++ix)
     (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
-  
+  // test against stupid mixing matrices  
+  for(unsigned int ix=0;ix<matrix->size().first;++ix) {
+    Complex sum(0.);
+    for(unsigned int iy=0;iy<matrix->size().second;++iy) {
+      sum += norm((*matrix)(ix,iy));
+    }
+    if(abs(sum-1.)>1e-4) {
+      cerr << "The sum of the mod squares of the " << ix+1 << "th row "
+	   << "of the " << name << " block does not sum to 1. \n"
+	   << "sum = " << sum.real() << ". We strongly suggest you check your SLHA file.\n";
+    }
+  }
+
   if(name == "nmix") {
     vector<long> ids(4);
     ids[0] = 1000022; ids[1] = 1000023; 
