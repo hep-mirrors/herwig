@@ -212,10 +212,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     if     (_abstractOutgoingVertex1) abstractOutgoingVertexA = _abstractOutgoingVertex1;
     else if(_abstractOutgoingVertex2) abstractOutgoingVertexA = _abstractOutgoingVertex2;
   }
-  else if((inpart.       dataPtr()->iColour()==PDT::Colour0     &&
-	   decay[iferm]->dataPtr()->iColour()==PDT::Colour3     && 
-	   decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) &&
-	 (-decay[ianti]->dataPtr()->id() == decay[iferm]->dataPtr()->id())){
+  else if(inpart.       dataPtr()->iColour()==PDT::Colour0     &&
+	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3     && 
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
     abstractOutgoingVertexF = _abstractOutgoingVertex1;
     abstractOutgoingVertexA = _abstractOutgoingVertex2;
   }

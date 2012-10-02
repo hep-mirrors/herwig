@@ -48,7 +48,7 @@ cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 10000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
-set LEPGenerator:MaxErrors 10000
+set LEPGenerator:MaxErrors 100000
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 2550.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 

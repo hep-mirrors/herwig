@@ -513,72 +513,76 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
   
   int dipoleNo  = -1; 
+  int process   = -1;
+
   if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
     if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)
-      dipoleNo=2;
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
+      dipoleNo=2; process = 0;
+    }
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
 	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
-      dipoleNo=2;
+      dipoleNo=2; process = 0;
       swap(aProgenitor, cProgenitor);
     }
   }
   if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3) {
     if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)
-      dipoleNo=1;
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+      dipoleNo=2; process = 1;
+    }
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
 	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
-      dipoleNo=1;
+      dipoleNo=2; process = 1;
       swap(aProgenitor, cProgenitor);      
     }
 
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)
-      dipoleNo=3;
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo=3; process = 2;
+    }
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
 	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
-      dipoleNo=3;
+      dipoleNo=3; process = 2;
       swap(aProgenitor, cProgenitor);
     }
   }
 
   else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) {
     if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0))
-      dipoleNo=1;
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)){
+      dipoleNo=2; process = 1;
+    }
     else if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
 	      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)){
-      dipoleNo=1;
+      dipoleNo=2; process = 1;
       swap(aProgenitor, cProgenitor);      
     }
 
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)
-      dipoleNo=3;
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
+      dipoleNo=3; process = 2;
+    }
     else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
 	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
-      dipoleNo=3;
+      dipoleNo=3; process = 2;
       swap(aProgenitor, cProgenitor);
     }
   }
 
-  if (dipoleNo==-1) 
+  if (dipoleNo==-1 || process == -1) 
     throw Exception() << "Unknown colour structure in 3 boday decay in "
   		      << "GeneralTwoBodyDecayer::generateHardest()"
   		      << Exception::runerror;
-
   
   Energy pT_temp=pTmin_;
-  Lorentz5Momentum pspectator;
   LorentzRotation eventFrame;
-  LorentzRotation temp_eventFrame;
   vector<Lorentz5Momentum> momenta;
   vector<Lorentz5Momentum> temp_momenta(4);
     
   for (int i=0; i<dipoleNo; ++i){
-    if(dipoleNo==2 && i==1) swap(aProgenitor, cProgenitor);    
-    //if(dipoleNo==3 && i==2) swap(aProgenitor, cProgenitor);   
+    if(process==0 && i==1) swap(aProgenitor, cProgenitor);    
+    //if(process==2 && i==2) swap(aProgenitor, cProgenitor);   
 
     // masses of the particles
     mb_  = bProgenitor->progenitor()->momentum().mass();
@@ -588,8 +592,8 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     c2_  = sqr(c_);
     
     // find rotation from lab to frame with a along -z
-    temp_eventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
-    pspectator = temp_eventFrame*aProgenitor->progenitor()->momentum();
+    LorentzRotation temp_eventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
+    Lorentz5Momentum pspectator = temp_eventFrame*aProgenitor->progenitor()->momentum();
     temp_eventFrame.rotateZ( -pspectator.phi() );
     temp_eventFrame.rotateY( -pspectator.theta() - Constants::pi );
 
@@ -599,16 +603,16 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     temp_momenta.clear();
     temp_momenta = hardMomenta(bProgenitor->progenitor()->dataPtr(),
 			       cProgenitor->progenitor()->dataPtr(),
-			       aProgenitor->progenitor()->dataPtr(), dipoleNo, i);
+			       aProgenitor->progenitor()->dataPtr(), process, i);
 
     if(not temp_momenta.empty() && pT_>pT_temp){
       pT_temp=pT_;
       momenta=temp_momenta;
       eventFrame=temp_eventFrame;
     }
-    else if ((temp_momenta.empty() || pT_<pT_temp) && dipoleNo==2 && i==1) 
+    else if ((temp_momenta.empty() || pT_<pT_temp) && process==0 && i==1)
       swap(aProgenitor, cProgenitor);
-    //else if ((temp_momenta.empty() || pT_<pT_temp) && dipoleNo==3 && i==2) 
+    //else if ((temp_momenta.empty() || pT_<pT_temp) && process==2 && i==2) 
     //swap(aProgenitor, cProgenitor);
   }  
   pT_=pT_temp;
@@ -705,7 +709,7 @@ double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle & inpart,
 }
 
 vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr outc, 
-							     tcPDPtr outa, int dipoleNo,
+							     tcPDPtr outa, int process,
 							     int i) {
   double C    = 6.3;
   double ymax = 10.;
@@ -763,12 +767,22 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(tcPDPtr in, tcPDPtr
 
       double meRatio = matrixElementRatio(inpart,decay2,decay3,Initialize);
 
-      if (dipoleNo==2){
-	InvEnergy2 dipoleSum = abs(calculateDipole(dipoleNo, xc[j], xa[j])) +
-	                       abs(calculateDipole(dipoleNo, xa[j], xc[j]));
-	InvEnergy2 dipole    = abs(calculateDipole(dipoleNo, xc[j], xa[j]));
-	meRatio *= (3./4.)*(dipole/dipoleSum);	
+      double dipoleFactor = 1.;
+      if (process==0){
+	InvEnergy2 D1 = abs(calculateDipoleFF(xc[j], xa[j]));
+	InvEnergy2 D2 = abs(calculateDipoleFF(xa[j], xc[j]));
+	dipoleFactor =(3./4.)* D1/(D1 + D2);	
       }
+      else if (process==1){
+	double xT = 2.*pT/mb_;
+	Energy2 pbpg = particleMomenta[1]*particleMomenta[3];
+	dipoleFactor = abs(calculateDipoleIF(i, pbpg, xg, xT)) / 
+	              (abs(calculateDipoleIF(0, pbpg, xg, xT)) + 
+		       abs(calculateDipoleIF(1, pbpg, xg, xT)));
+	
+
+      }
+      meRatio*=dipoleFactor;
 
       //Calculate jacobian
       Energy2 denom = (mb_ - particleMomenta[3].e()) * particleMomenta[2].vect().mag() -
@@ -911,17 +925,33 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xa) {
   return true;
 }
 
-InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(int dipoleNo, double x1, double x2){
+ InvEnergy2 GeneralTwoBodyDecayer::calculateDipoleFF(double xc, double xa){
 
-  InvEnergy2 dipole=1./GeV/GeV;
-  if (dipoleNo==2){
-    InvEnergy2 commonPrefactor = 4./3.*8.*Constants::pi/sqr(mb_);
-    dipole = commonPrefactor/(1.-x2)*(2.*(1.-2.*a2_)/(2.-x1-x2)-sqrt((1.-4.*a2_)/
-                             (sqr(x2)-4.*a2_))*(x2-2.*a2_)*(2.+(x1-1.)/(x2-2.*a2_)+
-			      2.*a2_/(1.-x2))/(1.-2.*a2_));
-  }
+   //dipole for final state emitter c and spectator a
+   InvEnergy2 commonPrefactor = 4./3.*8.*Constants::pi*coupling_->value(mb_*mb_)/sqr(mb_);
+   double lambda2 = 1. + sqr(a2_) + sqr(c2_) - 2.*a2_ - 2.*c2_ - 2.*a2_*c2_;    
+   InvEnergy2 dipole = (commonPrefactor/(1.-xa+a2_-c2_))*( (2.*(1.-a2_-c2_)/(2.-xa-xc))-
+							   sqrt((lambda2)/(sqr(xa)-4.*a2_))*
+							   ((xa-2.*a2_)/(1-a2_-c2_))*
+							   (2.+ ((xc-1.+a2_-c2_)/(xa-2.*a2_)) + 
+							    (2.*c2_/(1.+a2_-c2_-xa))) );
   return dipole;
 }
+
+InvEnergy2 GeneralTwoBodyDecayer::calculateDipoleIF(int i, Energy2 pbpg, double xg, double xT){
+   //dipole for final state emitter and initial state spectator
+   double commonPrefactor = 4./3. *4.*Constants::pi*coupling_->value(mb_*mb_);
+   InvEnergy2 dipole = 1./GeV/GeV;
+   if (i==0){
+     dipole = -4./ sqr(mb_*xg); 
+   }
+   else if (i==1){
+     double z = 1. - xg/(1. - a2_ + c2_);
+     dipole = - sqr(mb_)*c2_ / sqr(pbpg) + (1./pbpg)*(2./(1.-z) - 1. - z);
+   }
+   dipole*=commonPrefactor;
+   return dipole;
+ }
 
 const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
 								const ParticleVector & decay,

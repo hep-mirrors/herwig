@@ -203,11 +203,17 @@ protected:
    *  Return the momenta including the hard emission
    */
   vector<Lorentz5Momentum> hardMomenta(tcPDPtr in, tcPDPtr outc, tcPDPtr outa, 
-				       int dipoleNo, int i);
+				       int process, int i);
+
   /**
-   *  Return the momenta including the hard emission
+   *  Return dipole for final final connection
    */
-  InvEnergy2 calculateDipole(int dipoleNo, double x1, double x2);
+  InvEnergy2 calculateDipoleFF(double xc, double xa);
+
+  /**
+   *  Return dipole for initial final connection
+   */
+  InvEnergy2 calculateDipoleIF(int i, Energy2 pbpg, double xg, double xT);
 
   /**
    *  Coupling for the generation of hard radiation
