@@ -478,8 +478,7 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 }
 
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
-
-
+  // search for the coloured particles
   bool colouredParticles=false;
   vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
   for (unsigned int it=0; it<Progenitors.size(); ++it){
@@ -488,94 +487,33 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       break;
     }
   }
-  if (not colouredParticles){
+  // if no coloured particles return
+  if ( !colouredParticles ) {
     for (unsigned int it=0; it<Progenitors.size(); ++it){
       Progenitors[it]->maximumpT(pTmin_);
     }
     return HardTreePtr();
-  }    
-
-  if (tree->outgoingLines().size()!=2){
+  }
+  // check exactly two outgoing particles
+  if (tree->outgoingLines().size()!=2) {
     throw Exception()
       << "Number of outgoing particles is not equal to 2 in "
       << "GeneralTwoBodyDecayer::generateHardest()" 
       << Exception::runerror;
   }
-
-  //for decay b -> a c 
-  assert(tree->outgoingLines().size()==2);
-
+  // for decay b -> a c 
+  // set progenitors
+  // outgoing
   ShowerProgenitorPtr 
     cProgenitor = tree->outgoingLines(). begin()->first,
     aProgenitor = tree->outgoingLines().rbegin()->first;
-
   // Get the decaying particle
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
-  
+  // Identify the diples
   int dipoleNo  = -1; 
   int process   = -1;
-
-  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
-    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
-      dipoleNo=2; process = 0;
-    }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
-      dipoleNo=2; process = 0;
-      swap(aProgenitor, cProgenitor);
-    }
-  }
-  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3) {
-    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
-      dipoleNo=2; process = 1;
-    }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
-      dipoleNo=2; process = 1;
-      swap(aProgenitor, cProgenitor);      
-    }
-
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
-      dipoleNo=3; process = 2;
-    }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
-      dipoleNo=3; process = 2;
-      swap(aProgenitor, cProgenitor);
-    }
-  }
-
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) {
-    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)){
-      dipoleNo=2; process = 1;
-    }
-    else if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-	      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)){
-      dipoleNo=2; process = 1;
-      swap(aProgenitor, cProgenitor);      
-    }
-
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
-      dipoleNo=3; process = 2;
-    }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
-      dipoleNo=3; process = 2;
-      swap(aProgenitor, cProgenitor);
-    }
-  }
-
-  if (dipoleNo==-1 || process == -1) 
-    throw Exception() << "Unknown colour structure in 3 boday decay in "
-  		      << "GeneralTwoBodyDecayer::generateHardest()"
-  		      << Exception::runerror;
-  
-  Energy pT_temp=pTmin_;
+  identifyDipoles(dipoleNo,process,aProgenitor,bProgenitor,cProgenitor);
+  Energy pT_temp = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
   vector<Lorentz5Momentum> temp_momenta(4);
@@ -1095,3 +1033,78 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   return colour_;
 }
 
+
+void GeneralTwoBodyDecayer::identifyDipoles(int & dipoleNo, int & process,
+					    ShowerProgenitorPtr & aProgenitor,
+					    ShowerProgenitorPtr & bProgenitor,
+					    ShowerProgenitorPtr & cProgenitor) const {
+  // neutral decaying particle
+  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 ) {
+    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
+      dipoleNo = 2;
+      process  = 0;
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo = 2;
+      process  = 0;
+      swap(aProgenitor, cProgenitor);
+    }
+  }
+  // triplet decaying particle
+  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 ) {
+    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+      dipoleNo = 2;
+      process  = 1;
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo=2; 
+      process = 1;
+      swap(aProgenitor, cProgenitor);      
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+      dipoleNo = 3;
+      process  = 2;
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+      dipoleNo = 3;
+      process  = 2;
+      swap(aProgenitor, cProgenitor);
+    }
+  }
+  // antitriplet decaying particle 
+  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) {
+    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)){
+      dipoleNo = 2;
+      process  = 1;
+    }
+    else if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
+	      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)){
+      dipoleNo = 2;
+      process  = 1;
+      swap(aProgenitor, cProgenitor);      
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
+      dipoleNo = 3;
+      process  = 2;
+    }
+    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+      dipoleNo = 3;
+      process  = 2;
+      swap(aProgenitor, cProgenitor);
+    }
+  }
+  // check this is allowed
+  if (dipoleNo==-1 || process == -1) 
+    throw Exception() << "Unknown colour structure in 3 boday decay in "
+  		      << "GeneralTwoBodyDecayer::generateHardest()"
+  		      << Exception::runerror;
+}

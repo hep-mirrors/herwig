@@ -216,6 +216,14 @@ protected:
   InvEnergy2 calculateDipoleIF(int i, Energy2 pbpg, double xg, double xT);
 
   /**
+   *  Work out the type of process
+   */
+  void identifyDipoles(int & dipoleNo, int & process,
+		       ShowerProgenitorPtr & aProgenitor,
+		       ShowerProgenitorPtr & bProgenitor,
+		       ShowerProgenitorPtr & cProgenitor) const;
+
+  /**
    *  Coupling for the generation of hard radiation
    */
   ShowerAlphaPtr coupling() {return coupling_;}
