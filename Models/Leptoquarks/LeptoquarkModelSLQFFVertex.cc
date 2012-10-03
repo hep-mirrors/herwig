@@ -190,7 +190,6 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     smid_2 = isc; 
   }
   if(fabs(lqid) < 9900000) {
-    lqid = ichg;
     smid_1 = ism;
     smid_2 = isc;
   }

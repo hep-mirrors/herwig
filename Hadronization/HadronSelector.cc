@@ -665,8 +665,8 @@ double HadronSelector::specialWeight(long id) {
       return sqr(_repwt[l][j][n]);  
     }    
   }
-  // rest has spin >= 5/2 (ispin >= 6), haven't got those
-  assert( false );
+  // rest is not excited or 
+  // has spin >= 5/2 (ispin >= 6), haven't got those
   return 1.0;
 }
 
