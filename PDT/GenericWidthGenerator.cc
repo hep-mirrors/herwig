@@ -412,7 +412,6 @@ void GenericWidthGenerator::doinit() {
 	    interMasses_.push_back(moff);
 	    interWidths_.push_back(widthptr->partialWidth(moff2));
 	  }
-	  coupling=1.;
 	  if(BRnorm_) {
 	    double ratio(1.);
 	    if((massgen1&&massgen2&&
@@ -491,8 +490,7 @@ void GenericWidthGenerator::doinit() {
 	      coupling = 0.;
 	    }
 	    else {
-	      double ratio(mode->brat()*mode->parent()->width()/gamma);
-	      coupling *=ratio;
+	      coupling = mode->brat()*mode->parent()->width()/gamma;
 	    }
 	  }
 	  MEtype_.push_back(2);

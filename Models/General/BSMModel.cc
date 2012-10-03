@@ -141,7 +141,6 @@ void BSMModel::decayRead() {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
