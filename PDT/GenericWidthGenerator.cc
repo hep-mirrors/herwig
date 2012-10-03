@@ -259,7 +259,7 @@ void GenericWidthGenerator::doinit() {
     // loop over the decay modes to get the partial widths
     for(;start!=end;++start) {
       // the decay mode
-      tcDMPtr mode=(*start).second;      
+      tcDMPtr mode=(*start).second;
       decayModes_.push_back(const_ptr_cast<DMPtr>(mode));
       decayTags_.push_back(decayModes_.back()->tag());
       ParticleMSet::const_iterator pit(mode->products().begin());
@@ -325,9 +325,19 @@ void GenericWidthGenerator::doinit() {
 	  if(BRnorm_) {
 	    if(mass_>MEmass1_[MEtype_.size()-1]+MEmass2_[MEtype_.size()-1]) {
 	      Energy gamma(partial2BodyWidth(MEtype_.size()-1,mass_));
-	      double ratio(mode->brat()*mode->parent()->width()/gamma);
-	      ratio=sqrt(ratio);
-	      MEcoupling_.back() *=ratio;
+	      if(gamma==ZERO) {
+		cerr << "Partial width for " << mode->tag()
+		     << " is zero in GenericWidthGenerator::doinit()"
+		     << " if doing BSM physics this is probably a problem with your input "
+		     << "parameters.\n"
+		     << "Zeroing mode\n";
+		MEcoupling_.back() = 0.;
+	      }
+	      else {
+		double ratio(mode->brat()*mode->parent()->width()/gamma);
+		ratio=sqrt(ratio);
+		MEcoupling_.back() *=ratio;
+	      }
 	    }
 	  }
 	}
@@ -402,7 +412,6 @@ void GenericWidthGenerator::doinit() {
 	    interMasses_.push_back(moff);
 	    interWidths_.push_back(widthptr->partialWidth(moff2));
 	  }
-	  coupling=1.;
 	  if(BRnorm_) {
 	    double ratio(1.);
 	    if((massgen1&&massgen2&&
@@ -414,7 +423,17 @@ void GenericWidthGenerator::doinit() {
 	       (!massgen1&&!massgen2&&
 		mass_>part1->mass()+part2->mass())) {
 	      Energy gamma(widthptr->partialWidth(mass_*mass_));
-	      ratio=mode->brat()*mode->parent()->width()/gamma;
+	      if(gamma==ZERO) {
+		cerr << "Partial width for " << mode->tag()
+		     << " is zero in GenericWidthGenerator::doinit()"
+		     << " if doing BSM physics this is probably a problem with your input "
+		     << "parameters.\n"
+		     << "Zeroing mode\n";
+		ratio = 0.;
+	      }
+	      else {
+		ratio=mode->brat()*mode->parent()->width()/gamma;
+	      }
 	    }
 	    MEcoupling_.back()=ratio;
 	  }
@@ -461,10 +480,18 @@ void GenericWidthGenerator::doinit() {
 	  }
 	  double coupling(1.);
 	  if(BRnorm_) {
-	    Energy gamma = ZERO;
-	    gamma=widthptr->partialWidth(mass_*mass_);
-	    double ratio(mode->brat()*mode->parent()->width()/gamma);
-	    coupling *=ratio;
+	    Energy gamma = widthptr->partialWidth(mass_*mass_);
+	    if(gamma==ZERO) {
+	      cerr << "Partial width for " << mode->tag()
+		   << " is zero in GenericWidthGenerator::doinit()"
+		   << " if doing BSM physics this is probably a problem with your input "
+		   << "parameters.\n"
+		   << "Zeroing mode\n";
+	      coupling = 0.;
+	    }
+	    else {
+	      coupling = mode->brat()*mode->parent()->width()/gamma;
+	    }
 	  }
 	  MEtype_.push_back(2);
 	  MEcode_.push_back(0);
@@ -500,7 +527,7 @@ void GenericWidthGenerator::doinit() {
       for(unsigned int ix=0;ix<decayTags_.size();++ix) {
 	decayModes_.push_back(CurrentGenerator::current().findDecayMode(decayTags_[ix]));
 	if(!decayModes_.back()) 
-	  generator()->log() << "Error in GenericWidthGenerator::doinit() "
+	  generator()->log() << "Error in GenericWidthGenerator::doinit(). "
 			     << "Failed to find DecayMode  for tag" 
 			     << decayTags_[ix] << "\n";
       }
@@ -748,7 +775,7 @@ Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w)
 }
 
 Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
-						       Energy m2) const {
+						Energy m2) const {
   using Constants::pi;
   if(q<m1+m2) return ZERO;
   // calcluate the decay momentum
