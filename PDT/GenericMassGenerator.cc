@@ -158,17 +158,15 @@ void GenericMassGenerator::doinit() {
   if(initialize_) {
     // zero the maximum weight
     maxWgt_=0.;
-    // storage of variables for the loop
-    double wgt=0.,swgt=0.,sqwgt=0.;
+    // storage of variable for the loop
+    double wgt=0.;
     // perform the initialisation
-    for(int ix=0;ix<nInitial_;++ix) {
-      mass(wgt,*particle_,3);
-      swgt  += wgt;
-      sqwgt += sqr(wgt);
-      if(wgt>maxWgt_) maxWgt_=wgt;
+    // (mass() contains a ThePEG::Random call)
+    for(int ix=0; ix<nInitial_; ++ix) {
+      mass(wgt, *particle_, 3);
+      if ( wgt > maxWgt_ ) 
+	maxWgt_ = wgt;
     }
-    swgt=swgt/nInitial_;
-    sqwgt=sqrt(max(0.,sqwgt/nInitial_-swgt*swgt)/nInitial_);
   }
 }
   
