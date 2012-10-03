@@ -149,11 +149,19 @@ void LeptoquarkModelSLQFFVertex::doinit() {
 }
 
 void LeptoquarkModelSLQFFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _CFF << _cL0 << _cR0 << _cR0t << _cL1 << _cL12 << _cR12 << _cL12t << _dcL0 << _dcR0 << _dcR0t << _dcL1 << _dcL12 << _dcR12 << _dcL12t << _derivscale;
+  os << _CFF << _cL0 << _cR0 << _cR0t 
+     << _cL1 << _cL12 << _cR12 << _cL12t 
+     << _dcL0 << _dcR0 << _dcR0t 
+     << _dcL1 << _dcL12 << _dcR12 << _dcL12t 
+     << ounit(_derivscale,GeV);
 }
 
 void LeptoquarkModelSLQFFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _CFF >> _cL0 >> _cR0 >> _cR0t >> _cL1 >> _cL12 >> _cR12 >> _cL12t >>_dcL0 >> _dcR0 >> _dcR0t >> _dcL1 >> _dcL12 >> _dcR12 >> _dcL12t >> _derivscale;
+  is >> _CFF >> _cL0 >> _cR0 >> _cR0t 
+     >> _cL1 >> _cL12 >> _cR12 >> _cL12t 
+     >>_dcL0 >> _dcR0 >> _dcR0t 
+     >> _dcL1 >> _dcL12 >> _dcR12 >> _dcL12t 
+     >> iunit(_derivscale,GeV);
 }
 
 ClassDescription<LeptoquarkModelSLQFFVertex> 
@@ -188,9 +196,10 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   }
   if( fabs(smid_1) > fabs(smid_2) ) { swap(smid_1, smid_2); }
 
-  double mtop = 174.2;
-  double mbot = 4.2;
-  double mtau = 1.77699;
+  const Energy denom = sqrt(2.) * _derivscale;
+  const double mtop = getParticleData(ParticleID::t)->mass()        / denom;
+  const double mbot = getParticleData(ParticleID::b)->mass()        / denom;
+  const double mtau = getParticleData(ParticleID::tauminus)->mass() / denom;
 
   //set the couplings to left and right 
   //S0
@@ -253,6 +262,8 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     _cR = _cL12t; _cL = Complex(0.);
   }
 
+
+
   //dS0
   if( fabs(isc) == 9961551 || fabs(ism) == 9961551 || fabs(ichg) == 9961551) {
     if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
@@ -263,20 +274,18 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
       _cR = _dcL0 * mtop; 
       _cL = Complex(0.);
     }
-    _cL /= sqrt(2.) * _derivscale; 
-    _cR /= sqrt(2.) * _derivscale; 
   }
 
   //d~S0
   if( fabs(isc) == 9971561 || fabs(ism) == 9971561 || fabs(ichg) ==  9971561) {
-    _cR = _dcR0t * mtau / (sqrt(2.) * _derivscale); 
-    _cL = _dcR0t * mtop / (sqrt(2.) * _derivscale); 
+    _cR = _dcR0t * mtau;
+    _cL = _dcR0t * mtop;
   }
 
   //dS1 triplet
   if( fabs(isc) == 9981561 || fabs(ism) == 9981561 || fabs(ichg) ==  9981561) {
-    _cR = sqrt(2.) * _dcL1 * mtop / (sqrt(2.) * _derivscale);
-    _cL = sqrt(2.) * _dcL1 * mtau / (sqrt(2.) * _derivscale);
+    _cR = sqrt(2.) * _dcL1 * mtop;
+    _cL = sqrt(2.) * _dcL1 * mtau;
   }
   if( fabs(isc) == 9981551 || fabs(ism) == 9981551 || fabs(ichg) ==  9981551) {
     if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
@@ -287,13 +296,10 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
       _cR = _dcL1 * mtop;
       _cL = Complex(0.);
     }
-    _cL /= sqrt(2.) * _derivscale; 
-    _cR /= sqrt(2.) * _derivscale; 
-  
   }
 
   if( fabs(isc) == 9981651 || fabs(ism) == 9981651 || fabs(ichg) ==  9981651) {
-    _cL = sqrt(2.) * _dcL1 * mbot / (sqrt(2.) * _derivscale);
+    _cL = sqrt(2.) * _dcL1 * mbot;
     _cR = Complex(0.);
   }
   
@@ -302,8 +308,6 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   if( fabs(isc) == 9991551 || fabs(ism) == 9991551 || fabs(ichg) == 9991551 ) {
     _cL = _dcL12 * mbot + _dcR12 * mtau;
     _cR = _dcR12 * mbot + _dcL12 * mtau;
-    _cL /= sqrt(2.) * _derivscale; 
-    _cR /= sqrt(2.) * _derivscale; 
   }
 
   if( fabs(isc) == 9991561 || fabs(ism) == 9991561 || fabs(ichg) == 9991561 ) {
@@ -314,24 +318,28 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
     if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
       _cL = _dcL12 * mbot;
     }    
-  
-    _cL /= sqrt(2.) * _derivscale; 
-    _cR /= sqrt(2.) * _derivscale; 
   }
 
   //dS1/2 tilde doublet
   if( fabs(isc) == 9901561 || fabs(ism) == 9901561  || fabs(ichg) == 9901561 ) {
-    _cL = _dcL12t * mtop  / (sqrt(2.) * _derivscale); _cR = _dcL12t * mtau / (sqrt(2.) * _derivscale);
+    _cL = _dcL12t * mtop; 
+    _cR = _dcL12t * mtau;
   }
   
   if( fabs(isc) == 9901661 || fabs(ism) == 9901661  || fabs(ichg) == 9901661 ) {
-    _cL = _dcL12t * mtop / (sqrt(2.) * _derivscale); _cR = Complex(0.);
+    _cL = _dcL12t * mtop;
+    _cR = Complex(0.);
   }
-    if(smid_1 > 0) { 
-      left(conj(_cR)); right(conj(_cL));
-    } else { left(_cL); right(_cR); } 
 
- 
+
+  if(smid_1 > 0) { 
+    left(conj(_cR)); 
+    right(conj(_cL));
+  } 
+  else { 
+    left(_cL); 
+    right(_cR); 
+  } 
 
   norm(_CFF);
 }
