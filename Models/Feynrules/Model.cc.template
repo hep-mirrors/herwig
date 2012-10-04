@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 //#include "Herwig++/Models/General/ModelGenerator.h"
 
 using namespace ThePEG;
@@ -37,10 +38,6 @@ IBPtr ${ModelName}::fullclone() const {
 void ${ModelName}::doinit() {
   StandardModel::doinit();
   $addVertex
-
-  for(int ppm = 0; ppm < ${num_params}; ppm++) { 
-    params_array[ppm] = callfunction(ppm);
-  } 
 
 }
 

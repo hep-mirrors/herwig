@@ -25,6 +25,10 @@ set HPConstructor:Processes Exclusive
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
+cd /Herwig/EventHandlers
+create ThePEG::Cuts   /Herwig/Cuts/NoCuts
+set /Herwig/EventHandlers/LHCHandler:Cuts /Herwig/Cuts/NoCuts
+
 # Other parameters for run
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
@@ -41,6 +45,5 @@ set /Herwig/Analysis/Basics:CheckQuark No
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
 
-#set /Herwig/Cuts/QCDCuts:MHatMin 300*GeV
 
 saverun LHC-${ModelName} LHCGenerator

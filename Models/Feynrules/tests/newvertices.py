@@ -22,6 +22,14 @@ if(os.path.exists(os.getcwd() + '/'+opts.MODELDIR) is False):
 # if the Model path exists, then import the UFO FeynRules module
 FR = __import__(opts.MODELDIR)
 
+# check if a function is a number
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 # function that replaces ** with pow(,): used in PyMathToThePEGMath below
 def powstring(stringrep,power):
     return 'pow(' + stringrep.replace('**','') + ',' + power + ')'
@@ -45,7 +53,11 @@ def PyMathToThePEGMath(stringin, paramsin):
     pow_ddg = 0
     power = ''
     powerchange = []
-  
+    initial_len_paramsin = len(paramsin)
+    # to take care of the ** powers over brackets (), append new "parameters" of type (xxxx)
+    #	th = acos(1/sqrt(1 + (-pow(MM1,2) + pow(MM2,2) + sqrt(4*pow(MM12,4) + (pow(MM1,2) - pow(MM2,2))**2))**2/(4.*pow(MM12,4))));
+
+    
     # loop over the array of the model parameters and search for them in the given mathematical expression
     # each time a new position with the ** notation is found, replace with the C++ pow(,) notation
     for xx in range(0,len(paramsin)):
@@ -84,6 +96,7 @@ def PyMathToThePEGMath(stringin, paramsin):
     # do replacements of 'complex'
     # integers multiplying stuff (add the "." 
     stringin = stringin.replace('complex','Complex')
+    stringin = stringin.replace('cmath.pi', 'M_PI')
     stringin = stringin.replace('cmath.', '')
     stringin = stringin.replace('-(','(-1.)*(')
     for nn in range(0,len(numbersarray)):
@@ -97,6 +110,30 @@ def PyMathToThePEGMath(stringin, paramsin):
         paramsin[ss] = paramsin[ss].replace('**','')
     return stringin
 
+# function that replaces alphaS (aS)-dependent variables
+# with their explicit form which also contains strongCoupling
+def aStoStrongCoup(stringin, paramstoreplace, paramstoreplace_expressions):
+    print stringin
+    for xx in range(0,len(paramstoreplace)):
+        print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
+    stringout = stringout.replace('aS', '(sqr(strongCoupling(q2))/(4.0*Constants::pi))')
+    print 'resulting string', stringout
+    return stringout
+
+
+# function that replaces alphaEW (aEW)-dependent variables
+# with their explicit form which also contains weakCoupling
+def aEWtoWeakCoup(stringin, paramstoreplace, paramstoreplace_expressions):
+    print stringin
+    for xx in range(0,len(paramstoreplace)):
+        print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
+    stringout = stringout.replace('aEW', '(sqr(weakCoupling(q2))/(4.0*Constants::pi))')
+    print 'resulting string', stringout
+    return stringout
+          
+          
 # function to get template
 def getTemplate(basename):
     with open('../%s.template' % basename, 'r') as f:
@@ -147,6 +184,8 @@ parmconstr = []
 parmextinter = []
 parmfuncmap = []
 paramsforev = []
+paramstoreplace_ = []
+paramstoreplace_expressions_ = []
 
 # get external parameters for printing
 parmsubs = dict( [ (p.name, float(p.value)) 
@@ -184,12 +223,25 @@ allparams =  [ p.name
 #print 'internal parms:'
 #print internal
 #print
-
+paramstoreplaceEW_ = []
+paramstoreplaceEW_expressions_ = []
 # calculate internal parameters
 for p in internal:
     print p.name,'=',p.value
+    if('aS' in p.value and p.name is not 'aS'):
+        print 'PARAM', p.name, 'contains aS'
+        print p.value
+        paramstoreplace_.append(p.name)
+        paramstoreplace_expressions_.append(p.value)
+    if('aEW' in p.value and p.name is not 'aEW'):
+        print 'PARAM', p.name, 'contains aEW'
+        print p.value
+        paramstoreplaceEW_.append(p.name)
+        paramstoreplaceEW_expressions_.append(p.value)
+        #if(is_number(p.value)):
     newval = evaluate(p.value)
     parmsubs.update( { p.name : newval } )
+        
 
 #print parmsubs
 #print
@@ -198,7 +250,7 @@ for p in internal:
 for p in external:
     print p.name,'=',p.value
     extinter = '%s' % (p.name)
-
+ 
 #print 'NUMBER OF PARAMS', len(FR.all_parameters)
 #print 'PARAMETER NAMES'
     
@@ -257,6 +309,11 @@ for p in FR.all_parameters:
         parmnumber += 1
     else:
         raise Exception('Unknown data type "%s".' % p.type)
+    if(p.name == 'aS'):
+        funcvertex = '%s = (sqr(strongCoupling(q2))/(4.0*Constants::pi));' % p.name
+    if(p.lhablock == None):
+        funcvertex = p.name +' = ' + PyMathToThePEGMath(p.value, allparams) + ';' 
+        print 'NO LHABLOCK:', p.name, funcvertex
 
     # do calc in C++, add interfaces for externals
     paramvertexcalc.append(funcvertex)    
@@ -436,7 +493,7 @@ VERTEX = getTemplate('Vertex.cc')
 
 def produce_vertex_file(subs):
     newname = ModelName + subs['classname'] + '.cc'
-    writeFile( newname, VERTEX.substitute(subs) )
+    writeFile( newname, VERTEX.substitute(subs) )    
 
 # loop over all vertices
 for v in FR.all_vertices:
@@ -465,11 +522,20 @@ for v in FR.all_vertices:
 
 # Check if the Vertex is self-conjugate or not
     pdgcode = [0,0,0,0]
-#    print 'printing particles in vertex'
+    notsmvertex = False
+#   print 'printing particles in vertex'
     for i in range(len(v.particles)):
 #       print v.particles[i].pdg_code
         pdgcode[i] = v.particles[i].pdg_code
+        if(pdgcode[i] not in SMPARTICLES):
+            notsmvertex = True
 
+#  treat replacement of SM vertices with BSM vertices?               
+    if(notsmvertex == False):
+        print 'VERTEX INCLUDED IN STANDARD MODEL!'
+        #        v.include = 0
+        #continue
+    
     selfconjugate = 0
     for j in range(len(pdgcode)):
         for k in range(len(pdgcode)):
@@ -514,29 +580,43 @@ for v in FR.all_vertices:
         qcd = C.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
         # Is there a better way to treat this?
-        if(qed == 0 and qcd == 0): qed = 1
+        if(qed == 0 and qcd == 0):
+            qed = 1
         unique_qcd( qed )
         unique_qed( qcd )
         L = v.lorentz[li]
 
         if lt in ['FFS','FFV']:
+            print 'PRINTING LORENTZ STRUCTURE'
             print L.structure
             for lor in map(string.strip, L.structure.split('+')):
                 breakdown = lor.split('*')
                 prefactor='1'
+                print 'breakdown', breakdown, 'length', len(breakdown)
                 if len(breakdown) == 3:
                     prefactor = breakdown[0]
                     breakdown = breakdown[1:]
-
                 if len(breakdown) == 2:
                     assert(breakdown[0][:5] == 'Gamma')
                     if breakdown[1][:5] == 'ProjM':
+                        print 'LEFT HANDED'
                         coup_left.append(prefactor+' * '+C.value)
                     elif breakdown[1][:5] == 'ProjP':
+                        print 'RIGHT HANDED'
                         coup_right.append(prefactor+' * '+C.value)
-                else:
-                    coup_left.append(C.value)
-                    coup_right.append(C.value)
+                    else:
+                        coup_left.append(C.value)
+                        coup_right.append(C.value)
+                if len(breakdown) == 1:
+                    if breakdown[0][:5] == 'ProjM':
+                        print 'LEFT HANDED'
+                        coup_left.append(prefactor+' * '+C.value)
+                    elif breakdown[0][:5] == 'ProjP':
+                        print 'RIGHT HANDED'
+                        coup_right.append(prefactor+' * '+C.value)
+                    else:
+                        coup_left.append(C.value)
+                        coup_right.append(C.value)
         else:
             coup_norm.append(C.value)
                 
@@ -555,26 +635,45 @@ for v in FR.all_vertices:
     print 'Right:',rightcontent
     print 'Norm:',normcontent
     print '---------------'
-  
+
+
+    #leftexplicit = complex(evaluate(leftcontent))
+    #rightexplicit = complex(evaluate(rightcontent))
+    #    normexplicit = complex(evaluate(normcontent))
+    leftdebug = ''
+    rightdebug = ''
+    normdebug = ''
     ### do we need left/right?
     if 'FF' in lt:
-        leftcalc = PyMathToThePEGMath(leftcontent, allparams)
-        rightcalc = PyMathToThePEGMath(rightcontent, allparams)
+        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
+        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
         left = 'left(' + leftcalc + ');'
         right = 'right(' + rightcalc + ');'
+        #leftdebug  = 'left(Complex(%s,%s));'  % (leftexplicit.real,leftexplicit.imag)
+        #rightdebug = 'right(Complex(%s,%s));' % (rightexplicit.real,rightexplicit.imag)
     else:
         left = ''
         right = ''
         leftcalc = ''
         rightcalc = ''
+        leftdebug = ''
+        rightdebug = ''
         
-    normcalc = PyMathToThePEGMath(normcontent, allparams)
+
+    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
     norm = 'norm(' + normcalc + ');'
+    #normdebug = 'norm(Complex(%s,%s));' % (normexplicit.real,normexplicit.imag)
 
     if(plistarray[1] is ''):
         plist2 = ''
     else:
         plist2 = 'addToList(%s);' % plistarray[1]
+
+
+    if('q2' in norm or 'q2' in left or 'q2' in right):
+        q2var = ' q2'
+    else:
+        q2var = ''
     
         
     ### assemble dictionary and fill template
@@ -592,7 +691,7 @@ for v in FR.all_vertices:
              'setCouplings' : '',
              'qedorder'   : qed,
              'qcdorder' : qcd,
-             'q2'        :  '',
+             'q2'        :  q2var,
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
              'spindirectory' : spind,
              'ModelName' : ModelName,
@@ -606,7 +705,10 @@ for v in FR.all_vertices:
              'paramdecl': '\n'.join(parmdecls),
              'ostream' : ' << '.join(paramsforstream),
              'istream' : ' >> '.join(paramsforstream),
-             'paramvertexcalc': '\n\t'.join(paramvertexcalc)
+             'paramvertexcalc': '\n\t'.join(paramvertexcalc),
+             'leftdebug': leftdebug,
+             'rightdebug' : rightdebug,
+             'normdebug' : normdebug
              }             # ok
 
 

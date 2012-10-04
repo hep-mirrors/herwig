@@ -10,8 +10,9 @@
 #define HERWIG_${ModelName}_H
 //
 // This is the declaration of the ${ModelName} class.
-//#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Models/General/BSMModel.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+//#include "Herwig++/Models/General/BSMModel.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 
 namespace Herwig {
@@ -27,7 +28,7 @@ using namespace ThePEG;
  *  @see StandardModel
  */
 //class ${ModelName}: public StandardModel {
-class ${ModelName}: public BSMModel {
+class ${ModelName}: public StandardModel {
 
 public:
   /// Default constructor
@@ -73,15 +74,6 @@ ${parmgetters}
 Complex params_array[${num_params}];
 
   Complex test() const { return Complex(1,0); }
-
-
-Complex callfunction(int callthis) const{
-  switch (callthis)
-  {
-     ${parmfuncmap}
-  }
-  return Complex(0,0);
-}
 
 
   //@}  

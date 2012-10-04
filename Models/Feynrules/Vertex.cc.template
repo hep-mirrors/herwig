@@ -22,7 +22,6 @@ namespace Herwig
   public:
     ${ModelName}${classname}();
     virtual void setCoupling(Energy2${couplingptrs});
-    Complex params_array_v[$num_params];
     ${paramdecl}
     /** @name Functions used by the persistent I/O system. */
     //@{
@@ -47,10 +46,14 @@ namespace Herwig
      */
     tcSMPtr _theModel;
 
+
+
   protected:
     virtual IBPtr clone() const { return new_ptr(*this); }
     virtual IBPtr fullclone() const { return new_ptr(*this); }
     virtual void doinit();
+    virtual void getParams(Energy2${q2});
+
   
   private:
     static ClassDescription<${ModelName}${classname}> init${ModelName}${classname};
@@ -87,12 +90,13 @@ void ${ModelName}${classname}::Init() {
      "the coupling of the Z boson to the Standard Model fermions");
 }
 
-  void ${ModelName}${classname}::setCoupling(Energy2${q2}${couplingptrs}) {
-  // first the overall normalisation
-  ${norm}
+  void ${ModelName}${classname}::setCoupling(Energy2 q2${couplingptrs}) {
+    getParams(q2);
+  // first the overall normalisati
+    ${norm} // cout << ${normdebug} << endl;
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ${left}
-  ${right}
+    ${left} // cout << ${leftdebug} << endl;
+    ${right} // cout << ${rightdebug} << endl;
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
@@ -115,14 +119,8 @@ void ${ModelName}${classname}::doinit() {
    _theModel = generator()->standardModel();
    tcHw${ModelName}Ptr hw${ModelName}_ptr =dynamic_ptr_cast<tcHw${ModelName}Ptr>(_theModel);
    
-  for(int ppm = 0; ppm < ${num_params}; ppm++) { 
-    params_array_v[ppm] = hw${ModelName}_ptr->callfunction(ppm);
-  } 
-
-   Complex testval = hw${ModelName}_ptr->test();
-   if(hw${ModelName}_ptr) { 
-     ${paramvertexcalc}
-   }
+  Energy2 q2 = 8100.*GeV*GeV;
+    getParams(q2);
 
    ${parameters}
    ${setCouplings}
@@ -130,5 +128,16 @@ void ${ModelName}${classname}::doinit() {
    orderInGs(${qcdorder});
    ${lorentztag}Vertex::doinit();
 }
+
+void ${ModelName}${classname}::getParams(Energy2 q2) {
+
+   _theModel = generator()->standardModel();
+   tcHw${ModelName}Ptr hw${ModelName}_ptr =dynamic_ptr_cast<tcHw${ModelName}Ptr>(_theModel);
+   
+   if(hw${ModelName}_ptr) { 
+     ${paramvertexcalc}
+   }
+}
+
 
 }
