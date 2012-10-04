@@ -32,16 +32,64 @@ def is_number(s):
 
 # function that replaces ** with pow(,): used in PyMathToThePEGMath below
 def powstring(stringrep,power):
-    return 'pow(' + stringrep.replace('**','') + ',' + power + ')'
+    #if(stringrep[0] == '('):
+    #    return 'pow(' + stringrep[0:len(stringrep)-2] + stringrep[len(stringrep)-3:len(stringrep)].replace('**','') + ',' + power + ')'
+    #else:
+    return 'pow(' + stringrep[0:len(stringrep)-3] + stringrep[len(stringrep)-3:len(stringrep)+1].replace('**','') + ',' + power + ')'
+
+def BrackParams(stringin):
+    # to take care of the ** powers over brackets (), append new "parameters" of type (xxxx)
+    #	th = acos(1/sqrt(1 + (-pow(MM1,2) + pow(MM2,2) + sqrt(4*pow(MM12,4) + (pow(MM1,2) - pow(MM2,2))**2))**2/(4.*pow(MM12,4))));
+    # start by finding the positions of the left and right brackets 
+    stringbrack = stringin
+    d_string_length = len(stringbrack)
+    brack_pos_left = []
+    brack_pos_right = []
+    for ll in range(0,d_string_length):
+        if(stringbrack[ll] is '('):
+            brack_pos_left.append(ll)
+        if(stringbrack[ll] is ')'):
+            brack_pos_right.append(ll)
+
+    paramsin_brack = []
+    # loop over the left bracket positions, moving left, and count the number of right brackets
+    for le in brack_pos_left:
+        LRNUM = -1
+        # print 'brack_pos_left', le
+        # loop over the input string starting from the position of the bracket
+        # count the left and right brackets to the right of the left bracket
+        # left brackets are negative, right brackets are positive
+        # the matched bracket is found when the left + right = LRNUM = 0
+        for lm in range(le+1,d_string_length):
+            if(lm in brack_pos_left):
+                LRNUM = LRNUM - 1
+            if(lm in brack_pos_right):
+                LRNUM = LRNUM + 1
+            if(LRNUM is 0):
+                #print 'BRACKET', le, 'matched with', lm, stringbrack
+                #print 'appending', stringbrack[le:lm+1]
+                paramsin_brack.append(stringbrack[le:lm+1])
+                break
+            
+    # sort the paramsin_brack according to length, from longest to shortest
+    # insert to start of string
+    paramsin_brack.sort(key=len, reverse=True)
+    # for iii in range(0,len(paramsin_brack)):
+    #paramsin.insert(0,paramsin_brack[iii])
+    return paramsin_brack
+
+def PyMathToThePEGMath(stringin, paramsin):
+    stringout = PyMathToThePEGMath_nb(stringin, paramsin)
+    paramsbrack = BrackParams(stringout)
+    print 'paramsbrack', paramsbrack
+    if(paramsbrack is not []):
+        stringreturn =  PyMathToThePEGMath_nb(stringout, paramsbrack)
+    return stringreturn
 
 # function that converts the vertex expressions in Python math format to
 # format that can be calculated using ThePEG 
-def PyMathToThePEGMath(stringin, paramsin):
-
-    # add '**' to the end of paramsin[ss], the array of given parameters of the model
-    for ss in range(0,len(paramsin)):
-        paramsin[ss] = paramsin[ss] + '**'
-        
+def PyMathToThePEGMath_nb(stringin, paramsin):
+    
     # define an array that contains the numbers 0-9 in string form
     numbersarray = ['0','1','2','3','4','5','6','7','8','9']
 
@@ -52,12 +100,16 @@ def PyMathToThePEGMath(stringin, paramsin):
     powpos = ''
     pow_ddg = 0
     power = ''
-    powerchange = []
-    initial_len_paramsin = len(paramsin)
-    # to take care of the ** powers over brackets (), append new "parameters" of type (xxxx)
-    #	th = acos(1/sqrt(1 + (-pow(MM1,2) + pow(MM2,2) + sqrt(4*pow(MM12,4) + (pow(MM1,2) - pow(MM2,2))**2))**2/(4.*pow(MM12,4))));
+  
 
-    
+    # add '**' to the end of paramsin[ss], the array of given parameters of the model
+    for ss in range(0,len(paramsin)):
+        paramsin[ss] = paramsin[ss] + '**'
+
+        #print 'in progress', stringin
+
+    #print 'paramsin', paramsin
+    powerchange = []
     # loop over the array of the model parameters and search for them in the given mathematical expression
     # each time a new position with the ** notation is found, replace with the C++ pow(,) notation
     for xx in range(0,len(paramsin)):
@@ -74,6 +126,7 @@ def PyMathToThePEGMath(stringin, paramsin):
         while (initial_string_length-ii >= 0):
             # set the new position of the found 
             posnew = stringin.find(paramsin[xx],initial_string_length-ii)
+            #print 'param found', posnew, paramsin[xx]
             # if the position is new, do stuff
             if(posnew is not pos and posnew is not -1):
                 # get the position of the power
@@ -89,6 +142,7 @@ def PyMathToThePEGMath(stringin, paramsin):
                 powerchange[xx].append([ posnew, power ])
                 # do the replacement of the ** to pow(,)
                 stringin = stringin[:posnew] + stringin[posnew:posnew+len(paramsin[xx])+len(power)].replace(paramsin[xx]+power,powstring(paramsin[xx],power)) + stringin[posnew+len(paramsin[xx])+len(power):]
+                print 'in progress', stringin
             # reset position variable for next point in string
             # increment the counter for the position in string
             pos = posnew
@@ -103,8 +157,10 @@ def PyMathToThePEGMath(stringin, paramsin):
         numbersnn = numbersarray[nn]
         stringin = stringin.replace(numbersnn +' *', numbersnn +'. *')
         stringin = stringin.replace(numbersnn+'*Complex',numbersnn+'.*Complex')
+        
+   
     # print 'final string:'
-    # print stringin
+    # print 'final string', stringin, paramsin
     # reset the parameters with ** for next run of function and return
     for ss in range(0,len(paramsin)):
         paramsin[ss] = paramsin[ss].replace('**','')
@@ -129,7 +185,7 @@ def aEWtoWeakCoup(stringin, paramstoreplace, paramstoreplace_expressions):
     for xx in range(0,len(paramstoreplace)):
         print paramstoreplace[xx], paramstoreplace_expressions[xx]
         stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
-    stringout = stringout.replace('aEW', '(sqr(weakCoupling(q2))/(4.0*Constants::pi))')
+    stringout = stringout.replace('aEWM1', '(1/(sqr(electroMagneticCoupling(q2))/(4.0*Constants::pi)))')
     print 'resulting string', stringout
     return stringout
           
@@ -233,7 +289,7 @@ for p in internal:
         print p.value
         paramstoreplace_.append(p.name)
         paramstoreplace_expressions_.append(p.value)
-    if('aEW' in p.value and p.name is not 'aEW'):
+    if('aEWM1' in p.value and p.name is not 'aEWM1'):
         print 'PARAM', p.name, 'contains aEW'
         print p.value
         paramstoreplaceEW_.append(p.name)
@@ -311,6 +367,8 @@ for p in FR.all_parameters:
         raise Exception('Unknown data type "%s".' % p.type)
     if(p.name == 'aS'):
         funcvertex = '%s = (sqr(strongCoupling(q2))/(4.0*Constants::pi));' % p.name
+    if(p.name == 'aEWM1'):
+        funcvertex = '%s = ((4.0*Constants::pi)/sqr(electroMagneticCoupling(q2)));' % p.name
     if(p.lhablock == None):
         funcvertex = p.name +' = ' + PyMathToThePEGMath(p.value, allparams) + ';' 
         print 'NO LHABLOCK:', p.name, funcvertex
