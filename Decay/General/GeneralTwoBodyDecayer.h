@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), a_(0.), c_(0.), a2_(0.), c2_(0.), pTmin_(GeV), pT_(ZERO),
+  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), pTmin_(GeV), pT_(ZERO),
 			    colour_(1,DVector(1,1.)), colourFlows_(3,vector<pair<int,double > >(1,make_pair(0,1.)))
 {}
 
@@ -177,6 +177,11 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
+   * Type of dipole
+   */
+  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
+
+  /**
    *  Compute the spin and colour factor
    */
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
@@ -188,37 +193,34 @@ protected:
 			    const ParticleVector & decay3, MEOption meopt);
 
   /**
-   *  Calculate momenta of a, b, c, g
+   *  Calculate momenta of all the particles
    */
   bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
-		   double& xa, double& xc, double& xc_z, 
+		   double& xs, double& xe, double& xe_z, 
 		   vector<Lorentz5Momentum>& particleMomenta);
 
   /**
    *  Check the calculated momenta are physical
    */
-  bool psCheck(double xg, double xa);
+  bool psCheck(double xg, double xs);
 
   /**
    *  Return the momenta including the hard emission
    */
-  vector<Lorentz5Momentum> hardMomenta(tcPDPtr in, tcPDPtr outc, tcPDPtr outa, 
-				       int process, int i);
+  vector<Lorentz5Momentum> hardMomenta(const ShowerProgenitorPtr &in, 
+				       const ShowerProgenitorPtr &emitter, 
+				       const ShowerProgenitorPtr &spectator, 
+				       vector<dipoleType> dipoles, int i);
 
   /**
-   *  Return dipole for final final connection
+   * Return dipole corresponding to the dipoleType dipoleId
    */
-  InvEnergy2 calculateDipoleFF(double xc, double xa);
-
-  /**
-   *  Return dipole for initial final connection
-   */
-  InvEnergy2 calculateDipoleIF(int i, Energy2 pbpg, double xg, double xT);
+  InvEnergy2 calculateDipole(dipoleType dipoleId, double xe, double xs, double xT);
 
   /**
    *  Work out the type of process
    */
-  void identifyDipoles(int & dipoleNo, int & process,
+  void identifyDipoles(vector<dipoleType> & dipoles,
 		       ShowerProgenitorPtr & aProgenitor,
 		       ShowerProgenitorPtr & bProgenitor,
 		       ShowerProgenitorPtr & cProgenitor) const;
@@ -349,24 +351,24 @@ private:
   Energy mb_;
 
   /**
-   *  Reduced mass of colour singlet child particle
+   *  Reduced mass of emitter child particle
    */
-  double a_;
+  double e_;
 
   /**
-   * Reduced mass of coloured child particle
+   * Reduced mass of spectator child particle
    */
-  double c_;
+  double s_;
 
   /**
-   *  Reduced of colour singlet child particle squared
+   *  Reduced mass of emitter child particle squared
    */
-  double a2_;
+  double e2_;
 
   /**
-   * Reduced mass of coloured child particle squared
+   * Reduced mass of spectator child particle squared
    */
-  double c2_;
+  double s2_;
 
   /**
    *  Minimum \f$p_T\f$
