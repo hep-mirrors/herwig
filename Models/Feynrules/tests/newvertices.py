@@ -78,6 +78,8 @@ def BrackParams(stringin):
     #paramsin.insert(0,paramsin_brack[iii])
     return paramsin_brack
 
+# function that converts the vertex expressions in Python math format:
+# called twice: once for the parameters, and once for terms in parentheses (...)
 def PyMathToThePEGMath(stringin, paramsin):
     stringout = PyMathToThePEGMath_nb(stringin, paramsin)
     paramsbrack = BrackParams(stringout)
@@ -148,7 +150,9 @@ def PyMathToThePEGMath_nb(stringin, paramsin):
             pos = posnew
             ii += 1
     # do replacements of 'complex'
-    # integers multiplying stuff (add the "." 
+    # integers multiplying stuff (add the "."
+    stringin = stringin.replace('0j','Complex(0,0)')
+    stringin = stringin.replace('complex(0,1)','Complex(0,1.)')
     stringin = stringin.replace('complex','Complex')
     stringin = stringin.replace('cmath.pi', 'M_PI')
     stringin = stringin.replace('cmath.', '')
@@ -369,6 +373,10 @@ for p in FR.all_parameters:
         funcvertex = '%s = (sqr(strongCoupling(q2))/(4.0*Constants::pi));' % p.name
     if(p.name == 'aEWM1'):
         funcvertex = '%s = ((4.0*Constants::pi)/sqr(electroMagneticCoupling(q2)));' % p.name
+    if(p.name == 'Gf'):
+        funcvertex = '%s = generator()->standardModel()->fermiConstant()*GeV*GeV;' % p.name
+    if(p.name == 'MZ'):
+        funcvertex = '%s = getParticleData(ThePEG::ParticleID::Z0)->mass()/GeV;' % p.name
     if(p.lhablock == None):
         funcvertex = p.name +' = ' + PyMathToThePEGMath(p.value, allparams) + ';' 
         print 'NO LHABLOCK:', p.name, funcvertex
@@ -581,18 +589,39 @@ for v in FR.all_vertices:
 # Check if the Vertex is self-conjugate or not
     pdgcode = [0,0,0,0]
     notsmvertex = False
+    vhasw = 0
+    vhasz = 0
+    vhasf = 0
+    vhasg = 0
+    vhash = 0
+    vhasp = 0
 #   print 'printing particles in vertex'
     for i in range(len(v.particles)):
 #       print v.particles[i].pdg_code
         pdgcode[i] = v.particles[i].pdg_code
+        if(pdgcode[i] == 23):
+            vhasz += 1
+        if(pdgcode[i] == 22):
+            vhasp += 1
+        if(pdgcode[i] == 25):
+            vhash += 1
+        if(pdgcode[i] == 21):
+            vhasg += 1
+        if(pdgcode[i] == 24):
+            vhasw += 1
+        if(abs(pdgcode[i]) < 7 or (abs(pdgcode[i]) > 10 and abs(pdgcode[i]) < 17)):
+            vhasf += 1
         if(pdgcode[i] not in SMPARTICLES):
             notsmvertex = True
+        
 
 #  treat replacement of SM vertices with BSM vertices?               
     if(notsmvertex == False):
-        print 'VERTEX INCLUDED IN STANDARD MODEL!'
-        #        v.include = 0
-        #continue
+        if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
+            print 'VERTEX INCLUDED IN STANDARD MODEL!'
+            v.include = 0
+            continue
+            
     
     selfconjugate = 0
     for j in range(len(pdgcode)):
@@ -728,6 +757,7 @@ for v in FR.all_vertices:
         plist2 = 'addToList(%s);' % plistarray[1]
 
 
+    # input q2 or not, depending on whether it is necessary
     if('q2' in norm or 'q2' in left or 'q2' in right):
         q2var = ' q2'
     else:
