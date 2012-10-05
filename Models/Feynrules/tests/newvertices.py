@@ -22,6 +22,11 @@ if(os.path.exists(os.getcwd() + '/'+opts.MODELDIR) is False):
 # if the Model path exists, then import the UFO FeynRules module
 FR = __import__(opts.MODELDIR)
 
+
+print 'generating Model and Vertex files/.model file/.input file'
+print 'please be patient!'
+print '-------------------'
+
 # check if a function is a number
 def is_number(s):
     try:
@@ -83,7 +88,7 @@ def BrackParams(stringin):
 def PyMathToThePEGMath(stringin, paramsin):
     stringout = PyMathToThePEGMath_nb(stringin, paramsin)
     paramsbrack = BrackParams(stringout)
-    print 'paramsbrack', paramsbrack
+    #print 'paramsbrack', paramsbrack
     if(paramsbrack is not []):
         stringreturn =  PyMathToThePEGMath_nb(stringout, paramsbrack)
     return stringreturn
@@ -144,7 +149,7 @@ def PyMathToThePEGMath_nb(stringin, paramsin):
                 powerchange[xx].append([ posnew, power ])
                 # do the replacement of the ** to pow(,)
                 stringin = stringin[:posnew] + stringin[posnew:posnew+len(paramsin[xx])+len(power)].replace(paramsin[xx]+power,powstring(paramsin[xx],power)) + stringin[posnew+len(paramsin[xx])+len(power):]
-                print 'in progress', stringin
+                #print 'in progress', stringin
             # reset position variable for next point in string
             # increment the counter for the position in string
             pos = posnew
@@ -173,24 +178,24 @@ def PyMathToThePEGMath_nb(stringin, paramsin):
 # function that replaces alphaS (aS)-dependent variables
 # with their explicit form which also contains strongCoupling
 def aStoStrongCoup(stringin, paramstoreplace, paramstoreplace_expressions):
-    print stringin
+    #print stringin
     for xx in range(0,len(paramstoreplace)):
-        print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        #print paramstoreplace[xx], paramstoreplace_expressions[xx]
         stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
     stringout = stringout.replace('aS', '(sqr(strongCoupling(q2))/(4.0*Constants::pi))')
-    print 'resulting string', stringout
+    #print 'resulting string', stringout
     return stringout
 
 
 # function that replaces alphaEW (aEW)-dependent variables
 # with their explicit form which also contains weakCoupling
 def aEWtoWeakCoup(stringin, paramstoreplace, paramstoreplace_expressions):
-    print stringin
+    #print stringin
     for xx in range(0,len(paramstoreplace)):
-        print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        #print paramstoreplace[xx], paramstoreplace_expressions[xx]
         stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
     stringout = stringout.replace('aEWM1', '(1/(sqr(electroMagneticCoupling(q2))/(4.0*Constants::pi)))')
-    print 'resulting string', stringout
+    #print 'resulting string', stringout
     return stringout
           
           
@@ -287,15 +292,15 @@ paramstoreplaceEW_ = []
 paramstoreplaceEW_expressions_ = []
 # calculate internal parameters
 for p in internal:
-    print p.name,'=',p.value
+    #print p.name,'=',p.value
     if('aS' in p.value and p.name is not 'aS'):
-        print 'PARAM', p.name, 'contains aS'
-        print p.value
+        #print 'PARAM', p.name, 'contains aS'
+        #print p.value
         paramstoreplace_.append(p.name)
         paramstoreplace_expressions_.append(p.value)
     if('aEWM1' in p.value and p.name is not 'aEWM1'):
-        print 'PARAM', p.name, 'contains aEW'
-        print p.value
+        #print 'PARAM', p.name, 'contains aEW'
+        #print p.value
         paramstoreplaceEW_.append(p.name)
         paramstoreplaceEW_expressions_.append(p.value)
         #if(is_number(p.value)):
@@ -308,7 +313,7 @@ for p in internal:
 
 # put external parameters into list of parameters to be interfaced
 for p in external:
-    print p.name,'=',p.value
+    #print p.name,'=',p.value
     extinter = '%s' % (p.name)
  
 #print 'NUMBER OF PARAMS', len(FR.all_parameters)
@@ -325,7 +330,7 @@ parmnumber = 0
 for p in FR.all_parameters:
     value = parmsubs[p.name]
     extinter = ''
-    print p.name
+    #print p.name
     if (p.nature == 'external' and p.type == 'real'):
     #extinter = '%s' % (p.name)
        extinter = 'static Parameter<%s, double> interfaceg%s' % (ModelName, p.name)
@@ -379,7 +384,7 @@ for p in FR.all_parameters:
         funcvertex = '%s = getParticleData(ThePEG::ParticleID::Z0)->mass()/GeV;' % p.name
     if(p.lhablock == None):
         funcvertex = p.name +' = ' + PyMathToThePEGMath(p.value, allparams) + ';' 
-        print 'NO LHABLOCK:', p.name, funcvertex
+        #print 'NO LHABLOCK:', p.name, funcvertex
 
     # do calc in C++, add interfaces for externals
     paramvertexcalc.append(funcvertex)    
@@ -413,10 +418,10 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
 
 
 
-for k,v in parmtextsubs.iteritems():
-    print k
-    print v
-    print
+#for k,v in parmtextsubs.iteritems():
+    #print k
+    #print v
+    #print
 
 # write the files from templates according to the above subs
 writeFile( ModelName + '.h', MODEL_H.substitute(parmtextsubs) )
@@ -554,6 +559,9 @@ def get_lorentztag(spin):
 ##################################################
 ##################################################
 
+# count number of vertices not included
+notincluded = 0
+
 # get vertex template
 VERTEX = getTemplate('Vertex.cc')
 
@@ -564,9 +572,9 @@ def produce_vertex_file(subs):
 # loop over all vertices
 for v in FR.all_vertices:
 
-    print v.name
-    print map(str,v.particles)
-    print '---------------'
+    #print v.name
+    #print map(str,v.particles)
+    #print '---------------'
     v.include = 1
 
     ### Spin structure
@@ -584,7 +592,7 @@ for v in FR.all_vertices:
     plistarray = ['','']    
     plistarray[0] = ','.join([ str(p.pdg_code) for p in v.particles ])
     plist = ','.join([ str(p.pdg_code) for p in v.particles ])
-    print plist
+    #print plist
 
 # Check if the Vertex is self-conjugate or not
     pdgcode = [0,0,0,0]
@@ -618,8 +626,9 @@ for v in FR.all_vertices:
 #  treat replacement of SM vertices with BSM vertices?               
     if(notsmvertex == False):
         if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
-            print 'VERTEX INCLUDED IN STANDARD MODEL!'
+            #print 'VERTEX INCLUDED IN STANDARD MODEL!'
             v.include = 0
+            notincluded += 1
             continue
             
     
@@ -628,7 +637,7 @@ for v in FR.all_vertices:
         for k in range(len(pdgcode)):
                if( j != k and j != 0 and abs(pdgcode[j]) == abs(pdgcode[k])):
                    selfconjugate = 1
-                   print 'self-conjugate vertex'
+                   #print 'self-conjugate vertex'
 #        print pdgcode[j]
 
 # if the Vertex is not self-conjugate, then add the conjugate vertex
@@ -674,32 +683,32 @@ for v in FR.all_vertices:
         L = v.lorentz[li]
 
         if lt in ['FFS','FFV']:
-            print 'PRINTING LORENTZ STRUCTURE'
-            print L.structure
+            #print 'PRINTING LORENTZ STRUCTURE'
+            #print L.structure
             for lor in map(string.strip, L.structure.split('+')):
                 breakdown = lor.split('*')
                 prefactor='1'
-                print 'breakdown', breakdown, 'length', len(breakdown)
+                #print 'breakdown', breakdown, 'length', len(breakdown)
                 if len(breakdown) == 3:
                     prefactor = breakdown[0]
                     breakdown = breakdown[1:]
                 if len(breakdown) == 2:
                     assert(breakdown[0][:5] == 'Gamma')
                     if breakdown[1][:5] == 'ProjM':
-                        print 'LEFT HANDED'
+                        #print 'LEFT HANDED'
                         coup_left.append(prefactor+' * '+C.value)
                     elif breakdown[1][:5] == 'ProjP':
-                        print 'RIGHT HANDED'
+                        #print 'RIGHT HANDED'
                         coup_right.append(prefactor+' * '+C.value)
                     else:
                         coup_left.append(C.value)
                         coup_right.append(C.value)
                 if len(breakdown) == 1:
                     if breakdown[0][:5] == 'ProjM':
-                        print 'LEFT HANDED'
+                        #print 'LEFT HANDED'
                         coup_left.append(prefactor+' * '+C.value)
                     elif breakdown[0][:5] == 'ProjP':
-                        print 'RIGHT HANDED'
+                        #print 'RIGHT HANDED'
                         coup_right.append(prefactor+' * '+C.value)
                     else:
                         coup_left.append(C.value)
@@ -708,20 +717,20 @@ for v in FR.all_vertices:
             coup_norm.append(C.value)
                 
 
-        print 'Colour  :',v.color[ci]
-        print 'Lorentz %s:'%L.name, L.spins, L.structure
-        print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
-        print '---------------'
+        #print 'Colour  :',v.color[ci]
+        #print 'Lorentz %s:'%L.name, L.spins, L.structure
+        #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
+        #print '---------------'
 
 
     leftcontent = ' + '.join(coup_left) if len(coup_left)!=0 else '0j'
     rightcontent = ' + '.join(coup_right) if len(coup_right)!=0 else '0j'
     normcontent = ' + '.join(coup_norm) if len(coup_norm)!=0 else '1.'
 
-    print 'Left:',leftcontent
-    print 'Right:',rightcontent
-    print 'Norm:',normcontent
-    print '---------------'
+    #print 'Left:',leftcontent
+    #print 'Right:',rightcontent
+    #print 'Norm:',normcontent
+    #print '---------------'
 
 
     #leftexplicit = complex(evaluate(leftcontent))
@@ -800,7 +809,7 @@ for v in FR.all_vertices:
              }             # ok
 
 
-    print plistarray[0]
+    #print plistarray[0]
 #    if plist in allplist:
 #        print 'PLIST IN ALLPLIST'
         
@@ -813,10 +822,10 @@ for v in FR.all_vertices:
         produce_vertex_file(subs)
         allplist += plistarray[0]
     else:
-        print 'VERTEX ALREADY INCLUDED'
+        #print 'VERTEX ALREADY INCLUDED'
         v.include = 0
         
-    print '============================================================'
+        #print '============================================================'
 
 ##################################################
 ##################################################
@@ -833,7 +842,7 @@ def get_vertices():
     for v in FR.all_vertices:
         for l in v.lorentz:
             lt = get_lorentztag(l.spins)
-            print lt
+            #print lt
         if("U" not in lt and v.include == 1):
             vlist += vertexline.substitute(
                 { 'classname' : 'Herwig::' + ModelName + 'V_%03d' % int(v.name[2:]),
@@ -847,10 +856,13 @@ modelfilesubs = { 'plist' : get_all_thepeg_particles(),
                   'ModelName': ModelName
                   }
 
-print get_all_thepeg_particles()
+#print get_all_thepeg_particles()
 
 MODELINFILE = getTemplate('FR.model')
 
 writeFile( ModelName +'.model', MODELINFILE.substitute(modelfilesubs) )
 
-print len(FR.all_vertices)
+print 'finished generating model', ModelName
+print 'model directory:', opts.MODELDIR
+print 'generated', len(FR.all_vertices)-notincluded, 'vertices'
+
