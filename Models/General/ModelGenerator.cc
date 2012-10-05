@@ -338,7 +338,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     if( (**dit).brat() < brMin_ || release < ZERO ) {
       if( release < ZERO )
 	cerr << "Warning: The shower cannot be generated using this decay " 
-	     << (**dit).tag() << " because it is too close to threshold. It "
+	     << (**dit).tag() << " because it is too close to threshold.\nIt "
 	     << "will be switched off and the branching fractions of the "
 	     << "remaining modes rescaled.\n";
       rescalebrat = true;

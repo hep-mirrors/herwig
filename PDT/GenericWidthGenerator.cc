@@ -327,8 +327,8 @@ void GenericWidthGenerator::doinit() {
 	      Energy gamma(partial2BodyWidth(MEtype_.size()-1,mass_));
 	      if(gamma==ZERO) {
 		cerr << "Partial width for " << mode->tag()
-		     << " is zero in GenericWidthGenerator::doinit()"
-		     << " if doing BSM physics this is probably a problem with your input "
+		     << " is zero in GenericWidthGenerator::doinit().\n"
+		     << "If doing BSM physics this is probably a problem with your input "
 		     << "parameters.\n"
 		     << "Zeroing mode\n";
 		MEcoupling_.back() = 0.;
