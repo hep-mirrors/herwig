@@ -584,6 +584,17 @@ private:
   string theSubtractionData;
 
   /**
+   * Command to limit the real emission process to be considered.
+   */
+  string doSingleRealProcess(string);
+
+  /**
+   * The real emission process to be included; if empty, all possible
+   * ones will be considered.
+   */
+  vector<string> realEmissionProcess;
+
+  /**
    * True, if cancellationn of epsilon poles should be checked.
    */
   bool theCheckPoles;

@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -31,6 +32,7 @@ TreePhasespace::TreePhasespace()
   : x0(0.01), xc(1e-4) {
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  theIncludeMirrored = true;
 }
 
 TreePhasespace::~TreePhasespace() {}
@@ -50,19 +52,21 @@ void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
   lastChannelsIterator = channelMap().find(lastXCombPtr());
 
   if ( lastChannelsIterator == channelMap().end() ) {
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> channels;
+    map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> > channels;
     for ( StandardXComb::DiagramVector::const_iterator d =
 	    lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
       PhasespaceTree tree;
       Ptr<Tree2toNDiagram>::ptr diag =
 	dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d);
       tree.setup(*diag);
-      channels[diag] = tree;
+      PhasespaceTree treeMirror;
+      treeMirror.setupMirrored(*diag, diag->nSpace() - 1);
+      channels[diag] = make_pair(tree,treeMirror);
     }
     channelMap()[lastXCombPtr()] = channels;
     lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
-
+    
   lastPhasespaceInfo.sHat = lastXComb().lastSHat();
   lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
   lastPhasespaceInfo.weight = 1.;
@@ -80,7 +84,9 @@ double TreePhasespace::generateKinematics(const double* random,
   if ( momenta.size() > 3 ) {
 
     size_t nchannels = lastXComb().diagrams().size();
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::iterator ds =
+    bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
+    map<Ptr<Tree2toNDiagram>::ptr,
+	pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
       lastChannels().begin();
     advance(ds,(size_t)(random[0]*nchannels));
     Ptr<Tree2toNDiagram>::ptr channel = ds->first;
@@ -88,20 +94,24 @@ double TreePhasespace::generateKinematics(const double* random,
 
     lastPhasespaceInfo.rnd.numbers = random;
     lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
-
+    
     try {
-      lastChannels()[channel].generateKinematics(lastPhasespaceInfo,momenta);
+      if ( !doMirror )
+	lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
+      else 
+	lastChannels()[channel].second.generateKinematics(lastPhasespaceInfo,momenta);
     } catch (Veto) {
       return 0.;
     }
-
+    
     if ( !matchConstraints(momenta) )
       return 0.;
 
     fillDiagramWeights(x0);
 
     double sum = 0.;
-    for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::const_iterator d
+    for ( map<Ptr<Tree2toNDiagram>::ptr,
+	    pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::const_iterator d
 	    = lastChannels().begin(); d != lastChannels().end(); ++d )
       sum += diagramWeight(*(d->first));
 
@@ -160,11 +170,11 @@ void TreePhasespace::doinitrun() {
 }
 
 void TreePhasespace::persistentOutput(PersistentOStream & os) const {
-  os << theChannelMap << x0 << xc;
+  os << theChannelMap << x0 << xc << theIncludeMirrored;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
-  is >> theChannelMap >> x0 >> xc;
+  is >> theChannelMap >> x0 >> xc >> theIncludeMirrored;
 }
 
 
@@ -203,6 +213,21 @@ void TreePhasespace::Init() {
      &TreePhasespace::xc, 1e-4, 0.0, 0,
      false, false, Interface::lowerlim);
 
+
+  static Switch<TreePhasespace,bool> interfaceIncludeMirrored
+    ("IncludeMirrored",
+     "Choose whether to include mirrored diagrams for PS generation",
+     &TreePhasespace::theIncludeMirrored, true, true, false);
+  static SwitchOption interfaceIncludeMirroredTrue
+    (interfaceIncludeMirrored,
+     "True",
+     "Use unmirrored and mirrored diagrams",
+     true);
+  static SwitchOption interfaceIncludeMirroredFalse
+    (interfaceIncludeMirrored,
+     "False",
+     "Use only unmirrored diagrams",
+     false);
 
 }
 

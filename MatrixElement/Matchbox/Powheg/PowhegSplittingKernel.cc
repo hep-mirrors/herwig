@@ -328,9 +328,6 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
 
     double res = evaluate();
 
-    if ( res < 0. )
-      generator()->log() << "negative splitting kernel: " << res << "\n";
-
     return res >= 0. ? res : 0.;
 
   } catch (...) {

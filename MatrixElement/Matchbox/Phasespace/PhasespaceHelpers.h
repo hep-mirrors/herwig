@@ -125,11 +125,21 @@ using namespace ThePEG;
        * Wether or not this is a spacelike line.
        */
       bool spacelike;
+
+      /**
+       * Wether or not this is a mirrored channel.
+       */
+      bool doMirror;
       
       /**
        * Setup from diagram at given position.
        */
       void setup(const Tree2toNDiagram&, int pos = 0);
+
+      /**
+       * Setup mirror from diagram at given position.
+       */
+      void setupMirrored(const Tree2toNDiagram& diag, int pos);
 
       /**
        * Initialize using masses as given by mass() members of the
@@ -152,6 +162,11 @@ using namespace ThePEG;
        * Read phasespace tree from istream
        */
       void get(PersistentIStream&);
+
+      /**
+       * Print tree, only for debugging purposes
+       */
+      void print(int in = 0);
 
     };
 

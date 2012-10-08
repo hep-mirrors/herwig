@@ -83,11 +83,11 @@ void MatchboxNLOME::logPoles() const {
     res2i += (**v).oneLoopDoublePole();
     res1i += (**v).oneLoopSinglePole();
   }
+  double diff2 = abs(res2me) != 0. ? 1.-abs(res2i/res2me) : abs(res2i)-abs(res2me);
+  double diff1 = abs(res1me) != 0. ? 1.-abs(res1i/res1me) : abs(res1i)-abs(res1me);
   generator()->log() 
-    << "check 1/eps^2 pole: "
-    << res2me << " + " << res2i << " = " << (res2me + res2i) << "\n"
-    << "check 1/eps pole: "
-    << res1me << " + " << res1i << " = " << (res1me + res1i) << "\n"
+    << "check "
+    << log10(abs(diff2)) << " " << log10(abs(diff1)) << "\n"
     << flush;
 }
 

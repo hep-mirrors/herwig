@@ -153,13 +153,17 @@ private:
   /**
    * Map xcomb's to channel vectors indexed by diagram id.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >&
+  map<tStdXCombPtr,
+      map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >&
   channelMap() { return theChannelMap->channelMap(); }
 
   /**
    * The currently active channels.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >::iterator 
+  map<tStdXCombPtr,
+      map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >::iterator 
   lastChannelsIterator;
 
   /**
@@ -180,9 +184,15 @@ private:
   double xc;
 
   /**
+   * Choose whether to also use mirrored phasespace generation
+   */
+  bool theIncludeMirrored;
+       
+  /**
    * Return the currently active channels.
    */
-  map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>& lastChannels() { 
+  map<Ptr<Tree2toNDiagram>::ptr,
+      pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >& lastChannels() { 
     return lastChannelsIterator->second; 
   }
 

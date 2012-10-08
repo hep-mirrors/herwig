@@ -450,6 +450,13 @@ bool SubtractionDipole::generateTildeKinematics() {
   meMomenta()[bornEmitter()] = tildeKinematics()->bornEmitterMomentum();
   meMomenta()[bornSpectator()] = tildeKinematics()->bornSpectatorMomentum();
 
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
+  for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+    p->setMass((**pd).mass());
+    p->rescaleRho();
+  }
+
   jacobian(realEmissionME()->lastXComb().jacobian());
 
   logGenerateTildeKinematics();
@@ -504,6 +511,13 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   meMomenta()[realEmitter()] = invertedTildeKinematics()->realEmitterMomentum();
   meMomenta()[realEmission()] = invertedTildeKinematics()->realEmissionMomentum();
   meMomenta()[realSpectator()] = invertedTildeKinematics()->realSpectatorMomentum();
+
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
+  for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+    p->setMass((**pd).mass());
+    p->rescaleRho();
+  }
 
   jacobian(underlyingBornME()->lastXComb().jacobian() *
 	   invertedTildeKinematics()->jacobian());

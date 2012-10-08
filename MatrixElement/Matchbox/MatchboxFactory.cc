@@ -294,7 +294,11 @@ void MatchboxFactory::setup() {
 
     if ( realContributions() ) {
       vector<string> rproc = process;
-      rproc.push_back("j");
+      if ( realEmissionProcess.empty() ) {
+	rproc.push_back("j");
+      } else {
+	rproc = realEmissionProcess;
+      }
       ames = makeMEs(rproc,orderInAlphaS()+1);
       copy(ames.begin(),ames.end(),back_inserter(realEmissionMEs()));
     }
@@ -609,7 +613,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs
      << theVerbose << theSubtractionData << theCheckPoles
-     << theParticleGroups << process;
+     << theParticleGroups << process << realEmissionProcess;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -624,7 +628,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs
      >> theVerbose >> theSubtractionData >> theCheckPoles
-     >> theParticleGroups >> process;
+     >> theParticleGroups >> process >> realEmissionProcess;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -647,6 +651,17 @@ string MatchboxFactory::doProcess(string in) {
     throw InitException() << "Invalid process.";
   for ( vector<string>::iterator p = process.begin();
 	p != process.end(); ++p ) {
+    *p = StringUtils::stripws(*p);
+  }
+  return "";
+}
+
+string MatchboxFactory::doSingleRealProcess(string in) {
+  realEmissionProcess = StringUtils::split(in);
+  if ( realEmissionProcess.size() < 3 )
+    throw InitException() << "Invalid process.";
+  for ( vector<string>::iterator p = realEmissionProcess.begin();
+	p != realEmissionProcess.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
   return "";
@@ -968,6 +983,11 @@ void MatchboxFactory::Init() {
     ("Process",
      "Set the process to consider.",
      &MatchboxFactory::doProcess, false);
+
+  static Command<MatchboxFactory> interfaceSingleRealProcess
+    ("SingleRealProcess",
+     "Set the process to consider.",
+     &MatchboxFactory::doSingleRealProcess, false);
 
 }
 
