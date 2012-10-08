@@ -473,7 +473,7 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
   _outgoing.push_back(outgoing.first );
   _outgoing.push_back(outgoing.second);
   vertex_ = vertex;
-  incomingVertex_ = inV;
+  incomingVertex_   = inV;
   outgoingVertices_ = outV;
 }
 
@@ -516,12 +516,11 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
-  vector<Lorentz5Momentum> trialMomenta(4);
   ShowerProgenitorPtr finalEmitter, finalSpectator;
   ShowerProgenitorPtr trialEmitter, trialSpectator;
 
   for (int i=0; i<dipoles.size(); ++i){
-    //assign emitter and spectator depending on current dipole
+    // assign emitter and spectator depending on current dipole
     if (dipoles[i]==FFc || dipoles[i]==IFc || dipoles[i]==IFbc){
       trialEmitter   = cProgenitor;
       trialSpectator = aProgenitor;
@@ -540,9 +539,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     //invert it
     trialEventFrame.invert();
 
-    trialMomenta.clear();
     pT_ = pTmin_;
-    trialMomenta = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
+    vector<Lorentz5Momentum> trialMomenta 
+      = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
 
     if(pT_>trialpT){
       trialpT        = pT_;
@@ -552,7 +551,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       finalSpectator = trialSpectator;
     }
   }  
-  pT_=trialpT;
+  pT_ = trialpT;
 
   // if no emission return
   if(momenta.empty()) {
@@ -633,8 +632,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
-
-  //return the tree
+  // return the tree
   return hardtree;
 }
 
@@ -664,11 +662,16 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   vector<Lorentz5Momentum> particleMomenta (4);
   Energy2 lambda = sqr(mb_)* sqrt( 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_);    
 
-  //Calculate A
+  // Calculate A
   double A = (ymax - ymin) * C * (coupling_->overestimateValue() / (2.*Constants::pi));
  
   Energy pTmax = mb_* (sqr(1.-s_) - e2_) / (2.*(1.-s_));
-  if (pTmax < pTmin_) particleMomenta.clear(); 
+
+  // if no possible emission return
+  if ( pTmax < pTmin_ ) {
+    particleMomenta.clear(); 
+    return particleMomenta;
+  }
 
   while (pTmax >= pTmin_) {  
     //Generate pT, y and phi values
@@ -683,45 +686,41 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
     
     for (unsigned int j=0; j<2; j++) {
 
-      //Check if the momenta are physical
+      // Check if the momenta are physical
       bool physical = calcMomenta(j, pT, y, phi, xg, xs[j], xe[j], xe_z[j], particleMomenta);
       if (!physical) continue;
       
-      //Check if point lies within phase space
+      // Check if point lies within phase space
       bool inPS = psCheck(xg, xs[j]);
       if (!inPS) continue;
       
-      //Calculate the ratio R/B
-      //decay products for 3 body decay
-      Particle inpart   = Particle(in       ->progenitor()->dataPtr());      
-      Particle outparte = Particle(emitter  ->progenitor()->dataPtr()); 
-      Particle outparts = Particle(spectator->progenitor()->dataPtr()); 
-      Particle g        = Particle(getParticleData(ParticleID::g));
-      inpart.  set5Momentum(particleMomenta[0]);
-      outparte.set5Momentum(particleMomenta[1]);
-      outparts.set5Momentum(particleMomenta[2]);
-      g.       set5Momentum(particleMomenta[3]);
+      // Calculate the ratio R/B
+      // decay products for 3 body decay
+      PPtr inpart   = in       ->progenitor()->dataPtr()->produceParticle(particleMomenta[0]);     
       ParticleVector decay3;
-      decay3.push_back(&outparte); decay3.push_back(&outparts); decay3.push_back(&g);
+      decay3.push_back(emitter  ->progenitor()->dataPtr()->produceParticle(particleMomenta[1]));
+      decay3.push_back(spectator->progenitor()->dataPtr()->produceParticle(particleMomenta[2]));
+      decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
       
       //decay products for 2 body decay
-      Lorentz5Momentum p1, p2; 
-      p1.setE((mb_/2.)*(1.+e2_-s2_)); p1.setX(ZERO); p1.setY(ZERO); p1.setZ( lambda/2./mb_);
-      p1.setMass(mb_*e_);    
-      p2.setE((mb_/2.)*(1.+s2_-e2_)); p2.setX(ZERO); p2.setY(ZERO); p2.setZ(-lambda/2./mb_);
-      p2.setMass(mb_*s_);
-      Particle outpart1 = Particle(emitter  ->progenitor()->dataPtr()); outpart1.set5Momentum(p1);
-      Particle outpart2 = Particle(spectator->progenitor()->dataPtr()); outpart2.set5Momentum(p2);
-      ParticleVector decay2; decay2.push_back(&outpart1); decay2.push_back(&outpart2);
+      Lorentz5Momentum p1(ZERO,ZERO, lambda/2./mb_,(mb_/2.)*(1.+e2_-s2_),mb_*e_);
+      Lorentz5Momentum p2(ZERO,ZERO,-lambda/2./mb_,(mb_/2.)*(1.+s2_-e2_),mb_*s_);
+      Particle outpart1 = Particle(emitter  ->progenitor()->dataPtr());
+      outpart1.set5Momentum(p1);
+      Particle outpart2 = Particle(spectator->progenitor()->dataPtr());
+      outpart2.set5Momentum(p2);
+      ParticleVector decay2;
+      decay2.push_back(&outpart1);
+      decay2.push_back(&outpart2);
 
       //calculate matrix element ratio R/B
-      double meRatio = matrixElementRatio(inpart,decay2,decay3,Initialize);
+      double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize);
 
       //calculate dipole factor
-      InvEnergy2 dipoleSum = 1./GeV/GeV;
+      InvEnergy2 dipoleSum = ZERO;
 
       //S->FF
-      for (int k=0; k<dipoles.size(); ++k){
+      for (int k=0; k<dipoles.size(); ++k) {
 	if (dipoles.size()==2){
 	  if ((dipoles[k]==FFa && dipoles[i]==FFc) ||
 	      (dipoles[k]==FFc && dipoles[i]==FFa)){
@@ -888,7 +887,7 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xs) {
 InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(dipoleType dipoleId, double xe, double xs,
 						  double xe_z){
 
-  InvEnergy2 dipole = 1./GeV/GeV;
+  InvEnergy2 dipole = ZERO;
   double coeff = 4./3.*8.*Constants::pi*coupling_->value(mb_*mb_);
 
   if (dipoleId==FFa || dipoleId==FFc){
