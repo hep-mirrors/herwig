@@ -28,6 +28,11 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
   double mu = sqr(data->mass())/sHat;
   double gamma = sqr(data->width())/sHat;
 
+  if ( M0 != ZERO )
+    x0 = M0/sqrtSHat;
+  if ( Mc != ZERO )
+    xc = Mc/sqrtSHat;
+
   double r = rnd();
 
   pair<double,double> event;

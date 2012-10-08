@@ -29,9 +29,11 @@ using namespace Herwig;
 using namespace Herwig::PhasespaceHelpers;
 
 TreePhasespace::TreePhasespace() 
-  : x0(0.01), xc(1e-4) {
+  : x0(0.01), xc(1e-4), M0(ZERO), Mc(ZERO) {
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
   theIncludeMirrored = true;
 }
 
@@ -161,20 +163,28 @@ void TreePhasespace::doinit() {
   MatchboxPhasespace::doinit();
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
 }
 
 void TreePhasespace::doinitrun() {
   MatchboxPhasespace::doinitrun();
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
 }
 
 void TreePhasespace::persistentOutput(PersistentOStream & os) const {
-  os << theChannelMap << x0 << xc << theIncludeMirrored;
+  os << theChannelMap << x0 << xc 
+     << ounit(M0,GeV) << ounit(Mc,GeV)
+     << theIncludeMirrored;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
-  is >> theChannelMap >> x0 >> xc >> theIncludeMirrored;
+  is >> theChannelMap >> x0 >> xc 
+     >> iunit(M0,GeV) >> iunit(Mc,GeV)
+     >> theIncludeMirrored;
 }
 
 
@@ -213,6 +223,18 @@ void TreePhasespace::Init() {
      &TreePhasespace::xc, 1e-4, 0.0, 0,
      false, false, Interface::lowerlim);
 
+
+  static Parameter<TreePhasespace,Energy> interfaceM0
+    ("M0",
+     "Set the cut below which flat virtuality sammpling is imposed.",
+     &TreePhasespace::M0, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<TreePhasespace,Energy> interfaceMC
+    ("MC",
+     "Set the cut below which no virtualities are generated.",
+     &TreePhasespace::Mc, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
 
   static Switch<TreePhasespace,bool> interfaceIncludeMirrored
     ("IncludeMirrored",

@@ -63,6 +63,18 @@ using namespace ThePEG;
       double xc;
 
       /**
+       * Parameter steering from which on propagator virtualities are
+       * sampled flat.
+       */
+      Energy M0;
+
+      /**
+       * Parameter steering at which virtuality singularities of
+       * propagators are actually cut off.
+       */
+      Energy Mc;
+
+      /**
        * Generate a mass for the given particle type and mass range.
        */
       Energy generateMass(tcPDPtr, const pair<Energy,Energy>&);

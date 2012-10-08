@@ -184,6 +184,18 @@ private:
   double xc;
 
   /**
+   * Parameter steering from which on propagator virtualities are
+   * sampled flat.
+   */
+  Energy M0;
+
+  /**
+   * Parameter steering at which virtuality singularities of
+   * propagators are actually cut off.
+   */
+  Energy Mc;
+
+  /**
    * Choose whether to also use mirrored phasespace generation
    */
   bool theIncludeMirrored;
