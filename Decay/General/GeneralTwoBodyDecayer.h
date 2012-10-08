@@ -215,7 +215,8 @@ protected:
   /**
    * Return dipole corresponding to the dipoleType dipoleId
    */
-  InvEnergy2 calculateDipole(dipoleType dipoleId, double xe, double xs, double xT);
+  InvEnergy2 calculateDipole(dipoleType dipoleId, const Particle & inpart, 
+			     const ParticleVector & decay3, dipoleType emittingDipole);
 
   /**
    *  Work out the type of process

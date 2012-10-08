@@ -12,11 +12,11 @@
 
 ##################################################
 
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers[0]
+#erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers[0]
 #set /Herwig/QEDRadiation/QEDRadiationHandler:DecayingParticles 2 NULL
 #set /Herwig/QEDRadiation/QEDRadiationHandler:RadiationGenerator NULL
 
-#set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 
 #testing
@@ -47,10 +47,14 @@ insert HPConstructor:Incoming 2 /Herwig/Particles/ubar
 insert HPConstructor:Incoming 3 /Herwig/Particles/d
 insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
-insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
-insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
-insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
+#insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+#insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
+#insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
+#insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
+
+set HPConstructor:Processes Exclusive
+insert HPConstructor:Outgoing 0 /Herwig/Particles/~g
+insert HPConstructor:Outgoing 1 /Herwig/Particles/~g
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -83,5 +87,6 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 2350.0
 
 saverun LHC-MSSM LHCGenerator

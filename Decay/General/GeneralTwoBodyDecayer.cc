@@ -473,7 +473,7 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
   _outgoing.push_back(outgoing.first );
   _outgoing.push_back(outgoing.second);
   vertex_ = vertex;
-  incomingVertex_   = inV;
+  incomingVertex_ = inV;
   outgoingVertices_ = outV;
 }
 
@@ -516,6 +516,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
+  vector<Lorentz5Momentum> trialMomenta(4);
   ShowerProgenitorPtr finalEmitter, finalSpectator;
   ShowerProgenitorPtr trialEmitter, trialSpectator;
 
@@ -663,8 +664,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   Energy2 lambda = sqr(mb_)* sqrt( 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_);    
 
   // Calculate A
-  double A = (ymax - ymin) * C * (coupling_->overestimateValue() / (2.*Constants::pi));
- 
+  double A = (ymax - ymin) * C * (coupling_->overestimateValue() / (2.*Constants::pi)); 
   Energy pTmax = mb_* (sqr(1.-s_) - e2_) / (2.*(1.-s_));
 
   // if no possible emission return
@@ -674,7 +674,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   }
 
   while (pTmax >= pTmin_) {  
-    //Generate pT, y and phi values
+    // Generate pT, y and phi values
     Energy pT = pTmax * pow(UseRandom::rnd() , (1./A));  
     if (pT < pTmin_) {particleMomenta.clear(); break;}
 
@@ -696,68 +696,37 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
       
       // Calculate the ratio R/B
       // decay products for 3 body decay
-      PPtr inpart   = in       ->progenitor()->dataPtr()->produceParticle(particleMomenta[0]);     
+      PPtr inpart   = in        ->progenitor()->dataPtr()->produceParticle(particleMomenta[0]);     
       ParticleVector decay3;
       decay3.push_back(emitter  ->progenitor()->dataPtr()->produceParticle(particleMomenta[1]));
       decay3.push_back(spectator->progenitor()->dataPtr()->produceParticle(particleMomenta[2]));
       decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
       
-      //decay products for 2 body decay
+      // decay products for 2 body decay
       Lorentz5Momentum p1(ZERO,ZERO, lambda/2./mb_,(mb_/2.)*(1.+e2_-s2_),mb_*e_);
       Lorentz5Momentum p2(ZERO,ZERO,-lambda/2./mb_,(mb_/2.)*(1.+s2_-e2_),mb_*s_);
-      Particle outpart1 = Particle(emitter  ->progenitor()->dataPtr());
-      outpart1.set5Momentum(p1);
-      Particle outpart2 = Particle(spectator->progenitor()->dataPtr());
-      outpart2.set5Momentum(p2);
       ParticleVector decay2;
-      decay2.push_back(&outpart1);
-      decay2.push_back(&outpart2);
+      decay2.push_back(emitter  ->progenitor()->dataPtr()->produceParticle(p1));
+      decay2.push_back(spectator->progenitor()->dataPtr()->produceParticle(p2));
 
-      //calculate matrix element ratio R/B
+      // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize);
 
-      //calculate dipole factor
+      // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
-
-      //S->FF
-      for (int k=0; k<dipoles.size(); ++k) {
-	if (dipoles.size()==2){
-	  if ((dipoles[k]==FFa && dipoles[i]==FFc) ||
-	      (dipoles[k]==FFc && dipoles[i]==FFa)){
-	    dipoleSum = abs(calculateDipole(dipoles[i], xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(dipoles[k], xs[j], xe[j], xe_z[j]));
-	  }
-	  else if ((dipoles[i]==IFba && dipoles[k]==IFa ) ||
-		   (dipoles[i]==IFbc && dipoles[k]==IFc ) ||
-		   (dipoles[i]==IFa  && dipoles[k]==IFba) ||
-		   (dipoles[i]==IFc  && dipoles[k]==IFbc)){
-	    dipoleSum = abs(calculateDipole(dipoles[i], xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(dipoles[k], xe[j], xs[j], xe_z[j]));
-	  }	  
-	}
-	else if (dipoles.size()==4){
-	  if (dipoles[k]==IFa){
-	    dipoleSum = abs(calculateDipole(IFba, xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(IFa , xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(FFa , xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(FFc , xs[j], xe[j], xe_z[j]));
-	  }
-	  else if (dipoles[k]==IFc){
-	    dipoleSum = abs(calculateDipole(IFbc, xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(IFc , xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(FFc , xe[j], xs[j], xe_z[j]))
-	              + abs(calculateDipole(FFa , xs[j], xe[j], xe_z[j]));
-	  }
-	}	
+      InvEnergy2 numerator = ZERO;
+      for (int k=0; k<dipoles.size(); ++k){
+	InvEnergy2 dipole = abs(calculateDipole(dipoles[k], *inpart, decay3, dipoles[i]));
+	dipoleSum += dipole;
+	if (k==i) numerator = dipole;
       }
+      meRatio *= numerator/dipoleSum;
 
-      double dipoleFactor = abs(calculateDipole(dipoles[i], xe[j], xs[j], xe_z[j]))/dipoleSum;
-      meRatio *= dipoleFactor;
-      //Calculate jacobian
+      // Calculate jacobian
       Energy2 denom = (mb_ - particleMomenta[3].e()) * particleMomenta[2].vect().mag() -
 		       particleMomenta[2].e() * particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2()) / (lambda * denom);     
-      //Calculate weight
+      // Calculate weight
       weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C / Constants::twopi; 
      }
 
@@ -767,7 +736,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
     //weights << weight[0]+weight[1] << endl;
     //}
 
-    //Accept point if weight > R
+    // Accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
       if (weight[0] > (weight[0] + weight[1])*UseRandom::rnd()) {
 	particleMomenta[1].setE( (mb_/2.)*xe  [0]);
@@ -784,7 +753,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
       pT_ = pT;
       break;   
     }
-    //If there's no splitting lower the pT
+    // If there's no splitting lower the pT
     pTmax = pT; 
     
   }
@@ -804,11 +773,11 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
    		        double& xg, double& xs, double& xe, double& xe_z,
 			vector<Lorentz5Momentum>& particleMomenta){
   
-  //Calculate xg
+  // Calculate xg
   xg = 2.*pT*cosh(y) / mb_;
   if (xg>(1. - sqr(e_ + s_)) || xg<0.) return false;
 
-  //Calculate xs
+  // Calculate xs
   double xT  = 2.*pT / mb_;
   double A   = 4. - 4.*xg + sqr(xT);
   double B   = 4.*(3.*xg - 2. + 2.*e2_ - 2.*s2_ - sqr(xg) - xg*e2_ + xg*s2_);
@@ -822,11 +791,11 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   if (j==1) xs = (-B - sqrt(det))/(2.*A);  
   if (xs>(1. + s2_ - e2_) || xs<2.*s_) return false;
 
-  //Calculate xe
+  // Calculate xe
   xe = 2. - xs - xg;     
   if (xe>(1. + e2_ - s2_) || xe<2.*e_) return false;       
 
-  //Calculate xe_z  
+  // Calculate xe_z  
   double epsilon_p =  -sqrt(sqr(xs) - 4.*s2_) + xT*sinh(y) + sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
   double epsilon_m =  -sqrt(sqr(xs) - 4.*s2_) + xT*sinh(y) - sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
 
@@ -835,10 +804,10 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   
   else return false;
 
-  //Check b is on shell
+  // Check b is on shell
   if (fabs((sqr(xe) - sqr(xT) - sqr(xe_z) - 4.*e2_))>1.e-10) return false;
 
-  //Calculate 4 momenta
+  // Calculate 4 momenta
   particleMomenta[0].setE   ( mb_);
   particleMomenta[0].setX   ( ZERO);
   particleMomenta[0].setY   ( ZERO);
@@ -869,7 +838,7 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 
 bool GeneralTwoBodyDecayer::psCheck(double xg, double xs) {
   
-  //Check is point is in allowed region of phase space
+  // Check is point is in allowed region of phase space
   double xe_star = (1. - s2_ + e2_ - xg) / sqrt(1. - xg);
   double xg_star = xg / sqrt(1. - xg);
 
@@ -884,32 +853,49 @@ bool GeneralTwoBodyDecayer::psCheck(double xg, double xs) {
   return true;
 }
 
-InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(dipoleType dipoleId, double xe, double xs,
-						  double xe_z){
+InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(dipoleType dipoleId, 
+						  const Particle & inpart, 
+						  const ParticleVector & decay3, 
+						  dipoleType emittingDipole){
 
+  double spinFactor;
   InvEnergy2 dipole = ZERO;
-  double coeff = 4./3.*8.*Constants::pi*coupling_->value(mb_*mb_);
+  double xe = 2.*decay3[0]->momentum().e()/mb_;
+  double xs = 2.*decay3[1]->momentum().e()/mb_;
+  double xg = 2.*decay3[2]->momentum().e()/mb_;
+  double coeff = 8.*Constants::pi*coupling_->value(mb_*mb_);
+  double lambda2 = 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_;   
 
-  if (dipoleId==FFa || dipoleId==FFc){
-    double lambda2 = 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_; 
-    dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*( (2.*(1.-s2_-e2_)/(2.-xs-xe))-
-					      sqrt((lambda2)/(sqr(xs)-4.*s2_))*
-					    ((xs-2.*s2_)/(1-s2_-e2_))*
-					     (2.+ ((xe-1.+s2_-e2_)/(xs-2.*s2_)) + 
-					     (2.*e2_/(1.+s2_-e2_-xs))) );
-  }
-  else if (dipoleId==IFba || dipoleId==IFbc){
-    double xg = 2. - xe - xs;
+  if (dipoleId==IFba || dipoleId==IFbc){
     dipole = -4./ sqr(mb_*xg);
   }
   else if (dipoleId==IFa || dipoleId==IFc){
-    double xg = 2. - xe - xs;
-    double xT = sqrt(sqr(xe) - sqr(xe_z) - 4.*e2_);
     double z  = 1. - xg/(1. - s2_ + e2_);
-    Energy2 pepg = sqr(mb_/2.)*(xg*xe + sqr(xT) - xe_z*sqrt(sqr(xg)-sqr(xT)));
-    dipole = - sqr(mb_)*e2_ / sqr(pepg) + (1./pepg)*(2./(1.-z) - 1. - z);
+    Energy2 pepg = decay3[0]->momentum()*decay3[2]->momentum();
+    if      (decay3[0]->dataPtr()->iSpin()==PDT::Spin0)     spinFactor = 2.;    
+    else if (decay3[0]->dataPtr()->iSpin()==PDT::Spin1Half) spinFactor = 1. + z;
+    dipole = - sqr(mb_)*e2_ / sqr(pepg) + (1./pepg)*(2./(1.-z) - spinFactor);
   }
 
+  else if ((dipoleId==FFa && (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
+	   (dipoleId==FFc && (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
+    double z = 1. + ((xe-1.+s2_-e2_)/(xs-2.*s2_));
+    if      (decay3[0]->dataPtr()->iSpin()==PDT::Spin0)     spinFactor = 2.;
+    else if (decay3[0]->dataPtr()->iSpin()==PDT::Spin1Half) spinFactor = 1. + z;
+    dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*( (2.*(1.-s2_-e2_)/(2.-xs-xe))-
+					     sqrt((lambda2)/(sqr(xs)-4.*s2_))*
+					     ((xs-2.*s2_)/(1-s2_-e2_))*
+					     ( spinFactor + (2.*e2_/(1.+s2_-e2_-xs))) );
+  }
+  else if (dipoleId==FFa || dipoleId==FFc) { 
+    double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
+    if      (decay3[0]->dataPtr()->iSpin()==PDT::Spin0)     spinFactor = 2.;
+    else if (decay3[0]->dataPtr()->iSpin()==PDT::Spin1Half) spinFactor = 1. + z;
+    dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*( (2.*(1.-e2_-s2_)/(2.-xe-xs))-
+					     sqrt((lambda2)/(sqr(xe)-4.*e2_))*
+					     ((xe-2.*e2_)/(1-e2_-s2_))*
+					     ( spinFactor + (2.*s2_/(1.+e2_-s2_-xe))) );
+  }  
   dipole *= coeff;
   return dipole;
 }
@@ -1127,9 +1113,21 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
       dipoles.push_back(FFa );
     }
   }
+  // octet decaying particle
+  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
+	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)){
+      dipoles.push_back(IFba);
+      dipoles.push_back(IFbc);
+      dipoles.push_back(IFa);
+      dipoles.push_back(IFc);
+    }
+  }
   // check this is allowed
   if (dipoles.size()==0) 
-    throw Exception() << "Unknown colour structure in 3 boday decay in "
+    throw Exception() << "Unknown colour structure in 3 body decay in "
 		      << "GeneralTwoBodyDecayer::generateHardest()"
 		      << Exception::runerror;
 }

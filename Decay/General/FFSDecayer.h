@@ -15,6 +15,9 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+
 
 namespace Herwig {
 using namespace ThePEG;
@@ -59,6 +62,16 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return false;}
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+		       const ParticleVector & decay,MEOption meopt);
   //@}
 
 public:
@@ -141,6 +154,21 @@ private:
    * Pointer to the perturbative vertex
    */
   FFSVertexPtr _perturbativeVertex;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from incoming (anti)fermion
+   */
+  AbstractFFVVertexPtr _abstractIncomingVertex;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   */
+  AbstractFFVVertexPtr _abstractOutgoingVertex1;
+
+  /**
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
+   */
+  AbstractVSSVertexPtr _abstractOutgoingVertex2;
 
   /**
    *  Spin density matrix
