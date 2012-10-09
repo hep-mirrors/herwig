@@ -39,7 +39,7 @@ public:
 		     Offsel_(0), BRnorm_(true),
 		     Npoints_(50), Iorder_(1),
 		     BWshape_(0), brMin_(1e-6), twoBodyOnly_(false), 
-		     decayOutput_(1) {}
+		     decayOutput_(1), minWidth_(1e-6) {}
 
 public:
 
@@ -206,6 +206,12 @@ private:
    *   Option for the outputs of the decays to a file
    */
   unsigned int decayOutput_;
+
+  /**
+   *  Minimum fraction of particle's mass width can be for off-shell
+   *  treatment
+   */
+  double minWidth_;
 };
 
 }

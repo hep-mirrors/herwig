@@ -228,6 +228,7 @@ Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
 
 void GenericWidthGenerator::doinit() {
   WidthGenerator::doinit();
+  if(particle()->widthGenerator()!=this) return;
   // make sure the particle data object was initialized
   particle_->init();
   tDecayIntegratorPtr decayer;

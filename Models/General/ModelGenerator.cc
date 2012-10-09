@@ -203,6 +203,13 @@ void ModelGenerator::Init() {
      "Output in the Susy Les Houches Accord format",
      2);
 
+  static Parameter<ModelGenerator,double> interfaceMinimumWidthFraction
+    ("MinimumWidthFraction",
+     "Minimum fraction of the particle's mass the width can be"
+     " for the off-shell treatment.",
+     &ModelGenerator::minWidth_, 1e-6, 1e-15, 1.,
+     false, false, Interface::limited);
+
 }
 
 namespace {
@@ -237,7 +244,7 @@ void ModelGenerator::doinit() {
   }
   for(; pit != pend; ++pit)
     createWidthGenerator(*pit);
-
+  
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
@@ -277,7 +284,6 @@ void ModelGenerator::doinit() {
     parent->reset();
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
-
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(ZERO);
@@ -285,6 +291,10 @@ void ModelGenerator::doinit() {
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
     else {
+      if(parent->mass()*minWidth_>parent->width()) {
+	parent->massGenerator(tGenericMassGeneratorPtr());
+	parent->widthGenerator(tGenericWidthGeneratorPtr());
+      }
       if ( decayOutput_ == 2 )
 	writeDecayModes(ofs, parent);
       else
