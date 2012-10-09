@@ -317,7 +317,6 @@ void SusyBase::readSetup(istream & is) {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
@@ -437,8 +436,8 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
       sum += norm((*matrix)(ix,iy));
     }
     if(abs(sum-1.)>1e-4) {
-      cerr << "The sum of the mod squares of the " << ix+1 << "th row "
-	   << "of the " << name << " block does not sum to 1. \n"
+      cerr << "The sum of the mod squares of row " << ix+1
+	   << " of the " << name << " block does not sum to 1. \n"
 	   << "sum = " << sum.real() << ". We strongly suggest you check your SLHA file.\n";
     }
   }

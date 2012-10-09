@@ -134,7 +134,6 @@ int PScalar4FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   } while( ix<4 && idl1<0 );
   if(idl1<0) return -1;
   // find the second particle antiparticle pair
-  idtemp=-1;
   for(ix=0;ix<4;++ix) {
     if(!done[ix]) {
       idt[iy]=id[ix];

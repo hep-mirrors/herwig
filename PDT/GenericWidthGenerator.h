@@ -68,7 +68,8 @@ public:
    * Default constructor
    */
   GenericWidthGenerator()
-    : mass_(), prefactor_(1.), initialize_(false),BRnorm_(true),npoints_(50),
+    : mass_(), prefactor_(1.), initialize_(false),output_(false),
+      BRnorm_(true),npoints_(50),
       BRminimum_(0.01), intOrder_(1), twoBodyOnly_(false)
   {}
 
@@ -274,16 +275,24 @@ protected:
   Energy mass() const {return mass_;}
 
   /**
+   *  Access to the decay modes
+   */
+
+  /**
    * Initialization option for use by the inheriting classes
    */
   bool initialize() const {return initialize_;}
 
   /**
-   *  Access to the decay modes
+   * Output option for use by the inheriting classes
+   */
+  bool output() const {return output_;}
+
+  /**
+   *  Access to the DecayModes
    */
   vector<tDMPtr> decayModes() const {return decayModes_;}
   
-
 private:
 
   /**
@@ -388,6 +397,11 @@ private:
    * initialize the generator using the particle data object
    */
   bool initialize_;
+
+  /**
+   *  Output the parameters
+   */
+  bool output_;
 
   /**
    * normalise the terms so that the partial widths for an on-shell particle are correct

@@ -29,7 +29,7 @@ void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
      << BWShape_ << nGenerate_ 
      << ounit(mass_,GeV) << ounit(width_,GeV) 
      << ounit(mass2_,GeV2) << ounit(mWidth_,GeV2) 
-     << nInitial_ << initialize_ << widthGen_ << widthOpt_;
+     << nInitial_ << initialize_ << output_ << widthGen_ << widthOpt_;
 }
 
 void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
@@ -38,7 +38,7 @@ void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
      >> BWShape_ >> nGenerate_ 
      >> iunit(mass_,GeV) >> iunit(width_ ,GeV)
      >> iunit(mass2_,GeV2) >> iunit(mWidth_ ,GeV2)
-     >> nInitial_ >> initialize_ >> widthGen_ >> widthOpt_;
+     >> nInitial_ >> initialize_ >> output_ >> widthGen_ >> widthOpt_;
 }
 
 ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGenerator;
@@ -58,7 +58,6 @@ void GenericMassGenerator::Init() {
      &GenericMassGenerator::setParticle, 
      &GenericMassGenerator::getParticle);
 
-
   static Switch<GenericMassGenerator,bool> interfaceInitialize
     ("Initialize",
      "Initialize the calculation of the maximum weight etc",
@@ -72,6 +71,21 @@ void GenericMassGenerator::Init() {
     (interfaceInitialize,
      "No",
      "Don't do the initalization",
+     false);
+
+  static Switch<GenericMassGenerator,bool> interfaceOutput
+    ("Output",
+     "Output the setup",
+     &GenericMassGenerator::output_, false, false, false);
+  static SwitchOption interfaceOutputYes
+    (interfaceOutput,
+     "Yes",
+     "Output the data",
+     true);
+  static SwitchOption interfaceOutputNo
+    (interfaceOutput,
+     "No",
+     "Don't output the data",
      false);
 
   static Switch<GenericMassGenerator,int> interfaceBreitWignerShape
@@ -158,17 +172,15 @@ void GenericMassGenerator::doinit() {
   if(initialize_) {
     // zero the maximum weight
     maxWgt_=0.;
-    // storage of variables for the loop
-    double wgt=0.,swgt=0.,sqwgt=0.;
+    // storage of variable for the loop
+    double wgt=0.;
     // perform the initialisation
-    for(int ix=0;ix<nInitial_;++ix) {
-      mass(wgt,*particle_,3);
-      swgt  += wgt;
-      sqwgt += sqr(wgt);
-      if(wgt>maxWgt_) maxWgt_=wgt;
+    // (mass() contains a ThePEG::Random call)
+    for(int ix=0; ix<nInitial_; ++ix) {
+      mass(wgt, *particle_, 3);
+      if ( wgt > maxWgt_ ) 
+	maxWgt_ = wgt;
     }
-    swgt=swgt/nInitial_;
-    sqwgt=sqrt(max(0.,sqwgt/nInitial_-swgt*swgt)/nInitial_);
   }
 }
   
@@ -183,7 +195,7 @@ void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
 }
 
 void GenericMassGenerator::dofinish() {
-  if(initialize_) {
+  if(output_) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());

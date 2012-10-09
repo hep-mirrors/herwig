@@ -69,7 +69,7 @@ public:
       lowerMass_(),upperMass_(),
       mass_(),width_(),mass2_(),mWidth_(),
       nInitial_(1000),
-      initialize_(false), widthOpt_(false) {}
+      initialize_(false), output_(false), widthOpt_(false) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -441,6 +441,11 @@ private:
    * Whether or not to initialize the GenericMassGenerator
    */
   bool initialize_;
+
+  /**
+   * Whether or not to output the data to a file
+   */
+  bool output_;
 
   /**
    * Pointer to the width generator
