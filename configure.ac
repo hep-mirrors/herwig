@@ -108,6 +108,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
+		Models/LH/Makefile
+		Models/LHTP/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
