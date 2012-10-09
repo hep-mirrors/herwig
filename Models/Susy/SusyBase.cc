@@ -63,7 +63,7 @@ void SusyBase::doinit() {
   addVertex(CNWVertex_);
   addVertex(GOGOHVertex_);
   addVertex(WHHVertex_);
-  addVertex(NCTVertex_);
+  if(NCTVertex_) addVertex(NCTVertex_);
   if(gravitino_) {
     if(GVNHVertex_) addVertex(GVNHVertex_);
     if(GVNVVertex_) addVertex(GVNVVertex_);
@@ -216,7 +216,7 @@ void SusyBase::Init() {
     ("Vertex/NCT",
      "Vertex for the flavour violating coupling of the top squark "
      "to the neutralino and charm quark.",
-     &SusyBase::NCTVertex_, false, false, true, false, false);
+     &SusyBase::NCTVertex_, false, false, true, true, false);
 
   static Reference<SusyBase,AbstractRFSVertex> interfaceVertexGVNH
     ("Vertex/GVNH",
