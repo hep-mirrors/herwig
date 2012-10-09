@@ -429,20 +429,13 @@ void DecayPhaseSpaceMode::doinit() {
   if(_extpart[0]->widthGenerator()) {
     _widthgen=
       dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
-    //const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->init();
   }
   else {
     _widthgen=cGenericWidthGeneratorPtr();
   }
-  tcGenericWidthGeneratorPtr wtemp;
   for(unsigned int ix=0;ix<_extpart.size();++ix) {
     assert(_extpart[ix]);
     _massgen[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
-    if(ix>0) {
-      wtemp=
-	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
-      //if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->init();
-    }
   }
   for(unsigned int ix=0;ix<_channels.size();++ix) {
     _channels[ix]->init();
