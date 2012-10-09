@@ -28,6 +28,9 @@ Doc/HerwigDefaults.in
 Doc/fixinterfaces.pl
 Doc/refman.conf
 Doc/refman.h
+Doc/AllInterfaces.h
+Doc/HerwigDefaults.rpo
+Doc/Herwig\+\+-refman.tag
 (src|Utilities)/version.tmp
 (src|Utilities)/version.tmp.new
 INSTALL
