@@ -31,7 +31,7 @@ void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << particle_ << ounit(mass_,GeV) << prefactor_ << MEtype_ << MEcode_
      << ounit(MEmass1_,GeV) << ounit(MEmass2_,GeV) << MEcoupling_ << modeOn_
      << ounit(interMasses_,GeV) << ounit(interWidths_,GeV) 
-     << noOfEntries_ << initialize_ << BRnorm_ << twoBodyOnly_
+     << noOfEntries_ << initialize_ << output_ << BRnorm_ << twoBodyOnly_
      << npoints_ << decayModes_ << decayTags_ << ounit(minMass_,GeV) 
      << BRminimum_ << intOrder_ << interpolators_;
 }
@@ -40,7 +40,7 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> particle_ >> iunit(mass_,GeV) >> prefactor_ >> MEtype_ >> MEcode_ 
      >> iunit(MEmass1_,GeV) >> iunit(MEmass2_,GeV) >> MEcoupling_ >>modeOn_
      >> iunit(interMasses_,GeV) >> iunit(interWidths_,GeV)
-     >> noOfEntries_ >> initialize_ >> BRnorm_ >> twoBodyOnly_
+     >> noOfEntries_ >> initialize_ >> output_ >> BRnorm_ >> twoBodyOnly_
      >> npoints_ >> decayModes_ >> decayTags_ >> iunit(minMass_,GeV)
      >> BRminimum_ >> intOrder_ >> interpolators_;
 }
@@ -90,6 +90,21 @@ void GenericWidthGenerator::Init() {
     (interfaceInitialize,
      "No",
      "Don't do the initalization",
+     false);
+
+  static Switch<GenericWidthGenerator,bool> interfaceOutput
+    ("Output",
+     "Output the setup",
+     &GenericWidthGenerator::output_, false, false, false);
+  static SwitchOption interfaceOutputYes
+    (interfaceOutput,
+     "Yes",
+     "Output the data",
+     true);
+  static SwitchOption interfaceOutputNo
+    (interfaceOutput,
+     "No",
+     "Don't output the data",
      false);
 
   static ParVector<GenericWidthGenerator,int> interfacemetype
@@ -749,7 +764,7 @@ Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
 }
 
 void GenericWidthGenerator::dofinish() {
-  if(initialize_) {
+  if(output_) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());
