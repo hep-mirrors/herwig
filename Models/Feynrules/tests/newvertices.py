@@ -1,14 +1,17 @@
 #! /usr/bin/env python
 from __future__ import with_statement
-import cmath, string, os, sys, fileinput
+import cmath, string, os, sys, fileinput, pprint
 from optparse import OptionParser
 
 
 # set up the option parser for command line input 
-parser = OptionParser(usage="%prog -d [UFO model directory] -n [custom model nametag]")
+parser = OptionParser(usage="%prog -d [UFO model directory] -n [custom model nametag] -v [verbose mode]")
 
 parser.add_option("-d", "--directory", dest="MODELDIR",
                   default="Model", help="UFO model directory.")
+
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+                  default=False, help="enable verbose mode.")
 
 parser.add_option("-n", "--name", dest="MODELNAME",
                   default="FeynRulesModel", help="custom model nametag.")
@@ -19,13 +22,23 @@ if(os.path.exists(os.getcwd() + '/'+opts.MODELDIR) is False):
     print 'Path', os.getcwd() + '/'+ opts.MODELDIR, 'does not exist, exiting'
     sys.exit()
 
+    #print 'verbose', opts.verbose
+
 # if the Model path exists, then import the UFO FeynRules module
 FR = __import__(opts.MODELDIR)
-
-
-print 'generating Model and Vertex files/.model file/.input file'
+print '==============================================================================================================='
+print '______                  ______        _                 __ _   _                        _                      '
+print '|  ___|                 | ___ \      | |               / /| | | |                      (_)          _      _   '
+print '| |_  ___  _   _  _ __  | |_/ /_   _ | |  ___  ___    / / | |_| |  ___  _ __ __      __ _   __ _  _| |_  _| |_ '
+print '|  _|/ _ \| | | || \'_ \ |    /| | | || | / _ \/ __|  / /  |  _  | / _ \| \'__|\ \ /\ / /| | / _` ||_   _||_   _|'
+print '| | |  __/| |_| || | | || |\ \| |_| || ||  __/\__ \ / /   | | | ||  __/| |    \ V  V / | || (_| |  |_|    |_|  '
+print '\_|  \___| \__, ||_| |_|\_| \_|\__,_||_| \___||___//_/    \_| |_/ \___||_|     \_/\_/  |_| \__, |              '
+print '            __/ |                                                                           __/ |              '
+print '           |___/                                                                           |___/               '
+print '==============================================================================================================='
+print 'generating model/vertex/.model/.in files'
 print 'please be patient!'
-print '-------------------'
+print '==============================================================================================================='
 
 # check if a function is a number
 def is_number(s):
@@ -327,6 +340,11 @@ parmnumber = 0
 
 # loop over parameters and fill in template stuff according to internal/external and complex/real
 # WARNING: Complex external parameter input not tested!
+if(opts.verbose is True):
+    print 'verbose mode on: printing all parameters'
+    print '---------------------------------------------------------------------------------------------------------------'
+    paramsstuff = ('name', 'expression', 'default value', 'nature')
+    pprint.pprint(paramsstuff)
 for p in FR.all_parameters:
     value = parmsubs[p.name]
     extinter = ''
@@ -385,7 +403,7 @@ for p in FR.all_parameters:
     if(p.lhablock == None):
         funcvertex = p.name +' = ' + PyMathToThePEGMath(p.value, allparams) + ';' 
         #print 'NO LHABLOCK:', p.name, funcvertex
-
+    paramdstuff = (p.name,p.value, value, p.nature)
     # do calc in C++, add interfaces for externals
     paramvertexcalc.append(funcvertex)    
     parmdecls.append(decl)
@@ -397,6 +415,8 @@ for p in FR.all_parameters:
     parmfuncmap.append(funcmap)
     paramsforev.append(forev)
     paramsforstream.append(forev)
+    if(opts.verbose is True):
+         pprint.pprint(paramdstuff)
     if extinter != '':
         parmextinter.append('\n')
 
@@ -422,6 +442,7 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
     #print k
     #print v
     #print
+print '---------------------------------------------------------------------------------------------------------------'
 
 # write the files from templates according to the above subs
 writeFile( ModelName + '.h', MODEL_H.substitute(parmtextsubs) )
@@ -567,8 +588,14 @@ VERTEX = getTemplate('Vertex.cc')
 
 def produce_vertex_file(subs):
     newname = ModelName + subs['classname'] + '.cc'
-    writeFile( newname, VERTEX.substitute(subs) )    
+    writeFile( newname, VERTEX.substitute(subs) )
 
+if(opts.verbose is True):
+    #print 'vertex\tLorentz\t\t\tC_L\t\t\tC_R\t\t\t\tnorm\t'
+    print 'verbose mode on: printing all vertices'
+    print '---------------------------------------------------------------------------------------------------------------'
+    labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
+    pprint.pprint(labels)
 # loop over all vertices
 for v in FR.all_vertices:
 
@@ -716,7 +743,7 @@ for v in FR.all_vertices:
         else:
             coup_norm.append(C.value)
                 
-
+            
         #print 'Colour  :',v.color[ci]
         #print 'Lorentz %s:'%L.name, L.spins, L.structure
         #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
@@ -808,7 +835,16 @@ for v in FR.all_vertices:
              'normdebug' : normdebug
              }             # ok
 
-
+    if(opts.verbose is True):
+        print '---------------------------------------------------------------------------------------------------------------'
+        if( selfconjugate is True ):
+            stuff = ( classname, plistarray[0], leftcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), rightcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), normcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0') )
+        else:
+            stuff = ( classname, plistarray[0], plistarray[1], leftcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), rightcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), normcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0') )
+        pprint.pprint(stuff)
+        #print classname, '\t', lt,'\t', plistarray[0], '\t',leftcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), '\t\t', rightcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), '\t\t\t\t', normcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0')
+    
+            
     #print plistarray[0]
 #    if plist in allplist:
 #        print 'PLIST IN ALLPLIST'
@@ -826,6 +862,8 @@ for v in FR.all_vertices:
         v.include = 0
         
         #print '============================================================'
+
+print '==============================================================================================================='
 
 ##################################################
 ##################################################
@@ -862,7 +900,17 @@ MODELINFILE = getTemplate('FR.model')
 
 writeFile( ModelName +'.model', MODELINFILE.substitute(modelfilesubs) )
 
-print 'finished generating model', ModelName
-print 'model directory:', opts.MODELDIR
-print 'generated', len(FR.all_vertices)-notincluded, 'vertices'
+print 'finished generating model:\t', ModelName
+print 'model directory:\t\t', opts.MODELDIR
+print 'generated:\t\t\t', len(FR.all_vertices)-notincluded, 'vertices'
+print '==============================================================================================================='
+print 'library:\t\t\t', ModelName +'.so'
+print 'input file:\t\t\t', 'LHC-' + ModelName +'.in'
+print 'model file:\t\t\t', ModelName +'.model'
+print '==============================================================================================================='
+print 'To complete installation, compile by typing "make", copy the generated .so file into the Herwig++ lib directory'
+print 'and the .model and .in files in the directory that you wish to run in.'
+print 'DONE!'
+print '==============================================================================================================='
+
 
