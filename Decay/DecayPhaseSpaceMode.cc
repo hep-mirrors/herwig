@@ -183,7 +183,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       for(int ix=0;ix<_npoint;++ix) {
 	m0 = (inpart->dataPtr())->generateMass();
 	double wgt=0.; 
-	int ichan;
+	int ichan(-1);
 	if(m0>mmin) {
 	  inpart->set5Momentum(Lorentz5Momentum(m0));
 	  // compute the prefactor
@@ -200,11 +200,13 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	  }
 	}
 	if(wgt>_maxweight) _maxweight=wgt;
-	wsum[ichan]=wsum[ichan]+wgt;
+	if(ichan>=0) {
+	  wsum[ichan]   += wgt;
+	  wsqsum[ichan] += sqr(wgt);
+	  ++nchan[ichan];
+	}
 	totsum+=wgt;
-	wsqsum[ichan]=wsqsum[ichan]+sqr(wgt);
 	totsq+=wgt*wgt;
-	++nchan[ichan];
       }
       totsum=totsum/_npoint;
       totsq=totsq/_npoint-sqr(totsum);
