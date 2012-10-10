@@ -230,8 +230,7 @@ void ModelGenerator::doinit() {
   for(size_t iv = 0; iv < model->numberOfVertices(); ++iv)
     model->vertex(iv)->init();
   // sort DecayParticles list by mass
-  sort(particles_.begin(),particles_.end(),
-       massIsLess);
+  sort(particles_.begin(),particles_.end(),massIsLess);
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
   if( Offsel_ == 0 ) {
