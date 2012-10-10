@@ -734,8 +734,9 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
   // loop over the modes
   for(ix=0;ix<particles.size();++ix)
     {
-      if(ix!=imode)
-	{
+      if(ix==imode||particles[ix].empty()) continue;
+	  assert(!particles[ix].empty());
+	  assert(particles[ix][0]);
 	  // the particle mode
 	  if(particles[ix][0]->id()==id[0]&&particles[ix].size()==id.size())
 	    {
@@ -766,7 +767,6 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
 		}
 	      if(nfound==idbar.size()){cc.push_back(false);loc.push_back(ix);}
 	    }
-	}
     }
 }
 
