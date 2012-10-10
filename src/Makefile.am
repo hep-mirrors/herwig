@@ -79,17 +79,17 @@ check_BSM_Full=
 check_BSM=
 if WANT_MSSM
 check_BSM += check-LHC-RPV
-check_BSM_Full += check-LHC-RPV check-LHC-MSSM
+check_BSM_Full += check-LHC-RPV check-LHC-MSSM check-ILC-MSSM
 endif
 if WANT_NMSSM
 check_BSM_Full += check-LHC-NMSSM
 endif
 if WANT_UED
-check_BSM_Full += check-LHC-MUED
+check_BSM_Full += check-LHC-MUED check-ILC-MUED
 endif
 if WANT_RS
 check_BSM += check-LHC-RS
-check_BSM_Full += check-LHC-RS
+check_BSM_Full += check-LHC-RS check-ILC-RS
 endif
 if WANT_LH
 check_BSM_Full += check-LHC-LH
@@ -104,7 +104,7 @@ if WANT_ADD
 check_BSM_Full += check-LHC-ADD
 endif
 if WANT_TTBA
-check_BSM_Full += check-LHC-TTBA
+check_BSM_Full += check-LHC-TTBA check-TVT-TTBA
 endif
 if WANT_ZPRIME
 check_BSM_Full += check-LHC-ZP
@@ -116,14 +116,24 @@ check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
 check-BSM: $(check_BSM_Full)
 
+check-Matchbox: check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+
+check-extra: check-LHC-diffractive check-LHC-GammaGamma check-LHC-MB check-TVT
+
+check-all: check-local check-Powheg check-BSM check-Matchbox check-extra
+
 link-helper-files:
 	@for i in $(HELPERFILES); do \
 	if test -f $(srcdir)/$$i -a ! -e $$i; then \
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
+CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< -D
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+	@echo $(CHECKCOMMAND)
+	@$(CHECKCOMMAND) && echo -e "###### $@ GOOD ######\n" \
+			 || echo -e "###### $@  BAD ######\n"
 
 ## valgrind targets ##
 
