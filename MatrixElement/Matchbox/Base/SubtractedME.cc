@@ -124,7 +124,7 @@ void SubtractedME::getDipoles() {
 
   if ( genDipoles.empty() ) {
     // probably finite real contribution, but warn
-    generator()->log() << "Warning: No subtraction dipoles could be found for the processes:\n";
+    generator()->log() << "\nWarning: No subtraction dipoles could be found for the processes:\n";
     for ( vector<PDVector>::const_iterator s = real->subProcesses().begin();
 	  s != real->subProcesses().end(); ++s ) {
       generator()->log() << (*s)[0]->PDGName() << " " << (*s)[1]->PDGName()
@@ -216,6 +216,12 @@ void SubtractedME::setVetoScales(tSubProPtr subpro) const {
 
 void SubtractedME::doinit() {
 
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::doinit();
+    return;
+  }
+
   theReal = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
 
   if ( theReal ) {
@@ -229,6 +235,12 @@ void SubtractedME::doinit() {
 }
 
 void SubtractedME::doinitrun() {
+
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::doinit();
+    return;
+  }
 
   MEGroup::doinitrun();
 

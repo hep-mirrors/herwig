@@ -507,6 +507,7 @@ void MatchboxFactory::setup() {
       if ( sub->dependent().empty() ) {
 	// finite real contribution
 	MEs().push_back(sub->head());
+	sub->head(tMEPtr());
 	continue;
       }
 
