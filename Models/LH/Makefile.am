@@ -1,4 +1,4 @@
-if WANT_LH
+if WANT_BSM
 pkglib_LTLIBRARIES = HwLHModel.la
 endif
 HwLHModel_la_SOURCES = \

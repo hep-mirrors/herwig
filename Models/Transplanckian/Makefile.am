@@ -1,4 +1,4 @@
-if WANT_TRP
+if WANT_BSM
 pkglib_LTLIBRARIES = HwTransplanck.la
 endif
 HwTransplanck_la_SOURCES = METRP2to2.cc METRP2to2.h

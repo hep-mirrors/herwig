@@ -77,37 +77,23 @@ HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/An
 
 check_BSM_Full=
 check_BSM=
-if WANT_MSSM
-check_BSM += check-LHC-RPV
-check_BSM_Full += check-LHC-RPV check-LHC-MSSM check-ILC-MSSM
-endif
-if WANT_NMSSM
-check_BSM_Full += check-LHC-NMSSM
-endif
-if WANT_UED
-check_BSM_Full += check-LHC-MUED check-ILC-MUED
-endif
-if WANT_RS
-check_BSM += check-LHC-RS
-check_BSM_Full += check-LHC-RS check-ILC-RS
-endif
-if WANT_LH
-check_BSM_Full += check-LHC-LH
-endif
-if WANT_LHTP
-check_BSM_Full += check-LHC-LHTP
-endif
-if WANT_TRP
-check_BSM_Full += check-LHC-TRP
-endif
-if WANT_ADD
-check_BSM_Full += check-LHC-ADD
-endif
-if WANT_TTBA
-check_BSM_Full += check-LHC-TTBA check-TVT-TTBA
-endif
-if WANT_ZPRIME
-check_BSM_Full += check-LHC-ZP
+
+if WANT_BSM
+
+check_BSM += check-LHC-RPV check-LHC-RS
+
+check_BSM_Full += \
+check-LHC-RPV check-LHC-MSSM check-ILC-MSSM \
+check-LHC-NMSSM \
+check-LHC-MUED check-ILC-MUED \
+check-LHC-RS check-ILC-RS check-LHC-ADD \
+check-LHC-LH check-LHC-LHTP \
+check-LHC-TRP \
+check-LHC-TTBA check-TVT-TTBA \
+check-LHC-ZP \
+check-LHC-LQ \
+check-LHC-Sextet
+
 endif
 
 check-local: check-LEP check-LHC $(check_BSM) check-DIS check-ILC check-GammaGamma check-LHC-Powheg

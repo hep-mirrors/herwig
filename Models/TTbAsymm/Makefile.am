@@ -1,4 +1,4 @@
-if WANT_TTBA
+if WANT_BSM
 pkglib_LTLIBRARIES = HwTTbAModel.la
 endif
 HwTTbAModel_la_SOURCES = \

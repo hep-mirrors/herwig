@@ -1,4 +1,4 @@
-if WANT_NMSSM
+if WANT_BSM
 pkglib_LTLIBRARIES = HwNMSSM.la
 endif
 HwNMSSM_la_SOURCES =  \

@@ -1,4 +1,4 @@
-if WANT_UED
+if WANT_BSM
 pkglib_LTLIBRARIES = HwUED.la
 endif
 HwUED_la_SOURCES = \
