@@ -1,4 +1,4 @@
-if WANT_Leptoquark
+if WANT_BSM
 pkglib_LTLIBRARIES = HwLeptoquarkModel.la
 endif
 HwLeptoquarkModel_la_SOURCES = \

@@ -1,5 +1,5 @@
 SUBDIRS = NMSSM
-if WANT_MSSM
+if WANT_BSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif
 HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h SusyBase.fh \
