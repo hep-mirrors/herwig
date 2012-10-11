@@ -110,7 +110,7 @@ if WANT_ZPRIME
 check_BSM_Full += check-LHC-ZP
 endif
 
-check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg 
+check-local: check-LEP check-LHC $(check_BSM) check-DIS check-ILC check-GammaGamma check-LHC-Powheg
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
@@ -132,8 +132,8 @@ CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< -D
 	@echo $(CHECKCOMMAND)
-	@$(CHECKCOMMAND) && echo -e "###### $@ GOOD ######\n" \
-			 || echo -e "###### $@  BAD ######\n"
+	@$(CHECKCOMMAND) && echo -e "# $@ OK #\n" \
+			 || echo -e "###### $@ BAD ######\n"
 
 ## valgrind targets ##
 
