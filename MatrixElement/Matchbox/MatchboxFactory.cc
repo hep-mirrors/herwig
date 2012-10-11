@@ -504,6 +504,12 @@ void MatchboxFactory::setup() {
 
       sub->getDipoles();
 
+      if ( sub->dependent().empty() ) {
+	// finite real contribution
+	MEs().push_back(sub->head());
+	continue;
+      }
+
       if ( verbose() )
 	sub->setVerbose();
 

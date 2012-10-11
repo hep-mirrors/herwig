@@ -122,12 +122,19 @@ void SubtractedME::getDipoles() {
       (**d).doTestSubtraction();
   }
 
-  if ( genDipoles.empty() )
-    Throw<InitException>() << "The SubtractedME '"
-			   << name() << "' could not generate "
-			   << "subtraction terms for the real emission "
-			   << "matrix element '" << real->name() << "'. "
-			   << "Please check the corresponding input file.";
+  if ( genDipoles.empty() ) {
+    // probably finite real contribution, but warn
+    generator()->log() << "Warning: No subtraction dipoles could be found for the processes:\n";
+    for ( vector<PDVector>::const_iterator s = real->subProcesses().begin();
+	  s != real->subProcesses().end(); ++s ) {
+      generator()->log() << (*s)[0]->PDGName() << " " << (*s)[1]->PDGName()
+			 << " -> ";
+      for ( PDVector::const_iterator p = s->begin() + 2; p != s->end(); ++p )
+	generator()->log() << (**p).PDGName() << " ";
+      generator()->log() << "\n" << flush;
+    }
+    generator()->log() << "Assuming finite tree-level O(alphaS) correction.\n";
+  }
 
   dipMEs.resize(genDipoles.size());
   copy(genDipoles.begin(),genDipoles.end(),dipMEs.begin());
