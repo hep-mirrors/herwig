@@ -484,8 +484,7 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   generator()->preinitInterface(wgen, "TwoBodyOnly", "set", twob);
   ostringstream os;
   os << Npoints_;
-  generator()->preinitInterface(wgen, "InterpolationPoints", "set", 
-				  os.str());
+  generator()->preinitInterface(wgen, "Points", "set", os.str());
   os.str("");
   os << Iorder_;
   generator()->preinitInterface(wgen, "InterpolationOrder", "set",
