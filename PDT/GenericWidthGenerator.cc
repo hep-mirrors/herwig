@@ -603,73 +603,75 @@ void GenericWidthGenerator::doinit() {
     if(particle_->widthGenerator() && 
        particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
   }
-  // code to output plots
-  //   string fname = CurrentGenerator::current().filename() + 
-  //     string("-") + name() + string(".top");
-  //   ofstream output(fname.c_str());
-  //   Energy step = (particle_->massMax()-particle_->massMin())/100.;
-  //   output << "SET FONT DUPLEX\n";
-  //   output << "TITLE TOP \"Width for " << particle_->name() << "\"\n";
-  //   output << "TITLE BOTTOM \"m/GeV\"\n";
-  //   output << "TITLE LEFT \"G/GeV\"\n";
-  //   output << "CASE       \"F    \"\n";
-  //   output << "SET LIMITS X " 
-  // 	 << (particle_->massMin()-10.*step)/GeV << " " 
-  // 	 << particle_->massMax()/GeV << "\n";
-  //   Energy upper(ZERO);
-  //   for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
-  //     Energy gamma=width(*particle_,etest);
-  //     upper = max(gamma,upper);
-  //     output << etest/GeV << "\t" << gamma/GeV << "\n";
-  //   }
-  //   output << "SET LIMITS Y 0. " << upper/GeV << "\n";
-  //   output << "JOIN\n";
-  //   output << (particle_->massMin()-9.*step)/GeV << "\t" 
-  // 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
-  //   output << (particle_->massMin()-7.*step)/GeV << "\t" 
-  // 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
-  //   output << "JOIN\n";
-  //   output << "TITLE DATA " 
-  // 	 << (particle_->massMin()-6.*step)/GeV << "\t" 
-  // 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV 
-  // 	 << " \"total\"\n";
-  //   for(unsigned int ix=0;ix<MEcode_.size();++ix) {
-  //     for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
-  //       output << etest/GeV << "\t" << partialWidth(ix,etest)*prefactor_/GeV << "\n";
-  //     }
-  //     switch(ix) {
-  //     case 0:  output << "join red\n"    ; break;
-  //     case 1:  output << "join blue\n"   ; break;
-  //     case 2:  output << "join green\n"  ; break;
-  //     case 3:  output << "join yellow\n" ; break;
-  //     case 4:  output << "join magenta\n"; break;
-  //     case 5:  output << "join cyan\n"   ; break;
-  //     case 6:  output << "join dashes\n" ; break;
-  //     case 7:  output << "join dotted\n" ; break;
-  //     case 8:  output << "join dotdash\n"; break;
-  //     default: output << "join daashes space\n";  break;
-  //     }
-  //     output << (particle_->massMin()-9.*step)/GeV << "\t" 
-  // 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n";
-  //     output << (particle_->massMin()-7.*step)/GeV << "\t" 
-  // 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n"; 
-  //     switch(ix) {
-  //     case 0:  output << "join red\n"    ; break;
-  //     case 1:  output << "join blue\n"   ; break;
-  //     case 2:  output << "join green\n"  ; break;
-  //     case 3:  output << "join yellow\n" ; break;
-  //     case 4:  output << "join magenta\n"; break;
-  //     case 5:  output << "join cyan\n"   ; break;
-  //     case 6:  output << "join dashes\n" ; break;
-  //     case 7:  output << "join dotted\n" ; break;
-  //     case 8:  output << "join dotdash\n"; break;
-  //     default: output << "join daashes space\n";  break;
-  //     }
-  //     output << "TITLE DATA " 
-  // 	   << (particle_->massMin()-6.*step)/GeV << "\t" 
-  // 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV 
-  // 	   << " \"" << decayTags_[ix] << "\"\n";
-  //   }
+  if ( Debug::level > 29 ) {
+  //  code to output plots
+    string fname = CurrentGenerator::current().filename() + 
+      string("-") + name() + string(".top");
+    ofstream output(fname.c_str());
+    Energy step = (particle_->massMax()-particle_->massMin())/100.;
+    output << "SET FONT DUPLEX\n";
+    output << "TITLE TOP \"Width for " << particle_->name() << "\"\n";
+    output << "TITLE BOTTOM \"m/GeV\"\n";
+    output << "TITLE LEFT \"G/GeV\"\n";
+    output << "CASE       \"F    \"\n";
+    output << "SET LIMITS X " 
+  	 << (particle_->massMin()-10.*step)/GeV << " " 
+  	 << particle_->massMax()/GeV << "\n";
+    Energy upper(ZERO);
+    for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
+      Energy gamma=width(*particle_,etest);
+      upper = max(gamma,upper);
+      output << etest/GeV << "\t" << gamma/GeV << "\n";
+    }
+    output << "SET LIMITS Y 0. " << upper/GeV << "\n";
+    output << "JOIN\n";
+    output << (particle_->massMin()-9.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
+    output << (particle_->massMin()-7.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
+    output << "JOIN\n";
+    output << "TITLE DATA " 
+  	 << (particle_->massMin()-6.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV 
+  	 << " \"total\"\n";
+    for(unsigned int ix=0;ix<MEcode_.size();++ix) {
+      for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
+        output << etest/GeV << "\t" << partialWidth(ix,etest)*prefactor_/GeV << "\n";
+      }
+      switch(ix) {
+      case 0:  output << "join red\n"    ; break;
+      case 1:  output << "join blue\n"   ; break;
+      case 2:  output << "join green\n"  ; break;
+      case 3:  output << "join yellow\n" ; break;
+      case 4:  output << "join magenta\n"; break;
+      case 5:  output << "join cyan\n"   ; break;
+      case 6:  output << "join dashes\n" ; break;
+      case 7:  output << "join dotted\n" ; break;
+      case 8:  output << "join dotdash\n"; break;
+      default: output << "join daashes space\n";  break;
+      }
+      output << (particle_->massMin()-9.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n";
+      output << (particle_->massMin()-7.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n"; 
+      switch(ix) {
+      case 0:  output << "join red\n"    ; break;
+      case 1:  output << "join blue\n"   ; break;
+      case 2:  output << "join green\n"  ; break;
+      case 3:  output << "join yellow\n" ; break;
+      case 4:  output << "join magenta\n"; break;
+      case 5:  output << "join cyan\n"   ; break;
+      case 6:  output << "join dashes\n" ; break;
+      case 7:  output << "join dotted\n" ; break;
+      case 8:  output << "join dotdash\n"; break;
+      default: output << "join daashes space\n";  break;
+      }
+      output << "TITLE DATA " 
+  	   << (particle_->massMin()-6.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV 
+  	   << " \"" << decayTags_[ix] << "\"\n";
+    }
+}
 }
 
 void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header) {

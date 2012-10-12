@@ -37,7 +37,7 @@ public:
    */
   ModelGenerator() : particles_(0), offshell_(0),
 		     Offsel_(0), BRnorm_(true),
-		     Npoints_(50), Iorder_(1),
+		     Npoints_(10), Iorder_(1),
 		     BWshape_(0), brMin_(1e-6), twoBodyOnly_(false), 
 		     decayOutput_(1), minWidth_(1e-6) {}
 

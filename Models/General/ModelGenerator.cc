@@ -128,7 +128,7 @@ void ModelGenerator::Init() {
   static Parameter<ModelGenerator,int> interfacePoints
     ("InterpolationPoints",
      "Number of points to use for interpolation tables when needed",
-     &ModelGenerator::Npoints_, 50, 5, 1000,
+     &ModelGenerator::Npoints_, 10, 5, 1000,
      false, false, true);
   
   static Parameter<ModelGenerator,unsigned int> 
