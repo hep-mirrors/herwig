@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwDipoleShowerKernels.la
+endif
 
 libHwDipoleShowerKernels_la_SOURCES = \
 	DipoleSplittingKernel.h DipoleSplittingKernel.cc \

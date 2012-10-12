@@ -352,6 +352,34 @@ AC_SUBST(LOAD_BSM)
 AM_CONDITIONAL(WANT_BSM,[test "$enable_models" = "yes"])
 ])
 
+
+AC_DEFUN([HERWIG_ENABLE_DIPOLE],
+[
+AC_MSG_CHECKING([if dipole shower should be built])
+
+AC_ARG_ENABLE(dipole,
+        AC_HELP_STRING([--disable-dipole],[Turn off compilation of dipole shower.]),
+        [],
+        [enable_dipole=yes]
+        )
+AC_MSG_RESULT([$enable_dipole])
+
+LOAD_DIPOLE=""
+LOAD_DIPOLE_ALPHAS=""
+LOAD_MATCHBOX=""
+if test "$enable_dipole" = "yes"; then
+LOAD_DIPOLE="library HwDipoleShower.so"
+LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
+LOAD_MATCHBOX="library HwMatchbox.so"
+fi
+AC_SUBST(LOAD_DIPOLE)
+AC_SUBST(LOAD_DIPOLE_ALPHAS)
+AC_SUBST(LOAD_MATCHBOX)
+
+AM_CONDITIONAL(WANT_DIPOLE,[test "$enable_dipole" = "yes"])
+])
+
+
 AC_DEFUN([HERWIG_OVERVIEW],
 [
 FCSTRING=`$FC --version | head -1`
@@ -365,21 +393,21 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Herwig debug mode:	$enable_debug
+*** Dipole shower:	$enable_dipole
 ***
-*** GSL:		$with_gsl
+*** Herwig debug mode:	$enable_debug
 ***
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
+*** GSL:		$with_gsl
 *** boost:              $with_boost
-***
 *** Fastjet:		${fjconfig}
 ***
 *** Host:		$host
+*** CC:			$CCSTRING
 *** CXX:		$CXXSTRING
 *** FC:			$FCSTRING
-*** CC:			$CCSTRING
 *****************************************************
 _HW_EOF_
 ])

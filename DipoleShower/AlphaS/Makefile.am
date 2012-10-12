@@ -1,4 +1,7 @@
+if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwDipoleShowerAlphaS.la
+endif
+
 HwDipoleShowerAlphaS_la_LDFLAGS = -module -version-info 1:0:0
 
 HwDipoleShowerAlphaS_la_SOURCES =  \
