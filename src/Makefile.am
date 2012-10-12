@@ -159,6 +159,7 @@ register-with-thepeg-repo:
 		"$(SETUPTHEPEG)" --init \
 		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+		-i $(DESTDIR)$(pkgdatadir) \
 		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 
