@@ -19,6 +19,8 @@ MatchboxScaleChoice.cc \
 MatchboxScaleChoice.h \
 MatchboxPtScale.h \
 MatchboxPtScale.cc \
+MatchboxHtScale.h \
+MatchboxHtScale.cc \
 ProcessData.h \
 ProcessData.cc \
 SimpleColourBasis.cc \
