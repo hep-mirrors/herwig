@@ -73,7 +73,7 @@ CLEANFILES = HerwigDefaults.rpo \
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D
+	./Herwig++ init -L$(top_builddir)/lib defaults/HerwigDefaults.in -D
 
 check_BSM_Full=
 check_BSM=
@@ -102,7 +102,13 @@ check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
 check-BSM: $(check_BSM_Full)
 
-check-Matchbox: check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+check_Matchbox= 
+if WANT_DIPOLE
+check_Matchbox += \
+check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+endif
+
+check-Matchbox: $(check_Matchbox)
 
 check-extra: check-LHC-diffractive check-LHC-GammaGamma check-LHC-MB check-TVT
 
@@ -118,8 +124,8 @@ CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< -D
 	@echo $(CHECKCOMMAND)
-	@$(CHECKCOMMAND) && echo -e "# $@ OK #\n" \
-			 || echo -e "###### $@ BAD ######\n"
+	@$(CHECKCOMMAND) && echo "# $@ OK #" \
+			 || (echo "###### $@ BAD ######"; false)
 
 ## valgrind targets ##
 
@@ -128,7 +134,7 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
 	$(VALGRIND) ./Herwig++ read -d1 -D LHC.in &> /tmp/valgrind-read.log
@@ -140,7 +146,7 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository
-	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
@@ -153,6 +159,7 @@ register-with-thepeg-repo:
 		"$(SETUPTHEPEG)" --init \
 		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+		-i $(DESTDIR)$(pkgdatadir) \
 		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 

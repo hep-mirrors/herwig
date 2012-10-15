@@ -21,11 +21,12 @@ using namespace ThePEG;
 void printUsageAndExit();
 
 void HerwigInit(string infile, string reponame);
-void HerwigRead(string reponame, string runname);
+void HerwigRead(string reponame, string runname,
+		const gengetopt_args_info & args_info);
 void HerwigRun(string runname, int seed, string tag, long N, 
 	       bool tics, bool resume, bool keepid);
 
-
+void setSearchPaths(const gengetopt_args_info & args_info);
 
 int main(int argc, char * argv[]) {
  
@@ -51,7 +52,7 @@ int main(int argc, char * argv[]) {
       status = READ;
     else if ( runType == "run" )  
       status = RUN;
-    else                          
+    else
       printUsageAndExit();
 
     // Use second argument as input- or runfile name
@@ -65,9 +66,18 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
     }
 
+    // If status is INIT, we need a runname
+    std::string infile;
+    if ( status == INIT ) {
+      if ( runname.empty() ) {
+	cerr << "Error: You need to supply a runfile name.\n";
+	printUsageAndExit();
+      }
+      infile = runname;
+    }
+
     // Defaults for these filenames are set in the ggo file
     std::string reponame = args_info.repo_arg;
-    std::string infile = args_info.init_arg;
 
     // Number of events
     long N = -1;
@@ -82,12 +92,14 @@ int main(int argc, char * argv[]) {
     // run name tag (default given in ggo file)
     string tag = args_info.tag_arg;
 
+    setSearchPaths(args_info);
+  
     // Library search path for dlopen()
     for ( size_t i = 0; i < args_info.append_given; ++i )
       DynamicLoader::appendPath( args_info.append_arg[i] );
     for ( size_t i = 0; i < args_info.prepend_given; ++i )
       DynamicLoader::prependPath( args_info.prepend_arg[i] );
-
+    
     // Debugging level
     if ( args_info.debug_given )
       Debug::setDebug( args_info.debug_arg );
@@ -120,7 +132,7 @@ int main(int argc, char * argv[]) {
     // Call mode
     switch ( status ) {
     case INIT:  HerwigInit( infile, reponame ); break;
-    case READ:  HerwigRead( reponame, runname ); break;
+    case READ:  HerwigRead( reponame, runname, args_info ); break;
     case RUN:   HerwigRun( runname, seed, tag, N, 
 			   tics, resume, keepid );  break;
     default:    printUsageAndExit();
@@ -158,6 +170,16 @@ int main(int argc, char * argv[]) {
 }
 
 
+void setSearchPaths(const gengetopt_args_info & args_info) {
+  // Search path for read command
+  for ( size_t i = 0; i < args_info.append_read_given; ++i )
+    Repository::appendReadDir( args_info.append_read_arg[i] );
+  for ( size_t i = 0; i < args_info.prepend_read_given; ++i )
+    Repository::prependReadDir( args_info.prepend_read_arg[i] );
+}
+
+
+
 void printUsageAndExit() {
   std::cerr << gengetopt_args_info_usage << '\n';
   Repository::cleanup();
@@ -184,8 +206,8 @@ void HerwigInit(string infile, string reponame) {
 }
 
 
-
-void HerwigRead(string reponame, string runname) {
+void HerwigRead(string reponame, string runname, 
+		const gengetopt_args_info & args_info) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -195,6 +217,7 @@ void HerwigRead(string reponame, string runname) {
 #endif
   string msg = Repository::load(reponame);
   if ( ! msg.empty() ) cerr << msg << '\n';
+  setSearchPaths(args_info);
   breakThePEG();
   if ( !runname.empty() && runname != "-" ) {
     string msg = Repository::read(runname, std::cout);
