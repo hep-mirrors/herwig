@@ -41,14 +41,14 @@ size_t SimpleColourBasis::prepareBasis(const vector<PDT::Colour>& basis) {
   if ( id33bar.empty() )
     makeIds();
 
-  if ( basis == id33bar || basis == id33bar8 )
+  if ( basis == id88 || basis == id33bar || basis == id33bar8 )
     return 1;
 
-  if ( basis == id33bar33bar )
+  if ( basis == id888 || basis == id33bar88 || basis == id33bar33bar )
     return 2;
 
-  if ( basis == id33bar88 )
-    return 2;
+  if ( basis == id8888 )
+    return 6;
 
   throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
 
@@ -62,27 +62,52 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
   if ( id33bar.empty() )
     makeIds();
 
+  double Nc = SM().Nc();
+  double Nc2 = sqr(Nc);
+  double Nc4 = sqr(Nc2);
+  double Nc6 = Nc2*Nc4;
+
+  if ( a > b )
+    swap(a,b);
+
+  if ( abBasis == id88 ) {
+    return ( Nc2 - 1. )/4.;
+  }
+
   if ( abBasis == id33bar ) {
-    assert(a==b);
-    return SM().Nc();
+    return Nc;
+  }
+
+  if ( abBasis == id888 ) {
+    if ( a == b )
+      return ( Nc4 - 3.*Nc2 + 2. )/(8.*Nc);
+    return -( Nc2 - 1. )/(4.*Nc);
   }
 
   if ( abBasis == id33bar8 ) {
-    assert(a==b);
-    return (SM().Nc()*SM().Nc()-1.)/2.;
+    return ( Nc2 - 1. )/2.;
+  }
+
+  if ( abBasis == id8888 ) {
+    if ( a == b )
+      return ( Nc6 - 4.*Nc4 + 6.*Nc2 - 3. )/(16.*Nc2);
+    if ( ( a == 0 && b == 1 ) ||
+	 ( a == 2 && b == 3 ) ||
+	 ( a == 4 && b == 5 ) )
+      return ( Nc4 + 2.*Nc2 - 3. )/(16.*Nc2);
+    return -( Nc2 - 4. + 3./Nc2 )/16.;
   }
 
   if ( abBasis == id33bar88 ) {
-    if ( a == b ) {
-      return sqr((SM().Nc()*SM().Nc()-1.)/2.)/SM().Nc();
-    }
-    return (1.-SM().Nc()*SM().Nc())/(4.*SM().Nc());
+    if ( a == b )
+      return ( Nc4 - 2.*Nc2 + 1 )/(4.*Nc);
+    return -( Nc2 - 1. )/(4.*Nc);
   }
 
   if ( abBasis == id33bar33bar ) {
     if ( a == b )
-      return SM().Nc()*SM().Nc();
-    return SM().Nc();
+      return Nc2;
+    return Nc;
   }
 
   throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
@@ -90,31 +115,64 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
 }
 
 double SimpleColourBasis::tMatrixElement(size_t i, size_t a, 
-#ifndef NDEBUG
 					 size_t b,
-#else
-					 size_t,
-#endif
 					 const vector<PDT::Colour>&,
 					 const vector<PDT::Colour>& bBasis) const {
 
   if ( id33bar.empty() )
     makeIds();
 
+  if ( bBasis == id88 ) {
+    if ( i == 0 )
+      return a == 0 ? -1. : 1.;
+    else
+      return a == 0 ? 1. : -1.;
+  }
+
   if ( bBasis == id33bar ) {
-    assert(a==b);
     return i == 0 ? 1. : -1.;
   }
 
+  if ( bBasis == id888 ) {
+    if ( i == 0 ) {
+      if ( a == 3 && b == 0 )
+	return 1.;
+      if ( a == 0 && b == 0 )
+	return -1.;
+      if ( a == 1 && b == 1 )
+	return 1.;
+      if ( a == 2 && b == 1 )
+	return -1.;
+    }
+    if ( i == 1 ) {
+      if ( a == 4 && b == 0 )
+	return 1.;
+      if ( a == 3 && b == 0 )
+	return -1.;
+      if ( a == 2 && b == 1 )
+	return 1.;
+      if ( a == 5 && b == 1 )
+	return -1.;
+    }
+    if ( i == 3 ) {
+      if ( a == 0 && b == 0 )
+	return 1.;
+      if ( a == 4 && b == 0 )
+	return -1.;
+      if ( a == 5 && b == 1 )
+	return 1.;
+      if ( a == 1 && b == 1 )
+	return -1.;
+    }
+  }
+
   if ( bBasis == id33bar8 ) {
-    assert(b==0);
     if ( i == 0 )
-      return a == 0 ? 1. : 0.;
+      return a == 1 ? 1. : 0.;
     if ( i == 1 )
-      return a == 1 ? -1. : 0.;
+      return a == 0 ? -1. : 0.;
     if ( i == 2 )
-      return a == 0 ? -1. : 1.;
-    return 0.;
+      return a == 0 ? 1. : -1.;
   }
 
   throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
@@ -142,37 +200,97 @@ bool SimpleColourBasis::colourConnected(const cPDVector& sub,
   int idAntiColoured = i.second ? i.first : j.first;
   idAntiColoured = trans->second.find(idAntiColoured)->second;
 
-  if ( basis == id33bar )
-    return idColoured == 0 && idAntiColoured == 1;
+  if ( basis == id88 ) {
+    return
+      ( idColoured == 0 && idAntiColoured == 1 ) ||
+      ( idColoured == 1 && idAntiColoured == 0 );
+  }
+
+  if ( basis == id33bar ) {
+    return
+      idColoured == 0 && idAntiColoured == 1;
+  }
+
+  if ( basis == id888 ) {
+    if ( a == 0 )
+      return
+	( idColoured == 0 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 0 );
+    if ( a == 1 )
+      return
+	( idColoured == 0 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 0 );
+  }
 
   if ( basis == id33bar8 ) {
-    return 
-      (idColoured == 0 && idAntiColoured == 2) || 
-      (idColoured == 2 && idAntiColoured == 1);
+    return
+      ( idColoured == 0 && idAntiColoured == 2 ) ||
+      ( idColoured == 2 && idAntiColoured == 1 );
+  }
+
+  if ( basis == id8888 ) {
+    if ( a == 0 )
+      return
+	( idColoured == 0 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 0 );
+    if ( a == 1 )
+      return
+	( idColoured == 0 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 0 );
+    if ( a == 2 )
+      return
+	( idColoured == 0 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 0 );
+    if ( a == 3 )
+      return
+	( idColoured == 0 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 0 );
+    if ( a == 4 )
+      return
+	( idColoured == 0 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 0 );
+    if ( a == 5 )
+      return
+	( idColoured == 0 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 1 ) ||
+	( idColoured == 1 && idAntiColoured == 0 );
   }
 
   if ( basis == id33bar88 ) {
     if ( a == 0 )
       return
-	(idColoured == 0 && idAntiColoured == 2) || 
-	(idColoured == 3 && idAntiColoured == 1) ||
-	(idColoured == 2 && idAntiColoured == 3);
+	( idColoured == 0 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 1 );
     if ( a == 1 )
       return
-	(idColoured == 0 && idAntiColoured == 3) || 
-	(idColoured == 2 && idAntiColoured == 1) ||
-	(idColoured == 3 && idAntiColoured == 2);
+	( idColoured == 0 && idAntiColoured == 3 ) ||
+	( idColoured == 3 && idAntiColoured == 2 ) ||
+	( idColoured == 2 && idAntiColoured == 1 );
   }
 
   if ( basis == id33bar33bar ) {
     if ( a == 0 )
       return
-	(idColoured == 0 && idAntiColoured == 1) ||
-	(idColoured == 2 && idAntiColoured == 3);
+	( idColoured == 0 && idAntiColoured == 1 ) ||
+	( idColoured == 2 && idAntiColoured == 3 );
     if ( a == 1 )
       return
-	(idColoured == 0 && idAntiColoured == 3) ||
-	(idColoured == 2 && idAntiColoured == 1);
+	( idColoured == 0 && idAntiColoured == 3 ) ||
+	( idColoured == 2 && idAntiColoured == 1 );
   }
 
   return false;
@@ -184,12 +302,24 @@ bool SimpleColourBasis::colourConnected(const cPDVector& sub,
 
 void SimpleColourBasis::makeIds() const {
 
+  id88.push_back(PDT::Colour8);
+  id88.push_back(PDT::Colour8);
+
   id33bar.push_back(PDT::Colour3);
   id33bar.push_back(PDT::Colour3bar);
+
+  id888.push_back(PDT::Colour8);
+  id888.push_back(PDT::Colour8);
+  id888.push_back(PDT::Colour8);
 
   id33bar8.push_back(PDT::Colour3);
   id33bar8.push_back(PDT::Colour3bar);
   id33bar8.push_back(PDT::Colour8);
+
+  id8888.push_back(PDT::Colour8);
+  id8888.push_back(PDT::Colour8);
+  id8888.push_back(PDT::Colour8);
+  id8888.push_back(PDT::Colour8);
 
   id33bar88.push_back(PDT::Colour3);
   id33bar88.push_back(PDT::Colour3bar);
@@ -220,7 +350,7 @@ void SimpleColourBasis::Init() {
 
   static ClassDocumentation<SimpleColourBasis> documentation
     ("SimpleColourBasis implements the colour algebra needed for "
-     "vector boson and vector boson + jet production at NLO. It mainly "
+     "electroweak boson and electroweak boson + jet production at NLO. It mainly "
      "serves as an example for the general ColourBasis interface.");
 
 }

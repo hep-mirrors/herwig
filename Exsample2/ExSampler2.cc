@@ -29,7 +29,7 @@ using namespace Herwig;
 using namespace exsample;
 
 ExSampler::ExSampler() 
-  : presampling_points_(1000),
+  : BinSampler(), presampling_points_(1000),
     freeze_grid_(0),
     efficiency_threshold_(.95),
     gain_threshold_(.1) {}

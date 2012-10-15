@@ -47,10 +47,12 @@ bool FFMqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 6 &&
     abs(partons[emitter]->id()) < 6 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
-    partons[emission]->mass() != ZERO &&
-    partons[emitter]->mass() != ZERO;
+    !(partons[emission]->mass() == ZERO &&
+      partons[emitter]->mass() == ZERO &&
+      partons[spectator]->mass() == ZERO);
 }
 
+// TODO: (5.18)
 double FFMqqxDipole::me2Avg(double) const {
   assert(false && "implementation missing");
   return 0.;
@@ -92,6 +94,16 @@ double FFMqqxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
+
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaS()/
+	underlyingBornME()->lastXComb().lastAlphaS(),
+	underlyingBornME()->orderInAlphaS());
+
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaEM()/
+	underlyingBornME()->lastXComb().lastAlphaEM(),
+	underlyingBornME()->orderInAlphaEW());
 
   lastME2(res);
 

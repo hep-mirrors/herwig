@@ -50,6 +50,16 @@ struct MatchboxCurrents
   Energy GW;
 
   /**
+   * CA
+   */
+  double CA;
+
+  /**
+   * CF
+   */
+  double CF;
+
+  /**
    * Generate a hash value for the current; 
    * second member of the pair reserved for combinations
    */
@@ -143,6 +153,141 @@ struct MatchboxCurrents
 						       int qbar, int qbarHel,
 						       int k,    int kHel,
 						       int kbar, int kbarHel);
+
+  /**
+   * One-loop left-handed qqbar current
+   */
+  const LorentzVector<Complex>& qqbarLeftOneLoopCurrent(int q,    int qHel,
+							int qbar, int qbarHel);
+
+  /**
+   * One-loop right-handed qqbar current
+   */
+  const LorentzVector<Complex>& qqbarRightOneLoopCurrent(int q,    int qHel,
+							 int qbar, int qbarHel);
+
+  /**
+   * One-loop left-handed qqbarg current
+   */
+  const LorentzVector<Complex>& qqbargLeftOneLoopCurrent(int q,    int qHel,
+							 int qbar, int qbarHel,
+							 int g,    int gHel);
+
+  /**
+   * One-loop right-handed qqbarg current
+   */
+  const LorentzVector<Complex>& qqbargRightOneLoopCurrent(int q,    int qHel,
+							  int qbar, int qbarHel,
+							  int g,    int gHel);
+
+private:
+
+  /**
+   * Tree level left-handed qqbargg current, full reference vector dependence
+   */
+  LorentzVector<Complex> qqbarggGeneralLeftCurrent(int q,    int qHel,
+						   int qbar, int qbarHel,
+						   int g1,   int g1Hel,
+						   int g2,   int g2Hel,
+						   int n);
+
+  /**
+   * Tree level left-handed qqbargg current, fixed reference vector choice
+   */
+  LorentzVector<Complex> qqbarggFixedLeftCurrent(int q,    int qHel,
+						 int qbar, int qbarHel,
+						 int g1,   int g1Hel,
+						 int g2,   int g2Hel);
+
+  /**
+   * Tree level left-handed qqbargg current, full reference vector dependence
+   */
+  LorentzVector<Complex> qqbarggGeneralRightCurrent(int q,    int qHel,
+						   int qbar, int qbarHel,
+						   int g1,   int g1Hel,
+						   int g2,   int g2Hel,
+						   int n);
+
+  /**
+   * Tree level left-handed qqbargg current, fixed reference vector choice
+   */
+  LorentzVector<Complex> qqbarggFixedRightCurrent(int q,    int qHel,
+						  int qbar, int qbarHel,
+						  int g1,   int g1Hel,
+						  int g2,   int g2Hel);
+
+  /**
+   * Container for the coefficients of the standard matrix elements for the
+   * one-loop qqbarg currents.
+   */
+  vector<Complex> qqbargLoops;
+
+  /**
+   * Work out the coefficients of the standard matrix elements for the
+   * one-loop qqbarg currents.
+   */
+  void qqbargLoopCoefficients(int q, int qbar, int g);
+
+  /**
+   * Evaluate the six-dimensional box
+   */
+  Complex box6(int i, int j, int k);
+
+  /**
+   * One-loop left-handed qqbarg current, full reference vector dependence
+   */
+  LorentzVector<Complex> qqbargGeneralLeftLoopCurrent(int q,    int qHel,
+						      int qbar, int qbarHel,
+						      int g,    int gHel,
+						      int n);
+
+  /**
+   * One-loop left-handed qqbarg current, fixed reference vector choice
+   */
+  LorentzVector<Complex> qqbargFixedLeftLoopCurrent(int q,    int qHel,
+						    int qbar, int qbarHel,
+						    int g,    int gHel);
+
+  /**
+   * One-loop left-handed qqbarg current, full reference vector dependence
+   */
+  LorentzVector<Complex> qqbargGeneralRightLoopCurrent(int q,    int qHel,
+						       int qbar, int qbarHel,
+						       int g,    int gHel,
+						       int n);
+
+  /**
+   * One-loop left-handed qqbarg current, fixed reference vector choice
+   */
+  LorentzVector<Complex> qqbargFixedRightLoopCurrent(int q,    int qHel,
+						     int qbar, int qbarHel,
+						     int g,    int gHel);
+
+
+//#define CHECK_MatchboxCurrents
+
+#ifdef CHECK_MatchboxCurrents
+
+private:
+
+  /**
+   * Ostreams to write precision data to
+   */
+  static map<string,ofstream*>& checkStreams();
+
+  /**
+   * Return check stream for given name
+   */
+  static ostream& checkStream(const string&);
+
+  /**
+   * Check if the given current is conserved
+   */
+  void checkCurrent(const string& id,
+		    const LorentzVector<Complex>& current,
+		    const LorentzVector<double>& q);
+
+#endif // CHECK_MatchboxCurrents
 
 };
 

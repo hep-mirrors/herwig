@@ -77,6 +77,17 @@ public:
     return theFixedScale == ZERO ? lastSHat() : sqr(theFixedScale);
   }
 
+  /**
+   * Return the QED renormalization scale. This default version returns
+   * shat.
+   */
+  virtual Energy2 renormalizationScaleQED() const { 
+    if ( theFixedQEDScale != ZERO )
+      return sqr(theFixedQEDScale);
+    Energy mZ = getParticleData(ParticleID::Z0)->mass();
+    return mZ*mZ; 
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -131,6 +142,11 @@ private:
    * A fixed scale choice. If zero, shat will be used.
    */
   Energy theFixedScale;
+
+  /**
+   * A fixed QED scale choice. If zero, shat will be used.
+   */
+  Energy theFixedQEDScale;
 
   /**
    * The assignment operator is private and must never be called.

@@ -53,6 +53,24 @@ generate(const PDVector& legs,
 	  prog.begin(); d != prog.end(); ++d ) {
     assert(d->size() == 1);
     Tree2toNDiagram diag = d->front().generate(count);
+    bool internalVeto = false;
+    set<int> external;
+    int nex = diag.partons().size();
+    for ( int i = 0; i < nex; ++i ) {
+      external.insert(diag.diagramId(i));
+    }
+    int n = diag.allPartons().size();
+    for ( int i = 0; i < n; ++i ) {
+      if ( external.find(i) != external.end() )
+	continue;
+      if ( find(excludeInternal().begin(), excludeInternal().end(), diag.allPartons()[i])
+	   != excludeInternal().end() ) {
+	internalVeto = true;
+	break;
+      }
+    }
+    if ( internalVeto )
+      continue;
     bool gotit = false;
     for ( vector<Ptr<Tree2toNDiagram>::ptr>::const_iterator
 	    d = res.begin(); d != res.end(); ++d ) {
@@ -292,11 +310,11 @@ clusterAll(const PDVector& external,
 
 
 void Tree2toNGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theVertices << maxOrderGs << maxOrderGem << prepared;
+  os << theVertices << theExcludeInternal << maxOrderGs << maxOrderGem << prepared;
 }
 
 void Tree2toNGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theVertices >> maxOrderGs >> maxOrderGem >> prepared;
+  is >> theVertices >> theExcludeInternal >> maxOrderGs >> maxOrderGem >> prepared;
 }
 
 
@@ -318,6 +336,11 @@ void Tree2toNGenerator::Init() {
     ("Vertices",
      "The vertices to consider.",
      &Tree2toNGenerator::theVertices, -1, false, false, true, false, false);
+
+  static RefVector<Tree2toNGenerator,ParticleData> interfaceExcludeInternal
+    ("ExcludeInternal",
+     "Particles to be exluded from becoming internal lines.",
+     &Tree2toNGenerator::theExcludeInternal, -1, false, false, true, false, false);
 
 }
 

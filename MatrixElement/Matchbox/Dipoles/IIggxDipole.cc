@@ -75,6 +75,16 @@ double IIggxDipole::me2Avg(double ccme2) const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaS()/
+	underlyingBornME()->lastXComb().lastAlphaS(),
+	underlyingBornME()->orderInAlphaS());
+
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaEM()/
+	underlyingBornME()->lastXComb().lastAlphaEM(),
+	underlyingBornME()->orderInAlphaEW());
+
   lastME2(res);
 
   return res;
@@ -118,6 +128,16 @@ double IIggxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
+
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaS()/
+	underlyingBornME()->lastXComb().lastAlphaS(),
+	underlyingBornME()->orderInAlphaS());
+
+  res *=
+    pow(realEmissionME()->lastXComb().lastAlphaEM()/
+	underlyingBornME()->lastXComb().lastAlphaEM(),
+	underlyingBornME()->orderInAlphaEW());
 
   lastME2(res);
 

@@ -25,11 +25,15 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 #include "MatchboxMEBase.h"
 
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <iterator>
+using std::ostream_iterator;
+
 using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
-  : Amplitude(), theColourBasisDim(0),
-    amplitudesCleanedUp(false), oneLoopAmplitudesCleanedUp(false),
+  : Amplitude(), theNLight(0), theColourBasisDim(0),
     calculateTrees(true), calculateLoops(true) {}
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
@@ -49,20 +53,6 @@ void MatchboxAmplitude::cloneDependencies(const std::string&) {
 
 Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const vector<PDVector>&) const {
   return new_ptr(MatchboxMEBase());
-}
-
-void MatchboxAmplitude::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
 }
 
 struct orderPartonData {
@@ -103,19 +93,23 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
   if ( theLastCrossingMap != crossingMap().end() ) {
     assert(amplitudePartonData().find(lastXCombPtr()) != amplitudePartonData().end());
-    assert(colourMap().find(lastXCombPtr()) != colourMap().end());
+    assert(amplitudeToColourMap().find(lastXCombPtr()) != amplitudeToColourMap().end());
+    assert(colourToAmplitudeMap().find(lastXCombPtr()) != colourToAmplitudeMap().end());
     theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastColourMap = colourMap().find(lastXCombPtr());
+    theLastAmplitudeToColourMap = amplitudeToColourMap().find(lastXCombPtr());
+    theLastColourToAmplitudeMap = colourToAmplitudeMap().find(lastXCombPtr());
     assert(crossingSigns().find(lastXCombPtr()) != crossingSigns().end());
     theLastCrossingSign = crossingSigns().find(lastXCombPtr())->second;
     return;
   } else {
     crossingMap()[lastXCombPtr()] = vector<int>(mePartonData().size());
     amplitudePartonData()[lastXCombPtr()] = cPDVector(mePartonData().size());
-    colourMap()[lastXCombPtr()] = map<size_t,size_t>();
+    amplitudeToColourMap()[lastXCombPtr()] = map<size_t,size_t>();
+    colourToAmplitudeMap()[lastXCombPtr()] = map<size_t,size_t>();
     theLastCrossingMap = crossingMap().find(lastXCombPtr());
     theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastColourMap = colourMap().find(lastXCombPtr());
+    theLastAmplitudeToColourMap = amplitudeToColourMap().find(lastXCombPtr());
+    theLastColourToAmplitudeMap = colourToAmplitudeMap().find(lastXCombPtr());
   }
 
   double csign = 1.;
@@ -193,7 +187,9 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
     for ( size_t k = 0; k < lastCrossingMap().size(); ++k ) {
       if ( colourCross.find(lastCrossingMap()[k]) !=
 	   colourCross.end() ) {
-	lastColourMap()[k] = colourCross.find(lastCrossingMap()[k])->second;
+	size_t ccross = colourCross.find(lastCrossingMap()[k])->second;
+	lastAmplitudeToColourMap()[k] = ccross;
+	lastColourToAmplitudeMap()[ccross] = k;
       }
     }
   }
@@ -203,7 +199,11 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
   int iCrossed = lastCrossingMap()[i];
   Lorentz5Momentum res = meMomenta()[iCrossed];
-  return iCrossed > 1 ? res : -res;
+  if ( iCrossed < 2 )
+    res = -res;
+  res.setMass(meMomenta()[iCrossed].mass());
+  res.rescaleRho();
+  return res;
 }
 
 set<vector<int> > MatchboxAmplitude::generateHelicities() const {
@@ -237,17 +237,26 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 
 }
 
-void MatchboxAmplitude::prepareAmplitudes() {
+void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
   if ( !calculateTrees )
     return;
 
-  if ( lastAmplitudes().empty() ) {
+  theLastAmplitudes = theLastAmplitudeMap.find(lastXCombPtr());
+  theLastLargeNAmplitudes = theLastLargeNAmplitudeMap.find(lastXCombPtr());
+  bool initialized = theLastAmplitudes != theLastAmplitudeMap.end();
+
+  if ( !initialized ) {
+    theLastAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
+    theLastLargeNAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
+    theLastAmplitudes = theLastAmplitudeMap.find(lastXCombPtr());
+    theLastLargeNAmplitudes = theLastLargeNAmplitudeMap.find(lastXCombPtr());
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
-	  h != helicities.end(); ++h )
+          h != helicities.end(); ++h ) {
       lastAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
-    lastLargeNAmplitudes() = lastAmplitudes();
+      lastLargeNAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+    }
   }
 
   AmplitudeIterator amp = lastAmplitudes().begin();
@@ -257,52 +266,57 @@ void MatchboxAmplitude::prepareAmplitudes() {
       amp->second(k) = evaluate(k,amp->first,lamp->second(k));
   }
 
-  if ( !amplitudesCleanedUp ) {
+  if ( !initialized ) {
     map<vector<int>,CVector> clean;
     for ( map<vector<int>,CVector>::const_iterator amp = lastAmplitudes().begin();
-	  amp != lastAmplitudes().end(); ++amp ) {
+          amp != lastAmplitudes().end(); ++amp ) {
       bool nonZero = false;
       for ( size_t k = 0; k < colourBasisDim(); ++k ) {
-	if ( amp->second(k) != Complex(0.0) ) {
-	  nonZero = true;
-	  break;
-	}
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
       }
       if ( nonZero )
-	clean.insert(*amp);
+        clean.insert(*amp);
     }
-    theLastAmplitudes = clean;
+    lastAmplitudes() = clean;
     clean.clear();
     for ( map<vector<int>,CVector>::const_iterator amp = lastLargeNAmplitudes().begin();
-	  amp != lastLargeNAmplitudes().end(); ++amp ) {
+          amp != lastLargeNAmplitudes().end(); ++amp ) {
       bool nonZero = false;
       for ( size_t k = 0; k < colourBasisDim(); ++k ) {
-	if ( amp->second(k) != Complex(0.0) ) {
-	  nonZero = true;
-	  break;
-	}
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
       }
       if ( nonZero )
-	clean.insert(*amp);
+        clean.insert(*amp);
     }
-    theLastLargeNAmplitudes = clean;
-    amplitudesCleanedUp = true;
+    lastLargeNAmplitudes() = clean;
   }
 
   calculateTrees = false;
 
 }
 
-void MatchboxAmplitude::prepareOneLoopAmplitudes() {
+void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
   if ( !calculateLoops )
     return;
 
-  if ( lastOneLoopAmplitudes().empty() ) {
+  theLastOneLoopAmplitudes = theLastOneLoopAmplitudeMap.find(lastXCombPtr());
+  bool initialized = theLastOneLoopAmplitudes != theLastOneLoopAmplitudeMap.end();
+
+  if ( !initialized ) {
+    theLastOneLoopAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
+    theLastOneLoopAmplitudes = theLastOneLoopAmplitudeMap.find(lastXCombPtr());
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
-	  h != helicities.end(); ++h )
+          h != helicities.end(); ++h ) {
       lastOneLoopAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+    }
   }
 
   for ( AmplitudeIterator amp = lastOneLoopAmplitudes().begin();
@@ -311,22 +325,21 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes() {
       amp->second(k) = evaluateOneLoop(k,amp->first);
   }
 
-  if ( !oneLoopAmplitudesCleanedUp ) {
+  if ( !initialized ) {
     map<vector<int>,CVector> clean;
     for ( map<vector<int>,CVector>::const_iterator amp = lastOneLoopAmplitudes().begin();
-	  amp != lastOneLoopAmplitudes().end(); ++amp ) {
+          amp != lastOneLoopAmplitudes().end(); ++amp ) {
       bool nonZero = false;
       for ( size_t k = 0; k < colourBasisDim(); ++k ) {
-	if ( amp->second(k) != Complex(0.0) ) {
-	  nonZero = true;
-	  break;
-	}
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
       }
       if ( nonZero )
-	clean.insert(*amp);
+        clean.insert(*amp);
     }
-    theLastOneLoopAmplitudes = clean;
-    oneLoopAmplitudesCleanedUp = true;
+    lastOneLoopAmplitudes() = clean;
   }
 
   calculateLoops = false;
@@ -385,7 +398,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
 
-  Complex corr = 0.;
+  double corr = 0.;
 
   int iCrossed = -1;
   for ( unsigned int k = 0; k < lastCrossingMap().size(); ++k )
@@ -396,27 +409,28 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   assert(iCrossed >= 0);
 
   set<const CVector*> done;
-  for ( AmplitudeConstIterator a = theLastAmplitudes.begin();
-	a != theLastAmplitudes.end(); ++a ) {
+  for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	a != lastAmplitudes().end(); ++a ) {
     if ( done.find(&(a->second)) != done.end() )
       continue;
-    AmplitudeConstIterator b = theLastAmplitudes.begin();
+    AmplitudeConstIterator b = lastAmplitudes().begin();
     while ( !equalsModulo(iCrossed,a->first,b->first) )
-      if ( ++b == theLastAmplitudes.end() )
+      if ( ++b == lastAmplitudes().end() )
 	break;
-    if ( b == theLastAmplitudes.end() || done.find(&(b->second)) != done.end() )
+    if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
       continue;
     done.insert(&(a->second)); done.insert(&(b->second));
     if ( a->first[iCrossed] == 1 )
       swap(a,b);
-    corr += colourBasis()->interference(mePartonData(),a->second,b->second);
+    corr += 
+      2.*real(colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second)*sqr(pFactor));
   }
 
   double Nc = generator()->standardModel()->Nc();
   double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
 
   return 
-    avg + 2.*lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
+    avg + lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
 

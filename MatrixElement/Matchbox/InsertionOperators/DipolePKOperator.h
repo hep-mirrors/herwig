@@ -75,43 +75,6 @@ public:
     return sqr(hbarc) * me2() * lastBorn()->lastXComb().jacobian() / (2.*lastSHat());
   }
 
-  /**
-   * Change from CDR to DR
-   */
-  virtual void useDR() { theUseDR = true; }
-
-  /**
-   * Change from DR to CDR
-   */
-  virtual void useCDR() { theUseDR = false; }
-
-  /**
-   * Change to the CS convention
-   */
-  virtual void useCS() { theUseCS = true; }
-
-  /**
-   * Change to the standard convention
-   */
-  virtual void useNonCS() { theUseCS = false; }
-
-  /**
-   * Return true, if dimensional reduction
-   * is used.
-   */
-  virtual bool isDR() const { return theUseDR; }
-
-  /**
-   * Return true, if the virtual correction has been calculated in the
-   * dipole convention.
-   */
-  virtual bool isCS() const { return theUseCS; }
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
 public:
 
   /**
@@ -280,16 +243,6 @@ private:
    * K_g
    */
   double KGluon;
-
-  /**
-   * True, if dimensional reduction is used.
-   */
-  bool theUseDR;
-
-  /**
-   * True, if dipole conventions are used.
-   */
-  bool theUseCS;
 
   /**
    * The scale to be used.
