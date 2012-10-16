@@ -7,7 +7,7 @@ if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwMatchbox.la
 endif
 
-HwMatchbox_la_LDFLAGS = -module -version-info 1:0:0
+HwMatchbox_la_LDFLAGS = -module -version-info 2:0:0
 HwMatchbox_la_LIBADD = \
 Base/libHwMatchboxBase.la \
 Utility/libHwMatchboxUtility.la \

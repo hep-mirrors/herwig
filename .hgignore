@@ -60,3 +60,4 @@ Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)
 Tests/Rivet.*
 Tests/plots
 Tests/.*index.html
+Herwig\+\+\-.\..\..

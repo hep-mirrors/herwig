@@ -13,11 +13,11 @@
 
 using namespace Herwig;
 
-tcPDPtr SU2Helper::SU2CC(tcPDPtr p) { 
+tcPDPtr SU2Helper::SU2CC(tcPDPtr p, int familyShift) { 
   if ( !isInSU2Doublet(p) )
     return tcPDPtr();
-  PID idUp = p->id() < 0 ? p->id() + 1 : p->id() - 1;
-  PID idDown = p->id() < 0 ? p->id() - 1 : p->id() + 1;
+  PID idUp = p->id() < 0 ? p->id() + 1 - 2*familyShift : p->id() - 1 + 2*familyShift;
+  PID idDown = p->id() < 0 ? p->id() - 1 - 2*familyShift : p->id() + 1 + 2*familyShift;
   if ( !CurrentGenerator::isVoid() )
     return isSU2Up(p) ? 
       CurrentGenerator::current().getParticleData(idUp) :
