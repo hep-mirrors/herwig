@@ -162,7 +162,8 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
       if ( checkcc == processLegs.end() )
 	for ( set<pair<tcPDPtr,int>,orderPartonData>::iterator c = processLegs.begin();
 	      c != processLegs.end(); ++c ) {
-	  assert(SU2Helper::SU2CC(check)->CC());
+	  if ( !SU2Helper::SU2CC(check) )
+	    continue;
 	  if ( c->first == SU2Helper::SU2CC(check)->CC() ) {
 	    checkcc = c; break;
 	  }
@@ -173,7 +174,8 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	  bool gotone = false;
 	  for ( set<pair<tcPDPtr,int>,orderPartonData>::iterator c = processLegs.begin();
 		c != processLegs.end(); ++c ) {
-	    assert(SU2Helper::SU2CC(check,i)->CC());
+	    if ( !SU2Helper::SU2CC(check,i) )
+	      continue;
 	    if ( c->first == SU2Helper::SU2CC(check,i)->CC() ) {
 	      checkcc = c; gotone = true; break;
 	    }
