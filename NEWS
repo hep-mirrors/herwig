@@ -18,7 +18,7 @@ Herwig++ News				(emacs -*- outline -*- format)
    with 'read' and 'run' and should now be used without the '-i' flag.
 
 ** Width treatment in BSM
-   The width treatment in BSM decay chains has been gratly improved
+   The width treatment in BSM decay chains has been greatly improved
    and is now switched on by default in the .model files. To get the
    old behaviour, use 
      set /Herwig/NewPhysics/NewModel:WhichOffshell Selected
