@@ -1,6 +1,6 @@
 SUBDIRS = SplittingFunctions Default Base .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 15:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 15:1:0
 HwShower_la_LIBADD = Default/libHwDefaultShower.la \
 $(top_builddir)/Shower/SplittingFunctions/libHwSplitting.la \
 $(top_builddir)/Shower/Base/libHwShowerBase.la \
