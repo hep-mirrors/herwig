@@ -1,5 +1,25 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.1 release: 2012-XX-XX
+
+** O2AlphaS
+   Support for setting quark masses different from the particle data
+   objects as introduced in ThePEG 1.8.1 has been enabled.
+
+** Matchbox
+   Several improvements and bug fixes are included for
+   Matchbox. Amplitudes relevant to pp -> Z+jet and crossed processes
+   at NLO are now available, and various scale choices have been added
+   in a more flexible way. All subtraction dipoles for massive quarks
+   are now included.
+
+** Dipole shower
+   Parameters to perform scale variations in the shower have been
+   added to estimate uncertainties. A bug in showering off gg -> h has
+   been fixed.
+
+** TODO SP & DG what else?
+
 * Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
 
 ** New NLO framework
