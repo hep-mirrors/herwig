@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxUtility.la
-endif
 
 libHwMatchboxUtility_la_SOURCES = \
 AmplitudeCache.h \
@@ -21,6 +19,8 @@ MatchboxPtScale.h \
 MatchboxPtScale.cc \
 MatchboxHtScale.h \
 MatchboxHtScale.cc \
+MatchboxParticlePtScale.h \
+MatchboxParticlePtScale.cc \
 ProcessData.h \
 ProcessData.cc \
 SimpleColourBasis.cc \
