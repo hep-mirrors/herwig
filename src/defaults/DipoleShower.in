@@ -28,7 +28,7 @@
 
 
 
-
+library HwMatchbox.so
 library HwDipoleShower.so
 
 mkdir /Herwig/DipoleShower
