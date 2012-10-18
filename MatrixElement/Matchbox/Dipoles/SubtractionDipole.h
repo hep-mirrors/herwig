@@ -699,6 +699,15 @@ public:
 
   //@}
 
+protected:
+
+  /**
+   * Handle integer powers appearing downstream.
+   */
+  double pow(double x, unsigned int p) const {
+    return pow(x,(double)p);
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
