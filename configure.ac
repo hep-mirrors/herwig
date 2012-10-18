@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([Herwig++],[trunk],[herwig@projects.hepforge.org],[Herwig++])
+AC_INIT([Herwig++],[devel],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -116,6 +116,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
 		Models/TTbAsymm/Makefile
+		Models/Feynrules/Makefile
+		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
 		Decay/Makefile
