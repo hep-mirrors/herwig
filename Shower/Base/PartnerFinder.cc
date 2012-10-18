@@ -246,7 +246,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       }
       
       if(partners.empty()) {
-        throw Exception() << "`Failed to make colour connections in " 
+	throw Exception() << "`Failed to make colour connections in " 
                           << "PartnerFinder::setQCDInitialEvolutionScales"
                           << (**cit)
                           << Exception::eventerror;

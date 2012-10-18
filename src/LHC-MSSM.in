@@ -12,9 +12,6 @@
 
 ##################################################
 
-#erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers[0]
-#set /Herwig/QEDRadiation/QEDRadiationHandler:DecayingParticles 2 NULL
-#set /Herwig/QEDRadiation/QEDRadiationHandler:RadiationGenerator NULL
 
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
@@ -51,10 +48,14 @@ insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 #insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 #insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
 #insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
+#insert HPConstructor:Outgoing 4 /Herwig/Particles/~g
 
 set HPConstructor:Processes Exclusive
 insert HPConstructor:Outgoing 0 /Herwig/Particles/~g
 insert HPConstructor:Outgoing 1 /Herwig/Particles/~g
+
+#insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+#insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -62,7 +63,9 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/~g
 # then add another 'setup' line with that
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
+
 setup MSSM/Model CMSSM40.1.1.slha
+#setup MSSM/Model SPhenoSPS1a.spc
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
@@ -87,6 +90,6 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 2350.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 4000.0
 
 saverun LHC-MSSM LHCGenerator

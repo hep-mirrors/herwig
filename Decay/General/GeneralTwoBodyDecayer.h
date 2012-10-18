@@ -202,7 +202,7 @@ protected:
   /**
    *  Check the calculated momenta are physical
    */
-  bool psCheck(double xg, double xs);
+  bool psCheck(const double xg, const double xs);
 
   /**
    *  Return the momenta including the hard emission
@@ -210,13 +210,18 @@ protected:
   vector<Lorentz5Momentum> hardMomenta(const ShowerProgenitorPtr &in, 
 				       const ShowerProgenitorPtr &emitter, 
 				       const ShowerProgenitorPtr &spectator, 
-				       vector<dipoleType> dipoles, int i);
+				       const vector<dipoleType>  &dipoles, int i);
 
   /**
    * Return dipole corresponding to the dipoleType dipoleId
    */
-  InvEnergy2 calculateDipole(dipoleType dipoleId, const Particle & inpart, 
-			     const ParticleVector & decay3, dipoleType emittingDipole);
+  InvEnergy2 calculateDipole(const dipoleType & dipoleId, const ParticleVector & decay3, 
+			     const dipoleType & emittingDipole);
+
+  /**
+   * Return contribution to dipole that depends on the spin of the emitter
+   */
+  double dipoleSpinFactor(const PPtr & emitter, double z);
 
   /**
    *  Work out the type of process
@@ -225,6 +230,13 @@ protected:
 		       ShowerProgenitorPtr & aProgenitor,
 		       ShowerProgenitorPtr & bProgenitor,
 		       ShowerProgenitorPtr & cProgenitor) const;
+
+  /**
+   * Set up the colour lines
+   */
+  void getColourLines(vector<ColinePtr> & newline, const HardTreePtr & hardtree, 
+		      const ShowerProgenitorPtr & bProgenitor);
+
 
   /**
    *  Coupling for the generation of hard radiation
@@ -290,14 +302,10 @@ protected:
   const vector<DVector> & getColourFactors(const Particle & inpart, 
 					   const ParticleVector & decay, 
 					   unsigned int & nflow); 
+ 
+  vector<vector<pair<int,double > > > & colourFlows(const Particle & inpart,
+							  const ParticleVector & decay);
 
-  // const vector<DVector> & getColourFactors() const {
-  //   return colour_;
-  // }
-  
-  const vector<vector<pair<int,double > > > & colourFlows() const {
-    return colourFlows_;
-  }
   //@}
 
 private:

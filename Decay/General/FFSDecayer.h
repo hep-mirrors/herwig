@@ -65,7 +65,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  virtual bool hasPOWHEGCorrection() {return true;}
 
   /**
    *  Three-body matrix element including additional QCD radiation
@@ -163,12 +163,12 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertex1;
+  AbstractFFVVertexPtr _abstractOutgoingVertexF;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertex2;
+  AbstractVSSVertexPtr _abstractOutgoingVertexS;
 
   /**
    *  Spin density matrix
@@ -184,6 +184,32 @@ private:
    *  Barred spinor wavefunctions
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
+
+ /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
+  /**
+   *  Scalar wavefunction for 3 body decay
+   */
+  mutable ScalarWaveFunction _swave3;
+
+  /**
+   *  Spinor wavefunction for 3 body decay
+   */
+  mutable vector<SpinorWaveFunction> _wave3;
+
+  /**
+   *  Barred spinor wavefunction for 3 body decay
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar3;
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<VectorWaveFunction> _vwave3;
+
 };
 
 }
