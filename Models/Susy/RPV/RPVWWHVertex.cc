@@ -55,7 +55,7 @@ void RPVWWHVertex::doinit() {
   Energy vu = vd*tanb;
   for(unsigned int ix=0;ix<higgs.size();++ix) {
     complex<Energy> c = vd*(*mix)(ix,0)+vu*(*mix)(ix,1);
-    for(unsigned int iy=0;iy<3;++iy) c += vnu[iy]*(*mix)(ix,2+iy);
+    for(size_t iy=2; iy<mix->size().second; ++iy) c += vnu[iy-2]*(*mix)(ix,iy);
     vector<complex<Energy> > coup(2);
     coup[0] = c/v*mw;
     coup[1] = c/v*mz/cw;

@@ -285,34 +285,124 @@ void RPV::createMixingMatrices() {
   }
   // we don't want neutrinos first then neutralinos so swap them
   // neutralinos first then neutrinos
-  vector<int> move(7);
-  move[0] = 4; move[1] = 5; move[2] = 6;
-  move[3] = 0; move[4] = 1; move[5] = 2; move[6] = 3;
-  CMatrix oldMat = neutralinoMix()->getMatrix();
-  CMatrix newMat(7,vector<Complex>(7,0.));
-  for(unsigned int ix=0;ix<7;++ix) {
-    for(unsigned int iy=0;iy<7;++iy)
-      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+  if ( neutralinoMix()->size().first == 7 ) {
+    vector<int> move(7);
+    move[0] = 4; move[1] = 5; move[2] = 6;
+    move[3] = 0; move[4] = 1; move[5] = 2; move[6] = 3;
+    CMatrix oldMat = neutralinoMix()->getMatrix();
+    CMatrix newMat(7,vector<Complex>(7,0.));
+    for(unsigned int ix=0;ix<7;++ix) {
+      for(unsigned int iy=0;iy<7;++iy)
+	newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+    }
+    neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
   }
-  neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
   // charginos the same
-  move.resize(5);
-  move[0] = 2; move[1] = 3; move[2] = 4;
-  move[3] = 0; move[4] = 1;
-  oldMat = charginoUMix()->getMatrix();
-  newMat = CMatrix(5,vector<Complex>(5,0.));
-  for(unsigned int ix=0;ix<5;++ix) {
-    for(unsigned int iy=0;iy<5;++iy)
-      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+  if(charginoUMix()->size().first  != charginoVMix()->size().first || 
+     charginoUMix()->size().second != charginoVMix()->size().second )
+    throw Exception() << "Chargino U and V mixing matrices must have the same size.\n"
+		      << "Check your SLHA file!" << Exception::runerror;
+  if ( charginoUMix()->size().first == 5 ) {
+    vector<int> move(5);
+    move[0] = 2; move[1] = 3; move[2] = 4;
+    move[3] = 0; move[4] = 1;
+    CMatrix oldMat = charginoUMix()->getMatrix();
+    CMatrix newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+    }
+    charginoUMix(new_ptr(MixingMatrix(newMat,charginoUMix()->getIds())));
+    oldMat = charginoVMix()->getMatrix();
+    newMat = CMatrix(5,vector<Complex>(5,0.));
+    for(unsigned int ix=0;ix<5;++ix) {
+      for(unsigned int iy=0;iy<5;++iy)
+	newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+    }
+    charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
   }
-  charginoUMix(new_ptr(MixingMatrix(newMat,charginoUMix()->getIds())));
-  oldMat = charginoVMix()->getMatrix();
-  newMat = CMatrix(5,vector<Complex>(5,0.));
-  for(unsigned int ix=0;ix<5;++ix) {
-    for(unsigned int iy=0;iy<5;++iy)
-      newMat[move[ix]][move[iy]] = oldMat[ix][iy];
+
+  const MatrixSize & n = neutralinoMix()->size();
+  const MatrixSize & u = charginoUMix()->size();
+  const MatrixSize & h = CPevenHiggsMix()->size();
+  const MatrixSize & a = CPoddHiggsMix()->size();
+  const MatrixSize & l = ChargedHiggsMix()->size();
+
+  bool nBig   = n.first == 7 && n.second == 7;
+  bool nSmall = n.first == 4 && n.second == 4;
+  if ( ! (nBig || nSmall) )
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "(RV)Nmix " << n.first << ',' << n.second << '\n'
+      << Exception::runerror; 
+
+  bool uBig   = u.first == 5 && u.second == 5;
+  bool uSmall = u.first == 2 && u.second == 2;
+  if ( ! (uBig || uSmall) )
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "(RV)Umix " << u.first << ',' << u.second << '\n'
+      << Exception::runerror; 
+
+  bool hBig   = h.first == 5 && h.second == 5;
+  bool hSmall = h.first == 2 && h.second == 2;
+  if ( ! (hBig || hSmall) )
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "(RV)Hmix " << h.first << ',' << h.second << '\n'
+      << Exception::runerror; 
+
+  bool aBig = (a.first == 4 || a.first == 5) && a.second == 5;
+  bool aSmall = a.first == 1 && a.second == 2;
+  if ( ! (aBig || aSmall) )
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "RVAmix " << a.first << ',' << a.second << '\n'
+      << Exception::runerror; 
+
+  bool lBig = (l.first == 7 || l.first == 8) && l.second == 8;
+  bool lSmall = l.first == 1 && l.second == 2;
+  if ( ! (lBig || lSmall) )
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "RVLmix " << l.first << ',' << l.second << '\n'
+      << Exception::runerror; 
+
+
+  bool allBig   = nBig && uBig && hBig && aBig && lBig;
+  bool allSmall = nSmall && uSmall && hSmall && aSmall && lSmall;
+
+  bool allSmallExceptN = nBig && uSmall && hSmall && aSmall && lSmall;
+
+  if ( allBig ) 
+    return;
+
+  if ( allSmall )
+    return;
+  
+  if ( allSmallExceptN ) {
+    cerr << "Warning: Truncating Nmix to 4,4 for consistency "
+	 << "with other mixing matrices.\n";
+    CMatrix oldMat = neutralinoMix()->getMatrix();
+    CMatrix newMat(4,vector<Complex>(4,0.));
+    for(unsigned int ix=0;ix<4;++ix)
+      for(unsigned int iy=0;iy<4;++iy)
+	newMat[ix][iy] = oldMat[ix][iy];
+    assert( neutralinoMix()->getIds().size() >= 4 );
+    vector<long>::const_iterator beg = neutralinoMix()->getIds().begin();
+    vector<long>::const_iterator end = beg + 4;
+    neutralinoMix(new_ptr(MixingMatrix(newMat,vector<long>(beg,end))));
+    return;
   }
-  charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
+
+  throw Exception() 
+    << "Mixing matrices have inconsistent sizes:\n"	
+    << "(RV)Nmix " << n.first << ',' << n.second << '\n'
+    << "(RV)Umix " << u.first << ',' << u.second << '\n'
+    << "(RV)Hmix " << h.first << ',' << h.second << '\n'
+    << "RVAmix   " << a.first << ',' << a.second << '\n'
+    << "RVLmix   " << l.first << ',' << l.second << '\n'
+    << Exception::runerror; 
 }
 
 void RPV::doinit() {
