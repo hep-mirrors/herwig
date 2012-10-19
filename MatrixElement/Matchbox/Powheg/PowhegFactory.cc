@@ -26,7 +26,8 @@
 using namespace Herwig;
 
 PowhegFactory::PowhegFactory() 
-  : SubProcessHandler(), theBornScreening(true), theVerbose(false) {}
+  : SubProcessHandler(), theBornScreening(true), 
+    theVerbose(false), theMCSum(false) {}
 
 PowhegFactory::~PowhegFactory() {}
 
@@ -62,6 +63,10 @@ void PowhegFactory::setup() {
       bbar->beVerbose();
     else
       bbar->beQuiet();
+
+    if ( theMCSum )
+      bbar->doMCSum();
+
     bbar->setup(*bv,theSubtractedMEs,theBornScreening);
 
     theInclusiveMEs.push_back(bbar);
@@ -150,13 +155,15 @@ void PowhegFactory::print(ostream& os) const {
 void PowhegFactory::persistentOutput(PersistentOStream & os) const {
   os << theBornVirtuals << theSubtractedMEs 
      << theMatchboxFactory << theBornScreening 
-     << theInclusiveMEs << theRealMEs << theVerbose;
+     << theInclusiveMEs << theRealMEs << theVerbose
+     << theMCSum;
 }
 
 void PowhegFactory::persistentInput(PersistentIStream & is, int) {
   is >> theBornVirtuals >> theSubtractedMEs 
      >> theMatchboxFactory >> theBornScreening 
-     >> theInclusiveMEs >> theRealMEs >> theVerbose;
+     >> theInclusiveMEs >> theRealMEs >> theVerbose
+     >> theMCSum;
 }
 
 void PowhegFactory::Init() {
@@ -226,6 +233,21 @@ void PowhegFactory::Init() {
      true);
   static SwitchOption interfaceVerboseOff
     (interfaceVerbose,
+     "Off",
+     "Off",
+     false);
+
+  static Switch<PowhegFactory,bool> interfaceMCSum
+    ("MCSum",
+     "MC sum over eal emission contributions.",
+     &PowhegFactory::theMCSum, false, false, false);
+  static SwitchOption interfaceMCSumOn
+    (interfaceMCSum,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceMCSumOff
+    (interfaceMCSum,
      "Off",
      "Off",
      false);

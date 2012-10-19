@@ -141,7 +141,6 @@ void BSMModel::decayRead() {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
@@ -310,9 +309,9 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   }
   if( abs(brsum - 1.) > tolerance_ && nmode!=0 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
-  	 << " from the spectrum file does not sum to 1. The branching fractions"
-  	 << " will be rescaled.\n";
-    cerr << setprecision(13) << abs(brsum - 1.) << "\n";
+  	 << " from the spectrum file does not sum to 1.\nThe branching fractions"
+  	 << " will be rescaled. Difference from 1 is " 
+	 << abs(brsum - 1.) << "\n";
   }
   if(nmode>0) {
     inpart->update();

@@ -36,7 +36,7 @@
 using namespace Herwig;
 
 PowhegInclusiveME::PowhegInclusiveME() 
-  : MEGroup(), theVerbose(false) {}
+  : MEGroup(), theVerbose(false), theMCSum(false) {}
 
 PowhegInclusiveME::~PowhegInclusiveME() {
 }
@@ -68,19 +68,6 @@ void PowhegInclusiveME::setXComb(tStdXCombPtr xc) {
   StdDepXCVector::const_iterator depxc = group->dependent().begin();
   for ( ; me != dependent().end(); ++me, ++depxc ) {
     theKernelMap[*me]->setXComb(*depxc);
-  }
-
-  // only cluster real emission
-
-  if ( lastCuts().jetFinder() )
-    lastCuts().jetFinder()->minOutgoing(lastXComb().mePartonData().size()-1);
-
-  if ( verbose() ) {
-    generator()->log() 
-      << "=== PowhegInclusiveME XComb hierarchies ========================================\n";
-    dumpInfo();
-    generator()->log() 
-      << "================================================================================\n";
   }
 
 }
@@ -251,27 +238,6 @@ void PowhegInclusiveME::printLastEvent(ostream& os) const {
 
 }
 
-void PowhegInclusiveME::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  generator()->log() << prefix << "  | Born/virtual ME\n";
-  dynamic_ptr_cast<Ptr<MatchboxNLOME>::tptr>(head())->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Dipoles\n";
-  for ( MEVector::const_iterator k = dependent().begin();
-	k != dependent().end(); ++k ) {
-    dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*k)->dumpInfo(prefix+"  | ");
-  }
-}
-
 void PowhegInclusiveME::lastEventStatistics() {
   MEGroup::lastEventStatistics();
   if ( !generator() )
@@ -284,11 +250,11 @@ void PowhegInclusiveME::lastEventStatistics() {
 
 
 void PowhegInclusiveME::persistentOutput(PersistentOStream & os) const {
-  os << theSplittingKernels << theKernelMap << theVerbose;
+  os << theSplittingKernels << theKernelMap << theVerbose << theMCSum;
 }
 
 void PowhegInclusiveME::persistentInput(PersistentIStream & is, int) {
-  is >> theSplittingKernels >> theKernelMap >> theVerbose;
+  is >> theSplittingKernels >> theKernelMap >> theVerbose >> theMCSum;
 }
 
 void PowhegInclusiveME::rebind(const TranslationMap & trans) {
@@ -334,6 +300,21 @@ void PowhegInclusiveME::Init() {
      true);
   static SwitchOption interfaceVerboseOff
     (interfaceVerbose,
+     "Off",
+     "Off",
+     false);
+
+  static Switch<PowhegInclusiveME,bool> interfaceMCSum
+    ("MCSum",
+     "MC sum over eal emission contributions.",
+     &PowhegInclusiveME::theMCSum, false, false, false);
+  static SwitchOption interfaceMCSumOn
+    (interfaceMCSum,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceMCSumOff
+    (interfaceMCSum,
      "Off",
      "Off",
      false);

@@ -210,6 +210,11 @@ public:
   vector<PDT::Colour> normalOrderMap(const cPDVector& sub);
 
   /**
+   * Get the normal ordered legs
+   */
+  const vector<PDT::Colour>& normalOrderedLegs(const cPDVector& sub) const;
+
+  /**
    * Convert the legs to a string.
    */
   string file(const vector<PDT::Colour>&) const;

@@ -633,19 +633,20 @@ void HadronSelector::constructHadronTable() {
 }
 
 double HadronSelector::specialWeight(long id) {
-  int pspin = id % 10;  
-  // Only K0L and K0S have pspin == 0 
-  if(pspin == 0) pspin = 1;
+  const int pspin = id % 10;  
+  // Only K0L and K0S have pspin == 0, should
+  // not get them until Decay step
+  assert( pspin != 0 );
   // Baryon : J = 1/2 or 3/2
-  else if(pspin == 2 || pspin == 4) {
-    if(pspin == 2) {
-      // Singlet (Lambda-like) baryon
-      if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);   
-      // octet
-      else                            return 1.;
-    } 
-    // Decuplet baryon
-    else return sqr(_decWt);
+  if(pspin == 2) {
+    // Singlet (Lambda-like) baryon
+    if( (id/100)%10 < (id/10 )%10 ) return sqr(_sngWt);   
+    // octet
+    else                            return 1.;
+  } 
+  // Decuplet baryon
+  else if (pspin == 4) {
+    return sqr(_decWt);
   }    
   // Meson
   else if(pspin % 2 == 1) {
@@ -664,6 +665,8 @@ double HadronSelector::specialWeight(long id) {
       return sqr(_repwt[l][j][n]);  
     }    
   }
+  // rest is not excited or 
+  // has spin >= 5/2 (ispin >= 6), haven't got those
   return 1.0;
 }
 

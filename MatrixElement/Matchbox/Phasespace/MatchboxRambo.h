@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author SDimon Platzer
+ * \author Simon Platzer
  *
  * \brief MatchboxRambo implements RAMBO phase space generation.
  *
@@ -157,6 +157,27 @@ private:
    * Whether or not we need to reshuffle.
    */
   bool needToReshuffle;
+
+  /**
+   * True, if a reference sample of phasespace points should be
+   * generated.
+   */
+  bool theMakeReferenceSample;
+
+  /**
+   * Map processes to streams for reference samples
+   */
+  map<cPDVector,ofstream*> referenceSamples;
+
+  /**
+   * The stream to fill for the reference sample
+   */
+  ofstream* referenceSample;
+
+  /**
+   * Write the generated point to the reference sample
+   */
+  void dumpReference(const vector<Lorentz5Momentum>&, double) const;
 
 };
 

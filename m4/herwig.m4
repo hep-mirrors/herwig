@@ -334,101 +334,51 @@ AC_SUBST(AM_LDFLAGS)
 
 AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
-AC_MSG_CHECKING([for BSM models to include])
-
-LOAD_RS=""
-LOAD_SUSY=""
-LOAD_NMSSM=""
-LOAD_TRP=""
-LOAD_UED=""
-LOAD_ADD=""
-LOAD_SEXTET=""
-LOAD_TTBA=""
-LOAD_ZPRIME=""
+AC_MSG_CHECKING([if BSM models should be built])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet lh lhtp) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--disable-models],[Turn off compilation of BSM models.]),
         [],
-        [enable_models=all]
+        [enable_models=yes]
         )
-if test "x$enable_models" = "xyes" -o "x$enable_models" = "xall"; then
-   all=yes
-fi
 AC_MSG_RESULT([$enable_models])
 
-if test ! "$all"; then
-   oldIFS="$IFS"
-   IFS=","
-   for i in $enable_models; do
-       declare $i=yes
-   done
-   IFS="$oldIFS"
+LOAD_BSM=""
+if test "$enable_models" = "yes"; then
+LOAD_BSM="read BSMlibs.in"
 fi
+AC_SUBST(LOAD_BSM)
 
-if test "$nmssm" -o "$all"; then
-   LOAD_NMSSM="library HwNMSSM.so"
-   mssm=yes
-fi
-AC_SUBST(LOAD_NMSSM)
-
-if test "$rs" -o "$all" ; then
-   LOAD_RS="library HwRSModel.so"
-fi
-AC_SUBST(LOAD_RS)
-
-if test "$mssm" -o "$all"; then
-   LOAD_SUSY="library HwSusy.so"
-fi
-AC_SUBST(LOAD_SUSY)
-
-if test "$trp" -o "$all"; then
-   LOAD_TRP="library HwTransplanck.so"
-fi
-AC_SUBST(LOAD_TRP)
-
-if test "$ued" -o "$all"; then
-   LOAD_UED="library HwUED.so"
-fi
-AC_SUBST(LOAD_UED)
-
-if test "$add" -o "$all"; then
-   LOAD_ADD="library HwADDModel.so"
-fi
-AC_SUBST(LOAD_ADD)
-
-if test "$leptoquarks" -o "$all"; then
-   LOAD_LEPTOQUARKS="library HwLeptoquarkModel.so"
-fi
-AC_SUBST(LOAD_LEPTOQUARKS)
-
-if test "$sextet" -o "$all"; then
-   LOAD_SEXTET="library HwSextetModel.so"
-fi
-AC_SUBST(LOAD_SEXTET)
-
-if test "$ttba" -o "$all"; then
-   LOAD_TTBA="library HwTTbAModel.so"
-fi
-AC_SUBST(LOAD_TTBA)
-
-if test "$zprime" -o "$all"; then
-   LOAD_SEXTET="library HwZprimeModel.so"
-fi
-AC_SUBST(LOAD_ZPRIME)
-
-AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
-AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
-AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
-AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
-AM_CONDITIONAL(WANT_LH,[test "$lh" -o "$all"])
-AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
-AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
-AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
-AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
-AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
-AM_CONDITIONAL(WANT_TTBA,[test "$ttba" -o "$all"])
-AM_CONDITIONAL(WANT_ZPRIME,[test "$zprime" -o "$all"])
+AM_CONDITIONAL(WANT_BSM,[test "$enable_models" = "yes"])
 ])
+
+
+AC_DEFUN([HERWIG_ENABLE_DIPOLE],
+[
+AC_MSG_CHECKING([if dipole shower should be built])
+
+AC_ARG_ENABLE(dipole,
+        AC_HELP_STRING([--disable-dipole],[Turn off compilation of dipole shower.]),
+        [],
+        [enable_dipole=yes]
+        )
+AC_MSG_RESULT([$enable_dipole])
+
+LOAD_DIPOLE=""
+LOAD_DIPOLE_ALPHAS=""
+LOAD_MATCHBOX=""
+if test "$enable_dipole" = "yes"; then
+LOAD_DIPOLE="library HwDipoleShower.so"
+LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
+LOAD_MATCHBOX="library HwMatchbox.so"
+fi
+AC_SUBST(LOAD_DIPOLE)
+AC_SUBST(LOAD_DIPOLE_ALPHAS)
+AC_SUBST(LOAD_MATCHBOX)
+
+AM_CONDITIONAL(WANT_DIPOLE,[test "$enable_dipole" = "yes"])
+])
+
 
 AC_DEFUN([HERWIG_OVERVIEW],
 [
@@ -443,21 +393,21 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Herwig debug mode:	$enable_debug
+*** Dipole shower:	$enable_dipole
 ***
-*** GSL:		$with_gsl
+*** Herwig debug mode:	$enable_debug
 ***
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
+*** GSL:		$with_gsl
 *** boost:              $with_boost
-***
 *** Fastjet:		${fjconfig}
 ***
 *** Host:		$host
+*** CC:			$CCSTRING
 *** CXX:		$CXXSTRING
 *** FC:			$FCSTRING
-*** CC:			$CCSTRING
 *****************************************************
 _HW_EOF_
 ])

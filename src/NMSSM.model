@@ -24,11 +24,11 @@ read MSSM.model
 ##################################################
 cd /Herwig/Particles
 create ThePEG::ParticleData H30 
-setup H30 45 H30 500.0 0.0 0.0 0.0 0 0 1 0
+setup H30 45 H30 500.0 0.0 0.0 0.0 0 0 1 1
 create ThePEG::ParticleData A20 
-setup A20 46 A20 500.0 0.0 0.0 0.0 0 0 1 0
+setup A20 46 A20 500.0 0.0 0.0 0.0 0 0 1 1
 create ThePEG::ParticleData ~chi_50
-setup ~chi_50 1000045 ~chi_50 500.0 0.0 0.0 0.0 0 0 2 0
+setup ~chi_50 1000045 ~chi_50 500.0 0.0 0.0 0.0 0 0 2 1
 ###################################################
 #
 # The main directory and model object
@@ -83,7 +83,7 @@ set Model:Vertex/NNP    NULL
 set Model:Vertex/CCZ    /Herwig/Vertices/MSSM/MSSM_CCZ
 set Model:Vertex/CNW    /Herwig/Vertices/MSSM/MSSM_CNW
 set Model:Vertex/SSWHH  /Herwig/Vertices/MSSM/MSSM_WHH
-set Model:Vertex/NCT    /Herwig/Vertices/MSSM/MSSM_NCT
+set Model:Vertex/NCT    NULL
 # NMSSM feynman rules
 set Model:Vertex/FFH    /Herwig/Vertices/NMSSM/NMSSM_FFH
 set Model:Vertex/GOGOH  /Herwig/Vertices/NMSSM/NMSSM_GOGOH

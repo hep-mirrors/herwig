@@ -27,7 +27,7 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 MatchboxNLOME::MatchboxNLOME() 
-  : MEBase(), theNDim(-1) {}
+  : MEBase(), theNDim(-1), theCheckPoles(false) {}
 
 MatchboxNLOME::~MatchboxNLOME() {}
 
@@ -73,7 +73,27 @@ bool MatchboxNLOME::generateKinematics(const double * r) {
   return ret;
 }
 
+void MatchboxNLOME::logPoles() const {
+  double res2me = matrixElement()->oneLoopDoublePole();
+  double res1me = matrixElement()->oneLoopSinglePole();
+  double res2i = 0.;
+  double res1i = 0.;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    res2i += (**v).oneLoopDoublePole();
+    res1i += (**v).oneLoopSinglePole();
+  }
+  double diff2 = abs(res2me) != 0. ? 1.-abs(res2i/res2me) : abs(res2i)-abs(res2me);
+  double diff1 = abs(res1me) != 0. ? 1.-abs(res1i/res1me) : abs(res1i)-abs(res1me);
+  generator()->log() 
+    << "check "
+    << log10(abs(diff2)) << " " << log10(abs(diff1)) << "\n"
+    << flush;
+}
+
 double MatchboxNLOME::me2() const {
+  if ( !matrixElement()->onlyOneLoop() && checkPoles() )
+    logPoles();
   double res = !matrixElement()->onlyOneLoop() ? matrixElement()->me2() : 0.;
   if ( matrixElement()->haveOneLoop() ) {
     res += 
@@ -91,6 +111,8 @@ CrossSection MatchboxNLOME::dSigHatDR() const {
     !matrixElement()->onlyOneLoop() ? matrixElement()->dSigHatDR() : ZERO;
   if ( res == ZERO && !matrixElement()->onlyOneLoop() )
     return res;
+  if ( !matrixElement()->onlyOneLoop() && checkPoles() )
+    logPoles();
   if ( matrixElement()->haveOneLoop() ) {
     if ( matrixElement()->onlyOneLoop() )
       matrixElement()->getPDFWeight();
@@ -148,8 +170,14 @@ void MatchboxNLOME::print(ostream& os) const {
   for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	  virtuals().begin(); v != virtuals().end(); ++v ) {
     os << " '" << (**v).name() << "' with " 
-       << ((**v).isDR() ? "" : "C") << "DR/" 
-       << ((**v).isCS() ? "CS" : "standard") << " conventions\n";
+       << ((**v).isDR() ? "" : "C") << "DR/";
+    if ( (**v).isCS() )
+      os << "CS";
+    if ( (**v).isBDK() )
+      os << "BDK";
+    if ( (**v).isExpanded() )
+      os << "expanded";
+    os << " conventions\n";
   }
 
   os << "--------------------------------------------------------------------------------\n";
@@ -197,28 +225,6 @@ void MatchboxNLOME::printLastEvent(ostream& os) const {
 
 }
 
-void MatchboxNLOME::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  generator()->log() << prefix << "  | Matrix element\n";
-  matrixElement()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Insertion operators\n";
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator i = 
-	  virtuals().begin(); i != virtuals().end(); ++i ) {
-    (**i).dumpInfo(prefix+"  | ");
-  }
-}
-
-
 void MatchboxNLOME::doinit() {
   MEBase::doinit();
 }
@@ -228,11 +234,11 @@ void MatchboxNLOME::doinitrun() {
 }
 
 void MatchboxNLOME::persistentOutput(PersistentOStream & os) const {
-  os << theMatrixElement << theVirtuals << theNDim;
+  os << theMatrixElement << theVirtuals << theNDim << theCheckPoles;
 }
 
 void MatchboxNLOME::persistentInput(PersistentIStream & is, int) {
-  is >> theMatrixElement >> theVirtuals >> theNDim;
+  is >> theMatrixElement >> theVirtuals >> theNDim >> theCheckPoles;
 }
 
 void MatchboxNLOME::Init() {

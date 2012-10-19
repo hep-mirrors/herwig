@@ -214,6 +214,8 @@ public:
    * Return (ij)
    */
   double invariant(int i, int j) const {
+    if ( i== j )
+      return 0.;
     if ( i > j )
       swap(i,j);
     if ( getInvariant[i][j] ) {
@@ -227,6 +229,8 @@ public:
    * Return <ij>
    */
   Complex plusProduct(int i, int j) const {
+    if ( i== j )
+      return 0.;
     bool swapij = (i > j);
     if ( swapij )
       swap(i,j);
@@ -243,6 +247,8 @@ public:
    * Return [ij]
    */
   Complex minusProduct(int i, int j) const {
+    if ( i== j )
+      return 0.;
     return -crossingSign(i,j)*conj(plusProduct(i,j));
   }
 

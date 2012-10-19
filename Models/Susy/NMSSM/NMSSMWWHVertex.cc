@@ -31,9 +31,8 @@ void NMSSMWWHVertex::doinit() {
   }
   // SM parameters
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  double sw = sin2ThetaW();
-  _zfact = 1./(1.-sw);
-  sw = sqrt(sw);
+  double sw2 = sin2ThetaW();
+  _zfact = 1./(1.-sw2);
   // NMSSM parameters
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

@@ -110,7 +110,13 @@ public:
    * Return true for MC summation of dependent
    * matrix elements, if feasible.
    */
-  virtual bool mcSumDependent() const { return false; }
+  virtual bool mcSumDependent() const { return theMCSum; }
+
+  /**
+   * Switch on MC summation of dependent
+   * matrix elements, if feasible.
+   */
+  virtual void doMCSum() { theMCSum = true; }
 
 public:
 
@@ -131,11 +137,6 @@ public:
    * Print debug information on the last event
    */
   void printLastEvent(ostream&) const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   /**
    * Switch on verbosity for this subtracted ME
@@ -249,6 +250,11 @@ private:
    * last phase space point.
    */
   bool theVerbose;
+
+  /**
+   * Wether or not the real contributions should be MC summed
+   */
+  bool theMCSum;
 
 private:
 

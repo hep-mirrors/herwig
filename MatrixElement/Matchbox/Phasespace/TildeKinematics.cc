@@ -26,11 +26,6 @@ TildeKinematics::TildeKinematics()
 
 TildeKinematics::~TildeKinematics() {}
 
-void TildeKinematics::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-}
-
 Energy TildeKinematics::lastScale() const {
   if ( ( theDipole->bornEmitter() < 2 && theDipole->bornSpectator() > 1 ) ||
        ( theDipole->bornEmitter() > 1 && theDipole->bornSpectator() < 2 ) ) {
