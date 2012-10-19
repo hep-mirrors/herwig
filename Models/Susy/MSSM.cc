@@ -84,22 +84,30 @@ void MSSM::createMixingMatrices() {
   // neutral higgs mixing if not already set
   if(!theHiggsMix) {
     MixingVector hmix;
-    hmix.push_back(MixingElement(1,1,-sin(theAlpha)));
-    hmix.push_back(MixingElement(1,2, cos(theAlpha)));
     hmix.push_back(MixingElement(2,1, cos(theAlpha)));
     hmix.push_back(MixingElement(2,2, sin(theAlpha)));
+    hmix.push_back(MixingElement(1,1,-sin(theAlpha)));
+    hmix.push_back(MixingElement(1,2, cos(theAlpha)));
     vector<long> ids(2);
     ids[0] = 25; ids[1] = 35;
     theHiggsMix = new_ptr(MixingMatrix(2,2));
     (*theHiggsMix).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*theHiggsMix)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
     hmix.clear();
     double beta = atan(tanBeta());
     hmix.push_back(MixingElement(1,1,sin(beta)));
     hmix.push_back(MixingElement(1,2,cos(beta)));
     ids.resize(1,37);
     HiggsPMix_ = new_ptr(MixingMatrix(1,2));
+    (*HiggsPMix_).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*HiggsPMix_)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
     ids.resize(1,36);
     HiggsAMix_ = new_ptr(MixingMatrix(1,2));
+    (*HiggsAMix_).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*HiggsAMix_)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
   }
   // base class for neutralinos and charginos
   SusyBase::createMixingMatrices();
@@ -187,13 +195,23 @@ void MSSM::extractParameters(bool checkmodel) {
   // the higgs mixing angle if not NMSSM
   theAlpha=0.;
   if(inmssm==0) {
+    bool readAlpha = false;
     map<string,ParamMap>::const_iterator pit;
     pit=parameters().find("alpha");
     if(pit!=parameters().end()) {
       ParamMap::const_iterator it = pit->second.find(1);
-      if(it!=pit->second.end()) theAlpha=it->second;
+      if(it!=pit->second.end()) {
+	readAlpha = true;
+	theAlpha=it->second;
     }
   }
+    if(!readAlpha) 
+      throw Exception() << "In the MSSM model BLOCK ALPHA which must be"
+			<< " present in the SLHA file is missing"
+			<< Exception::runerror;
+  }
+
+
   if(checkmodel) {
     if(inmssm!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				    << " used but NMSSM read in " 

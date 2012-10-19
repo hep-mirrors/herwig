@@ -434,7 +434,8 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   for(ix=0;ix<out.size();++ix) external.push_back(out[ix]);
   out.clear();
   // now create the intermediates
-  ParticleVector resonance; resonance.push_back(external[0]);
+  ParticleVector resonance;
+  resonance.push_back(external[0]);
   PPtr respart;
   tcPDPtr parttemp;
   Lorentz5Momentum pinter;
@@ -454,6 +455,8 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
 			     resonance[-_intdau1[ix]] : external[_intdau1[ix]]);
     resonance[ix]->addChild( _intdau2[ix]<0 ? 
 			     resonance[-_intdau2[ix]] : external[_intdau2[ix]]);
+    if(resonance[ix]->dataPtr()->stable())
+      resonance[ix]->setLifeLength(Lorentz5Distance());
   }
   // construct the output with the particles in the first step
   out.push_back( _intdau1[0]>0 ? external[_intdau1[0]] : resonance[-_intdau1[0]]);

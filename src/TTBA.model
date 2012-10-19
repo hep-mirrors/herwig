@@ -17,31 +17,31 @@ cd /Herwig/Particles
 # W prime model
 
 create /ThePEG/ParticleData Wp
-setup Wp 34 Wp 400.0 0.0 0.0 0.0 3 0 3 0
+setup Wp 34 Wp 400.0 0.0 0.0 0.0 3 0 3 1
 create /ThePEG/ParticleData Wpbar
-setup Wpbar -34 Wpbar 400.0 0.0 0.0 0.0 -3 0 3 0
+setup Wpbar -34 Wpbar 400.0 0.0 0.0 0.0 -3 0 3 1
 makeanti Wp Wpbar
 
 # Abelian Z prime model
 
 create /ThePEG/ParticleData Zp
-setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 0
+setup Zp 32 Zp 700.0 0.0 0.0 0.0 0 0 3 1
 
 # Axigluon model
 
 create /ThePEG/ParticleData Ag
-setup Ag 63 Ag 2000.0 0.0 0 0.0 0 8 3 0
+setup Ag 63 Ag 2000.0 0.0 0 0.0 0 8 3 1
 
 
 # Non-Abelian SU(2)_X model
 
 create /ThePEG/ParticleData Vz
-setup Vz 70 Vz 80.0 0.0 0.0 0.0 0 0 3 0
+setup Vz 70 Vz 80.0 0.0 0.0 0.0 0 0 3 1
 
 create /ThePEG/ParticleData Yp
-setup Yp 71 Yp 200.0 0.0 0.0 0.0 0 0 3 0
+setup Yp 71 Yp 200.0 0.0 0.0 0.0 0 0 3 1
 create /ThePEG/ParticleData Ym
-setup Ym -71 Ym 200.0 0.0 0.0 0.0 0 0 3 0
+setup Ym -71 Ym 200.0 0.0 0.0 0.0 0 0 3 1
 makeanti Yp Ym
 
 
@@ -136,6 +136,9 @@ cd /Herwig/NewPhysics
 set TwoBodyDC:CreateDecayModes Yes
 set ThreeBodyDC:CreateDecayModes No
 
+# which particles get the off-shell treatment
+set NewModel:WhichOffshell All
+# particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/Wp
 insert NewModel:DecayParticles 1 /Herwig/Particles/Zp
 insert NewModel:DecayParticles 2 /Herwig/Particles/Ag

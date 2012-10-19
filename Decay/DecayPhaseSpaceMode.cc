@@ -183,7 +183,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       for(int ix=0;ix<_npoint;++ix) {
 	m0 = (inpart->dataPtr())->generateMass();
 	double wgt=0.; 
-	int ichan;
+	int ichan(-1);
 	if(m0>mmin) {
 	  inpart->set5Momentum(Lorentz5Momentum(m0));
 	  // compute the prefactor
@@ -200,11 +200,13 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	  }
 	}
 	if(wgt>_maxweight) _maxweight=wgt;
-	wsum[ichan]=wsum[ichan]+wgt;
+	if(ichan>=0) {
+	  wsum[ichan]   += wgt;
+	  wsqsum[ichan] += sqr(wgt);
+	  ++nchan[ichan];
+	}
 	totsum+=wgt;
-	wsqsum[ichan]=wsqsum[ichan]+sqr(wgt);
 	totsq+=wgt*wgt;
-	++nchan[ichan];
       }
       totsum=totsum/_npoint;
       totsq=totsq/_npoint-sqr(totsum);
@@ -426,23 +428,10 @@ void DecayPhaseSpaceMode::doinit() {
   }
   Interfaced::doinit();
   _massgen.resize(_extpart.size());
-  if(_extpart[0]->widthGenerator()) {
-    _widthgen=
-      dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
-    //const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->init();
-  }
-  else {
-    _widthgen=cGenericWidthGeneratorPtr();
-  }
-  tcGenericWidthGeneratorPtr wtemp;
+  _widthgen = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
   for(unsigned int ix=0;ix<_extpart.size();++ix) {
     assert(_extpart[ix]);
     _massgen[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
-    if(ix>0) {
-      wtemp=
-	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
-      //if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->init();
-    }
   }
   for(unsigned int ix=0;ix<_channels.size();++ix) {
     _channels[ix]->init();
@@ -450,6 +439,14 @@ void DecayPhaseSpaceMode::doinit() {
 }
   
 void DecayPhaseSpaceMode::doinitrun() {
+  // update the mass and width generators
+  if(_extpart[0]->widthGenerator()!=_widthgen) {
+    _widthgen= dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
+  }
+  for(unsigned int ix=0;ix<_extpart.size();++ix) {
+    if(_massgen[ix]!=_extpart[ix]->massGenerator())
+      _massgen[ix] = dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
+  }
   // check the size of the weight vector is the same as the number of channels
   if(_channelwgts.size()!=numberChannels()) {
     throw Exception() << "Inconsistent number of channel weights and channels"

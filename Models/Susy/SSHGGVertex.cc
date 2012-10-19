@@ -82,7 +82,7 @@ void SSHGGVertex::doinit() {
   theSqmass[3] = getParticleData(ParticleID::SUSY_t_2)->mass();
 
   VVSLoopVertex::doinit();
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 

@@ -24,6 +24,8 @@
 
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <iterator>
+using std::ostream_iterator;
 
 #include "DiagramDrawer.h"
 
@@ -88,6 +90,15 @@ vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
   return legs;
 
+}
+
+const vector<PDT::Colour>& ColourBasis::normalOrderedLegs(const cPDVector& sub) const {
+  static vector<PDT::Colour> empty;
+  map<cPDVector,vector<PDT::Colour> >::const_iterator n =
+    theNormalOrderedLegs.find(sub);
+  if ( n != theNormalOrderedLegs.end() )
+    return n->second;
+  return empty;
 }
 
 size_t ColourBasis::prepare(const cPDVector& sub,

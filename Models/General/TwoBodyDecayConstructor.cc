@@ -64,6 +64,9 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   for(set<PDPtr>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
     tPDPtr parent = *ip;
+    if ( Debug::level > 0 )
+      Repository::cout() << "Constructing 2-body decays for " 
+			 << parent->PDGName() << '\n';
     for(unsigned int iv = 0; iv < nv; ++iv) {
       if(excluded(model->vertex(iv)) || 
 	 model->vertex(iv)->getNpoint()>3) continue;

@@ -6,7 +6,6 @@
 .*/.*\.l[ao]
 .*/.*\.so\.*
 .*/.*\.o
-Tests/.*\.aida
 .*~
 .*.codereplace
 .*\.tar\.(gz|bz2)
@@ -30,6 +29,9 @@ Doc/HerwigDefaults.in
 Doc/fixinterfaces.pl
 Doc/refman.conf
 Doc/refman.h
+Doc/AllInterfaces.h
+Doc/HerwigDefaults.rpo
+Doc/Herwig\+\+-refman.tag
 (src|Utilities)/version.tmp
 (src|Utilities)/version.tmp.new
 INSTALL
@@ -54,8 +56,9 @@ src/defaults/done-all-links
 src/versionstring.h
 src/tune
 src/tests/.*\.(time|mult|Bmult|chisq)
-Tests/.*/.*\.(top|ps|pyc|info)
-Tests/.*\.(top|run|tex|mult|Bmult)
+Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)
+Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)
 Tests/Rivet.*
 Tests/plots
-
+Tests/.*index.html
+Herwig\+\+\-.\..\..

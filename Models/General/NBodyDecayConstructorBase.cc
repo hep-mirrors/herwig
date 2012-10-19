@@ -13,6 +13,7 @@
 
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/Repository.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -28,6 +29,7 @@ using namespace ThePEG;
 
 void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const {
   os << init_ << iteration_ << points_ << info_ << decayConstructor_
+     << createModes_ << minReleaseFraction_ << maxBoson_ << maxList_
      << removeOnShell_ << excludeEffective_ << includeTopOnShell_
      << excludedVerticesVector_ << excludedVerticesSet_ 
      << excludedParticlesVector_ << excludedParticlesSet_;
@@ -35,6 +37,7 @@ void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const 
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
   is >> init_ >> iteration_ >> points_ >> info_ >> decayConstructor_
+     >> createModes_ >> minReleaseFraction_ >> maxBoson_ >> maxList_
      >> removeOnShell_ >> excludeEffective_ >> includeTopOnShell_
      >> excludedVerticesVector_ >> excludedVerticesSet_
      >> excludedParticlesVector_ >> excludedParticlesSet_;
@@ -387,6 +390,9 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
       ip!=particles.end();++ip) {
     // get the decaying particle
     tPDPtr parent = *ip;
+    if ( Debug::level > 0 )
+      Repository::cout() << "Constructing N-body decays for " 
+			 << parent->PDGName() << '\n';
     // first create prototype 1->2 decays
     std::queue<PrototypeVertexPtr> prototypes;
     for(unsigned int iv = 0; iv < nv; ++iv) {

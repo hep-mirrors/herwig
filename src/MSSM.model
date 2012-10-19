@@ -294,6 +294,9 @@ insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H0
 insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/A0
 insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H+
 
+# which particles get the off-shell treatment
+set NewModel:WhichOffshell All
+# particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
 insert NewModel:DecayParticles 2 /Herwig/Particles/~s_L

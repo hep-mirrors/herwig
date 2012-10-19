@@ -23,8 +23,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/PDT/MassGenerator.h"
-#include "ThePEG/PDT/WidthGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
@@ -144,6 +142,7 @@ void SusyBase::Init() {
      "  [arXiv:0801.0045 [hep-ph]].\n"
      "  %%CITATION = CPHCB,180,8;%%\n"
      );
+
 
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
@@ -348,7 +347,6 @@ void SusyBase::readSetup(istream & is) {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
@@ -368,8 +366,9 @@ void SusyBase::readSetup(istream & is) {
 
 void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein,
 			 bool stringBlock) {
-  if(!cfile) throw SetupException() << "SusyBase::readBlock() - "
-				    << "The input stream is in a bad state"
+  if(!cfile)
+    throw SetupException() 
+				    << "SusyBase::readBlock() - The input stream is in a bad state"
 				    << Exception::runerror;
   // storage or the parameters
   string test = StringUtils::car(linein, "#");
@@ -480,6 +479,19 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   matrix = new_ptr(MixingMatrix(size.first,size.second));
   for(unsigned int ix=0; ix < values.size(); ++ix)
     (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
+  // test against stupid mixing matrices  
+  for(unsigned int ix=0;ix<matrix->size().first;++ix) {
+    Complex sum(0.);
+    for(unsigned int iy=0;iy<matrix->size().second;++iy) {
+      sum += norm((*matrix)(ix,iy));
+    }
+    if(abs(sum-1.)>1e-4) {
+      cerr << "The sum of the mod squares of row " << ix+1
+	   << " of the " << name << " block does not sum to 1. \n"
+	   << "sum = " << sum.real() << ". We strongly suggest you check your SLHA file.\n";
+    }
+  }
+
   vector<long> ids;
   if(name == "nmix") {
     ids.resize(4);
@@ -591,6 +603,7 @@ void SusyBase::resetRepositoryMasses() {
 	   << " is strongly discouraged.\n";
     // reset the masses
     resetMass(it->first,it->second*GeV,part);
+
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }

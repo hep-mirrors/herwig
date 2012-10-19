@@ -70,6 +70,13 @@ public:
   virtual bool apply() const = 0;
 
   /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches() = 0;
+
+  /**
    * Evaluate the reweight.
    */
   virtual double evaluate() const = 0;
@@ -92,11 +99,6 @@ public:
    * Print debug information on the last event
    */
   virtual void printLastEvent(ostream&) const {}
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  virtual void dumpInfo(const string& prefix = "") const = 0;
 
 public:
 

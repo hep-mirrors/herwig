@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
+AC_INIT([Herwig++],[devel],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -89,6 +89,8 @@ HERWIG_VERSIONSTRING
 HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
+
+HERWIG_ENABLE_DIPOLE
 
 SHARED_FLAG=-shared
 AM_CONDITIONAL(NEED_APPLE_FIXES,

@@ -1,4 +1,4 @@
-if WANT_RPV
+if WANT_BSM
 pkglib_LTLIBRARIES = HwRPV.la
 endif
 HwRPV_la_SOURCES =  \

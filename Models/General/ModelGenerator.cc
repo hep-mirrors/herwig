@@ -38,13 +38,13 @@ IBPtr ModelGenerator::fullclone() const {
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << hardProcessConstructors_ << _theDecayConstructor << particles_ 
-     << offshell_ << Offsel_ << BRnorm_
+     << offshell_ << Offsel_ << BRnorm_ << twoBodyOnly_
      << Npoints_ << Iorder_ << BWshape_ << brMin_ << decayOutput_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
-     >> offshell_ >> Offsel_ >> BRnorm_
+     >> offshell_ >> Offsel_ >> BRnorm_ >> twoBodyOnly_
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
@@ -128,7 +128,7 @@ void ModelGenerator::Init() {
   static Parameter<ModelGenerator,int> interfacePoints
     ("InterpolationPoints",
      "Number of points to use for interpolation tables when needed",
-     &ModelGenerator::Npoints_, 50, 5, 1000,
+     &ModelGenerator::Npoints_, 10, 5, 1000,
      false, false, true);
   
   static Parameter<ModelGenerator,unsigned int> 
@@ -161,6 +161,21 @@ void ModelGenerator::Init() {
      "NoNumerator",
      "Neglect the numerator factors",
      3);
+
+  static Switch<ModelGenerator,bool> interfaceTwoBodyOnly
+    ("TwoBodyOnly",
+     "Whether to use only two-body or all modes in the running width calculation",
+     &ModelGenerator::twoBodyOnly_, false, false, false);
+  static SwitchOption interfaceTwoBodyOnlyYes
+    (interfaceTwoBodyOnly,
+     "Yes",
+     "Only use two-body modes",
+     true);
+  static SwitchOption interfaceTwoBodyOnlyNo
+    (interfaceTwoBodyOnly,
+     "No",
+     "Use all modes",
+     false);
   
   static Parameter<ModelGenerator,double> interfaceMinimumBR
     ("MinimumBR",
@@ -188,6 +203,13 @@ void ModelGenerator::Init() {
      "Output in the Susy Les Houches Accord format",
      2);
 
+  static Parameter<ModelGenerator,double> interfaceMinimumWidthFraction
+    ("MinimumWidthFraction",
+     "Minimum fraction of the particle's mass the width can be"
+     " for the off-shell treatment.",
+     &ModelGenerator::minWidth_, 1e-6, 1e-15, 1.,
+     false, false, Interface::limited);
+
 }
 
 namespace {
@@ -207,22 +229,10 @@ void ModelGenerator::doinit() {
   // and the vertices
   for(size_t iv = 0; iv < model->numberOfVertices(); ++iv)
     model->vertex(iv)->init();
-  // sort DecayParticles list by mass
-  sort(particles_.begin(),particles_.end(),
-       massIsLess);
-  //create mass and width generators for the requested particles
-  PDVector::iterator pit, pend;
-  if( Offsel_ == 0 ) {
-    pit = offshell_.begin();
-    pend = offshell_.end();
-  }
-  else {
-    pit = particles_.begin();
-    pend = particles_.end();
-  }
-  for(; pit != pend; ++pit)
-    createWidthGenerator(*pit);
-
+  // uniq and sort DecayParticles list by mass
+  set<PDPtr> tmp(particles_.begin(),particles_.end());
+  particles_.assign(tmp.begin(),tmp.end());
+  sort(particles_.begin(),particles_.end(),massIsLess);
   //create decayers and decaymodes (if necessary)
   if( _theDecayConstructor ) {
     _theDecayConstructor->init();
@@ -252,9 +262,13 @@ void ModelGenerator::doinit() {
 	  << "     # Version number\n";
     }
   }
-  pit = particles_.begin();
-  pend = particles_.end();
-  for( ; pit != pend; ++pit) {
+  //create mass and width generators for the requested particles
+  set<PDPtr> offShell;
+  if( Offsel_ == 0 ) offShell = set<PDPtr>(offshell_.begin() ,offshell_.end() );
+  else               offShell = set<PDPtr>(particles_.begin(),particles_.end());
+  
+  for(PDVector::iterator pit = particles_.begin(); 
+      pit != particles_.end(); ++pit) {
     tPDPtr parent = *pit;
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
@@ -262,7 +276,6 @@ void ModelGenerator::doinit() {
     parent->reset();
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
-
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(ZERO);
@@ -270,6 +283,20 @@ void ModelGenerator::doinit() {
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
     else {
+      if(parent->mass()*minWidth_>parent->width()) {
+	parent->massGenerator(tGenericMassGeneratorPtr());
+	parent->widthGenerator(tGenericWidthGeneratorPtr());
+      }
+      else {
+	if( offShell.find(*pit) != offShell.end() ) {
+	  createWidthGenerator(*pit);
+	}
+	else {
+	  parent->massGenerator(tGenericMassGeneratorPtr());
+	  parent->widthGenerator(tGenericWidthGeneratorPtr());
+	}
+      }
+
       if ( decayOutput_ == 2 )
 	writeDecayModes(ofs, parent);
       else
@@ -323,7 +350,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     if( (**dit).brat() < brMin_ || release < ZERO ) {
       if( release < ZERO )
 	cerr << "Warning: The shower cannot be generated using this decay " 
-	     << (**dit).tag() << " because it is too close to threshold. It "
+	     << (**dit).tag() << " because it is too close to threshold.\nIt "
 	     << "will be switched off and the branching fractions of the "
 	     << "remaining modes rescaled.\n";
       rescalebrat = true;
@@ -437,8 +464,8 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
     (generator()->preinitCreate("Herwig::BSMWidthGenerator", wn));
 
   //set the particle interface
-  generator()->preinitInterface(mgen, "Particle", "set", p->fullName());
-  generator()->preinitInterface(wgen, "Particle", "set", p->fullName());
+  mgen->particle(p);
+  wgen->particle(p);
 
   //set the generator interfaces in the ParticleData object
   generator()->preinitInterface(p, "Mass_generator","set", mn);
@@ -453,10 +480,11 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
 
   string norm = BRnorm_ ? "Yes" : "No";
   generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
+  string twob = twoBodyOnly_ ? "Yes" : "No";
+  generator()->preinitInterface(wgen, "TwoBodyOnly", "set", twob);
   ostringstream os;
   os << Npoints_;
-  generator()->preinitInterface(wgen, "InterpolationPoints", "set", 
-				  os.str());
+  generator()->preinitInterface(wgen, "Points", "set", os.str());
   os.str("");
   os << Iorder_;
   generator()->preinitInterface(wgen, "InterpolationOrder", "set",
