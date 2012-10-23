@@ -21,17 +21,39 @@
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
 #include <functional>
+
+namespace Herwig {
+// Need to init the interpolator instance here
+HERWIG_INTERPOLATOR_CLASSDESC(Energy,Energy2)
+}
+
+
 
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+
+DescribeClass<FourPionNovosibirskCurrent,WeakDecayCurrent>
+describeHerwigFourPionNovosibirskCurrent("Herwig::FourPionNovosibirskCurrent",
+					 "HwWeakCurrents.so");
+
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
  
+IBPtr FourPionNovosibirskCurrent::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FourPionNovosibirskCurrent::fullclone() const {
+  return new_ptr(*this);
+}
+
 void FourPionNovosibirskCurrent::doupdate() {
   WeakDecayCurrent::doupdate();
   // update running width if needed
@@ -352,32 +374,41 @@ void FourPionNovosibirskCurrent::doinitrun() {
 }
 
 void FourPionNovosibirskCurrent::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_rhomass,GeV) << ounit(_a1mass,GeV) << ounit(_omegamass,GeV) 
+  os << _a1runinter 
+     << ounit(_rhomass,GeV) << ounit(_a1mass,GeV) << ounit(_omegamass,GeV) 
      << ounit(_sigmamass,GeV) << ounit(_rhowidth,GeV) << ounit(_a1width,GeV)
-     << ounit(_omegawidth,GeV) << ounit(_sigmawidth,GeV) << _zsigma << ounit(_lambda2,GeV2)
-     << _initializea1 << _localparameters << ounit(_a1runwidth,GeV) << ounit(_a1runq2,GeV2) << ounit(_onedlam2,1/GeV2) 
+     << ounit(_omegawidth,GeV) << ounit(_sigmawidth,GeV) 
+     << _zsigma << ounit(_lambda2,GeV2)
+     << _initializea1 << _localparameters 
+     << ounit(_a1runwidth,GeV) << ounit(_a1runq2,GeV2) << ounit(_onedlam2,1/GeV2) 
      << _a1massolam2 << ounit(_psigma,GeV) << ounit(_mpic,GeV) << ounit(_mpi0,GeV)
-     << ounit(_aomega,1/GeV) << ounit(_athreec,1/GeV) << ounit(_aonec,1/GeV) << _bomega << _bthreec << _bonec 
-     << _comega << _cthreec <<_conec << _omegaparam << ounit(_intwidth,GeV) << ounit(_intmass,GeV)
+     << ounit(_aomega,1/GeV) << ounit(_athreec,1/GeV) << ounit(_aonec,1/GeV) 
+     << _bomega << _bthreec << _bonec 
+     << _comega << _cthreec <<_conec << _omegaparam 
+     << ounit(_intwidth,GeV) << ounit(_intmass,GeV)
      << ounit(_mpic2,GeV2) << ounit(_mpi02,GeV2) << ounit(_hm2,GeV2) << _dhdq2m2 
      << ounit(_prho,GeV) << ounit(_rhoD,GeV2) << _zmag << _zphase
      << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void FourPionNovosibirskCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_rhomass,GeV) >> iunit(_a1mass,GeV) >> iunit(_omegamass,GeV) 
+  is >> _a1runinter 
+     >> iunit(_rhomass,GeV) >> iunit(_a1mass,GeV) >> iunit(_omegamass,GeV) 
      >> iunit(_sigmamass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_a1width,GeV)
-     >> iunit(_omegawidth,GeV) >> iunit(_sigmawidth,GeV) >> _zsigma >> iunit(_lambda2,GeV2)
-     >> _initializea1 >> _localparameters >> iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) >> iunit(_onedlam2,1/GeV2)
+     >> iunit(_omegawidth,GeV) >> iunit(_sigmawidth,GeV) 
+     >> _zsigma >> iunit(_lambda2,GeV2)
+     >> _initializea1 >> _localparameters 
+     >> iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) >> iunit(_onedlam2,1/GeV2)
      >> _a1massolam2 >> iunit(_psigma,GeV) >> iunit(_mpic,GeV) >> iunit(_mpi0,GeV)
-     >> iunit(_aomega,1/GeV) >> iunit(_athreec,1/GeV) >> iunit(_aonec,1/GeV) >> _bomega >> _bthreec >> _bonec 
-     >> _comega >> _cthreec >>_conec >> _omegaparam >> iunit(_intwidth,GeV) >> iunit(_intmass,GeV)
+     >> iunit(_aomega,1/GeV) >> iunit(_athreec,1/GeV) >> iunit(_aonec,1/GeV) 
+     >> _bomega >> _bthreec >> _bonec 
+     >> _comega >> _cthreec >>_conec >> _omegaparam 
+     >> iunit(_intwidth,GeV) >> iunit(_intmass,GeV)
      >> iunit(_mpic2,GeV2) >> iunit(_mpi02,GeV2)>> iunit(_hm2,GeV2) >> _dhdq2m2
      >> iunit(_prho,GeV) >> iunit(_rhoD,GeV2) >> _zmag >> _zphase
      >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
-ClassDescription<FourPionNovosibirskCurrent> FourPionNovosibirskCurrent::initFourPionNovosibirskCurrent;
 // Definition of the static class description member.
 
 void FourPionNovosibirskCurrent::Init() {
@@ -572,7 +603,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
   Energy min(ZERO);
   if(imode==0) {
     min=   getParticleData(ParticleID::piplus)->mass()
-        +3.*getParticleData(ParticleID::pi0)->mass();
+      +3.*getParticleData(ParticleID::pi0)->mass();
   }
   else {
     min=3.*getParticleData(ParticleID::piplus)->mass()
@@ -863,11 +894,11 @@ FourPionNovosibirskCurrent::current(const int imode, const int ichan,
     if(ichan<0) {
       // a_1 rho current
       veca1rho= t1(q2,q3,q1,q4)+t1(q2,q4,q1,q3)+t1(q3,q2,q1,q4)
-	       +t1(q3,q4,q1,q2)+t1(q4,q2,q1,q3)+t1(q4,q3,q1,q2);
+	+t1(q3,q4,q1,q2)+t1(q4,q2,q1,q3)+t1(q4,q3,q1,q2);
       // a_1 sigma current
       veca1sig=
  	t2(q2,q1,q3,q4,0)+t2(q3,q1,q2,q4,0)+t2(q4,q1,q3,q2,0)
-       -t2(q1,q2,q3,q4,0)-t2(q1,q3,q2,q4,0)-t2(q1,q4,q3,q2,0);
+	-t2(q1,q2,q3,q4,0)-t2(q1,q3,q2,q4,0)-t2(q1,q4,q3,q2,0);
     }
     else if(ichan== 0) veca1rho = t1(q2,q3,q1,q4);
     else if(ichan== 1) veca1rho = t1(q2,q4,q1,q3);
@@ -1020,3 +1051,169 @@ threeBodyMatrixElement(const int iopt, const Energy2 q2,
   output *= a1FormFactor(q2);
   return output.real() / pow<4,1>(_rhomass);
 }
+
+Complex FourPionNovosibirskCurrent::sigmaBreitWigner(Energy2 q2,
+						     unsigned int iopt) const {
+  Energy q(sqrt(q2));
+  Energy pcm = iopt==0 ? 
+    Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0) :
+    Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic);
+  if(pcm<ZERO) pcm=ZERO;
+  Energy  width(_sigmawidth*pcm/_psigma[iopt]);
+  Energy2 msigma2 = sqr(_sigmamass);
+  return msigma2/(q2-msigma2+Complex(0.,1.)*msigma2*width/q);
+}
+
+Complex FourPionNovosibirskCurrent::a1BreitWigner(Energy2 q2) const {
+  Complex ii(0.,1.);
+  Energy2 m2 = sqr(_a1mass);
+  Energy q = sqrt(q2);
+  return (m2/complex<Energy2>(q2 - m2 + ii*q*a1width(q2)));
+}
+
+Complex FourPionNovosibirskCurrent::omegaBreitWigner(Energy2 q2) const {
+  Energy q(sqrt(q2));
+  // calcluate the running width
+  double diff((q-_omegamass)/GeV),temp(diff);
+  double gomega(1.);
+  Complex ii(0.,1.);
+  if(q<=1.*GeV) {
+    for(unsigned int ix=0;ix<6;++ix) {
+      gomega +=temp*_omegaparam[ix];
+      temp*=diff;
+    }
+  }
+  else {
+    gomega=_omegaparam[6]+q/GeV*(_omegaparam[7]+q/GeV*_omegaparam[8]
+				 +q2/GeV2*_omegaparam[9]);
+  }
+  if(gomega<0.){gomega=0.;}
+  Energy2 numer=_omegamass*_omegamass;
+  complex<Energy2> denom=q2-_omegamass*_omegamass+ii*_omegamass*_omegawidth*gomega;
+  return numer/denom;
+}
+
+Complex FourPionNovosibirskCurrent::rhoBreitWigner(Energy2 q2) const {
+  Energy q(sqrt(q2));
+  Energy2 grhom(8.*_prho*_prho*_prho/_rhomass);
+  complex<Energy2> denom;
+  Complex ii(0.,1.);
+  if(q2<4.*_mpic2) {
+    denom=q2-_rhomass*_rhomass
+      -_rhowidth*_rhomass*(hFunction(q)-_hm2-(q2-_rhomass*_rhomass)*_dhdq2m2)/grhom;
+  }
+  else {
+    Energy pcm(2.*Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic));
+    Energy2 grho(pcm*pcm*pcm/q);
+    denom=q2-_rhomass*_rhomass
+      -_rhowidth*_rhomass*(hFunction(q)-_hm2-(q2-_rhomass*_rhomass)*_dhdq2m2)/grhom
+      +ii*_rhomass*_rhowidth*grho/grhom;
+  }
+  return _rhoD/denom;
+}
+
+LorentzVector<complex<Energy5> > 
+FourPionNovosibirskCurrent::t1(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+			       Lorentz5Momentum & q3,Lorentz5Momentum & q4) const {
+  // momentum of the whole sysytem
+  Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
+  // compute the virtuality of the a_1
+  Lorentz5Momentum a1(q2+q3+q4);a1.rescaleMass();
+  // compute the virtuality of the  rho
+  Lorentz5Momentum rho(q3+q4);rho.rescaleMass();
+  // compute the prefactor    
+  Complex pre(-a1FormFactor(a1.mass2())*a1BreitWigner(a1.mass2())*
+	      rhoBreitWigner(rho.mass2()));
+  // dot products we need
+  Energy2 QdQmq1(Q*a1);
+  complex<Energy4> consta(QdQmq1*(a1*q3)), constb(QdQmq1*(a1*q4)),
+    constc(((Q*q4)*(q1*q3)-(Q*q3)*(q1*q4)));
+  // compute the current
+  return pre*(consta*q4-constb*q3+constc*a1);
+}
+
+LorentzVector<complex<Energy5> > 
+FourPionNovosibirskCurrent::t2(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+			       Lorentz5Momentum & q3,Lorentz5Momentum & q4,
+			       unsigned int iopt) const {
+  // momentum of the whole system
+  Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
+  // compute the virtuality of the a_1
+  Lorentz5Momentum a1(q2+q3+q4);a1.rescaleMass();
+  // compute the virtuality of the  sigma
+  Lorentz5Momentum sigma(q3+q4);sigma.rescaleMass();
+  // compute the prefactor
+  Complex pre(_zsigma*a1FormFactor(a1.mass2())
+	      *a1BreitWigner(a1.mass2())*
+	      sigmaBreitWigner(sigma.mass2(),iopt));
+  // dot products we need
+  complex<Energy4> consta((Q*a1)*a1.mass2()),constb((Q*q2)*a1.mass2());
+  // compute the current
+  return pre*(consta*q2-constb*a1);
+}
+
+LorentzVector<complex<Energy5> > 
+FourPionNovosibirskCurrent::t3(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+			       Lorentz5Momentum & q3,Lorentz5Momentum & q4) const {
+  // momentum of the whole sysytem
+  Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
+  // compute the virtuality of the omega
+  Lorentz5Momentum omega(q2+q3+q4);omega.rescaleMass();
+  // compute the virtuality of the  rho
+  Lorentz5Momentum rho(q3+q4);rho.rescaleMass();
+  // compute the prefactor
+  Complex pre(omegaBreitWigner(omega.mass2())*rhoBreitWigner(rho.mass2()));
+  // dot products we need
+  complex<Energy4> consta((Q*q3)*(q1*q4)-(Q*q4)*(q1*q3)),
+    constb(-(Q*q2)*(q1*q4)+(q1*q2)*(Q*q4)),
+    constc((Q*q2)*(q1*q3)-(q1*q2)*(Q*q3));
+  // compute the current
+  return pre*(consta*q2+constb*q3+constc*q4);
+}
+
+InvEnergy6 FourPionNovosibirskCurrent::gFunction(Energy2 q2, int ichan) const {
+  Energy q(sqrt(q2));
+  InvEnergy4 invmrho4 = 1/sqr(sqr(_rhomass));
+  // the one charged pion G function
+  if(ichan==0) {
+    return (*_Fonec)(q) * _aonec * (*_Fsigma)(q2) * sqrt(_bonec*q/GeV-_conec) *
+      invmrho4/q;
+  }
+  // the three charged pion G function
+  else if(ichan==1) {
+    return (*_Fthreec)(q)*_athreec*sqrt(_bthreec*q/GeV-_cthreec)*invmrho4/q; 
+  }
+  // the omega G function
+  else if(ichan==2) {
+    return(*_Fomega)(q)*_aomega*sqrt(_bomega*q/GeV-_comega)*invmrho4/q;
+  }
+  assert(false);
+  return InvEnergy6();
+}
+
+Energy2 FourPionNovosibirskCurrent::DParameter() const {
+  Energy2 grhom(8.*_prho*_prho*_prho/_rhomass);
+  return _rhomass*_rhomass+_rhowidth*_rhomass*
+    (hFunction(ZERO)-_hm2+_rhomass*_rhomass*_dhdq2m2)/grhom;
+}
+
+double FourPionNovosibirskCurrent::dhdq2Parameter() const {
+  Energy2 mrho2(_rhomass*_rhomass);
+  double root(sqrt(1.-4.*_mpic2/mrho2));
+  return root/Constants::pi*(root+(1.+2*_mpic2/mrho2)*log((1+root)/(1-root)));
+}
+
+Energy2 FourPionNovosibirskCurrent::hFunction(const Energy q) const {
+  using Constants::pi;
+  static const Energy2 eps(0.01*MeV2);
+
+  Energy2 q2(q*q), output;
+  if (q2 > 4*_mpic2) {
+    double root = sqrt(1.-4.*_mpic2/q2);
+    output = root*log((1.+root)/(1.-root))*(q2-4*_mpic2)/pi;
+  }
+  else if (q2 > eps) output = ZERO;
+  else               output = -8.*_mpic2/pi;
+  return output;
+}
+
