@@ -17,6 +17,12 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
+namespace Herwig {
+// Need to init the interpolator instance here
+HERWIG_INTERPOLATOR_CLASSDESC(Energy,Energy2)
+}
 
 
 using namespace Herwig;
@@ -40,9 +46,11 @@ ThreeMesonCurrentBase::ThreeMesonCurrentBase() {
   setInitialModes(12);
 }
 
-AbstractNoPIOClassDescription<ThreeMesonCurrentBase> 
-ThreeMesonCurrentBase::initThreeMesonCurrentBase;
-// Definition of the static class description member.
+DescribeAbstractNoPIOClass<ThreeMesonCurrentBase,WeakDecayCurrent>
+describeHerwigThreeMesonCurrentBase("Herwig::ThreeMesonCurrentBase",
+				    "HwWeakCurrents.so");
+
+
 
 void ThreeMesonCurrentBase::Init() {
     

@@ -25,13 +25,6 @@
 
 #include <functional>
 
-namespace Herwig {
-// Need to init the interpolator instance here
-HERWIG_INTERPOLATOR_CLASSDESC(Energy,Energy2)
-}
-
-
-
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
