@@ -16,12 +16,8 @@
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include "ClusterHadronizationHandler.h"
-#include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
-
-DescribeNoPIOClass<Cluster,Particle>
-describeCluster("Herwig::Cluster","");
 
 PPtr Cluster::clone() const {
   return new_ptr(*this);
@@ -31,13 +27,14 @@ PPtr Cluster::fullclone() const {
   return clone();
 }
 
-tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
+cCluHadHdlPtr Cluster::_clusterHadHandler = cCluHadHdlPtr();
 
 Energy2 Cluster::_mg2 = ZERO;
 
+ClassDescription<Cluster> Cluster::initCluster;
+
 Cluster::Cluster() 
-  : Particle(CurrentGenerator::current().
-	     getParticleData(long(ParticleID::Cluster))), 
+  : Particle(), 
     _isAvailable(true),
     _hasReshuffled(false),
     _component(),
@@ -45,7 +42,21 @@ Cluster::Cluster()
     _isBeamRemnant(),
     _isPerturbative(),
     _numComp(0),
-    _id(0) {}  
+    _id(0) {}
+
+void Cluster::persistentOutput(PersistentOStream & os) const {
+  os << _isAvailable << _hasReshuffled << _component << _original
+     << _isBeamRemnant << _isPerturbative << _numComp << _id
+     << _clusterHadHandler << ounit(_mg2,GeV2);
+}
+
+void Cluster::persistentInput(PersistentIStream & is, int) {
+  is >> _isAvailable >> _hasReshuffled >> _component >> _original
+     >> _isBeamRemnant >> _isPerturbative >> _numComp >> _id
+     >> _clusterHadHandler >> iunit(_mg2,GeV2);
+}
+
+
 
 Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   : Particle(CurrentGenerator::current().
