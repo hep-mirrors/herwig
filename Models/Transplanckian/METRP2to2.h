@@ -194,11 +194,6 @@ protected:
   void setup_interpolator();
   
 private:
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<METRP2to2> initMETRP2to2;
 
   /**
    * The assignment operator is private and must never be called.
@@ -236,42 +231,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of METRP2to2. */
-template <>
-struct BaseClassTrait<Herwig::METRP2to2,1> {
-  /** Typedef of the first base class of METRP2to2. */
-  typedef Herwig::HwMEBase NthBase;
-
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the METRP2to2 class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::METRP2to2>
-  : public ClassTraitsBase<Herwig::METRP2to2> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::METRP2to2"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * METRP2to2 is implemented. It may also include several, space-separated,
-   * libraries if the class MEQCD2to2Fast depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwTransplanck.so"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_METRP2to2_H */
