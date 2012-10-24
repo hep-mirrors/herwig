@@ -26,7 +26,7 @@ using namespace Herwig;
 DescribeClass<KaonThreeMesonCurrent,ThreeMesonCurrentBase>
 describeHerwigKaonThreeMesonCurrent("Herwig::KaonThreeMesonCurrent",
 				    "HwWeakCurrents.so");
-
+HERWIG_INTERPOLATOR_CLASSDESC(KaonThreeMesonCurrent,Energy,Energy2)
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }

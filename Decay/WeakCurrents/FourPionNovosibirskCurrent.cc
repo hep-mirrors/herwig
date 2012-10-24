@@ -32,6 +32,7 @@ using namespace ThePEG::Helicity;
 DescribeClass<FourPionNovosibirskCurrent,WeakDecayCurrent>
 describeHerwigFourPionNovosibirskCurrent("Herwig::FourPionNovosibirskCurrent",
 					 "HwWeakCurrents.so");
+HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent,Energy,Energy2)
 
 
 namespace {
