@@ -24,7 +24,7 @@ void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
 		const gengetopt_args_info & args_info);
 void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume, bool keepid);
+	       bool tics, bool resume);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
 
@@ -118,19 +118,13 @@ int main(int argc, char * argv[]) {
     if ( args_info.resume_flag )
       resume = true;
 
-    // Keep id
-    bool keepid = false;
-    if ( args_info.keepid_flag )
-      keepid = true;
-
     // *** End of command line parsing ***
    
     // Call mode
     switch ( status ) {
     case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, seed, tag, N, 
-			   tics, resume, keepid );  break;
+    case RUN:   HerwigRun( runname, seed, tag, N, tics, resume );  break;
     default:    printUsageAndExit();
     }
 
@@ -226,8 +220,8 @@ void HerwigRead(string reponame, string runname,
 
 
 void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume, bool keepid) {
-  PersistentIStream is(runname, keepid);
+	       bool tics, bool resume) {
+  PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
 
