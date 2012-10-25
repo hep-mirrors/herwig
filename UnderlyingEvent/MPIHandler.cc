@@ -606,7 +606,10 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
      << DLmode_ << ounit(totalXSecExp_, millibarn)
      << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV)
-     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_;
+     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_
+     << avgNhard_ << avgNsoft_ << softMult_ 
+     << ounit(inelXSec_, millibarn) 
+     << ounit(softMu2_, GeV2);
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -620,7 +623,11 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
      >> DLmode_ >> iunit(totalXSecExp_, millibarn)
      >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV)
-     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_;
+     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_
+     >> avgNhard_ >> avgNsoft_ >> softMult_ 
+     >> iunit(inelXSec_, millibarn) 
+     >> iunit(softMu2_, GeV2);
+  currentHandler_ = this;
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
