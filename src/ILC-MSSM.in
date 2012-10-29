@@ -46,6 +46,7 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
 setup MSSM/Model CMSSM40.1.1.slha
+#setup MSSM/Model spectrum_1000_200.slha
 
 # Other parameters for run
 cd /Herwig/Generators

@@ -90,14 +90,16 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   //count number of events which give gluons in the dead region 
   // ofstream dead("dead.top");
   // ofstream count("count.top");
-  // for (unsigned int iy=0; iy<100000; ++iy){   
-  // vector<Lorentz5Momentum> momenta = hardMomenta();
-  // if(momenta.empty()) continue;
-  // double xw = 2.*momenta[2].e()/momenta[0].mass();
-  // double xg = 2.*momenta[3].e()/momenta[0].mass();
-  // count << "1\n";
-  // if(not deadZoneCheck(xw, xg)) continue;
-  // dead << xg << "\t" << xw << "\n";
+  // ofstream PS("PS3.top");
+  // for (unsigned int iy=0; iy<200000; ++iy){   
+  //   vector<Lorentz5Momentum> momenta = hardMomenta();
+  //   if(momenta.empty()) continue;
+  //   double xw = 2.*momenta[2].e()/momenta[0].mass();
+  //   double xg = 2.*momenta[3].e()/momenta[0].mass();
+  //   count << "1\n";
+  //   PS << xg << "\t" << xw << "\n";
+  //   if(not deadZoneCheck(xw, xg)) continue;
+  //   dead << xg << "\t" << xw << "\n";
   // }
 
 
@@ -105,16 +107,16 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> momenta = hardMomenta();
 
   //
-   // if (!momenta.empty()){
-   //   ofstream output("PS.top", ios::app);
-   //   double xw = 2.*momenta[2].e()/momenta[0].mass();
-   //   double xg = 2.*momenta[3].e()/momenta[0].mass();
-   //   output << xg << "\t" << xw << "\n";
-   //   if (deadZoneCheck(xw, xg)) {
-   //     ofstream dead2("dead2.top", ios::app);
-   //     dead2 << "1\n";
-   //   }
-   // }
+  //if (!momenta.empty()){
+  //ofstream output("PS.top", ios::app);
+  //double xw = 2.*momenta[2].e()/momenta[0].mass();
+  //double xg = 2.*momenta[3].e()/momenta[0].mass();
+  //output << xg << "\t" << xw << "\n";
+  //if (deadZoneCheck(xw, xg)) {
+  //  ofstream dead2("dead2.top", ios::app);
+  //  dead2 << "1\n";
+  //}
+  //}
 
   // if no emission return
   if(momenta.empty()) {
@@ -125,9 +127,9 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   
   // rotate momenta back to the lab
   for(unsigned int ix=0;ix<momenta.size();++ix) {
-    momenta[ix] *= eventFrame;
-  
+    momenta[ix] *= eventFrame;  
   }
+
   // get ParticleData objects
   tcPDPtr top    = topProgenitor->progenitor()->dataPtr();
   tcPDPtr bottom = bProgenitor  ->progenitor()->dataPtr();
@@ -200,12 +202,10 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
   double ymin = -ymax;
   
   vector<Lorentz5Momentum> particleMomenta (4);
-  Energy2 lambda = sqr(mt_)* sqrt( 1. + sqr(w2_) + sqr(b2_) -
-			           2.*w2_ - 2.*b2_ - 2.*w2_*b2_);    
+  Energy2 lambda = sqr(mt_)* sqrt( 1. + sqr(w2_) + sqr(b2_) - 2.*w2_ - 2.*b2_ - 2.*w2_*b2_);  
 
   //Calculate A
-  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / 
-  				 (2.*Constants::pi));
+  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / (2.*Constants::pi));
    
   Energy pTmax = mt_* (sqr(1.-w_) - b2_) / (2.*(1.-w_));
   if (pTmax < pTmin_) particleMomenta.clear();
@@ -226,11 +226,11 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       //Check if the momenta are physical
       bool physical = calcMomenta(j, pT, y, phi, xg, xw[j], xb[j], xb_z[j], 
 				  particleMomenta);
-      if (not physical) continue;
+      if (! physical) continue;
       
       //Check if point lies within phase space
       bool inPS = psCheck(xg, xw[j]);
-      if (not inPS) continue;
+      if (! inPS) continue;
       
       //Calculate the ratio R/B
       double meRatio = matrixElementRatio(particleMomenta);
@@ -245,11 +245,11 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C;    
      }
 
-    ofstream weights;
-    if (weight[0] + weight[1] > 1.){
-      weights.open("weights.top", ios::app);
-      weights << weight[0]+weight[1] << endl;
-    }
+    //ofstream weights;
+    //if (weight[0] + weight[1] > 1.){
+    //weights.open("weights.top", ios::app);
+    //weights << weight[0]+weight[1] << endl;
+    //}
 
     //Accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {

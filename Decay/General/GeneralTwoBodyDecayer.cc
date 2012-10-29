@@ -512,7 +512,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   // identify which dipoles are required
   vector<dipoleType> dipoles;
   identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor);
-  
+
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
@@ -530,7 +530,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       trialEmitter   = aProgenitor;
       trialSpectator = cProgenitor;
     }
-  
+
     // find rotation from lab to frame with the spectator along -z
     LorentzRotation trialEventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
     Lorentz5Momentum pspectator = trialEventFrame*trialSpectator->progenitor()->momentum();
@@ -543,7 +543,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     pT_ = pTmin_;
     vector<Lorentz5Momentum> trialMomenta 
       = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
-  
+
     // select dipole which gives highest pT branching
     if(pT_>trialpT){
       trialpT        = pT_;
@@ -554,7 +554,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     }
   }  
   pT_ = trialpT;
-      
+
   // if no emission return
   if(momenta.empty()) {
     bProgenitor   ->maximumpT(pTmin_);
@@ -567,7 +567,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   for(unsigned int ix=0;ix<momenta.size();++ix) {
     momenta[ix] *= eventFrame;
   }
-  
+ 
   // set maximum pT for subsequent branchings
   bProgenitor   ->maximumpT(pT_);
   finalEmitter  ->maximumpT(pT_);
@@ -728,13 +728,6 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
       // calculate weight
       weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C / Constants::twopi; 
     }
-
-    //ofstream weights;
-    //if (weight[0] + weight[1] > 1.){
-    //weights.open("weights.top", ios::app);
-    //weights << weight[0]+weight[1] << endl;
-    //}
-
     // accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
       if (weight[0] > (weight[0] + weight[1])*UseRandom::rnd()) {
@@ -764,7 +757,7 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 						 const ParticleVector & decay3, 
 						 MEOption meopt) {
   // calculate R/B
-  double B = me2        (0, inpart, decay2, meopt);
+  double B = me2        (0, inpart, decay2, meopt);    
   double R = threeBodyME(0, inpart, decay3, meopt);
   return R/B;
 }
@@ -991,11 +984,7 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   }
   // decaying colour octet
   else if(inpart.dataPtr()->iColour() == PDT::Colour8) {
-    if(oct.size()==2 && sing.size() == 1) { //??
-      nflow = 1;
-      colour_ = vector<DVector>(1,DVector(1,3.));
-    }
-    else if(oct.size()==1 && trip.size()==1 && atrip.size()==1) {
+    if(oct.size()==1 && trip.size()==1 && atrip.size()==1) {
       nflow = 2;
       colour_ .resize(2,DVector(2,0.));
       colour_[0][0] =  2./3. ; colour_[0][1] = -1./12.;
@@ -1130,16 +1119,16 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
   if(inpart.dataPtr()->iColour() == PDT::Colour3 &&
      trip.size()==1 && oct.size()==2) {
     colourFlows_[2].resize(2, make_pair(0,1.));
-    colourFlows_[2][0] = make_pair(0,-1.);
-    colourFlows_[2][1] = make_pair(1, 1.);
+    colourFlows_[2][0] = make_pair(0, 1.);
+    colourFlows_[2][1] = make_pair(1,-1.);
     colourFlows_[1][0] = make_pair(1, 1.);
   }
   // decaying colour anti-triplet
   else if(inpart.dataPtr()->iColour() == PDT::Colour3bar &&
 	  atrip.size()==1 && oct.size()==2){
     colourFlows_[1].resize(2, make_pair(0,1.));
-    colourFlows_[1][0] = make_pair(0,-1.);
-    colourFlows_[1][1] = make_pair(1, 1.);
+    colourFlows_[1][0] = make_pair(0, 1.);
+    colourFlows_[1][1] = make_pair(1,-1.);
     colourFlows_[2][0] = make_pair(1, 1.);
   }
   // decaying colour octet

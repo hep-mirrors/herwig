@@ -71,7 +71,14 @@ public:
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,MEOption meopt);
+  /**
+   * Indentify outgoing vertices for the fermion and antifermion
+   */
+  void identifyVertices(const int iferm, const int ianti,
+			const Particle & inpart, const ParticleVector & decay,
+			AbstractFFVVertexPtr & abstractOutgoingVertexF, 
+			AbstractFFVVertexPtr & abstractOutgoingVertexA);
   //@}
 
 public:

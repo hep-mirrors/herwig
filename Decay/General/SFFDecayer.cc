@@ -150,13 +150,12 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     if(decay[ix]->dataPtr()->CC()) itype[ix] = decay[ix]->id()>0 ? 0:1;
     else                           itype[ix] = 2;
   }
-
   if(itype[0]==0 && itype[1]!=0) swap(iferm, ianti);
+  if(itype[0]==2 && itype[1]==1) swap(iferm, ianti);
   if(itype[0]==0 && itype[1]==0 && decay[0]->dataPtr()->id()<decay[1]->dataPtr()->id()) 
     swap(iferm, ianti);
   if(itype[0]==1 && itype[1]==1 && decay[0]->dataPtr()->id()<decay[1]->dataPtr()->id()) 
     swap(iferm, ianti);
-
   
   if(meopt==Initialize) {
     // create scalar wavefunction for decaying particle
@@ -180,6 +179,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   // calculate colour factors and number of colour flows
   unsigned int nflow;
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
+  if(nflow>1) cfactors[0][1]=cfactors[1][0];
 
   vector<DecayMatrixElement> ME(nflow,DecayMatrixElement(PDT::Spin0,     PDT::Spin1Half,
 							 PDT::Spin1Half, PDT::Spin1));
@@ -205,28 +205,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   // identify fermion and/or anti-fermion vertex
   AbstractFFVVertexPtr abstractOutgoingVertexF;
   AbstractFFVVertexPtr abstractOutgoingVertexA;
-  if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&  
-     decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
-    if     (_abstractOutgoingVertex1) abstractOutgoingVertexF = _abstractOutgoingVertex1;
-    else if(_abstractOutgoingVertex2) abstractOutgoingVertexF = _abstractOutgoingVertex2;
-  }
-  else if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
-	  decay[iferm]->dataPtr()->iColour()==PDT::Colour0){
-    if     (_abstractOutgoingVertex1) abstractOutgoingVertexA = _abstractOutgoingVertex1;
-    else if(_abstractOutgoingVertex2) abstractOutgoingVertexA = _abstractOutgoingVertex2;
-  }
-  else if(inpart.       dataPtr()->iColour()==PDT::Colour0     &&
-	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3     && 
-	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-    abstractOutgoingVertexF = _abstractOutgoingVertex1;
-    abstractOutgoingVertexA = _abstractOutgoingVertex2;
-  }
-
-  if (not ((_abstractIncomingVertex  && (abstractOutgoingVertexF || abstractOutgoingVertexA)) ||
-	   ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
-    throw Exception()
-    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::threeBodyME"
-    << Exception::runerror;
+  identifyVertices(iferm, ianti, inpart, decay, abstractOutgoingVertexF, abstractOutgoingVertexA);
 
   Energy2 scale(sqr(inpart.mass()));
   tcPDPtr Scalar=getParticleData(inpart.id());
@@ -301,7 +280,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	  Complex diag = _abstractVertex->evaluate(scale,interS,_wavebar3[ifm],_swave3)/gs;
 	  for(unsigned int ix=0;ix<colourFlows(inpart, decay)[2].size();++ix) {
 	    ME[colourFlows(inpart, decay)[2][ix].first](0, ia, ifm, iv) += 
-	       colourFlows(inpart, decay)[2][ix].second*diag; 
+	       colourFlows(inpart, decay)[2][ix].second*diag;
 	  }
 	}
       }
@@ -319,4 +298,60 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 
   // return the answer
   return output;
+}
+
+void SFFDecayer::identifyVertices(const int iferm, const int ianti,
+				  const Particle & inpart, const ParticleVector & decay, 
+				  AbstractFFVVertexPtr & abstractOutgoingVertexF, 
+				  AbstractFFVVertexPtr & abstractOutgoingVertexA){
+
+  if(inpart.dataPtr()->iColour()==PDT::Colour3){
+    if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&  
+       decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
+      if     (_abstractOutgoingVertex1) abstractOutgoingVertexF = _abstractOutgoingVertex1;
+      else if(_abstractOutgoingVertex2) abstractOutgoingVertexF = _abstractOutgoingVertex2;
+    }
+    else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
+	     decay[ianti]->dataPtr()->iColour()==PDT::Colour8){
+      if (_abstractOutgoingVertex1->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
+	abstractOutgoingVertexF = _abstractOutgoingVertex2;
+	abstractOutgoingVertexA = _abstractOutgoingVertex1;
+      }
+      else {
+	abstractOutgoingVertexF = _abstractOutgoingVertex1;
+	abstractOutgoingVertexA = _abstractOutgoingVertex2;
+      }
+    }
+  }
+  else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
+    if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
+       decay[iferm]->dataPtr()->iColour()==PDT::Colour0){
+      if     (_abstractOutgoingVertex1) abstractOutgoingVertexA = _abstractOutgoingVertex1;
+      else if(_abstractOutgoingVertex2) abstractOutgoingVertexA = _abstractOutgoingVertex2;
+    }
+    else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour8 &&
+	     decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+      if (_abstractOutgoingVertex1->isIncoming(getParticleData(decay[iferm]->dataPtr()->id()))){
+	abstractOutgoingVertexF = _abstractOutgoingVertex1;
+	abstractOutgoingVertexA = _abstractOutgoingVertex2;
+      }
+      else {
+	abstractOutgoingVertexF = _abstractOutgoingVertex2;
+	abstractOutgoingVertexA = _abstractOutgoingVertex1;
+      }
+    }
+  }
+  else if(inpart.       dataPtr()->iColour()==PDT::Colour0     &&
+	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3     && 
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+    abstractOutgoingVertexF = _abstractOutgoingVertex1;
+    abstractOutgoingVertexA = _abstractOutgoingVertex2;
+  }
+
+  if (not ((_abstractIncomingVertex  && (abstractOutgoingVertexF || abstractOutgoingVertexA)) ||
+	   ( abstractOutgoingVertexF &&  abstractOutgoingVertexA) ||
+	   ( abstractOutgoingVertexF &&  abstractOutgoingVertexA && _abstractIncomingVertex)))
+    throw Exception()
+    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::threeBodyME"
+    << Exception::runerror;
 }
