@@ -290,7 +290,7 @@ private:
   /**
    * This is needed to determine if a cluster is from a perturbative quark.
    */
-  static cCluHadHdlPtr _clusterHadHandler;
+  static tcCluHadHdlPtr _clusterHadHandler;
   
   /**
    *  The gluon mass is needed to determine if a cluster is from a perturbative quark
@@ -308,7 +308,7 @@ private:
   bool        _isAvailable;        //!< Whether the cluster is hadronizing
   bool        _hasReshuffled;      //!< Whether the cluster has been reshuffled
   ParticleVector _component;       //!< The constituent partons
-  ParticleVector _original;        //!< The original components
+  tParticleVector _original;        //!< The original components
   vector<bool> _isBeamRemnant;     //!< Whether a parton is a beam remnant
   vector<bool> _isPerturbative;    //!< Whether a parton is perturbative
   int _numComp;                    //!< The number of constituents

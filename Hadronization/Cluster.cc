@@ -27,7 +27,7 @@ PPtr Cluster::fullclone() const {
   return clone();
 }
 
-cCluHadHdlPtr Cluster::_clusterHadHandler = cCluHadHdlPtr();
+tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
 Energy2 Cluster::_mg2 = ZERO;
 
