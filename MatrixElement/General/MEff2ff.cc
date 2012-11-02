@@ -29,12 +29,8 @@ void MEff2ff::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin1Half, PDT::Spin1Half));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin1Half, PDT::Spin1Half);
   for(size_t ix = 0;ix < numberOfDiags(); ++ix) {
     const HPDiagram & current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
@@ -60,16 +56,6 @@ void MEff2ff::doinit() {
       tensor_[ix] = make_pair(vert1, vert2);
     }
   }
-}
-
-void MEff2ff::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin1Half, PDT::Spin1Half));
 }
 
 double MEff2ff::me2() const {
@@ -597,6 +583,8 @@ void MEff2ff::persistentOutput(PersistentOStream & os) const {
 
 void MEff2ff::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> tensor_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin1Half, PDT::Spin1Half);
 }
 
 ClassDescription<MEff2ff> MEff2ff::initMEff2ff;
