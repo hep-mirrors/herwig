@@ -25,6 +25,7 @@
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Cuts/SimpleKTCut.h"
+#include "ThePEG/PDF/PartonExtractor.h"
 
 #include "gsl/gsl_sf_bessel.h"
 
@@ -596,7 +597,7 @@ void MPIHandler::overrideUECuts() {
 }
 
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
-  os << theMultiplicities << theHandler 
+  os << theMultiplicities << theHandler
      << theSubProcesses << theCuts << theProcessHandlers
      << additionalMultiplicities_ << identicalToUE_ 
      << ounit(PtOfQCDProc_, GeV) << ounit(Ptmin_, GeV) 
@@ -613,7 +614,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
-  is >> theMultiplicities >> theHandler 
+  is >> theMultiplicities >> theHandler
      >> theSubProcesses >> theCuts >> theProcessHandlers
      >> additionalMultiplicities_ >> identicalToUE_ 
      >> iunit(PtOfQCDProc_, GeV) >> iunit(Ptmin_, GeV)
@@ -629,6 +630,15 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(softMu2_, GeV2);
   currentHandler_ = this;
 }
+
+void MPIHandler::clean() {
+  // ThePEG's event handler's usual event cleanup doesn't reach these
+  // XCombs. Need to do it by hand here.
+  for ( size_t i = 0; i < theSubProcesses.size(); ++i ) {
+    theSubProcesses[i]->pExtractor()->lastXCombPtr()->clean();
+  }
+}
+
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
 // Definition of the static class description member.

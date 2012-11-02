@@ -16,7 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
-  
+
 // calculate a decay matrix for one of the incoming particles
 RhoDMatrix ProductionMatrixElement::
 calculateDMatrix(int id, const RhoDMatrix & rhoin,
@@ -155,3 +155,291 @@ Complex ProductionMatrixElement::average(const ProductionMatrixElement & me2,
   }
   return output;
 }
+
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out) {
+  _nout=2;
+  _inspin.resize(2);
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin.push_back(out);
+  setMESize();
+}
+
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
+						 PDT::Spin out2) {
+  _nout=2;
+  _inspin.resize(2);
+  _inspin[0]=in1; 
+  _inspin[1]=in2;
+  _outspin.push_back(out1);
+  _outspin.push_back(out2);
+  setMESize();
+}
+  
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
+						 PDT::Spin out2,PDT::Spin out3) {
+  _inspin.resize(2);
+  _nout=3;
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin.push_back(out1);
+  _outspin.push_back(out2);
+  _outspin.push_back(out3);
+  setMESize();
+}
+
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
+						 PDT::Spin out2,PDT::Spin out3, PDT::Spin out4) {
+  _nout=4;
+  _inspin.resize(2);
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin.push_back(out1);
+  _outspin.push_back(out2);
+  _outspin.push_back(out3);
+  _outspin.push_back(out4);
+  setMESize();
+}
+
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
+						 PDT::Spin out2,PDT::Spin out3, PDT::Spin out4,
+						 PDT::Spin out5) {
+  _nout=5;
+  _inspin.resize(2);
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin.push_back(out1);
+  _outspin.push_back(out2);
+  _outspin.push_back(out3);
+  _outspin.push_back(out4);
+  _outspin.push_back(out5);
+  setMESize();
+}
+
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
+						 PDT::Spin out2,PDT::Spin out3, PDT::Spin out4,
+						 PDT::Spin out5, PDT::Spin out6) {
+  _nout=6;
+  _inspin.resize(2);
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin.push_back(out1);
+  _outspin.push_back(out2);
+  _outspin.push_back(out3);
+  _outspin.push_back(out4);
+  _outspin.push_back(out5);
+  _outspin.push_back(out6);
+  setMESize();
+}
+  
+ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,vector<PDT::Spin> out) {
+  _inspin.resize(2);
+  _nout=out.size(); 
+  _inspin[0]=in1;
+  _inspin[1]=in2;
+  _outspin=out;
+  setMESize();
+}
+  
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out) const {
+  assert(_outspin.size()==1);
+  unsigned int iloc = in1*_constants[1] + in2*_constants[2] + out*_constants[3];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+  
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out) {
+  assert(_outspin.size()==1);
+  unsigned int iloc = in1*_constants[1] + in2*_constants[2] + out*_constants[3];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2) const {
+  assert(_outspin.size()==2);
+  unsigned int iloc = in1*_constants[1] + in2*_constants[2] +
+    out1*_constants[3] + out2*_constants[4];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2) {
+  assert(_outspin.size()==2);
+  unsigned int iloc = in1*_constants[1] + in2*_constants[2] +
+    out1*_constants[3] + out2*_constants[4];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3) const {
+  assert(_outspin.size()==3);
+  vector<unsigned int> ivec(5);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  return (*this)(ivec);
+}
+
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3) {
+  assert(_outspin.size()==3);
+  vector<unsigned int> ivec(5);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  return (*this)(ivec);
+}
+
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3,unsigned int out4) const {
+  assert(_outspin.size()==4);
+  vector<unsigned int> ivec(6);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  return (*this)(ivec);
+}
+  
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3, unsigned int out4) {
+  assert(_outspin.size()==4);
+  vector<unsigned int> ivec(6);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  return (*this)(ivec);
+}
+
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3,unsigned int out4,
+						unsigned int out5) const {
+  assert(_outspin.size()==5);
+  vector<unsigned int> ivec(7);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  ivec[6]=out5;
+  return (*this)(ivec);
+}
+  
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3, unsigned int out4,
+						unsigned int out5) {
+  assert(_outspin.size()==5);
+  vector<unsigned int> ivec(7);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  ivec[6]=out5;
+  return (*this)(ivec);
+}
+
+Complex   ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3,unsigned int out4,
+						unsigned int out5,unsigned int out6) const {
+  assert(_outspin.size()==6);
+  vector<unsigned int> ivec(8);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  ivec[6]=out5;
+  ivec[7]=out6;
+  return (*this)(ivec);
+}
+
+Complex & ProductionMatrixElement::operator () (unsigned int in1,unsigned int in2,
+						unsigned int out1,unsigned int out2,
+						unsigned int out3, unsigned int out4,
+						unsigned int out5, unsigned int out6) {
+  assert(_outspin.size()==6);
+  vector<unsigned int> ivec(8);
+  ivec[0]=in1;
+  ivec[1]=in2;
+  ivec[2]=out1;
+  ivec[3]=out2;
+  ivec[4]=out3;
+  ivec[5]=out4;
+  ivec[6]=out5;
+  ivec[7]=out6;
+  return (*this)(ivec);
+}
+
+Complex   ProductionMatrixElement::operator () (vector<unsigned int> hel) const {
+  assert(_outspin.size() == hel.size()-2);
+  unsigned int iloc(0),ix;
+  // incoming and outgoing particles
+  for(ix=0;ix<hel.size();++ix)
+    iloc += hel[ix]*_constants[ix+1];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+  
+Complex & ProductionMatrixElement::operator () (vector<unsigned int> hel) {
+  assert(_outspin.size() == hel.size()-2);
+  unsigned int iloc=0,ix;
+  // incoming particles
+  for(ix=0;ix<hel.size();++ix)
+    iloc += hel[ix]*_constants[ix+1];
+  assert(iloc<_matrixelement.size());
+  return _matrixelement[iloc];
+}
+//@}
+
+void ProductionMatrixElement::reset(const ProductionMatrixElement & x) const {
+  _nout = x._nout;
+  _inspin = x._inspin;
+  _outspin = x._outspin;
+  _matrixelement = x._matrixelement;
+  _constants     = x._constants;
+}
+  
+void ProductionMatrixElement::setMESize() {
+  unsigned int ix;
+  int isize=_inspin[0]*_inspin[1];
+  for(ix=0;ix<_outspin.size();++ix)
+    isize*=_outspin[ix];
+  // zero the matrix element
+  _matrixelement.resize(isize,0.);
+  // set up the constants for the mapping of helicity to vectro index
+  _constants.resize(_outspin.size()+3);
+  unsigned int temp=1;
+  for(ix=_outspin.size()+1;ix>1;--ix) {
+    temp*=_outspin[ix-2];
+    _constants[ix]=temp;
+  }
+  temp*=_inspin[1];_constants[1]=temp;
+  temp*=_inspin[0];_constants[0]=temp;
+  _constants[_outspin.size()+2]=1;
+}
+  

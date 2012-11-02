@@ -69,6 +69,11 @@ public:
   virtual void finalize() {}
 
   /**
+   * Clean up method called after each event.
+   */
+  virtual void clean() {}
+
+  /**
    * Return the number of different hard processes. Use 0 as default to
    * not require implementation.
    */

@@ -95,6 +95,14 @@ public:
    */
   bool isSoftUnderlyingEventON() const
   { return _underlyingEventHandler; }
+  
+  /**
+   *  pointer to "this", the current HadronizationHandler.
+   */
+  static const ClusterHadronizationHandler * currentHandler() {
+    assert(currentHandler_);
+    return currentHandler_;
+  }
 
 public:
 
@@ -134,16 +142,6 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-   /**
-    * Initialize this object at the begining of the run phase.
-    */
-  virtual void doinitrun();
   //@}
 
 private:
@@ -205,6 +203,12 @@ private:
    */
   void _setChildren(ClusterVector clusters) const;
   
+  /**
+   *  pointer to "this", the current HadronizationHandler.
+   */
+  static ClusterHadronizationHandler * currentHandler_;
+
+
 };
 
 

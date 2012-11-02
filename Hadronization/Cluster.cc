@@ -27,10 +27,6 @@ PPtr Cluster::fullclone() const {
   return clone();
 }
 
-cCluHadHdlPtr Cluster::_clusterHadHandler = cCluHadHdlPtr();
-
-Energy2 Cluster::_mg2 = ZERO;
-
 ClassDescription<Cluster> Cluster::initCluster;
 
 Cluster::Cluster() 
@@ -46,14 +42,12 @@ Cluster::Cluster()
 
 void Cluster::persistentOutput(PersistentOStream & os) const {
   os << _isAvailable << _hasReshuffled << _component << _original
-     << _isBeamRemnant << _isPerturbative << _numComp << _id
-     << _clusterHadHandler << ounit(_mg2,GeV2);
+     << _isBeamRemnant << _isPerturbative << _numComp << _id;
 }
 
 void Cluster::persistentInput(PersistentIStream & is, int) {
   is >> _isAvailable >> _hasReshuffled >> _component >> _original
-     >> _isBeamRemnant >> _isPerturbative >> _numComp >> _id
-     >> _clusterHadHandler >> iunit(_mg2,GeV2);
+     >> _isBeamRemnant >> _isPerturbative >> _numComp >> _id;
 }
 
 
@@ -147,9 +141,10 @@ void Cluster::calculateX() {
     setVertex(LorentzPoint());
   } else {
     // Get the needed parameters. 
-    assert(_clusterHadHandler); 
-    Energy2 vmin2 = _clusterHadHandler->minVirtuality2();
-    Length dmax = _clusterHadHandler->maxDisplacement();
+    Energy2 vmin2 
+      = ClusterHadronizationHandler::currentHandler()->minVirtuality2();
+    Length dmax 
+      = ClusterHadronizationHandler::currentHandler()->maxDisplacement();
     
     // Get the positions and displacements of the two components (Lab frame).
     LorentzPoint pos1 = _component[0]->vertex();
@@ -251,8 +246,9 @@ void Cluster::setBeamRemnant(int i, bool b) {
     _isBeamRemnant[i] = b;
 }
 
-void Cluster::setPointerClusterHadHandler(tcCluHadHdlPtr gp) {
-  _clusterHadHandler = gp;
-  _mg2=sqr(_clusterHadHandler->
-	   getParticleData(ParticleID::g)->constituentMass());
+bool Cluster::initPerturbative(tPPtr p)
+{ 
+  Energy mg 
+    = CurrentGenerator::current().getParticleData(ParticleID::g)->constituentMass();
+  return p->scale() > sqr(mg);
 }
