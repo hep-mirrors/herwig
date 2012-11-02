@@ -58,22 +58,12 @@ setup MSSM/Model RPV3.1.slha
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
-cd /Herwig/Generators
-set LHCGenerator:DumpPeriod 50
-set LHCGenerator:KeepAllDumps Yes
-
-#set LHCGenerator:EventHandler:CascadeHandler NULL
-#set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-#set LHCGenerator:EventHandler:HadronizationHandler NULL
-#set LHCGenerator:EventHandler:DecayHandler NULL
-#set /Herwig/Analysis/Basics:CheckQuark No
-
 
 # Other parameters for run
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 1000
+set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
 saverun LHC-RPV LHCGenerator
