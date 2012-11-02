@@ -174,9 +174,6 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
     generator()->logWarning( Exception(message.str(), Exception::warning));
     return children;
   } 
-  cerr << "testing mass " 
-       << children[_map[0]]->mass()/GeV << " " 
-       << children[_map[0]]->dataPtr()->mass()/GeV  << "\n";
   // boost the momenta to the rest frame
   Boost boostv(p.momentum().boostVector());
   // boost the particles to the parent rest frame
