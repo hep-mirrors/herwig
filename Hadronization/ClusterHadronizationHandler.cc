@@ -225,7 +225,7 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
   } 
   if (!lightOK) {
-    currentHandler_ = 0;
+    //    currentHandler_ = 0;
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
   }
@@ -287,7 +287,7 @@ handle(EventHandler & ch, const tPVector & tagged,
       (**pit).setLifeLength(LorentzDistance());
     }
   }
-  currentHandler_ = 0;
+  //  currentHandler_ = 0;
 }
 
 void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
