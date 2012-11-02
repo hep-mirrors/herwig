@@ -13,7 +13,6 @@
 // Author: Peter Richardson
 //
 #include "ProductionMatrixElement.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 

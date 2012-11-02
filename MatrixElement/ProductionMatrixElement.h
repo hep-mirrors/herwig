@@ -11,8 +11,6 @@
 //
 // This is the declaration of the ProductionMatrixElement class.
 
-#include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/Utilities/ClassDescription.h>
 #include <ThePEG/EventRecord/RhoDMatrix.h>
 
 namespace Herwig {
@@ -416,39 +414,6 @@ private:
 
 };
 
-}
-
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ProductionMatrixElement.
- */
-template <>
-struct BaseClassTrait<Herwig::ProductionMatrixElement,1> {
-  /** Typedef of the base class of ProductionMatrixElement. */
-  typedef Base NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::ProductionMatrixElement>
-  : public ClassTraitsBase<Herwig::ProductionMatrixElement> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::ProductionMatrixElement"; }
-};
-
-/** @endcond */
-  
 }
 
 #endif /* HERWIG_ProductionMatrixElement_H */
