@@ -9,7 +9,7 @@
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
+set LHCGenerator:PrintEvent 1000
 set LHCGenerator:MaxErrors 10000
 
 ##################################################
@@ -42,7 +42,7 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # W+jet
 # insert SimpleQCD:MatrixElements[0] MEWJet
 #
-# Z+jet
+# Z+jet 
 # insert SimpleQCD:MatrixElements[0] MEZJet
 #
 # WW/WZ/ZZ
@@ -129,6 +129,18 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
+
+
+set LHCGenerator:DumpPeriod 50
+set LHCGenerator:KeepAllDumps Yes
+
+#set LHCGenerator:EventHandler:CascadeHandler NULL
+#set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+#set LHCGenerator:EventHandler:HadronizationHandler NULL
+#set LHCGenerator:EventHandler:DecayHandler NULL
+#set /Herwig/Analysis/Basics:CheckQuark No
+
+
 saverun LHC LHCGenerator
 
 ##################################################
