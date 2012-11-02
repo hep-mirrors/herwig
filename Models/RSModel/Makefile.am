@@ -1,4 +1,4 @@
-if WANT_RS
+if WANT_BSM
 pkglib_LTLIBRARIES = HwRSModel.la
 endif
 HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  \

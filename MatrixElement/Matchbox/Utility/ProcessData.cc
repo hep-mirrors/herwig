@@ -43,14 +43,14 @@ IBPtr ProcessData::fullclone() const {
 
 void ProcessData::persistentOutput(PersistentOStream & os) const {
   os << theDiagramMap << theCrossingMap
-     << theColourMap << theCrossingSigns
-     << theAmplitudePartonData;
+     << theAmplitudeToColourMap << theColourToAmplitudeMap 
+     << theCrossingSigns << theAmplitudePartonData;
 }
 
 void ProcessData::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramMap >> theCrossingMap
-     >> theColourMap >> theCrossingSigns
-     >> theAmplitudePartonData;
+     >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
+     >> theCrossingSigns >> theAmplitudePartonData;
 }
 
 

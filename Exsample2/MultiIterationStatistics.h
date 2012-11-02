@@ -12,6 +12,7 @@
 // This is the declaration of the MultiIterationStatistics class.
 //
 
+#include "ThePEG/Interface/Interfaced.h"
 #include "GeneralStatistics.h"
 
 namespace Herwig {
@@ -23,7 +24,7 @@ using namespace ThePEG;
  * \author Simon Platzer
  * \brief Monte Carlo statistics for multiple iterations
  */
-class MultiIterationStatistics: public Herwig::GeneralStatistics {
+class MultiIterationStatistics: public Interfaced, public Herwig::GeneralStatistics {
 
 public:
 
@@ -47,7 +48,7 @@ public:
    */
   void nextIteration() {
     iterations().push_back(GeneralStatistics(*this));
-    reset();
+    GeneralStatistics::reset();
   }
 
   /**
@@ -105,6 +106,44 @@ public:
    * @param version the version number of the object when written.
    */
   void get(PersistentIStream & is);
+
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -113,6 +152,12 @@ private:
    * The currently accumulated iterations.
    */
   vector<GeneralStatistics> theIterations;
+
+  /**
+   * The minimum number of events per iteration to take this iteration
+   * into account when calculating the total cross section
+   */
+  unsigned int theMinNumEventsPerIteration;
 
 };
 

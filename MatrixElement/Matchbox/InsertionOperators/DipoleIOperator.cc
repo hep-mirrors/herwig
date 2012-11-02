@@ -30,8 +30,7 @@ DipoleIOperator::DipoleIOperator()
     CA(-1.0), CF(-1.0), 
     gammaQuark(-1.0), gammaGluon(-1.0),
     betaZero(-1.),
-    KQuark(-1.0), KGluon(-1.0),
-    theUseDR(false), theUseCS(false) {}
+    KQuark(-1.0), KGluon(-1.0) {}
 
 DipoleIOperator::~DipoleIOperator() {}
 
@@ -41,21 +40,6 @@ IBPtr DipoleIOperator::clone() const {
 
 IBPtr DipoleIOperator::fullclone() const {
   return new_ptr(*this);
-}
-
-void DipoleIOperator::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "  | Born ME\n";
-  lastBorn()->dumpInfo(prefix+"  | ");
 }
 
 void DipoleIOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
@@ -103,11 +87,7 @@ double DipoleIOperator::me2() const {
 
   int idi = 0; int idj = 0;
 
-  Energy2 mu2 = 0.*GeV2;
-  if ( !isCS() ) {
-    assert(lastBorn()->matchboxAmplitude());
-    mu2 = lastBorn()->matchboxAmplitude()->mu2();
-  }
+  Energy2 mu2 = lastBorn()->mu2();
 
   for ( cPDVector::const_iterator i = mePartonData().begin();
 	i != mePartonData().end(); ++i, ++idi ) {
@@ -127,13 +107,16 @@ double DipoleIOperator::me2() const {
 	continue;
 
       double delta = 0.;
-      if ( !isCS() ) {
-	double xgammaGluon = gammaGluon;
-	double xgammaQuark = gammaQuark;
-	if ( isDR() ) {
-	  xgammaGluon += CA/6.;
-	  xgammaQuark += CF/2.;
-	}
+
+      double xgammaGluon = gammaGluon;
+      double xgammaQuark = gammaQuark;
+      if ( isDR() ) {
+	xgammaGluon += CA/6.;
+	xgammaQuark += CF/2.;
+      }
+
+      if ( isBDK() ) {
+	assert(!isCS() && !isExpanded());
 	delta = 
 	  ((**i).id() == ParticleID::g ? xgammaGluon : xgammaQuark) * 
 	  log(mu2/(2.*(meMomenta()[idi]*meMomenta()[idj])));
@@ -141,6 +124,14 @@ double DipoleIOperator::me2() const {
 	     (idi > 1 && idj > 1) )
 	  delta +=
 	    ((**i).id() == ParticleID::g ? CA : CF) * sqr(pi) / 2.;
+      }
+
+      if ( isExpanded() ) {
+	assert(!isCS() && !isBDK());
+	double theLog = log(mu2/(2.*(meMomenta()[idi]*meMomenta()[idj])));
+	delta = 
+	  ((**i).id() == ParticleID::g ? CA : CF) * 0.5 * sqr(theLog) +
+	  ((**i).id() == ParticleID::g ? xgammaGluon : xgammaQuark) * theLog;
       }
 
       res +=
@@ -152,16 +143,14 @@ double DipoleIOperator::me2() const {
     }
   }
 
-  if ( !isCS() ) {
-    Energy2 muR2 = 
-      lastBorn()->renormalizationScale()*
-      lastBorn()->renormalizationScaleFactor();
-    if ( muR2 != mu2 ) {
-      res -=
-	betaZero *
-	lastBorn()->orderInAlphaS() * log(muR2/mu2) *
-	lastBorn()->me2();
-    }    
+  Energy2 muR2 = 
+    lastBorn()->renormalizationScale()*
+    lastBorn()->renormalizationScaleFactor();
+  if ( muR2 != mu2 ) {
+    res -=
+      betaZero *
+      lastBorn()->orderInAlphaS() * log(muR2/mu2) *
+      lastBorn()->me2();
   }
 
   // include the finite renormalization for DR here; ATTENTION this
@@ -177,14 +166,89 @@ double DipoleIOperator::me2() const {
 
 }
 
+double DipoleIOperator::oneLoopDoublePole() const {
+
+  if ( !isExpanded() )
+    return 0.;
+
+  double res = 0.;
+
+  for ( cPDVector::const_iterator i = mePartonData().begin();
+	i != mePartonData().end(); ++i ) {
+
+    if ( !apply(*i) )
+      continue;
+    
+    res += (**i).id() == ParticleID::g ? CA : CF;
+
+  }
+
+  res *= ( - lastBorn()->lastAlphaS() / (2.*pi) ) * ( - lastBorn()->me2() );
+
+  return res;
+
+}
+
+double DipoleIOperator::oneLoopSinglePole() const {
+
+  if ( !isExpanded() )
+    return 0.;
+
+  double res = 0.;
+
+  int idi = 0; int idj = 0;
+
+  Energy2 mu2 = lastBorn()->mu2();
+
+  for ( cPDVector::const_iterator i = mePartonData().begin();
+	i != mePartonData().end(); ++i, ++idi ) {
+
+    if ( !apply(*i) )
+      continue;
+
+    idj = 0;
+
+    for ( cPDVector::const_iterator j = mePartonData().begin();
+	  j != mePartonData().end(); ++j, ++idj ) {
+
+      if ( !apply(*j) )
+	continue;
+
+      if ( i == j || lastBorn()->noDipole(idi,idj) )
+	continue;
+
+      double xgammaGluon = gammaGluon;
+      double xgammaQuark = gammaQuark;
+      if ( isDR() ) {
+	xgammaGluon += CA/6.;
+	xgammaQuark += CF/2.;
+      }
+
+      double theLog = log(mu2/(2.*(meMomenta()[idi]*meMomenta()[idj])));
+      double delta = 
+	((**i).id() == ParticleID::g ? CA : CF) * theLog +
+	((**i).id() == ParticleID::g ? xgammaGluon : xgammaQuark);
+
+      res +=
+	delta * lastBorn()->colourCorrelatedME2(make_pair(idi,idj));
+    }
+
+  }
+
+  res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
+
+  return res;
+
+}
+
 void DipoleIOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << betaZero
-     << KQuark << KGluon << theUseDR << theUseCS;
+     << KQuark << KGluon;
 }
 
 void DipoleIOperator::persistentInput(PersistentIStream & is, int) {
   is >> CA >> CF >> gammaQuark >> gammaGluon >> betaZero
-     >> KQuark >> KGluon >> theUseDR >> theUseCS;
+     >> KQuark >> KGluon;
 }
 
 // *** Attention *** The following static variable is needed for the type

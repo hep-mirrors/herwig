@@ -680,7 +680,7 @@ void ShowerHandler::boostCollision(bool boost) {
     Axis axis((boost_*incoming_.first ->momentum()).vect().unit());
     if(axis.perp2()>0.) {
       double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      boost_.rotate(acos(-axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      boost_.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     }
   }
   // first call performs the boost and second inverse

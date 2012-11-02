@@ -33,17 +33,20 @@
 
 #include "Herwig++/DipoleShower/Utility/DipolePartonSplitter.h"
 
+#include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+
 using namespace Herwig;
 
 DipoleShowerHandler::DipoleShowerHandler() 
   : ShowerHandler(), chainOrderVetoScales(true),
-    nEmissions(0), discardNoEmissions(false),
+    nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
     doFSR(true), doISR(true), realignmentScheme(0),
     hardFirstEmission(false),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theFactorizationScaleFactor(1.0),
-    theRenormalizationScaleFactor(1.0) {}
+    theRenormalizationScaleFactor(1.0),
+    theHardScaleFactor(1.0) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -91,14 +94,34 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 
       unsigned int nEmitted = 0;
 
-      doCascade(nEmitted);
+      if ( firstMCatNLOEmission ) {
+	bool mcatnloReal = false;
+	assert(eventRecord().xcombPtr());
+	mcatnloReal = 
+	  dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+        if ( !mcatnloReal )
+	  nEmissions = 1;
+	else
+	  nEmissions = 0;
+      }
 
-      if ( discardNoEmissions ) {
-	if ( !didRadiate )
-	  throw Veto();
-	if ( nEmissions )
-	  if ( nEmissions < nEmitted )
+      if ( !firstMCatNLOEmission ) {
+
+	doCascade(nEmitted);
+
+	if ( discardNoEmissions ) {
+	  if ( !didRadiate )
 	    throw Veto();
+	  if ( nEmissions )
+	    if ( nEmissions < nEmitted )
+	      throw Veto();
+	}
+
+      } else {
+
+	if ( nEmissions == 1 )
+	  doCascade(nEmitted);
+
       }
 
       if ( intrinsicPtGenerator ) {
@@ -150,12 +173,30 @@ void DipoleShowerHandler::constituentReshuffle() {
 void DipoleShowerHandler::hardScales() {
 
   Energy maxPt = generator()->maximumCMEnergy();
+  bool mcatnloReal = false;
+  assert(eventRecord().xcombPtr());
+  mcatnloReal = 
+    hardFirstEmission && 
+    dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
   if ( (eventRecord().incoming().first->coloured() ||
 	eventRecord().incoming().second->coloured()) &&
-       !hardFirstEmission ) {
-    for ( PList::const_iterator p = eventRecord().outgoing().begin();
-	  p != eventRecord().outgoing().end(); ++p )
-      maxPt = min(maxPt,(**p).momentum().perp());
+       (!hardFirstEmission || mcatnloReal) ) {
+    if ( !eventRecord().outgoing().empty() ) {
+      for ( PList::const_iterator p = eventRecord().outgoing().begin();
+	    p != eventRecord().outgoing().end(); ++p )
+	maxPt = min(maxPt,(**p).momentum().perp());
+    } else {
+      assert(!eventRecord().hard().empty());
+      Lorentz5Momentum phard(ZERO,ZERO,ZERO,ZERO);
+      for ( PList::const_iterator p = eventRecord().hard().begin();
+	    p != eventRecord().hard().end(); ++p )
+	phard += (**p).momentum();
+      Energy mhard = phard.m();
+      maxPt = mhard;
+    }
+  }
+  if ( !hardFirstEmission || mcatnloReal ) {
+    maxPt *= sqrt(theHardScaleFactor);
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -638,18 +679,20 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << kernels << theEvolutionOrdering 
      << constituentReshuffler << intrinsicPtGenerator
      << theGlobalAlphaS << chainOrderVetoScales
-     << nEmissions << discardNoEmissions << doFSR << doISR
+     << nEmissions << discardNoEmissions << firstMCatNLOEmission << doFSR << doISR
      << realignmentScheme << hardFirstEmission << verbosity << printEvent
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor;
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor
+     << theHardScaleFactor;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> kernels >> theEvolutionOrdering 
      >> constituentReshuffler >> intrinsicPtGenerator
      >> theGlobalAlphaS >> chainOrderVetoScales
-     >> nEmissions >> discardNoEmissions >> doFSR >> doISR
+     >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission >> doFSR >> doISR
      >> realignmentScheme >> hardFirstEmission >> verbosity >> printEvent
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
+     >> theHardScaleFactor;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -816,6 +859,23 @@ void DipoleShowerHandler::Init() {
 
   interfaceDiscardNoEmissions.rank(-1);
 
+  static Switch<DipoleShowerHandler,bool> interfaceFirstMCatNLOEmission
+    ("FirstMCatNLOEmission",
+     "[debug option] Only perform the first MC@NLO emission.",
+     &DipoleShowerHandler::firstMCatNLOEmission, false, false, false);
+  static SwitchOption interfaceFirstMCatNLOEmissionOn
+    (interfaceFirstMCatNLOEmission,
+     "On",
+     "",
+     true);
+  static SwitchOption interfaceFirstMCatNLOEmissionOff 
+    (interfaceFirstMCatNLOEmission,
+     "Off",
+     "",
+     false);
+
+  interfaceFirstMCatNLOEmission.rank(-1);
+
 
   static Parameter<DipoleShowerHandler,int> interfaceVerbosity
     ("Verbosity",
@@ -844,6 +904,12 @@ void DipoleShowerHandler::Init() {
     ("RenormalizationScaleFactor",
      "The renormalization scale factor.",
      &DipoleShowerHandler::theRenormalizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,double> interfaceHardScaleFactor
+    ("HardScaleFactor",
+     "The hard scale factor.",
+     &DipoleShowerHandler::theHardScaleFactor, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
 }

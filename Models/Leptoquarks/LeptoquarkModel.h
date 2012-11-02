@@ -154,7 +154,7 @@ public:
    * Suppression scale for derivatively coupled scalar leptoquarks
    */
   
-  double fscale() const {return _derivscalef;}
+  Energy fscale() const {return _derivscalef;}
 
 
 
@@ -310,7 +310,7 @@ private:
   /**
    *  Suppression scale for derivatively coupled scalar leptoquarks, f
    */
-  double _derivscalef;
+  Energy _derivscalef;
 
   
 

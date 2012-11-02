@@ -1041,7 +1041,7 @@ bool MEPP2Higgs::applyHard(ShowerParticleVector gluons,
   double kappa[2]={1.,1.};
   // get the momentum fractions for the leading order process
   // and the values of the PDF's
-  double x[2],fx[2];
+  double x[2]={-99.99e99,-99.99e99},fx[2]={-99.99e99,-99.99e99};
   tcPDFPtr pdf[2];
   for(unsigned int ix=0;ix<gluons.size();++ix) {
     x[ix]=gluons[ix]->x();
@@ -1536,7 +1536,7 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   Energy2 sh = mh2_-th-uh;
   InvEnergy2 res = InvEnergy2();
   // pdf part of the cross section
-  double pdf[4];
+  double pdf[4] = {99.99e99,99.99e99,99.99e99,99.99e99};
   if(mu_F_opt_==0) {  // As in original version ...
     pdf[0]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],mh2_,x1);
     pdf[1]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],mh2_,y1);

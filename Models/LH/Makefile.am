@@ -1,8 +1,8 @@
-if WANT_LH
+if WANT_BSM
 pkglib_LTLIBRARIES = HwLHModel.la
 endif
 HwLHModel_la_SOURCES = \
-LHModel.h LHModel.cc  \
+LHModel.h LHModel.fh LHModel.cc  \
 LHFFZVertex.h  LHFFZVertex.cc  \
 LHFFPVertex.h  LHFFPVertex.cc  \
 LHFFGVertex.h  LHFFGVertex.cc  \

@@ -12,7 +12,7 @@ HwPomeronPDF_la_SOURCES = \
 PomeronPDF.cc PomeronPDF.h 
 ## add this to produce tests of the PDFs
 ## HwDIFFRACTIVEPDF_la_CPPFLAGS=$(AM_CPPFLAGS) -DDIFFRACTIVEPDF_TESTING
-HwPomeronPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwPomeronPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:1:0
 
 pkglib_LTLIBRARIES += HwReggeonPDF.la
 HwReggeonPDF_la_SOURCES = \

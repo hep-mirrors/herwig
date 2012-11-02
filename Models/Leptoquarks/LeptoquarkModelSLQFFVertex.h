@@ -237,7 +237,7 @@ private:
   /**
    *  Suppression scale for derivatively coupled scalar leptoquarks
    */
-  double _derivscale;
+  Energy _derivscale;
 
 
 

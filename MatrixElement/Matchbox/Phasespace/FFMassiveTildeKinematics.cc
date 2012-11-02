@@ -18,10 +18,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-// TODO: remove
-// only for checking for NaN or inf
-#include <gsl/gsl_math.h>
-
 using namespace Herwig;
 
 FFMassiveTildeKinematics::FFMassiveTildeKinematics() {}
@@ -49,13 +45,6 @@ bool FFMassiveTildeKinematics::doMap() {
   subtractionParameters()[0] = y;
   subtractionParameters()[1] = z;
   
-  //ms
-  if( gsl_isnan(z) ) cout << "FFMassiveTildeKinematics::doMap z nan" << endl;
-  if( gsl_isnan(y) ) cout << "FFMassiveTildeKinematics::doMap y nan" <<
-    " -- momenta " << emitter/GeV << " " << emission/GeV << " " << spectator/GeV <<
-    /*" -- theDipole-ids? " << theDipole->realEmitter() << " " << theDipole->realEmission() <<
-    " " << theDipole->realSpectator() <<*/ endl;
-
   Lorentz5Momentum pTot = emitter+emission+spectator;
   Energy scale = pTot.m();
   // masses
@@ -80,9 +69,6 @@ bool FFMassiveTildeKinematics::doMap() {
   bornSpectatorMomentum().setMass( sqrt(Muj2)*scale );
   bornSpectatorMomentum().rescaleEnergy();
   
-  if(gsl_isnan(bornEmitterMomentum().t()/GeV) || gsl_isnan(bornSpectatorMomentum().t()/GeV))
-    cout << "FFMassiveTildeKinematics::doMap() nan" << endl;
-
   return true;
 
 }
@@ -90,9 +76,6 @@ bool FFMassiveTildeKinematics::doMap() {
 Energy FFMassiveTildeKinematics::lastPt() const {
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
-  // 2011-09-11
-  // TODO: remove
-  assert ( scale==lastScale() );
   
   double y = subtractionParameters()[0];
   double z = subtractionParameters()[1];
@@ -103,7 +86,6 @@ Energy FFMassiveTildeKinematics::lastPt() const {
   double muj2 = sqr( realSpectatorData()->mass() / scale );
     
   Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 );
-  if(gsl_isnan(ret/GeV)) cout << "FFMassiveTildeKinematics::lastPt() nan" << endl;
   
   return ret;
 }

@@ -51,13 +51,13 @@ public:
   /**
    * Access the channel map
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >&
+  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >&
   channelMap() { return theChannelMap; }
 
   /**
    * Return the channel map
    */
-  const map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >&
+  const map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >&
   channelMap() const { return theChannelMap; }
 
 public:
@@ -113,7 +113,7 @@ private:
   /**
    * Map xcomb's to channel vectors indexed by diagram id.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> > theChannelMap;
+  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceHelpers::PhasespaceTree,PhasespaceHelpers::PhasespaceTree> > > theChannelMap;
 
   /**
    * The assignment operator is private and must never be called.

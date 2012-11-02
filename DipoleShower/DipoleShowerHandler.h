@@ -271,6 +271,11 @@ private:
   bool discardNoEmissions;
 
   /**
+   * Perform the first MC@NLO emission only.
+   */
+  bool firstMCatNLOEmission;
+
+  /**
    * Switch on or off final state radiation.
    */
   bool doFSR;
@@ -348,6 +353,11 @@ private:
    */
   double theRenormalizationScaleFactor;
 
+  /**
+   * The scale factor for the hard scale
+   */
+  double theHardScaleFactor;
+
 private:
 
   /**
@@ -394,7 +404,7 @@ struct ClassTraits<Herwig::DipoleShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDipoleShower.so"; }
+  static string library() { return "HwMatchbox.so HwDipoleShower.so"; }
 };
 
 /** @endcond */

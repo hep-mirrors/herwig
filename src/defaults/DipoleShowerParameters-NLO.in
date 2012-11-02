@@ -18,14 +18,14 @@ set /Herwig/Model:QCD/RunningAlphaS AlphaS
 # matching parameters
 ################################################################################
 
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FFPtCut 1.245924*GeV
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FFScreeningScale 0.0*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FFPtCut 1.245924*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FFScreeningScale 0.0*GeV
 
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FIPtCut 0.706986*GeV
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:FIScreeningScale 1.017780*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FIPtCut 0.706986*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FIScreeningScale 1.017780*GeV
 
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:IIPtCut 0.275894*GeV
-set /Herwig/MatrixElements/Matchbox/Utility/MECorrectionHandler:IIScreeningScale 0.254028*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:IIPtCut 0.275894*GeV
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:IIScreeningScale 0.254028*GeV
 
 ################################################################################
 # shower parameters
