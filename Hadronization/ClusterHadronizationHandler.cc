@@ -32,6 +32,8 @@
 
 using namespace Herwig;
 
+ClusterHadronizationHandler * ClusterHadronizationHandler::currentHandler_ = 0;
+
 DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
 describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
 
