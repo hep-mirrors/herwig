@@ -277,7 +277,7 @@ void ThreeMesonDefaultCurrent::persistentOutput(PersistentOStream & os) const {
      <<ounit(_kstarF5masses,GeV)
      << ounit(_kstarF123widths,GeV) << ounit(_kstarF5widths,GeV) << _a1parameters 
      << _k1parameters
-     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
+     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV) << _a1runinter;
 }
 
 void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
@@ -292,7 +292,7 @@ void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
      >>iunit(_kstarF5masses,GeV)
      >> iunit(_kstarF123widths,GeV) >> iunit(_kstarF5widths,GeV) >> _a1parameters 
      >> _k1parameters
-     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
+     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV) >> _a1runinter;
 }
 
 void ThreeMesonDefaultCurrent::Init() {
