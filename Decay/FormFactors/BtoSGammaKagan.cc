@@ -110,8 +110,7 @@ void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
      << ounit(_spectmax,1./GeV) << ounit(_fermilambda,GeV)
      << _fermia << ounit(_ferminorm,1./GeV) << ounit(_fermilambda1,GeV2)
      <<_ycut << _deltacut << _nsfunct 
-     << _nspect << _maxtry << _initialize
-     << _s22inter << _s27inter << _pmHinter;
+     << _nspect << _maxtry << _initialize;
 }
 
 void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
@@ -123,8 +122,7 @@ void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
      >> iunit(_spectmax,1./GeV) >> iunit(_fermilambda,GeV) 
      >> _fermia >> iunit(_ferminorm,1./GeV) >> iunit(_fermilambda1,GeV2)
      >>_ycut >> _deltacut >> _nsfunct 
-     >> _nspect >> _maxtry >> _initialize
-     >> _s22inter >> _s27inter >> _pmHinter;
+     >> _nspect >> _maxtry >> _initialize;
 }
 
 void BtoSGammaKagan::Init() {

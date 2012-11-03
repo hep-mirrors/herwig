@@ -257,7 +257,7 @@ void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV) 
      << ounit(_a1runq2,GeV2) <<  _initializea1
      << ounit(_mKstar,GeV) << ounit(_mK,GeV) << _gammk << _a1opt 
-     << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV) << _a1runinter;
+     << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
@@ -276,7 +276,7 @@ void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >>  iunit(_a1runwidth,GeV) 
      >> iunit(_a1runq2,GeV2) >>  _initializea1
      >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt 
-     >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV) >> _a1runinter;
+     >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
 void ThreePionCLEOCurrent::Init() {
