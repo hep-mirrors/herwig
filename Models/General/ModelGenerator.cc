@@ -368,7 +368,6 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     }
   }
   if( ( rescalebrat || abs(brsum - 1.) > 1e-12 ) && !parent->decayModes().empty()) {
-    cerr << "testing in rescale " << parent->PDGName() <<  rescalebrat << " " << brsum << "\n";
     dit = parent->decayModes().begin();
     dend = parent->decayModes().end();
     double factor = oldwidth/newwidth;
