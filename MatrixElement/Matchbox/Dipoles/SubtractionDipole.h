@@ -101,7 +101,7 @@ public:
    * Create a StdDependentXComb object for the real emission process,
    * given a XComb driving the underlying Born
    */
-  StdDependentXCombPtr makeRealXComb(tStdXCombPtr bornXC);
+  StdDepXCVector makeRealXCombs(tStdXCombPtr bornXC);
 
   /**
    * Return true, if bookkeeping did not find a non-trivial setup.

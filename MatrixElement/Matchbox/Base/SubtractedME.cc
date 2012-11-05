@@ -238,7 +238,7 @@ void SubtractedME::doinitrun() {
 
   // has been deactivated by the factory
   if ( !head() ) {
-    MEBase::doinit();
+    MEBase::doinitrun();
     return;
   }
 
@@ -302,6 +302,12 @@ void SubtractedME::doinitrun() {
 }
 
 void SubtractedME::dofinish() {
+
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::dofinish();
+    return;
+  }
 
   MEGroup::dofinish();
 

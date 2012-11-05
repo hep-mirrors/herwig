@@ -230,13 +230,13 @@ StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
 }
 
-StdDependentXCombPtr SubtractionDipole::makeRealXComb(tStdXCombPtr bornXC) {
+StdDepXCVector SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*bornXC).mePartonData();
 
   if ( theSplittingMap.find(underlyingBornKey(proc,bornEmitter(),bornSpectator())) ==
        theSplittingMap.end() )
-    return StdDependentXCombPtr();
+    return StdDepXCVector();
 
   PartonPairVec pbs = bornXC->pExtractor()->getPartons(bornXC->maxEnergy(), 
 						       bornXC->particles(),
@@ -245,17 +245,33 @@ StdDependentXCombPtr SubtractionDipole::makeRealXComb(tStdXCombPtr bornXC) {
   DiagramVector realDiags = realEmissionDiagrams(proc);
   assert(!realDiags.empty());
 
-  PartonPairVec::iterator ppit = pbs.begin();
-  for ( ; ppit != pbs.end(); ++ppit ) {
-    if ( ppit->first->parton() == realDiags.front()->partons()[0] &&
-	 ppit->second->parton() == realDiags.front()->partons()[1] )
-      break;
+  StdDepXCVector res;
+
+  map<cPDVector,DiagramVector> realProcs;
+
+  for ( MEBase::DiagramVector::const_iterator d = realDiags.begin();
+	d != realDiags.end(); ++d ) {
+    realProcs[(**d).partons()].push_back(*d);
   }
 
-  assert(ppit != pbs.end());
+  for ( map<cPDVector,DiagramVector>::const_iterator pr =
+	  realProcs.begin(); pr != realProcs.end(); ++pr ) {
 
-  StdDependentXCombPtr res =
-    new_ptr(StdDependentXComb(bornXC,*ppit,this,realDiags));
+    PartonPairVec::iterator ppit = pbs.begin();
+    for ( ; ppit != pbs.end(); ++ppit ) {
+      if ( ppit->first->parton() == pr->second.front()->partons()[0] &&
+	   ppit->second->parton() == pr->second.front()->partons()[1] )
+	break;
+    }
+
+    assert(ppit != pbs.end());
+
+    StdDependentXCombPtr rxc =
+      new_ptr(StdDependentXComb(bornXC,*ppit,this,pr->second));
+
+    res.push_back(rxc);
+
+  }
 
   return res;
 
