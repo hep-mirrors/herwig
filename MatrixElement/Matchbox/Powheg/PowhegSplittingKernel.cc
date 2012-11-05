@@ -268,7 +268,6 @@ void PowhegSplittingKernel::startPresampling() {
   lastXCombPtr()->head(thePresamplingXCombs[theXCombBackup]);
   ME2byDipoles::setXComb(lastXCombPtr());
   projectionDipole()->setXComb(lastXCombPtr());
-  thePresamplingXCombs[theXCombBackup]->prepare(theXCombBackup->lastParticles());
 }
 
 void PowhegSplittingKernel::stopPresampling() {
@@ -302,6 +301,8 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
       copy(p.begin()+theBornRandom.second+projectionDipole()->nDimRadiation(),p.end(),
 	   thePresamplingPoint.begin()+theBornRandom.second);
 
+      thePresamplingXCombs[theXCombBackup]->prepare(theXCombBackup->lastParticles());
+
       if ( thePresamplingXCombs[theXCombBackup]->
 	   dSigDR(make_pair(0.0,0.0), bdim,
 		  &thePresamplingPoint[0]) == ZERO ) {
@@ -317,13 +318,12 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
     tStdDependentXCombPtr depXComb =
       dynamic_ptr_cast<tStdDependentXCombPtr>(lastXCombPtr());  
     assert(depXComb);
-    depXComb->setProcess();
     if ( !projectionDipole()->generateKinematics(rad) ) {
       if ( projectionDipole()->verbose() )
 	generator()->log() << "failed to generate radiation kinematics\n";
       return 0.0;
     }
-    depXComb->remakeIncoming();
+    depXComb->clean();
     depXComb->setIncomingPartons();
 
     double res = evaluate();

@@ -116,8 +116,10 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   vector<StdDependentXCombPtr>::iterator xcit = xcs->second.begin();
   vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
 
-  for ( ; xcit != xcs->second.end(); ++xcit, ++dip )
+  for ( ; xcit != xcs->second.end(); ++xcit, ++dip ) {
+    (**xcit).clean();
     (**dip).setXComb(*xcit);
+  }
 
 }
 
@@ -181,10 +183,8 @@ double ME2byDipoles::evaluate(double& sratio) const {
     tStdDependentXCombPtr depXComb =
       dynamic_ptr_cast<tStdDependentXCombPtr>((**dip).lastXCombPtr());  
     assert(depXComb);
-    depXComb->setProcess();
     if ( !(**dip).generateTildeKinematics() )
       continue;
-    depXComb->remakeIncoming();
     depXComb->setIncomingPartons();
 
     (**dip).realEmissionME()->setScale();

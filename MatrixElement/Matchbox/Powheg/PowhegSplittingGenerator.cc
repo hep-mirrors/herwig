@@ -141,7 +141,8 @@ handle(EventHandler & eh, const tPVector &, const Hint &) {
   }
 
   eh.select(lastSplitting()->lastXCombPtr());
-  dynamic_ptr_cast<tStdDependentXCombPtr>(lastSplitting()->lastXCombPtr())->setPartonBinInstances();
+  dynamic_ptr_cast<tStdDependentXCombPtr>(lastSplitting()->lastXCombPtr())->
+    recreatePartonBinInstances(lastSplitting()->lastXCombPtr()->lastScale());
   eh.lastExtractor()->constructRemnants(lastSplitting()->lastXCombPtr()->partonBinInstances(),
 					newSub, eh.currentStep());
 
