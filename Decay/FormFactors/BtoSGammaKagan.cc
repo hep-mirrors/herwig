@@ -22,9 +22,19 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 using Herwig::Math::Li2;
+
+DescribeClass<BtoSGammaKagan,BtoSGammaHadronicMass>
+describeHerwigBtoSGammaKagan("Herwig::BtoSGammaKagan",
+			     "HwFormFactors.so");
+
+HERWIG_INTERPOLATOR_CLASSDESC(BtoSGammaKagan1,double,double)
+
+HERWIG_INTERPOLATOR_CLASSDESC(BtoSGammaKagan2,InvEnergy,Energy)
+
 
 BtoSGammaKagan::BtoSGammaKagan() 
   : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
@@ -114,9 +124,6 @@ void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
      >>_ycut >> _deltacut >> _nsfunct 
      >> _nspect >> _maxtry >> _initialize;
 }
-
-ClassDescription<BtoSGammaKagan> BtoSGammaKagan::initBtoSGammaKagan;
-// Definition of the static class description member.
 
 void BtoSGammaKagan::Init() {
 

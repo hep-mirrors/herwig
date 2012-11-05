@@ -24,7 +24,7 @@ void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
 		const gengetopt_args_info & args_info);
 void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume, bool keepid);
+	       bool tics, bool resume);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
 
@@ -44,7 +44,7 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
 
     // Interpret command status
-    enum { INIT, READ, RUN } status;
+    enum { INIT, READ, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
     if ( runType == "init" )
       status = INIT;
@@ -52,8 +52,10 @@ int main(int argc, char * argv[]) {
       status = READ;
     else if ( runType == "run" )  
       status = RUN;
-    else
+    else {
+      status = ERROR;
       printUsageAndExit();
+    }
 
     // Use second argument as input- or runfile name
     string runname;
@@ -67,14 +69,8 @@ int main(int argc, char * argv[]) {
     }
 
     // If status is INIT, we need a runname
-    std::string infile;
-    if ( status == INIT ) {
-      if ( runname.empty() ) {
-	cerr << "Error: You need to supply a runfile name.\n";
-	printUsageAndExit();
-      }
-      infile = runname;
-    }
+    if ( status == INIT && runname.empty() )
+	runname = "HerwigDefaults.in";
 
     // Defaults for these filenames are set in the ggo file
     std::string reponame = args_info.repo_arg;
@@ -122,19 +118,13 @@ int main(int argc, char * argv[]) {
     if ( args_info.resume_flag )
       resume = true;
 
-    // Keep id
-    bool keepid = false;
-    if ( args_info.keepid_flag )
-      keepid = true;
-
     // *** End of command line parsing ***
    
     // Call mode
     switch ( status ) {
-    case INIT:  HerwigInit( infile, reponame ); break;
+    case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, seed, tag, N, 
-			   tics, resume, keepid );  break;
+    case RUN:   HerwigRun( runname, seed, tag, N, tics, resume );  break;
     default:    printUsageAndExit();
     }
 
@@ -230,8 +220,8 @@ void HerwigRead(string reponame, string runname,
 
 
 void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume, bool keepid) {
-  PersistentIStream is(runname, keepid);
+	       bool tics, bool resume) {
+  PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
 

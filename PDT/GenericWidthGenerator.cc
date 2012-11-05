@@ -24,9 +24,15 @@
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/StringUtils.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <ctime>
 
 using namespace Herwig;
+
+DescribeClass<GenericWidthGenerator,WidthGenerator>
+describeHerwigGenericWidthGenerator("Herwig::GenericWidthGenerator","");
+HERWIG_INTERPOLATOR_CLASSDESC(GenericWidthGenerator,Energy,Energy)
+
 
 void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << particle_ << ounit(mass_,GeV) << prefactor_ << MEtype_ << MEcode_
@@ -45,11 +51,6 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
      >> npoints_ >> decayModes_ >> decayTags_ >> iunit(minMass_,GeV)
      >> BRminimum_ >> intOrder_ >> interpolators_;
 }
-
-ClassDescription<Interpolator<Energy, Energy> > initInterpolatorEE;
-
-ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthGenerator;
-// Definition of the static class description member.
 
 void GenericWidthGenerator::setParticle(string p) {
   if ( (particle_ = Repository::GetPtr<tPDPtr>(p)) ) return;

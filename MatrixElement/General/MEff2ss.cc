@@ -28,12 +28,8 @@ void MEff2ss::doinit() {
   scalar_ .resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin0    , PDT::Spin0    ));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin0    , PDT::Spin0    ));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin0    , PDT::Spin0    );
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::tChannel) {
@@ -69,16 +65,6 @@ void MEff2ss::doinit() {
 			    << "channel from diagram. Vertex not cast! "
 			    << Exception::runerror;
   }
-}
-
-void MEff2ss::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin0    , PDT::Spin0    ));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin0    , PDT::Spin0    ));
 }
 
 double MEff2ss::me2() const {
@@ -191,6 +177,8 @@ void MEff2ss::persistentOutput(PersistentOStream & os) const {
 
 void MEff2ss::persistentInput(PersistentIStream & is, int) {
   is >> fermion_ >> scalar_ >> vector_ >> tensor_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin0    , PDT::Spin0    );
 }
 
 ClassDescription<MEff2ss> MEff2ss::initMEff2ss;

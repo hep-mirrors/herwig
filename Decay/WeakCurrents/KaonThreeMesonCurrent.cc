@@ -19,15 +19,29 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeClass<KaonThreeMesonCurrent,ThreeMesonCurrentBase>
+describeHerwigKaonThreeMesonCurrent("Herwig::KaonThreeMesonCurrent",
+				    "HwWeakCurrents.so");
+HERWIG_INTERPOLATOR_CLASSDESC(KaonThreeMesonCurrent,Energy,Energy2)
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
+ 
+IBPtr KaonThreeMesonCurrent::clone() const {
+  return new_ptr(*this);
+}
 
-inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
+IBPtr KaonThreeMesonCurrent::fullclone() const {
+  return new_ptr(*this);
+}
+
+KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   // rho parameters
   // use local values
   _rhoparameters=true;
@@ -168,7 +182,8 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
 
 
 void KaonThreeMesonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
+  os << _a1runinter
+     << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
      << _rho2wgts << ounit(_rho2mass,GeV) << ounit(_rho2width,GeV)
      << _kstar1wgts << ounit(_kstar1mass,GeV) << ounit(_kstar1width,GeV) 
      << _kstar2wgts << ounit(_kstar2mass,GeV) << ounit(_kstar2width,GeV) 
@@ -179,11 +194,13 @@ void KaonThreeMesonCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(_phimass,GeV) << ounit(_phiwidth,GeV) << _omegaKstarwgt 
      << ounit(_fpi,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV) 
      << _initializea1 << _rhoparameters << _kstarparameters << _a1parameters 
-     << _k1parameters << _a1opt << _omegaopt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
+     << _k1parameters << _a1opt << _omegaopt 
+     << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void KaonThreeMesonCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
+  is >> _a1runinter
+     >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
      >> _rho2wgts >> iunit(_rho2mass,GeV) >> iunit(_rho2width,GeV) 
      >> _kstar1wgts >> iunit(_kstar1mass,GeV) >> iunit(_kstar1width,GeV) 
      >> _kstar2wgts >> iunit(_kstar2mass,GeV) >> iunit(_kstar2width,GeV) 
@@ -194,11 +211,10 @@ void KaonThreeMesonCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(_phimass,GeV) >> iunit(_phiwidth,GeV) >> _omegaKstarwgt 
      >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV) 
      >> _initializea1 >> _rhoparameters >> _kstarparameters >> _a1parameters 
-     >> _k1parameters >> _a1opt >> _omegaopt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
+     >> _k1parameters >> _a1opt >> _omegaopt 
+     >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
-ClassDescription<KaonThreeMesonCurrent> KaonThreeMesonCurrent::initKaonThreeMesonCurrent;
-// Definition of the static class description member.
 
 void KaonThreeMesonCurrent::Init() {
 
@@ -1296,6 +1312,213 @@ threeBodyMatrixElement(const int       , const Energy2 q2,
   output+= ((s2-4.*mpi2)+0.25*(s3-s1)*(s3-s1)/q2)*real(propa*conj(propa)); 
   // the interference term 
   output+= (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
-							       propb*conj(propa)); 
-    return output / sqr(_rho1mass[0]);
+							     propb*conj(propa)); 
+  return output / sqr(_rho1mass[0]);
+}
+
+Complex KaonThreeMesonCurrent::Trho1(Energy2 q2,int ires) const {
+  Complex output(0.);
+  double norm(0.);
+  for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) norm+=_rho1wgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) {
+      output+=_rho1wgts[ix]*BWrho1(q2,ix);
+    }
   }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rho1wgts.size()) output=_rho1wgts[temp]*BWrho1(q2,temp);
+  }
+  return output/norm;
+}
+  
+Complex KaonThreeMesonCurrent::Trho2(Energy2 q2,int ires) const {
+  Complex output(0.);
+  double norm(0.);
+  for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) norm+=_rho2wgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) {
+      output+=_rho2wgts[ix]*BWrho2(q2,ix);
+    }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rho2wgts.size()) output=_rho2wgts[temp]*BWrho2(q2,temp);
+  }
+  return output/norm;
+}
+  
+Complex KaonThreeMesonCurrent::TKstar1(Energy2 q2,int ires) const  {
+  Complex output(0.);
+  double norm(0.);
+  for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) norm+=_kstar1wgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) {
+      output+=_kstar1wgts[ix]*BWKstar1(q2,ix);
+    }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_kstar1wgts.size()) output=_kstar1wgts[temp]*BWKstar1(q2,temp);
+  }
+  return output/norm;
+}
+  
+Complex KaonThreeMesonCurrent::TKstar2(Energy2 q2,int ires) const {
+  Complex output(0.);
+  double norm(0.);
+  for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) norm+=_kstar2wgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) {
+      output+=_kstar2wgts[ix]*BWKstar2(q2,ix);
+    }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_kstar2wgts.size()) output=_kstar2wgts[temp]*BWKstar2(q2,temp);
+  }
+  return output/norm;
+}
+
+Complex KaonThreeMesonCurrent::BWrho1(Energy2 q2, unsigned int ires) const {
+  if(ires>=_rho1mass.size()) return 0.;
+  Energy mass  = _rho1mass [ires];
+  Energy width = _rho1width[ires];
+  Energy q=sqrt(q2);
+  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
+  Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+  double ratio = Math::powi(pcm/pcm0, 3);
+  Energy gam(width*mass*ratio/q);
+  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+} 
+
+Complex KaonThreeMesonCurrent::BWrho2(Energy2 q2, unsigned int ires) const {
+  if(ires>=_rho2mass.size()) return 0.;
+  Energy mass  = _rho2mass [ires];
+  Energy width = _rho2width[ires];
+  Energy q=sqrt(q2);
+  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
+  Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+  double ratio(pcm/pcm0);ratio*=ratio*ratio;
+  Energy gam(width*mass*ratio/q);
+  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+}
+  
+Complex KaonThreeMesonCurrent::BWKstar1(Energy2 q2, unsigned int ires) const {
+  if(ires>=_kstar1mass.size()) return 0.;
+  Energy mass  = _kstar1mass [ires];
+  Energy width = _kstar1width[ires];
+  Energy q=sqrt(q2);
+  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
+  Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+  double ratio(pcm/pcm0);ratio*=ratio*ratio;
+  Energy gam(width*mass*ratio/q);
+  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+}
+
+Complex KaonThreeMesonCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
+  if(ires>=_kstar2mass.size()) return 0.;
+  Energy mass  = _kstar2mass [ires];
+  Energy width = _kstar2width[ires];
+  Energy q=sqrt(q2);
+  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
+  Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+  double ratio(pcm/pcm0);ratio*=ratio*ratio;
+  Energy gam(width*mass*ratio/q);
+  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
+}
+
+Complex KaonThreeMesonCurrent::a1BreitWigner(Energy2 q2) const {
+  Complex ii(0.,1.);
+  Energy2 m2(_a1mass*_a1mass);
+  Energy  q(sqrt(q2));
+  return m2/(m2-q2-ii*q*a1Width(q2));
+}
+  
+Complex KaonThreeMesonCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
+  Complex denom(0),num(0.);
+  if(iopt==0) {
+    for(unsigned int ix=0;ix<_k1wgta.size();++ix) denom+=_k1wgta[ix];
+    if(ires==-1) {
+      for(unsigned int ix=0;ix<_k1wgta.size();++ix) 
+	num+=_k1wgta[ix]*K1BreitWigner(q2,ix);
+    }
+    else {	
+      num+=_k1wgta[ires]*K1BreitWigner(q2,ires);
+    }
+  }
+  else if(iopt==1) {
+    for(unsigned int ix=0;ix<_k1wgtb.size();++ix) denom+=_k1wgtb[ix];
+    if(ires==-1) {
+      for(unsigned int ix=0;ix<_k1wgtb.size();++ix) 
+	num+=_k1wgtb[ix]*K1BreitWigner(q2,ix);
+    }
+    else {	
+      num+=_k1wgtb[ires]*K1BreitWigner(q2,ires);
+    }
+  }
+  else {
+    return 0.;
+  }
+  return num/denom;
+}
+
+Complex KaonThreeMesonCurrent::K1BreitWigner(Energy2 q2,unsigned int ires) const {
+  if(ires>=_k1mass.size()) return 0.;
+  Energy2 m2=sqr(_k1mass[ires]),mg=_k1mass[ires]*_k1width[ires];
+  return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
+}
+
+Energy KaonThreeMesonCurrent::a1Width(Energy2 q2) const {
+  if(!_a1opt) return _a1mass*_a1width*g(q2)/g(_a1mass*_a1mass)/sqrt(q2);
+  else        return (*_a1runinter)(q2);
+}
+  
+double KaonThreeMesonCurrent::g(Energy2 q2) const {
+  double output;
+  if(q2<9.*_mpi*_mpi) {
+    output=0.;
+  }
+  else if(q2<sqr(_rho1mass[0]+_mpi)) {
+    double diff=(q2-9.*_mpi*_mpi)/GeV2;
+      
+    output=4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
+  }
+  else {
+    double ratio = q2/GeV2;
+    output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
+  }
+  return output;
+}
+  
+Complex KaonThreeMesonCurrent::Tomega(Energy2 q2, int ires) const {
+  double denom=(1.+_epsomega);
+  Complex num(0.);
+  if(ires<0) num=OmegaPhiBreitWigner(q2,0)+_epsomega*OmegaPhiBreitWigner(q2,1);
+  else if(ires==0) num=OmegaPhiBreitWigner(q2,0);
+  else             num=OmegaPhiBreitWigner(q2,1);
+  return num/denom;
+}
+
+Complex KaonThreeMesonCurrent::OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const {
+  Energy2 m2,mg;
+  if(ires==0) {
+    m2=sqr(_omegamass);
+    mg=_omegamass*_omegawidth;
+  }
+  else {
+    m2=sqr(_phimass);
+    mg=_phimass*_phiwidth;
+  }
+  return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
+}
+
+Complex KaonThreeMesonCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const {
+  Complex output;
+  if(ires<0)         output = _omegaKstarwgt*TKstar1(s1,-1)+Tomega(s2,-1);
+  else if(ires%2==0) output = _omegaKstarwgt*TKstar1(s1,ires/2);
+  else if(ires%2==1) output = Tomega(s2,ires/2);
+  return output/(1.+_omegaKstarwgt);
+}
+
+

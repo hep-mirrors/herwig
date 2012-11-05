@@ -27,6 +27,8 @@ void MEvv2tv::persistentOutput(PersistentOStream & os) const {
 
 void MEvv2tv::persistentInput(PersistentIStream & is, int) {
   is >> vector_ >> fourPoint_;
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
+			   PDT::Spin2, PDT::Spin1);
 }
 
 ClassDescription<MEvv2tv> MEvv2tv::initMEvv2tv;
@@ -78,12 +80,8 @@ void MEvv2tv::doinit() {
   GeneralHardME::doinit();
   vector_    .resize(numberOfDiags());
   fourPoint_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					  PDT::Spin2, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					     PDT::Spin2, PDT::Spin1));
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
+			   PDT::Spin2, PDT::Spin1);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::tChannel) {
@@ -115,16 +113,6 @@ void MEvv2tv::doinit() {
 	dynamic_ptr_cast<AbstractVVVTVertexPtr>(current.vertices.first);
     }
   }
-}
-
-void MEvv2tv::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					  PDT::Spin2, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					     PDT::Spin2, PDT::Spin1));
 }
 
 ProductionMatrixElement MEvv2tv::vv2tvHeME(const VBVector & vec1,

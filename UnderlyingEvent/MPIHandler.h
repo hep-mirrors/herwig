@@ -173,6 +173,12 @@ public:
   virtual void finalize();
 
   /**
+   * Clean up the XCombs from our subprocesses after each event.
+   * ThePEG cannot see them, so the usual cleaning misses these.
+   */
+  virtual void clean();
+
+  /**
    * Write out accumulated statistics about integrated cross sections.
    */
   void statistics() const;
