@@ -407,6 +407,7 @@ void ShowerHandler::cascade() {
   if(btotal) boostCollision(true);
   // unset the current ShowerHandler
   currentHandler_ = 0;
+  getMPIHandler()->clean();
 }
 
 void ShowerHandler::fillEventRecord() {

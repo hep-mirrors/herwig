@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
@@ -26,6 +27,11 @@ namespace {
 }
 
 using namespace Herwig;
+
+DescribeClass<ThreePionCLEOCurrent,ThreeMesonCurrentBase>
+describeHerwigThreePionCLEOCurrent("Herwig::ThreePionCLEOCurrent",
+				   "HwWeakCurrents.so");
+HERWIG_INTERPOLATOR_CLASSDESC(ThreePionCLEOCurrent,Energy,Energy2)
 
 ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   // local particle properties
@@ -272,9 +278,6 @@ void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt 
      >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
-
-ClassDescription<ThreePionCLEOCurrent> ThreePionCLEOCurrent::initThreePionCLEOCurrent;
-// Definition of the static class description member.
 
 void ThreePionCLEOCurrent::Init() {
 

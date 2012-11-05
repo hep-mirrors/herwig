@@ -34,14 +34,20 @@ void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
      >> iunit(_xunit,TypeTraits<ArgT>::baseunit);
 }
 
-#define HERWIG_INTERPOLATOR_CLASSDESC(ValT,ArgT)                          \
-/**                                                                       \
- * This template specialization registers the Interpolator with ThePEG    \
- */                                                                       \
-template <>                                                               \
-ClassDescription<Interpolator<ValT,ArgT> >                                \
-Interpolator<ValT,ArgT>::initInterpolator                                 \
-= ClassDescription<Interpolator<ValT,ArgT> >();                           \
+/**
+ * Macro for Interpolator user classes to use. Only they know what the
+ * template arguments are going to be.
+ */
+#define HERWIG_INTERPOLATOR_CLASSDESC(Name,ValT,ArgT) \
+/**                                                   \
+* Register the Interpolator with ThePEG               \
+*/                                                    \
+DescribeClass<Interpolator<ValT,ArgT>,Interfaced>     \
+describeHerwigInterpolatorFor##Name(                  \
+"Herwig::Interpolator<"                               \
++ ClassTraits<ValT>::className() + ","                \
++ ClassTraits<ArgT>::className() + ">","");           \
+
 
 
 template <typename ValT, typename ArgT>

@@ -308,7 +308,7 @@ fi
 
 dnl -Wfloat-equal -fvisibility-inlines-hidden -Wctor-dtor-privacy -Weffc++
 if test -n "$GCC"; then
-	warnflags="-ansi -pedantic -Wall -W"
+	warnflags="-ansi -pedantic -Wall -Wextra -Wno-overloaded-virtual"
 
 	if test "x$enable_debug" = "xslow"; then
 		debugflags="$debugflags -fno-inline"
