@@ -32,8 +32,12 @@ using namespace ThePEG::Helicity;
 DescribeClass<FourPionNovosibirskCurrent,WeakDecayCurrent>
 describeHerwigFourPionNovosibirskCurrent("Herwig::FourPionNovosibirskCurrent",
 					 "HwWeakCurrents.so");
-HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent,Energy,Energy2)
 
+HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent1,Energy,Energy2)
+
+HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent2,double,Energy)
+
+HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent3,double,Energy2)
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
@@ -368,7 +372,7 @@ void FourPionNovosibirskCurrent::doinitrun() {
 }
 
 void FourPionNovosibirskCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _a1runinter 
+  os << _a1runinter << _Fomega << _Fthreec << _Fonec << _Fsigma
      << ounit(_rhomass,GeV) << ounit(_a1mass,GeV) << ounit(_omegamass,GeV) 
      << ounit(_sigmamass,GeV) << ounit(_rhowidth,GeV) << ounit(_a1width,GeV)
      << ounit(_omegawidth,GeV) << ounit(_sigmawidth,GeV) 
@@ -386,7 +390,7 @@ void FourPionNovosibirskCurrent::persistentOutput(PersistentOStream & os) const 
 }
 
 void FourPionNovosibirskCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _a1runinter 
+  is >> _a1runinter >> _Fomega >> _Fthreec >> _Fonec >> _Fsigma
      >> iunit(_rhomass,GeV) >> iunit(_a1mass,GeV) >> iunit(_omegamass,GeV) 
      >> iunit(_sigmamass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_a1width,GeV)
      >> iunit(_omegawidth,GeV) >> iunit(_sigmawidth,GeV) 

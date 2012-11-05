@@ -43,10 +43,7 @@ void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
 * Register the Interpolator with ThePEG               \
 */                                                    \
 DescribeClass<Interpolator<ValT,ArgT>,Interfaced>     \
-describeHerwigInterpolatorFor##Name(                  \
-"Herwig::Interpolator<"                               \
-+ ClassTraits<ValT>::className() + ","                \
-+ ClassTraits<ArgT>::className() + ">","");           \
+describeHerwigInterpolatorFor##Name("Herwig::Interpolator<"#ValT","#ArgT">","");\
 
 
 
