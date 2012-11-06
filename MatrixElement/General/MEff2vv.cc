@@ -28,12 +28,8 @@ void MEff2vv::doinit() {
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
   scalar_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin1, PDT::Spin1));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin1, PDT::Spin1);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::tChannel) {
@@ -57,16 +53,6 @@ void MEff2vv::doinit() {
 		    dynamic_ptr_cast<AbstractVVTVertexPtr>(current.vertices.second));
     }
   }
-}
-
-void MEff2vv::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin1, PDT::Spin1));
 }
 
 double MEff2vv::me2() const {
@@ -193,6 +179,8 @@ void MEff2vv::persistentOutput(PersistentOStream & os) const {
 
 void MEff2vv::persistentInput(PersistentIStream & is, int) {
   is >> fermion_ >> vector_ >> tensor_ >> scalar_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin1, PDT::Spin1);
 }
 
 ClassDescription<MEff2vv> MEff2vv::initMEff2vv;

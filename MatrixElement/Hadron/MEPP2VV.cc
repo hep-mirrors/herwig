@@ -139,8 +139,8 @@ void MEPP2VV::doinit() {
   FFWvertex_ = hwsm->vertexFFW();
 }
 
-double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
-  double rand = *r;
+double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double r) {
+  double rand = r;
   Energy2 m12 = sqr(meMomenta()[2].mass());
   Energy2 m22 = sqr(meMomenta()[3].mass());
   Energy2 D1 = sHat()-m12-m22;

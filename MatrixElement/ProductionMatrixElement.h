@@ -11,8 +11,6 @@
 //
 // This is the declaration of the ProductionMatrixElement class.
 
-#include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/Utilities/ClassDescription.h>
 #include <ThePEG/EventRecord/RhoDMatrix.h>
 
 namespace Herwig {
@@ -45,14 +43,7 @@ public:
    * @param in2 \f$2S+1\f$ for the second incoming particle.
    * @param out \f$2S+1\f$ for the outgoing particle.
    */
-  ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out) {
-    _nout=2;
-    _inspin.resize(2);
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin.push_back(out);
-    setMESize();
-  }
+  ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out);
 
   /**
    * Constructor for 2-2 scattering.
@@ -62,15 +53,7 @@ public:
    * @param out2 \f$2S+1\f$ for the second outgoing particle.
    */
   ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
-			  PDT::Spin out2) {
-    _nout=2;
-    _inspin.resize(2);
-    _inspin[0]=in1; 
-    _inspin[1]=in2;
-    _outspin.push_back(out1);
-    _outspin.push_back(out2);
-    setMESize();
-  }
+			  PDT::Spin out2);
   
   /**
    * Constructor for 2-3 scattering.
@@ -81,16 +64,7 @@ public:
    * @param out3 \f$2S+1\f$ for the third outgoing particle.
    */
   ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
-			  PDT::Spin out2,PDT::Spin out3) {
-    _inspin.resize(2);
-    _nout=3;
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin.push_back(out1);
-    _outspin.push_back(out2);
-    _outspin.push_back(out3);
-    setMESize();
-  }
+			  PDT::Spin out2,PDT::Spin out3);
 
   /**
    * Constructor for 2-4 scattering.
@@ -102,17 +76,7 @@ public:
    * @param out4 \f$2S+1\f$ for the fourth outgoing particle.
    */
   ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
-			  PDT::Spin out2,PDT::Spin out3, PDT::Spin out4) {
-    _nout=4;
-    _inspin.resize(2);
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin.push_back(out1);
-    _outspin.push_back(out2);
-    _outspin.push_back(out3);
-    _outspin.push_back(out4);
-    setMESize();
-  }
+			  PDT::Spin out2,PDT::Spin out3, PDT::Spin out4);
 
   /**
    * Constructor for 2-5 scattering.
@@ -126,18 +90,7 @@ public:
    */
   ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
 			  PDT::Spin out2,PDT::Spin out3, PDT::Spin out4,
-			  PDT::Spin out5) {
-    _nout=5;
-    _inspin.resize(2);
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin.push_back(out1);
-    _outspin.push_back(out2);
-    _outspin.push_back(out3);
-    _outspin.push_back(out4);
-    _outspin.push_back(out5);
-    setMESize();
-  }
+			  PDT::Spin out5);
 
   /**
    * Constructor for 2-6 scattering.
@@ -152,19 +105,7 @@ public:
    */
   ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,PDT::Spin out1,
 			  PDT::Spin out2,PDT::Spin out3, PDT::Spin out4,
-			  PDT::Spin out5, PDT::Spin out6) {
-    _nout=6;
-    _inspin.resize(2);
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin.push_back(out1);
-    _outspin.push_back(out2);
-    _outspin.push_back(out3);
-    _outspin.push_back(out4);
-    _outspin.push_back(out5);
-    _outspin.push_back(out6);
-    setMESize();
-  }
+			  PDT::Spin out5, PDT::Spin out6);
   
   /**
    * Constructor for 2-n scattering.
@@ -172,19 +113,12 @@ public:
    * @param in2 \f$2S+1\f$ for the second incoming particle.
    * @param out A vector containing \f$2S+1\f$ for the outgoing particles.
    */
-  ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,vector<PDT::Spin> out) {
-    _inspin.resize(2);
-    _nout=out.size(); 
-    _inspin[0]=in1;
-    _inspin[1]=in2;
-    _outspin=out;
-    setMESize();
-  }
+  ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,vector<PDT::Spin> out);
   
   /**
    * Default constructor.
    */
-  ProductionMatrixElement() {};
+  ProductionMatrixElement() {}
   //@}
 
 public:
@@ -217,12 +151,7 @@ public:
    * @return The matrix element for the given helicities.
    */
   Complex   operator () (unsigned int in1,unsigned int in2,
-			 unsigned int out) const {
-    assert(_outspin.size()==1);
-    unsigned int iloc = in1*_constants[1] + in2*_constants[2] + out*_constants[3];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+			 unsigned int out) const;
   
   /**
    * Access the helicity components for a 2-1 scattering. This method supplies
@@ -233,12 +162,7 @@ public:
    * @return The matrix element for the given helicities.
    */
   Complex & operator () (unsigned int in1,unsigned int in2,
-			 unsigned int out) {
-    assert(_outspin.size()==1);
-    unsigned int iloc = in1*_constants[1] + in2*_constants[2] + out*_constants[3];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+			 unsigned int out);
 
   /**
    * Access the helicity components for a 2-2 scattering. This method supplies
@@ -250,13 +174,7 @@ public:
    * @return The matrix element for the given helicities.
    */
   Complex   operator () (unsigned int in1,unsigned int in2,
-			 unsigned int out1,unsigned int out2) const {
-    assert(_outspin.size()==2);
-    unsigned int iloc = in1*_constants[1] + in2*_constants[2] +
-      out1*_constants[3] + out2*_constants[4];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+			 unsigned int out1,unsigned int out2) const;
 
   /**
    * Access the helicity components for a 2-2 scattering. This method supplies
@@ -268,13 +186,7 @@ public:
    * @return The matrix element for the given helicities.
    */
   Complex & operator () (unsigned int in1,unsigned int in2,
-			 unsigned int out1,unsigned int out2) {
-    assert(_outspin.size()==2);
-    unsigned int iloc = in1*_constants[1] + in2*_constants[2] +
-      out1*_constants[3] + out2*_constants[4];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+			 unsigned int out1,unsigned int out2);
 
   /**
    * Access the helicity components for a 2-3 scattering. This method supplies
@@ -288,16 +200,7 @@ public:
    */
   Complex   operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
-			 unsigned int out3) const {
-    assert(_outspin.size()==3);
-    vector<unsigned int> ivec(5);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    return (*this)(ivec);
-  }
+			 unsigned int out3) const;
 
   /**
    * Access the helicity components for a 2-3 scattering. This method supplies
@@ -311,16 +214,7 @@ public:
    */
   Complex & operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
-			 unsigned int out3) {
-    assert(_outspin.size()==3);
-    vector<unsigned int> ivec(5);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    return (*this)(ivec);
-  }
+			 unsigned int out3);
 
   /**
    * Access the helicity components for a 2-4 scattering.  This method supplies
@@ -335,17 +229,7 @@ public:
    */
   Complex   operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
-			 unsigned int out3,unsigned int out4) const {
-    assert(_outspin.size()==4);
-    vector<unsigned int> ivec(6);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    return (*this)(ivec);
-  }
+			 unsigned int out3,unsigned int out4) const;
   
   /**
    * Access the helicity components for a 2-4 scattering. This method supplies
@@ -360,17 +244,7 @@ public:
    */
   Complex & operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
-			 unsigned int out3, unsigned int out4) {
-    assert(_outspin.size()==4);
-    vector<unsigned int> ivec(6);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    return (*this)(ivec);
-  }
+			 unsigned int out3, unsigned int out4);
 
   /**
    * Access the helicity components for a 2-5 scattering. This method supplies
@@ -387,18 +261,7 @@ public:
   Complex   operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
 			 unsigned int out3,unsigned int out4,
-			 unsigned int out5) const {
-    assert(_outspin.size()==5);
-    vector<unsigned int> ivec(7);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    ivec[6]=out5;
-    return (*this)(ivec);
-  }
+			 unsigned int out5) const;
   
   /**
    * Access the helicity components for a 2-5 scattering. This method supplies
@@ -415,18 +278,7 @@ public:
   Complex & operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
 			 unsigned int out3, unsigned int out4,
-			 unsigned int out5) {
-    assert(_outspin.size()==5);
-    vector<unsigned int> ivec(7);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    ivec[6]=out5;
-    return (*this)(ivec);
-  }
+			 unsigned int out5);
 
   /**
    * Access the helicity components for a 2-6 scattering. This method supplies
@@ -444,19 +296,7 @@ public:
   Complex   operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
 			 unsigned int out3,unsigned int out4,
-			 unsigned int out5,unsigned int out6) const {
-    assert(_outspin.size()==6);
-    vector<unsigned int> ivec(8);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    ivec[6]=out5;
-    ivec[7]=out6;
-    return (*this)(ivec);
-  }
+			 unsigned int out5,unsigned int out6) const;
 
   /**
    * Access the helicity components for a 2-6 scattering. This method supplies
@@ -474,19 +314,7 @@ public:
   Complex & operator () (unsigned int in1,unsigned int in2,
 			 unsigned int out1,unsigned int out2,
 			 unsigned int out3, unsigned int out4,
-			 unsigned int out5, unsigned int out6) {
-    assert(_outspin.size()==6);
-    vector<unsigned int> ivec(8);
-    ivec[0]=in1;
-    ivec[1]=in2;
-    ivec[2]=out1;
-    ivec[3]=out2;
-    ivec[4]=out3;
-    ivec[5]=out4;
-    ivec[6]=out5;
-    ivec[7]=out6;
-    return (*this)(ivec);
-  }
+			 unsigned int out5, unsigned int out6);
 
   /**
    * Access the helicity components for a 2-n scattering. This method supplies
@@ -494,15 +322,7 @@ public:
    * @param hel The helicities of the incoming and outgoing particles
    * @return The matrix element for the given helicities.
    */
-  Complex   operator () (vector<unsigned int> hel) const {
-    assert(_outspin.size() == hel.size()-2);
-    unsigned int iloc(0),ix;
-    // incoming and outgoing particles
-    for(ix=0;ix<hel.size();++ix)
-      iloc += hel[ix]*_constants[ix+1];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+  Complex   operator () (vector<unsigned int> hel) const;
   
   /**
    * Access the helicity components for a 2-n scattering. This method supplies
@@ -510,15 +330,7 @@ public:
    * @param hel The helicities of the incoming and outgoing particles
    * @return The matrix element for the given helicities.
    */
-  Complex & operator () (vector<unsigned int> hel) {
-    assert(_outspin.size() == hel.size()-2);
-    unsigned int iloc=0,ix;
-    // incoming particles
-    for(ix=0;ix<hel.size();++ix)
-      iloc += hel[ix]*_constants[ix+1];
-    assert(iloc<_matrixelement.size());
-    return _matrixelement[iloc];
-  }
+  Complex & operator () (vector<unsigned int> hel);
   //@}
 
 public:
@@ -559,13 +371,7 @@ public:
   /**
    * Reset the matrix element.
    */
-  void reset(const ProductionMatrixElement & x) const {
-    _nout = x._nout;
-    _inspin = x._inspin;
-    _outspin = x._outspin;
-    _matrixelement = x._matrixelement;
-    _constants     = x._constants;
-  }
+  void reset(const ProductionMatrixElement & x) const;
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -577,24 +383,7 @@ private:
   /**
    * Set the size of the vector containing the matrix element.
    */
-  void setMESize() {
-    unsigned int ix;
-    int isize=_inspin[0]*_inspin[1];
-    for(ix=0;ix<_outspin.size();++ix)
-      isize*=_outspin[ix];
-    // zero the matrix element
-    _matrixelement.resize(isize,0.);
-    // set up the constants for the mapping of helicity to vectro index
-    _constants.resize(_outspin.size()+3);
-    unsigned int temp=1;
-    for(ix=_outspin.size()+1;ix>1;--ix) {
-      temp*=_outspin[ix-2];
-      _constants[ix]=temp;
-    }
-    temp*=_inspin[1];_constants[1]=temp;
-    temp*=_inspin[0];_constants[0]=temp;
-    _constants[_outspin.size()+2]=1;
-  }
+  void setMESize();
   
 private:
   
@@ -625,39 +414,6 @@ private:
 
 };
 
-}
-
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ProductionMatrixElement.
- */
-template <>
-struct BaseClassTrait<Herwig::ProductionMatrixElement,1> {
-  /** Typedef of the base class of ProductionMatrixElement. */
-  typedef Base NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::ProductionMatrixElement>
-  : public ClassTraitsBase<Herwig::ProductionMatrixElement> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::ProductionMatrixElement"; }
-};
-
-/** @endcond */
-  
 }
 
 #endif /* HERWIG_ProductionMatrixElement_H */

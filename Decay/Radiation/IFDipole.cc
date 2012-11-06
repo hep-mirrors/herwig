@@ -155,12 +155,25 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
   // _q???[_map[1]] and _m[_map[1]] are the momenta and masses of 
   // the neutral child.
   _chrg1 = p.dataPtr()->iCharge()/3.0;
-  if(children[1]->dataPtr()->iCharge()/3.0==0.0) 
-    { _chrg2  = children[0]->dataPtr()->iCharge()/3.0; 
-      _map[0] = 0; _map[1] = 1; }
-  else if(children[0]->dataPtr()->iCharge()/3.0==0.0)
-    { _chrg2  = children[1]->dataPtr()->iCharge()/3.0; 
-      _map[0] = 1; _map[1] = 0; }
+  if(children[1]->dataPtr()->iCharge()/3.0==0.0) {
+    _chrg2  = children[0]->dataPtr()->iCharge()/3.0; 
+    _map[0] = 0; _map[1] = 1;
+  }
+  else if(children[0]->dataPtr()->iCharge()/3.0==0.0) {
+    _chrg2  = children[1]->dataPtr()->iCharge()/3.0; 
+    _map[0] = 1; _map[1] = 0; 
+  }
+  // check the radiating particle is not massless
+  // if(children[1]->mass()<
+  if(children[_map[0]]->mass()<1e-4*GeV) { 
+    ostringstream message;
+    message << "IFDipole::generatePhotons() trying to generate QED radiation from "
+	    << children[_map[0]]->dataPtr()->PDGName() << "\n with mass " << children[_map[0]]->mass()/GeV
+	    << "which is much smaller than the mass of the electron.\n"
+	    << "This is probably due to reading events from a LHEF,\nskipping radiation in this case.\n";
+    generator()->logWarning( Exception(message.str(), Exception::warning));
+    return children;
+  } 
   // boost the momenta to the rest frame
   Boost boostv(p.momentum().boostVector());
   // boost the particles to the parent rest frame

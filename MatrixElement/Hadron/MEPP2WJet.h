@@ -143,12 +143,6 @@ public:
 protected:
 
   /**
-   * Used internally by generateKinematics, after calculating the
-   * limits on cos(theta).
-   */
-  double getCosTheta(double cthmin, double cthmax, const double r);
-
-  /**
    *  Matrix elements for the different subprocesses
    */
   //@{
