@@ -24,6 +24,8 @@
 
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <iterator>
+using std::ostream_iterator;
 
 #include "DiagramDrawer.h"
 
@@ -88,6 +90,15 @@ vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
   return legs;
 
+}
+
+const vector<PDT::Colour>& ColourBasis::normalOrderedLegs(const cPDVector& sub) const {
+  static vector<PDT::Colour> empty;
+  map<cPDVector,vector<PDT::Colour> >::const_iterator n =
+    theNormalOrderedLegs.find(sub);
+  if ( n != theNormalOrderedLegs.end() )
+    return n->second;
+  return empty;
 }
 
 size_t ColourBasis::prepare(const cPDVector& sub,
@@ -600,8 +611,10 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
     dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
   assert(dd && theFlowMap.find(dd) != theFlowMap.end());
   const vector<ColourLines*>& cl = colourLineMap()[dd];
+
   Selector<const ColourLines *> sel;
   size_t dim = amps.begin()->second.size();
+  assert(dim == cl.size());
   double w = 0.;
   for ( size_t i = 0; i < dim; ++i ) {
     if ( !cl[i] )
@@ -610,8 +623,10 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
     for ( map<vector<int>,CVector>::const_iterator a = amps.begin();
 	  a != amps.end(); ++a )
       w += real(conj((a->second)(i))*((a->second)(i)));
-    sel.insert(w,cl[i]);
+    if ( w > 0. )
+      sel.insert(w,cl[i]);
   }
+  assert(!sel.empty());
   return sel;
 }
 
@@ -950,6 +965,8 @@ bool ColourBasis::readBasis(const vector<PDT::Colour>& legs) {
       read(theCorrelators[legs][make_pair(i,j)],in);
     }
   }
+
+  readBasisDetails(legs);
 
   return true;
 

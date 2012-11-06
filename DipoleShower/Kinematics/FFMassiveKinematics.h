@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer and Martin Stoll
+ * \author Simon Platzer
  *
  * \brief FFMassiveKinematics implements massive splittings
  * off a final-final dipole.
@@ -141,6 +141,23 @@ public:
   template <class T>
   inline double rootOfKallen (T a, T b, T c) const {
     return sqrt( a*a + b*b + c*c - 2.*( a*b+a*c+b*c ) ); }
+  
+  /**
+   * Perform a rotation on both momenta such that the first one will
+   * point along the (positive) z axis. Rotate back to the original
+   * reference frame by applying rotateUz(returnedVector) to each momentum.
+   */
+  ThreeVector<double> rotateToZ (Lorentz5Momentum& pTarget, Lorentz5Momentum& p1){
+    ThreeVector<double> oldAxis = pTarget.vect().unit();
+    double ct = oldAxis.z(); double st = sqrt( 1.-sqr(ct) ); // cos,sin(theta)
+    double cp = oldAxis.x()/st; double sp = oldAxis.y()/st; // cos,sin(phi)
+    pTarget.setZ( pTarget.vect().mag() ); pTarget.setX( 0.*GeV ); pTarget.setY( 0.*GeV );
+    Lorentz5Momentum p1old = p1;
+    p1.setX(    sp*p1old.x() -    cp*p1old.y()                );
+    p1.setY( ct*cp*p1old.x() + ct*sp*p1old.y() - st*p1old.z() );
+    p1.setZ( st*cp*p1old.x() + st*sp*p1old.y() + ct*p1old.z() );
+    return oldAxis;
+  }
 
 public:
 

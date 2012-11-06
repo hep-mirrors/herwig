@@ -279,6 +279,9 @@ insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 
+# which particles get the off-shell treatment
+set NewModel:WhichOffshell All
+# particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
 insert NewModel:DecayParticles 2 /Herwig/Particles/~s_L

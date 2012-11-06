@@ -1609,7 +1609,8 @@ deconstructInitialInitialSystem(bool & applyBoost,
   // hadron level cmf
   Energy2 s  = (pq[0] +pq[1] ).m2();
   // calculate the x values 
-  double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
+  double x0 = sqrt(pcm.mass2()/s*exp(2.*rap));
+  double x[2]={x0, pcm.mass2()/s/x0};
   if(pq[0].z()<ZERO) swap(x[0],x[1]);
   double k1=alpha[0]/x[0],k2=beta[1]/x[1];
   double alphanew[2]={alpha[0]/k1,alpha[1]*k2};

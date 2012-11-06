@@ -61,6 +61,13 @@ public:
   virtual bool apply() const { return projectionDipole()->apply(); }
 
   /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches();
+
+  /**
    * Evaluate the ratio.
    */
   virtual double evaluate() const {
@@ -162,11 +169,6 @@ public:
    */
   virtual void printLastEvent(ostream&) const;
 
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -236,7 +238,7 @@ private:
    * A map of real xcombs to Born xcombs to
    * be used by the dipoles.
    */
-  map<StdXCombPtr,vector<StdDependentXCombPtr> > theXCombMap;
+  map<StdXCombPtr,vector<StdXCombPtr> > theXCombMap;
 
 private:
 

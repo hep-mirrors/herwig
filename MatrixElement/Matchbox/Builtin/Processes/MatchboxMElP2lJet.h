@@ -100,6 +100,13 @@ public:
   virtual bool isCS() const { return true; }
 
   /**
+   * Return the value of the dimensional regularization
+   * parameter. Note that renormalization scale dependence is fully
+   * restored in DipoleIOperator.
+   */
+  virtual Energy2 mu2() const { return lastSHat(); }
+
+  /**
    * Return the renormalization scale for the last generated phasespace point.
    */
   virtual Energy2 factorizationScale() const;

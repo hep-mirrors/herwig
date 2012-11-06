@@ -227,7 +227,7 @@ protected:
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+  virtual double getCosTheta(double cthmin, double cthmax, const double r);
 
 private:
 

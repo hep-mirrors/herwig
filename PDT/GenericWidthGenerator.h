@@ -24,10 +24,15 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
- * Typedef to define a DecayMoap
- */
-typedef Selector<tDMPtr> DecayMap;
+  /**
+   *  Declare ModelGenerator class as must be friend to set the particle
+   */
+  class ModelGenerator;
+
+  /**
+   * Typedef to define a DecayMoap
+   */
+  typedef Selector<tDMPtr> DecayMap;
 
 
 /** \ingroup PDT
@@ -45,6 +50,11 @@ typedef Selector<tDMPtr> DecayMap;
  */
 class GenericWidthGenerator: public WidthGenerator {
 
+  /**
+   *  ModelGenerator class as must be friend to set the particle
+   */
+  friend class ModelGenerator;
+
 public:
 
   /**
@@ -58,8 +68,9 @@ public:
    * Default constructor
    */
   GenericWidthGenerator()
-    : mass_(), prefactor_(1.), initialize_(false),BRnorm_(true),npoints_(50),
-      BRminimum_(0.01), intOrder_(1)
+    : mass_(), prefactor_(1.), initialize_(false),output_(false),
+      BRnorm_(true),npoints_(50),
+      BRminimum_(0.01), intOrder_(1), twoBodyOnly_(false)
   {}
 
   /** @name Functions used by the persistent I/O system. */
@@ -186,6 +197,11 @@ protected:
    */
   tPDPtr particle() const {return particle_;}
 
+  /**
+   * Set the particle
+   */
+  void particle(tPDPtr in) {particle_ = in;}
+
 protected:
 
   /** @name Clone Methods. */
@@ -259,16 +275,24 @@ protected:
   Energy mass() const {return mass_;}
 
   /**
+   *  Access to the decay modes
+   */
+
+  /**
    * Initialization option for use by the inheriting classes
    */
   bool initialize() const {return initialize_;}
 
   /**
-   *  Access to the decay modes
+   * Output option for use by the inheriting classes
+   */
+  bool output() const {return output_;}
+
+  /**
+   *  Access to the DecayModes
    */
   vector<tDMPtr> decayModes() const {return decayModes_;}
   
-
 private:
 
   /**
@@ -282,11 +306,6 @@ private:
   string getParticle() const;
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<GenericWidthGenerator> initGenericWidthGenerator;
 
   /**
    * Private and non-existent assignment operator.
@@ -375,6 +394,11 @@ private:
   bool initialize_;
 
   /**
+   *  Output the parameters
+   */
+  bool output_;
+
+  /**
    * normalise the terms so that the partial widths for an on-shell particle are correct
    */
   bool BRnorm_;
@@ -398,39 +422,13 @@ private:
    *  Order of the interpolation for the tables
    */
   unsigned int intOrder_;
+
+  /**
+   *  Whether or not to only include 2 body modes in the running
+   * width calculation, higher modes flat
+   */
+  bool twoBodyOnly_;
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of GenericWidthGenerator.
- */
-template <>
-struct BaseClassTrait<Herwig::GenericWidthGenerator,1> {
-  /** Typedef of the base class of GenericWidthGenerator. */
-  typedef WidthGenerator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::GenericWidthGenerator>
-  : public ClassTraitsBase<Herwig::GenericWidthGenerator> {
-   /** Return the class name. */
-   static string className() { return "Herwig::GenericWidthGenerator"; }
-};
-
-/** @endcond */
 
 }
 

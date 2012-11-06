@@ -92,6 +92,13 @@ public:
   virtual void setXComb(tStdXCombPtr real);
 
   /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches();
+
+  /**
    * Return the number of random numbers
    * needed to sample this kernel.
    */

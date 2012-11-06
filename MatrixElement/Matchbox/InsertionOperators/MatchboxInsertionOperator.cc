@@ -22,7 +22,8 @@
 using namespace Herwig;
 
 MatchboxInsertionOperator::MatchboxInsertionOperator() 
-  : HandlerBase() {}
+  : HandlerBase(),
+    theUseDR(false), theUseCS(false), theUseBDK(false), theUseExpanded(false) {}
 
 MatchboxInsertionOperator::~MatchboxInsertionOperator() {}
 
@@ -45,11 +46,13 @@ IVector MatchboxInsertionOperator::getReferences() {
 }
 
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theLastBorn;
+  os << theLastXComb << theLastBorn
+     << theUseDR << theUseCS << theUseBDK << theUseExpanded;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theLastBorn;
+  is >> theLastXComb >> theLastBorn
+     >> theUseDR >> theUseCS >> theUseBDK >> theUseExpanded;
 }
 
 

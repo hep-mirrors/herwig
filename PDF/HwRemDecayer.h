@@ -65,7 +65,8 @@ public:
   /**
    * The default constructor.
    */
-  inline HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
+  inline HwRemDecayer() : ptmin_(-1.*GeV), beta_(ZERO),
+			  maxtrySoft_(10), 
 			  colourDisrupt_(1.0), 
 			  _kinCutoff(0.75*GeV), 
 			  _forcedSplitScale(2.5*GeV),

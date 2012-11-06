@@ -228,6 +228,11 @@ private:
    */
   bool theVerbose;
 
+  /**
+   * Wether or not the real contributions should be MC summed
+   */
+  bool theMCSum;
+
 private:
 
   /**

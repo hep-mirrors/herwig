@@ -26,16 +26,12 @@ IBPtr FFMgx2qqxDipoleKernel::fullclone() const {
   return new_ptr(*this);
 }
 
-/**
- * TODO: only correct if either ALL quarks are massless or
- * ALL quarks have masses >0.*GeV
- */
 bool FFMgx2qqxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     ind.emitterData()->id() == ParticleID::g &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
-    // massless quarks shall be treated by massless FFgx2qqxDipoleKernel
-    !( abs(ind.spectatorData()->id()) < 6 && ind.spectatorData()->mass() == ZERO );
+    !( ind.spectatorData()->mass() == ZERO &&
+       flavour()->mass() == ZERO ) &&
+    !ind.initialStateEmitter() && !ind.initialStateSpectator();
 }
 
 bool FFMgx2qqxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
@@ -49,8 +45,8 @@ bool FFMgx2qqxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
   return
     sk.emitter(b)->id() + sk.emission(b)->id() == 0 &&
     abs(sk.emitter(b)->id()) < 6 &&
-    abs(sk.emitter(b)->id()) == abs(emitter(a)->id()) &&
-    abs(sk.spectator(b)->id()) == abs(spectator(a)->id());
+    emitter(a)->id() == sk.emitter(b)->id() &&
+    abs(sk.spectator(b)->mass()) == abs(spectator(a)->mass());
 }
 
 tcPDPtr FFMgx2qqxDipoleKernel::emitter(const DipoleIndex&) const {
@@ -84,16 +80,24 @@ double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double y = ( sqr(split.lastPt()/split.scale()) + muQ2*(1.-2.*z+2.*z*z) ) /
     (z*(1.-z)) / (1.-2.*muQ2-muj2);
   
+  // new: 2011-08-31
+  // 2011-11-06: so far never happened
+  if( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 < 0. ){
+    cout << "error in FFMgx2qqxDipoleKernel::evaluate1 -- " <<
+      "muj2 " << muj2 << "  muQ2 " << muQ2 << "  y " << y << endl;
+    return 0.0;
+  }
+  
   double vijk = sqrt( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-2.*muQ2-muj2)*(1.-y));
   double viji = sqrt( sqr((1.-2.*muQ2-muj2)*y)-4.*sqr(muQ2) ) / ((1.-2.*muQ2-muj2)*y+2.*muQ2);
 
   double zp = 0.5*(1.+viji*vijk);
   double zm = 0.5*(1.-viji*vijk);
 
-  // free parameter of the subtraction scheme
+  // how to choose kappa??
   double kappa = 0.;
 
-  ret *= 0.5 / vijk *
+  ret *= 0.25 / vijk *
     ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*muQ2/(2*muQ2+(1.-2*muQ2-muj2)*y) ) );
     
   return ret > 0. ? ret : 0.;
