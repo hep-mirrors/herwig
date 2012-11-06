@@ -372,9 +372,6 @@ void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   }
   if ( !apply() )
     return;
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
-    (**rw).setXComb(theRealEmissionME->lastXCombPtr());
 }
 
 void SubtractionDipole::setKinematics() {
@@ -629,13 +626,17 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     (2. * realEmissionME()->lastXComb().lastSHat());
 
   double weight = 0.0;
+  bool applied = false;
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
+	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).setXComb(theRealEmissionME->lastXCombPtr());
+    if ( !(**rw).apply() )
+      continue;
     weight += (**rw).evaluate();
-
-  if ( !theReweights.empty() ) {
-    res *= weight;
+    applied = true;
   }
+  if ( applied )
+    res *= weight;
 
   if ( splitting() )
     lastMECrossSection(res);

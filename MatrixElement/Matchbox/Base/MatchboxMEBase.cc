@@ -146,9 +146,6 @@ unsigned int MatchboxMEBase::orderInAlphaEW() const {
 void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
 
   MEBase::setXComb(xc);
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
-    (**rw).setXComb(xc);
   if ( phasespace() && !xc->head() )
     phasespace()->prepare(xc,theVerbose);
   if ( scaleChoice() )
@@ -294,6 +291,7 @@ Energy2 MatchboxMEBase::renormalizationScaleQED() const {
 void MatchboxMEBase::setVetoScales(tSubProPtr subpro) const {
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
 	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).setXComb(lastXCombPtr());
     if ( !(**rw).apply() )
       continue;
     (**rw).setVetoScales(subpro);
@@ -499,6 +497,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   bool applied = false;
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
 	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).setXComb(lastXCombPtr());
     if ( !(**rw).apply() )
       continue;
     weight += (**rw).evaluate();
