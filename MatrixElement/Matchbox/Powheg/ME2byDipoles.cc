@@ -102,7 +102,7 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   assert(real);
   theLastXComb = real;
 
-  map<StdXCombPtr,vector<StdDependentXCombPtr> >::iterator xcs
+  map<StdXCombPtr,vector<StdXCombPtr> >::iterator xcs
     = theXCombMap.find(theLastXComb);
 
   if ( xcs == theXCombMap.end() ) {
@@ -113,7 +113,7 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   if ( theRealME )
     theRealME->setXComb(theLastXComb);
 
-  vector<StdDependentXCombPtr>::iterator xcit = xcs->second.begin();
+  vector<StdXCombPtr>::iterator xcit = xcs->second.begin();
   vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
 
   for ( ; xcit != xcs->second.end(); ++xcit, ++dip ) {
@@ -180,9 +180,7 @@ double ME2byDipoles::evaluate(double& sratio) const {
 	  theDipoles.begin(); dip != theDipoles.end(); ++dip ) {
     if ( !(**dip).apply() )
       continue;
-    tStdDependentXCombPtr depXComb =
-      dynamic_ptr_cast<tStdDependentXCombPtr>((**dip).lastXCombPtr());  
-    assert(depXComb);
+    tStdXCombPtr depXComb = (**dip).lastXCombPtr();  
     if ( !(**dip).generateTildeKinematics() )
       continue;
     depXComb->setIncomingPartons();
@@ -230,11 +228,11 @@ double ME2byDipoles::evaluate(double& sratio) const {
 
 void ME2byDipoles::getXCombs(tStdXCombPtr xc) {
 
-  vector<StdDependentXCombPtr> xcs;
+  vector<StdXCombPtr> xcs;
 
   for ( vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
 	dip != theDipoles.end(); ++dip ) {
-    StdDependentXCombPtr depxc = (**dip).makeBornXComb(xc);
+    StdXCombPtr depxc = (**dip).makeBornXComb(xc);
     xcs.push_back(depxc);
   }
 

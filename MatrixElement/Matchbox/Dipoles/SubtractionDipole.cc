@@ -26,7 +26,6 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
-#include "ThePEG/Handlers/StdDependentXComb.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -198,14 +197,14 @@ void SubtractionDipole::splittingBookkeeping() {
   realSpectator(spectator(lastRealEmissionKey));
 }
 
-StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
+StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*realXC).mePartonData();
 
   if ( theMergingMap.find(realEmissionKey(proc,realEmitter(),
 					  realEmission(),realSpectator())) ==
        theMergingMap.end() )
-    return StdDependentXCombPtr();
+    return StdXCombPtr();
 
   PartonPairVec pbs = realXC->pExtractor()->getPartons(realXC->maxEnergy(), 
 						       realXC->particles(),
@@ -223,20 +222,20 @@ StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   assert(ppit != pbs.end());
 
-  StdDependentXCombPtr res =
-    new_ptr(StdDependentXComb(realXC,*ppit,this,bornDiags));
+  StdXCombPtr res =
+    new_ptr(StandardXComb(realXC,*ppit,this,bornDiags));
 
   return res;
 
 }
 
-StdDepXCVector SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
+vector<StdXCombPtr> SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*bornXC).mePartonData();
 
   if ( theSplittingMap.find(underlyingBornKey(proc,bornEmitter(),bornSpectator())) ==
        theSplittingMap.end() )
-    return StdDepXCVector();
+    return vector<StdXCombPtr>();
 
   PartonPairVec pbs = bornXC->pExtractor()->getPartons(bornXC->maxEnergy(), 
 						       bornXC->particles(),
@@ -245,7 +244,7 @@ StdDepXCVector SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
   DiagramVector realDiags = realEmissionDiagrams(proc);
   assert(!realDiags.empty());
 
-  StdDepXCVector res;
+  vector<StdXCombPtr> res;
 
   map<cPDVector,DiagramVector> realProcs;
 
@@ -266,8 +265,8 @@ StdDepXCVector SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
 
     assert(ppit != pbs.end());
 
-    StdDependentXCombPtr rxc =
-      new_ptr(StdDependentXComb(bornXC,*ppit,this,pr->second));
+    StdXCombPtr rxc =
+      new_ptr(StandardXComb(bornXC,*ppit,this,pr->second));
 
     res.push_back(rxc);
 
@@ -390,8 +389,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
-    assert(dynamic_ptr_cast<tStdDependentXCombPtr>(realEmissionME()->lastXCombPtr()));
-    dynamic_ptr_cast<tStdDependentXCombPtr>(realEmissionME()->lastXCombPtr())->setIncomingPartons();
+    realEmissionME()->lastXCombPtr()->setIncomingPartons();
     realEmissionME()->setScale();
     assert(lastXCombPtr() == realEmissionME()->lastXCombPtr());
     return true;
@@ -400,8 +398,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
     return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
-  assert(dynamic_ptr_cast<tStdDependentXCombPtr>(underlyingBornME()->lastXCombPtr()));
-  dynamic_ptr_cast<tStdDependentXCombPtr>(underlyingBornME()->lastXCombPtr())->setIncomingPartons();
+  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
   return true;
 }
 

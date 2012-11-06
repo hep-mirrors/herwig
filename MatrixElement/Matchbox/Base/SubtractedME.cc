@@ -473,7 +473,7 @@ void SubtractedME::lastEventSubtraction() {
   if ( xcme2 == ZERO )
     return;
 
-  for ( StdDepXCVector::const_iterator d = xc->dependent().begin();
+  for ( vector<StdXCombPtr>::const_iterator d = xc->dependent().begin();
 	d != xc->dependent().end(); ++d ) {
     if ( !(*d) )
       continue;

@@ -14,7 +14,6 @@
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/Handlers/StdDependentXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 
 namespace Herwig {
@@ -92,16 +91,16 @@ public:
   void splittingBookkeeping();
 
   /**
-   * Create a StdDependentXComb object for the underlying
+   * Create a dependent xcomb object for the underlying
    * Born process, given a XComb driving the real emission
    */
-  StdDependentXCombPtr makeBornXComb(tStdXCombPtr realXC);
+  StdXCombPtr makeBornXComb(tStdXCombPtr realXC);
 
   /**
-   * Create a StdDependentXComb object for the real emission process,
+   * Create dependent xcomb objects for the real emission process,
    * given a XComb driving the underlying Born
    */
-  StdDepXCVector makeRealXCombs(tStdXCombPtr bornXC);
+  vector<StdXCombPtr> makeRealXCombs(tStdXCombPtr bornXC);
 
   /**
    * Return true, if bookkeeping did not find a non-trivial setup.

@@ -315,9 +315,7 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
 
     const double * rad = &p[theBornRandom.second];
 
-    tStdDependentXCombPtr depXComb =
-      dynamic_ptr_cast<tStdDependentXCombPtr>(lastXCombPtr());  
-    assert(depXComb);
+    tStdXCombPtr depXComb = lastXCombPtr();  
     if ( !projectionDipole()->generateKinematics(rad) ) {
       if ( projectionDipole()->verbose() )
 	generator()->log() << "failed to generate radiation kinematics\n";
