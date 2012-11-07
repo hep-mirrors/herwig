@@ -31,15 +31,9 @@ updateChildren(const tShowerParticlePtr theParent,
   double dz = z(); 
   double dphi = phi();
   // set the values
-  if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3);
-    theParent->showerParameters().resize(2);
-    theParent->showerParameters()[0]=1.;
-  }
-  for(unsigned int ix=0;ix<2;++ix) {
-    theChildren[ix]->showerVariables() .resize(3);
-    theChildren[ix]->showerParameters().resize(2);
-  }
+  // if(theParent->showerParameters().alpha==0.0) {
+  //   theParent->showerParameters().alpha=1.;
+  // }
   if(angularOrder) {
     theChildren[0]->setEvolutionScale(        dqtilde);
     theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
@@ -49,20 +43,20 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[1]->setEvolutionScale(        dqtilde);
   }
   // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 
-  theChildren[1]->showerParameters()[0]=(1.-dz)*theParent->showerParameters()[0];
-  theChildren[0]->showerVariables()[0]=   pT()*cos(dphi) +     
-    dz *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   pT()*sin(dphi) + 
-    dz *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= - pT()*cos(dphi) + 
-    (1.-dz)*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= - pT()*sin(dphi) + 
-    (1.-dz)*theParent->showerVariables()[1];
+  theChildren[0]->showerParameters().alpha=    dz *theParent->showerParameters().alpha; 
+  theChildren[1]->showerParameters().alpha=(1.-dz)*theParent->showerParameters().alpha;
+  theChildren[0]->showerParameters().px=   pT()*cos(dphi) +     
+    dz *theParent->showerParameters().px;
+  theChildren[0]->showerParameters().py=   pT()*sin(dphi) + 
+    dz *theParent->showerParameters().py;
+  theChildren[1]->showerParameters().px= - pT()*cos(dphi) + 
+    (1.-dz)*theParent->showerParameters().px;
+  theChildren[1]->showerParameters().py= - pT()*sin(dphi) + 
+    (1.-dz)*theParent->showerParameters().py;
   for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
+    theChildren[ix]->showerParameters().pt=
+      sqrt(sqr(theChildren[ix]->showerParameters().px)+
+	   sqr(theChildren[ix]->showerParameters().py));
   // set up the colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
   // make the products children of the parent
@@ -82,15 +76,15 @@ reconstructLast(const tShowerParticlePtr theLast,
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
   Energy theMass = mass>ZERO ? mass : theLast->data().constituentMass(); 
-  theLast->showerParameters()[1]=
-    (sqr(theMass) + sqr(theLast->showerVariables()[2])
-     - sqr( theLast->showerParameters()[0] )*pVector().m2())
-    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );   
+  theLast->showerParameters().beta=
+    (sqr(theMass) + sqr(theLast->showerParameters().pt)
+     - sqr( theLast->showerParameters().alpha )*pVector().m2())
+    / ( 2.*theLast->showerParameters().alpha*p_dot_n() );   
   // set that new momentum  
-  theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters()[0], 
-					    theLast->showerParameters()[1], 
-					    theLast->showerVariables()[0],
-					    theLast->showerVariables()[1],iopt));
+  theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters().alpha, 
+					    theLast->showerParameters().beta, 
+					    theLast->showerParameters().px,
+					    theLast->showerParameters().py,iopt));
 }
 
 void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
