@@ -54,11 +54,6 @@ using namespace ThePEG;
  */
 class KinematicsReconstructor: public Interfaced {
 
-/**
- *  The Evolver is a friend to allow the  setting of _showerVariables
- */
-friend class Evolver;
-
 public:
 
   /**
