@@ -13,11 +13,9 @@
 
 #include "ZeroZeroOneSplitFn.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
 
 using namespace Herwig;
