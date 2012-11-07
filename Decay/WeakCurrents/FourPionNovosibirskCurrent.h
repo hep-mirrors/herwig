@@ -166,13 +166,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const;
   //@}
   
 protected:
@@ -198,11 +198,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<FourPionNovosibirskCurrent> initFourPionNovosibirskCurrent;
 
   /**
    * Private and non-existent assignment operator.
@@ -234,79 +229,28 @@ protected:
    * @param iopt The pion masses to used (0=\f$\pi^0\f$, 1=\f$\pi^+\f$)
    * @return The Breit-Wigner for the \f$\sigma\f$ meson
    */
-  Complex sigmaBreitWigner(Energy2 q2,unsigned int iopt) const {
-    Energy q(sqrt(q2));
-    Energy pcm = iopt==0 ? 
-      Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0) :
-      Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic);
-    if(pcm<ZERO) pcm=ZERO;
-    Energy  width(_sigmawidth*pcm/_psigma[iopt]);
-    Energy2 msigma2 = sqr(_sigmamass);
-    return msigma2/(q2-msigma2+Complex(0.,1.)*msigma2*width/q);
-  }
+  Complex sigmaBreitWigner(Energy2 q2,unsigned int iopt) const;
 
   /**
    * The \f$a_1\f$ breit wigner.
    * @param q2 The scale \f$q^2\f$.
    * @return The Breit-Wigner for the \f$a_1\f$.
    */
-  Complex a1BreitWigner(Energy2 q2) const {
-    Complex ii(0.,1.);
-    Energy2 m2 = sqr(_a1mass);
-    Energy q = sqrt(q2);
-    return (m2/complex<Energy2>(q2 - m2 + ii*q*a1width(q2)));
-  }
+  Complex a1BreitWigner(Energy2 q2) const;
 
   /**
    * The Breit-Wigner for the \f$\omega\f$.
    * @param q2 The scale \f$q^2\f$.
    * @return The Breit-Wigner for the \f$\omega\f$.
    */
-  Complex omegaBreitWigner(Energy2 q2) const {
-    Energy q(sqrt(q2));
-    // calcluate the running width
-    double diff((q-_omegamass)/GeV),temp(diff);
-    double gomega(1.);
-    Complex ii(0.,1.);
-    if(q<=1.*GeV) {
-      for(unsigned int ix=0;ix<6;++ix) {
-	gomega +=temp*_omegaparam[ix];
-	temp*=diff;
-      }
-    }
-    else {
-      gomega=_omegaparam[6]+q/GeV*(_omegaparam[7]+q/GeV*_omegaparam[8]
-				   +q2/GeV2*_omegaparam[9]);
-    }
-    if(gomega<0.){gomega=0.;}
-    Energy2 numer=_omegamass*_omegamass;
-    complex<Energy2> denom=q2-_omegamass*_omegamass+ii*_omegamass*_omegawidth*gomega;
-    return numer/denom;
-  }
+  Complex omegaBreitWigner(Energy2 q2) const;
 
   /**
    * The Breit-Wigner for the \f$\rho\f$.
    * @param q2 The scale \f$q^2\f$.
    * @return The Breit-Wigner for the \f$\rho\f$.
    */
-  Complex rhoBreitWigner(Energy2 q2) const {
-    Energy q(sqrt(q2));
-    Energy2 grhom(8.*_prho*_prho*_prho/_rhomass);
-    complex<Energy2> denom;
-    Complex ii(0.,1.);
-    if(q2<4.*_mpic2) {
-      denom=q2-_rhomass*_rhomass
-	-_rhowidth*_rhomass*(hFunction(q)-_hm2-(q2-_rhomass*_rhomass)*_dhdq2m2)/grhom;
-    }
-    else {
-      Energy pcm(2.*Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic));
-      Energy2 grho(pcm*pcm*pcm/q);
-      denom=q2-_rhomass*_rhomass
-	-_rhowidth*_rhomass*(hFunction(q)-_hm2-(q2-_rhomass*_rhomass)*_dhdq2m2)/grhom
-	+ii*_rhomass*_rhowidth*grho/grhom;
-    }
-    return _rhoD/denom;
-  }
+  Complex rhoBreitWigner(Energy2 q2) const;
 
   /**
    * Return the \f$a_1\f$ running width.
@@ -325,23 +269,7 @@ protected:
    */
   LorentzVector<complex<Energy5> > 
   t1(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const {
-    // momentum of the whole sysytem
-    Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
-    // compute the virtuality of the a_1
-    Lorentz5Momentum a1(q2+q3+q4);a1.rescaleMass();
-    // compute the virtuality of the  rho
-    Lorentz5Momentum rho(q3+q4);rho.rescaleMass();
-    // compute the prefactor    
-    Complex pre(-a1FormFactor(a1.mass2())*a1BreitWigner(a1.mass2())*
-		rhoBreitWigner(rho.mass2()));
-    // dot products we need
-    Energy2 QdQmq1(Q*a1);
-    complex<Energy4> consta(QdQmq1*(a1*q3)), constb(QdQmq1*(a1*q4)),
-      constc(((Q*q4)*(q1*q3)-(Q*q3)*(q1*q4)));
-    // compute the current
-    return pre*(consta*q4-constb*q3+constc*a1);
-  }
+     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
 
   /**
    * The \f$t_2\f$ current used in calculating the current.
@@ -355,22 +283,7 @@ protected:
   LorentzVector<complex<Energy5> > 
   t2(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
      Lorentz5Momentum & q3,Lorentz5Momentum & q4,
-     unsigned int iopt) const {
-    // momentum of the whole system
-    Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
-    // compute the virtuality of the a_1
-    Lorentz5Momentum a1(q2+q3+q4);a1.rescaleMass();
-    // compute the virtuality of the  sigma
-    Lorentz5Momentum sigma(q3+q4);sigma.rescaleMass();
-    // compute the prefactor
-    Complex pre(_zsigma*a1FormFactor(a1.mass2())
-		*a1BreitWigner(a1.mass2())*
-		sigmaBreitWigner(sigma.mass2(),iopt));
-    // dot products we need
-    complex<Energy4> consta((Q*a1)*a1.mass2()),constb((Q*q2)*a1.mass2());
-    // compute the current
-    return pre*(consta*q2-constb*a1);
-  }
+     unsigned int iopt) const;
 
   /**
    * The \f$t_3\f$ current used in calculating the current.
@@ -382,22 +295,7 @@ protected:
    */
   LorentzVector<complex<Energy5> > 
   t3(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const {
-    // momentum of the whole sysytem
-    Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
-    // compute the virtuality of the omega
-    Lorentz5Momentum omega(q2+q3+q4);omega.rescaleMass();
-    // compute the virtuality of the  rho
-    Lorentz5Momentum rho(q3+q4);rho.rescaleMass();
-    // compute the prefactor
-    Complex pre(omegaBreitWigner(omega.mass2())*rhoBreitWigner(rho.mass2()));
-    // dot products we need
-    complex<Energy4> consta((Q*q3)*(q1*q4)-(Q*q4)*(q1*q3)),
-      constb(-(Q*q2)*(q1*q4)+(q1*q2)*(Q*q4)),
-      constc((Q*q2)*(q1*q3)-(q1*q2)*(Q*q3));
-    // compute the current
-    return pre*(consta*q2+constb*q3+constc*q4);
-  }
+     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
 
   /**
    * The G functions of hep-ph/0201149
@@ -405,62 +303,24 @@ protected:
    * @param ichan Which of the four pion channels this is for.
    * @return The G function.
    */
-  InvEnergy6 gFunction(Energy2 q2, int ichan) const {
-    Energy q(sqrt(q2));
-    InvEnergy4 invmrho4 = 1/sqr(sqr(_rhomass));
-    // the one charged pion G function
-    if(ichan==0) {
-      return (*_Fonec)(q) * _aonec * (*_Fsigma)(q2) * sqrt(_bonec*q/GeV-_conec) *
-	invmrho4/q;
-    }
-    // the three charged pion G function
-    else if(ichan==1) {
-      return (*_Fthreec)(q)*_athreec*sqrt(_bthreec*q/GeV-_cthreec)*invmrho4/q; 
-    }
-    // the omega G function
-    else if(ichan==2) {
-      return(*_Fomega)(q)*_aomega*sqrt(_bomega*q/GeV-_comega)*invmrho4/q;
-    }
-    assert(false);
-    return InvEnergy6();
-  }
+  InvEnergy6 gFunction(Energy2 q2, int ichan) const;
 
   /**
    * The d parameter in \f$\rho\f$ the propagator.
    */
-  Energy2 DParameter() const {
-    Energy2 grhom(8.*_prho*_prho*_prho/_rhomass);
-    return _rhomass*_rhomass+_rhowidth*_rhomass*
-      (hFunction(ZERO)-_hm2+_rhomass*_rhomass*_dhdq2m2)/grhom;
-  }
+  Energy2 DParameter() const;
 
   /**
    * The \f$\frac{dh}{dq^2}\f$ function in the rho propagator evaluated at \f$q^2=m^2\f$.
    */
-  double dhdq2Parameter() const {
-    Energy2 mrho2(_rhomass*_rhomass);
-    double root(sqrt(1.-4.*_mpic2/mrho2));
-    return root/Constants::pi*(root+(1.+2*_mpic2/mrho2)*log((1+root)/(1-root)));
-  }
-  
+  double dhdq2Parameter() const;
+
   /**
    * The h function in the \f$\rho\f$ propagator.
    * @param q The scale.
    * @return The h function.
    */
-  Energy2 hFunction(const Energy q) const {
-    using Constants::pi;
-    static const Energy2 eps(0.01*MeV2);
-
-    Energy2 q2(q*q), output;
-    if (q2 > 4*_mpic2) {
-      double root = sqrt(1.-4.*_mpic2/q2);
-      output = root*log((1.+root)/(1.-root))*(q2-4*_mpic2)/pi;
-    }
-    else if (q2 > eps) output = ZERO;
-    else               output = -8.*_mpic2/pi;
-    return output;
-  }
+  Energy2 hFunction(const Energy q) const;
 
 private:
   
@@ -703,45 +563,6 @@ private:
    */
   Energy _maxcalc;
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of FourPionNovosibirskCurrent.
- */
-template <>
- struct BaseClassTrait<Herwig::FourPionNovosibirskCurrent,1> {
-   /** Typedef of the base class of FourPionNovosibirskCurrent. */
-  typedef Herwig::WeakDecayCurrent NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::FourPionNovosibirskCurrent>
-  : public ClassTraitsBase<Herwig::FourPionNovosibirskCurrent> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::FourPionNovosibirskCurrent"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwWeakCurrents.so"; }
-  
-};
-
-/** @endcond */
 
 }
 

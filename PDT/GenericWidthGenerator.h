@@ -308,11 +308,6 @@ private:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<GenericWidthGenerator> initGenericWidthGenerator;
-
-  /**
    * Private and non-existent assignment operator.
    */
   GenericWidthGenerator & operator=(const GenericWidthGenerator &);
@@ -434,38 +429,6 @@ private:
    */
   bool twoBodyOnly_;
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of GenericWidthGenerator.
- */
-template <>
-struct BaseClassTrait<Herwig::GenericWidthGenerator,1> {
-  /** Typedef of the base class of GenericWidthGenerator. */
-  typedef WidthGenerator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::GenericWidthGenerator>
-  : public ClassTraitsBase<Herwig::GenericWidthGenerator> {
-   /** Return the class name. */
-   static string className() { return "Herwig::GenericWidthGenerator"; }
-};
-
-/** @endcond */
 
 }
 

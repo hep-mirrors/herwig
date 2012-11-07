@@ -32,6 +32,8 @@
 
 using namespace Herwig;
 
+ClusterHadronizationHandler * ClusterHadronizationHandler::currentHandler_ = 0;
+
 DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
 describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
 
@@ -138,13 +140,6 @@ void ClusterHadronizationHandler::Init() {
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
 }
 
-void ClusterHadronizationHandler::doinitrun() {
-  HadronizationHandler::doinitrun();
-  // The run initialization is used here to all Cluster to have access to the
-  // ClusterHadronizationHandler class instance, via a static pointer.
-  Cluster::setPointerClusterHadHandler(this);
-}
-
 namespace {
   void extractChildren(tPPtr p, set<PPtr> & all) {
     if (p->children().empty()) return;
@@ -161,6 +156,7 @@ void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
   useMe();
+  currentHandler_ = this;
   PVector currentlist(tagged.begin(),tagged.end());
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
@@ -228,9 +224,11 @@ handle(EventHandler & ch, const tPVector & tagged,
 	       mem_fun(&Particle::undecay));
     }
   } 
-  if (!lightOK)
+  if (!lightOK) {
+    //    currentHandler_ = 0;
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
+  }
 
 
   // decay the remaining clusters
@@ -289,6 +287,7 @@ handle(EventHandler & ch, const tPVector & tagged,
       (**pit).setLifeLength(LorentzDistance());
     }
   }
+  //  currentHandler_ = 0;
 }
 
 void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {

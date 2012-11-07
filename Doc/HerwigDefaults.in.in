@@ -39,8 +39,8 @@ library HwVMDecay.so
 library HwSatPDF.so
 library HwIncomingPhotonEvolver.so
 @LOAD_BSM@
-@LOAD_DIPOLE@
 @LOAD_DIPOLE_ALPHAS@
 @LOAD_MATCHBOX@
+@LOAD_DIPOLE@
 @LOAD_FASTJET@
 doxygendump Herwig:: AllInterfaces.h

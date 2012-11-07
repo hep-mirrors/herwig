@@ -238,7 +238,7 @@ private:
    * A map of real xcombs to Born xcombs to
    * be used by the dipoles.
    */
-  map<StdXCombPtr,vector<StdDependentXCombPtr> > theXCombMap;
+  map<StdXCombPtr,vector<StdXCombPtr> > theXCombMap;
 
 private:
 
