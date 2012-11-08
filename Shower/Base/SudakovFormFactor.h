@@ -506,12 +506,6 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<SudakovFormFactor> initSudakovFormFactor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -651,33 +645,6 @@ private:
   Energy freeze_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SudakovFormFactor. */
-template <>
-struct BaseClassTrait<Herwig::SudakovFormFactor,1> {
-  /** Typedef of the first base class of SudakovFormFactor. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SudakovFormFactor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SudakovFormFactor>
-  : public ClassTraitsBase<Herwig::SudakovFormFactor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SudakovFormFactor"; }
-};
-
-/** @endcond */
 
 }
 

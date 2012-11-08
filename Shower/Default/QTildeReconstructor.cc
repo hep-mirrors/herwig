@@ -26,9 +26,13 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/ColourLine.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <cassert>
 
 using namespace Herwig;
+
+DescribeClass<QTildeReconstructor,KinematicsReconstructor>
+describeQTildeReconstructor("Herwig::QTildeReconstructor", "HwShower.so");
 
 namespace {
 
@@ -127,9 +131,6 @@ void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
      >> _noRescaleVector;  
 }
-
-ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
-// Definition of the static class description member.
 
 void QTildeReconstructor::Init() {
 

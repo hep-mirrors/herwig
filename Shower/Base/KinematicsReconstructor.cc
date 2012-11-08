@@ -13,12 +13,12 @@
 
 #include "KinematicsReconstructor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-AbstractNoPIOClassDescription<KinematicsReconstructor> 
-KinematicsReconstructor::initKinematicsReconstructor;
-// Definition of the static class description member.
+DescribeAbstractNoPIOClass<KinematicsReconstructor,Interfaced>
+describeKinematicsReconstructor ("Herwig::KinematicsReconstructor","HwShower.so");
 
 void KinematicsReconstructor::Init() {
 

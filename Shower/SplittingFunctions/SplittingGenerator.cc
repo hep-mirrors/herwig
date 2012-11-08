@@ -24,8 +24,12 @@
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeClass<SplittingGenerator,Interfaced>
+describeSplittingGenerator ("Herwig::SplittingGenerator","");
 
 IBPtr SplittingGenerator::clone() const {
   return new_ptr(*this);
@@ -43,9 +47,6 @@ void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
 void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
   is >>	_isr_Mode >> _fsr_Mode >> _bbranchings >> _fbranchings;
 }
-
-ClassDescription<SplittingGenerator> SplittingGenerator::initSplittingGenerator;
-// Definition of the static class description member.
 
 void SplittingGenerator::Init() {
 

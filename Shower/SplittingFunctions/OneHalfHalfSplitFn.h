@@ -141,53 +141,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<OneHalfHalfSplitFn> initOneHalfHalfSplitFn;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   OneHalfHalfSplitFn & operator=(const OneHalfHalfSplitFn &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of OneHalfHalfSplitFn. */
-template <>
-struct BaseClassTrait<Herwig::OneHalfHalfSplitFn,1> {
-  /** Typedef of the first base class of OneHalfHalfSplitFn. */
-  typedef Herwig::SplittingFunction NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the OneHalfHalfSplitFn class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::OneHalfHalfSplitFn>
-  : public ClassTraitsBase<Herwig::OneHalfHalfSplitFn> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::OneHalfHalfSplitFn"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * OneHalfHalfSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class OneHalfHalfSplitFn depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

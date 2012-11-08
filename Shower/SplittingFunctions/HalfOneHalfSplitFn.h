@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline HalfOneHalfSplitFn() : SplittingFunction(1) {}
+  HalfOneHalfSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -128,22 +128,16 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<HalfOneHalfSplitFn> initHalfOneHalfSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
@@ -152,41 +146,6 @@ private:
   HalfOneHalfSplitFn & operator=(const HalfOneHalfSplitFn &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HalfOneHalfSplitFn. */
-template <>
-struct BaseClassTrait<Herwig::HalfOneHalfSplitFn,1> {
-  /** Typedef of the first base class of HalfOneHalfSplitFn. */
-  typedef Herwig::SplittingFunction NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HalfOneHalfSplitFn class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HalfOneHalfSplitFn>
-  : public ClassTraitsBase<Herwig::HalfOneHalfSplitFn> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HalfOneHalfSplitFn"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * HalfOneHalfSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class HalfOneHalfSplitFn depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

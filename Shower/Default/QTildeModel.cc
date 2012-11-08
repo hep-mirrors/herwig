@@ -18,8 +18,12 @@
 #include "QTildeSudakov.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeNoPIOClass<QTildeModel,Herwig::ShowerModel>
+describeQTildeModel ("Herwig::QTildeModel","HwShower.so");
 
 IBPtr QTildeModel::clone() const {
   return new_ptr(*this);
@@ -28,9 +32,6 @@ IBPtr QTildeModel::clone() const {
 IBPtr QTildeModel::fullclone() const {
   return new_ptr(*this);
 }
-
-NoPIOClassDescription<QTildeModel> QTildeModel::initQTildeModel;
-// Definition of the static class description member.
 
 void QTildeModel::Init() {
 

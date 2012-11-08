@@ -141,53 +141,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<OneOneOneSplitFn> initOneOneOneSplitFn;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   OneOneOneSplitFn & operator=(const OneOneOneSplitFn &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of OneOneOneSplitFn. */
-template <>
-struct BaseClassTrait<Herwig::OneOneOneSplitFn,1> {
-  /** Typedef of the first base class of OneOneOneSplitFn. */
-  typedef Herwig::SplittingFunction NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the OneOneOneSplitFn class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::OneOneOneSplitFn>
-  : public ClassTraitsBase<Herwig::OneOneOneSplitFn> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::OneOneOneSplitFn"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * OneOneOneSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class OneOneOneSplitFn depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

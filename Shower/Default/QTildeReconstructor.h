@@ -460,12 +460,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static ClassDescription<QTildeReconstructor> initQTildeReconstructor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -516,41 +510,6 @@ private:
    */
   set<cPDPtr> _noRescale;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of QTildeReconstructor. */
-template <>
-struct BaseClassTrait<Herwig::QTildeReconstructor,1> {
-  /** Typedef of the first base class of QTildeReconstructor. */
-  typedef Herwig::KinematicsReconstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the QTildeReconstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::QTildeReconstructor>
-  : public ClassTraitsBase<Herwig::QTildeReconstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::QTildeReconstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QTildeReconstructor is implemented. It may also include several, space-separated,
-   * libraries if the class QTildeReconstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

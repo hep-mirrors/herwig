@@ -31,8 +31,12 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeClass<Evolver,Interfaced>
+describeEvolver ("Herwig::Evolver","HwShower.so");
 
 IBPtr Evolver::clone() const {
   return new_ptr(*this);
@@ -59,9 +63,6 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt;
 }
-
-ClassDescription<Evolver> Evolver::initEvolver;
-// Definition of the static class description member.
 
 void Evolver::Init() {
   

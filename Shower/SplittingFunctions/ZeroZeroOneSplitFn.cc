@@ -17,11 +17,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <cassert>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<ZeroZeroOneSplitFn> ZeroZeroOneSplitFn::initZeroZeroOneSplitFn;
-// Definition of the static class description member.
+DescribeNoPIOClass<ZeroZeroOneSplitFn,Herwig::SplittingFunction>
+describeZeroZeroOneSplitFn ("Herwig::ZeroZeroOneSplitFn","HwShower.so");
 
 void ZeroZeroOneSplitFn::Init() {
 
