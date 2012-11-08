@@ -71,13 +71,13 @@ public:
    * Evaluate the ratio.
    */
   virtual double evaluate() const {
-    double dummy; return evaluate(dummy);
+    double dummy; return evaluate(dummy,false);
   }
 
   /**
    * Evaluate the ratio.
    */
-  double evaluate(double&) const;
+  double evaluate(double&, bool) const;
 
 public:
 

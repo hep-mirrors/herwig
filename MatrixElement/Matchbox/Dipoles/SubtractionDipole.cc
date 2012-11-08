@@ -34,6 +34,7 @@ using namespace Herwig;
 
 SubtractionDipole::SubtractionDipole() 
   : MEBase(), theSplitting(false), theApply(true), theSubtractionTest(false),
+    theIgnoreCuts(false), theShowerKernel(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1) {}
 
@@ -542,52 +543,6 @@ void SubtractionDipole::ptCut(Energy cut) {
   theInvertedTildeKinematics->ptCut(cut);
 }
 
-CrossSection SubtractionDipole::dSigAvgDR(Energy2 factorizationScale) const {
-
-  assert(splitting());
-
-  double jac = jacobian();
-
-  if ( jac == 0.0 )
-    return ZERO;
-
-  jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
-	     realEmissionME()->lastXComb().mePartonData().size()-4.);
-
-  if ( havePDFWeight1() || havePDFWeight2() ) {
-    realEmissionME()->getPDFWeight(factorizationScale);
-  }
-
-  assert(lastHeadXComb().hasMeta(MatchboxMetaKeys::ColourCorrelatedMEs));
-
-  map<pair<int,int>,double>& ccmap = 
-    lastHeadXComb().meta<map<pair<int,int>,double> >(MatchboxMetaKeys::ColourCorrelatedMEs);
-
-  pair<int,int> cfg(bornEmitter(),bornSpectator());
-  if ( cfg.first > cfg.second )
-    swap(cfg.first,cfg.second);
-
-  assert(ccmap.find(cfg) != ccmap.end());
-
-  double ccme2 = ccmap[cfg];
-  double xme2 = me2Avg(ccme2);
-
-  if ( xme2 == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
-  }
-
-  CrossSection res = 
-    sqr(hbarc) * jac * lastMEPDFWeight() * xme2 /
-    (2. * lastSHat());
-
-  lastMECrossSection(res);
-
-  return lastMECrossSection();
-
-}
-
 CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double pdfweight = 1.;
@@ -608,7 +563,12 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     lastMEPDFWeight(pdfweight);
   }
 
-  double xme2 = me2();
+  double xme2 = 0.0;
+
+  if ( !showerKernel() )
+    xme2 = me2();
+  else
+    xme2 = me2Avg(-underlyingBornME()->me2());
 
   if ( xme2 == 0.0 ) {
     lastMECrossSection(ZERO);
@@ -968,7 +928,8 @@ void SubtractionDipole::generateSubCollision(SubProcess & sub) {
 }
 
 void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
-  os << theSplitting << theApply << theSubtractionTest << theRealEmissionME << theUnderlyingBornME
+  os << theSplitting << theApply << theSubtractionTest << theIgnoreCuts
+     << theShowerKernel << theRealEmissionME << theUnderlyingBornME
      << theTildeKinematics << theInvertedTildeKinematics << theReweights
      << theRealEmitter << theRealEmission << theRealSpectator
      << theSubtractionParameters
@@ -979,7 +940,8 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
-  is >> theSplitting >> theApply >> theSubtractionTest >> theRealEmissionME >> theUnderlyingBornME
+  is >> theSplitting >> theApply >> theSubtractionTest >> theIgnoreCuts
+     >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME
      >> theTildeKinematics >> theInvertedTildeKinematics >> theReweights
      >> theRealEmitter >> theRealEmission >> theRealSpectator
      >> theSubtractionParameters

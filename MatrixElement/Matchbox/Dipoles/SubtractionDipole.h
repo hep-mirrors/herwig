@@ -381,6 +381,17 @@ public:
    */
   virtual void clearKinematics();
 
+  /**
+   * If this is a dependent matrix element in a ME group, return true,
+   * if cuts should be ignored.
+   */
+  virtual bool ignoreCuts() const { return theIgnoreCuts; }
+
+  /**
+   * Indicate that cuts should be ignored
+   */
+  void doIgnoreCuts(bool is = true) { theIgnoreCuts = is; }
+
   //@}
 
   /** @name Tilde kinematics */
@@ -563,9 +574,16 @@ public:
   virtual double me2Avg(double ccme2) const = 0;
 
   /**
-   * Return the matrix element averaged over spin correlations.
+   * Return true, if the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
    */
-  virtual CrossSection dSigAvgDR(Energy2 factorizationScale) const;
+  bool showerKernel() const { return theShowerKernel; }
+
+  /**
+   * Indicate that the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
+   */
+  void doShowerKernel(bool is = true) { theShowerKernel = is; }
 
   /**
    * Return the matrix element squared differential in the variables
@@ -749,6 +767,17 @@ private:
    * True, if the subtraction is being tested.
    */
   bool theSubtractionTest;
+
+  /**
+   * True if cuts should be ignored
+   */
+  bool theIgnoreCuts;
+
+  /**
+   * True, if the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
+   */
+  bool theShowerKernel;
 
   /**
    * The real emission matrix element to be considered
