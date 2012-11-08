@@ -12,9 +12,7 @@
 // This is the declaration of the QTildeReconstructor class.
 //
 
-#include "ThePEG/EventRecord/ColourLine.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "ThePEG/Repository/UseRandom.h"
 
 namespace Herwig {
 
@@ -474,50 +472,6 @@ private:
   QTildeReconstructor & operator=(const QTildeReconstructor &);
 
 private:
-
-  /**
-   * Return colour line progenitor pointer for ShowerProgenitor
-   */ 
-   Ptr<ThePEG::ColourLine>::transient_pointer
-   CL(ShowerProgenitorPtr a, unsigned int index=0) const {
-    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->colourLines()[index]);
-  }
-
-  /**
-   * Return progenitor colour line size for ShowerProgenitor
-   */
-  unsigned int CLSIZE(ShowerProgenitorPtr a) const {
-    return a->progenitor()->colourInfo()->colourLines().size();
-  }
-
-  /**
-   * Return anti-colour line progenitor pointer for ShowerProgenitor
-   */
-  Ptr<ThePEG::ColourLine>::transient_pointer 
-  ACL(ShowerProgenitorPtr a, unsigned int index=0) const {
-    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->antiColourLines()[index]);
-  }
-
-  /**
-   * Return progenitor anti-colour line size for ShowerProgenitor
-   */
-  unsigned int ACLSIZE(ShowerProgenitorPtr a) const {
-    return a->progenitor()->colourInfo()->antiColourLines().size();
-  }
-
-  /**
-   * Return colour line size
-   */
-  unsigned int CLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
-    return (*a)->branchingParticle()->colourInfo()->colourLines().size();
-  }  
-
-  /**
-   * Return anti-colour line size
-   */
-  unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
-    return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
-  }
 
   /**
    *  Option for handling the reconstruction

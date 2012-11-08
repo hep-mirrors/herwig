@@ -24,6 +24,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/EventRecord/ColourLine.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -68,6 +70,51 @@ struct ColourSingletShower {
   vector<HardBranchingPtr> jets;
 
 };
+
+
+/**
+ * Return colour line progenitor pointer for ShowerProgenitor
+ */ 
+Ptr<ThePEG::ColourLine>::transient_pointer
+CL(ShowerProgenitorPtr a, unsigned int index=0) {
+  return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->colourLines()[index]);
+}
+
+/**
+ * Return progenitor colour line size for ShowerProgenitor
+ */
+unsigned int CLSIZE(ShowerProgenitorPtr a) {
+  return a->progenitor()->colourInfo()->colourLines().size();
+}
+
+/**
+ * Return anti-colour line progenitor pointer for ShowerProgenitor
+ */
+Ptr<ThePEG::ColourLine>::transient_pointer 
+ACL(ShowerProgenitorPtr a, unsigned int index=0) {
+  return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->antiColourLines()[index]);
+}
+
+/**
+ * Return progenitor anti-colour line size for ShowerProgenitor
+ */
+unsigned int ACLSIZE(ShowerProgenitorPtr a) {
+  return a->progenitor()->colourInfo()->antiColourLines().size();
+}
+
+/**
+ * Return colour line size
+ */
+unsigned int CLSIZE(set<HardBranchingPtr>::const_iterator & a) {
+  return (*a)->branchingParticle()->colourInfo()->colourLines().size();
+}  
+
+/**
+ * Return anti-colour line size
+ */
+unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) {
+  return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
+}
 
 }
 
