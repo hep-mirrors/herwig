@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxPowheg.la
+endif
 
 libHwMatchboxPowheg_la_SOURCES = \
 ME2byDipoles.cc \

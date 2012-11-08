@@ -193,11 +193,6 @@ public:
    */
   void setVerbose(bool on = true) { theVerbose = on; }
 
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
   //@}
 
   /** @name Setup of Subtracted ME objects */
@@ -306,6 +301,12 @@ protected:
 private:
 
   /**
+   * Pointer to the head real emission ME casted to a MatchboxMEBase
+   * object.
+   */
+  Ptr<MatchboxMEBase>::ptr theReal;
+
+  /**
    * The dipoles to be considered; the dipoles generated
    * can be accessed throught the dependent() matrxi element
    * vector, provided the head() is a MatchboxMEBase object.
@@ -340,8 +341,8 @@ private:
     /**
      * Constructor
      */
-    SubtractionHistogram(double low = 0.01, 
-			 double up = 100., 
+    SubtractionHistogram(double low = 0.001, 
+			 double up = 10., 
 			 unsigned int nbins = 100);
 
     /**

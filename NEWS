@@ -1,5 +1,63 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.1 release: 2012-10-16
+
+** Configure switches
+   The various switches to turn off compilation of BSM models have
+   been unified into a single '--disable-models'. A new flag
+   '--disable-dipole' can be used to turn off the compilation of the
+   Dipole and Matchbox codes.
+
+** Ticket #348: Search path for repository 'read' command
+   The search path for the 'read' command is configurable on the
+   command line with the -i and -I switches. By default, the
+   installation location is now included in the search path, so that
+   'Herwig++ read LEP.in' will work in an empty directory. The current
+   working directory will always be searched first. 
+   The rarely used "Herwig++ init" command has been made consistent
+   with 'read' and 'run' and should now be used without the '-i' flag.
+
+** Width treatment in BSM
+   The width treatment in BSM decay chains has been greatly improved
+   and is now switched on by default in the .model files. To get the
+   old behaviour, use 
+     set /Herwig/NewPhysics/NewModel:WhichOffshell Selected
+
+** New BSM models
+   Little Higgs models with and without T-parity are now available.
+
+** Resonance photon lifetime
+   A lifetime bug affecting decays of pi0 to e+e-X was fixed. The
+   virtual photon is not part of the event record anymore.
+
+** Ticket #371: Hard diffraction FPE
+   Herwig++ 2.6.0 introduced a bug into the diffraction code which
+   would abort any runs. This is now fixed.
+
+** O2AlphaS
+   Support for setting quark masses different from the particle data
+   objects as introduced in ThePEG 1.8.1 has been enabled.
+
+** Matchbox
+   Several improvements and bug fixes are included for
+   Matchbox. Amplitudes relevant to pp -> Z+jet and crossed processes
+   at NLO are now available, and various scale choices have been added
+   in a more flexible way. All subtraction dipoles for massive quarks
+   are now included.
+
+** Dipole shower
+   Parameters to perform scale variations in the shower have been
+   added to estimate uncertainties. A bug in showering off gg -> h has
+   been fixed.
+
+** Minor fixes
+*** Two broken colour structures in GeneralHardME
+*** Susy Higgs mixing matrix
+*** BaryonFactorizedDecayer out-of-bounds access
+*** Mass values in SimpleLHCAnalysis
+
+
+
 * Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
 
 ** New NLO framework

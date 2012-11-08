@@ -23,8 +23,8 @@ using namespace ThePEG;
  * \author Simon Platzer
  *
  * \brief SimpleColourBasis implements the colour algebra needed for
- * vector boson and vector boson + jet production at NLO. It mainly
- * serves as an example for the general ColourBasis interface.
+ * electroweak boson and electroweak boson + jet production at NLO. It
+ * mainly serves as an example for the general ColourBasis interface.
  *
  */
 class SimpleColourBasis: public ColourBasis {
@@ -140,14 +140,29 @@ protected:
 private:
 
   /**
+   * id for 88
+   */
+  mutable vector<PDT::Colour> id88;
+
+  /**
    * id for 33bar
    */
   mutable vector<PDT::Colour> id33bar;
 
   /**
+   * id for 888
+   */
+  mutable vector<PDT::Colour> id888;
+
+  /**
    * id for 33bar8
    */
   mutable vector<PDT::Colour> id33bar8;
+
+  /**
+   * id for 8888
+   */
+  mutable vector<PDT::Colour> id8888;
 
   /**
    * id for 33bar88

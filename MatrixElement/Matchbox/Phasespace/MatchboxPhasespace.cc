@@ -13,32 +13,22 @@
 
 #include "MatchboxPhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-MatchboxPhasespace::MatchboxPhasespace() {}
+MatchboxPhasespace::MatchboxPhasespace() 
+  : singularCutoff(10*GeV) {}
 
 MatchboxPhasespace::~MatchboxPhasespace() {}
 
 void MatchboxPhasespace::cloneDependencies(const std::string&) {
-}
-
-void MatchboxPhasespace::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
 }
 
 pair<double,Lorentz5Momentum> 
@@ -134,9 +124,56 @@ MatchboxPhasespace::selectDiagrams(const MEBase::DiagramVector& diags) const {
   return ret;
 }
 
+bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& momenta) {
+
+  if ( singularLimits.empty() )
+    return true;
+
+  theLastSingularLimit = singularLimits.begin();
+
+  for ( ; theLastSingularLimit != singularLimits.end(); ++theLastSingularLimit ) {
+    if ( theLastSingularLimit->first == theLastSingularLimit->second &&
+	 momenta[theLastSingularLimit->first].t() < singularCutoff )
+      break;
+    if ( theLastSingularLimit->first != theLastSingularLimit->second &&
+	 sqrt(momenta[theLastSingularLimit->first]*
+	      momenta[theLastSingularLimit->second]) < singularCutoff ) {
+      bool match = true;
+      for ( set<pair<size_t,size_t> >::const_iterator other =
+	      singularLimits.begin(); other != singularLimits.end(); ++other ) {
+	if ( other == theLastSingularLimit )
+	  continue;
+	if ( other->first == other->second &&
+	     momenta[other->first].t() < singularCutoff ) {
+	  match = false;
+	  break;
+	}
+	if ( other->first != other->second &&
+	     sqrt(momenta[other->first]*
+		  momenta[other->second]) < singularCutoff ) {
+	  match = false;
+	  break;
+	}
+      }
+      if ( match )
+	break;
+    }
+  }
+
+  return theLastSingularLimit != singularLimits.end();
+
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
+  os << singularLimits << ounit(singularCutoff,GeV);
+}
+
+void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
+  is >> singularLimits >> iunit(singularCutoff,GeV);
+}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -144,7 +181,7 @@ MatchboxPhasespace::selectDiagrams(const MEBase::DiagramVector& diags) const {
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeAbstractNoPIOClass<MatchboxPhasespace,HandlerBase>
+DescribeAbstractClass<MatchboxPhasespace,HandlerBase>
   describeMatchboxPhasespace("Herwig::MatchboxPhasespace", "HwMatchbox.so");
 
 void MatchboxPhasespace::Init() {
@@ -152,6 +189,13 @@ void MatchboxPhasespace::Init() {
   static ClassDocumentation<MatchboxPhasespace> documentation
     ("MatchboxPhasespace defines an abstract interface to a phase "
      "space generator.");
+
+
+  static Parameter<MatchboxPhasespace,Energy> interfaceSingularCutoff
+    ("SingularCutoff",
+     "[debug] Cutoff below which a region is considered singular.",
+     &MatchboxPhasespace::singularCutoff, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
 
 }
 

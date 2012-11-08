@@ -84,6 +84,11 @@ void GeneralSampler::initialize() {
 
   updateCrossSections(true);
 
+  if ( samplers.empty() ) {
+    throw Exception() << "No processes with non-zero cross section present."
+		      << Exception::abortnow;
+  }
+
   if ( theVerbose )
     cout << "estimated total cross section is ( "
 	 << integratedXSec()/nanobarn << " +/- "
@@ -266,12 +271,21 @@ void GeneralSampler::updateCrossSections(bool) {
   theIntegratedXSecErr = sqrt(var);
   norm = sumbias;
 
+  if ( sumbias == 0.0 ) {
+    samplers.clear();
+    theIntegratedXSec = ZERO;
+    theIntegratedXSecErr = ZERO;
+    return;
+  }
+
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
     double abssw = s->second->averageAbsWeight();
+    if ( abssw == 0.0 )
+      continue;
     s->second->bias(abssw/sumbias);
     current += abssw;
     newSamplers[current/sumbias] = s->second;
@@ -358,14 +372,14 @@ IVector GeneralSampler::getReferences() {
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theVerbose << theFlatSubprocesses 
      << samplers << lastSampler << theUpdateAfter
-     << theIntegratedXSec << theIntegratedXSecErr << theSumWeights
+     << theIntegratedXSec << theIntegratedXSecErr
      << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theVerbose >> theFlatSubprocesses 
      >> samplers >> lastSampler >> theUpdateAfter
-     >> theIntegratedXSec >> theIntegratedXSecErr >> theSumWeights
+     >> theIntegratedXSec >> theIntegratedXSecErr
      >> norm;
 }
 

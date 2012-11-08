@@ -31,7 +31,8 @@ public:
    */
   enum DipoleType {
     II12,II21,FF34,FF43,
-    IF13,IF14,IF23,IF24
+    IF13,IF14,IF23,IF24,
+    IF1,IF2,IF3,IF4
   };
 
 public:
@@ -242,11 +243,20 @@ protected:
   /**
    *  Subtracted real contribution
    */
-  vector<double> 
-  subtractedRealQED(pair<double,double> x, double z,
-		    double zJac,
-		    double oldqPDF, double newqPDF, double newpPDF,
-		    DipoleType dipole) const;
+//   vector<double> 
+//   subtractedRealQED(pair<double,double> x, double z,
+// 				       double zJac, double oldqPDF,
+// 				       double newqPDF, double newpPDF,
+// 				       DipoleType dipole) const;
+
+   vector<double> 
+   subtractedRealQED(pair<double,double> x, double z1,
+ 		    double z1Jac,
+ 		    double oldqPDF1, double newqPDF1, double newpPDF1,
+ 		    double z2,
+ 		    double z2Jac,
+ 		    double oldqPDF2, double newqPDF2, double newpPDF2,
+ 		    DipoleType dipole) const;
 
   /**
    *  Calculate of the collinear counterterms
@@ -308,7 +318,16 @@ protected:
   pair<double,double> 
   subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & pnew,
 		       DipoleType dipole, bool subtract) const;
-  
+
+  /**
+   *  \f$q\bar q\f$ with extra informations
+   */
+  pair<double,double>
+  subtractedQEDMEqqbar2(const vector<Lorentz5Momentum> & p,
+			double z1,double z1Jac,double oldqPDF1,double newqPDF1,
+			double z2,double z2Jac,double oldqPDF2,double newqPDF2,
+			DipoleType dipole, int iin, int iout, bool subtract) const;
+
   /**
    *  \f$g\bar q\f$
    */

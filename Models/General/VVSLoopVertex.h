@@ -6,7 +6,7 @@
 
 #include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.h"
 #include "VVSLoopVertex.fh"
-
+ 
 namespace Herwig {
 using namespace ThePEG;
 
@@ -25,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  VVSLoopVertex() : masses(0), type(0), couplings(0), theNpart(0) {
+  VVSLoopVertex() : masses(0), type(0), couplings(0), Npart_(0), loopToolsInit_(false) {
     kinematics(true);
   }
 
@@ -87,19 +87,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -126,7 +113,12 @@ protected:
   /**
    * Set the number of particles in the loop 
    */
-  void setNParticles(unsigned int npart) { theNpart = npart; }
+  void setNParticles(unsigned int npart) { Npart_ = npart; }
+
+  /**
+   *  Is loopTools initialized
+   */
+  bool loopToolsInitialized() { return loopToolsInit_; }
 
 private:
 
@@ -147,7 +139,12 @@ private:
   /**
    * The number of particles in the loop 
    */
-  unsigned int theNpart;
+  unsigned int Npart_;
+
+  /**
+   *  Loop tools initialised ?
+   */
+  bool loopToolsInit_;
 
 };
 

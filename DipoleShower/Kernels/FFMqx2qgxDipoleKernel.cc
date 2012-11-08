@@ -29,10 +29,11 @@ IBPtr FFMqx2qgxDipoleKernel::fullclone() const {
 bool FFMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     abs(ind.emitterData()->id()) < 6  &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
-    // massless quarks shall be treated by massless FFqx2qgxDipoleKernel
-    !( /*abs(ind.emitterData()->id()) < 6 &&*/ ind.emitterData()->mass() == ZERO ) &&
-    !( abs(ind.spectatorData()->id()) < 6 && ind.spectatorData()->mass() == ZERO );
+    // 2012-05-01
+    abs(ind.emitterData()->id()) == abs(flavour()->id()) &&
+    !( ind.emitterData()->mass() == ZERO &&
+       ind.spectatorData()->mass() == ZERO ) &&
+    !ind.initialStateEmitter() && !ind.initialStateSpectator();
 }
 
 bool FFMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
@@ -47,13 +48,20 @@ bool FFMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
   return
     sk.emission(b)->id() == ParticleID::g &&
     abs(sk.emitter(b)->id()) < 6 &&
-    abs(sk.emitter(b)->id()) == abs(emitter(a)->id()) &&
-    abs(sk.spectator(b)->id()) == abs(spectator(a)->id());
+    abs(sk.emitter(b)->mass()) == abs(emitter(a)->mass()) &&
+    abs(sk.spectator(b)->mass()) == abs(spectator(a)->mass());
 
 }
 
+// 2012-05-01
 tcPDPtr FFMqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
-  return ind.emitterData();
+  //  return ind.emitterData();
+  //  cout << "q2qg kernel: flavour " << flavour()->id() << endl << flush;
+  assert(flavour());
+  assert(abs(flavour()->id())<6);
+  //  cout << "  assertions passed" << endl << flush;
+  return ind.emitterData()->id() > 0 ?
+    (tcPDPtr) flavour() : (tcPDPtr) flavour()->CC();
 }
 
 tcPDPtr FFMqx2qgxDipoleKernel::emission(const DipoleIndex&) const {

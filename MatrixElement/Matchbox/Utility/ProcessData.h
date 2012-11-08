@@ -71,12 +71,22 @@ public:
   /**
    * Access the colour crossing information.
    */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return theColourMap; }
+  map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() { return theAmplitudeToColourMap; }
 
   /**
    * Return the colour crossing information.
    */
-  const map<tStdXCombPtr,map<size_t,size_t> >& colourMap() const { return theColourMap; }
+  const map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() const { return theAmplitudeToColourMap; }
+
+  /**
+   * Access the colour crossing information.
+   */
+  map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() { return theColourToAmplitudeMap; }
+
+  /**
+   * Return the colour crossing information.
+   */
+  const map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() const { return theColourToAmplitudeMap; }
 
   /**
    * Access the crossing information.
@@ -162,7 +172,13 @@ private:
    * The colour crossing information as filled by the last call to
    * fillCrossingMap()
    */
-  map<tStdXCombPtr,map<size_t,size_t> > theColourMap;
+  map<tStdXCombPtr,map<size_t,size_t> > theAmplitudeToColourMap;
+
+  /**
+   * The colour crossing information as filled by the last call to
+   * fillCrossingMap()
+   */
+  map<tStdXCombPtr,map<size_t,size_t> > theColourToAmplitudeMap;
 
   /**
    * The crossing signs as filled by the last call to

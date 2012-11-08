@@ -21,10 +21,6 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
-// TODO: remove
-// only for checking for NaN or inf
-#include <gsl/gsl_math.h>
-
 using namespace Herwig;
 
 FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() {}
@@ -70,10 +66,10 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   double y = ( sqr( pt / scale ) + sqr(1.-z)*mui2 + z*z*mu2 ) /
       (z*(1.-z)*(1.-mui2-mu2-muj2));
   
-  // TODO remove if well verified
   // now this is done in ptzAllowed!!
   // check (y,z) phasespace boundary
   // 2011-11-09: never occurred
+  /**
   double bar = 1.-mui2-mu2-muj2;
   double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
   double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
@@ -90,6 +86,7 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
     jacobian(0.0);
     return false;
   }
+  **/
       
   mapping /= z*(1.-z);
   jacobian( mapping*(1.-y)*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)) *
@@ -105,9 +102,6 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   subtractionParameters()[0] = y;
   subtractionParameters()[1] = z;
   
-  //ms
-  if( gsl_isnan(z) || gsl_isnan(y) ) cout << "FFMassiveInvertedTildeKinematics::doMap nan/inf" << endl;
-
   // kinematics from FFMassiveKinematics.cc
   // updated 2011-08-23
   // updated 2011-11-08
@@ -151,14 +145,6 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   realEmissionMomentum() = emm;
   realSpectatorMomentum() = spe;
   
-  if(gsl_isnan(em.t()/GeV) || gsl_isnan(emm.t()/GeV) || gsl_isnan(spe.t()/GeV))
-    cout << "FFMassiveInvertedTildeKinematics::doMap momenta corrupt " << /*em/GeV << "  " << emm/GeV <<
-      "  " << spe/GeV << endl <<
-      "  z " << z << "  y " << y << "  Ei " << Ei/GeV << "  E " << E/GeV << "  Ej " << Ej/GeV <<
-      "  scale " << scale/GeV << "  ptResc " << ptResc/GeV << endl <<
-      "  masses " << realEmitterData()->mass()/GeV << " " << realEmissionData()->mass()/GeV <<
-      " " << realSpectatorData()->mass()/GeV <<*/ endl;
-
   return true;
 
 }
@@ -175,8 +161,7 @@ Energy FFMassiveInvertedTildeKinematics::lastPt() const {
   double z = subtractionParameters()[1];
   
   Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 );
-  if(gsl_isnan(ret/GeV)) cout << "FFMassiveInvertedTildeKinematics::lastPt() nan" << endl;
-  
+
   return ret;
 }
     
@@ -191,14 +176,10 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
   Energy ptmax = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
     ( 2.-2.*sqrt(muj2) ) * scale;
   
-  // TODO: remove
-  // 2011-11-09: never occurred in the first place
-  assert(ptmax>0.*GeV);
-  
   return ptmax > 0.*GeV ? ptmax : 0.*GeV;
 }
 
-// Note that these bounds may be too loose
+// NOTE: bounds calculated at this step may be too loose
 pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
@@ -216,14 +197,10 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
     sqrt( 1.-sqr(pt/ptMax()) ) ) /
     ( 2.*sqr(1.-sqrt(muj2)) );
     
-  if(gsl_isnan(zp) || gsl_isnan(zm)) cout << "FFMassiveInvertedTildeKinematics::zBounds nan" << endl;
-  
   return make_pair(zm,zp);
 }
 
 bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz) const {
-  // TODO: to be removed after verified
-  assert( lastScale() == (bornEmitterMomentum()+bornSpectatorMomentum()).m() );
   // masses
   double mui2 = sqr( realEmitterData()->mass() / lastScale() );
   double mu2  = sqr( realEmissionData()->mass() / lastScale() );

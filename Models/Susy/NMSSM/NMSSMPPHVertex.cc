@@ -100,7 +100,7 @@ void NMSSMPPHVertex::doinit()  {
   type[5] = PDT::Spin1;
   couplings.resize(13);
   VVSLoopVertex::doinit();
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 void NMSSMPPHVertex::persistentOutput(PersistentOStream & os) const {

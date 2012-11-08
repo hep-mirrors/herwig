@@ -44,13 +44,14 @@ IBPtr TreePhasespaceChannels::fullclone() const {
 
 void TreePhasespaceChannels::persistentOutput(PersistentOStream & os) const {
   os << theChannelMap.size();
-  for ( map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> >::const_iterator k =
+  for ( map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,pair <PhasespaceTree,PhasespaceTree> > >::const_iterator k =
           theChannelMap.begin(); k != theChannelMap.end(); ++k ) {
     os << k->first << k->second.size();
-    for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree>::const_iterator l = 
+    for ( map<Ptr<Tree2toNDiagram>::ptr,pair <PhasespaceTree,PhasespaceTree> >::const_iterator l = 
             k->second.begin(); l != k->second.end(); ++l ) {
       os << l->first;
-      l->second.put(os);
+      l->second.first.put(os);
+      l->second.second.put(os);
     }
   }
 }
@@ -60,10 +61,10 @@ void TreePhasespaceChannels::persistentInput(PersistentIStream & is, int) {
   for ( size_t k = 0; k < nk; ++k ) {
     tStdXCombPtr xc; is >> xc;
     size_t nl; is >> nl;
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> cm;
+    map<Ptr<Tree2toNDiagram>::ptr,pair <PhasespaceTree,PhasespaceTree> > cm;
     for ( size_t l = 0; l < nl; ++l ) {
       Ptr<Tree2toNDiagram>::ptr ci; is >> ci;
-      PhasespaceTree cp; cp.get(is);
+      pair<PhasespaceTree,PhasespaceTree> cp; cp.first.get(is); cp.second.get(is);
       cm[ci] = cp;
     }
     theChannelMap[xc] = cm;

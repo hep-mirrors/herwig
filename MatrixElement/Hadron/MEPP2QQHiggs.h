@@ -168,11 +168,6 @@ protected:
 	      unsigned int flow) const;
   //@} 
 
-  /**
-   *  Generate the polar angle
-   */
-  double getCosTheta(double ctmin, double ctmax, double r);
-
 public:
 
   /** @name Functions used by the persistent I/O system. */

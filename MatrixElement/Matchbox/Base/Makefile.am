@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxBase.la
+endif
 
 libHwMatchboxBase_la_SOURCES = \
 DipoleRepository.cc \

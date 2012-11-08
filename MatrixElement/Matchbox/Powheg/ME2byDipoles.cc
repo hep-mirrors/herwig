@@ -102,7 +102,7 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   assert(real);
   theLastXComb = real;
 
-  map<StdXCombPtr,vector<StdDependentXCombPtr> >::iterator xcs
+  map<StdXCombPtr,vector<StdXCombPtr> >::iterator xcs
     = theXCombMap.find(theLastXComb);
 
   if ( xcs == theXCombMap.end() ) {
@@ -113,11 +113,13 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   if ( theRealME )
     theRealME->setXComb(theLastXComb);
 
-  vector<StdDependentXCombPtr>::iterator xcit = xcs->second.begin();
+  vector<StdXCombPtr>::iterator xcit = xcs->second.begin();
   vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
 
-  for ( ; xcit != xcs->second.end(); ++xcit, ++dip )
+  for ( ; xcit != xcs->second.end(); ++xcit, ++dip ) {
+    (**xcit).clean();
     (**dip).setXComb(*xcit);
+  }
 
 }
 
@@ -155,10 +157,19 @@ double ME2byDipoles::scaledBorn(Energy2 factorizationScale) const {
 
 }
 
+void ME2byDipoles::flushCaches() {
+  if ( theRealME )
+    theRealME->flushCaches();
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d =
+	  theDipoles.begin(); d != theDipoles.end(); ++d )
+    (**d).flushCaches();
+
+}
+
 double ME2byDipoles::evaluate(double& sratio) const {
 
   if ( projectionDipole()->verbose() )
-    generator()->log() << "'" << name() << "' evaluating\n" << flush;
+    generator()->log() << "'" << name() << "' ME2byDipoles evaluating\n" << flush;
 
   double den = 0.0;
   sratio = 0.;
@@ -169,13 +180,9 @@ double ME2byDipoles::evaluate(double& sratio) const {
 	  theDipoles.begin(); dip != theDipoles.end(); ++dip ) {
     if ( !(**dip).apply() )
       continue;
-    tStdDependentXCombPtr depXComb =
-      dynamic_ptr_cast<tStdDependentXCombPtr>((**dip).lastXCombPtr());  
-    assert(depXComb);
-    depXComb->setProcess();
+    tStdXCombPtr depXComb = (**dip).lastXCombPtr();  
     if ( !(**dip).generateTildeKinematics() )
       continue;
-    depXComb->remakeIncoming();
     depXComb->setIncomingPartons();
 
     (**dip).realEmissionME()->setScale();
@@ -197,12 +204,16 @@ double ME2byDipoles::evaluate(double& sratio) const {
   }
 
   if ( theRealME ) {
-    if ( !realME()->lastXCombPtr()->willPassCuts() )
+    if ( !realME()->lastXCombPtr()->willPassCuts() ) {
+      if ( projectionDipole()->verbose() )
+	generator()->log() << "real emission did not pass the cuts\n" << flush;
       return 0.0;
+    }
   }
 
   assert(abs(den) != 0.);
   double num = theRealME ? realME()->me2() : numDip;
+
   double res = num / den;
 
   if ( projectionDipole()->verbose() ) {
@@ -217,11 +228,11 @@ double ME2byDipoles::evaluate(double& sratio) const {
 
 void ME2byDipoles::getXCombs(tStdXCombPtr xc) {
 
-  vector<StdDependentXCombPtr> xcs;
+  vector<StdXCombPtr> xcs;
 
   for ( vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
 	dip != theDipoles.end(); ++dip ) {
-    StdDependentXCombPtr depxc = (**dip).makeBornXComb(xc);
+    StdXCombPtr depxc = (**dip).makeBornXComb(xc);
     xcs.push_back(depxc);
   }
 
@@ -283,31 +294,6 @@ void ME2byDipoles::printLastEvent(ostream& os) const {
   os << flush;
 
 }
-
-void ME2byDipoles::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  if ( realME() ) {
-    generator()->log() << prefix << "  | Real emission ME\n";
-    realME()->dumpInfo(prefix+"  | ");
-  }
-  generator()->log() << prefix << "  | Projection dipole " << projectionDipole() << "\n";
-  generator()->log() << prefix << "  | Denominator dipoles\n";
-  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-	  dipoles().begin(); d != dipoles().end(); ++d ) {
-    (**d).dumpInfo(prefix+"  | ");
-  }
-}
-
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

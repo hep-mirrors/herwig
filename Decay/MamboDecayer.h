@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  MamboDecayer() : _maxweight(10.) {}
+  MamboDecayer() : _maxweight(10.), _a0(10,0.), _a1(10,0.) {}
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -276,12 +276,13 @@ private:
   /**
    * Store coefficents for aysymptotic expansion of \f$\frac{I_0}{I_1}\f$
    */
-  double _a0[10];
+  vector<double> _a0;
+
   /**
    * Store data for aysymptotic expansion of the first derivative
    * \f$\frac{I_0}{I_1}\f$.
    */
-  double _a1[10];
+  vector<double> _a1;
 };
 
 }

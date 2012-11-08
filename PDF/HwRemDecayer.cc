@@ -1095,14 +1095,14 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
      << maxtrySoft_ << colourDisrupt_ << pomeronStructure_
-     << ounit(mg_,GeV);
+     << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV));
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
      >> maxtrySoft_ >> colourDisrupt_ >> pomeronStructure_
-     >> iunit(mg_,GeV);
+     >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV));
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;

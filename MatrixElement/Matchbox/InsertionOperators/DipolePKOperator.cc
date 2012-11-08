@@ -30,8 +30,7 @@ DipolePKOperator::DipolePKOperator()
   : MatchboxInsertionOperator(),
     CA(-1.0), CF(-1.0), 
     gammaQuark(-1.0), gammaGluon(-1.0),
-    KQuark(-1.0), KGluon(-1.0),
-    theUseDR(false), theUseCS(false) {}
+    KQuark(-1.0), KGluon(-1.0) {}
 
 DipolePKOperator::~DipolePKOperator() {}
 
@@ -41,21 +40,6 @@ IBPtr DipolePKOperator::clone() const {
 
 IBPtr DipolePKOperator::fullclone() const {
   return new_ptr(*this);
-}
-
-void DipolePKOperator::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "  | Born ME\n";
-  lastBorn()->dumpInfo(prefix+"  | ");
 }
 
 void DipolePKOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
@@ -329,6 +313,7 @@ double DipolePKOperator::sumParton(int id) const {
   vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
 
   double disFinite = 0.0;
+  double glueFinite = 0.0;
 
   for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
 	i != mePartonData().end(); ++i, ++Pi, ++idi ) {
@@ -380,6 +365,14 @@ double DipolePKOperator::sumParton(int id) const {
       }
       if ( z > x )
 	res -= disFinite*ifCorrelated;
+    }
+
+    if ( mePartonData()[idi]->id() == ParticleID::g ) {
+      if ( glueFinite == 0.0 && z > x ) {
+	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+      }
+      if ( z > x )
+	res -= glueFinite*ifCorrelated;
     }
 
   }
@@ -455,13 +448,11 @@ double DipolePKOperator::me2() const {
 
 void DipolePKOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << KQuark << KGluon
-     << theUseDR << theUseCS
      << ounit(scale,GeV2) << pdf << particle << x << z << pdfCache << parton;
 }
 
 void DipolePKOperator::persistentInput(PersistentIStream & is, int) {
   is >> CA >> CF >> gammaQuark >> gammaGluon >> KQuark >> KGluon
-     >> theUseDR >> theUseCS
      >> iunit(scale,GeV2) >> pdf >> particle >> x >> z >> pdfCache >> parton;
 }
 

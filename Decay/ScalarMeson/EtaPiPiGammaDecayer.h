@@ -175,11 +175,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<EtaPiPiGammaDecayer> initEtaPiPiGammaDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   EtaPiPiGammaDecayer & operator=(const EtaPiPiGammaDecayer &);
@@ -363,49 +358,6 @@ private:
    */
   mutable vector<Helicity::LorentzPolarizationVector> _vectors;
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of EtaPiPiGammaDecayer.
- */
-struct BaseClassTrait<Herwig::EtaPiPiGammaDecayer,1> {
-    /** Typedef of the base class of EtaPiPiGammaDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-struct ClassTraits<Herwig::EtaPiPiGammaDecayer>
-  : public ClassTraitsBase<Herwig::EtaPiPiGammaDecayer> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::EtaPiPiGammaDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwSMDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
-
-namespace Herwig {
 
 /**
  * A simple struct to provide the integrand for the integral

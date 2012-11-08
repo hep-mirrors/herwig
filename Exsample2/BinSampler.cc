@@ -31,7 +31,7 @@
 using namespace Herwig;
 
 BinSampler::BinSampler() 
-  : Interfaced(), MultiIterationStatistics(), 
+  : MultiIterationStatistics(), 
     theInitialPoints(1000000), theBin(-1),
     theInitialized(false) {}
 
@@ -142,7 +142,7 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<BinSampler,Interfaced>
+DescribeClass<BinSampler,MultiIterationStatistics>
   describeHerwigBinSampler("Herwig::BinSampler", "HwExsample2.so");
 
 void BinSampler::Init() {

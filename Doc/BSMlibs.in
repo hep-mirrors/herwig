@@ -1,0 +1,12 @@
+library HwADDModel.so
+library HwLeptoquarkModel.so
+library HwLHModel.so
+library HwLHTPModel.so
+library HwRSModel.so
+library HwSextetModel.so
+library HwSusy.so
+library HwNMSSM.so
+library HwTransplanck.so
+library HwTTbAModel.so
+library HwUED.so
+library HwZprimeModel.so

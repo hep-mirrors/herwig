@@ -391,7 +391,7 @@ bool DrellYanBase::applyHard(ShowerParticleVector quarks,
   double kappa[2]={1.,1.};
   // get the momentum fractions for the leading order process
   // and the values of the PDF's
-  double x[2],fx[2];
+  double x[2]={-99.99e99,-99.99e99}, fx[2]={-99.99e99,-99.99e99};
   tcPDFPtr pdf[2];
   for(unsigned int ix=0;ix<quarks.size();++ix) {
     x[ix]=quarks[ix]->x();

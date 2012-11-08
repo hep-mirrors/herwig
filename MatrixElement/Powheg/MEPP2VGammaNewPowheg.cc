@@ -93,7 +93,7 @@ bool MEPP2VGammaNewPowheg::generateKinematics(const double * r) {
       ctmin = max(ctmin,                     tanh(-ymax3));
     if ( ctmin >= ctmax ) return false;
   }
-  double cth = getCosTheta(ctmin, ctmax, r);
+  double cth = getCosTheta(ctmin, ctmax, r[0]);
   Energy pt = q*sqrt(1.0-sqr(cth));
   phi(rnd(2.0*Constants::pi));
   meMomenta()[2].setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));

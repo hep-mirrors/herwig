@@ -96,7 +96,7 @@ namespace SpinorHelicity {
 	res.second *= Complex(0.,1.);
 	return res;
       }
-      if ( abs(p.plus()) == ZERO ) {
+      if ( abs(p.plus()) < 1.e-10 * GeV ) {
 	return make_pair(complex<Value>(ZERO),
 			 complex<Value>(sqrt(2.*p.t())));
       }
@@ -120,7 +120,7 @@ namespace SpinorHelicity {
 	res.second *= Complex(0.,1.);
 	return res;
       }
-      if ( abs(p.plus()) == ZERO ) {
+      if ( abs(p.plus()) < 1.e-10 * GeV ) {
 	return make_pair(complex<Value>(sqrt(2.*p.t())),
 			 complex<Value>(ZERO));
       }

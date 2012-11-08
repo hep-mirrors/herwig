@@ -335,6 +335,7 @@ void SMHiggsWidthGenerator::doinit() {
   ca_ = ncolour;
   cf_ = (sqr(ncolour)-1.0)/(2.0*ca_);
   GenericWidthGenerator::doinit();
+  if(particle()->widthGenerator()!=this) return;
   // construct the map
   for(unsigned int ix=0;ix<decayModes().size();++ix) {
     tDMPtr mode = decayModes()[ix];

@@ -813,13 +813,23 @@ void MEqq2gZ2ffPowhegQED::Init() {
   static SwitchOption interfaceDipoleSum0
     (interfaceDipoleSum,
      "0",
-     "(R-Sum(D-))*|D+|/Sum|D|",
+     "(R-Sum(D_IF-))*|D_II_FF_IF+|/Sum|D_II_FF_IF+|",
      0);
   static SwitchOption interfaceDipoleSum1
     (interfaceDipoleSum,
      "1",
      "R*|D|/Sum|D|",
      1);
+  static SwitchOption interfaceDipoleSum2
+    (interfaceDipoleSum,
+     "2",
+     "R*|D_II_FF_IFsameemitter|/Sum|D_II_FF_IFsameemitter|",
+     2);
+  static SwitchOption interfaceDipoleSum3
+    (interfaceDipoleSum,
+     "3",
+     "R-alldipoles",
+     3);
 
   static Reference<MEqq2gZ2ffPowhegQED,OneLoopFFAWZVertex> interfaceOneLoopVertex
     ("OneLoopVertex",
@@ -1061,7 +1071,7 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
     for (unsigned int iin=0; iin<2; ++iin) {
       double collIF = iin==0 ? collQIF : collQbarIF ;
       for(unsigned int iout=2; iout<4; ++iout) {
-	// - sign because outgoing particles should be counted with a minus //ER
+	// - sign because outgoing particles should be counted with a minus //ER:
 	int QiQo= - mePartonData()[iin]->iCharge()*mePartonData()[iout]->iCharge(); 
 	if( QiQo != 0) {  
 	  Energy2 sioHat = 2.*meMomenta()[iin].dot(meMomenta()[iout]) ;
@@ -1102,12 +1112,20 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 // 	mePartonData()[2]->PDGName()<<" "<<
 // 	mePartonData()[3]->PDGName()<<" "<<endl;
 
-      realQED1 = subtractedRealQED(x,z. first,zJac. first,
-				   oldqPDF. first,newqPDF. first,
-				   newpPDF. first, II12);
-      realQED2 = subtractedRealQED(x,z.second,zJac.second, 
-				   oldqPDF.second,newqPDF.second,
-				   newpPDF.second, II21);
+      realQED1 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   II12);
+
+      realQED2 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   II21);
+
       wgt += realQED1[0] + realQED1[2] +realQED2[0] +realQED2[2];
     }
     // FSR
@@ -1118,41 +1136,107 @@ double MEqq2gZ2ffPowhegQED::NLOWeight() const {
 // 	mePartonData()[2]->PDGName()<<" "<<
 // 	mePartonData()[3]->PDGName()<<" "<<endl;
 
-      realQED3 = subtractedRealQED(x,zTilde_,1.,oldqPDF. first,
-				   oldqPDF. first,0.,FF34);
-      realQED4 = subtractedRealQED(x,zTilde_,1.,oldqPDF. first,
-				   oldqPDF. first,0.,FF43);
+
+      realQED3 = subtractedRealQED(x,
+				   zTilde_,1.,
+				   oldqPDF.first,oldqPDF.first,0.,
+				   zTilde_,1.,
+				   oldqPDF.second,oldqPDF.second,0.,
+				   FF34);
+
+      realQED4 = subtractedRealQED(x,
+				   zTilde_,1.,
+				   oldqPDF.first,oldqPDF.first,0.,
+				   zTilde_,1.,
+				   oldqPDF.second,oldqPDF.second,0.,
+				   FF43);
+
       wgt += realQED3[0] + realQED4[0];
     }
     // ISR/FSR interference
     if(QEDContributions_==0) {
-//       cout<<"====IF======="<<endl;
+//        cout<<"====IF======="<<endl;
 //       cout<<mePartonData()[0]->PDGName()<<" "<<
 // 	mePartonData()[1]->PDGName()<<" "<<
 // 	mePartonData()[2]->PDGName()<<" "<<
 // 	mePartonData()[3]->PDGName()<<" "<<endl;
       
-      if(DipoleSum_!=0 || 
-	 mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
-	realQED5 = subtractedRealQED(x,z. first,zJac. first,
-				     oldqPDF. first,newqPDF. first,
-				     newpPDF. first, IF13);
-      if(DipoleSum_!=0 || 
-	 mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
-	realQED6 = subtractedRealQED(x,z. first,zJac. first,
-				     oldqPDF. first,newqPDF. first,
-				     newpPDF. first, IF14);
-      if(DipoleSum_!=0 || 
-	 mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
-	realQED7 = subtractedRealQED(x,z.second,zJac.second, 
-				     oldqPDF.second,newqPDF.second,
-				     newpPDF.second, IF23);
-      if(DipoleSum_!=0 || 
-	 mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
-	realQED8 = subtractedRealQED(x,z.second,zJac.second, 
-				     oldqPDF.second,newqPDF.second,
-				     newpPDF.second, IF24);
-      //       cout<<"realqed= "<<realQED5[0]<<" "<<realQED6[0]<<" "<<realQED7[0]<<" "<<realQED8[0]<<" "<<endl;
+      if(DipoleSum_<=1) {
+	if(DipoleSum_==0 || 
+	   mePartonData()[0]->iCharge()*mePartonData()[2]->iCharge()>0)
+	  realQED5 = subtractedRealQED(x,
+				       z.first,zJac.first,
+				       oldqPDF.first,newqPDF.first,newpPDF.first,
+				       z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,newpPDF.second,
+				       IF13);
+	if(DipoleSum_==0 ||
+	   mePartonData()[0]->iCharge()*mePartonData()[3]->iCharge()>0)
+	  realQED6 = subtractedRealQED(x,
+				       z.first,zJac.first,
+				       oldqPDF.first,newqPDF.first,newpPDF.first,
+				       z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,newpPDF.second,
+				       IF14);
+	if(DipoleSum_==0 ||
+	   mePartonData()[1]->iCharge()*mePartonData()[2]->iCharge()>0)
+	  realQED7 = subtractedRealQED(x,
+				       z.first,zJac.first,
+				       oldqPDF.first,newqPDF.first,newpPDF.first,
+				       z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,newpPDF.second,
+				       IF23);
+	if(DipoleSum_==0 ||
+	   mePartonData()[1]->iCharge()*mePartonData()[3]->iCharge()>0)
+	  realQED8 = subtractedRealQED(x,
+				       z.first,zJac.first,
+				       oldqPDF.first,newqPDF.first,newpPDF.first,
+				       z.second,zJac.second,
+				       oldqPDF.second,newqPDF.second,newpPDF.second,
+				       IF24);
+      }
+      
+      else if(DipoleSum_ ==2) {
+// 	cout<<"IF1, zfirst "<<z.first<<endl;
+	realQED5 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   IF1);
+
+// 	cout<<"IF2, zsecond "<<z.second<<endl;
+	realQED6 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   IF2);
+
+// 	cout<<"IF3, zfirst,zsecond "<<z.first<<" "<<z.second<<endl;
+	realQED7 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   IF3);
+
+// 	cout<<"IF4, zfirst,zsecond "<<z.first<<" "<<z.second<<endl;
+	realQED8 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   IF4);
+      }
+      else {
+	realQED5 = subtractedRealQED(x,
+				   z.first,zJac.first,
+				   oldqPDF.first,newqPDF.first,newpPDF.first,
+				   z.second,zJac.second,
+				   oldqPDF.second,newqPDF.second,newpPDF.second,
+				   IF13);
+      }
       wgt += (realQED5[0] + realQED6[0] + realQED7[0] + realQED8[0] );
     }
   }
@@ -1614,12 +1698,30 @@ double MEqq2gZ2ffPowhegQED::realQCDME(const cPDVector & particles,
 }
 
 vector<double> 
-MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
-				       double zJac, double oldqPDF,
-				       double newqPDF, double newpPDF,
-				       DipoleType dipole) const {
+MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z1,
+		    double z1Jac,
+		    double oldqPDF1, double newqPDF1, double newpPDF1,
+		    double z2,
+		    double z2Jac,
+		    double oldqPDF2, double newqPDF2, double newpPDF2,
+		    DipoleType dipole) const {
   // ISR
   if(dipole==II12||dipole==II21) {
+    double z,zJac,newqPDF,oldqPDF,newpPDF;
+    if(dipole==II12) {
+      z = z1;
+      zJac = z1Jac;
+      newqPDF = newqPDF1;
+      oldqPDF = oldqPDF1;
+      newpPDF = newpPDF1;
+    }
+    else {
+      z = z2;
+      zJac = z2Jac;
+      newqPDF = newqPDF2;
+      oldqPDF = oldqPDF2;
+      newpPDF = newpPDF2;
+    }
     double vt   = vTilde_*(1.-z);
     double vJac = 1.-z;
     Energy pT   = sqrt(sHat()*vt*(1.-vt-z)/z);
@@ -1706,6 +1808,15 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
   }
   // FSR
   else if(dipole==FF34||dipole==FF43) {
+    double zJac;
+    if(dipole==FF34) {
+      zJac = z1Jac;
+    }
+    else {
+      zJac = z2Jac;
+    }
+//     cout<<"FF check: must be 1 "<<zJac<<endl;
+
     // reduced mass
     double mu2 = sqr(mePartonData()[2]->mass())/sHat();
     double mu  = sqrt(mu2);
@@ -1779,6 +1890,24 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
   // ISR/FSR interference
   else if (dipole == IF13 || dipole == IF14 ||
 	   dipole == IF23 || dipole == IF24) {
+
+    if(DipoleSum_ == 2) {
+      cout<<"error"<<endl;
+    }
+
+    double z,zJac,newqPDF,oldqPDF;
+    if(dipole==IF13 || dipole==IF14) {
+      z = z1;
+      zJac = z1Jac;
+      newqPDF = newqPDF1;
+      oldqPDF = oldqPDF1;
+    }
+    else {
+      z = z2;
+      zJac = z2Jac;
+      newqPDF = newqPDF2;
+      oldqPDF = oldqPDF2;
+    }
     // particles making up the dipole
     int iin   = dipole == IF13 || dipole == IF14 ? 0 : 1;
     int iout  = dipole == IF13 || dipole == IF23 ? 2 : 3;
@@ -1871,7 +2000,13 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
       assert(false);
     vector<double> output(2,0.);
     if(!(zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 )) {
-      pair<double,double> realIF = subtractedQEDMEqqbar(pnew,dipole,true);
+      pair<double,double> realIF = 
+	subtractedQEDMEqqbar(pnew,dipole,true);
+      //Here we can use an overall phase*newqPDF/oldqPDF, since
+      //all the dipoles included in the current term have
+      //the same kinematics and the same underlying Born ME.
+      //ER: check that PDF change is ok also for real ME, since
+      //    we are using an overall pdf rescaling
       double fact = EMfact_*phase*newqPDF/oldqPDF;
       output[0] = realIF.first *fact;
       output[1] = realIF.second*fact;
@@ -1879,6 +2014,160 @@ MEqq2gZ2ffPowhegQED::subtractedRealQED(pair<double,double> x, double z,
     // return the answer
     return output;
   }
+  ///////////////////////////////////////////////////
+  else if (dipole == IF1 || dipole == IF2 ||
+	   dipole == IF3 || dipole == IF4) {
+    if(DipoleSum_!=2) {
+      cout<<"Error2 in subtractedRealQED"<<endl;
+      assert(false);
+    }
+
+    // particles making up the dipole
+    int iin=-1,iout=-1;
+    // new momenta
+    vector<Lorentz5Momentum> pnew(5);
+
+    double z=ZERO,zJac=ZERO;
+    double charge02 = double(mePartonData()[0]->iCharge()*
+			     mePartonData()[2]->iCharge())/9.;
+    double charge12 = double(mePartonData()[1]->iCharge()*
+			     mePartonData()[2]->iCharge())/9.;
+    if(dipole == IF1 || dipole == IF2) {
+      // initial_em-final_spect
+      iin = dipole==IF1 ? 0 : 1;
+      // build 'real' kinematics assuming spectator is such that
+      // Q_em*Q_sp>0
+      iout= (dipole==IF1 && charge02 > 0) || (dipole==IF2 && charge12 > 0)
+	? 2 : 3;
+      if(dipole==IF1) {
+	z = z1;
+	zJac = z1Jac;
+	if(iin!=0) cout<<"Error 0"<<endl;
+      }
+      else {
+	z = z2;
+	zJac = z2Jac;
+	if(iin!=1) cout<<"Error 1"<<endl;
+      }
+    }
+    else if(dipole == IF3 || dipole == IF4) {
+      // initial_sp-final_emitter
+      iout= dipole==IF3 ? 2 : 3;
+      // build 'real' kinematics assuming spectator is such that
+      // Q_em*Q_sp>0
+      iin = (dipole==IF3 && charge02 > 0) || (dipole==IF4 && charge12 > 0)
+	? 0 : 1;
+
+      z = iin==0 ? z1 : z2; //ER:
+      zJac = iin==0 ? z1Jac : z2Jac; //ER:
+    }
+    //now (iin,iout) are well defined
+//     cout<<"In subtractedrealqed I'll use "<<iin<<iout<<" "<<z<<endl;
+    
+    // momentum of system
+    Lorentz5Momentum q = meMomenta()[iout]-meMomenta()[iin];
+    q.rescaleMass();
+    Energy  Q  = -q.mass();
+    Energy2 Q2 = sqr(Q);
+    // reduced mass
+    Energy mj = meMomenta()[iout].mass();
+    double mu2 = sqr(mj)/Q2;
+    // second integration variable
+    double vJac = (1.-mu2*z/(1.+mu2-z));
+    double vt = vTilde_*vJac;
+    // work out LT to Breit-Frame
+    Lorentz5Momentum pb     = meMomenta()[iin ];
+    Axis axis(q.vect().unit());
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    LorentzRotation rot;
+    if(axis.perp2()>1e-20) {
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+    }
+    if(abs(1.-q.e()/q.vect().mag())>1e-6) 
+      rot.boostZ( q.e()/q.vect().mag());
+    pb *= rot;
+    if(pb.perp2()/GeV2>1e-20) {
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+    }
+    // born incoming and outgoing momenta
+    Lorentz5Momentum pij = rot*meMomenta()[iout];
+    Lorentz5Momentum pat = rot*meMomenta()[iin ];
+    // generate the real emission momenta
+    double x1 = -(1.+mu2)/z;
+    double x2 = 1-mu2-vt*(1.+mu2)/z;
+    double x3 = 2.+x1-x2;
+    double corr = (1.-z-vt)*mu2/((1.-vt)*(1.-z));
+    double xT = sqrt(4.*(1.-z)/z*vt*(1.-vt)*(1.+corr));
+    // incoming momentum
+    Lorentz5Momentum pa(ZERO,ZERO,-0.5*x1*Q,-0.5*x1*Q,ZERO);
+    // outgoing momentum
+    Lorentz5Momentum pj( 0.5*Q*xT*cos(phi_), 0.5*Q*xT*sin(phi_),
+			 -0.5*Q*x2,0.5*Q*sqrt(sqr(x2)+sqr(xT)+4.*mu2),mj);
+    Lorentz5Momentum pi(-0.5*Q*xT*cos(phi_),-0.5*Q*xT*sin(phi_),
+			-0.5*Q*x3,0.5*Q*sqrt(sqr(x3)+sqr(xT)       ),ZERO);
+    // boost back to the lab
+    rot.invert();
+    pa *= rot;
+    pi *= rot;
+    pj *= rot;
+    // incoming
+    if(iin==0) {
+      pnew[0] = pa;
+      pnew[1] = meMomenta()[1];
+    }
+    else {
+      pnew[0] = meMomenta()[0];
+      pnew[1] = pa;
+    }
+    // outgoing
+    if(iout==2) {
+      pnew[2] = pj;
+      pnew[3] = meMomenta()[3];
+    }
+    else {
+      pnew[2] = meMomenta()[2];
+      pnew[3] = pj;
+    }
+    // emitted
+    pnew[4] = pi;
+    // phase-space prefactors
+    double phase = vJac*(1.+mu2);
+    //Here compute dipoles
+    vector<double> output(2,0.);
+//     cout<<"call QEDMEqqbar2 with "<<zTilde_<<" "<<vt<<" "<<1.-z-vt<<endl;
+    if(!(zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 )) {
+      pair<double,double> realIF = 
+	subtractedQEDMEqqbar2(pnew,
+			      z1,z1Jac,oldqPDF1,newqPDF1,
+			      z2,z2Jac,oldqPDF2,newqPDF2,
+			      dipole,iin,iout,true);
+      double fact = EMfact_*phase;//ER: *newqPDF/oldqPDF;
+      output[0] = realIF.first *fact;
+      output[1] = realIF.second*fact;
+    }
+    // return the answer
+    return output;
+  }
+
+/////////////////////////// Assume for now that this is not needed
+//     if      ( dipole == IF13 ) {
+//       realEmissionQEDIF13_ = pnew;
+//     }
+//     else if ( dipole == IF14 ) {
+//       realEmissionQEDIF14_ = pnew;
+//     }
+//     else if ( dipole == IF23 ) {
+//       realEmissionQEDIF23_ = pnew;
+//     }
+//     else if ( dipole == IF24 ) {
+//       realEmissionQEDIF24_ = pnew;
+//     }
+//     else
+//       assert(false);
+//////////////////////////////////////////////
   else {
     assert(false);
     return vector<double>(4,0.);
@@ -1894,6 +2183,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   vector<double> me = realQEDME(particles,p);
   // scale for the phase space
   Energy2 scale(ZERO);
+  Energy2 scaleIF[4] = {ZERO,ZERO,ZERO,ZERO};
   /////////// compute the two II dipole terms ////////////////////////////
   InvEnergy2 DII[2] = {ZERO,ZERO};
   if(QEDContributions_!=2) {
@@ -1992,55 +2282,99 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   }
   /////////// ISR/FSR interference ////////////////////////////
   InvEnergy2 DIF[4]={ZERO,ZERO,ZERO,ZERO};
+  InvEnergy2 DFI[4]={ZERO,ZERO,ZERO,ZERO};
   Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
   InvEnergy2 negativeDipoles(ZERO);
   if(QEDContributions_==0) {
-//     cout<<"doing IF dipoles"<<endl;
-    for(unsigned int ix=0;ix<4;++ix) {
-      // incoming and outgoing particles in the dipole
-      unsigned int iin  = ix<2 ? 0 :1;
-      unsigned int iout = ix%2 == 0 ? 2 : 3;
-      // emission variables
-      double x = 1.-p[iout]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
-      double z =    p[iin ]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
-      // momenta for the born process
-      Lorentz5Momentum pat = x*p[iin];
-      Lorentz5Momentum pjt = p[4]+p[iout]-(1.-x)*p[iin];
-      vector<Lorentz5Momentum> pa(4);
-      for(unsigned iy=0;iy<4;++iy) {
-	if(iy==iin)       pa[iy] = pat;
-	else if(iy==iout) pa[iy] = pjt;
-	else              pa[iy] = p[iy];
+    if(DipoleSum_ != 2) {
+      //     cout<<"doing IF dipoles"<<endl;
+      for(unsigned int ix=0;ix<4;++ix) {
+	// incoming and outgoing particles in the dipole
+	unsigned int iin  = ix<2 ? 0 :1;
+	unsigned int iout = ix%2 == 0 ? 2 : 3;
+	// emission variables
+	double x = 1.-p[iout]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+	double z =    p[iin ]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+	// momenta for the born process
+	Lorentz5Momentum pat = x*p[iin];
+	Lorentz5Momentum pjt = p[4]+p[iout]-(1.-x)*p[iin];
+	vector<Lorentz5Momentum> pa(4);
+	for(unsigned iy=0;iy<4;++iy) {
+	  if(iy==iin)       pa[iy] = pat;
+	  else if(iy==iout) pa[iy] = pjt;
+	  else              pa[iy] = p[iy];
+	}
+	// pT
+	Energy mj = p[iout].mass();
+	Lorentz5Momentum q = pjt-pat;
+	q.rescaleMass();
+	Energy  Q  = -q.mass();
+	Energy2 Q2 = sqr(Q);
+	double mu2 = sqr(mj)/Q2;
+	double corr = (1.-x-z)*mu2/((1.-z)*(1.-x));
+	pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr);
+	// LO matrix element
+	double lo = loME(mePartonData(),pa,false);
+	Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
+	Energy2 dot2 = max(p[iout]*p[4],1e-30*MeV2);
+	InvEnergy2 split = 
+	  0.5/dot1/x*(2./(1.-x+z)-1.-x) +
+	  0.5/dot2/x*(2./(1.-x+z)-2.+z-sqr(mj)/dot2);
+	// lo piece and charge factors
+	double charge = double(mePartonData()[iin]->iCharge()*
+			       mePartonData()[iout]->iCharge())/9.;
+	// with the + sign because one of the 2 partons is outgoing,
+	// so revert the sign of the
+	// 'color' operator of the outgoing parton
+	InvEnergy2 Dipole= + lo*charge*split; 
+	if(DipoleSum_!=0 || charge>0)
+	  DIF[ix]          = Dipole;
+	else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
+	  negativeDipoles += Dipole;
+	if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
       }
-      // pT
-      Energy mj = p[iout].mass();
-      Lorentz5Momentum q = pjt-pat;
-      q.rescaleMass();
-      Energy  Q  = -q.mass();
-      Energy2 Q2 = sqr(Q);
-      double mu2 = sqr(mj)/Q2;
-      double corr = (1.-x-z)*mu2/((1.-z)*(1.-x));
-      pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr);
-      // LO matrix element
-      double lo = loME(mePartonData(),pa,false);
-      Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
-      Energy2 dot2 = max(p[iout]*p[4],1e-30*MeV2);
-      InvEnergy2 split = 
-	0.5/dot1/x*(2./(1.-x+z)-1.-x) +
-	0.5/dot2/x*(2./(1.-x+z)-2.+z-sqr(mj)/dot2);
-      // lo piece and charge factors
-      double charge = double(mePartonData()[iin]->iCharge()*
-			     mePartonData()[iout]->iCharge())/9.;
-      //new //ER
-      // with the + sign because one of the 2 partons is outgoing,
-      // so revert the sign of the
-      // 'color' operator of the outgoing parton
-      InvEnergy2 Dipole= + lo*charge*split; 
-      if(DipoleSum_ !=0 || charge>0)
-	DIF[ix]          = Dipole;
-      else if(dot1>1e-30*MeV2&&dot2>1e-30*MeV2)
-	negativeDipoles += Dipole;
-      if(int(ix)==int(dipole)-int(IF13)) scale = Q2;
+    }
+    else {
+//       if(dipole==IF1 || dipole==IF2 || dipole==IF3 || dipole==IF4) cout<<"IF IF"<<endl;
+      for(unsigned int ix=0;ix<4;++ix) {
+	// incoming and outgoing particles in the dipole
+	unsigned int iin  = ix<2 ? 0 :1;
+	unsigned int iout = ix%2 == 0 ? 2 : 3;
+	// emission variables
+	double x = 1.-p[iout]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+	double z =    p[iin ]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+	// momenta for the born process
+	Lorentz5Momentum pat = x*p[iin];
+	Lorentz5Momentum pjt = p[4]+p[iout]-(1.-x)*p[iin];
+	vector<Lorentz5Momentum> pa(4);
+	for(unsigned iy=0;iy<4;++iy) {
+	  if(iy==iin)       pa[iy] = pat;
+	  else if(iy==iout) pa[iy] = pjt;
+	  else              pa[iy] = p[iy];
+	}
+	// pT
+	Energy mj = p[iout].mass();
+	Lorentz5Momentum q = pjt-pat;
+	q.rescaleMass();
+	Energy  Q  = -q.mass();
+	Energy2 Q2 = sqr(Q);
+	double mu2 = sqr(mj)/Q2;
+	double corr = (1.-x-z)*mu2/((1.-z)*(1.-x));
+	pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr);
+	// LO matrix element
+	double lo = loME(mePartonData(),pa,false);
+	Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
+	Energy2 dot2 = max(p[iout]*p[4],1e-30*MeV2);
+	// lo piece and charge factors
+	double charge = double(mePartonData()[iin]->iCharge()*
+			       mePartonData()[iout]->iCharge())/9.;
+	InvEnergy2 splitIF = 0.5/dot1/x*(2./(1.-x+z)-1.-x);
+	InvEnergy2 splitFI = 0.5/dot2/x*(2./(1.-x+z)-2.+z-sqr(mj)/dot2);
+
+	DIF[ix]=charge*splitIF*lo;
+	DFI[ix]=charge*splitFI*lo;
+	scaleIF[ix]=Q2;
+      }
     }
   }
   // supression function
@@ -2063,44 +2397,53 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     assert(false);
   pair<double,double> supressionFactor = supressionFunction(pT2sup);
   // numerator for dipole ratio
-  InvEnergy2 num;
+  InvEnergy2 num,numscale;
   switch (dipole) {
   case II12 :
     num = DII[0];
+    numscale=num;
     break;
   case II21 :
     num = DII[1];
+    numscale=num;
     break;
   case FF34 :
     num = DFF[0];
+    numscale=num;
     break;
   case FF43 :
     num = DFF[1];
+    numscale=num;
     break;
   case IF13 :
     num = DIF[0];
+    numscale=num;
     break;
   case IF14 :
     num = DIF[1];
+    numscale=num;
     break;
   case IF23 :
     num = DIF[2];
+    numscale=num;
     break;
   case IF24 :
     num = DIF[3];
+    numscale=num;
     break;
   default:
     assert(false);
   };
   double meout(0.);
   InvEnergy2 den(ZERO);
+  InvEnergy2 allDipoles(ZERO); //needed to check limits
   // ISR 
   if(QEDContributions_==1 ||
      (QEDContributions_==3 && (dipole==II12 || dipole ==II21))) {
     assert(dipole==II12 || dipole ==II21);
     meout = me[0];
     den = abs(DII[0])+abs(DII[1]);
-    //    negativeDipoles=ZERO; //!ER:
+    allDipoles=DII[0]+DII[1];
   }
   // FSR 
   else if(QEDContributions_==2 ||
@@ -2108,13 +2451,35 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
     assert(dipole==FF34 || dipole ==FF43);
     meout = me[1];
     den = abs(DFF[0])+abs(DFF[1]);
-    //    negativeDipoles=ZERO; //!ER:
+    allDipoles=DFF[0]+DFF[1];
   }
   // full result
   else if(QEDContributions_==0) {
     meout = me[2];
     den = abs(DII[0])+abs(DII[1])+abs(DFF[0])+abs(DFF[1]);
-    for(unsigned int ix=0;ix<4;++ix) den += abs(DIF[ix]);
+    if(DipoleSum_!=2) {
+      for(unsigned int ix=0;ix<4;++ix) den += abs(DIF[ix]);
+      allDipoles = (DII[0])+(DII[1])+(DFF[0])+(DFF[1]);
+      for(unsigned int ix=0;ix<4;++ix) allDipoles += DIF[ix];
+    }
+    else if(DipoleSum_==2) {
+      den=den + // DENFIXED
+      abs(DIF[0]+DIF[1]) + 
+      abs(DIF[2]+DIF[3]) +
+      abs(DFI[0]+DFI[2]) +
+      abs(DFI[1]+DFI[3]) ;
+//       for(unsigned int ix=0;ix<4;++ix) {
+// 	den += abs(DIF[ix]+DFI[ix]);
+//       }
+    }
+    else
+      assert(false);
+    if (DipoleSum_ ==3) {
+      negativeDipoles = ZERO;
+      numscale = allDipoles;
+      den = 1./GeV2;
+      num = den ;
+    }
   }
   else 
     assert(false);
@@ -2123,7 +2488,7 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   if(den>ZERO) {
     if(subtract) {
       output.first  = scale*((UnitRemoval::InvE2*meout-negativeDipoles)*
-			     abs(num)/den*supressionFactor.first -num);
+			     abs(num)/den*supressionFactor.first -numscale);
     }
     else {
       output.first  = scale* UnitRemoval::InvE2*meout*
@@ -2134,6 +2499,275 @@ MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar(const vector<Lorentz5Momentum> & p,
   }
   return output;
 }
+
+
+pair<double,double> 
+MEqq2gZ2ffPowhegQED::subtractedQEDMEqqbar2(const vector<Lorentz5Momentum> & p,
+					   double z1,double z1Jac,double oldqPDF1,double newqPDF1,
+					   double z2,double z2Jac,double oldqPDF2,double newqPDF2,
+					   DipoleType dipole, int iin, int iout, bool subtract) const {
+  //////////////////////  
+  //ER:
+  //////////////////////
+
+  //Sanity check
+  if(DipoleSum_!=2) {
+    cout<<"Error in subtractedQEDMEqqbar2"<<endl;
+    assert(false);
+  }
+
+//   cout<<"In qqbar2: iin, iout "<<" "<<iin<<" "<<iout<<endl;
+
+
+  // calculate the matrix element
+  cPDVector particles(mePartonData());
+  particles.push_back(gamma_);
+  vector<double> me = realQEDME(particles,p);
+  // scale for the phase space
+  Energy2 scale(ZERO);
+  Energy2 scaleIF[4] = {ZERO,ZERO,ZERO,ZERO};
+  /////////// compute the two II dipole terms ////////////////////////////
+  InvEnergy2 DII[2] = {ZERO,ZERO};
+  if(QEDContributions_!=2) {
+    //    cout<<"doing II dipoles"<<endl;
+    double x = (p[0]*p[1]-p[4]*p[1]-p[4]*p[0])/(p[0]*p[1]);
+    Lorentz5Momentum Kt = p[0]+p[1]-p[4];
+    vector<Lorentz5Momentum> pa(4),pb(4);
+    // momenta for q -> q gamma emission
+    pa[0] = x*p[0];
+    pa[1] =   p[1];
+    Lorentz5Momentum K = pa[0]+pa[1];
+    Lorentz5Momentum Ksum = K+Kt;
+    Energy2 K2 = K.m2();
+    Energy2 Ksum2 = Ksum.m2();
+    for(unsigned int ix=2;ix<4;++ix)
+      pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
+    // first LO matrix element
+    double lo1 = loME(mePartonData(),pa,false);
+    // momenta for qbar -> qbar gamma emission
+    pb[0] =   p[0];
+    pb[1] = x*p[1];
+    K = pb[0]+pb[1];
+    Ksum = K+Kt;
+    K2 = K.m2();
+    Ksum2 = Ksum.m2();
+    for(unsigned int ix=2;ix<4;++ix)
+      pb[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2.*K*(Kt*p[ix])/K2;
+    // second LO matrix element
+    double lo2 = loME(mePartonData(),pb,false);
+    // II dipoles
+    DII[0] = 0.5/(p[0]*p[4])/x*(2./(1.-x)-(1.+x))*lo1;
+    DII[1] = 0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x))*lo2;
+    // charge factors
+    for(unsigned int ix=0;ix<2;++ix)
+      DII[ix] *= sqr(double(mePartonData()[0]->iCharge())/3.);
+    // phase-space factor
+    if(dipole==II12||dipole==II21) {
+      //      scale = sHat();
+      cout<<"ERROR IN QQBAR2, called with II dipole"<<endl;
+    }
+  }
+  /////////// compute the two FF dipole terms ////////////////////////////
+  InvEnergy2 DFF[2]={ZERO,ZERO};
+  Energy2 pT2final[2]={ZERO,ZERO};
+  if(QEDContributions_!=1) {
+    //cout<<"doing FF dipoles"<<endl;
+    Lorentz5Momentum q = p[0]+p[1];
+    Energy2 Q2=q.m2();
+    Energy2 lambda = sqrt((Q2-sqr(p[2].mass()+p[3].mass()))*
+			  (Q2-sqr(p[2].mass()-p[3].mass())));
+    for(unsigned int iemit=0;iemit<2;++iemit) {
+      unsigned int ispect = iemit==0 ? 1 : 0;
+      Energy2 pipj = p[4      ] * p[2+iemit ];
+      Energy2 pipk = p[4      ] * p[2+ispect];
+      Energy2 pjpk = p[2+iemit] * p[2+ispect];
+      double y = pipj/(pipj+pipk+pjpk);
+      double z = pipk/(     pipk+pjpk);
+      Energy mij = sqrt(2.*pipj+sqr(p[2+iemit].mass()));
+      Energy2 lamB = sqrt((Q2-sqr(mij+p[2+ispect].mass()))*
+			  (Q2-sqr(mij-p[2+ispect].mass())));
+      Energy2 Qpk = q*p[2+ispect];
+      Lorentz5Momentum pkt = 
+	lambda/lamB*(p[2+ispect]-Qpk/Q2*q)
+	+0.5/Q2*(Q2+sqr(p[2+ispect].mass())-sqr(p[2+ispect].mass()))*q;
+      Lorentz5Momentum pijt = 
+	q-pkt;
+      double muj = p[2+iemit ].mass()/sqrt(Q2);
+      double muk = p[2+ispect].mass()/sqrt(Q2);
+      double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
+      double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
+      /(1.-y)/(1.-sqr(muj)-sqr(muk));
+      // transverse momentum
+      double x1 = 2.*p[2+iemit ]*q/Q2;
+      double x2 = 2.*p[2+ispect]*q/Q2;
+      pT2final[iemit] = 0.25*Q2/(sqr(x2)-4.*sqr(muk))*
+	((sqr(x1)-4.*sqr(muj))*(sqr(x2)-4.*sqr(muk)) - 
+	 sqr(2.*x1+2.*x2-2.-x1*x2-2.*sqr(muj)-2.*sqr(muk)));
+      // dipole term
+      DFF[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
+			     -vt/v*(2.-z+sqr(p[2+iemit].mass())/pipj));
+      // matrix element
+      vector<Lorentz5Momentum> lomom(4);
+      lomom[0] = p[0];
+      lomom[1] = p[1];
+      if(iemit==0) {
+	lomom[2] = pijt;
+	lomom[3] = pkt ;
+      }
+      else {
+	lomom[3] = pijt;
+	lomom[2] = pkt ;
+      }
+      // leading-order matrix element
+      double lo = loME(mePartonData(),lomom,false);
+      DFF[iemit] *= lo*sqr(double(mePartonData()[2]->iCharge())/3.);
+    }
+    // phase-space factpr
+    if(dipole==FF34||dipole==FF43) {
+      //      scale = sHat();
+      cout<<"ERROR IN QQBAR2, called with FF dipole"<<endl;
+    }
+  }
+  /////////// ISR/FSR interference ////////////////////////////
+  InvEnergy2 DIF[4]={ZERO,ZERO,ZERO,ZERO};
+  InvEnergy2 DFI[4]={ZERO,ZERO,ZERO,ZERO};
+  Energy2 pT2IF[4] ={ZERO,ZERO,ZERO,ZERO};
+  InvEnergy2 negativeDipoles(ZERO);
+  if(QEDContributions_==0) {
+    for(unsigned int ix=0;ix<4;++ix) {
+      // incoming and outgoing particles in the dipole
+      unsigned int iin  = ix<2 ? 0 :1;
+      unsigned int iout = ix%2 == 0 ? 2 : 3;
+      // emission variables
+      double x = 1.-p[iout]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+      double z =    p[iin ]*p[4]/(p[iin]*p[iout]+p[iin]*p[4]);
+//       cout<<"iin, iout, x "<<" "<<iin<<" "<<iout<<" "<<x<<endl;
+      // momenta for the born process
+      Lorentz5Momentum pat = x*p[iin];
+      Lorentz5Momentum pjt = p[4]+p[iout]-(1.-x)*p[iin];
+      vector<Lorentz5Momentum> pa(4);
+      for(unsigned iy=0;iy<4;++iy) {
+	if(iy==iin)       pa[iy] = pat;
+	else if(iy==iout) pa[iy] = pjt;
+	else              pa[iy] = p[iy];
+      }
+      // pT
+      Energy mj = p[iout].mass();
+      Lorentz5Momentum q = pjt-pat;
+      q.rescaleMass();
+      Energy  Q  = -q.mass();
+      Energy2 Q2 = sqr(Q);
+      double mu2 = sqr(mj)/Q2;
+      double corr = (1.-x-z)*mu2/((1.-z)*(1.-x));
+      pT2IF[ix] = Q2*(1.-x)/x*z*(1.-z)*(1.+corr);
+      // LO matrix element
+      double lo = loME(mePartonData(),pa,false);
+      Energy2 dot1 = max(p[iin ]*p[4],1e-30*MeV2);
+      Energy2 dot2 = max(p[iout]*p[4],1e-30*MeV2);
+      // lo piece and charge factors
+      double charge = double(mePartonData()[iin]->iCharge()*
+			     mePartonData()[iout]->iCharge())/9.;
+      InvEnergy2 splitIF = 0.5/dot1/x*(2./(1.-x+z)-1.-x);
+      InvEnergy2 splitFI = 0.5/dot2/x*(2./(1.-x+z)-2.+z-sqr(mj)/dot2);
+      
+      DIF[ix]=charge*splitIF*lo;
+      DFI[ix]=charge*splitFI*lo;
+      scaleIF[ix]=Q2;
+    }
+  }
+
+  // supression function
+  Energy2 pT2sup=ZERO;
+  InvEnergy2 dipolesubtract=ZERO;
+  if(dipole==IF1 || dipole==IF2 || dipole==IF3 || dipole==IF4)
+    pT2sup = ZERO;  //!ER: Needs to be fixed
+  else 
+    assert(false);
+  pair<double,double> supressionFactor = supressionFunction(pT2sup);
+  // numerator for dipole ratio
+  InvEnergy2 num;
+  double pdfratio,phase;
+  switch (dipole) {
+  case IF1 :
+    num = DIF[0]+DIF[1];
+    scale= iout==2 ? scaleIF[0] : scaleIF[1];
+    if(iin!=0) cout<<"Error iin 0"<<endl;
+    pdfratio=newqPDF1/oldqPDF1;
+    phase=z1Jac/z1;
+    dipolesubtract=num*pdfratio*phase;
+    break;
+  case IF2 :
+    num = DIF[2]+DIF[3];
+    scale= iout==2 ? scaleIF[2] : scaleIF[3];
+    if(iin!=1) cout<<"Error iin 1"<<endl;
+    pdfratio=newqPDF2/oldqPDF2;
+    phase=z2Jac/z2;
+    dipolesubtract=num*pdfratio*phase;
+    break;
+  case IF3 :
+    num = DFI[0]+DFI[2];
+    scale= iin==0 ? scaleIF[0] : scaleIF[2];
+    pdfratio = iin==0 ? newqPDF1/oldqPDF1 : newqPDF2/oldqPDF2;//ER:
+    phase= iin==0 ? z1Jac/z1 : z2Jac/z2;//ER:
+    dipolesubtract=num*pdfratio*phase;
+    break;
+  case IF4 :
+    num = DFI[1]+DFI[3];
+    scale= iin==0 ? scaleIF[1] : scaleIF[3];
+    pdfratio = iin==0 ? newqPDF1/oldqPDF1 : newqPDF2/oldqPDF2;//ER:
+    phase= iin==0 ? z1Jac/z1 : z2Jac/z2;//ER:
+    dipolesubtract=num*pdfratio*phase;
+    break;
+  default:
+    assert(false);
+  };
+  double meout(0.);
+  InvEnergy2 den(ZERO);
+  InvEnergy2 allDipoles(ZERO);
+  // ISR 
+  if(QEDContributions_==1 ||
+     (QEDContributions_==3 && (dipole==II12 || dipole ==II21))) {
+    cout<<"error"<<endl;
+  }
+  // FSR 
+  else if(QEDContributions_==2 ||
+	  (QEDContributions_==3 && (dipole==FF34 || dipole ==FF43))) {
+    cout<<"error"<<endl;
+  }
+  // full result
+  else if(QEDContributions_==0) {
+    meout = me[2]*pdfratio*phase;
+    den = abs(DII[0])+abs(DII[1])+abs(DFF[0])+abs(DFF[1]);
+    den=den + 
+      abs(DIF[0]+DIF[1]) + // DENFIXED
+      abs(DIF[2]+DIF[3]) +
+      abs(DFI[0]+DFI[2]) +
+      abs(DFI[1]+DFI[3]) ;
+      //    for(unsigned int ix=0;ix<4;++ix) den += abs(DIF[ix]+DFI[ix]);
+  }
+  else 
+    assert(false);
+  // return the answer
+  pair<double,double> output = make_pair(0.,0.);
+
+  //ER: fix here
+
+  if(den>ZERO) {
+    if(subtract) {
+      //      cout<<"Forse non va perche metto assieme dipoli con kin diversa"<<endl;
+      output.first  = scale*(UnitRemoval::InvE2*meout
+		       *abs(num)/den*supressionFactor.first -dipolesubtract);
+    }
+    else {
+      output.first  = scale*UnitRemoval::InvE2*meout
+	*abs(num)/den*supressionFactor.first;
+    }
+    output.second   = scale*UnitRemoval::InvE2*meout
+      *abs(num)/den*supressionFactor.second;
+  }
+  return output;
+}
+
 
 pair<double,double>
 MEqq2gZ2ffPowhegQED::subtractedQEDMEpqbar(const vector<Lorentz5Momentum> & p,
