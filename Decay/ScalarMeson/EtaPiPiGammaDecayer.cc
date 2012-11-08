@@ -24,9 +24,18 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
+
+
+DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator>
+describeHerwigEtaPiPiGammaDecayer("Herwig::EtaPiPiGammaDecayer",
+				  "HwSMDecay.so");
+HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
+
+
 
 void EtaPiPiGammaDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
@@ -275,9 +284,6 @@ void EtaPiPiGammaDecayer::persistentInput(PersistentIStream & is, int) {
      >> _phase >>_omnesfunctionreal >> _omnesfunctionimag >> _initialize
      >> _npoints >> iunit(_epscut,MeV);
 }
-
-ClassDescription<EtaPiPiGammaDecayer> EtaPiPiGammaDecayer::initEtaPiPiGammaDecayer;
-// Definition of the static class description member.
 
 void EtaPiPiGammaDecayer::Init() {
 

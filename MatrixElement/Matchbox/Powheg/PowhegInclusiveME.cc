@@ -65,7 +65,7 @@ void PowhegInclusiveME::setXComb(tStdXCombPtr xc) {
   MEVector::const_iterator me = dependent().begin();
   tStdXCombGroupPtr group = dynamic_ptr_cast<tStdXCombGroupPtr>(xc);
   assert(group);
-  StdDepXCVector::const_iterator depxc = group->dependent().begin();
+  vector<StdXCombPtr>::const_iterator depxc = group->dependent().begin();
   for ( ; me != dependent().end(); ++me, ++depxc ) {
     theKernelMap[*me]->setXComb(*depxc);
   }

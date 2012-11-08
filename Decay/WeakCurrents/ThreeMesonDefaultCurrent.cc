@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -27,6 +28,12 @@ namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
+
+DescribeClass<ThreeMesonDefaultCurrent,ThreeMesonCurrentBase>
+describeHerwigThreeMesonDefaultCurrent("Herwig::ThreeMesonDefaultCurrent",
+				       "HwWeakCurrents.so");
+HERWIG_INTERPOLATOR_CLASSDESC(ThreeMesonDefaultCurrent,Energy,Energy2)
+
 
 ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
@@ -270,7 +277,7 @@ void ThreeMesonDefaultCurrent::persistentOutput(PersistentOStream & os) const {
      <<ounit(_kstarF5masses,GeV)
      << ounit(_kstarF123widths,GeV) << ounit(_kstarF5widths,GeV) << _a1parameters 
      << _k1parameters
-     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
+     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV) << _a1runinter;
 }
 
 void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
@@ -285,11 +292,8 @@ void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
      >>iunit(_kstarF5masses,GeV)
      >> iunit(_kstarF123widths,GeV) >> iunit(_kstarF5widths,GeV) >> _a1parameters 
      >> _k1parameters
-     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
+     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV) >> _a1runinter;
 }
-
-ClassDescription<ThreeMesonDefaultCurrent> ThreeMesonDefaultCurrent::initThreeMesonDefaultCurrent;
-// Definition of the static class description member.
 
 void ThreeMesonDefaultCurrent::Init() {
         

@@ -126,8 +126,6 @@ protected:
    */
   virtual bool accept(tcPDPtr parent, const tPDVector & children) const = 0;
   
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
   /**
    *  Perform the decay of the particle to the specified decay products
    * @param parent The decaying particle
@@ -136,7 +134,6 @@ protected:
    */
   virtual ParticleVector decay(const Particle & parent,
 			       const tPDVector & children) const = 0;
-#pragma GCC diagnostic pop
   //@}
 
 public:

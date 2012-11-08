@@ -28,12 +28,8 @@ void MEvv2vv::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					     PDT::Spin1, PDT::Spin1));
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1,
+			   PDT::Spin1, PDT::Spin1);
   for(size_t i = 0; i < numberOfDiags(); ++i) {
     HPDiagram diag = getProcessInfo()[i];
     tcPDPtr offshell = diag.intermediate;
@@ -62,15 +58,6 @@ void MEvv2vv::doinit() {
       tensor_[i] = make_pair(vert1, vert2);
     }
   }
-}
-void MEvv2vv::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					     PDT::Spin1, PDT::Spin1));
 }
 
 double MEvv2vv::me2() const {
@@ -255,6 +242,8 @@ void MEvv2vv::persistentOutput(PersistentOStream & os) const {
 
 void MEvv2vv::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> tensor_ >> fourPointVertex_;
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1,
+			   PDT::Spin1, PDT::Spin1);
 }
 
 ClassDescription<MEvv2vv> MEvv2vv::initMEvv2vv;

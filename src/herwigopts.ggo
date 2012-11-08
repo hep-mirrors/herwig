@@ -73,7 +73,3 @@ failures, but will exit with a non-zero return code."
 
 option "resume" - "Try to resume execution from an earlier interrupted run."
   flag off hidden
-
-option "keepid" - "Peserve creation order of objects, \
-to allow exactly reproducible runs."
-  flag off hidden
