@@ -19,49 +19,52 @@
 using namespace Herwig;
 
 void FS_QTildeShowerKinematics1to2::
+updateParameters(tShowerParticlePtr theParent,
+		 tShowerParticlePtr theChild0,
+		 tShowerParticlePtr theChild1,
+		 bool setAlpha) const {
+  const ShowerParticle::Parameters & parent = theParent->showerParameters();
+  ShowerParticle::Parameters & child0 = theChild0->showerParameters();
+  ShowerParticle::Parameters & child1 = theChild1->showerParameters();
+  // determine alphas of children according to interpretation of z
+  if ( setAlpha ) {
+    child0.alpha =      z() * parent.alpha;
+    child1.alpha = (1.-z()) * parent.alpha;
+  }
+  // set the values
+  double cphi = cos(phi());
+  double sphi = sin(phi());
+
+  child0.px =  pT() * cphi +     z() * parent.px;
+  child0.py =  pT() * sphi +     z() * parent.py;
+  child0.pt = sqrt( sqr(child0.px) + sqr(child0.py) );
+
+  child1.px = -pT() * cphi + (1.-z())* parent.px;
+  child1.py = -pT() * sphi + (1.-z())* parent.py;
+  child1.pt = sqrt( sqr(child1.px) + sqr(child1.py) );
+}
+
+
+
+void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
 	       const ShowerParticleVector & theChildren,
 	       bool angularOrder) const {
   if(theChildren.size() != 2)
-    throw Exception() <<  "FS_QTildeShowerKinematics1to2::updateChildren() " 
+    throw Exception() << "FS_QTildeShowerKinematics1to2::updateChildren() "
 		      << "Warning! too many children!" << Exception::eventerror;
   // copy scales etc
   Energy dqtilde = scale();
-  // resize the parameter vectors
-  if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3);
-    theParent->showerParameters().resize(2);
-    theParent->showerParameters()[0]=1.;
-  }
-  theChildren[0]->showerVariables() .resize(3);
-  theChildren[0]->showerParameters().resize(2);
-  theChildren[1]->showerVariables() .resize(3);
-  theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
   if(angularOrder) {
-    theChildren[0]->setEvolutionScale(z()*dqtilde);
-    theChildren[1]->setEvolutionScale((1.-z())*dqtilde);
+    theChildren[0]->setEvolutionScale(    z() * dqtilde);
+    theChildren[1]->setEvolutionScale((1.-z())* dqtilde);
   }
   else {
     theChildren[0]->setEvolutionScale(dqtilde);
     theChildren[1]->setEvolutionScale(dqtilde);
   }
-  // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters()[0]=     z() *theParent->showerParameters()[0];
-  theChildren[1]->showerParameters()[0]= (1.-z())*theParent->showerParameters()[0];
-  // set the values
-  theChildren[0]->showerVariables()[0]=   
-    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   
-    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= 
-    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= 
-    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
-  for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
+  updateParameters(theParent, theChildren[0], theChildren[1], true);
   // set up the colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
   // make the products children of the parent
@@ -78,8 +81,8 @@ reconstructParent(const tShowerParticlePtr theParent,
 		      << Exception::eventerror;
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
-  theParent->showerParameters()[1]= 
-    c1->showerParameters()[1] + c2->showerParameters()[1]; 
+  theParent->showerParameters().beta= 
+    c1->showerParameters().beta + c2->showerParameters().beta; 
   theParent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
@@ -89,15 +92,12 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
   Energy theMass = mass > ZERO  ?  mass : theLast->data().constituentMass();
-  theLast->showerParameters()[1]=
-    (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
-     - sqr( theLast->showerParameters()[0] )*pVector().m2())
-    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );
+  ShowerParticle::Parameters & last = theLast->showerParameters();
+  last.beta = ( sqr(theMass) + sqr(last.pt) - sqr(last.alpha) * pVector().m2() )
+    / ( 2. * last.alpha * p_dot_n() );
   // set that new momentum
-  theLast->set5Momentum(sudakov2Momentum( theLast->showerParameters()[0],
-					  theLast->showerParameters()[1], 
-					  theLast->showerVariables()[0],
-					  theLast->showerVariables()[1],iopt));
+  theLast->set5Momentum(sudakov2Momentum( last.alpha, last.beta, 
+					  last.px, last.py, iopt) );
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
@@ -182,19 +182,8 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
 void FS_QTildeShowerKinematics1to2::
 resetChildren(const tShowerParticlePtr theParent, 
 	      const ShowerParticleVector & theChildren) const {
-  // set the values
-  theChildren[0]->showerVariables()[0]=   
-    pT()*cos(phi()) +     z() *theParent->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=   
-    pT()*sin(phi()) +     z() *theParent->showerVariables()[1];
-  theChildren[1]->showerVariables()[0]= 
-    - pT()*cos(phi()) + (1.-z())*theParent->showerVariables()[0];
-  theChildren[1]->showerVariables()[1]= 
-    - pT()*sin(phi()) + (1.-z())*theParent->showerVariables()[1];
-  for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerVariables()[2]=
-      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
-	   sqr(theChildren[ix]->showerVariables()[1]));
+  updateParameters(theParent, theChildren[0], theChildren[1], false);
+
   for(unsigned int ix=0;ix<theChildren.size();++ix) {
     if(theChildren[ix]->children().empty()) continue;
     ShowerParticleVector children;

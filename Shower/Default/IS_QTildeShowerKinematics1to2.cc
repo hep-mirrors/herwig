@@ -23,27 +23,22 @@ void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
 		bool ) const {
-  theChildren[1]->showerVariables().resize(3);
-  theChildren[1]->showerParameters().resize(2);
-  theChildren[1]->showerParameters()[0]=
-    (1.-z())*theParent->showerParameters()[0];
-  double cphi = cos(phi()),sphi = sin(phi());
-  theChildren[1]->showerVariables()[0] = 
-    (1.-z())*theParent->showerVariables()[0] - cphi*pT();
-  theChildren[1]->showerVariables()[1]=
-    (1.-z())*theParent->showerVariables()[1] - sphi*pT();
-  theChildren[1]->showerVariables()[2]=
-    sqrt(sqr(theChildren[1]->showerVariables()[0])+
-	 sqr(theChildren[1]->showerVariables()[1]));
+  const ShowerParticle::Parameters & parent = theParent->showerParameters();
+  ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
+  ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
+  double cphi = cos(phi());
+  double sphi = sin(phi());
+
+  child1.alpha = (1.-z()) * parent.alpha;
+
+  child1.px = (1.-z()) * parent.px - cphi * pT();
+  child1.py = (1.-z()) * parent.py - sphi * pT();
+  child1.pt = sqrt( sqr(child1.px) + sqr(child1.py) );
   // space-like child
-  theChildren[0]->showerParameters()[0] =
-    theParent->showerParameters()[0] - theChildren[1]->showerParameters()[0];
-  theChildren[0]->showerParameters()[1] = 
-    theParent->showerParameters()[1] - theChildren[1]->showerParameters()[1];
-  theChildren[0]->showerVariables()[0]=
-    theParent->showerVariables()[0] - theChildren[1]->showerVariables()[0];
-  theChildren[0]->showerVariables()[1]=
-    theParent->showerVariables()[1] - theChildren[1]->showerVariables()[1];
+  child0.alpha = parent.alpha - child1.alpha;
+  child0.beta  = parent.beta  - child1.beta;
+  child0.px    = parent.px    - child1.px;
+  child0.py    = parent.py    - child1.py;
 }
 
 
@@ -63,32 +58,23 @@ updateParent(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[0]);
   theParent->addChild(theChildren[1]);
   theParent->x(theChildren[0]->x()/z());
-  // create the storage for the shower variables
-  theParent->showerVariables().resize(3);
-  theParent->showerParameters().resize(2);
-  if(theChildren[0]->showerVariables().empty()) {
-    theChildren[0]->showerVariables().resize(3);
-    theChildren[0]->showerParameters().resize(2);
-  }
 }
 
 void IS_QTildeShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
 		  const ParticleVector & theChildren ) const {
-  ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
+  PPtr c1 = theChildren[0];
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
+  ShowerParticle::Parameters & c2param = c2->showerParameters();
   // get shower variables from 1st child in order to keep notation
   // parent->(c1, c2) clean even though the splitting was initiated
   // from c1.  The name updateParent is still referring to the
   // timelike branching though.
   // on-shell child
-  c2->showerParameters()[1]=
-    0.5*(sqr(c2->data().constituentMass())+sqr(c2->showerVariables()[2]))
-    /(c2->showerParameters()[0]*p_dot_n());
-  c2->set5Momentum(sudakov2Momentum(c2->showerParameters()[0],
-				    c2->showerParameters()[1], 
-				    c2->showerVariables()[0],
-				    c2->showerVariables()[1],0));
+  c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
+    / ( c2param.alpha * p_dot_n() );
+  c2->set5Momentum( sudakov2Momentum(c2param.alpha, c2param.beta, 
+				     c2param.px, c2param.py, 0) );
   // spacelike child
   Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
   pc1.rescaleMass();
@@ -98,20 +84,19 @@ reconstructParent(const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   if(theLast->isFinalState()) return;
-  Energy2 pt2=sqr(px)+sqr(py);
-  theLast->showerParameters()[0]=theLast->x();
-  theLast->showerParameters()[1]=0.5*pt2/
-    theLast->showerParameters()[0]/p_dot_n();
-  theLast->showerVariables().resize(3);
-  theLast->showerParameters().resize(2);
-  for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=ZERO;
+  ShowerParticle::Parameters & last = theLast->showerParameters();
+  Energy2 pt2 = sqr(px) + sqr(py);
+  last.alpha = theLast->x();
+  last.beta  = 0.5 * pt2 / last.alpha / p_dot_n();
+  last.px    = ZERO;
+  last.py    = ZERO;
+  last.pt    = ZERO;
   // momentum
-  Lorentz5Momentum ntemp=Lorentz5Momentum(ZERO,-pVector().vect());
-  double beta = 0.5*pt2/
-    theLast->showerParameters()[0]/(pVector()*ntemp);
+  Lorentz5Momentum ntemp = Lorentz5Momentum(ZERO,-pVector().vect());
+  double beta = 0.5 * pt2 / last.alpha / (pVector() * ntemp);
   Lorentz5Momentum plast = 
-    Lorentz5Momentum(pVector().z()>ZERO ? px : -px ,py,ZERO,ZERO)
-    +theLast->x()*pVector()+beta*ntemp;
+    Lorentz5Momentum( (pVector().z()>ZERO ? px : -px), py, ZERO, ZERO)
+    + theLast->x() * pVector() + beta * ntemp;
   plast.rescaleMass();
   theLast->set5Momentum(plast);
 }

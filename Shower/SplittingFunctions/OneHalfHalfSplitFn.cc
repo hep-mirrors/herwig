@@ -12,10 +12,8 @@
 //
 
 #include "OneHalfHalfSplitFn.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
 
 using namespace Herwig;

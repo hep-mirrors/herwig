@@ -248,15 +248,20 @@ public:
    *  shower evolution scheme
    */
   //@{
+  struct Parameters {
+    Parameters() : alpha(1.), beta(), px(), py(), pt() {}
+    double alpha;
+    double beta;
+    Energy px;
+    Energy py;
+    Energy pt;
+  };
+
+
   /**
    *  Set the vector containing dimensionless variables
    */
-  vector<double> & showerParameters() { return _parameters; }
-
-  /**
-   *  Set the vector containing dimensionful variables
-   */
-  vector<Energy> & showerVariables() { return _variables; }
+  Parameters & showerParameters() { return _parameters; }
   //@}
 
   /**
@@ -316,12 +321,7 @@ private:
   /**
    * Dimensionless parameters
    */
-  vector<double> _parameters;
-
-  /**
-   *  Dimensionful parameters
-   */
-  vector<Energy> _variables;
+  Parameters _parameters;
 
   /**
    *  The beam energy fraction for particle's in the initial state
