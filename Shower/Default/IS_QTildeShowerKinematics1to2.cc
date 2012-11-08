@@ -31,14 +31,14 @@ updateChildren( const tShowerParticlePtr theParent,
 
   child1.alpha = (1.-z()) * parent.alpha;
 
-  child1.px = (1.-z()) * parent.px - cphi * pT();
-  child1.py = (1.-z()) * parent.py - sphi * pT();
-  child1.pt = sqrt( sqr(child1.px) + sqr(child1.py) );
+  child1.ptx = (1.-z()) * parent.ptx - cphi * pT();
+  child1.pty = (1.-z()) * parent.pty - sphi * pT();
+  child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
   // space-like child
   child0.alpha = parent.alpha - child1.alpha;
   child0.beta  = parent.beta  - child1.beta;
-  child0.px    = parent.px    - child1.px;
-  child0.py    = parent.py    - child1.py;
+  child0.ptx   = parent.ptx   - child1.ptx;
+  child0.pty   = parent.pty   - child1.pty;
 }
 
 
@@ -74,7 +74,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
     / ( c2param.alpha * p_dot_n() );
   c2->set5Momentum( sudakov2Momentum(c2param.alpha, c2param.beta, 
-				     c2param.px, c2param.py, 0) );
+				     c2param.ptx, c2param.pty, 0) );
   // spacelike child
   Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
   pc1.rescaleMass();
@@ -88,8 +88,8 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   Energy2 pt2 = sqr(px) + sqr(py);
   last.alpha = theLast->x();
   last.beta  = 0.5 * pt2 / last.alpha / p_dot_n();
-  last.px    = ZERO;
-  last.py    = ZERO;
+  last.ptx   = ZERO;
+  last.pty   = ZERO;
   last.pt    = ZERO;
   // momentum
   Lorentz5Momentum ntemp = Lorentz5Momentum(ZERO,-pVector().vect());

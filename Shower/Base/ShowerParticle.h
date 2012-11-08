@@ -249,11 +249,11 @@ public:
    */
   //@{
   struct Parameters {
-    Parameters() : alpha(1.), beta(), px(), py(), pt() {}
+    Parameters() : alpha(1.), beta(), ptx(), pty(), pt() {}
     double alpha;
     double beta;
-    Energy px;
-    Energy py;
+    Energy ptx;
+    Energy pty;
     Energy pt;
   };
 

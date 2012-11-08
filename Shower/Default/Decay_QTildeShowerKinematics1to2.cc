@@ -43,20 +43,20 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[1]->setEvolutionScale(        dqtilde);
   }
   // determine alphas of children according to interpretation of z
-  theChildren[0]->showerParameters().alpha=    dz *theParent->showerParameters().alpha; 
-  theChildren[1]->showerParameters().alpha=(1.-dz)*theParent->showerParameters().alpha;
-  theChildren[0]->showerParameters().px=   pT()*cos(dphi) +     
-    dz *theParent->showerParameters().px;
-  theChildren[0]->showerParameters().py=   pT()*sin(dphi) + 
-    dz *theParent->showerParameters().py;
-  theChildren[1]->showerParameters().px= - pT()*cos(dphi) + 
-    (1.-dz)*theParent->showerParameters().px;
-  theChildren[1]->showerParameters().py= - pT()*sin(dphi) + 
-    (1.-dz)*theParent->showerParameters().py;
-  for(unsigned int ix=0;ix<2;++ix)
-    theChildren[ix]->showerParameters().pt=
-      sqrt(sqr(theChildren[ix]->showerParameters().px)+
-	   sqr(theChildren[ix]->showerParameters().py));
+  const ShowerParticle::Parameters & parent = theParent->showerParameters();
+  ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
+  ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
+  child0.alpha =     dz  * parent.alpha; 
+  child1.alpha = (1.-dz) * parent.alpha;
+
+  child0.ptx =  pT() * cos(dphi) +     dz  * parent.ptx;
+  child0.pty =  pT() * sin(dphi) +     dz  * parent.pty;
+  child0.pt  = sqrt( sqr(child0.ptx) + sqr(child0.pty) );
+
+  child1.ptx = -pT() * cos(dphi) + (1.-dz) * parent.ptx;
+  child1.pty = -pT() * sin(dphi) + (1.-dz) * parent.pty;
+  child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
+
   // set up the colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
   // make the products children of the parent
@@ -83,8 +83,9 @@ reconstructLast(const tShowerParticlePtr theLast,
   // set that new momentum  
   theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters().alpha, 
 					    theLast->showerParameters().beta, 
-					    theLast->showerParameters().px,
-					    theLast->showerParameters().py,iopt));
+					    theLast->showerParameters().ptx,
+					    theLast->showerParameters().pty,
+					    iopt));
 }
 
 void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {

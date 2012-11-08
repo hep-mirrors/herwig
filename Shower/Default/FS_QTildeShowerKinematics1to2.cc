@@ -35,13 +35,13 @@ updateParameters(tShowerParticlePtr theParent,
   double cphi = cos(phi());
   double sphi = sin(phi());
 
-  child0.px =  pT() * cphi +     z() * parent.px;
-  child0.py =  pT() * sphi +     z() * parent.py;
-  child0.pt = sqrt( sqr(child0.px) + sqr(child0.py) );
+  child0.ptx =  pT() * cphi +     z() * parent.ptx;
+  child0.pty =  pT() * sphi +     z() * parent.pty;
+  child0.pt  = sqrt( sqr(child0.ptx) + sqr(child0.pty) );
 
-  child1.px = -pT() * cphi + (1.-z())* parent.px;
-  child1.py = -pT() * sphi + (1.-z())* parent.py;
-  child1.pt = sqrt( sqr(child1.px) + sqr(child1.py) );
+  child1.ptx = -pT() * cphi + (1.-z())* parent.ptx;
+  child1.pty = -pT() * sphi + (1.-z())* parent.pty;
+  child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
 }
 
 
@@ -97,7 +97,7 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
     / ( 2. * last.alpha * p_dot_n() );
   // set that new momentum
   theLast->set5Momentum(sudakov2Momentum( last.alpha, last.beta, 
-					  last.px, last.py, iopt) );
+					  last.ptx, last.pty, iopt) );
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
