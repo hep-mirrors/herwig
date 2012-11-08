@@ -14,9 +14,6 @@
 #include "ZeroZeroOneSplitFn.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-#include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;

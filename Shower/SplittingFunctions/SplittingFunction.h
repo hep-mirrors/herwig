@@ -14,7 +14,6 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "ThePEG/EventRecord/ColourLine.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {

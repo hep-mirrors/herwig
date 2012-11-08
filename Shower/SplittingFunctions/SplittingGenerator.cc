@@ -16,12 +16,10 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/ShowerHandler.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"

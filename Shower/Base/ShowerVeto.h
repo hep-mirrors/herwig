@@ -14,12 +14,13 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "ShowerTree.fh"
+#include "ShowerParticle.fh"
 #include "ShowerProgenitor.fh"
 
 namespace Herwig {
+
+struct Branching;
 
 using namespace ThePEG;
   

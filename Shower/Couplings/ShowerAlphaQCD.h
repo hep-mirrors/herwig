@@ -13,7 +13,6 @@
 //
 
 #include "ShowerAlpha.h"
-#include "ThePEG/Config/Constants.h"
 
 namespace Herwig {
 

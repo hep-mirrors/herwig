@@ -11,7 +11,6 @@
 // functions of the ShowerAlphaQCD class.
 //
 #include "ShowerAlphaQCD.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -21,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Config/Constants.h"
 
 using namespace Herwig;
 

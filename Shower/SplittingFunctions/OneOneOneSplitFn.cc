@@ -13,9 +13,7 @@
 
 #include "OneOneOneSplitFn.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;

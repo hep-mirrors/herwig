@@ -18,7 +18,6 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include <cassert>
 #include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
@@ -136,10 +135,10 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			       cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
-			       kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
-			       z_( 0.0 ),phi_(0.0), pT_() {}
+			cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
+			kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
+			vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
+			z_( 0.0 ),phi_(0.0), pT_() {}
 
   /**
    *  Members to generate the scale of the next branching

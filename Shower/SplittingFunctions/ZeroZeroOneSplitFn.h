@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ZeroZeroOneSplitFn() : SplittingFunction(1) {}
+  ZeroZeroOneSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -127,13 +127,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:

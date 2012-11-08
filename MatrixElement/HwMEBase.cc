@@ -12,6 +12,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -267,4 +269,8 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double r) {
 bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching) {
   return false;
+}
+
+HardTreePtr HwMEBase::generateHardest(ShowerTreePtr) {
+    return HardTreePtr();
 }
