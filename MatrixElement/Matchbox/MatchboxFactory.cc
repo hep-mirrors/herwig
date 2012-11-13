@@ -41,7 +41,7 @@ MatchboxFactory::MatchboxFactory()
   : SubProcessHandler(), theNLight(0),
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
-    theRealContributions(true), theSubProcessGroups(false),
+    theRealContributions(true), theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theVerbose(false), theSubtractionData(""), theCheckPoles(false) {}
@@ -507,6 +507,8 @@ void MatchboxFactory::setup() {
       if ( sub->dependent().empty() ) {
 	// finite real contribution
 	MEs().push_back(sub->head());
+	Ptr<MatchboxMEBase>::ptr fme = dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head());
+        finiteRealMEs().push_back(fme);
 	sub->head(tMEPtr());
 	continue;
       }
@@ -516,6 +518,9 @@ void MatchboxFactory::setup() {
 
       if ( subProcessGroups() )
 	sub->setSubProcessGroups();
+
+      if ( inclusive() )
+	sub->setInclusive();
 
       if ( vetoScales() )
 	sub->doVetoScales();
@@ -612,13 +617,13 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theSubProcessGroups
+     << theRealContributions << theSubProcessGroups << theInclusive
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
      << theAmplitudes << theCache
      << theBornMEs << theVirtuals << theRealEmissionMEs
-     << theBornVirtualMEs << theSubtractedMEs
+     << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theSubtractionData << theCheckPoles
      << theParticleGroups << process << realEmissionProcess;
 }
@@ -627,13 +632,13 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theSubProcessGroups
+     >> theRealContributions >> theSubProcessGroups >> theInclusive
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
      >> theAmplitudes >> theCache
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
-     >> theBornVirtualMEs >> theSubtractedMEs
+     >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theSubtractionData >> theCheckPoles
      >> theParticleGroups >> process >> realEmissionProcess;
 }
@@ -830,6 +835,21 @@ void MatchboxFactory::Init() {
      "Off",
      false);
 
+  static Switch<MatchboxFactory,bool> interfaceInclusive
+    ("Inclusive",
+     "Switch on or off production of inclusive cross section.",
+     &MatchboxFactory::theInclusive, false, false, false);
+  static SwitchOption interfaceInclusiveOn
+    (interfaceInclusive,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceInclusiveOff
+    (interfaceInclusive,
+     "Off",
+     "Off",
+     false);
+
   static Reference<MatchboxFactory,MatchboxPhasespace> interfacePhasespace
     ("Phasespace",
      "Set the phasespace generator.",
@@ -931,8 +951,13 @@ void MatchboxFactory::Init() {
 
   static RefVector<MatchboxFactory,SubtractedME> interfaceSubtractedMEs
     ("SubtractedMEs",
-     "The generated Born/virtual contributions",
+     "The generated subtracted real emission contributions",
      &MatchboxFactory::theSubtractedMEs, -1, false, true, true, true, false);
+
+  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceFiniteRealMEs
+    ("FiniteRealMEs",
+     "The generated finite real contributions",
+     &MatchboxFactory::theFiniteRealMEs, -1, false, true, true, true, false);
 
   static Switch<MatchboxFactory,bool> interfaceVerbose
     ("Verbose",

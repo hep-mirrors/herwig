@@ -34,7 +34,8 @@ using namespace Herwig;
 SubtractedME::SubtractedME() 
   : MEGroup(), 
     theSubtractionData(""), 
-    theVerbose(false), theSubProcessGroups(false),
+    theVerbose(false), 
+    theSubProcessGroups(false), theInclusive(false),
     theVetoScales(false) {}
 
 SubtractedME::~SubtractedME() {}
@@ -212,6 +213,18 @@ void SubtractedME::setVetoScales(tSubProPtr subpro) const {
 
   }
 
+}
+
+void SubtractedME::fillProjectors() {
+  if ( !inclusive() )
+    return;
+  Ptr<StdXCombGroup>::tptr group = 
+    dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
+  for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
+	d != group->dependent().end(); ++d ) {
+    if ( (**d).lastCrossSection() != ZERO )
+      lastXCombPtr()->projectors().insert(abs((**d).lastME2()),*d);
+  }
 }
 
 void SubtractedME::doinit() {
@@ -523,12 +536,12 @@ void SubtractedME::lastEventSubtraction() {
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
   os << theDipoles << theBorns << theSubtractionData 
-     << theVerbose << theSubProcessGroups << theVetoScales;
+     << theVerbose << theInclusive << theSubProcessGroups << theVetoScales;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
   is >> theDipoles >> theBorns >> theSubtractionData 
-     >> theVerbose >> theSubProcessGroups >> theVetoScales;
+     >> theVerbose >> theInclusive >> theSubProcessGroups >> theVetoScales;
 }
 
 void SubtractedME::Init() {
@@ -575,6 +588,21 @@ void SubtractedME::Init() {
      true);
   static SwitchOption interfaceSubProcessGroupsOff
     (interfaceSubProcessGroups,
+     "Off",
+     "Off",
+     false);
+
+  static Switch<SubtractedME,bool> interfaceInclusive
+    ("Inclusive",
+     "Switch on or off production of inclusive cross section.",
+     &SubtractedME::theInclusive, false, false, false);
+  static SwitchOption interfaceInclusiveOn
+    (interfaceInclusive,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceInclusiveOff
+    (interfaceInclusive,
      "Off",
      "Off",
      false);

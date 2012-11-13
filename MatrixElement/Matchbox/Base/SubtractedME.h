@@ -84,6 +84,30 @@ public:
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
 
+  /**
+   * Return true, if one of the dependent subprocesses should be
+   * constructed in place of the one driven by the head matrix element
+   * or a full subprocess group.
+   */
+  virtual bool selectDependentSubProcess() const { return theInclusive; }
+
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const { return theInclusive; }
+
+  /**
+   * Switch on or off inclusive mode.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
+  /**
+   * Fill the projectors object of xcombs to choose subprocesses
+   * different than the one currently integrated.
+   */
+  virtual void fillProjectors();
+
   //@}
 
   /** @name Matrix element and dipole information */
@@ -398,6 +422,12 @@ private:
    * head matrix element.
    */
   bool theSubProcessGroups;
+
+  /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
 
   /**
    * True, if veto scales should be set

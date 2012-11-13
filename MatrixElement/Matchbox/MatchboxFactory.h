@@ -155,6 +155,17 @@ public:
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
 
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const { return theInclusive; }
+
+  /**
+   * Switch on or off inclusive mode.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
   //@}
 
   /** @name Phasespace generation and scale choice */
@@ -315,6 +326,16 @@ public:
    * Access the produced subtracted matrix elements
    */
   vector<Ptr<SubtractedME>::ptr>& subtractedMEs() { return theSubtractedMEs; }
+
+  /**
+   * Return the produced finite real emission matrix elements
+   */
+  const vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() const { return theFiniteRealMEs; }
+
+  /**
+   * Access the produced finite real emission elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() { return theFiniteRealMEs; }
 
   //@}
 
@@ -503,6 +524,12 @@ private:
   bool theSubProcessGroups;
 
   /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
+
+  /**
    * The phase space generator to be used.
    */
   Ptr<MatchboxPhasespace>::ptr thePhasespace;
@@ -572,6 +599,11 @@ private:
    * The produced subtracted matrix elements
    */
   vector<Ptr<SubtractedME>::ptr> theSubtractedMEs;
+
+  /**
+   * The produced finite real emission matrix elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
 
   /**
    * Switch on or off verbosity
