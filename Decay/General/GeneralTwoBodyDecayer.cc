@@ -524,7 +524,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr finalEmitter, finalSpectator;
   ShowerProgenitorPtr trialEmitter, trialSpectator;
 
-  for (int i=0; i<dipoles.size(); ++i){
+  for (int i=0; i<int(dipoles.size()); ++i){
 
     // assign emitter and spectator based on current dipole
     if (dipoles[i]==FFc || dipoles[i]==IFc || dipoles[i]==IFbc){
@@ -720,7 +720,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
       // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;
-      for (int k=0; k<dipoles.size(); ++k){
+      for (int k=0; k<int(dipoles.size()); ++k){
 	InvEnergy2 dipole = abs(calculateDipole(dipoles[k], decay3, dipoles[i]));
 	dipoleSum += dipole;
 	if (k==i) numerator = dipole;
@@ -1151,10 +1151,10 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
   // special case for 3->30 S->SV decay
   // add colour flow for 4 point vertex
   if (inpart.dataPtr()->iSpin()     == PDT::Spin0  &&
-     (decay[0]->dataPtr()->iSpin()  == PDT::Spin0  &&
-      decay[1]->dataPtr()->iSpin()  == PDT::Spin1) ||
-     (decay[0]->dataPtr()->iSpin()  == PDT::Spin1  &&
-      decay[1]->dataPtr()->iSpin()  == PDT::Spin0)){
+      ((decay[0]->dataPtr()->iSpin()  == PDT::Spin0  &&
+	decay[1]->dataPtr()->iSpin()  == PDT::Spin1) ||
+       (decay[0]->dataPtr()->iSpin()  == PDT::Spin1  &&
+	decay[1]->dataPtr()->iSpin()  == PDT::Spin0))){
     if((inpart.dataPtr()->iColour() == PDT::Colour3         &&
 	oct.size()==1 && trip.size()== 1 &&  sing.size()==1)||
        (inpart.dataPtr()->iColour() == PDT::Colour3bar      &&
@@ -1177,7 +1177,7 @@ void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline, const Ha
     branchingPart.push_back((**cit).branchingParticle());
   }
   vector<int> sing,trip,atrip,oct;
-  for (int sp=0;sp<branchingPart.size();++sp){
+  for (size_t sp=0;sp<branchingPart.size();++sp){
     if     (branchingPart[sp]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(sp);
     else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(sp);
     else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour3bar) atrip.push_back(sp);
