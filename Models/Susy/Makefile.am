@@ -10,6 +10,7 @@ SSGFSVertex.cc    SSGFSVertex.h    \
 SSHSFSFVertex.cc  SSHSFSFVertex.h  \
 SSNFSVertex.cc    SSNFSVertex.h    \
 SSWSSVertex.cc    SSWSSVertex.h    \
+SSWGSSVertex.cc   SSWGSSVertex.h   \
 SSGSSVertex.cc    SSGSSVertex.h    \
 SSGGSQSQVertex.cc SSGGSQSQVertex.h \
 SSGSGSGVertex.cc  SSGSGSGVertex.h  \

@@ -57,6 +57,7 @@ void SusyBase::doinit() {
   addVertex(CFSFVertex_);
   addVertex(GSFSFVertex_);
   addVertex(GGSQSQVertex_);
+  addVertex(WGSQSQVertex_);
   addVertex(GSGSGVertex_);
   addVertex(NNZVertex_);
   if(NNPVertex_) addVertex(NNPVertex_);
@@ -78,7 +79,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << readFile_ << gravitino_
      << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
-     << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
+     << GSFSFVertex_ << GGSQSQVertex_ << WGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
      << GOGOHVertex_ << WHHVertex_ << GNGVertex_ << NCTVertex_
      << GVNHVertex_ << GVNVVertex_ << GVFSVertex_
@@ -97,7 +98,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> readFile_  >> gravitino_
      >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
-     >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
+     >> GSFSFVertex_ >> GGSQSQVertex_ >> WGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
      >> GOGOHVertex_ >> WHHVertex_ >> GNGVertex_ >> NCTVertex_
      >> GVNHVertex_ >> GVNVVertex_ >> GVFSVertex_
@@ -173,6 +174,11 @@ void SusyBase::Init() {
      ("Vertex/GGSQSQ",
       "Reference to the gluon-gluon-squark-squark vertex",
       &SusyBase::GGSQSQVertex_, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexWGSS
+     ("Vertex/WGSQSQ",
+      "Reference to the gauge boson-gluon-squark-squark vertex",
+      &SusyBase::WGSQSQVertex_, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGSGSG
      ("Vertex/GSGSG",

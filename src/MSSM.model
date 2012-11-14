@@ -195,6 +195,7 @@ create Herwig::SSCFSVertex MSSM_CFS
 create Herwig::SSGSSVertex MSSM_GSS
 create Herwig::SSGNGVertex MSSM_GNG
 create Herwig::SSGGSQSQVertex MSSM_GGSS
+create Herwig::SSWGSSVertex MSSM_WGSS
 create Herwig::SSGSGSGVertex MSSM_GGOGO
 create Herwig::SSNNZVertex MSSM_NNZ
 create Herwig::SSNNPVertex MSSM_NNP
@@ -230,6 +231,7 @@ set Model:Vertex/HSFSF  /Herwig/Vertices/MSSM/MSSM_HSS
 set Model:Vertex/CFSF   /Herwig/Vertices/MSSM/MSSM_CFS
 set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
+set Model:Vertex/WGSQSQ /Herwig/Vertices/MSSM/MSSM_WGSS
 set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
 set Model:Vertex/GNG    /Herwig/Vertices/MSSM/MSSM_GNG
 set Model:Vertex/NNZ    /Herwig/Vertices/MSSM/MSSM_NNZ

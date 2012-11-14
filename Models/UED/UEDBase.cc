@@ -240,6 +240,22 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
       }
     }
 
+    resetMass(6100006,5.6317619E+02*GeV);
+    //resetMass(5100021,5.4317619E+02*GeV);
+    
+    //resetMass(6100001,2.9317619E+02*GeV);
+    //resetMass(6100002,2.9317619E+02*GeV);
+    //resetMass(6100003,2.9317619E+02*GeV);
+    //resetMass(6100004,2.9317619E+02*GeV);
+    //resetMass(6100005,2.9317619E+02*GeV);
+    //resetMass(6100006,2.9317619E+02*GeV);
+    //resetMass(5100001,2.9317619E+02*GeV);
+    //resetMass(5100002,2.9317619E+02*GeV);
+    //resetMass(5100003,2.9317619E+02*GeV);
+    //resetMass(5100004,2.9317619E+02*GeV);
+    //resetMass(5100005,2.9317619E+02*GeV);
+    //resetMass(5100006,2.9317619E+02*GeV);
+    //resetMass(5100022,1.0317619E+02*GeV);
 }
 
 void UEDBase::bosonMasses(const unsigned int n) {

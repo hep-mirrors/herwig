@@ -136,7 +136,8 @@ public:
    */
   void setDecayInfo(PDPtr incoming,PDPair outgoing,
 		    VertexBasePtr,VertexBasePtr,
-		    const vector<VertexBasePtr> &);
+		    const vector<VertexBasePtr> &,
+		    VertexBasePtr);
 
 protected:
   
@@ -160,6 +161,13 @@ protected:
    * @return a pointer to the vertex for QCD radiation off the decay products
    */
   vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation from 4 point vertex
+   */
+  VertexBasePtr getFourPointVertex() const { return fourPointVertex_; }
+
 
   /**
    * Set integration weight
@@ -348,6 +356,12 @@ private:
    *  Pointer to the vertices for radiation from the outgoing particles
    */
   vector<VertexBasePtr> outgoingVertices_; 
+
+  /**
+   *  Pointer to vertex for radiation coming from 4 point vertex
+   */
+  VertexBasePtr fourPointVertex_;
+
 
   /**
    * Maximum weight for integration

@@ -259,12 +259,12 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << vertex_ << _incoming << _outgoing << _maxweight << ounit(pTmin_,GeV)
-     << coupling_ << incomingVertex_ << outgoingVertices_;
+     << coupling_ << incomingVertex_ << outgoingVertices_ << fourPointVertex_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> vertex_ >> _incoming >> _outgoing >> _maxweight >> iunit(pTmin_,GeV) 
-     >> coupling_ >> incomingVertex_ >> outgoingVertices_;
+     >> coupling_ >> incomingVertex_ >> outgoingVertices_ >> fourPointVertex_;
 }
 
 AbstractClassDescription<GeneralTwoBodyDecayer> 
@@ -467,7 +467,8 @@ Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
 
 void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 					 VertexBasePtr vertex, VertexBasePtr inV,
-					 const vector<VertexBasePtr> & outV) {
+					 const vector<VertexBasePtr> & outV,
+					 VertexBasePtr fourV) {
   _incoming=incoming;
   _outgoing.clear();
   _outgoing.push_back(outgoing.first );
@@ -475,9 +476,11 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
   vertex_ = vertex;
   incomingVertex_ = inV;
   outgoingVertices_ = outV;
+  fourPointVertex_ = fourV;
 }
 
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
+
   // search for coloured particles
   bool colouredParticles=false;
   vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
@@ -501,6 +504,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       << "GeneralTwoBodyDecayer::generateHardest()" 
       << Exception::runerror;
   }
+
   // for decay b -> a c 
   // set progenitors
   ShowerProgenitorPtr 
@@ -521,6 +525,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr trialEmitter, trialSpectator;
 
   for (int i=0; i<dipoles.size(); ++i){
+
     // assign emitter and spectator based on current dipole
     if (dipoles[i]==FFc || dipoles[i]==IFc || dipoles[i]==IFbc){
       trialEmitter   = cProgenitor;
@@ -541,6 +546,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
     // try to generate a branching
     pT_ = pTmin_;
+    
     vector<Lorentz5Momentum> trialMomenta 
       = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
 
@@ -620,7 +626,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   // make the HardTree from the HardBranching vectors.
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					  ShowerInteraction::QCD));
-  
+
   // connect the particles with the branchings in the HardTree
   hardtree->connect( bProgenitor   ->progenitor(), spaceBranchings[0] );
   hardtree->connect( finalEmitter  ->progenitor(),   allBranchings[1] );
@@ -645,7 +651,7 @@ double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle & inpart,
 vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgenitorPtr &in, 
 							     const ShowerProgenitorPtr &emitter, 
 							     const ShowerProgenitorPtr &spectator, 
-							     const vector<dipoleType> &dipoles, 
+							     const vector<dipoleType>  &dipoles, 
 							     int i) {
   double C    = 6.3;
   double ymax = 10.;
@@ -664,7 +670,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   // calculate A
   double A = (ymax - ymin) * C * (coupling_->overestimateValue() / (2.*Constants::pi)); 
   Energy pTmax = mb_* (sqr(1.-s_) - e2_) / (2.*(1.-s_));
-
+  
   // if no possible branching return
   if ( pTmax < pTmin_ ) {
     particleMomenta.clear(); 
@@ -760,6 +766,7 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
   double B = me2        (0, inpart, decay2, meopt);    
   double R = threeBodyME(0, inpart, decay3, meopt);
   return R/B;
+  
 }
 
 bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
@@ -1023,6 +1030,7 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
 	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
 	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar  &&
 	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)){
+
       dipoles.push_back(FFa);
       dipoles.push_back(FFc);
     }
@@ -1139,6 +1147,24 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
     colourFlows_[0][1] = make_pair(1, 1.);
     colourFlows_[2][0] = make_pair(1, 1.);
   }  
+ 
+  // special case for 3->30 S->SV decay
+  // add colour flow for 4 point vertex
+  if (inpart.dataPtr()->iSpin()     == PDT::Spin0  &&
+     (decay[0]->dataPtr()->iSpin()  == PDT::Spin0  &&
+      decay[1]->dataPtr()->iSpin()  == PDT::Spin1) ||
+     (decay[0]->dataPtr()->iSpin()  == PDT::Spin1  &&
+      decay[1]->dataPtr()->iSpin()  == PDT::Spin0)){
+    if((inpart.dataPtr()->iColour() == PDT::Colour3         &&
+	oct.size()==1 && trip.size()== 1 &&  sing.size()==1)||
+       (inpart.dataPtr()->iColour() == PDT::Colour3bar      &&
+	oct.size()==1 && sing.size()== 1 && atrip.size()==1)){
+      colourFlows_.clear();
+      colourFlows_ = vector<vector<pair<int,double> > >
+	(4, vector<pair<int,double > > (1, make_pair(0, 1.)));
+    }
+  }
+
   return colourFlows_;
 }
 

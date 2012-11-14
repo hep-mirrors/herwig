@@ -112,6 +112,7 @@ void SSWSSVertex::doinit() {
   for(long ix=2000001;ix<2000007;++ix) {
     addToList(22,ix,-ix);
   }
+
   VSSVertex::doinit();
   tMSSMPtr theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!theSS)

@@ -586,6 +586,11 @@ private:
   AbstractVVSSVertexPtr GGSQSQVertex_;
 
   /**
+   * Pointer to the gauge boson-gluon-squark-squark vertex;
+   */
+  AbstractVVSSVertexPtr WGSQSQVertex_;
+
+  /**
    * Pointer to the gluon-gluino-gluino vertex
    */
   AbstractFFVVertexPtr GSGSGVertex_; 

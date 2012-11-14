@@ -9,6 +9,7 @@
 #
 # The second section contains the user settings.
 ###################################################
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 
 read MUED.model
 cd /Herwig/NewPhysics
@@ -36,10 +37,16 @@ set HPConstructor:IncludeEW Yes
 insert HPConstructor:Incoming 0 /Herwig/Particles/e+
 insert HPConstructor:Incoming 1 /Herwig/Particles/e-
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/KK1_Z0
-insert HPConstructor:Outgoing 1 /Herwig/Particles/KK1_W+
-insert HPConstructor:Outgoing 2 /Herwig/Particles/KK1_e_L-
-insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_e_R-
+set HPConstructor:Processes Exclusive
+#insert HPConstructor:Outgoing 0 /Herwig/Particles/KK1_Z0
+#insert HPConstructor:Outgoing 1 /Herwig/Particles/KK1_W+
+#insert HPConstructor:Outgoing 2 /Herwig/Particles/KK1_e_L-
+#insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_e_R-
+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/KK1_t_2
+insert HPConstructor:Outgoing 1 /Herwig/Particles/KK1_t_2bar
+
+
 
 # Other parameters for run
 cd /Herwig/Generators
@@ -47,7 +54,7 @@ set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 2000.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################

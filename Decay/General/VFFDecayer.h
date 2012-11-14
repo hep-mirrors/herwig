@@ -15,7 +15,7 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -62,7 +62,26 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
-//@}
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt);
+
+  /**
+   * Indentify outgoing vertices for the fermion and antifermion
+   */
+  void identifyVertices(const int iferm, const int ianti,
+			const Particle & inpart, const ParticleVector & decay,
+			AbstractFFVVertexPtr & abstractOutgoingVertexF, 
+			AbstractFFVVertexPtr & abstractOutgoingVertexA);
+  //@}
 
 public:
 
@@ -146,6 +165,21 @@ private:
   FFVVertexPtr _perturbativeVertex;
 
   /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from incoming vector
+   */
+  AbstractVVVVertexPtr _abstractIncomingVertex;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   */
+  AbstractFFVVertexPtr _abstractOutgoingVertex1;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   */
+  AbstractFFVVertexPtr _abstractOutgoingVertex2;
+
+  /**
    *  Spin density matrix 
    */
   mutable RhoDMatrix _rho;
@@ -164,6 +198,30 @@ private:
    *  Barred spinors for the decay products
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
+ /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
+  /**
+   *  Scalar wavefunction for 3 body decay
+   */
+  mutable vector<VectorWaveFunction> _vector3;
+
+  /**
+   *  Spinor wavefunction for 3 body decay
+   */
+  mutable vector<SpinorWaveFunction> _wave3;
+
+  /**
+   *  Barred spinor wavefunction for 3 body decay
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar3;
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<VectorWaveFunction> _gluon;
 
 };
 

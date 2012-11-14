@@ -208,7 +208,7 @@ private:
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<VectorWaveFunction> _vwave3;
+  mutable vector<VectorWaveFunction> _gluon;
 
 };
 
