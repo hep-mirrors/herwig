@@ -50,4 +50,5 @@ IFMqgxDipole.h \
 IFMqqxDipole.cc \
 IFMqqxDipole.h \
 SubtractionDipole.cc \
+SubtractionDipole.fh \
 SubtractionDipole.h

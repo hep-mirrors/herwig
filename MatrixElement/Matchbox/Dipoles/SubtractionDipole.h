@@ -12,6 +12,8 @@
 // This is the declaration of the SubtractionDipole class.
 //
 
+#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
