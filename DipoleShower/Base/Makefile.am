@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwDipoleShowerBase.la
+endif
 
 libHwDipoleShowerBase_la_SOURCES = \
 	DipoleSplittingInfo.h DipoleSplittingInfo.cc \

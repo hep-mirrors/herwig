@@ -311,7 +311,6 @@ double SMHiggsWidthGenerator::HwDoubleBW(double x, double y) const {
 }
 
 void SMHiggsWidthGenerator::doinit() {
-  GenericWidthGenerator::doinit();
   // extract W and Z mass and width
   tPDPtr w = getParticleData(ParticleID::Wplus);
   tPDPtr z = getParticleData(ParticleID::Z0);
@@ -335,6 +334,8 @@ void SMHiggsWidthGenerator::doinit() {
   double ncolour = generator()->standardModel()->Nc();
   ca_ = ncolour;
   cf_ = (sqr(ncolour)-1.0)/(2.0*ca_);
+  GenericWidthGenerator::doinit();
+  if(particle()->widthGenerator()!=this) return;
   // construct the map
   for(unsigned int ix=0;ix<decayModes().size();++ix) {
     tDMPtr mode = decayModes()[ix];

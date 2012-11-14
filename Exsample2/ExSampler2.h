@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see \ref ExSamplerInterfaces "The interfaces"
  * defined for ExSampler.
  */
-class ExSampler: public Herwig::BinSampler {
+  class ExSampler: public Herwig::BinSampler {
 
 public:
 

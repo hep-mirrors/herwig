@@ -131,7 +131,7 @@ public:
    * branch of the diagram.
    */
   pair<double,Lorentz5Momentum> timeLikeWeight(const Tree2toNDiagram& diag,
-					       int branch) const;
+					       int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given spacelike branch of
@@ -139,7 +139,7 @@ public:
    */
   double spaceLikeWeight(const Tree2toNDiagram& diag,
 			 const Lorentz5Momentum& incoming,
-			 int branch) const;
+			 int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given diagram.
@@ -152,7 +152,7 @@ public:
   /**
    * Fill the diagram weights.
    */
-  void fillDiagramWeights();
+  void fillDiagramWeights(double flatCut = 0.0);
 
   /**
    * Clone this phase space generator.
@@ -166,10 +166,47 @@ public:
    */
   virtual void cloneDependencies(const std::string& prefix = "");
 
+public:
+
   /**
-   * Dump xcomb hierarchies.
+   * Limit phasespace generation to a given collinear or soft limit.
    */
-  void dumpInfo(const string& prefix = "") const;
+  void singularLimit(size_t i, size_t j) {
+    if ( i > j )
+      swap(i,j);
+    singularLimits.insert(make_pair(i,j));
+  }
+
+  /**
+   * Return the last matched singular limit.
+   */
+  const pair<size_t,size_t>& lastSingularLimit() const {
+    assert(theLastSingularLimit != singularLimits.end());
+    return *theLastSingularLimit;
+  }
+
+  /**
+   * Return true, if constraints on phasespace generation have been met.
+   */
+  bool matchConstraints(const vector<Lorentz5Momentum>& momenta);
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
 public:
 
@@ -192,6 +229,23 @@ private:
    * The diagram weights indexed by diagram id.
    */
   map<int,double> diagramWeights;
+
+  /**
+   * If not empty, the entries here serve to limit phasespace
+   * generation to the corresponding collinear limits, or soft limits
+   * if both pair entries are equal.
+   */
+  set<pair<size_t,size_t> > singularLimits;
+
+  /**
+   * The last matched singular limit.
+   */
+  set<pair<size_t,size_t> >::const_iterator theLastSingularLimit;
+
+  /**
+   * A cutoff below which a region is considered singular.
+   */
+  Energy singularCutoff;
 
   /**
    * The assignment operator is private and must never be called.

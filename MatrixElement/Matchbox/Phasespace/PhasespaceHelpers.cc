@@ -28,6 +28,11 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
   double mu = sqr(data->mass())/sHat;
   double gamma = sqr(data->width())/sHat;
 
+  if ( M0 != ZERO )
+    x0 = M0/sqrtSHat;
+  if ( Mc != ZERO )
+    xc = Mc/sqrtSHat;
+
   double r = rnd();
 
   pair<double,double> event;
@@ -150,53 +155,57 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
 					    const Lorentz5Momentum& p2,
 					    Energy pt) {
 
-  if ( (p1+p2).m2() <= ZERO ) {
-    cerr << "cannot boost ... " << ((p1+p2).m2()/GeV2) << "\n";
-    throw Veto();
-  }
-  Boost beta = (p1+p2).findBoostToCM();
-      
-  Lorentz5Momentum p1c = p1;
-
-  if (beta.mag2() > Constants::epsilon) {
-    p1c.boost(beta);
-  }
-      
-  Lorentz5Momentum k (0.*GeV,0.*GeV,0.*GeV,0.*GeV);
-      
-  double ct = p1c.vect().unit().z();
-  double st = sqrt(1.-ct*ct);
-  
   double phi = 2.*Constants::pi*rnd();
   weight *= 2.*Constants::pi;
-  double cphi = cos(phi);
-  double sphi = sqrt(1.-cphi*cphi);
-  if (phi  > Constants::pi) sphi = -sphi;
-  
-  // adding an output somewhere around here results in the correct behaviour
-  // when compiling with g++-4.6.1 -O3
-  // cerr << "bla\n" << flush;
-  if (st > Constants::epsilon) {
-    double cchi = p1c.vect().unit().x()/st;
-    double schi = p1c.vect().unit().y()/st;
-    k.setX((cphi*cchi*ct-sphi*schi)*pt);
-    k.setY((cphi*schi*ct+sphi*cchi)*pt);
-    k.setZ(-cphi*st*pt);
-  } else {
-    k.setX(pt*cphi);
-    k.setY(pt*sphi);
-    k.setZ(0.*GeV);
-  }
-  
-  if (beta.mag2() > Constants::epsilon)
-    k.boost(-beta);
-    
-  return k;
+
+  Lorentz5Momentum P = p1 + p2;
+
+  Energy2 Q2 = abs(P.m2());
+
+  Lorentz5Momentum Q = 
+    Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2));
+
+  bool boost =
+    abs((P-Q).vect().mag2()/GeV2) > 1e-8 ||
+    abs((P-Q).t()/GeV) > 1e-4;
+
+  Lorentz5Momentum inFrame1;
+  if ( boost )
+    inFrame1 = p1 + ((P*p1-Q*p1)/(P*Q-Q.mass2()))*(P-Q);
+  else
+    inFrame1 = p1;
+
+  Energy ptx = inFrame1.x();
+  Energy pty = inFrame1.y();
+  Energy q = 2.*inFrame1.z();
+
+  Energy Qp = sqrt(4.*(sqr(ptx)+sqr(pty))+sqr(q));
+  Energy Qy = sqrt(4.*sqr(pty)+sqr(q));
+
+  double cPhi = cos(phi);
+  double sPhi = sqrt(1.-sqr(cPhi));
+  if ( phi > Constants::pi )
+    sPhi = -sPhi;
+
+  Lorentz5Momentum kt;
+
+  kt.setT(ZERO);
+  kt.setX(pt*Qy*cPhi/Qp);
+  kt.setY(-pt*(4*ptx*pty*cPhi/Qp+q*sPhi)/Qy);
+  kt.setZ(2.*pt*(-ptx*q*cPhi/Qp + pty*sPhi)/Qy);
+
+  if ( boost )
+    kt = kt + ((P*kt-Q*kt)/(P*Q-Q.mass2()))*(P-Q);
+  kt.setMass(-pt);
+  kt.rescaleRho();
+
+  return kt;
 
 }
 
 void PhasespaceTree::setup(const Tree2toNDiagram& diag, 
 			   int pos) {
+  doMirror = false;
 
   pair<int,int> dchildren =
     diag.children(pos);
@@ -234,14 +243,83 @@ void PhasespaceTree::setup(const Tree2toNDiagram& diag,
 
 }
 
+void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag, 
+			   int pos) {
+
+  doMirror = true;
+
+  spacelike = pos < diag.nSpace();
+
+  pair<int,int> dchildren;
+  if (pos != 0 && spacelike)
+    dchildren =
+      make_pair(diag.parent(pos), diag.children(diag.parent(pos)).second);
+  else if ( !spacelike )
+    dchildren =
+      diag.children(pos);
+  else 
+    dchildren =
+      make_pair(-1,-1);
+
+  data = diag.allPartons()[pos];
+  
+  //  cerr << "pos= " << pos << " " << data->PDGName() << " " << diag.externalId(pos) << "  next up: " << diag.parent(pos) << " " << diag.children(diag.parent(pos)).second << "\n" << flush;
+
+  if ( pos == diag.nSpace() - 1 )
+    externalId = 1;
+
+  if ( dchildren.first == -1 ) {
+    externalId = diag.externalId(pos);
+    leafs.insert(externalId);
+    return;
+  }
+  
+
+
+  children.push_back(PhasespaceTree());
+  children.back().setupMirrored(diag,dchildren.first);
+  children.push_back(PhasespaceTree());
+  children.back().setupMirrored(diag,dchildren.second);
+
+  if ( !children[0].children.empty() &&
+       children[1].children.empty() &&
+       !spacelike )
+    swap(children[0],children[1]);
+  if ( spacelike &&
+       !children[0].spacelike ) {
+    assert (false);
+  }
+
+  copy(children[0].leafs.begin(),children[0].leafs.end(),
+       inserter(leafs,leafs.begin()));
+  copy(children[1].leafs.begin(),children[1].leafs.end(),
+       inserter(leafs,leafs.begin()));
+
+}
+
+void PhasespaceTree::print(int in) {
+  for (int i = 0; i != in; i++)
+    cerr << "   ";
+  cerr << " |- "  << data->PDGName() << " " << externalId << "\n" << flush;
+  if ( !children.empty() ) {
+    children[1].print(in+1);
+    children[0].print(in+int(!spacelike));
+  }
+  else {
+  cerr << "\n";
+  }
+}
+
 void PhasespaceTree::init(const vector<Lorentz5Momentum>& meMomenta) {
 
   if ( children.empty() ) {
     massRange.first = meMomenta[externalId].mass();
     massRange.second = massRange.first;
-    momentum.setMass(meMomenta[externalId].mass());
-    if ( externalId == 1 )
+    if ( !doMirror && externalId == 1 )
       momentum = meMomenta[1];
+    if ( doMirror && externalId == 0 )
+      momentum = meMomenta[0];
+    momentum.setMass(meMomenta[externalId].mass());
     return;
   }
 
@@ -259,21 +337,28 @@ void PhasespaceTree::init(const vector<Lorentz5Momentum>& meMomenta) {
 
 void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
 					vector<Lorentz5Momentum>& meMomenta) {
-
-  if ( externalId == 0 ) {
+  
+  if ( !doMirror && externalId == 0 ) {
     init(meMomenta);
     momentum = meMomenta[0];
   }
+  else if ( doMirror && externalId == 1) {
+    init(meMomenta);
+    momentum = meMomenta[1];
+  }
 
   if ( children.empty() ) {
-    if ( externalId != 1 )
+    if ( ( !doMirror && externalId != 1 )
+	 || ( doMirror && externalId !=0 ) )
       meMomenta[externalId] = momentum;
     return;
   }
 
   // s-channel
-  if ( externalId == 0 &&
-       children[0].externalId == 1 ) {
+  if ( ( !doMirror && externalId == 0 &&
+	 children[0].externalId == 1 )
+       || ( doMirror && externalId == 1 &&
+	    children[0].externalId == 0 ) ) {
     children[1].momentum = meMomenta[0] + meMomenta[1];
     children[1].momentum.setMass(info.sqrtSHat);
     children[1].momentum.rescaleEnergy();
@@ -365,7 +450,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   }
 
   // get the CM energy avaialble
-  Energy2 s = (momentum+meMomenta[1]).m2();
+  Energy2 s = (momentum+meMomenta[int(!doMirror)]).m2();
   if ( s <= ZERO )
     throw Veto();
 
@@ -408,7 +493,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy2 ma2 = sqr(ma);
   if ( ma < ZERO )
     ma2 = -ma2;
-  Energy mb = meMomenta[1].mass();
+  Energy mb = meMomenta[int(!doMirror)].mass();
   Energy2 mb2 = sqr(mb);
 
   // pick the ys variable
@@ -463,7 +548,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy pt = sqrt(pt2);
 
   children[1].momentum = 
-    xa*momentum + xb*meMomenta[1] + info.generateKt(momentum,meMomenta[1],pt);
+    xa*momentum + xb*meMomenta[int(!doMirror)] + info.generateKt(momentum,meMomenta[int(!doMirror)],pt);
   children[1].momentum.setMass(mi);
   children[1].momentum.rescaleEnergy();
 
@@ -484,7 +569,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[0].generateKinematics(info,meMomenta);
   } else {
     children[0].children[1].momentum =
-      meMomenta[1] + children[0].momentum;
+      meMomenta[int(!doMirror)] + children[0].momentum;
     children[0].children[1].momentum.setMass(MW);
     children[0].children[1].momentum.rescaleEnergy();
     children[0].children[1].generateKinematics(info,meMomenta);
@@ -499,7 +584,7 @@ void PhasespaceTree::put(PersistentOStream& os) const {
     children[0].put(os);
     children[1].put(os);
   }
-  os << data << externalId << leafs << spacelike;
+  os << data << externalId << leafs << spacelike << doMirror;
 }
 
 void PhasespaceTree::get(PersistentIStream& is) {
@@ -510,5 +595,5 @@ void PhasespaceTree::get(PersistentIStream& is) {
     children[0].get(is);
     children[1].get(is);
   }
-  is >> data >> externalId >> leafs >> spacelike;
+  is >> data >> externalId >> leafs >> spacelike >> doMirror;
 }

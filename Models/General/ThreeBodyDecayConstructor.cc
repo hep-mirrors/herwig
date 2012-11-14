@@ -233,6 +233,9 @@ void ThreeBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   for(set<PDPtr>::const_iterator ip=particles.begin();
       ip!=particles.end();++ip) {
     tPDPtr parent = *ip;
+    if ( Debug::level > 0 )
+      Repository::cout() << "Constructing 3-body decays for " 
+			 << parent->PDGName() << '\n';
     // create the prototype 1->2 decays which will be turned into
     // 1 -> 3 decays
     vector<TwoBodyPrototype> prototypes;

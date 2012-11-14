@@ -21,6 +21,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
+  /**
+   *  Declare ModelGenerator class as must be friend to set the particle
+   */
+  class ModelGenerator;
+
 /** \ingroup PDT
  *
  *  The <code>GenericMassGenerator</code> class is a simple class for the
@@ -49,6 +54,11 @@ using namespace ThePEG;
  */
 class GenericMassGenerator: public MassGenerator {
 
+  /**
+   *  ModelGenerator class as must be friend to set the particle
+   */
+  friend class ModelGenerator;
+
 public:
 
   /**
@@ -59,7 +69,7 @@ public:
       lowerMass_(),upperMass_(),
       mass_(),width_(),mass2_(),mWidth_(),
       nInitial_(1000),
-      initialize_(false), widthOpt_(false) {}
+      initialize_(false), output_(false), widthOpt_(false) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -285,6 +295,11 @@ protected:
    */
   tcPDPtr particle() const {return particle_;}
 
+  /**
+   * Set the particle
+   */
+  void particle(tPDPtr in) {particle_ = in;}
+
 protected:
 
   /** @name Clone Methods. */
@@ -426,6 +441,11 @@ private:
    * Whether or not to initialize the GenericMassGenerator
    */
   bool initialize_;
+
+  /**
+   * Whether or not to output the data to a file
+   */
+  bool output_;
 
   /**
    * Pointer to the width generator

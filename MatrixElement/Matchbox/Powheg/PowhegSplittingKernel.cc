@@ -94,13 +94,19 @@ void PowhegSplittingKernel::setXComb(tStdXCombPtr real) {
 
 }
 
+void PowhegSplittingKernel::flushCaches() {
+  if ( realME() )
+    realME()->flushCaches();
+  if ( projectionDipole() )
+    projectionDipole()->flushCaches();
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d =
+	  dipoles().begin(); d != dipoles().end(); ++d )
+    (**d).flushCaches();
+}
+
 tSubProPtr PowhegSplittingKernel::construct(Energy pt) {
 
-  // only cluster real emission
-
-  if ( lastCuts().jetFinder() )
-    lastCuts().jetFinder()->minOutgoing(lastXComb().mePartonData().size()-2);
-
+  lastXCombPtr()->matrixElement()->flushCaches();
   tSubProPtr subpro = lastXCombPtr()->construct();
 
   if ( projectionDipole()->realEmitter() == 0 ||
@@ -143,8 +149,11 @@ double PowhegSplittingKernel::evaluate() const {
     generator()->log() << "'" << name() << "' evaluating\n";
 
   if ( !projectionDipole()->underlyingBornME()->
-       lastXCombPtr()->willPassCuts() )
+       lastXCombPtr()->willPassCuts() ) {
+    if ( projectionDipole()->verbose() )
+      generator()->log() << "Born did not pass the cuts\n";
     return 0.;
+  }
 
   double fscaleFactor =
     projectionDipole()->realEmissionME()->factorizationScaleFactor();
@@ -154,6 +163,7 @@ double PowhegSplittingKernel::evaluate() const {
 
   double dummy;
   double ratio = ME2byDipoles::evaluate(dummy);
+  assert(ratio >= 0.);
 
   Energy2 bornSHat =
     projectionDipole()->underlyingBornME()->lastXComb().lastSHat();
@@ -177,7 +187,8 @@ double PowhegSplittingKernel::evaluate() const {
     born += sqr(hbarc) * scaledBornScreen() * bornJacobian / (2.*bornSHat);
   }
 
-  ratio *= ( projectionDipole()->dSigHatDR(fscale) / born );
+  CrossSection dip = projectionDipole()->dSigHatDR(fscale);
+  ratio *= ( dip / born );
 
   double rscaleFactor =
     projectionDipole()->realEmissionME()->renormalizationScaleFactor();
@@ -257,7 +268,6 @@ void PowhegSplittingKernel::startPresampling() {
   lastXCombPtr()->head(thePresamplingXCombs[theXCombBackup]);
   ME2byDipoles::setXComb(lastXCombPtr());
   projectionDipole()->setXComb(lastXCombPtr());
-  thePresamplingXCombs[theXCombBackup]->prepare(theXCombBackup->lastParticles());
 }
 
 void PowhegSplittingKernel::stopPresampling() {
@@ -269,6 +279,8 @@ void PowhegSplittingKernel::stopPresampling() {
 }
 
 double PowhegSplittingKernel::evaluate(const vector<double>& p) {
+
+  flushCaches();
 
   try {
 
@@ -289,6 +301,8 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
       copy(p.begin()+theBornRandom.second+projectionDipole()->nDimRadiation(),p.end(),
 	   thePresamplingPoint.begin()+theBornRandom.second);
 
+      thePresamplingXCombs[theXCombBackup]->prepare(theXCombBackup->lastParticles());
+
       if ( thePresamplingXCombs[theXCombBackup]->
 	   dSigDR(make_pair(0.0,0.0), bdim,
 		  &thePresamplingPoint[0]) == ZERO ) {
@@ -301,17 +315,18 @@ double PowhegSplittingKernel::evaluate(const vector<double>& p) {
 
     const double * rad = &p[theBornRandom.second];
 
-    tStdDependentXCombPtr depXComb =
-      dynamic_ptr_cast<tStdDependentXCombPtr>(lastXCombPtr());  
-    assert(depXComb);
-    depXComb->setProcess();
+    tStdXCombPtr depXComb = lastXCombPtr();  
     if ( !projectionDipole()->generateKinematics(rad) ) {
+      if ( projectionDipole()->verbose() )
+	generator()->log() << "failed to generate radiation kinematics\n";
       return 0.0;
     }
-    depXComb->remakeIncoming();
+    depXComb->clean();
     depXComb->setIncomingPartons();
 
-    return evaluate();
+    double res = evaluate();
+
+    return res >= 0. ? res : 0.;
 
   } catch (...) {
     if ( presampling() )

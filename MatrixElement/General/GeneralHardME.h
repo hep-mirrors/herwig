@@ -257,7 +257,6 @@ protected:
     return debug_;
   }
 
-
   /**
    *  Set/Get Info on the selected diagram and colour flow
    */
@@ -356,6 +355,17 @@ protected:
       }
       spin->productionVertex(hardvertex);
     }
+  }
+
+  /**
+   *  Initialize the storage of the helicity matrix elements
+   */
+  void initializeMatrixElements(PDT::Spin  in1, PDT::Spin in2,
+				PDT::Spin out1, PDT::Spin out2) {
+    flowME().resize(numberOfFlows(),
+		    ProductionMatrixElement(in1,in2,out1,out2));
+    diagramME().resize(numberOfDiags(),
+		       ProductionMatrixElement(in1,in2,out1,out2));
   }
 
 private:

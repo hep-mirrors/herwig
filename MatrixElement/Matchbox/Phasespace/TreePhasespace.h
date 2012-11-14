@@ -13,7 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/PhasespaceHelpers.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TreePhasespaceChannels.h"
 
 namespace Herwig {
 
@@ -50,6 +50,12 @@ public:
 public:
 
   /**
+   * Return true, if this phasespace generator will generate incoming
+   * partons itself.
+   */
+  virtual bool haveX1X2() const { return false; }
+
+  /**
    * Prepare a phase space generator for the given xcomb object.
    */
   virtual void prepare(tStdXCombPtr, bool verbose = false);
@@ -65,6 +71,8 @@ public:
    * multiplicity final state.
    */
   virtual int nDim(int nFinal) const {
+    if ( nFinal == 1 )
+      return 1;
     return 3*(nFinal - 1); // one additional number needed for channel selection
   }
 
@@ -138,14 +146,24 @@ protected:
 private:
 
   /**
+   * The object storing channel maps
+   */
+  Ptr<TreePhasespaceChannels>::ptr theChannelMap;
+
+  /**
    * Map xcomb's to channel vectors indexed by diagram id.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> > channelMap;
+  map<tStdXCombPtr,
+      map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >&
+  channelMap() { return theChannelMap->channelMap(); }
 
   /**
    * The currently active channels.
    */
-  map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree> >::iterator 
+  map<tStdXCombPtr,
+      map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> > >::iterator 
   lastChannelsIterator;
 
   /**
@@ -166,9 +184,27 @@ private:
   double xc;
 
   /**
+   * Parameter steering from which on propagator virtualities are
+   * sampled flat.
+   */
+  Energy M0;
+
+  /**
+   * Parameter steering at which virtuality singularities of
+   * propagators are actually cut off.
+   */
+  Energy Mc;
+
+  /**
+   * Choose whether to also use mirrored phasespace generation
+   */
+  bool theIncludeMirrored;
+       
+  /**
    * Return the currently active channels.
    */
-  map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>& lastChannels() { 
+  map<Ptr<Tree2toNDiagram>::ptr,
+      pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >& lastChannels() { 
     return lastChannelsIterator->second; 
   }
 

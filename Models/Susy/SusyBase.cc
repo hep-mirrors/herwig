@@ -22,8 +22,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/PDT/MassGenerator.h"
-#include "ThePEG/PDT/WidthGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
@@ -66,7 +64,7 @@ void SusyBase::doinit() {
   addVertex(CNWVertex_);
   addVertex(GOGOHVertex_);
   addVertex(WHHVertex_);
-  addVertex(NCTVertex_);
+  if(NCTVertex_) addVertex(NCTVertex_);
   if(gravitino_) {
     if(GVNHVertex_) addVertex(GVNHVertex_);
     if(GVNVVertex_) addVertex(GVNVVertex_);
@@ -224,7 +222,7 @@ void SusyBase::Init() {
     ("Vertex/NCT",
      "Vertex for the flavour violating coupling of the top squark "
      "to the neutralino and charm quark.",
-     &SusyBase::NCTVertex_, false, false, true, false, false);
+     &SusyBase::NCTVertex_, false, false, true, true, false);
 
   static Reference<SusyBase,AbstractRFSVertex> interfaceVertexGVNH
     ("Vertex/GVNH",
@@ -325,7 +323,6 @@ void SusyBase::readSetup(istream & is) {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
@@ -438,7 +435,19 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   matrix = new_ptr(MixingMatrix(size.first,size.second));
   for(unsigned int ix=0; ix < values.size(); ++ix)
     (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
-  
+  // test against stupid mixing matrices  
+  for(unsigned int ix=0;ix<matrix->size().first;++ix) {
+    Complex sum(0.);
+    for(unsigned int iy=0;iy<matrix->size().second;++iy) {
+      sum += norm((*matrix)(ix,iy));
+    }
+    if(abs(sum-1.)>1e-4) {
+      cerr << "The sum of the mod squares of row " << ix+1
+	   << " of the " << name << " block does not sum to 1. \n"
+	   << "sum = " << sum.real() << ". We strongly suggest you check your SLHA file.\n";
+    }
+  }
+
   if(name == "nmix") {
     vector<long> ids(4);
     ids[0] = 1000022; ids[1] = 1000023; 
@@ -515,12 +524,9 @@ void SusyBase::resetRepositoryMasses() {
 	   << part->PDGName() << " using SLHA "
 	   << "file,\nthis can affect parts of the Standard Model simulation and"
 	   << " is strongly discouraged.\n";
-    //Find interface nominal mass interface
-    const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-    ostringstream os;
-    os.precision(12);
-    os << abs(it->second);
-    ifb->exec(*part, "set", os.str());
+    // reset the masses
+    resetMass(it->first,it->second*GeV,part);
+
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }

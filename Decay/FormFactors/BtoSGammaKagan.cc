@@ -22,9 +22,19 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 using Herwig::Math::Li2;
+
+DescribeClass<BtoSGammaKagan,BtoSGammaHadronicMass>
+describeHerwigBtoSGammaKagan("Herwig::BtoSGammaKagan",
+			     "HwFormFactors.so");
+
+HERWIG_INTERPOLATOR_CLASSDESC(BtoSGammaKagan1,double,double)
+
+HERWIG_INTERPOLATOR_CLASSDESC(BtoSGammaKagan2,InvEnergy,Energy)
+
 
 BtoSGammaKagan::BtoSGammaKagan() 
   : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
@@ -100,7 +110,8 @@ void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
      << ounit(_spectmax,1./GeV) << ounit(_fermilambda,GeV)
      << _fermia << ounit(_ferminorm,1./GeV) << ounit(_fermilambda1,GeV2)
      <<_ycut << _deltacut << _nsfunct 
-     << _nspect << _maxtry << _initialize;
+     << _nspect << _maxtry << _initialize
+     << _s22inter << _s27inter << _pmHinter;
 }
 
 void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
@@ -112,11 +123,9 @@ void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
      >> iunit(_spectmax,1./GeV) >> iunit(_fermilambda,GeV) 
      >> _fermia >> iunit(_ferminorm,1./GeV) >> iunit(_fermilambda1,GeV2)
      >>_ycut >> _deltacut >> _nsfunct 
-     >> _nspect >> _maxtry >> _initialize;
+     >> _nspect >> _maxtry >> _initialize
+     >> _s22inter >> _s27inter >> _pmHinter;
 }
-
-ClassDescription<BtoSGammaKagan> BtoSGammaKagan::initBtoSGammaKagan;
-// Definition of the static class description member.
 
 void BtoSGammaKagan::Init() {
 

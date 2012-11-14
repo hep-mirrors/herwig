@@ -135,12 +135,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<Interpolator<ValT,ArgT> > initInterpolator;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -214,43 +208,6 @@ make_InterpolatorPtr(const typename std::vector<ValT> & f,
 {
   return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
 }
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Interpolator. */
-template <typename ValT, typename ArgT>
-struct BaseClassTrait<Herwig::Interpolator<ValT,ArgT>,1> {
-  /** Typedef of the first base class of Interpolator. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Interpolator class and the shared object where it is defined. */
-template <typename ValT, typename ArgT>
-struct ClassTraits<Herwig::Interpolator<ValT,ArgT> >
-  : public ClassTraitsBase<Herwig::Interpolator<ValT,ArgT> > {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Interpolator<"
-                               + ClassTraits<ValT>::className() + ","
-                               + ClassTraits<ArgT>::className() + ">"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * Interpolator is implemented. It may also include several, space-separated,
-   * libraries if the class Interpolator depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwUtils.so"; }
-};
-
-/** @endcond */
 
 }
 

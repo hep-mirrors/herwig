@@ -139,8 +139,8 @@ void MEPP2VV::doinit() {
   FFWvertex_ = hwsm->vertexFFW();
 }
 
-double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
-  double rand = *r;
+double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double r) {
+  double rand = r;
   Energy2 m12 = sqr(meMomenta()[2].mass());
   Energy2 m22 = sqr(meMomenta()[3].mass());
   Energy2 D1 = sHat()-m12-m22;
@@ -378,7 +378,8 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
 	  // t-channel
 	  for(unsigned int ix=0;ix<3;++ix) {
 	    SpinorWaveFunction inter = 
-	      FFWvertex_->evaluate(scale(),5,tc[ix],f1[ihel1],v1[ohel1]);
+	      FFWvertex_->evaluate(scale(),(abs(tc[ix]->id())!=6 ? 5 : 1),
+	    			   tc[ix],f1[ihel1],v1[ohel1]);
 	    diag[ix] = 
 	      FFWvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
 	  }

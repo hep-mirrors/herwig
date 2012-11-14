@@ -162,8 +162,12 @@ void alpha_s::match_thresholds () {
   quark_masses_squared_[0] = 0.*MeV2;
 
   for (long f = 1; f < 7; ++f) {
-    quark_masses_squared_[static_cast<size_t>(f)]
-      = sqr(getParticleData(f)->mass());
+    if ( quarkMasses().empty() )
+      quark_masses_squared_[static_cast<size_t>(f)]
+	= sqr(getParticleData(f)->mass());
+    else
+      quark_masses_squared_[static_cast<size_t>(f)]
+	= sqr(quarkMasses()[static_cast<size_t>(f-1)]);
   }
 
   unsigned int active_at_input = active_flavours(sqr(scale_in_));

@@ -30,12 +30,6 @@ InvertedTildeKinematics::InvertedTildeKinematics()
 
 InvertedTildeKinematics::~InvertedTildeKinematics() {}
 
-void InvertedTildeKinematics::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-}
-
-
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

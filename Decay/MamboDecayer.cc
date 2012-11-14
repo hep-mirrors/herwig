@@ -30,11 +30,11 @@ bool MamboDecayer::accept(tcPDPtr, const tPDVector & ) const {
 }
 
 void MamboDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _maxweight;
+  os << _maxweight << _a0 << _a1;
 }
 
 void MamboDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _maxweight;
+  is >> _maxweight >> _a0 >> _a1;
 }
 
 ClassDescription<MamboDecayer> MamboDecayer::initMamboDecayer;

@@ -59,7 +59,7 @@ GSLBisection::value(const T & fn,
   try{
     gsl_root_fsolver_set (solver, &F, x_lo, x_hi);
   }catch(GSLerror){
-    cerr << "GSLBisection: initial interval does not contain zero\n";
+    //cerr << "GSLBisection: initial interval does not contain zero\n";
     throw IntervalError();
   }
    

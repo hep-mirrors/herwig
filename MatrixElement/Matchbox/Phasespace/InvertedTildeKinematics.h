@@ -133,11 +133,6 @@ public:
     return dynamic_ptr_cast<Ptr<InvertedTildeKinematics>::ptr>(clone());
   }
 
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
   /** @name Access to process data. */
   //@{
   /**

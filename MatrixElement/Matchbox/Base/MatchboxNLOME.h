@@ -264,6 +264,22 @@ public:
   }
 
   /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return theCheckPoles; }
+
+  /**
+   * Switch on checking of epsilon pole cancellation.
+   */
+  void doCheckPoles() { theCheckPoles = true; }
+
+  /**
+   * Perform the check of epsilon pole cancellation. Results will be
+   * written to the log file, one per phasespace point.
+   */
+  void logPoles() const;
+
+  /**
    * Return the matrix element for the kinematical configuation
    * previously provided by the last call to setKinematics(), suitably
    * scaled by sHat() to give a dimension-less number.
@@ -297,11 +313,6 @@ public:
    * Print information on last event generated.
    */
   void printLastEvent(ostream& os) const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -412,6 +423,11 @@ private:
    * The number of random variables needed
    */
   mutable int theNDim;
+
+  /**
+   * True, if cancellationn of epsilon poles should be checked.
+   */
+  bool theCheckPoles;
 
 private:
 

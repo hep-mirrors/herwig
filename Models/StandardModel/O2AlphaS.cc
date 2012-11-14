@@ -76,8 +76,11 @@ vector<Energy2> O2AlphaS::flavourThresholds() const {
 void O2AlphaS::doinit() {
   // thresholds
   for ( int ix=1; ix<7; ++ix ) {
-    tPDPtr p = getParticleData(ix);
-    _threshold[ix-1] = p->mass();
+    if ( quarkMasses().empty() ) {
+      tPDPtr p = getParticleData(ix);
+      _threshold[ix-1] = p->mass();
+    } else
+      _threshold[ix-1] = quarkMasses()[ix-1];
   }
   // d is heavier than u, need to swap
   swap(_threshold[0],_threshold[1]);

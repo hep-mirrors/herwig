@@ -103,35 +103,62 @@ public:
   /**
    * Change from CDR to DR
    */
-  virtual void useDR() { }
+  virtual void useDR() { theUseDR = true; }
 
   /**
    * Change from DR to CDR
    */
-  virtual void useCDR() { }
+  virtual void useCDR() { theUseDR = false; }
 
   /**
-   * Change to the simple convention
+   * Change to the CS conventions
    */
-  virtual void useCS() { }
+  virtual void useCS() { theUseCS = true; }
 
   /**
-   * Change to the standard convention
+   * Change to the BDK conventions
    */
-  virtual void useNonCS() { }
+  virtual void useBDK() { theUseBDK = true; }
+
+  /**
+   * Change to the Expanded conventions
+   */
+  virtual void useExpanded() { theUseExpanded = true; }
 
   /**
    * Return true, if this virtual correction
    * has been calculated using dimensional reduction.
    * CDR is assumed otherwise.
    */
-  virtual bool isDR() const { return false; }
+  virtual bool isDR() const { return theUseDR; }
 
   /**
    * Return true, if the virtual correction has been calculated in the
    * dipole convention.
    */
-  virtual bool isCS() const { return false; }
+  virtual bool isCS() const { return theUseCS; }
+
+  /**
+   * Return true, if the virtual correction has been calculated in the
+   * BDK convention.
+   */
+  virtual bool isBDK() const { return theUseBDK; }
+
+  /**
+   * Return true, if the virtual correction has been calculated in the
+   * expanded convention.
+   */
+  virtual bool isExpanded() const { return theUseExpanded; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const { return 0.; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const { return 0.; }
 
   //@}
 
@@ -176,11 +203,6 @@ public:
   Ptr<MatchboxInsertionOperator>::ptr cloneMe() const {
     return dynamic_ptr_cast<Ptr<MatchboxInsertionOperator>::ptr>(clone());
   }
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  virtual void dumpInfo(const string& prefix = "") const = 0;
 
   //@}
 
@@ -252,6 +274,31 @@ private:
    * virtual corrections to.
    */
   Ptr<MatchboxMEBase>::tptr theLastBorn;
+
+  /**
+   * True, if this virtual correction
+   * has been calculated using dimensional reduction.
+   * CDR is assumed otherwise.
+   */
+  bool theUseDR;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * dipole convention.
+   */
+  bool theUseCS;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * BDK convention.
+   */
+  bool theUseBDK;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * expanded convention.
+   */
+  bool theUseExpanded;
 
 private:
 

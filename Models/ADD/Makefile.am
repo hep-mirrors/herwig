@@ -1,4 +1,4 @@
-if WANT_ADD
+if WANT_BSM
 pkglib_LTLIBRARIES = HwADDModel.la
 endif
 HwADDModel_la_SOURCES = ADDModel.fh ADDModel.cc  ADDModel.h  \

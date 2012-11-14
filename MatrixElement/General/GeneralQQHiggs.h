@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralQQHiggs class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
@@ -28,7 +28,7 @@ using namespace ThePEG;
  * @see \ref GeneralQQHiggsInterfaces "The interfaces"
  * defined for GeneralQQHiggs.
  */
-class GeneralQQHiggs: public MEBase {
+class GeneralQQHiggs: public HwMEBase {
 
 public:
 
@@ -54,7 +54,7 @@ public:
 
 public:
 
-  /** @name Virtual functions required by the MEBase class. */
+  /** @name Virtual functions required by the HwMEBase class. */
   //@{
   /**
    * Return the order in \f$\alpha_S\f$ in which this matrix
@@ -180,11 +180,6 @@ protected:
 	      ScalarWaveFunction & h,
 	      unsigned int flow) const;
   //@} 
-
-  /**
-   *  Generate the polar angle
-   */
-  double getCosTheta(double ctmin, double ctmax, double r);
 
 public:
 
@@ -382,7 +377,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::GeneralQQHiggs,1> {
   /** Typedef of the first base class of GeneralQQHiggs. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -14,7 +14,6 @@
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/Handlers/StdDependentXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 
 namespace Herwig {
@@ -92,16 +91,16 @@ public:
   void splittingBookkeeping();
 
   /**
-   * Create a StdDependentXComb object for the underlying
+   * Create a dependent xcomb object for the underlying
    * Born process, given a XComb driving the real emission
    */
-  StdDependentXCombPtr makeBornXComb(tStdXCombPtr realXC);
+  StdXCombPtr makeBornXComb(tStdXCombPtr realXC);
 
   /**
-   * Create a StdDependentXComb object for the real emission process,
+   * Create dependent xcomb objects for the real emission process,
    * given a XComb driving the underlying Born
    */
-  StdDependentXCombPtr makeRealXComb(tStdXCombPtr bornXC);
+  vector<StdXCombPtr> makeRealXCombs(tStdXCombPtr bornXC);
 
   /**
    * Return true, if bookkeeping did not find a non-trivial setup.
@@ -377,20 +376,6 @@ public:
   virtual bool wantCMS () const { return realEmissionME()->wantCMS(); }
 
   /**
-   * If this is a dependent matrix element in a ME group, return true,
-   * if cuts should be inherited from the head matrix element, i.e. no
-   * cut is being applied to the dependent matrix element if the head
-   * configuration has passed the cuts.
-   */
-  virtual bool headCuts() const { return testSubtraction(); }
-
-  /**
-   * If this is a dependent matrix element in a ME group, return true,
-   * if cuts should be ignored.
-   */
-  virtual bool ignoreCuts() const { return splitting(); }
-
-  /**
    * Clear the information previously provided by a call to
    * setKinematics(...).
    */
@@ -604,15 +589,12 @@ public:
    * point is about to be generated, so all caches should
    * be flushed.
    */
-  virtual void flushCaches() {
-    theUnderlyingBornME->flushCaches();
-    theRealEmissionME->flushCaches();
-  }  
+  virtual void flushCaches();
 
   /**
    * Indicate that the subtraction is being tested.
    */
-  void testSubtraction() { theSubtractionTest = true; }
+  void doTestSubtraction() { theSubtractionTest = true; }
 
   /**
    * Return true, if the subtraction is being tested.
@@ -657,11 +639,6 @@ public:
    * for dsigdr evaluation
    */
   void logDSigHatDR(double effectiveJac) const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -720,6 +697,15 @@ public:
   virtual void generateSubCollision(SubProcess & sub);
 
   //@}
+
+protected:
+
+  /**
+   * Handle integer powers appearing downstream.
+   */
+  double pow(double x, unsigned int p) const {
+    return std::pow(x,(double)p);
+  }
 
 public:
 

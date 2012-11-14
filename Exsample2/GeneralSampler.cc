@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/LoopGuard.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -30,7 +31,8 @@ using namespace Herwig;
 
 GeneralSampler::GeneralSampler() 
   : theVerbose(false), theFlatSubprocesses(false), 
-    isSampling(false),
+    isSampling(false), theUpdateAfter(1),
+    crossSectionCalls(0), gotCrossSections(false),
     theIntegratedXSec(0.), theIntegratedXSecErr(0.),
     theSumWeights(0.), norm(0.) {}
 
@@ -82,6 +84,11 @@ void GeneralSampler::initialize() {
 
   updateCrossSections(true);
 
+  if ( samplers.empty() ) {
+    throw Exception() << "No processes with non-zero cross section present."
+		      << Exception::abortnow;
+  }
+
   if ( theVerbose )
     cout << "estimated total cross section is ( "
 	 << integratedXSec()/nanobarn << " +/- "
@@ -96,6 +103,8 @@ double GeneralSampler::generate() {
 
   long tries = 0;
   long excptTries = 0;
+
+  gotCrossSections = false;
 
   if ( !theFlatSubprocesses )
     lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
@@ -215,6 +224,13 @@ void GeneralSampler::currentCrossSections() const {
   if ( !isSampling )
     return;
 
+  if ( gotCrossSections )
+    return;
+
+  if ( ++crossSectionCalls == theUpdateAfter ) {
+    crossSectionCalls = 0;
+  } else return;
+
   double xsec = 0.;
   double var = 0.;
 
@@ -226,6 +242,8 @@ void GeneralSampler::currentCrossSections() const {
 
   theIntegratedXSec = xsec;
   theIntegratedXSecErr = sqrt(var);
+
+  gotCrossSections = true;
 
 }
 
@@ -253,12 +271,21 @@ void GeneralSampler::updateCrossSections(bool) {
   theIntegratedXSecErr = sqrt(var);
   norm = sumbias;
 
+  if ( sumbias == 0.0 ) {
+    samplers.clear();
+    theIntegratedXSec = ZERO;
+    theIntegratedXSecErr = ZERO;
+    return;
+  }
+
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
     double abssw = s->second->averageAbsWeight();
+    if ( abssw == 0.0 )
+      continue;
     s->second->bias(abssw/sumbias);
     current += abssw;
     newSamplers[current/sumbias] = s->second;
@@ -344,15 +371,15 @@ IVector GeneralSampler::getReferences() {
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theVerbose << theFlatSubprocesses 
-     << samplers << lastSampler
-     << theIntegratedXSec << theIntegratedXSecErr << theSumWeights
+     << samplers << lastSampler << theUpdateAfter
+     << theIntegratedXSec << theIntegratedXSecErr
      << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theVerbose >> theFlatSubprocesses 
-     >> samplers >> lastSampler
-     >> theIntegratedXSec >> theIntegratedXSecErr >> theSumWeights
+     >> samplers >> lastSampler >> theUpdateAfter
+     >> theIntegratedXSec >> theIntegratedXSecErr
      >> norm;
 }
 
@@ -375,6 +402,13 @@ void GeneralSampler::Init() {
     ("BinSampler",
      "The bin sampler to be used.",
      &GeneralSampler::theBinSampler, false, false, true, false, false);
+
+
+  static Parameter<GeneralSampler,size_t> interfaceUpdateAfter
+    ("UpdateAfter",
+     "Update cross sections every number of events.",
+     &GeneralSampler::theUpdateAfter, 1, 1, 0,
+     false, false, Interface::lowerlim);
 
 
   static Switch<GeneralSampler,bool> interfaceVerbose

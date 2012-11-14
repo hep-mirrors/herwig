@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
+AC_INIT([Herwig++],[devel],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -90,6 +90,8 @@ HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
 
+HERWIG_ENABLE_DIPOLE
+
 SHARED_FLAG=-shared
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
@@ -108,6 +110,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
+		Models/LH/Makefile
+		Models/LHTP/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
@@ -146,6 +150,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Powheg/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Processes/Makefile
+                MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
 		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile
