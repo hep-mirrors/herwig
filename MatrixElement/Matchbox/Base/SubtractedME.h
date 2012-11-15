@@ -108,6 +108,22 @@ public:
    */
   virtual void fillProjectors();
 
+  /**
+   * Return true, if this MEGroup will reweight the contributing cross
+   * sections.
+   */
+  virtual bool groupReweighted() const { return inclusive(); }
+
+  /**
+   * Reweight the head cross section
+   */
+  virtual double reweightHead();
+
+  /**
+   * Reweight the dependent cross section
+   */
+  virtual double reweightDependent(tStdXCombPtr);
+
   //@}
 
   /** @name Matrix element and dipole information */

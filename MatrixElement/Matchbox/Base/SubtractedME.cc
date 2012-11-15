@@ -223,8 +223,23 @@ void SubtractedME::fillProjectors() {
   for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
 	d != group->dependent().end(); ++d ) {
     if ( (**d).lastCrossSection() != ZERO )
-      lastXCombPtr()->projectors().insert(abs((**d).lastME2()),*d);
+      lastXCombPtr()->projectors().insert(1.,*d);
   }
+}
+
+double SubtractedME::reweightHead() {
+  double sum = 0.;
+  for ( Selector<tStdXCombPtr>::const_iterator d =
+	  lastXComb().projectors().begin(); d != lastXComb().projectors().end(); ++d )
+    sum += d->second->lastME2();
+  return
+    lastXComb().projectors().size() * lastXComb().lastProjector()->lastME2() / sum;
+}
+
+double SubtractedME::reweightDependent(tStdXCombPtr xc) {
+  if ( xc != lastXComb().lastProjector() )
+    return 0.;
+  return lastXComb().projectors().size();
 }
 
 void SubtractedME::doinit() {
