@@ -17,6 +17,7 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -601,6 +602,43 @@ public:
 
   //@}
 
+  /** @name Methods relevant to matching */
+  //@{
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+    theShowerApproximation = app;
+  }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
+
+  /**
+   * Indicate that the shower real emission contribution should be subtracted.
+   */
+  void doRealShowerSubtraction() { theRealShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower real emission contribution should be subtracted.
+   */
+  bool realShowerSubtraction() const { return theRealShowerSubtraction; }
+
+  /**
+   * Indicate that the shower virtual contribution should be subtracted.
+   */
+  void doVirtualShowerSubtraction() { theVirtualShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower virtual contribution should be subtracted.
+   */
+  bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
+
+  //@}
+
   /** @name Caching and diagnostic information */
   //@{
 
@@ -898,6 +936,21 @@ private:
    * The last pt as generated from the splitting mapping
    */
   Energy theLastSplittingPt;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * True, if the shower real emission contribution should be subtracted.
+   */
+  bool theRealShowerSubtraction;
+
+  /**
+   * True, if the shower virtual contribution should be subtracted.
+   */
+  bool theVirtualShowerSubtraction;
 
 private:
 

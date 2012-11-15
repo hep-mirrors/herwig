@@ -112,7 +112,7 @@ public:
    * Return true, if this MEGroup will reweight the contributing cross
    * sections.
    */
-  virtual bool groupReweighted() const { return inclusive(); }
+  virtual bool groupReweighted() const { return inclusive() || showerApproximation(); }
 
   /**
    * Reweight the head cross section
@@ -123,6 +123,43 @@ public:
    * Reweight the dependent cross section
    */
   virtual double reweightDependent(tStdXCombPtr);
+
+  //@}
+
+  /** @name Methods relevant to matching */
+  //@{
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+    theShowerApproximation = app;
+  }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
+
+  /**
+   * Indicate that the shower real emission contribution should be subtracted.
+   */
+  void doRealShowerSubtraction() { theRealShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower real emission contribution should be subtracted.
+   */
+  bool realShowerSubtraction() const { return theRealShowerSubtraction; }
+
+  /**
+   * Indicate that the shower virtual contribution should be subtracted.
+   */
+  void doVirtualShowerSubtraction() { theVirtualShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower virtual contribution should be subtracted.
+   */
+  bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
 
   //@}
 
@@ -450,6 +487,21 @@ private:
    * for the real emission
    */
   bool theVetoScales;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * True, if the shower real emission contribution should be subtracted.
+   */
+  bool theRealShowerSubtraction;
+
+  /**
+   * True, if the shower virtual contribution should be subtracted.
+   */
+  bool theVirtualShowerSubtraction;
 
 private:
 

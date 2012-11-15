@@ -36,7 +36,8 @@ SubtractedME::SubtractedME()
     theSubtractionData(""), 
     theVerbose(false), 
     theSubProcessGroups(false), theInclusive(false),
-    theVetoScales(false) {}
+    theVetoScales(false),
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -51,7 +52,6 @@ IBPtr SubtractedME::fullclone() const {
 void SubtractedME::setXComb(tStdXCombPtr xc) {
   MEGroup::setXComb(xc);
 }
-
 
 MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
 						      tMEPtr depME) const {
@@ -216,7 +216,7 @@ void SubtractedME::setVetoScales(tSubProPtr subpro) const {
 }
 
 void SubtractedME::fillProjectors() {
-  if ( !inclusive() )
+  if ( !inclusive() && !virtualShowerSubtraction() )
     return;
   Ptr<StdXCombGroup>::tptr group = 
     dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
@@ -229,6 +229,21 @@ void SubtractedME::fillProjectors() {
 
 double SubtractedME::reweightHead() {
   double sum = 0.;
+  if ( realShowerSubtraction() ) {
+    assert(showerApproximation());
+    bool below = showerApproximation()->belowCutoff();
+    showerApproximation()->resetBelowCutoff();
+    if ( below )
+      return 0.;
+    return lastXComb().projectors().size();
+  }
+  if ( virtualShowerSubtraction() ) {
+    assert(showerApproximation());
+    bool above = !showerApproximation()->belowCutoff();
+    showerApproximation()->resetBelowCutoff();
+    if ( above )
+      return 0.;
+  }
   for ( Selector<tStdXCombPtr>::const_iterator d =
 	  lastXComb().projectors().begin(); d != lastXComb().projectors().end(); ++d )
     sum += d->second->lastME2();
@@ -551,12 +566,16 @@ void SubtractedME::lastEventSubtraction() {
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
   os << theDipoles << theBorns << theSubtractionData 
-     << theVerbose << theInclusive << theSubProcessGroups << theVetoScales;
+     << theVerbose << theInclusive << theSubProcessGroups << theVetoScales
+     << theShowerApproximation
+     << theRealShowerSubtraction << theVirtualShowerSubtraction;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
   is >> theDipoles >> theBorns >> theSubtractionData 
-     >> theVerbose >> theInclusive >> theSubProcessGroups >> theVetoScales;
+     >> theVerbose >> theInclusive >> theSubProcessGroups >> theVetoScales
+     >> theShowerApproximation
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
 }
 
 void SubtractedME::Init() {
@@ -637,6 +656,10 @@ void SubtractedME::Init() {
      "Off",
      false);
 
+  static Reference<SubtractedME,ShowerApproximation> interfaceShowerApproximation
+    ("ShowerApproximation",
+     "Set the shower approximation to be considered.",
+     &SubtractedME::theShowerApproximation, false, false, true, true, false);
 
 }
 

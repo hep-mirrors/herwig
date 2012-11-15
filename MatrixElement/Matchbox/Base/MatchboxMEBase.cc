@@ -744,6 +744,7 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 }
 
 void MatchboxMEBase::flushCaches() { 
+  MEBase::flushCaches();
   if ( cache() )
     cache()->flush();
   if ( matchboxAmplitude() )

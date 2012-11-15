@@ -36,7 +36,8 @@ SubtractionDipole::SubtractionDipole()
   : MEBase(), theSplitting(false), theApply(true), theSubtractionTest(false),
     theIgnoreCuts(false), theShowerKernel(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
-    theBornEmitter(-1), theBornSpectator(-1) {}
+    theBornEmitter(-1), theBornSpectator(-1),
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false) {}
 
 SubtractionDipole::~SubtractionDipole() {}
 
@@ -545,6 +546,21 @@ void SubtractionDipole::ptCut(Energy cut) {
 
 CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
+  if ( showerApproximation() && realShowerSubtraction() ) {
+    assert(!splitting());
+    showerApproximation()->setBornXComb(lastXCombPtr());
+    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
+    showerApproximation()->setDipole(this);
+    if ( !showerApproximation()->isAboveCutoff() )
+      showerApproximation()->wasBelowCutoff();
+    if ( !showerApproximation()->isInShowerPhasespace() ) {
+      lastMECrossSection(ZERO);
+      lastME2(0.0);
+      return ZERO;   
+    }
+    return -showerApproximation()->dSigHatDR();
+  }
+
   double pdfweight = 1.;
 
   double jac = jacobian();
@@ -563,6 +579,23 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     lastMEPDFWeight(pdfweight);
   }
 
+  CrossSection res = ZERO;
+
+  if ( showerApproximation() && virtualShowerSubtraction() ) {
+    if ( !splitting() ) {
+      showerApproximation()->setBornXComb(lastXCombPtr());
+      showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
+    } else {
+      showerApproximation()->setBornXComb(underlyingBornME()->lastXCombPtr());
+      showerApproximation()->setRealXComb(lastXCombPtr());
+    }
+    showerApproximation()->setDipole(this);
+    if ( !showerApproximation()->isAboveCutoff() )
+      showerApproximation()->wasBelowCutoff();
+    if ( showerApproximation()->isInShowerPhasespace() )
+      res = showerApproximation()->dSigHatDR();
+  }
+
   double xme2 = 0.0;
 
   if ( !showerKernel() )
@@ -571,17 +604,14 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     xme2 = me2Avg(-underlyingBornME()->me2());
 
   if ( xme2 == 0.0 ) {
-    lastMECrossSection(ZERO);
+    lastMECrossSection(res);
     lastME2(0.0);
-    return ZERO;
+    return res;
   }
 
   lastME2(xme2);
 
-  if ( splitting() )
-    xme2 = abs(xme2);
-
-  CrossSection res = 
+  res -= 
     sqr(hbarc) * jac * pdfweight * xme2 /
     (2. * realEmissionME()->lastXComb().lastSHat());
 
@@ -598,10 +628,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   if ( applied )
     res *= weight;
 
-  if ( splitting() )
-    lastMECrossSection(res);
-  else
-    lastMECrossSection(-res);
+  lastMECrossSection(res);
 
   logDSigHatDR(jac);
 
@@ -936,7 +963,9 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << theMergingMap << theSplittingMap << theIndexMap
      << theUnderlyingBornDiagrams << theRealEmissionDiagrams
      << lastRealEmissionKey << lastUnderlyingBornKey
-     << theBornEmitter << theBornSpectator;
+     << theBornEmitter << theBornSpectator
+     << theShowerApproximation
+     << theRealShowerSubtraction << theVirtualShowerSubtraction;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -948,7 +977,9 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> theMergingMap >> theSplittingMap >> theIndexMap
      >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams
      >> lastRealEmissionKey >> lastUnderlyingBornKey
-     >> theBornEmitter >> theBornSpectator;
+     >> theBornEmitter >> theBornSpectator
+     >> theShowerApproximation
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
 }
 
 void SubtractionDipole::Init() {
@@ -982,6 +1013,11 @@ void SubtractionDipole::Init() {
     ("Reweights",
      "Reweight objects to be applied to this matrix element.",
      &SubtractionDipole::theReweights, -1, false, false, true, true, false);
+
+  static Reference<SubtractionDipole,ShowerApproximation> interfaceShowerApproximation
+    ("ShowerApproximation",
+     "Set the shower approximation to be considered.",
+     &SubtractionDipole::theShowerApproximation, false, false, true, true, false);
 
 }
 

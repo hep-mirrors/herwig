@@ -1,6 +1,6 @@
 SUBDIRS = \
 Base Utility Phasespace \
-Dipoles InsertionOperators Powheg \
+Dipoles InsertionOperators Powheg Matching \
 Builtin
 
 if WANT_DIPOLE
@@ -15,6 +15,7 @@ Phasespace/libHwMatchboxPhasespace.la \
 Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
 Powheg/libHwMatchboxPowheg.la \
+Matching/libHwMatchboxMatching.la \
 Builtin/Processes/libHwMatchboxBuiltinProcesses.la \
 Builtin/Amplitudes/libHwMatchboxBuiltinAmplitudes.la
 

@@ -166,6 +166,16 @@ public:
    */
   void setInclusive(bool on = true) { theInclusive = on; }
 
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) { theShowerApproximation = app; }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
+
   //@}
 
   /** @name Phasespace generation and scale choice */
@@ -676,6 +686,11 @@ private:
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
 					   unsigned int orderas) const;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
 
 private:
 

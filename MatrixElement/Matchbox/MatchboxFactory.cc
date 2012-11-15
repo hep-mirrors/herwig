@@ -625,7 +625,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theSubtractionData << theCheckPoles
-     << theParticleGroups << process << realEmissionProcess;
+     << theParticleGroups << process << realEmissionProcess
+     << theShowerApproximation;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -640,7 +641,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theSubtractionData >> theCheckPoles
-     >> theParticleGroups >> process >> realEmissionProcess;
+     >> theParticleGroups >> process >> realEmissionProcess
+     >> theShowerApproximation;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1020,6 +1022,11 @@ void MatchboxFactory::Init() {
     ("SingleRealProcess",
      "Set the process to consider.",
      &MatchboxFactory::doSingleRealProcess, false);
+
+  static Reference<MatchboxFactory,ShowerApproximation> interfaceShowerApproximation
+    ("ShowerApproximation",
+     "Set the shower approximation to be considered.",
+     &MatchboxFactory::theShowerApproximation, false, false, true, true, false);
 
 }
 
