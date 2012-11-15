@@ -572,6 +572,20 @@ public:
   void underlyingBornME(Ptr<MatchboxMEBase>::tptr me) { theUnderlyingBornME = me; }
 
   /**
+   * Set the dipoles which have been found along with this dipole
+   */
+  void partnerDipoles(const vector<Ptr<SubtractionDipole>::ptr>& p) {
+    thePartners = p;
+  }
+
+  /**
+   * Return the dipoles which have been found along with this dipole
+   */
+  const vector<Ptr<SubtractionDipole>::ptr>& partnerDipoles() const {
+    return thePartners;
+  }
+
+  /**
    * Return the matrix element averaged over spin correlations.
    */
   virtual double me2Avg(double ccme2) const = 0;
@@ -828,6 +842,11 @@ private:
    * The underlying Born matrix element
    */
   Ptr<MatchboxMEBase>::ptr theUnderlyingBornME;
+
+  /**
+   * The dipoles which have been found along with this dipole
+   */
+  vector<Ptr<SubtractionDipole>::ptr> thePartners;
 
   /**
    * The TildeKinematics to be used.

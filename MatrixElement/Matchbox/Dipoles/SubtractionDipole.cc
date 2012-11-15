@@ -965,7 +965,8 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << lastRealEmissionKey << lastUnderlyingBornKey
      << theBornEmitter << theBornSpectator
      << theShowerApproximation
-     << theRealShowerSubtraction << theVirtualShowerSubtraction;
+     << theRealShowerSubtraction << theVirtualShowerSubtraction
+     << thePartners;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -979,7 +980,8 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> lastRealEmissionKey >> lastUnderlyingBornKey
      >> theBornEmitter >> theBornSpectator
      >> theShowerApproximation
-     >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction
+     >> thePartners;
 }
 
 void SubtractionDipole::Init() {
@@ -998,6 +1000,10 @@ void SubtractionDipole::Init() {
      "The real emission matrix element.",
      &SubtractionDipole::theRealEmissionME, false, false, true, true, false);
 
+  static RefVector<SubtractionDipole,SubtractionDipole> interfacePartners
+    ("Partners",
+     "The partner dipoles found along with this dipole.",
+     &SubtractionDipole::thePartners, -1, false, false, true, false, false);
 
   static Reference<SubtractionDipole,TildeKinematics> interfaceTildeKinematics
     ("TildeKinematics",

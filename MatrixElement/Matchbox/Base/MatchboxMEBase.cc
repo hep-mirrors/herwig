@@ -680,6 +680,10 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
     }
   }
 
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d = res.begin();
+	d != res.end(); ++d )
+    (**d).partnerDipoles(res);
+
   return res;
 
 }
