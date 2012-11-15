@@ -164,6 +164,38 @@ vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& 
 
 }
 
+void SubtractedME::showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->showerApproximation(app);
+  }
+}
+
+void SubtractedME::doRealShowerSubtraction() { 
+  theRealShowerSubtraction = true;
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doRealShowerSubtraction();
+  }
+}
+
+void SubtractedME::doVirtualShowerSubtraction() { 
+  theVirtualShowerSubtraction = true; 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doVirtualShowerSubtraction();
+  }
+}
+
 void SubtractedME::setVetoScales(tSubProPtr subpro) const {
 
   if ( !vetoScales() )

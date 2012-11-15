@@ -132,9 +132,7 @@ public:
   /**
    * Set the shower approximation.
    */
-  void showerApproximation(Ptr<ShowerApproximation>::tptr app) {
-    theShowerApproximation = app;
-  }
+  void showerApproximation(Ptr<ShowerApproximation>::tptr);
 
   /**
    * Return the shower approximation.
@@ -144,7 +142,7 @@ public:
   /**
    * Indicate that the shower real emission contribution should be subtracted.
    */
-  void doRealShowerSubtraction() { theRealShowerSubtraction = true; }
+  void doRealShowerSubtraction();
 
   /**
    * Return true, if the shower real emission contribution should be subtracted.
@@ -154,7 +152,7 @@ public:
   /**
    * Indicate that the shower virtual contribution should be subtracted.
    */
-  void doVirtualShowerSubtraction() { theVirtualShowerSubtraction = true; }
+  void doVirtualShowerSubtraction();
 
   /**
    * Return true, if the shower virtual contribution should be subtracted.

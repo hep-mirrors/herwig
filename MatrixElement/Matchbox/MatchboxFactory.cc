@@ -526,8 +526,19 @@ void MatchboxFactory::setup() {
 	sub->doVetoScales();
 
       subtractedMEs().push_back(sub);
-
       MEs().push_back(sub);
+
+      if ( showerApproximation() ) {
+	sub->showerApproximation(showerApproximation());
+	Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	string vname = sub->fullName() + ".vsub";
+	if ( ! (generator()->preinitRegister(subv,pname) ) )
+	  throw InitException() << "Subtracted ME " << vname << " already existing.";
+	sub->doRealShowerSubtraction();
+	subv->doVirtualShowerSubtraction();
+	subtractedMEs().push_back(subv);
+	MEs().push_back(subv);
+      }
 
       ++(*progressBar);
 
