@@ -240,7 +240,7 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
       }
     }
 
-    resetMass(6100006,5.6317619E+02*GeV);
+    //resetMass(6100006,5.6317619E+02*GeV);
     //resetMass(5100021,5.4317619E+02*GeV);
     
     //resetMass(6100001,2.9317619E+02*GeV);

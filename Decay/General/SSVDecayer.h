@@ -171,7 +171,6 @@ private:
    */
   AbstractVVVVertexPtr _abstractOutgoingVertexV;
 
-
   /**
    *  Abstract pointer to AbstractVVSSVertex for QCD radiation from 4 point vertex
    */

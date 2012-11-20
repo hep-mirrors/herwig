@@ -43,8 +43,8 @@ insert HPConstructor:Incoming 0 /Herwig/Particles/e+
 insert HPConstructor:Incoming 1 /Herwig/Particles/e-
 
 set HPConstructor:Processes Exclusive
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
-#insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
+insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 
 #insert HPConstructor:Outgoing 0 /Herwig/Particles/~t_2
 #insert HPConstructor:Outgoing 1 /Herwig/Particles/~t_2bar
@@ -52,8 +52,8 @@ set HPConstructor:Processes Exclusive
 #insert HPConstructor:Outgoing 0 /Herwig/Particles/~chi_40
 #insert HPConstructor:Outgoing 1 /Herwig/Particles/~chi_40
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/~b_2
-insert HPConstructor:Outgoing 1 /Herwig/Particles/~b_2bar
+#insert HPConstructor:Outgoing 0 /Herwig/Particles/~b_2
+#insert HPConstructor:Outgoing 1 /Herwig/Particles/~b_2bar
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -61,9 +61,9 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/~b_2bar
 # then add another 'setup' line with that
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
-setup MSSM/Model spectrum_1000_200_sq2sqVB.slha	
+#setup MSSM/Model spectrum_1000_200_sq2sqVB.slha	
 #setup MSSM/Model spectrum_1000_200_sq2Gq.slha
-#setup MSSM/Model CMSSM40.1.1.slha
+setup MSSM/Model CMSSM40.1.1.slha
 
 # Other parameters for run
 cd /Herwig/Generators
@@ -71,8 +71,8 @@ set LEPGenerator:NumberOfEvents 10000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 100000
-#set LEPGenerator:EventHandler:LuminosityFunction:Energy 2250.0
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 2200.0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 2250.0
+#set LEPGenerator:EventHandler:LuminosityFunction:Energy 2200.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 saverun ILC-MSSM LEPGenerator

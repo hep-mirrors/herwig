@@ -14,7 +14,9 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -59,6 +61,17 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return true;}
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt);
+
   //@}
   
 public:
@@ -143,6 +156,21 @@ private:
   VVTVertexPtr _perturbativeVertex;
 
   /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
+   */
+  AbstractVVVVertexPtr _abstractOutgoingVertex1;
+
+  /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
+   */
+  AbstractVVVVertexPtr _abstractOutgoingVertex2;
+
+  /**
+   *  Abstract pointer to AbstractVVVTVertex for QCD radiation from 4 point vertex
+   */
+  AbstractVVVTVertexPtr _abstractFourPointVertex;
+
+  /**
    *  Spin density matrix
    */
   mutable RhoDMatrix _rho;
@@ -156,6 +184,27 @@ private:
    *  Polarization vectors of outgoing vector bosons
    */
   mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+
+  /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
+  /**
+   *  Tensor wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::TensorWaveFunction> _tensors3;
+
+  /**
+   *  Polarization vectors of outgoing vector bosons
+   */
+  mutable vector<Helicity::VectorWaveFunction> _vectors3[2];
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> _gluon;
+
 };
 
 }

@@ -190,15 +190,15 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::calculateWaveFunctions(_gluon,  decay[iglu ],outgoing,true );
 
   // gauge test
-  //_gluon.clear();
-  //for(unsigned int ix=0;ix<3;++ix) {
-  //if(ix==1) _gluon.push_back(VectorWaveFunction());
-  //else {
-  //  _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  //					  decay[iglu ]->dataPtr(),10,
-  //					  outgoing));
-  //}
-  //}
+  // _gluon.clear();
+  // for(unsigned int ix=0;ix<3;++ix) {
+  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   else {
+  //   _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 					decay[iglu ]->dataPtr(),10,
+  // 					outgoing));
+  //   }
+  // }
 
 
   if (! ((_abstractIncomingVertex  && (_abstractOutgoingVertexS || _abstractOutgoingVertexV)) ||

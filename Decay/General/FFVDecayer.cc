@@ -202,7 +202,8 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	   (itype[0] == 2 && itype[1] == 2 && decay[ivect]->id() < 0));  
 
   // no emissions from massive vectors
-  if (_abstractOutgoingVertexV && decay[ivect]->dataPtr()->mass()!=ZERO)
+  bool massless = decay[ivect]->dataPtr()->mass()==ZERO;
+  if (_abstractOutgoingVertexV && (! massless))
     throw Exception()
       << "No dipoles available for massive vectors in FFVDecayer::threeBodyME"
       << Exception::runerror;
@@ -234,7 +235,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	constructSpinInfo(_wavebar3,const_ptr_cast<tPPtr>(&inpart),incoming,true);
       SpinorWaveFunction::constructSpinInfo(_wave3,decay[ilept],outgoing,true);
     }
-    VectorWaveFunction::constructSpinInfo(_vector3, decay[ivect],outgoing,true,false);
+    VectorWaveFunction::constructSpinInfo(_vector3, decay[ivect],outgoing,true,massless);
     VectorWaveFunction::constructSpinInfo(_gluon,   decay[iglu ],outgoing,true,false);
     return 0.;
   }
@@ -251,19 +252,19 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   if (ferm)  SpinorBarWaveFunction::calculateWaveFunctions(_wavebar3, decay[ilept],outgoing);
   else       SpinorWaveFunction::   calculateWaveFunctions(_wave3   , decay[ilept],outgoing);
   
-  VectorWaveFunction::calculateWaveFunctions(_vector3, decay[ivect],outgoing,false);
+  VectorWaveFunction::calculateWaveFunctions(_vector3, decay[ivect],outgoing,massless);
   VectorWaveFunction::calculateWaveFunctions(_gluon,   decay[iglu ],outgoing,true );
 
   // gauge test
-  //_gluon.clear();
-  //for(unsigned int ix=0;ix<3;++ix) {
-  //if(ix==1) _gluon.push_back(VectorWaveFunction());
-  //else {
-  //  _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  //					  decay[iglu ]->dataPtr(),10,
-  //					  outgoing));
-  //}
-  //}
+  _gluon.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) _gluon.push_back(VectorWaveFunction());
+    else {
+      _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  					  decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
 
   if (! ((_abstractIncomingVertex  && (_abstractOutgoingVertexF  || _abstractOutgoingVertexV)) ||
 	 (_abstractOutgoingVertexF &&  _abstractOutgoingVertexV)))
@@ -398,6 +399,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    }
 	  }
 	}
+	if(massless) ++iv;
       }
     }
   }
@@ -410,7 +412,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
     }
   }
   output*=(4.*Constants::pi);
-
+  cerr << output << "\n";
   // return the answer
   return output;
 }

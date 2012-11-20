@@ -118,6 +118,8 @@ Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 
 double VSSDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay, MEOption meopt) {
+
+  bool massless = inpart.mass()==ZERO;
  
   // work out which is the scalar and anti-scalar
   int ianti(0), iscal(1), iglu(2);
@@ -136,12 +138,12 @@ double VSSDecayer::threeBodyME(const int , const Particle & inpart,
  if(meopt==Initialize) {
     // create vector wavefunction for decaying particle
     VectorWaveFunction::calculateWaveFunctions(_vector3, _rho3, const_ptr_cast<tPPtr>(&inpart), 
-					       incoming, false);
+					       incoming, massless);
   }
   // setup spin information when needed
   if(meopt==Terminate) {
     VectorWaveFunction::
-      constructSpinInfo(_vector3 ,const_ptr_cast<tPPtr>(&inpart),outgoing,true,false);
+      constructSpinInfo(_vector3 ,const_ptr_cast<tPPtr>(&inpart),outgoing,true,massless);
     ScalarWaveFunction::constructSpinInfo(       decay[iscal],outgoing,true);
     ScalarWaveFunction::constructSpinInfo(       decay[ianti],outgoing,true);
     VectorWaveFunction::constructSpinInfo(_gluon,decay[iglu ],outgoing,true,false);
@@ -248,6 +250,7 @@ double VSSDecayer::threeBodyME(const int , const Particle & inpart,
 	}
       }
     }
+    if(massless) ++iv;
   }
 
   // contract matrices 
@@ -330,13 +333,13 @@ void VSSDecayer::identifyVertices(const int iscal, const int ianti,
   if (! ((_abstractIncomingVertex  && (abstractOutgoingVertexS  || abstractOutgoingVertexA)) ||
 	 ( abstractOutgoingVertexS &&  abstractOutgoingVertexA)))
     throw Exception()
-      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::threeBodyME"
+      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
       << Exception::runerror;
 
   // prohibit all for now since all unchecked
   if (true)
     throw Exception()
-      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::threeBodyME"
+      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
       << Exception::runerror;
 
 }

@@ -330,16 +330,6 @@ VertexBasePtr TwoBodyDecayConstructor::radiationVertex(tPDPtr particle, tPDPair 
     }
     // look for 4 point vertex including a gluon
     else {           
-      // restrict to ~q->~q W/Z/gamma decays
-      if (children.first->iSpin()==PDT::Spin1 && children.second->iSpin()==PDT::Spin0)
-	swap(children.first, children.second);
-      
-      if ((abs(particle->id())       <1000001 && abs(particle->id())       >1000006)  ||
-	  (abs(particle->id())       <2000001 && abs(particle->id())       >2000006)) continue;
-      if ((abs(children. first->id())<1000001 && abs(children.first ->id())>1000006)  ||
-	  (abs(children. first->id())<2000001 && abs(children.first ->id())>2000006)) continue;
-      if  (abs(children.second->id())<22      || abs(children.second->id())>24)       continue;
-
       if( !vertex->isIncoming(particle)       ||  vertex->getNpoint()!=4              ||
       	  !vertex->isOutgoing(children.first) || !vertex->isOutgoing(children.second) || 
 	  !vertex->isOutgoing(gluon)) continue;

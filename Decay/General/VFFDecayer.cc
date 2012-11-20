@@ -143,6 +143,8 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 double VFFDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay, MEOption meopt) {
 
+  bool massless = inpart.mass()==ZERO;
+
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
   int itype[2];
@@ -160,12 +162,12 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
   if(meopt==Initialize) {
     // create vector wavefunction for decaying particle
     VectorWaveFunction::calculateWaveFunctions(_vector3, _rho3, const_ptr_cast<tPPtr>(&inpart), 
-					       incoming, false);
+					       incoming, massless);
   }
   // setup spin information when needed
   if(meopt==Terminate) {
     VectorWaveFunction::
-      constructSpinInfo(_vector3 ,const_ptr_cast<tPPtr>(&inpart),outgoing,true,false);
+      constructSpinInfo(_vector3 ,const_ptr_cast<tPPtr>(&inpart),outgoing,true,massless);
     SpinorBarWaveFunction::
       constructSpinInfo(_wavebar3,decay[iferm],outgoing,true);
     SpinorWaveFunction::
@@ -283,6 +285,7 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
 	}
       }
     }
+    if(massless) ++iv;
   }
 
   // contract matrices 
@@ -366,14 +369,14 @@ void VFFDecayer::identifyVertices(const int iferm, const int ianti,
   if (! ((_abstractIncomingVertex  && (abstractOutgoingVertexF  || abstractOutgoingVertexA)) ||
 	 ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
     throw Exception()
-    << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::threeBodyME"
+    << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
     << Exception::runerror;
 
   // prohibit 3->8 3 and 3->0 3 (unchecked)
   if (inpart.dataPtr()->iColour()==PDT::Colour3 || 
       inpart.dataPtr()->iColour()==PDT::Colour3bar)
     throw Exception()
-      << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::threeBodyME"
+      << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
       << Exception::runerror;
   
 }

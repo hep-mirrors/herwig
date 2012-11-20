@@ -10,6 +10,10 @@
 # The second section contains the user settings.
 ###################################################
 
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+
+
 read RS.model
 cd /Herwig/NewPhysics
 
@@ -20,18 +24,32 @@ cd /Herwig/NewPhysics
 ##################################################
 # Example hard process: Incoming proton,resonant gravition
 
-insert ResConstructor:Incoming 0 /Herwig/Particles/g
-insert ResConstructor:Incoming 0 /Herwig/Particles/u
-insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
-insert ResConstructor:Incoming 0 /Herwig/Particles/d
-insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
+#insert ResConstructor:Incoming 0 /Herwig/Particles/g
+#insert ResConstructor:Incoming 0 /Herwig/Particles/u
+#insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+#insert ResConstructor:Incoming 0 /Herwig/Particles/d
+#insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
 
-insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
+#insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
 
-insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
-insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
-insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
-insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
+#insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
+#insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
+#insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
+#insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
+
+
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/d
+insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/s
+insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/c
+insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/Graviton
+
 
 # coupling
 set RS/Model:Lambda_pi 10000*GeV

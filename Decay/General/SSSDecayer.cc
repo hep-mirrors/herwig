@@ -35,6 +35,7 @@ void SSSDecayer::doinit() {
   _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVSSVertexPtr>(getIncomingVertex());
   _abstractOutgoingVertex1 = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
   _abstractOutgoingVertex2 = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+
   GeneralTwoBodyDecayer::doinit();
 }
 
@@ -238,6 +239,7 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
       }
     }
   }
+
   // contract matrices 
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
@@ -317,13 +319,13 @@ void SSSDecayer::identifyVertices(const int iscal, const int ianti,
   if (! ((_abstractIncomingVertex  && (abstractOutgoingVertexS || abstractOutgoingVertexA)) ||
 	 ( abstractOutgoingVertexS &&  abstractOutgoingVertexA)))
     throw Exception()
-      << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::threeBodyME"
+      << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::identifyVertices"
       << Exception::runerror;
 
   // prohibit 8->3 3bar and 3->8 3 (unchecked)
   if (_abstractIncomingVertex && abstractOutgoingVertexS && abstractOutgoingVertexA)
     throw Exception()
-      << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::threeBodyME"
+      << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::identifyVertices"
       << Exception::runerror;
 
 }

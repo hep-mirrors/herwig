@@ -935,6 +935,10 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,4.));
     }
+    else if (oct.size()==3){
+      nflow = 1.;
+      colour_ = vector<DVector>(1,DVector(1,24.));
+    }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour scalar particle in "
@@ -1029,8 +1033,9 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
     if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3     &&
 	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
 	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar  &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)){
-
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)    ||
+	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8     &&
+	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8)){
       dipoles.push_back(FFa);
       dipoles.push_back(FFc);
     }
@@ -1110,6 +1115,7 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
 
 vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
 								      const ParticleVector & decay){
+
   vector<int> sing,trip,atrip,oct;
 
   for(unsigned int it=0;it<decay.size();++it) {
@@ -1148,17 +1154,13 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
     colourFlows_[2][0] = make_pair(1, 1.);
   }  
  
-  // special case for 3->30 S->SV decay
-  // add colour flow for 4 point vertex
-  if (inpart.dataPtr()->iSpin()     == PDT::Spin0  &&
-      ((decay[0]->dataPtr()->iSpin()  == PDT::Spin0  &&
-	decay[1]->dataPtr()->iSpin()  == PDT::Spin1) ||
-       (decay[0]->dataPtr()->iSpin()  == PDT::Spin1  &&
-	decay[1]->dataPtr()->iSpin()  == PDT::Spin0))){
-    if((inpart.dataPtr()->iColour() == PDT::Colour3         &&
-	oct.size()==1 && trip.size()== 1 &&  sing.size()==1)||
-       (inpart.dataPtr()->iColour() == PDT::Colour3bar      &&
-	oct.size()==1 && sing.size()== 1 && atrip.size()==1)){
+  // if a 4 point vertex exists, add a colour flow for it
+  if(fourPointVertex_){
+    if (colourFlows_[0].size()>1 || colourFlows_[1].size()>1 || colourFlows_[2].size()>1)   
+      throw Exception() << "Unknown colour flows for 4 point vertex in "
+			<< "GeneralTwoBodyDecayer::colourFlows()"
+			<< Exception::runerror;
+    else {
       colourFlows_.clear();
       colourFlows_ = vector<vector<pair<int,double> > >
 	(4, vector<pair<int,double > > (1, make_pair(0, 1.)));
@@ -1168,7 +1170,7 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
   return colourFlows_;
 }
 
-void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline, const HardTreePtr & hardtree, 
+void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,const HardTreePtr & hardtree, 
 					   const ShowerProgenitorPtr & bProgenitor){
 
   vector<ShowerParticlePtr> branchingPart;
@@ -1184,11 +1186,20 @@ void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline, const Ha
     else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour8   ) oct.  push_back(sp);
   }
   // decaying colour singlet
-  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-      trip.size()==1 && atrip.size()==1){    
-    newline.push_back(new_ptr(ColourLine()));
-    newline[0]->addColoured    (branchingPart[trip [0]]);
-    newline[0]->addAntiColoured(branchingPart[atrip[0]]);
+  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+    if (trip.size()==1 && atrip.size()==1){    
+      newline.push_back(new_ptr(ColourLine()));
+      newline[0]->addColoured    (branchingPart[trip [0]]);
+      newline[0]->addAntiColoured(branchingPart[atrip[0]]);
+    }
+    else if (oct.size()==2){
+      newline.push_back(new_ptr(ColourLine()));
+      newline.push_back(new_ptr(ColourLine()));
+      newline[0]->addColoured    (branchingPart[oct[0]]);
+      newline[0]->addAntiColoured(branchingPart[oct[1]]);
+      newline[1]->addColoured    (branchingPart[oct[1]]);
+      newline[1]->addAntiColoured(branchingPart[oct[0]]);
+    }
   }
   // decaying colour triplet
   else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 ){

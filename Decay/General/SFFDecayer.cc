@@ -365,7 +365,7 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
   if (! ((_abstractIncomingVertex  && (abstractOutgoingVertexF  || abstractOutgoingVertexA)) ||
 	 ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
     throw Exception()
-    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::threeBodyME"
+    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
     << Exception::runerror;
 
   //prohibit 8->3 3bar (unchecked)
@@ -373,7 +373,7 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
 	decay[iferm]->dataPtr()->iColour()==PDT::Colour3 && 
 	decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar)
     throw Exception()
-    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::threeBodyME"
+    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
     << Exception::runerror;
 
 }
