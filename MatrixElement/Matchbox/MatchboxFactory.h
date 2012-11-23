@@ -347,6 +347,13 @@ public:
    */
   vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() { return theFiniteRealMEs; }
 
+  /**
+   * Return the map of Born processes to splitting dipoles
+   */
+  const map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >& splittingDipoles() const {
+    return theSplittingDipoles;
+  }
+
   //@}
 
   /** @name Setup the matrix elements */
@@ -691,6 +698,11 @@ private:
    * The shower approximation.
    */
   Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * The map of Born processes to splitting dipoles
+   */
+  map<cPDVector,set<Ptr<SubtractionDipole>::ptr> > theSplittingDipoles;
 
 private:
 

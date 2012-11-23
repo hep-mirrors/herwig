@@ -118,8 +118,7 @@ void SubtractionDipole::setupBookkeeping() {
     UnderlyingBornKey bornKey = underlyingBornKey((**bd).partons(),xemitter,xspectator);
     if ( theMergingMap.find(realKey) == theMergingMap.end() )
       theMergingMap.insert(make_pair(realKey,make_pair(bornKey,realBornMap)));
-    if ( theSplittingMap.find(bornKey) == theSplittingMap.end() )
-      theSplittingMap.insert(make_pair(bornKey,make_pair(realKey,bornRealMap)));
+    theSplittingMap.insert(make_pair(bornKey,make_pair(realKey,bornRealMap)));
 
   }
 
@@ -128,7 +127,7 @@ void SubtractionDipole::setupBookkeeping() {
 
   theIndexMap.clear();
 
-  for ( map<UnderlyingBornKey,RealEmissionInfo>::const_iterator s =
+  for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator s =
 	  theSplittingMap.begin(); s != theSplittingMap.end(); ++s ) {
     theIndexMap[process(s->first)] = make_pair(emitter(s->first),spectator(s->first));
   }
@@ -146,7 +145,7 @@ void SubtractionDipole::setupBookkeeping() {
   }
 
   theRealEmissionDiagrams.clear();
-  for ( map<UnderlyingBornKey,RealEmissionInfo>::const_iterator r =
+  for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator r =
 	  theSplittingMap.begin(); r != theSplittingMap.end(); ++r ) {
     DiagramVector reals;
     for ( DiagramVector::const_iterator d = theRealEmissionME->diagrams().begin();
@@ -190,10 +189,15 @@ void SubtractionDipole::splittingBookkeeping() {
   bornEmitter(es.first);
   bornSpectator(es.second);
   lastUnderlyingBornKey = underlyingBornKey(lastHeadXComb().mePartonData(),bornEmitter(),bornSpectator());
-  map<UnderlyingBornKey,RealEmissionInfo>::const_iterator k =
-    theSplittingMap.find(lastUnderlyingBornKey);
-  assert(k != theSplittingMap.end());
-  lastRealEmissionKey = k->second.first;
+  typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
+  pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
+  assert(kr.first != kr.second);
+  lastRealEmissionInfo = kr.first;
+  for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
+    if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
+      break;
+  assert(lastRealEmissionInfo != kr.second);
+  lastRealEmissionKey = lastRealEmissionInfo->second.first;
   realEmitter(emitter(lastRealEmissionKey));
   realEmission(emission(lastRealEmissionKey));
   realSpectator(spectator(lastRealEmissionKey));
@@ -509,7 +513,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   meMomenta().resize(lastHeadXComb().meMomenta().size() + 1);
 
   assert(splittingMap().find(lastUnderlyingBornKey) != splittingMap().end());
-  map<int,int>& trans = theSplittingMap[lastUnderlyingBornKey].second;
+  map<int,int>& trans = const_cast<map<int,int>&>(lastRealEmissionInfo->second.second);
 
   int n = lastHeadXComb().meMomenta().size();
   for ( int k = 0; k < n; ++k ) {

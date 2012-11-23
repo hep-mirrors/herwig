@@ -265,7 +265,7 @@ public:
   /**
    * Return the splitting map
    */
-  const map<UnderlyingBornKey,RealEmissionInfo>& splittingMap() const { return theSplittingMap; }
+  const multimap<UnderlyingBornKey,RealEmissionInfo>& splittingMap() const { return theSplittingMap; }
 
   /**
    * Return the underlying Born diagrams to be considered
@@ -897,7 +897,7 @@ private:
    * Map underlying Born diagrams and tilde emitter/spectator
    * to real emission diagram containing the splitting.
    */
-  map<UnderlyingBornKey,RealEmissionInfo> theSplittingMap;
+  multimap<UnderlyingBornKey,RealEmissionInfo> theSplittingMap;
 
   /**
    * Map underlying Born diagrams to emitter/spectator pairs
@@ -923,6 +923,11 @@ private:
    * The last underlying Born key encountered
    */
   UnderlyingBornKey lastUnderlyingBornKey;
+
+  /**
+   * The last real emission info encountered
+   */
+  multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator lastRealEmissionInfo;
 
   /**
    * The emitter as referred to by the underlying Born

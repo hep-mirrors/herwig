@@ -472,6 +472,16 @@ void MatchboxFactory::setup() {
 
   }
 
+  theSplittingDipoles.clear();
+  set<cPDVector> bornProcs;
+  if ( showerApproximation() ) {
+    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	    = bornMEs().begin(); born != bornMEs().end(); ++born )
+      for ( MEBase::DiagramVector::const_iterator d = (**born).diagrams().begin();
+	    d != (**born).diagrams().end(); ++d )
+	bornProcs.insert((**d).partons());
+  }
+
   if ( realContributions() ) {
 
     generator()->log() << "preparing real emission matrix elements." << flush;
@@ -538,6 +548,12 @@ void MatchboxFactory::setup() {
 	subv->doVirtualShowerSubtraction();
 	subtractedMEs().push_back(subv);
 	MEs().push_back(subv);
+	for ( set<cPDVector>::const_iterator p = bornProcs.begin();
+	      p != bornProcs.end(); ++p ) {
+	  vector<Ptr<SubtractionDipole>::ptr> sdip = sub->splitDipoles(*p);
+	  set<Ptr<SubtractionDipole>::ptr>& dips = theSplittingDipoles[*p];
+	  copy(sdip.begin(),sdip.end(),inserter(dips,dips.begin()));
+	}
       }
 
       ++(*progressBar);
@@ -637,7 +653,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theSubtractionData << theCheckPoles
      << theParticleGroups << process << realEmissionProcess
-     << theShowerApproximation;
+     << theShowerApproximation << theSplittingDipoles;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -653,7 +669,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theSubtractionData >> theCheckPoles
      >> theParticleGroups >> process >> realEmissionProcess
-     >> theShowerApproximation;
+     >> theShowerApproximation >> theSplittingDipoles;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
