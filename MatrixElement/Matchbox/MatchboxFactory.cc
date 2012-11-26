@@ -567,6 +567,37 @@ void MatchboxFactory::setup() {
 
   }
 
+  if ( !theSplittingDipoles.empty() ) {
+    map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr> cloneMap;
+    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator sd = theSplittingDipoles.begin();
+	  sd != theSplittingDipoles.end(); ++sd ) {
+      for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator d = sd->second.begin();
+	    d != sd->second.end(); ++d ) {
+	cloneMap[*d] = Ptr<SubtractionDipole>::ptr();
+      }
+    }
+    for ( map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr>::iterator cd =
+	    cloneMap.begin(); cd != cloneMap.end(); ++cd ) {
+      Ptr<SubtractionDipole>::ptr cloned = cd->first->cloneMe();
+      string dname = cd->first->fullName() + ".splitting";
+      if ( ! (generator()->preinitRegister(cloned,dname)) )
+	throw InitException() << "Dipole '" << dname << "' already existing.";
+      cloned->cloneDependencies();
+      cloned->showerApproximation(Ptr<ShowerApproximation>::tptr());
+      cloned->doSplitting();
+      cd->second = cloned;
+    }
+    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::iterator sd = theSplittingDipoles.begin();
+	  sd != theSplittingDipoles.end(); ++sd ) {
+      set<Ptr<SubtractionDipole>::ptr> cloned;
+      for ( set<Ptr<SubtractionDipole>::ptr>::iterator d = sd->second.begin();
+	    d != sd->second.end(); ++d ) {
+	cloned.insert(cloneMap[*d]);
+      }
+      sd->second = cloned;
+    }
+  }
+
   generator()->log() << "process setup finished.\n" << flush;
 
 }
