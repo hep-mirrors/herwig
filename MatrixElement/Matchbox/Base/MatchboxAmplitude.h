@@ -18,12 +18,11 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-class MatchboxMEBase;
 
 /**
  * \ingroup Matchbox

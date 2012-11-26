@@ -21,6 +21,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 
 namespace Herwig {
