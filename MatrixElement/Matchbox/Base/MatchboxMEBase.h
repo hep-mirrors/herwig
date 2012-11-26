@@ -23,6 +23,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
 
 namespace Herwig {
 
@@ -210,6 +211,12 @@ public:
    * element.
    */
   virtual int nDim() const;
+
+  /**
+   * The number of internal degrees of freedom used in the matrix
+   * element for generating a Born phase space point
+   */
+  virtual int nDimBorn() const;
 
   /**
    * Return true, if this matrix element will generate momenta for the
@@ -488,6 +495,58 @@ public:
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const;
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return theCheckPoles; }
+
+  /**
+   * Switch on checking of epsilon pole cancellation.
+   */
+  void doCheckPoles() { theCheckPoles = true; }
+
+  /**
+   * Perform the check of epsilon pole cancellation. Results will be
+   * written to the log file, one per phasespace point.
+   */
+  void logPoles() const;
+
+  /**
+   * Return the virtual corrections
+   */
+  const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const {
+    return theVirtuals;
+  }
+
+  /**
+   * Return the virtual corrections
+   */
+  vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() {
+    return theVirtuals;
+  }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections
+   */
+  void doOneLoop() { theOneLoop = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   */
+  bool oneLoop() const { return theOneLoop; }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections but
+   * no Born contributions
+   */
+  void doOneLoopNoBorn() { theOneLoop = true; theOneLoopNoBorn = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   * but no Born contributions
+   */
+  bool oneLoopNoBorn() const { return theOneLoopNoBorn || onlyOneLoop(); }
 
   //@}
 
@@ -796,6 +855,11 @@ private:
   Ptr<MatchboxMECache>::ptr theCache;
 
   /**
+   * The virtual corrections.
+   */
+  vector<Ptr<MatchboxInsertionOperator>::ptr> theVirtuals;
+
+  /**
    * The subprocesses to be considered, if a diagram generator is
    * present.
    */
@@ -838,6 +902,22 @@ private:
    * for later use
    */
   bool theGetColourCorrelatedMEs;
+
+  /**
+   * True, if cancellationn of epsilon poles should be checked.
+   */
+  bool theCheckPoles;
+
+  /**
+   * True, if this matrix element includes one-loop corrections
+   */
+  bool theOneLoop;
+
+  /**
+   * True, if this matrix element includes one-loop corrections
+   * but no Born contributions
+   */
+  bool theOneLoopNoBorn;
 
   /**
    * Map xcomb's to storage of Born matrix elements squared.

@@ -39,7 +39,9 @@ MatchboxMEBase::MatchboxMEBase()
     theRenormalizationScaleFactor(1.0),
     theVerbose(false),
     theFixedCouplings(false), theFixedQEDCouplings(false),
-    theNLight(0), theGetColourCorrelatedMEs(false) {}
+    theNLight(0), theGetColourCorrelatedMEs(false),
+    theCheckPoles(false), theOneLoop(false),
+    theOneLoopNoBorn(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -204,6 +206,18 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     setScale();
     logGenerateKinematics(r);
 
+    int ampShift = 0;
+    int nBorn = nDimBorn();
+    if ( matchboxAmplitude() ) {
+      ampShift = matchboxAmplitude()->nDimAdditional();
+      if ( ampShift )
+	matchboxAmplitude()->additionalKinematics(r + nBorn);
+    }
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      (**v).additionalKinematics(r + nBorn + ampShift);
+    }
+
     return true;
 
   }
@@ -217,6 +231,23 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 }
 
 int MatchboxMEBase::nDim() const { 
+
+  int ampAdd = 0;
+  if ( matchboxAmplitude() ) {
+    ampAdd = matchboxAmplitude()->nDimAdditional();
+  }
+
+  int insertionAdd = 0;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    insertionAdd = max(insertionAdd,(**v).nDimAdditional());
+  }
+
+  return nDimBorn() + ampAdd + insertionAdd;
+
+}
+
+int MatchboxMEBase::nDimBorn() const { 
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     int n = phasespace()->nDim(nout);
@@ -480,7 +511,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   double xme2 = me2();
   lastME2(xme2);
 
-  if ( xme2 == 0. ) {
+  if ( xme2 == 0. && !oneLoopNoBorn() ) {
     lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
@@ -489,9 +520,29 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   if ( getColourCorrelatedMEs() )
     storeColourCorrelatedMEs(xme2);
 
-  CrossSection res = 
-    (sqr(hbarc)/(2.*lastSHat())) *
-    jacobian() * xme2;
+  double vme2 = 0.;
+  if ( oneLoop() )
+    vme2 = oneLoopInterference();
+
+  CrossSection res = ZERO;
+
+  if ( !oneLoopNoBorn() )
+    res += 
+      (sqr(hbarc)/(2.*lastSHat())) *
+      jacobian() * xme2;
+
+  if ( oneLoop() )
+    res += 
+      (sqr(hbarc)/(2.*lastSHat())) *
+      jacobian() * vme2;
+
+  if ( !onlyOneLoop() ) {
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      (**v).setXComb(lastXCombPtr());
+      res += (**v).dSigHatDR();
+    }
+  }
 
   double weight = 0.0;
   bool applied = false;
@@ -538,6 +589,24 @@ double MatchboxMEBase::oneLoopInterference() const {
     << "Please check your setup." << Exception::abortnow;
   return 0.;
 
+}
+
+void MatchboxMEBase::logPoles() const {
+  double res2me = oneLoopDoublePole();
+  double res1me = oneLoopSinglePole();
+  double res2i = 0.;
+  double res1i = 0.;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    res2i += (**v).oneLoopDoublePole();
+    res1i += (**v).oneLoopSinglePole();
+  }
+  double diff2 = abs(res2me) != 0. ? 1.-abs(res2i/res2me) : abs(res2i)-abs(res2me);
+  double diff1 = abs(res1me) != 0. ? 1.-abs(res1i/res1me) : abs(res1i)-abs(res1me);
+  generator()->log() 
+    << "check "
+    << log10(abs(diff2)) << " " << log10(abs(diff1)) << "\n"
+    << flush;
 }
 
 bool MatchboxMEBase::haveOneLoop() const {
@@ -757,6 +826,10 @@ void MatchboxMEBase::flushCaches() {
 	  reweights().begin(); r != reweights().end(); ++r ) {
     (**r).flushCaches();
   }
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    (**v).flushCaches();
+  }
 }
 
 void MatchboxMEBase::printLastEvent(ostream& os) const {
@@ -936,22 +1009,35 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     *rw = myReweight;
   }
 
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    Ptr<MatchboxInsertionOperator>::ptr myIOP = (**v).cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << (**v).name();
+    if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+      throw InitException() << "Insertion operator " << pname.str() << " already existing.";
+    *v = myIOP;
+    (**v).setBorn(this);
+  }
+
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theReweights << thePhasespace << theAmplitude << theScaleChoice
      << theDiagramGenerator << theProcessData << theSubprocesses
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theVerbose << theCache << theFixedCouplings << theFixedQEDCouplings
-     << theNLight << theGetColourCorrelatedMEs << symmetryFactors;
+     << theVerbose << theCache << theVirtuals << theFixedCouplings << theFixedQEDCouplings
+     << theNLight << theGetColourCorrelatedMEs << theCheckPoles 
+     << theOneLoop << theOneLoopNoBorn << symmetryFactors;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theReweights >> thePhasespace >> theAmplitude >> theScaleChoice
      >> theDiagramGenerator >> theProcessData >> theSubprocesses
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theVerbose >> theCache >> theFixedCouplings >> theFixedQEDCouplings
-     >> theNLight >> theGetColourCorrelatedMEs >> symmetryFactors;
+     >> theVerbose >> theCache >> theVirtuals >> theFixedCouplings >> theFixedQEDCouplings
+     >> theNLight >> theGetColourCorrelatedMEs >> theCheckPoles 
+     >> theOneLoop >> theOneLoopNoBorn >> symmetryFactors;
 }
 
 void MatchboxMEBase::Init() {
@@ -990,6 +1076,11 @@ void MatchboxMEBase::Init() {
     ("Cache",
      "Set the cache object to be used.",
      &MatchboxMEBase::theCache, false, false, true, true, false);
+
+  static RefVector<MatchboxMEBase,MatchboxInsertionOperator> interfaceVirtuals
+    ("Virtuals",
+     "The virtual corrections to be added.",
+     &MatchboxMEBase::theVirtuals, -1, false, false, true, true, false);
 
   static Parameter<MatchboxMEBase,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",
