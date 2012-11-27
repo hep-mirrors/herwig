@@ -121,7 +121,7 @@ public:
   /**
    * Return the shower approximated real emission cross section
    * divided by the Born cross section and the radiation phasespace
-   * jacobian for the given pair of Bron and real emission
+   * jacobian for the given pair of Born and real emission
    * configurations.
    */
   virtual double me2() const = 0;

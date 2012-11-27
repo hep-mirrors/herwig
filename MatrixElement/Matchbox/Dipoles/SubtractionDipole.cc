@@ -389,6 +389,8 @@ void SubtractionDipole::setKinematics() {
 }
 
 bool SubtractionDipole::generateKinematics(const double * r) {
+  if ( lastXCombPtr()->kinematicsGenerated() )
+    return true;
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
@@ -402,6 +404,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  lastXCombPtr()->didGenerateKinematics();
   return true;
 }
 
