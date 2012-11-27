@@ -64,6 +64,13 @@ public:
   virtual bool uniformAdditional() const { return true; }
 
   /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
+
+  /**
    * Given a process from the head matrix element,
    * return a list of diagrams which should be considered for
    * the given dependent matrix element.
