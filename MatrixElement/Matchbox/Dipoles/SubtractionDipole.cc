@@ -550,8 +550,11 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double jac = jacobian();
 
-  if ( splitting() && jac == 0.0 )
+  if ( splitting() && jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
     return ZERO;
+  }
 
   if ( splitting() )
     jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),

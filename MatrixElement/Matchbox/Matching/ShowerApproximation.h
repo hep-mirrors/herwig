@@ -113,7 +113,7 @@ public:
 
   /**
    * Return the shower approximation to the real emission cross
-   * section for the given pair of Bron and real emission
+   * section for the given pair of Born and real emission
    * configurations.
    */
   virtual CrossSection dSigHatDR() const = 0;
