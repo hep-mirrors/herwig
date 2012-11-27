@@ -242,13 +242,6 @@ public:
       diagrams().front()->partons().size() != 3; }
 
   /**
-   * Return true, if the XComb steering this matrix element
-   * should keep track of the random numbers used to generate
-   * the last phase space point
-   */
-  virtual bool keepRandomNumbers() const { return true; }
-
-  /**
    * Return the meMomenta as generated at the last
    * phase space point.
    */
@@ -671,6 +664,11 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
+
+  /**
+   * Dump the setup to an ostream
+   */
+  void print(ostream&) const;
 
   /**
    * Print debug information on the last event

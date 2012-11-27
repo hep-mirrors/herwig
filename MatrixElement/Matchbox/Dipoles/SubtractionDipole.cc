@@ -408,14 +408,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
 int SubtractionDipole::nDim() const {
   if ( !splitting() )
     return underlyingBornME()->nDim();
-  int alldim =
-    underlyingBornME()->nDim() + nDimRadiation();
-  // don't mess with random number for collinear remainders
-  // see MEGroup.cc:55 and MatchboxNLOME
-  if ( underlyingBornME()->diagrams().front()->partons()[0]->coloured() ||
-       underlyingBornME()->diagrams().front()->partons()[1]->coloured() )
-    ++alldim;
-  return alldim;
+  return underlyingBornME()->nDim() + nDimRadiation();
 }
 
 void SubtractionDipole::clearKinematics() {

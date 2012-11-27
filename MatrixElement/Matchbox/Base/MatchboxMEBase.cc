@@ -832,6 +832,50 @@ void MatchboxMEBase::flushCaches() {
   }
 }
 
+void MatchboxMEBase::print(ostream& os) const {
+
+  os << "--- MatchboxMEBase setup -------------------------------------------------------\n";
+
+  os << " '" << name() << "' for subprocesses:\n";
+  for ( vector<PDVector>::const_iterator p = subProcesses().begin();
+	p != subProcesses().end(); ++p ) {
+    os << "  ";
+    for ( PDVector::const_iterator pp = p->begin();
+	  pp != p->end(); ++pp ) {
+      os << (**pp).PDGName() << " ";
+      if ( pp == p->begin() + 1 )
+	os << "-> ";
+    }
+    os << "\n";
+  }
+
+  os << " including " << (oneLoop() ? "" : "no ") << "virtual corrections";
+  if ( oneLoopNoBorn() )
+    os << " without Born contributions";
+  os << "\n";
+
+  if ( oneLoop() && !onlyOneLoop() ) {
+    os << " using insertion operators\n";
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      os << " '" << (**v).name() << "' with " 
+	 << ((**v).isDR() ? "" : "C") << "DR/";
+      if ( (**v).isCS() )
+	os << "CS";
+      if ( (**v).isBDK() )
+	os << "BDK";
+      if ( (**v).isExpanded() )
+	os << "expanded";
+      os << " conventions\n";
+    }
+  }
+
+  os << "--------------------------------------------------------------------------------\n";
+
+  os << flush;
+
+}
+
 void MatchboxMEBase::printLastEvent(ostream& os) const {
 
   os << "--- MatchboxMEBase last event information --------------------------------------\n";
@@ -854,7 +898,8 @@ void MatchboxMEBase::printLastEvent(ostream& os) const {
      << " alphaS = " << lastAlphaS() << "\n";
 
   os << " momenta/GeV generated from random numbers\n ";
-  copy(meInfo().begin(),meInfo().end(),ostream_iterator<double>(os," "));
+  copy(lastXComb().lastRandomNumbers().begin(),
+       lastXComb().lastRandomNumbers().end(),ostream_iterator<double>(os," "));
   os << ":\n ";
 
   for ( vector<Lorentz5Momentum>::const_iterator p = meMomenta().begin();
