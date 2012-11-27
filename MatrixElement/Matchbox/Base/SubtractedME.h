@@ -117,17 +117,28 @@ public:
   /**
    * Reweight the head cross section
    */
-  virtual double reweightHead();
+  virtual double reweightHead(const vector<tStdXCombPtr>&);
 
   /**
    * Reweight the dependent cross section
    */
-  virtual double reweightDependent(tStdXCombPtr);
+  virtual double reweightDependent(tStdXCombPtr, const vector<tStdXCombPtr>&);
 
   //@}
 
   /** @name Methods relevant to matching */
   //@{
+
+  /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches() { 
+    MEGroup::flushCaches();
+    if ( showerApproximation() )
+      showerApproximation()->resetBelowCutoff();
+  }
 
   /**
    * Set the shower approximation.

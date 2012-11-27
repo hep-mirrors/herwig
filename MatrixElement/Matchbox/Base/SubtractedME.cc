@@ -259,34 +259,48 @@ void SubtractedME::fillProjectors() {
   }
 }
 
-double SubtractedME::reweightHead() {
-  double sum = 0.;
+double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
   if ( realShowerSubtraction() ) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
-    showerApproximation()->resetBelowCutoff();
     if ( below )
       return 0.;
-    return lastXComb().projectors().size();
+    return 1.;
   }
   if ( virtualShowerSubtraction() ) {
     assert(showerApproximation());
     bool above = !showerApproximation()->belowCutoff();
-    showerApproximation()->resetBelowCutoff();
     if ( above )
       return 0.;
   }
-  for ( Selector<tStdXCombPtr>::const_iterator d =
-	  lastXComb().projectors().begin(); d != lastXComb().projectors().end(); ++d )
-    sum += d->second->lastME2();
+  double sum = 0.;
+  for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+    sum += (**d).lastME2();
   return
-    lastXComb().projectors().size() * lastXComb().lastProjector()->lastME2() / sum;
+    dep.size() * lastXComb().lastProjector()->lastME2() / sum;
 }
 
-double SubtractedME::reweightDependent(tStdXCombPtr xc) {
+double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
+  if ( realShowerSubtraction() ) {
+    assert(showerApproximation());
+    double sum = 0.;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+      sum += (**d).lastME2();
+    return xc->lastME2()/sum;
+  }
   if ( xc != lastXComb().lastProjector() )
     return 0.;
-  return lastXComb().projectors().size();
+  double w = 1.;
+  if ( virtualShowerSubtraction() ) {
+    assert(showerApproximation());
+    double sum = 0.;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+      sum += (**d).lastME2();
+    assert(xc->meInfo().size() == 1);
+    double r = xc->meInfo()[0];
+    w -= xc->lastME2()*r/sum;
+  }
+  return w * dep.size();
 }
 
 void SubtractedME::doinit() {
