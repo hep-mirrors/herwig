@@ -1,6 +1,6 @@
 SUBDIRS = \
 Base Utility Phasespace \
-Dipoles InsertionOperators Powheg Matching \
+Dipoles InsertionOperators Matching \
 Builtin
 
 if WANT_DIPOLE
