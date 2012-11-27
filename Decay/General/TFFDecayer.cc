@@ -62,7 +62,7 @@ void TFFDecayer::Init() {
   static ClassDocumentation<TFFDecayer> documentation
     ("The TFFDecayer class implements the decay of a tensor particle "
      "to 2 fermions ");
-
+  
 }
 
 double TFFDecayer::me2(const int , const Particle & inpart,
@@ -215,10 +215,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
      _abstractOutgoingVertex1->isIncoming(getParticleData(decay[ianti]->id())))
     swap (abstractOutgoingVertexF, abstractOutgoingVertexA);  
   
-
-  if(! (inpart.dataPtr()       ->iColour()==PDT::Colour0  &&
-	decay[iferm]->dataPtr()->iColour()==PDT::Colour3  && 
-	decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar)){
+  if(! (inpart.dataPtr()->iColour()==PDT::Colour0)){
     throw Exception()
       << "Invalid vertices for QCD radiation in TFF decay in TFFDecayer::threeBodyME"
       << Exception::runerror;

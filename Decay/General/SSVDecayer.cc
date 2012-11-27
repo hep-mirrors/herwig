@@ -207,11 +207,11 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
       << Exception::runerror;
 
-  // prohibit 0->3 3bar, 3->83 and 8->3 3bar
-  if (_abstractOutgoingVertexS &&  _abstractOutgoingVertexV)
-    throw Exception()
-      << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
-      << Exception::runerror;
+  // // prohibit 0->3 3bar, 3->83 and 8->3 3bar
+  // if (_abstractOutgoingVertexS &&  _abstractOutgoingVertexV)
+  //   throw Exception()
+  //     << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
+  //     << Exception::runerror;
 
   // sort out colour flows
   int S(1), V(2);

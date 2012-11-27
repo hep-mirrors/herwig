@@ -47,8 +47,9 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), pTmin_(GeV), pT_(ZERO),
-			    colour_(1,DVector(1,1.)), colourFlows_(3,vector<pair<int,double > >(1,make_pair(0,1.)))
+  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), 
+			    pTmin_(GeV), pT_(ZERO), colour_(1,DVector(1,1.)), 
+			    colourFlows_(3,vector<pair<int,double > >(1,make_pair(0,1.)))
 {}
 
 
@@ -117,7 +118,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
 
   /**
    *  Member to generate the hardest emission in the POWHEG scheme

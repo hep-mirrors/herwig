@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 //
 // GeneralTwoBodyDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
@@ -668,7 +669,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   Energy2 lambda = sqr(mb_)* sqrt( 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_);    
 
   // calculate A
-  double A = (ymax - ymin) * C * (coupling_->overestimateValue() / (2.*Constants::pi)); 
+  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / (2.*Constants::pi)); 
   Energy pTmax = mb_* (sqr(1.-s_) - e2_) / (2.*(1.-s_));
   
   // if no possible branching return
@@ -732,7 +733,7 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
 		       particleMomenta[2].e() * particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2()) / (lambda * denom);     
       // calculate weight
-      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling_->ratio(pT*pT) / C / Constants::twopi; 
+      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C / Constants::twopi; 
     }
     // accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
@@ -863,7 +864,7 @@ InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(const dipoleType & dipoleId,
   double xe = 2.*decay3[0]->momentum().e()/mb_;
   double xs = 2.*decay3[1]->momentum().e()/mb_;
   double xg = 2.*decay3[2]->momentum().e()/mb_;
-  double coeff = 8.*Constants::pi*coupling_->value(mb_*mb_);
+  double coeff = 8.*Constants::pi*coupling()->value(mb_*mb_);
   double lambda2 = 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_;   
 
   // radiation from b with initial-final connection 

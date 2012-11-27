@@ -152,6 +152,7 @@ Block AE Q=  8.46515137E+02   #
 Block DCINFO                           # Program information
      1   ISASUGRA from ISAJET          # Spectrum Calculator
      2   7.81   26-APR-2011 16:50:35   # Version number
+
 #         PDG         Width
 DECAY         6  1.16585374E+00   # TP    decays
 #          BR          NDA       ID1       ID2       ID3       ID4

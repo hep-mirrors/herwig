@@ -255,12 +255,12 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
       << "Invalid vertices for QCD radiation in FFS decay in FFSDecayer::threeBodyME"
       << Exception::runerror;
 
-  //prohibit 3->8 3 (unchecked)
-    if (decay[ilept]->dataPtr()->iColour()==PDT::Colour8 ||
-	decay[iscal]->dataPtr()->iColour()==PDT::Colour8)
-    throw Exception()
-    << "Invalid vertices for QCD radiation in FFS decay in FFSDecayer::threeBodyME"
-    << Exception::runerror;
+  // //prohibit 3->8 3 (unchecked)
+  //   if (decay[ilept]->dataPtr()->iColour()==PDT::Colour8 ||
+  // 	decay[iscal]->dataPtr()->iColour()==PDT::Colour8)
+  //   throw Exception()
+  //   << "Invalid vertices for QCD radiation in FFS decay in FFSDecayer::threeBodyME"
+  //   << Exception::runerror;
 
   // sort out colour flows
   int F(1), S(2);

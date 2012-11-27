@@ -274,10 +274,27 @@ void VSSDecayer::identifyVertices(const int iscal, const int ianti,
 
   // work out which scalar each outgoing vertex corresponds to 
   // two outgoing vertices
-  if((inpart.dataPtr()       ->iColour()==PDT::Colour0  || 
-      inpart.dataPtr()       ->iColour()==PDT::Colour8) &&
-      decay[iscal]->dataPtr()->iColour()==PDT::Colour3  && 
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+  if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
+    ((decay[iscal]->dataPtr()->iColour()==PDT::Colour3     &&
+      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
+     (decay[iscal]->dataPtr()->iColour()==PDT::Colour8     &&
+      decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
+    if(_abstractOutgoingVertex1==_abstractOutgoingVertex2){
+      abstractOutgoingVertexS = _abstractOutgoingVertex1;
+      abstractOutgoingVertexA = _abstractOutgoingVertex2;
+    }
+    else if (_abstractOutgoingVertex1->isIncoming(getParticleData(decay[iscal]->id()))){
+      abstractOutgoingVertexS = _abstractOutgoingVertex1;
+      abstractOutgoingVertexA = _abstractOutgoingVertex2;
+    }
+    else if (_abstractOutgoingVertex2->isIncoming(getParticleData(decay[iscal]->id()))){
+      abstractOutgoingVertexS = _abstractOutgoingVertex2;
+      abstractOutgoingVertexA = _abstractOutgoingVertex1;
+    }
+  }
+  else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
+	  decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
     if(_abstractOutgoingVertex1==_abstractOutgoingVertex2){
       abstractOutgoingVertexS = _abstractOutgoingVertex1;
       abstractOutgoingVertexA = _abstractOutgoingVertex2;
@@ -336,11 +353,11 @@ void VSSDecayer::identifyVertices(const int iscal, const int ianti,
       << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
       << Exception::runerror;
 
-  // prohibit all for now since all unchecked
-  if (true)
-    throw Exception()
-      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
-      << Exception::runerror;
+  // // prohibit all for now since all unchecked
+  // if (true)
+  //   throw Exception()
+  //     << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
+  //     << Exception::runerror;
 
 }
 

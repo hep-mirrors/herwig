@@ -64,7 +64,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
   /**
    *  Three-body matrix element including additional QCD radiation

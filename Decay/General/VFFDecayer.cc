@@ -310,10 +310,27 @@ void VFFDecayer::identifyVertices(const int iferm, const int ianti,
 
   // work out which fermion each outgoing vertex corresponds to 
   // two outgoing vertices
-  if((inpart.dataPtr()       ->iColour()==PDT::Colour0  || 
-      inpart.dataPtr()       ->iColour()==PDT::Colour8) &&
-      decay[iferm]->dataPtr()->iColour()==PDT::Colour3  && 
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+  if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
+     ((decay[iferm]->dataPtr()->iColour()==PDT::Colour3     &&
+      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
+     (decay[iferm]->dataPtr()->iColour()==PDT::Colour8     &&
+      decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
+    if(_abstractOutgoingVertex1==_abstractOutgoingVertex2){
+      abstractOutgoingVertexF = _abstractOutgoingVertex1;
+      abstractOutgoingVertexA = _abstractOutgoingVertex2;
+    }
+    else if (_abstractOutgoingVertex1->isIncoming(getParticleData(decay[iferm]->id()))){
+      abstractOutgoingVertexF = _abstractOutgoingVertex1;
+      abstractOutgoingVertexA = _abstractOutgoingVertex2;
+    }
+    else if (_abstractOutgoingVertex2->isIncoming(getParticleData(decay[iferm]->id()))){
+      abstractOutgoingVertexF = _abstractOutgoingVertex2;
+      abstractOutgoingVertexA = _abstractOutgoingVertex1;
+    }
+  }
+  else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
+	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
     if(_abstractOutgoingVertex1==_abstractOutgoingVertex2){
       abstractOutgoingVertexF = _abstractOutgoingVertex1;
       abstractOutgoingVertexA = _abstractOutgoingVertex2;
@@ -372,12 +389,12 @@ void VFFDecayer::identifyVertices(const int iferm, const int ianti,
     << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
     << Exception::runerror;
 
-  // prohibit 3->8 3 and 3->0 3 (unchecked)
-  if (inpart.dataPtr()->iColour()==PDT::Colour3 || 
-      inpart.dataPtr()->iColour()==PDT::Colour3bar)
-    throw Exception()
-      << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
-      << Exception::runerror;
+  // // prohibit 3->8 3 and 3->0 3 (unchecked)
+  // if (inpart.dataPtr()->iColour()==PDT::Colour3 || 
+  //     inpart.dataPtr()->iColour()==PDT::Colour3bar)
+  //   throw Exception()
+  //     << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
+  //     << Exception::runerror;
   
 }
 

@@ -70,10 +70,18 @@ public:
    *  which implement hard corrections 
    */
   //@{
+  
+  /**
+   * Type of POWHEG correction
+   */
+  enum POWHEGType {No, ISR, FSR, Both};
+
+
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  //virtual bool hasPOWHEGCorrection() {return false;}
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
 
   /**
    *  Has an old fashioned ME correction

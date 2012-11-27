@@ -71,6 +71,12 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
   //@}
 
 public:

@@ -32,7 +32,7 @@ public:
   /**
    *  Has not got a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
 
   /**
    *  Has not got an old fashioned ME correction

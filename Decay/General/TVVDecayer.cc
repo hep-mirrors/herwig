@@ -201,14 +201,12 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
      _abstractOutgoingVertex1->isIncoming(getParticleData(decay[1]->id())))
     swap(_abstractOutgoingVertex1, _abstractOutgoingVertex2);
   
-  if (! (_abstractOutgoingVertex1 &&  _abstractOutgoingVertex2))
+  if (! (_abstractOutgoingVertex1 && _abstractOutgoingVertex2))
     throw Exception()
       << "Invalid vertices for QCD radiation in TVV decay in TVVDecayer::threeBodyME"
       << Exception::runerror;
 
-  if( !(inpart.dataPtr()   ->iColour()==PDT::Colour0  &&
-	decay[0]->dataPtr()->iColour()==PDT::Colour8  && 
-	decay[1]->dataPtr()->iColour()==PDT::Colour8))
+  if( !(inpart.dataPtr()->iColour()==PDT::Colour0))
     throw Exception()
       << "Invalid vertices for QCD radiation in TVV decay in TVVDecayer::threeBodyME"
       << Exception::runerror;

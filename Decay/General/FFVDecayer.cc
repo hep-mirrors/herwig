@@ -256,15 +256,15 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::calculateWaveFunctions(_gluon,   decay[iglu ],outgoing,true );
 
   // gauge test
-  _gluon.clear();
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix==1) _gluon.push_back(VectorWaveFunction());
-    else {
-      _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  					  decay[iglu ]->dataPtr(),10,
-  					  outgoing));
-    }
-  }
+  // _gluon.clear();
+  // for(unsigned int ix=0;ix<3;++ix) {
+  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   else {
+  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 					  decay[iglu ]->dataPtr(),10,
+  // 					  outgoing));
+  //   }
+  // }
 
   if (! ((_abstractIncomingVertex  && (_abstractOutgoingVertexF  || _abstractOutgoingVertexV)) ||
 	 (_abstractOutgoingVertexF &&  _abstractOutgoingVertexV)))
@@ -272,14 +272,14 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
       << "Invalid vertices for QCD radiation in FFV decay in FFVDecayer::threeBodyME"
       << Exception::runerror;
 
-  // prohibit 8->3 3bar and 0->3 3bar (unchecked)
-  if ((decay[ivect]->dataPtr()->iColour()==PDT::Colour3     &&
-       decay[ilept]->dataPtr()->iColour()==PDT::Colour3bar) ||
-      (decay[ilept]->dataPtr()->iColour()==PDT::Colour3     &&
-       decay[ivect]->dataPtr()->iColour()==PDT::Colour3bar))
-    throw Exception()
-      << "Invalid vertices for QCD radiation in FFV decay in FFVDecayer::threeBodyME"
-      << Exception::runerror;
+  // // prohibit 8->3 3bar and 0->3 3bar (unchecked)
+  // if ((decay[ivect]->dataPtr()->iColour()==PDT::Colour3     &&
+  //      decay[ilept]->dataPtr()->iColour()==PDT::Colour3bar) ||
+  //     (decay[ilept]->dataPtr()->iColour()==PDT::Colour3     &&
+  //      decay[ivect]->dataPtr()->iColour()==PDT::Colour3bar))
+  //   throw Exception()
+  //     << "Invalid vertices for QCD radiation in FFV decay in FFVDecayer::threeBodyME"
+  //     << Exception::runerror;
 
 
   // sort out colour flows

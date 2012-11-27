@@ -1032,16 +1032,69 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 }
 
 void Evolver::hardestEmission(bool hard) {
-  if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
-      (_decayme && _decayme->hasPOWHEGCorrection())) {
+
+  if( ( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0) ||
+      ( _decayme && _decayme->hasPOWHEGCorrection()!=0)) {
     if(_hardme)
       _hardtree =  _hardme->generateHardest( currentTree() );
-    else
+    else{
       _hardtree = _decayme->generateHardest( currentTree() );
+    }
     if(!_hardtree) return;
     // join up the two tree
     connectTrees(currentTree(),_hardtree,hard);
   }
+
+  // if hard me doesn't have a FSR powheg correction use decay powheg correction
+  if (_hardme && _hardme->hasPOWHEGCorrection()<2){
+ 
+    // check for intermediate colour singlet resonance
+    ParticleVector inter =  _hardme->subProcess()->intermediates();
+    if (inter.empty()) return;
+    if (inter[0]->momentum().m2()/GeV2 < 0) return;
+    if (inter[0]->dataPtr()->iColour()!=PDT::Colour0) return;
+   
+    map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
+    if (out.size()!=2) return;
+    // ignore cases where outgoing particles not coloured
+    if (out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
+    	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) return;
+   
+
+    // look up decay mode
+    tDMPtr dm;
+    if(!dm) {
+      string tag;
+      string inParticle = inter[0]->dataPtr()->name() + "->";
+      vector<string> outParticles;
+      outParticles .push_back(out.begin ()->first->progenitor()->dataPtr()->name());
+      outParticles .push_back(out.rbegin()->first->progenitor()->dataPtr()->name());
+      for (int it=0; it<2; ++it){
+	tag = inParticle + outParticles[it] + "," + outParticles[(it+1)%2] + ";";
+	dm = generator()->findDecayMode(tag);
+	//if(dm) cerr << "tag " << tag << endl;
+	if(dm) break;
+      }     
+    }
+
+    // get the decayer
+    HwDecayerBasePtr decayer;   
+    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());    
+
+    // check if decayer has a POWHEG correction and if it does generate the hardest emission
+    if (!decayer || decayer->hasPOWHEGCorrection()<2) return;
+    //cerr << "powheg correction\n";
+    //cerr << inter[0]->PDGName() << " -> " 
+    //	 << out. begin()->second->PDGName() << "\t" 
+    //	 << out.rbegin()->second->PDGName() << "\n";
+
+    ShowerDecayMap decay;
+    ShowerTreePtr  decayTree = new_ptr(ShowerTree(inter[0], decay));
+    HardTreePtr   POWHEGTree = decayer->generateHardest(decayTree);
+    if (!POWHEGTree) return;
+    
+  }
+
   else {
     _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
   }
