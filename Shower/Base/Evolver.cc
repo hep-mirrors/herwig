@@ -1061,7 +1061,6 @@ void Evolver::hardestEmission(bool hard) {
     if (out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
     	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) return;
    
-    generator()->log() << "testing found intermediate " << *inter[0] << "\n";
     // look up decay mode
     tDMPtr dm;
     if(!dm) {
@@ -1073,7 +1072,6 @@ void Evolver::hardestEmission(bool hard) {
       for (int it=0; it<2; ++it){
 	tag = inParticle + outParticles[it] + "," + outParticles[(it+1)%2] + ";";
 	dm = generator()->findDecayMode(tag);
-	if(dm) generator()->log() << "tag " << tag << endl;
 	if(dm) break;
       }     
     }
@@ -1084,10 +1082,6 @@ void Evolver::hardestEmission(bool hard) {
     
     // check if decayer has a POWHEG correction and if it does generate the hardest emission
     if (!decayer || decayer->hasPOWHEGCorrection()<2) return;
-    generator()->log() << "powheg correction\n";
-    generator()->log() << inter[0]->PDGName() << " -> " 
-		       << out. begin()->second->PDGName() << "\t" 
-		       << out.rbegin()->second->PDGName() << "\n";
 
     ShowerDecayMap decay;
     ShowerTreePtr  decayTree = new_ptr(ShowerTree(inter[0], decay));
@@ -1100,6 +1094,7 @@ void Evolver::hardestEmission(bool hard) {
       inBranch.push_back(new_ptr(HardBranching(cit->second,SudakovPtr(),
 					       HardBranchingPtr(),HardBranching::Incoming)));
       hardBranch.push_back(inBranch.back());
+      inBranch.back()->beam(cit->first->original()->parents()[0]);
     }
     if(inBranch[0]->branchingParticle()->dataPtr()->coloured()) {
       inBranch[0]->colourPartner(inBranch[1]);
@@ -1109,12 +1104,11 @@ void Evolver::hardestEmission(bool hard) {
       if((**it).branchingParticle()->id()!=inter[0]->id()) 
 	hardBranch.push_back(*it);
     }
-    hardBranch[0]->colourPartner(hardBranch[1]);
-    hardBranch[1]->colourPartner(hardBranch[0]);
+    hardBranch[2]->colourPartner(hardBranch[3]);
+    hardBranch[3]->colourPartner(hardBranch[2]);
     HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
-    generator()->log() << *POWHEGTree << "\n";
-    generator()->log() << *newTree << "\n"; 
     _hardtree = newTree;
+    connectTrees(currentTree(),_hardtree,hard);
   }
 
   else {
