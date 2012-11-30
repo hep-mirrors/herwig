@@ -16,6 +16,7 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
@@ -68,6 +69,16 @@ public:
    * Set the diagram generator.
    */
   void diagramGenerator(Ptr<Tree2toNGenerator>::ptr dg) { theDiagramGenerator = dg; }
+
+  /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
 
   /**
    * Return the number of light flavours, this matrix
@@ -198,6 +209,16 @@ public:
    * Switch on fixed couplings.
    */
   void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
+
+  /**
+   * Return true, if fixed couplings are used.
+   */
+  bool fixedQEDCouplings() const { return theFixedQEDCouplings; }
+
+  /**
+   * Switch on fixed couplings.
+   */
+  void setFixedQEDCouplings(bool on = true) { theFixedQEDCouplings = on; }
 
   /**
    * Return true, if veto scales should be set
@@ -348,6 +369,16 @@ public:
    */
   void subtractionData(const string& s) { theSubtractionData = s; }
 
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return theCheckPoles; }
+
+  /**
+   * Switch on checking of epsilon pole cancellation.
+   */
+  void doCheckPoles() { theCheckPoles = true; }
+
   //@}
 
   /** @name Process generation */
@@ -428,6 +459,11 @@ private:
   Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
 
   /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
+
+  /**
    * The number of light flavours, this matrix
    * element is calculated for.
    */
@@ -492,6 +528,11 @@ private:
   bool theFixedCouplings;
 
   /**
+   * Use non-running couplings.
+   */
+  bool theFixedQEDCouplings;
+
+  /**
    * True, if veto scales should be set
    * for the real emission
    */
@@ -541,6 +582,22 @@ private:
    * Prefix for subtraction data
    */
   string theSubtractionData;
+
+  /**
+   * Command to limit the real emission process to be considered.
+   */
+  string doSingleRealProcess(string);
+
+  /**
+   * The real emission process to be included; if empty, all possible
+   * ones will be considered.
+   */
+  vector<string> realEmissionProcess;
+
+  /**
+   * True, if cancellationn of epsilon poles should be checked.
+   */
+  bool theCheckPoles;
 
   /**
    * Particle groups.

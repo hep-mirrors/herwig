@@ -27,6 +27,12 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+
+#include <boost/progress.hpp>
+
+#include <iterator>
+using std::ostream_iterator;
 
 using namespace Herwig;
 using std::ostream_iterator;
@@ -37,8 +43,8 @@ MatchboxFactory::MatchboxFactory()
     theBornContributions(true), theVirtualContributions(true),
     theRealContributions(true), theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
-    theFixedCouplings(false), theVetoScales(false),
-    theVerbose(false), theSubtractionData("") {}
+    theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
+    theVerbose(false), theSubtractionData(""), theCheckPoles(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -59,6 +65,9 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
   if ( diagramGenerator() && !me->diagramGenerator() )
     me->diagramGenerator(diagramGenerator());
 
+  if ( processData() && !me->processData() )
+    me->processData(processData());
+
   if ( me->nLight() == 0 )
     me->nLight(nLight());
 
@@ -77,6 +86,9 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
   if ( fixedCouplings() )
     me->setFixedCouplings();
 
+  if ( fixedQEDCouplings() )
+    me->setFixedQEDCouplings();
+
   if ( cache() && !me->cache() )
     me->cache(cache());
 
@@ -85,51 +97,150 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
 
 }
 
-struct ProjectQN {
-  inline pair<int,pair<int,int> > operator()(PDPtr p) const {
-    return
-      pair<int,pair<int,int> >((*p).iSpin(),pair<int,int>((*p).iCharge(),(*p).iColour()));
+struct LegIndex {
+
+  int spin;
+  int charge;
+  int colour;
+
+  int isSameAs;
+  int isSameFamilyAs;
+
+  inline bool operator==(const LegIndex& other) const {
+    return 
+      spin == other.spin &&
+      charge == other.charge &&
+      colour == other.colour &&
+      isSameAs == other.isSameAs &&
+      isSameFamilyAs == other.isSameFamilyAs;
   }
+
+  inline bool operator<(const LegIndex& other) const {
+
+    if ( spin != other.spin )
+      return spin < other.spin;
+
+    if ( charge != other.charge )
+      return charge < other.charge;
+
+    if ( colour != other.colour )
+      return colour < other.colour;
+
+    if ( isSameAs != other.isSameAs )
+      return isSameAs < other.isSameAs;
+
+    if ( isSameFamilyAs != other.isSameFamilyAs )
+      return isSameFamilyAs < other.isSameFamilyAs;
+
+    return false;
+
+  }
+
 };
 
-string pid(const vector<pair<int,pair<int,int> > >& key) {
+vector<LegIndex> makeIndex(const PDVector& proc) {
+
+  map<long,int> idMap;
+  map<int,int> familyIdMap;
+  int lastId = 0;
+  int lastFamilyId = 0;
+
+  vector<LegIndex> res;
+
+  for ( PDVector::const_iterator p = proc.begin();
+	p != proc.end(); ++p ) {
+    int id;
+    if ( idMap.find((**p).id()) != idMap.end() ) {
+      id = idMap[(**p).id()];
+    } else {
+      id = lastId;
+      idMap[(**p).id()] = lastId;
+      ++lastId;
+    }
+    int familyId;
+    if ( familyIdMap.find(SU2Helper::family(*p)) != familyIdMap.end() ) {
+      familyId = familyIdMap[SU2Helper::family(*p)];
+    } else {
+      familyId = lastFamilyId;
+      familyIdMap[SU2Helper::family(*p)] = lastFamilyId;
+      ++lastFamilyId;
+    }
+    LegIndex idx;
+    idx.spin = (**p).iSpin();
+    idx.charge = (**p).iCharge();
+    idx.colour = (**p).iColour();
+    idx.isSameAs = id;
+    idx.isSameFamilyAs = familyId;
+    res.push_back(idx);
+  }
+
+  return res;
+
+}
+
+string pid(const vector<LegIndex>& key) {
   ostringstream res;
-  for ( vector<pair<int,pair<int,int> > >::const_iterator k =
+  for ( vector<LegIndex>::const_iterator k =
 	  key.begin(); k != key.end(); ++k )
-    res << k->first << k->second.first
-	<< k->second.second;
+    res << k->spin << k->charge
+	<< k->colour << k->isSameAs
+	<< k->isSameFamilyAs;
   return res.str();
 }
 
 vector<Ptr<MatchboxMEBase>::ptr> MatchboxFactory::
 makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
-  typedef vector<pair<int,pair<int,int> > > QNKey;
+  typedef vector<LegIndex> QNKey;
+
+  generator()->log() << "determining subprocesses for ";
+  copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
+  generator()->log() << flush;
 
   map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > > ampProcs;
   set<PDVector> processes = makeSubProcesses(proc);
+
+  vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
   for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
 	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
     (**amp).orderInGs(orderas);
     (**amp).orderInGem(orderInAlphaEW());
     if ( (**amp).orderInGs() != orderas ||
-	 (**amp).orderInGem() != orderInAlphaEW() )
+	 (**amp).orderInGem() != orderInAlphaEW() ) {
       continue;
+    }
+    matchAmplitudes.push_back(*amp);
+  }
+
+  size_t combinations = processes.size()*matchAmplitudes.size();
+  size_t procCount = 0;
+
+  boost::progress_display * progressBar = 
+    new boost::progress_display(combinations,generator()->log());
+
+  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	  = matchAmplitudes.begin(); amp != matchAmplitudes.end(); ++amp ) {
+    (**amp).orderInGs(orderas);
+    (**amp).orderInGem(orderInAlphaEW());
     for ( set<PDVector>::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
+      ++(*progressBar);
       if ( !(**amp).canHandle(*p) )
 	continue;
-      QNKey key;
-      transform(p->begin(),p->end(),back_inserter(key),ProjectQN());
+      QNKey key = makeIndex(*p);
+      ++procCount;
       ampProcs[*amp][key].push_back(*p);
     }
   }
 
+  delete progressBar;
+  generator()->log() << flush;
+
   vector<Ptr<MatchboxMEBase>::ptr> res;
   for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > >::const_iterator
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
-    for ( map<QNKey,vector<PDVector> >::const_iterator m = ap->second.begin();
+  for ( map<QNKey,vector<PDVector> >::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
       Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
       me->subProcesses() = m->second;
@@ -140,6 +251,12 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
       res.push_back(me);
     }
   }
+
+  generator()->log() << "created " << res.size()
+		     << " matrix element objects for "
+		     << procCount << " subprocesses.\n";
+  generator()->log() << "--------------------------------------------------------------------------------\n"
+		     << flush;
 
   return res;
 
@@ -157,7 +274,9 @@ void MatchboxFactory::setup() {
 	  g != particleGroups().end(); ++g )
       for ( PDVector::iterator p = g->second.begin();
 	    p != g->second.end(); ++p ) {
+#ifndef NDEBUG
 	long checkid = (**p).id();
+#endif
 	*p = getParticleData((**p).id());
 	assert((**p).id() == checkid);
       }
@@ -175,7 +294,11 @@ void MatchboxFactory::setup() {
 
     if ( realContributions() ) {
       vector<string> rproc = process;
-      rproc.push_back("j");
+      if ( realEmissionProcess.empty() ) {
+	rproc.push_back("j");
+      } else {
+	rproc = realEmissionProcess;
+      }
       ames = makeMEs(rproc,orderInAlphaS()+1);
       copy(ames.begin(),ames.end(),back_inserter(realEmissionMEs()));
     }
@@ -191,7 +314,8 @@ void MatchboxFactory::setup() {
 
   // check finite term conventions of virtual contributions
   bool virtualsAreCS = false;
-  bool virtualsAreStandard = false;
+  bool virtualsAreBDK = false;
+  bool virtualsAreExpanded = false;
 
   // check and prepare the Born and virtual matrix elements
   for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
@@ -202,7 +326,8 @@ void MatchboxFactory::setup() {
       virtualsAreDR |= (**born).isDR();
       virtualsAreCDR |= !(**born).isDR();
       virtualsAreCS |= (**born).isCS();
-      virtualsAreStandard |= !(**born).isCS();
+      virtualsAreBDK |= (**born).isBDK();
+      virtualsAreExpanded |= (**born).isExpanded();
     }
   }
 
@@ -214,7 +339,8 @@ void MatchboxFactory::setup() {
     virtualsAreDR |= (**virt).isDR();
     virtualsAreCDR |= !(**virt).isDR();
     virtualsAreCS |= (**virt).isCS();
-    virtualsAreStandard |= !(**virt).isCS();
+    virtualsAreBDK |= (**virt).isBDK();
+    virtualsAreExpanded |= (**virt).isExpanded();
   }
 
   // check for consistent conventions on virtuals, if we are to include them
@@ -222,7 +348,10 @@ void MatchboxFactory::setup() {
     if ( virtualsAreDR && virtualsAreCDR ) {
       throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
     }
-    if ( virtualsAreCS && virtualsAreStandard ) {
+    if ( (virtualsAreCS && virtualsAreBDK) ||
+	 (virtualsAreCS && virtualsAreExpanded) ||
+	 (virtualsAreBDK && virtualsAreExpanded) ||
+	 (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
       throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
     }
     if ( !haveVirtuals ) {
@@ -241,8 +370,10 @@ void MatchboxFactory::setup() {
 	(**virt).useCDR();
       if ( virtualsAreCS )
 	(**virt).useCS();
-      else
-	(**virt).useNonCS();
+      if ( virtualsAreBDK )
+	(**virt).useBDK();
+      if ( virtualsAreExpanded )
+	(**virt).useExpanded();
     }
   }
 
@@ -282,7 +413,14 @@ void MatchboxFactory::setup() {
 
   if ( bornContributions() && virtualContributions() ) {
 
+    generator()->log() << "preparing Born "
+		       << (virtualContributions() ? "and virtual" : "")
+		       << " matrix elements." << flush;
+
     bornVirtualMEs().clear();
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(bornMEs().size(),generator()->log());
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
@@ -310,6 +448,12 @@ void MatchboxFactory::setup() {
 	if ( nlo->virtuals().empty() )
 	  throw InitException() << "No insertion operators have been found for "
 				<< (**born).name() << "\n";
+	if ( checkPoles() ) {
+	  if ( !virtualsAreExpanded ) {
+	    throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
+	  }
+	  nlo->doCheckPoles();
+	}
       }
 
       nlo->cloneDependencies();
@@ -317,17 +461,29 @@ void MatchboxFactory::setup() {
       bornVirtualMEs().push_back(nlo);
       MEs().push_back(nlo);
 
+      ++(*progressBar);
+
     }
+
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
 
   }
 
   if ( realContributions() ) {
+
+    generator()->log() << "preparing real emission matrix elements." << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
 	theSubtractionData += "/";
 
     subtractedMEs().clear();    
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(realEmissionMEs().size(),generator()->log());
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
@@ -343,7 +499,17 @@ void MatchboxFactory::setup() {
       sub->allDipoles().clear();
       sub->dependent().clear();
 
+      if ( subtractionData() != "" )
+	sub->subtractionData(subtractionData());
+
       sub->getDipoles();
+
+      if ( sub->dependent().empty() ) {
+	// finite real contribution
+	MEs().push_back(sub->head());
+	sub->head(tMEPtr());
+	continue;
+      }
 
       if ( verbose() )
 	sub->setVerbose();
@@ -354,16 +520,22 @@ void MatchboxFactory::setup() {
       if ( vetoScales() )
 	sub->doVetoScales();
 
-      if ( subtractionData() != "" )
-	sub->subtractionData(subtractionData());
-
       subtractedMEs().push_back(sub);
 
       MEs().push_back(sub);
 
+      ++(*progressBar);
+
     }
 
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
+
   }
+
+  generator()->log() << "process setup finished.\n" << flush;
 
 }
 
@@ -437,33 +609,33 @@ void MatchboxFactory::doinit() {
 
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
-  os << theDiagramGenerator 
+  os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theSubProcessGroups
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theFixedCouplings << theVetoScales
+     << theFixedCouplings << theFixedQEDCouplings << theVetoScales
      << theAmplitudes << theCache
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs
-     << theVerbose << theSubtractionData
-     << theParticleGroups << process;
+     << theVerbose << theSubtractionData << theCheckPoles
+     << theParticleGroups << process << realEmissionProcess;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
-  is >> theDiagramGenerator 
+  is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theSubProcessGroups
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theFixedCouplings >> theVetoScales
+     >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
      >> theAmplitudes >> theCache
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs
-     >> theVerbose >> theSubtractionData
-     >> theParticleGroups >> process;
+     >> theVerbose >> theSubtractionData >> theCheckPoles
+     >> theParticleGroups >> process >> realEmissionProcess;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -486,6 +658,17 @@ string MatchboxFactory::doProcess(string in) {
     throw InitException() << "Invalid process.";
   for ( vector<string>::iterator p = process.begin();
 	p != process.end(); ++p ) {
+    *p = StringUtils::stripws(*p);
+  }
+  return "";
+}
+
+string MatchboxFactory::doSingleRealProcess(string in) {
+  realEmissionProcess = StringUtils::split(in);
+  if ( realEmissionProcess.size() < 3 )
+    throw InitException() << "Invalid process.";
+  for ( vector<string>::iterator p = realEmissionProcess.begin();
+	p != realEmissionProcess.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
   return "";
@@ -570,6 +753,10 @@ void MatchboxFactory::Init() {
      "Set the diagram generator.",
      &MatchboxFactory::theDiagramGenerator, false, false, true, true, false);
 
+  static Reference<MatchboxFactory,ProcessData> interfaceProcessData
+    ("ProcessData",
+     "Set the process data object to be used.",
+     &MatchboxFactory::theProcessData, false, false, true, true, false);
 
   static Parameter<MatchboxFactory,unsigned int> interfaceOrderInAlphaS
     ("OrderInAlphaS",
@@ -680,10 +867,25 @@ void MatchboxFactory::Init() {
      "Off",
      false);
 
+  static Switch<MatchboxFactory,bool> interfaceFixedQEDCouplings
+    ("FixedQEDCouplings",
+     "Switch on or off fixed QED couplings.",
+     &MatchboxFactory::theFixedQEDCouplings, true, false, false);
+  static SwitchOption interfaceFixedQEDCouplingsOn
+    (interfaceFixedQEDCouplings,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceFixedQEDCouplingsOff
+    (interfaceFixedQEDCouplings,
+     "Off",
+     "Off",
+     false);
+
   static Switch<MatchboxFactory,bool> interfaceVetoScales
     ("VetoScales",
      "Switch on or setting veto scales.",
-     &MatchboxFactory::theVetoScales, true, false, false);
+     &MatchboxFactory::theVetoScales, false, false, false);
   static SwitchOption interfaceVetoScalesOn
     (interfaceVetoScales,
      "On",
@@ -753,6 +955,20 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theSubtractionData, "",
      false, false);
 
+  static Switch<MatchboxFactory,bool> interfaceCheckPoles
+    ("CheckPoles",
+     "Switch on or off checks of epsilon poles.",
+     &MatchboxFactory::theCheckPoles, true, false, false);
+  static SwitchOption interfaceCheckPolesOn
+    (interfaceCheckPoles,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceCheckPolesOff
+    (interfaceCheckPoles,
+     "Off",
+     "Off",
+     false);
 
   static RefVector<MatchboxFactory,ParticleData> interfaceParticleGroup
     ("ParticleGroup",
@@ -774,6 +990,11 @@ void MatchboxFactory::Init() {
     ("Process",
      "Set the process to consider.",
      &MatchboxFactory::doProcess, false);
+
+  static Command<MatchboxFactory> interfaceSingleRealProcess
+    ("SingleRealProcess",
+     "Set the process to consider.",
+     &MatchboxFactory::doSingleRealProcess, false);
 
 }
 

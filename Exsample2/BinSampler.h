@@ -32,7 +32,7 @@ using namespace ThePEG;
  * @see \ref BinSamplerInterfaces "The interfaces"
  * defined for BinSampler.
  */
-class BinSampler: public Interfaced, public Herwig::MultiIterationStatistics {
+class BinSampler: public Herwig::MultiIterationStatistics {
 
 public:
 

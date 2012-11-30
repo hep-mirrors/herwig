@@ -28,12 +28,8 @@ void MEvv2ss::doinit() {
   scalar2_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags()); 
   tensor_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					  PDT::Spin0, PDT::Spin0));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					     PDT::Spin0, PDT::Spin0));
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
+			   PDT::Spin0, PDT::Spin0);
   for(size_t i = 0; i < numberOfDiags(); ++i ) {
     HPDiagram dg = getProcessInfo()[i];
     if( !dg.intermediate ) {
@@ -70,16 +66,6 @@ void MEvv2ss::doinit() {
       }
     }
   }
-}
-
-void MEvv2ss::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					  PDT::Spin0, PDT::Spin0));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					     PDT::Spin0, PDT::Spin0));
 }
 
 double MEvv2ss::me2() const {
@@ -195,6 +181,8 @@ void MEvv2ss::persistentOutput(PersistentOStream & os) const {
 
 void MEvv2ss::persistentInput(PersistentIStream & is, int) {
   is >> scalar1_ >> scalar2_ >> vector_ >> tensor_ >> contact_;
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
+			   PDT::Spin0, PDT::Spin0);
 }
 
 ClassDescription<MEvv2ss> MEvv2ss::initMEvv2ss;

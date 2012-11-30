@@ -56,11 +56,6 @@ public:
     return dynamic_ptr_cast<Ptr<TildeKinematics>::ptr>(clone());
   }
 
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
   /** @name Access to kinematic quantities. */
   //@{
   /**

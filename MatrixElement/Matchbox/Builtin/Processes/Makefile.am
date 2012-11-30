@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxBuiltinProcesses.la
+endif
 libHwMatchboxBuiltinProcesses_la_SOURCES = \
 MatchboxMElg2lqqbar.cc \
 MatchboxMElg2lqqbar.h \

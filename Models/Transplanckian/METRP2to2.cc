@@ -25,16 +25,14 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/Utilities/Interpolator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <fstream>
 
-namespace Herwig {
-
-// Need to init the interpolator instance here
-HERWIG_INTERPOLATOR_CLASSDESC(double,double)
-
-}
-
 using namespace Herwig;
+
+DescribeClass<METRP2to2,HwMEBase>
+describeHerwigMETRP2to2("Herwig::METRP2to2","HwTransplanck.so");
+HERWIG_INTERPOLATOR_CLASSDESC(METRP2to2,double,double)
 
 
 METRP2to2::METRP2to2()
@@ -104,9 +102,6 @@ Energy2 METRP2to2::scale() const {
   Energy2 invbcsq = 1 / sqr(bccalc(sHat()));
   return ( -tHat() > invbcsq ) ? invbcsq : -tHat();
 }
-
-// Definition of the static class description member.
-ClassDescription<METRP2to2> METRP2to2::initMETRP2to2;
 
 void METRP2to2::Init() {
 

@@ -190,56 +190,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<ThreeMesonCurrentBase> initThreeMesonCurrentBase;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   ThreeMesonCurrentBase & operator=(const ThreeMesonCurrentBase &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ThreeMesonCurrentBase.
- */
-template <>
- struct BaseClassTrait<Herwig::ThreeMesonCurrentBase,1> {
-  /** Typedef of the base class of ThreeMesonCurrentBase. */
-  typedef Herwig::WeakDecayCurrent NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::ThreeMesonCurrentBase>
-  : public ClassTraitsBase<Herwig::ThreeMesonCurrentBase> {
-   /** Return the class name.*/
-  static string className() { return "Herwig::ThreeMesonCurrentBase"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwWeakCurrents.so"; }
-
-};
-
-/** @endcond */
 
 }
 

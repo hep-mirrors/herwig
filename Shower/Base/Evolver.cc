@@ -665,8 +665,10 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   Energy minmass(ZERO), mIn(ZERO);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
-      minmass += max( particlesToShower[ix]->progenitor()->mass(),
-		      particlesToShower[ix]->progenitor()->dataPtr()->constituentMass() );
+      if(particlesToShower[ix]->progenitor()->dataPtr()->stable()) 
+	minmass += particlesToShower[ix]->progenitor()->dataPtr()->constituentMass();
+      else
+	minmass += particlesToShower[ix]->progenitor()->mass();
     }
     else {
       mIn = particlesToShower[ix]->progenitor()->mass();

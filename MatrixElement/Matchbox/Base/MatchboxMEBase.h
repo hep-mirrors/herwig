@@ -17,6 +17,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
@@ -93,6 +94,16 @@ public:
    * Set the diagram generator.
    */
   void diagramGenerator(Ptr<Tree2toNGenerator>::ptr gen) { theDiagramGenerator = gen; }
+
+  /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
 
   /**
    * Return true, if this matrix element does not want to
@@ -208,13 +219,20 @@ public:
    * derived class returns true here. The phase space jacobian is to
    * include a factor 1/(x1 x2).
    */
-  virtual bool haveX1X2() const { return (phasespace() ? phasespace()->haveX1X2() : false); }
+  virtual bool haveX1X2() const { 
+    return 
+      (phasespace() ? phasespace()->haveX1X2() : false) ||
+      diagrams().front()->partons().size() == 3;
+  }
 
   /**
    * Return true, if this matrix element expects
    * the incoming partons in their center-of-mass system
    */
-  virtual bool wantCMS() const { return phasespace() ? phasespace()->wantCMS() : true; }
+  virtual bool wantCMS() const { 
+    return 
+      (phasespace() ? phasespace()->wantCMS() : true) &&
+      diagrams().front()->partons().size() != 3; }
 
   /**
    * Return true, if the XComb steering this matrix element
@@ -276,7 +294,7 @@ public:
   void factorizationScaleFactor(double f) { theFactorizationScaleFactor = f; }
 
   /**
-   * Return the renormalization scale for the last generated phasespace point.
+   * Return the (QCD) renormalization scale for the last generated phasespace point.
    */
   virtual Energy2 renormalizationScale() const;
 
@@ -289,6 +307,11 @@ public:
    * Set the renormalization scale factor
    */
   void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
+
+  /**
+   * Return the QED renormalization scale for the last generated phasespace point.
+   */
+  virtual Energy2 renormalizationScaleQED() const;
 
   /**
    * Set veto scales on the particles at the given
@@ -306,6 +329,16 @@ public:
    * Switch on fixed couplings.
    */
   void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
+
+  /**
+   * Return true, if fixed couplings are used.
+   */
+  bool fixedQEDCouplings() const { return theFixedQEDCouplings; }
+
+  /**
+   * Switch on fixed couplings.
+   */
+  void setFixedQEDCouplings(bool on = true) { theFixedQEDCouplings = on; }
 
   /**
    * Return the value of \f$\alpha_S\f$ associated with the phase
@@ -426,6 +459,35 @@ public:
    * of the integrated dipoles.
    */
   virtual bool isCS() const;
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of BDK.
+   */
+  virtual bool isBDK() const;
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of everything expanded.
+   */
+  virtual bool isExpanded() const;
+
+  /**
+   * Return the value of the dimensional regularization
+   * parameter. Note that renormalization scale dependence is fully
+   * restored in DipoleIOperator.
+   */
+  virtual Energy2 mu2() const;
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const;
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const;
 
   //@}
 
@@ -586,11 +648,6 @@ public:
    */
   void logDSigHatDR() const;
 
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
-
   //@}
 
   /** @name Reweight objects */
@@ -724,6 +781,11 @@ private:
   Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
 
   /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
+
+  /**
    * The scale choice object
    */
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
@@ -759,6 +821,11 @@ private:
    * Use non-running couplings.
    */
   bool theFixedCouplings;
+
+  /**
+   * Use non-running couplings.
+   */
+  bool theFixedQEDCouplings;
 
   /**
    * The number of light flavours, this matrix

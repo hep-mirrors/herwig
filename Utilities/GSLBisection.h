@@ -83,10 +83,8 @@ public:
   /**
    * Function to overwrite the default GSL error handling
    */
-  static void GSLsubstHandler(const char * reason, const char * file, 
-			      int line, int gsl_errno){
-    cerr << "GSL error: " << reason << " in file: " << file << " , line: "  
-	 << line << ", error code " << gsl_errno << endl;
+  static void GSLsubstHandler(const char *, const char *, 
+			      int, int){
     throw GSLerror();
   }
 

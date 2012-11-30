@@ -16,7 +16,7 @@ library HwADDModel.so
 ###################################################
 cd /Herwig/Particles
 create /ThePEG/ParticleData Graviton
-setup Graviton 39 Graviton 0.0 0.0 0.0 0.0 0 0 5 0
+setup Graviton 39 Graviton 0.0 0.0 0.0 0.0 0 0 5 1
 create Herwig::GravitonMassGenerator /Herwig/Masses/GravitonMassGenerator
 set /Herwig/Masses/GravitonMassGenerator:Particle Graviton
 set Graviton:Mass_generator /Herwig/Masses/GravitonMassGenerator

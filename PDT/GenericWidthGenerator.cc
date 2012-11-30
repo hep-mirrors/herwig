@@ -24,14 +24,21 @@
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/StringUtils.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include <ctime>
 
 using namespace Herwig;
+
+DescribeClass<GenericWidthGenerator,WidthGenerator>
+describeHerwigGenericWidthGenerator("Herwig::GenericWidthGenerator","");
+HERWIG_INTERPOLATOR_CLASSDESC(GenericWidthGenerator,Energy,Energy)
+
 
 void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << particle_ << ounit(mass_,GeV) << prefactor_ << MEtype_ << MEcode_
      << ounit(MEmass1_,GeV) << ounit(MEmass2_,GeV) << MEcoupling_ << modeOn_
      << ounit(interMasses_,GeV) << ounit(interWidths_,GeV) 
-     << noOfEntries_ << initialize_ << BRnorm_
+     << noOfEntries_ << initialize_ << output_ << BRnorm_ << twoBodyOnly_
      << npoints_ << decayModes_ << decayTags_ << ounit(minMass_,GeV) 
      << BRminimum_ << intOrder_ << interpolators_;
 }
@@ -40,15 +47,10 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> particle_ >> iunit(mass_,GeV) >> prefactor_ >> MEtype_ >> MEcode_ 
      >> iunit(MEmass1_,GeV) >> iunit(MEmass2_,GeV) >> MEcoupling_ >>modeOn_
      >> iunit(interMasses_,GeV) >> iunit(interWidths_,GeV)
-     >> noOfEntries_ >> initialize_ >> BRnorm_
+     >> noOfEntries_ >> initialize_ >> output_ >> BRnorm_ >> twoBodyOnly_
      >> npoints_ >> decayModes_ >> decayTags_ >> iunit(minMass_,GeV)
      >> BRminimum_ >> intOrder_ >> interpolators_;
 }
-
-ClassDescription<Interpolator<Energy, Energy> > initInterpolatorEE;
-
-ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthGenerator;
-// Definition of the static class description member.
 
 void GenericWidthGenerator::setParticle(string p) {
   if ( (particle_ = Repository::GetPtr<tPDPtr>(p)) ) return;
@@ -90,6 +92,21 @@ void GenericWidthGenerator::Init() {
     (interfaceInitialize,
      "No",
      "Don't do the initalization",
+     false);
+
+  static Switch<GenericWidthGenerator,bool> interfaceOutput
+    ("Output",
+     "Output the setup",
+     &GenericWidthGenerator::output_, false, false, false);
+  static SwitchOption interfaceOutputYes
+    (interfaceOutput,
+     "Yes",
+     "Output the data",
+     true);
+  static SwitchOption interfaceOutputNo
+    (interfaceOutput,
+     "No",
+     "Don't output the data",
      false);
 
   static ParVector<GenericWidthGenerator,int> interfacemetype
@@ -200,6 +217,22 @@ void GenericWidthGenerator::Init() {
      &GenericWidthGenerator::intOrder_, 1, 1, 5,
      false, false, Interface::limited);
 
+  static Switch<GenericWidthGenerator,bool> interfaceTwoBodyOnly
+    ("TwoBodyOnly",
+     "Only Use two-body modes for the calculation of the running "
+     "width, higher multiplicity modes fixed partial width",
+     &GenericWidthGenerator::twoBodyOnly_, false, false, false);
+  static SwitchOption interfaceTwoBodyOnlyYes
+    (interfaceTwoBodyOnly,
+     "Yes",
+     "Only include two-body modes",
+     true);
+  static SwitchOption interfaceTwoBodyOnlyNo
+    (interfaceTwoBodyOnly,
+     "No",
+     "Include all modes",
+     false);
+
 }
 
 Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
@@ -212,6 +245,7 @@ Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
 
 void GenericWidthGenerator::doinit() {
   WidthGenerator::doinit();
+  if(particle()->widthGenerator()!=this) return;
   // make sure the particle data object was initialized
   particle_->init();
   tDecayIntegratorPtr decayer;
@@ -236,6 +270,9 @@ void GenericWidthGenerator::doinit() {
     WidthCalculatorBasePtr widthptr;
     // get the list of decay modes as a decay selector
     DecayMap modes=particle_->decaySelector();
+    if ( Debug::level > 0 )
+      Repository::cout() << "Width generator for "
+			 << particle_->PDGName() << endl;
     DecayMap::const_iterator start=modes.begin();
     DecayMap::const_iterator end=modes.end();
     tPDPtr part1,part2;
@@ -243,7 +280,15 @@ void GenericWidthGenerator::doinit() {
     // loop over the decay modes to get the partial widths
     for(;start!=end;++start) {
       // the decay mode
-      tcDMPtr mode=(*start).second;      
+      tcDMPtr mode=(*start).second;
+      clock_t time;
+      if ( Debug::level > 1 ) {
+	Repository::cout() << "Partial width " 
+			   << left
+			   << std::setw(40)
+			   << mode->tag() << flush;
+	time = std::clock();
+      }
       decayModes_.push_back(const_ptr_cast<DMPtr>(mode));
       decayTags_.push_back(decayModes_.back()->tag());
       ParticleMSet::const_iterator pit(mode->products().begin());
@@ -309,9 +354,19 @@ void GenericWidthGenerator::doinit() {
 	  if(BRnorm_) {
 	    if(mass_>MEmass1_[MEtype_.size()-1]+MEmass2_[MEtype_.size()-1]) {
 	      Energy gamma(partial2BodyWidth(MEtype_.size()-1,mass_));
-	      double ratio(mode->brat()*mode->parent()->width()/gamma);
-	      ratio=sqrt(ratio);
-	      MEcoupling_.back() *=ratio;
+	      if(gamma==ZERO) {
+		cerr << "Partial width for " << mode->tag()
+		     << " is zero in GenericWidthGenerator::doinit().\n"
+		     << "If doing BSM physics this is probably a problem with your input "
+		     << "parameters.\n"
+		     << "Zeroing mode\n";
+		MEcoupling_.back() = 0.;
+	      }
+	      else {
+		double ratio(mode->brat()*mode->parent()->width()/gamma);
+		ratio=sqrt(ratio);
+		MEcoupling_.back() *=ratio;
+	      }
 	    }
 	  }
 	}
@@ -386,7 +441,6 @@ void GenericWidthGenerator::doinit() {
 	    interMasses_.push_back(moff);
 	    interWidths_.push_back(widthptr->partialWidth(moff2));
 	  }
-	  coupling=1.;
 	  if(BRnorm_) {
 	    double ratio(1.);
 	    if((massgen1&&massgen2&&
@@ -398,7 +452,17 @@ void GenericWidthGenerator::doinit() {
 	       (!massgen1&&!massgen2&&
 		mass_>part1->mass()+part2->mass())) {
 	      Energy gamma(widthptr->partialWidth(mass_*mass_));
-	      ratio=mode->brat()*mode->parent()->width()/gamma;
+	      if(gamma==ZERO) {
+		cerr << "Partial width for " << mode->tag()
+		     << " is zero in GenericWidthGenerator::doinit()"
+		     << " if doing BSM physics this is probably a problem with your input "
+		     << "parameters.\n"
+		     << "Zeroing mode\n";
+		ratio = 0.;
+	      }
+	      else {
+		ratio=mode->brat()*mode->parent()->width()/gamma;
+	      }
 	    }
 	    MEcoupling_.back()=ratio;
 	  }
@@ -423,7 +487,7 @@ void GenericWidthGenerator::doinit() {
       // higher multiplicities
       else {
 	setupMode(mode,decayer,MEcode_.size());
-	widthptr=decayer->threeBodyMEIntegrator(*mode);
+	widthptr = twoBodyOnly_ ? WidthCalculatorBasePtr() : decayer->threeBodyMEIntegrator(*mode);
 	if(!widthptr) {
 	  MEtype_.push_back(0);
 	  MEcode_.push_back(0);
@@ -445,10 +509,18 @@ void GenericWidthGenerator::doinit() {
 	  }
 	  double coupling(1.);
 	  if(BRnorm_) {
-	    Energy gamma = ZERO;
-	    gamma=widthptr->partialWidth(mass_*mass_);
-	    double ratio(mode->brat()*mode->parent()->width()/gamma);
-	    coupling *=ratio;
+	    Energy gamma = widthptr->partialWidth(mass_*mass_);
+	    if(gamma==ZERO) {
+	      cerr << "Partial width for " << mode->tag()
+		   << " is zero in GenericWidthGenerator::doinit()"
+		   << " if doing BSM physics this is probably a problem with your input "
+		   << "parameters.\n"
+		   << "Zeroing mode\n";
+	      coupling = 0.;
+	    }
+	    else {
+	      coupling = mode->brat()*mode->parent()->width()/gamma;
+	    }
 	  }
 	  MEtype_.push_back(2);
 	  MEcode_.push_back(0);
@@ -471,6 +543,12 @@ void GenericWidthGenerator::doinit() {
 	  interpolators_.back() = make_InterpolatorPtr(widths,masses,intOrder_);
 	}
       }
+      if ( Debug::level > 1 ) {
+	double diff = double(std::clock()-time)/CLOCKS_PER_SEC;
+	if ( diff > 0.2 )
+	  Repository::cout() << ' ' << diff << " s";
+	Repository::cout() << endl;
+      }
     }
     // now check the overall normalisation of the running width
     Energy gamma = width(*particle_,mass_);
@@ -484,7 +562,7 @@ void GenericWidthGenerator::doinit() {
       for(unsigned int ix=0;ix<decayTags_.size();++ix) {
 	decayModes_.push_back(CurrentGenerator::current().findDecayMode(decayTags_[ix]));
 	if(!decayModes_.back()) 
-	  generator()->log() << "Error in GenericWidthGenerator::doinit() "
+	  generator()->log() << "Error in GenericWidthGenerator::doinit(). "
 			     << "Failed to find DecayMode  for tag" 
 			     << decayTags_[ix] << "\n";
       }
@@ -523,75 +601,78 @@ void GenericWidthGenerator::doinit() {
     decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(decayModes_[ix]->decayer());
     if(!decayer) continue;
     decayer->init();
-    decayer->setPartialWidth(*decayModes_[ix],ix);
+    if(particle_->widthGenerator() && 
+       particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
   }
-  // code to output plots
-//   string fname = CurrentGenerator::current().filename() + 
-//     string("-") + name() + string(".top");
-//   ofstream output(fname.c_str());
-//   Energy step = (particle_->massMax()-particle_->massMin())/100.;
-//   output << "SET FONT DUPLEX\n";
-//   output << "TITLE TOP \"Width for " << particle_->name() << "\"\n";
-//   output << "TITLE BOTTOM \"m/GeV\"\n";
-//   output << "TITLE LEFT \"G/GeV\"\n";
-//   output << "CASE       \"F    \"\n";
-//   output << "SET LIMITS X " 
-// 	 << (particle_->massMin()-10.*step)/GeV << " " 
-// 	 << particle_->massMax()/GeV << "\n";
-//   Energy upper(ZERO);
-//   for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
-//     Energy gamma=width(*particle_,etest);
-//     upper = max(gamma,upper);
-//     output << etest/GeV << "\t" << gamma/GeV << "\n";
-//   }
-//   output << "SET LIMITS Y 0. " << upper/GeV << "\n";
-//   output << "JOIN\n";
-//   output << (particle_->massMin()-9.*step)/GeV << "\t" 
-// 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
-//   output << (particle_->massMin()-7.*step)/GeV << "\t" 
-// 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
-//   output << "JOIN\n";
-//   output << "TITLE DATA " 
-// 	 << (particle_->massMin()-6.*step)/GeV << "\t" 
-// 	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV 
-// 	 << " \"total\"\n";
-//   for(unsigned int ix=0;ix<MEcode_.size();++ix) {
-//     for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
-//       output << etest/GeV << "\t" << partialWidth(ix,etest)*prefactor_/GeV << "\n";
-//     }
-//     switch(ix) {
-//     case 0:  output << "join red\n"    ; break;
-//     case 1:  output << "join blue\n"   ; break;
-//     case 2:  output << "join green\n"  ; break;
-//     case 3:  output << "join yellow\n" ; break;
-//     case 4:  output << "join magenta\n"; break;
-//     case 5:  output << "join cyan\n"   ; break;
-//     case 6:  output << "join dashes\n" ; break;
-//     case 7:  output << "join dotted\n" ; break;
-//     case 8:  output << "join dotdash\n"; break;
-//     default: output << "join daashes space\n";  break;
-//     }
-//     output << (particle_->massMin()-9.*step)/GeV << "\t" 
-// 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n";
-//     output << (particle_->massMin()-7.*step)/GeV << "\t" 
-// 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n"; 
-//     switch(ix) {
-//     case 0:  output << "join red\n"    ; break;
-//     case 1:  output << "join blue\n"   ; break;
-//     case 2:  output << "join green\n"  ; break;
-//     case 3:  output << "join yellow\n" ; break;
-//     case 4:  output << "join magenta\n"; break;
-//     case 5:  output << "join cyan\n"   ; break;
-//     case 6:  output << "join dashes\n" ; break;
-//     case 7:  output << "join dotted\n" ; break;
-//     case 8:  output << "join dotdash\n"; break;
-//     default: output << "join daashes space\n";  break;
-//     }
-//     output << "TITLE DATA " 
-// 	   << (particle_->massMin()-6.*step)/GeV << "\t" 
-// 	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV 
-// 	   << " \"" << decayTags_[ix] << "\"\n";
-//   }
+  if ( Debug::level > 29 ) {
+  //  code to output plots
+    string fname = CurrentGenerator::current().filename() + 
+      string("-") + name() + string(".top");
+    ofstream output(fname.c_str());
+    Energy step = (particle_->massMax()-particle_->massMin())/100.;
+    output << "SET FONT DUPLEX\n";
+    output << "TITLE TOP \"Width for " << particle_->name() << "\"\n";
+    output << "TITLE BOTTOM \"m/GeV\"\n";
+    output << "TITLE LEFT \"G/GeV\"\n";
+    output << "CASE       \"F    \"\n";
+    output << "SET LIMITS X " 
+  	 << (particle_->massMin()-10.*step)/GeV << " " 
+  	 << particle_->massMax()/GeV << "\n";
+    Energy upper(ZERO);
+    for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
+      Energy gamma=width(*particle_,etest);
+      upper = max(gamma,upper);
+      output << etest/GeV << "\t" << gamma/GeV << "\n";
+    }
+    output << "SET LIMITS Y 0. " << upper/GeV << "\n";
+    output << "JOIN\n";
+    output << (particle_->massMin()-9.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
+    output << (particle_->massMin()-7.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV << "\n";
+    output << "JOIN\n";
+    output << "TITLE DATA " 
+  	 << (particle_->massMin()-6.*step)/GeV << "\t" 
+  	 <<  upper*(MEcode_.size()+1)/(MEcode_.size()+2)/GeV 
+  	 << " \"total\"\n";
+    for(unsigned int ix=0;ix<MEcode_.size();++ix) {
+      for(Energy etest=particle_->massMin();etest<particle_->massMax();etest+=step) {
+        output << etest/GeV << "\t" << partialWidth(ix,etest)*prefactor_/GeV << "\n";
+      }
+      switch(ix) {
+      case 0:  output << "join red\n"    ; break;
+      case 1:  output << "join blue\n"   ; break;
+      case 2:  output << "join green\n"  ; break;
+      case 3:  output << "join yellow\n" ; break;
+      case 4:  output << "join magenta\n"; break;
+      case 5:  output << "join cyan\n"   ; break;
+      case 6:  output << "join dashes\n" ; break;
+      case 7:  output << "join dotted\n" ; break;
+      case 8:  output << "join dotdash\n"; break;
+      default: output << "join daashes space\n";  break;
+      }
+      output << (particle_->massMin()-9.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n";
+      output << (particle_->massMin()-7.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV << "\n"; 
+      switch(ix) {
+      case 0:  output << "join red\n"    ; break;
+      case 1:  output << "join blue\n"   ; break;
+      case 2:  output << "join green\n"  ; break;
+      case 3:  output << "join yellow\n" ; break;
+      case 4:  output << "join magenta\n"; break;
+      case 5:  output << "join cyan\n"   ; break;
+      case 6:  output << "join dashes\n" ; break;
+      case 7:  output << "join dotted\n" ; break;
+      case 8:  output << "join dotdash\n"; break;
+      default: output << "join daashes space\n";  break;
+      }
+      output << "TITLE DATA " 
+  	   << (particle_->massMin()-6.*step)/GeV << "\t" 
+  	   <<  upper*(MEcode_.size()-ix)/(MEcode_.size()+2)/GeV 
+  	   << " \"" << decayTags_[ix] << "\"\n";
+    }
+}
 }
 
 void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header) {
@@ -704,7 +785,7 @@ Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
 }
 
 void GenericWidthGenerator::dofinish() {
-  if(initialize_) {
+  if(output_) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());
@@ -731,7 +812,7 @@ Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w)
 }
 
 Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
-						       Energy m2) const {
+						Energy m2) const {
   using Constants::pi;
   if(q<m1+m2) return ZERO;
   // calcluate the decay momentum
@@ -741,49 +822,49 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   Energy  pcm(sqrt(pcm2));
   double gam(0.);
   switch(MEcode_[imode]) {
-  // V -> P P
+    // V -> P P
   case  0: gam = pcm2/6./q2;
     break;
-  // V -> P V
+    // V -> P V
   case  1: gam = pcm2/12./m02;
     break;
-  // V -> f fbar
+    // V -> f fbar
   case  2: gam = 1./12.*(q2*(2.*q2-m12-m22+6.*m1*m2)
 			 -(m12-m22)*(m12-m22))/q2/q2;
     break;
-  // P -> VV
+    // P -> VV
   case  3: gam = 0.25*pcm2/m02;
     break;
-  // A -> VP 
+    // A -> VP 
   case  4: gam = (2.*pcm2+3.*m12)/24./m02;
     break;
-  // V -> VV
+    // V -> VV
   case  5: gam = pcm2/3./q2*(1.+m12/q2+m22/q2);
     break;
-  // S -> SS
+    // S -> SS
   case  6: gam = 0.125/q2*m02;
     break;
-  // T -> PP
+    // T -> PP
   case  7: gam = pcm2*pcm2/60./q2/m02;
     break;
-  // T -> VP
+    // T -> VP
   case  8: gam = pcm2*pcm2/40./m02/m02;
     break;
-  // T -> VV
+    // T -> VV
   case  9: gam = 1./30./q2/q2/m02*
       (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
        -5.*(m12-m22)*(m12-m22)*pcm2);
     break;
-  // P -> PV
+    // P -> PV
   case 10: gam = 0.5*pcm2/m22;
     break;
-  // P -> PT
+    // P -> PT
   case 11: gam = sqr(pcm2)/12.*q2/m12/m12/m02;
     break;
-  // S -> VV
+    // S -> VV
   case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
     break;
-  // unknown
+    // unknown
   default:
     throw Exception() << "Unknown type of mode " << MEcode_[imode] 
 		      << " in GenericWidthGenerator::partial2BodyWidth() " 

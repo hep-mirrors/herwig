@@ -1,5 +1,5 @@
 SUBDIRS = NMSSM
-if WANT_MSSM
+if WANT_BSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif
 HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h SusyBase.fh \
@@ -30,4 +30,4 @@ SSNCTVertex.h SSNCTVertex.cc \
 SSGVNHVertex.h SSGVNHVertex.cc\
 SSGVNVVertex.h SSGVNVVertex.cc\
 SSGVFSVertex.h SSGVFSVertex.cc
-HwSusy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
+HwSusy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0

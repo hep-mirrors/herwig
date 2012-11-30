@@ -1,4 +1,6 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwDipoleShowerKernels.la
+endif
 
 libHwDipoleShowerKernels_la_SOURCES = \
 	DipoleSplittingKernel.h DipoleSplittingKernel.cc \
@@ -18,4 +20,10 @@ libHwDipoleShowerKernels_la_SOURCES = \
 	IIqx2qgxDipoleKernel.h IIqx2qgxDipoleKernel.cc \
 	IIqx2gqxDipoleKernel.h IIqx2gqxDipoleKernel.cc \
 	IIgx2ggxDipoleKernel.h IIgx2ggxDipoleKernel.cc \
-	IIgx2qqxDipoleKernel.h IIgx2qqxDipoleKernel.cc
+	IIgx2qqxDipoleKernel.h IIgx2qqxDipoleKernel.cc \
+	FIMqx2qgxDipoleKernel.h FIMqx2qgxDipoleKernel.cc \
+	FIMgx2qqxDipoleKernel.h FIMgx2qqxDipoleKernel.cc \
+	IFMqx2qgxDipoleKernel.h IFMqx2qgxDipoleKernel.cc \
+	IFMqx2gqxDipoleKernel.h IFMqx2gqxDipoleKernel.cc \
+	IFMgx2ggxDipoleKernel.h IFMgx2ggxDipoleKernel.cc \
+	IFMgx2qqxDipoleKernel.h IFMgx2qqxDipoleKernel.cc

@@ -1,12 +1,8 @@
 ################################################################################
 # Setup the dipole shower
 ################################################################################
-library HwDipoleShower.so
 
-mkdir /Herwig/DipoleShower
-cd /Herwig/DipoleShower
 
-create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 ################################################################################
 #
@@ -32,8 +28,13 @@ create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 
 
+library HwMatchbox.so
+library HwDipoleShower.so
 
+mkdir /Herwig/DipoleShower
+cd /Herwig/DipoleShower
 
+create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 ################################################################################
 # zero quark masses for the time being

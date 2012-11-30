@@ -23,7 +23,6 @@ Block EXTPAR   # Non-universal SUSY breaking parameters
      0     1.76318844E+16   # Input scale
 Block MASS   # Scalar and gaugino mass spectrum
 #  PDG code   mass                 particle
-        24     8.04229965E+01   #  W^+
         25     1.16870972E+02   #  h^0            
         35     6.28744934E+02   #  H^0            
         36     6.24697754E+02   #  A^0            

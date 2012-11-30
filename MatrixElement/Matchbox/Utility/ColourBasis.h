@@ -210,6 +210,11 @@ public:
   vector<PDT::Colour> normalOrderMap(const cPDVector& sub);
 
   /**
+   * Get the normal ordered legs
+   */
+  const vector<PDT::Colour>& normalOrderedLegs(const cPDVector& sub) const;
+
+  /**
    * Convert the legs to a string.
    */
   string file(const vector<PDT::Colour>&) const;
@@ -430,6 +435,11 @@ private:
    * Read in the basis computation which are supposed to be known.
    */
   bool readBasis(const vector<PDT::Colour>&);
+
+  /**
+   * Gather any implementation dependend details when reading a basis
+   */
+  virtual void readBasisDetails(const vector<PDT::Colour>&) {}
 
   /**
    * Write out symmetric matrices.

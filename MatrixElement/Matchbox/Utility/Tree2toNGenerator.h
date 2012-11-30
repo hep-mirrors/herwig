@@ -67,6 +67,16 @@ public:
    */
   const VertexVector& vertices() const { return theVertices; }
 
+  /**
+   * Access the particles to be excluded from internal lines
+   */
+  PDVector& excludeInternal() { return theExcludeInternal; }
+
+  /**
+   * Return the particles to be excluded from internal lines
+   */
+  const PDVector& excludeInternal() const { return theExcludeInternal; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -272,6 +282,11 @@ private:
    * The vertices to be used.
    */
   VertexVector theVertices;
+
+  /**
+   * The particles to be excluded from internal lines
+   */
+  PDVector theExcludeInternal;
 
   /**
    * Maximum order in gs to consider.

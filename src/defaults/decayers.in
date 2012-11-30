@@ -11681,7 +11681,7 @@ create Herwig::PScalar4FermionsDecayer  PScalar4f
 newdef PScalar4f:Iteration 1
 newdef PScalar4f:Ntry 500
 newdef PScalar4f:Points 10000
-newdef PScalar4f:GenerateIntermediates 1 
+newdef PScalar4f:GenerateIntermediates 0
 newdef PScalar4f:Incoming   0 111
 newdef PScalar4f:Outgoing1  0 11
 newdef PScalar4f:Outgoing2  0 11

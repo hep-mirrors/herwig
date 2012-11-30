@@ -1,4 +1,4 @@
-if WANT_Leptoquark
+if WANT_BSM
 pkglib_LTLIBRARIES = HwLeptoquarkModel.la
 endif
 HwLeptoquarkModel_la_SOURCES = \
@@ -7,4 +7,4 @@ LeptoquarkModelSLQSLQGGVertex.h LeptoquarkModelSLQSLQGGVertex.cc \
 LeptoquarkModelSLQFFVertex.h	LeptoquarkModelSLQFFVertex.cc   \
 LeptoquarkModelSLQSLQGVertex.h 	LeptoquarkModelSLQSLQGVertex.cc 
 
-HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:1

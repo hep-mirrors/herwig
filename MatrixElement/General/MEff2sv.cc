@@ -25,12 +25,8 @@ void MEff2sv::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin0,PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin0,PDT::Spin1));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin0,PDT::Spin1);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if( current.channelType == HPDiagram::sChannel ) {
@@ -58,22 +54,14 @@ void MEff2sv::doinit() {
   }
 }
 
-void MEff2sv::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin0,PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin0,PDT::Spin1));
-}
-
 void MEff2sv::persistentOutput(PersistentOStream & os) const {
   os << scalar_ << vector_ << fermion_;
 }
 
 void MEff2sv::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> fermion_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin0,PDT::Spin1);
 }
 
 ClassDescription<MEff2sv> MEff2sv::initMEff2sv;

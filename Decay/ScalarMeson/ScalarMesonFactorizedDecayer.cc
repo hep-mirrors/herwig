@@ -665,6 +665,7 @@ void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
   for(ix=0;ix<particles.size();++ix) {
     if(ix==imode||particles[ix].empty()) continue;
     assert(!particles[ix].empty());
+    assert(particles[ix][0]);
     // the particle mode
     if(particles[ix][0]->id()==id[0]&&particles[ix].size()==id.size()) {
       nfound=1;

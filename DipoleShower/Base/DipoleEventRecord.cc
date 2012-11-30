@@ -209,7 +209,17 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 
   DipoleChain current_chain;
 
-  if (ordered.size() > 2) {
+  bool startIsTriplet =
+    (ordered.front()->hasColour() && !ordered.front()->hasAntiColour()) ||
+    (!ordered.front()->hasColour() && ordered.front()->hasAntiColour());
+  bool endIsTriplet =
+    (ordered.back()->hasColour() && !ordered.back()->hasAntiColour()) ||
+    (!ordered.back()->hasColour() && ordered.back()->hasAntiColour());
+
+  bool is33bar =
+    ordered.size() == 2 && startIsTriplet && endIsTriplet;
+
+  if (!is33bar) {
 
     for (PList::const_iterator p = ordered.begin();
 	 p != ordered.end(); ++p) {

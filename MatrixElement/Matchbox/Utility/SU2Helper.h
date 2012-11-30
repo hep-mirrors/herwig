@@ -55,7 +55,12 @@ struct SU2Helper {
    * projection of this particle (antiparticle) does not belong 
    * to a weak SU(2) doublet.
    */
-  static tcPDPtr SU2CC(tcPDPtr p);
+  static tcPDPtr SU2CC(tcPDPtr p, int familyShift = 0);
+
+  /**
+   * Return the family
+   */
+  static int family(tcPDPtr p);
 
 };
 

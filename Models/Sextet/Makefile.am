@@ -1,4 +1,4 @@
-if WANT_SEXTET
+if WANT_BSM
 pkglib_LTLIBRARIES = HwSextetModel.la
 endif
 HwSextetModel_la_SOURCES = SextetParticles.h \
