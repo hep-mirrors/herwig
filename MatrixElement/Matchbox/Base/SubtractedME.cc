@@ -196,56 +196,7 @@ void SubtractedME::doVirtualShowerSubtraction() {
   }
 }
 
-void SubtractedME::setVetoScales(tSubProPtr subpro) const {
-
-  if ( !vetoScales() )
-    return;
-
-  Ptr<SubtractionDipole>::tptr dipole;
-  Energy pt;
-
-  assert(head()->noMirror());
-
-  for ( MEVector::const_iterator d = dependent().begin();
-	d != dependent().end(); ++d ) {
-
-    dipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*d);
-    assert(dipole);
-    pt = dipole->lastPt();
-
-    if ( dipole->realEmitter() == 0 ||
-	 dipole->realSpectator() == 0 ) {
-      if ( subpro->incoming().first->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().first->vetoScale() > sqr(pt) )
-	subpro->incoming().first->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() == 1 ||
-	 dipole->realSpectator() == 1 ) {
-      if ( subpro->incoming().second->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().second->vetoScale() > sqr(pt) )
-	subpro->incoming().second->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() > 1 ) {
-      if ( subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realEmitter()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realSpectator() > 1 ) {
-      if ( subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realSpectator()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( subpro->outgoing()[dipole->realEmission()-2]->vetoScale() < 0.0*GeV2 ||
-	 subpro->outgoing()[dipole->realEmission()-2]->vetoScale() > sqr(pt) )
-      subpro->outgoing()[dipole->realEmission()-2]->vetoScale(sqr(pt));  
-
-  }
-
-}
+void SubtractedME::setVetoScales(tSubProPtr) const {}
 
 void SubtractedME::fillProjectors() {
   if ( !inclusive() && !virtualShowerSubtraction() )

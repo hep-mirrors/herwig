@@ -319,15 +319,7 @@ Energy2 MatchboxMEBase::renormalizationScaleQED() const {
   return renormalizationScale();
 }
 
-void MatchboxMEBase::setVetoScales(tSubProPtr subpro) const {
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    (**rw).setXComb(lastXCombPtr());
-    if ( !(**rw).apply() )
-      continue;
-    (**rw).setVetoScales(subpro);
-  }
-}
+void MatchboxMEBase::setVetoScales(tSubProPtr) const {}
 
 void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
