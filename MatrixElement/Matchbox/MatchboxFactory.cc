@@ -453,6 +453,8 @@ void MatchboxFactory::setup() {
 
       if ( !bornContributions() ) {
 	nlo->doOneLoopNoBorn();
+      } else {
+	nlo->doOneLoop();
       }
 
       nlo->cloneDependencies();
