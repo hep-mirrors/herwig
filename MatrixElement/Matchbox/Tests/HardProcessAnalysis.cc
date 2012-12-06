@@ -56,7 +56,7 @@ HardProcessAnalysis::Histograms::Histograms(Energy ECM) {
 
   rapidity = new_ptr(Histogram(-7.,7.,nbins));
 
-  phi = new_ptr(Histogram(0.,2.*Constants::pi,nbins));
+  phi = new_ptr(Histogram(-Constants::pi,Constants::pi,nbins));
 
 }
 
