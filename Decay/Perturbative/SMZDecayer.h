@@ -70,12 +70,6 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
-
-  /**
-   *  Has a POWHEG style correction
-   */
-  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
-
   //@}
 
 public:
@@ -208,6 +202,11 @@ protected:
    *  Apply the hard matrix element
    */
   vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
+
+  /**
+   *  Pointer to the coupling
+   */
+  ShowerAlphaPtr alpha_;
 
   /**
    *  Get the weight for hard emission
@@ -407,11 +406,6 @@ private:
    *  Cut-off parameter
    */
   static const double EPS_;
-
-  /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr alpha_;
 };
 
 }
