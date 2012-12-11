@@ -76,7 +76,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
+  virtual POWHEGType hasPOWHEGCorrection() {return Both;}
 
   /**
    *  Has an old fashioned ME correction

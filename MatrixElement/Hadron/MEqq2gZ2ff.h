@@ -54,6 +54,7 @@ public:
    */
   virtual unsigned int orderInAlphaEW() const;
 
+
   /**
    * The matrix element for the kinematical configuration
    * previously provided by the last call to setKinematics(), suitably

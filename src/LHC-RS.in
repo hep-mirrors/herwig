@@ -25,10 +25,10 @@ cd /Herwig/NewPhysics
 # Example hard process: Incoming proton,resonant graviton
 
 insert ResConstructor:Incoming 0 /Herwig/Particles/g
-insert ResConstructor:Incoming 0 /Herwig/Particles/u
-insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
-insert ResConstructor:Incoming 0 /Herwig/Particles/d
-insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
+insert ResConstructor:Incoming 1 /Herwig/Particles/u
+insert ResConstructor:Incoming 2 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 3 /Herwig/Particles/d
+insert ResConstructor:Incoming 4 /Herwig/Particles/dbar
 
 insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
 #insert ResConstructor:Intermediates 1 /Herwig/Particles/gamma
@@ -68,5 +68,7 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+
 
 saverun LHC-RS LHCGenerator

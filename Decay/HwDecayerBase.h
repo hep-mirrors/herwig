@@ -115,6 +115,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual HardTreePtr generateHardest(ShowerTreePtr) {
+    cerr << "called2" << endl;
     return HardTreePtr();
   }
   //@}

@@ -346,6 +346,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
   }
   // partners all ready set only do the scales
   else {
+   
     for(ShowerParticleVector::const_iterator cit = particles.begin();
         cit != particles.end(); ++cit) {
       if(!(**cit).dataPtr()->coloured()) continue;
@@ -362,6 +363,7 @@ bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 pair<Energy,Energy> PartnerFinder::
 calculateInitialEvolutionScales(const ShowerPPair &particlePair,
                                 const bool isDecayCase) {
+  
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
 
   if(FS1 && FS2)

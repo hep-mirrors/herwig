@@ -8,12 +8,6 @@
 #
 # The second section contains the user settings.
 ###################################################
-cd /Herwig/EventHandlers
-set LEPHandler:HadronizationHandler NULL
-set LEPHandler:DecayHandler NULL
-
-cd /Herwig/Analysis
-set Basics:CheckQuark 0
 
 
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
@@ -23,6 +17,7 @@ set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 
 read MSSM.model
 cd /Herwig/NewPhysics
+
 
 ##################################################
 #
@@ -71,7 +66,7 @@ set LEPGenerator:NumberOfEvents 10000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 100000
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 5000.0
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 2250.0
 #set LEPGenerator:EventHandler:LuminosityFunction:Energy 2200.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 

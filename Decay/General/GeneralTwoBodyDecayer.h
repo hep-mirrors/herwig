@@ -196,7 +196,7 @@ protected:
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
 
   /**
-   *  Calculate matrix element ratio B/R
+   *  Calculate matrix element ratio R/B
    */
   double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 			    const ParticleVector & decay3, MEOption meopt);
@@ -224,8 +224,8 @@ protected:
   /**
    * Return dipole corresponding to the dipoleType dipoleId
    */
-  InvEnergy2 calculateDipole(const dipoleType & dipoleId, const ParticleVector & decay3, 
-			     const dipoleType & emittingDipole);
+  InvEnergy2 calculateDipole(const dipoleType & dipoleId,   const Particle & inpart,
+			     const ParticleVector & decay3, const dipoleType & emittingDipole);
 
   /**
    * Return contribution to dipole that depends on the spin of the emitter
@@ -252,7 +252,6 @@ protected:
    */
   ShowerAlphaPtr coupling() {return coupling_;}
   //@}
-
 
 public:
 

@@ -34,7 +34,7 @@ public:
    */
   //virtual bool hasPOWHEGCorrection() {return _alpha;}
 
-  virtual POWHEGType hasPOWHEGCorrection() {return (_alpha) ? ISR:No;}
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
 
 
   /**

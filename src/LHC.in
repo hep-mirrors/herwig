@@ -6,6 +6,14 @@
 ##################################################
 # Technical parameters for this run
 ##################################################
+cd /Herwig/EventHandlers
+set LHCHandler:HadronizationHandler NULL
+set LHCHandler:DecayHandler NULL
+
+cd /Herwig/Analysis
+set Basics:CheckQuark 0
+
+
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
@@ -18,6 +26,7 @@ set LHCGenerator:MaxErrors 10000
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 
 ########################
 ## sqrt(s) = 8000 GeV ##
@@ -38,7 +47,8 @@ cd /Herwig/MatrixElements/
 #  Electroweak boson W/Z processes
 #
 # Drell-Yan Z/gamma
-#insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+set MEqq2gZ2ff:Process Quarks
 #
 # Drell-Yan W
 #insert SimpleQCD:MatrixElements[0] MEqq2W2ff
@@ -97,7 +107,7 @@ cd /Herwig/MatrixElements/
 #insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
 #
 # t tbar Higgs
-insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
+#insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
 #
 # b bbar Higgs
 #insert SimpleQCD:MatrixElements[0] MEPP2bbbarH

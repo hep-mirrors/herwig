@@ -141,6 +141,7 @@ void SMZDecayer::Init() {
     ("Coupling",
      "Pointer to the object to calculate the coupling for the correction",
      &SMZDecayer::alpha_, false, false, true, false, false);
+
 }
 
 
@@ -925,3 +926,13 @@ double SMZDecayer::PS(double x, double xbar) {
   double den = (1.-xbar)*sqrt(xbar*xbar - 4.*d_rho_);
   return brack/den;
 }
+
+// HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree){
+//   cerr << "tree\n";
+//   if (tree){
+//     VFFDecayer decayer = VFFDecayer();
+//     //cerr << "here " << bool(decayer.generateHardest(tree)) << endl;
+//     return decayer.generateHardest(tree);
+//   }
+//   return HardTreePtr();
+// }
