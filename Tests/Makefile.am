@@ -272,9 +272,9 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
 	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
-Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton Rivet-LHC-7-GammaGamma
 	rm -rf Rivet-LHC-Photon 
-	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
+	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida LHC-7-GammaGamma.aida -o LHC-Photon.aida
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
 
 Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
