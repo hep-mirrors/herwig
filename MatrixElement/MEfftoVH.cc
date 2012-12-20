@@ -356,7 +356,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   }
 
   if ( ctmin >= ctmax ) return false;
-    
+  jacobian(1.);
   double cth = getCosTheta(ctmin, ctmax, r[0]);
   
   Energy pt = q*sqrt(1.0-sqr(cth));

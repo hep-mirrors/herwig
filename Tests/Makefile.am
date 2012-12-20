@@ -227,13 +227,16 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
                 Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
-	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE Rivet-LHC-2760-UE \
+                Rivet-LHC-7-Heavy-0 \
                 Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
                 Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
                 Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top-L \
 		Rivet-LHC-7-Top-SL \
 	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long \
-                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 
+                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 \
+                Rivet-LHC-7-Jets-All-3 Rivet-LHC-7-Jets-All-4 \
+                Rivet-LHC-7-Jets-All-5
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
