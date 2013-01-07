@@ -14,11 +14,11 @@ decaymode h0->mu-,mu+; 0.0003 1 /Herwig/Decays/Hff
 decaymode h0->t,tbar; 0 1 /Herwig/Decays/Hff
 #
 #
-decaymode Z0->d,dbar; 0.153812 1 /Herwig/Decays/ZDecayer
-decaymode Z0->s,sbar; 0.153811 1 /Herwig/Decays/ZDecayer
-decaymode Z0->b,bbar; 0.152457 1 /Herwig/Decays/ZDecayer
-decaymode Z0->u,ubar; 0.119279 1 /Herwig/Decays/ZDecayer
-decaymode Z0->c,cbar; 0.119162 1 /Herwig/Decays/ZDecayer
+decaymode Z0->d,dbar; 0.153812 1 /Herwig/Decays/ZPowhegDecayer
+decaymode Z0->s,sbar; 0.153811 1 /Herwig/Decays/ZPowhegDecayer
+decaymode Z0->b,bbar; 0.152457 1 /Herwig/Decays/ZPowhegDecayer
+decaymode Z0->u,ubar; 0.119279 1 /Herwig/Decays/ZPowhegDecayer
+decaymode Z0->c,cbar; 0.119162 1 /Herwig/Decays/ZPowhegDecayer
 decaymode Z0->nu_e,nu_ebar; 0.066897 1 /Herwig/Decays/ZDecayer
 decaymode Z0->nu_mu,nu_mubar; 0.066897 1 /Herwig/Decays/ZDecayer
 decaymode Z0->nu_tau,nu_taubar; 0.066897 1 /Herwig/Decays/ZDecayer

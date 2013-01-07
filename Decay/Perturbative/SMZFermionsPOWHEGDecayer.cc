@@ -468,6 +468,20 @@ void SMZFermionsPOWHEGDecayer::doinit() {
 }
 
 bool SMZFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
+  Energy particleMass = ZERO;
+  for(unsigned int ix=0;ix<hardProcess.size();++ix) {
+    if(hardProcess[ix]->id()==ParticleID::Z0) {
+      mZ_ = hardProcess[ix]->mass();
+    }
+    else {
+      particleMass =  hardProcess[ix]->mass();
+    }
+  }
+  // reduced mass
+  mu_  = particleMass/mZ_;
+  mu2_ = sqr(mu_);
+  // scale
+  scale_ = sqr(mZ_);
   // max pT
   Energy pTmax = 0.5*sqrt(mz2_);
   // Define over valued y_max & y_min according to the associated pt_min cut.
