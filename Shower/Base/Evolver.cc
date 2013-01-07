@@ -1033,63 +1033,62 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 
 void Evolver::hardestEmission(bool hard) {
 
-  // map<ShowerProgenitorPtr, ShowerParticlePtr > in = currentTree()->incomingLines();
-  // map<ShowerProgenitorPtr, ShowerParticlePtr >::iterator itn;
-  // for (itn=in.begin();itn!=in.end();++itn){
-  //   cerr << (*itn).second->PDGName() << "\t";
-  // }
-  // cerr << " -> ";
+  map<ShowerProgenitorPtr, ShowerParticlePtr > in = currentTree()->incomingLines();
+  map<ShowerProgenitorPtr, ShowerParticlePtr >::iterator itn;
+  for (itn=in.begin();itn!=in.end();++itn){
+    cerr << (*itn).second->PDGName() << "\t";
+  }
+  cerr << " -> ";
 
-  // map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
-  // map<ShowerProgenitorPtr, tShowerParticlePtr >::iterator ito;
-  // for (ito=out.begin();ito!=out.end();++ito){
-  //   cerr << (*ito).second->PDGName() << "\t";
-  // }
-  // cerr << "\n";
+  map<ShowerProgenitorPtr, tShowerParticlePtr > out2 = currentTree()->outgoingLines();
+  map<ShowerProgenitorPtr, tShowerParticlePtr >::iterator ito;
+  for (ito=out2.begin();ito!=out2.end();++ito){
+    cerr << (*ito).second->PDGName() << "\t";
+  }
+  cerr << "\n";
 
+  HardTreePtr ISRTree;
   if( ( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0) ||
       ( _decayme && _decayme->hasPOWHEGCorrection()!=0)) {
     if(_hardme){
       _hardtree =  _hardme->generateHardest( currentTree() );
       //cerr << "hardme, POWHEG " << _hardme->hasPOWHEGCorrection() << endl;
       //cerr << "worked? " << bool(_hardtree) << endl;
-      //if(_hardtree) cout << "success" << endl;
     }
     else{
       _hardtree = _decayme->generateHardest( currentTree() );
       //cerr << "decayme, POWHEG " << _decayme->hasPOWHEGCorrection() << endl;
       //cerr << "worked? " << bool(_hardtree) << endl;
-      
     }
-    //if(!_hardtree) return;
-    if(_hardtree)
-      // join up the two tree
-      connectTrees(currentTree(),_hardtree,hard);
+    if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) ISRTree=_hardtree;
   }
 
   else {
     _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
-    //cerr << "CKKW " << endl;
-    //cerr << "worked? " << bool(_hardtree) << endl;
   }
     
   // if hard me doesn't have a FSR powheg correction use decay powheg correction
   if (_hardme && _hardme->hasPOWHEGCorrection()<2) {
-    //cerr << "hardme2, POWHEG " << _hardme->hasPOWHEGCorrection() << endl;
-        
+    cerr << "hardme2, POWHEG " << _hardme->hasPOWHEGCorrection() << endl;
+     
     // check for intermediate colour singlet resonance
     ParticleVector inter =  _hardme->subProcess()->intermediates();
-    if (inter.empty()) return;
-    //cerr << "inter " << inter[0]->PDGName() << endl;
     // might need to think about this
-    if (inter[0]->momentum().m2()/GeV2 < 0) return;
-    if (inter[0]->dataPtr()->iColour()!=PDT::Colour0) return;
+    if (inter.empty() || 
+	inter[0]->momentum().m2()/GeV2 < 0 || 
+	inter[0]->dataPtr()->iColour()!=PDT::Colour0){
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
    
     map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
-    if (out.size()!=2) return;
     // ignore cases where outgoing particles not coloured
-    if (out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
-    	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) return;
+    if (out.size()!=2 ||
+	out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
+    	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) {
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
 
     // look up decay mode
     tDMPtr dm;
@@ -1109,44 +1108,75 @@ void Evolver::hardestEmission(bool hard) {
 
     // get the decayer
     HwDecayerBasePtr decayer;   
-    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());    
+    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());   
     //if (decayer) cerr << decayer->hasPOWHEGCorrection() << endl;
     
     // check if decayer has a POWHEG correction and if it does generate the hardest emission
-    if (!decayer || decayer->hasPOWHEGCorrection()<2) return;
+    if (!decayer || decayer->hasPOWHEGCorrection()<2){
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
 
     ShowerDecayMap decay;
     ShowerTreePtr  decayTree = new_ptr(ShowerTree(inter[0], decay));
-    //cerr << "line1119" << endl;
     HardTreePtr   POWHEGTree = decayer->generateHardest(decayTree);
     //if(POWHEGTree) cerr << "powheg tree" << endl;
-    if (!POWHEGTree) return;
-    //cerr << "worked" << endl;
-    
+    if (!POWHEGTree) {
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
+
+     
     vector<HardBranchingPtr> inBranch,hardBranch;
     for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
-	  cit=currentTree()->incomingLines().begin();
+	cit =currentTree()->incomingLines().begin();
 	cit!=currentTree()->incomingLines().end();++cit ) {
       inBranch.push_back(new_ptr(HardBranching(cit->second,SudakovPtr(),
 					       HardBranchingPtr(),HardBranching::Incoming)));
-      hardBranch.push_back(inBranch.back());
       inBranch.back()->beam(cit->first->original()->parents()[0]);
+      if(!ISRTree)
+	hardBranch.push_back(inBranch.back());
     }
+         
     if(inBranch[0]->branchingParticle()->dataPtr()->coloured()) {
       inBranch[0]->colourPartner(inBranch[1]);
       inBranch[1]->colourPartner(inBranch[0]);
     }
-    for(set<HardBranchingPtr>::iterator it =POWHEGTree->branchings().begin();
-	it!=POWHEGTree->branchings().end();++it) {
-      if((**it).branchingParticle()->id()!=inter[0]->id()) 
-	hardBranch.push_back(*it);
+ 
+    if (ISRTree){
+      //cerr << "ISRTree " << *ISRTree << endl;
+      for(set<HardBranchingPtr>::iterator it =POWHEGTree->branchings().begin();
+	  it!=POWHEGTree->branchings().end();++it) {
+	if((**it).branchingParticle()->id()!=inter[0]->id()) {
+	  for(set<HardBranchingPtr>::iterator cit =ISRTree->branchings().begin();
+	      cit!=ISRTree->branchings().end();++cit) {
+	    if((**cit).status()==HardBranching::Incoming) continue;
+	    if ((**it).branchingParticle()->id()==(**cit).branchingParticle()->id()){
+	      (**cit).branchingParticle()->setMomentum((**it).branchingParticle()->momentum());
+	      if(!(**it).children().empty()){
+		(**cit).addChild((**it).children()[0]);
+		(**cit).addChild((**it).children()[1]);
+	      }
+	    }
+	  }
+	}
+      }
+      _hardtree = ISRTree;
     }
-    hardBranch[2]->colourPartner(hardBranch[3]);
-    hardBranch[3]->colourPartner(hardBranch[2]);
-    HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
-    _hardtree = newTree;
-    connectTrees(currentTree(),_hardtree,hard);
+    else {
+      for(set<HardBranchingPtr>::iterator it =POWHEGTree->branchings().begin();
+	  it!=POWHEGTree->branchings().end();++it) {
+	if((**it).branchingParticle()->id()!=inter[0]->id()) hardBranch.push_back(*it);
+      } 
+      hardBranch[2]->colourPartner(hardBranch[3]);
+      hardBranch[3]->colourPartner(hardBranch[2]);
+      
+      HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));      
+      _hardtree = newTree;
+    }
+    //cerr << "hardtree " << *_hardtree << endl;
   }
+  if(_hardtree) connectTrees(currentTree(),_hardtree,hard); 
 }
 
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,

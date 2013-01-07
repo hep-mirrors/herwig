@@ -80,8 +80,8 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  //virtual bool hasPOWHEGCorrection() {return false;}
-  virtual POWHEGType hasPOWHEGCorrection() {return No;}
+  virtual POWHEGType hasPOWHEGCorrection() {cerr << "HwDecayerBase" << endl; return No;}
+
 
   /**
    *  Has an old fashioned ME correction
@@ -114,10 +114,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr) {
-    cerr << "called2" << endl;
-    return HardTreePtr();
-  }
+  virtual HardTreePtr generateHardest(ShowerTreePtr) {return HardTreePtr();}
   //@}
 
 protected:

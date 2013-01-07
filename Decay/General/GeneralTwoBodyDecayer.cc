@@ -952,17 +952,29 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   // require at least one gluon
   assert(oct.size()>=1);
 
-  colour_ = vector<DVector>(1,DVector(1,1));
+  // identical particle symmetry factor
+  double symFactor=1.;
+  if (( sing.size()==2 && decay[ sing[0]]->id()==decay[ sing[1]]->id()) ||
+      ( trip.size()==2 && decay[ trip[0]]->id()==decay[ trip[1]]->id()) ||
+      (atrip.size()==2 && decay[atrip[0]]->id()==decay[atrip[1]]->id()) ||
+      (  oct.size()==2 && decay[  oct[0]]->id()==decay[  oct[1]]->id()))
+    symFactor/=2.;
+  else if (oct.size()==3 && 
+	   decay[oct[0]]->id()==decay[oct[1]]->id() &&
+	   decay[oct[0]]->id()==decay[oct[2]]->id())
+    symFactor/=6.;
+  
+  colour_ = vector<DVector>(1,DVector(1,symFactor*1));
   
   // decaying colour singlet   
   if(inpart.dataPtr()->iColour() == PDT::Colour0) {
     if(trip.size()==1 && atrip.size()==1 && oct.size()==1) {
       nflow = 1;
-      colour_ = vector<DVector>(1,DVector(1,4.));
+      colour_ = vector<DVector>(1,DVector(1,symFactor*4.));
     }
     else if (oct.size()==3){
       nflow = 1.;
-      colour_ = vector<DVector>(1,DVector(1,12.));
+      colour_ = vector<DVector>(1,DVector(1,symFactor*24.));
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -978,13 +990,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   else if(inpart.dataPtr()->iColour() == PDT::Colour3) {
     if(trip.size()==1 && sing.size()==1 && oct.size()==1) {
       nflow = 1;
-      colour_ = vector<DVector>(1,DVector(1,4./3.));
+      colour_ = vector<DVector>(1,DVector(1,symFactor*4./3.));
     }
     else if(trip.size()==1 && oct.size()==2) {
       nflow = 2;
       colour_ .resize(2,DVector(2,0.));
-      colour_[0][0] = 16./9.; colour_[0][1] = -2./9.;
-      colour_[1][0] = -2./9.; colour_[1][1] = 16./9.;
+      colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
+      colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -1000,13 +1012,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   else if(inpart.dataPtr()->iColour() == PDT::Colour3bar) {
     if(atrip.size()==1 && sing.size()==1 && oct.size()==1) {
       nflow = 1;
-      colour_ = vector<DVector>(1,DVector(1,4./3.));
+      colour_ = vector<DVector>(1,DVector(1,symFactor*4./3.));
     }
     else if(atrip.size()==1 && oct.size()==2){
       nflow = 2;
       colour_ .resize(2,DVector(2,0.));
-      colour_[0][0] = 16./9.; colour_[0][1] = -2./9.;
-      colour_[1][0] = -2./9.; colour_[1][1] = 16./9.;
+      colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
+      colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -1023,8 +1035,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     if(oct.size()==1 && trip.size()==1 && atrip.size()==1) {
       nflow = 2;
       colour_ .resize(2,DVector(2,0.));
-      colour_[0][0] =  2./3. ; colour_[0][1] = -1./12.;
-      colour_[1][0] = -1./12.; colour_[1][1] =  2./3. ;
+      colour_[0][0] =  symFactor*2./3. ; colour_[0][1] = -symFactor*1./12.;
+      colour_[1][0] = -symFactor*1./12.; colour_[1][1] =  symFactor*2./3. ;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"

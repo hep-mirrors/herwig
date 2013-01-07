@@ -90,8 +90,19 @@ public:
    */
   virtual bool accept(tcPDPtr parent, const tPDVector & children) const {
     bool cc;
+
     return modeNumber(cc,parent,children)>=0;
   }
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {cerr << "DecayIntegrator" << endl; return No;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr){return HardTreePtr();}
   
   /**
    * For a given decay mode and a given particle instance, perform the

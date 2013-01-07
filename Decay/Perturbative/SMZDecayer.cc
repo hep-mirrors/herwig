@@ -927,12 +927,147 @@ double SMZDecayer::PS(double x, double xbar) {
   return brack/den;
 }
 
-// HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree){
-//   cerr << "tree\n";
-//   if (tree){
-//     VFFDecayer decayer = VFFDecayer();
-//     //cerr << "here " << bool(decayer.generateHardest(tree)) << endl;
-//     return decayer.generateHardest(tree);
+
+// HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
+
+//   ShowerProgenitorPtr 
+//     cProgenitor = tree->outgoingLines(). begin()->first,
+//     aProgenitor = tree->outgoingLines().rbegin()->first;
+//   // get the decaying particle
+//   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
+  
+//   // find rotation from lab to frame with the spectator along -z
+//   LorentzRotation eventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
+//   Lorentz5Momentum pspectator = eventFrame*cProgenitor->progenitor()->momentum();
+//   eventFrame.rotateZ( -pspectator.phi() );
+//   eventFrame.rotateY( -pspectator.theta() - Constants::pi );
+//   // invert it
+//   eventFrame.invert();
+
+//   // try to generate a branching
+  
+//   vector<Lorentz5Momentum> momenta (4);
+//   double xe=0.9;
+//   double xe_z = 0.7;
+//   double xs=0.9;
+//   double y = 3.;
+//   Energy mb_  = bProgenitor  ->progenitor()->momentum().mass();
+//   double e_   = cProgenitor  ->progenitor()->momentum().mass() / mb_;
+//   double s_   = aProgenitor->progenitor()->momentum().mass() / mb_;
+//   double e2_  = sqr(e_);
+//   double s2_  = sqr(s_);
+//   double phi =0.1 ;
+//   Energy pT_=  3.*GeV;
+//   Energy pTmin_=  1.*GeV;
+
+//   // calculate 4 momenta
+//   momenta[0].setE   ( mb_);
+//   momenta[0].setX   ( ZERO);
+//   momenta[0].setY   ( ZERO);
+//   momenta[0].setZ   ( ZERO);
+//   momenta[0].setMass( mb_);
+
+//   momenta[1].setE   ( mb_*xe/2.);
+//   momenta[1].setX   (-pT_*cos(phi));
+//   momenta[1].setY   (-pT_*sin(phi));
+//   momenta[1].setZ   ( mb_*xe_z/2.);
+//   momenta[1].setMass( mb_*e_);
+
+//   momenta[2].setE   ( mb_*xs/2.);
+//   momenta[2].setX   ( ZERO);
+//   momenta[2].setY   ( ZERO);
+//   momenta[2].setZ   (-mb_*sqrt(sqr(xs) - 4.*s2_)/2.);
+//   momenta[2].setMass( mb_*s_);
+
+//   momenta[3].setE   ( pT_*cosh(y));
+//   momenta[3].setX   ( pT_*cos(phi));
+//   momenta[3].setY   ( pT_*sin(phi));
+//   momenta[3].setZ   ( pT_*sinh(y));
+//   momenta[3].setMass( ZERO);
+
+
+//   // if no emission return
+//   if(momenta.empty()) {
+//     bProgenitor   ->maximumpT(pTmin_);
+//     aProgenitor   ->maximumpT(pTmin_);
+//     cProgenitor   ->maximumpT(pTmin_);
+//     return HardTreePtr();
 //   }
-//   return HardTreePtr();
+
+//   // rotate momenta back to the lab
+//   for(unsigned int ix=0;ix<momenta.size();++ix) {
+//     momenta[ix] *= eventFrame;
+//   }
+ 
+//   // set maximum pT for subsequent branchings
+//   bProgenitor   ->maximumpT(pT_);
+//   cProgenitor  ->maximumpT(pT_);
+//   aProgenitor->maximumpT(pT_);
+
+//   // get ParticleData objects
+//   tcPDPtr b = bProgenitor   ->progenitor()->dataPtr();
+//   tcPDPtr e = cProgenitor  ->progenitor()->dataPtr();
+//   tcPDPtr s = aProgenitor->progenitor()->dataPtr();
+//   tcPDPtr gluon  = getParticleData(ParticleID::g);
+
+//   // create new ShowerParticles
+//   ShowerParticlePtr emitter  (new_ptr(ShowerParticle(e,     true )));
+//   ShowerParticlePtr spectator(new_ptr(ShowerParticle(s,     true )));
+//   ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon, true )));
+//   ShowerParticlePtr incoming (new_ptr(ShowerParticle(b,     false)));
+//   ShowerParticlePtr parent   (new_ptr(ShowerParticle(e,     true )));
+
+//   // set momenta
+//   emitter  ->set5Momentum(momenta[1]); 
+//   spectator->set5Momentum(momenta[2]);  
+//   gauge    ->set5Momentum(momenta[3]); 
+//   incoming ->set5Momentum(bProgenitor->progenitor()->momentum());  
+//   Lorentz5Momentum parentMomentum(momenta[1]+momenta[3]);
+//   parentMomentum.rescaleMass();
+//   parent->set5Momentum(parentMomentum);
+
+//   // create the vectors of HardBranchings to create the HardTree:
+//   vector<HardBranchingPtr> spaceBranchings,allBranchings;
+//   // incoming particle b
+//   spaceBranchings.push_back(new_ptr(HardBranching(incoming,SudakovPtr(),
+// 						  HardBranchingPtr(),
+// 						  HardBranching::Incoming)));
+//   // outgoing particles from hard emission:
+//   HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
+// 							 HardBranchingPtr(),
+// 							 HardBranching::Outgoing)));
+//   HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
+// 						       HardBranchingPtr(),
+// 						       HardBranching::Outgoing)));
+//   emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
+// 						HardBranchingPtr(),
+// 						HardBranching::Outgoing)));
+//   emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
+// 						HardBranchingPtr(),
+// 						HardBranching::Outgoing)));
+//   allBranchings.push_back(spaceBranchings[0]);
+//   allBranchings.push_back(emitterBranch);
+//   allBranchings.push_back(spectatorBranch);
+//   // make the HardTree from the HardBranching vectors.
+//   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
+// 					  ShowerInteraction::QCD));
+
+//   // connect the particles with the branchings in the HardTree
+//   hardtree->connect( bProgenitor   ->progenitor(), spaceBranchings[0] );
+//   hardtree->connect( cProgenitor  ->progenitor(),   allBranchings[1] );
+//   hardtree->connect( aProgenitor->progenitor(),   allBranchings[2] );
+
+//   // set up colour lines
+//   // colour flow
+//   ColinePtr newline=new_ptr(ColourLine());
+//   for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+//       cit!=hardtree->branchings().end();++cit) {
+//     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+//       newline->addColoured((**cit).branchingParticle());
+//     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+//       newline->addAntiColoured((**cit).branchingParticle());
+//   }
+  
+//   // return the tree
+//   return hardtree;  
 // }

@@ -9,8 +9,9 @@
 #include "Herwig++/Utilities/Maths.h"
 
 namespace Herwig {
-
+  
 using namespace ThePEG;
+
 
 /**
  * Here is the documentation of the SMZFermionsPOWHEGDecayer class.
@@ -18,32 +19,29 @@ using namespace ThePEG;
  * @see \ref SMZFermionsPOWHEGDecayerInterfaces "The interfaces"
  * defined for SMZFermionsPOWHEGDecayer.
  */
-class SMZFermionsPOWHEGDecayer: public SMZDecayer {
+  class SMZFermionsPOWHEGDecayer: public SMZDecayer{
 
 public:
 
   /**
    * The default constructor.
    */
-  SMZFermionsPOWHEGDecayer();
-
-  /**
-   *  Virtual members to be overridden by inheriting classes
-   *  which implement hard corrections 
-   */
-  //@{
+    SMZFermionsPOWHEGDecayer();
+    
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
-
+  virtual POWHEGType hasPOWHEGCorrection() {cerr << "SMZFermionsDecayer" << endl; return FSR;}
 
   /**
    *  Apply the POWHEG style correction
    */
   virtual HardTreePtr generateHardest(ShowerTreePtr);
-  //@}
-
+  
+  /**
+   *  Virtual members to be overridden by inheriting classes
+   *  which implement hard corrections 
+   */
   virtual double me2(const int ichan, const Particle & part,
 		     const ParticleVector & decay, MEOption meopt) const;
 

@@ -11,6 +11,7 @@
 //
 // This is the declaration of the SMZDecayer class.
 //
+
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
@@ -28,7 +29,7 @@ using namespace ThePEG::Helicity;
  * @see DecayIntegrator
  * 
  */
-class SMZDecayer: public DecayIntegrator {
+  class SMZDecayer: public DecayIntegrator {
 
 public:
 
@@ -37,7 +38,17 @@ public:
    */
   SMZDecayer();
 
-public:
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {cerr << "SMZDecayer" << endl; return No;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr){cerr << "SMZDecayer2\n";
+    return HardTreePtr();}
+
 
   /**
    *  Virtual members to be overridden by inheriting classes
