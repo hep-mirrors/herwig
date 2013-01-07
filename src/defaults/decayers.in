@@ -6491,6 +6491,25 @@ newdef ZDecayer:Points 10000
 newdef ZDecayer:GenerateIntermediates 0 
 newdef ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
+#
+create Herwig::SMZFermionsPOWHEGDecayer ZPowhegDecayer HwPerturbativeDecay.so
+newdef ZPowhegDecayer:Coupling /Herwig/Shower/AlphaQCD
+newdef ZPowhegDecayer:QuarkMax 0 0.43
+newdef ZPowhegDecayer:QuarkMax 1 0.30
+newdef ZPowhegDecayer:QuarkMax 2 0.43
+newdef ZPowhegDecayer:QuarkMax 3 0.30
+newdef ZPowhegDecayer:QuarkMax 4 0.43
+newdef ZPowhegDecayer:LeptonMax 0 0.1
+newdef ZPowhegDecayer:LeptonMax 1 0.2
+newdef ZPowhegDecayer:LeptonMax 2 0.1
+newdef ZPowhegDecayer:LeptonMax 3 0.2
+newdef ZPowhegDecayer:LeptonMax 4 0.1
+newdef ZPowhegDecayer:LeptonMax 5 0.2
+newdef ZPowhegDecayer:Iteration 1
+newdef ZPowhegDecayer:Ntry 500
+newdef ZPowhegDecayer:Points 10000
+newdef ZPowhegDecayer:GenerateIntermediates 0 
+newdef ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMWDecayer  WDecayer
