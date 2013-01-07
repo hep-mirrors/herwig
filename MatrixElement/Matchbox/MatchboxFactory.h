@@ -353,6 +353,34 @@ public:
     return theSplittingDipoles;
   }
 
+  /**
+   * Identify a splitting channel
+   */
+  struct SplittingChannel {
+
+    /**
+     * The Born XComb
+     */
+    StdXCombPtr bornXComb;
+
+    /**
+     * The real XComb
+     */
+    StdXCombPtr realXComb;
+
+    /**
+     * The dipole in charge of the splitting
+     */
+    Ptr<SubtractionDipole>::ptr dipole;
+
+  };
+
+  /**
+   * Generate all splitting channels for the Born process handled by
+   * the given XComb
+   */
+  list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
+
   //@}
 
   /** @name Setup the matrix elements */

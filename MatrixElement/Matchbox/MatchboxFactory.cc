@@ -605,6 +605,55 @@ void MatchboxFactory::setup() {
 
 }
 
+list<MatchboxFactory::SplittingChannel> 
+MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
+
+  if ( xcptr->lastProjector() )
+    xcptr = xcptr->lastProjector();
+
+  const StandardXComb& xc = *xcptr;
+
+  cPDVector proc = xc.mePartonData();
+
+  map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator splitEntries
+    = splittingDipoles().find(proc);
+
+  list<SplittingChannel> res;
+  if ( splitEntries == splittingDipoles().end() )
+    return res;
+
+  const set<Ptr<SubtractionDipole>::ptr>& splitDipoles = splitEntries->second;
+
+
+  for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator sd =
+	  splitDipoles.begin(); sd != splitDipoles.end(); ++sd ) {
+
+    Ptr<MatchboxMEBase>::tptr bornME = 
+      const_ptr_cast<Ptr<MatchboxMEBase>::tptr>((**sd).underlyingBornME());
+
+    SplittingChannel channel;
+    channel.dipole = *sd;
+    channel.bornXComb =
+      bornME->makeXComb(xc.maxEnergy(),xc.particles(),xc.eventHandlerPtr(),
+			const_ptr_cast<tSubHdlPtr>(xc.subProcessHandler()),
+			xc.pExtractor(),xc.CKKWHandler(),
+			xc.partonBins(),xc.cuts(),xc.diagrams(),xc.mirror(),
+			PartonPairVec());
+
+    vector<StdXCombPtr> realXCombs = (**sd).makeRealXCombs(channel.bornXComb);
+
+    for ( vector<StdXCombPtr>::const_iterator rxc = realXCombs.begin();
+	  rxc != realXCombs.end(); ++rxc ) {
+      channel.realXComb = *rxc;
+      res.push_back(channel);
+    }
+
+  }
+
+  return res;
+
+}
+
 void MatchboxFactory::print(ostream& os) const {
 
   os << "--- MatchboxFactory setup -----------------------------------------------------------\n";
