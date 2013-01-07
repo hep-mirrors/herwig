@@ -48,6 +48,14 @@ public:
 public:
 
   /**
+   * Return true, if this shower approximation will require a
+   * splitting generator
+   */
+  virtual bool needsSplittingGenerator() const { return false; }
+
+public:
+
+  /**
    * Set the XComb object describing the Born process
    */
   void setBornXComb(tStdXCombPtr xc) { theBornXComb = xc; }
