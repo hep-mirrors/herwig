@@ -396,6 +396,10 @@ bool SubtractionDipole::generateKinematics(const double * r) {
       return false;
     realEmissionME()->lastXCombPtr()->setIncomingPartons();
     realEmissionME()->setScale();
+    double jac = jacobian();
+    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
+	       realEmissionME()->lastXComb().mePartonData().size()-4.);
+    jacobian(jac);
     assert(lastXCombPtr() == realEmissionME()->lastXCombPtr());
     return true;
   }
@@ -555,10 +559,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     lastME2(0.0);
     return ZERO;
   }
-
-  if ( splitting() )
-    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
-	       realEmissionME()->lastXComb().mePartonData().size()-4.);
 
   if ( havePDFWeight1() || havePDFWeight2() ) {
     if ( splitting() )
