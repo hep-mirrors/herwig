@@ -38,7 +38,7 @@ cd /Herwig/MatrixElements/
 #  Electroweak boson W/Z processes
 #
 # Drell-Yan Z/gamma
-#insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 #
 # Drell-Yan W
 #insert SimpleQCD:MatrixElements[0] MEqq2W2ff
@@ -97,7 +97,7 @@ cd /Herwig/MatrixElements/
 #insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
 #
 # t tbar Higgs
-insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
+#insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
 #
 # b bbar Higgs
 #insert SimpleQCD:MatrixElements[0] MEPP2bbbarH
