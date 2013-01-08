@@ -306,6 +306,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("8971293")>0 or 
         hpath.find("8817804")>0 or 
         hpath.find("8968497")>0 or 
+        hpath.find("9120041")>0 or 
         hpath.find("9126244")>0 or 
         hpath.find("926145") >0 or 
         hpath.find("9086218")>0 or 
@@ -764,8 +765,8 @@ useOnePt("/ATLAS_2011_S9126244/d43-x01-y02", "7000", "210" )
 
 # CMS_2011_S9120041 UE analysis
 logging.info("Processing CMS_2011_S9120041")
-useOnePt("/CMS_2011_S9120041/d01-x01-y01", "7000", "0" )
-useOnePt("/CMS_2011_S9120041/d02-x01-y01", "7000", "0" )
+mergeByPt("/CMS_2011_S9120041/d01-x01-y01", "7000")
+mergeByPt("/CMS_2011_S9120041/d02-x01-y01", "7000")
 useOnePt("/CMS_2011_S9120041/d03-x01-y01",  "900", "0" )
 useOnePt("/CMS_2011_S9120041/d04-x01-y01",  "900", "0" )
 useOnePt("/CMS_2011_S9120041/d05-x01-y01", "7000", "0" )
