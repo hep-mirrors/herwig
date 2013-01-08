@@ -342,7 +342,7 @@ double FlatInvertiblePhasespace::generateKinematics(const double* r,
   for ( ; pcm != cmMomenta.end(); ++pcm, ++plab )
     *plab = pcm->boost(toLab);
 
-  return weight;
+  return weight/(x1*x2);
 
 }
 
@@ -389,7 +389,10 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 
   weight *= invertKinematics(cmMomenta,sqrt(lastXCombPtr()->lastSHat()),r+2);
 
-  return weight;
+  double x1 = lastXCombPtr()->lastX1();
+  double x2 = lastXCombPtr()->lastX2();
+
+  return weight/(x1*x2);
 
 }
 
