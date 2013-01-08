@@ -21,7 +21,6 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxNLOME.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
 
 namespace Herwig {
@@ -310,12 +309,12 @@ public:
   /**
    * Return the produced NLO matrix elements
    */
-  const vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
+  const vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
 
   /**
    * Access the produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
+  vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
 
   /**
    * Return the real emission matrix elements to be considered
@@ -354,6 +353,34 @@ public:
     return theSplittingDipoles;
   }
 
+  /**
+   * Identify a splitting channel
+   */
+  struct SplittingChannel {
+
+    /**
+     * The Born XComb
+     */
+    StdXCombPtr bornXComb;
+
+    /**
+     * The real XComb
+     */
+    StdXCombPtr realXComb;
+
+    /**
+     * The dipole in charge of the splitting
+     */
+    Ptr<SubtractionDipole>::ptr dipole;
+
+  };
+
+  /**
+   * Generate all splitting channels for the Born process handled by
+   * the given XComb
+   */
+  list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
+
   //@}
 
   /** @name Setup the matrix elements */
@@ -391,6 +418,16 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
+
+  /**
+   * Return true, if verbose while initializing
+   */
+  bool initVerbose() const { return theInitVerbose || verbose(); }
+
+  /**
+   * Switch on diagnostic information while initializing
+   */
+  void setInitVerbose(bool on = true) { theInitVerbose = on; }
 
   /**
    * Dump the setup
@@ -610,7 +647,7 @@ private:
   /**
    * The produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr> theBornVirtualMEs;
+  vector<Ptr<MatchboxMEBase>::ptr> theBornVirtualMEs;
 
   /**
    * The produced subtracted matrix elements
@@ -626,6 +663,11 @@ private:
    * Switch on or off verbosity
    */
   bool theVerbose;
+
+  /**
+   * True, if verbose while initializing
+   */
+  bool theInitVerbose;
 
   /**
    * Prefix for subtraction data

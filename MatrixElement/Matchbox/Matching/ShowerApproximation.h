@@ -48,6 +48,14 @@ public:
 public:
 
   /**
+   * Return true, if this shower approximation will require a
+   * splitting generator
+   */
+  virtual bool needsSplittingGenerator() const { return false; }
+
+public:
+
+  /**
    * Set the XComb object describing the Born process
    */
   void setBornXComb(tStdXCombPtr xc) { theBornXComb = xc; }
@@ -113,7 +121,7 @@ public:
 
   /**
    * Return the shower approximation to the real emission cross
-   * section for the given pair of Bron and real emission
+   * section for the given pair of Born and real emission
    * configurations.
    */
   virtual CrossSection dSigHatDR() const = 0;
@@ -121,7 +129,7 @@ public:
   /**
    * Return the shower approximated real emission cross section
    * divided by the Born cross section and the radiation phasespace
-   * jacobian for the given pair of Bron and real emission
+   * jacobian for the given pair of Born and real emission
    * configurations.
    */
   virtual double me2() const = 0;

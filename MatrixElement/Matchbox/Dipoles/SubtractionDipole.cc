@@ -389,11 +389,17 @@ void SubtractionDipole::setKinematics() {
 }
 
 bool SubtractionDipole::generateKinematics(const double * r) {
+  if ( lastXCombPtr()->kinematicsGenerated() )
+    return true;
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
     realEmissionME()->lastXCombPtr()->setIncomingPartons();
     realEmissionME()->setScale();
+    double jac = jacobian();
+    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
+	       realEmissionME()->lastXComb().mePartonData().size()-4.);
+    jacobian(jac);
     assert(lastXCombPtr() == realEmissionME()->lastXCombPtr());
     return true;
   }
@@ -402,20 +408,14 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  lastXCombPtr()->didGenerateKinematics();
   return true;
 }
 
 int SubtractionDipole::nDim() const {
   if ( !splitting() )
     return underlyingBornME()->nDim();
-  int alldim =
-    underlyingBornME()->nDim() + nDimRadiation();
-  // don't mess with random number for collinear remainders
-  // see MEGroup.cc:55 and MatchboxNLOME
-  if ( underlyingBornME()->diagrams().front()->partons()[0]->coloured() ||
-       underlyingBornME()->diagrams().front()->partons()[1]->coloured() )
-    ++alldim;
-  return alldim;
+  return underlyingBornME()->nDim() + nDimRadiation();
 }
 
 void SubtractionDipole::clearKinematics() {
@@ -550,6 +550,23 @@ void SubtractionDipole::ptCut(Energy cut) {
 
 CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
+  double pdfweight = 1.;
+
+  double jac = jacobian();
+
+  if ( splitting() && jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
+    return ZERO;
+  }
+
+  if ( havePDFWeight1() || havePDFWeight2() ) {
+    if ( splitting() )
+      realEmissionME()->getPDFWeight(factorizationScale);
+    pdfweight = realEmissionME()->lastXComb().lastMEPDFWeight();
+    lastMEPDFWeight(pdfweight);
+  }
+
   if ( showerApproximation() && realShowerSubtraction() ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
@@ -562,42 +579,9 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       lastME2(0.0);
       return ZERO;   
     }
-    return -showerApproximation()->dSigHatDR();
-  }
-
-  double pdfweight = 1.;
-
-  double jac = jacobian();
-
-  if ( splitting() && jac == 0.0 )
-    return ZERO;
-
-  if ( splitting() )
-    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
-	       realEmissionME()->lastXComb().mePartonData().size()-4.);
-
-  if ( havePDFWeight1() || havePDFWeight2() ) {
-    if ( splitting() )
-      realEmissionME()->getPDFWeight(factorizationScale);
-    pdfweight = realEmissionME()->lastXComb().lastMEPDFWeight();
-    lastMEPDFWeight(pdfweight);
-  }
-
-  CrossSection res = ZERO;
-
-  if ( showerApproximation() && virtualShowerSubtraction() ) {
-    if ( !splitting() ) {
-      showerApproximation()->setBornXComb(lastXCombPtr());
-      showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
-    } else {
-      showerApproximation()->setBornXComb(underlyingBornME()->lastXCombPtr());
-      showerApproximation()->setRealXComb(lastXCombPtr());
-    }
-    showerApproximation()->setDipole(this);
-    if ( !showerApproximation()->isAboveCutoff() )
-      showerApproximation()->wasBelowCutoff();
-    if ( showerApproximation()->isInShowerPhasespace() )
-      res = showerApproximation()->dSigHatDR();
+    lastME2(me2());
+    lastMECrossSection(-showerApproximation()->dSigHatDR());
+    return lastMECrossSection();
   }
 
   double xme2 = 0.0;
@@ -608,31 +592,47 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     xme2 = me2Avg(-underlyingBornME()->me2());
 
   if ( xme2 == 0.0 ) {
-    lastMECrossSection(res);
+    lastMECrossSection(ZERO);
     lastME2(0.0);
-    return res;
+    return ZERO;
   }
 
   lastME2(xme2);
 
-  res -= 
+  CrossSection res = 
     sqr(hbarc) * jac * pdfweight * xme2 /
     (2. * realEmissionME()->lastXComb().lastSHat());
 
-  double weight = 0.0;
-  bool applied = false;
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    (**rw).setXComb(theRealEmissionME->lastXCombPtr());
-    if ( !(**rw).apply() )
-      continue;
-    weight += (**rw).evaluate();
-    applied = true;
+  if ( !showerApproximation() ) {
+    double weight = 0.0;
+    bool applied = false;
+    for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
+	    theReweights.begin(); rw != theReweights.end(); ++rw ) {
+      (**rw).setXComb(theRealEmissionME->lastXCombPtr());
+      if ( !(**rw).apply() )
+	continue;
+      weight += (**rw).evaluate();
+      applied = true;
+    }
+    if ( applied )
+      res *= weight;
   }
-  if ( applied )
-    res *= weight;
 
-  lastMECrossSection(res);
+  if ( showerApproximation() && virtualShowerSubtraction() ) {
+    assert(!splitting());
+    showerApproximation()->setBornXComb(lastXCombPtr());
+    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
+    showerApproximation()->setDipole(this);
+    if ( !showerApproximation()->isAboveCutoff() )
+      showerApproximation()->wasBelowCutoff();
+    CrossSection shower = ZERO;
+    if ( showerApproximation()->isInShowerPhasespace() )
+      shower = showerApproximation()->dSigHatDR();
+    vector<double> ratio(1,shower/res);
+    meInfo(ratio);
+  }
+
+  lastMECrossSection(-res);
 
   logDSigHatDR(jac);
 

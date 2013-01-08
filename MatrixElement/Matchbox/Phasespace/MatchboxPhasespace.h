@@ -169,6 +169,22 @@ public:
 public:
 
   /**
+   * Return true, if this phase space generator is invertible
+   */
+  virtual bool isInvertible() const { return false; }
+
+  /**
+   * Invert the given phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertKinematics(const vector<Lorentz5Momentum>&,
+				  double*) const {
+    return 0.;
+  }
+
+public:
+
+  /**
    * Limit phasespace generation to a given collinear or soft limit.
    */
   void singularLimit(size_t i, size_t j) {

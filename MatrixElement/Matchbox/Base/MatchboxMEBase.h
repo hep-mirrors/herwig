@@ -185,6 +185,13 @@ public:
   virtual void setXComb(tStdXCombPtr xc);
 
   /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
+
+  /**
    * Generate incoming parton momenta. This default
    * implementation performs the standard mapping
    * from x1,x2 -> tau,y making 1/tau flat; incoming
@@ -240,13 +247,6 @@ public:
     return 
       (phasespace() ? phasespace()->wantCMS() : true) &&
       diagrams().front()->partons().size() != 3; }
-
-  /**
-   * Return true, if the XComb steering this matrix element
-   * should keep track of the random numbers used to generate
-   * the last phase space point
-   */
-  virtual bool keepRandomNumbers() const { return true; }
 
   /**
    * Return the meMomenta as generated at the last
@@ -671,6 +671,11 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
+
+  /**
+   * Dump the setup to an ostream
+   */
+  void print(ostream&) const;
 
   /**
    * Print debug information on the last event
