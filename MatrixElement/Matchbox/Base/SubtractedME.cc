@@ -196,56 +196,7 @@ void SubtractedME::doVirtualShowerSubtraction() {
   }
 }
 
-void SubtractedME::setVetoScales(tSubProPtr subpro) const {
-
-  if ( !vetoScales() )
-    return;
-
-  Ptr<SubtractionDipole>::tptr dipole;
-  Energy pt;
-
-  assert(head()->noMirror());
-
-  for ( MEVector::const_iterator d = dependent().begin();
-	d != dependent().end(); ++d ) {
-
-    dipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*d);
-    assert(dipole);
-    pt = dipole->lastPt();
-
-    if ( dipole->realEmitter() == 0 ||
-	 dipole->realSpectator() == 0 ) {
-      if ( subpro->incoming().first->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().first->vetoScale() > sqr(pt) )
-	subpro->incoming().first->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() == 1 ||
-	 dipole->realSpectator() == 1 ) {
-      if ( subpro->incoming().second->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().second->vetoScale() > sqr(pt) )
-	subpro->incoming().second->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() > 1 ) {
-      if ( subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realEmitter()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realSpectator() > 1 ) {
-      if ( subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realSpectator()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( subpro->outgoing()[dipole->realEmission()-2]->vetoScale() < 0.0*GeV2 ||
-	 subpro->outgoing()[dipole->realEmission()-2]->vetoScale() > sqr(pt) )
-      subpro->outgoing()[dipole->realEmission()-2]->vetoScale(sqr(pt));  
-
-  }
-
-}
+void SubtractedME::setVetoScales(tSubProPtr) const {}
 
 void SubtractedME::fillProjectors() {
   if ( !inclusive() && !virtualShowerSubtraction() )
@@ -259,34 +210,48 @@ void SubtractedME::fillProjectors() {
   }
 }
 
-double SubtractedME::reweightHead() {
-  double sum = 0.;
+double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
   if ( realShowerSubtraction() ) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
-    showerApproximation()->resetBelowCutoff();
     if ( below )
       return 0.;
-    return lastXComb().projectors().size();
+    return 1.;
   }
   if ( virtualShowerSubtraction() ) {
     assert(showerApproximation());
     bool above = !showerApproximation()->belowCutoff();
-    showerApproximation()->resetBelowCutoff();
     if ( above )
       return 0.;
   }
-  for ( Selector<tStdXCombPtr>::const_iterator d =
-	  lastXComb().projectors().begin(); d != lastXComb().projectors().end(); ++d )
-    sum += d->second->lastME2();
+  double sum = 0.;
+  for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+    sum += (**d).lastME2();
   return
-    lastXComb().projectors().size() * lastXComb().lastProjector()->lastME2() / sum;
+    dep.size() * lastXComb().lastProjector()->lastME2() / sum;
 }
 
-double SubtractedME::reweightDependent(tStdXCombPtr xc) {
+double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
+  if ( realShowerSubtraction() ) {
+    assert(showerApproximation());
+    double sum = 0.;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+      sum += (**d).lastME2();
+    return xc->lastME2()/sum;
+  }
   if ( xc != lastXComb().lastProjector() )
     return 0.;
-  return lastXComb().projectors().size();
+  double w = 1.;
+  if ( virtualShowerSubtraction() ) {
+    assert(showerApproximation());
+    double sum = 0.;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+      sum += (**d).lastME2();
+    assert(xc->meInfo().size() == 1);
+    double r = xc->meInfo()[0];
+    w -= xc->lastME2()*r/sum;
+  }
+  return w * dep.size();
 }
 
 void SubtractedME::doinit() {

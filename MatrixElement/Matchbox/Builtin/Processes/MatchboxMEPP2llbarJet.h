@@ -52,7 +52,7 @@ public:
    * The number of internal degreed of freedom used in the matrix
    * element.
    */
-  virtual int nDim() const { return phasespace() ? phasespace()->nDim(3) : 5; }
+  virtual int nDimBorn() const { return phasespace() ? phasespace()->nDim(3) : 5; }
 
   /**
    * Return the order in \f$\alpha_S\f$ in which this matrix element

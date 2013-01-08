@@ -1,7 +1,7 @@
 SUBDIRS = \
 Base Utility Phasespace \
-Dipoles InsertionOperators Powheg Matching \
-Builtin
+Dipoles InsertionOperators Matching \
+Builtin Tests
 
 if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwMatchbox.la
@@ -14,10 +14,10 @@ Utility/libHwMatchboxUtility.la \
 Phasespace/libHwMatchboxPhasespace.la \
 Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
-Powheg/libHwMatchboxPowheg.la \
 Matching/libHwMatchboxMatching.la \
 Builtin/Processes/libHwMatchboxBuiltinProcesses.la \
-Builtin/Amplitudes/libHwMatchboxBuiltinAmplitudes.la
+Builtin/Amplitudes/libHwMatchboxBuiltinAmplitudes.la \
+Tests/libHwMatchboxTests.la
 
 HwMatchbox_la_SOURCES =  \
 MatchboxFactory.h MatchboxFactory.cc
