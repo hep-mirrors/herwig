@@ -191,14 +191,13 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
     for(ihel2=0;ihel2<2;++ihel2) {
       // wavefunction for the intermediate 1st vector
       inter[0] = vertex->evaluate(mb2,1,vec,fin[ihel1],ain[ihel2]);
-      // after the emission of the higgs
-      inter[1] = _vertexWWH->evaluate(mb2,1,vec,inter[0],higgs);
       // boson decay piece
       for(ohel1=0;ohel1<2;++ohel1) {
 	for(ohel2=0;ohel2<2;++ohel2) {
-	  diag = vertex->evaluate(sqr(inter[1].particle()->mass()),
-				  aout[ohel2],fout[ohel1],inter[1]);
-	  me += norm(diag);
+	  inter[1] = vertex->evaluate(sqr(vec->mass()),1,vec,
+				      aout[ohel2],fout[ohel1]);
+      	  diag = _vertexWWH->evaluate(mb2,inter[1],inter[0],higgs);
+      	  me += norm(diag);
 	  menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
 	}
       }
