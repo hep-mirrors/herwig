@@ -548,7 +548,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   }
   if ( applied )
     res *= weight;
-  lastMECrossSection(res * lastMEPDFWeight());
+  lastMECrossSection(res);
 
   return lastMECrossSection();
 
