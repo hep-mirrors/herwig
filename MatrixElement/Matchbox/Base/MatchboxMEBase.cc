@@ -521,12 +521,12 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   if ( !oneLoopNoBorn() )
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
-      jacobian() * xme2;
+      jacobian()* lastMEPDFWeight() * xme2;
 
   if ( oneLoop() )
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
-      jacobian() * vme2;
+      jacobian()* lastMEPDFWeight() * vme2;
 
   if ( !onlyOneLoop() ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
