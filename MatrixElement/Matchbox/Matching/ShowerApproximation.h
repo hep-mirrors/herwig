@@ -127,10 +127,10 @@ public:
   virtual CrossSection dSigHatDR() const = 0;
 
   /**
-   * Return the shower approximated real emission cross section
-   * divided by the Born cross section and the radiation phasespace
-   * jacobian for the given pair of Born and real emission
-   * configurations.
+   * Return the shower approximation splitting kernel for the given
+   * pair of Born and real emission configurations in units of the
+   * Born center of mass energy squared, and including a weight to
+   * project onto the splitting given by the dipole used.
    */
   virtual double me2() const = 0;
 

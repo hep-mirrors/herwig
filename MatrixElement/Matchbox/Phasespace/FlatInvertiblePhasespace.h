@@ -62,20 +62,8 @@ public:
   virtual int nDim(int nFinal) const {
     if ( nFinal == 1 )
       return 1;
-    return 3*nFinal - 2;
+    return 3*nFinal - 4;
   }
-
-  /**
-   * Return true, if this phasespace generator will generate incoming
-   * partons itself.
-   */
-  virtual bool haveX1X2() const { return true; }
-
-  /**
-   * Return true, if this phase space generator expects
-   * the incoming partons in their center-of-mass system
-   */
-  virtual bool wantCMS() const { return false; }
 
 public:
 

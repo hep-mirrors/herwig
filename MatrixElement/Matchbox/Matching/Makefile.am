@@ -4,4 +4,8 @@ endif
 
 libHwMatchboxMatching_la_SOURCES = \
 ShowerApproximation.h \
-ShowerApproximation.cc
+ShowerApproximation.cc \
+ShowerApproximationKernel.h \
+ShowerApproximationKernel.cc \
+ShowerApproximationGenerator.h \
+ShowerApproximationGenerator.cc

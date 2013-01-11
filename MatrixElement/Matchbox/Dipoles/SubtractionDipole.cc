@@ -401,6 +401,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
 	       realEmissionME()->lastXComb().mePartonData().size()-4.);
     jacobian(jac);
     assert(lastXCombPtr() == realEmissionME()->lastXCombPtr());
+    lastXCombPtr()->didGenerateKinematics();
     return true;
   }
   if ( !generateTildeKinematics() )

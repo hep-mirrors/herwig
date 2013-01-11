@@ -277,36 +277,23 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 double FlatInvertiblePhasespace::generateKinematics(const double* r,
 						    vector<Lorentz5Momentum>& momenta) {
 
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
-
-  Energy ECMMin = ZERO;
-  pd = mePartonData().begin() + 2;
-  for ( ; pd != mePartonData().end(); ++pd )
-    ECMMin += (**pd).mass();
-
-  double weight = 1.;
-
-  double tauMin = sqr(ECMMin)/lastXCombPtr()->lastS();
-  double tau = 1.;
-
   if ( momenta.size() > 3 ) {
-    tau = tauMin + r[1]*(1.-tauMin);
-  } else {
-    tau = tauMin;
+
+    cPDVector::const_iterator pd = mePartonData().begin();
+    vector<Lorentz5Momentum>::iterator p = momenta.begin();
+    for ( ; pd != mePartonData().end(); ++pd, ++p )
+      p->setMass((**pd).mass());
+
+    double weight = generateKinematics(momenta,sqrt(lastXCombPtr()->lastSHat()),r);
+
+    fillDiagramWeights();
+
+    return weight;
+
   }
 
+  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
   double ltau = log(tau)/2.;
-  weight *= -2.*ltau;
-
-  if ( momenta.size() > 3 ) {
-    weight *= 1.-tauMin;
-  } else {
-    weight *= 2.*Constants::pi;
-  }
-
   double y = ltau - 2.*r[0]*ltau;
   double x1 = sqrt(tau)*exp(y);
   double x2 = sqrt(tau)*exp(-y);
@@ -317,82 +304,33 @@ double FlatInvertiblePhasespace::generateKinematics(const double* r,
   ThreeVector<Energy> p2 =
     x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
 
+  ThreeVector<Energy> q = p1 + p2;
+
   momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
   momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
+  momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
 
   lastXCombPtr()->lastX1X2(make_pair(x1,x2));
   lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
 
-  if ( momenta.size() == 3 ) {
-    ThreeVector<Energy> q = p1 + p2;
-    momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
-    return weight;
-  }
+  fillDiagramWeights();
 
-  vector<Lorentz5Momentum> cmMomenta;
-  copy(momenta.begin()+2,momenta.end(),back_inserter(cmMomenta));
-
-  weight *= generateKinematics(cmMomenta,sqrt(lastXCombPtr()->lastSHat()),r+2);
-
-  Boost toLab = (momenta[0]+momenta[1]).boostVector();
-
-  vector<Lorentz5Momentum>::iterator pcm = cmMomenta.begin();
-  vector<Lorentz5Momentum>::iterator plab = momenta.begin() + 2;
-
-  for ( ; pcm != cmMomenta.end(); ++pcm, ++plab )
-    *plab = pcm->boost(toLab);
-
-  return weight/(x1*x2);
+  return -4.*Constants::pi*ltau;
 
 }
 
 double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>& momenta,
 						  double* r) const {
 
-  Energy ECMMin = ZERO;
-  cPDVector::const_iterator pd = mePartonData().begin() + 2;
-  for ( ; pd != mePartonData().end(); ++pd )
-    ECMMin += (**pd).mass();
+  if ( momenta.size() > 3 )
+    return invertKinematics(momenta,(momenta[0]+momenta[1]).m(),r);
 
-  double weight = 1.;
-
-  double tauMin = sqr(ECMMin)/lastXCombPtr()->lastS();
-  double tau = lastXCombPtr()->lastTau();
-
-  if ( momenta.size() > 3 ) {
-    r[1] = (tau - tauMin)/(1.-tauMin);
-  }
-
+  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
   double ltau = log(tau)/2.;
-  weight *= -2.*ltau;
 
-  if ( momenta.size() > 3 ) {
-    weight *= 1.-tauMin;
-  } else {
-    weight *= 2.*Constants::pi;
-  }
+  r[0] = (ltau - (momenta[0]+momenta[1]).rapidity())/(2.*ltau);
 
-  double y = lastXCombPtr()->lastY();
-  r[0] = (ltau - y)/(2.*ltau);
-
-  if ( momenta.size() == 3 )
-    return weight;
-
-  vector<Lorentz5Momentum> cmMomenta;
-  copy(momenta.begin()+2,momenta.end(),back_inserter(cmMomenta));
-
-  Boost toCM = -(momenta[0]+momenta[1]).boostVector();
-
-  for ( vector<Lorentz5Momentum>::iterator p = cmMomenta.begin();
-	p != cmMomenta.end(); ++p )
-    p->boost(toCM);
-
-  weight *= invertKinematics(cmMomenta,sqrt(lastXCombPtr()->lastSHat()),r+2);
-
-  double x1 = lastXCombPtr()->lastX1();
-  double x2 = lastXCombPtr()->lastX2();
-
-  return weight/(x1*x2);
+  return -4.*Constants::pi*ltau;
 
 }
 
