@@ -160,6 +160,7 @@ double GeneralSampler::generate() {
     }
 
     // revisit unweighting at this point later
+    break;
 
   }
 
