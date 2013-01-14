@@ -400,6 +400,8 @@ void MatchboxFactory::setup() {
 
       Ptr<MatchboxMEBase>::ptr bornme = (**born).cloneMe();
       string pname = fullName() + "/" + (**born).name();
+      if ( independentVirtuals() )
+	pname += ".Born";
       if ( ! (generator()->preinitRegister(bornme,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
       bornme->cloneDependencies();
@@ -423,7 +425,11 @@ void MatchboxFactory::setup() {
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
       Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
-      string pname = fullName() + "/" + (**born).name();
+      string pname = fullName() + "/" + (**born).name();\
+      if ( !independentVirtuals() )
+	pname += ".BornVirtual";
+      else
+	pname += ".Virtual";
       if ( ! (generator()->preinitRegister(nlo,pname) ) )
 	throw InitException() << "NLO ME " << pname << " already existing.";
 
@@ -502,7 +508,7 @@ void MatchboxFactory::setup() {
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
 
       Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
-      string pname = fullName() + "/" + (**real).name();
+      string pname = fullName() + "/" + (**real).name() + ".Real";
       if ( ! (generator()->preinitRegister(sub,pname) ) )
 	throw InitException() << "Subtracted ME " << pname << " already existing.";
 
