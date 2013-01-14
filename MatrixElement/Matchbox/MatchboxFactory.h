@@ -142,6 +142,16 @@ public:
   void setRealContributions(bool on = true) { theRealContributions = on; }
 
   /**
+   * Return true, if virtual contributions should be treated as independent subprocesses
+   */
+  bool independentVirtuals() const { return theIndependentVirtuals; }
+
+  /**
+   * Switch on/off virtual contributions should be treated as independent subprocesses
+   */
+  void setIndependentVirtuals(bool on = true) { theIndependentVirtuals = on; }
+
+  /**
    * Return true, if SubProcessGroups should be
    * setup from this MEGroup. If not, a single SubProcess
    * is constructed from the data provided by the
@@ -568,6 +578,11 @@ private:
    * Switch on or off subtracted real emission contributions should be included.
    */
   bool theRealContributions;
+
+  /**
+   * True if virtual contributions should be treated as independent subprocesses
+   */
+  bool theIndependentVirtuals;
 
   /**
    * True, if SubProcessGroups should be

@@ -41,7 +41,8 @@ MatchboxFactory::MatchboxFactory()
   : SubProcessHandler(), theNLight(0),
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
-    theRealContributions(true), theSubProcessGroups(false), theInclusive(false),
+    theRealContributions(true), theIndependentVirtuals(false),
+    theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theVerbose(false), theInitVerbose(false), theSubtractionData(""), theCheckPoles(false) {}
@@ -390,7 +391,7 @@ void MatchboxFactory::setup() {
 
   // setup born and virtual contributions
 
-  if ( bornContributions() && !virtualContributions() ) {
+  if ( (bornContributions() && !virtualContributions()) || independentVirtuals() ) {
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
@@ -451,7 +452,7 @@ void MatchboxFactory::setup() {
 	}
       }
 
-      if ( !bornContributions() ) {
+      if ( !bornContributions() || independentVirtuals() ) {
 	nlo->doOneLoopNoBorn();
       } else {
 	nlo->doOneLoop();
@@ -705,7 +706,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theSubProcessGroups << theInclusive
+     << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
@@ -721,7 +722,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theSubProcessGroups >> theInclusive
+     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
@@ -908,6 +909,21 @@ void MatchboxFactory::Init() {
     (interfaceRealContributions,
      "Off",
      "Switch off real contributions.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceIndependentVirtuals
+    ("IndependentVirtuals",
+     "Switch on or off virtual contributions as separate subprocesses.",
+     &MatchboxFactory::theIndependentVirtuals, true, false, false);
+  static SwitchOption interfaceIndependentVirtualsOn
+    (interfaceIndependentVirtuals,
+     "On",
+     "Switch on virtual contributions as separate subprocesses.",
+     true);
+  static SwitchOption interfaceIndependentVirtualsOff
+    (interfaceIndependentVirtuals,
+     "Off",
+     "Switch off virtual contributions as separate subprocesses.",
      false);
 
   static Switch<MatchboxFactory,bool> interfaceSubProcessGroups

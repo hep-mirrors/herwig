@@ -25,6 +25,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "ThePEG/Handlers/StandardEventHandler.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+
 #include <boost/progress.hpp>
 
 using namespace Herwig;
@@ -56,6 +59,14 @@ void GeneralSampler::initialize() {
     throw InitException() << "weighted events requested from unweighting bin sampler object.";
   }
 
+  if ( !theBinSampler->isUnweighting() && !eventHandler()->weighted() ) {
+    throw InitException() << "unweighted events requested from weighted bin sampler object.";
+  }
+
+  if ( theBinSampler->isUnweighting() && theFlatSubprocesses ) {
+    throw InitException() << "cannot run flat subprocesses with unweighted sampling.";
+  }
+
   if ( !samplers.empty() )
     return;
 
@@ -69,6 +80,12 @@ void GeneralSampler::initialize() {
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
     s->bin(b);
+    const StandardEventHandler& eh = *eventHandler();
+    const StandardXComb& xc = *eh.xCombs()[b];
+    if ( eventHandler()->weighted() && theSamplingBias ) {
+      s->enhanceInitialPoints(theSamplingBias->enhanceInitialPoints(xc));
+      s->oversamplingFactor(theSamplingBias->oversamplingFactor(xc));
+    }
     lastSampler = s;
     s->initialize(theVerbose);
     samplers[b] = s;
@@ -106,33 +123,14 @@ double GeneralSampler::generate() {
 
   gotCrossSections = false;
 
-  if ( !theFlatSubprocesses )
-    lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-  else {
-    map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
-    advance(s,(size_t)(UseRandom::rnd()*samplers.size()));
-    lastSampler = s->second;
-  }
+  lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
 
   while ( true ) {
 
     try {
       lastSampler->generate(eventHandler()->weighted());
-    } catch (BinSampler::NewMaximum& update) {
-      if ( !eventHandler()->weighted() ) {
-	unsigned long skip = 
-	  (unsigned long)(lastSampler->acceptedPoints()*(1.-update.oldMaxWeight/update.newMaxWeight));
-	map<Ptr<BinSampler>::tptr,unsigned long>::iterator s = skipMap.find(lastSampler);
-	if ( s != skipMap.end() )
-	  s->second += skip;
-	else if ( skip != 0 )
-	  skipMap[lastSampler] = skip;
-	lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-	tries = 0;
-	if ( ++excptTries == eventHandler()->maxLoop() )
-	  break;
-	continue;
-      }
+    } catch (BinSampler::NewMaximum&) {
+      continue;
     } catch(BinSampler::UpdateCrossSections) {
       updateCrossSections();
       lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
@@ -161,31 +159,7 @@ double GeneralSampler::generate() {
       continue;
     }
 
-    if ( eventHandler()->weighted() || lastSampler->isUnweighting() )
-      break;
-
-    if ( abs(lastSampler->lastWeight())/lastSampler->maxWeight() > UseRandom::rnd() ) {
-      if ( skipMap.empty() )
-	break;
-      map<Ptr<BinSampler>::tptr,unsigned long>::iterator s = skipMap.find(lastSampler);
-      if ( s == skipMap.end() )
-	break;
-      s->second -= 1;
-      if ( s->second == 0 )
-	skipMap.erase(s);
-      lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-      tries = 0;
-      if ( ++excptTries == eventHandler()->maxLoop() )
-	break;
-      continue;
-    }
-
-    if ( ++tries == eventHandler()->maxLoop() ) {
-      throw MaxTryException()
-	<< "Maximum number of unweighting tries reached in GeneralSampler::generate()\n"
-	<< "for process " << lastSampler->process()
-	<< Exception::eventerror;
-    }
+    // revisit unweighting at this point later
 
   }
 
@@ -264,7 +238,11 @@ void GeneralSampler::updateCrossSections(bool) {
     }
     xsec += s->second->averageWeight();
     var += s->second->averageWeightVariance();
-    sumbias += s->second->averageAbsWeight();
+    if ( !theFlatSubprocesses ) {
+      sumbias += s->second->averageAbsWeight() * s->second->oversamplingFactor();
+    } else {
+      sumbias += 1.;
+    }
   }
 
   theIntegratedXSec = xsec;
@@ -283,11 +261,16 @@ void GeneralSampler::updateCrossSections(bool) {
 
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
-    double abssw = s->second->averageAbsWeight();
+    double abssw = s->second->averageAbsWeight() * s->second->oversamplingFactor();
     if ( abssw == 0.0 )
       continue;
-    s->second->bias(abssw/sumbias);
-    current += abssw;
+    if ( !theFlatSubprocesses ) {
+      s->second->bias(abssw/sumbias);
+      current += abssw;
+    } else {
+      s->second->bias(1.);
+      current += 1.;
+    }
     newSamplers[current/sumbias] = s->second;
   }
 
@@ -302,8 +285,7 @@ void GeneralSampler::dofinish() {
   set<string> compensating;
   for ( map<double,Ptr<BinSampler>::ptr>::const_iterator s =
 	  samplers.begin(); s != samplers.end(); ++s ) {
-    if ( s->second->compensating() ||
-	 skipMap.find(s->second) != skipMap.end() ) {
+    if ( s->second->compensating() ) {
       compensating.insert(s->second->process());
     }
     if ( s->second->nanPoints() ) {
@@ -370,14 +352,14 @@ IVector GeneralSampler::getReferences() {
 }
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
-  os << theBinSampler << theVerbose << theFlatSubprocesses 
+  os << theBinSampler << theSamplingBias << theVerbose << theFlatSubprocesses 
      << samplers << lastSampler << theUpdateAfter
      << theIntegratedXSec << theIntegratedXSecErr
      << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
-  is >> theBinSampler >> theVerbose >> theFlatSubprocesses 
+  is >> theBinSampler >> theSamplingBias >> theVerbose >> theFlatSubprocesses 
      >> samplers >> lastSampler >> theUpdateAfter
      >> theIntegratedXSec >> theIntegratedXSecErr
      >> norm;
@@ -402,6 +384,12 @@ void GeneralSampler::Init() {
     ("BinSampler",
      "The bin sampler to be used.",
      &GeneralSampler::theBinSampler, false, false, true, false, false);
+
+
+  static Reference<GeneralSampler,SamplingBias> interfaceSamplingBias
+    ("SamplingBias",
+     "Set the sampling bias to apply.",
+     &GeneralSampler::theSamplingBias, false, false, true, true, false);
 
 
   static Parameter<GeneralSampler,size_t> interfaceUpdateAfter
