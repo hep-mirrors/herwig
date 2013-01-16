@@ -385,12 +385,14 @@ public:
   /**
    * Supply the PDF weight for the first incoming parton.
    */
-  double pdf1(Energy2 factorizationScale = ZERO) const;
+  double pdf1(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   /**
    * Supply the PDF weight for the second incoming parton.
    */
-  double pdf2(Energy2 factorizationScale = ZERO) const;
+  double pdf2(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   //@}
 

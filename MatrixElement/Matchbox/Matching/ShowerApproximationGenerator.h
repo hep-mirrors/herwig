@@ -99,6 +99,21 @@ protected:
    */
   double invertFraction(tcPDPtr, double, double) const;
 
+  /**
+   * Return the pt cut to be applied for final-final dipoles.
+   */
+  Energy ffPtCut() const { return theShowerApproximation->ffPtCut();; }
+
+  /**
+   * Return the pt cut to be applied for final-initial dipoles.
+   */
+  Energy fiPtCut() const { return theShowerApproximation->fiPtCut(); }
+
+  /**
+   * Return the pt cut to be applied for initial-initial dipoles.
+   */
+  Energy iiPtCut() const { return theShowerApproximation->iiPtCut(); }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -168,21 +183,6 @@ private:
    * Map hard processes to the respective kernels.
    */
   map<cPDVector,set<Ptr<ShowerApproximationKernel>::ptr> > theKernelMap;
-
-  /**
-   * The pt cut to be applied for final-final dipoles.
-   */
-  Energy theFFPtCut;
-
-  /**
-   * The pt cut to be applied for final-initial dipoles.
-   */
-  Energy theFIPtCut;
-
-  /**
-   * The pt cut to be applied for initial-initial dipoles.
-   */
-  Energy theIIPtCut;
 
   /**
    * The number of points to presample this splitting generator.

@@ -96,8 +96,14 @@ double ShowerApproximationKernel::evaluate(const vector<double>& r) {
 
   }
 
+  assert(dipole()->splitting());
   realXComb()->clean();
   dipole()->setXComb(realXComb());
+  for ( vector<StdXCombPtr>::const_iterator t = tildeXCombs().begin();
+	t != tildeXCombs().end(); ++t ) {
+    (**t).clean();
+    (**t).matrixElement()->setXComb(*t);
+  }
   if ( !dipole()->generateKinematics(&r[nDimBorn()]) )
     return 0.;
 
@@ -105,6 +111,7 @@ double ShowerApproximationKernel::evaluate(const vector<double>& r) {
 
   showerApproximation()->setBornXComb(bornXComb());
   showerApproximation()->setRealXComb(realXComb());
+  showerApproximation()->setTildeXCombs(tildeXCombs());
   showerApproximation()->setDipole(dipole());
 
   if ( !showerApproximation()->isInShowerPhasespace() )
@@ -151,7 +158,7 @@ double ShowerApproximationKernel::generate() {
 
 void ShowerApproximationKernel::persistentOutput(PersistentOStream & os) const {
   os << theDipole << theShowerApproximation 
-     << theBornXComb << theRealXComb
+     << theBornXComb << theRealXComb << theTildeXCombs
      << thePresamplingPoints << theMaxTry << theFlags << theSupport
      << theLastParameterPoint << theShowerApproximationGenerator;
 
@@ -159,7 +166,7 @@ void ShowerApproximationKernel::persistentOutput(PersistentOStream & os) const {
 
 void ShowerApproximationKernel::persistentInput(PersistentIStream & is, int) {
   is >> theDipole >> theShowerApproximation 
-     >> theBornXComb >> theRealXComb
+     >> theBornXComb >> theRealXComb >> theTildeXCombs
      >> thePresamplingPoints >> theMaxTry >> theFlags >> theSupport
      >> theLastParameterPoint >> theShowerApproximationGenerator;
 }

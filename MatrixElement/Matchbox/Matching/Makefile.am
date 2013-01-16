@@ -8,4 +8,8 @@ ShowerApproximation.cc \
 ShowerApproximationKernel.h \
 ShowerApproximationKernel.cc \
 ShowerApproximationGenerator.h \
-ShowerApproximationGenerator.cc
+ShowerApproximationGenerator.cc \
+DipoleMatching.h \
+DipoleMatching.cc \
+MEMatching.h \
+MEMatching.cc

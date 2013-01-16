@@ -53,6 +53,12 @@ public:
    */
   virtual bool needsSplittingGenerator() const { return false; }
 
+  /**
+   * Return true, if this shower approximation will require tilde
+   * XCombs for the real phase space point generated
+   */
+  virtual bool needsTildeXCombs() const { return false; }
+
 public:
 
   /**
@@ -66,6 +72,11 @@ public:
   tStdXCombPtr bornXComb() const { return theBornXComb; }
 
   /**
+   * Return the XComb object describing the Born process
+   */
+  tcStdXCombPtr bornCXComb() const { return theBornXComb; }
+
+  /**
    * Set the XComb object describing the real emission process
    */
   void setRealXComb(tStdXCombPtr xc) { theRealXComb = xc; }
@@ -74,6 +85,21 @@ public:
    * Return the XComb object describing the real emission process
    */
   tStdXCombPtr realXComb() const { return theRealXComb; }
+
+  /**
+   * Return the XComb object describing the real emission process
+   */
+  tcStdXCombPtr realCXComb() const { return theRealXComb; }
+
+  /**
+   * Set the tilde xcomb objects associated to the real xcomb
+   */
+  void setTildeXCombs(const vector<StdXCombPtr>& xc) { theTildeXCombs = xc; }
+
+  /**
+   * Return the tilde xcomb objects associated to the real xcomb
+   */
+  const vector<StdXCombPtr>& tildeXCombs() const { return theTildeXCombs; }
 
   /**
    * Set the dipole in charge for the emission
@@ -104,20 +130,46 @@ public:
    */
   void resetBelowCutoff() { theBelowCutoff = false; }
 
+  /**
+   * Return the pt cut to be applied for final-final dipoles.
+   */
+  Energy ffPtCut() const { return theFFPtCut; }
+
+  /**
+   * Return the pt cut to be applied for final-initial dipoles.
+   */
+  Energy fiPtCut() const { return theFIPtCut; }
+
+  /**
+   * Return the pt cut to be applied for initial-initial dipoles.
+   */
+  Energy iiPtCut() const { return theIIPtCut; }
+
 public:
+
+  /**
+   * Return true, if the phase space restrictions of the dipole shower should
+   * be applied.
+   */
+  bool restrictPhasespace() const { return theRestrictPhasespace; }
+
+  /**
+   * Return the scale factor for the hard scale
+   */
+  double hardScaleFactor() const { return theHardScaleFactor; }
 
   /**
    * Return true, if the shower was able to generate an emission
    * leading from the given Born to the given real emission process.
    */
-  virtual bool isInShowerPhasespace() const = 0;
+  virtual bool isInShowerPhasespace() const;
 
   /**
    * Return true, if the shower emission leading from the given Born
    * to the given real emission process would have been generated
    * above the shower's infrared cutoff.
    */
-  virtual bool isAboveCutoff() const = 0;
+  virtual bool isAboveCutoff() const;
 
   /**
    * Return the shower approximation to the real emission cross
@@ -133,6 +185,31 @@ public:
    * project onto the splitting given by the dipole used.
    */
   virtual double me2() const = 0;
+
+  /**
+   * Return true, if the shower scales should be used in the subtraction
+   */
+  bool showerScalesInSubtraction() const { return theShowerScalesInSubtraction; }
+
+  /**
+   * Return true, if the shower scales should be used in splitting generation
+   */
+  bool showerScalesInSplitting() const { return theShowerScalesInSplitting; }
+
+  /**
+   * Return the running coupling weight
+   */
+  double couplingWeight(bool showerscales) const;
+
+  /**
+   * Return the Born PDF weight
+   */
+  double bornPDFWeight(bool showerscales) const;
+
+  /**
+   * Return the real emission PDF weight
+   */
+  double realPDFWeight(bool showerscales) const;
 
 public:
 
@@ -177,6 +254,11 @@ private:
   tStdXCombPtr theRealXComb;
 
   /**
+   * The tilde xcomb objects associated to the real xcomb
+   */
+  vector<StdXCombPtr> theTildeXCombs;
+
+  /**
    * The dipole in charge for the emission
    */
   Ptr<SubtractionDipole>::tcptr theDipole;
@@ -186,6 +268,47 @@ private:
    * the infrared cutoff.
    */
   bool theBelowCutoff;
+
+  /**
+   * The pt cut to be applied for final-final dipoles.
+   */
+  Energy theFFPtCut;
+
+  /**
+   * The pt cut to be applied for final-initial dipoles.
+   */
+  Energy theFIPtCut;
+
+  /**
+   * The pt cut to be applied for initial-initial dipoles.
+   */
+  Energy theIIPtCut;
+
+  /**
+   * True, if the shower scales should be used in the subtraction
+   */
+  bool theShowerScalesInSubtraction;
+
+  /**
+   * True, if the shower scales should be used in splitting generation
+   */
+  bool theShowerScalesInSplitting;
+
+  /**
+   * True, if the phase space restrictions of the dipole shower should
+   * be applied.
+   */
+  bool theRestrictPhasespace;
+
+  /**
+   * The scale factor for the hard scale
+   */
+  double theHardScaleFactor;
+
+  /**
+   * The x value from which on we extrapolate PDFs for numerically stable ratios.
+   */
+  double theExtrapolationX;
 
 private:
 

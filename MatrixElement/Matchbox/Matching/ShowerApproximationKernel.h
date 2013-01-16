@@ -83,6 +83,16 @@ public:
   tStdXCombPtr realXComb() const { return theRealXComb; }
 
   /**
+   * Set the tilde xcomb objects associated to the real xcomb
+   */
+  void setTildeXCombs(const vector<StdXCombPtr>& xc) { theTildeXCombs = xc; }
+
+  /**
+   * Return the tilde xcomb objects associated to the real xcomb
+   */
+  const vector<StdXCombPtr>& tildeXCombs() const { return theTildeXCombs; }
+
+  /**
    * Set the dipole in charge for the emission
    */
   void setDipole(Ptr<SubtractionDipole>::tptr dip) { theDipole = dip; }
@@ -332,6 +342,11 @@ private:
    * The XComb describing the process after radiation
    */
   StdXCombPtr theRealXComb;
+
+  /**
+   * The tilde xcomb objects associated to the real xcomb
+   */
+  vector<StdXCombPtr> theTildeXCombs;
 
   /**
    * True, if currently being presampled

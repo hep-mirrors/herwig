@@ -391,6 +391,12 @@ void MatchboxFactory::setup() {
 
   // setup born and virtual contributions
 
+  if ( bornContributions() || virtualContributions() ) {
+    generator()->log() << "preparing Born "
+		       << (virtualContributions() ? "and virtual" : "")
+		       << " matrix elements." << flush;
+  }
+
   if ( (bornContributions() && !virtualContributions()) || independentVirtuals() ) {
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
@@ -412,10 +418,6 @@ void MatchboxFactory::setup() {
 
   if ( virtualContributions() ) {
 
-    generator()->log() << "preparing Born "
-		       << (virtualContributions() ? "and virtual" : "")
-		       << " matrix elements." << flush;
-
     bornVirtualMEs().clear();
 
     boost::progress_display * progressBar = 
@@ -425,7 +427,7 @@ void MatchboxFactory::setup() {
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
       Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
-      string pname = fullName() + "/" + (**born).name();\
+      string pname = fullName() + "/" + (**born).name();
       if ( !independentVirtuals() )
 	pname += ".BornVirtual";
       else
@@ -652,6 +654,17 @@ MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
     for ( vector<StdXCombPtr>::const_iterator rxc = realXCombs.begin();
 	  rxc != realXCombs.end(); ++rxc ) {
       channel.realXComb = *rxc;
+      if ( showerApproximation()->needsTildeXCombs() ) {
+	channel.tildeXCombs.clear();
+	assert(!channel.dipole->partnerDipoles().empty());
+	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator p =
+		channel.dipole->partnerDipoles().begin();
+	      p != channel.dipole->partnerDipoles().end(); ++p ) {
+	  StdXCombPtr txc = channel.dipole->makeBornXComb(channel.realXComb);
+	  if ( txc )
+	    channel.tildeXCombs.push_back(txc);
+	}
+      }
       res.push_back(channel);
     }
 

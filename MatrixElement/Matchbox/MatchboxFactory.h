@@ -379,6 +379,11 @@ public:
     StdXCombPtr realXComb;
 
     /**
+     * The set of tilde XCombs to consider for the real xcomb
+     */
+    vector<StdXCombPtr> tildeXCombs;
+
+    /**
      * The dipole in charge of the splitting
      */
     Ptr<SubtractionDipole>::ptr dipole;

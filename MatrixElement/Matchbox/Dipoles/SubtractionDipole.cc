@@ -580,17 +580,20 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       lastME2(0.0);
       return ZERO;   
     }
-    lastME2(me2());
     lastMECrossSection(-showerApproximation()->dSigHatDR());
     return lastMECrossSection();
   }
 
   double xme2 = 0.0;
 
-  if ( !showerKernel() )
-    xme2 = me2();
-  else
-    xme2 = me2Avg(-underlyingBornME()->me2());
+  if ( lastME2() == 0.0 ) {
+    if ( !showerKernel() )
+      xme2 = me2();
+    else
+      xme2 = me2Avg(-underlyingBornME()->me2());
+  } else {
+    xme2 = lastME2();
+  }
 
   if ( xme2 == 0.0 ) {
     lastMECrossSection(ZERO);
@@ -629,8 +632,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     CrossSection shower = ZERO;
     if ( showerApproximation()->isInShowerPhasespace() )
       shower = showerApproximation()->dSigHatDR();
-    vector<double> ratio(1,shower/res);
-    meInfo(ratio);
+    res -= shower;
   }
 
   lastMECrossSection(-res);

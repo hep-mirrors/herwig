@@ -211,6 +211,15 @@ void SubtractedME::fillProjectors() {
 }
 
 double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
+
+  if ( inclusive() && !lastXComb().lastProjector() )
+    return 1.;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    assert(!showerApproximation()->belowCutoff());
+    return 0.;
+  }
+
   if ( realShowerSubtraction() ) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
@@ -218,40 +227,54 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
       return 0.;
     return 1.;
   }
-  if ( virtualShowerSubtraction() ) {
-    assert(showerApproximation());
-    bool above = !showerApproximation()->belowCutoff();
-    if ( above )
-      return 0.;
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( virtualShowerSubtraction() ) {
+      assert(showerApproximation());
+      bool above = !showerApproximation()->belowCutoff();
+      if ( above )
+	return 0.;
+    }
+    double sum = 0.;
+    size_t n = 0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( (**d).lastCrossSection() != ZERO ) {
+	sum += (**d).lastME2();
+	++n;
+      }
+    }
+    return
+      n * lastXComb().lastProjector()->lastME2() / sum;
   }
-  double sum = 0.;
-  for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
-    sum += (**d).lastME2();
-  return
-    dep.size() * lastXComb().lastProjector()->lastME2() / sum;
+
+  return 1.;
+
 }
 
 double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
-  if ( realShowerSubtraction() ) {
-    assert(showerApproximation());
-    double sum = 0.;
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
-      sum += (**d).lastME2();
-    return xc->lastME2()/sum;
-  }
-  if ( xc != lastXComb().lastProjector() )
+
+  if ( inclusive() && !lastXComb().lastProjector() )
     return 0.;
-  double w = 1.;
-  if ( virtualShowerSubtraction() ) {
-    assert(showerApproximation());
-    double sum = 0.;
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
-      sum += (**d).lastME2();
-    assert(xc->meInfo().size() == 1);
-    double r = xc->meInfo()[0];
-    w -= xc->lastME2()*r/sum;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    assert(!showerApproximation()->belowCutoff());
+    return 0.;
   }
-  return w * dep.size();
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( xc != lastXComb().lastProjector() )
+      return 0.;
+    size_t n = 0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( (**d).lastCrossSection() != ZERO ) {
+	++n;
+      }
+    }
+    return n;
+  }
+
+  return 1.;
+
 }
 
 void SubtractedME::doinit() {

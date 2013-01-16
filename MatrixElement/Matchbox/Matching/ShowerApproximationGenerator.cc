@@ -218,22 +218,23 @@ handle(EventHandler & eh, const tPVector &,
 	new_ptr(ShowerApproximationKernel());
       kernel->setBornXComb(c->bornXComb);
       kernel->setRealXComb(c->realXComb);
+      kernel->setTildeXCombs(c->tildeXCombs);
       kernel->setDipole(c->dipole);
       kernel->showerApproximation(theShowerApproximation);
       kernel->presamplingPoints(thePresamplingPoints);
       kernel->maxtry(theMaxTry);
       if ( kernel->dipole()->bornEmitter() > 1 &&
 	   kernel->dipole()->bornSpectator() > 1 ) {
-	kernel->ptCut(theFFPtCut);
+	kernel->ptCut(ffPtCut());
       } else if ( ( kernel->dipole()->bornEmitter() > 1 &&
 		    kernel->dipole()->bornSpectator() < 2 ) ||
 		  ( kernel->dipole()->bornEmitter() < 2 &&
 		    kernel->dipole()->bornSpectator() > 1 ) ) {
-	kernel->ptCut(theFIPtCut);
+	kernel->ptCut(fiPtCut());
       } else {
 	assert(kernel->dipole()->bornEmitter() < 2 &&
 	       kernel->dipole()->bornSpectator() < 2);
-	kernel->ptCut(theIIPtCut);
+	kernel->ptCut(iiPtCut());
       }
       newKernels.insert(kernel);
     }
@@ -338,16 +339,12 @@ IBPtr ShowerApproximationGenerator::fullclone() const {
 void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) const {
   os << theShowerApproximation << thePhasespace 
      << theFactory << theKernelMap
-     << ounit(theFFPtCut,GeV) << ounit(theFIPtCut,GeV)
-     << ounit(theIIPtCut,GeV)
      << thePresamplingPoints << theMaxTry;
 }
 
 void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) {
   is >> theShowerApproximation >> thePhasespace 
      >> theFactory >> theKernelMap
-     >> iunit(theFFPtCut,GeV) >> iunit(theFIPtCut,GeV)
-     >> iunit(theIIPtCut,GeV)
      >> thePresamplingPoints >> theMaxTry;
 }
 
@@ -383,24 +380,6 @@ void ShowerApproximationGenerator::Init() {
     ("Factory",
      "The factory object to use.",
      &ShowerApproximationGenerator::theFactory, false, false, true, false, false);
-
-  static Parameter<ShowerApproximationGenerator,Energy> interfaceFFPtCut
-    ("FFPtCut",
-     "Set the pt infrared cutoff",
-     &ShowerApproximationGenerator::theFFPtCut, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
-     false, false, Interface::lowerlim);
-
-  static Parameter<ShowerApproximationGenerator,Energy> interfaceFIPtCut
-    ("FIPtCut",
-     "Set the pt infrared cutoff",
-     &ShowerApproximationGenerator::theFIPtCut, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
-     false, false, Interface::lowerlim);
-
-  static Parameter<ShowerApproximationGenerator,Energy> interfaceIIPtCut
-    ("IIPtCut",
-     "Set the pt infrared cutoff",
-     &ShowerApproximationGenerator::theIIPtCut, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
-     false, false, Interface::lowerlim);
 
   static Parameter<ShowerApproximationGenerator,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",
