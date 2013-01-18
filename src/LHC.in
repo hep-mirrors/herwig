@@ -6,12 +6,12 @@
 ##################################################
 # Technical parameters for this run
 ##################################################
-cd /Herwig/EventHandlers
-set LHCHandler:HadronizationHandler NULL
-set LHCHandler:DecayHandler NULL
+#cd /Herwig/EventHandlers
+#set LHCHandler:HadronizationHandler NULL
+#set LHCHandler:DecayHandler NULL
 
-cd /Herwig/Analysis
-set Basics:CheckQuark 0
+#cd /Herwig/Analysis
+#set Basics:CheckQuark 0
 
 
 cd /Herwig/Generators
@@ -33,7 +33,6 @@ set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 ########################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
-
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 
 
@@ -49,9 +48,12 @@ cd /Herwig/MatrixElements/
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 set MEqq2gZ2ff:Process Quarks
+
 #
 # Drell-Yan W
 #insert SimpleQCD:MatrixElements[0] MEqq2W2ff
+#set MEqq2W2ff:Process Quarks
+
 #
 # W+jet
 #insert SimpleQCD:MatrixElements[0] MEWJet
@@ -113,6 +115,9 @@ set MEqq2gZ2ff:Process Quarks
 #insert SimpleQCD:MatrixElements[0] MEPP2bbbarH
 
 cd /Herwig/Generators
+
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+set /Herwig/Analysis/Plot:EventNumber 2299
 
 ##################################################
 #  Useful analysis handlers for hadron-hadron physics

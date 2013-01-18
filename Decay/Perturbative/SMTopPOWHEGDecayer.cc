@@ -78,6 +78,7 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   w2_ = sqr(w_);
   b2_ = sqr(b_);
 
+
   // find rotation fgrom lab to frame with W along -z
   LorentzRotation eventFrame( topProgenitor->progenitor()->momentum().findBoostToCM() );
   Lorentz5Momentum pspectator = eventFrame*WProgenitor->progenitor()->momentum();
@@ -90,16 +91,23 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   //count number of events which give gluons in the dead region 
   // ofstream dead("dead.top");
   // ofstream count("count.top");
-  // ofstream PS("PS3.top");
-  // for (unsigned int iy=0; iy<200000; ++iy){   
-  //   vector<Lorentz5Momentum> momenta = hardMomenta();
-  //   if(momenta.empty()) continue;
-  //   double xw = 2.*momenta[2].e()/momenta[0].mass();
-  //   double xg = 2.*momenta[3].e()/momenta[0].mass();
-  //   count << "1\n";
-  //   PS << xg << "\t" << xw << "\n";
-  //   if(not deadZoneCheck(xw, xg)) continue;
-  //   dead << xg << "\t" << xw << "\n";
+
+  // if ( WProgenitor  ->progenitor()->momentum().mass()/GeV > 80.402 &&
+  //      WProgenitor  ->progenitor()->momentum().mass()/GeV < 80.404){
+  //   cerr <<  WProgenitor  ->progenitor()->momentum().mass()/GeV << endl;
+ 
+
+  //   ofstream PS("PS3.top");
+  //   for (unsigned int iy=0; iy<52427; ++iy){   
+  //     vector<Lorentz5Momentum> momenta = hardMomenta();
+  //     if(momenta.empty()) continue;
+  //     double xw = 2.*momenta[2].e()/momenta[0].mass();
+  //     double xg = 2.*momenta[3].e()/momenta[0].mass();
+  //     //   count << "1\n";
+  //     PS << xg << "\t" << xw << "\n";
+  //     //   if(not deadZoneCheck(xw, xg)) continue;
+  //     //   dead << xg << "\t" << xw << "\n";
+  //   }
   // }
 
 

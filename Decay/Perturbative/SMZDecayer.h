@@ -39,18 +39,6 @@ public:
   SMZDecayer();
 
   /**
-   *  Has a POWHEG style correction
-   */
-  virtual POWHEGType hasPOWHEGCorrection() {cerr << "SMZDecayer" << endl; return No;}
-
-  /**
-   *  Apply the POWHEG style correction
-   */
-  virtual HardTreePtr generateHardest(ShowerTreePtr){cerr << "SMZDecayer2\n";
-    return HardTreePtr();}
-
-
-  /**
    *  Virtual members to be overridden by inheriting classes
    *  which implement hard corrections 
    */

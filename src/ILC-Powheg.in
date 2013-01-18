@@ -33,6 +33,9 @@ create Herwig::O2AlphaS O2AlphaS
 set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
+set /Herwig/Particles/W+:NominalMass 80.403*GeV
+set /Herwig/Particles/W-:NominalMass 80.403*GeV
+
 
 #set /Herwig/Particles/h0:NominalMass 116.871*GeV
 

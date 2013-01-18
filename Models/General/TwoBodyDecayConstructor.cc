@@ -218,7 +218,7 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
  
   // get the vertices for radiation from the external legs
   VertexBasePtr inRad = radiationVertex(decay.parent_);
-  vector<VertexBasePtr> outRad;
+  vector<VertexBasePtr> outRad;  
   outRad.push_back(radiationVertex(decay.children_.first ));
   outRad.push_back(radiationVertex(decay.children_.second));
   // get any contributing 4 point vertices

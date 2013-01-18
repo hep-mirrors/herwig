@@ -37,14 +37,27 @@ void FFVDecayer::doinit() {
   _abstractVertex         = dynamic_ptr_cast<AbstractFFVVertexPtr>(getVertex());
   _abstractIncomingVertex = dynamic_ptr_cast<AbstractFFVVertexPtr>(getIncomingVertex());
 
-  if (getOutgoingVertices()[0] && getOutgoingVertices()[0]->getName()==VertexType::FFV){
-    _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
-    _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+  if (getOutgoingVertices()[0]){
+    if (getOutgoingVertices()[0]->getName()==VertexType::FFV){
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+    }
+    else {
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+    }
   }
-  else {
-    _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
-    _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+  else if (getOutgoingVertices()[1]){
+    if (getOutgoingVertices()[1]->getName()==VertexType::FFV){
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+    }
+    else {
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+    }
   }
+
   GeneralTwoBodyDecayer::doinit();
 }
 
@@ -327,7 +340,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    }
 	    for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
 	      ME[colourFlows(inpart, decay)[0][ix].first](ifi, ifo, iv, ig) += 
-		 colourFlows(inpart, decay)[0][ix].second*diag;
+		colourFlows(inpart, decay)[0][ix].second*diag;
 	    }
 	  }
 
@@ -395,7 +408,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    }
 	    for(unsigned int ix=0;ix<colourFlows(inpart, decay)[V].size();++ix) {
 	      ME[colourFlows(inpart, decay)[V][ix].first](ifi, ifo, iv, ig) += 
-		 colourFlows(inpart, decay)[V][ix].second*diag;		  
+		 colourFlows(inpart, decay)[V][ix].second*diag;
 	    }
 	  }
 	}
@@ -412,7 +425,6 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
     }
   }
   output*=(4.*Constants::pi);
-  cerr << output << "\n";
   // return the answer
   return output;
 }

@@ -383,6 +383,28 @@ void SMWFermionsPOWHEGDecayer::doinit() {
 }
 
 bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
+ 
+  vector<Energy> particleMass;
+  for(unsigned int ix=0;ix<hardProcess.size();++ix) {
+    if(abs(hardProcess[ix]->id())==ParticleID::Wplus) {
+      mW_ = hardProcess[ix]->mass();
+    }
+    else {
+      particleMass.push_back(hardProcess[ix]->mass());
+    }
+  }
+  if (particleMass.size()!=2)  {
+    throw Exception()
+      << "Number of outgoing particles is not equal to 2 in "
+      << "SMWFermionPOWHEGDecayer::getEvent()" 
+      << Exception::runerror;
+  }
+  // reduced mass
+  mu1_ = particleMass[0]/mW_;
+  mu2_ = particleMass[1]/mW_;
+  // scale
+  scale_ = sqr(mW_);
+ 
   // max pT
   Energy pTmax = 0.5*sqrt(mw2_);
   // Define over valued y_max & y_min according to the associated pt_min cut.

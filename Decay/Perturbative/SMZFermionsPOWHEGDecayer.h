@@ -31,7 +31,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {cerr << "SMZFermionsDecayer" << endl; return FSR;}
+    virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
   /**
    *  Apply the POWHEG style correction

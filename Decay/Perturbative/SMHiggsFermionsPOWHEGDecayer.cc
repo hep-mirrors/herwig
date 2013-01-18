@@ -321,6 +321,7 @@ void SMHiggsFermionsPOWHEGDecayer::doinit() {
 }
 
 bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
+  cerr << "higgs" << endl;
   // max pT
   Energy pTmax = 0.5*sqrt(mh2_);
   // Define over valued y_max & y_min according to the associated pt_min cut.

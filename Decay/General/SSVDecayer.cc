@@ -37,13 +37,25 @@ void SSVDecayer::doinit() {
   _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVSSVertexPtr> (getIncomingVertex());
   _abstractFourPointVertex = dynamic_ptr_cast<AbstractVVSSVertexPtr>(getFourPointVertex());
 
-  if (getOutgoingVertices()[0] && getOutgoingVertices()[0]->getName()==VertexType::VSS){
-    _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
-    _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+  if (getOutgoingVertices()[0]){
+    if (getOutgoingVertices()[0]->getName()==VertexType::VSS){
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+    }
+    else {
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+    }
   }
-  else {
-    _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
-    _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+  else if (getOutgoingVertices()[1]){
+    if (getOutgoingVertices()[1]->getName()==VertexType::VSS){
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+    }
+    else {
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+    }
   }
   GeneralTwoBodyDecayer::doinit();
 }

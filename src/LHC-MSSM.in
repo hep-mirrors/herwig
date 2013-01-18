@@ -38,11 +38,11 @@ set HPConstructor:IncludeEW No
 
 
 # Example hard process: Incoming proton, outgoing squarks
-#insert HPConstructor:Incoming 0 /Herwig/Particles/g
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
 insert HPConstructor:Incoming 0 /Herwig/Particles/u
 insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
-#insert HPConstructor:Incoming 3 /Herwig/Particles/d
-#insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
+insert HPConstructor:Incoming 3 /Herwig/Particles/d
+insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
 #insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
 #insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
@@ -54,11 +54,12 @@ set HPConstructor:Processes Exclusive
 #insert HPConstructor:Outgoing 0 /Herwig/Particles/~g
 #insert HPConstructor:Outgoing 1 /Herwig/Particles/~g
 
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
-#insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
+insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/u
-insert HPConstructor:Outgoing 1 /Herwig/Particles/ubar
+
+#set /Herwig/Particles/p+:PDF /Herwig/Partons/NoPDF
+
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -67,8 +68,9 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/ubar
 # file as the argument. The provided
 # spectrum file is an example using SPheno 2.2.3
 
-#setup MSSM/Model spectrum_1000_200.slha
-setup MSSM/Model CMSSM40.1.1.slha
+#setup MSSM/Model spectrum_1000_200_sq2Hsq.slha
+#setup MSSM/Model CMSSM40.1.1.slha
+setup MSSM/Model susy_1460_600_0_10_P.slha
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
@@ -90,7 +92,7 @@ cd /Herwig/Generators
 #set /Herwig/Analysis/Plot:EventNumber 82584
 
 set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:RandomNumberGenerator:Seed 31122012
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0

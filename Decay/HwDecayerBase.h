@@ -80,7 +80,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {cerr << "HwDecayerBase" << endl; return No;}
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
 
 
   /**
