@@ -847,7 +847,7 @@ double DrellYanBase::getResult(int emis_type, Energy pt, double yj) {
   else {
     res*=pdf[2]*pdf[3]/pdf[0]/pdf[1]*m2/sh;
   }
-  res*=_alpha->ratio(sqrt(pt));
+  res*=_alpha->ratio(sqr(pt));
   return res;
 } 
 
