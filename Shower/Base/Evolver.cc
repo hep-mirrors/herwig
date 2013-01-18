@@ -301,6 +301,12 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
 
 void Evolver::setupMaximumScales(ShowerTreePtr hard, 
 				 vector<ShowerProgenitorPtr> p) {
+  // let POWHEG events radiate freely
+  if(_hardEmissionMode==1&&hardTree()) {
+    vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
+    for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(Constants::MaxEnergy);
+    return;
+  }
   // find out if hard partonic subprocess.
   bool isPartonic(false); 
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
