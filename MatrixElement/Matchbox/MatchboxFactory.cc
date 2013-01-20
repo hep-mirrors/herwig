@@ -530,7 +530,7 @@ void MatchboxFactory::setup() {
 	// finite real contribution
 	Ptr<MatchboxMEBase>::ptr fme = 
 	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
-	string pname = fullName() + "/" + (**real).name() + ".Real";
+	string pname = fullName() + "/" + (**real).name() + ".FiniteReal";
 	if ( ! (generator()->preinitRegister(fme,pname) ) )
 	  throw InitException() << "ME " << pname << " already existing.";
 	MEs().push_back(fme);	
