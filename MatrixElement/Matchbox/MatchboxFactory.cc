@@ -397,7 +397,8 @@ void MatchboxFactory::setup() {
 		       << " matrix elements." << flush;
   }
 
-  if ( (bornContributions() && !virtualContributions()) || independentVirtuals() ) {
+  if ( (bornContributions() && !virtualContributions()) || 
+       (bornContributions() && virtualContributions() && independentVirtuals()) ) {
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
@@ -527,8 +528,12 @@ void MatchboxFactory::setup() {
 
       if ( sub->dependent().empty() ) {
 	// finite real contribution
-	MEs().push_back(sub->head());
-	Ptr<MatchboxMEBase>::ptr fme = dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head());
+	Ptr<MatchboxMEBase>::ptr fme = 
+	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
+	string pname = fullName() + "/" + (**real).name() + ".Real";
+	if ( ! (generator()->preinitRegister(fme,pname) ) )
+	  throw InitException() << "ME " << pname << " already existing.";
+	MEs().push_back(fme);	
         finiteRealMEs().push_back(fme);
 	sub->head(tMEPtr());
 	continue;
