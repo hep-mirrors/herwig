@@ -95,14 +95,18 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
       unsigned int nEmitted = 0;
 
       if ( firstMCatNLOEmission ) {
+
 	bool mcatnloReal = false;
-	assert(eventRecord().xcombPtr());
-	mcatnloReal = 
+	Ptr<SubtractedME>::tptr subme =
 	  dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+	if ( subme )
+	  if ( subme->realShowerSubtraction() )
+	    mcatnloReal = true;
         if ( !mcatnloReal )
 	  nEmissions = 1;
 	else
 	  nEmissions = 0;
+
       }
 
       if ( !firstMCatNLOEmission ) {
@@ -173,14 +177,21 @@ void DipoleShowerHandler::constituentReshuffle() {
 void DipoleShowerHandler::hardScales() {
 
   Energy maxPt = generator()->maximumCMEnergy();
-  bool mcatnloReal = false;
-  assert(eventRecord().xcombPtr());
-  mcatnloReal = 
-    hardFirstEmission && 
-    dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+
+  bool restrictPhasespace = !hardFirstEmission;
+
+  if ( !restrictPhasespace ) {
+    assert(eventRecord().xcombPtr());
+    Ptr<SubtractedME>::tptr subme =
+      dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+    if ( subme )
+      if ( subme->realShowerSubtraction() )
+	restrictPhasespace = true;
+  }
+
   if ( (eventRecord().incoming().first->coloured() ||
 	eventRecord().incoming().second->coloured()) &&
-       (!hardFirstEmission || mcatnloReal) ) {
+       restrictPhasespace ) {
     if ( !eventRecord().outgoing().empty() ) {
       for ( PList::const_iterator p = eventRecord().outgoing().begin();
 	    p != eventRecord().outgoing().end(); ++p )
@@ -194,8 +205,6 @@ void DipoleShowerHandler::hardScales() {
       Energy mhard = phard.m();
       maxPt = mhard;
     }
-  }
-  if ( !hardFirstEmission || mcatnloReal ) {
     maxPt *= sqrt(theHardScaleFactor);
   }
 
