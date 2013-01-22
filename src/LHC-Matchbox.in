@@ -38,13 +38,13 @@ do PPFactory:Process p p e+ e-
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set LHCFactory:ShowerApproximation DipoleMatching
+set PPFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# set LHCFactory:ShowerApproximation MEMatching
+# set PPFactory:ShowerApproximation MEMatching
 # insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
 
 ################################################################################
@@ -58,8 +58,8 @@ set LHCFactory:ShowerApproximation DipoleMatching
 # hard process scale variations
 ################################################################################
 
-set /Herwig/MatrixElement/Matchbox/LHCFactory:RenormalizationScaleFactor 1.0
-set /Herwig/MatrixElement/Matchbox/LHCFactory:FactorizationScaleFactor 1.0
+set /Herwig/MatrixElement/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElement/Matchbox/PPFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
 # shower scale variations
