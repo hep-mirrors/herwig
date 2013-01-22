@@ -29,7 +29,9 @@ using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
   : HandlerBase(), theBelowCutoff(false),
-    theFFPtCut(1.0*GeV), theFIPtCut(1.0*GeV), theIIPtCut(1.0*GeV),
+    theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
+    theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
+    theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
     theShowerScalesInSubtraction(false),
     theShowerScalesInSplitting(true),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
@@ -84,11 +86,33 @@ bool ShowerApproximation::isInShowerPhasespace() const {
 
 }
 
+Energy2 ShowerApproximation::showerRenormalizationScale() const {
+
+  Energy2 mur = sqr(dipole()->lastPt());
+
+  if ( dipole()->bornEmitter() > 1 &&
+       dipole()->bornSpectator() > 1 ) {
+    return mur + sqr(ffScreeningScale());
+  } else if ( ( dipole()->bornEmitter() > 1 &&
+		dipole()->bornSpectator() < 2 ) ||
+	      ( dipole()->bornEmitter() < 2 &&
+		dipole()->bornSpectator() > 1 ) ) {
+    return mur + sqr(fiScreeningScale());
+  } else {
+    assert(dipole()->bornEmitter() < 2 &&
+	   dipole()->bornSpectator() < 2);
+    return mur + sqr(iiScreeningScale());
+  }
+
+  return mur;
+
+}
+
 double ShowerApproximation::couplingWeight(bool showerscales) const {
   if ( !showerscales )
     return 1.;
   double hardAlpha = dipole()->realEmissionME()->lastAlphaS();
-  Energy2 mur = sqr(dipole()->lastPt());
+  Energy2 mur = showerRenormalizationScale();
   mur *= dipole()->realEmissionME()->renormalizationScaleFactor();
   double runAlpha = SM().alphaS(mur);
   return runAlpha/hardAlpha;
@@ -100,7 +124,7 @@ double ShowerApproximation::bornPDFWeight(bool showerscales) const {
     return 1.;
   Energy2 muf;
   if ( showerscales ) {
-    muf = sqr(dipole()->lastPt());
+    muf = showerFactorizationScale();
   } else {
     muf = dipole()->underlyingBornME()->factorizationScale();
   }
@@ -121,7 +145,7 @@ double ShowerApproximation::realPDFWeight(bool showerscales) const {
     return 1.;
   Energy2 muf;
   if ( showerscales ) {
-    muf = sqr(dipole()->lastPt());
+    muf = showerFactorizationScale();
   } else {
     muf = dipole()->realEmissionME()->factorizationScale();
   }
@@ -142,18 +166,20 @@ double ShowerApproximation::realPDFWeight(bool showerscales) const {
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
   os << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
-     << ounit(theFFPtCut,GeV) << ounit(theFIPtCut,GeV)
-     << ounit(theIIPtCut,GeV) << theShowerScalesInSubtraction
-     << theShowerScalesInSplitting
+     << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
+     << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
+     << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV) 
+     << theShowerScalesInSubtraction << theShowerScalesInSplitting
      << theRestrictPhasespace << theHardScaleFactor
      << theExtrapolationX;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
   is >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
-     >> iunit(theFFPtCut,GeV) >> iunit(theFIPtCut,GeV)
-     >> iunit(theIIPtCut,GeV) >> theShowerScalesInSubtraction
-     >> theShowerScalesInSplitting
+     >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
+     >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
+     >> iunit(theIIPtCut,GeV) >> iunit(theIIScreeningScale,GeV) 
+     >> theShowerScalesInSubtraction >> theShowerScalesInSplitting
      >> theRestrictPhasespace >> theHardScaleFactor
      >> theExtrapolationX;
 }
@@ -189,6 +215,24 @@ void ShowerApproximation::Init() {
     ("IIPtCut",
      "Set the pt infrared cutoff",
      &ShowerApproximation::theIIPtCut, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximation,Energy> interfaceFFScreeningScale
+    ("FFScreeningScale",
+     "Set the screening scale",
+     &ShowerApproximation::theFFScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximation,Energy> interfaceFIScreeningScale
+    ("FIScreeningScale",
+     "Set the screening scale",
+     &ShowerApproximation::theFIScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximation,Energy> interfaceIIScreeningScale
+    ("IIScreeningScale",
+     "Set the screening scale",
+     &ShowerApproximation::theIIScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
   static Switch<ShowerApproximation,bool> interfaceShowerScalesInSubtraction

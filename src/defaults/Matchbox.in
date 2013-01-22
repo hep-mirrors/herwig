@@ -204,22 +204,28 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
 
 ################################################################################
-# Setup utilities for process generation
+# Setup utilities for matching
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
 
-create Herwig::PowhegSplittingGenerator MECorrectionHandler
+create Herwig::MEMatching MEMatching
+set MEMatching:RestrictPhasespace Off
+set MEMatching:FFPtCut 1.0*GeV
+set MEMatching:FIPtCut 1.0*GeV
+set MEMatching:IIPtCut 1.0*GeV
 
-set MECorrectionHandler:FFPtCut 1.0*GeV
-set MECorrectionHandler:FFScreeningScale 0.0*GeV
+create Herwig::DipoleMatching DipoleMatching
+set DipoleMatching:RestrictPhasespace On
+set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FIPtCut 1.0*GeV
+set DipoleMatching:IIPtCut 1.0*GeV
 
-set MECorrectionHandler:FIPtCut 1.0*GeV
-set MECorrectionHandler:FIScreeningScale 0.0*GeV
+################################################################################
+# Setup utilities for process generation
+################################################################################
 
-set MECorrectionHandler:IIPtCut 1.0*GeV
-set MECorrectionHandler:IIScreeningScale 0.0*GeV
-
+cd /Herwig/MatrixElements/Matchbox
 mkdir Utility
 cd Utility
 
@@ -330,21 +336,6 @@ cp Factory PPFactory
 
 set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
 set PPFactory:Cuts /Herwig/Cuts/QCDCuts
-
-create Herwig::PowhegFactory EEPowhegFactory
-set EEPowhegFactory:PartonExtractor /Herwig/Partons/EEExtractor
-set EEPowhegFactory:Cuts /Herwig/Cuts/EECuts
-set EEPowhegFactory:MatchboxFactory EEFactory
-
-create Herwig::PowhegFactory DISPowhegFactory
-set DISPowhegFactory:PartonExtractor /Herwig/Partons/DISExtractor
-set DISPowhegFactory:Cuts /Herwig/Cuts/DISCuts
-set DISPowhegFactory:MatchboxFactory DISFactory
-
-create Herwig::PowhegFactory PPPowhegFactory
-set PPPowhegFactory:PartonExtractor /Herwig/Partons/QCDExtractor
-set PPPowhegFactory:Cuts /Herwig/Cuts/QCDCuts
-set PPPowhegFactory:MatchboxFactory PPFactory
 
 cd /
 

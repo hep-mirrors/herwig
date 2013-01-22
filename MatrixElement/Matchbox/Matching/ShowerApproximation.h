@@ -145,6 +145,33 @@ public:
    */
   Energy iiPtCut() const { return theIIPtCut; }
 
+  /**
+   * Return the screening scale to be applied for final-final dipoles.
+   */
+  Energy ffScreeningScale() const { return theFFScreeningScale; }
+
+  /**
+   * Return the screening scale to be applied for final-initial dipoles.
+   */
+  Energy fiScreeningScale() const { return theFIScreeningScale; }
+
+  /**
+   * Return the screening scale to be applied for initial-initial dipoles.
+   */
+  Energy iiScreeningScale() const { return theIIScreeningScale; }
+
+  /**
+   * Return the shower renormalization scale
+   */
+  Energy2 showerRenormalizationScale() const;
+
+  /**
+   * Return the shower factorization scale
+   */
+  Energy2 showerFactorizationScale() const {
+    return showerRenormalizationScale();
+  }
+
 public:
 
   /**
@@ -275,14 +302,32 @@ private:
   Energy theFFPtCut;
 
   /**
+   * An optional screening scale for final-final dipoles; see
+   * DipoleSplittingKernel
+   */
+  Energy theFFScreeningScale;
+
+  /**
    * The pt cut to be applied for final-initial dipoles.
    */
   Energy theFIPtCut;
 
   /**
+   * An optional screening scale for final-initial dipoles; see
+   * DipoleSplittingKernel
+   */
+  Energy theFIScreeningScale;
+
+  /**
    * The pt cut to be applied for initial-initial dipoles.
    */
   Energy theIIPtCut;
+
+  /**
+   * An optional screening scale for initial-initial dipoles; see
+   * DipoleSplittingKernel
+   */
+  Energy theIIScreeningScale;
 
   /**
    * True, if the shower scales should be used in the subtraction
