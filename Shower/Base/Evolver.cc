@@ -299,7 +299,8 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
 }
 
 void Evolver::setupMaximumScales(ShowerTreePtr hard, 
-				 vector<ShowerProgenitorPtr> p) {
+				 const vector<ShowerProgenitorPtr> & p,
+				 XCPtr xcomb) {
   // let POWHEG events radiate freely
   if(_hardEmissionMode==1&&hardTree()) {
     vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
@@ -326,6 +327,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
        !ShowerHandler::currentHandler()->firstInteraction())) {
     // scattering process
     if(hard->isHard()) {
+      assert(xcomb);
       // coloured incoming particles
       if (isPartonic) {
 	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
@@ -338,8 +340,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
       if (ptmax < ZERO) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
-	ptmax=min(ptmax,sqrt(ShowerHandler::currentHandler()
-			     ->lastXCombPtr()->lastScale()));
+	ptmax=min(ptmax,sqrt(xcomb->lastScale()));
       }
     } 
     // decay, incoming() is the decaying particle.
@@ -352,8 +353,14 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // LesHouchesReader itself - use this by user's choice. 
   // Can be more general than this. 
   else {
-    ptmax = sqrt( ShowerHandler::currentHandler()
-		  ->lastXCombPtr()->lastScale() );
+    if(hard->isHard()) {
+      assert(xcomb);
+      ptmax = sqrt( xcomb->lastScale() );
+    }
+    else {
+      ptmax = hard->incomingLines().begin()->first
+	->progenitor()->momentum().mass(); 
+    }
   }
   // set maxHardPt for all progenitors.  For partonic processes this
   // is now the max pt in the FS, for non-partonic processes or
@@ -377,7 +384,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   // extract particles to shower
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
   // setup the maximum scales for the shower, given by the hard process
-  if (hardVetoOn()) setupMaximumScales(currentTree(), particlesToShower);
+  if (hardVetoOn()) setupMaximumScales(currentTree(), particlesToShower,xcomb);
   // generate the intrinsic p_T once and for all
   generateIntrinsicpT(particlesToShower);
   // main shower loop
@@ -666,7 +673,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   // extract particles to be shower, set scales and 
   // perform hard matrix element correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
-  setupMaximumScales(currentTree(), particlesToShower);
+  setupMaximumScales(currentTree(), particlesToShower,XCPtr());
   // compute the minimum mass of the final-state
   Energy minmass(ZERO), mIn(ZERO);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
