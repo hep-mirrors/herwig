@@ -52,7 +52,7 @@ Hadron/QQHTest.h  Hadron/QQHTest.cc
 
 REPO = $(top_builddir)/src/HerwigDefaults.rpo
 HERWIG = $(top_builddir)/src/Herwig++
-HWREAD = $(HERWIG) read -repo $(REPO) -L $(builddir)/.libs
+HWREAD = $(HERWIG) read --repo $(REPO) -L $(builddir)/.libs
 HWRUN = $(HERWIG) run
 
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma

@@ -281,7 +281,7 @@ void GenericWidthGenerator::doinit() {
     for(;start!=end;++start) {
       // the decay mode
       tcDMPtr mode=(*start).second;
-      clock_t time;
+      clock_t time = 0;
       if ( Debug::level > 1 ) {
 	Repository::cout() << "Partial width " 
 			   << left
