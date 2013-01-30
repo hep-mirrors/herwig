@@ -37,7 +37,8 @@ SubtractionDipole::SubtractionDipole()
     theIgnoreCuts(false), theShowerKernel(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1),
-    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false) {}
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
+    theRealEmissionScales(false) {}
 
 SubtractionDipole::~SubtractionDipole() {}
 
@@ -561,12 +562,22 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     return ZERO;
   }
 
-  if ( havePDFWeight1() || havePDFWeight2() ) {
-    if ( splitting() )
-      realEmissionME()->getPDFWeight(factorizationScale);
-    pdfweight = realEmissionME()->lastXComb().lastMEPDFWeight();
-    lastMEPDFWeight(pdfweight);
+  if ( factorizationScale == ZERO ) {
+    if ( realEmissionScales() )
+      factorizationScale = realEmissionME()->lastScale();
+    else
+      factorizationScale = underlyingBornME()->lastScale();
   }
+
+  if ( havePDFWeight1() ) {
+    pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  }
+ 
+  if ( havePDFWeight2() ) {
+    pdfweight *= realEmissionME()->pdf2(factorizationScale);
+  }
+
+  lastMEPDFWeight(pdfweight);
 
   if ( showerApproximation() && realShowerSubtraction() ) {
     assert(!splitting());
@@ -599,6 +610,20 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     lastMECrossSection(ZERO);
     lastME2(0.0);
     return ZERO;
+  }
+
+  if ( realEmissionScales() ) {
+
+    xme2 *=
+      pow(realEmissionME()->lastXComb().lastAlphaS()/
+	  underlyingBornME()->lastXComb().lastAlphaS(),
+	  realEmissionME()->orderInAlphaS());
+
+    xme2 *=
+      pow(realEmissionME()->lastXComb().lastAlphaEM()/
+	  underlyingBornME()->lastXComb().lastAlphaEM(),
+	  underlyingBornME()->orderInAlphaEW());
+
   }
 
   lastME2(xme2);
@@ -973,7 +998,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << theBornEmitter << theBornSpectator
      << theShowerApproximation
      << theRealShowerSubtraction << theVirtualShowerSubtraction
-     << thePartners;
+     << thePartners << theRealEmissionScales;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -988,7 +1013,7 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> theBornEmitter >> theBornSpectator
      >> theShowerApproximation
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
-     >> thePartners;
+     >> thePartners >> theRealEmissionScales;
 }
 
 void SubtractionDipole::Init() {

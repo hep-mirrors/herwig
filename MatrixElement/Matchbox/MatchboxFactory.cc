@@ -45,7 +45,8 @@ MatchboxFactory::MatchboxFactory()
     theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theVerbose(false), theInitVerbose(false), theSubtractionData(""), theCheckPoles(false) {}
+    theVerbose(false), theInitVerbose(false), theSubtractionData(""), 
+    theCheckPoles(false), theRealEmissionScales(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -551,6 +552,9 @@ void MatchboxFactory::setup() {
       if ( vetoScales() )
 	sub->doVetoScales();
 
+      if ( realEmissionScales() )
+	sub->doRealEmissionScales();
+
       subtractedMEs().push_back(sub);
       MEs().push_back(sub);
 
@@ -739,7 +743,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theInitVerbose << theSubtractionData << theCheckPoles
      << theParticleGroups << process << realEmissionProcess
-     << theShowerApproximation << theSplittingDipoles;
+     << theShowerApproximation << theSplittingDipoles
+     << theRealEmissionScales;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -755,7 +760,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theInitVerbose >> theSubtractionData >> theCheckPoles
      >> theParticleGroups >> process >> realEmissionProcess
-     >> theShowerApproximation >> theSplittingDipoles;
+     >> theShowerApproximation >> theSplittingDipoles
+     >> theRealEmissionScales;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1170,6 +1176,22 @@ void MatchboxFactory::Init() {
     ("ShowerApproximation",
      "Set the shower approximation to be considered.",
      &MatchboxFactory::theShowerApproximation, false, false, true, true, false);
+
+  static Switch<MatchboxFactory,bool> interfaceRealEmissionScales
+    ("RealEmissionScales",
+     "Switch on or off calculation of subtraction scales from real emission kinematics.",
+     &MatchboxFactory::theRealEmissionScales, true, false, false);
+  static SwitchOption interfaceRealEmissionScalesOn
+    (interfaceRealEmissionScales,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceRealEmissionScalesOff
+    (interfaceRealEmissionScales,
+     "Off",
+     "Off",
+     false);
+
 
 }
 

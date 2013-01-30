@@ -174,6 +174,16 @@ void SubtractedME::showerApproximation(Ptr<ShowerApproximation>::tptr app) {
   }
 }
 
+void SubtractedME::doRealEmissionScales() { 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doRealEmissionScales();
+  }
+}
+
 void SubtractedME::doRealShowerSubtraction() { 
   theRealShowerSubtraction = true;
   for ( MEVector::const_iterator m = dependent().begin();

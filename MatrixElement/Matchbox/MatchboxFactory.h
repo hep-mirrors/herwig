@@ -165,6 +165,16 @@ public:
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
 
   /**
+   * Return true, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool realEmissionScales() const { return theRealEmissionScales; }
+
+  /**
+   * Switch on/off that subtraction scales should be caluclated from real emission kinematics
+   */
+  void setRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
+
+  /**
    * Return true, if the integral over the unresolved emission should be
    * calculated.
    */
@@ -765,6 +775,11 @@ private:
    * The map of Born processes to splitting dipoles
    */
   map<cPDVector,set<Ptr<SubtractionDipole>::ptr> > theSplittingDipoles;
+
+  /**
+   * True, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool theRealEmissionScales;
 
 private:
 

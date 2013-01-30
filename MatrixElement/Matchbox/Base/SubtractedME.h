@@ -131,6 +131,11 @@ public:
    */
   virtual double reweightDependent(tStdXCombPtr, const vector<tStdXCombPtr>&);
 
+  /**
+   * Switch on or off that scales should be calculated from real emission kinematics
+   */
+  void doRealEmissionScales();
+
   //@}
 
   /** @name Methods relevant to matching */

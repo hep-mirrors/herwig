@@ -497,24 +497,46 @@ public:
   //@{
 
   /**
+   * Return true, if scales should be calculated from real emission kinematics
+   */
+  bool realEmissionScales() const { return theRealEmissionScales; }
+
+  /**
+   * Switch on or off that scales should be calculated from real emission kinematics
+   */
+  void doRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
+
+  /**
    * Return the scale associated with the phase space point provided
    * by the last call to setKinematics().
    */
-  virtual Energy2 scale() const { return realEmissionME()->scale(); }
+  virtual Energy2 scale() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->scale() :
+      underlyingBornME()->scale();
+  }
 
   /**
    * Return the value of \f$\alpha_S\f$ associated with the phase
    * space point provided by the last call to setKinematics(). This
    * versions returns SM().alphaS(scale()).
    */
-  virtual double alphaS() const { return realEmissionME()->lastAlphaS(); }
+  virtual double alphaS() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->alphaS() :
+      underlyingBornME()->alphaS();
+  }
 
   /**
    * Return the value of \f$\alpha_EM\f$ associated with the phase
    * space point provided by the last call to setKinematics(). This
    * versions returns SM().alphaEM(scale()).
    */
-  virtual double alphaEM() const { return realEmissionME()->lastAlphaEM(); }
+  virtual double alphaEM() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->alphaEM() :
+      underlyingBornME()->alphaEM();
+  }
 
   /**
    * Return true, if this matrix element provides the PDF
@@ -975,6 +997,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if scales should be calculated from real emission kinematics
+   */
+  bool theRealEmissionScales;
 
 private:
 
