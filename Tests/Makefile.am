@@ -212,10 +212,15 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
                 Rivet-TVT-Run-I-Jets-3   Rivet-TVT-Run-I-Jets-4 \
                 Rivet-TVT-Run-I-Jets-5   Rivet-TVT-Run-I-Jets-6 \
                 Rivet-TVT-Run-I-Jets-7   Rivet-TVT-Run-I-Jets-8\
-                Rivet-TVT-Run-I-UE\
-                Rivet-TVT-630-UE        Rivet-TVT-630-Jets-1 \
-                Rivet-TVT-630-Jets-2    Rivet-TVT-630-Jets-3
+                Rivet-TVT-Run-I-UE       Rivet-TVT-Run-II-Jets-0\
+                Rivet-TVT-630-UE         Rivet-TVT-630-Jets-1 \
+                Rivet-TVT-630-Jets-2     Rivet-TVT-630-Jets-3 \
+                Rivet-TVT-300-UE         Rivet-TVT-300-Jets-1 \
+                Rivet-TVT-900-UE         Rivet-TVT-900-Jets-1
 	rivet-rmgaps TVT-Run-I-Jets-4.aida	
+	python/merge-TVT-Energy TVT
+	rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.aida TVT-900-Energy.aida TVT-1960-Energy.aida
+	flat2aida RatioPlots.dat -o TVT-RatioPlots.aida
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
