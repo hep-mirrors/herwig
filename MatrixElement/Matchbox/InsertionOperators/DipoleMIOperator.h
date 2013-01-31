@@ -13,6 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 
 namespace Herwig {
 

@@ -18,12 +18,11 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-class MatchboxMEBase;
 
 /**
  * \ingroup Matchbox
@@ -75,6 +74,17 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector&) const { return false; }
+
+  /**
+   * Provide the additional random numbers
+   */
+  void additionalKinematics(const double *);
+
+  /**
+   * Return the number of random numbers required to evaluate this
+   * amplitude at a fixed phase space point.
+   */
+  virtual int nDimAdditional() const { return 0; }
 
   /**
    * Return a ME instance appropriate for this amplitude and the given
@@ -503,6 +513,13 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
+protected:
+
+  /**
+   * The additional random numbers requested by
+   * this virtual correction.
+   */
+  vector<double> additionalRandomNumbers;
 
 private:
 

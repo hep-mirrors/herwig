@@ -38,8 +38,7 @@ double PowhegRealReweight::evaluate() const {
   if ( !bornScreening() )
     return 0.0;
 
-  double dummy;
-  double ratio = ME2byDipoles::evaluate(dummy);
+  double ratio = ME2byDipoles::evaluate();
 
   double born = scaledBorn();
   double screen = scaledBornScreen();

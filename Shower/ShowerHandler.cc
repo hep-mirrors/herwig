@@ -38,8 +38,12 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/PDF/HwRemDecayer.h"
 #include <cassert>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeClass<ShowerHandler,CascadeHandler>
+describeShowerHandler ("Herwig::ShowerHandler","HwShower.so");
 
 ShowerHandler::~ShowerHandler() {}
 
@@ -102,9 +106,6 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_;  
 }
-
-ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;
-// Definition of the static class description member.
 
 void ShowerHandler::Init() {
 

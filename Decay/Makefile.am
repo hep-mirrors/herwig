@@ -20,4 +20,5 @@ DecayPhaseSpaceMode.h \
 HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h \
 HwDecayHandler.cc HwDecayHandler.h\
 DecayVertex.fh DecayVertex.h DecayVertex.cc \
-DecayMatrixElement.h DecayMatrixElement.cc
+DecayMatrixElement.h DecayMatrixElement.cc \
+BranchingRatioReweighter.h BranchingRatioReweighter.cc

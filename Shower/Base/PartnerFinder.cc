@@ -21,8 +21,12 @@
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Utilities/Debug.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeAbstractClass<PartnerFinder,Interfaced>
+describePartnerFinder ("Herwig::PartnerFinder","HwShower.so");
 
 // some useful functions to avoid using #define
 namespace {
@@ -64,9 +68,6 @@ void PartnerFinder::persistentOutput(PersistentOStream & os) const {
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
   is >> partnerMethod_ >> QEDPartner_ >> scaleChoice_;
 }
-
-AbstractClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;
-// Definition of the static class description member.
 
 void PartnerFinder::Init() {
 

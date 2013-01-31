@@ -64,6 +64,13 @@ public:
   virtual bool uniformAdditional() const { return true; }
 
   /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
+
+  /**
    * Given a process from the head matrix element,
    * return a list of diagrams which should be considered for
    * the given dependent matrix element.
@@ -83,6 +90,97 @@ public:
    * Switch on or off producing subprocess groups.
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+
+  /**
+   * Return true, if one of the dependent subprocesses should be
+   * constructed in place of the one driven by the head matrix element
+   * or a full subprocess group.
+   */
+  virtual bool selectDependentSubProcess() const { return theInclusive; }
+
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const { return theInclusive; }
+
+  /**
+   * Switch on or off inclusive mode.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
+  /**
+   * Fill the projectors object of xcombs to choose subprocesses
+   * different than the one currently integrated.
+   */
+  virtual void fillProjectors();
+
+  /**
+   * Return true, if this MEGroup will reweight the contributing cross
+   * sections.
+   */
+  virtual bool groupReweighted() const { return inclusive() || showerApproximation(); }
+
+  /**
+   * Reweight the head cross section
+   */
+  virtual double reweightHead(const vector<tStdXCombPtr>&);
+
+  /**
+   * Reweight the dependent cross section
+   */
+  virtual double reweightDependent(tStdXCombPtr, const vector<tStdXCombPtr>&);
+
+  /**
+   * Switch on or off that scales should be calculated from real emission kinematics
+   */
+  void doRealEmissionScales();
+
+  //@}
+
+  /** @name Methods relevant to matching */
+  //@{
+
+  /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches() { 
+    MEGroup::flushCaches();
+    if ( showerApproximation() )
+      showerApproximation()->resetBelowCutoff();
+  }
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr);
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
+
+  /**
+   * Indicate that the shower real emission contribution should be subtracted.
+   */
+  void doRealShowerSubtraction();
+
+  /**
+   * Return true, if the shower real emission contribution should be subtracted.
+   */
+  bool realShowerSubtraction() const { return theRealShowerSubtraction; }
+
+  /**
+   * Indicate that the shower virtual contribution should be subtracted.
+   */
+  void doVirtualShowerSubtraction();
+
+  /**
+   * Return true, if the shower virtual contribution should be subtracted.
+   */
+  bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
 
   //@}
 
@@ -400,10 +498,31 @@ private:
   bool theSubProcessGroups;
 
   /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
+
+  /**
    * True, if veto scales should be set
    * for the real emission
    */
   bool theVetoScales;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * True, if the shower real emission contribution should be subtracted.
+   */
+  bool theRealShowerSubtraction;
+
+  /**
+   * True, if the shower virtual contribution should be subtracted.
+   */
+  bool theVirtualShowerSubtraction;
 
 private:
 

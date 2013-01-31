@@ -18,6 +18,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -131,4 +133,8 @@ bool HwDecayerBase::softMatrixElementVeto(ShowerProgenitorPtr,
 					  ShowerParticlePtr,
 					  Branching) {
   return false;
+}
+
+HardTreePtr HwDecayerBase::generateHardest(ShowerTreePtr) {
+  return HardTreePtr();
 }

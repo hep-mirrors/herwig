@@ -12,9 +12,7 @@
 // This is the declaration of the QTildeReconstructor class.
 //
 
-#include "ThePEG/EventRecord/ColourLine.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "ThePEG/Repository/UseRandom.h"
 
 namespace Herwig {
 
@@ -464,62 +462,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static ClassDescription<QTildeReconstructor> initQTildeReconstructor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   QTildeReconstructor & operator=(const QTildeReconstructor &);
 
 private:
-
-  /**
-   * Return colour line progenitor pointer for ShowerProgenitor
-   */ 
-   Ptr<ThePEG::ColourLine>::transient_pointer
-   CL(ShowerProgenitorPtr a, unsigned int index=0) const {
-    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->colourLines()[index]);
-  }
-
-  /**
-   * Return progenitor colour line size for ShowerProgenitor
-   */
-  unsigned int CLSIZE(ShowerProgenitorPtr a) const {
-    return a->progenitor()->colourInfo()->colourLines().size();
-  }
-
-  /**
-   * Return anti-colour line progenitor pointer for ShowerProgenitor
-   */
-  Ptr<ThePEG::ColourLine>::transient_pointer 
-  ACL(ShowerProgenitorPtr a, unsigned int index=0) const {
-    return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->antiColourLines()[index]);
-  }
-
-  /**
-   * Return progenitor anti-colour line size for ShowerProgenitor
-   */
-  unsigned int ACLSIZE(ShowerProgenitorPtr a) const {
-    return a->progenitor()->colourInfo()->antiColourLines().size();
-  }
-
-  /**
-   * Return colour line size
-   */
-  unsigned int CLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
-    return (*a)->branchingParticle()->colourInfo()->colourLines().size();
-  }  
-
-  /**
-   * Return anti-colour line size
-   */
-  unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) const {
-    return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
-  }
 
   /**
    *  Option for handling the reconstruction
@@ -564,41 +512,6 @@ private:
    */
   set<cPDPtr> _noRescale;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of QTildeReconstructor. */
-template <>
-struct BaseClassTrait<Herwig::QTildeReconstructor,1> {
-  /** Typedef of the first base class of QTildeReconstructor. */
-  typedef Herwig::KinematicsReconstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the QTildeReconstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::QTildeReconstructor>
-  : public ClassTraitsBase<Herwig::QTildeReconstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::QTildeReconstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QTildeReconstructor is implemented. It may also include several, space-separated,
-   * libraries if the class QTildeReconstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

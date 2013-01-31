@@ -55,6 +55,14 @@ public:
    * @param children The particles produced in the branching
    * @param partnerType The type of evolution partner
    */
+private:
+
+  void updateParameters(tShowerParticlePtr theParent,
+			tShowerParticlePtr theChild0,
+			tShowerParticlePtr theChild1,
+			bool setAlpha) const; 
+
+public:
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
 			       ShowerPartnerType::Type partnerType) const;

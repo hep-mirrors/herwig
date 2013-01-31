@@ -213,8 +213,10 @@ void HerwigRead(string reponame, string runname,
     string msg = Repository::read(runname, std::cout);
     if ( ! msg.empty() ) cerr << msg << '\n';
   }
-  else
+  else {
+    Repository::exitOnError() = 0;
     Repository::read(std::cin, std::cout, "Herwig++> ");
+  }
 }
 
 

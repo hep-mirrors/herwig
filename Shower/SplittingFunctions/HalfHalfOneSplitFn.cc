@@ -13,16 +13,13 @@
 
 #include "HalfHalfOneSplitFn.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Utilities/Maths.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include <cassert>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<HalfHalfOneSplitFn> HalfHalfOneSplitFn::initHalfHalfOneSplitFn;
-// Definition of the static class description member.
+DescribeNoPIOClass<HalfHalfOneSplitFn,Herwig::SplittingFunction>
+describeHalfHalfOneSplitFn ("Herwig::HalfHalfOneSplitFn","HwShower.so");
 
 void HalfHalfOneSplitFn::Init() {
 

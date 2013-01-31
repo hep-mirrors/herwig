@@ -114,12 +114,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<ShowerModel> initShowerModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -148,41 +142,6 @@ private:
   //@}
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ShowerModel. */
-template <>
-struct BaseClassTrait<Herwig::ShowerModel,1> {
-  /** Typedef of the first base class of ShowerModel. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ShowerModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ShowerModel>
-  : public ClassTraitsBase<Herwig::ShowerModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerModel is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

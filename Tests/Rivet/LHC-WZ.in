@@ -1,0 +1,37 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase.in
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEPP2VV
+set MEPP2VV:Process WZ
+
+do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;
+do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;
+do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+# reweight for the branching ratios
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
+
+
+##################################################
+# select the analyses
+##################################################
+
+# general analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I954993
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-WZ LHCGenerator

@@ -41,21 +41,42 @@ do DISFactory:Process e+ p e+ j
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-set /Herwig/DipoleShower/DipoleShowerHandler:HardFirstEmission On
+set DISFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] DISPowhegFactory
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# set DISFactory:ShowerApproximation MEMatching
+# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+
+################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set /Herwig/MatrixElement/Matchbox/DISFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElement/Matchbox/DISFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

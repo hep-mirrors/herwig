@@ -34,17 +34,42 @@ do EEFactory:Process e- e+ j j
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set /Herwig/DipoleShower/DipoleShowerHandler:HardFirstEmission On
+set EEFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEPowhegFactory
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# set EEFactory:ShowerApproximation MEMatching
+# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+
+################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set /Herwig/MatrixElement/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElement/Matchbox/EEFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

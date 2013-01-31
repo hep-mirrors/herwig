@@ -32,7 +32,10 @@ using namespace Herwig;
 
 BinSampler::BinSampler() 
   : MultiIterationStatistics(), 
-    theInitialPoints(1000000), theBin(-1),
+    theInitialPoints(1000000), 
+    theEnhanceInitialPoints(1.0),
+    theOversamplingFactor(1.0),
+    theBin(-1),
     theInitialized(false) {}
 
 BinSampler::~BinSampler() {}
@@ -128,12 +131,14 @@ void BinSampler::initialize(bool progress) {
 
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
-  os << theInitialPoints << theBin << theInitialized << theLastPoint;
+  os << theInitialPoints << theEnhanceInitialPoints 
+     << theOversamplingFactor << theBin << theInitialized << theLastPoint;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
-  is >> theInitialPoints >> theBin >> theInitialized >> theLastPoint;
+  is >> theInitialPoints >> theEnhanceInitialPoints 
+     >> theOversamplingFactor >> theBin >> theInitialized >> theLastPoint;
 }
 
 

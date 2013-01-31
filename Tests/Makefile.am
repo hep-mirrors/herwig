@@ -52,7 +52,7 @@ Hadron/QQHTest.h  Hadron/QQHTest.cc
 
 REPO = $(top_builddir)/src/HerwigDefaults.rpo
 HERWIG = $(top_builddir)/src/Herwig++
-HWREAD = $(HERWIG) read -r $(REPO) -L $(builddir)/.libs
+HWREAD = $(HERWIG) read --repo $(REPO) -L $(builddir)/.libs
 HWRUN = $(HERWIG) run
 
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma
@@ -195,8 +195,8 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
 	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-PromptPhoton \
- 		  Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet \
- 		  Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet
+                  Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet \
+		  Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
 	python/add-aida Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet --add -o TVT-Run-II-DiPhoton.aida
@@ -231,13 +231,16 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
                 Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
-	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE Rivet-LHC-2760-UE \
+                Rivet-LHC-7-Heavy-0 \
                 Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
                 Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
                 Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top-L \
 		Rivet-LHC-7-Top-SL \
 	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long \
-                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 
+                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 \
+                Rivet-LHC-7-Jets-All-3 Rivet-LHC-7-Jets-All-4 \
+                Rivet-LHC-7-Jets-All-5
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
@@ -265,17 +268,18 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
               Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
               Rivet-LHC-Z-e  Rivet-LHC-Powheg-Z-e  \
               Rivet-LHC-Z-mu Rivet-LHC-Powheg-Z-mu \
+              Rivet-LHC-WZ   Rivet-LHC-Powheg-WZ\
               Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
               Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-EW.aida;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-EW.aida;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton \
                   Rivet-LHC-7-DiPhoton-GammaGamma        Rivet-LHC-7-DiPhoton-GammaJet \
 		  Rivet-LHC-Powheg-7-DiPhoton-GammaGamma Rivet-LHC-Powheg-7-DiPhoton-GammaJet
-	rm -rf Rivet-LHC-Photon 
+	rm -rf Rivet-LHC-Photon
 	python/add-aida LHC-7-DiPhoton-GammaGamma.aida LHC-7-DiPhoton-GammaJet.aida --add -o LHC-7-DiPhoton.aida
 	python/add-aida LHC-Powheg-7-DiPhoton-GammaGamma.aida LHC-7-Powheg-DiPhoton-GammaJet.aida --add -o LHC-Powheg-7-DiPhoton.aida
 	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida

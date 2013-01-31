@@ -18,6 +18,7 @@
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -328,7 +329,6 @@ private:
    * The initial kappa-tilde values for radiation from the quark
    */
   double d_kt1_;
-
   /**
    *  Pointer to the EM coupling
    */

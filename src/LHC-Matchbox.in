@@ -38,20 +38,42 @@ do PPFactory:Process p p e+ e-
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set PPFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-# insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPPowhegFactory
-# insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# set PPFactory:ShowerApproximation MEMatching
+# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+
+################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set /Herwig/MatrixElement/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElement/Matchbox/PPFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

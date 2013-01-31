@@ -14,12 +14,13 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "ShowerTree.fh"
+#include "ShowerParticle.fh"
 #include "ShowerProgenitor.fh"
 
 namespace Herwig {
+
+struct Branching;
 
 using namespace ThePEG;
   
@@ -118,12 +119,6 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<ShowerVeto> initShowerVeto;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -137,41 +132,6 @@ private:
   ShowerVetoType _vetoType;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ShowerVeto. */
-template <>
-struct BaseClassTrait<Herwig::ShowerVeto,1> {
-  /** Typedef of the first base class of ShowerVeto. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ShowerVeto class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ShowerVeto>
-  : public ClassTraitsBase<Herwig::ShowerVeto> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerVeto"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ShowerVeto is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerVeto depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

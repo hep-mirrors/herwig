@@ -34,8 +34,10 @@ using namespace Herwig;
 SubtractedME::SubtractedME() 
   : MEGroup(), 
     theSubtractionData(""), 
-    theVerbose(false), theSubProcessGroups(false),
-    theVetoScales(false) {}
+    theVerbose(false), 
+    theSubProcessGroups(false), theInclusive(false),
+    theVetoScales(false),
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -50,7 +52,6 @@ IBPtr SubtractedME::fullclone() const {
 void SubtractedME::setXComb(tStdXCombPtr xc) {
   MEGroup::setXComb(xc);
 }
-
 
 MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
 						      tMEPtr depME) const {
@@ -163,54 +164,124 @@ vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& 
 
 }
 
-void SubtractedME::setVetoScales(tSubProPtr subpro) const {
-
-  if ( !vetoScales() )
-    return;
-
-  Ptr<SubtractionDipole>::tptr dipole;
-  Energy pt;
-
-  assert(head()->noMirror());
-
-  for ( MEVector::const_iterator d = dependent().begin();
-	d != dependent().end(); ++d ) {
-
-    dipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*d);
-    assert(dipole);
-    pt = dipole->lastPt();
-
-    if ( dipole->realEmitter() == 0 ||
-	 dipole->realSpectator() == 0 ) {
-      if ( subpro->incoming().first->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().first->vetoScale() > sqr(pt) )
-	subpro->incoming().first->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() == 1 ||
-	 dipole->realSpectator() == 1 ) {
-      if ( subpro->incoming().second->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().second->vetoScale() > sqr(pt) )
-	subpro->incoming().second->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() > 1 ) {
-      if ( subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realEmitter()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realSpectator() > 1 ) {
-      if ( subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realSpectator()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( subpro->outgoing()[dipole->realEmission()-2]->vetoScale() < 0.0*GeV2 ||
-	 subpro->outgoing()[dipole->realEmission()-2]->vetoScale() > sqr(pt) )
-      subpro->outgoing()[dipole->realEmission()-2]->vetoScale(sqr(pt));  
-
+void SubtractedME::showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->showerApproximation(app);
   }
+}
+
+void SubtractedME::doRealEmissionScales() { 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doRealEmissionScales();
+  }
+}
+
+void SubtractedME::doRealShowerSubtraction() { 
+  theRealShowerSubtraction = true;
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doRealShowerSubtraction();
+  }
+}
+
+void SubtractedME::doVirtualShowerSubtraction() { 
+  theVirtualShowerSubtraction = true; 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doVirtualShowerSubtraction();
+  }
+}
+
+void SubtractedME::setVetoScales(tSubProPtr) const {}
+
+void SubtractedME::fillProjectors() {
+  if ( !inclusive() && !virtualShowerSubtraction() )
+    return;
+  Ptr<StdXCombGroup>::tptr group = 
+    dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
+  for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
+	d != group->dependent().end(); ++d ) {
+    if ( (**d).lastCrossSection() != ZERO )
+      lastXCombPtr()->projectors().insert(1.,*d);
+  }
+}
+
+double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
+
+  if ( inclusive() && !lastXComb().lastProjector() )
+    return 1.;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    return 1.;
+  }
+
+  if ( realShowerSubtraction() ) {
+    assert(showerApproximation());
+    bool below = showerApproximation()->belowCutoff();
+    if ( below )
+      return 0.;
+    return 1.;
+  }
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( virtualShowerSubtraction() ) {
+      assert(showerApproximation());
+      bool above = !showerApproximation()->belowCutoff();
+      if ( above )
+	return 0.;
+    }
+    double sum = 0.;
+    size_t n = 0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( (**d).lastCrossSection() != ZERO ) {
+	sum += (**d).lastME2();
+	++n;
+      }
+    }
+    return
+      n * lastXComb().lastProjector()->lastME2() / sum;
+  }
+
+  return 1.;
+
+}
+
+double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
+
+  if ( inclusive() && !lastXComb().lastProjector() )
+    return 0.;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    return 0.;
+  }
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( xc != lastXComb().lastProjector() )
+      return 0.;
+    size_t n = 0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( (**d).lastCrossSection() != ZERO ) {
+	++n;
+      }
+    }
+    return n;
+  }
+
+  return 1.;
 
 }
 
@@ -523,12 +594,16 @@ void SubtractedME::lastEventSubtraction() {
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
   os << theDipoles << theBorns << theSubtractionData 
-     << theVerbose << theSubProcessGroups << theVetoScales;
+     << theVerbose << theInclusive << theSubProcessGroups << theVetoScales
+     << theShowerApproximation
+     << theRealShowerSubtraction << theVirtualShowerSubtraction;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
   is >> theDipoles >> theBorns >> theSubtractionData 
-     >> theVerbose >> theSubProcessGroups >> theVetoScales;
+     >> theVerbose >> theInclusive >> theSubProcessGroups >> theVetoScales
+     >> theShowerApproximation
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
 }
 
 void SubtractedME::Init() {
@@ -579,6 +654,21 @@ void SubtractedME::Init() {
      "Off",
      false);
 
+  static Switch<SubtractedME,bool> interfaceInclusive
+    ("Inclusive",
+     "Switch on or off production of inclusive cross section.",
+     &SubtractedME::theInclusive, false, false, false);
+  static SwitchOption interfaceInclusiveOn
+    (interfaceInclusive,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceInclusiveOff
+    (interfaceInclusive,
+     "Off",
+     "Off",
+     false);
+
   static Switch<SubtractedME,bool> interfaceVetoScales
     ("VetoScales",
      "Switch on or off production of sub-process groups.",
@@ -594,6 +684,10 @@ void SubtractedME::Init() {
      "Off",
      false);
 
+  static Reference<SubtractedME,ShowerApproximation> interfaceShowerApproximation
+    ("ShowerApproximation",
+     "Set the shower approximation to be considered.",
+     &SubtractedME::theShowerApproximation, false, false, true, true, false);
 
 }
 

@@ -12,16 +12,14 @@
 //
 
 #include "OneOneOneSplitFn.h"
-#include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include <cassert>
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<OneOneOneSplitFn> OneOneOneSplitFn::initOneOneOneSplitFn;
-// Definition of the static class description member.
+DescribeNoPIOClass<OneOneOneSplitFn,Herwig::SplittingFunction>
+describeOneOneOneSplitFn ("Herwig::OneOneOneSplitFn","HwShower.so");
 
 void OneOneOneSplitFn::Init() {
 

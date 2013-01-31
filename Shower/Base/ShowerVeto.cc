@@ -16,8 +16,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeAbstractClass<ShowerVeto,Interfaced>
+describeShowerVeto ("Herwig::ShowerVeto","HwShower.so");
 
 void ShowerVeto::persistentOutput(PersistentOStream & os) const {
   os << oenum(_vetoType);
@@ -26,9 +30,6 @@ void ShowerVeto::persistentOutput(PersistentOStream & os) const {
 void ShowerVeto::persistentInput(PersistentIStream & is, int) {
   is >> ienum(_vetoType);
 }
-
-AbstractClassDescription<ShowerVeto> ShowerVeto::initShowerVeto;
-// Definition of the static class description member.
 
 void ShowerVeto::Init() {
 

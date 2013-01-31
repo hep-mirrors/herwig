@@ -87,6 +87,13 @@ struct orderPartonData {
 
 };
 
+void MatchboxAmplitude::additionalKinematics(const double * r) {
+  if ( nDimAdditional() ) {
+    additionalRandomNumbers.resize(nDimAdditional());
+    copy(r,r+nDimAdditional(),additionalRandomNumbers.begin());
+  }
+}
+
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
   theLastCrossingMap = crossingMap().find(lastXCombPtr());

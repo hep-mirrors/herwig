@@ -11,7 +11,6 @@
 // functions of the ShowerAlphaQCD class.
 //
 #include "ShowerAlphaQCD.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -20,8 +19,13 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Config/Constants.h"
 
 using namespace Herwig;
+
+DescribeClass<ShowerAlphaQCD,ShowerAlpha>
+describeShowerAlphaQCD("Herwig::ShowerAlphaQCD","HwShower.so");
 
 IBPtr ShowerAlphaQCD::clone() const {
   return new_ptr(*this);
@@ -44,9 +48,6 @@ void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
      >> _tolerance >> _maxtry >> _alphamin
      >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV);
 }
-
-ClassDescription<ShowerAlphaQCD> ShowerAlphaQCD::initShowerAlphaQCD;
-// Definition of the static class description member.
 
 void ShowerAlphaQCD::Init() {
 

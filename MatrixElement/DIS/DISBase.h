@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
