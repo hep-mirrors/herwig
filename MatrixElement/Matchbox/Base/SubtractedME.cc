@@ -226,8 +226,7 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     return 1.;
 
   if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
-    assert(!showerApproximation()->belowCutoff());
-    return 0.;
+    return 1.;
   }
 
   if ( realShowerSubtraction() ) {
@@ -267,7 +266,6 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
     return 0.;
 
   if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
-    assert(!showerApproximation()->belowCutoff());
     return 0.;
   }
 
