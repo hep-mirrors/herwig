@@ -277,15 +277,21 @@ handle(EventHandler & ch, const tPVector & tagged,
   event->selectFinalState(inserter(finalstate));
   for(vector<tPPtr>::const_iterator pit=particles.begin();
       pit!=particles.end();++pit) {
-    // if a final-state particle just zero production
-    if(finalstate.find(*pit)!=finalstate.end()) {
-      (**pit).setVertex(LorentzPoint());
+    // fix the vertex position
+    tPPtr parent = (**pit).parents().empty() ? tPPtr() : (**pit).parents()[0];
+    bool inClusters(false);
+    bool newVertex(false);
+    while(parent&&!parent->parents().empty()) {
+      if(!inClusters&&parent->id()==ParticleID::Cluster) {
+	inClusters = true;
+      }
+      else if(inClusters&&parent->id()!=ParticleID::Cluster) {
+	newVertex = true;
+	break;
+      }
+      parent = parent->parents()[0]; 
     }
-    // if not zero the lot
-    else {
-      (**pit).setVertex(LorentzPoint());
-      (**pit).setLifeLength(LorentzDistance());
-    }
+    if(newVertex) (**pit).setVertex(parent->vertex());
   }
   //  currentHandler_ = 0;
 }

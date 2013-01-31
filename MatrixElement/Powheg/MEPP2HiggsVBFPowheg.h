@@ -6,16 +6,10 @@
 //
 
 #include "Herwig++/MatrixElement/Hadron/MEPP2HiggsVBF.h"
-#include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-/**
- *  Typedef for BeamParticleData
- */
-typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**
  * Here is the documentation of the MEPP2HiggsVBFPowheg class.

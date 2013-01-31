@@ -39,7 +39,9 @@ MatchboxMEBase::MatchboxMEBase()
     theRenormalizationScaleFactor(1.0),
     theVerbose(false),
     theFixedCouplings(false), theFixedQEDCouplings(false),
-    theNLight(0), theGetColourCorrelatedMEs(false) {}
+    theNLight(0), theGetColourCorrelatedMEs(false),
+    theCheckPoles(false), theOneLoop(false),
+    theOneLoopNoBorn(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -146,9 +148,6 @@ unsigned int MatchboxMEBase::orderInAlphaEW() const {
 void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
 
   MEBase::setXComb(xc);
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
-    (**rw).setXComb(xc);
   if ( phasespace() && !xc->head() )
     phasespace()->prepare(xc,theVerbose);
   if ( scaleChoice() )
@@ -207,6 +206,18 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     setScale();
     logGenerateKinematics(r);
 
+    int ampShift = 0;
+    int nBorn = nDimBorn();
+    if ( matchboxAmplitude() ) {
+      ampShift = matchboxAmplitude()->nDimAdditional();
+      if ( ampShift )
+	matchboxAmplitude()->additionalKinematics(r + nBorn);
+    }
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      (**v).additionalKinematics(r + nBorn + ampShift);
+    }
+
     return true;
 
   }
@@ -220,6 +231,23 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 }
 
 int MatchboxMEBase::nDim() const { 
+
+  int ampAdd = 0;
+  if ( matchboxAmplitude() ) {
+    ampAdd = matchboxAmplitude()->nDimAdditional();
+  }
+
+  int insertionAdd = 0;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    insertionAdd = max(insertionAdd,(**v).nDimAdditional());
+  }
+
+  return nDimBorn() + ampAdd + insertionAdd;
+
+}
+
+int MatchboxMEBase::nDimBorn() const { 
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     int n = phasespace()->nDim(nout);
@@ -291,14 +319,7 @@ Energy2 MatchboxMEBase::renormalizationScaleQED() const {
   return renormalizationScale();
 }
 
-void MatchboxMEBase::setVetoScales(tSubProPtr subpro) const {
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    if ( !(**rw).apply() )
-      continue;
-    (**rw).setVetoScales(subpro);
-  }
-}
+void MatchboxMEBase::setVetoScales(tSubProPtr) const {}
 
 void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
@@ -323,9 +344,18 @@ void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
 }
 
-double MatchboxMEBase::pdf1(Energy2 fscale) const {
+double MatchboxMEBase::pdf1(Energy2 fscale, double xEx) const {
 
   assert(lastXCombPtr()->partonBins().first->pdf());
+
+  if ( xEx < 1. && lastX1() >= xEx ) {
+    return
+      ( ( 1. - lastX1() ) / ( 1. - xEx ) ) *
+      lastXCombPtr()->partonBins().first->pdf()->xfx(lastParticles().first->dataPtr(),
+						     lastPartons().first->dataPtr(),
+						     fscale == ZERO ? lastScale() : fscale,
+						     xEx)/xEx;
+  }
 
   return lastXCombPtr()->partonBins().first->pdf()->xfx(lastParticles().first->dataPtr(),
 							lastPartons().first->dataPtr(),
@@ -333,9 +363,18 @@ double MatchboxMEBase::pdf1(Energy2 fscale) const {
 							lastX1())/lastX1();
 }
 
-double MatchboxMEBase::pdf2(Energy2 fscale) const {
+double MatchboxMEBase::pdf2(Energy2 fscale, double xEx) const {
 
   assert(lastXCombPtr()->partonBins().second->pdf());
+
+  if ( xEx < 1. && lastX2() >= xEx ) {
+    return
+      ( ( 1. - lastX2() ) / ( 1. - xEx ) ) *
+      lastXCombPtr()->partonBins().second->pdf()->xfx(lastParticles().second->dataPtr(),
+						      lastPartons().second->dataPtr(),
+						      fscale == ZERO ? lastScale() : fscale,
+						      xEx)/xEx;
+  }
 
   return lastXCombPtr()->partonBins().second->pdf()->xfx(lastParticles().second->dataPtr(),
 							 lastPartons().second->dataPtr(),
@@ -482,7 +521,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   double xme2 = me2();
   lastME2(xme2);
 
-  if ( xme2 == 0. ) {
+  if ( xme2 == 0. && !oneLoopNoBorn() ) {
     lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
@@ -491,14 +530,35 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   if ( getColourCorrelatedMEs() )
     storeColourCorrelatedMEs(xme2);
 
-  CrossSection res = 
-    (sqr(hbarc)/(2.*lastSHat())) *
-    jacobian() * xme2;
+  double vme2 = 0.;
+  if ( oneLoop() )
+    vme2 = oneLoopInterference();
+
+  CrossSection res = ZERO;
+
+  if ( !oneLoopNoBorn() )
+    res += 
+      (sqr(hbarc)/(2.*lastSHat())) *
+      jacobian()* lastMEPDFWeight() * xme2;
+
+  if ( oneLoop() )
+    res += 
+      (sqr(hbarc)/(2.*lastSHat())) *
+      jacobian()* lastMEPDFWeight() * vme2;
+
+  if ( !onlyOneLoop() ) {
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      (**v).setXComb(lastXCombPtr());
+      res += (**v).dSigHatDR();
+    }
+  }
 
   double weight = 0.0;
   bool applied = false;
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
 	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).setXComb(lastXCombPtr());
     if ( !(**rw).apply() )
       continue;
     weight += (**rw).evaluate();
@@ -506,7 +566,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   }
   if ( applied )
     res *= weight;
-  lastMECrossSection(res * lastMEPDFWeight());
+  lastMECrossSection(res);
 
   return lastMECrossSection();
 
@@ -539,6 +599,24 @@ double MatchboxMEBase::oneLoopInterference() const {
     << "Please check your setup." << Exception::abortnow;
   return 0.;
 
+}
+
+void MatchboxMEBase::logPoles() const {
+  double res2me = oneLoopDoublePole();
+  double res1me = oneLoopSinglePole();
+  double res2i = 0.;
+  double res1i = 0.;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    res2i += (**v).oneLoopDoublePole();
+    res1i += (**v).oneLoopSinglePole();
+  }
+  double diff2 = abs(res2me) != 0. ? 1.-abs(res2i/res2me) : abs(res2i)-abs(res2me);
+  double diff1 = abs(res1me) != 0. ? 1.-abs(res1i/res1me) : abs(res1i)-abs(res1me);
+  generator()->log() 
+    << "check "
+    << log10(abs(diff2)) << " " << log10(abs(diff1)) << "\n"
+    << flush;
 }
 
 bool MatchboxMEBase::haveOneLoop() const {
@@ -681,6 +759,10 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
     }
   }
 
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d = res.begin();
+	d != res.end(); ++d )
+    (**d).partnerDipoles(res);
+
   return res;
 
 }
@@ -745,6 +827,7 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 }
 
 void MatchboxMEBase::flushCaches() { 
+  MEBase::flushCaches();
   if ( cache() )
     cache()->flush();
   if ( matchboxAmplitude() )
@@ -753,6 +836,54 @@ void MatchboxMEBase::flushCaches() {
 	  reweights().begin(); r != reweights().end(); ++r ) {
     (**r).flushCaches();
   }
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    (**v).flushCaches();
+  }
+}
+
+void MatchboxMEBase::print(ostream& os) const {
+
+  os << "--- MatchboxMEBase setup -------------------------------------------------------\n";
+
+  os << " '" << name() << "' for subprocesses:\n";
+  for ( vector<PDVector>::const_iterator p = subProcesses().begin();
+	p != subProcesses().end(); ++p ) {
+    os << "  ";
+    for ( PDVector::const_iterator pp = p->begin();
+	  pp != p->end(); ++pp ) {
+      os << (**pp).PDGName() << " ";
+      if ( pp == p->begin() + 1 )
+	os << "-> ";
+    }
+    os << "\n";
+  }
+
+  os << " including " << (oneLoop() ? "" : "no ") << "virtual corrections";
+  if ( oneLoopNoBorn() )
+    os << " without Born contributions";
+  os << "\n";
+
+  if ( oneLoop() && !onlyOneLoop() ) {
+    os << " using insertion operators\n";
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	    virtuals().begin(); v != virtuals().end(); ++v ) {
+      os << " '" << (**v).name() << "' with " 
+	 << ((**v).isDR() ? "" : "C") << "DR/";
+      if ( (**v).isCS() )
+	os << "CS";
+      if ( (**v).isBDK() )
+	os << "BDK";
+      if ( (**v).isExpanded() )
+	os << "expanded";
+      os << " conventions\n";
+    }
+  }
+
+  os << "--------------------------------------------------------------------------------\n";
+
+  os << flush;
+
 }
 
 void MatchboxMEBase::printLastEvent(ostream& os) const {
@@ -777,7 +908,8 @@ void MatchboxMEBase::printLastEvent(ostream& os) const {
      << " alphaS = " << lastAlphaS() << "\n";
 
   os << " momenta/GeV generated from random numbers\n ";
-  copy(meInfo().begin(),meInfo().end(),ostream_iterator<double>(os," "));
+  copy(lastXComb().lastRandomNumbers().begin(),
+       lastXComb().lastRandomNumbers().end(),ostream_iterator<double>(os," "));
   os << ":\n ";
 
   for ( vector<Lorentz5Momentum>::const_iterator p = meMomenta().begin();
@@ -932,22 +1064,35 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     *rw = myReweight;
   }
 
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    Ptr<MatchboxInsertionOperator>::ptr myIOP = (**v).cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << (**v).name();
+    if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+      throw InitException() << "Insertion operator " << pname.str() << " already existing.";
+    *v = myIOP;
+    (**v).setBorn(this);
+  }
+
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theReweights << thePhasespace << theAmplitude << theScaleChoice
      << theDiagramGenerator << theProcessData << theSubprocesses
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theVerbose << theCache << theFixedCouplings << theFixedQEDCouplings
-     << theNLight << theGetColourCorrelatedMEs << symmetryFactors;
+     << theVerbose << theCache << theVirtuals << theFixedCouplings << theFixedQEDCouplings
+     << theNLight << theGetColourCorrelatedMEs << theCheckPoles 
+     << theOneLoop << theOneLoopNoBorn << symmetryFactors;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theReweights >> thePhasespace >> theAmplitude >> theScaleChoice
      >> theDiagramGenerator >> theProcessData >> theSubprocesses
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theVerbose >> theCache >> theFixedCouplings >> theFixedQEDCouplings
-     >> theNLight >> theGetColourCorrelatedMEs >> symmetryFactors;
+     >> theVerbose >> theCache >> theVirtuals >> theFixedCouplings >> theFixedQEDCouplings
+     >> theNLight >> theGetColourCorrelatedMEs >> theCheckPoles 
+     >> theOneLoop >> theOneLoopNoBorn >> symmetryFactors;
 }
 
 void MatchboxMEBase::Init() {
@@ -986,6 +1131,11 @@ void MatchboxMEBase::Init() {
     ("Cache",
      "Set the cache object to be used.",
      &MatchboxMEBase::theCache, false, false, true, true, false);
+
+  static RefVector<MatchboxMEBase,MatchboxInsertionOperator> interfaceVirtuals
+    ("Virtuals",
+     "The virtual corrections to be added.",
+     &MatchboxMEBase::theVirtuals, -1, false, false, true, true, false);
 
   static Parameter<MatchboxMEBase,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",

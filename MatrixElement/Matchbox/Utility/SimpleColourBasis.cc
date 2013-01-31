@@ -164,6 +164,7 @@ double SimpleColourBasis::tMatrixElement(size_t i, size_t a,
       if ( a == 1 && b == 1 )
 	return -1.;
     }
+    return 0.;
   }
 
   if ( bBasis == id33bar8 ) {

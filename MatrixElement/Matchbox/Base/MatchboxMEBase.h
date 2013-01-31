@@ -21,12 +21,13 @@
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-class SubtractionDipole;
 
 /**
  * \ingroup Matchbox
@@ -184,6 +185,13 @@ public:
   virtual void setXComb(tStdXCombPtr xc);
 
   /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
+
+  /**
    * Generate incoming parton momenta. This default
    * implementation performs the standard mapping
    * from x1,x2 -> tau,y making 1/tau flat; incoming
@@ -212,6 +220,12 @@ public:
   virtual int nDim() const;
 
   /**
+   * The number of internal degrees of freedom used in the matrix
+   * element for generating a Born phase space point
+   */
+  virtual int nDimBorn() const;
+
+  /**
    * Return true, if this matrix element will generate momenta for the
    * incoming partons itself.  The matrix element is required to store
    * the incoming parton momenta in meMomenta()[0,1]. No mapping in
@@ -233,13 +247,6 @@ public:
     return 
       (phasespace() ? phasespace()->wantCMS() : true) &&
       diagrams().front()->partons().size() != 3; }
-
-  /**
-   * Return true, if the XComb steering this matrix element
-   * should keep track of the random numbers used to generate
-   * the last phase space point
-   */
-  virtual bool keepRandomNumbers() const { return true; }
 
   /**
    * Return the meMomenta as generated at the last
@@ -378,12 +385,14 @@ public:
   /**
    * Supply the PDF weight for the first incoming parton.
    */
-  double pdf1(Energy2 factorizationScale = ZERO) const;
+  double pdf1(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   /**
    * Supply the PDF weight for the second incoming parton.
    */
-  double pdf2(Energy2 factorizationScale = ZERO) const;
+  double pdf2(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   //@}
 
@@ -488,6 +497,58 @@ public:
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const;
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return theCheckPoles; }
+
+  /**
+   * Switch on checking of epsilon pole cancellation.
+   */
+  void doCheckPoles() { theCheckPoles = true; }
+
+  /**
+   * Perform the check of epsilon pole cancellation. Results will be
+   * written to the log file, one per phasespace point.
+   */
+  void logPoles() const;
+
+  /**
+   * Return the virtual corrections
+   */
+  const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const {
+    return theVirtuals;
+  }
+
+  /**
+   * Return the virtual corrections
+   */
+  vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() {
+    return theVirtuals;
+  }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections
+   */
+  void doOneLoop() { theOneLoop = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   */
+  bool oneLoop() const { return theOneLoop; }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections but
+   * no Born contributions
+   */
+  void doOneLoopNoBorn() { theOneLoop = true; theOneLoopNoBorn = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   * but no Born contributions
+   */
+  bool oneLoopNoBorn() const { return theOneLoopNoBorn || onlyOneLoop(); }
 
   //@}
 
@@ -612,6 +673,11 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
+
+  /**
+   * Dump the setup to an ostream
+   */
+  void print(ostream&) const;
 
   /**
    * Print debug information on the last event
@@ -796,6 +862,11 @@ private:
   Ptr<MatchboxMECache>::ptr theCache;
 
   /**
+   * The virtual corrections.
+   */
+  vector<Ptr<MatchboxInsertionOperator>::ptr> theVirtuals;
+
+  /**
    * The subprocesses to be considered, if a diagram generator is
    * present.
    */
@@ -838,6 +909,22 @@ private:
    * for later use
    */
   bool theGetColourCorrelatedMEs;
+
+  /**
+   * True, if cancellationn of epsilon poles should be checked.
+   */
+  bool theCheckPoles;
+
+  /**
+   * True, if this matrix element includes one-loop corrections
+   */
+  bool theOneLoop;
+
+  /**
+   * True, if this matrix element includes one-loop corrections
+   * but no Born contributions
+   */
+  bool theOneLoopNoBorn;
 
   /**
    * Map xcomb's to storage of Born matrix elements squared.

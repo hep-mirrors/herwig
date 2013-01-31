@@ -32,6 +32,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
@@ -48,6 +49,9 @@ void findChildren(tShowerParticlePtr parent,set<ShowerParticlePtr> & fs) {
   }
 }
 }
+
+DescribeClass<Evolver,Interfaced>
+describeEvolver ("Herwig::Evolver","HwShower.so");
 
 IBPtr Evolver::clone() const {
   return new_ptr(*this);
@@ -100,9 +104,6 @@ void Evolver::doinit() {
     interactions_.push_back(ShowerInteraction::QED);
   }
 }
-
-ClassDescription<Evolver> Evolver::initEvolver;
-// Definition of the static class description member.
 
 void Evolver::Init() {
   
@@ -371,6 +372,12 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
 
 void Evolver::setupMaximumScales(ShowerTreePtr hard, 
 				 vector<ShowerProgenitorPtr> p) {
+  // let POWHEG events radiate freely
+  if(_hardEmissionMode==1&&hardTree()) {
+    vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
+    for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(Constants::MaxEnergy);
+    return;
+  }
   // find out if hard partonic subprocess.
   bool isPartonic(false); 
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 

@@ -9,6 +9,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig++/Models/StandardModel/OneLoopFFAWZVertex.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

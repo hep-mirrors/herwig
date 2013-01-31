@@ -40,7 +40,7 @@ double PowhegInclusiveReweight::evaluate() const {
     generator()->log() << "'" << name() << "' evaluating inclusive reweight\n";
 
   double sratio;
-  double ratio = ME2byDipoles::evaluate(sratio);
+  double ratio = ME2byDipoles::evaluate(sratio,true);
 
   if ( bornScreening() ) {
     if ( !projectionDipole()->underlyingBornME()->

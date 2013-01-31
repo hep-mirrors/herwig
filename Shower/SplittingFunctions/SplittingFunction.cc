@@ -19,11 +19,12 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-AbstractClassDescription<SplittingFunction> SplittingFunction::initSplittingFunction;
-// Definition of the static class description member.
+DescribeAbstractClass<SplittingFunction,Interfaced>
+describeSplittingFunction ("Herwig::SplittingFunction","");
 
 void SplittingFunction::Init() {
 

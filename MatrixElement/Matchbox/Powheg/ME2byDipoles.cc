@@ -102,24 +102,14 @@ void ME2byDipoles::setXComb(tStdXCombPtr real) {
   assert(real);
   theLastXComb = real;
 
-  map<StdXCombPtr,vector<StdXCombPtr> >::iterator xcs
-    = theXCombMap.find(theLastXComb);
-
-  if ( xcs == theXCombMap.end() ) {
-    getXCombs(theLastXComb);
-    xcs = theXCombMap.find(theLastXComb);
-  }
-
   if ( theRealME )
     theRealME->setXComb(theLastXComb);
 
-  vector<StdXCombPtr>::iterator xcit = xcs->second.begin();
-  vector<Ptr<SubtractionDipole>::ptr>::iterator dip = theDipoles.begin();
+  map<StdXCombPtr,vector<StdXCombPtr> >::iterator xcs
+    = theXCombMap.find(theLastXComb);
 
-  for ( ; xcit != xcs->second.end(); ++xcit, ++dip ) {
-    (**xcit).clean();
-    (**dip).setXComb(*xcit);
-  }
+  if ( xcs == theXCombMap.end() )
+    getXCombs(theLastXComb);
 
 }
 
@@ -166,7 +156,7 @@ void ME2byDipoles::flushCaches() {
 
 }
 
-double ME2byDipoles::evaluate(double& sratio) const {
+double ME2byDipoles::evaluate(double& sratio, bool doSRatio) const {
 
   if ( projectionDipole()->verbose() )
     generator()->log() << "'" << name() << "' ME2byDipoles evaluating\n" << flush;
@@ -176,26 +166,34 @@ double ME2byDipoles::evaluate(double& sratio) const {
 
   double numDip = 0.0;
 
-  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator dip =
-	  theDipoles.begin(); dip != theDipoles.end(); ++dip ) {
-    if ( !(**dip).apply() )
+  map<StdXCombPtr,vector<StdXCombPtr> >::const_iterator xcs
+    = theXCombMap.find(theLastXComb);
+  assert(xcs != theXCombMap.end());
+
+  for ( vector<StdXCombPtr>::const_iterator xcit = xcs->second.begin(); xcit != xcs->second.end(); ++xcit ) {
+    (**xcit).clean();
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>((**xcit).matrixElement());
+    assert(dip);
+    dip->setXComb(*xcit);
+    if ( !dip->apply() )
       continue;
-    tStdXCombPtr depXComb = (**dip).lastXCombPtr();  
-    if ( !(**dip).generateTildeKinematics() )
+    tStdXCombPtr depXComb = dip->lastXCombPtr();  
+    if ( !dip->generateTildeKinematics() )
       continue;
     depXComb->setIncomingPartons();
 
-    (**dip).realEmissionME()->setScale();
-    (**dip).underlyingBornME()->setScale();
-    double res = (**dip).me2();
-    den += abs(res);
-    if ( depXComb->willPassCuts() )
-      sratio += res;
+    dip->realEmissionME()->setScale();
+    dip->underlyingBornME()->setScale();
+    double res = dip->me2Avg(-dip->underlyingBornME()->me2());
+    den += res;
+    if ( doSRatio )
+      if ( depXComb->willPassCuts() )
+	sratio += dip->me2();
 
-    if ( *dip == projectionDipole() ) {
-      numDip = abs(res);
+    if ( dip == projectionDipole() ) {
+      numDip = res;
     }
-
   }
 
   if ( sratio != 0. ) {

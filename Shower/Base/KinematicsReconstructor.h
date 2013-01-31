@@ -54,11 +54,6 @@ using namespace ThePEG;
  */
 class KinematicsReconstructor: public Interfaced {
 
-/**
- *  The Evolver is a friend to allow the  setting of _showerVariables
- */
-friend class Evolver;
-
 public:
 
   /**
@@ -128,52 +123,11 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static AbstractNoPIOClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   KinematicsReconstructor & operator=(const KinematicsReconstructor &);
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of KinematicsReconstructor. */
-template <>
-struct BaseClassTrait<Herwig::KinematicsReconstructor,1> {
-  /** Typedef of the first base class of KinematicsReconstructor. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the KinematicsReconstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::KinematicsReconstructor>
-  : public ClassTraitsBase<Herwig::KinematicsReconstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::KinematicsReconstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * KinematicsReconstructor is implemented. It may also include several, space-separated,
-   * libraries if the class KinematicsReconstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

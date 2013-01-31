@@ -13,7 +13,6 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "Base/ShowerParticle.fh"
-#include "Base/ShowerKinematics.fh" 
 #include "Base/SudakovFormFactor.fh"
 
 namespace Herwig { 

@@ -15,13 +15,16 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ShowerKinematics.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeAbstractClass<SudakovFormFactor,Interfaced>
+describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_
@@ -36,9 +39,6 @@ void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
      >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
      >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
 }
-
-AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
-// Definition of the static class description member.
 
 void SudakovFormFactor::Init() {
 

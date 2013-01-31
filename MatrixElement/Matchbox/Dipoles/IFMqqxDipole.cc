@@ -74,7 +74,7 @@ double IFMqqxDipole::me2Avg(double ccme2) const {
   double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
 
   res *= 8.*CF*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= -ccme2;
 
@@ -85,16 +85,6 @@ double IFMqqxDipole::me2Avg(double ccme2) const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaS()/
-	underlyingBornME()->lastXComb().lastAlphaS(),
-	underlyingBornME()->orderInAlphaS());
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaEM()/
-	underlyingBornME()->lastXComb().lastAlphaEM(),
-	underlyingBornME()->orderInAlphaEW());
 
   lastME2(res);
 
@@ -131,7 +121,7 @@ double IFMqqxDipole::me2() const {
   double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
 
   res *= 8.*CF*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= 
     pow(realEmissionME()->lastXComb().lastSHat() / underlyingBornME()->lastXComb().lastSHat(),
@@ -140,16 +130,6 @@ double IFMqqxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaS()/
-	underlyingBornME()->lastXComb().lastAlphaS(),
-	underlyingBornME()->orderInAlphaS());
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaEM()/
-	underlyingBornME()->lastXComb().lastAlphaEM(),
-	underlyingBornME()->orderInAlphaEW());
 
   lastME2(res);
 

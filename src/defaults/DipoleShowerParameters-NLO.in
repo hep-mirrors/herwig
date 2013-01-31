@@ -5,7 +5,7 @@
 cd /Herwig/DipoleShower
 
 ################################################################################
-# setup alphas
+# setup alphas and PDFs
 ################################################################################
 
 cp NLOAlphaS AlphaS
@@ -14,18 +14,30 @@ set AlphaS:freezing_scale 0.0*GeV
 
 set /Herwig/Model:QCD/RunningAlphaS AlphaS
 
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+
 ################################################################################
 # matching parameters
 ################################################################################
 
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FFPtCut 1.245924*GeV
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FFScreeningScale 0.0*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FFPtCut 1.245924*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FFScreeningScale 0.0*GeV
 
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FIPtCut 0.706986*GeV
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:FIScreeningScale 1.017780*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FIPtCut 0.706986*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FIScreeningScale 1.017780*GeV
 
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:IIPtCut 0.275894*GeV
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:IIScreeningScale 0.254028*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:IIPtCut 0.275894*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:IIScreeningScale 0.254028*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.245924*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 0.706986*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIScreeningScale 1.017780*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 0.275894*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIScreeningScale 0.254028*GeV
 
 ################################################################################
 # shower parameters

@@ -79,7 +79,7 @@ double FFMqgxDipole::me2() const {
   // extra mass terms cancel: mi2+m2-Mi2 = mQ2+0-mQ2
   double res =
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= ( 2./(1.-z*(1.-y)) - vbar/vijk * ( (1.+z) + muQ2*sqr(lastDipoleScale())*2./prop ) );
 
@@ -88,16 +88,6 @@ double FFMqgxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaS()/
-	underlyingBornME()->lastXComb().lastAlphaS(),
-	underlyingBornME()->orderInAlphaS());
-
-  res *=
-    pow(realEmissionME()->lastXComb().lastAlphaEM()/
-	underlyingBornME()->lastXComb().lastAlphaEM(),
-	underlyingBornME()->orderInAlphaEW());
 
   lastME2(res);
 

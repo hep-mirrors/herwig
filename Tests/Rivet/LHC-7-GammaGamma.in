@@ -1,0 +1,60 @@
+##################################################
+# LHC gamma gamma initiated processes
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+read LHCBase.in
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:Sampler:Ntry 10000
+set /Herwig/Partons/QCDExtractor:FlatSHatY 0
+
+##################################################
+# Change the proton PDFs to those for photon radiation
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
+
+##################################################
+#  Cuts
+##################################################
+cd /Herwig/Cuts
+set QCDCuts:ScaleMin 0.0*GeV
+set QCDCuts:X1Min 0
+set QCDCuts:X2Min 0
+set QCDCuts:X1Max 1.
+set QCDCuts:X2Max 1.
+set QCDCuts:MHatMin 1.*GeV
+erase QCDCuts:MultiCuts 0
+set LeptonKtCut:MinKT 3*GeV
+
+##################################################
+# Selected the hard process
+##################################################
+cd /Herwig/MatrixElements
+
+# fermion-antifermion 
+insert SimpleQCD:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
+set /Herwig/MatrixElements/MEgg2ff:Process Muon
+
+##################################################
+# LHC physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+# No QED radiation
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_I954992
+
+
+###################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LHC-7-GammaGamma LHCGenerator

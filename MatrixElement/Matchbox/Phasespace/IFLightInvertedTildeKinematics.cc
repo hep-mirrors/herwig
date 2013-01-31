@@ -50,24 +50,40 @@ bool IFLightInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
-  Energy pt = ptz.first;
+  Energy qt = ptz.first;
   double z = ptz.second;
 
+  double kappa = sqr(qt/lastScale());
+
+  double rho = 1. - 4.*kappa*z*(1.-z) / sqr(1. - z + kappa);
+  if ( rho < 0. ) {
+    jacobian(0.0);
+    return false;
+  }
+
+  Energy2 pt2 = (sqr(lastScale())/2.)*(1. - z - kappa)*(1. - sqrt(rho));
+  if ( pt2 < ZERO ) {
+    jacobian(0.0);
+    return false;
+  }
+
+  Energy pt = sqrt(pt2);
+
   double ratio = sqr(pt/lastScale());
-  double x = ( z*(1.-z) - ratio ) / ( 1. - z - ratio );
-  double u = ratio / (1.-z);
-  pt = lastScale()*sqrt(u*(1.-u)*(1.-x)/x);
+
+  double x = sqr(pt/qt);
+  double u = ratio/(1.-z);
 
   if ( x < emitterX() || x > 1. || u > 1. ) {
     jacobian(0.0);
     return false;
   }
 
-  mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
+  mapping /= (sqr(z*(1.-z)-ratio) + z*(1.-z)*sqr(1.-z))/(1.-z-ratio);
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   double phi = 2.*Constants::pi*r[2];
-  Lorentz5Momentum kt = getKt(emitter,spectator,pt,phi,true);
+  Lorentz5Momentum kt = getKt(emitter,spectator,qt,phi,true);
 
   subtractionParameters().resize(2);
   subtractionParameters()[0] = x;
@@ -93,13 +109,13 @@ Energy IFLightInvertedTildeKinematics::lastPt() const {
   Energy scale = sqrt(2.*(bornEmitterMomentum()*bornSpectatorMomentum()));
   double x = subtractionParameters()[0];
   double u = subtractionParameters()[1];
-  return scale * sqrt(u*(1.-u)*(1.-x));
+  return scale * sqrt(u*(1.-u)*(1.-x)/x);
 
 }
 
 Energy IFLightInvertedTildeKinematics::ptMax() const {
   double x = emitterX();
-  return sqrt(1.-x)*lastScale()/2.;
+  return sqrt((1.-x)/x)*lastScale()/2.;
 }
 
 pair<double,double> IFLightInvertedTildeKinematics::zBounds(Energy pt) const {
