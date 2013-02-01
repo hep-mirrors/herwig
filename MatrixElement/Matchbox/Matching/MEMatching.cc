@@ -29,9 +29,7 @@
 
 using namespace Herwig;
 
-MEMatching::MEMatching()
-  : theBornScreening(true),
-    theScreeningPower(2.0) {}
+MEMatching::MEMatching() {}
 
 MEMatching::~MEMatching() {}
 
@@ -75,64 +73,58 @@ double MEMatching::channelWeight() const {
   return currentChannel / sum;
 }
 
-double MEMatching::screeningME2() const {
-  return
-    pow(sqr(dipole()->lastPt())/bornXComb()->lastSHat(),screeningPower()) *
-    dipole()->underlyingBornME()->me2Norm();
-}
-
 CrossSection MEMatching::dSigHatDR() const {
-  double pdfFactor = 1.;
-  double bornPDF = bornPDFWeight(showerScalesInSubtraction());
-  double bornPDFHard = bornPDF;
-  if ( showerScalesInSubtraction() )
-    bornPDFHard = bornPDFWeight(false);
-  if ( bornScreening() ) {
-    double bornME2 = dipole()->underlyingBornME()->me2();
-    double screenME2 = screeningME2();
-    pdfFactor = bornME2 * bornPDFHard / ( bornME2 * bornPDF + screenME2 );
-  } else {
-    pdfFactor = bornPDFHard / bornPDF;
-  }
+
   assert(realXComb()->lastME2() > 0.0);
+
+  double xme2 = realXComb()->lastME2() * channelWeight();
+  xme2 /= 
+    pow(dipole()->realEmissionME()->lastXComb().lastAlphaS(),
+	dipole()->realEmissionME()->orderInAlphaS());
+  xme2 *=
+    pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
+	dipole()->underlyingBornME()->orderInAlphaS());
+  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());    
+
   return
     sqr(hbarc) * 
     realXComb()->jacobian() * 
-    realPDFWeight(showerScalesInSubtraction()) *
-    couplingWeight(showerScalesInSubtraction()) *
-    pdfFactor *
-    channelWeight() * realXComb()->lastME2() /
+    subtractionScaleWeight() *
+    xme2 /
     (2. * realXComb()->lastSHat());
+
 }
 
 double MEMatching::me2() const {
-  double bornPDF = bornPDFWeight(showerScalesInSplitting());
-  double realPDF = realPDFWeight(showerScalesInSplitting());
+
   assert(bornXComb()->lastME2() > 0.0);
-  double den = 
-    bornXComb()->lastME2() * bornPDF;
-  if ( bornScreening() )
-    den += screeningME2();
-  double num =
-    dipole()->realEmissionME()->me2() * realPDF;
-  num *= pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),2.*(realCXComb()->mePartonData().size())-8.);
-  return 
-    (num/den) *
-    (bornXComb()->lastSHat()/realXComb()->lastSHat()) * 
-    couplingWeight(showerScalesInSplitting());
+
+  double bme2 = bornXComb()->lastME2();
+  bme2 /=
+    pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
+	dipole()->underlyingBornME()->orderInAlphaS());
+
+  double rme2 = dipole()->realEmissionME()->me2();
+  rme2 /= 
+    pow(dipole()->realEmissionME()->lastXComb().lastAlphaS(),
+	dipole()->realEmissionME()->orderInAlphaS());
+  rme2 *= 
+    pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),
+	2.*(realCXComb()->mePartonData().size())-8.);
+
+  return
+    channelWeight() * (rme2/bme2) *
+    splittingScaleWeight();
+
 }
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MEMatching::persistentOutput(PersistentOStream & os) const {
-  os << theBornScreening << theScreeningPower;
-}
+void MEMatching::persistentOutput(PersistentOStream & ) const {}
 
-void MEMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theBornScreening >> theScreeningPower;
-}
+void MEMatching::persistentInput(PersistentIStream & , int) {}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -147,27 +139,6 @@ void MEMatching::Init() {
 
   static ClassDocumentation<MEMatching> documentation
     ("MEMatching implements NLO matching with matrix element correction (aka Powheg).");
-
-  static Switch<MEMatching,bool> interfaceBornScreening
-    ("BornScreening",
-     "Switch on or off Born screening",
-     &MEMatching::theBornScreening, true, false, false);
-  static SwitchOption interfaceBornScreeningOn
-    (interfaceBornScreening,
-     "On",
-     "Perform Born screening",
-     true);
-  static SwitchOption interfaceBornScreeningOff
-    (interfaceBornScreening,
-     "Off",
-     "Do not perform Born screening",
-     false);
-
-  static Parameter<MEMatching,double> interfaceScreeningPower
-    ("ScreeningPower",
-     "Set the power of pt used in the screening term",
-     &MEMatching::theScreeningPower, 2.0, 1.0, 0,
-     false, false, Interface::lowerlim);
 
 }
 
