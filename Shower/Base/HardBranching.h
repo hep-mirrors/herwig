@@ -246,8 +246,12 @@ public:
    *  The colour partner of the branching
    */
   void colourPartner(tHardBranchingPtr in) {_partner=in;}
-
   //@}
+
+  /**
+   *  Boost from original to shower momenta
+   */
+  LorentzRotation showerBoost() const {return _showerBoost;}
 
 private:
 
@@ -340,6 +344,11 @@ private:
    *  The colour partner
    */
   tHardBranchingPtr _partner;
+
+  /**
+   *  Boost which transformed at shower
+   */
+  LorentzRotation _showerBoost;
 
 };
 

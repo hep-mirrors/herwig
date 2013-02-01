@@ -1,4 +1,4 @@
-SUBDIRS = SplittingFunctions Default Base .
+SUBDIRS = SplittingFunctions Default Base Matching .
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 15:1:0
 HwShower_la_LIBADD = Default/libHwDefaultShower.la \

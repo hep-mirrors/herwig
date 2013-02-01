@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CKKWTree class.
+//
+#ifndef HERWIG_CKKWTree_FH
+#define HERWIG_CKKWTree_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class CKKWTree;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::CKKWTree     ,CKKWTreePtr     );
+
+}
+
+#endif

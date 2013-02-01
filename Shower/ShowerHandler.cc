@@ -459,7 +459,7 @@ void ShowerHandler::findShoweringParticles() {
     }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
+    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset,true));
     else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower
@@ -555,13 +555,16 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
 }
 
 PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
-			       set<PPtr> outgoingset) const {
+			       set<PPtr> outgoingset,
+			       bool checkStep,
+			       tSubProPtr process) const {
   PPtr parent=original;
   isHard |=(outgoingset.find(original) != outgoingset.end());
   if(!original->parents().empty()) {
     PPtr orig=original->parents()[0];
-    if(current_->find(orig)&&decayProduct(orig)) {
-      parent=findParent(orig,isHard,outgoingset);
+    if(((checkStep&&current_->find(orig)) || !checkStep) &&
+       decayProduct(orig,process) ) {
+      parent=findParent(orig,isHard,outgoingset,checkStep,process);
     }
   }
   return parent;
@@ -634,23 +637,24 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
   else return findFirstParton(parent);
 }
 
-bool ShowerHandler::decayProduct(tPPtr particle) const {
+bool ShowerHandler::decayProduct(tPPtr particle,tSubProPtr process) const {
+  if(!process) process = currentSubProcess();
   // must be time-like and not incoming
   if(particle->momentum().m2()<=ZERO||
-     particle == currentSubProcess()->incoming().first||
-     particle == currentSubProcess()->incoming().second) return false;
+     particle == process->incoming().first||
+     particle == process->incoming().second) return false;
   // if only 1 outgoing and this is it
-  if(currentSubProcess()->outgoing().size()==1 &&
-     currentSubProcess()->outgoing()[0]==particle) return true;
+  if(process->outgoing().size()==1 &&
+     process->outgoing()[0]==particle) return true;
   // must not be the s-channel intermediate otherwise
-  if(find(currentSubProcess()->incoming().first->children().begin(),
-	  currentSubProcess()->incoming().first->children().end(),particle)!=
-     currentSubProcess()->incoming().first->children().end()&&
-     find(currentSubProcess()->incoming().second->children().begin(),
-	  currentSubProcess()->incoming().second->children().end(),particle)!=
-     currentSubProcess()->incoming().second->children().end()&&
-     currentSubProcess()->incoming().first ->children().size()==1&&
-     currentSubProcess()->incoming().second->children().size()==1)
+  if(find(process->incoming().first->children().begin(),
+	  process->incoming().first->children().end(),particle)!=
+     process->incoming().first->children().end()&&
+     find(process->incoming().second->children().begin(),
+	  process->incoming().second->children().end(),particle)!=
+     process->incoming().second->children().end()&&
+     process->incoming().first ->children().size()==1&&
+     process->incoming().second->children().size()==1)
     return false;
   // if non-coloured this is enough
   if(!particle->dataPtr()->coloured()) return true;
