@@ -80,10 +80,10 @@ CrossSection MEMatching::dSigHatDR() const {
   double xme2 = realXComb()->lastME2() * channelWeight();
   xme2 /= 
     pow(dipole()->realEmissionME()->lastXComb().lastAlphaS(),
-	dipole()->realEmissionME()->orderInAlphaS());
+	(double)(dipole()->realEmissionME()->orderInAlphaS()));
   xme2 *=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
-	dipole()->underlyingBornME()->orderInAlphaS());
+	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
   xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());    
 
   return
@@ -102,12 +102,12 @@ double MEMatching::me2() const {
   double bme2 = bornXComb()->lastME2();
   bme2 /=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
-	dipole()->underlyingBornME()->orderInAlphaS());
+	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
 
   double rme2 = dipole()->realEmissionME()->me2();
   rme2 /= 
     pow(dipole()->realEmissionME()->lastXComb().lastAlphaS(),
-	dipole()->realEmissionME()->orderInAlphaS());
+	(double)(dipole()->realEmissionME()->orderInAlphaS()));
   rme2 *= 
     pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),
 	2.*(realCXComb()->mePartonData().size())-8.);

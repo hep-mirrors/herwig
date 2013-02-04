@@ -200,7 +200,7 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
       realAlpha = dipole()->underlyingBornME()->lastXComb().lastAlphaS();
     }
     couplingFactor *=
-      pow(realAlpha/bornAlpha,dipole()->underlyingBornME()->orderInAlphaS());
+      pow(realAlpha/bornAlpha,(double)(dipole()->underlyingBornME()->orderInAlphaS()));
   }
 
   Energy2 hardScale = ZERO;
