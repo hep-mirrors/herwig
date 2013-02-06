@@ -252,6 +252,8 @@ cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
 
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels

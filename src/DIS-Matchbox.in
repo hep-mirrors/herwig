@@ -61,8 +61,8 @@ set DISFactory:ShowerApproximation DipoleMatching
 # hard process scale variations
 ################################################################################
 
-set /Herwig/MatrixElement/Matchbox/DISFactory:RenormalizationScaleFactor 1.0
-set /Herwig/MatrixElement/Matchbox/DISFactory:FactorizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/DISFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/DISFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
 # shower scale variations
