@@ -188,10 +188,10 @@ double FlatInvertiblePhasespace::generateKinematics(vector<Lorentz5Momentum>& P,
 
   vector<Energy> m;
   for ( vector<Lorentz5Momentum>::const_iterator p =
-	  P.begin(); p != P.end(); ++p )
+	  P.begin() + 2; p != P.end(); ++p )
     m.push_back(p->mass());
 
-  size_t n = P.size();
+  size_t n = P.size() - 2;
   vector<Energy> M(n-1);
   M[0] = Ecm;
 
@@ -214,14 +214,14 @@ double FlatInvertiblePhasespace::generateKinematics(vector<Lorentz5Momentum>& P,
     if ( phi > Constants::pi )
       sphi = -sphi;
 
-    P[i-2].setX(q*cphi*s);
-    P[i-2].setY(q*sphi*s);
-    P[i-2].setZ(q*c);
-    P[i-2].rescaleEnergy();
-    P[i-2].boost(Q.boostVector());
-    P[i-2].rescaleEnergy();
+    P[i].setX(q*cphi*s);
+    P[i].setY(q*sphi*s);
+    P[i].setZ(q*c);
+    P[i].rescaleEnergy();
+    P[i].boost(Q.boostVector());
+    P[i].rescaleEnergy();
 
-    nextQ = Q - P[i-2];
+    nextQ = Q - P[i];
     nextQ.setMass(M[i-1]);
     nextQ.rescaleEnergy();
 
@@ -241,10 +241,10 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 
   vector<Energy> m;
   for ( vector<Lorentz5Momentum>::const_iterator p =
-	  P.begin(); p != P.end(); ++p )
+	  P.begin() + 2; p != P.end(); ++p )
     m.push_back(p->mass());
 
-  size_t n = P.size();
+  size_t n = P.size() - 2;
   vector<Energy> M(n-1);
   M[0] = Ecm;
 
@@ -253,14 +253,14 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 
   for ( size_t i = 2; i <= n-1; ++i ) {
     for ( size_t k = i; k <= n; ++k )
-      Q[i-1] += P[k-1];
+      Q[i-1] += P[k+1];
     M[i-1] = Q[i-1].m();
   }
 
   double weight = invertIntermediates(M,m,r);
 
   for ( size_t i = 2; i <= n; ++i ) {
-    Lorentz5Momentum p = P[i-2];
+    Lorentz5Momentum p = P[i];
     p.boost(-Q[i-2].boostVector());
     r[n-6+2*i] = (p.cosTheta()+1.)/2.;
     double phi = p.phi();
