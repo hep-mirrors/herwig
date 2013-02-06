@@ -154,23 +154,15 @@ private:
     /**
      * Finalize given process id and cross section.
      */
-    void finalize(const string& subpro,
+    void finalize(ostream& dat,
+		  ostream& plot,
+		  const string& subpro,
 		  size_t legid);
-
-    /**
-     * Energy spectrum
-     */
-    HistogramPtr energy;
 
     /**
      * Pt spectrum
      */
     HistogramPtr transverse;
-
-    /**
-     * Polar angle distribution
-     */
-    HistogramPtr cosTheta;
 
     /**
      * Rapidity distribution
@@ -185,9 +177,31 @@ private:
   };
 
   /**
+   * Outgoing partons and x distributions
+   */
+  struct AllHistograms {
+
+    /**
+     * Outgoing partons
+     */
+    vector<Histograms> outgoing;
+
+    /**
+     * x1 distribution
+     */
+    HistogramPtr x1;
+
+    /**
+     * x2 distribution
+     */
+    HistogramPtr x2;
+
+  };
+
+  /**
    * Histograms per subprocess
    */
-  map<vector<string>,vector<Histograms> > histogramData;
+  map<vector<string>,AllHistograms> histogramData;
 
   /**
    * Analyze a given final state

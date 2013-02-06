@@ -43,16 +43,12 @@ HardProcessAnalysis::Histograms::Histograms(Energy ECM) {
   for ( size_t k = 0; k < nbins+1; ++k )
     logBins[k] = logLow*pow(10.0,cLog*k);
 
-  energy = new_ptr(Histogram(logBins));
-
   logUp = ECM/GeV/4.;
   cLog = log10(logUp/logLow)/nbins;
   for ( size_t k = 0; k < nbins+1; ++k )
     logBins[k] = logLow*pow(10.0,cLog*k);
 
   transverse = new_ptr(Histogram(logBins));
-
-  cosTheta = new_ptr(Histogram(-1.,1.,nbins));
 
   rapidity = new_ptr(Histogram(-7.,7.,nbins));
 
@@ -62,58 +58,71 @@ HardProcessAnalysis::Histograms::Histograms(Energy ECM) {
 
 void HardProcessAnalysis::Histograms::fill(const Lorentz5Momentum& p, double weight) {
 
-  energy->addWeighted(p.t()/GeV,weight);
   transverse->addWeighted(p.perp()/GeV,weight);
-  cosTheta->addWeighted(p.cosTheta(),weight);
   rapidity->addWeighted(p.rapidity(),weight);
   phi->addWeighted(p.phi(),weight);
 
 }
 
-void HardProcessAnalysis::Histograms::finalize(const string& subpro,
+void HardProcessAnalysis::Histograms::finalize(ostream& dat,
+					       ostream& plot,
+					       const string& subpro,
 					       size_t legid) {
 
-  energy->normaliseToCrossSection();
   transverse->normaliseToCrossSection();
-  cosTheta->normaliseToCrossSection();
   rapidity->normaliseToCrossSection();
   phi->normaliseToCrossSection();
 
   ostringstream prefix;
   prefix << subpro << "_" << legid;
 
-  string energyName = prefix.str() + "_energy.dat";
-  ofstream energyOut(energyName.c_str());
-  energy->rivetOutput(energyOut,"HardProcessAnalysis",prefix.str() + "_energy",
-		      "Energy of " + prefix.str(),"$E$/GeV","${\\rm d}\\sigma/{\\rm d}E$/(nb/GeV)");
+  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+       << prefix.str() << "_transverse\n"
+       << "Title=Transverse momentum of " << prefix.str() << "\n"
+       << "XLabel=" << "$p_\\perp$/GeV" << "\n"
+       << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}p_\\perp$/(nb/GeV)" << "\n"
+       << "LogX=1\n"
+       << "LogY=1\n"
+       << "# END PLOT\n\n";
 
-  string transverseName = prefix.str() + "_transverse.dat";
-  ofstream transverseOut(transverseName.c_str());
-  transverse->rivetOutput(transverseOut,"HardProcessAnalysis",prefix.str() + "_transverse",
-			  "Transverse momentum of " + prefix.str(),"$p_\\perp$/GeV","${\\rm d}\\sigma/{\\rm d}p_\\perp$/(nb/GeV)");
 
-  string costhetaName = prefix.str() + "_costheta.dat";
-  ofstream costhetaOut(costhetaName.c_str());
-  cosTheta->rivetOutput(costhetaOut,"HardProcessAnalysis",prefix.str() + "_costheta",
-			"Polar angle of " + prefix.str(),"$\\cos\\theta$","${\\rm d}\\sigma/{\\rm d}\\cos\\theta$/nb");
+  transverse->rivetOutput(dat,prefix.str() + "_transverse","HardProcessAnalysis");
+  dat << "\n";
 
-  string rapidityName = prefix.str() + "_rapidity.dat";
-  ofstream rapidityOut(rapidityName.c_str());
-  rapidity->rivetOutput(rapidityOut,"HardProcessAnalysis",prefix.str() + "_rapidity",
-			"Rapidity of " + prefix.str(),"$y$","${\\rm d}\\sigma/{\\rm d}y$/nb");
+  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+       << prefix.str() << "_rapidity\n"
+       << "Title=Rapidity of " << prefix.str() << "\n"
+       << "XLabel=" << "$y$" << "\n"
+       << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}y$/nb" << "\n"
+       << "LogX=0\n"
+       << "LogY=1\n"
+       << "# END PLOT\n\n";
 
-  string phiName = prefix.str() + "_phi.dat";
-  ofstream phiOut(phiName.c_str());
-  phi->rivetOutput(phiOut,"HardProcessAnalysis",prefix.str() + "_phi",
-		   "Azimuthal angle of " + prefix.str(),"$\\phi$","${\\rm d}\\sigma/{\\rm d}\\phi$/nb");
+  rapidity->rivetOutput(dat,prefix.str() + "_rapidity","HardProcessAnalysis");
+  dat << "\n";
+
+  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+       << prefix.str() << "_phi\n"
+       << "Title=Azimuthal angle of " << prefix.str() << "\n"
+       << "XLabel=" << "$\\phi$" << "\n"
+       << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\phi$/nb" << "\n"
+       << "LogX=0\n"
+       << "LogY=1\n"
+       << "# END PLOT\n\n";
+
+  phi->rivetOutput(dat,prefix.str() + "_phi","HardProcessAnalysis");
+  dat << "\n";
 
 }
 
-struct SortIdEnergy {
+struct SortedInPt {
   inline bool operator()(PPtr a, PPtr b) const {
-    if ( a->id() < b->id() )
-      return true;
-    if ( a->momentum().t() > b->momentum().t() )
+    if ( a->id() != b->id() ) {
+      if ( a->id() < b->id() )
+	return true;
+      return false;
+    }
+    if ( a->momentum().perp() > b->momentum().perp() )
       return true;
     return false;
   }
@@ -126,19 +135,37 @@ struct GetName {
 };
 
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
-  sort(out.begin(),out.end(),SortIdEnergy());
+  sort(out.begin(),out.end(),SortedInPt());
   vector<string> proc;
   proc.push_back(in.first->PDGName());
   proc.push_back(in.second->PDGName());
   std::transform(out.begin(),out.end(),
 		 back_inserter(proc),GetName());
-  vector<Histograms>& data = histogramData[proc];
-  if ( data.empty() )
-    data.resize(out.size(),Histograms(generator()->maximumCMEnergy()));
+  AllHistograms& data = histogramData[proc];
+  if ( data.outgoing.empty() ) {
+    data.outgoing.resize(out.size(),Histograms(generator()->maximumCMEnergy()));
+    size_t nbins = 100;
+    vector<double> logBins(nbins+1);
+    double logLow = 1.0e-6;
+    double logUp = 1.0;
+    double cLog = log10(logUp/logLow)/nbins;
+    for ( size_t k = 0; k < nbins+1; ++k )
+      logBins[k] = logLow*pow(10.0,cLog*k);
+    data.x1 = new_ptr(Histogram(logBins));
+    data.x2 = new_ptr(Histogram(logBins));
+  }
   ParticleVector::const_iterator p = out.begin();
-  vector<Histograms>::iterator h = data.begin();
+  vector<Histograms>::iterator h = data.outgoing.begin();
   for ( ; p != out.end(); ++p, ++h )
     h->fill((**p).momentum(),weight);
+  double y = (in.first->momentum() + in.second->momentum()).rapidity();
+  double tau = 
+    (in.first->momentum() + in.second->momentum()).m2()/
+    sqr(generator()->maximumCMEnergy());
+  double x1 = tau*exp(y);
+  double x2 = tau*exp(-y);
+  data.x1->addWeighted(x1,weight);
+  data.x2->addWeighted(x2,weight);
 }
 
 void HardProcessAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -156,17 +183,52 @@ void HardProcessAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
 }
 
 void HardProcessAnalysis::dofinish() {
+
   AnalysisHandler::dofinish();
-  for ( map<vector<string>,vector<Histograms> >::iterator h = 
+
+  ofstream dat("HardProcessAnalysis.dat");
+  ofstream plot("HardProcessAnalysis.plot");
+
+  for ( map<vector<string>,AllHistograms>::iterator h = 
 	  histogramData.begin(); h != histogramData.end(); ++h ) {
     string subpro;
     for ( vector<string>::const_iterator p = h->first.begin();
 	  p != h->first.end(); ++p ) {
       subpro += *p + (p != --(h->first.end()) ? "_" : "");
     }
-    for ( size_t k = 0; k < h->second.size(); ++k )
-      h->second[k].finalize(subpro,k+2);
+    for ( size_t k = 0; k < h->second.outgoing.size(); ++k )
+      h->second.outgoing[k].finalize(dat,plot,subpro,k+2);
+
+    h->second.x1->normaliseToCrossSection();
+
+    plot << "# BEGIN PLOT /HardProcessAnalysis/"
+	 << subpro << "_x1\n"
+	 << "Title=Momentum fraction of first parton in " << subpro << "\n"
+	 << "XLabel=" << "$\\x_1$" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\x_1$/nb" << "\n"
+	 << "LogX=1\n"
+	 << "LogY=1\n"
+	 << "# END PLOT\n\n";
+
+    h->second.x1->rivetOutput(dat,subpro + "_x1","HardProcessAnalysis");
+    dat << "\n";
+
+    h->second.x2->normaliseToCrossSection();
+
+    plot << "# BEGIN PLOT /HardProcessAnalysis/"
+	 << subpro << "_x2\n"
+	 << "Title=Momentum fraction of second parton in " << subpro << "\n"
+	 << "XLabel=" << "$\\x_2$" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\x_2$/nb" << "\n"
+	 << "LogX=1\n"
+	 << "LogY=1\n"
+	 << "# END PLOT\n\n";
+
+    h->second.x2->rivetOutput(dat,subpro + "_x2","HardProcessAnalysis");
+    dat << "\n";
+
   }
+
 }
 
 void HardProcessAnalysis::doinitrun() {
