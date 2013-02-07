@@ -144,7 +144,7 @@ private:
     /**
      * The constructor
      */
-    explicit Histograms(Energy ECM);
+    explicit Histograms(Energy ECM, unsigned int theNBins);
 
     /**
      * Analyse given momentum
@@ -157,7 +157,8 @@ private:
     void finalize(ostream& dat,
 		  ostream& plot,
 		  const string& subpro,
-		  size_t legid);
+		  size_t legid,
+		  bool theUnitWeights);
 
     /**
      * Pt spectrum
@@ -207,6 +208,16 @@ private:
    * Analyze a given final state
    */
   void fill(PPair, ParticleVector, double);
+
+  /**
+   * The number of bins to use
+   */
+  unsigned int theNBins;
+
+  /**
+   * True, if unit weights should be booked
+   */
+  bool theUnitWeights;
 
 };
 

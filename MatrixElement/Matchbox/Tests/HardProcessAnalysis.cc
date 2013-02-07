@@ -6,6 +6,8 @@
 
 #include "HardProcessAnalysis.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -19,7 +21,8 @@
 
 using namespace Herwig;
 
-HardProcessAnalysis::HardProcessAnalysis() {}
+HardProcessAnalysis::HardProcessAnalysis()
+  : theNBins(100), theUnitWeights(false) {}
 
 HardProcessAnalysis::~HardProcessAnalysis() {}
 
@@ -32,27 +35,25 @@ HardProcessAnalysis::~HardProcessAnalysis() {}
 #include "ThePEG/Analysis/LWH/AnalysisFactory.h"
 #endif
 
-HardProcessAnalysis::Histograms::Histograms(Energy ECM) {
+HardProcessAnalysis::Histograms::Histograms(Energy ECM, unsigned int theNBins) {
 
-  size_t nbins = 100;
-
-  vector<double> logBins(nbins+1);
+  vector<double> logBins(theNBins+1);
   double logLow = 0.1;
   double logUp = ECM/GeV;
-  double cLog = log10(logUp/logLow)/nbins;
-  for ( size_t k = 0; k < nbins+1; ++k )
+  double cLog = log10(logUp/logLow)/theNBins;
+  for ( size_t k = 0; k < theNBins+1; ++k )
     logBins[k] = logLow*pow(10.0,cLog*k);
 
   logUp = ECM/GeV/4.;
-  cLog = log10(logUp/logLow)/nbins;
-  for ( size_t k = 0; k < nbins+1; ++k )
+  cLog = log10(logUp/logLow)/theNBins;
+  for ( size_t k = 0; k < theNBins+1; ++k )
     logBins[k] = logLow*pow(10.0,cLog*k);
 
   transverse = new_ptr(Histogram(logBins));
 
-  rapidity = new_ptr(Histogram(-7.,7.,nbins));
+  rapidity = new_ptr(Histogram(-7.,7.,theNBins));
 
-  phi = new_ptr(Histogram(-Constants::pi,Constants::pi,nbins));
+  phi = new_ptr(Histogram(-Constants::pi,Constants::pi,theNBins));
 
 }
 
@@ -67,7 +68,8 @@ void HardProcessAnalysis::Histograms::fill(const Lorentz5Momentum& p, double wei
 void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 					       ostream& plot,
 					       const string& subpro,
-					       size_t legid) {
+					       size_t legid,
+					       bool theUnitWeights) {
 
   transverse->normaliseToCrossSection();
   rapidity->normaliseToCrossSection();
@@ -76,7 +78,7 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
   ostringstream prefix;
   prefix << subpro << "_" << legid;
 
-  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+  plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
        << prefix.str() << "_transverse\n"
        << "Title=Transverse momentum of " << prefix.str() << "\n"
        << "XLabel=" << "$p_\\perp$/GeV" << "\n"
@@ -86,10 +88,10 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "# END PLOT\n\n";
 
 
-  transverse->rivetOutput(dat,prefix.str() + "_transverse","HardProcessAnalysis");
+  transverse->rivetOutput(dat,prefix.str() + "_transverse",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
   dat << "\n";
 
-  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+  plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
        << prefix.str() << "_rapidity\n"
        << "Title=Rapidity of " << prefix.str() << "\n"
        << "XLabel=" << "$y$" << "\n"
@@ -98,10 +100,10 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "LogY=1\n"
        << "# END PLOT\n\n";
 
-  rapidity->rivetOutput(dat,prefix.str() + "_rapidity","HardProcessAnalysis");
+  rapidity->rivetOutput(dat,prefix.str() + "_rapidity",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
   dat << "\n";
 
-  plot << "# BEGIN PLOT /HardProcessAnalysis/"
+  plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
        << prefix.str() << "_phi\n"
        << "Title=Azimuthal angle of " << prefix.str() << "\n"
        << "XLabel=" << "$\\phi$" << "\n"
@@ -110,7 +112,7 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "LogY=1\n"
        << "# END PLOT\n\n";
 
-  phi->rivetOutput(dat,prefix.str() + "_phi","HardProcessAnalysis");
+  phi->rivetOutput(dat,prefix.str() + "_phi",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
   dat << "\n";
 
 }
@@ -143,13 +145,12 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
 		 back_inserter(proc),GetName());
   AllHistograms& data = histogramData[proc];
   if ( data.outgoing.empty() ) {
-    data.outgoing.resize(out.size(),Histograms(generator()->maximumCMEnergy()));
-    size_t nbins = 100;
-    vector<double> logBins(nbins+1);
+    data.outgoing.resize(out.size(),Histograms(generator()->maximumCMEnergy(),theNBins));
+    vector<double> logBins(theNBins+1);
     double logLow = 1.0e-6;
     double logUp = 1.0;
-    double cLog = log10(logUp/logLow)/nbins;
-    for ( size_t k = 0; k < nbins+1; ++k )
+    double cLog = log10(logUp/logLow)/theNBins;
+    for ( size_t k = 0; k < theNBins+1; ++k )
       logBins[k] = logLow*pow(10.0,cLog*k);
     data.x1 = new_ptr(Histogram(logBins));
     data.x2 = new_ptr(Histogram(logBins));
@@ -173,11 +174,13 @@ void HardProcessAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   tSubProPtr sub = event->primarySubProcess();
   Ptr<SubProcessGroup>::tptr grp = 
     dynamic_ptr_cast<Ptr<SubProcessGroup>::tptr>(sub);
-  fill(sub->incoming(),sub->outgoing(),event->weight()*sub->groupWeight());
+  double weight = !theUnitWeights ? event->weight()*sub->groupWeight() : 1.0;
+  fill(sub->incoming(),sub->outgoing(),weight);
   if ( grp ) {
     for ( SubProcessVector::const_iterator s = grp->dependent().begin();
 	  s != grp->dependent().end(); ++s ) {
-      fill((**s).incoming(),(**s).outgoing(),event->weight()*(**s).groupWeight());
+      weight = !theUnitWeights ? event->weight()*(**s).groupWeight() : 1.0;
+      fill((**s).incoming(),(**s).outgoing(),weight);
     }
   }
 }
@@ -186,8 +189,8 @@ void HardProcessAnalysis::dofinish() {
 
   AnalysisHandler::dofinish();
 
-  ofstream dat("HardProcessAnalysis.dat");
-  ofstream plot("HardProcessAnalysis.plot");
+  ofstream dat(!theUnitWeights ? "HardProcessAnalysis.dat" : "HardProcessAnalysisFlat.dat");
+  ofstream plot(!theUnitWeights ? "HardProcessAnalysis.plot" : "HardProcessAnalysisFlat.plot");
 
   for ( map<vector<string>,AllHistograms>::iterator h = 
 	  histogramData.begin(); h != histogramData.end(); ++h ) {
@@ -197,11 +200,11 @@ void HardProcessAnalysis::dofinish() {
       subpro += *p + (p != --(h->first.end()) ? "_" : "");
     }
     for ( size_t k = 0; k < h->second.outgoing.size(); ++k )
-      h->second.outgoing[k].finalize(dat,plot,subpro,k+2);
+      h->second.outgoing[k].finalize(dat,plot,subpro,k+2,theUnitWeights);
 
     h->second.x1->normaliseToCrossSection();
 
-    plot << "# BEGIN PLOT /HardProcessAnalysis/"
+    plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x1\n"
 	 << "Title=Momentum fraction of first parton in " << subpro << "\n"
 	 << "XLabel=" << "$\\x_1$" << "\n"
@@ -210,12 +213,12 @@ void HardProcessAnalysis::dofinish() {
 	 << "LogY=1\n"
 	 << "# END PLOT\n\n";
 
-    h->second.x1->rivetOutput(dat,subpro + "_x1","HardProcessAnalysis");
+    h->second.x1->rivetOutput(dat,subpro + "_x1",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
     h->second.x2->normaliseToCrossSection();
 
-    plot << "# BEGIN PLOT /HardProcessAnalysis/"
+    plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x2\n"
 	 << "Title=Momentum fraction of second parton in " << subpro << "\n"
 	 << "XLabel=" << "$\\x_2$" << "\n"
@@ -224,7 +227,7 @@ void HardProcessAnalysis::dofinish() {
 	 << "LogY=1\n"
 	 << "# END PLOT\n\n";
 
-    h->second.x2->rivetOutput(dat,subpro + "_x2","HardProcessAnalysis");
+    h->second.x2->rivetOutput(dat,subpro + "_x2",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
   }
@@ -251,9 +254,13 @@ IBPtr HardProcessAnalysis::fullclone() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void HardProcessAnalysis::persistentOutput(PersistentOStream &) const {}
+void HardProcessAnalysis::persistentOutput(PersistentOStream & os) const {
+  os << theNBins << theUnitWeights;
+}
 
-void HardProcessAnalysis::persistentInput(PersistentIStream &, int) {}
+void HardProcessAnalysis::persistentInput(PersistentIStream & is, int) {
+  is >> theNBins >> theUnitWeights;
+}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -268,6 +275,29 @@ void HardProcessAnalysis::Init() {
 
   static ClassDocumentation<HardProcessAnalysis> documentation
     ("There is no documentation for the HardProcessAnalysis class");
+
+
+  static Parameter<HardProcessAnalysis,unsigned int> interfaceNBins
+    ("NBins",
+     "The number of bins to use",
+     &HardProcessAnalysis::theNBins, 100, 1, 0,
+     false, false, Interface::lowerlim);
+
+
+  static Switch<HardProcessAnalysis,bool> interfaceUnitWeights
+    ("UnitWeights",
+     "Use unit weights",
+     &HardProcessAnalysis::theUnitWeights, false, false, false);
+  static SwitchOption interfaceUnitWeightsYes
+    (interfaceUnitWeights,
+     "Yes",
+     "Use unit weights",
+     true);
+  static SwitchOption interfaceUnitWeightsNo
+    (interfaceUnitWeights,
+     "No",
+     "Do not use unit weights",
+     false);
 
 }
 
