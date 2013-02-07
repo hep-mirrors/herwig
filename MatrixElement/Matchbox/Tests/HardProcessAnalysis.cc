@@ -262,7 +262,7 @@ void HardProcessAnalysis::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<HardProcessAnalysis,AnalysisHandler>
-  describeHerwigHardProcessAnalysis("Herwig::HardProcessAnalysis", "HardProcessAnalysis.so");
+  describeHerwigHardProcessAnalysis("Herwig::HardProcessAnalysis", "HwMatchbox.so");
 
 void HardProcessAnalysis::Init() {
 
