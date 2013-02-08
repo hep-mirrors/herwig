@@ -219,6 +219,11 @@ private:
    */
   bool theUnitWeights;
 
+  /**
+   * True, if subprocesses should be distinguished by initial state
+   */
+  bool theSplitInitialStates;
+
 };
 
 }

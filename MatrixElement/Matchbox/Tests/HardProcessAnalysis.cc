@@ -22,7 +22,8 @@
 using namespace Herwig;
 
 HardProcessAnalysis::HardProcessAnalysis()
-  : theNBins(100), theUnitWeights(false) {}
+  : theNBins(100), theUnitWeights(false),
+    theSplitInitialStates(true) {}
 
 HardProcessAnalysis::~HardProcessAnalysis() {}
 
@@ -139,13 +140,16 @@ struct GetName {
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
   sort(out.begin(),out.end(),SortedInPt());
   vector<string> proc;
-  proc.push_back(in.first->PDGName());
-  proc.push_back(in.second->PDGName());
+  if ( theSplitInitialStates ) {
+    proc.push_back(in.first->PDGName());
+    proc.push_back(in.second->PDGName());
+  }
   std::transform(out.begin(),out.end(),
 		 back_inserter(proc),GetName());
   AllHistograms& data = histogramData[proc];
   if ( data.outgoing.empty() ) {
-    data.outgoing.resize(out.size(),Histograms(generator()->maximumCMEnergy(),theNBins));
+    for ( size_t k = 0; k < out.size(); ++k )
+      data.outgoing.push_back(Histograms(generator()->maximumCMEnergy(),theNBins));
     vector<double> logBins(theNBins+1);
     double logLow = 1.0e-6;
     double logUp = 1.0;
@@ -255,11 +259,11 @@ IBPtr HardProcessAnalysis::fullclone() const {
 
 
 void HardProcessAnalysis::persistentOutput(PersistentOStream & os) const {
-  os << theNBins << theUnitWeights;
+  os << theNBins << theUnitWeights << theSplitInitialStates;
 }
 
 void HardProcessAnalysis::persistentInput(PersistentIStream & is, int) {
-  is >> theNBins >> theUnitWeights;
+  is >> theNBins >> theUnitWeights >> theSplitInitialStates;
 }
 
 
@@ -276,13 +280,11 @@ void HardProcessAnalysis::Init() {
   static ClassDocumentation<HardProcessAnalysis> documentation
     ("There is no documentation for the HardProcessAnalysis class");
 
-
   static Parameter<HardProcessAnalysis,unsigned int> interfaceNBins
     ("NBins",
      "The number of bins to use",
      &HardProcessAnalysis::theNBins, 100, 1, 0,
      false, false, Interface::lowerlim);
-
 
   static Switch<HardProcessAnalysis,bool> interfaceUnitWeights
     ("UnitWeights",
@@ -297,6 +299,21 @@ void HardProcessAnalysis::Init() {
     (interfaceUnitWeights,
      "No",
      "Do not use unit weights",
+     false);
+
+  static Switch<HardProcessAnalysis,bool> interfaceSplitInitialStates
+    ("SplitInitialStates",
+     "Distinguish by initial state",
+     &HardProcessAnalysis::theSplitInitialStates, true, false, false);
+  static SwitchOption interfaceSplitInitialStatesYes
+    (interfaceSplitInitialStates,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceSplitInitialStatesNo
+    (interfaceSplitInitialStates,
+     "No",
+     "",
      false);
 
 }
