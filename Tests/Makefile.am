@@ -212,10 +212,15 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
                 Rivet-TVT-Run-I-Jets-3   Rivet-TVT-Run-I-Jets-4 \
                 Rivet-TVT-Run-I-Jets-5   Rivet-TVT-Run-I-Jets-6 \
                 Rivet-TVT-Run-I-Jets-7   Rivet-TVT-Run-I-Jets-8\
-                Rivet-TVT-Run-I-UE\
-                Rivet-TVT-630-UE        Rivet-TVT-630-Jets-1 \
-                Rivet-TVT-630-Jets-2    Rivet-TVT-630-Jets-3
+                Rivet-TVT-Run-I-UE       Rivet-TVT-Run-II-Jets-0\
+                Rivet-TVT-630-UE         Rivet-TVT-630-Jets-1 \
+                Rivet-TVT-630-Jets-2     Rivet-TVT-630-Jets-3 \
+                Rivet-TVT-300-UE         Rivet-TVT-300-Jets-1 \
+                Rivet-TVT-900-UE         Rivet-TVT-900-Jets-1
 	rivet-rmgaps TVT-Run-I-Jets-4.aida	
+	python/merge-TVT-Energy TVT
+	rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.aida TVT-900-Energy.aida TVT-1960-Energy.aida
+	flat2aida RatioPlots.dat -o TVT-RatioPlots.aida
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
@@ -227,12 +232,16 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
                 Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
                 Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
                 Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
-	        Rivet-LHC-2360-UE Rivet-LHC-900-UE \
+	        Rivet-LHC-2360-UE Rivet-LHC-900-UE Rivet-LHC-2760-UE \
+                Rivet-LHC-7-Heavy-0 \
                 Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \
                 Rivet-LHC-7-Heavy-3 Rivet-LHC-7-Heavy-4 \
-                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top \
+                Rivet-LHC-7-Heavy-5 Rivet-LHC-7-Top-L \
+		Rivet-LHC-7-Top-SL \
 	        Rivet-LHC-7-UE-Long Rivet-LHC-900-UE-Long \
-                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 
+                Rivet-LHC-7-Jets-All-1 Rivet-LHC-7-Jets-All-2 \
+                Rivet-LHC-7-Jets-All-3 Rivet-LHC-7-Jets-All-4 \
+                Rivet-LHC-7-Jets-All-5
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
@@ -260,17 +269,26 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
               Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
               Rivet-LHC-Z-e  Rivet-LHC-Powheg-Z-e  \
               Rivet-LHC-Z-mu Rivet-LHC-Powheg-Z-mu \
+              Rivet-LHC-WZ   Rivet-LHC-Powheg-WZ\
               Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
               Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-EW.aida;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,ZZ}.aida -o LHC-Powheg-EW.aida;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-EW.aida;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-Powheg-EW.aida;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
 
-Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton Rivet-LHC-7-GammaGamma
 	rm -rf Rivet-LHC-Photon 
-	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
+	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida LHC-7-GammaGamma.aida -o LHC-Photon.aida
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++
+
+Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
+		 Rivet-LHC-Powheg-VBF Rivet-LHC-VBF Rivet-LHC-WH Rivet-LHC-ZH \
+		 Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
+	rm -rf Rivet-LHC-Higgs
+	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.aida:gg-Powheg LHC-ggH.aida:gg LHC-ggHJet.aida:HJet \
+		 LHC-Powheg-VBF.aida:VBF-Powheg LHC-VBF.aida:VBF LHC-WH.aida:WH LHC-ZH.aida:ZH \
+                 LHC-Powheg-WH.aida:WH-Powheg LHC-Powheg-ZH.aida:ZH-Powheg
 
 tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets Rivet-LHC-Jets Rivet-Star Rivet-SppS Rivet-LHC-EW Rivet-LHC-Photon
 

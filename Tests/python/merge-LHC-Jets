@@ -134,16 +134,16 @@ if __name__ == "__main__":
     ## Prefix used in dat file headers
     headerprefix = "# "
 
-aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,
+aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,"-2760-UE.aida"    ,
            "-7-UE.aida"     ,"-900-UE-Long.aida",
            "-7-UE-Long.aida","-7-Jets-0.aida",
            "-7-Jets-All-1.aida","-7-Jets-All-2.aida",
+           "-7-Jets-All-3.aida","-7-Jets-All-4.aida","-7-Jets-All-5.aida",
            "-7-Jets-1.aida","-7-Jets-2.aida",
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
            "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida",
-           "-7-Heavy-1.aida","-7-Heavy-2.aida","-7-Heavy-3.aida",
-           "-7-Heavy-4.aida","-7-Heavy-5.aida"]
-
+           "-7-Heavy-0.aida","-7-Heavy-1.aida","-7-Heavy-2.aida",
+           "-7-Heavy-3.aida","-7-Heavy-4.aida","-7-Heavy-5.aida"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -157,6 +157,9 @@ for f in aidafiles:
         ptmin=0.
     elif(file.find("-2360-UE")>0) :
         sqrts=2360
+        ptmin=0.
+    elif(file.find("-2760-UE")>0) :
+        sqrts=2760
         ptmin=0.
     elif(file.find("-7-UE")>0) :
         ptmin=0.
@@ -178,8 +181,10 @@ for f in aidafiles:
         ptmin=400.
     elif(file.find("-7-Jets-8")>0) :
         ptmin=600.
-    elif(file.find("-7-Heavy-1.aida")>0) :
+    elif(file.find("-7-Heavy-0.aida")>0) :
         ptmin=0.
+    elif(file.find("-7-Heavy-1.aida")>0) :
+        ptmin=5.
     elif(file.find("-7-Heavy-2.aida")>0) :
         ptmin=20.
     elif(file.find("-7-Heavy-3.aida")>0) :
@@ -188,12 +193,18 @@ for f in aidafiles:
         ptmin=80.
     elif(file.find("-7-Heavy-5.aida")>0) :
         ptmin=110.
-    elif(file.find("-7-Top.aida")>0) :
+    elif(file.find("-7-Top-SL.aida")>0 or file.find("-7-Top-L.aida")>0):
         ptmin=0.
     elif(file.find("-7-Jets-All-1")>0) :
         ptmin=25.
     elif(file.find("-7-Jets-All-2")>0) :
         ptmin=50.
+    elif(file.find("-7-Jets-All-3")>0) :
+        ptmin=100.
+    elif(file.find("-7-Jets-All-4")>0) :
+        ptmin=170.
+    elif(file.find("-7-Jets-All-5")>0) :
+        ptmin=320.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -206,8 +217,6 @@ for f in aidafiles:
     ## Get histos from this AIDA file
     for dps in tree.findall("dataPointSet"):
         h = lighthisto.Histo.fromDPS(dps)
-        # di-jet decorrelations
-        # jet shapes
         if(h.fullPath().find("S8924791")>0 or 
            h.fullPath().find("S8971293")>0 or 
            h.fullPath().find("S8817804")>0 or 
@@ -227,15 +236,18 @@ for f in aidafiles:
            h.fullPath().find("I926145" )>0 or
            h.fullPath().find("S8941262")>0 or
            h.fullPath().find("S8973270")>0 or
-           h.fullPath().find("I1082009")>0) :
+           h.fullPath().find("I1118269")>0 or
+           h.fullPath().find("I1188891")>0 or
+           h.fullPath().find("I1082009")>0 or
+           h.fullPath().find("I1087342")>0 or
+           h.fullPath().find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
            tmpE = inhistos_pt[h.fullPath()]
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = {}
-           tmpP = tmpE[sqrts]
-           if not tmpP.has_key(ptmin):
-               tmpP[ptmin] = h
+           if not tmpE[sqrts].has_key(ptmin):
+               tmpE[sqrts][ptmin] = h
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
         else :
@@ -291,11 +303,20 @@ for f in aidafiles:
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.iteritems():
     if( hpath.find("8924791")>0  or 
-        h.fullPath().find("8971293")>0 or 
-        h.fullPath().find("8817804")>0 or 
-        h.fullPath().find("8968497")>0 or 
-        h.fullPath().find("9126244")>0  or 
-        h.fullPath().find("1082936")>0 ) :
+        hpath.find("8971293")>0 or 
+        hpath.find("8817804")>0 or 
+        hpath.find("8968497")>0 or 
+        hpath.find("9120041")>0 or 
+        hpath.find("9126244")>0 or 
+        hpath.find("926145") >0 or 
+        hpath.find("9086218")>0 or 
+        hpath.find("1082936")>0 or 
+        hpath.find("8941262")>0 or 
+        hpath.find("1118269")>0 or 
+        hpath.find("1087342")>0  or 
+        hpath.find("1188891")>0 or
+        hpath.find("919017")>0  or
+        hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
         ## Empty the bin set for histos which we're going to merge
@@ -744,8 +765,8 @@ useOnePt("/ATLAS_2011_S9126244/d43-x01-y02", "7000", "210" )
 
 # CMS_2011_S9120041 UE analysis
 logging.info("Processing CMS_2011_S9120041")
-useOnePt("/CMS_2011_S9120041/d01-x01-y01", "7000", "0" )
-useOnePt("/CMS_2011_S9120041/d02-x01-y01", "7000", "0" )
+mergeByPt("/CMS_2011_S9120041/d01-x01-y01", "7000")
+mergeByPt("/CMS_2011_S9120041/d02-x01-y01", "7000")
 useOnePt("/CMS_2011_S9120041/d03-x01-y01",  "900", "0" )
 useOnePt("/CMS_2011_S9120041/d04-x01-y01",  "900", "0" )
 useOnePt("/CMS_2011_S9120041/d05-x01-y01", "7000", "0" )
@@ -996,8 +1017,8 @@ mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000")
 mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000")
 
 logging.info("Processing CMS_2011_S8941262")
-useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "0" )
-useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "5" )
+useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "5" )
 mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000")
 
 logging.info("Processing CMS_2011_S8973270")
@@ -1015,6 +1036,28 @@ useOnePt("/ATLAS_2012_I1082009/d10-x01-y01", "7000", "25" )
 useOnePt("/ATLAS_2012_I1082009/d11-x01-y01", "7000", "50" )
 useOnePt("/ATLAS_2012_I1082009/d12-x01-y01", "7000", "50" )
 useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "25" )
+
+logging.info("Processing ATLAS_2012_I1118269")
+mergeByPt("/ATLAS_2012_I1118269/d01-x01-y01", "7000")
+useOnePt("/ATLAS_2012_I1118269/d02-x01-y01", "7000", "5" )
+
+logging.info("Processing ATLAS_2012_I1188891")
+mergeByPt("/ATLAS_2012_I1188891/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1188891/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1188891/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1188891/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1188891/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2012_I1188891/d06-x01-y01", "7000")
+
+logging.info("Processing CMS_2012_I1087342")
+mergeByPt("/CMS_2012_I1087342/d01-x01-y01", "7000")
+mergeByPt("/CMS_2012_I1087342/d02-x01-y01", "7000")
+mergeByPt("/CMS_2012_I1087342/d03-x01-y01", "7000")
+logging.info("Processing CMS_2012_PAS_QCD_11_010")
+mergeByPt("/CMS_2012_PAS_QCD_11_010/d01-x01-y01", "7000")
+mergeByPt("/CMS_2012_PAS_QCD_11_010/d02-x01-y01", "7000")
+mergeByPt("/CMS_2012_PAS_QCD_11_010/d03-x01-y01", "7000")
+mergeByPt("/CMS_2012_PAS_QCD_11_010/d04-x01-y01", "7000")
 
 # Choose output file
 name = "LHC"+"-Jets.aida"

@@ -21,6 +21,8 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 # ATLAS jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082009
+# flavour composition of jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1188891
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

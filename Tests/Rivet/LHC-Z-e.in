@@ -27,6 +27,8 @@ set MEqq2gZ2ff:Process Electron
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
 # ATLAS pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
+# ATLAS Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
