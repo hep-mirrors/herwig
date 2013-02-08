@@ -84,7 +84,9 @@ public:
    * is constructed from the data provided by the
    * head matrix element.
    */
-  virtual bool subProcessGroups() const { return theSubProcessGroups; }
+  virtual bool subProcessGroups() const { 
+    return theSubProcessGroups && !(showerApproximation() || inclusive());
+  }
 
   /**
    * Switch on or off producing subprocess groups.

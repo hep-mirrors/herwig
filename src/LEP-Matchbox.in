@@ -54,8 +54,8 @@ set EEFactory:ShowerApproximation DipoleMatching
 # hard process scale variations
 ################################################################################
 
-set /Herwig/MatrixElement/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
-set /Herwig/MatrixElement/Matchbox/EEFactory:FactorizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/EEFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
 # shower scale variations

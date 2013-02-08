@@ -252,6 +252,8 @@ cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
 
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
@@ -282,6 +284,10 @@ create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 insert SecondJet:Accepts[0] 2
+
+create ThePEG::JetCuts JetCuts
+set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:Ordering OrderPt
 
 ################################################################################
 # Setup scale choices

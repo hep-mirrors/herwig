@@ -77,21 +77,6 @@ public:
    */
   double channelWeight() const;
 
-  /**
-   * Return true, if 'Born screening' is taken into account
-   */
-  bool bornScreening() const { return theBornScreening; }
-
-  /**
-   * Return the power of pt used in the screening term
-   */
-  double screeningPower() const { return theScreeningPower; }
-
-  /**
-   * Return the screening `matrix element squared'
-   */
-  double screeningME2() const;
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -141,16 +126,6 @@ protected:
 
 
 private:
-
-  /**
-   * True, if 'Born screening' should be done
-   */
-  bool theBornScreening;
-
-  /**
-   * The power of pt used in the screening term
-   */
-  double theScreeningPower;
 
   /**
    * The assignment operator is private and must never be called.
