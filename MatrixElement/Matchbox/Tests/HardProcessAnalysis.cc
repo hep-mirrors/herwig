@@ -270,7 +270,7 @@ void HardProcessAnalysis::dofinish() {
 	 << "LogY=1\n"
 	 << "# END PLOT\n\n";
 
-    h->second.rapidity->rivetOutput(dat,subpro + "_y",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
+    h->second.sshat->rivetOutput(dat,subpro + "_sshat",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
   }
