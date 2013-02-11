@@ -26,7 +26,42 @@ set LHCHandler:BeamB /Herwig/Particles/pbar-
 cd /Herwig/MatrixElements/Matchbox
 
 insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+
+################################################################################
+# inclusive Drell-Yan
+################################################################################
+
+set PPFactory:OrderInAlphaS 0
 do PPFactory:Process p p e+ e-
+
+################################################################################
+# Z+1 jet
+################################################################################
+
+# set PPFactory:OrderInAlphaS 1
+# do PPFactory:Process p p e+ e- j
+
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
+
+# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
+
+# set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+
+################################################################################
+# Z+2 jets (leading order only)
+################################################################################
+
+# set PPFactory:OrderInAlphaS 2
+# do PPFactory:Process p p e+ e- j j
+
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
+
+# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetFinder:JetRegions 1 /Herwig/Cuts/SecondJet
+
+# set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 ################################################################################
 # leading order
@@ -59,8 +94,8 @@ set PPFactory:ShowerApproximation DipoleMatching
 # hard process scale variations
 ################################################################################
 
-set /Herwig/MatrixElement/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
-set /Herwig/MatrixElement/Matchbox/PPFactory:FactorizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/PPFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
 # shower scale variations

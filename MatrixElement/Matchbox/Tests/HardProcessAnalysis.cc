@@ -16,6 +16,8 @@
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/EventRecord/SubProcessGroup.h"
 
+#include "ThePEG/Handlers/EventHandler.h"
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -39,14 +41,9 @@ HardProcessAnalysis::~HardProcessAnalysis() {}
 HardProcessAnalysis::Histograms::Histograms(Energy ECM, unsigned int theNBins) {
 
   vector<double> logBins(theNBins+1);
-  double logLow = 0.1;
-  double logUp = ECM/GeV;
+  double logLow = 1.0;
+  double logUp = ECM/GeV/4.;
   double cLog = log10(logUp/logLow)/theNBins;
-  for ( size_t k = 0; k < theNBins+1; ++k )
-    logBins[k] = logLow*pow(10.0,cLog*k);
-
-  logUp = ECM/GeV/4.;
-  cLog = log10(logUp/logLow)/theNBins;
   for ( size_t k = 0; k < theNBins+1; ++k )
     logBins[k] = logLow*pow(10.0,cLog*k);
 
@@ -120,20 +117,26 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 
 struct SortedInPt {
   inline bool operator()(PPtr a, PPtr b) const {
-    if ( a->id() != b->id() ) {
-      if ( a->id() < b->id() )
-	return true;
-      return false;
-    }
-    if ( a->momentum().perp() > b->momentum().perp() )
-      return true;
-    return false;
+    if ( a->id() != b->id() )
+      return ( a->id() < b->id() );
+    return ( a->momentum().perp() > b->momentum().perp() );
   }
 };
 
 struct GetName {
   inline string operator()(PPtr p) const {
-    return p->PDGName();
+    string res = p->PDGName();
+    string::size_type pos = res.find("+");
+    while ( pos != string::npos ) {
+      res.replace(pos,1,"plus");
+      pos = res.find("+");
+    }
+    pos = res.find("-");
+    while ( pos != string::npos ) {
+      res.replace(pos,1,"minus");
+      pos = res.find("-");
+    }
+    return res;
   }
 };
 
@@ -158,15 +161,23 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
       logBins[k] = logLow*pow(10.0,cLog*k);
     data.x1 = new_ptr(Histogram(logBins));
     data.x2 = new_ptr(Histogram(logBins));
+    logUp = generator()->maximumCMEnergy()/GeV;
+    logLow = 1.0;
+    cLog = log10(logUp/logLow)/theNBins;
+    for ( size_t k = 0; k < theNBins+1; ++k )
+      logBins[k] = logLow*pow(10.0,cLog*k);
+    data.sshat = new_ptr(Histogram(logBins));
+    data.rapidity = new_ptr(Histogram(-7.,7.,theNBins));
   }
   ParticleVector::const_iterator p = out.begin();
   vector<Histograms>::iterator h = data.outgoing.begin();
   for ( ; p != out.end(); ++p, ++h )
     h->fill((**p).momentum(),weight);
   double y = (in.first->momentum() + in.second->momentum()).rapidity();
-  double tau = 
-    (in.first->momentum() + in.second->momentum()).m2()/
-    sqr(generator()->maximumCMEnergy());
+  data.rapidity->addWeighted(y,weight);
+  Energy2 shat = (in.first->momentum() + in.second->momentum()).m2();
+  data.sshat->addWeighted(sqrt(shat)/GeV,weight);
+  double tau = shat/sqr(generator()->maximumCMEnergy());
   double x1 = tau*exp(y);
   double x2 = tau*exp(-y);
   data.x1->addWeighted(x1,weight);
@@ -211,8 +222,8 @@ void HardProcessAnalysis::dofinish() {
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x1\n"
 	 << "Title=Momentum fraction of first parton in " << subpro << "\n"
-	 << "XLabel=" << "$\\x_1$" << "\n"
-	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\x_1$/nb" << "\n"
+	 << "XLabel=" << "$x_1$" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}x_1$/nb" << "\n"
 	 << "LogX=1\n"
 	 << "LogY=1\n"
 	 << "# END PLOT\n\n";
@@ -225,8 +236,8 @@ void HardProcessAnalysis::dofinish() {
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x2\n"
 	 << "Title=Momentum fraction of second parton in " << subpro << "\n"
-	 << "XLabel=" << "$\\x_2$" << "\n"
-	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\x_2$/nb" << "\n"
+	 << "XLabel=" << "$x_2$" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}x_2$/nb" << "\n"
 	 << "LogX=1\n"
 	 << "LogY=1\n"
 	 << "# END PLOT\n\n";
@@ -234,7 +245,59 @@ void HardProcessAnalysis::dofinish() {
     h->second.x2->rivetOutput(dat,subpro + "_x2",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
+    h->second.rapidity->normaliseToCrossSection();
+
+    plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
+	 << subpro << "_y\n"
+	 << "Title=Rapidity in " << subpro << "\n"
+	 << "XLabel=" << "$y$" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}y$/nb" << "\n"
+	 << "LogX=0\n"
+	 << "LogY=1\n"
+	 << "# END PLOT\n\n";
+
+    h->second.rapidity->rivetOutput(dat,subpro + "_y",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
+    dat << "\n";
+
+    h->second.sshat->normaliseToCrossSection();
+
+    plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
+	 << subpro << "_sshat\n"
+	 << "Title=Partonic centre of mass energy in " << subpro << "\n"
+	 << "XLabel=" << "$\\sqrt{\\hat{s}}$/GeV" << "\n"
+	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\sqrt{\\hat{s}}$/(nb/GeV)" << "\n"
+	 << "LogX=1\n"
+	 << "LogY=1\n"
+	 << "# END PLOT\n\n";
+
+    h->second.rapidity->rivetOutput(dat,subpro + "_y",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
+    dat << "\n";
+
   }
+
+  Energy ECM = generator()->maximumCMEnergy();
+  CrossSection xsec = generator()->eventHandler()->integratedXSec();
+  CrossSection xsecErr = generator()->eventHandler()->integratedXSecErr();
+
+  dat << "# BEGIN HISTOGRAM /"
+      << (!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat")
+      << "/xsec\n"
+      << "AidaPath=/"
+      << (!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat")
+      << "/xsec\n"
+      << (ECM/GeV - 10.) << "\t"
+      << (ECM/GeV + 10.) << "\t"
+      << (xsec/nanobarn) << "\t"
+      << (xsecErr/nanobarn) << "\n"
+      << "# END HISTOGRAM\n";
+
+  plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/xsec\n"
+       << "Title=Total cross section\n"
+       << "XLabel=" << "$\\sqrt{S}$/GeV" << "\n"
+       << "YLabel=" << "$\\sigma(\\sqrt(S))$/nb" << "\n"
+       << "LogX=0\n"
+       << "LogY=0\n"
+       << "# END PLOT\n\n";
 
 }
 

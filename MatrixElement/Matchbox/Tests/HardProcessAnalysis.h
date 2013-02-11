@@ -197,6 +197,16 @@ private:
      */
     HistogramPtr x2;
 
+    /**
+     * sqrt(shat) distribution
+     */
+    HistogramPtr sshat;
+
+    /**
+     * y distribution
+     */
+    HistogramPtr rapidity;
+
   };
 
   /**
