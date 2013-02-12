@@ -26,14 +26,14 @@ insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFact
 # two jets
 ################################################################################
 
-set EEFactory:OrderInAlphas 0
+set EEFactory:OrderInAlphaS 0
 do EEFactory:Process e- e+ j j 
 
 ################################################################################
 # three jets
 ################################################################################
 
-# set EEFactory:OrderInAlphas 1
+# set EEFactory:OrderInAlphaS 1
 # do EEFactory:Process e- e+ j j j
 
 # set /Herwig/Cuts/JetFinder:Variant SphericalKt
@@ -51,7 +51,7 @@ do EEFactory:Process e- e+ j j
 # four jets (leading order only)
 ################################################################################
 
-# set EEFactory:OrderInAlphas 2
+# set EEFactory:OrderInAlphaS 2
 # do EEFactory:Process e- e+ j j j
 
 # set /Herwig/Cuts/JetFinder:Variant SphericalKt

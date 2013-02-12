@@ -42,7 +42,7 @@ do PPFactory:Process p p e+ e-
 
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 
-# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
 
 # set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
@@ -56,8 +56,8 @@ do PPFactory:Process p p e+ e-
 
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 
-# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
-# insert /Herwig/Cuts/JetFinder:JetRegions 1 /Herwig/Cuts/SecondJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
 
 # set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts

@@ -291,6 +291,7 @@ do ThirdJet:YRange -5.0 5.0
 insert ThirdJet:Accepts[0] 3
 
 create ThePEG::NJetsCut NJetsCut
+set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
 set NJetsCut:NJetsMin 2
 
 create ThePEG::JetCuts JetCuts

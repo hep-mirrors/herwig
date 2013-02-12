@@ -50,8 +50,8 @@ do DISFactory:Process e+ p e+ j
 # set /Herwig/Cuts/JetFinder:Mode Inclusive
 # set /Herwig/Cuts/JetFinder:ConeRadius 0.7
 
-# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
-# insert /Herwig/Cuts/JetFinder:JetRegions 1 /Herwig/Cuts/SecondJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
 
 # set /Herwig/Cuts/DISCuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/DISCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
@@ -70,9 +70,9 @@ do DISFactory:Process e+ p e+ j
 # set /Herwig/Cuts/JetFinder:Mode Inclusive
 # set /Herwig/Cuts/JetFinder:ConeRadius 0.7
 
-# insert /Herwig/Cuts/JetFinder:JetRegions 0 /Herwig/Cuts/FirstJet
-# insert /Herwig/Cuts/JetFinder:JetRegions 1 /Herwig/Cuts/SecondJet
-# insert /Herwig/Cuts/JetFinder:JetRegions 1 /Herwig/Cuts/ThirdJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/ThirdJet
 
 # set /Herwig/Cuts/DISCuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/DISCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
