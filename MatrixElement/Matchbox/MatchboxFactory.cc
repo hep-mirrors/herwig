@@ -266,7 +266,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
 void MatchboxFactory::setup() {
 
-  if ( !amplitudes().empty() ) {
+  if ( bornMEs().empty() ) {
 
     if ( particleGroups().find("j") == particleGroups().end() )
       throw InitException() << "Could not find a jet particle group named 'j'";
@@ -294,7 +294,7 @@ void MatchboxFactory::setup() {
     vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
     copy(ames.begin(),ames.end(),back_inserter(bornMEs()));
 
-    if ( realContributions() ) {
+    if ( realContributions() && realEmissionMEs().empty() ) {
       vector<string> rproc = process;
       if ( realEmissionProcess.empty() ) {
 	rproc.push_back("j");

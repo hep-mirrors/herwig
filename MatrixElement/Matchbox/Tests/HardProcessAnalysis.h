@@ -234,6 +234,11 @@ private:
    */
   bool theSplitInitialStates;
 
+  /**
+   * True, if partons should be handled as jets irrespective of flavour
+   */
+  bool thePartonsAreJets;
+
 };
 
 }

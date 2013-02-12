@@ -25,7 +25,8 @@ using namespace Herwig;
 
 HardProcessAnalysis::HardProcessAnalysis()
   : theNBins(100), theUnitWeights(false),
-    theSplitInitialStates(true) {}
+    theSplitInitialStates(true),
+    thePartonsAreJets(false) {}
 
 HardProcessAnalysis::~HardProcessAnalysis() {}
 
@@ -124,7 +125,12 @@ struct SortedInPt {
 };
 
 struct GetName {
+  bool partonsAreJets;
+  explicit GetName(bool newPartonsAreJets = false)
+    : partonsAreJets(newPartonsAreJets) {}
   inline string operator()(PPtr p) const {
+    if ( partonsAreJets && p->coloured() )
+      return "j";
     string res = p->PDGName();
     string::size_type pos = res.find("+");
     while ( pos != string::npos ) {
@@ -144,11 +150,11 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
   sort(out.begin(),out.end(),SortedInPt());
   vector<string> proc;
   if ( theSplitInitialStates ) {
-    proc.push_back(in.first->PDGName());
-    proc.push_back(in.second->PDGName());
+    proc.push_back(GetName()(in.first));
+    proc.push_back(GetName()(in.second));
   }
   std::transform(out.begin(),out.end(),
-		 back_inserter(proc),GetName());
+		 back_inserter(proc),GetName(thePartonsAreJets));
   AllHistograms& data = histogramData[proc];
   if ( data.outgoing.empty() ) {
     for ( size_t k = 0; k < out.size(); ++k )
@@ -322,11 +328,11 @@ IBPtr HardProcessAnalysis::fullclone() const {
 
 
 void HardProcessAnalysis::persistentOutput(PersistentOStream & os) const {
-  os << theNBins << theUnitWeights << theSplitInitialStates;
+  os << theNBins << theUnitWeights << theSplitInitialStates << thePartonsAreJets;
 }
 
 void HardProcessAnalysis::persistentInput(PersistentIStream & is, int) {
-  is >> theNBins >> theUnitWeights >> theSplitInitialStates;
+  is >> theNBins >> theUnitWeights >> theSplitInitialStates >> thePartonsAreJets;
 }
 
 
@@ -375,6 +381,21 @@ void HardProcessAnalysis::Init() {
      true);
   static SwitchOption interfaceSplitInitialStatesNo
     (interfaceSplitInitialStates,
+     "No",
+     "",
+     false);
+
+  static Switch<HardProcessAnalysis,bool> interfacePartonsAreJets
+    ("PartonsAreJets",
+     "Treat each parton as a jet.",
+     &HardProcessAnalysis::thePartonsAreJets, false, false, false);
+  static SwitchOption interfacePartonsAreJetsYes
+    (interfacePartonsAreJets,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfacePartonsAreJetsNo
+    (interfacePartonsAreJets,
      "No",
      "",
      false);
