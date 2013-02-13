@@ -562,7 +562,7 @@ void MatchboxFactory::setup() {
 	sub->showerApproximation(showerApproximation());
 	Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	string vname = sub->fullName() + ".vsub";
-	if ( ! (generator()->preinitRegister(subv,pname) ) )
+	if ( ! (generator()->preinitRegister(subv,vname) ) )
 	  throw InitException() << "Subtracted ME " << vname << " already existing.";
 	sub->doRealShowerSubtraction();
 	subv->doVirtualShowerSubtraction();
