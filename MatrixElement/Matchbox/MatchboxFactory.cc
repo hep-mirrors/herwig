@@ -393,9 +393,9 @@ void MatchboxFactory::setup() {
   // setup born and virtual contributions
 
   if ( bornContributions() || virtualContributions() ) {
-    generator()->log() << "preparing Born "
-		       << (virtualContributions() ? "and virtual" : "")
-		       << " matrix elements." << flush;
+    generator()->log() << "preparing Born"
+		       << (virtualContributions() ? " and virtual" : "")
+		       << " matrix elements.\n" << flush;
   }
 
   if ( (bornContributions() && !virtualContributions()) || 
@@ -497,7 +497,7 @@ void MatchboxFactory::setup() {
 
   if ( realContributions() ) {
 
-    generator()->log() << "preparing real emission matrix elements." << flush;
+    generator()->log() << "preparing real emission matrix elements.\n" << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
@@ -619,7 +619,7 @@ void MatchboxFactory::setup() {
     }
   }
 
-  generator()->log() << "process setup finished.\n" << flush;
+  generator()->log() << "Process setup finished.\n" << flush;
 
 }
 
