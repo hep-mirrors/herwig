@@ -158,6 +158,7 @@ private:
 		  ostream& plot,
 		  const string& subpro,
 		  size_t legid,
+		  double norm,
 		  bool theUnitWeights);
 
     /**

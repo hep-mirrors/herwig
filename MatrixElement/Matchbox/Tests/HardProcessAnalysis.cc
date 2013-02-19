@@ -68,11 +68,12 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 					       ostream& plot,
 					       const string& subpro,
 					       size_t legid,
+					       double norm,
 					       bool theUnitWeights) {
 
-  transverse->normaliseToCrossSection();
-  rapidity->normaliseToCrossSection();
-  phi->normaliseToCrossSection();
+  transverse->prefactor(norm);
+  rapidity->prefactor(norm);
+  phi->prefactor(norm);
 
   ostringstream prefix;
   prefix << subpro << "_" << legid;
@@ -221,9 +222,11 @@ void HardProcessAnalysis::dofinish() {
       subpro += *p + (p != --(h->first.end()) ? "_" : "");
     }
     for ( size_t k = 0; k < h->second.outgoing.size(); ++k )
-      h->second.outgoing[k].finalize(dat,plot,subpro,k+2,theUnitWeights);
+      h->second.outgoing[k].finalize(dat,plot,subpro,k+2,
+				     generator()->eventHandler()->integratedXSec()/nanobarn,
+				     theUnitWeights);
 
-    h->second.x1->normaliseToCrossSection();
+    h->second.x1->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x1\n"
@@ -237,7 +240,7 @@ void HardProcessAnalysis::dofinish() {
     h->second.x1->rivetOutput(dat,subpro + "_x1",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.x2->normaliseToCrossSection();
+    h->second.x2->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x2\n"
@@ -251,7 +254,7 @@ void HardProcessAnalysis::dofinish() {
     h->second.x2->rivetOutput(dat,subpro + "_x2",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.rapidity->normaliseToCrossSection();
+    h->second.rapidity->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_y\n"
@@ -265,7 +268,7 @@ void HardProcessAnalysis::dofinish() {
     h->second.rapidity->rivetOutput(dat,subpro + "_y",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.sshat->normaliseToCrossSection();
+    h->second.sshat->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_sshat\n"
