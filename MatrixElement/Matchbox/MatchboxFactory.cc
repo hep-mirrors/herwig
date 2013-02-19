@@ -1180,7 +1180,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceRealEmissionScales
     ("RealEmissionScales",
      "Switch on or off calculation of subtraction scales from real emission kinematics.",
-     &MatchboxFactory::theRealEmissionScales, true, false, false);
+     &MatchboxFactory::theRealEmissionScales, false, false, false);
   static SwitchOption interfaceRealEmissionScalesOn
     (interfaceRealEmissionScales,
      "On",
@@ -1191,7 +1191,6 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
-
 
 }
 
