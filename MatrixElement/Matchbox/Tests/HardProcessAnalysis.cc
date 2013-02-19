@@ -118,9 +118,18 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 }
 
 struct SortedInPt {
+  bool partonsAreJets;
+  explicit SortedInPt(bool newPartonsAreJets = false)
+    : partonsAreJets(newPartonsAreJets) {}
   inline bool operator()(PPtr a, PPtr b) const {
-    if ( a->id() != b->id() )
-      return ( a->id() < b->id() );
+    long aId = a->id();
+    if ( partonsAreJets && a->coloured() )
+      aId = 21;
+    long bId = b->id();
+    if ( partonsAreJets && b->coloured() )
+      bId = 21;
+    if ( aId != bId )
+      return ( aId < bId );
     return ( a->momentum().perp() > b->momentum().perp() );
   }
 };
