@@ -44,7 +44,7 @@
 library HwExsample2.so
 library HwMatchbox.so
 library JetCuts.so
-library KTJetFinder.so
+library FastJetFinder.so
 
 mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
@@ -252,6 +252,8 @@ cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
 
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
@@ -266,7 +268,7 @@ set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 cd /Herwig/Cuts
 
-create ThePEG::KTJetFinder JetFinder
+create ThePEG::FastJetFinder JetFinder
 set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
 set JetFinder:Variant AntiKt
 set JetFinder:RecombinationScheme E
@@ -282,6 +284,19 @@ create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 insert SecondJet:Accepts[0] 2
+
+create ThePEG::JetRegion ThirdJet
+set ThirdJet:PtMin 20.*GeV
+do ThirdJet:YRange -5.0 5.0
+insert ThirdJet:Accepts[0] 3
+
+create ThePEG::NJetsCut NJetsCut
+set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:NJetsMin 2
+
+create ThePEG::JetCuts JetCuts
+set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:Ordering OrderPt
 
 ################################################################################
 # Setup scale choices

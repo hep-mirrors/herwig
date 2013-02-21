@@ -41,19 +41,18 @@ IBPtr DipoleMatching::fullclone() const {
 }
 
 CrossSection DipoleMatching::dSigHatDR() const {
-  double pdfFactor = 1.;
-  if ( showerScalesInSubtraction() ) {
-    double bornPDF = bornPDFWeight(showerScalesInSubtraction());
-    double bornPDFHard = bornPDFWeight(false);
-    pdfFactor = bornPDFHard / bornPDF;
-  }
+
+  double xme2 = dipole()->me2();
+  xme2 /= dipole()->underlyingBornME()->lastXComb().lastAlphaS();
+  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+
   return
     sqr(hbarc) * 
     realXComb()->jacobian() * 
-    realPDFWeight(showerScalesInSubtraction()) * pdfFactor *
-    couplingWeight(showerScalesInSubtraction()) *
-    dipole()->me2() /
+    subtractionScaleWeight() *
+    xme2 /
     (2. * realXComb()->lastSHat());
+
 }
 
 double DipoleMatching::me2() const {

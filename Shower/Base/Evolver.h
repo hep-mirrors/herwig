@@ -434,7 +434,7 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+  void setupMaximumScales(ShowerTreePtr, const vector<ShowerProgenitorPtr> &,XCPtr);
 
 protected:
 

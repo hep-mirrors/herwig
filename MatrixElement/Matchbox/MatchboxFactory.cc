@@ -266,7 +266,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
 void MatchboxFactory::setup() {
 
-  if ( !amplitudes().empty() ) {
+  if ( bornMEs().empty() ) {
 
     if ( particleGroups().find("j") == particleGroups().end() )
       throw InitException() << "Could not find a jet particle group named 'j'";
@@ -294,7 +294,7 @@ void MatchboxFactory::setup() {
     vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
     copy(ames.begin(),ames.end(),back_inserter(bornMEs()));
 
-    if ( realContributions() ) {
+    if ( realContributions() && realEmissionMEs().empty() ) {
       vector<string> rproc = process;
       if ( realEmissionProcess.empty() ) {
 	rproc.push_back("j");
@@ -393,9 +393,9 @@ void MatchboxFactory::setup() {
   // setup born and virtual contributions
 
   if ( bornContributions() || virtualContributions() ) {
-    generator()->log() << "preparing Born "
-		       << (virtualContributions() ? "and virtual" : "")
-		       << " matrix elements." << flush;
+    generator()->log() << "preparing Born"
+		       << (virtualContributions() ? " and virtual" : "")
+		       << " matrix elements.\n" << flush;
   }
 
   if ( (bornContributions() && !virtualContributions()) || 
@@ -497,7 +497,7 @@ void MatchboxFactory::setup() {
 
   if ( realContributions() ) {
 
-    generator()->log() << "preparing real emission matrix elements." << flush;
+    generator()->log() << "preparing real emission matrix elements.\n" << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
@@ -562,7 +562,7 @@ void MatchboxFactory::setup() {
 	sub->showerApproximation(showerApproximation());
 	Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	string vname = sub->fullName() + ".vsub";
-	if ( ! (generator()->preinitRegister(subv,pname) ) )
+	if ( ! (generator()->preinitRegister(subv,vname) ) )
 	  throw InitException() << "Subtracted ME " << vname << " already existing.";
 	sub->doRealShowerSubtraction();
 	subv->doVirtualShowerSubtraction();
@@ -619,7 +619,7 @@ void MatchboxFactory::setup() {
     }
   }
 
-  generator()->log() << "process setup finished.\n" << flush;
+  generator()->log() << "Process setup finished.\n" << flush;
 
 }
 
@@ -1180,7 +1180,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceRealEmissionScales
     ("RealEmissionScales",
      "Switch on or off calculation of subtraction scales from real emission kinematics.",
-     &MatchboxFactory::theRealEmissionScales, true, false, false);
+     &MatchboxFactory::theRealEmissionScales, false, false, false);
   static SwitchOption interfaceRealEmissionScalesOn
     (interfaceRealEmissionScales,
      "On",
@@ -1191,7 +1191,6 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
-
 
 }
 

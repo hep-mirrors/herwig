@@ -32,6 +32,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_S6265367
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2001_S4598261
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2003_I593379
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

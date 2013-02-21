@@ -32,10 +32,15 @@ ShowerApproximation::ShowerApproximation()
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
-    theShowerScalesInSubtraction(false),
-    theShowerScalesInSplitting(true),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
-    theExtrapolationX(0.65) {}
+    theRenormalizationScaleFactor(1.0), theFactorizationScaleFactor(1.0),
+    theExtrapolationX(0.65),
+    theRealEmissionScaleInSubtraction(showerScale), 
+    theBornScaleInSubtraction(showerScale), 
+    theEmissionScaleInSubtraction(showerScale), 
+    theRealEmissionScaleInSplitting(showerScale), 
+    theBornScaleInSplitting(showerScale), 
+    theEmissionScaleInSplitting(showerScale) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -86,7 +91,7 @@ bool ShowerApproximation::isInShowerPhasespace() const {
 
 }
 
-Energy2 ShowerApproximation::showerRenormalizationScale() const {
+Energy2 ShowerApproximation::showerEmissionScale() const {
 
   Energy2 mur = sqr(dipole()->lastPt());
 
@@ -108,27 +113,34 @@ Energy2 ShowerApproximation::showerRenormalizationScale() const {
 
 }
 
-double ShowerApproximation::couplingWeight(bool showerscales) const {
-  if ( !showerscales )
-    return 1.;
-  double hardAlpha = dipole()->realEmissionME()->lastAlphaS();
-  Energy2 mur = showerRenormalizationScale();
-  mur *= dipole()->realEmissionME()->renormalizationScaleFactor();
-  double runAlpha = SM().alphaS(mur);
-  return runAlpha/hardAlpha;
+Energy2 ShowerApproximation::bornRenormalizationScale() const {
+  return 
+    dipole()->underlyingBornME()->renormalizationScaleFactor() *
+    dipole()->underlyingBornME()->renormalizationScale();
 }
 
-double ShowerApproximation::bornPDFWeight(bool showerscales) const {
+Energy2 ShowerApproximation::bornFactorizationScale() const {
+  return 
+    dipole()->underlyingBornME()->factorizationScaleFactor() *
+    dipole()->underlyingBornME()->factorizationScale();
+}
+
+Energy2 ShowerApproximation::realRenormalizationScale() const {
+  return 
+    dipole()->realEmissionME()->renormalizationScaleFactor() *
+    dipole()->realEmissionME()->renormalizationScale();
+}
+
+Energy2 ShowerApproximation::realFactorizationScale() const {
+  return 
+    dipole()->realEmissionME()->factorizationScaleFactor() *
+    dipole()->realEmissionME()->factorizationScale();
+}
+
+double ShowerApproximation::bornPDFWeight(Energy2 muf) const {
   if ( !bornCXComb()->mePartonData()[0]->coloured() &&
        !bornCXComb()->mePartonData()[1]->coloured() )
     return 1.;
-  Energy2 muf;
-  if ( showerscales ) {
-    muf = showerFactorizationScale();
-  } else {
-    muf = dipole()->underlyingBornME()->factorizationScale();
-  }
-  muf *= dipole()->underlyingBornME()->factorizationScaleFactor();
   double pdfweight = 1.;
   if ( bornCXComb()->mePartonData()[0]->coloured() &&
        dipole()->underlyingBornME()->havePDFWeight1() )
@@ -139,17 +151,10 @@ double ShowerApproximation::bornPDFWeight(bool showerscales) const {
   return pdfweight;
 }
 
-double ShowerApproximation::realPDFWeight(bool showerscales) const {
+double ShowerApproximation::realPDFWeight(Energy2 muf) const {
   if ( !realCXComb()->mePartonData()[0]->coloured() &&
        !realCXComb()->mePartonData()[1]->coloured() )
     return 1.;
-  Energy2 muf;
-  if ( showerscales ) {
-    muf = showerFactorizationScale();
-  } else {
-    muf = dipole()->realEmissionME()->factorizationScale();
-  }
-  muf *= dipole()->realEmissionME()->factorizationScaleFactor();
   double pdfweight = 1.;
   if ( realCXComb()->mePartonData()[0]->coloured() &&
        dipole()->realEmissionME()->havePDFWeight1() )
@@ -158,6 +163,60 @@ double ShowerApproximation::realPDFWeight(bool showerscales) const {
        dipole()->realEmissionME()->havePDFWeight2() )
     pdfweight *= dipole()->realEmissionME()->pdf2(muf,theExtrapolationX);
   return pdfweight;
+}
+
+double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) const {
+
+  double emissionAlpha = 1.;
+  Energy2 emissionScale = ZERO;
+  if ( eScale == showerScale ) {
+    emissionAlpha = SM().alphaS(showerRenormalizationScale());
+    emissionScale = showerFactorizationScale();
+  } else if ( eScale == realScale ) {
+    emissionAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
+    emissionScale = dipole()->realEmissionME()->lastScale();
+  } else if ( eScale == bornScale ) {
+    emissionAlpha = dipole()->underlyingBornME()->lastXComb().lastAlphaS();
+    emissionScale = dipole()->underlyingBornME()->lastScale();
+  }
+  double emissionPDF = realPDFWeight(emissionScale);
+
+  double couplingFactor = 1.;
+  if ( bScale != rScale ) {
+    double bornAlpha = 1.;
+    if ( bScale == showerScale ) {
+      bornAlpha = SM().alphaS(showerRenormalizationScale());
+    } else if ( bScale == realScale ) {
+      bornAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
+    } else if ( bScale == bornScale ) {
+      bornAlpha = dipole()->underlyingBornME()->lastXComb().lastAlphaS();
+    }
+    double realAlpha = 1.;
+    if ( rScale == showerScale ) {
+      realAlpha = SM().alphaS(showerRenormalizationScale());
+    } else if ( rScale == realScale ) {
+      realAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
+    } else if ( rScale == bornScale ) {
+      realAlpha = dipole()->underlyingBornME()->lastXComb().lastAlphaS();
+    }
+    couplingFactor *=
+      pow(realAlpha/bornAlpha,(double)(dipole()->underlyingBornME()->orderInAlphaS()));
+  }
+
+  Energy2 hardScale = ZERO;
+  if ( bScale == showerScale ) {
+    hardScale = showerFactorizationScale();
+  } else if ( bScale == realScale ) {
+    hardScale = dipole()->realEmissionME()->lastScale();
+  } else if ( bScale == bornScale ) {
+    hardScale = dipole()->underlyingBornME()->lastScale();
+  }
+  double bornPDF = bornPDFWeight(hardScale);
+
+  return
+    emissionAlpha * emissionPDF *
+    couplingFactor / bornPDF;
+    
 }
 
 // If needed, insert default implementations of virtual function defined
@@ -169,9 +228,12 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
      << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV) 
-     << theShowerScalesInSubtraction << theShowerScalesInSplitting
      << theRestrictPhasespace << theHardScaleFactor
-     << theExtrapolationX;
+     << theRenormalizationScaleFactor << theFactorizationScaleFactor
+     << theExtrapolationX
+     << theRealEmissionScaleInSubtraction << theBornScaleInSubtraction
+     << theEmissionScaleInSubtraction << theRealEmissionScaleInSplitting
+     << theBornScaleInSplitting << theEmissionScaleInSplitting;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -179,9 +241,12 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
      >> iunit(theIIPtCut,GeV) >> iunit(theIIScreeningScale,GeV) 
-     >> theShowerScalesInSubtraction >> theShowerScalesInSplitting
      >> theRestrictPhasespace >> theHardScaleFactor
-     >> theExtrapolationX;
+     >> theRenormalizationScaleFactor >> theFactorizationScaleFactor
+     >> theExtrapolationX
+     >> theRealEmissionScaleInSubtraction >> theBornScaleInSubtraction
+     >> theEmissionScaleInSubtraction >> theRealEmissionScaleInSplitting
+     >> theBornScaleInSplitting >> theEmissionScaleInSplitting;
 }
 
 
@@ -235,36 +300,6 @@ void ShowerApproximation::Init() {
      &ShowerApproximation::theIIScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
-  static Switch<ShowerApproximation,bool> interfaceShowerScalesInSubtraction
-    ("ShowerScalesInSubtraction",
-     "Switch on or off shower scales in the matching subtraction",
-     &ShowerApproximation::theShowerScalesInSubtraction, true, false, false);
-  static SwitchOption interfaceShowerScalesInSubtractionOn
-    (interfaceShowerScalesInSubtraction,
-     "On",
-     "Use shower scales in the matching subtraction",
-     true);
-  static SwitchOption interfaceShowerScalesInSubtractionOff
-    (interfaceShowerScalesInSubtraction,
-     "Off",
-     "Use hard process scales in the matching subtraction",
-     false);
-
-  static Switch<ShowerApproximation,bool> interfaceShowerScalesInSplitting
-    ("ShowerScalesInSplitting",
-     "Switch on or off shower scales in the splitting generation",
-     &ShowerApproximation::theShowerScalesInSplitting, true, false, false);
-  static SwitchOption interfaceShowerScalesInSplittingOn
-    (interfaceShowerScalesInSplitting,
-     "On",
-     "Use shower scales in the matching splitting generation",
-     true);
-  static SwitchOption interfaceShowerScalesInSplittingOff
-    (interfaceShowerScalesInSplitting,
-     "Off",
-     "Use hard process scales in the matching splitting generation",
-     false);
-
   static Switch<ShowerApproximation,bool> interfaceRestrictPhasespace
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
@@ -286,11 +321,143 @@ void ShowerApproximation::Init() {
      &ShowerApproximation::theHardScaleFactor, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
+  static Parameter<ShowerApproximation,double> interfaceRenormalizationScaleFactor
+    ("RenormalizationScaleFactor",
+     "The hard scale factor.",
+     &ShowerApproximation::theRenormalizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximation,double> interfaceFactorizationScaleFactor
+    ("FactorizationScaleFactor",
+     "The hard scale factor.",
+     &ShowerApproximation::theFactorizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
   static Parameter<ShowerApproximation,double> interfaceExtrapolationX
     ("ExtrapolationX",
      "The x from which on extrapolation should be performed.",
      &ShowerApproximation::theExtrapolationX, 0.65, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Switch<ShowerApproximation,int> interfaceRealEmissionScaleInSubtraction
+    ("RealEmissionScaleInSubtraction",
+     "Set the scale choice for the real emission cross section in the matching subtraction.",
+     &ShowerApproximation::theRealEmissionScaleInSubtraction, showerScale, false, false);
+  static SwitchOption interfaceRealEmissionScaleInSubtractionRealScale
+    (interfaceRealEmissionScaleInSubtraction,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceRealEmissionScaleInSubtractionBornScale
+    (interfaceRealEmissionScaleInSubtraction,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceRealEmissionScaleInSubtractionShowerScale
+    (interfaceRealEmissionScaleInSubtraction,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
+
+  static Switch<ShowerApproximation,int> interfaceBornScaleInSubtraction
+    ("BornScaleInSubtraction",
+     "Set the scale choice for the Born cross section in the matching subtraction.",
+     &ShowerApproximation::theBornScaleInSubtraction, showerScale, false, false);
+  static SwitchOption interfaceBornScaleInSubtractionRealScale
+    (interfaceBornScaleInSubtraction,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceBornScaleInSubtractionBornScale
+    (interfaceBornScaleInSubtraction,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceBornScaleInSubtractionShowerScale
+    (interfaceBornScaleInSubtraction,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
+
+  static Switch<ShowerApproximation,int> interfaceEmissionScaleInSubtraction
+    ("EmissionScaleInSubtraction",
+     "Set the scale choice for the emission in the matching subtraction.",
+     &ShowerApproximation::theEmissionScaleInSubtraction, showerScale, false, false);
+  static SwitchOption interfaceEmissionScaleInSubtractionRealScale
+    (interfaceEmissionScaleInSubtraction,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceEmissionScaleInSubtractionEmissionScale
+    (interfaceEmissionScaleInSubtraction,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceEmissionScaleInSubtractionShowerScale
+    (interfaceEmissionScaleInSubtraction,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
+
+  static Switch<ShowerApproximation,int> interfaceRealEmissionScaleInSplitting
+    ("RealEmissionScaleInSplitting",
+     "Set the scale choice for the real emission cross section in the splitting.",
+     &ShowerApproximation::theRealEmissionScaleInSplitting, showerScale, false, false);
+  static SwitchOption interfaceRealEmissionScaleInSplittingRealScale
+    (interfaceRealEmissionScaleInSplitting,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceRealEmissionScaleInSplittingBornScale
+    (interfaceRealEmissionScaleInSplitting,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceRealEmissionScaleInSplittingShowerScale
+    (interfaceRealEmissionScaleInSplitting,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
+
+  static Switch<ShowerApproximation,int> interfaceBornScaleInSplitting
+    ("BornScaleInSplitting",
+     "Set the scale choice for the Born cross section in the splitting.",
+     &ShowerApproximation::theBornScaleInSplitting, showerScale, false, false);
+  static SwitchOption interfaceBornScaleInSplittingRealScale
+    (interfaceBornScaleInSplitting,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceBornScaleInSplittingBornScale
+    (interfaceBornScaleInSplitting,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceBornScaleInSplittingShowerScale
+    (interfaceBornScaleInSplitting,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
+
+  static Switch<ShowerApproximation,int> interfaceEmissionScaleInSplitting
+    ("EmissionScaleInSplitting",
+     "Set the scale choice for the emission in the splitting.",
+     &ShowerApproximation::theEmissionScaleInSplitting, showerScale, false, false);
+  static SwitchOption interfaceEmissionScaleInSplittingRealScale
+    (interfaceEmissionScaleInSplitting,
+     "RealScale",
+     "Use the real emission scale.",
+     realScale);
+  static SwitchOption interfaceEmissionScaleInSplittingEmissionScale
+    (interfaceEmissionScaleInSplitting,
+     "BornScale",
+     "Use the Born scale.",
+     bornScale);
+  static SwitchOption interfaceEmissionScaleInSplittingShowerScale
+    (interfaceEmissionScaleInSplitting,
+     "ShowerScale",
+     "Use the shower scale",
+     showerScale);
 
 }
 
