@@ -989,8 +989,8 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   double contrib[2][2];
   // storage of the real emmision momenta
   vector<Lorentz5Momentum> realMomenta[2][2]=
-    {{vector<Lorentz5Momentum>(3),vector<Lorentz5Momentum>(3)},
-     {vector<Lorentz5Momentum>(3),vector<Lorentz5Momentum>(3)}};
+    {{vector<Lorentz5Momentum>(4),vector<Lorentz5Momentum>(4)},
+     {vector<Lorentz5Momentum>(4),vector<Lorentz5Momentum>(4)}};
   for(unsigned int ix=0;ix<2;++ix)
     for(unsigned int iy=0;iy<2;++iy)
       realMomenta[ix][iy][0] = loMomenta_[0];
@@ -1069,7 +1069,7 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
 			     -z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
 	}
 	// boost the momenta back to the lab
-	for(unsigned int iz=2;iz<4;++iz)
+	for(unsigned int iz=1;iz<4;++iz)
 	  realMomenta[ix][iy][iz] *= eventFrame;
 	// jacobian and prefactors for the weight
 	Energy J = M/sqrt(xT2)*abs(-x1[ix][iy]*x2[ix][iy]+2.*mu22*x1[ix][iy]
@@ -1120,11 +1120,11 @@ HardTreePtr SMZDecayer::generateHardest(ShowerTreePtr tree) {
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;
   for(unsigned int ix=0;ix<partons_.size();++ix) {
-    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
+    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=1)));
     hardParticles.back()->set5Momentum(emmision[ix]);
   }
   ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
-  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
+  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[3]);
   parentMomentum.setMass(partons_[iemit]->mass());
   parent->set5Momentum(parentMomentum);
   // Create the vectors of HardBranchings to create the HardTree:
@@ -1212,7 +1212,6 @@ double SMZDecayer::meRatio(vector<cPDPtr> partons,
     // matrix element
     vector<Lorentz5Momentum> lomom(4);
     lomom[0] = momenta[0];
-    lomom[1] = momenta[1];
     if(iemit==0) {
       lomom[1] = pijt;
       lomom[2] = pkt ;
