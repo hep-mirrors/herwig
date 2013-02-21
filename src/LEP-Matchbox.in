@@ -21,7 +21,49 @@ read DipoleShowerParameters-NLO.in
 cd /Herwig/MatrixElements/Matchbox
 
 insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFactory
+
+################################################################################
+# two jets
+################################################################################
+
+set EEFactory:OrderInAlphaS 0
 do EEFactory:Process e- e+ j j 
+
+################################################################################
+# three jets
+################################################################################
+
+# set EEFactory:OrderInAlphaS 1
+# do EEFactory:Process e- e+ j j j
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Exclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
+# set /Herwig/Cuts/JetFinder:DCut 50*GeV2
+
+# set /Herwig/Cuts/NJetsCut:NJetsMin 3
+
+# set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
+
+################################################################################
+# four jets (leading order only)
+################################################################################
+
+# set EEFactory:OrderInAlphaS 2
+# do EEFactory:Process e- e+ j j j
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Exclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
+# set /Herwig/Cuts/JetFinder:DCut 50*GeV2
+
+# set /Herwig/Cuts/NJetsCut:NJetsMin 4
+
+# set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
 
 ################################################################################
 # leading order
@@ -54,8 +96,8 @@ set EEFactory:ShowerApproximation DipoleMatching
 # hard process scale variations
 ################################################################################
 
-set /Herwig/MatrixElement/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
-set /Herwig/MatrixElement/Matchbox/EEFactory:FactorizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/EEFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
 # shower scale variations

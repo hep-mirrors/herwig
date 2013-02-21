@@ -7,7 +7,7 @@ read TVT-UEBase.in
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
 
 ##################################################
 #  Use the q qbar matrix element
@@ -26,14 +26,8 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 ##################################################
 # select the analyses
 ##################################################
-# run II UE analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
-# run II charged multiplicity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_NOTE_9936
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8233977
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
@@ -42,4 +36,4 @@ cd /Herwig/Generators
 # get the cross section right
 create Herwig::MPIXSecReweighter MPIXSecReweighter
 insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
-saverun TVT-Run-II-UE LHCGenerator
+saverun TVT-900-UE LHCGenerator

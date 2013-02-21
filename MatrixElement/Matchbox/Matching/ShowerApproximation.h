@@ -163,13 +163,115 @@ public:
   /**
    * Return the shower renormalization scale
    */
-  Energy2 showerRenormalizationScale() const;
+  virtual Energy2 showerEmissionScale() const;
+
+  /**
+   * Return the shower renormalization scale
+   */
+  Energy2 showerRenormalizationScale() const {
+    return renormalizationScaleFactor()*showerEmissionScale();
+  }
 
   /**
    * Return the shower factorization scale
    */
   Energy2 showerFactorizationScale() const {
-    return showerRenormalizationScale();
+    return factorizationScaleFactor()*showerEmissionScale();
+  }
+
+  /**
+   * Return the Born renormalization scale
+   */
+  Energy2 bornRenormalizationScale() const;
+
+  /**
+   * Return the Born factorization scale
+   */
+  Energy2 bornFactorizationScale() const;
+
+  /**
+   * Return the real emission renormalization scale
+   */
+  Energy2 realRenormalizationScale() const;
+
+  /**
+   * Return the real emission factorization scale
+   */
+  Energy2 realFactorizationScale() const;
+
+  /**
+   * Enumerate possible scale choices
+   */
+  enum ScaleChoices {
+
+    bornScale = 0,
+    /** Use the born scales */
+
+    realScale = 1,
+    /** Use the real scales */
+
+    showerScale = 2
+    /** Use the shower scales */
+
+  };
+
+  /**
+   * Return the scale choice in the real emission cross section to be
+   * used in the matching subtraction.
+   */
+  int realEmissionScaleInSubtraction() const { return theRealEmissionScaleInSubtraction; }
+
+  /**
+   * Return the scale choice in the born cross section to be
+   * used in the matching subtraction.
+   */
+  int bornScaleInSubtraction() const { return theBornScaleInSubtraction; }
+
+  /**
+   * Return the scale choice in the emission contribution to be
+   * used in the matching subtraction.
+   */
+  int emissionScaleInSubtraction() const { return theEmissionScaleInSubtraction; }
+
+  /**
+   * Return the scale choice in the real emission cross section to be
+   * used in the splitting.
+   */
+  int realEmissionScaleInSplitting() const { return theRealEmissionScaleInSplitting; }
+
+  /**
+   * Return the scale choice in the born cross section to be
+   * used in the splitting.
+   */
+  int bornScaleInSplitting() const { return theBornScaleInSplitting; }
+
+  /**
+   * Return the scale choice in the emission contribution to be
+   * used in the splitting.
+   */
+  int emissionScaleInSplitting() const { return theEmissionScaleInSplitting; }
+
+  /**
+   * Return the scale weight
+   */
+  double scaleWeight(int rScale, int bScale, int eScale) const;
+
+  /**
+   * Return the scale weight for the matching subtraction
+   */
+  double subtractionScaleWeight() const {
+    return scaleWeight(realEmissionScaleInSubtraction(),
+		       bornScaleInSubtraction(),
+		       emissionScaleInSubtraction());
+  }
+
+  /**
+   * Return the scale weight for the splitting
+   */
+  double splittingScaleWeight() const {
+    return scaleWeight(realEmissionScaleInSplitting(),
+		       bornScaleInSplitting(),
+		       emissionScaleInSplitting());
   }
 
 public:
@@ -184,6 +286,16 @@ public:
    * Return the scale factor for the hard scale
    */
   double hardScaleFactor() const { return theHardScaleFactor; }
+
+  /**
+   * Get the factorization scale factor
+   */
+  double factorizationScaleFactor() const { return theFactorizationScaleFactor; }
+
+  /**
+   * Get the renormalization scale factor
+   */
+  double renormalizationScaleFactor() const { return theRenormalizationScaleFactor; }
 
   /**
    * Return true, if the shower was able to generate an emission
@@ -214,29 +326,14 @@ public:
   virtual double me2() const = 0;
 
   /**
-   * Return true, if the shower scales should be used in the subtraction
-   */
-  bool showerScalesInSubtraction() const { return theShowerScalesInSubtraction; }
-
-  /**
-   * Return true, if the shower scales should be used in splitting generation
-   */
-  bool showerScalesInSplitting() const { return theShowerScalesInSplitting; }
-
-  /**
-   * Return the running coupling weight
-   */
-  double couplingWeight(bool showerscales) const;
-
-  /**
    * Return the Born PDF weight
    */
-  double bornPDFWeight(bool showerscales) const;
+  double bornPDFWeight(Energy2 muF) const;
 
   /**
    * Return the real emission PDF weight
    */
-  double realPDFWeight(bool showerscales) const;
+  double realPDFWeight(Energy2 muF) const;
 
 public:
 
@@ -330,16 +427,6 @@ private:
   Energy theIIScreeningScale;
 
   /**
-   * True, if the shower scales should be used in the subtraction
-   */
-  bool theShowerScalesInSubtraction;
-
-  /**
-   * True, if the shower scales should be used in splitting generation
-   */
-  bool theShowerScalesInSplitting;
-
-  /**
    * True, if the phase space restrictions of the dipole shower should
    * be applied.
    */
@@ -351,9 +438,55 @@ private:
   double theHardScaleFactor;
 
   /**
+   * The scale factor for the renormalization scale
+   */
+  double theRenormalizationScaleFactor;
+
+  /**
+   * The scale factor for the factorization scale
+   */
+  double theFactorizationScaleFactor;
+
+  /**
    * The x value from which on we extrapolate PDFs for numerically stable ratios.
    */
   double theExtrapolationX;
+
+  /**
+   * The scale choice in the real emission cross section to be
+   * used in the matching subtraction.
+   */
+  int theRealEmissionScaleInSubtraction;
+
+  /**
+   * The scale choice in the born cross section to be
+   * used in the matching subtraction.
+   */
+  int theBornScaleInSubtraction;
+
+  /**
+   * The scale choice in the emission contribution to be
+   * used in the matching subtraction.
+   */
+  int theEmissionScaleInSubtraction;
+
+  /**
+   * The scale choice in the real emission cross section to be
+   * used in the splitting.
+   */
+  int theRealEmissionScaleInSplitting;
+
+  /**
+   * The scale choice in the born cross section to be
+   * used in the splitting.
+   */
+  int theBornScaleInSplitting;
+
+  /**
+   * The scale choice in the emission contribution to be
+   * used in the splitting.
+   */
+  int theEmissionScaleInSplitting;
 
 private:
 

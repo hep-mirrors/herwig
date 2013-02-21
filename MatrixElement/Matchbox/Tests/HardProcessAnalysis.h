@@ -144,7 +144,7 @@ private:
     /**
      * The constructor
      */
-    explicit Histograms(Energy ECM);
+    explicit Histograms(Energy ECM, unsigned int theNBins);
 
     /**
      * Analyse given momentum
@@ -154,23 +154,17 @@ private:
     /**
      * Finalize given process id and cross section.
      */
-    void finalize(const string& subpro,
-		  size_t legid);
-
-    /**
-     * Energy spectrum
-     */
-    HistogramPtr energy;
+    void finalize(ostream& dat,
+		  ostream& plot,
+		  const string& subpro,
+		  size_t legid,
+		  double norm,
+		  bool theUnitWeights);
 
     /**
      * Pt spectrum
      */
     HistogramPtr transverse;
-
-    /**
-     * Polar angle distribution
-     */
-    HistogramPtr cosTheta;
 
     /**
      * Rapidity distribution
@@ -185,14 +179,66 @@ private:
   };
 
   /**
+   * Outgoing partons and x distributions
+   */
+  struct AllHistograms {
+
+    /**
+     * Outgoing partons
+     */
+    vector<Histograms> outgoing;
+
+    /**
+     * x1 distribution
+     */
+    HistogramPtr x1;
+
+    /**
+     * x2 distribution
+     */
+    HistogramPtr x2;
+
+    /**
+     * sqrt(shat) distribution
+     */
+    HistogramPtr sshat;
+
+    /**
+     * y distribution
+     */
+    HistogramPtr rapidity;
+
+  };
+
+  /**
    * Histograms per subprocess
    */
-  map<vector<string>,vector<Histograms> > histogramData;
+  map<vector<string>,AllHistograms> histogramData;
 
   /**
    * Analyze a given final state
    */
   void fill(PPair, ParticleVector, double);
+
+  /**
+   * The number of bins to use
+   */
+  unsigned int theNBins;
+
+  /**
+   * True, if unit weights should be booked
+   */
+  bool theUnitWeights;
+
+  /**
+   * True, if subprocesses should be distinguished by initial state
+   */
+  bool theSplitInitialStates;
+
+  /**
+   * True, if partons should be handled as jets irrespective of flavour
+   */
+  bool thePartonsAreJets;
 
 };
 

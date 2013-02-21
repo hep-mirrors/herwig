@@ -93,7 +93,8 @@ aidafiles=["-Run-II-UE.aida"    ,"-Run-II-Jets-1.aida","-Run-II-Jets-2.aida",\
            "-Run-I-UE.aida"    ,"-Run-I-Jets-1.aida","-Run-I-Jets-2.aida",\
            "-Run-I-Jets-3.aida","-Run-I-Jets-4.aida","-Run-I-Jets-5.aida",\
            "-630-UE.aida"      ,"-630-Jets-1.aida"  ,"-630-Jets-2.aida"  ,\
-           "-630-Jets-3.aida"]
+           "-630-Jets-3.aida", "-300-Energy.aida", "-900-Energy.aida", "-1960-Energy.aida",
+           "-RatioPlots.aida"]
 
 ## Get histos
 inhistos = {}
@@ -192,7 +193,8 @@ for f in aidafiles:
              h.fullPath().find("4796047")>0 or h.fullPath().find("1865951")>0 or
              h.fullPath().find("2089246")>0 or h.fullPath().find("3108457")>0 or
              h.fullPath().find("3349578")>0 or h.fullPath().find("3541940")>0 or
-             h.fullPath().find("3214044")>0 or h.fullPath().find("2952106")>0 ) :
+             h.fullPath().find("3214044")>0 or h.fullPath().find("2952106")>0 or
+             h.fullPath().find("NOTE10874")>0 or h.fullPath().find("895662")>0 ) :
             outhistos[h.fullPath()] = h
 
 aidafiles=["-Run-II-Jets-8.aida","-Run-II-Jets-9.aida","-Run-II-Jets-10.aida","-Run-II-Jets-11.aida",\

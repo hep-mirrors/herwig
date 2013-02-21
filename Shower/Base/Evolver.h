@@ -152,7 +152,7 @@ protected:
   /**
    *   Perform the shower
    */
-  void doShowering(bool hard);
+  void doShowering(bool hard,XCPtr);
 
   /**
    *  Generate the hard matrix element correction
@@ -439,7 +439,7 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(vector<ShowerProgenitorPtr> &);
+  void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
 protected:
 
