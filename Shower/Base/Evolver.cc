@@ -2043,7 +2043,7 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
       // clear results of last attempt if needed
       if(ntry!=0) {
 	currentTree()->clear();
-	setEvolutionPartners(hard,interactions_[inter],false);
+	setEvolutionPartners(hard,interactions_[inter],true);
 	_nis = _nfs = 0;
       }
       // generate the shower
