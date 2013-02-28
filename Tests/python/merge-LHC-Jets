@@ -240,6 +240,7 @@ for f in aidafiles:
            h.fullPath().find("I1188891")>0 or
            h.fullPath().find("I1082009")>0 or
            h.fullPath().find("I1087342")>0 or
+           h.fullPath().find("I9035664")>0 or
            h.fullPath().find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
@@ -316,6 +317,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1087342")>0  or 
         hpath.find("1188891")>0 or
         hpath.find("919017")>0  or
+        hpath.find("9035664")>0  or
         hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
@@ -1058,6 +1060,20 @@ mergeByPt("/CMS_2012_PAS_QCD_11_010/d01-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d02-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d03-x01-y01", "7000")
 mergeByPt("/CMS_2012_PAS_QCD_11_010/d04-x01-y01", "7000")
+
+logging.info("Processing ATLAS_2011_I9035664")
+mergeByPt("/ATLAS_2011_I9035664/d11-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d12-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d13-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d14-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d15-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d16-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d17-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d18-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d20-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d21-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d22-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I9035664/d23-x01-y01", "7000")
 
 # Choose output file
 name = "LHC"+"-Jets.aida"
