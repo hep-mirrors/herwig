@@ -764,6 +764,13 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
   // extract the progenitors
   vector<ShowerParticlePtr> particles = 
     currentTree()->extractProgenitorParticles();
+  // clear the partners if needed
+  if(clear) {
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      particles[ix]->partner(ShowerParticlePtr());
+      particles[ix]->clearPartners();
+    }
+  }
   // sort out the colour partners
   if(hardTree()) {
     // find the partner
@@ -783,12 +790,6 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
     }
   }
   // Set the initial evolution scales
-  if(clear) {
-    for(unsigned int ix=0;ix<particles.size();++ix) {
-      particles[ix]->partner(ShowerParticlePtr());
-      particles[ix]->clearPartners();
-    }
-  }
   showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
