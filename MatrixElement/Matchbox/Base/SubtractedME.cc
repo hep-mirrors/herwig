@@ -165,6 +165,7 @@ vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& 
 }
 
 void SubtractedME::showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+  theShowerApproximation = app;
   for ( MEVector::const_iterator m = dependent().begin();
 	m != dependent().end(); ++m ) {
     Ptr<SubtractionDipole>::tptr dip = 
