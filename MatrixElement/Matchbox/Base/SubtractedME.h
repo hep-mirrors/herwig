@@ -210,6 +210,11 @@ public:
   void getDipoles();
 
   /**
+   * Clone all dipoles.
+   */
+  void cloneDipoles();
+
+  /**
    * Return all dipoles matching the given Born process
    */
   vector<Ptr<SubtractionDipole>::ptr> splitDipoles(const cPDVector&);

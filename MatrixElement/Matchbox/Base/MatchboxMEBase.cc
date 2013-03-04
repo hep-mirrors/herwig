@@ -512,7 +512,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
 
   getPDFWeight();
 
-  if ( !lastXComb().willPassCuts() ) {
+  if ( !lastXCombPtr()->willPassCuts() ) {
     lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();

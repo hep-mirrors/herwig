@@ -564,6 +564,7 @@ void MatchboxFactory::setup() {
 	string vname = sub->fullName() + ".vsub";
 	if ( ! (generator()->preinitRegister(subv,vname) ) )
 	  throw InitException() << "Subtracted ME " << vname << " already existing.";
+	subv->cloneDipoles();
 	sub->doRealShowerSubtraction();
 	subv->doVirtualShowerSubtraction();
 	subtractedMEs().push_back(subv);

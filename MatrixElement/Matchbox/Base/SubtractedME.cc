@@ -144,6 +144,30 @@ void SubtractedME::getDipoles() {
 
 }
 
+void SubtractedME::cloneDipoles() {
+
+  MEVector dipMEs;
+
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+
+    Ptr<SubtractionDipole>::ptr cloned = dip->cloneMe();
+    ostringstream pname;
+    pname << fullName() << "/" << cloned->name();
+    if ( ! (generator()->preinitRegister(cloned,pname.str()) ) )
+      throw InitException() << "Subtraction dipole " << pname.str() << " already existing.";
+    cloned->cloneDependencies(pname.str());
+    dipMEs.push_back(cloned);
+
+  }
+
+  dependent() = dipMEs;
+
+}
+
 vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& born) {
 
   vector<Ptr<SubtractionDipole>::ptr> dips = dipoles();
@@ -227,13 +251,19 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     return 1.;
 
   if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
-    return 1.;
+    return 0.;
   }
 
   if ( realShowerSubtraction() ) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
-    if ( below )
+    bool haveDipole = false;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+      if ( (**d).willPassCuts() ) {
+	haveDipole = true;
+	break;
+      }
+    if ( below && haveDipole )
       return 0.;
     return 1.;
   }
