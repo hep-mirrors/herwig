@@ -381,7 +381,13 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
 
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
   double Nc = generator()->standardModel()->Nc();
-  double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
   return 
     lastCrossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
 }
@@ -451,7 +457,13 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   }
 
   double Nc = generator()->standardModel()->Nc();
-  double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
 
   return 
     avg + lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
