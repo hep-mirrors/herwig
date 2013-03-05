@@ -208,12 +208,22 @@ private:
      */
     HistogramPtr rapidity;
 
+    /**
+     * The sum of weights
+     */
+    double sumWeights;
+
   };
 
   /**
    * Histograms per subprocess
    */
   map<vector<string>,AllHistograms> histogramData;
+
+  /**
+   * The total sum of weights
+   */
+  double sumWeights;
 
   /**
    * Analyze a given final state
