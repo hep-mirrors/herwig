@@ -80,7 +80,8 @@ set PPFactory:ShowerApproximation DipoleMatching
 ################################################################################
 
 # set PPFactory:ShowerApproximation MEMatching
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+# set MECorrectionHandler:Factory PPFactory
+# insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
 # scale variations

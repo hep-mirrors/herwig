@@ -560,15 +560,17 @@ void MatchboxFactory::setup() {
 
       if ( showerApproximation() ) {
 	sub->showerApproximation(showerApproximation());
-	Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
-	string vname = sub->fullName() + ".vsub";
-	if ( ! (generator()->preinitRegister(subv,vname) ) )
-	  throw InitException() << "Subtracted ME " << vname << " already existing.";
-	subv->cloneDipoles();
+	if ( virtualContributions() ) {
+	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	  string vname = sub->fullName() + ".vsub";
+	  if ( ! (generator()->preinitRegister(subv,vname) ) )
+	    throw InitException() << "Subtracted ME " << vname << " already existing.";
+	  subv->cloneDipoles();
+	  subv->doVirtualShowerSubtraction();
+	  subtractedMEs().push_back(subv);
+	  MEs().push_back(subv);
+	}
 	sub->doRealShowerSubtraction();
-	subv->doVirtualShowerSubtraction();
-	subtractedMEs().push_back(subv);
-	MEs().push_back(subv);
 	if ( showerApproximation()->needsSplittingGenerator() )
 	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
 		p != bornProcs.end(); ++p ) {
@@ -624,6 +626,39 @@ void MatchboxFactory::setup() {
 
 }
 
+void MatchboxFactory::SplittingChannel::print(ostream& os) const {
+
+  os << "--- SplittingChannel setup -----------------------------------------------------\n";
+
+  os << " Born process ";
+  const StandardXComb& bxc = *bornXComb;
+  os << bxc.mePartonData()[0]->PDGName() << " "
+     << bxc.mePartonData()[1]->PDGName() << " -> ";
+  for ( cPDVector::const_iterator p = bxc.mePartonData().begin() + 2;
+	p != bxc.mePartonData().end(); ++p ) {
+    os << (**p).PDGName() << " ";
+  }
+  os << "\n";
+
+  os << " to real emission process ";
+  const StandardXComb& rxc = *realXComb;
+  os << rxc.mePartonData()[0]->PDGName() << " "
+     << rxc.mePartonData()[1]->PDGName() << " -> ";
+  for ( cPDVector::const_iterator p = rxc.mePartonData().begin() + 2;
+	p != rxc.mePartonData().end(); ++p ) {
+    os << (**p).PDGName() << " ";
+  }
+  os << "\n";
+
+  os << " with dipole:\n";
+  dipole->print(os);
+
+  os << "--------------------------------------------------------------------------------\n";
+
+  os << flush;
+
+}
+
 list<MatchboxFactory::SplittingChannel> 
 MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
 
@@ -643,21 +678,22 @@ MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
 
   const set<Ptr<SubtractionDipole>::ptr>& splitDipoles = splitEntries->second;
 
-
-  for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator sd =
-	  splitDipoles.begin(); sd != splitDipoles.end(); ++sd ) {
-
+  SplittingChannel channel;
+  if ( !splitDipoles.empty() ) {
     Ptr<MatchboxMEBase>::tptr bornME = 
-      const_ptr_cast<Ptr<MatchboxMEBase>::tptr>((**sd).underlyingBornME());
-
-    SplittingChannel channel;
-    channel.dipole = *sd;
+      const_ptr_cast<Ptr<MatchboxMEBase>::tptr>((**splitDipoles.begin()).underlyingBornME());
     channel.bornXComb =
       bornME->makeXComb(xc.maxEnergy(),xc.particles(),xc.eventHandlerPtr(),
 			const_ptr_cast<tSubHdlPtr>(xc.subProcessHandler()),
 			xc.pExtractor(),xc.CKKWHandler(),
 			xc.partonBins(),xc.cuts(),xc.diagrams(),xc.mirror(),
 			PartonPairVec());
+  }
+
+  for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator sd =
+	  splitDipoles.begin(); sd != splitDipoles.end(); ++sd ) {
+
+    channel.dipole = *sd;
 
     vector<StdXCombPtr> realXCombs = (**sd).makeRealXCombs(channel.bornXComb);
 
@@ -677,6 +713,33 @@ MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
       }
       res.push_back(channel);
     }
+
+  }
+
+  if ( initVerbose() ) {
+
+    generator()->log()
+      << "--- MatchboxFactory splitting channels ----------------------------------------------\n";
+
+    const StandardXComb& bxc = *xcptr;
+
+    generator()->log() << " hard process handled is: ";
+    generator()->log() << bxc.mePartonData()[0]->PDGName() << " "
+		       << bxc.mePartonData()[1]->PDGName() << " -> ";
+    for ( cPDVector::const_iterator p = bxc.mePartonData().begin() + 2;
+	  p != bxc.mePartonData().end(); ++p ) {
+      generator()->log() << (**p).PDGName() << " ";
+    }
+    generator()->log() << "\n";
+
+    for ( list<MatchboxFactory::SplittingChannel>::const_iterator sp =
+	    res.begin(); sp != res.end(); ++sp ) {
+      sp->print(generator()->log());
+    }
+
+    generator()->log()
+      << "-------------------------------------------------------------------------------------\n"
+      << flush;
 
   }
 
