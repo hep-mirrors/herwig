@@ -29,7 +29,8 @@
 
 using namespace Herwig;
 
-MEMatching::MEMatching() {}
+MEMatching::MEMatching()
+  : theScreeningScale(10*GeV) {}
 
 MEMatching::~MEMatching() {}
 
@@ -87,7 +88,12 @@ CrossSection MEMatching::dSigHatDR() const {
   xme2 *=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
 	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
-  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());    
+  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+
+  if ( theScreeningScale != ZERO ) {
+    xme2 *= sqr(theScreeningScale) /
+      ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
+  }
 
   return
     sqr(hbarc) * 
@@ -115,6 +121,11 @@ double MEMatching::me2() const {
     pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),
 	2.*(realCXComb()->mePartonData().size())-8.);
 
+  if ( theScreeningScale != ZERO ) {
+    rme2 *= sqr(theScreeningScale) /
+      ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
+  }
+
   return
     channelWeight() * (rme2/bme2) *
     splittingScaleWeight();
@@ -125,9 +136,13 @@ double MEMatching::me2() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MEMatching::persistentOutput(PersistentOStream & ) const {}
+void MEMatching::persistentOutput(PersistentOStream & os) const {
+  os << ounit(theScreeningScale,GeV);
+}
 
-void MEMatching::persistentInput(PersistentIStream & , int) {}
+void MEMatching::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(theScreeningScale,GeV);
+}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -142,6 +157,12 @@ void MEMatching::Init() {
 
   static ClassDocumentation<MEMatching> documentation
     ("MEMatching implements NLO matching with matrix element correction (aka Powheg).");
+
+  static Parameter<MEMatching,Energy> interfaceScreeningScale
+    ("ScreeningScale",
+     "The screening scale to project out singular parts.",
+     &MEMatching::theScreeningScale, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
 
 }
 
