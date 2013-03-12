@@ -220,6 +220,17 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
 }
 
+const string& MatchboxAmplitude::colourOrdering(size_t id) const {
+
+  static string empty = "";
+  if ( !colourBasis() ) {
+    return empty;
+  }
+
+  return colourBasis()->ordering(mePartonData(),lastColourToAmplitudeMap(),id);
+
+}
+
 Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
   int iCrossed = lastCrossingMap()[i];
   Lorentz5Momentum res = meMomenta()[iCrossed];
@@ -407,13 +418,10 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
   return true;
 }
 
-double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
-						  const SpinCorrelationTensor& c) const {
+LorentzVector<Complex> MatchboxAmplitude::plusPolarization(const Lorentz5Momentum& p,
+							   const Lorentz5Momentum& n) const {
 
   using namespace SpinorHelicity;
-
-  Lorentz5Momentum p = meMomenta()[ij.first];
-  Lorentz5Momentum n = meMomenta()[ij.second];
 
   LorentzVector<complex<Energy> > num =
     PlusSpinorCurrent(PlusConjugateSpinor(n),MinusSpinor(p)).eval();
@@ -422,6 +430,18 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
     sqrt(2.)*PlusSpinorProduct(PlusConjugateSpinor(n),PlusSpinor(p)).eval();
 
   LorentzVector<Complex> polarization(num.x()/den,num.y()/den,num.z()/den,num.t()/den);
+
+  return polarization;
+
+}
+
+double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
+						  const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n);
 
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
 

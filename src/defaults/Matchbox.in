@@ -234,8 +234,6 @@ cd /Herwig/MatrixElements/Matchbox
 mkdir Utility
 cd Utility
 
-create Herwig::SimpleColourBasis SimpleColourBasis
-
 create Herwig::Tree2toNGenerator DiagramGenerator
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
