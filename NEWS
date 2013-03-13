@@ -1,5 +1,19 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.3 release: 2013-02-22
+
+** Decay vertex positioning in HepMC output
+   Pseudo-vertices that Herwig++ inserts for technical reasons will
+   now not contribute to the Lorentz positions of downstream vertices.
+   Thanks to ATLAS for the bug report!
+
+** Updated Rivet tests 
+   Herwig's library of Rivet test runs has been brought up-to-date
+   with new analyses that were recently published by the Rivet
+   collaboration.
+
+
+
 * Herwig++-2.6.2 release: 2013-01-30
 
 ** Fixes for PDF and scale choices in POWHEG events

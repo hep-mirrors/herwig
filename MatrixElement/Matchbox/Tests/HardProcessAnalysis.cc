@@ -24,7 +24,7 @@
 using namespace Herwig;
 
 HardProcessAnalysis::HardProcessAnalysis()
-  : theNBins(100), theUnitWeights(false),
+  : sumWeights(0.0), theNBins(100), theUnitWeights(false),
     theSplitInitialStates(true),
     thePartonsAreJets(false) {}
 
@@ -84,7 +84,7 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "XLabel=" << "$p_\\perp$/GeV" << "\n"
        << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}p_\\perp$/(nb/GeV)" << "\n"
        << "LogX=1\n"
-       << "LogY=1\n"
+       << "LogY=0\n"
        << "# END PLOT\n\n";
 
 
@@ -97,7 +97,7 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "XLabel=" << "$y$" << "\n"
        << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}y$/nb" << "\n"
        << "LogX=0\n"
-       << "LogY=1\n"
+       << "LogY=0\n"
        << "# END PLOT\n\n";
 
   rapidity->rivetOutput(dat,prefix.str() + "_rapidity",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
@@ -109,7 +109,7 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
        << "XLabel=" << "$\\phi$" << "\n"
        << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\phi$/nb" << "\n"
        << "LogX=0\n"
-       << "LogY=1\n"
+       << "LogY=0\n"
        << "# END PLOT\n\n";
 
   phi->rivetOutput(dat,prefix.str() + "_phi",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
@@ -184,6 +184,7 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
       logBins[k] = logLow*pow(10.0,cLog*k);
     data.sshat = new_ptr(Histogram(logBins));
     data.rapidity = new_ptr(Histogram(-7.,7.,theNBins));
+    data.sumWeights = 0.;
   }
   ParticleVector::const_iterator p = out.begin();
   vector<Histograms>::iterator h = data.outgoing.begin();
@@ -198,6 +199,7 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
   double x2 = tau*exp(-y);
   data.x1->addWeighted(x1,weight);
   data.x2->addWeighted(x2,weight);
+  data.sumWeights += weight;
 }
 
 void HardProcessAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -206,6 +208,7 @@ void HardProcessAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   Ptr<SubProcessGroup>::tptr grp = 
     dynamic_ptr_cast<Ptr<SubProcessGroup>::tptr>(sub);
   double weight = !theUnitWeights ? event->weight()*sub->groupWeight() : 1.0;
+  sumWeights += weight;
   fill(sub->incoming(),sub->outgoing(),weight);
   if ( grp ) {
     for ( SubProcessVector::const_iterator s = grp->dependent().begin();
@@ -230,12 +233,13 @@ void HardProcessAnalysis::dofinish() {
 	  p != h->first.end(); ++p ) {
       subpro += *p + (p != --(h->first.end()) ? "_" : "");
     }
+    double fraction = h->second.sumWeights / sumWeights;
     for ( size_t k = 0; k < h->second.outgoing.size(); ++k )
       h->second.outgoing[k].finalize(dat,plot,subpro,k+2,
-				     generator()->eventHandler()->integratedXSec()/nanobarn,
+				     generator()->eventHandler()->integratedXSec() * fraction/nanobarn,
 				     theUnitWeights);
 
-    h->second.x1->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
+    h->second.x1->prefactor(generator()->eventHandler()->integratedXSec() * fraction/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x1\n"
@@ -243,13 +247,13 @@ void HardProcessAnalysis::dofinish() {
 	 << "XLabel=" << "$x_1$" << "\n"
 	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}x_1$/nb" << "\n"
 	 << "LogX=1\n"
-	 << "LogY=1\n"
+	 << "LogY=0\n"
 	 << "# END PLOT\n\n";
 
     h->second.x1->rivetOutput(dat,subpro + "_x1",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.x2->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
+    h->second.x2->prefactor(generator()->eventHandler()->integratedXSec() * fraction/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_x2\n"
@@ -257,13 +261,13 @@ void HardProcessAnalysis::dofinish() {
 	 << "XLabel=" << "$x_2$" << "\n"
 	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}x_2$/nb" << "\n"
 	 << "LogX=1\n"
-	 << "LogY=1\n"
+	 << "LogY=0\n"
 	 << "# END PLOT\n\n";
 
     h->second.x2->rivetOutput(dat,subpro + "_x2",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.rapidity->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
+    h->second.rapidity->prefactor(generator()->eventHandler()->integratedXSec() * fraction/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_y\n"
@@ -271,13 +275,13 @@ void HardProcessAnalysis::dofinish() {
 	 << "XLabel=" << "$y$" << "\n"
 	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}y$/nb" << "\n"
 	 << "LogX=0\n"
-	 << "LogY=1\n"
+	 << "LogY=0\n"
 	 << "# END PLOT\n\n";
 
     h->second.rapidity->rivetOutput(dat,subpro + "_y",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");
     dat << "\n";
 
-    h->second.sshat->prefactor(generator()->eventHandler()->integratedXSec()/nanobarn);
+    h->second.sshat->prefactor(generator()->eventHandler()->integratedXSec() * fraction/nanobarn);
 
     plot << "# BEGIN PLOT /HardProcessAnalysis" << (!theUnitWeights ? "" : "Flat") << "/"
 	 << subpro << "_sshat\n"
@@ -285,7 +289,7 @@ void HardProcessAnalysis::dofinish() {
 	 << "XLabel=" << "$\\sqrt{\\hat{s}}$/GeV" << "\n"
 	 << "YLabel=" << "${\\rm d}\\sigma/{\\rm d}\\sqrt{\\hat{s}}$/(nb/GeV)" << "\n"
 	 << "LogX=1\n"
-	 << "LogY=1\n"
+	 << "LogY=0\n"
 	 << "# END PLOT\n\n";
 
     h->second.sshat->rivetOutput(dat,subpro + "_sshat",!theUnitWeights ? "HardProcessAnalysis" : "HardProcessAnalysisFlat");

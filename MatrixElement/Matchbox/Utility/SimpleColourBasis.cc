@@ -154,7 +154,7 @@ double SimpleColourBasis::tMatrixElement(size_t i, size_t a,
       if ( a == 5 && b == 1 )
 	return -1.;
     }
-    if ( i == 3 ) {
+    if ( i == 2 ) {
       if ( a == 0 && b == 0 )
 	return 1.;
       if ( a == 4 && b == 0 )
