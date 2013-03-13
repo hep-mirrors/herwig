@@ -278,7 +278,8 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     double sum = 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( (**d).lastCrossSection() != ZERO ) {
+      if ( (**d).lastCrossSection() != ZERO &&
+	   (**d).lastME2() != 0.0 ) {
 	sum += (**d).lastME2();
 	++n;
       }
@@ -305,7 +306,8 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
       return 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( (**d).lastCrossSection() != ZERO ) {
+      if ( (**d).lastCrossSection() != ZERO &&
+	   (**d).lastME2() != 0.0 ) {
 	++n;
       }
     }

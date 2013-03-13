@@ -674,6 +674,8 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     showerApproximation()->setDipole(this);
     if ( !showerApproximation()->isAboveCutoff() )
       showerApproximation()->wasBelowCutoff();
+    else
+      lastME2(0.0);
     CrossSection shower = ZERO;
     if ( showerApproximation()->isInShowerPhasespace() )
       shower = showerApproximation()->dSigHatDR();
