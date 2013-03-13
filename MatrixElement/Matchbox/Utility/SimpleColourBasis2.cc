@@ -1516,15 +1516,15 @@ bool SimpleColourBasis2::colourConnected(const cPDVector& sub,
   }
 
   if ( basis == id888 ) {
-return
-(a == 0 &&
-((idColoured == 0 && idAntiColoured == 1) ||
-(idColoured == 1 && idAntiColoured == 2) ||
-(idColoured == 2 && idAntiColoured == 0))) ||
-(a == 1 &&
-((idColoured == 0 && idAntiColoured == 2) ||
-(idColoured == 2 && idAntiColoured == 1) ||
-(idColoured == 1 && idAntiColoured == 0)));
+    return
+      (a == 0 &&
+       ((idColoured == 0 && idAntiColoured == 1) ||
+	(idColoured == 1 && idAntiColoured == 2) ||
+	(idColoured == 2 && idAntiColoured == 0))) ||
+      (a == 1 &&
+       ((idColoured == 0 && idAntiColoured == 2) ||
+	(idColoured == 2 && idAntiColoured == 1) ||
+	(idColoured == 1 && idAntiColoured == 0)));
   }
 
   if ( basis == id33bar8 ) {

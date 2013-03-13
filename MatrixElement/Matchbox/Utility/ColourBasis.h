@@ -311,7 +311,14 @@ protected:
 			       const vector<PDT::Colour>&,
 			       const pair<int,bool>&, 
 			       const pair<int,bool>&, 
-			       size_t) const {
+			       size_t) const;
+
+  /**
+   * Return true, if a large-N colour connection exists for the
+   * given external legs and basis tensor.
+   */
+  virtual bool colourConnected(const vector<PDT::Colour>&,
+			       int, int, size_t) const {
     return false;
   }
 
