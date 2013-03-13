@@ -223,6 +223,7 @@ handle(EventHandler & eh, const tPVector &,
       kernel->showerApproximation(theShowerApproximation);
       kernel->presamplingPoints(thePresamplingPoints);
       kernel->maxtry(theMaxTry);
+      kernel->showerApproximationGenerator(this);
       if ( kernel->dipole()->bornEmitter() > 1 &&
 	   kernel->dipole()->bornSpectator() > 1 ) {
 	kernel->ptCut(ffPtCut());
@@ -248,6 +249,7 @@ handle(EventHandler & eh, const tPVector &,
   const set<Ptr<ShowerApproximationKernel>::ptr>& kernels = kernelit->second;
 
   theLastBornME = (**kernels.begin()).dipole()->underlyingBornME();
+  theLastBornME->phasespace(thePhasespace);
   theLastBornXComb = (**kernels.begin()).bornXComb();
 
   if ( !prepare() )
@@ -315,11 +317,12 @@ handle(EventHandler & eh, const tPVector &,
   }
 
   eh.select(winnerKernel->realXComb());
-  winnerKernel->realXComb()->
-    recreatePartonBinInstances(winnerKernel->realXComb()->lastScale());
-  eh.lastExtractor()->constructRemnants(winnerKernel->realXComb()->partonBinInstances(),
-					newSub, eh.currentStep());
 
+  winnerKernel->realXComb()->recreatePartonBinInstances(winnerKernel->realXComb()->lastScale());
+  winnerKernel->realXComb()->refillPartonBinInstances(&(xc.lastRandomNumbers()[0]));
+
+  winnerKernel->realXComb()->pExtractor()->constructRemnants(winnerKernel->realXComb()->partonBinInstances(),
+							     newSub, eh.currentStep());
 
 }
 

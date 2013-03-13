@@ -119,7 +119,17 @@ void SubtractionDipole::setupBookkeeping() {
     UnderlyingBornKey bornKey = underlyingBornKey((**bd).partons(),xemitter,xspectator);
     if ( theMergingMap.find(realKey) == theMergingMap.end() )
       theMergingMap.insert(make_pair(realKey,make_pair(bornKey,realBornMap)));
-    theSplittingMap.insert(make_pair(bornKey,make_pair(realKey,bornRealMap)));
+    RealEmissionInfo realInfo = make_pair(realKey,bornRealMap);
+    bool gotit = false;
+    typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spIterator;
+    pair<spIterator,spIterator> range = theSplittingMap.equal_range(bornKey);
+    for ( ; range.first != range.second; ++range.first )
+      if ( range.first->second == realInfo ) {
+	gotit = true;
+	break;
+      }
+    if ( !gotit )
+      theSplittingMap.insert(make_pair(bornKey,realInfo));
 
   }
 
@@ -208,9 +218,12 @@ StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*realXC).mePartonData();
 
-  if ( theMergingMap.find(realEmissionKey(proc,realEmitter(),
-					  realEmission(),realSpectator())) ==
-       theMergingMap.end() )
+  lastRealEmissionKey = 
+    realEmissionKey(proc,realEmitter(),realEmission(),realSpectator());
+  map<RealEmissionKey,UnderlyingBornInfo>::const_iterator k =
+    theMergingMap.find(lastRealEmissionKey);
+
+  if ( k == theMergingMap.end() )
     return StdXCombPtr();
 
   PartonPairVec pbs = realXC->pExtractor()->getPartons(realXC->maxEnergy(), 
@@ -240,8 +253,15 @@ vector<StdXCombPtr> SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*bornXC).mePartonData();
 
-  if ( theSplittingMap.find(underlyingBornKey(proc,bornEmitter(),bornSpectator())) ==
-       theSplittingMap.end() )
+  map<cPDVector,pair<int,int> >::const_iterator esit = theIndexMap.find(proc);
+  if ( esit == theIndexMap.end() ) 
+    return vector<StdXCombPtr>();
+  pair<int,int> es = esit->second;
+  bornEmitter(es.first);
+  bornSpectator(es.second);
+  lastUnderlyingBornKey = underlyingBornKey(proc,bornEmitter(),bornSpectator());
+
+  if ( theSplittingMap.find(lastUnderlyingBornKey) == theSplittingMap.end() )
     return vector<StdXCombPtr>();
 
   PartonPairVec pbs = bornXC->pExtractor()->getPartons(bornXC->maxEnergy(), 

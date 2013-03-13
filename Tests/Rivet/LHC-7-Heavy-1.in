@@ -29,6 +29,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262
 # b-hadron cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
+# J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I9035664
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

@@ -398,6 +398,11 @@ public:
      */
     Ptr<SubtractionDipole>::ptr dipole;
 
+    /**
+     * Dump the setup
+     */
+    void print(ostream&) const;
+
   };
 
   /**

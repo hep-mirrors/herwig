@@ -56,6 +56,40 @@ ColourBasis::~ColourBasis() {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+const string& ColourBasis::ordering(const cPDVector& sub, 
+				    const map<size_t,size_t>& colourToAmplitude,
+				    size_t tensorId) {
+
+  const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
+
+  map<size_t,string>& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
+
+  if ( orderings.empty() ) {
+    map<size_t,vector<vector<size_t> > > tensors =
+      basisList(basis);
+    for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
+	    tensors.begin(); t != tensors.end(); ++t ) {
+      ostringstream oid;
+      for ( vector<vector<size_t> >::const_iterator s = t->second.begin();
+	    s != t->second.end(); ++s ) {
+	oid << "[";
+	for ( vector<size_t>::const_iterator l = s->begin();
+	      l != s->end(); ++l ) {
+	  map<size_t,size_t>::const_iterator trans = 
+	    colourToAmplitude.find(*l);
+	  assert(trans != colourToAmplitude.end());
+	  oid << trans->second << (l != --(s->end()) ? "," : "");
+	}
+	oid << "]";
+      }
+      orderings[t->first] = oid.str();
+    }
+  }
+
+  return orderings[tensorId];
+
+}
+
 vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
   vector<PDT::Colour> allLegs = projectColour(sub);
@@ -1062,13 +1096,13 @@ void ColourBasis::doinitrun() {
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
   os << theSearchPath << theNormalOrderedLegs
-     << theIndexMap << theFlowMap;
+     << theIndexMap << theFlowMap << theOrderingIdentifiers;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theSearchPath >> theNormalOrderedLegs
-     >> theIndexMap >> theFlowMap;
+     >> theIndexMap >> theFlowMap >> theOrderingIdentifiers;
 }
 
 

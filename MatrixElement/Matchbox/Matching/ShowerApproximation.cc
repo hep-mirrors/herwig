@@ -52,16 +52,16 @@ bool ShowerApproximation::isAboveCutoff() const {
 
   if ( dipole()->bornEmitter() > 1 &&
        dipole()->bornSpectator() > 1 ) {
-    return dipole()->lastPt() > ffPtCut();
+    return dipole()->lastPt() >= ffPtCut();
   } else if ( ( dipole()->bornEmitter() > 1 &&
 		dipole()->bornSpectator() < 2 ) ||
 	      ( dipole()->bornEmitter() < 2 &&
 		dipole()->bornSpectator() > 1 ) ) {
-    return dipole()->lastPt() > fiPtCut();
+    return dipole()->lastPt() >= fiPtCut();
   } else {
     assert(dipole()->bornEmitter() < 2 &&
 	   dipole()->bornSpectator() < 2);
-    return dipole()->lastPt() > iiPtCut();
+    return dipole()->lastPt() >= iiPtCut();
   }
 
   return true;

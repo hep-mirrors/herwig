@@ -95,7 +95,8 @@ set DISFactory:ShowerApproximation DipoleMatching
 ################################################################################
 
 # set DISFactory:ShowerApproximation MEMatching
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+# set MECorrectionHandler:Factory DISFactory
+# insert /Herwig/Generators/DISGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
 # scale variations

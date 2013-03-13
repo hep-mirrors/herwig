@@ -27,6 +27,8 @@ ProcessData.h \
 ProcessData.cc \
 SimpleColourBasis.cc \
 SimpleColourBasis.h \
+SimpleColourBasis2.cc \
+SimpleColourBasis2.h \
 SpinCorrelationTensor.h \
 SpinorHelicity.h \
 SU2Helper.cc \
