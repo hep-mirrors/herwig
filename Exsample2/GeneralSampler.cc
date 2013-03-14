@@ -202,9 +202,13 @@ void GeneralSampler::currentCrossSections() const {
   if ( gotCrossSections )
     return;
 
-  if ( ++crossSectionCalls == theUpdateAfter ) {
-    crossSectionCalls = 0;
-  } else return;
+  if ( crossSectionCalls > 0 ) {
+    if ( ++crossSectionCalls == theUpdateAfter ) {
+      crossSectionCalls = 0;
+    } else return;
+  }
+
+  ++crossSectionCalls;
 
   double xsec = 0.;
   double var = 0.;
@@ -321,6 +325,7 @@ void GeneralSampler::dofinish() {
 			    << "Warning: Some samplers are still in compensating mode."
 			    << Exception::warning);
   }
+
   SamplerBase::dofinish();
 }
 
