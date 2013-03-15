@@ -122,6 +122,8 @@ void PowhegInclusiveME::setup(Ptr<MatchboxNLOME>::ptr newBornVirtual,
       reweight->setup(*realit);
 
       pdip->doSplitting();
+      pdip->doIgnoreCuts();
+      pdip->doShowerKernel();
       pdip->addReweight(reweight);
 
       Ptr<SubtractionDipole>::ptr sdip = (**dip).cloneMe();

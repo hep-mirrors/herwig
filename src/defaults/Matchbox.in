@@ -44,7 +44,7 @@
 library HwExsample2.so
 library HwMatchbox.so
 library JetCuts.so
-library KTJetFinder.so
+library FastJetFinder.so
 
 mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
@@ -72,6 +72,10 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
 set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
 set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
+
+set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 
 ################################################################################
 # Integration/sampling
@@ -200,26 +204,35 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
 
 ################################################################################
-# Setup utilities for process generation
+# Setup utilities for matching
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
 
-create Herwig::PowhegSplittingGenerator MECorrectionHandler
+create Herwig::MEMatching MEMatching
+set MEMatching:RestrictPhasespace Off
+set MEMatching:FFPtCut 1.0*GeV
+set MEMatching:FIPtCut 1.0*GeV
+set MEMatching:IIPtCut 1.0*GeV
 
-set MECorrectionHandler:FFPtCut 1.0*GeV
-set MECorrectionHandler:FFScreeningScale 0.0*GeV
+create Herwig::ShowerApproximationGenerator MECorrectionHandler
+set MECorrectionHandler:ShowerApproximation MEMatching
+create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
+set MECorrectionHandler:Phasespace InvertiblePhasespace
 
-set MECorrectionHandler:FIPtCut 1.0*GeV
-set MECorrectionHandler:FIScreeningScale 0.0*GeV
+create Herwig::DipoleMatching DipoleMatching
+set DipoleMatching:RestrictPhasespace On
+set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FIPtCut 1.0*GeV
+set DipoleMatching:IIPtCut 1.0*GeV
 
-set MECorrectionHandler:IIPtCut 1.0*GeV
-set MECorrectionHandler:IIScreeningScale 0.0*GeV
+################################################################################
+# Setup utilities for process generation
+################################################################################
 
+cd /Herwig/MatrixElements/Matchbox
 mkdir Utility
 cd Utility
-
-create Herwig::SimpleColourBasis SimpleColourBasis
 
 create Herwig::Tree2toNGenerator DiagramGenerator
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
@@ -242,6 +255,8 @@ cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
 
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
@@ -256,7 +271,7 @@ set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 cd /Herwig/Cuts
 
-create ThePEG::KTJetFinder JetFinder
+create ThePEG::FastJetFinder JetFinder
 set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
 set JetFinder:Variant AntiKt
 set JetFinder:RecombinationScheme E
@@ -272,6 +287,19 @@ create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 insert SecondJet:Accepts[0] 2
+
+create ThePEG::JetRegion ThirdJet
+set ThirdJet:PtMin 20.*GeV
+do ThirdJet:YRange -5.0 5.0
+insert ThirdJet:Accepts[0] 3
+
+create ThePEG::NJetsCut NJetsCut
+set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:NJetsMin 2
+
+create ThePEG::JetCuts JetCuts
+set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:Ordering OrderPt
 
 ################################################################################
 # Setup scale choices
@@ -326,21 +354,6 @@ cp Factory PPFactory
 
 set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
 set PPFactory:Cuts /Herwig/Cuts/QCDCuts
-
-create Herwig::PowhegFactory EEPowhegFactory
-set EEPowhegFactory:PartonExtractor /Herwig/Partons/EEExtractor
-set EEPowhegFactory:Cuts /Herwig/Cuts/EECuts
-set EEPowhegFactory:MatchboxFactory EEFactory
-
-create Herwig::PowhegFactory DISPowhegFactory
-set DISPowhegFactory:PartonExtractor /Herwig/Partons/DISExtractor
-set DISPowhegFactory:Cuts /Herwig/Cuts/DISCuts
-set DISPowhegFactory:MatchboxFactory DISFactory
-
-create Herwig::PowhegFactory PPPowhegFactory
-set PPPowhegFactory:PartonExtractor /Herwig/Partons/QCDExtractor
-set PPPowhegFactory:Cuts /Herwig/Cuts/QCDCuts
-set PPPowhegFactory:MatchboxFactory PPFactory
 
 cd /
 

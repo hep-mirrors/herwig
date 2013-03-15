@@ -8,11 +8,12 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-AbstractClassDescription<UEBase> UEBase::initUEBase;
-// Definition of the static class description member.
+DescribeAbstractClass<UEBase,Interfaced>
+describeUEBase ("Herwig::UEBase","HwShower.so");
 
 void UEBase::Init() {
 

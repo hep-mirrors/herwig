@@ -21,7 +21,49 @@ read DipoleShowerParameters-NLO.in
 cd /Herwig/MatrixElements/Matchbox
 
 insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFactory
+
+################################################################################
+# two jets
+################################################################################
+
+set EEFactory:OrderInAlphaS 0
 do EEFactory:Process e- e+ j j 
+
+################################################################################
+# three jets
+################################################################################
+
+# set EEFactory:OrderInAlphaS 1
+# do EEFactory:Process e- e+ j j j
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Exclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
+# set /Herwig/Cuts/JetFinder:DCut 50*GeV2
+
+# set /Herwig/Cuts/NJetsCut:NJetsMin 3
+
+# set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
+
+################################################################################
+# four jets (leading order only)
+################################################################################
+
+# set EEFactory:OrderInAlphaS 2
+# do EEFactory:Process e- e+ j j j
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Exclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
+# set /Herwig/Cuts/JetFinder:DCut 50*GeV2
+
+# set /Herwig/Cuts/NJetsCut:NJetsMin 4
+
+# set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
 
 ################################################################################
 # leading order
@@ -34,17 +76,43 @@ do EEFactory:Process e- e+ j j
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set /Herwig/DipoleShower/DipoleShowerHandler:HardFirstEmission On
+set EEFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEPowhegFactory
+# set EEFactory:ShowerApproximation MEMatching
+# set MECorrectionHandler:Factory EEFactory
 # insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set /Herwig/MatrixElements/Matchbox/EEFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/EEFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

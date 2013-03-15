@@ -18,6 +18,7 @@
 #include "ThePEG/Utilities/Rebinder.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 
 using namespace Herwig;
 
@@ -26,6 +27,20 @@ MatchboxInsertionOperator::MatchboxInsertionOperator()
     theUseDR(false), theUseCS(false), theUseBDK(false), theUseExpanded(false) {}
 
 MatchboxInsertionOperator::~MatchboxInsertionOperator() {}
+
+void MatchboxInsertionOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) { theLastBorn = me; }
+
+Ptr<MatchboxMEBase>::tptr MatchboxInsertionOperator::lastBorn() { return theLastBorn; }
+
+Ptr<MatchboxMEBase>::tcptr MatchboxInsertionOperator::lastBorn() const { return theLastBorn; }
+
+CrossSection MatchboxInsertionOperator::dSigHatDR() const {
+  return
+    sqr(hbarc) * me2() *
+    lastBorn()->lastXComb().jacobian() * 
+    lastMEPDFWeight() /
+    (2.*lastSHat());
+}
 
 void MatchboxInsertionOperator::additionalKinematics(const double * r) {
   if ( nDimAdditional() ) {

@@ -161,8 +161,7 @@ double PowhegSplittingKernel::evaluate() const {
   Energy2 fscale = 
     fscaleFactor * (sqr(projectionDipole()->lastPt()) + sqr(theScreeningScale));
 
-  double dummy;
-  double ratio = ME2byDipoles::evaluate(dummy);
+  double ratio = ME2byDipoles::evaluate();
   assert(ratio >= 0.);
 
   Energy2 bornSHat =

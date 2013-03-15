@@ -56,6 +56,14 @@ public:
    * @param theChildren The particles produced in the branching
    * @param angularOrder Whether or not to apply angular ordering
    */
+private:
+
+  void updateParameters(tShowerParticlePtr theParent,
+			tShowerParticlePtr theChild0,
+			tShowerParticlePtr theChild1,
+			bool setAlpha) const; 
+
+public:
   virtual void updateChildren( const tShowerParticlePtr theParent, 
 			       const ShowerParticleVector & theChildren,
 			       bool angularOrder) const;

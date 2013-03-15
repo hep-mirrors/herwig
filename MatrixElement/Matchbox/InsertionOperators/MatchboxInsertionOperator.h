@@ -15,7 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 
 namespace Herwig {
 
@@ -62,19 +62,19 @@ public:
    * Set the Born matrix element this class represents 
    * virtual corrections to.
    */
-  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me) { theLastBorn = me; }
+  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me);
 
   /**
    * Return the Born matrix element this class represents 
    * virtual corrections to.
    */
-  Ptr<MatchboxMEBase>::tptr lastBorn() { return theLastBorn; }
+  Ptr<MatchboxMEBase>::tptr lastBorn();
 
   /**
    * Return the Born matrix element this class represents 
    * virtual corrections to.
    */
-  Ptr<MatchboxMEBase>::tcptr lastBorn() const { return theLastBorn; }
+  Ptr<MatchboxMEBase>::tcptr lastBorn() const;
 
   /**
    * Set the XComb object steering the Born matrix
@@ -177,13 +177,7 @@ public:
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
    */
-  virtual CrossSection dSigHatDR() const {
-    return
-      sqr(hbarc) * me2() *
-      lastBorn()->lastXComb().jacobian() * 
-      lastMEPDFWeight() /
-      (2.*lastSHat());
-  }
+  virtual CrossSection dSigHatDR() const;
 
   //@}
 

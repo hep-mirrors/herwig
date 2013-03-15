@@ -6,15 +6,21 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/ShowerParticle.fh"
+#include "Herwig++/Shower/Base/ShowerProgenitor.fh"
+#include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
+#include "Herwig++/Shower/ShowerConfig.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 
 namespace Herwig {
 
+struct Branching;
+
 using namespace ThePEG;
+
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**
  * The HwMEBase class serves a number of purposes
@@ -119,9 +125,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr) {
-    return HardTreePtr();
-  }
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
   /**

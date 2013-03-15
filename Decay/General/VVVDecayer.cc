@@ -18,6 +18,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

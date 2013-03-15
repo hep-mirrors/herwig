@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlpha() : _scaleFactor( 1.0 ) {}
+  ShowerAlpha() : _scaleFactor( 1.0 ) {}
   //@}
 
 public:
@@ -94,12 +94,12 @@ public:
    * whereas different values can be useful for systematics evaluation 
    * for Initial State radiation or Final State radiation effects.
    */
-  inline double scaleFactor() const {return _scaleFactor;}
+  double scaleFactor() const {return _scaleFactor;}
 
   /**
    * Initialize this coupling.
    */
-  virtual inline void initialize () {}
+  virtual void initialize () {}
   //@}
 
 public:
@@ -131,12 +131,6 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<ShowerAlpha> initShowerAlpha;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -150,33 +144,6 @@ private:
   double _scaleFactor;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ShowerAlpha. */
-template <>
-struct BaseClassTrait<Herwig::ShowerAlpha,1> {
-  /** Typedef of the first base class of ShowerAlpha. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ShowerAlpha class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ShowerAlpha>
-  : public ClassTraitsBase<Herwig::ShowerAlpha> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerAlpha"; }
-};
-
-/** @endcond */
 
 }
 

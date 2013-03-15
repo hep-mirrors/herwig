@@ -16,6 +16,7 @@
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;

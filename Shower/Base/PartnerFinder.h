@@ -163,12 +163,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static AbstractClassDescription<PartnerFinder> initPartnerFinder;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -187,41 +181,6 @@ private:
    int _partnerMethod;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of PartnerFinder. */
-template <>
-struct BaseClassTrait<Herwig::PartnerFinder,1> {
-  /** Typedef of the first base class of PartnerFinder. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the PartnerFinder class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::PartnerFinder>
-  : public ClassTraitsBase<Herwig::PartnerFinder> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::PartnerFinder"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * PartnerFinder is implemented. It may also include several, space-separated,
-   * libraries if the class PartnerFinder depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

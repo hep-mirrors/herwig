@@ -32,6 +32,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractRFSVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractRFVVertex.fh"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;

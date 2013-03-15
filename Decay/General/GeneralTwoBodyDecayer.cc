@@ -19,6 +19,11 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Utilities/Exception.h"
+#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/Base/Branching.h"
 
 using namespace Herwig;
 

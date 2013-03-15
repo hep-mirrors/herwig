@@ -5,6 +5,8 @@
 // This is the declaration of the ProtoBranching class.
 //
 
+#include "Herwig++/Shower/Base/HardBranching.h"
+
 namespace Herwig {
 
 using namespace ThePEG;

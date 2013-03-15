@@ -74,7 +74,7 @@ Energy IILightTildeKinematics::lastPt() const {
   Energy scale = sqrt(2.*(bornEmitterMomentum()*bornSpectatorMomentum()));
   double x = subtractionParameters()[0];
   double v = subtractionParameters()[1];
-  return scale * sqrt(v*(1.-x-v));
+  return scale * sqrt(v*(1.-x-v)/x);
 
 }
 

@@ -25,6 +25,10 @@
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Utilities/Maths.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -1577,4 +1581,11 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   }
   scale = mu_R_opt_==0 ? mh2_+sqr(pt) : sqr(pt) ;
   return alpha_->ratio(scale)/8./sqr(Constants::pi)*mh2_/sh*GeV*pt*res;
+}
+
+void MEPP2Higgs::initializeMECorrection(ShowerTreePtr tree, double & initial,
+					double & final) {
+  final   = 1.;
+  initial = tree->incomingLines().begin()->second->id()==ParticleID::g ?
+    enhance_ : 1.;
 }

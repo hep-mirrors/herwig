@@ -13,13 +13,15 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/ShowerParticle.fh"
+#include "Herwig++/Shower/Base/ShowerProgenitor.fh"
+#include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {
+
+struct Branching;
 
 using namespace ThePEG;
 
@@ -114,7 +116,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr) {return HardTreePtr();}
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
 protected:

@@ -135,12 +135,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<QTildeFinder> initQTildeFinder;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -186,41 +180,6 @@ private:
   unsigned int _initialInitialConditions;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of QTildeFinder. */
-template <>
-struct BaseClassTrait<Herwig::QTildeFinder,1> {
-  /** Typedef of the first base class of QTildeFinder. */
-  typedef Herwig::PartnerFinder NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the QTildeFinder class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::QTildeFinder>
-  : public ClassTraitsBase<Herwig::QTildeFinder> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::QTildeFinder"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QTildeFinder is implemented. It may also include several, space-separated,
-   * libraries if the class QTildeFinder depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

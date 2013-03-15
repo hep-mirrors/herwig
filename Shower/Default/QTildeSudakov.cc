@@ -20,11 +20,12 @@
 #include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
-// Definition of the static class description member.
+DescribeNoPIOClass<QTildeSudakov,Herwig::SudakovFormFactor>
+describeQTildeSudakov ("Herwig::QTildeSudakov","HwShower.so");
 
 void QTildeSudakov::Init() {
 
