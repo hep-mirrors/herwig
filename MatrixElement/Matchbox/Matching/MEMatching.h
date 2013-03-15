@@ -133,6 +133,12 @@ private:
    */
   MEMatching & operator=(const MEMatching &);
 
+  /**
+   * A scale to project out singular parts; if zero, the full matrix
+   * element correction is exponentiated.
+   */
+  Energy theScreeningScale;
+
 };
 
 }

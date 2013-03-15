@@ -102,7 +102,7 @@ protected:
   /**
    * Return the pt cut to be applied for final-final dipoles.
    */
-  Energy ffPtCut() const { return theShowerApproximation->ffPtCut();; }
+  Energy ffPtCut() const { return theShowerApproximation->ffPtCut(); }
 
   /**
    * Return the pt cut to be applied for final-initial dipoles.

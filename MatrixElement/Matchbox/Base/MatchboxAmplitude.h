@@ -237,6 +237,12 @@ public:
    */
   map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() { return processData()->colourToAmplitudeMap(); }
 
+  /**
+   * Return an ordering identifier for the current subprocess and
+   * colour absis tensor index.
+   */
+  const string& colourOrdering(size_t id) const;
+
   //@}
 
   /** @name Phasespace point, crossing and helicities */
@@ -342,6 +348,14 @@ public:
    * Return the colour correlated matrix element.
    */
   virtual double colourCorrelatedME2(pair<int,int> ij) const;
+
+  /**
+   * Return a positive helicity polarization vector for a gluon of
+   * momentum p (with reference vector n) to be used when evaluating
+   * spin correlations.
+   */
+  virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
+						  const Lorentz5Momentum& n) const;
 
   /**
    * Return the colour and spin correlated matrix element.

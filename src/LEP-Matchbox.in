@@ -83,7 +83,8 @@ set EEFactory:ShowerApproximation DipoleMatching
 ################################################################################
 
 # set EEFactory:ShowerApproximation MEMatching
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MEMatching
+# set MECorrectionHandler:Factory EEFactory
+# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
 # scale variations
