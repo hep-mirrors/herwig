@@ -190,7 +190,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       for(long iy=0;iy<2;++iy) {
 	long isf = 1000000*(1+iy)+iferm;
 	Energy msf = getParticleData(isf)->mass();
-	if(mf+msf<Mj||mf+msf<Mi) continue;
+	if(!_includeOnShell&&(mf+msf<Mj||mf+msf<Mi)) continue;
 	Complex g[2][2];
 	Complex ma1(0.), ma2(0.);
 	// heavy fermions
@@ -238,7 +238,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
-      if(Mk+_mw<Mj||Mk+_mw<Mi) continue;
+      if(!_includeOnShell&&(Mk+_mw<Mj||Mk+_mw<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
@@ -267,7 +267,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
-      if(Mk+mh<Mj||Mk+mh<Mi) continue;
+      if(!_includeOnShell&&(Mk+mh<Mj||Mk+mh<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,mh,Mk,I,J,K,I2);
       Complex g[2][2];
@@ -297,7 +297,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
-      if(Mk+_mw<Mj||Mk+_mw<Mi) continue;
+      if(!_includeOnShell&&(Mk+_mw<Mj||Mk+_mw<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
