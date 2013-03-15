@@ -14,6 +14,7 @@ create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
 create Herwig::DecayConstructor DecayConstructor
 newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
+set TwoBodyDC:ExcludeEffectiveVertices No
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 create Herwig::FourBodyDecayConstructor FourBodyDC
 
