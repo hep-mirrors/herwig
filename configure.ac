@@ -150,9 +150,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Dipoles/Makefile
                 MatrixElement/Matchbox/InsertionOperators/Makefile
                 MatrixElement/Matchbox/Powheg/Makefile
+                MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Processes/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
+                MatrixElement/Matchbox/Tests/Makefile
 		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile

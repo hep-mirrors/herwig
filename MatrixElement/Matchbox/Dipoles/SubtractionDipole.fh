@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the SubtractionDipole class
+
+#ifndef HERWIG_SubtractionDipole_FH
+#define HERWIG_SubtractionDipole_FH
+
+namespace Herwig {
+
+class SubtractionDipole;
+
+}
+
+#endif // HERWIG_SubtractionDipole_FH

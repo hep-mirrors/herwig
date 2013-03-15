@@ -7,7 +7,7 @@ pkglib_LTLIBRARIES = Hw64Decay.la HwMamboDecay.la
 Hw64Decay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
 Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.cc 
 
-HwMamboDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:2:0
+HwMamboDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
 HwMamboDecay_la_SOURCES = MamboDecayer.h MamboDecayer.cc 
 
 libHwDecay_la_LIBADD = $(top_builddir)/PDT/libHwPDT.la
@@ -20,4 +20,5 @@ DecayPhaseSpaceMode.h \
 HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h \
 HwDecayHandler.cc HwDecayHandler.h\
 DecayVertex.fh DecayVertex.h DecayVertex.cc \
-DecayMatrixElement.h DecayMatrixElement.cc
+DecayMatrixElement.h DecayMatrixElement.cc \
+BranchingRatioReweighter.h BranchingRatioReweighter.cc

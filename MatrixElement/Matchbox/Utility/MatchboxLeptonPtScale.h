@@ -46,23 +46,19 @@ public:
 public:
 
   /**
-   * Return the renormalization scale. This default version returns
-   * shat.
+   * Return the renormalization scale.
    */
   virtual Energy2 renormalizationScale() const;
 
   /**
-   * Return the factorization scale. This default version returns
-   * shat.
+   * Return the factorization scale.
    */
   virtual Energy2 factorizationScale() const;
 
   /**
-   * Return the QED renormalization scale. This default version returns
-   * shat.
+   * Return the QED renormalization scale.
    */
   virtual Energy2 renormalizationScaleQED() const;
-
 
 public:
 

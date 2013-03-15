@@ -16,7 +16,6 @@
 #include "Herwig++/Shower/Base/Branching.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
-#include "Herwig++/Shower/Base/ShowerKinematics.h"
 
 namespace Herwig {
 
@@ -306,12 +305,6 @@ private:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SplittingGenerator> initSplittingGenerator;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -344,33 +337,6 @@ private:
    */
   BranchingList _bbranchings;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SplittingGenerator. */
-template <>
-struct BaseClassTrait<Herwig::SplittingGenerator,1> {
-  /** Typedef of the first base class of SplittingGenerator. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SplittingGenerator class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SplittingGenerator>
-  : public ClassTraitsBase<Herwig::SplittingGenerator> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SplittingGenerator"; }
-};
-
-/** @endcond */
 
 }
 

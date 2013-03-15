@@ -18,7 +18,6 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include <cassert>
 #include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
@@ -136,10 +135,10 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			       cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
-			       kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
-			       z_( 0.0 ),phi_(0.0), pT_() {}
+			cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
+			kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
+			vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
+			z_( 0.0 ),phi_(0.0), pT_() {}
 
   /**
    *  Members to generate the scale of the next branching
@@ -506,12 +505,6 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<SudakovFormFactor> initSudakovFormFactor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -651,33 +644,6 @@ private:
   Energy freeze_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SudakovFormFactor. */
-template <>
-struct BaseClassTrait<Herwig::SudakovFormFactor,1> {
-  /** Typedef of the first base class of SudakovFormFactor. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SudakovFormFactor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SudakovFormFactor>
-  : public ClassTraitsBase<Herwig::SudakovFormFactor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SudakovFormFactor"; }
-};
-
-/** @endcond */
 
 }
 

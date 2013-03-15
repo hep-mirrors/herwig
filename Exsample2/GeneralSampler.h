@@ -14,6 +14,7 @@
 
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "BinSampler.h"
+#include "SamplingBias.h"
 
 namespace Herwig {
 
@@ -214,6 +215,11 @@ private:
   Ptr<BinSampler>::ptr theBinSampler;
 
   /**
+   * The sampling bias to apply
+   */
+  Ptr<SamplingBias>::ptr theSamplingBias;
+
+  /**
    * Whether or not additional information should be printed to cout.
    */
   bool theVerbose;
@@ -278,12 +284,6 @@ private:
    * The sum of absolute cross section.
    */ 
   double norm;
-
-  /**
-   * Map samplers to events to be skipped owing to encounter of a new
-   * maximum.
-   */
-  map<Ptr<BinSampler>::tptr,unsigned long> skipMap;
 
 private:
 

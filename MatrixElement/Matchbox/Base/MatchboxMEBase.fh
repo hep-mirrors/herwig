@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the MatchboxMEBase class
+
+#ifndef HERWIG_MatchboxMEBase_FH
+#define HERWIG_MatchboxMEBase_FH
+
+namespace Herwig {
+
+class MatchboxMEBase;
+
+}
+
+#endif // HERWIG_MatchboxMEBase_FH

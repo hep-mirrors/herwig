@@ -427,7 +427,7 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+  void setupMaximumScales(ShowerTreePtr, const vector<ShowerProgenitorPtr> &,XCPtr);
 
 protected:
 
@@ -495,12 +495,6 @@ private:
    * Get the octet -> octet octet reduction factor.
    */
   double getReductionFactor(tShowerParticlePtr particle);
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<Evolver> initEvolver;
 
   /**
    * The assignment operator is private and must never be called.
@@ -671,41 +665,6 @@ private:
    */
   int _colourEvolutionMethod;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Evolver. */
-template <>
-struct BaseClassTrait<Herwig::Evolver,1> {
-  /** Typedef of the first base class of Evolver. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Evolver class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Evolver>
-  : public ClassTraitsBase<Herwig::Evolver> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Evolver"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * Evolver is implemented. It may also include several, space-separated,
-   * libraries if the class Evolver depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

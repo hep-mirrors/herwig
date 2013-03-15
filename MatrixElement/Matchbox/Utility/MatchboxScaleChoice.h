@@ -79,7 +79,7 @@ public:
 
   /**
    * Return the QED renormalization scale. This default version returns
-   * shat.
+   * the Z mass squared.
    */
   virtual Energy2 renormalizationScaleQED() const { 
     if ( theFixedQEDScale != ZERO )

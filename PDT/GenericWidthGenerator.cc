@@ -281,13 +281,12 @@ void GenericWidthGenerator::doinit() {
     for(;start!=end;++start) {
       // the decay mode
       tcDMPtr mode=(*start).second;
-      clock_t time;
+      clock_t time = std::clock();
       if ( Debug::level > 1 ) {
 	Repository::cout() << "Partial width " 
 			   << left
 			   << std::setw(40)
 			   << mode->tag() << flush;
-	time = std::clock();
       }
       decayModes_.push_back(const_ptr_cast<DMPtr>(mode));
       decayTags_.push_back(decayModes_.back()->tag());

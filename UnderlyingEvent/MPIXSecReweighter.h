@@ -108,11 +108,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
-
 private:
 
   /**

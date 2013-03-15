@@ -90,6 +90,26 @@ public:
   const map<cPDVector,map<size_t,size_t> >& indexMap() const { return theIndexMap; }
 
   /**
+   * Return a map of basis tensor indices to vectors identifying a
+   * certain ordering corresponding to the given colour structure. May
+   * not be supported by all colour basis implementations.
+   */
+  virtual map<size_t,vector<vector<size_t> > > basisList(const vector<PDT::Colour>&) const {
+    return map<size_t,vector<vector<size_t> > >();
+  }
+
+  /**
+   * Given a physical subprocess, a colour to amplitude label map and
+   * a basis tensor index, return an identifier of the ordering
+   * coresponding to the given colour structure. This will only return
+   * sensible results for colour bases which implement the basisList
+   * query.
+   */
+  const string& ordering(const cPDVector& sub, 
+			 const map<size_t,size_t>& colourToAmplitude,
+			 size_t tensorId);
+
+  /**
    * For the given subprocess and amplitude vectors
    * calculate the amplitude squared.
    */
@@ -291,7 +311,14 @@ protected:
 			       const vector<PDT::Colour>&,
 			       const pair<int,bool>&, 
 			       const pair<int,bool>&, 
-			       size_t) const {
+			       size_t) const;
+
+  /**
+   * Return true, if a large-N colour connection exists for the
+   * given external legs and basis tensor.
+   */
+  virtual bool colourConnected(const vector<PDT::Colour>&,
+			       int, int, size_t) const {
     return false;
   }
 
@@ -420,6 +447,11 @@ private:
    * Map diagrams to colour line objects.
    */
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> > theColourLineMap;
+
+  /**
+   * Store ordering identifiers
+   */
+  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,string> > > theOrderingIdentifiers;
 
   /**
    * Write out yet unknown basis computations.
