@@ -109,7 +109,11 @@ double TreePhasespace::generateKinematics(const double* random,
     if ( !matchConstraints(momenta) )
       return 0.;
 
-    fillDiagramWeights(x0);
+    double flatCut = x0;
+    if ( M0 != ZERO )
+      flatCut = M0/sqrt(lastSHat());
+
+    fillDiagramWeights(flatCut);
 
     double sum = 0.;
     for ( map<Ptr<Tree2toNDiagram>::ptr,

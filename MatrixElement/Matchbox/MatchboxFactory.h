@@ -21,7 +21,6 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxNLOME.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
 
 namespace Herwig {
@@ -143,6 +142,16 @@ public:
   void setRealContributions(bool on = true) { theRealContributions = on; }
 
   /**
+   * Return true, if virtual contributions should be treated as independent subprocesses
+   */
+  bool independentVirtuals() const { return theIndependentVirtuals; }
+
+  /**
+   * Switch on/off virtual contributions should be treated as independent subprocesses
+   */
+  void setIndependentVirtuals(bool on = true) { theIndependentVirtuals = on; }
+
+  /**
    * Return true, if SubProcessGroups should be
    * setup from this MEGroup. If not, a single SubProcess
    * is constructed from the data provided by the
@@ -154,6 +163,37 @@ public:
    * Switch on or off producing subprocess groups.
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+
+  /**
+   * Return true, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool realEmissionScales() const { return theRealEmissionScales; }
+
+  /**
+   * Switch on/off that subtraction scales should be caluclated from real emission kinematics
+   */
+  void setRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
+
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const { return theInclusive; }
+
+  /**
+   * Switch on or off inclusive mode.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) { theShowerApproximation = app; }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
 
   //@}
 
@@ -289,12 +329,12 @@ public:
   /**
    * Return the produced NLO matrix elements
    */
-  const vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
+  const vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
 
   /**
    * Access the produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
+  vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
 
   /**
    * Return the real emission matrix elements to be considered
@@ -315,6 +355,61 @@ public:
    * Access the produced subtracted matrix elements
    */
   vector<Ptr<SubtractedME>::ptr>& subtractedMEs() { return theSubtractedMEs; }
+
+  /**
+   * Return the produced finite real emission matrix elements
+   */
+  const vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() const { return theFiniteRealMEs; }
+
+  /**
+   * Access the produced finite real emission elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() { return theFiniteRealMEs; }
+
+  /**
+   * Return the map of Born processes to splitting dipoles
+   */
+  const map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >& splittingDipoles() const {
+    return theSplittingDipoles;
+  }
+
+  /**
+   * Identify a splitting channel
+   */
+  struct SplittingChannel {
+
+    /**
+     * The Born XComb
+     */
+    StdXCombPtr bornXComb;
+
+    /**
+     * The real XComb
+     */
+    StdXCombPtr realXComb;
+
+    /**
+     * The set of tilde XCombs to consider for the real xcomb
+     */
+    vector<StdXCombPtr> tildeXCombs;
+
+    /**
+     * The dipole in charge of the splitting
+     */
+    Ptr<SubtractionDipole>::ptr dipole;
+
+    /**
+     * Dump the setup
+     */
+    void print(ostream&) const;
+
+  };
+
+  /**
+   * Generate all splitting channels for the Born process handled by
+   * the given XComb
+   */
+  list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
 
   //@}
 
@@ -353,6 +448,16 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
+
+  /**
+   * Return true, if verbose while initializing
+   */
+  bool initVerbose() const { return theInitVerbose || verbose(); }
+
+  /**
+   * Switch on diagnostic information while initializing
+   */
+  void setInitVerbose(bool on = true) { theInitVerbose = on; }
 
   /**
    * Dump the setup
@@ -495,12 +600,23 @@ private:
   bool theRealContributions;
 
   /**
+   * True if virtual contributions should be treated as independent subprocesses
+   */
+  bool theIndependentVirtuals;
+
+  /**
    * True, if SubProcessGroups should be
    * setup from this MEGroup. If not, a single SubProcess
    * is constructed from the data provided by the
    * head matrix element.
    */
   bool theSubProcessGroups;
+
+  /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
 
   /**
    * The phase space generator to be used.
@@ -566,7 +682,7 @@ private:
   /**
    * The produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr> theBornVirtualMEs;
+  vector<Ptr<MatchboxMEBase>::ptr> theBornVirtualMEs;
 
   /**
    * The produced subtracted matrix elements
@@ -574,9 +690,19 @@ private:
   vector<Ptr<SubtractedME>::ptr> theSubtractedMEs;
 
   /**
+   * The produced finite real emission matrix elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
+
+  /**
    * Switch on or off verbosity
    */
   bool theVerbose;
+
+  /**
+   * True, if verbose while initializing
+   */
+  bool theInitVerbose;
 
   /**
    * Prefix for subtraction data
@@ -644,6 +770,21 @@ private:
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
 					   unsigned int orderas) const;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * The map of Born processes to splitting dipoles
+   */
+  map<cPDVector,set<Ptr<SubtractionDipole>::ptr> > theSplittingDipoles;
+
+  /**
+   * True, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool theRealEmissionScales;
 
 private:
 

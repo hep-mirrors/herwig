@@ -21,8 +21,12 @@
 #include "PartnerFinder.h"
 #include "Evolver.h"
 #include "SudakovFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeAbstractClass<ShowerModel,Interfaced>
+describeShowerModel ("Herwig::ShowerModel","HwShower.so");
 
 void ShowerModel::persistentOutput(PersistentOStream & os) const {
   os << _reconstructor << _partnerfinder << _sudakovs;
@@ -36,9 +40,6 @@ void ShowerModel::doinit() {
   Interfaced::doinit();
   checkConsistency();
 }
-
-AbstractClassDescription<ShowerModel> ShowerModel::initShowerModel;
-// Definition of the static class description member.
 
 void ShowerModel::Init() {
 

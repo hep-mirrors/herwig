@@ -8,9 +8,8 @@ DipoleRepository.h \
 MatchboxAmplitude.cc \
 MatchboxAmplitude.h \
 MatchboxMEBase.cc \
+MatchboxMEBase.fh \
 MatchboxMEBase.h \
-MatchboxNLOME.cc \
-MatchboxNLOME.h \
 MatchboxReweightBase.cc \
 MatchboxReweightBase.h \
 SubtractedME.cc \

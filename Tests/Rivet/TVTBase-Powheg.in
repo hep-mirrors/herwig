@@ -26,6 +26,12 @@ set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 ##################################################
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/MRST
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/MRST
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MRST
+set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MRST
+set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/MRST-NLO
+set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/MRST-NLO
 
 ##################################################
 #  and strong coupling

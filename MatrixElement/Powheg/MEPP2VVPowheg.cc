@@ -24,6 +24,10 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include "Herwig++/Decay/DecayMatrixElement.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 

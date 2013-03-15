@@ -25,7 +25,42 @@ set LHCHandler:LuminosityFunction:Energy 8000.0*GeV
 cd /Herwig/MatrixElements/Matchbox
 
 insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+
+################################################################################
+# inclusive Drell-Yan
+################################################################################
+
+set PPFactory:OrderInAlphaS 0
 do PPFactory:Process p p e+ e-
+
+################################################################################
+# Z+1 jet
+################################################################################
+
+# set PPFactory:OrderInAlphaS 1
+# do PPFactory:Process p p e+ e- j
+
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
+
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+
+# set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+
+################################################################################
+# Z+2 jets (leading order only)
+################################################################################
+
+# set PPFactory:OrderInAlphaS 2
+# do PPFactory:Process p p e+ e- j j
+
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
+
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
+
+# set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 ################################################################################
 # leading order
@@ -38,20 +73,43 @@ do PPFactory:Process p p e+ e-
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set PPFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-# insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPPowhegFactory
+# set PPFactory:ShowerApproximation MEMatching
+# set MECorrectionHandler:Factory PPFactory
 # insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set /Herwig/MatrixElements/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
+set /Herwig/MatrixElements/Matchbox/PPFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

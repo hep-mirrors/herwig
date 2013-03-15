@@ -1,5 +1,48 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.6.3 release: 2013-02-22
+
+** Decay vertex positioning in HepMC output
+   Pseudo-vertices that Herwig++ inserts for technical reasons will
+   now not contribute to the Lorentz positions of downstream vertices.
+   Thanks to ATLAS for the bug report!
+
+** Updated Rivet tests 
+   Herwig's library of Rivet test runs has been brought up-to-date
+   with new analyses that were recently published by the Rivet
+   collaboration.
+
+
+
+* Herwig++-2.6.2 release: 2013-01-30
+
+** Fixes for PDF and scale choices in POWHEG events
+   Scale settings for MPI and the regular shower are now correct in
+   POWHEG events. This should fix reported anomalies in POWHEG jet rates.
+   NLO PDFs are now also set consistently in the example input files.
+
+** Ticket #373: Branching ratio factors in cross-section
+   If any decay modes are selectively disabled, setting the following
+   post-handler will cause all reported cross-sections to include the
+   branching ratio factor(s) from the previous stages correctly:
+
+   create Herwig::BranchingRatioReweighter BRreweight
+   insert LHCGenerator:EventHandler:PostDecayHandlers 0 BRreweight
+
+** Anomalous vertices now possible in MEfftoVH
+
+** Interactive shell does not quit on error
+
+** Better warning messages for events from inconsistent LHEF files
+
+** Possible division by zero error fixed in BSM branching ratio calculations
+
+** Decayer and ME changes to improve checkpointing
+   The checkpointing changes in ThePEG 1.8.2 are implemented here, too. Regular
+   dump files are consistent now.
+
+
+
 * Herwig++-2.6.1 release: 2012-10-16
 
 ** Configure switches
