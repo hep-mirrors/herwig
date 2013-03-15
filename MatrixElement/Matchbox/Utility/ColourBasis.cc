@@ -56,6 +56,26 @@ ColourBasis::~ColourBasis() {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+bool ColourBasis::colourConnected(const cPDVector& sub,
+				  const vector<PDT::Colour>& basis,
+				  const pair<int,bool>& i, 
+				  const pair<int,bool>& j, 
+				  size_t a) const {
+
+  // translate process to basis ids
+  map<cPDVector,map<size_t,size_t> >::const_iterator trans
+    = indexMap().find(sub);
+  assert(trans != indexMap().end());
+
+  int idColoured = i.second ? j.first : i.first;
+  idColoured = trans->second.find(idColoured)->second;
+  int idAntiColoured = i.second ? i.first : j.first;
+  idAntiColoured = trans->second.find(idAntiColoured)->second;
+
+  return colourConnected(basis,idColoured,idAntiColoured,a);
+
+}
+
 const string& ColourBasis::ordering(const cPDVector& sub, 
 				    const map<size_t,size_t>& colourToAmplitude,
 				    size_t tensorId) {
