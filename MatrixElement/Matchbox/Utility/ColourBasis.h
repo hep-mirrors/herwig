@@ -209,7 +209,7 @@ public:
   /**
    * Return true, if this basis is running in large-N mode
    */
-  virtual bool largeN() const { return false; }
+  virtual bool largeN() const { return theLargeN; }
 
   /**
    * Convert particle data to colour information
@@ -397,6 +397,11 @@ private:
   typedef map<vector<PDT::Colour>,map<size_t,vector<pair<size_t,size_t > > > > ChargeNonZeroMap;
 
   typedef map<vector<PDT::Colour>,map<pair<size_t,size_t>,symmetric_matrix<double,upper> > > CorrelatorMap;
+
+  /**
+   * True, if this basis is running in large-N mode
+   */
+  bool theLargeN;
 
   /**
    * A search path for already calculated and stored matrices.

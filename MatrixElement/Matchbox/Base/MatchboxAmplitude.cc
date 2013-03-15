@@ -403,6 +403,20 @@ double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
     lastCrossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
 }
 
+double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
+						    Ptr<ColourBasis>::tptr largeNBasis) const {
+  double Nc = generator()->standardModel()->Nc();
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = Nc/2.;
+  } else assert(false);
+  return 
+    lastCrossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
+}
+
 // compare int vectors modulo certain element
 // which needs to differe between the two
 bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {

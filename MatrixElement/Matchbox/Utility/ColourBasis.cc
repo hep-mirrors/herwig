@@ -14,6 +14,7 @@
 #include "ColourBasis.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -38,7 +39,7 @@ using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
 
 ColourBasis::ColourBasis() 
-  : theSearchPath("."),didRead(false), didWrite(false) {}
+  : theLargeN(false), theSearchPath("."), didRead(false), didWrite(false) {}
 
 ColourBasis::~ColourBasis() {
   for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
@@ -1115,13 +1116,13 @@ void ColourBasis::doinitrun() {
 }
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
-  os << theSearchPath << theNormalOrderedLegs
+  os << theLargeN << theSearchPath << theNormalOrderedLegs
      << theIndexMap << theFlowMap << theOrderingIdentifiers;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
-  is >> theSearchPath >> theNormalOrderedLegs
+  is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
      >> theIndexMap >> theFlowMap >> theOrderingIdentifiers;
 }
 
@@ -1146,6 +1147,21 @@ void ColourBasis::Init() {
      "Set the search path for pre-computed colour basis data.",
      &ColourBasis::theSearchPath, ".",
      false, false);
+
+  static Switch<ColourBasis,bool> interfaceLargeN
+    ("LargeN",
+     "Switch on or off large-N evaluation.",
+     &ColourBasis::theLargeN, false, false, false);
+  static SwitchOption interfaceLargeNOn
+    (interfaceLargeN,
+     "On",
+     "Work in N=infinity",
+     true);
+  static SwitchOption interfaceLargeNOff
+    (interfaceLargeN,
+     "Off",
+     "Work in N=3",
+     false);
 
 }
 

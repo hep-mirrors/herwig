@@ -350,6 +350,12 @@ public:
   virtual double colourCorrelatedME2(pair<int,int> ij) const;
 
   /**
+   * Return the large-N colour correlated matrix element.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return a positive helicity polarization vector for a gluon of
    * momentum p (with reference vector n) to be used when evaluating
    * spin correlations.

@@ -796,6 +796,30 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
 }
 
+double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
+						 Ptr<ColourBasis>::tptr largeNBasis) const {
+
+  if ( matchboxAmplitude() ) {
+
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes(this);
+    lastME2(matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
+	    matchboxAmplitude()->lastCrossingSign()*
+	    me2Norm());
+
+    logME2();
+    
+    return lastME2();
+
+  }
+
+  throw Exception()
+    << "MatchboxMEBase::largeNColourCorrelatedME2() expects a MatchboxAmplitude object.\n"
+    << "Please check your setup." << Exception::abortnow;
+  return 0.;
+
+}
+
 double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 					       const SpinCorrelationTensor& c) const {
 

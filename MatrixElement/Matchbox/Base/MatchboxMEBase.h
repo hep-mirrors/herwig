@@ -592,6 +592,15 @@ public:
   virtual double colourCorrelatedME2(pair<int,int>) const;
 
   /**
+   * Return the colour correlated matrix element squared in the
+   * large-N approximation with respect to the given two partons as
+   * appearing in mePartonData(), suitably scaled by sHat() to give a
+   * dimension-less number.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return the colour and spin correlated matrix element squared for
    * the gluon indexed by the first argument using the given
    * correlation tensor.
