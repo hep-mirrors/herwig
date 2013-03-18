@@ -120,7 +120,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
-		Models/HiggsPair/makefile
+		Models/HiggsPair/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
