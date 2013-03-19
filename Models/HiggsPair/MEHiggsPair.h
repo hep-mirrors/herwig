@@ -282,6 +282,19 @@ private:
   Energy _m1, _m2;
 
 
+  /*					       
+   * Heavy H mass
+   */
+  Energy _heavyHmass;
+
+
+  /*					       
+   * Heavy H width
+   */
+  Energy _heavyHwidth;
+
+
+
 private:
 
   /**
@@ -293,6 +306,12 @@ private:
    *  multiplier for the SM triple-coupling
    */
   double _selfcoupling;
+
+
+  /**
+   *  multiplier for the hhH triple-coupling
+   */
+  double _hhHcoupling;
 
 
   /**
