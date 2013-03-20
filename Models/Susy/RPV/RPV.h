@@ -154,6 +154,21 @@ private:
   vector<Energy> vnu_;
 
   /**
+   *  Squark mixing matrices
+   */
+  //@{
+  /**
+   *  For up-type squarks
+   */
+  MixingMatrixPtr upSquarkMix_;
+
+  /**
+   *  For down-type squarks
+   */
+  MixingMatrixPtr downSquarkMix_;
+  //@}
+
+  /**
    *  New vertices
    */
   //@{

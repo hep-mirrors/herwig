@@ -15,11 +15,13 @@ using namespace Herwig;
 
 void RPV::persistentOutput(PersistentOStream & os ) const {
   os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_ << ounit(vnu_,GeV)
+     << upSquarkMix_ << downSquarkMix_
      << LLEVertex_ << LQDVertex_ << UDDVertex_;
 }
 
 void RPV::persistentInput(PersistentIStream & is, int) {
   is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_ >> iunit(vnu_,GeV)
+     >> upSquarkMix_ >> downSquarkMix_
      >> LLEVertex_ >> LQDVertex_ >> UDDVertex_;
 }
 
@@ -146,6 +148,12 @@ void RPV::createMixingMatrices() {
       MixingMatrixPtr temp;
       createMixingMatrix(temp,name,it->second.second,it->second.first);
       ChargedHiggsMix(temp);
+    }
+    else if (name == "dsqmix" ) {
+      createMixingMatrix(downSquarkMix_,name,it->second.second,it->second.first);
+    }
+    else if (name == "usqmix" ) {
+      createMixingMatrix(upSquarkMix_,name,it->second.second,it->second.first);
     }
   }
   // base class for neutralinos and charginos
@@ -296,7 +304,7 @@ void RPV::createMixingMatrices() {
     }
     neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
   }
-  // charginos the same
+  // charginos the same, i.e. charginos first then charged leptons
   if(charginoUMix()->size().first  != charginoVMix()->size().first || 
      charginoUMix()->size().second != charginoVMix()->size().second )
     throw Exception() << "Chargino U and V mixing matrices must have the same size.\n"

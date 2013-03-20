@@ -593,6 +593,16 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids[5] = -2000013;
     ids[6] = -2000015;
   }
+  else if(name == "usqmix" ) {
+    ids.resize(6);
+    ids[0] = 1000002; ids[1] = 1000004; ids[2] = 1000004;
+    ids[3] = 2000002; ids[4] = 2000004; ids[5] = 2000004;
+  }
+  else if(name == "dsqmix" ) {
+    ids.resize(6);
+    ids[0] = 1000001; ids[1] = 1000003; ids[2] = 1000005;
+    ids[3] = 2000001; ids[4] = 2000003; ids[5] = 2000005;
+  }
   else {
     throw SetupException() << "SusyBase::createMixingMatrix() "
 			   << "cannot find correct title for mixing matrix "
