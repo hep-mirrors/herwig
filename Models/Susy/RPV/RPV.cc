@@ -140,8 +140,7 @@ void RPV::createMixingMatrices() {
     if (name == "rvamix") {
       MixingMatrixPtr temp;
       createMixingMatrix(temp,name,it->second.second,it->second.first);
-      CPoddHiggsMix(temp); 
-      
+      CPoddHiggsMix(temp);
     }
     else if (name == "rvlmix") {
       MixingMatrixPtr temp;

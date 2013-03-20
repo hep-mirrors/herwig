@@ -154,11 +154,16 @@ public:
    */
   void setIds(const vector<long> & mixingCodes)  {
     if(mixingCodes.size() != size_.first) {
+      ostringstream codes;
+      for(unsigned int ix=0;ix<mixingCodes.size();++ix)
+	codes << mixingCodes[ix] << " ";
       throw MixingMatrixError() << "MixingMatrix::setIds() - The number "
 				<< "of PDG codes (" << mixingCodes.size()
 				<< ") does not match the size of the "
 				<< "matrix (" << size_.first
-				<< ")" << Exception::warning;
+				<< ")"
+				<< "Ids are " << codes.str() 
+				<< Exception::warning;
       return;
     }
     ids_ = mixingCodes;

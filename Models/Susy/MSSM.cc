@@ -194,7 +194,7 @@ void MSSM::extractParameters(bool checkmodel) {
   int ifv = jt!=pit->second.end() ? int(jt->second) : 0;
   // the higgs mixing angle if not NMSSM
   theAlpha=0.;
-  if(inmssm==0) {
+  if(inmssm==0&&irpv==0) {
     bool readAlpha = false;
     map<string,ParamMap>::const_iterator pit;
     pit=parameters().find("alpha");
@@ -203,8 +203,8 @@ void MSSM::extractParameters(bool checkmodel) {
       if(it!=pit->second.end()) {
 	readAlpha = true;
 	theAlpha=it->second;
+      }
     }
-  }
     if(!readAlpha) 
       throw Exception() << "In the MSSM model BLOCK ALPHA which must be"
 			<< " present in the SLHA file is missing"

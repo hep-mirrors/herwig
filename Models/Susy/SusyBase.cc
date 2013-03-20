@@ -546,10 +546,23 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids[0] = 36; ids[1] = 46;
   }
   else if(name == "rvamix") {
-    ids.resize(5);
-    ids[0] = 36; ids[1] = 1000017;
+    // some programs, i.e. spheno include the goldstone even though the standard says they shouldn't
+    // obeys standard
+    if(size.first==4) {
+      ids.resize(4);
+    }
+    // includes goldstone
+    else if(size.first==5) {
+      ids.resize(5);
+      ids[4] = 0;
+    }
+    else {
+      throw Exception() << "SusyBase::createMixingMatrix() "
+			<< "rvamix matrix must have either 4 rows (obeying standard) "
+			<< "or 5 including the goldstone, not " << size.first << Exception::runerror;
+    }
+    ids[0] = 36     ; ids[1] = 1000017;
     ids[2] = 1000018; ids[3] = 1000019;
-    ids[4] = 0;
   }
   else if(name == "rvhmix") {
     ids.resize(5);
@@ -557,7 +570,21 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids[2] = 1000012; ids[3] = 1000014; ids[4] = 1000016;
   }
   else if(name == "rvlmix") {
-    ids.resize(8);
+    // some programs, i.e. spheno include the goldstone even though the standard says they shouldn't
+    // obeys standard
+    if(size.first==7) {
+      ids.resize(7);
+    }
+    // includes goldstone
+    else if(size.first==8) {
+      ids.resize(8);
+      ids[7] = 0;
+    }
+    else {
+      throw Exception() << "SusyBase::createMixingMatrix() "
+			<< "rvlmix matrix must have either 7 rows (obeying standard) "
+			<< "or 8 including the goldstone, not " << size.first << Exception::runerror;
+    }
     ids[0] = 37;
     ids[1] = -1000011;
     ids[2] = -1000013;
@@ -565,7 +592,6 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids[4] = -2000011;
     ids[5] = -2000013;
     ids[6] = -2000015;
-    ids[7] = 0;
   }
   else {
     throw SetupException() << "SusyBase::createMixingMatrix() "
