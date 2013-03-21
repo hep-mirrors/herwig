@@ -8,6 +8,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -15,13 +16,13 @@ using namespace Herwig;
 
 void RPV::persistentOutput(PersistentOStream & os ) const {
   os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_ << ounit(vnu_,GeV)
-     << upSquarkMix_ << downSquarkMix_
+     << upSquarkMix_ << downSquarkMix_ << triLinearOnly_
      << LLEVertex_ << LQDVertex_ << UDDVertex_;
 }
 
 void RPV::persistentInput(PersistentIStream & is, int) {
   is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_ >> iunit(vnu_,GeV)
-     >> upSquarkMix_ >> downSquarkMix_
+     >> upSquarkMix_ >> downSquarkMix_ >> triLinearOnly_
      >> LLEVertex_ >> LQDVertex_ >> UDDVertex_;
 }
 
@@ -49,6 +50,21 @@ void RPV::Init() {
     ("Vertex/UDD",
      "The vertex for the trillinear UDD interaction",
      &RPV::UDDVertex_, false, false, true, false, false);
+
+  static Switch<RPV,bool> interfaceTriLinearOnly
+    ("TriLinearOnly",
+     "Only include trilinears and take rest of model to be MSSM",
+     &RPV::triLinearOnly_, false, false, false);
+  static SwitchOption interfaceTriLinearOnlyYes
+    (interfaceTriLinearOnly,
+     "Yes",
+     "Trilinears + MSSM",
+     true);
+  static SwitchOption interfaceTriLinearOnlyNo
+    (interfaceTriLinearOnly,
+     "No",
+     "All RPV couplings and mixings",
+     false);
 
 }
 
@@ -290,6 +306,16 @@ void RPV::createMixingMatrices() {
     }
     charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
   }
+  // in SOFTSUSY the neutralino mixing matrix seems to be transposed 
+  else if(program=="SOFTSUSY") {
+    CMatrix oldMat = neutralinoMix()->getMatrix();
+    CMatrix newMat(7,vector<Complex>(7,0.));
+    for(unsigned int ix=0;ix<7;++ix) {
+      for(unsigned int iy=0;iy<7;++iy)
+	newMat[ix][iy] = oldMat[iy][ix];
+    }
+    neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
+  }
   // we don't want neutrinos first then neutralinos so swap them
   // neutralinos first then neutrinos
   if ( neutralinoMix()->size().first == 7 ) {
@@ -380,12 +406,6 @@ void RPV::createMixingMatrices() {
   bool allSmall = nSmall && uSmall && hSmall && aSmall && lSmall;
 
   bool allSmallExceptN = nBig && uSmall && hSmall && aSmall && lSmall;
-
-  if ( allBig ) 
-    return;
-
-  if ( allSmall )
-    return;
   
   if ( allSmallExceptN ) {
     cerr << "Warning: Truncating Nmix to 4,4 for consistency "
@@ -401,15 +421,289 @@ void RPV::createMixingMatrices() {
     neutralinoMix(new_ptr(MixingMatrix(newMat,vector<long>(beg,end))));
     return;
   }
-
-  throw Exception() 
-    << "Mixing matrices have inconsistent sizes:\n"	
-    << "(RV)Nmix " << n.first << ',' << n.second << '\n'
-    << "(RV)Umix " << u.first << ',' << u.second << '\n'
-    << "(RV)Hmix " << h.first << ',' << h.second << '\n'
-    << "RVAmix   " << a.first << ',' << a.second << '\n'
-    << "RVLmix   " << l.first << ',' << l.second << '\n'
-    << Exception::runerror; 
+  else if ( ! (allBig || allSmall) ) {
+    throw Exception() 
+      << "Mixing matrices have inconsistent sizes:\n"	
+      << "(RV)Nmix " << n.first << ',' << n.second << '\n'
+      << "(RV)Umix " << u.first << ',' << u.second << '\n'
+      << "(RV)Hmix " << h.first << ',' << h.second << '\n'
+      << "RVAmix   " << a.first << ',' << a.second << '\n'
+      << "RVLmix   " << l.first << ',' << l.second << '\n'
+      << Exception::runerror;
+  }
+  // reduce to MSSM + trilinear if requested
+  if(triLinearOnly_) {
+    // reduce size of n
+    if(neutralinoMix()->size().first ==7) {
+      CMatrix mix(4,vector<Complex>(4,0.));
+      unsigned int irow=0;
+      int imax[7]={-1,-1,-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<7;++ix) {
+      	double maxComp(0.);
+      	for(unsigned int iy=0;iy<7;++iy) {
+       	  double value = abs((*neutralinoMix())(ix,iy));
+       	  if(value>maxComp) {
+       	    maxComp = value;
+       	    imax[ix] = iy;
+       	  }
+      	}
+	// neutralino
+	if(imax[ix]<=3) {
+	  for(unsigned int iy=0;iy<4;++iy) mix[irow][iy] = (*neutralinoMix())(ix,iy);
+	  ++irow;
+	  assert(irow<=4);
+	}
+	// neutrino
+	else {
+	  idMap()[neutralinoMix()->getIds()[ix]] = neutralinoMix()->getIds()[imax[ix]];
+	}
+      }
+      vector<long> ids = neutralinoMix()->getIds();
+      ids.resize(4);
+      neutralinoMix(new_ptr(MixingMatrix(mix,ids)));
+    }
+    // reduce size of u
+    if(charginoUMix()->size().first ==5) {
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int irow=0;
+      int imax[5]={-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<5;++ix) {
+	double maxComp(0.);
+	for(unsigned int iy=0;iy<5;++iy) {
+       	  double value = abs((*charginoUMix())(ix,iy));
+       	  if(value>maxComp) {
+       	    maxComp = value;
+       	    imax[ix] = iy;
+       	  }
+      	}
+	// chargino
+       	if(imax[ix]<=1) {
+     	  for(unsigned int iy=0;iy<2;++iy) mix[irow][iy] = (*charginoUMix())(ix,iy);
+     	  ++irow;
+     	  assert(irow<=2);
+      	}
+	// charged lepton
+      	else {
+      	  idMap()[abs(charginoUMix()->getIds()[ix])] = abs(charginoUMix()->getIds()[imax[ix]]);
+     	}
+      }
+      vector<long> ids = charginoUMix()->getIds();
+      ids.resize(2);
+      charginoUMix(new_ptr(MixingMatrix(mix,ids)));
+    }
+    // reduce size of v
+    if(charginoVMix()->size().first ==5) {
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int irow=0;
+      int imax[5]={-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<5;++ix) {
+	double maxComp(0.);
+	for(unsigned int iy=0;iy<5;++iy) {
+       	  double value = abs((*charginoVMix())(ix,iy));
+       	  if(value>maxComp) {
+       	    maxComp = value;
+       	    imax[ix] = iy;
+       	  }
+      	}
+	// chargino
+       	if(imax[ix]<=1) {
+     	  for(unsigned int iy=0;iy<2;++iy) mix[irow][iy] = (*charginoVMix())(ix,iy);
+     	  ++irow;
+     	  assert(irow<=2);
+      	}
+      }
+      vector<long> ids = charginoVMix()->getIds();
+      ids.resize(2);
+      charginoVMix(new_ptr(MixingMatrix(mix,ids)));
+    }
+    // reduce size of pseudo scalar mixing
+    if(CPoddHiggsMix()) {
+      MixingVector hmix;
+      double beta = atan(tanBeta());
+      hmix.push_back(MixingElement(1,1,sin(beta)));
+      hmix.push_back(MixingElement(1,2,cos(beta)));
+      vector<long> ids(1,36);
+      MixingMatrixPtr newMix = new_ptr(MixingMatrix(1,2));
+      (*newMix).setIds(ids);
+      for(unsigned int ix=0; ix < hmix.size(); ++ix)
+	(*newMix)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
+      CPoddHiggsMix(newMix);
+    }
+    // reduce size of true scalar mixing
+    if(CPevenHiggsMix()->size().first==5) {
+      double alpha(0.);
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int irow=0;
+      int imax[5]={-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<5;++ix) {
+      	double maxComp(0.);
+      	for(unsigned int iy=0;iy<5;++iy) {
+       	  double value = abs((*CPevenHiggsMix())(ix,iy));
+       	  if(value>maxComp) {
+       	    maxComp = value;
+       	    imax[ix] = iy;
+       	  }
+      	}
+       	// neutral Higgs
+       	if(imax[ix]<=1) {
+      	  for(unsigned int iy=0;iy<2;++iy) mix[irow][iy] = (*CPevenHiggsMix())(ix,iy);
+	  if(irow==0)
+	    alpha = atan2(-(*CPevenHiggsMix())(ix,0).real(),(*CPevenHiggsMix())(ix,1).real());
+      	  ++irow;
+      	  assert(irow<=2);
+       	}
+      }
+      vector<long> ids = CPevenHiggsMix()->getIds();
+      ids.resize(2);
+      CPevenHiggsMix(new_ptr(MixingMatrix(mix,ids)));
+      higgsMixingAngle(alpha);
+    }
+    else {
+      bool readAlpha = false;
+      map<string,ParamMap>::const_iterator pit=parameters().find("alpha");
+      if(pit!=parameters().end()) {
+	ParamMap::const_iterator it = pit->second.find(1);
+	if(it!=pit->second.end()) {
+	  readAlpha = true;
+	  higgsMixingAngle(it->second);
+	}
+      }
+      if(!readAlpha) 
+	throw Exception() << "In the RPV model BLOCK ALPHA which must be"
+			  << " present in the SLHA file is missing"
+			  << Exception::runerror;
+    }
+    // reduce size of charged scalar mixing
+    if(ChargedHiggsMix()->size().first>=7) {
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int istau(0);
+      int imax[8]={-1,-1,-1,-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<ChargedHiggsMix()->size().first;++ix) {
+	double maxComp(0.);
+	for(unsigned int iy=0;iy<8;++iy) {
+	  double value = abs((*ChargedHiggsMix())(ix,iy));
+	  if(value>maxComp) {
+	    maxComp = value;
+	    imax[ix] = iy;
+	  }
+	}
+	if(imax[ix]<=1) imax[ix]=0;
+	else --imax[ix];
+	idMap()[abs(ChargedHiggsMix()->getIds()[ix])] = abs(ChargedHiggsMix()->getIds()[imax[ix]]);
+      	if(abs(ChargedHiggsMix()->getIds()[imax[ix]])%10==5) {
+      	  mix[istau][0] = (*ChargedHiggsMix())(ix,4);
+      	  mix[istau][1] = (*ChargedHiggsMix())(ix,7);
+	  if(istau==0) idMap()[abs(ChargedHiggsMix()->getIds()[ix])] = 1000015;
+	  else         idMap()[abs(ChargedHiggsMix()->getIds()[ix])] = 2000015;
+      	  istau+=1;
+      	  assert(istau<=2);
+      	}
+      }
+      // set up the stau mixing matrix
+      vector<long> ids(2);
+      ids[0] = 1000015;
+      ids[1] = 2000015;
+      stauMix(new_ptr(MixingMatrix(mix,ids)));
+      // delete 7x7
+      MixingVector hmix;
+      double beta = atan(tanBeta());
+      hmix.push_back(MixingElement(1,1,sin(beta)));
+      hmix.push_back(MixingElement(1,2,cos(beta)));
+      ids.resize(1,37);
+      MixingMatrixPtr newMix = new_ptr(MixingMatrix(1,2));
+      (*newMix).setIds(ids);
+      for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      	(*newMix)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
+      ChargedHiggsMix(newMix);
+    }
+    // reduce size of up squark mixing
+    if( upSquarkMix_ ) {
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int istop(0);
+      int imax[6]={-1,-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<6;++ix) {
+	double maxComp(0.);
+	for(unsigned int iy=0;iy<6;++iy) {
+	  double value = abs((*upSquarkMix_)(ix,iy));
+	  if(value>maxComp) {
+	    maxComp = value;
+	    imax[ix] = iy;
+	  }
+	}
+	idMap()[upSquarkMix_->getIds()[ix]] = upSquarkMix_->getIds()[imax[ix]];
+	if(upSquarkMix_->getIds()[imax[ix]]%10==6) {
+	  mix[istop][0] = (*upSquarkMix_)(ix,2);
+	  mix[istop][1] = (*upSquarkMix_)(ix,5);
+	  if(istop==0) idMap()[upSquarkMix_->getIds()[ix]] = 1000006;
+	  else         idMap()[upSquarkMix_->getIds()[ix]] = 2000006;
+	  istop+=1;
+	  assert(istop<=2);
+	}
+      }
+      // set up the stop mixing matrix
+      vector<long> ids(2);
+      ids[0] = 1000006;
+      ids[1] = 2000006;
+      stopMix(new_ptr(MixingMatrix(mix,ids)));
+      // delete 6x6
+      upSquarkMix_ = MixingMatrixPtr();
+    }
+    // reduce size of down squark mixing
+    if( downSquarkMix_ ) {
+      CMatrix mix(2,vector<Complex>(2,0.));
+      unsigned int isbot(0);
+      int imax[6]={-1,-1,-1,-1,-1,-1};
+      for(unsigned int ix=0;ix<6;++ix) {
+      	double maxComp(0.);
+      	for(unsigned int iy=0;iy<6;++iy) {
+      	  double value = abs((*downSquarkMix_)(ix,iy));
+       	  if(value>maxComp) {
+       	    maxComp = value;
+       	    imax[ix] = iy;
+       	  }
+       	}
+      	idMap()[downSquarkMix_->getIds()[ix]] = downSquarkMix_->getIds()[imax[ix]];
+      	if(downSquarkMix_->getIds()[imax[ix]]%10==5) {
+      	  mix[isbot][0] = (*downSquarkMix_)(ix,2);
+      	  mix[isbot][1] = (*downSquarkMix_)(ix,5);
+	  if(isbot==0) idMap()[downSquarkMix_->getIds()[ix]] = 1000005;
+	  else         idMap()[downSquarkMix_->getIds()[ix]] = 2000005;
+      	  isbot+=1;
+      	  assert(isbot<=2);
+      	}
+      }
+      // set up the sbottom mixing matrix
+      vector<long> ids(2);
+      ids[0] = 1000005;
+      ids[1] = 2000005;
+      sbottomMix(new_ptr(MixingMatrix(mix,ids)));
+      // delete 6x6
+      downSquarkMix_ = MixingMatrixPtr();
+    }
+    // get the masses as we will have to mess with them
+    map<string,ParamMap>::const_iterator fit=parameters().find("mass");
+    ParamMap theMasses = fit->second;
+    for(long id=1000017;id<=1000019;++id) {
+      if(theMasses.find(id)==theMasses.end()) continue;
+      double mass = abs(theMasses.find(id)->second);
+      // find scalar partner
+      double mdiff=1e30;
+      long new_id;
+      for(ParamMap::const_iterator it=theMasses.begin();it!=theMasses.end();++it) {
+	double diff = abs(abs(it->second)-mass);
+	if(diff<mdiff) {
+	  mdiff = diff;
+	  new_id = it->first;
+	}
+      }
+      if(idMap().find(new_id)!=idMap().end()) {
+	idMap()[id] = idMap()[new_id];
+      }
+      else {
+	idMap()[id] = new_id;
+      }
+    }
+  }
 }
 
 void RPV::doinit() {

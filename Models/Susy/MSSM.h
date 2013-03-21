@@ -160,6 +160,26 @@ protected:
    */
   void ChargedHiggsMix(MixingMatrixPtr in) {HiggsPMix_ = in;}
 
+  /**
+   * Set the stop mixing matrix
+   */
+  void stopMix(MixingMatrixPtr in) {theStopMix =in;}
+
+  /**
+   * The sbottom chargino mixing matrix
+   */
+  void sbottomMix(MixingMatrixPtr in) {theSbotMix = in;}
+
+  /**
+   * The stau mixing matrix
+   */
+  void stauMix(MixingMatrixPtr in) {theStauMix = in;}
+
+  /**
+   * Value of Higgs mixing angle \f$\alpha\f$.
+   */
+  void higgsMixingAngle(double in) {theAlpha = in;}
+
 private:
 
   /**

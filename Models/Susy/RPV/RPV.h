@@ -27,7 +27,8 @@ public:
    */
   RPV() : lambdaLLE_(3,vector<vector<double> >(3,vector<double>(3,0.))),
 	  lambdaLQD_(3,vector<vector<double> >(3,vector<double>(3,0.))),
-	  lambdaUDD_(3,vector<vector<double> >(3,vector<double>(3,0.)))
+	  lambdaUDD_(3,vector<vector<double> >(3,vector<double>(3,0.))),
+	  triLinearOnly_(false)
   {}
 
 
@@ -188,6 +189,10 @@ private:
   AbstractFFSVertexPtr UDDVertex_;
   //@}
 
+  /**
+   *  Switch to only do trilinears
+   */
+  bool triLinearOnly_;
 };
 
 }

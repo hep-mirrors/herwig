@@ -595,8 +595,8 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else if(name == "usqmix" ) {
     ids.resize(6);
-    ids[0] = 1000002; ids[1] = 1000004; ids[2] = 1000004;
-    ids[3] = 2000002; ids[4] = 2000004; ids[5] = 2000004;
+    ids[0] = 1000002; ids[1] = 1000004; ids[2] = 1000006;
+    ids[3] = 2000002; ids[4] = 2000004; ids[5] = 2000006;
   }
   else if(name == "dsqmix" ) {
     ids.resize(6);
@@ -660,8 +660,10 @@ void SusyBase::adjustMixingMatrix(long id) {
   case 12 :
   case 14 :
   case 16 : 
-    if(NMix_)
-      NMix_->adjustPhase(id);
+    if(NMix_) {
+      if(id>16||(id<=16&&NMix_->size().first>4))
+	 NMix_->adjustPhase(id);
+    }
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
@@ -675,8 +677,7 @@ void SusyBase::adjustMixingMatrix(long id) {
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
-    if(VMix_)
-      VMix_->adjustPhase(id);
+    if(VMix_) VMix_->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
