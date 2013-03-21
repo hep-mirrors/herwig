@@ -110,8 +110,10 @@ void RPVLLEVertex::setCoupling(Energy2, tcPDPtr part1,
     }
   }
   // charged slepton case
-  else if( abs(islep) == ParticleID::SUSY_e_Lminus|| 
-	   abs(islep) == ParticleID::SUSY_mu_Lminus|| 
+  else if( abs(islep) == ParticleID::SUSY_e_Lminus  || 
+	   abs(islep) == ParticleID::SUSY_mu_Lminus || 
+	   abs(islep) == ParticleID::SUSY_e_Rminus  || 
+	   abs(islep) == ParticleID::SUSY_mu_Rminus || 
 	   abs(islep) == ParticleID::SUSY_tau_1minus|| 
 	   abs(islep) == ParticleID::SUSY_tau_2minus) {
     // right charged slepton
