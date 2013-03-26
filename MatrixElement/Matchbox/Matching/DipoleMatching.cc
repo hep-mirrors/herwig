@@ -56,14 +56,19 @@ CrossSection DipoleMatching::dSigHatDR() const {
   }
 
   xme2 /= dipole()->underlyingBornME()->lastXComb().lastAlphaS();
-  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+  double bornPDF = bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+  if ( bornPDF == 0.0 )
+    return ZERO;
+  xme2 *= bornPDF;
 
-  return
+  CrossSection res = 
     sqr(hbarc) * 
     realXComb()->jacobian() * 
     subtractionScaleWeight() *
     xme2 /
     (2. * realXComb()->lastSHat());
+
+  return res;
 
 }
 

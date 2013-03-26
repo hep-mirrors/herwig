@@ -228,9 +228,9 @@ set MECorrectionHandler:Phasespace InvertiblePhasespace
 
 create Herwig::DipoleMatching DipoleMatching
 set DipoleMatching:RestrictPhasespace On
-set MEMatching:BornScaleInSubtraction BornScale
-set MEMatching:RealEmissionScaleInSubtraction BornScale
-set MEMatching:EmissionScaleInSubtraction BornScale
+set DipoleMatching:BornScaleInSubtraction BornScale
+set DipoleMatching:RealEmissionScaleInSubtraction BornScale
+set DipoleMatching:EmissionScaleInSubtraction BornScale
 set DipoleMatching:FFPtCut 1.0*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
