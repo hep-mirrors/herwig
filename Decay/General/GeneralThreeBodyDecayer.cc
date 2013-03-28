@@ -438,6 +438,11 @@ colourConnections(const Particle & parent,
 	outgoing[octet[0]]->colourNeighbour(outgoing[triplet[0]]);
       }
     }
+    else if (singlet.size()==1&&antitriplet.size()==2) {
+      tColinePtr col[2] = {ColourLine::create(outgoing[antitriplet[0]],true),
+			   ColourLine::create(outgoing[antitriplet[1]],true)};
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+    }
     else {
       string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
 	+ out[1]->PDGName() + " " + out[2]->PDGName();
@@ -512,6 +517,11 @@ colourConnections(const Particle & parent,
 	outgoing[octet[0]]->antiColourNeighbour(outgoing[antitriplet[0]]);
       }
     }
+    else if (singlet.size()==1&&triplet.size()==2) {
+      tColinePtr col[2] = {ColourLine::create(outgoing[triplet[0]]),
+			   ColourLine::create(outgoing[triplet[1]])};
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
     else {
       string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
 	+ out[1]->PDGName() + " " + out[2]->PDGName();
@@ -543,6 +553,48 @@ colourConnections(const Particle & parent,
 			    << mode << Exception::runerror;
 	}
       }
+    }
+    else if(triplet.size()==3) {
+      tColinePtr col[2];
+      if(colourFlow()==0) {
+	outgoing[0]->incomingColour    (const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[1]);
+	col[1] = ColourLine::create(outgoing[2]);
+      }
+      else if(colourFlow()==1) {
+	outgoing[1]->incomingColour    (const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[0]);
+	col[1] = ColourLine::create(outgoing[2]);
+      }
+      else if(colourFlow()==2) {
+	outgoing[2]->incomingColour    (const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[0]);
+	col[1] = ColourLine::create(outgoing[1]);
+      }
+      else
+	assert(false);
+      parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+    }
+    else if(antitriplet.size()==3) {
+      tColinePtr col[2];
+      if(colourFlow()==0) {
+	outgoing[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[1],true);
+	col[1] = ColourLine::create(outgoing[2],true);
+      }
+      else if(colourFlow()==1) {
+	outgoing[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[0],true);
+	col[1] = ColourLine::create(outgoing[2],true);
+      }
+      else if(colourFlow()==2) {
+	outgoing[2]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+	col[0] = ColourLine::create(outgoing[0],true);
+	col[1] = ColourLine::create(outgoing[1],true);
+      }
+      else
+	assert(false);
+      parent.colourLine()->setSinkNeighbours(col[0],col[1]);
     }
     else {
       string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
@@ -722,8 +774,8 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     else {
       generator()->log() << "Unknown colour flow structure for "
 			 << "colour neutral decay " 
-			 << name 
-			 << " in getColourFactors(), omitting decay\n";
+			 << name  << " in GeneralThreeBodyDecayer::"
+			 << "setColourFactors(), omitting decay\n";
       return false;
     }
   }
@@ -773,7 +825,7 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
 	else {
 	  generator()->log() << "Unknown colour for the intermediate in "
 			     << "triplet -> triplet triplet antitriplet in "
-			     << "ThreeBodyDecayConstructor::getColourFactors()"
+			     << "GeneralThreeBodyDecayer::setColourFactors()"
 			     << " for " << name << " omitting decay\n";
 	  return false;
 	}
@@ -784,10 +836,15 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       _colour        = vector<DVector>(1,DVector(1,4./3.));
       _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
     }
+    else if(sng.size()==1&&atrip.size()==2) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,2.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,2.));
+    }
     else {
       generator()->log() << "Unknown colour structure for "
 			 << "triplet decay in "
-			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << "GeneralThreeBodyDecayer::setColourFactors()"
 			 << " for " << name << " omitting decay\n";
       return false;
     }
@@ -838,7 +895,7 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
 	else {
 	  generator()->log() << "Unknown colour for the intermediate in "
 			     << "antitriplet -> antitriplet antitriplet triplet in "
-			     << "ThreeBodyDecayConstructor::getColourFactors()"
+			     << "GeneralThreeBodyDecayer::setColourFactors()"
 			     << " for " << name << " omitting decay\n";
 	  return false;
 	}
@@ -849,13 +906,19 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       _colour        = vector<DVector>(1,DVector(1,4./3.));
       _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
     }
+    else if(sng.size()==1&&trip.size()==2) {
+      _nflow = 1;
+      _colour        = vector<DVector>(1,DVector(1,2.));
+      _colourLargeNC = vector<DVector>(1,DVector(1,2.));
+    }
     else {
       generator()->log() << "Unknown colour antitriplet decay in "
-			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << "GeneralThreeBodyDecayer::setColourFactors()"
 			 << " for " << name << " omitting decay\n";
       return false;
     }
   }
+  // colour octet particle
   else if( _incoming->iColour() == PDT::Colour8) {
     // triplet antitriplet
     if(trip.size() == 1 && atrip.size() == 1 && sng.size() == 1) {
@@ -863,9 +926,54 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       _colour        = vector<DVector>(1,DVector(1,0.5));
       _colourLargeNC = vector<DVector>(1,DVector(1,0.5));
     }
+    // three (anti)triplets
+    else if(trip.size()==3||atrip.size()==3) {
+      _nflow = 3;
+      _colour        = vector<DVector>(3,DVector(3,0.));
+      _colourLargeNC = vector<DVector>(3,DVector(3,0.));
+      _colour[0][0] = 1.; _colour[1][1] = 1.; _colour[2][2] = 1.;
+      _colour[0][1] = -0.5; _colour[1][0] = -0.5;
+      _colour[0][2] = -0.5; _colour[2][0] = -0.5;
+      _colour[1][2] = -0.5; _colour[2][1] = -0.5;
+      _colourLargeNC = vector<DVector>(3,DVector(3,0.));
+      _colourLargeNC[0][0] = 1.; _colourLargeNC[1][1] = 1.; _colourLargeNC[2][2] = 1.;
+      // sett the factors for the diagrams
+      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+	tPDPtr inter = _diagrams[ix].intermediate;
+	if(inter->CC()) inter = inter->CC();
+	unsigned int io[2]={1,2};
+	double sign = _diagrams[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
+	for(unsigned int iy=0;iy<3;++iy) {
+	  if     (iy==1) io[0]=0;
+	  else if(iy==2) io[1]=1;
+	  tPDVector decaylist = _diagrams[ix].vertices.second->search(iy, inter);
+	  if(decaylist.empty()) continue;
+	  bool found=false;
+	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
+	    if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.first &&
+	       decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.second) {
+	      sign *= 1.;
+	      found = true;
+	    }
+	    else if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.second &&
+		    decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.first ) {
+	      sign *= -1.;
+	      found = true;
+	    }
+	  }
+	  if(found) {
+	    if(iy==1) sign *=-1.;
+	    break;
+	  }
+	}
+	_diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(_diagrams[ix].channelType+1,sign));
+	_diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(_diagrams[ix].channelType+1,sign));
+      }
+    }
+    // unknown
     else {
       generator()->log() << "Unknown colour octet decay in "
-			 << "ThreeBodyDecayConstructor::getColourFactors()"
+			 << "GeneralThreeBodyDecayer::setColourFactors()"
 			 << " for " << name << " omitting decay\n";
       return false;
     }
@@ -882,6 +990,13 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       for(unsigned int iy=0;iy<_nflow;++iy) {
 	generator()->log() << _colour[ix][iy] << " ";
       }
+      generator()->log() << "\n";
+    }
+    for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+      generator()->log() << "colour flow for diagram : " << ix;
+      for(unsigned int iy=0;iy<_diagrams[ix].colourFlow.size();++iy)
+	generator()->log() << "(" << _diagrams[ix].colourFlow[iy].first  << "," 
+			   << _diagrams[ix].colourFlow[iy].second << "); ";
       generator()->log() << "\n";
     }
   }
