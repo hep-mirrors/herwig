@@ -306,16 +306,6 @@ void RPV::createMixingMatrices() {
     }
     charginoVMix(new_ptr(MixingMatrix(newMat,charginoVMix()->getIds())));
   }
-  // in SOFTSUSY the neutralino mixing matrix seems to be transposed 
-  else if(program=="SOFTSUSY") {
-    CMatrix oldMat = neutralinoMix()->getMatrix();
-    CMatrix newMat(7,vector<Complex>(7,0.));
-    for(unsigned int ix=0;ix<7;++ix) {
-      for(unsigned int iy=0;iy<7;++iy)
-	newMat[ix][iy] = oldMat[iy][ix];
-    }
-    neutralinoMix(new_ptr(MixingMatrix(newMat,neutralinoMix()->getIds())));
-  }
   // we don't want neutrinos first then neutralinos so swap them
   // neutralinos first then neutrinos
   if ( neutralinoMix()->size().first == 7 ) {
