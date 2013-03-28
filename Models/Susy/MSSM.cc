@@ -192,26 +192,21 @@ void MSSM::extractParameters(bool checkmodel) {
   // flavour violation
   jt = pit->second.find(6);
   int ifv = jt!=pit->second.end() ? int(jt->second) : 0;
-  // the higgs mixing angle if not NMSSM
+  // the higgs mixing angle 
   theAlpha=0.;
-  if(inmssm==0&&irpv==0) {
-    bool readAlpha = false;
-    map<string,ParamMap>::const_iterator pit;
-    pit=parameters().find("alpha");
-    if(pit!=parameters().end()) {
-      ParamMap::const_iterator it = pit->second.find(1);
-      if(it!=pit->second.end()) {
-	readAlpha = true;
-	theAlpha=it->second;
-      }
+  bool readAlpha = false;
+  pit=parameters().find("alpha");
+  if(pit!=parameters().end()) {
+    ParamMap::const_iterator it = pit->second.find(1);
+    if(it!=pit->second.end()) {
+      readAlpha = true;
+      theAlpha=it->second;
     }
-    if(!readAlpha) 
-      throw Exception() << "In the MSSM model BLOCK ALPHA which must be"
-			<< " present in the SLHA file is missing"
-			<< Exception::runerror;
   }
-
-
+  if(inmssm==0&&irpv==0&&!readAlpha) 
+    throw Exception() << "In the MSSM model BLOCK ALPHA which must be"
+		      << " present in the SLHA file is missing"
+		      << Exception::runerror;
   if(checkmodel) {
     if(inmssm!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				    << " used but NMSSM read in " 
