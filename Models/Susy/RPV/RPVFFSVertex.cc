@@ -221,7 +221,7 @@ void RPVFFSVertex::doinit() {
     // neutrino
     if(_nmix->size().first<=4) {
       for(unsigned int nl = 0; nl < neu.size(); ++nl) {
-	for(long ix=11;ix<17;ix+=2) {
+	for(long ix=12;ix<17;ix+=2) {
 	  addToList( neu[nl],  ix, -(1000000+ix) );
 	  addToList( neu[nl], -ix,  (1000000+ix) );
 	}
@@ -233,6 +233,8 @@ void RPVFFSVertex::doinit() {
 	for(long ix=11;ix<17;ix+=2) {
 	  addToList( neu[nl],  ix, -(1000000+ix) );
 	  addToList( neu[nl], -ix,  (1000000+ix) );
+	  addToList( neu[nl],  ix, -(2000000+ix) );
+	  addToList( neu[nl], -ix,  (2000000+ix) );
 	}
       }
     }
@@ -723,8 +725,8 @@ void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
       if(f1->charged()) {
 	unsigned int ei = charginoIndex(f1ID);
 	unsigned int ej = charginoIndex(f2ID); 
-	_leftlast  = conj(OCCHL_[ih][ej][ei]);
-	_rightlast =      OCCHL_[ih][ei][ej] ;
+	_rightlast  = conj(OCCHL_[ih][ej][ei]);
+	_leftlast   =      OCCHL_[ih][ei][ej] ;
       }
       // neutralinos
       else {
@@ -742,8 +744,8 @@ void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
       if(f1->charged()) {
 	unsigned int ei = charginoIndex(f1ID);
 	unsigned int ej = charginoIndex(f2ID);
-	_leftlast  =  Complex(0.,1.)*conj(OCCAL_[ih][ej][ei]);
-	_rightlast = -Complex(0.,1.)*     OCCAL_[ih][ei][ej] ;
+	_rightlast = -Complex(0.,1.)*conj(OCCAL_[ih][ej][ei]);
+	_leftlast  =  Complex(0.,1.)*     OCCAL_[ih][ei][ej] ;
       }
       // neutralinos
       else {

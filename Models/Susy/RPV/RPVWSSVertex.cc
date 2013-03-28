@@ -137,23 +137,23 @@ void RPVWSSVertex::doinit() {
     addToList(23,1000015,-2000015);
     //Lbar-R stau
     addToList(23,-1000015,2000015);
-    if(mixH&&mixH->size().first>2) {
+    if(!(mixH&&mixH->size().first>2)) {
       for(long ix=1000012;ix<1000017;ix+=2) {
 	// sneutrinos
 	addToList(23,ix,-ix);
-	//LL-sleptons
-	for(long ix=1000011;ix<1000016;ix+=2) {
-	  addToList(-24,-ix,ix+1);
-	}
-	//2-L stau
-	addToList(-24,-2000015,1000016);
-	//LL-sleptons
-	for(long ix=1000011;ix<1000016;ix+=2) {
-	  addToList(24,ix,-ix-1);
-	}
-	//2-L stau
-	addToList(24,2000015,-1000016);
       }
+      //LL-sleptons
+      for(long ix=1000011;ix<1000016;ix+=2) {
+	addToList(-24,-ix,ix+1);
+      }
+      //2-L stau
+      addToList(-24,-2000015,1000016);
+      //LL-sleptons
+      for(long ix=1000011;ix<1000016;ix+=2) {
+	addToList(24,ix,-ix-1);
+      }
+      //2-L stau
+      addToList(24,2000015,-1000016);
     }
   }
   if(_interactions==0||_interactions==2) {
@@ -419,12 +419,12 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	 scalar == ParticleID::SUSY_nu_eL || scalar == ParticleID::SUSY_nu_muL ||
 	 scalar == ParticleID::SUSY_nu_tauL ) {
 	unsigned int ih = scalar < 1000000 ? (scalar-25)/10 : (scalar-1000008)/2;
-	_factlast =  0.5*Cijec_[ih][ic]/_sw;
+	_factlast = -0.5*Cijec_[ih][ic]/_sw;
 	if(gboson<0) _factlast *= -1.;
       }
       else {
 	unsigned int ih = scalar < 1000000 ? 0 : (scalar-1000016);
-	_factlast = Complex(0., 0.5)*Cijco_[ih][ic]/_sw;
+	_factlast =  Complex(0., 0.5)*Cijco_[ih][ic]/_sw;
       } 
       if(part3->charged()) _factlast *= -1.;
     }
