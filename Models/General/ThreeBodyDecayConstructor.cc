@@ -101,7 +101,7 @@ void ThreeBodyDecayConstructor::Init() {
   static SwitchOption interfaceIntegrationOptionShallowestPole
     (interfaceIntegrationOption,
      "ShallowestPole",
-     "Onlt include the  shallowest pole",
+     "Only include the  shallowest pole",
      1);
 
   static Parameter<ThreeBodyDecayConstructor,double> interfaceRelativeError
@@ -136,20 +136,6 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter,
   outgoing.insert(getParticleData(diagrams[0].outgoing           ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
-  // sort out ordering and labeling of diagrams
-  vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
-  for(unsigned int ix=0;ix<diagrams.size();++ix) {
-    unsigned int iy=0;
-    for(;iy<3;++iy) 
-      if(diagrams[ix].outgoing == outVector[iy]->id()) break;
-    if(diagrams[ix].channelType == TBDiagram::UNDEFINED) {
-      diagrams[ix].channelType = TBDiagram::Channel(iy);
-      if( ( iy == 0 && outVector[1]->id() != diagrams[ix].outgoingPair.first)||
-	  ( iy == 1 && outVector[0]->id() != diagrams[ix].outgoingPair.first)|| 
-	  ( iy == 2 && outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
-	swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
-    }
-  }
   // get the object name
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, outgoing, objectname);
@@ -159,6 +145,7 @@ createDecayer(vector<TBDiagram> & diagrams, bool inter,
     dynamic_ptr_cast<GeneralThreeBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
   // set up the decayer and return if doesn't work
+  vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
   if(!decayer->setDecayInfo(incoming,outVector,diagrams,symfac))
     return GeneralThreeBodyDecayerPtr();
   // set decayer options from base class
@@ -249,6 +236,19 @@ createDecayMode(vector<NBDiagram> & mode,
   outgoing.insert(getParticleData(diagrams[0].outgoing));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
+  // sort out ordering and labeling of diagrams
+  vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
+  for(unsigned int ix=0;ix<diagrams.size();++ix) {
+    // should all be UNDEFINED at this point but check anyway
+    if(diagrams[ix].channelType != TBDiagram::UNDEFINED) continue;
+    // determine the type
+    unsigned int iy=mode[ix].channelType[0]-1;
+    diagrams[ix].channelType = TBDiagram::Channel(iy);
+    if( ( iy == 0 && outVector[1]->id() != diagrams[ix].outgoingPair.first)||
+	( iy == 1 && outVector[0]->id() != diagrams[ix].outgoingPair.first)|| 
+	( iy == 2 && outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
+      swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
+  }
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
