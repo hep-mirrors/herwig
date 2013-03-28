@@ -68,7 +68,7 @@ void RPVUDDVertex::doinit() {
  	if(lambda_[i][j][k]==0.) continue;
  	// particles in the vertex
  	// right up squark
-	if(k<j) {
+	if(j<k) {
 	  addToList( -2*j-1 , -2*k-1 , -2000002-2*i );
 	  addToList(  2*j+1 ,  2*k+1 , +2000002+2*i );
 	}
@@ -110,9 +110,6 @@ void RPVUDDVertex::setCoupling(Energy2, tcPDPtr part1,
     }
     j = (abs(part1->id())- 1)/2;
     k = (abs(part2->id())- 1)/2;
-//     if(j<k) {
-//       mix *=-1.;
-//     }
   }
   else if(abs(islep) == ParticleID::SUSY_d_R || 
 	  abs(islep) == ParticleID::SUSY_s_R || 
@@ -130,11 +127,11 @@ void RPVUDDVertex::setCoupling(Energy2, tcPDPtr part1,
     if(abs(part1->id())%2==0) {
       i = (abs(part1->id())- 2)/2;
       j = (abs(part2->id())- 1)/2;
-      //       mix *= -1.;
     }
     else {
       i = (abs(part2->id())- 2)/2;
       j = (abs(part1->id())- 1)/2;
+      // mix *= -1.;
     }
   }
   else 
@@ -148,6 +145,5 @@ void RPVUDDVertex::setCoupling(Energy2, tcPDPtr part1,
     left (0.);
     right(1.);
   }
-  if(j<k) swap(j,k);
   norm(mix*lambda_[i][j][k]);
 }
