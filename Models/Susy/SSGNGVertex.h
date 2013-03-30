@@ -139,6 +139,11 @@ private:
   bool _includeOnShell;
 
   /**
+   *  Option to omit light quark yukawas 
+   */
+  bool _omitLightQuarkYukawas;
+
+  /**
    * Pointer to the stop mixing matrix
    */
   tMixingMatrixPtr _stop;

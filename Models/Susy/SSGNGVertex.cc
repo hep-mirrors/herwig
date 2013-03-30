@@ -36,7 +36,8 @@ namespace {
   }
 }
 
-SSGNGVertex::SSGNGVertex() : _includeOnShell(false),
+SSGNGVertex::SSGNGVertex() : _includeOnShell(false), 
+			     _omitLightQuarkYukawas(false),
 			     _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
 			     _leftlast(ZERO), _rightlast(ZERO) {
@@ -100,12 +101,12 @@ void SSGNGVertex::doinitrun() {
 
 void SSGNGVertex::persistentOutput(PersistentOStream & os) const {
   os << _sw << _cw << _theN << ounit(_mw,GeV) << _sb << _cb
-     << _stop << _sbot << _includeOnShell;
+     << _stop << _sbot << _includeOnShell << _omitLightQuarkYukawas;
 }
 
 void SSGNGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN >> iunit(_mw,GeV) >> _sb >> _cb
-     >> _stop >> _sbot >> _includeOnShell;
+     >> _stop >> _sbot >> _includeOnShell >> _omitLightQuarkYukawas;
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -132,6 +133,21 @@ void SSGNGVertex::Init() {
      "Don't incldue them",
      false);
 
+  static Switch<SSGNGVertex,bool> interfaceOmitLightQuarkYukawas
+    ("OmitLightQuarkYukawas",
+     "Omit the yukawa type couplings for down, up, strange"
+     " and charm quarks, mainly for testing vs ISAJET",
+     &SSGNGVertex::_omitLightQuarkYukawas, false, false, false);
+  static SwitchOption interfaceOmitLightQuarkYukawasNo
+    (interfaceOmitLightQuarkYukawas,
+     "No",
+     "Include the Yukawas",
+     false);
+  static SwitchOption interfaceOmitLightQuarkYukawasYes
+    (interfaceOmitLightQuarkYukawas,
+     "Yes",
+     "Omit Yukawas",
+     true);
 }
 
 void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
@@ -171,7 +187,8 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       tcPDPtr smf = getParticleData(iferm);
       Energy mf = smf->mass();
       double qf = smf->charge()/eplus;
-      double y = 0.5*dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel())->mass(q2,smf)/_mw;
+      double y = (!(iferm<=4&&_omitLightQuarkYukawas)) ?
+	0.5*double(dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel())->mass(q2,smf)/_mw) : 0.;
       Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
       double lambda(0.);
       // neutralino mixing element
