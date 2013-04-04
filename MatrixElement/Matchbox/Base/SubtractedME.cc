@@ -240,7 +240,9 @@ void SubtractedME::fillProjectors() {
     dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
   for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
 	d != group->dependent().end(); ++d ) {
-    if ( (**d).lastCrossSection() != ZERO )
+    if ( !(**d).kinematicsGenerated() )
+      continue;
+    if ( (**d).willPassCuts() )
       lastXCombPtr()->projectors().insert(1.,*d);
   }
 }
@@ -258,12 +260,17 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
     bool haveDipole = false;
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d )
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).kinematicsGenerated() )
+	continue;
       if ( (**d).willPassCuts() ) {
 	haveDipole = true;
 	break;
       }
-    if ( below && haveDipole )
+    }
+    if ( !haveDipole )
+      return 1.;
+    if ( below )
       return 0.;
     return 1.;
   }
@@ -278,7 +285,9 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     double sum = 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( (**d).lastCrossSection() != ZERO ) {
+      if ( !(**d).kinematicsGenerated() )
+	continue;
+      if ( (**d).willPassCuts() ) {
 	sum += (**d).lastME2();
 	++n;
       }
@@ -305,11 +314,27 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
       return 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( (**d).lastCrossSection() != ZERO ) {
+      if ( !(**d).kinematicsGenerated() )
+	continue;
+      if ( (**d).willPassCuts() ) {
 	++n;
       }
     }
     return n;
+  }
+
+  if ( realShowerSubtraction() ) {
+    bool haveDipole = false;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).kinematicsGenerated() )
+	continue;
+      if ( (**d).willPassCuts() ) {
+	haveDipole = true;
+	break;
+      }
+    }
+    if ( !haveDipole )
+      return 0.;
   }
 
   return 1.;
