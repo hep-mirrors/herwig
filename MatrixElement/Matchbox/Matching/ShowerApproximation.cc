@@ -85,7 +85,7 @@ bool ShowerApproximation::isInShowerPhasespace() const {
       maxPt = min(maxPt,p->perp());
   if ( maxPt == generator()->maximumCMEnergy() )
     maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
-  maxPt *= sqrt(hardScaleFactor());
+  maxPt *= hardScaleFactor();
 
   return dipole()->lastPt() <= maxPt;
 
@@ -115,25 +115,25 @@ Energy2 ShowerApproximation::showerEmissionScale() const {
 
 Energy2 ShowerApproximation::bornRenormalizationScale() const {
   return 
-    dipole()->underlyingBornME()->renormalizationScaleFactor() *
+    sqr(dipole()->underlyingBornME()->renormalizationScaleFactor()) *
     dipole()->underlyingBornME()->renormalizationScale();
 }
 
 Energy2 ShowerApproximation::bornFactorizationScale() const {
   return 
-    dipole()->underlyingBornME()->factorizationScaleFactor() *
+    sqr(dipole()->underlyingBornME()->factorizationScaleFactor()) *
     dipole()->underlyingBornME()->factorizationScale();
 }
 
 Energy2 ShowerApproximation::realRenormalizationScale() const {
   return 
-    dipole()->realEmissionME()->renormalizationScaleFactor() *
+    sqr(dipole()->realEmissionME()->renormalizationScaleFactor()) *
     dipole()->realEmissionME()->renormalizationScale();
 }
 
 Energy2 ShowerApproximation::realFactorizationScale() const {
   return 
-    dipole()->realEmissionME()->factorizationScaleFactor() *
+    sqr(dipole()->realEmissionME()->factorizationScaleFactor()) *
     dipole()->realEmissionME()->factorizationScale();
 }
 

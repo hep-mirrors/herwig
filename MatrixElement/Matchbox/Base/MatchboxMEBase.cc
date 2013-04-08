@@ -266,8 +266,8 @@ void MatchboxMEBase::setScale() const {
   if ( haveX1X2() ) {
     lastXCombPtr()->lastSHat((meMomenta()[0]+meMomenta()[1]).m2());
   }
-  Energy2 fscale = factorizationScale()*factorizationScaleFactor();
-  Energy2 rscale = renormalizationScale()*renormalizationScaleFactor();
+  Energy2 fscale = factorizationScale()*sqr(factorizationScaleFactor());
+  Energy2 rscale = renormalizationScale()*sqr(renormalizationScaleFactor());
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   if ( !fixedCouplings() ) {
