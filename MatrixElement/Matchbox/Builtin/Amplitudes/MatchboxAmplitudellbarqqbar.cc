@@ -39,7 +39,7 @@ IBPtr MatchboxAmplitudellbarqqbar::fullclone() const {
 }
 
 void MatchboxAmplitudellbarqqbar::doinit() {
-  MatchboxAmplitude::doinit();
+  MatchboxZGammaAmplitude::doinit();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -50,7 +50,7 @@ void MatchboxAmplitudellbarqqbar::doinit() {
 }
 
 void MatchboxAmplitudellbarqqbar::doinitrun() {
-  MatchboxAmplitude::doinitrun();
+  MatchboxZGammaAmplitude::doinitrun();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -114,7 +114,7 @@ bool MatchboxAmplitudellbarqqbar::canHandle(const PDVector& proc) const {
 void MatchboxAmplitudellbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
   if ( !calculateTrees ) {
-    MatchboxAmplitude::prepareAmplitudes(me);
+    MatchboxZGammaAmplitude::prepareAmplitudes(me);
     return;
   }
 
@@ -126,7 +126,7 @@ void MatchboxAmplitudellbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr m
   momentum(2,amplitudeMomentum(2));
   momentum(3,amplitudeMomentum(3));
 
-  MatchboxAmplitude::prepareAmplitudes(me);
+  MatchboxZGammaAmplitude::prepareAmplitudes(me);
 
 }
 
@@ -153,19 +153,21 @@ Complex MatchboxAmplitudellbarqqbar::evaluate(size_t, const vector<int>& hel, Co
 
   double bProp = (amplitudeMomentum(0)+amplitudeMomentum(1)).m2()/lastSHat();
 
-  Complex gamma =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
-    (LL + RL + LR + RR)/bProp;
+  Complex gamma = 0.0;
+  if ( includeGamma() )
+    gamma = Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+      (LL + RL + LR + RR)/bProp;
 
   bool up = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
-  Complex Z =
-    Complex(0.,-1.)*
-    (standardModel()->le()*(up ? standardModel()->lu() : standardModel()->ld())*LL +
-     standardModel()->re()*(up ? standardModel()->lu() : standardModel()->ld())*RL +
-     standardModel()->le()*(up ? standardModel()->ru() : standardModel()->rd())*LR +
-     standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
-    Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
-
+  Complex Z = 0.0;
+  if ( includeZ() )
+    Z = Complex(0.,-1.)*
+      (standardModel()->le()*(up ? standardModel()->lu() : standardModel()->ld())*LL +
+       standardModel()->re()*(up ? standardModel()->lu() : standardModel()->ld())*RL +
+       standardModel()->le()*(up ? standardModel()->ru() : standardModel()->rd())*LR +
+       standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
+      Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
+  
   Complex res = 4.*Constants::pi*SM().alphaEM()*(gamma+Z);
   largeN = res;
   return res;
@@ -194,18 +196,20 @@ Complex MatchboxAmplitudellbarqqbar::evaluateOneLoop(size_t, const vector<int>& 
 
   double bProp = (amplitudeMomentum(0)+amplitudeMomentum(1)).m2()/lastSHat();
 
-  Complex gamma =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
-    (LL + RL + LR + RR)/bProp;
+  Complex gamma = 0.0;
+  if ( includeGamma() )
+    gamma = Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+      (LL + RL + LR + RR)/bProp;
 
   bool up = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
-  Complex Z =
-    Complex(0.,-1.)*
-    (standardModel()->le()*(up ? standardModel()->lu() : standardModel()->ld())*LL +
-     standardModel()->re()*(up ? standardModel()->lu() : standardModel()->ld())*RL +
-     standardModel()->le()*(up ? standardModel()->ru() : standardModel()->rd())*LR +
-     standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
-    Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
+  Complex Z = 0.0;
+  if ( includeZ() )
+    Z = Complex(0.,-1.)*
+      (standardModel()->le()*(up ? standardModel()->lu() : standardModel()->ld())*LL +
+       standardModel()->re()*(up ? standardModel()->lu() : standardModel()->ld())*RL +
+       standardModel()->le()*(up ? standardModel()->ru() : standardModel()->rd())*LR +
+       standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
+      Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
 
   Complex res = (SM().alphaS()/(2.*Constants::pi))*4.*Constants::pi*SM().alphaEM()*(gamma+Z);
   return res;
@@ -226,7 +230,7 @@ void MatchboxAmplitudellbarqqbar::persistentInput(PersistentIStream &, int) {}
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<MatchboxAmplitudellbarqqbar,MatchboxAmplitude>
+DescribeClass<MatchboxAmplitudellbarqqbar,MatchboxZGammaAmplitude>
   describeHerwigMatchboxAmplitudellbarqqbar("Herwig::MatchboxAmplitudellbarqqbar", "HwMatchbox.so");
 
 void MatchboxAmplitudellbarqqbar::Init() {

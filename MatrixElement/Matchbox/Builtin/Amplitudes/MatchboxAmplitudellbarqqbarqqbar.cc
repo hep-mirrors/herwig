@@ -39,7 +39,7 @@ IBPtr MatchboxAmplitudellbarqqbarqqbar::fullclone() const {
 }
 
 void MatchboxAmplitudellbarqqbarqqbar::doinit() {
-  MatchboxAmplitude::doinit();
+  MatchboxZGammaAmplitude::doinit();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -48,7 +48,7 @@ void MatchboxAmplitudellbarqqbarqqbar::doinit() {
 }
 
 void MatchboxAmplitudellbarqqbarqqbar::doinitrun() {
-  MatchboxAmplitude::doinitrun();
+  MatchboxZGammaAmplitude::doinitrun();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -142,7 +142,7 @@ inline bool rightNonZero(int heli, int helj, int helk, int hell) {
 void MatchboxAmplitudellbarqqbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
   if ( !calculateTrees ) {
-    MatchboxAmplitude::prepareAmplitudes(me);
+    MatchboxZGammaAmplitude::prepareAmplitudes(me);
     return;
   }
 
@@ -156,7 +156,7 @@ void MatchboxAmplitudellbarqqbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tc
   momentum(4,amplitudeMomentum(4));
   momentum(5,amplitudeMomentum(5));
 
-  MatchboxAmplitude::prepareAmplitudes(me);
+  MatchboxZGammaAmplitude::prepareAmplitudes(me);
 
 }
 
@@ -282,10 +282,24 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
      standardModel()->re()*(up4 ? standardModel()->ru() : standardModel()->rd())*RR4325)/
     Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
 
-  Complex sum2345 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma2345+Z2345);
-  Complex sum2543 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma2543+Z2543);
-  Complex sum4523 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma4523+Z4523);
-  Complex sum4325 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma4325+Z4325);
+  Complex sum2345 = 0.0;
+  Complex sum2543 = 0.0;
+  Complex sum4523 = 0.0;
+  Complex sum4325 = 0.0;
+
+  if ( includeGamma() ) {
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4325;
+  }
+
+  if ( includeZ() ) {
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4325;
+  }
 
   double Nc = SM().Nc();
 
@@ -351,7 +365,7 @@ void MatchboxAmplitudellbarqqbarqqbar::persistentInput(PersistentIStream &, int)
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<MatchboxAmplitudellbarqqbarqqbar,MatchboxAmplitude>
+DescribeClass<MatchboxAmplitudellbarqqbarqqbar,MatchboxZGammaAmplitude>
   describeHerwigMatchboxAmplitudellbarqqbarqqbar("Herwig::MatchboxAmplitudellbarqqbarqqbar", "HwMatchbox.so");
 
 void MatchboxAmplitudellbarqqbarqqbar::Init() {
