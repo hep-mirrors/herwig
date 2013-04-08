@@ -94,6 +94,28 @@ public:
   void splittingBookkeeping();
 
   /**
+   * For the given event generation setup return a xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				const PBPair & newPartonBins, tCutsPtr newCuts,
+				const DiagramVector & newDiagrams, bool mir,
+				const PartonPairVec& allPBins,
+				tStdXCombPtr newHead = tStdXCombPtr(),
+				tMEPtr newME = tMEPtr());
+
+  /**
+   * For the given event generation setup return a dependent xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(tStdXCombPtr newHead,
+				const PBPair & newPartonBins,
+				const DiagramVector & newDiagrams,
+				tMEPtr newME = tMEPtr());
+
+  /**
    * Create a dependent xcomb object for the underlying
    * Born process, given a XComb driving the real emission
    */

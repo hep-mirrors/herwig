@@ -214,6 +214,46 @@ void SubtractionDipole::splittingBookkeeping() {
   realSpectator(spectator(lastRealEmissionKey));
 }
 
+StdXCombPtr SubtractionDipole::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+					 tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+					 tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+					 const PBPair & newPartonBins, tCutsPtr newCuts,
+					 const DiagramVector & newDiagrams, bool mir,
+					 const PartonPairVec& allPBins,
+					 tStdXCombPtr newHead,
+					 tMEPtr) {
+  if ( splitting() ) {
+    return 
+      underlyingBornME()->makeXComb(newMaxEnergy, inc,
+				    newEventHandler, newSubProcessHandler,
+				    newExtractor, newCKKW,
+				    newPartonBins, newCuts,
+				    newDiagrams, mir,
+				    allPBins,
+				    newHead);
+  }
+  return 
+    realEmissionME()->makeXComb(newMaxEnergy, inc,
+				 newEventHandler, newSubProcessHandler,
+				 newExtractor, newCKKW,
+				 newPartonBins, newCuts,
+				 newDiagrams, mir,
+				 allPBins,
+				 newHead);
+}
+
+StdXCombPtr SubtractionDipole::makeXComb(tStdXCombPtr newHead,
+					 const PBPair & newPartonBins,
+					 const DiagramVector & newDiagrams,
+					 tMEPtr) {
+  if ( splitting() ) {
+    return
+      underlyingBornME()->makeXComb(newHead, newPartonBins, newDiagrams);
+  } 
+  return
+    realEmissionME()->makeXComb(newHead, newPartonBins, newDiagrams);
+}
+
 StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*realXC).mePartonData();
@@ -242,10 +282,8 @@ StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   assert(ppit != pbs.end());
 
-  StdXCombPtr res =
-    new_ptr(StandardXComb(realXC,*ppit,this,bornDiags));
-
-  return res;
+  return
+    underlyingBornME()->makeXComb(realXC,*ppit,bornDiags,this);
 
 }
 
@@ -293,7 +331,7 @@ vector<StdXCombPtr> SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
     assert(ppit != pbs.end());
 
     StdXCombPtr rxc =
-      new_ptr(StandardXComb(bornXC,*ppit,this,pr->second));
+      realEmissionME()->makeXComb(bornXC,*ppit,pr->second,this);
 
     res.push_back(rxc);
 
