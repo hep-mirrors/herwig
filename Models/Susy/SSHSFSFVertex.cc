@@ -407,22 +407,22 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
     q2a = (alpha == 0) ? 0.0 : 1.0;
   }
   else {
-    q1a = (*theMix[0])(alpha, 0);
-    q2a = (*theMix[0])(1, alpha);
+    q1a = (*theMix[0])(alpha,0);
+    q2a = (*theMix[0])(alpha,1);
   }
   if( smd == 1 || smd == 3 ) {
     q1b = (beta == 0) ? 1.0 : 0.0;
     q2b = (beta == 0) ? 0.0 : 1.0;
   }
   else {
-    q1b = (*theMix[1])(0, beta);
-    q2b = (*theMix[1])(1, beta);
+    q1b = (*theMix[1])(beta,0);
+    q2b = (*theMix[1])(beta,1);
   }
   
   theCoupLast = ( q1a*q1b*(mfd*mfd*theTanB + mfu*mfu/theTanB - facta)
 		  + q2a*q2b*mfu*mfd*(theTanB + (1./theTanB))
-		  + q1a*q1b*mfd*(theTriC[smd - 1]*theTanB + theMu)
-		  + q2a*q1b*mfu*(theMu + theTriC[(smu + 1)/2]/theTanB)
+		  + q1a*q2b*mfd*(theTriC[smd - 1]*theTanB + theMu)
+		  + q2a*q1b*mfu*(theMu + theTriC[smu-1]/theTanB)
 		 )/theMw/sqrt(2.);
   }
 }
