@@ -25,7 +25,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSNNPVertex::SSNNPVertex() : _includeOnShell(false),
+SSNNPVertex::SSNNPVertex() : _includeOnShell(false), _realIntegral(false), 
 			     _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(ZERO), _couplast(0.),
 			     _leftlast(ZERO), _rightlast(ZERO) {
@@ -79,12 +79,14 @@ void SSNNPVertex::doinitrun() {
 
 void SSNNPVertex::persistentOutput(PersistentOStream & os) const {
   os << _sw << _cw << _theN << ounit(_mw,GeV) << _sb << _cb
-     << _stop << _sbot << _stau << _theU << _theV << _includeOnShell;
+     << _stop << _sbot << _stau << _theU << _theV << _includeOnShell
+     << _realIntegral;
 }
 
 void SSNNPVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN >> iunit(_mw,GeV) >> _sb >> _cb
-     >> _stop >> _sbot >> _stau >> _theU >> _theV >> _includeOnShell;
+     >> _stop >> _sbot >> _stau >> _theU >> _theV >> _includeOnShell
+     >> _realIntegral;
 }
 
 // The following static variable is needed for the type
@@ -110,6 +112,21 @@ void SSNNPVertex::Init() {
     (interfaceIncludeOnShellIntermediates,
      "No",
      "Don't incldue them",
+     false);
+
+  static Switch<SSNNPVertex,bool> interfaceRealIntegral
+    ("RealIntegral",
+     "Only include the real parts of the integrals",
+     &SSNNPVertex::_realIntegral, false, false, false);
+  static SwitchOption interfaceRealIntegralYes
+    (interfaceRealIntegral,
+     "Yes",
+     "Only include the real part",
+     true);
+  static SwitchOption interfaceRealIntegralNo
+    (interfaceRealIntegral,
+     "No",
+     "Don't include the real part",
      false);
 
 }
@@ -236,27 +253,27 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     // the chargino W contribution
     for(unsigned int ic=0;ic<2;++ic) {
       long id = ic==0 ? 
-	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
+    	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
       if(!_includeOnShell&&(Mk+_mw<Mj||Mk+_mw<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu2 : neu1;
-	g[ix][0] = 
-	  conj((*_theN)(in, 1))*(*_theV)(ic, 0) - 
-	  conj((*_theN)(in, 3))*(*_theV)(ic, 1)/sqrt(2);
-	g[ix][1] = 
-	  (*_theN)(in, 1)*conj((*_theU)(ic, 0)) +
-	  (*_theN)(in, 2)*conj((*_theU)(ic, 1))/sqrt(2);
+    	unsigned int in = ix==0 ? neu2 : neu1;
+    	g[ix][0] = 
+    	  conj((*_theN)(in, 1))*(*_theV)(ic, 0) - 
+    	  conj((*_theN)(in, 3))*(*_theV)(ic, 1)/sqrt(2);
+    	g[ix][1] = 
+    	  (*_theN)(in, 1)*conj((*_theU)(ic, 0)) +
+    	  (*_theN)(in, 2)*conj((*_theU)(ic, 1))/sqrt(2);
       }
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
-	coup[ix] = 
-	  Mj*(I2-J-K)*(g[0][o[ix]]*g[1][o[ix]]-conj(g[0][ix]*g[1][ix]))-
-	  Mi*(J-K)*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]))+
-	  2.*Mk*J*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]));
+    	coup[ix] = 
+    	  Mj*(I2-J-K)*(g[0][o[ix]]*g[1][o[ix]]-conj(g[0][ix]*g[1][ix]))-
+    	  Mi*(J-K)*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]))+
+    	  2.*Mk*J*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]));
       }
       _leftlast  += 4.*coup[0];
       _rightlast += 4.*coup[1];
@@ -265,29 +282,29 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     Energy mh = getParticleData(ParticleID::Hplus)->mass();
     for(unsigned int ic=0;ic<2;++ic) {
       long id = ic==0 ? 
-	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
+    	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
       if(!_includeOnShell&&(Mk+mh<Mj||Mk+mh<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,mh,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu2 : neu1;
-	g[ix][0] =  (*_theN)(in, 3)*(*_theV)(ic,0) 
-	  +               ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
-	  (*_theV)(ic,1)/sqrt(2);
-	g[ix][0] *= _cb;
-	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
-			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
-			(*_theU)(ic,1)/sqrt(2));
-	g[ix][1] *= _sb;
+    	unsigned int in = ix==0 ? neu2 : neu1;
+    	g[ix][0] =  (*_theN)(in, 3)*(*_theV)(ic,0) 
+    	  +               ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+    	  (*_theV)(ic,1)/sqrt(2);
+    	g[ix][0] *= _cb;
+    	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
+    			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+    			(*_theU)(ic,1)/sqrt(2));
+    	g[ix][1] *= _sb;
       }
       swap(g[1][0],g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
-	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
-	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
-	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
+    	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
+    	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
+    	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
       }
       _leftlast  += 2.*coup[0];
       _rightlast += 2.*coup[1];
@@ -295,29 +312,29 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     // the chargino goldstone contribution
     for(unsigned int ic=0;ic<2;++ic) {
       long id = ic==0 ? 
-	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
+    	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
       if(!_includeOnShell&&(Mk+_mw<Mj||Mk+_mw<Mi)) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu2 : neu1;
-	g[ix][0] = (*_theN)(in, 3)*(*_theV)(ic,0) 
-	  + ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
-	  (*_theV)(ic,1)/sqrt(2);
-	g[ix][0] *= _sb;
-	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
-			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
-			(*_theU)(ic,1)/sqrt(2));
-	g[ix][1] *= _cb;
+    	unsigned int in = ix==0 ? neu2 : neu1;
+    	g[ix][0] = (*_theN)(in, 3)*(*_theV)(ic,0) 
+    	  + ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+    	  (*_theV)(ic,1)/sqrt(2);
+    	g[ix][0] *=-_sb;
+    	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
+    			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+    			(*_theU)(ic,1)/sqrt(2));
+    	g[ix][1] *= _cb;
       }
       swap(g[1][0],g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
-	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
-	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
-	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
+    	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
+    	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
+    	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
       }
       _leftlast  += 2.*coup[0];
       _rightlast += 2.*coup[1];
@@ -340,4 +357,10 @@ void SSNNPVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
   J  = Looptools::C0i(Looptools::cc0,min2,mout2,0.,ms2,mf2,ms2)*UnitRemoval::InvE2;
   I2 =-Looptools::C0i(Looptools::cc1,min2,mout2,0.,mf2,ms2,mf2)*UnitRemoval::InvE2;
   K  = (1.+Complex(m2*I+M2*J-Mj2*I2))/(Mi2-Mj2);
+  if(_realIntegral) {
+    I  = I .real();
+    J  = J .real();
+    I2 = I2.real();
+    K  = K .real();
+  }
 }

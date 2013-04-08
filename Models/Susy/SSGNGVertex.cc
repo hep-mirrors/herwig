@@ -36,7 +36,7 @@ namespace {
   }
 }
 
-SSGNGVertex::SSGNGVertex() : _includeOnShell(false), 
+SSGNGVertex::SSGNGVertex() : _includeOnShell(false), _realIntegral(false), 
 			     _omitLightQuarkYukawas(false),
 			     _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
@@ -101,12 +101,14 @@ void SSGNGVertex::doinitrun() {
 
 void SSGNGVertex::persistentOutput(PersistentOStream & os) const {
   os << _sw << _cw << _theN << ounit(_mw,GeV) << _sb << _cb
-     << _stop << _sbot << _includeOnShell << _omitLightQuarkYukawas;
+     << _stop << _sbot << _includeOnShell << _omitLightQuarkYukawas
+     << _realIntegral;
 }
 
 void SSGNGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN >> iunit(_mw,GeV) >> _sb >> _cb
-     >> _stop >> _sbot >> _includeOnShell >> _omitLightQuarkYukawas;
+     >> _stop >> _sbot >> _includeOnShell >> _omitLightQuarkYukawas
+     >> _realIntegral;
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -148,6 +150,21 @@ void SSGNGVertex::Init() {
      "Yes",
      "Omit Yukawas",
      true);
+
+  static Switch<SSGNGVertex,bool> interfaceRealIntegral
+    ("RealIntegral",
+     "Only include the real parts of the integrals",
+     &SSGNGVertex::_realIntegral, false, false, false);
+  static SwitchOption interfaceRealIntegralYes
+    (interfaceRealIntegral,
+     "Yes",
+     "Only include the real part",
+     true);
+  static SwitchOption interfaceRealIntegralNo
+    (interfaceRealIntegral,
+     "No",
+     "Don't include the real part",
+     false);
 }
 
 void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
@@ -267,4 +284,10 @@ void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
   J  = Looptools::C0i(Looptools::cc0,min2,mout2,0.,ms2,mf2,ms2)*UnitRemoval::InvE2;
   I2 =-Looptools::C0i(Looptools::cc1,min2,mout2,0.,mf2,ms2,mf2)*UnitRemoval::InvE2;
   K  = (1.+Complex(m2*I+M2*J-Mj2*I2))/(Mi2-Mj2);
+  if(_realIntegral) {
+    I  = I .real();
+    J  = J .real();
+    I2 = I2.real();
+    K  = K .real();
+  }
 }

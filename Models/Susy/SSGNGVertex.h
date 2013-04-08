@@ -139,6 +139,11 @@ private:
   bool _includeOnShell;
 
   /**
+   *  Only include the real part of the integral
+   */
+  bool _realIntegral;
+
+  /**
    *  Option to omit light quark yukawas 
    */
   bool _omitLightQuarkYukawas;
