@@ -103,18 +103,21 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
     }
     assert(!isnan(sjac/MeV2));
     InvEnergy2 term; 
-    if(_mapping==0) {
-      rm2 = sqr(_channelmass[ix]);
-      rw2 = sqr(_channelwidth[ix]);
-      Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
-      term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
-    }
-    else if(_mapping==1) {
-      term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
+
+    if(_channelmass[ix] > ZERO) {
+      if(_channelwidth[ix] > 1e-8*MeV) {
+	rm2 = sqr(_channelmass[ix]);
+	rw2 = sqr(_channelwidth[ix]);
+	Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
+	term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
+      }
+      else {
+	term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
+      }
     }
     else {
       term = UnitRemoval::InvE2 * _channelweights[ix]*(_channelpower[ix]+1.)*
-	pow(sjac*UnitRemoval::InvE2, _channelpower[ix]);
+     	pow(sjac*UnitRemoval::InvE2, _channelpower[ix]);
     }
     jacdem += term;
   }
