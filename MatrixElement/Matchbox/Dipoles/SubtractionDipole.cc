@@ -219,39 +219,26 @@ StdXCombPtr SubtractionDipole::makeXComb(Energy newMaxEnergy, const cPDPair & in
 					 tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
 					 const PBPair & newPartonBins, tCutsPtr newCuts,
 					 const DiagramVector & newDiagrams, bool mir,
-					 const PartonPairVec& allPBins,
+					 const PartonPairVec&,
 					 tStdXCombPtr newHead,
-					 tMEPtr) {
-  if ( splitting() ) {
-    return 
-      underlyingBornME()->makeXComb(newMaxEnergy, inc,
-				    newEventHandler, newSubProcessHandler,
-				    newExtractor, newCKKW,
-				    newPartonBins, newCuts,
-				    newDiagrams, mir,
-				    allPBins,
-				    newHead);
-  }
-  return 
-    realEmissionME()->makeXComb(newMaxEnergy, inc,
-				 newEventHandler, newSubProcessHandler,
-				 newExtractor, newCKKW,
-				 newPartonBins, newCuts,
-				 newDiagrams, mir,
-				 allPBins,
-				 newHead);
+					 tMEPtr newME) {
+  if ( !newME )
+    newME = this;
+  return new_ptr(StandardXComb(newMaxEnergy, inc,
+			       newEventHandler, newSubProcessHandler,
+			       newExtractor, newCKKW,
+			       newPartonBins, newCuts, newME,
+			       newDiagrams, mir,
+			       newHead));
 }
 
 StdXCombPtr SubtractionDipole::makeXComb(tStdXCombPtr newHead,
 					 const PBPair & newPartonBins,
 					 const DiagramVector & newDiagrams,
-					 tMEPtr) {
-  if ( splitting() ) {
-    return
-      underlyingBornME()->makeXComb(newHead, newPartonBins, newDiagrams);
-  } 
-  return
-    realEmissionME()->makeXComb(newHead, newPartonBins, newDiagrams);
+					 tMEPtr newME) {
+  if ( !newME )
+    newME = this;
+  return new_ptr(StandardXComb(newHead, newPartonBins, newME, newDiagrams));
 }
 
 StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
