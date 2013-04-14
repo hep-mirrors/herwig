@@ -77,13 +77,13 @@ bool ColourBasis::colourConnected(const cPDVector& sub,
 
 }
 
-const string& ColourBasis::ordering(const cPDVector& sub, 
-				    const map<size_t,size_t>& colourToAmplitude,
-				    size_t tensorId) {
+const string& ColourBasis::orderingString(const cPDVector& sub, 
+					  const map<size_t,size_t>& colourToAmplitude,
+					  size_t tensorId) {
 
   const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
 
-  map<size_t,string>& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
+  map<size_t,string>& orderings = theOrderingStringIdentifiers[basis][colourToAmplitude];
 
   if ( orderings.empty() ) {
     map<size_t,vector<vector<size_t> > > tensors =
@@ -110,6 +110,28 @@ const string& ColourBasis::ordering(const cPDVector& sub,
   return orderings[tensorId];
 
 }
+
+const vector<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
+						     const map<size_t,size_t>& colourToAmplitude,
+						     size_t tensorId) {
+
+  const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
+
+  map<size_t,vector<vector<size_t> > >& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
+
+  if ( orderings.empty() ) {
+    map<size_t,vector<vector<size_t> > > tensors =
+      basisList(basis);
+    for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
+	    tensors.begin(); t != tensors.end(); ++t ) {
+      orderings[t->first] = t->second;
+    }
+  }
+
+  return orderings[tensorId];
+
+}
+
 
 vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
@@ -1117,13 +1139,13 @@ void ColourBasis::doinitrun() {
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
   os << theLargeN << theSearchPath << theNormalOrderedLegs
-     << theIndexMap << theFlowMap << theOrderingIdentifiers;
+     << theIndexMap << theFlowMap << theOrderingStringIdentifiers << theOrderingIdentifiers;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
-     >> theIndexMap >> theFlowMap >> theOrderingIdentifiers;
+     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers >> theOrderingIdentifiers;
 }
 
 

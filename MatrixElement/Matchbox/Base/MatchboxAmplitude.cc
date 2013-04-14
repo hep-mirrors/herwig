@@ -220,9 +220,20 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
 }
 
-const string& MatchboxAmplitude::colourOrdering(size_t id) const {
+const string& MatchboxAmplitude::colourOrderingString(size_t id) const {
 
   static string empty = "";
+  if ( !colourBasis() ) {
+    return empty;
+  }
+
+  return colourBasis()->orderingString(mePartonData(),lastColourToAmplitudeMap(),id);
+
+}
+
+const vector<vector<size_t> >& MatchboxAmplitude::colourOrdering(size_t id) const {
+
+  static vector<vector<size_t> > empty;
   if ( !colourBasis() ) {
     return empty;
   }
