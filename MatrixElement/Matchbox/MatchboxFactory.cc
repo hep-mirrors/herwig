@@ -46,7 +46,8 @@ MatchboxFactory::MatchboxFactory()
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theVerbose(false), theInitVerbose(false), theSubtractionData(""), 
-    theCheckPoles(false), theRealEmissionScales(false) {}
+    theCheckPoles(false), theRealEmissionScales(false),
+    theAllProcesses(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -204,15 +205,27 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
-  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
-	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
-    (**amp).orderInGs(orderas);
-    (**amp).orderInGem(orderInAlphaEW());
-    if ( (**amp).orderInGs() != orderas ||
-	 (**amp).orderInGem() != orderInAlphaEW() ) {
-      continue;
+  unsigned int lowestAsOrder =
+    allProcesses() ? 0 : orderas;
+  unsigned int highestAsOrder = orderas;
+
+  unsigned int lowestAeOrder =
+    allProcesses() ? 0 : orderInAlphaEW();
+  unsigned int highestAeOrder = orderInAlphaEW();
+
+  for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
+    for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
+      for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	      = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+	(**amp).orderInGs(oas);
+	(**amp).orderInGem(oae);
+	if ( (**amp).orderInGs() != oas ||
+	     (**amp).orderInGem() != oae ) {
+	  continue;
+	}
+	matchAmplitudes.push_back(*amp);
+      }
     }
-    matchAmplitudes.push_back(*amp);
   }
 
   size_t combinations = processes.size()*matchAmplitudes.size();
@@ -221,18 +234,22 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
   boost::progress_display * progressBar = 
     new boost::progress_display(combinations,generator()->log());
 
-  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
-	  = matchAmplitudes.begin(); amp != matchAmplitudes.end(); ++amp ) {
-    (**amp).orderInGs(orderas);
-    (**amp).orderInGem(orderInAlphaEW());
-    for ( set<PDVector>::const_iterator p = processes.begin();
-	  p != processes.end(); ++p ) {
-      ++(*progressBar);
-      if ( !(**amp).canHandle(*p) )
-	continue;
-      QNKey key = makeIndex(*p);
-      ++procCount;
-      ampProcs[*amp][key].push_back(*p);
+  for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
+    for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
+      for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	      = matchAmplitudes.begin(); amp != matchAmplitudes.end(); ++amp ) {
+	(**amp).orderInGs(oas);
+	(**amp).orderInGem(oae);
+	for ( set<PDVector>::const_iterator p = processes.begin();
+	      p != processes.end(); ++p ) {
+	  ++(*progressBar);
+	  if ( !(**amp).canHandle(*p) )
+	    continue;
+	  QNKey key = makeIndex(*p);
+	  ++procCount;
+	  ampProcs[*amp][key].push_back(*p);
+	}
+      }
     }
   }
 
@@ -808,7 +825,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theVerbose << theInitVerbose << theSubtractionData << theCheckPoles
      << theParticleGroups << process << realEmissionProcess
      << theShowerApproximation << theSplittingDipoles
-     << theRealEmissionScales;
+     << theRealEmissionScales << theAllProcesses;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -825,7 +842,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theVerbose >> theInitVerbose >> theSubtractionData >> theCheckPoles
      >> theParticleGroups >> process >> realEmissionProcess
      >> theShowerApproximation >> theSplittingDipoles
-     >> theRealEmissionScales;
+     >> theRealEmissionScales >> theAllProcesses;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1254,6 +1271,21 @@ void MatchboxFactory::Init() {
     (interfaceRealEmissionScales,
      "Off",
      "Off",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceAllProcesses
+    ("AllProcesses",
+     "Consider all processes up to a maximum coupling order specified by the coupling order interfaces.",
+     &MatchboxFactory::theAllProcesses, false, false, false);
+  static SwitchOption interfaceAllProcessesYes
+    (interfaceAllProcesses,
+     "Yes",
+     "Include all processes.",
+     true);
+  static SwitchOption interfaceAllProcessesNo
+    (interfaceAllProcesses,
+     "No",
+     "Only consider processes matching the exact order in the couplings.",
      false);
 
 }

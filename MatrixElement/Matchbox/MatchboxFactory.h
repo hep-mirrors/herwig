@@ -112,6 +112,16 @@ public:
   void orderInAlphaEW(unsigned int o) { theOrderInAlphaEW = o; }
 
   /**
+   * Return true, if all processes up to a maximum order are considered
+   */
+  bool allProcesses() const { return theAllProcesses; }
+
+  /**
+   * Switch on/off inclusino off all processes up to a maximum order
+   */
+  void setAllProcesses(bool on = true) { theAllProcesses = on; }
+
+  /**
    * Return true, if Born contributions should be included.
    */
   bool bornContributions() const { return theBornContributions; }
@@ -785,6 +795,12 @@ private:
    * True, if subtraction scales should be caluclated from real emission kinematics
    */
   bool theRealEmissionScales;
+
+  /**
+   * Consider all processes with order in couplings specifying the
+   * maximum order.
+   */
+  bool theAllProcesses;
 
 private:
 
