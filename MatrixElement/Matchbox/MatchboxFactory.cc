@@ -65,12 +65,6 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
   me->matchboxAmplitude(amp);
 
-  if ( diagramGenerator() && !me->diagramGenerator() )
-    me->diagramGenerator(diagramGenerator());
-
-  if ( processData() && !me->processData() )
-    me->processData(processData());
-
   if ( me->nLight() == 0 )
     me->nLight(nLight());
 
@@ -263,7 +257,14 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 	  m != ap->second.end(); ++m ) {
       Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
       me->subProcesses() = m->second;
+      if ( diagramGenerator() && !me->diagramGenerator() )
+	me->diagramGenerator(diagramGenerator());
+      if ( processData() && !me->processData() )
+	me->processData(processData());
       me->amplitude(ap->first);
+      me->matchboxAmplitude(ap->first);
+      if ( me->diagrams().empty() )
+	continue;
       string pname = "ME" + ap->first->name() + pid(m->first);
       if ( ! (generator()->preinitRegister(me,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
