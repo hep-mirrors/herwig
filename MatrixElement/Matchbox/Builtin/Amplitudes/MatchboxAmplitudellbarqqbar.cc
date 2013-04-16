@@ -113,7 +113,7 @@ bool MatchboxAmplitudellbarqqbar::canHandle(const PDVector& proc) const {
 
 void MatchboxAmplitudellbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
-  if ( !calculateTrees ) {
+  if ( !calculateTreeAmplitudes() ) {
     MatchboxZGammaAmplitude::prepareAmplitudes(me);
     return;
   }
@@ -155,10 +155,10 @@ Complex MatchboxAmplitudellbarqqbar::evaluate(size_t, const vector<int>& hel, Co
 
   Complex gamma = 0.0;
   if ( includeGamma() )
-    gamma = Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+    gamma = Complex(0.,-1.)*(-amplitudePartonData()[2]->iCharge()/3.)*
       (LL + RL + LR + RR)/bProp;
 
-  bool up = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
+  bool up = abs(amplitudePartonData()[2]->id()) % 2 == 0;
   Complex Z = 0.0;
   if ( includeZ() )
     Z = Complex(0.,-1.)*
@@ -198,10 +198,10 @@ Complex MatchboxAmplitudellbarqqbar::evaluateOneLoop(size_t, const vector<int>& 
 
   Complex gamma = 0.0;
   if ( includeGamma() )
-    gamma = Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+    gamma = Complex(0.,-1.)*(-amplitudePartonData()[2]->iCharge()/3.)*
       (LL + RL + LR + RR)/bProp;
 
-  bool up = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
+  bool up = abs(amplitudePartonData()[2]->id()) % 2 == 0;
   Complex Z = 0.0;
   if ( includeZ() )
     Z = Complex(0.,-1.)*

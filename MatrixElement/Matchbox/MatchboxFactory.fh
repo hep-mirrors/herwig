@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the MatchboxFactory class
+
+#ifndef HERWIG_MatchboxFactory_FH
+#define HERWIG_MatchboxFactory_FH
+
+namespace Herwig {
+
+class MatchboxFactory;
+
+}
+
+#endif // HERWIG_MatchboxFactory_FH

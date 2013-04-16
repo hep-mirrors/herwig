@@ -18,10 +18,10 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -300,16 +300,6 @@ public:
    * Access the amplitudes to be considered
    */
   vector<Ptr<MatchboxAmplitude>::ptr>& amplitudes() { return theAmplitudes; }
-
-  /**
-   * Set the ME cache object
-   */
-  void cache(Ptr<MatchboxMECache>::ptr c) { theCache = c; }
-
-  /**
-   * Get the ME cache object
-   */
-  Ptr<MatchboxMECache>::tptr cache() const { return theCache; }
 
   //@}
 
@@ -668,11 +658,6 @@ private:
    * The amplitudes to be considered
    */
   vector<Ptr<MatchboxAmplitude>::ptr> theAmplitudes;
-
-  /**
-   * The ME cache object
-   */
-  Ptr<MatchboxMECache>::ptr theCache;
 
   /**
    * The Born matrix elements to be considered

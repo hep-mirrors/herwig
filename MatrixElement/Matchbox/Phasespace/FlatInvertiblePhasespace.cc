@@ -38,10 +38,6 @@ IBPtr FlatInvertiblePhasespace::fullclone() const {
   return new_ptr(*this);
 }
 
-void FlatInvertiblePhasespace::prepare(tStdXCombPtr xc, bool) {
-  theLastXComb = xc;
-}
-
 double FlatInvertiblePhasespace::bisect(double v, double n, 
 					double target, double maxLevel) const {
 
@@ -274,63 +270,19 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 }
 
 
-double FlatInvertiblePhasespace::generateKinematics(const double* r,
-						    vector<Lorentz5Momentum>& momenta) {
+double FlatInvertiblePhasespace::generateTwoToNKinematics(const double* r,
+							  vector<Lorentz5Momentum>& momenta) {
 
-  if ( momenta.size() > 3 ) {
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = momenta.begin();
+  for ( ; pd != mePartonData().end(); ++pd, ++p )
+    p->setMass((**pd).mass());
 
-    cPDVector::const_iterator pd = mePartonData().begin();
-    vector<Lorentz5Momentum>::iterator p = momenta.begin();
-    for ( ; pd != mePartonData().end(); ++pd, ++p )
-      p->setMass((**pd).mass());
-
-    double weight = generateKinematics(momenta,sqrt(lastXCombPtr()->lastSHat()),r);
-
-    fillDiagramWeights();
-
-    return weight;
-
-  }
-
-  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
-  double ltau = log(tau)/2.;
-  double y = ltau - 2.*r[0]*ltau;
-  double x1 = sqrt(tau)*exp(y);
-  double x2 = sqrt(tau)*exp(-y);
-
-  ThreeVector<Energy> p1 =
-    x1*(lastXCombPtr()->lastParticles().first->momentum().vect());
-
-  ThreeVector<Energy> p2 =
-    x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
-
-  ThreeVector<Energy> q = p1 + p2;
-
-  momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
-  momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
-  momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
-
-  lastXCombPtr()->lastX1X2(make_pair(x1,x2));
-  lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
+  double weight = generateKinematics(momenta,sqrt(lastXCombPtr()->lastSHat()),r);
 
   fillDiagramWeights();
 
-  return -4.*Constants::pi*ltau;
-
-}
-
-double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>& momenta,
-						  double* r) const {
-
-  if ( momenta.size() > 3 )
-    return invertKinematics(momenta,(momenta[0]+momenta[1]).m(),r);
-
-  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
-  double ltau = log(tau)/2.;
-
-  r[0] = (ltau - (momenta[0]+momenta[1]).rapidity())/(2.*ltau);
-
-  return -4.*Constants::pi*ltau;
+  return weight;
 
 }
 

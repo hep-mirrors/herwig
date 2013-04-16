@@ -47,9 +47,9 @@ IBPtr TreePhasespace::fullclone() const {
   return new_ptr(*this);
 }
 
-void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
+void TreePhasespace::setXComb(tStdXCombPtr xco) {
 
-  theLastXComb = xco;
+  MatchboxPhasespace::setXComb(xco);
 
   lastChannelsIterator = channelMap().find(lastXCombPtr());
 
@@ -75,8 +75,8 @@ void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
 
 }
 
-double TreePhasespace::generateKinematics(const double* random,
-					  vector<Lorentz5Momentum>& momenta) {
+double TreePhasespace::generateTwoToNKinematics(const double* random,
+						vector<Lorentz5Momentum>& momenta) {
 
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = momenta.begin();

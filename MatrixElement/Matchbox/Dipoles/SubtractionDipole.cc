@@ -219,26 +219,51 @@ StdXCombPtr SubtractionDipole::makeXComb(Energy newMaxEnergy, const cPDPair & in
 					 tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
 					 const PBPair & newPartonBins, tCutsPtr newCuts,
 					 const DiagramVector & newDiagrams, bool mir,
-					 const PartonPairVec&,
+					 const PartonPairVec& allBins,
 					 tStdXCombPtr newHead,
 					 tMEPtr newME) {
+
   if ( !newME )
     newME = this;
-  return new_ptr(StandardXComb(newMaxEnergy, inc,
-			       newEventHandler, newSubProcessHandler,
-			       newExtractor, newCKKW,
-			       newPartonBins, newCuts, newME,
-			       newDiagrams, mir,
-			       newHead));
+
+  if ( !splitting() ) {
+    return
+      underlyingBornME()->makeXComb(newMaxEnergy, inc,
+				    newEventHandler, newSubProcessHandler,
+				    newExtractor, newCKKW,
+				    newPartonBins, newCuts,
+				    newDiagrams, mir, allBins,
+				    newHead, newME);
+  }
+
+  return
+    realEmissionME()->makeXComb(newMaxEnergy, inc,
+				newEventHandler, newSubProcessHandler,
+				newExtractor, newCKKW,
+				newPartonBins, newCuts,
+				newDiagrams, mir, allBins,
+				newHead, newME);
+
 }
 
 StdXCombPtr SubtractionDipole::makeXComb(tStdXCombPtr newHead,
 					 const PBPair & newPartonBins,
 					 const DiagramVector & newDiagrams,
 					 tMEPtr newME) {
+
   if ( !newME )
     newME = this;
-  return new_ptr(StandardXComb(newHead, newPartonBins, newME, newDiagrams));
+
+  if ( !splitting() ) {
+    return
+      underlyingBornME()->makeXComb(newHead, newPartonBins,
+				    newDiagrams, newME);
+  }
+
+  return
+    realEmissionME()->makeXComb(newHead, newPartonBins,
+				newDiagrams, newME);
+
 }
 
 StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
@@ -360,7 +385,7 @@ Selector<MEBase::DiagramIndex> SubtractionDipole::diagrams(const DiagramVector &
     realEmissionME() :
     underlyingBornME();
   if ( me->phasespace() ) {
-    me->phasespace()->prepare(lastXCombPtr());
+    me->phasespace()->setXComb(lastXCombPtr());
     me->phasespace()->fillDiagramWeights();
   }
   return 
@@ -373,7 +398,7 @@ MEBase::DiagramIndex SubtractionDipole::diagram(const DiagramVector & dv) const 
     realEmissionME() :
     underlyingBornME();
   if ( me->phasespace() ) {
-    me->phasespace()->prepare(lastXCombPtr());
+    me->phasespace()->setXComb(lastXCombPtr());
     me->phasespace()->fillDiagramWeights();
   }
   return 
@@ -412,6 +437,7 @@ void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   } else {
     theApply = true;
   }
+  lastMatchboxXComb(xc);
   MEBase::setXComb(xc); 
   if ( splitting() ) {
     realEmissionME()->setXComb(xc);
@@ -1045,7 +1071,8 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << theBornEmitter << theBornSpectator
      << theShowerApproximation
      << theRealShowerSubtraction << theVirtualShowerSubtraction
-     << thePartners << theRealEmissionScales;
+     << thePartners << theRealEmissionScales
+     << theLastXComb;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -1060,7 +1087,9 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> theBornEmitter >> theBornSpectator
      >> theShowerApproximation
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
-     >> thePartners >> theRealEmissionScales;
+     >> thePartners >> theRealEmissionScales
+     >> theLastXComb;
+  lastMatchboxXComb(theLastXComb);
 }
 
 void SubtractionDipole::Init() {
@@ -1068,41 +1097,6 @@ void SubtractionDipole::Init() {
   static ClassDocumentation<SubtractionDipole> documentation
     ("SubtractionDipole represents a dipole subtraction "
      "term in the formalism of Catani and Seymour.");
-
-  static Reference<SubtractionDipole,MatchboxMEBase> interfaceUnderlyingBornME
-    ("UnderlyingBornME",
-     "The underlying Born matrix element.",
-     &SubtractionDipole::theUnderlyingBornME, false, false, true, true, false);
-
-  static Reference<SubtractionDipole,MatchboxMEBase> interfaceRealEmissionME
-    ("RealEmissionME",
-     "The real emission matrix element.",
-     &SubtractionDipole::theRealEmissionME, false, false, true, true, false);
-
-  static RefVector<SubtractionDipole,SubtractionDipole> interfacePartners
-    ("Partners",
-     "The partner dipoles found along with this dipole.",
-     &SubtractionDipole::thePartners, -1, false, false, true, false, false);
-
-  static Reference<SubtractionDipole,TildeKinematics> interfaceTildeKinematics
-    ("TildeKinematics",
-     "Set the TildeKinematics object to be used.",
-     &SubtractionDipole::theTildeKinematics, false, false, true, false, false);
-
-  static Reference<SubtractionDipole,InvertedTildeKinematics> interfaceInvertedTildeKinematics
-    ("InvertedTildeKinematics",
-     "Set the InvertedTildeKinematics object to be used.",
-     &SubtractionDipole::theInvertedTildeKinematics, false, false, true, true, false);
-
-  static RefVector<SubtractionDipole,MatchboxReweightBase> interfaceReweights
-    ("Reweights",
-     "Reweight objects to be applied to this matrix element.",
-     &SubtractionDipole::theReweights, -1, false, false, true, true, false);
-
-  static Reference<SubtractionDipole,ShowerApproximation> interfaceShowerApproximation
-    ("ShowerApproximation",
-     "Set the shower approximation to be considered.",
-     &SubtractionDipole::theShowerApproximation, false, false, true, true, false);
 
 }
 

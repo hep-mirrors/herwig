@@ -58,56 +58,6 @@ public:
    */
   const map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> >& diagramMap() const { return theDiagramMap; }
 
-  /**
-   * Access the amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector>& amplitudePartonData() { return theAmplitudePartonData; }
-
-  /**
-   * Return the amplitude parton data.
-   */
-  const map<tStdXCombPtr,cPDVector>& amplitudePartonData() const { return theAmplitudePartonData; }
-
-  /**
-   * Access the colour crossing information.
-   */
-  map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() { return theAmplitudeToColourMap; }
-
-  /**
-   * Return the colour crossing information.
-   */
-  const map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() const { return theAmplitudeToColourMap; }
-
-  /**
-   * Access the colour crossing information.
-   */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() { return theColourToAmplitudeMap; }
-
-  /**
-   * Return the colour crossing information.
-   */
-  const map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() const { return theColourToAmplitudeMap; }
-
-  /**
-   * Access the crossing information.
-   */
-  map<tStdXCombPtr,vector<int> >& crossingMap() { return theCrossingMap; }
-
-  /**
-   * Return the crossing information.
-   */
-  const map<tStdXCombPtr,vector<int> >& crossingMap() const { return theCrossingMap; }
-
-  /**
-   * Access the crossing signs.
-   */
-  map<tStdXCombPtr,double>& crossingSigns() { return theCrossingSigns; }
-
-  /**
-   * Return the crossing signs.
-   */
-  const map<tStdXCombPtr,double>& crossingSigns() const { return theCrossingSigns; }
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -161,35 +111,6 @@ private:
    * The diagrams contributing to a subprocess
    */
   map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> > theDiagramMap;
-
-  /**
-   * The crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,vector<int> > theCrossingMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theAmplitudeToColourMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theColourToAmplitudeMap;
-
-  /**
-   * The crossing signs as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,double> theCrossingSigns;
-
-  /**
-   * The amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector> theAmplitudePartonData;
 
 private:
 

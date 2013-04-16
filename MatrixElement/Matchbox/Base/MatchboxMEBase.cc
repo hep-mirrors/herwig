@@ -27,6 +27,7 @@
 #include "ThePEG/Handlers/StdXCombGroup.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -35,15 +36,32 @@ using namespace Herwig;
 
 MatchboxMEBase::MatchboxMEBase() 
   : MEBase(), 
-    theFactorizationScaleFactor(1.0),
-    theRenormalizationScaleFactor(1.0),
-    theVerbose(false),
-    theFixedCouplings(false), theFixedQEDCouplings(false),
-    theNLight(0), theGetColourCorrelatedMEs(false),
-    theCheckPoles(false), theOneLoop(false),
+    theOneLoop(false),
     theOneLoopNoBorn(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
+
+Ptr<MatchboxFactory>::tcptr MatchboxMEBase::factory() const { return theFactory; }
+
+void MatchboxMEBase::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
+
+Ptr<Tree2toNGenerator>::tptr MatchboxMEBase::diagramGenerator() const { return factory()->diagramGenerator(); }
+
+Ptr<ProcessData>::tptr MatchboxMEBase::processData() const { return factory()->processData(); }
+
+unsigned int MatchboxMEBase::getNLight() const { return factory()->nLight(); }
+
+double MatchboxMEBase::factorizationScaleFactor() const { return factory()->factorizationScaleFactor(); }
+
+double MatchboxMEBase::renormalizationScaleFactor() const { return factory()->renormalizationScaleFactor(); }
+
+bool MatchboxMEBase::fixedCouplings() const { return factory()->fixedCouplings(); }
+
+bool MatchboxMEBase::fixedQEDCouplings() const { return factory()->fixedQEDCouplings(); }
+
+bool MatchboxMEBase::checkPoles() const { return factory()->checkPoles(); }
+
+bool MatchboxMEBase::verbose() const { return factory()->verbose(); }
 
 void MatchboxMEBase::getDiagrams() const {
 
@@ -53,7 +71,7 @@ void MatchboxMEBase::getDiagrams() const {
     for ( vector<PDVector>::const_iterator p = subProcesses().begin();
 	  p != subProcesses().end(); ++p ) {
       vector<Ptr<Tree2toNDiagram>::ptr>& res =
-	theProcessData->diagramMap()[*p];
+	processData()->diagramMap()[*p];
       if ( res.empty() ) {
 	res = diagramGenerator()->generate(*p,orderInAlphaS(),orderInAlphaEW());
       }
@@ -134,12 +152,11 @@ unsigned int MatchboxMEBase::orderInAlphaEW() const {
 void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
 
   MEBase::setXComb(xc);
-  if ( phasespace() && !xc->head() )
-    phasespace()->prepare(xc,theVerbose);
+  lastMatchboxXComb(xc);
+  if ( phasespace() )
+    phasespace()->setXComb(xc);
   if ( scaleChoice() )
     scaleChoice()->setXComb(xc);
-  if ( cache() )
-    cache()->setXComb(xc);
   if ( matchboxAmplitude() )
     matchboxAmplitude()->setXComb(xc);
 
@@ -192,16 +209,20 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     setScale();
     logGenerateKinematics(r);
 
-    int ampShift = 0;
-    int nBorn = nDimBorn();
-    if ( matchboxAmplitude() ) {
-      ampShift = matchboxAmplitude()->nDimAdditional();
-      if ( ampShift )
-	matchboxAmplitude()->additionalKinematics(r + nBorn);
+    assert(lastMatchboxXComb());
+
+    if ( nDimAmplitude() > 0 ) {
+      amplitudeRandomNumbers().resize(nDimAmplitude());
+      copy(r + nDimPhasespace(), 
+	   r + nDimPhasespace() + nDimAmplitude(),
+	   amplitudeRandomNumbers().begin());
     }
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	    virtuals().begin(); v != virtuals().end(); ++v ) {
-      (**v).additionalKinematics(r + nBorn + ampShift);
+
+    if ( nDimInsertions() > 0 ) {
+      insertionRandomNumbers().resize(nDimInsertions());
+      copy(r + nDimPhasespace() + nDimAmplitude(), 
+	   r + nDimPhasespace() + nDimAmplitude() + nDimInsertions(),
+	   insertionRandomNumbers().begin());
     }
 
     return true;
@@ -217,6 +238,9 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 }
 
 int MatchboxMEBase::nDim() const { 
+
+  if ( lastMatchboxXComb() )
+    return nDimPhasespace() + nDimAmplitude() + nDimInsertions();
 
   int ampAdd = 0;
   if ( matchboxAmplitude() ) {
@@ -234,6 +258,10 @@ int MatchboxMEBase::nDim() const {
 }
 
 int MatchboxMEBase::nDimBorn() const { 
+
+  if ( lastMatchboxXComb() )
+    return nDimPhasespace();
+
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     int n = phasespace()->nDim(nout);
@@ -373,18 +401,12 @@ double MatchboxMEBase::me2() const {
 
   if ( matchboxAmplitude() ) {
 
-    double res;
-    if ( !calculateME2(res) )
-      return res;
-
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
 
     lastME2(matchboxAmplitude()->me2()*
-	    matchboxAmplitude()->lastCrossingSign()*
+	    crossingSign()*
 	    me2Norm());
-
-    cacheME2(lastME2());
 
     logME2();
     
@@ -401,13 +423,10 @@ double MatchboxMEBase::me2() const {
 
 double MatchboxMEBase::finalStateSymmetry() const {
 
-  map<tStdXCombPtr,double>::const_iterator s =
-    symmetryFactors.find(lastXCombPtr());
+  if ( symmetryFactor() > 0.0 )
+    return symmetryFactor();
 
-  if ( s != symmetryFactors.end() )
-    return s->second;
-
-  double symmetryFactor = 1.;
+  double sFactor = 1.;
 
   map<long,int> counts;
 
@@ -431,16 +450,16 @@ double MatchboxMEBase::finalStateSymmetry() const {
     if ( c->second == 1 )
       continue;
     if ( c->second == 2 )
-      symmetryFactor /= 2.;
+      sFactor /= 2.;
     else if ( c->second == 3 )
-      symmetryFactor /= 6.;
+      sFactor /= 6.;
     else if ( c->second == 4 )
-      symmetryFactor /= 24.;
+      sFactor /= 24.;
   }
 
-  symmetryFactors[lastXCombPtr()] = symmetryFactor;
+  symmetryFactor(sFactor);
 
-  return symmetryFactor;
+  return symmetryFactor();
 
 }
 
@@ -471,29 +490,6 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-void MatchboxMEBase::storeColourCorrelatedMEs(double xme2) const {
-
-  map<pair<int,int>,double>& ccs = 
-    colourCorrelatedMEs[lastXCombPtr()];
-  int n = meMomenta().size();
-  for ( int i = 0; i < n; ++i ) {
-    if ( !mePartonData()[i]->coloured() )
-      continue;
-    for ( int j = i+1; j < n; ++j ) {
-      if ( !mePartonData()[j]->coloured() )
-	continue;
-      if ( noDipole(i,j) )
-	continue;
-      ccs[make_pair(i,j)] = colourCorrelatedME2(make_pair(i,j));
-    }
-  }
-  lastXCombPtr()->meta(MatchboxMetaKeys::ColourCorrelatedMEs,ccs);
-  double& bme2 = bornMEs[lastXCombPtr()];
-  bme2 = xme2 >= 0. ? xme2 : me2();
-  lastXCombPtr()->meta(MatchboxMetaKeys::BornME,bme2);
-
-}
-
 CrossSection MatchboxMEBase::dSigHatDR() const {
 
   getPDFWeight();
@@ -512,9 +508,6 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
-
-  if ( getColourCorrelatedMEs() )
-    storeColourCorrelatedMEs(xme2);
 
   double vme2 = 0.;
   if ( oneLoop() )
@@ -562,17 +555,11 @@ double MatchboxMEBase::oneLoopInterference() const {
 
   if ( matchboxAmplitude() ) {
 
-    double res;
-    if ( !calculateME2(res,make_pair<int,int>(-1,-1)) )
-      return res;
-
     if ( matchboxAmplitude()->oneLoopAmplitudes() )
       matchboxAmplitude()->prepareOneLoopAmplitudes(this);
     lastME2(matchboxAmplitude()->oneLoopInterference()*
-	    matchboxAmplitude()->lastCrossingSign()*
+	    crossingSign()*
 	    me2Norm(1));
-
-    cacheME2(lastME2(),make_pair<int,int>(-1,-1));
 
     logME2();
     
@@ -653,7 +640,7 @@ double MatchboxMEBase::oneLoopDoublePole() const {
 
     return
       matchboxAmplitude()->oneLoopDoublePole()*
-      matchboxAmplitude()->lastCrossingSign()*
+      crossingSign()*
       me2Norm(1);
 
   }
@@ -668,7 +655,7 @@ double MatchboxMEBase::oneLoopSinglePole() const {
 
     return 
       matchboxAmplitude()->oneLoopSinglePole()*
-      matchboxAmplitude()->lastCrossingSign()*
+      crossingSign()*
       me2Norm(1);
 
   }
@@ -757,17 +744,11 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
   if ( matchboxAmplitude() ) {
 
-    double res;
-    if ( !calculateME2(res,ij) )
-      return res;
-
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
     lastME2(matchboxAmplitude()->colourCorrelatedME2(ij)*
-	    matchboxAmplitude()->lastCrossingSign()*
+	    crossingSign()*
 	    me2Norm());
-
-    cacheME2(lastME2(),ij);
 
     logME2();
     
@@ -790,7 +771,7 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
     lastME2(matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
-	    matchboxAmplitude()->lastCrossingSign()*
+	    crossingSign()*
 	    me2Norm());
 
     logME2();
@@ -811,17 +792,11 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
   if ( matchboxAmplitude() ) {
 
-    double res;
-    if ( !calculateME2(res,ij) )
-      return res;
-
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
     lastME2(matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
-	    matchboxAmplitude()->lastCrossingSign()*
+	    crossingSign()*
 	    me2Norm());
-
-    cacheME2(lastME2(),ij);
 
     logME2();
     
@@ -838,8 +813,6 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
 void MatchboxMEBase::flushCaches() { 
   MEBase::flushCaches();
-  if ( cache() )
-    cache()->flush();
   if ( matchboxAmplitude() )
     matchboxAmplitude()->flushCaches();
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator r =
@@ -938,7 +911,7 @@ void MatchboxMEBase::printLastEvent(ostream& os) const {
 
 void MatchboxMEBase::logGenerateKinematics(const double * r) const {
 
-  if ( !theVerbose )
+  if ( !verbose() )
     return;
 
   generator()->log() << "'" << name() << "' generated kinematics\nfrom "
@@ -966,7 +939,7 @@ void MatchboxMEBase::logGenerateKinematics(const double * r) const {
 
 void MatchboxMEBase::logSetScale() const {
 
-  if ( !theVerbose )
+  if ( !verbose() )
     return;
 
   generator()->log() << "'" << name() << "' set scales using XComb " << lastXCombPtr() << ":\n"
@@ -979,7 +952,7 @@ void MatchboxMEBase::logSetScale() const {
 
 void MatchboxMEBase::logPDFWeight() const {
 
-  if ( !theVerbose )
+  if ( !verbose() )
     return;
 
   generator()->log() << "'" << name() << "' calculated pdf weight = "
@@ -993,7 +966,7 @@ void MatchboxMEBase::logPDFWeight() const {
 
 void MatchboxMEBase::logME2() const {
 
-  if ( !theVerbose )
+  if ( !verbose() )
     return;
 
   generator()->log() << "'" << name() << "' evaluated me2 using XComb "
@@ -1015,7 +988,7 @@ void MatchboxMEBase::logME2() const {
 
 void MatchboxMEBase::logDSigHatDR() const {
 
-  if ( !theVerbose )
+  if ( !verbose() )
     return;
 
   generator()->log() << "'" << name() << "' evaluated cross section using XComb "
@@ -1051,7 +1024,6 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     amplitude(myAmplitude);
     matchboxAmplitude()->orderInGs(orderInAlphaS());
     matchboxAmplitude()->orderInGem(orderInAlphaEW());
-    matchboxAmplitude()->processData(processData());
   }
 
   if ( scaleChoice() ) {
@@ -1082,27 +1054,105 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
       throw InitException() << "Insertion operator " << pname.str() << " already existing.";
     *v = myIOP;
-    (**v).setBorn(this);
   }
 
 }
 
+void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
+
+  if ( phasespace() ) {
+    size_t nout = diagrams().front()->partons().size()-2;
+    xc.nDimPhasespace(phasespace()->nDim(nout));
+  }
+
+  if ( matchboxAmplitude() ) {
+    xc.nDimAmplitude(matchboxAmplitude()->nDimAdditional());
+    if ( matchboxAmplitude()->colourBasis() ) {
+      size_t cdim = 
+ 	matchboxAmplitude()->colourBasis()->prepare(diagrams(),matchboxAmplitude()->noCorrelations());
+      xc.colourBasisDim(cdim);
+    }
+  }
+
+  int insertionAdd = 0;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    insertionAdd = max(insertionAdd,(**v).nDimAdditional());
+  }
+  xc.nDimInsertions(insertionAdd);
+
+  xc.nLight(getNLight());
+
+  if ( verbose() ) {
+    string fname = name() + ".diagrams";
+    ifstream test(fname.c_str());
+    if ( !test ) {
+      test.close();
+      ofstream out(fname.c_str());
+      for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
+	    d != diagrams().end(); ++d ) {
+	DiagramDrawer::drawDiag(out,dynamic_cast<const Tree2toNDiagram&>(**d));
+	out << "\n";
+      }
+    }
+  }
+
+}
+
+StdXCombPtr MatchboxMEBase::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				      tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				      tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				      const PBPair & newPartonBins, tCutsPtr newCuts,
+				      const DiagramVector & newDiagrams, bool mir,
+				      const PartonPairVec&,
+				      tStdXCombPtr newHead,
+				      tMEPtr newME) {
+
+  if ( !newME )
+    newME = this;
+
+  Ptr<MatchboxXComb>::ptr xc =
+    new_ptr(MatchboxXComb(newMaxEnergy, inc,
+			  newEventHandler, newSubProcessHandler,
+			  newExtractor, newCKKW,
+			  newPartonBins, newCuts, newME,
+			  newDiagrams, mir,
+			  newHead));
+
+  prepareXComb(*xc);
+
+  return xc;
+
+}
+
+StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
+				      const PBPair & newPartonBins,
+				      const DiagramVector & newDiagrams,
+				      tMEPtr newME) {
+  if ( !newME )
+    newME = this;
+
+  Ptr<MatchboxXComb>::ptr xc = 
+    new_ptr(MatchboxXComb(newHead, newPartonBins, newME, newDiagrams));
+
+  prepareXComb(*xc);
+
+  return xc;
+}
+
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
-  os << theReweights << thePhasespace << theAmplitude << theScaleChoice
-     << theDiagramGenerator << theProcessData << theSubprocesses
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theVerbose << theCache << theVirtuals << theFixedCouplings << theFixedQEDCouplings
-     << theNLight << theGetColourCorrelatedMEs << theCheckPoles 
-     << theOneLoop << theOneLoopNoBorn << symmetryFactors;
+  os << theLastXComb
+     << theFactory << thePhasespace << theAmplitude << theScaleChoice 
+     << theVirtuals << theReweights << theSubprocesses 
+     << theOneLoop << theOneLoopNoBorn;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
-  is >> theReweights >> thePhasespace >> theAmplitude >> theScaleChoice
-     >> theDiagramGenerator >> theProcessData >> theSubprocesses
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theVerbose >> theCache >> theVirtuals >> theFixedCouplings >> theFixedQEDCouplings
-     >> theNLight >> theGetColourCorrelatedMEs >> theCheckPoles 
-     >> theOneLoop >> theOneLoopNoBorn >> symmetryFactors;
+  is >> theLastXComb
+     >> theFactory >> thePhasespace >> theAmplitude >> theScaleChoice 
+     >> theVirtuals >> theReweights >> theSubprocesses 
+     >> theOneLoop >> theOneLoopNoBorn;
+  lastMatchboxXComb(theLastXComb);
 }
 
 void MatchboxMEBase::Init() {
@@ -1110,99 +1160,6 @@ void MatchboxMEBase::Init() {
   static ClassDocumentation<MatchboxMEBase> documentation
     ("MatchboxMEBase is the base class for matrix elements "
      "in the context of the matchbox NLO interface.");
-
-  static RefVector<MatchboxMEBase,MatchboxReweightBase> interfaceReweights
-    ("Reweights",
-     "Reweight objects to be applied to this matrix element.",
-     &MatchboxMEBase::theReweights, -1, false, false, true, true, false);
-
-
-  static Reference<MatchboxMEBase,MatchboxPhasespace> interfacePhasespace
-    ("Phasespace",
-     "Set the phasespace generator to be used.",
-     &MatchboxMEBase::thePhasespace, false, false, true, true, false);
-
-  static Reference<MatchboxMEBase,Tree2toNGenerator> interfaceDiagramGenerator
-    ("DiagramGenerator",
-     "Set the diagram generator to be used.",
-     &MatchboxMEBase::theDiagramGenerator, false, false, true, true, false);
-
-  static Reference<MatchboxMEBase,ProcessData> interfaceProcessData
-    ("ProcessData",
-     "Set the process data object to be used.",
-     &MatchboxMEBase::theProcessData, false, false, true, true, false);
-
-  static Reference<MatchboxMEBase,MatchboxScaleChoice> interfaceScaleChoice
-    ("ScaleChoice",
-     "Set the scale choice to be used.",
-     &MatchboxMEBase::theScaleChoice, false, false, true, true, false);
-
-  static Reference<MatchboxMEBase,MatchboxMECache> interfaceMECache
-    ("Cache",
-     "Set the cache object to be used.",
-     &MatchboxMEBase::theCache, false, false, true, true, false);
-
-  static RefVector<MatchboxMEBase,MatchboxInsertionOperator> interfaceVirtuals
-    ("Virtuals",
-     "The virtual corrections to be added.",
-     &MatchboxMEBase::theVirtuals, -1, false, false, true, true, false);
-
-  static Parameter<MatchboxMEBase,double> interfaceFactorizationScaleFactor
-    ("FactorizationScaleFactor",
-     "The factorization scale factor.",
-     &MatchboxMEBase::theFactorizationScaleFactor, 1.0, 0.0, 0,
-     false, false, Interface::lowerlim);
-
-  static Parameter<MatchboxMEBase,double> interfaceRenormalizationScaleFactor
-    ("RenormalizationScaleFactor",
-     "The renormalization scale factor.",
-     &MatchboxMEBase::theRenormalizationScaleFactor, 1.0, 0.0, 0,
-     false, false, Interface::lowerlim);
-
-  static Switch<MatchboxMEBase,bool> interfaceVerbose
-    ("Verbose",
-     "Print full infomation on each evaluated phase space point.",
-     &MatchboxMEBase::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
-    (interfaceVerbose,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceVerboseOff
-    (interfaceVerbose,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<MatchboxMEBase,bool> interfaceFixedCouplings
-    ("FixedCouplings",
-     "Indicate that no running couplings should be used.",
-     &MatchboxMEBase::theFixedCouplings, false, false, false);
-  static SwitchOption interfaceFixedCouplingsOn
-    (interfaceFixedCouplings,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceFixedCouplingsOff
-    (interfaceFixedCouplings,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<MatchboxMEBase,bool> interfaceFixedQEDCouplings
-    ("FixedQEDCouplings",
-     "Indicate that no running QED couplings should be used.",
-     &MatchboxMEBase::theFixedQEDCouplings, false, false, false);
-  static SwitchOption interfaceFixedQEDCouplingsOn
-    (interfaceFixedQEDCouplings,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceFixedQEDCouplingsOff
-    (interfaceFixedQEDCouplings,
-     "Off",
-     "Off",
-     false);
 
 }
 
@@ -1216,28 +1173,8 @@ IBPtr MatchboxMEBase::fullclone() const {
 
 void MatchboxMEBase::doinit() {
   MEBase::doinit();
-  theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
-  if ( matchboxAmplitude() ) {
-    if ( matchboxAmplitude()->colourBasis() ) {
-      size_t dim = 
-	matchboxAmplitude()->colourBasis()->prepare(diagrams(),matchboxAmplitude()->noCorrelations());
-      matchboxAmplitude()->colourBasisDim(dim);
-    }
-    matchboxAmplitude()->nLight(nLight());
-  }
-  if ( theVerbose ) {
-    string fname = name() + ".diagrams";
-    ifstream test(fname.c_str());
-    if ( !test ) {
-      test.close();
-      ofstream out(fname.c_str());
-      for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
-	    d != diagrams().end(); ++d ) {
-	DiagramDrawer::drawDiag(out,dynamic_cast<const Tree2toNDiagram&>(**d));
-	out << "\n";
-      }
-    }
-  }
+  if ( !theAmplitude )
+    theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
 }
 
 // *** Attention *** The following static variable is needed for the type

@@ -34,7 +34,8 @@ class InvertedTildeKinematics;
  * term in the formalism of Catani and Seymour.
  *
  */
-class SubtractionDipole: public MEBase {
+class SubtractionDipole: 
+    public MEBase,  public LastMatchboxXCombInfo {
 
 public:
 

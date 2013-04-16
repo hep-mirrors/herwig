@@ -111,7 +111,7 @@ bool MatchboxAmplitudellbarqqbargg::canHandle(const PDVector& proc) const {
 
 void MatchboxAmplitudellbarqqbargg::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
-  if ( !calculateTrees ) {
+  if ( !calculateTreeAmplitudes() ) {
     MatchboxZGammaAmplitude::prepareAmplitudes(me);
     return;
   }
@@ -142,12 +142,12 @@ Complex MatchboxAmplitudellbarqqbargg::evaluate(size_t a, const vector<int>& hel
   const LorentzVector<Complex>& leptonRight
     = llbarRightCurrent(0,hel[0],1,hel[1]); 
 
-  assert(lastAmplitudeToColourMap()[2] == 0 &&
-	 lastAmplitudeToColourMap()[3] == 1);
+  assert(amplitudeToColourMap()[2] == 0 &&
+	 amplitudeToColourMap()[3] == 1);
 
   int g1,hg1,g2,hg2;
-  if ( lastAmplitudeToColourMap()[4] == 2 &&
-       lastAmplitudeToColourMap()[5] == 3 ) {
+  if ( amplitudeToColourMap()[4] == 2 &&
+       amplitudeToColourMap()[5] == 3 ) {
     if ( a == 0 ) {
       g1 = 4; hg1 = hel[4];
       g2 = 5; hg2 = hel[5];
@@ -155,8 +155,8 @@ Complex MatchboxAmplitudellbarqqbargg::evaluate(size_t a, const vector<int>& hel
       g1 = 5; hg1 = hel[5];
       g2 = 4; hg2 = hel[4];
     } else assert(false);
-  } else if ( lastAmplitudeToColourMap()[4] == 3 &&
-	      lastAmplitudeToColourMap()[5] == 2 ) {
+  } else if ( amplitudeToColourMap()[4] == 3 &&
+	      amplitudeToColourMap()[5] == 2 ) {
     if ( a == 0 ) {
       g1 = 5; hg1 = hel[5];
       g2 = 4; hg2 = hel[4];
@@ -179,10 +179,10 @@ Complex MatchboxAmplitudellbarqqbargg::evaluate(size_t a, const vector<int>& hel
 
   Complex gamma = 0.0;
   if ( includeGamma() )
-    gamma = Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+    gamma = Complex(0.,-1.)*(-amplitudePartonData()[2]->iCharge()/3.)*
       (LL + RL + LR + RR)/bProp;
 
-  bool up = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
+  bool up = abs(amplitudePartonData()[2]->id()) % 2 == 0;
   Complex Z = 0.0;
   if ( includeZ() )
     Z = Complex(0.,-1.)*

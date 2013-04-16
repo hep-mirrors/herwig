@@ -38,12 +38,8 @@ IBPtr MatchboxReference::fullclone() const {
   return new_ptr(*this);
 }
 
-void MatchboxReference::prepare(tStdXCombPtr xc, bool) {
-  theLastXComb = xc;
-}
-
-double MatchboxReference::generateKinematics(const double*,
-					     vector<Lorentz5Momentum>& momenta) {
+double MatchboxReference::generateTwoToNKinematics(const double*,
+						   vector<Lorentz5Momentum>& momenta) {
 
 
   map<cPDVector,ifstream*>::iterator ref =

@@ -42,8 +42,8 @@ IBPtr DipolePKOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-void DipolePKOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
-  MatchboxInsertionOperator::setBorn(me);
+void DipolePKOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
@@ -275,7 +275,7 @@ double DipolePKOperator::sumParton(int id) const {
 
   using namespace RandomHelpers;
 
-  double r = additionalRandomNumbers.front();
+  double r = insertionRandomNumbers().front();
   double eps = 1e-3;
 
   pair<double,double> zw =

@@ -9,8 +9,6 @@ ColourBasis.cc \
 ColourBasis.h \
 DiagramDrawer.cc \
 DiagramDrawer.h \
-MatchboxMECache.cc \
-MatchboxMECache.h \
 MatchboxLeptonMassScale.h \
 MatchboxLeptonMassScale.cc \
 MatchboxLeptonPtScale.h \
@@ -34,4 +32,12 @@ SpinorHelicity.h \
 SU2Helper.cc \
 SU2Helper.h \
 Tree2toNGenerator.cc \
-Tree2toNGenerator.h
+Tree2toNGenerator.h \
+MatchboxXComb.h \
+MatchboxXComb.cc \
+MatchboxXCombGroup.h \
+MatchboxXCombGroup.cc \
+MatchboxXCombData.h \
+MatchboxXCombData.cc \
+LastMatchboxXComb.h
+

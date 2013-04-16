@@ -17,10 +17,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_sparse.hpp>
-#include <boost/numeric/ublas/symmetric.hpp>
-#include <boost/numeric/ublas/vector.hpp>
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 
 #include <iterator>
 
@@ -35,16 +32,6 @@ using boost::numeric::ublas::matrix;
 using boost::numeric::ublas::symmetric_matrix;
 using boost::numeric::ublas::compressed_matrix;
 using boost::numeric::ublas::upper;
-
-/**
- * \ingroup Matchbox
- * \author Simon Platzer
- *
- * \brief Define compolex vector from boost::uBLAS
- *
- */
-typedef boost::numeric::ublas::vector<Complex> CVector;
-
 
 /**
  * \ingroup Matchbox

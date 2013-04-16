@@ -28,7 +28,48 @@ MatchboxPhasespace::MatchboxPhasespace()
 
 MatchboxPhasespace::~MatchboxPhasespace() {}
 
-void MatchboxPhasespace::cloneDependencies(const std::string&) {
+void MatchboxPhasespace::cloneDependencies(const std::string&) {}
+
+double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
+						      vector<Lorentz5Momentum>& momenta) {
+
+  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
+  double ltau = log(tau)/2.;
+  double y = ltau - 2.*r[0]*ltau;
+  double x1 = sqrt(tau)*exp(y);
+  double x2 = sqrt(tau)*exp(-y);
+
+  ThreeVector<Energy> p1 =
+    x1*(lastXCombPtr()->lastParticles().first->momentum().vect());
+
+  ThreeVector<Energy> p2 =
+    x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
+
+  ThreeVector<Energy> q = p1 + p2;
+
+  momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
+  momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
+  momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
+
+  lastXCombPtr()->lastX1X2(make_pair(x1,x2));
+  lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
+
+  fillDiagramWeights();
+
+  return -4.*Constants::pi*ltau;
+
+}
+
+double MatchboxPhasespace::invertTwoToOneKinematics(const vector<Lorentz5Momentum>& momenta,
+						    double* r) const {
+
+  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
+  double ltau = log(tau)/2.;
+
+  r[0] = (ltau - (momenta[0]+momenta[1]).rapidity())/(2.*ltau);
+
+  return -4.*Constants::pi*ltau;
+
 }
 
 pair<double,Lorentz5Momentum> 
@@ -105,11 +146,11 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 
 void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
-  diagramWeights.clear();
+  diagramWeights().clear();
 
   for ( StandardXComb::DiagramVector::const_iterator d =
 	  lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
-    diagramWeights[(**d).id()] = 
+    diagramWeights()[(**d).id()] = 
       spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(**d),meMomenta()[0],0,flatCut);
   }
 
@@ -126,22 +167,22 @@ MatchboxPhasespace::selectDiagrams(const MEBase::DiagramVector& diags) const {
 
 bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& momenta) {
 
-  if ( singularLimits.empty() )
+  if ( singularLimits().empty() )
     return true;
 
-  theLastSingularLimit = singularLimits.begin();
+  lastSingularLimit() = singularLimits().begin();
 
-  for ( ; theLastSingularLimit != singularLimits.end(); ++theLastSingularLimit ) {
-    if ( theLastSingularLimit->first == theLastSingularLimit->second &&
-	 momenta[theLastSingularLimit->first].t() < singularCutoff )
+  for ( ; lastSingularLimit() != singularLimits().end(); ++lastSingularLimit() ) {
+    if ( lastSingularLimit()->first == lastSingularLimit()->second &&
+	 momenta[lastSingularLimit()->first].t() < singularCutoff )
       break;
-    if ( theLastSingularLimit->first != theLastSingularLimit->second &&
-	 sqrt(momenta[theLastSingularLimit->first]*
-	      momenta[theLastSingularLimit->second]) < singularCutoff ) {
+    if ( lastSingularLimit()->first != lastSingularLimit()->second &&
+	 sqrt(momenta[lastSingularLimit()->first]*
+	      momenta[lastSingularLimit()->second]) < singularCutoff ) {
       bool match = true;
       for ( set<pair<size_t,size_t> >::const_iterator other =
-	      singularLimits.begin(); other != singularLimits.end(); ++other ) {
-	if ( other == theLastSingularLimit )
+	      singularLimits().begin(); other != singularLimits().end(); ++other ) {
+	if ( other == lastSingularLimit() )
 	  continue;
 	if ( other->first == other->second &&
 	     momenta[other->first].t() < singularCutoff ) {
@@ -160,7 +201,7 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
     }
   }
 
-  return theLastSingularLimit != singularLimits.end();
+  return lastSingularLimit() != singularLimits().end();
 
 }
 
@@ -168,11 +209,14 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
-  os << singularLimits << ounit(singularCutoff,GeV);
+  os << theLastXComb
+     << ounit(singularCutoff,GeV);
 }
 
 void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
-  is >> singularLimits >> iunit(singularCutoff,GeV);
+  is >> theLastXComb
+     >> iunit(singularCutoff,GeV);
+  lastMatchboxXComb(theLastXComb);
 }
 
 

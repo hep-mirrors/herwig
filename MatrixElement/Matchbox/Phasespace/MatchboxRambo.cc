@@ -51,8 +51,8 @@ static double weights[7] = {
 
 };
 
-void MatchboxRambo::prepare(tStdXCombPtr xc, bool) {
-  theLastXComb = xc;
+void MatchboxRambo::setXComb(tStdXCombPtr xc) {
+  MatchboxPhasespace::setXComb(xc);
   needToReshuffle = false;
   if ( xc ) {
     for ( cPDVector::const_iterator d = mePartonData().begin();
@@ -89,8 +89,8 @@ void MatchboxRambo::dumpReference(const vector<Lorentz5Momentum>& momenta, doubl
   *referenceSample << weight*km*(ymax-ymin)/(lastX1()*lastX2()) << "\n" << flush;
 }
 
-double MatchboxRambo::generateKinematics(const double* r,
-					 vector<Lorentz5Momentum>& momenta) {
+double MatchboxRambo::generateTwoToNKinematics(const double* r,
+					       vector<Lorentz5Momentum>& momenta) {
 
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = momenta.begin();

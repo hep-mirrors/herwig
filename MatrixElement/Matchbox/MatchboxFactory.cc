@@ -65,38 +65,13 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
   me->matchboxAmplitude(amp);
 
-  if ( me->nLight() == 0 )
-    me->nLight(nLight());
+  me->factory(this);
 
   if ( phasespace() && !me->phasespace() )
     me->phasespace(phasespace());
 
   if ( scaleChoice() && !me->scaleChoice() )
     me->scaleChoice(scaleChoice());
-
-  if ( me->factorizationScaleFactor() == 1.0 )
-    me->factorizationScaleFactor(factorizationScaleFactor());
-
-  if ( me->renormalizationScaleFactor() == 1.0 )
-    me->renormalizationScaleFactor(renormalizationScaleFactor());
-
-  if ( fixedCouplings() )
-    me->setFixedCouplings();
-
-  if ( fixedQEDCouplings() )
-    me->setFixedQEDCouplings();
-
-  if ( cache() && !me->cache() )
-    me->cache(cache());
-
-  if ( diagramGenerator() && !me->diagramGenerator() )
-    me->diagramGenerator(diagramGenerator());
-
-  if ( processData() && !me->processData() )
-    me->processData(processData());
-
-  if ( verbose() )
-    me->setVerbose();
 
 }
 
@@ -478,7 +453,6 @@ void MatchboxFactory::setup() {
 	  if ( !virtualsAreExpanded ) {
 	    throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
 	  }
-	  nlo->doCheckPoles();
 	}
       }
 
@@ -532,18 +506,15 @@ void MatchboxFactory::setup() {
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
 
       Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
-      string pname = fullName() + "/" + (**real).name() + ".Real";
+      string pname = fullName() + "/" + (**real).name() + ".SubtractedReal";
       if ( ! (generator()->preinitRegister(sub,pname) ) )
 	throw InitException() << "Subtracted ME " << pname << " already existing.";
 
-      sub->borns() = bornMEs();
+      sub->factory(this);
+
       sub->head(*real);
 
-      sub->allDipoles().clear();
       sub->dependent().clear();
-
-      if ( subtractionData() != "" )
-	sub->subtractionData(subtractionData());
 
       sub->getDipoles();
 
@@ -551,26 +522,14 @@ void MatchboxFactory::setup() {
 	// finite real contribution
 	Ptr<MatchboxMEBase>::ptr fme = 
 	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
-	string pname = fullName() + "/" + (**real).name() + ".FiniteReal";
-	if ( ! (generator()->preinitRegister(fme,pname) ) )
-	  throw InitException() << "ME " << pname << " already existing.";
+	string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
+	if ( ! (generator()->preinitRegister(fme,qname) ) )
+	  throw InitException() << "ME " << qname << " already existing.";
 	MEs().push_back(fme);	
         finiteRealMEs().push_back(fme);
 	sub->head(tMEPtr());
 	continue;
       }
-
-      if ( verbose() )
-	sub->setVerbose();
-
-      if ( subProcessGroups() )
-	sub->setSubProcessGroups();
-
-      if ( inclusive() )
-	sub->setInclusive();
-
-      if ( vetoScales() )
-	sub->doVetoScales();
 
       if ( realEmissionScales() )
 	sub->doRealEmissionScales();
@@ -579,13 +538,12 @@ void MatchboxFactory::setup() {
       MEs().push_back(sub);
 
       if ( showerApproximation() ) {
-	sub->showerApproximation(showerApproximation());
 	if ( virtualContributions() ) {
 	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
-	  string vname = sub->fullName() + ".vsub";
+	  string vname = sub->fullName() + ".SubtractionIntegral";
 	  if ( ! (generator()->preinitRegister(subv,vname) ) )
 	    throw InitException() << "Subtracted ME " << vname << " already existing.";
-	  subv->cloneDipoles();
+	  subv->cloneDependencies(vname);
 	  subv->doVirtualShowerSubtraction();
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
@@ -822,7 +780,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
-     << theAmplitudes << theCache
+     << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theInitVerbose << theSubtractionData << theCheckPoles
@@ -839,7 +797,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
-     >> theAmplitudes >> theCache
+     >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theInitVerbose >> theSubtractionData >> theCheckPoles
@@ -1142,11 +1100,6 @@ void MatchboxFactory::Init() {
      "The amplitude objects.",
      &MatchboxFactory::theAmplitudes, -1, false, false, true, true, false);
 
-  static Reference<MatchboxFactory,MatchboxMECache> interfaceCache
-    ("Cache",
-     "Set the matrix element cache object.",
-     &MatchboxFactory::theCache, false, false, true, true, false);
-
   static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornMEs
     ("BornMEs",
      "The Born matrix elements to be used",
@@ -1162,7 +1115,6 @@ void MatchboxFactory::Init() {
     ("RealEmissionMEs",
      "The RealEmission matrix elements to be used",
      &MatchboxFactory::theRealEmissionMEs, -1, false, false, true, true, false);
-
 
   static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornVirtuals
     ("BornVirtualMEs",
