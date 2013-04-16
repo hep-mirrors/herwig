@@ -89,6 +89,12 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
   if ( cache() && !me->cache() )
     me->cache(cache());
 
+  if ( diagramGenerator() && !me->diagramGenerator() )
+    me->diagramGenerator(diagramGenerator());
+
+  if ( processData() && !me->processData() )
+    me->processData(processData());
+
   if ( verbose() )
     me->setVerbose();
 
@@ -257,12 +263,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 	  m != ap->second.end(); ++m ) {
       Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
       me->subProcesses() = m->second;
-      if ( diagramGenerator() && !me->diagramGenerator() )
-	me->diagramGenerator(diagramGenerator());
-      if ( processData() && !me->processData() )
-	me->processData(processData());
       me->amplitude(ap->first);
-      me->matchboxAmplitude(ap->first);
+      prepareME(me);
       if ( me->diagrams().empty() )
 	continue;
       string pname = "ME" + ap->first->name() + pid(m->first);

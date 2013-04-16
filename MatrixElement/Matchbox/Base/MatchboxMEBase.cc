@@ -68,20 +68,6 @@ void MatchboxMEBase::getDiagrams() const {
       add(*d);
     }
 
-    if ( theVerbose ) {
-      string fname = name() + ".diagrams";
-      ifstream test(fname.c_str());
-      if ( !test ) {
-	test.close();
-	ofstream out(fname.c_str());
-	for ( vector<Ptr<Tree2toNDiagram>::ptr>::const_iterator d = diags.begin();
-	      d != diags.end(); ++d ) {
-	  DiagramDrawer::drawDiag(out,**d);
-	  out << "\n";
-	}
-      }
-    }
-
     return;
 
   }
@@ -1238,6 +1224,19 @@ void MatchboxMEBase::doinit() {
       matchboxAmplitude()->colourBasisDim(dim);
     }
     matchboxAmplitude()->nLight(nLight());
+  }
+  if ( theVerbose ) {
+    string fname = name() + ".diagrams";
+    ifstream test(fname.c_str());
+    if ( !test ) {
+      test.close();
+      ofstream out(fname.c_str());
+      for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
+	    d != diagrams().end(); ++d ) {
+	DiagramDrawer::drawDiag(out,dynamic_cast<const Tree2toNDiagram&>(**d));
+	out << "\n";
+      }
+    }
   }
 }
 
