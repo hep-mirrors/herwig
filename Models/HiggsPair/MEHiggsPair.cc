@@ -237,8 +237,8 @@ double MEHiggsPair::me2() const {
   double XLAM=sqrt(sqr(s+sqr(Mc)-sqr(Md))-4.*s*sqr(Mc));
   //the jacobian is jacobian()*XLAM
   mesq *= jacobian()*XLAM; 
-  mesq *= QCD * SM().fermiConstant()*GeV*GeV / (128 * sqrt(2) * sqr(pi)  );
-
+  //  mesq *= QCD * SM().fermiConstant()*GeV*GeV / (128 * sqrt(2) * sqr(pi)  );
+  mesq *= QCD * SM().fermiConstant()*GeV*GeV / (512 * sqrt(2) * pi);
   return mesq/s;    
 }
 
@@ -391,8 +391,6 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
   double GHT=AMT/V;
   double GHB=AMB/V;
 
-
-
   //Higgs propagator
   PROH = Complex(S-sqr(AMH),AMH*GAMH*FACH);
 
@@ -490,7 +488,7 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
     D0BAC[0] = ScalFacs[7];
     D0ACB[0] = ScalFacs[8];
     formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
-    F1 = F1 + AMB*(form_.H1*(GHT*GHhh/PROHEAVY));
+    F1 = F1 + AMB*(form_.H1*(GHB*GHhh/PROHEAVY));
   }
   
   //square
