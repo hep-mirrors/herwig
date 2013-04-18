@@ -104,7 +104,7 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	     (*p)[i]->id() == ParticleID::g ) {
 	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.001,10.);
 	  if ( theReal->phasespace() )
-	    singularLimits().insert(make_pair(i,i));
+	    res->singularLimits().insert(make_pair(i,i));
 	}
 	for ( size_t j = i+1; j < (*p).size(); ++j ) {
 	  if ( !(*p)[j]->coloured() )
@@ -135,7 +135,7 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	    continue;
 	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.001,20.);
 	  if ( theReal->phasespace() )
-	    singularLimits().insert(make_pair(i,j));
+	    res->singularLimits().insert(make_pair(i,j));
 	}
       }
     }
@@ -569,6 +569,14 @@ SubtractionHistogram(double low,
 
 }
 
+void SubtractedME::SubtractionHistogram::persistentOutput(PersistentOStream& os) const {
+  os << lower << bins;
+}
+
+void SubtractedME::SubtractionHistogram::persistentInput(PersistentIStream& is) {
+  is >> lower >> bins;
+}
+
 void SubtractedME::SubtractionHistogram::
 dump(const std::string& prefix, 
      const cPDVector& proc,
@@ -636,6 +644,8 @@ void SubtractedME::lastEventSubtraction() {
       continue;
     if ( !(**d).matrixElement()->apply() )
       continue;
+    if ( !(**d).willPassCuts() )
+      continue;
     xcdip += (**d).lastCrossSection();
   }
 
@@ -679,14 +689,14 @@ void SubtractedME::lastEventSubtraction() {
 }
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb
-     << theFactory << theReal 
+  os << theLastXComb << theFactory << theReal 
+     << collinearHistograms << softHistograms 
      << theRealShowerSubtraction << theVirtualShowerSubtraction;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb
-     >> theFactory >> theReal 
+  is >> theLastXComb >> theFactory >> theReal 
+     >> collinearHistograms >> softHistograms 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
   lastMatchboxXComb(theLastXComb);
 }

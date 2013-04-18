@@ -294,6 +294,58 @@ public:
    */
   virtual bool preInitialize() const { return true; }
 
+  /**
+   * Simple envelope histogram to keep track of subtraction
+   */
+  struct SubtractionHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,pair<double,double> > bins;
+
+    /**
+     * Constructor
+     */
+    SubtractionHistogram(double low = 0.001, 
+			 double up = 10., 
+			 unsigned int nbins = 100);
+
+    /**
+     * Book an event.
+     */
+    void book(double inv, double ratio) {
+      map<double,pair<double,double> >::iterator b =
+	bins.upper_bound(inv);
+      if ( b == bins.end() ) return;
+      b->second.first = min(b->second.first,abs(ratio));
+      b->second.second = max(b->second.second,abs(ratio));
+    }
+
+    /**
+     * Write to file given name and invariant.
+     */
+    void dump(const std::string& prefix, 
+	      const cPDVector& proc,
+	      int i, int j) const;
+
+    /**
+     * Write to persistent ostream
+     */
+    void persistentOutput(PersistentOStream&) const;
+
+    /**
+     * Read from persistent istream
+     */
+    void persistentInput(PersistentIStream&);
+
+  };
+
   //@}
 
 public:
@@ -383,48 +435,6 @@ private:
   Ptr<MatchboxMEBase>::ptr theReal;
 
   /**
-   * Simple envelope histogram to keep track of subtraction
-   */
-  struct SubtractionHistogram {
-
-    /**
-     * The lower bound
-     */
-    double lower;
-
-    /**
-     * The bins, indexed by upper bound.
-     */
-    map<double,pair<double,double> > bins;
-
-    /**
-     * Constructor
-     */
-    SubtractionHistogram(double low = 0.001, 
-			 double up = 10., 
-			 unsigned int nbins = 100);
-
-    /**
-     * Book an event.
-     */
-    void book(double inv, double ratio) {
-      map<double,pair<double,double> >::iterator b =
-	bins.upper_bound(inv);
-      if ( b == bins.end() ) return;
-      b->second.first = min(b->second.first,abs(ratio));
-      b->second.second = max(b->second.second,abs(ratio));
-    }
-
-    /**
-     * Write to file given name and invariant.
-     */
-    void dump(const std::string& prefix, 
-	      const cPDVector& proc,
-	      int i, int j) const;
-
-  };
-
-  /**
    * Define the key for the collinear subtraction data.
    */
   typedef pair<cPDVector,pair<size_t, size_t> > CollinearSubtractionIndex;
@@ -463,6 +473,18 @@ private:
   SubtractedME & operator=(const SubtractedME &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const SubtractedME::SubtractionHistogram& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     SubtractedME::SubtractionHistogram& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 

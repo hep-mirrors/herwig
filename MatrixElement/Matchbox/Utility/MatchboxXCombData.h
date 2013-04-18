@@ -22,8 +22,8 @@
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Persistency/PersistentOStream.fh"
+#include "ThePEG/Persistency/PersistentIStream.fh"
 
 namespace Herwig {
 
@@ -510,6 +510,26 @@ namespace Herwig {
      * @param version the version number of the object when written.
      */
     void persistentInput(PersistentIStream & is, int version);
+
+    /**
+     * Put a CVector to the persistent ostream
+     */
+    static void putCVector(PersistentOStream&, const CVector&);
+
+    /**
+     * Get a CVector from the persistent istream
+     */
+    static void getCVector(PersistentIStream&, CVector&);
+
+    /**
+     * Put an amplitude map to the persistent ostream
+     */
+    static void putAmplitudeMap(PersistentOStream&, const map<vector<int>,CVector>&);
+
+    /**
+     * Get an amplitude map from the persistent istream
+     */
+    static void getAmplitudeMap(PersistentIStream&, map<vector<int>,CVector>&);
     //@}
 
     /**
@@ -720,26 +740,6 @@ namespace Herwig {
     double theSymmetryFactor;
 
   };
-
-  inline PersistentOStream& operator<<(PersistentOStream& os,
-				       const CVector& v) {
-    size_t n = v.size();
-    os << n;
-    for ( size_t k = 0; k < n; k++ )
-      os << v(k);
-    return os;
-  }
-
-  inline PersistentIStream& operator>>(PersistentIStream& is,
-				       CVector& v) {
-    size_t n; is >> n;
-    v.resize(n);
-    Complex value;
-    for ( size_t k = 0; k < n; k++ ) {
-      is >> value; v(k) = value;
-    }
-    return is;
-  }
 
 }
 

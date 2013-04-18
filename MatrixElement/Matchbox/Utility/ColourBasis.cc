@@ -1146,6 +1146,7 @@ void ColourBasis::persistentOutput(PersistentOStream & os) const {
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
      >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers >> theOrderingIdentifiers;
+  readBasis();
 }
 
 

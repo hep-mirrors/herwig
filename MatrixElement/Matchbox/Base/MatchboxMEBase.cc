@@ -1141,17 +1141,17 @@ StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb
-     << theFactory << thePhasespace << theAmplitude << theScaleChoice 
-     << theVirtuals << theReweights << theSubprocesses 
-     << theOneLoop << theOneLoopNoBorn;
+  os << theLastXComb << theFactory << thePhasespace 
+     << theAmplitude << theScaleChoice << theVirtuals 
+     << theReweights << theSubprocesses << theOneLoop 
+     << theOneLoopNoBorn;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb
-     >> theFactory >> thePhasespace >> theAmplitude >> theScaleChoice 
-     >> theVirtuals >> theReweights >> theSubprocesses 
-     >> theOneLoop >> theOneLoopNoBorn;
+  is >> theLastXComb >> theFactory >> thePhasespace 
+     >> theAmplitude >> theScaleChoice >> theVirtuals 
+     >> theReweights >> theSubprocesses >> theOneLoop 
+     >> theOneLoopNoBorn;
   lastMatchboxXComb(theLastXComb);
 }
 

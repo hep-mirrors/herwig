@@ -15,6 +15,9 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
 using namespace Herwig;
 
 MatchboxXCombData::MatchboxXCombData() 
@@ -67,12 +70,45 @@ void MatchboxXCombData::flushCaches() {
     f->second = true;
 }
 
+void MatchboxXCombData::putCVector(PersistentOStream& os, const CVector& v) {
+  size_t n = v.size();
+  os << n;
+  for ( size_t k = 0; k < n; k++ )
+    os << v(k);
+}
+
+void MatchboxXCombData::getCVector(PersistentIStream& is, CVector& v) {
+  size_t n; is >> n;
+  v.resize(n);
+  Complex value;
+  for ( size_t k = 0; k < n; k++ ) {
+    is >> value; v(k) = value;
+  }
+}
+
+void MatchboxXCombData::putAmplitudeMap(PersistentOStream& os, const map<vector<int>,CVector>& amps) {
+  os << amps.size();
+  for ( map<vector<int>,CVector>::const_iterator a = amps.begin();
+	a != amps.end(); ++a ) {
+    os << a->first;
+    putCVector(os,a->second);
+  }
+}
+
+void MatchboxXCombData::getAmplitudeMap(PersistentIStream& is, map<vector<int>,CVector>& amps) {
+  size_t n; is >> n;
+  for ( size_t k = 0; k < n; ++k ) {
+    vector<int> hel; is >> hel;
+    getCVector(is,amps[hel]);
+  }
+}
+
 void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
   os << theMatchboxME << theSubtractionDipole << theCrossingMap 
      << theAmplitudeToColourMap << theColourToAmplitudeMap 
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
-     << theCalculateTreeAmplitudes /*<< theLastAmplitudes << theLastLargeNAmplitudes*/
-     << theCalculateOneLoopAmplitudes /*<< theLastOneLoopAmplitudes*/
+     << theCalculateTreeAmplitudes /* << theLastAmplitudes << theLastLargeNAmplitudes */
+     << theCalculateOneLoopAmplitudes /* << theLastOneLoopAmplitudes */
      << theCalculateTreeME2 << theLastTreeME2 << theCalculateOneLoopInterference 
      << theLastOneLoopInterference << theCalculateColourCorrelators 
      << theColourCorrelators << theCalculateLargeNColourCorrelators 
@@ -82,14 +118,17 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theAmplitudeRandomNumbers << theInsertionRandomNumbers 
      << theDiagramWeights << theSingularLimits// << theLastSingularLimit 
      << theStandardModel << theSymmetryFactor;
+  putAmplitudeMap(os,theLastAmplitudes);
+  putAmplitudeMap(os,theLastLargeNAmplitudes);
+  putAmplitudeMap(os,theLastOneLoopAmplitudes);
 }
 
 void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
   is >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
      >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
-     >> theCalculateTreeAmplitudes /*>> theLastAmplitudes >> theLastLargeNAmplitudes*/
-     >> theCalculateOneLoopAmplitudes /*>> theLastOneLoopAmplitudes*/
+     >> theCalculateTreeAmplitudes /* >> theLastAmplitudes >> theLastLargeNAmplitudes */
+     >> theCalculateOneLoopAmplitudes /* >> theLastOneLoopAmplitudes */
      >> theCalculateTreeME2 >> theLastTreeME2 >> theCalculateOneLoopInterference 
      >> theLastOneLoopInterference >> theCalculateColourCorrelators 
      >> theColourCorrelators >> theCalculateLargeNColourCorrelators 
@@ -99,5 +138,8 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudeRandomNumbers >> theInsertionRandomNumbers 
      >> theDiagramWeights >> theSingularLimits// >> theLastSingularLimit 
      >> theStandardModel >> theSymmetryFactor;
+  getAmplitudeMap(is,theLastAmplitudes);
+  getAmplitudeMap(is,theLastLargeNAmplitudes);
+  getAmplitudeMap(is,theLastOneLoopAmplitudes);
 }
 

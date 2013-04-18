@@ -107,7 +107,7 @@ double MatchboxRambo::generateTwoToNKinematics(const double* r,
 	refname << (**p).PDGName();
       }
       refname << ".rambo";
-      referenceSamples[mePartonData()] = new ofstream(refname.str().c_str());
+      referenceSamples[mePartonData()] = new ofstream(refname.str().c_str(),std::ios_base::app);
       ref = referenceSamples.find(mePartonData());
       *(ref->second) << setprecision(26);
     }
@@ -227,11 +227,11 @@ Energy MatchboxRambo::ReshuffleEquation::operator() (double xi) const {
 
 
 void MatchboxRambo::persistentOutput(PersistentOStream & os) const {
-  os << theMakeReferenceSample;
+  os << needToReshuffle << theMakeReferenceSample;
 }
 
 void MatchboxRambo::persistentInput(PersistentIStream & is, int) {
-  is >> theMakeReferenceSample;
+  is >> needToReshuffle >> theMakeReferenceSample;
 }
 
 

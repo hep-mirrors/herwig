@@ -83,10 +83,12 @@ Energy IILightTildeKinematics::lastPt() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IILightTildeKinematics::persistentOutput(PersistentOStream &) const {
+void IILightTildeKinematics::persistentOutput(PersistentOStream & os) const {
+  os << ounit(K,GeV) << ounit(Ktilde,GeV);
 }
 
-void IILightTildeKinematics::persistentInput(PersistentIStream &, int) {
+void IILightTildeKinematics::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(K,GeV) >> iunit(Ktilde,GeV);
 }
 
 void IILightTildeKinematics::Init() {

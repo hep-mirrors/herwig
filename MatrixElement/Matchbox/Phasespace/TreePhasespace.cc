@@ -182,13 +182,20 @@ void TreePhasespace::doinitrun() {
 void TreePhasespace::persistentOutput(PersistentOStream & os) const {
   os << theChannelMap << x0 << xc 
      << ounit(M0,GeV) << ounit(Mc,GeV)
-     << theIncludeMirrored;
+     << theIncludeMirrored
+     << theLastXComb;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theChannelMap >> x0 >> xc 
      >> iunit(M0,GeV) >> iunit(Mc,GeV)
-     >> theIncludeMirrored;
+     >> theIncludeMirrored
+     >> theLastXComb;
+  lastPhasespaceInfo.x0 = x0;
+  lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
+  lastChannelsIterator = channelMap().find(lastXCombPtr());
 }
 
 

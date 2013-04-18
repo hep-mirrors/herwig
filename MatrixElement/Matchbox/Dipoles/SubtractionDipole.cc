@@ -1060,36 +1060,41 @@ void SubtractionDipole::generateSubCollision(SubProcess & sub) {
 }
 
 void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
-  os << theSplitting << theApply << theSubtractionTest << theIgnoreCuts
-     << theShowerKernel << theRealEmissionME << theUnderlyingBornME
-     << theTildeKinematics << theInvertedTildeKinematics << theReweights
-     << theRealEmitter << theRealEmission << theRealSpectator
-     << theSubtractionParameters
-     << theMergingMap << theSplittingMap << theIndexMap
-     << theUnderlyingBornDiagrams << theRealEmissionDiagrams
-     << lastRealEmissionKey << lastUnderlyingBornKey
-     << theBornEmitter << theBornSpectator
-     << theShowerApproximation
-     << theRealShowerSubtraction << theVirtualShowerSubtraction
-     << thePartners << theRealEmissionScales
-     << theLastXComb;
+  os << theLastXComb << theSplitting << theApply << theSubtractionTest 
+     << theIgnoreCuts << theShowerKernel << theRealEmissionME << theUnderlyingBornME 
+     << thePartners << theTildeKinematics << theInvertedTildeKinematics 
+     << theReweights << theRealEmitter << theRealEmission << theRealSpectator 
+     << theSubtractionParameters << theMergingMap << theSplittingMap 
+     << theIndexMap << theUnderlyingBornDiagrams << theRealEmissionDiagrams 
+     << lastRealEmissionKey << lastUnderlyingBornKey 
+     << theBornEmitter << theBornSpectator << ounit(theLastSubtractionScale,GeV) 
+     << ounit(theLastSplittingScale,GeV) << ounit(theLastSubtractionPt,GeV) 
+     << ounit(theLastSplittingPt,GeV) << theShowerApproximation 
+     << theRealShowerSubtraction << theVirtualShowerSubtraction 
+     << theRealEmissionScales;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
-  is >> theSplitting >> theApply >> theSubtractionTest >> theIgnoreCuts
-     >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME
-     >> theTildeKinematics >> theInvertedTildeKinematics >> theReweights
-     >> theRealEmitter >> theRealEmission >> theRealSpectator
-     >> theSubtractionParameters
-     >> theMergingMap >> theSplittingMap >> theIndexMap
-     >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams
-     >> lastRealEmissionKey >> lastUnderlyingBornKey
-     >> theBornEmitter >> theBornSpectator
-     >> theShowerApproximation
-     >> theRealShowerSubtraction >> theVirtualShowerSubtraction
-     >> thePartners >> theRealEmissionScales
-     >> theLastXComb;
+  is >> theLastXComb >> theSplitting >> theApply >> theSubtractionTest 
+     >> theIgnoreCuts >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME 
+     >> thePartners >> theTildeKinematics >> theInvertedTildeKinematics 
+     >> theReweights >> theRealEmitter >> theRealEmission >> theRealSpectator 
+     >> theSubtractionParameters >> theMergingMap >> theSplittingMap 
+     >> theIndexMap >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams 
+     >> lastRealEmissionKey >> lastUnderlyingBornKey 
+     >> theBornEmitter >> theBornSpectator >> iunit(theLastSubtractionScale,GeV) 
+     >> iunit(theLastSplittingScale,GeV) >> iunit(theLastSubtractionPt,GeV) 
+     >> iunit(theLastSplittingPt,GeV) >> theShowerApproximation 
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
+     >> theRealEmissionScales;
   lastMatchboxXComb(theLastXComb);
+  typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
+  pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
+  assert(kr.first != kr.second);
+  lastRealEmissionInfo = kr.first;
+  for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
+    if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
+      break;
 }
 
 void SubtractionDipole::Init() {
