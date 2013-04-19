@@ -18,6 +18,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 
 #include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
@@ -98,6 +99,11 @@ namespace Herwig {
     void flushCaches();
 
   public:
+
+    /**
+     * Get the factory
+     */
+    Ptr<MatchboxFactory>::tcptr factory() const;
 
     /**
      * Get the matrix element; may return null
@@ -549,6 +555,11 @@ namespace Herwig {
     MatchboxXCombData & operator=(const MatchboxXCombData &);
 
   private:
+
+    /**
+     * The factory
+     */
+    Ptr<MatchboxFactory>::tcptr theFactory;
 
     /**
      * The matrix element

@@ -92,11 +92,6 @@ void MatchboxRambo::dumpReference(const vector<Lorentz5Momentum>& momenta, doubl
 double MatchboxRambo::generateTwoToNKinematics(const double* r,
 					       vector<Lorentz5Momentum>& momenta) {
 
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
-
   if ( theMakeReferenceSample ) {
     map<cPDVector,ofstream*>::iterator ref =
       referenceSamples.find(mePartonData());

@@ -20,15 +20,48 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 using namespace Herwig;
 
 MatchboxPhasespace::MatchboxPhasespace() 
-  : singularCutoff(10*GeV) {}
+  : singularCutoff(10*GeV), theUseMassGenerators(false) {}
 
 MatchboxPhasespace::~MatchboxPhasespace() {}
 
 void MatchboxPhasespace::cloneDependencies(const std::string&) {}
+
+Ptr<MatchboxFactory>::tcptr MatchboxPhasespace::factory() const {
+  return lastMatchboxXComb()->factory();
+}
+
+Ptr<ProcessData>::tptr MatchboxPhasespace::processData() const {
+  return factory()->processData();
+}
+
+double MatchboxPhasespace::generateKinematics(const double* r,
+					      vector<Lorentz5Momentum>& momenta) {
+
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = momenta.begin();
+
+  double massJacobian = 1.;
+
+  if ( useMassGenerators() ) {
+    assert(false && "not supported yet");
+  } else {
+    for ( ; pd != mePartonData().end(); ++pd, ++p )
+      p->setMass((**pd).mass());
+  }
+
+  double weight = momenta.size() > 3 ? 
+    generateTwoToNKinematics(r,momenta) : 
+    generateTwoToOneKinematics(r,momenta);
+
+  return weight*massJacobian;
+
+}
 
 double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
 						      vector<Lorentz5Momentum>& momenta) {
@@ -58,6 +91,13 @@ double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
 
   return -4.*Constants::pi*ltau;
 
+}
+
+double MatchboxPhasespace::invertKinematics(const vector<Lorentz5Momentum>& momenta,
+					    double* r) const {
+  return momenta.size() > 3 ? 
+    invertTwoToNKinematics(momenta,r) : 
+    invertTwoToOneKinematics(momenta,r);
 }
 
 double MatchboxPhasespace::invertTwoToOneKinematics(const vector<Lorentz5Momentum>& momenta,
@@ -210,12 +250,12 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
 
 void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb
-     << ounit(singularCutoff,GeV);
+     << ounit(singularCutoff,GeV) << theUseMassGenerators;
 }
 
 void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb
-     >> iunit(singularCutoff,GeV);
+     >> iunit(singularCutoff,GeV) >> theUseMassGenerators;
   lastMatchboxXComb(theLastXComb);
 }
 

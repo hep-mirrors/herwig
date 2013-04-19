@@ -78,85 +78,49 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
 double TreePhasespace::generateTwoToNKinematics(const double* random,
 						vector<Lorentz5Momentum>& momenta) {
 
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
+  size_t nchannels = lastXComb().diagrams().size();
+  bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
+  map<Ptr<Tree2toNDiagram>::ptr,
+      pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
+    lastChannels().begin();
+  advance(ds,(size_t)(random[0]*nchannels));
+  Ptr<Tree2toNDiagram>::ptr channel = ds->first;
+  ++random;
 
-  if ( momenta.size() > 3 ) {
-
-    size_t nchannels = lastXComb().diagrams().size();
-    bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
-    map<Ptr<Tree2toNDiagram>::ptr,
-	pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
-      lastChannels().begin();
-    advance(ds,(size_t)(random[0]*nchannels));
-    Ptr<Tree2toNDiagram>::ptr channel = ds->first;
-    ++random;
-
-    lastPhasespaceInfo.rnd.numbers = random;
-    lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
+  lastPhasespaceInfo.rnd.numbers = random;
+  lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
     
-    try {
-      if ( !doMirror )
-	lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
-      else 
-	lastChannels()[channel].second.generateKinematics(lastPhasespaceInfo,momenta);
-    } catch (Veto) {
-      return 0.;
-    }
-    
-    if ( !matchConstraints(momenta) )
-      return 0.;
-
-    double flatCut = x0;
-    if ( M0 != ZERO )
-      flatCut = M0/sqrt(lastSHat());
-
-    fillDiagramWeights(flatCut);
-
-    double sum = 0.;
-    for ( map<Ptr<Tree2toNDiagram>::ptr,
-	    pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::const_iterator d
-	    = lastChannels().begin(); d != lastChannels().end(); ++d )
-      sum += diagramWeight(*(d->first));
-
-    double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
-
-    for ( vector<Lorentz5Momentum>::iterator k = momenta.begin();
-	  k != momenta.end(); ++k )
-      k->rescaleRho();
-
-    return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
-
+  try {
+    if ( !doMirror )
+      lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
+    else 
+      lastChannels()[channel].second.generateKinematics(lastPhasespaceInfo,momenta);
+  } catch (Veto) {
+    return 0.;
   }
+    
+  if ( !matchConstraints(momenta) )
+    return 0.;
 
-  double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
-  double ltau = log(tau)/2.;
-  double y = ltau - 2.*random[0]*ltau;
-  double x1 = sqrt(tau)*exp(y);
-  double x2 = sqrt(tau)*exp(-y);
+  double flatCut = x0;
+  if ( M0 != ZERO )
+    flatCut = M0/sqrt(lastSHat());
 
-  ThreeVector<Energy> p1 =
-    x1*(lastXCombPtr()->lastParticles().first->momentum().vect());
+  fillDiagramWeights(flatCut);
 
-  ThreeVector<Energy> p2 =
-    x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
+  double sum = 0.;
+  for ( map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::const_iterator d
+	  = lastChannels().begin(); d != lastChannels().end(); ++d )
+    sum += diagramWeight(*(d->first));
 
-  ThreeVector<Energy> q = p1 + p2;
+  double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
 
-  momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
-  momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
-  momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
+  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin();
+	k != momenta.end(); ++k )
+    k->rescaleRho();
 
-  lastXCombPtr()->lastX1X2(make_pair(x1,x2));
-  lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
-
-  fillDiagramWeights();
-
-  double weight = -4.*Constants::pi*ltau;
-
-  return weight;
+  return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
 
 }
 

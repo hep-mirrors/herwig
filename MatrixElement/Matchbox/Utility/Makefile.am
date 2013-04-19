@@ -22,6 +22,7 @@ MatchboxHtScale.cc \
 MatchboxParticlePtScale.h \
 MatchboxParticlePtScale.cc \
 ProcessData.h \
+ProcessData.fh \
 ProcessData.cc \
 SimpleColourBasis.cc \
 SimpleColourBasis.h \

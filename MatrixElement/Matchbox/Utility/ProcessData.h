@@ -15,6 +15,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
 
 namespace Herwig {
 
@@ -57,6 +59,26 @@ public:
    * Return diagrams contributing to a given subprocess
    */
   const map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> >& diagramMap() const { return theDiagramMap; }
+
+  /**
+   * Access the mass generators to be used for the given particles
+   */
+  map<cPDPtr,tGenericMassGeneratorPtr>& massGenerators() { return theMassGenerators; }
+
+  /**
+   * Return the mass generators to be used for the given particles
+   */
+  const map<cPDPtr,tGenericMassGeneratorPtr>& massGenerators() const { return theMassGenerators; }
+
+  /**
+   * Return the mass generator (or NULL)
+   */
+  tGenericMassGeneratorPtr massGenerator(cPDPtr);
+
+  /**
+   * Fill the mass generators for the given process
+   */
+  void fillMassGenerators(const PDVector&);
 
 public:
 
@@ -111,6 +133,11 @@ private:
    * The diagrams contributing to a subprocess
    */
   map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> > theDiagramMap;
+
+  /**
+   * The mass generators to be used for the given particles
+   */
+  map<cPDPtr,tGenericMassGeneratorPtr> theMassGenerators;
 
 private:
 

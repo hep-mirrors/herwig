@@ -16,6 +16,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -105,14 +107,20 @@ public:
   }
 
   /**
+   * Return the factory object
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Return the process data object
+   */
+  Ptr<ProcessData>::tptr processData() const;
+
+  /**
    * Generate a phase space point and return its weight.
    */
-  double generateKinematics(const double* r,
-			    vector<Lorentz5Momentum>& momenta) {
-    return momenta.size() > 3 ? 
-      generateTwoToNKinematics(r,momenta) : 
-      generateTwoToOneKinematics(r,momenta);
-  }
+  virtual double generateKinematics(const double* r,
+				    vector<Lorentz5Momentum>& momenta);
 
   /**
    * Generate a phase space point and return its weight.
@@ -143,6 +151,11 @@ public:
    * the incoming partons in their center-of-mass system
    */
   virtual bool wantCMS() const { return true; }
+
+  /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool useMassGenerators() const { return theUseMassGenerators; }
 
   /**
    * Fill a diagram selector for the last phase space point.
@@ -200,12 +213,8 @@ public:
    * Invert the given phase space point to the random numbers which
    * would have generated it.
    */
-  double invertKinematics(const vector<Lorentz5Momentum>& momenta,
-			  double* r) const {
-    return momenta.size() > 3 ? 
-      invertTwoToNKinematics(momenta,r) : 
-      invertTwoToOneKinematics(momenta,r);
-  }
+  virtual double invertKinematics(const vector<Lorentz5Momentum>& momenta,
+				  double* r) const;
 
   /**
    * Invert the given phase space point to the random numbers which
@@ -285,6 +294,11 @@ private:
    * A cutoff below which a region is considered singular.
    */
   Energy singularCutoff;
+
+  /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool theUseMassGenerators;
 
   /**
    * The assignment operator is private and must never be called.

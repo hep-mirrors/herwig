@@ -76,6 +76,7 @@ void MatchboxMEBase::getDiagrams() const {
 	res = diagramGenerator()->generate(*p,orderInAlphaS(),orderInAlphaEW());
       }
       copy(res.begin(),res.end(),back_inserter(diags));
+      processData()->fillMassGenerators(*p);
     }
 
     if ( diags.empty() )

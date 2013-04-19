@@ -273,11 +273,6 @@ double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>
 double FlatInvertiblePhasespace::generateTwoToNKinematics(const double* r,
 							  vector<Lorentz5Momentum>& momenta) {
 
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
-
   double weight = generateKinematics(momenta,sqrt(lastXCombPtr()->lastSHat()),r);
 
   fillDiagramWeights();

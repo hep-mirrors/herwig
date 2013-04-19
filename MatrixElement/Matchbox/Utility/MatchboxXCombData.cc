@@ -13,6 +13,7 @@
 
 #include "MatchboxXCombData.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -40,10 +41,18 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
     theLastOneLoopInterference(0.0), theNLight(0), 
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
-    theSymmetryFactor(0.0){
+    theSymmetryFactor(0.0) {
   flushCaches();
   theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(newME);
   theSubtractionDipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(newME);
+  if ( theMatchboxME )
+    theFactory = theMatchboxME->factory();
+  else if ( theSubtractionDipole )
+    theFactory = theSubtractionDipole->realEmissionME()->factory();
+}
+
+Ptr<MatchboxFactory>::tcptr MatchboxXCombData::factory() const {
+  return theFactory;
 }
 
 Ptr<MatchboxMEBase>::tptr MatchboxXCombData::matchboxME() const {
@@ -104,7 +113,7 @@ void MatchboxXCombData::getAmplitudeMap(PersistentIStream& is, map<vector<int>,C
 }
 
 void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
-  os << theMatchboxME << theSubtractionDipole << theCrossingMap 
+  os << theFactory << theMatchboxME << theSubtractionDipole << theCrossingMap 
      << theAmplitudeToColourMap << theColourToAmplitudeMap 
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
      << theCalculateTreeAmplitudes /* << theLastAmplitudes << theLastLargeNAmplitudes */
@@ -124,7 +133,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
 }
 
 void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
-  is >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
+  is >> theFactory >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
      >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
      >> theCalculateTreeAmplitudes /* >> theLastAmplitudes >> theLastLargeNAmplitudes */
