@@ -338,7 +338,8 @@ void SubtractedME::fillProjectors() {
     dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
   for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
 	d != group->dependent().end(); ++d ) {
-    if ( !(**d).kinematicsGenerated() )
+    if ( !(**d).matrixElement()->apply() ||
+	 !(**d).kinematicsGenerated() )
       continue;
     if ( (**d).willPassCuts() )
       lastXCombPtr()->projectors().insert(1.,*d);
@@ -359,7 +360,8 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     bool below = showerApproximation()->belowCutoff();
     bool haveDipole = false;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).kinematicsGenerated() )
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
 	continue;
       if ( (**d).willPassCuts() ) {
 	haveDipole = true;
@@ -383,7 +385,8 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     double sum = 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).kinematicsGenerated() )
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
 	continue;
       if ( (**d).willPassCuts() ) {
 	sum += (**d).lastME2();
@@ -412,7 +415,8 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
       return 0.;
     size_t n = 0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).kinematicsGenerated() )
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
 	continue;
       if ( (**d).willPassCuts() ) {
 	++n;
