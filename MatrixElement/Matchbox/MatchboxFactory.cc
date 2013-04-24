@@ -240,11 +240,10 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
       me->subProcesses() = m->second;
       me->amplitude(ap->first);
       prepareME(me);
-      if ( me->diagrams().empty() )
-	continue;
       string pname = "ME" + ap->first->name() + pid(m->first);
       if ( ! (generator()->preinitRegister(me,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
+      if ( me->diagrams().empty() )continue;
       res.push_back(me);
     }
   }
