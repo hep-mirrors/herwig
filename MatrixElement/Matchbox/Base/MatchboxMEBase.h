@@ -16,7 +16,6 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
@@ -24,25 +23,13 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-/**
- * \ingroup Matchbox
- * \author Simon Platzer
- *
- * \brief Keys for XComb meta information
- */
-struct MatchboxMetaKeys {
-
-  enum Keys {
-    BornME,
-    ColourCorrelatedMEs
-  };
-
-};
 
 /**
  * \ingroup Matchbox
@@ -54,7 +41,8 @@ struct MatchboxMetaKeys {
  * @see \ref MatchboxMEBaseInterfaces "The interfaces"
  * defined for MatchboxMEBase.
  */
-class MatchboxMEBase: public MEBase {
+class MatchboxMEBase: 
+    public MEBase, public LastMatchboxXCombInfo {
 
 public:
 
@@ -73,6 +61,16 @@ public:
 
 public:
 
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tcptr f);
+
   /** @name Subprocess and diagram information. */
   //@{
 
@@ -89,22 +87,12 @@ public:
   /**
    * Return the diagram generator.
    */
-  Ptr<Tree2toNGenerator>::tptr diagramGenerator() const { return theDiagramGenerator; }
-
-  /**
-   * Set the diagram generator.
-   */
-  void diagramGenerator(Ptr<Tree2toNGenerator>::ptr gen) { theDiagramGenerator = gen; }
+  Ptr<Tree2toNGenerator>::tptr diagramGenerator() const;
 
   /**
    * Return the process data.
    */
-  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
-
-  /**
-   * Set the process data.
-   */
-  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
+  Ptr<ProcessData>::tptr processData() const;
 
   /**
    * Return true, if this matrix element does not want to
@@ -155,13 +143,7 @@ public:
    * Return the number of light flavours, this matrix
    * element is calculated for.
    */
-  virtual unsigned int nLight() const { return theNLight; }
-
-  /**
-   * Set the number of light flavours, this matrix
-   * element is calculated for.
-   */
-  void nLight(unsigned int n) { theNLight = n; }
+  virtual unsigned int getNLight() const;
 
   //@}
 
@@ -293,12 +275,7 @@ public:
   /**
    * Get the factorization scale factor
    */
-  virtual double factorizationScaleFactor() const { return theFactorizationScaleFactor; }
-
-  /**
-   * Set the factorization scale factor
-   */
-  void factorizationScaleFactor(double f) { theFactorizationScaleFactor = f; }
+  virtual double factorizationScaleFactor() const;
 
   /**
    * Return the (QCD) renormalization scale for the last generated phasespace point.
@@ -308,12 +285,7 @@ public:
   /**
    * Get the renormalization scale factor
    */
-  virtual double renormalizationScaleFactor() const { return theRenormalizationScaleFactor; }
-
-  /**
-   * Set the renormalization scale factor
-   */
-  void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
+  virtual double renormalizationScaleFactor() const;
 
   /**
    * Return the QED renormalization scale for the last generated phasespace point.
@@ -330,22 +302,12 @@ public:
   /**
    * Return true, if fixed couplings are used.
    */
-  bool fixedCouplings() const { return theFixedCouplings; }
-
-  /**
-   * Switch on fixed couplings.
-   */
-  void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
+  bool fixedCouplings() const;
 
   /**
    * Return true, if fixed couplings are used.
    */
-  bool fixedQEDCouplings() const { return theFixedQEDCouplings; }
-
-  /**
-   * Switch on fixed couplings.
-   */
-  void setFixedQEDCouplings(bool on = true) { theFixedQEDCouplings = on; }
+  bool fixedQEDCouplings() const;
 
   /**
    * Return the value of \f$\alpha_S\f$ associated with the phase
@@ -501,12 +463,7 @@ public:
   /**
    * Return true, if cancellationn of epsilon poles should be checked.
    */
-  bool checkPoles() const { return theCheckPoles; }
-
-  /**
-   * Switch on checking of epsilon pole cancellation.
-   */
-  void doCheckPoles() { theCheckPoles = true; }
+  bool checkPoles() const;
 
   /**
    * Perform the check of epsilon pole cancellation. Results will be
@@ -592,6 +549,15 @@ public:
   virtual double colourCorrelatedME2(pair<int,int>) const;
 
   /**
+   * Return the colour correlated matrix element squared in the
+   * large-N approximation with respect to the given two partons as
+   * appearing in mePartonData(), suitably scaled by sHat() to give a
+   * dimension-less number.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return the colour and spin correlated matrix element squared for
    * the gluon indexed by the first argument using the given
    * correlation tensor.
@@ -599,37 +565,10 @@ public:
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
 
-  /**
-   * Return true, if colour correlated matrix elements should be calculated
-   * for later use
-   */
-  bool getColourCorrelatedMEs() const { return theGetColourCorrelatedMEs; }
-
-  /**
-   * Switch on calculation of colour correlated matrix elements for
-   * later use
-   */
-  void doColourCorrelatedMEs() { theGetColourCorrelatedMEs = true; }
-
-  /**
-   * Calculate colour correlated matrix elements for later use
-   */
-  void storeColourCorrelatedMEs(double xme2 = -1.) const;
-
   //@}
 
   /** @name Caching and diagnostic information */
   //@{
-
-  /**
-   * Set the ME cache object
-   */
-  void cache(Ptr<MatchboxMECache>::ptr c) { theCache = c; }
-
-  /**
-   * Get the ME cache object
-   */
-  Ptr<MatchboxMECache>::tptr cache() const { return theCache; }
 
   /**
    * Inform this matrix element that a new phase space
@@ -639,40 +578,9 @@ public:
   virtual void flushCaches();
 
   /**
-   * Return true, if the matrix element needs to be 
-   * recalculated for the given phase space point.
-   * If not, return the cached value in the given reference.
-   */
-  bool calculateME2(double& xme2,
-		    const pair<int,int>& corr = make_pair(0,0)) const {
-    if ( !cache() ) {
-      xme2 = 0.;
-      return true;
-    }
-    cache()->setXComb(lastXCombPtr());
-    return cache()->calculateME2(xme2,corr);
-  }
-
-  /**
-   * Cache a calculated matrix element
-   * for the last phase space point.
-   */
-  void cacheME2(double xme2,
-		const pair<int,int>& corr = make_pair(0,0)) const {
-    if ( !cache() )
-      return;
-    cache()->cacheME2(xme2,corr);
-  }
-
-  /**
    * Return true, if verbose
    */
-  bool verbose() const { return theVerbose; }
-
-  /**
-   * Switch on diagnostic information.
-   */
-  void setVerbose(bool on = true) { theVerbose = on; }
+  bool verbose() const;
 
   /**
    * Dump the setup to an ostream
@@ -759,6 +667,33 @@ public:
    */
   void cloneDependencies(const std::string& prefix = "");
 
+  /**
+   * Prepare an xcomb
+   */
+  void prepareXComb(MatchboxXCombData&) const;
+
+  /**
+   * For the given event generation setup return a xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				const PBPair & newPartonBins, tCutsPtr newCuts,
+				const DiagramVector & newDiagrams, bool mir,
+				const PartonPairVec& allPBins,
+				tStdXCombPtr newHead = tStdXCombPtr(),
+				tMEPtr newME = tMEPtr());
+
+  /**
+   * For the given event generation setup return a dependent xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(tStdXCombPtr newHead,
+				const PBPair & newPartonBins,
+				const DiagramVector & newDiagrams,
+				tMEPtr newME = tMEPtr());
+
   //@}
 
 public:
@@ -816,20 +751,12 @@ protected:
   virtual void doinit();
   //@}
 
-protected:
-
-  /**
-   * The final state symmetry factors.
-   */
-  mutable map<tStdXCombPtr,double> symmetryFactors;
-
 private:
 
   /**
-   * A vector of reweight objects the sum of which
-   * should be applied to reweight this matrix element
+   * The factory which produced this matrix element
    */
-  vector<Ptr<MatchboxReweightBase>::ptr> theReweights;
+  Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
    * The phase space generator to be used.
@@ -842,24 +769,9 @@ private:
   Ptr<MatchboxAmplitude>::ptr theAmplitude;
 
   /**
-   * The diagram generator to be used.
-   */
-  Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
-
-  /**
-   * The process data object to be used
-   */
-  Ptr<ProcessData>::ptr theProcessData;
-
-  /**
    * The scale choice object
    */
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
-
-  /**
-   * The ME cache object
-   */
-  Ptr<MatchboxMECache>::ptr theCache;
 
   /**
    * The virtual corrections.
@@ -867,53 +779,17 @@ private:
   vector<Ptr<MatchboxInsertionOperator>::ptr> theVirtuals;
 
   /**
-   * The subprocesses to be considered, if a diagram generator is
-   * present.
+   * A vector of reweight objects the sum of which
+   * should be applied to reweight this matrix element
+   */
+  vector<Ptr<MatchboxReweightBase>::ptr> theReweights;
+
+private:
+
+  /**
+   * The subprocesses to be considered.
    */
   vector<PDVector> theSubprocesses;
-
-  /**
-   * The factorization scale factor.
-   */
-  double theFactorizationScaleFactor;
-
-  /**
-   * The renormalization scale factor.
-   */
-  double theRenormalizationScaleFactor;
-
-  /**
-   * Wether or not diagnostic information
-   * should be written to the generator log
-   */
-  bool theVerbose;
-
-  /**
-   * Use non-running couplings.
-   */
-  bool theFixedCouplings;
-
-  /**
-   * Use non-running couplings.
-   */
-  bool theFixedQEDCouplings;
-
-  /**
-   * The number of light flavours, this matrix
-   * element is calculated for.
-   */
-  unsigned int theNLight;
-
-  /**
-   * True, if colour correlated matrix elements should be calculated
-   * for later use
-   */
-  bool theGetColourCorrelatedMEs;
-
-  /**
-   * True, if cancellationn of epsilon poles should be checked.
-   */
-  bool theCheckPoles;
 
   /**
    * True, if this matrix element includes one-loop corrections
@@ -925,16 +801,6 @@ private:
    * but no Born contributions
    */
   bool theOneLoopNoBorn;
-
-  /**
-   * Map xcomb's to storage of Born matrix elements squared.
-   */
-  mutable map<tStdXCombPtr,double> bornMEs;
-
-  /**
-   * Map xcomb's to storage of colour correlated matrix elements.
-   */
-  mutable map<tStdXCombPtr,map<pair<int,int>,double> > colourCorrelatedMEs;
 
 private:
 

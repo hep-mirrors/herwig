@@ -50,21 +50,15 @@ public:
 public:
 
   /**
-   * Return true, if this phasespace generator will generate incoming
-   * partons itself.
-   */
-  virtual bool haveX1X2() const { return false; }
-
-  /**
    * Prepare a phase space generator for the given xcomb object.
    */
-  virtual void prepare(tStdXCombPtr, bool verbose = false);
+  virtual void setXComb(tStdXCombPtr);
 
   /**
    * Generate a phase space point and return its weight.
    */
-  virtual double generateKinematics(const double*,
-				    vector<Lorentz5Momentum>& momenta);
+  virtual double generateTwoToNKinematics(const double*,
+					  vector<Lorentz5Momentum>& momenta);
 
   /**
    * Return the number of random numbers required to produce a given

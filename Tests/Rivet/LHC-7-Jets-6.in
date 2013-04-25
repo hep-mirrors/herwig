@@ -39,6 +39,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # CMS dijet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
+# ATLAS high pT jet shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1119557
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

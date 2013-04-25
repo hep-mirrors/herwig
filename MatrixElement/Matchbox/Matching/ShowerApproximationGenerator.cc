@@ -340,15 +340,19 @@ IBPtr ShowerApproximationGenerator::fullclone() const {
 
 
 void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theShowerApproximation << thePhasespace 
-     << theFactory << theKernelMap
-     << thePresamplingPoints << theMaxTry;
+  os << theShowerApproximation << thePhasespace << theFactory 
+     << theKernelMap << thePresamplingPoints << theMaxTry 
+     << lastIncomingXComb << theLastBornME << ounit(theLastMomenta,GeV) 
+     << ounit(theLastPresamplingMomenta,GeV) << theLastRandomNumbers
+     << theLastBornXComb << theLastPartons;
 }
 
 void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerApproximation >> thePhasespace 
-     >> theFactory >> theKernelMap
-     >> thePresamplingPoints >> theMaxTry;
+  is >> theShowerApproximation >> thePhasespace >> theFactory 
+     >> theKernelMap >> thePresamplingPoints >> theMaxTry 
+     >> lastIncomingXComb >> theLastBornME >> iunit(theLastMomenta,GeV) 
+     >> iunit(theLastPresamplingMomenta,GeV) >> theLastRandomNumbers
+     >> theLastBornXComb >> theLastPartons;
 }
 
 

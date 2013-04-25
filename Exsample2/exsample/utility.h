@@ -15,6 +15,28 @@
 
 namespace exsample {
 
+  /// \brief separate quantities written to an ostream
+  template<class OStream>
+  struct ostream_traits {
+
+    /// put the separator to the ostream
+    static void separator(OStream& os) { os << "\n"; }
+
+  };
+
+#ifdef EXSAMPLE_has_ThePEG
+
+  /// \brief separate quantities written to a ThePEG::PersistentOStream
+  template<>
+  struct ostream_traits<ThePEG::PersistentOStream> {
+
+    /// put the separator to the ostream
+    static void separator(ThePEG::PersistentOStream&) { }
+
+  };  
+
+#endif // EXSAMPLE_has_ThePEG
+
   /// \brief Compile time conversion of unsigned long to bool
   template<unsigned long>
   struct static_binary {
@@ -79,7 +101,7 @@ namespace exsample {
     }
 
     /// get the k'th bit
-    bool bit(unsigned long k) {
+    bool bit(unsigned long k) const {
       assert(k<n_bits);
       return (segments[n_segments-k/uint_bits-1] & (1ul << (k % uint_bits)));
     }
@@ -89,6 +111,23 @@ namespace exsample {
     void dump(OStream& os) const {
       for ( unsigned int k = 0; k < n_segments; ++k )
 	os << segments[k] << " ";
+    }
+
+    /// put to ostream
+    template<class OStream>
+    void put(OStream& os) const {
+      for ( size_t k = 0; k < n_segments; ++k ) {
+	os << segments[k];
+	ostream_traits<OStream>::separator(os);
+      }
+    }
+
+    /// get from istream
+    template<class IStream>
+    void get(IStream& is) {
+      for ( size_t k = 0; k < n_segments; ++k ) {
+	is >> segments[k];
+      }
     }
 
   private:
@@ -127,28 +166,6 @@ namespace exsample {
     assert(n <= sizeof(std::size_t)*CHAR_BIT);
     return (1 << n);
   }
-
-  /// \brief separate quantities written to an ostream
-  template<class OStream>
-  struct ostream_traits {
-
-    /// put the separator to the ostream
-    static void separator(OStream& os) { os << "\n"; }
-
-  };
-
-#ifdef EXSAMPLE_has_ThePEG
-
-  /// \brief separate quantities written to a ThePEG::PersistentOStream
-  template<>
-  struct ostream_traits<ThePEG::PersistentOStream> {
-
-    /// put the separator to the ostream
-    static void separator(ThePEG::PersistentOStream&) { }
-
-  };  
-
-#endif // EXSAMPLE_has_ThePEG
 
   /// \brief Fast, zero memory-overhead one-dimensional
   /// histogram with 2^n equally spaced bins

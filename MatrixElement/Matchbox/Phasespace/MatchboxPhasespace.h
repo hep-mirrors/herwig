@@ -15,6 +15,9 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -73,7 +76,9 @@ struct StreamingRnd {
  *
  */
 class MatchboxPhasespace: 
-    public HandlerBase, public LastXCombInfo<StandardXComb> {
+    public HandlerBase, 
+    public LastXCombInfo<StandardXComb>,
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -93,15 +98,41 @@ public:
 public:
 
   /**
-   * Prepare a phase space generator for the given xcomb object.
+   * Set the XComb object steering the Born matrix
+   * element this class represents virtual corrections to.
    */
-  virtual void prepare(tStdXCombPtr, bool verbose = false) = 0;
+  virtual void setXComb(tStdXCombPtr xc) { 
+    theLastXComb = xc;
+    lastMatchboxXComb(xc);
+  }
+
+  /**
+   * Return the factory object
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Return the process data object
+   */
+  Ptr<ProcessData>::tptr processData() const;
 
   /**
    * Generate a phase space point and return its weight.
    */
-  virtual double generateKinematics(const double*,
-				    vector<Lorentz5Momentum>& momenta) = 0;
+  virtual double generateKinematics(const double* r,
+				    vector<Lorentz5Momentum>& momenta);
+
+  /**
+   * Generate a phase space point and return its weight.
+   */
+  virtual double generateTwoToNKinematics(const double*,
+					  vector<Lorentz5Momentum>& momenta) = 0;
+
+  /**
+   * Generate a 2 -> 1 phase space point and return its weight.
+   */
+  virtual double generateTwoToOneKinematics(const double*,
+					    vector<Lorentz5Momentum>& momenta);
 
   /**
    * Return the number of random numbers required to produce a given
@@ -120,6 +151,11 @@ public:
    * the incoming partons in their center-of-mass system
    */
   virtual bool wantCMS() const { return true; }
+
+  /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool useMassGenerators() const { return theUseMassGenerators; }
 
   /**
    * Fill a diagram selector for the last phase space point.
@@ -145,8 +181,8 @@ public:
    * Return the weight appropriate to the given diagram.
    */
   double diagramWeight(const Tree2toNDiagram& diag) const {
-    assert( !diagramWeights.empty() );
-    return diagramWeights.find(diag.id())->second;
+    assert( !diagramWeights().empty() );
+    return diagramWeights().find(diag.id())->second;
   }
 
   /**
@@ -177,10 +213,23 @@ public:
    * Invert the given phase space point to the random numbers which
    * would have generated it.
    */
-  virtual double invertKinematics(const vector<Lorentz5Momentum>&,
-				  double*) const {
+  virtual double invertKinematics(const vector<Lorentz5Momentum>& momenta,
+				  double* r) const;
+
+  /**
+   * Invert the given phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertTwoToNKinematics(const vector<Lorentz5Momentum>&,
+					double*) const {
     return 0.;
   }
+
+  /**
+   * Invert the given 2 -> 1 phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertTwoToOneKinematics(const vector<Lorentz5Momentum>&, double*) const;
 
 public:
 
@@ -190,15 +239,15 @@ public:
   void singularLimit(size_t i, size_t j) {
     if ( i > j )
       swap(i,j);
-    singularLimits.insert(make_pair(i,j));
+    singularLimits().insert(make_pair(i,j));
   }
 
   /**
    * Return the last matched singular limit.
    */
-  const pair<size_t,size_t>& lastSingularLimit() const {
-    assert(theLastSingularLimit != singularLimits.end());
-    return *theLastSingularLimit;
+  const pair<size_t,size_t>& lastSingularIndices() const {
+    assert(lastSingularLimit() != singularLimits().end());
+    return *lastSingularLimit();
   }
 
   /**
@@ -242,26 +291,14 @@ public:
 private:
 
   /**
-   * The diagram weights indexed by diagram id.
-   */
-  map<int,double> diagramWeights;
-
-  /**
-   * If not empty, the entries here serve to limit phasespace
-   * generation to the corresponding collinear limits, or soft limits
-   * if both pair entries are equal.
-   */
-  set<pair<size_t,size_t> > singularLimits;
-
-  /**
-   * The last matched singular limit.
-   */
-  set<pair<size_t,size_t> >::const_iterator theLastSingularLimit;
-
-  /**
    * A cutoff below which a region is considered singular.
    */
   Energy singularCutoff;
+
+  /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool theUseMassGenerators;
 
   /**
    * The assignment operator is private and must never be called.

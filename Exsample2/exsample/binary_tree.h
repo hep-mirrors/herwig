@@ -275,7 +275,7 @@ namespace exsample {
       const_iterator() : pointee(0), post_end(0), pre_begin(0) { }
 
       /// constructor taking pointee
-      const_iterator(binary_tree * p, std::size_t end = 0)
+      const_iterator(const binary_tree * p, std::size_t end = 0)
 	: pointee(p), post_end(end), pre_begin(0) { }
 
       /// conversion from iterator
@@ -357,7 +357,7 @@ namespace exsample {
     private:
 
       /// the node pointed to
-      binary_tree * pointee;
+      const binary_tree * pointee;
 
       /// the distance from --end() (if above --end())
       std::size_t post_end;

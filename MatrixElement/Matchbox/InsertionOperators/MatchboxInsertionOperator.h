@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 
 namespace Herwig {
@@ -30,7 +31,10 @@ using namespace ThePEG;
  * @see \ref MatchboxInsertionOperatorInterfaces "The interfaces"
  * defined for MatchboxInsertionOperator.
  */
-class MatchboxInsertionOperator: public HandlerBase, public LastXCombInfo<StandardXComb> {
+class MatchboxInsertionOperator: 
+    public HandlerBase, 
+    public LastXCombInfo<StandardXComb>,
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -59,22 +63,12 @@ public:
   virtual bool apply(const cPDVector&) const = 0;
 
   /**
-   * Set the Born matrix element this class represents 
-   * virtual corrections to.
-   */
-  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me);
-
-  /**
    * Return the Born matrix element this class represents 
    * virtual corrections to.
    */
-  Ptr<MatchboxMEBase>::tptr lastBorn();
-
-  /**
-   * Return the Born matrix element this class represents 
-   * virtual corrections to.
-   */
-  Ptr<MatchboxMEBase>::tcptr lastBorn() const;
+  Ptr<MatchboxMEBase>::tptr lastBorn() const {
+    return lastMatchboxXComb()->matchboxME();
+  }
 
   /**
    * Set the XComb object steering the Born matrix
@@ -82,12 +76,8 @@ public:
    */
   virtual void setXComb(tStdXCombPtr xc) { 
     theLastXComb = xc;
+    lastMatchboxXComb(xc);
   }
-
-  /**
-   * Provide the additional random numbers
-   */
-  void additionalKinematics(const double *);
 
   /**
    * Return the number of additional random variables
@@ -192,11 +182,16 @@ public:
   virtual void flushCaches() {}
 
   /**
-   * Clone this matrix element.
+   * Clone this insertion operator.
    */
   Ptr<MatchboxInsertionOperator>::ptr cloneMe() const {
     return dynamic_ptr_cast<Ptr<MatchboxInsertionOperator>::ptr>(clone());
   }
+
+  /**
+   * Clone the dependencies, using a given prefix.
+   */
+  virtual void cloneDependencies(const std::string& prefix = "");
 
   //@}
 
@@ -230,44 +225,7 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  virtual void rebind(const TranslationMap & trans);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  virtual IVector getReferences();
-  //@}
-
-protected:
-
-  /**
-   * The additional random numbers requested by
-   * this virtual correction.
-   */
-  vector<double> additionalRandomNumbers;
-
 private:
-
-  /**
-   * The Born matrix element this class represents 
-   * virtual corrections to.
-   */
-  Ptr<MatchboxMEBase>::tptr theLastBorn;
 
   /**
    * True, if this virtual correction
