@@ -653,7 +653,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       intype.push_back(itype);
       inpow.push_back(0.);
       inmass.push_back(getProcessInfo()[ix].intermediate->mass());
-      inwidth.push_back(getProcessInfo()[ix].intermediate->width());
+      inwidth.push_back(widthOption() ==3 ? ZERO : getProcessInfo()[ix].intermediate->width());
       ++nchannel;
     }
     else if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma) {
@@ -675,7 +675,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     if(getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
       inpow.push_back(0.);
       inmass.push_back(getProcessInfo()[imin[minType].first].intermediate->mass());
-      inwidth.push_back(getProcessInfo()[imin[minType].first].intermediate->width());
+      inwidth.push_back(widthOption() ==3 ? ZERO : getProcessInfo()[imin[minType].first].intermediate->width());
     }
     else {
       inpow.push_back(-2.);
@@ -691,7 +691,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
 	inpow.push_back(0.);
 	inmass.push_back(getProcessInfo()[imin[ix].first].intermediate->mass());
-	inwidth.push_back(getProcessInfo()[imin[ix].first].intermediate->width());
+	inwidth.push_back(widthOption() ==3 ? ZERO : getProcessInfo()[imin[ix].first].intermediate->width());
       }
       else {
 	inpow.push_back(-2.);
