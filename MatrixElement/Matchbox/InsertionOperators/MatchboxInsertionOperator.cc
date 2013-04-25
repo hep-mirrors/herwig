@@ -28,11 +28,7 @@ MatchboxInsertionOperator::MatchboxInsertionOperator()
 
 MatchboxInsertionOperator::~MatchboxInsertionOperator() {}
 
-void MatchboxInsertionOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) { theLastBorn = me; }
-
-Ptr<MatchboxMEBase>::tptr MatchboxInsertionOperator::lastBorn() { return theLastBorn; }
-
-Ptr<MatchboxMEBase>::tcptr MatchboxInsertionOperator::lastBorn() const { return theLastBorn; }
+void MatchboxInsertionOperator::cloneDependencies(const std::string&) {}
 
 CrossSection MatchboxInsertionOperator::dSigHatDR() const {
   return
@@ -42,32 +38,15 @@ CrossSection MatchboxInsertionOperator::dSigHatDR() const {
     (2.*lastSHat());
 }
 
-void MatchboxInsertionOperator::additionalKinematics(const double * r) {
-  if ( nDimAdditional() ) {
-    additionalRandomNumbers.resize(nDimAdditional());
-    copy(r,r+nDimAdditional(),additionalRandomNumbers.begin());
-  }
-}
-
-void MatchboxInsertionOperator::rebind(const TranslationMap & trans) {
-  theLastBorn = trans.translate(theLastBorn);
-  HandlerBase::rebind(trans);
-}
-
-IVector MatchboxInsertionOperator::getReferences() {
-  IVector ret = HandlerBase::getReferences();
-  ret.push_back(theLastBorn);
-  return ret;
-}
-
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theLastBorn
+  os << theLastXComb
      << theUseDR << theUseCS << theUseBDK << theUseExpanded;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theLastBorn
+  is >> theLastXComb
      >> theUseDR >> theUseCS >> theUseBDK >> theUseExpanded;
+  lastMatchboxXComb(theLastXComb);
 }
 
 

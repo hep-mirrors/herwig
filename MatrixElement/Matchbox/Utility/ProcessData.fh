@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the ProcessData class
+
+#ifndef HERWIG_ProcessData_FH
+#define HERWIG_ProcessData_FH
+
+namespace Herwig {
+
+class ProcessData;
+
+}
+
+#endif // HERWIG_ProcessData_FH

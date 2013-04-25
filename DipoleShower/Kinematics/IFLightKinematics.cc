@@ -155,7 +155,7 @@ bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
   double x = pt2/sqr(qt);
   double u = ratio/(1.-z);
 
-  if ( x < 0. || x > 1. || u > 1. ) {
+  if ( x < 0. || x > 1. || u > 1. || u < 0. ) {
     jacobian(0.0);
     return false;
   }
@@ -163,8 +163,8 @@ bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
   double xe = info.emitterX();
   double s = sqrt(1.-sqr(qt/info.hardPt()));
 
-  double zp = 0.5*(1.+xe-(1.-xe)*s);
-  double zm = 0.5*(1.+xe+(1.-xe)*s);
+  double zp = 0.5*(1.+xe+(1.-xe)*s);
+  double zm = 0.5*(1.+xe-(1.-xe)*s);
 
   if ( z > zp || z < zm ||
        x < xe ) {
@@ -211,7 +211,7 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   double kappa = sqr(qt)/(-(pEmitter-pSpectator).m2());
 
   double rho = 1. - 4.*kappa*z*(1.-z) / sqr(1. - z + kappa);
-  Energy2 pt2 = (-(pEmitter-pSpectator).m2()/2.)*(1. - z - kappa)*(1. - sqrt(rho));
+  Energy2 pt2 = (-(pEmitter-pSpectator).m2()/2.)*(1. - z + kappa)*(1. - sqrt(rho));
 
   double ratio = pt2/(-(pEmitter-pSpectator).m2());
 

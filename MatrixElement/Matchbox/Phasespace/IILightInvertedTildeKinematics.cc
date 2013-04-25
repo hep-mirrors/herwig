@@ -121,10 +121,14 @@ pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IILightInvertedTildeKinematics::persistentOutput(PersistentOStream &) const {
+void IILightInvertedTildeKinematics::persistentOutput(PersistentOStream & os) const {
+  os << ounit(K,GeV) << ounit(K2,GeV2) << ounit(Ktilde,GeV)
+     << ounit(KplusKtilde,GeV) << ounit(KplusKtilde2,GeV2);
 }
 
-void IILightInvertedTildeKinematics::persistentInput(PersistentIStream &, int) {
+void IILightInvertedTildeKinematics::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(K,GeV) >> iunit(K2,GeV2) >> iunit(Ktilde,GeV)
+     >> iunit(KplusKtilde,GeV) >> iunit(KplusKtilde2,GeV2);
 }
 
 void IILightInvertedTildeKinematics::Init() {

@@ -36,21 +36,39 @@ IBPtr ProcessData::fullclone() const {
   return new_ptr(*this);
 }
 
+void ProcessData::fillMassGenerators(const PDVector& subpro) {
+  for ( PDVector::const_iterator pd = subpro.begin();
+	pd != subpro.end(); ++pd ) {
+    if ( theMassGenerators.find(*pd) != theMassGenerators.end() )
+      continue;
+    tGenericMassGeneratorPtr mgen = 
+      dynamic_ptr_cast<tGenericMassGeneratorPtr>((**pd).massGenerator());
+    if ( !mgen )
+      continue;
+    theMassGenerators[*pd] = mgen;
+  }
+}
+
+tGenericMassGeneratorPtr ProcessData::massGenerator(cPDPtr pd) {
+  if ( !pd->massGenerator() )
+    return tGenericMassGeneratorPtr();
+  map<cPDPtr,tGenericMassGeneratorPtr>::iterator mg =
+    theMassGenerators.find(pd);
+  if ( mg == theMassGenerators.end() )
+    return tGenericMassGeneratorPtr();
+  return mg->second;
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void ProcessData::persistentOutput(PersistentOStream & os) const {
-  os << theDiagramMap << theCrossingMap
-     << theAmplitudeToColourMap << theColourToAmplitudeMap 
-     << theCrossingSigns << theAmplitudePartonData;
+  os << theDiagramMap << theMassGenerators;
 }
 
 void ProcessData::persistentInput(PersistentIStream & is, int) {
-  is >> theDiagramMap >> theCrossingMap
-     >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
-     >> theCrossingSigns >> theAmplitudePartonData;
+  is >> theDiagramMap >> theMassGenerators;
 }
 
 

@@ -15,9 +15,8 @@ Phasespace/libHwMatchboxPhasespace.la \
 Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
 Matching/libHwMatchboxMatching.la \
-Builtin/Processes/libHwMatchboxBuiltinProcesses.la \
 Builtin/Amplitudes/libHwMatchboxBuiltinAmplitudes.la \
 Tests/libHwMatchboxTests.la
 
 HwMatchbox_la_SOURCES =  \
-MatchboxFactory.h MatchboxFactory.cc
+MatchboxFactory.h MatchboxFactory.fh MatchboxFactory.cc

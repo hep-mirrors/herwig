@@ -205,7 +205,7 @@ void DipoleShowerHandler::hardScales() {
       Energy mhard = phard.m();
       maxPt = mhard;
     }
-    maxPt *= sqrt(theHardScaleFactor);
+    maxPt *= theHardScaleFactor;
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();

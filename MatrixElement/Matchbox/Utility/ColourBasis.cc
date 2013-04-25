@@ -14,6 +14,7 @@
 #include "ColourBasis.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -38,7 +39,7 @@ using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
 
 ColourBasis::ColourBasis() 
-  : theSearchPath("."),didRead(false), didWrite(false) {}
+  : theLargeN(false), theSearchPath("."), didRead(false), didWrite(false) {}
 
 ColourBasis::~ColourBasis() {
   for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
@@ -76,13 +77,13 @@ bool ColourBasis::colourConnected(const cPDVector& sub,
 
 }
 
-const string& ColourBasis::ordering(const cPDVector& sub, 
-				    const map<size_t,size_t>& colourToAmplitude,
-				    size_t tensorId) {
+const string& ColourBasis::orderingString(const cPDVector& sub, 
+					  const map<size_t,size_t>& colourToAmplitude,
+					  size_t tensorId) {
 
   const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
 
-  map<size_t,string>& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
+  map<size_t,string>& orderings = theOrderingStringIdentifiers[basis][colourToAmplitude];
 
   if ( orderings.empty() ) {
     map<size_t,vector<vector<size_t> > > tensors =
@@ -109,6 +110,28 @@ const string& ColourBasis::ordering(const cPDVector& sub,
   return orderings[tensorId];
 
 }
+
+const vector<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
+						     const map<size_t,size_t>& colourToAmplitude,
+						     size_t tensorId) {
+
+  const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
+
+  map<size_t,vector<vector<size_t> > >& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
+
+  if ( orderings.empty() ) {
+    map<size_t,vector<vector<size_t> > > tensors =
+      basisList(basis);
+    for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
+	    tensors.begin(); t != tensors.end(); ++t ) {
+      orderings[t->first] = t->second;
+    }
+  }
+
+  return orderings[tensorId];
+
+}
+
 
 vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
@@ -1115,14 +1138,15 @@ void ColourBasis::doinitrun() {
 }
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
-  os << theSearchPath << theNormalOrderedLegs
-     << theIndexMap << theFlowMap << theOrderingIdentifiers;
+  os << theLargeN << theSearchPath << theNormalOrderedLegs
+     << theIndexMap << theFlowMap << theOrderingStringIdentifiers << theOrderingIdentifiers;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
-  is >> theSearchPath >> theNormalOrderedLegs
-     >> theIndexMap >> theFlowMap >> theOrderingIdentifiers;
+  is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
+     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers >> theOrderingIdentifiers;
+  readBasis();
 }
 
 
@@ -1146,6 +1170,21 @@ void ColourBasis::Init() {
      "Set the search path for pre-computed colour basis data.",
      &ColourBasis::theSearchPath, ".",
      false, false);
+
+  static Switch<ColourBasis,bool> interfaceLargeN
+    ("LargeN",
+     "Switch on or off large-N evaluation.",
+     &ColourBasis::theLargeN, false, false, false);
+  static SwitchOption interfaceLargeNOn
+    (interfaceLargeN,
+     "On",
+     "Work in N=infinity",
+     true);
+  static SwitchOption interfaceLargeNOff
+    (interfaceLargeN,
+     "Off",
+     "Work in N=3",
+     false);
 
 }
 

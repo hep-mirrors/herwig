@@ -17,10 +17,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_sparse.hpp>
-#include <boost/numeric/ublas/symmetric.hpp>
-#include <boost/numeric/ublas/vector.hpp>
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 
 #include <iterator>
 
@@ -35,16 +32,6 @@ using boost::numeric::ublas::matrix;
 using boost::numeric::ublas::symmetric_matrix;
 using boost::numeric::ublas::compressed_matrix;
 using boost::numeric::ublas::upper;
-
-/**
- * \ingroup Matchbox
- * \author Simon Platzer
- *
- * \brief Define compolex vector from boost::uBLAS
- *
- */
-typedef boost::numeric::ublas::vector<Complex> CVector;
-
 
 /**
  * \ingroup Matchbox
@@ -105,9 +92,20 @@ public:
    * sensible results for colour bases which implement the basisList
    * query.
    */
-  const string& ordering(const cPDVector& sub, 
-			 const map<size_t,size_t>& colourToAmplitude,
-			 size_t tensorId);
+  const string& orderingString(const cPDVector& sub, 
+			       const map<size_t,size_t>& colourToAmplitude,
+			       size_t tensorId);
+
+  /**
+   * Given a physical subprocess, a colour to amplitude label map and
+   * a basis tensor index, return an identifier of the ordering
+   * coresponding to the given colour structure. This will only return
+   * sensible results for colour bases which implement the basisList
+   * query.
+   */
+  const vector<vector<size_t> >& ordering(const cPDVector& sub, 
+					  const map<size_t,size_t>& colourToAmplitude,
+					  size_t tensorId);
 
   /**
    * For the given subprocess and amplitude vectors
@@ -209,7 +207,7 @@ public:
   /**
    * Return true, if this basis is running in large-N mode
    */
-  virtual bool largeN() const { return false; }
+  virtual bool largeN() const { return theLargeN; }
 
   /**
    * Convert particle data to colour information
@@ -399,6 +397,11 @@ private:
   typedef map<vector<PDT::Colour>,map<pair<size_t,size_t>,symmetric_matrix<double,upper> > > CorrelatorMap;
 
   /**
+   * True, if this basis is running in large-N mode
+   */
+  bool theLargeN;
+
+  /**
    * A search path for already calculated and stored matrices.
    */
   string theSearchPath;
@@ -451,7 +454,12 @@ private:
   /**
    * Store ordering identifiers
    */
-  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,string> > > theOrderingIdentifiers;
+  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,string> > > theOrderingStringIdentifiers;
+
+  /**
+   * Store ordering identifiers
+   */
+  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,vector<vector<size_t> > > > > theOrderingIdentifiers;
 
   /**
    * Write out yet unknown basis computations.

@@ -46,8 +46,8 @@ IBPtr DipoleMIOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-void DipoleMIOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
-  MatchboxInsertionOperator::setBorn(me);
+void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
   gammaQuark = (3./2.)*CF;

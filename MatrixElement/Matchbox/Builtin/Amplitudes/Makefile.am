@@ -4,6 +4,7 @@ endif
 
 libHwMatchboxBuiltinAmplitudes_la_SOURCES = \
 MatchboxCurrents.h MatchboxCurrents.cc \
+MatchboxZGammaAmplitude.h MatchboxZGammaAmplitude.cc \
 MatchboxAmplitudellbarqqbar.cc \
 MatchboxAmplitudellbarqqbarg.cc \
 MatchboxAmplitudellbarqqbargg.cc \
