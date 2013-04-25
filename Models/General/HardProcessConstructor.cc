@@ -454,10 +454,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       bool outsex  = outa == PDT::Colour6 && outb == PDT::Colour6bar;
       bool outsexb = outa == PDT::Colour6bar && outb == PDT::Colour6;
       if(incol || outcol) {
-	// Require an additional minus sign for a fermion 33bar final state
-	// due to the way the vertex rules are defined.
+	// Require an additional minus sign for a scalar/fermion
+	// 33bar final state due to the way the vertex rules are defined.
 	int prefact(1);
-	if( (pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) &&
+	if( ((pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) ||
+	     (pc->iSpin() == PDT::Spin0     && pd->iSpin() == PDT::Spin0    )) &&
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {
