@@ -211,7 +211,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    else if(offshell->iSpin() == PDT::Spin1) {
 	      VectorWaveFunction interv = _vec[idiag].first->
 		evaluate(scale, widthOption(), offshell, w0, w1);
-	      diag = -_vec[idiag].second->evaluate(scale,w3,w2,interv);
+	      diag = _vec[idiag].second->evaluate(scale,w3,w2,interv);
 	    }
 	    // intermediate tensor
 	    else if(offshell->iSpin() == PDT::Spin2) {
