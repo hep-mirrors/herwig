@@ -139,6 +139,11 @@ private:
   bool _includeOnShell;
 
   /**
+   *  Only include the real part of the integral
+   */
+  bool _realIntegral;
+
+  /**
    * Pointer to the stop mixing matrix
    */
   tMixingMatrixPtr _stop;

@@ -192,7 +192,7 @@ private:
   /**
    *  Include Yukawa's ?
    */
-  bool yukawa_;
+  unsigned int yukawa_;
 };
 }
 

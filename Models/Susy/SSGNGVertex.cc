@@ -36,7 +36,8 @@ namespace {
   }
 }
 
-SSGNGVertex::SSGNGVertex() : _includeOnShell(false),
+SSGNGVertex::SSGNGVertex() : _includeOnShell(false), _realIntegral(false), 
+			     _omitLightQuarkYukawas(false),
 			     _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
 			     _leftlast(ZERO), _rightlast(ZERO) {
@@ -100,12 +101,14 @@ void SSGNGVertex::doinitrun() {
 
 void SSGNGVertex::persistentOutput(PersistentOStream & os) const {
   os << _sw << _cw << _theN << ounit(_mw,GeV) << _sb << _cb
-     << _stop << _sbot << _includeOnShell;
+     << _stop << _sbot << _includeOnShell << _omitLightQuarkYukawas
+     << _realIntegral;
 }
 
 void SSGNGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN >> iunit(_mw,GeV) >> _sb >> _cb
-     >> _stop >> _sbot >> _includeOnShell;
+     >> _stop >> _sbot >> _includeOnShell >> _omitLightQuarkYukawas
+     >> _realIntegral;
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -132,6 +135,36 @@ void SSGNGVertex::Init() {
      "Don't incldue them",
      false);
 
+  static Switch<SSGNGVertex,bool> interfaceOmitLightQuarkYukawas
+    ("OmitLightQuarkYukawas",
+     "Omit the yukawa type couplings for down, up, strange"
+     " and charm quarks, mainly for testing vs ISAJET",
+     &SSGNGVertex::_omitLightQuarkYukawas, false, false, false);
+  static SwitchOption interfaceOmitLightQuarkYukawasNo
+    (interfaceOmitLightQuarkYukawas,
+     "No",
+     "Include the Yukawas",
+     false);
+  static SwitchOption interfaceOmitLightQuarkYukawasYes
+    (interfaceOmitLightQuarkYukawas,
+     "Yes",
+     "Omit Yukawas",
+     true);
+
+  static Switch<SSGNGVertex,bool> interfaceRealIntegral
+    ("RealIntegral",
+     "Only include the real parts of the integrals",
+     &SSGNGVertex::_realIntegral, false, false, false);
+  static SwitchOption interfaceRealIntegralYes
+    (interfaceRealIntegral,
+     "Yes",
+     "Only include the real part",
+     true);
+  static SwitchOption interfaceRealIntegralNo
+    (interfaceRealIntegral,
+     "No",
+     "Don't include the real part",
+     false);
 }
 
 void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
@@ -171,7 +204,8 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       tcPDPtr smf = getParticleData(iferm);
       Energy mf = smf->mass();
       double qf = smf->charge()/eplus;
-      double y = 0.5*dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel())->mass(q2,smf)/_mw;
+      double y = (!(iferm<=4&&_omitLightQuarkYukawas)) ?
+	0.5*double(dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel())->mass(q2,smf)/_mw) : 0.;
       Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
       double lambda(0.);
       // neutralino mixing element
@@ -250,4 +284,10 @@ void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
   J  = Looptools::C0i(Looptools::cc0,min2,mout2,0.,ms2,mf2,ms2)*UnitRemoval::InvE2;
   I2 =-Looptools::C0i(Looptools::cc1,min2,mout2,0.,mf2,ms2,mf2)*UnitRemoval::InvE2;
   K  = (1.+Complex(m2*I+M2*J-Mj2*I2))/(Mi2-Mj2);
+  if(_realIntegral) {
+    I  = I .real();
+    J  = J .real();
+    I2 = I2.real();
+    K  = K .real();
+  }
 }
