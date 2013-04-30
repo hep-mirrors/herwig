@@ -23,6 +23,7 @@ class PyToCpp(ast.NodeVisitor):
 
     def __init__(self):
         self.result = []
+        self.symbols = set()
 
     def parse(self,expression):
         tree = ast.parse(expression)
@@ -30,6 +31,10 @@ class PyToCpp(ast.NodeVisitor):
         return self.visit(tree)
 
     ##################################
+
+    def visit_Module(self,node):
+        self.generic_visit(node)
+        return ''.join(self.result), self.symbols
 
     def generic_visit(self,node):
         typename = type(node).__name__
@@ -81,13 +86,11 @@ class PyToCpp(ast.NodeVisitor):
         
     def visit_Attribute(self,node):
         if node.value.id != 'cmath':
-            self.visit(node.value)
-            self.result.append('.')
+            # can't have attributes other than with cmath
+            assert(False)
+#            self.visit(node.value)
+#            self.result.append('.')
         self.result.append(node.attr)
-
-    def visit_Module(self,node):
-        self.generic_visit(node)
-        return ''.join(self.result)
 
     def visit_Num(self,node):
         # some zeros are encoded as 0j
@@ -97,8 +100,12 @@ class PyToCpp(ast.NodeVisitor):
 
     def visit_Name(self,node):
         text = str(node.id)
-        if text == 'complex': text = 'Complex'
-        if text == 'complexconjugate': text = 'conj'
+        if text == 'complex': 
+            text = 'Complex'
+        elif text == 'complexconjugate': 
+            text = 'conj'
+        elif text not in []:
+            self.symbols.add(text)
         self.result.append(text)
 
     def visit_Mult(self,node):

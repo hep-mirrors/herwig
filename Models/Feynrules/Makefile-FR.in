@@ -17,7 +17,7 @@
 
 CXX = @CXX@
 
-CXXFLAGS = -g -W -Wall -ansi -pedantic @CXXFLAGS@
+CXXFLAGS = -Wall -Wextra -pedantic @CXXFLAGS@
 
 # add additional package header directories here
 CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@

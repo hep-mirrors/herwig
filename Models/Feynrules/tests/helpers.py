@@ -71,6 +71,12 @@ def get_lorentztag(spin):
     return ''.join(result)
 
 
+def add_brackets(expr, syms):
+    result = expr
+    for s in syms:
+        result = result.replace(s,s+'()')
+    return result
+
 
 def banner():
     return """\
@@ -124,3 +130,68 @@ def aEWtoWeakCoup(stringin, paramstoreplace, paramstoreplace_expressions):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
+
+if False:
+    
+# Check if the Vertex is self-conjugate or not
+    pdgcode = [0,0,0,0]
+    notsmvertex = False
+    vhasw = 0
+    vhasz = 0
+    vhasf = 0
+    vhasg = 0
+    vhash = 0
+    vhasp = 0
+#   print 'printing particles in vertex'
+    for i in range(len(v.particles)):
+#       print v.particles[i].pdg_code
+        pdgcode[i] = v.particles[i].pdg_code
+        if pdgcode[i] == 23:
+            vhasz += 1
+        if pdgcode[i] == 22:
+            vhasp += 1
+        if pdgcode[i] == 25:
+            vhash += 1
+        if pdgcode[i] == 21:
+            vhasg += 1
+        if pdgcode[i] == 24:
+            vhasw += 1
+        if abs(pdgcode[i]) < 7 or (abs(pdgcode[i]) > 10 and abs(pdgcode[i]) < 17):
+            vhasf += 1
+        if pdgcode[i] not in SMPARTICLES:
+            notsmvertex = True
+        
+
+#  treat replacement of SM vertices with BSM vertices?               
+    if notsmvertex == False:
+        if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
+            #print 'VERTEX INCLUDED IN STANDARD MODEL!'
+            v.include = 0
+            notincluded += 1
+            #continue
+            
+    
+    selfconjugate = 0
+    for j in range(len(pdgcode)):
+        for k in range(len(pdgcode)):
+               if  j != k and j != 0 and abs(pdgcode[j]) == abs(pdgcode[k]):
+                   selfconjugate = 1
+                   #print 'self-conjugate vertex'
+#        print pdgcode[j]
+
+# if the Vertex is not self-conjugate, then add the conjugate vertex
+# automatically
+    scfac = [1,1,1,1]
+    if selfconjugate == 0:
+        #first find the self-conjugate particles
+        for u in range(len(v.particles)):
+              if v.particles[u].selfconjugate == 0:
+                  scfac[u] = -1
+#                  print 'particle ', v.particles[u].pdg_code, ' found not to be self-conjugate'
+                  
+    if selfconjugate == 0:
+        plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
+        if len(v.particles) is 4:                                                                                                                      
+            plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
+        #print 'Conjugate vertex:', plistarray[1]

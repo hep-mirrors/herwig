@@ -8,16 +8,13 @@
 //
 #ifndef HERWIG_${ModelName}_H
 #define HERWIG_${ModelName}_H
-//
+
 // This is the declaration of the ${ModelName} class.
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-//#include "ThePEG/StandardModel/StandardModelBase.h"
-
 
 namespace Herwig {
 using namespace ThePEG;
-
-
+using ThePEG::Constants::pi;
 /** \ingroup Models
  *  
  *  This is the Herwig++ ${ModelName} class which inherits from ThePEG 
@@ -68,12 +65,6 @@ public:
 
 ${getters}
 ${parmgetters}
-
-
-Complex params_array[${num_params}];
-
-  Complex test() const { return Complex(1,0); }
-
 
   //@}  
   

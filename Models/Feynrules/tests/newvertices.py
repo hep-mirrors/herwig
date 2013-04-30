@@ -3,7 +3,7 @@ import os, sys, pprint
 import argparse
 
 from string import Template, strip
-from helpers import CheckUnique, getTemplate, writeFile, get_lorentztag
+from helpers import CheckUnique, getTemplate, writeFile, get_lorentztag, add_brackets
 from converter import PyToCpp
 
 # set up the option parser for command line input 
@@ -29,7 +29,6 @@ FR = __import__(module)
 ##################################################
 ##################################################
 
-
 def PyMathToThePEGMath(expr):
     result = PyToCpp().parse(expr)
     return result
@@ -40,36 +39,27 @@ def aStoStrongCoup(a,b,c):
 def aEWtoWeakCoup(a,b,c):
     return a
 
-
-
 ##################################################
 ##################################################
 ##################################################
-
-# get templates for Model header and .cc file,
-# Herwig++ run input file
-MODEL_H  = getTemplate('Model.h')
-MODEL_CC = getTemplate('Model.cc')
-MODEL_HWIN = getTemplate('LHC-FR.in')
 
 # get the Model name from the arguments
 modelname = args.name
+libname = modelname + '.so'
 
 # copy the Makefile-FR to current directory,
 # replace with the modelname for compilation
 with open('../Makefile-FR','r') as orig:
     with open('Makefile','w') as dest:
-        dest.write(orig.read().replace("FeynrulesModel.so", modelname+".so"))
+        dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
 
 # define arrays and variables     
-allplist = ""
+#allplist = ""
 parmdecls = []
 parmgetters = []
 parmconstr = []
 
-parmfuncmap = []
-paramsforev = []
 paramstoreplace_ = []
 paramstoreplace_expressions_ = []
 
@@ -114,7 +104,6 @@ for p in internal:
         
     
 # more arrays used for substitution in templates 
-paramvertexcalc = []
 paramsforstream = []
 parmmodelconstr = []
 
@@ -130,10 +119,10 @@ if args.verbose:
 
 interfacedecl_T = Template(
 """
-static Parameter<$modelname, $type> interface$pname
-  ("$pname",
-   "The interface for parameter $pname",
-   &$modelname::$pname, $value, 0, 0,
+static Parameter<${modelname}, ${type}> interface${pname}
+  ("${pname}",
+   "The interface for parameter ${pname}",
+   &${modelname}::${pname}_, ${value}, 0, 0,
    false, false, Interface::nolimits);
 """
 )
@@ -143,7 +132,7 @@ interfaceDecls = []
 typemap = {'complex':'Complex',
            'real':'double'}
 
-for parmnumber,p in enumerate(FR.all_parameters):
+for p in FR.all_parameters:
     value = parmsubs[p.name]
 
     if p.nature == 'external':
@@ -157,72 +146,78 @@ for parmnumber,p in enumerate(FR.all_parameters):
     if p.type == 'real':
         assert( value.imag < 1.0e-16 )
         value = value.real
-        parmconstr.append('%s(%s)' % (p.name, value))
         if p.nature == 'external':
+            parmconstr.append('%s_(%s)' % (p.name, value))
             parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
     elif p.type == 'complex':
         value = complex(value)
-        parmconstr.append('%s(%s,%s)' % (p.name, value.real, value.imag))
         if p.nature == 'external':
+            parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
             parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
     else:
         raise Exception('Unknown data type "%s".' % p.type)
-
     parmsubs[p.name] = value
-    parmdecls.append('  %s %s;' % (typemap[p.type], p.name))
-    parmgetters.append('  %s %s_() const { return %s; }' % (typemap[p.type],p.name, p.name))
-    parmfuncmap.append('   case %s:  return %s_();' % (parmnumber, p.name))
-    paramsforev.append('%s' % p.name)
-    paramsforstream.append('%s' % p.name)
+
+
+    if p.nature == 'external':
+        parmdecls.append('  %s %s_;' % (typemap[p.type], p.name))
+        parmgetters.append('  %s %s() const { return %s_; }' % (typemap[p.type],p.name, p.name))
+        paramsforstream.append('%s_' % p.name)
+        expression, symbols = 'return %s_' % p.name, None
+    else:
+        expression, symbols = PyMathToThePEGMath(p.value)
+        text = add_brackets(expression, symbols)
+        parmgetters.append('  %s %s() const { return %s; }' % (typemap[p.type],p.name, text))
 
     print 'NAME  |',p.name
     print 'VALUE |',p.value
-
-#    if p.name == 'aS':
-#        funcvertex = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
-#    elif p.name == 'aEWM1':
-#        funcvertex = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
-#    elif p.name == 'Gf':
-#        funcvertex = 'generator()->standardModel()->fermiConstant() * GeV2'
-#    elif p.name == 'MZ':
-#        funcvertex = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
-#    else:
-    funcvertex = 'hw%s_ptr->%s_()' % (modelname, p.name)
-    if not p.lhablock:
-        funcvertex = PyMathToThePEGMath(p.value)
-    print 'TEXT  |','%s = %s;' % (p.name,funcvertex)
+    print 'TEXT  |','%s = %s;' % (p.name,expression)
+    print 'SYMS  |',symbols
     print '-'*60
-    paramvertexcalc.append('%s = %s;' % (p.name,funcvertex))
+
+### special treatment
+#    if p.name == 'aS':
+#        expression = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
+#    elif p.name == 'aEWM1':
+#        expression = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
+#    elif p.name == 'Gf':
+#        expression = 'generator()->standardModel()->fermiConstant() * GeV2'
+#    elif p.name == 'MZ':
+#        expression = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
+
 
     if args.verbose:
         pprint.pprint((p.name,p.value, value, p.nature))
 
 parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'parmdecls' : '\n'.join(parmdecls),
-                 'parmconstr' : ': ' + ',\n  '.join(parmconstr),
+                 'parmconstr' : ': ' + ','.join(parmconstr),
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
-                 'ostream' : '\n\t<< '.join(paramsforstream),
-                 'istream' : '\n\t>> '.join(paramsforstream),
+                 'ostream' : '<< '.join(paramsforstream),
+                 'istream' : '>> '.join(paramsforstream),
                  'refs' : '',
                  'parmextinter': ''.join(interfaceDecls),
-                 'num_params': len(FR.all_parameters),
-                 'parmfuncmap': '\n'.join(parmfuncmap),
-                 'paramsforev': ','.join(paramsforev),
                  'ModelName': modelname
                  }
 
 print '-'*60
 
 # write the files from templates according to the above subs
-writeFile( modelname + '.h', MODEL_H.substitute(parmtextsubs) )
-writeFile( modelname +'.cc', MODEL_CC.substitute(parmtextsubs) )
+MODEL_H  = getTemplate('Model.h')
+MODEL_CC = getTemplate('Model.cc')
+MODEL_HWIN = getTemplate('LHC-FR.in')
+writeFile( modelname + '.h',          MODEL_H.substitute(parmtextsubs) )
+writeFile( modelname +'.cc',          MODEL_CC.substitute(parmtextsubs) )
 writeFile( 'LHC-' + modelname +'.in', MODEL_HWIN.substitute(parmtextsubs) )
 
 ##################################################
 ##################################################
 ##################################################
+
+
+
 
 # ignore these, they're in Hw++ already # TODO reset Hw++ settings instead
 SMPARTICLES = {
@@ -373,72 +368,7 @@ for v in FR.all_vertices:
     elif 'U' in lt: spin_directory = 'Ghost'
     
     ### Particle ids #################### sort order? ####################
-    plistarray = ['','']    
-    plistarray[0] = ','.join([ str(p.pdg_code) for p in v.particles ])
-    plist = ','.join([ str(p.pdg_code) for p in v.particles ])
-    #print plist
-
-# Check if the Vertex is self-conjugate or not
-    pdgcode = [0,0,0,0]
-    notsmvertex = False
-    vhasw = 0
-    vhasz = 0
-    vhasf = 0
-    vhasg = 0
-    vhash = 0
-    vhasp = 0
-#   print 'printing particles in vertex'
-    for i in range(len(v.particles)):
-#       print v.particles[i].pdg_code
-        pdgcode[i] = v.particles[i].pdg_code
-        if pdgcode[i] == 23:
-            vhasz += 1
-        if pdgcode[i] == 22:
-            vhasp += 1
-        if pdgcode[i] == 25:
-            vhash += 1
-        if pdgcode[i] == 21:
-            vhasg += 1
-        if pdgcode[i] == 24:
-            vhasw += 1
-        if abs(pdgcode[i]) < 7 or (abs(pdgcode[i]) > 10 and abs(pdgcode[i]) < 17):
-            vhasf += 1
-        if pdgcode[i] not in SMPARTICLES:
-            notsmvertex = True
-        
-
-#  treat replacement of SM vertices with BSM vertices?               
-    if notsmvertex == False:
-        if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
-            #print 'VERTEX INCLUDED IN STANDARD MODEL!'
-            v.include = 0
-            notincluded += 1
-            continue
-            
-    
-    selfconjugate = 0
-    for j in range(len(pdgcode)):
-        for k in range(len(pdgcode)):
-               if  j != k and j != 0 and abs(pdgcode[j]) == abs(pdgcode[k]):
-                   selfconjugate = 1
-                   #print 'self-conjugate vertex'
-#        print pdgcode[j]
-
-# if the Vertex is not self-conjugate, then add the conjugate vertex
-# automatically
-    scfac = [1,1,1,1]
-    if selfconjugate == 0:
-        #first find the self-conjugate particles
-        for u in range(len(v.particles)):
-              if v.particles[u].selfconjugate == 0:
-                  scfac[u] = -1
-#                  print 'particle ', v.particles[u].pdg_code, ' found not to be self-conjugate'
-                  
-    if selfconjugate == 0:
-        plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
-        if len(v.particles) is 4:                                                                                                                      
-            plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
-        #print 'Conjugate vertex:', plistarray[1]
+    plistarray = [','.join([ str(p.pdg_code) for p in v.particles ])]
     
     ### Colour structure
     if v.color == '1': qcdord = '0'
@@ -477,7 +407,7 @@ for v in FR.all_vertices:
                     prefactor = breakdown[0]
                     breakdown = breakdown[1:]
                 if len(breakdown) == 2:
-                    assert(breakdown[0][:5] == 'Gamma')
+#                    assert(breakdown[0][:5] == 'Gamma')
                     if breakdown[1][:5] == 'ProjM':
                         #print 'LEFT HANDED'
                         coup_left.append(prefactor+' * '+C.value)
@@ -511,43 +441,37 @@ for v in FR.all_vertices:
     rightcontent = ' + '.join(coup_right) if len(coup_right)!=0 else '0j'
     normcontent = ' + '.join(coup_norm) if len(coup_norm)!=0 else '1.'
 
-    #print 'Left:',leftcontent
-    #print 'Right:',rightcontent
-    #print 'Norm:',normcontent
-    #print '---------------'
+#    #print 'Left:',leftcontent
+#    #print 'Right:',rightcontent
+#    #print 'Norm:',normcontent
+#    #print '---------------'
 
 
-    #leftexplicit = complex(evaluate(leftcontent))
-    #rightexplicit = complex(evaluate(rightcontent))
-    #    normexplicit = complex(evaluate(normcontent))
-    leftdebug = ''
-    rightdebug = ''
-    normdebug = ''
-    ### do we need left/right?
+#    ### do we need left/right?
+    symbols = set()
     if 'FF' in lt:
-        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent), paramstoreplace_, paramstoreplace_expressions_)
-        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent), paramstoreplace_, paramstoreplace_expressions_)
+#        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+#        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+        leftcalc, sym = PyMathToThePEGMath(leftcontent)
+        symbols |= sym
+        rightcalc, sym = PyMathToThePEGMath(rightcontent)
+        symbols |= sym
         left = 'left(' + leftcalc + ');'
         right = 'right(' + rightcalc + ');'
-        #leftdebug  = 'left(Complex(%s,%s));'  % (leftexplicit.real,leftexplicit.imag)
-        #rightdebug = 'right(Complex(%s,%s));' % (rightexplicit.real,rightexplicit.imag)
     else:
         left = ''
         right = ''
         leftcalc = ''
         rightcalc = ''
-        leftdebug = ''
-        rightdebug = ''
         
 
-    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent), paramstoreplace_, paramstoreplace_expressions_)
+#    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+    normcalc, sym = PyMathToThePEGMath(normcontent)
+    symbols |= sym
     norm = 'norm(' + normcalc + ');'
-    #normdebug = 'norm(Complex(%s,%s));' % (normexplicit.real,normexplicit.imag)
 
-    if plistarray[1] is '':
-        plist2 = ''
-    else:
-        plist2 = 'addToList(%s);' % plistarray[1]
+
+    symbolrefs = [ 'double %s = model->%s();' % (s,s) for s in symbols ]
 
 
     # input q2 or not, depending on whether it is necessary
@@ -560,14 +484,14 @@ for v in FR.all_vertices:
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lt,                   # ok
              'classname'  : classname,            # ok
+             'symbolrefs' : '\n    '.join(symbolrefs),
              'left'       : left,                 # doesn't always exist in base
              'right'      : right,                 # doesn't always exist in base 
              'norm'      : norm,                 # needs norm, too
 
              #################### need survey which different setter methods exist in base classes
 
-             'addToPlist' : 'addToList(%s);' % plistarray[0], # ok
-             'addToPlist2' : plist2, # ok
+             'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
              'parameters' : '',
              'setCouplings' : '',
              'qedorder'   : qed,
@@ -576,41 +500,25 @@ for v in FR.all_vertices:
              'couplingptrs' : ',tcPDPtr'*len(v.particles),
              'spindirectory' : spin_directory,
              'ModelName' : modelname,
-             'num_params' : len(FR.all_parameters),
-             'leftcontent' : leftcontent,
-             'rightcontent' : rightcontent,
-             'normcontent' : normcontent,
-             'leftcalc': leftcalc,
-             'rightcalc' : rightcalc,
-             'normcalc' : normcalc,
-             'paramdecl': '\n'.join(parmdecls),
-             'ostream' : ' << '.join(paramsforstream),
-             'istream' : ' >> '.join(paramsforstream),
-             'paramvertexcalc': '\n\t'.join(paramvertexcalc),
-             'leftdebug': leftdebug,
-             'rightdebug' : rightdebug,
-             'normdebug' : normdebug
              }             # ok
 
     if args.verbose:
         print '-'*60
-        if  selfconjugate:
-            stuff = ( classname, plistarray[0], leftcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), rightcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), normcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0') )
-        else:
-            stuff = ( classname, plistarray[0], plistarray[1], leftcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), rightcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0'), normcalc.replace('Complex(0,1.)','i').replace('Complex(0,0)','0') )
-        pprint.pprint(stuff)
+        pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
         
         
-    if  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and plistarray[0] not in allplist and plistarray[1] not in allplist:
-        produce_vertex_file(subs)
-        allplist += plistarray[0]
-        allplist += plistarray[1]
-    elif  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and selfconjugate:
-        produce_vertex_file(subs)
-        allplist += plistarray[0]
-    else:
-        #print 'VERTEX ALREADY INCLUDED'
-        v.include = 0
+
+    produce_vertex_file(subs)
+#    if  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and plistarray[0] not in allplist and plistarray[1] not in allplist:
+#        produce_vertex_file(subs)
+#        allplist += plistarray[0]
+#        allplist += plistarray[1]
+#    elif  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and selfconjugate:
+#        produce_vertex_file(subs)
+#        allplist += plistarray[0]
+#    else:
+#        #print 'VERTEX ALREADY INCLUDED'
+#        v.include = 0
         
         #print '============================================================'
 
@@ -627,17 +535,17 @@ insert ${ModelName}:ExtraVertices 0 $name
 
 
 def get_vertices():
-    vlist = 'library ' + modelname + '.so\n'
+    vlist = ['library %s\n' % libname]
     for v in FR.all_vertices:
         for l in v.lorentz:
             lt = get_lorentztag(l.spins)
             #print lt
         if "U" not in lt and v.include == 1:
-            vlist += vertexline.substitute(
+            vlist.append( vertexline.substitute(
                 { 'classname' : 'Herwig::%sV_%03d' % (modelname, int(v.name[2:])),
                   'name' : '/Herwig/%s/%s' % (modelname,v.name), 
-                  'ModelName' : modelname } )
-    return vlist
+                  'ModelName' : modelname } ) )
+    return ''.join(vlist)
 
 
 modelfilesubs = { 'plist' : get_all_thepeg_particles(),
@@ -656,7 +564,7 @@ print 'finished generating model:\t', modelname
 print 'model directory:\t\t', args.ufodir
 print 'generated:\t\t\t', len(FR.all_vertices)-notincluded, 'vertices'
 print '='*60
-print 'library:\t\t\t', modelname +'.so'
+print 'library:\t\t\t', libname
 print 'input file:\t\t\t', 'LHC-' + modelname +'.in'
 print 'model file:\t\t\t', modelname +'.model'
 print '='*60

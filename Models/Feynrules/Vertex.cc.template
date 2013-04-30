@@ -28,7 +28,7 @@ namespace Herwig
   public:
     ${ModelName}${classname}();
     virtual void setCoupling(Energy2${couplingptrs});
-    ${paramdecl}
+    
     /** @name Functions used by the persistent I/O system. */
     //@{
     /**
@@ -50,7 +50,7 @@ namespace Herwig
     /**
      * Pointer to the model object.
      */
-    tcSMPtr _theModel;
+    tcHw${ModelName}Ptr model;
 
 
 
@@ -58,7 +58,7 @@ namespace Herwig
     virtual IBPtr clone() const { return new_ptr(*this); }
     virtual IBPtr fullclone() const { return new_ptr(*this); }
     virtual void doinit();
-    virtual void getParams(Energy2${q2});
+    virtual void getParams(Energy2);
 
   
   private:
@@ -70,68 +70,57 @@ namespace Herwig
 }
 
 namespace Herwig {
-using namespace ThePEG;
+  using namespace ThePEG;
 
-// Static variable needed for the type description system in ThePEG.
+  // Static variable needed for the type description system in ThePEG.
   DescribeClass<${ModelName}${classname},Helicity::${lorentztag}Vertex>
-  describeHerwig${ModelName}${classname}("Herwig::${ModelName}${classname}", 
+  describeHerwig${ModelName}${classname}("Herwig::${ModelName}${classname}",
 					 "${ModelName}.so");
+  
+  
+  void ${ModelName}${classname}::Init() {
+    static ClassDocumentation<${ModelName}${classname}> 
+    documentation("The ${ModelName}${classname} class is the implementation of"
+		  "the coupling(s) ${addToPlist}");
+  }
 
+  void ${ModelName}${classname}::setCoupling(Energy2 ${couplingptrs}) {
+    ${symbolrefs}
+    //    getParams(q2);
+    ${norm}
+    ${left}
+    ${right}
+  }
 
-void ${ModelName}${classname}::Init() {
-  static ClassDocumentation<${ModelName}${classname}> documentation
-    ("The ${ModelName}${classname} class is the implementation of"
-     "the coupling of the Z boson to the Standard Model fermions");
-}
+  ${ModelName}${classname}::${ModelName}${classname}() {
+    ${addToPlist}
+  }
 
-  void ${ModelName}${classname}::setCoupling(Energy2 q2${couplingptrs}) {
-    getParams(q2);
-  // first the overall normalisati
-    ${norm} // cout << ${normdebug} << endl;
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ${left} // cout << ${leftdebug} << endl;
-    ${right} // cout << ${rightdebug} << endl;
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
+  void ${ModelName}${classname}::persistentOutput(PersistentOStream & os) const {
+    os << model;
+  }
 
-${ModelName}${classname}::${ModelName}${classname}() {
-  ${addToPlist}
-  ${addToPlist2}
-}
+  void ${ModelName}${classname}::persistentInput(PersistentIStream & is, int) {
+    is >> model;
+  }
 
-void ${ModelName}${classname}::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << $ostream;
-}
-
-void ${ModelName}${classname}::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> $istream;
-}
-
-void ${ModelName}${classname}::doinit() {
-
-
-   _theModel = generator()->standardModel();
-   tcHw${ModelName}Ptr hw${ModelName}_ptr =dynamic_ptr_cast<tcHw${ModelName}Ptr>(_theModel);
+  void ${ModelName}${classname}::doinit() {
+    model = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
+    assert(model);
    
-  Energy2 q2 = 8100.*GeV*GeV;
-    getParams(q2);
+    //    getParams(q2);
 
-   ${parameters}
-   ${setCouplings}
-   orderInGem(${qedorder});
-   orderInGs(${qcdorder});
-   ${lorentztag}Vertex::doinit();
-}
+    ${parameters}
+    ${setCouplings}
+    orderInGem(${qedorder});
+    orderInGs(${qcdorder});
+    ${lorentztag}Vertex::doinit();
+  }
 
-void ${ModelName}${classname}::getParams(Energy2 q2) {
-
-   _theModel = generator()->standardModel();
-   tcHw${ModelName}Ptr hw${ModelName}_ptr =dynamic_ptr_cast<tcHw${ModelName}Ptr>(_theModel);
-   
-   if(hw${ModelName}_ptr) { 
-     ${paramvertexcalc}
-   }
-}
+  void ${ModelName}${classname}::getParams(Energy2 ) {
+    model = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
+    assert(model);
+  }
 
 
 }
