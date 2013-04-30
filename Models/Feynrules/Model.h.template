@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ${ModelName}.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2013 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -11,8 +11,7 @@
 //
 // This is the declaration of the ${ModelName} class.
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-//#include "Herwig++/Models/General/BSMModel.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
+//#include "ThePEG/StandardModel/StandardModelBase.h"
 
 
 namespace Herwig {
@@ -107,11 +106,6 @@ protected:
 
 private:
   
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<${ModelName}> init${ModelName};
-  
   /** 
    * Private and non-existent assignment operator.
    */
@@ -127,47 +121,13 @@ private:
 
 ${decls}
 ${parmdecls}
+  //@}
 };
 
 }
 
 namespace ThePEG {
-
   ThePEG_DECLARE_POINTERS(Herwig::${ModelName},Hw${ModelName}Ptr);
-
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ${ModelName}.
- */
-template <>
-struct BaseClassTrait<Herwig::${ModelName},1> {
-    /** Typedef of the base class of ${ModelName}. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::${ModelName}>
-  : public ClassTraitsBase<Herwig::${ModelName}> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::${ModelName}"; }
-  /**
-   * The name of a file containing the dynamic library.
-   */
-  static string library() { return "${ModelName}.so"; }
-};
-
-/** @endcond */
-
 }
 
 

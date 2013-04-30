@@ -1,10 +1,10 @@
 #! /usr/bin/env python
-from __future__ import with_statement
-import cmath, os, sys, fileinput, pprint
+import os, sys, pprint
 import argparse
 
 from string import Template, strip
 from helpers import CheckUnique, getTemplate, writeFile, get_lorentztag
+from converter import PyToCpp
 
 # set up the option parser for command line input 
 parser = argparse.ArgumentParser(description='Create Herwig++ model files from Feynrules UFO input.')
@@ -30,8 +30,9 @@ FR = __import__(module)
 ##################################################
 
 
-def PyMathToThePEGMath(a,b):
-    return a
+def PyMathToThePEGMath(expr):
+    result = PyToCpp().parse(expr)
+    return result
 
 def aStoStrongCoup(a,b,c):
     return a
@@ -79,6 +80,7 @@ parmsubs = dict( [ (p.name, float(p.value))
 
 # evaluate python cmath
 def evaluate(x):
+    import cmath
     return eval(x, 
                 {'cmath':cmath,
                  'complexconjugate':FR.function_library.complexconjugate}, 
@@ -173,18 +175,23 @@ for parmnumber,p in enumerate(FR.all_parameters):
     paramsforev.append('%s' % p.name)
     paramsforstream.append('%s' % p.name)
 
-    if p.name == 'aS':
-        funcvertex = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
-    elif p.name == 'aEWM1':
-        funcvertex = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
-    elif p.name == 'Gf':
-        funcvertex = 'generator()->standardModel()->fermiConstant() * GeV2'
-    elif p.name == 'MZ':
-        funcvertex = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
-    else:
-        funcvertex = 'hw%s_ptr->%s_()' % (modelname, p.name)
-    if p.lhablock == None:
-        funcvertex = PyMathToThePEGMath(p.value, allparams)
+    print 'NAME  |',p.name
+    print 'VALUE |',p.value
+
+#    if p.name == 'aS':
+#        funcvertex = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
+#    elif p.name == 'aEWM1':
+#        funcvertex = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
+#    elif p.name == 'Gf':
+#        funcvertex = 'generator()->standardModel()->fermiConstant() * GeV2'
+#    elif p.name == 'MZ':
+#        funcvertex = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
+#    else:
+    funcvertex = 'hw%s_ptr->%s_()' % (modelname, p.name)
+    if not p.lhablock:
+        funcvertex = PyMathToThePEGMath(p.value)
+    print 'TEXT  |','%s = %s;' % (p.name,funcvertex)
+    print '-'*60
     paramvertexcalc.append('%s = %s;' % (p.name,funcvertex))
 
     if args.verbose:
@@ -518,8 +525,8 @@ for v in FR.all_vertices:
     normdebug = ''
     ### do we need left/right?
     if 'FF' in lt:
-        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
-        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
+        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent), paramstoreplace_, paramstoreplace_expressions_)
+        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent), paramstoreplace_, paramstoreplace_expressions_)
         left = 'left(' + leftcalc + ');'
         right = 'right(' + rightcalc + ');'
         #leftdebug  = 'left(Complex(%s,%s));'  % (leftexplicit.real,leftexplicit.imag)
@@ -533,7 +540,7 @@ for v in FR.all_vertices:
         rightdebug = ''
         
 
-    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent, allparams), paramstoreplace_, paramstoreplace_expressions_)
+    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent), paramstoreplace_, paramstoreplace_expressions_)
     norm = 'norm(' + normcalc + ');'
     #normdebug = 'norm(Complex(%s,%s));' % (normexplicit.real,normexplicit.imag)
 

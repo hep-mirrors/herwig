@@ -18,6 +18,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
 //#include "Herwig++/Models/General/ModelGenerator.h"
 
 using namespace ThePEG;
@@ -37,23 +39,25 @@ IBPtr ${ModelName}::fullclone() const {
 
 void ${ModelName}::doinit() {
   StandardModel::doinit();
-  $addVertex
+  ${addVertex}
 
 }
 
 void ${ModelName}::persistentOutput(PersistentOStream & os) const {
-  os << $ostream ;
+  os << ${ostream} ;
 }
 
 void ${ModelName}::persistentInput(PersistentIStream & is, int) {
-  is >> $istream ;
+  is >> ${istream} ;
 }
 
-ClassDescription<${ModelName}> ${ModelName}::init${ModelName};
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<${ModelName},StandardModel>
+  describeThePEG${ModelName}("Herwig::${ModelName}", "${ModelName}.so");
 
 void ${ModelName}::Init() {
-$refs
+  ${refs}
+
 
 static ClassDocumentation<${ModelName}> documentation
   ("The ${ModelName} class inherits from StandardModel"

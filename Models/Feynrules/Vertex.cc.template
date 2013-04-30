@@ -10,13 +10,19 @@
 #include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+
+namespace {
+  const Complex ii = Complex(0,1);
+}
 
 namespace Herwig 
 {
   using namespace ThePEG;
   using namespace ThePEG::Helicity;
+  using ThePEG::Constants::pi;
 
   class ${ModelName}${classname}: public ${lorentztag}Vertex {
   public:
@@ -56,7 +62,6 @@ namespace Herwig
 
   
   private:
-    static ClassDescription<${ModelName}${classname}> init${ModelName}${classname};
     ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
     Complex leftval, rightval, normval;
 
@@ -64,25 +69,14 @@ namespace Herwig
   };
 }
 
-namespace ThePEG 
-{
-  template <>
-  struct BaseClassTrait<Herwig::${ModelName}${classname},1> {
-    typedef ThePEG::Helicity::${lorentztag}Vertex NthBase;
-  };
-  template <>
-  struct ClassTraits<Herwig::${ModelName}${classname}>
-    : public ClassTraitsBase<Herwig::${ModelName}${classname}> {
-      static string className() { return "Herwig::${ModelName}${classname}"; }
-      static string library() { return "${ModelName}.so"; }
-    };
-}
-
 namespace Herwig {
 using namespace ThePEG;
 
-ClassDescription<${ModelName}${classname}> 
-${ModelName}${classname}::init${ModelName}${classname};
+// Static variable needed for the type description system in ThePEG.
+  DescribeClass<${ModelName}${classname},Helicity::${lorentztag}Vertex>
+  describeHerwig${ModelName}${classname}("Herwig::${ModelName}${classname}", 
+					 "${ModelName}.so");
+
 
 void ${ModelName}${classname}::Init() {
   static ClassDocumentation<${ModelName}${classname}> documentation
