@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import os, sys, pprint, argparse
+import os, sys, pprint, argparse, re
 from string import Template, strip
 
 from ufo2peg import *
@@ -176,7 +176,7 @@ for p in FR.all_parameters:
 
 parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'parmdecls' : '\n'.join(parmdecls),
-                 'parmconstr' : ': ' + ','.join(parmconstr),
+                 'parmconstr' : ': %s' % ','.join(parmconstr),
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
@@ -193,9 +193,9 @@ print '-'*60
 MODEL_H  = getTemplate('Model.h')
 MODEL_CC = getTemplate('Model.cc')
 MODEL_HWIN = getTemplate('LHC-FR.in')
-writeFile( modelname + '.h',          MODEL_H.substitute(parmtextsubs) )
-writeFile( modelname +'.cc',          MODEL_CC.substitute(parmtextsubs) )
-writeFile( 'LHC-' + modelname +'.in', MODEL_HWIN.substitute(parmtextsubs) )
+writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
+writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
+writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
 
 
 ##################################################
@@ -207,7 +207,7 @@ writeFile( 'LHC-' + modelname +'.in', MODEL_HWIN.substitute(parmtextsubs) )
 VERTEX = getTemplate('Vertex.cc')
 
 def produce_vertex_file(subs):
-    newname = modelname + subs['classname'] + '.cc'
+    newname = '%s%s.cc' % (modelname, subs['classname'])
     writeFile( newname, VERTEX.substitute(subs) )
 
 if args.verbose:
@@ -260,17 +260,21 @@ for vertex in FR.all_vertices:
         L = vertex.lorentz[lorentz_idx]
 
         if lorentztag in ['FFS','FFV']:
-            #print 'PRINTING LORENTZ STRUCTURE'
-            #print L.structure
-            for lor in map(strip, L.structure.split('+')):
+            print 'PRINTING LORENTZ STRUCTURE',
+            print L.structure
+            for lor in map(strip, re.split(r' \+ | - ',L.structure)):
                 breakdown = lor.split('*')
                 prefactor='1'
-                #print 'breakdown', breakdown, 'length', len(breakdown)
+                print 'breakdown', breakdown, 'length', len(breakdown)
+                print
+                print parse_lorentz(L.structure)
+                print
+
                 if len(breakdown) == 3:
                     prefactor = breakdown[0]
                     breakdown = breakdown[1:]
                 if len(breakdown) == 2:
-#                    assert(breakdown[0][:5] == 'Gamma')
+                    assert(breakdown[0][:5] == 'Gamma')
                     if breakdown[1][:5] == 'ProjM':
                         #print 'LEFT HANDED'
                         coup_left.append(prefactor+' * '+C.value)
@@ -278,6 +282,8 @@ for vertex in FR.all_vertices:
                         #print 'RIGHT HANDED'
                         coup_right.append(prefactor+' * '+C.value)
                     else:
+                        print C.value
+                        assert(False)
                         coup_left.append(C.value)
                         coup_right.append(C.value)
                 if len(breakdown) == 1:
