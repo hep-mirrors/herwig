@@ -3,29 +3,32 @@ AST visitor class to convert Python expressions into C++ as used by ThePEG
 """
 import ast
 
-def is_square(node):
-    """Check if a Pow object is just a square."""
-    try:
-        return node.right.n == 2.0
-    except:
-        return False
+class PyToCppException(Exception):
+    """Base class for all PyToCpp exceptions."""
 
-def is_ii(node):
-    """Check if a Call object is just the imaginary unit."""
-    try:
-        return ( node.func.id == 'complex' 
-                 and node.args[0].n == 0
-                 and node.args[1].n == 1 )
-    except:
-        return False
 
 class PyToCpp(ast.NodeVisitor):
+    """Convert Python math expressions into C++.
 
-    def __init__(self):
-        self.result = []
-        self.symbols = set()
+    Returns a tuple (expr,syms):
+    expr -- C++-compatible expression
+    syms -- set of all free variables
+
+    Usage:
+    >>> expr = '3+2**a*b'
+    >>> PyToCpp().parse(expr)
+    ('(3.0+(pow(2.0,a)*b))', set(['a', 'b']))
+
+    Note: 
+    The converter is currently not generic, it relies on the
+    conventions of Feynrules' UFO format on the one hand and ThePEG's
+    C++ types on the other.
+    """
 
     def parse(self,expression):
+        """Convert expression to C++ format."""
+        self.result = []
+        self.symbols = set()
         tree = ast.parse(expression)
         #print ast.dump(tree)
         return self.visit(tree)
@@ -40,7 +43,7 @@ class PyToCpp(ast.NodeVisitor):
         typename = type(node).__name__
         harmless = ['Module','Expr']
         if typename not in harmless:
-            raise Exception('Missing implementation for %s'%typename)
+            raise PyToCppException('Missing implementation for %s' % typename)
         super(PyToCpp,self).generic_visit(node)
 
     def visit_UnaryOp(self,node):
@@ -86,10 +89,8 @@ class PyToCpp(ast.NodeVisitor):
         
     def visit_Attribute(self,node):
         if node.value.id != 'cmath':
-            # can't have attributes other than with cmath
-            assert(False)
-#            self.visit(node.value)
-#            self.result.append('.')
+            err = "Don't know how to convert %s module." % node.value.id
+            raise PyToCppException(err)
         self.result.append(node.attr)
 
     def visit_Num(self,node):
@@ -124,5 +125,28 @@ class PyToCpp(ast.NodeVisitor):
         self.result.append('/')
 
     def visit_Pow(self,node):
-        # should have been caught in BinaryOp
-        assert(False)
+        err = "Shold never get here. BinaryOp catches Pow calls."
+        raise PyToCppException(err)
+
+### Helpers
+
+def is_square(node):
+    """Check if a Pow object is just a square."""
+    try:
+        return node.right.n == 2.0
+    except:
+        return False
+
+def is_ii(node):
+    """Check if a Call object is just the imaginary unit."""
+    try:
+        return ( node.func.id == 'complex' 
+                 and node.args[0].n == 0
+                 and node.args[1].n == 1 )
+    except:
+        return False
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

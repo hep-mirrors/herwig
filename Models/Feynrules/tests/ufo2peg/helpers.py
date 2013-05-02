@@ -71,11 +71,26 @@ def get_lorentztag(spin):
     return ''.join(result)
 
 
+def spindirectory(lt):
+    """Return the spin directory name for a given Lorentz tag."""
+    if 'T' in lt: 
+        spin_directory = 'Tensor'
+    elif 'S' in lt: 
+        spin_directory = 'Scalar'
+    elif 'V' in lt: 
+        spin_directory = 'Vector'
+    else:
+        raise Exception("Unknown Lorentz tag {}.".format(lt))
+    return spin_directory
+
+
 def add_brackets(expr, syms):
     result = expr
     for s in syms:
         result = result.replace(s,s+'()')
     return result
+
+
 
 
 def banner():

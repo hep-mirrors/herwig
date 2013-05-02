@@ -47,25 +47,23 @@ namespace Herwig
   
   public:
     static void Init();
-    /**
-     * Pointer to the model object.
-     */
-    tcHw${ModelName}Ptr model;
-
-
 
   protected:
     virtual IBPtr clone() const { return new_ptr(*this); }
     virtual IBPtr fullclone() const { return new_ptr(*this); }
     virtual void doinit();
-    virtual void getParams(Energy2);
+    //    virtual void getParams(Energy2);
 
   
   private:
     ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
-    Complex leftval, rightval, normval;
 
+    //    Complex leftval, rightval, normval;
 
+    /**
+     * Pointer to the model object.
+     */
+    tcHw${ModelName}Ptr model_;
   };
 }
 
@@ -97,16 +95,16 @@ namespace Herwig {
   }
 
   void ${ModelName}${classname}::persistentOutput(PersistentOStream & os) const {
-    os << model;
+    os << model_;
   }
 
   void ${ModelName}${classname}::persistentInput(PersistentIStream & is, int) {
-    is >> model;
+    is >> model_;
   }
 
   void ${ModelName}${classname}::doinit() {
-    model = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
-    assert(model);
+    model_ = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
+    assert(model_);
    
     //    getParams(q2);
 
@@ -117,10 +115,8 @@ namespace Herwig {
     ${lorentztag}Vertex::doinit();
   }
 
-  void ${ModelName}${classname}::getParams(Energy2 ) {
-    model = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
-    assert(model);
-  }
+  // void ${ModelName}${classname}::getParams(Energy2 ) {
+  // }
 
 
 }
