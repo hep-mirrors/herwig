@@ -1,8 +1,9 @@
 from string import Template
+from os import path
+
 """
 Helper functions for the Herwig++ Feynrules converter
 """
-
 
 class CheckUnique:
     """Uniqueness checker.
@@ -43,7 +44,11 @@ def is_number(s):
 
 def getTemplate(name):
     """Create a template from a file."""
-    with open('../{}.template'.format(name), 'r') as f:
+    templatename = '{}.template'.format(name)
+    # assumes the template files sit next to this script
+    moduledir = path.dirname(path.abspath(__file__))
+    templatepath = path.join(moduledir,templatename)
+    with open(templatepath, 'r') as f:
         templateText = f.read()
     return Template( templateText )
 
