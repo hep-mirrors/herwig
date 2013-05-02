@@ -14,6 +14,7 @@
 # C++ flags
 # 
 .PRECIOUS: %.o
+.PHONY: all clean
 
 CXX = @CXX@
 
@@ -36,5 +37,6 @@ ALLOBJFILES=$(ALLCCFILES:.cc=.o)
 	$(CXX) -fPIC $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
-	rm -f *.run *.log *.out *.tex *.dot *.svg *.model *.spc *.in
+	@echo "Removing all generated files"
+	@rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
+	@rm -f *.run *.log *.out *.tex *.dot *.svg *.model *.spc *.in Makefile
