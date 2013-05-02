@@ -3,6 +3,13 @@ AST visitor class to convert Python expressions into C++ as used by ThePEG
 """
 import ast
 
+
+def py2cpp(expr):
+    """Convert expr to C++ form. Wraps the converter class."""
+    result = PyToCpp().parse(expr)
+    return result
+
+
 class PyToCppException(Exception):
     """Base class for all PyToCpp exceptions."""
 

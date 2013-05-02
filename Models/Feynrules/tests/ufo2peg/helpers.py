@@ -89,6 +89,17 @@ def spindirectory(lt):
     return spin_directory
 
 
+def def_from_model(FR,s):
+    """Return a C++ line that defines parameter s as coming from the model file."""
+    stype = typemap(getattr(FR.parameters,s).type)
+    return '{t} {s} = model_->{s}();'.format(t=stype,s=s)
+
+_typemap = {'complex':'Complex',
+            'real':'double'}
+
+def typemap(s):
+    return _typemap[s]
+
 def add_brackets(expr, syms):
     result = expr
     for s in syms:

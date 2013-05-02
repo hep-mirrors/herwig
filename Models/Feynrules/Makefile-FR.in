@@ -36,5 +36,5 @@ ALLOBJFILES=$(ALLCCFILES:.cc=.o)
 	$(CXX) -fPIC $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f FeynRulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
+	rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
 	rm -f *.run *.log *.out *.tex *.dot *.svg *.model *.spc *.in

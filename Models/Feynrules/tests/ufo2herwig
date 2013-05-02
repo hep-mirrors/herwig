@@ -1,8 +1,7 @@
 #! /usr/bin/env python
-import os, sys, pprint
-import argparse
-
+import os, sys, pprint, argparse
 from string import Template, strip
+
 from ufo2peg import *
 
 # set up the option parser for command line input 
@@ -34,14 +33,6 @@ if modelpath:
 
 FR = __import__(module)
 
-
-##################################################
-##################################################
-##################################################
-
-def PyMathToThePEGMath(expr):
-    result = PyToCpp().parse(expr)
-    return result
 
 ##################################################
 ##################################################
@@ -81,30 +72,23 @@ def evaluate(x):
                 parmsubs)
 
 
-# get internal, external and all params into arrays
-internal = [ p 
-             for p in FR.all_parameters 
-             if p.nature == 'internal' ]
+## get internal params into arrays
+internal = ( p for p in FR.all_parameters 
+             if p.nature == 'internal' )
 
-external = [ p 
-             for p in FR.all_parameters 
-             if p.nature == 'external' ]
+#paramstoreplaceEW_ = []
+#paramstoreplaceEW_expressions_ = []
 
-allparams =  [ p.name 
-               for p in FR.all_parameters ]
-
-paramstoreplaceEW_ = []
-paramstoreplaceEW_expressions_ = []
 # calculate internal parameters
 for p in internal:
-    if 'aS' in p.value and p.name != 'aS':
-        paramstoreplace_.append(p.name)
-        paramstoreplace_expressions_.append(p.value)
-    if 'aEWM1' in p.value and p.name != 'aEWM1':
-        paramstoreplaceEW_.append(p.name)
-        paramstoreplaceEW_expressions_.append(p.value)
-    newval = evaluate(p.value)
-    parmsubs.update( { p.name : newval } )
+    parmsubs.update( { p.name : evaluate(p.value) } )
+#    if 'aS' in p.value and p.name != 'aS':
+#        paramstoreplace_.append(p.name)
+#        paramstoreplace_expressions_.append(p.value)
+#    if 'aEWM1' in p.value and p.name != 'aEWM1':
+#        paramstoreplaceEW_.append(p.name)
+#        paramstoreplaceEW_expressions_.append(p.value)
+
         
     
 # more arrays used for substitution in templates 
@@ -133,9 +117,6 @@ static Parameter<${modelname}, ${type}> interface${pname}
 
 interfaceDecls = []
 
-typemap = {'complex':'Complex',
-           'real':'double'}
-
 for p in FR.all_parameters:
     value = parmsubs[p.name]
 
@@ -144,7 +125,7 @@ for p in FR.all_parameters:
             interfacedecl_T.substitute(modelname=modelname,
                                        pname=p.name,
                                        value=value,
-                                       type=typemap[p.type]) 
+                                       type=typemap(p.type)) 
         )
 
     if p.type == 'real':
@@ -164,14 +145,14 @@ for p in FR.all_parameters:
 
 
     if p.nature == 'external':
-        parmdecls.append('  %s %s_;' % (typemap[p.type], p.name))
-        parmgetters.append('  %s %s() const { return %s_; }' % (typemap[p.type],p.name, p.name))
+        parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
+        parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
         paramsforstream.append('%s_' % p.name)
         expression, symbols = 'return %s_' % p.name, None
     else:
-        expression, symbols = PyMathToThePEGMath(p.value)
+        expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
-        parmgetters.append('  %s %s() const { return %s; }' % (typemap[p.type],p.name, text))
+        parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
 
     print 'NAME  |',p.name
     print 'VALUE |',p.value
@@ -236,28 +217,28 @@ if args.verbose:
     pprint.pprint(labels)
 
 
-for v in FR.all_vertices:
+for vertex in FR.all_vertices:
 
-    #print v.name
-    #print map(str,v.particles)
+    #print vertex.name
+    #print map(str,vertex.particles)
     #print '---------------'
-    v.include = 1
+#    vertex.include = 1
 
     ### Spin structure
     unique = CheckUnique()
-    for l in v.lorentz:
+    for l in vertex.lorentz:
         lorentztag = get_lorentztag(l.spins)
         unique( lorentztag )
     
     ### Particle ids #### sort order? ####
-    plistarray = [','.join([ str(p.pdg_code) for p in v.particles ])]
+    plistarray = [','.join([ str(p.pdg_code) for p in vertex.particles ])]
     
     ### Colour structure
-    if v.color == '1': qcdord = '0'
+    if vertex.color == '1': qcdord = '0'
     else:              qcdord = ''
 
     ### classname
-    classname = 'V_%03d' % int(v.name[2:])
+    classname = 'V_%03d' % int(vertex.name[2:])
 
     ### parse couplings
     unique_qcd = CheckUnique()
@@ -267,16 +248,16 @@ for v in FR.all_vertices:
     coup_right = []
     coup_norm = []
  
-    for (colour_idx,lorentz_idx),C in v.couplings.iteritems():
+    for (colour_idx,lorentz_idx),C in vertex.couplings.iteritems():
         qed = C.order.get('QED',0)
         qcd = C.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
         # Is there a better way to treat this?
         if qed == 0 and qcd == 0:
             qed = 1
-        unique_qcd( qed )
-        unique_qed( qcd )
-        L = v.lorentz[lorentz_idx]
+        unique_qcd( qcd )
+        unique_qed( qed )
+        L = vertex.lorentz[lorentz_idx]
 
         if lorentztag in ['FFS','FFV']:
             #print 'PRINTING LORENTZ STRUCTURE'
@@ -313,7 +294,7 @@ for v in FR.all_vertices:
             coup_norm.append(C.value)
                 
             
-        #print 'Colour  :',v.color[colour_idx]
+        #print 'Colour  :',vertex.color[colour_idx]
         #print 'Lorentz %s:'%L.name, L.spins, L.structure
         #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
         #print '---------------'
@@ -332,11 +313,11 @@ for v in FR.all_vertices:
 #    ### do we need left/right?
     symbols = set()
     if 'FF' in lorentztag:
-#        leftcalc = aStoStrongCoup(PyMathToThePEGMath(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-#        rightcalc = aStoStrongCoup(PyMathToThePEGMath(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-        leftcalc, sym = PyMathToThePEGMath(leftcontent)
+#        leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+#        rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+        leftcalc, sym = py2cpp(leftcontent)
         symbols |= sym
-        rightcalc, sym = PyMathToThePEGMath(rightcontent)
+        rightcalc, sym = py2cpp(rightcontent)
         symbols |= sym
         left = 'left(' + leftcalc + ');'
         right = 'right(' + rightcalc + ');'
@@ -347,26 +328,18 @@ for v in FR.all_vertices:
         rightcalc = ''
         
 
-#    normcalc = aStoStrongCoup(PyMathToThePEGMath(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-    normcalc, sym = PyMathToThePEGMath(normcontent)
+#    normcalc = aStoStrongCoup(py2cpp(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+    normcalc, sym = py2cpp(normcontent)
     symbols |= sym
     norm = 'norm(' + normcalc + ');'
 
-
-    symbolrefs = [ 'double {s} = model_->{s}();'.format(s=s) for s in symbols ]
-
-
-#    # input q2 or not, depending on whether it is necessary
-#    if 'q2' in norm or 'q2' in left or 'q2' in right:
-#        q2var = ' q2'
-#    else:
-#        q2var = ''
-    
+    # define unkown symbols from the model
+    symboldefs = [ def_from_model(FR,s) for s in symbols ]
         
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lorentztag,                   # ok
              'classname'  : classname,            # ok
-             'symbolrefs' : '\n    '.join(symbolrefs),
+             'symbolrefs' : '\n    '.join(symboldefs),
              'left'       : left,                 # doesn't always exist in base
              'right'      : right,                 # doesn't always exist in base 
              'norm'      : norm,                 # needs norm, too
@@ -378,8 +351,7 @@ for v in FR.all_vertices:
              'setCouplings' : '',
              'qedorder'   : qed,
              'qcdorder' : qcd,
-#             'q2'        :  q2var,
-             'couplingptrs' : ',tcPDPtr'*len(v.particles),
+             'couplingptrs' : ',tcPDPtr'*len(vertex.particles),
              'spindirectory' : spindirectory(lorentztag),
              'ModelName' : modelname,
              }             # ok
@@ -400,7 +372,7 @@ for v in FR.all_vertices:
 #        allplist += plistarray[0]
 #    else:
 #        #print 'VERTEX ALREADY INCLUDED'
-#        v.include = 0
+#        vertex.include = 0
         
         #print '============================================================'
 
@@ -422,7 +394,7 @@ def get_vertices():
         for l in v.lorentz:
             lorentztag = get_lorentztag(l.spins)
             #print lorentztag
-        if "U" not in lorentztag and v.include == 1:
+        if 'U' not in lorentztag: # and v.include == 1:
             vlist.append( vertexline.substitute(
                 { 'classname' : 'Herwig::%sV_%03d' % (modelname, int(v.name[2:])),
                   'name' : '/Herwig/%s/%s' % (modelname,v.name), 
