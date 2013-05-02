@@ -154,11 +154,11 @@ for p in FR.all_parameters:
         text = add_brackets(expression, symbols)
         parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
 
-    print 'NAME  |',p.name
-    print 'VALUE |',p.value
-    print 'TEXT  |','%s = %s;' % (p.name,expression)
-    print 'SYMS  |',symbols
-    print '-'*60
+#    print 'NAME  |',p.name
+#    print 'VALUE |',p.value
+#    print 'TEXT  |','%s = %s;' % (p.name,expression)
+#    print 'SYMS  |',symbols
+#    print '-'*60
 
 ### special treatment
 #    if p.name == 'aS':
