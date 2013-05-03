@@ -260,42 +260,11 @@ for vertex in FR.all_vertices:
         L = vertex.lorentz[lorentz_idx]
 
         if lorentztag in ['FFS','FFV']:
-            print 'PRINTING LORENTZ STRUCTURE',
-            print L.structure
-            for lor in map(strip, re.split(r' \+ | - ',L.structure)):
-                breakdown = lor.split('*')
-                prefactor='1'
-                print 'breakdown', breakdown, 'length', len(breakdown)
-                print
-                print parse_lorentz(L.structure)
-                print
-
-                if len(breakdown) == 3:
-                    prefactor = breakdown[0]
-                    breakdown = breakdown[1:]
-                if len(breakdown) == 2:
-                    assert(breakdown[0][:5] == 'Gamma')
-                    if breakdown[1][:5] == 'ProjM':
-                        #print 'LEFT HANDED'
-                        coup_left.append(prefactor+' * '+C.value)
-                    elif breakdown[1][:5] == 'ProjP':
-                        #print 'RIGHT HANDED'
-                        coup_right.append(prefactor+' * '+C.value)
-                    else:
-                        print C.value
-                        assert(False)
-                        coup_left.append(C.value)
-                        coup_right.append(C.value)
-                if len(breakdown) == 1:
-                    if breakdown[0][:5] == 'ProjM':
-                        #print 'LEFT HANDED'
-                        coup_left.append(prefactor+' * '+C.value)
-                    elif breakdown[0][:5] == 'ProjP':
-                        #print 'RIGHT HANDED'
-                        coup_right.append(prefactor+' * '+C.value)
-                    else:
-                        coup_left.append(C.value)
-                        coup_right.append(C.value)
+            left,right = parse_lorentz(L.structure)
+            if left:
+                coup_left.append('%s * %s' % (left,C.value))
+            if right:
+                coup_right.append('%s * %s' % (right,C.value))
         else:
             coup_norm.append(C.value)
                 
@@ -306,9 +275,9 @@ for vertex in FR.all_vertices:
         #print '---------------'
 
 
-    leftcontent = ' + '.join(coup_left) if len(coup_left)!=0 else '0j'
-    rightcontent = ' + '.join(coup_right) if len(coup_right)!=0 else '0j'
-    normcontent = ' + '.join(coup_norm) if len(coup_norm)!=0 else '1.'
+    leftcontent = ' + '.join(coup_left) if coup_left else '0'
+    rightcontent = ' + '.join(coup_right) if coup_right else '0'
+    normcontent = ' + '.join(coup_norm) if coup_norm else '1'
 
 #    #print 'Left:',leftcontent
 #    #print 'Right:',rightcontent
