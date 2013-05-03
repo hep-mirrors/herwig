@@ -165,7 +165,7 @@ void LHWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     _q2last=q2;
   }
   int ih = abs(c->id());
-  int ibos[2]={abs(a->id()),abs(b->id())};
+  long int ibos[2]={abs(a->id()),abs(b->id())};
   if(ih==25) {
     if     ( ibos[0]==24&&ibos[1]==24     ) norm(UnitRemoval::InvE *_couplast*_coup[0]);
     else if( ibos[0]==23&&ibos[1]==23     ) norm(UnitRemoval::InvE *_couplast*_coup[1]);

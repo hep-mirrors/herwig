@@ -157,7 +157,7 @@ void LHWWWWVertex::doinit() {
 void LHWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 			       tcPDPtr c,tcPDPtr d) {
   // id's of the particles
-  int id[4]={a->id(),b->id(),c->id(),d->id()};
+  long int id[4]={a->id(),b->id(),c->id(),d->id()};
   // order the particles
   int ngamma(0),nz(0);
   int iorder[4];
