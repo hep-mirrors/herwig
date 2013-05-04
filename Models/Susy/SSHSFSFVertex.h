@@ -121,37 +121,41 @@ private:
   //@{
   /**
    * Calculate the coupling for the first higgs 
+   * @param q2 scale
    * @param higgs The ID of the higgs
    * @param smID The ID of the SM particle to which it is a partner.
    * @param alpha The mass eigenstate of an sfermion
    * @param beta  The mass eigenstate of the other sfermion
    */
-  void downSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
+  void downSF(Energy2 q2, long higgs, long smID, unsigned int alpha, unsigned int beta);
   
   /**
    * Calculate the coupling for the second higgs 
+   * @param q2 scale
    * @param higgs The ID of the higgs
    * @param smID The ID of the SM particle to which it is a partner.
    * @param alpha The mass eigenstate of an sfermion
    * @param beta  The mass eigenstate of the other sfermion
    */
-  void upSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
+  void upSF(Energy2 q2, long higgs, long smID, unsigned int alpha, unsigned int beta);
   
   /**
    * Calculate the coupling for the third higgs 
+   * @param q2 scale
    * @param higgs The ID of the higgs
    * @param smID The ID of the SM particle to which it is a partner.
    * @param alpha The mass eigenstate of an sfermion
    * @param beta  The mass eigenstate of the other sfermion
    */
-  void leptonSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
+  void leptonSF(Energy2 q2, long higgs, long smID, unsigned int alpha, unsigned int beta);
   
   /**
    *  Calculate the coupling for the charged higgs 
+   * @param q2 scale
    * @param id1 The ID of the first sfermion
    * @param id2 The ID of the second sfermion
    */
-  void chargedHiggs(long id1, long id2);
+  void chargedHiggs(Energy2 q2, long id1, long id2);
   
   //@}
 
@@ -257,7 +261,11 @@ private:
    * The ID of the second sfermion when the vertex was last evaluated 
    */
   long theSF2Last;
-  
+
+  /**
+   *  The Model
+   */
+  tMSSMPtr theMSSM;
 };
 }
 
