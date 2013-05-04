@@ -117,7 +117,7 @@ public:
   /**
    * Switch on subprocess groups
    */
-  void setSubProcessGroups() { theSubProcessGroups = true; }
+  void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
 
   /**
    * Return true, if one of the dependent subprocesses should be
@@ -131,6 +131,12 @@ public:
    * calculated.
    */
   bool inclusive() const;
+
+  /**
+   * Switch on calculating the integral over the unresolved emission should be
+   * calculated.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
 
   /**
    * Fill the projectors object of xcombs to choose subprocesses
@@ -485,6 +491,12 @@ private:
    * Switch on subprocess groups
    */
   bool theSubProcessGroups;
+
+  /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
 
 private:
 
