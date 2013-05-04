@@ -63,6 +63,8 @@ bool MatchboxMEBase::checkPoles() const { return factory()->checkPoles(); }
 
 bool MatchboxMEBase::verbose() const { return factory()->verbose(); }
 
+bool MatchboxMEBase::initVerbose() const { return factory()->initVerbose(); }
+
 void MatchboxMEBase::getDiagrams() const {
 
   if ( diagramGenerator() && processData() ) {
@@ -1094,7 +1096,7 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
   xc.nLight(getNLight());
 
-  if ( verbose() ) {
+  if ( initVerbose() ) {
     string fname = name() + ".diagrams";
     ifstream test(fname.c_str());
     if ( !test ) {

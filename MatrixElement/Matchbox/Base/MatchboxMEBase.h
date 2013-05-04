@@ -583,6 +583,11 @@ public:
   bool verbose() const;
 
   /**
+   * Return true, if verbose
+   */
+  bool initVerbose() const;
+
+  /**
    * Dump the setup to an ostream
    */
   void print(ostream&) const;
