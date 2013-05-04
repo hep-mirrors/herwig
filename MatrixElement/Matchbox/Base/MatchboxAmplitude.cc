@@ -324,6 +324,8 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     lastLargeNAmplitudes() = clean;
   }
 
+  haveTreeAmplitudes();
+
 }
 
 void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
@@ -363,6 +365,8 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     }
     lastOneLoopAmplitudes() = clean;
   }
+
+  haveOneLoopAmplitudes();
 
 }
 

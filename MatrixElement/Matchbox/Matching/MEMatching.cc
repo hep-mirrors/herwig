@@ -76,10 +76,7 @@ double MEMatching::channelWeight() const {
 
 CrossSection MEMatching::dSigHatDR() const {
 
-  double xme2 = 
-    realXComb()->lastME2() > 0.0 ? 
-    realXComb()->lastME2() : 
-    dipole()->realEmissionME()->me2();
+  double xme2 = dipole()->realEmissionME()->me2();
 
   xme2 *= channelWeight();
   xme2 /= 
@@ -108,9 +105,7 @@ CrossSection MEMatching::dSigHatDR() const {
 
 double MEMatching::me2() const {
 
-  assert(bornXComb()->lastME2() > 0.0);
-
-  double bme2 = bornXComb()->lastME2();
+  double bme2 = bornXComb()->me2();
   bme2 /=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
 	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
