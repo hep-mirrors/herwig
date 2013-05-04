@@ -14,6 +14,7 @@
 #include "MatchboxPhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -43,13 +44,46 @@ Ptr<ProcessData>::tptr MatchboxPhasespace::processData() const {
 double MatchboxPhasespace::generateKinematics(const double* r,
 					      vector<Lorentz5Momentum>& momenta) {
 
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
+  cPDVector::const_iterator pd = mePartonData().begin() + 2;
+  vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
 
   double massJacobian = 1.;
 
   if ( useMassGenerators() ) {
-    assert(false && "not supported yet");
+    Energy gmass = ZERO;
+    tGenericMassGeneratorPtr mgen = 
+      processData()->massGenerator(*pd);
+    Energy maxMass = 
+      (!haveX1X2() && momenta.size() > 3) ? 
+      sqrt(lastSHat()) : sqrt(lastS());
+    for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+      if ( mgen && !isInvertible() ) {
+	Energy massMax = min((**pd).massMax(),maxMass);
+	Energy massMin = (**pd).massMin();
+	if ( massMin > massMax )
+	  return 0.0;
+	gmass = mgen->mass(massJacobian,**pd,massMin,massMax,r[0]);
+	++r;
+      } else if ( (**pd).width() != ZERO ) {
+	Energy massMax = min((**pd).massMax(),maxMass);
+	Energy massMin = (**pd).massMin();
+	if ( massMin > massMax )
+	  return 0.0;
+	// use a standard Breit Wigner here which we can invert
+	// see invertKinematics as well
+	double bwILow = 
+	  atan((sqr(massMin)-sqr((**pd).mass()))/((**pd).mass() * (**pd).width()));
+	double bwIUp = 
+	  atan((sqr(massMax)-sqr((**pd).mass()))/((**pd).mass() * (**pd).width()));
+	gmass = sqrt(sqr((**pd).mass()) + 
+		     (**pd).mass()*(**pd).width()*tan(bwILow+r[0]*(bwIUp-bwILow)));
+	++r;
+      } else {
+	gmass = (**pd).mass();
+      }
+      maxMass -= gmass;
+    }
+    p->setMass(gmass);
   } else {
     for ( ; pd != mePartonData().end(); ++pd, ++p )
       p->setMass((**pd).mass());
@@ -95,6 +129,42 @@ double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
 
 double MatchboxPhasespace::invertKinematics(const vector<Lorentz5Momentum>& momenta,
 					    double* r) const {
+
+  if ( useMassGenerators() ) {
+
+    Energy gmass = ZERO;
+    Energy maxMass = 
+      (!haveX1X2() && momenta.size() > 3) ? 
+      sqrt((momenta[0]+momenta[1]).m2()) : sqrt(lastS());
+
+    cPDVector::const_iterator pd = mePartonData().begin() + 2;
+    vector<Lorentz5Momentum>::const_iterator p = momenta.begin() + 2;
+
+    for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+
+      if ( (**pd).width() != ZERO ) {
+	Energy massMax = min((**pd).massMax(),maxMass);
+	Energy massMin = (**pd).massMin();
+	if ( massMin > massMax )
+	  return 0.0;
+	double bwILow = 
+	  atan((sqr(massMin)-sqr((**pd).mass()))/((**pd).mass() * (**pd).width()));
+	double bwIUp = 
+	  atan((sqr(massMax)-sqr((**pd).mass()))/((**pd).mass() * (**pd).width()));
+	gmass = p->mass();
+	double bw =
+	  atan((sqr(gmass)-sqr((**pd).mass()))/((**pd).mass() * (**pd).width()));
+	r[0] = (bw-bwILow)/(bwIUp-bwILow);
+	++r;
+      } else {
+	gmass = (**pd).mass();
+      }
+      maxMass -= gmass;
+
+    }
+
+  }
+
   return momenta.size() > 3 ? 
     invertTwoToNKinematics(momenta,r) : 
     invertTwoToOneKinematics(momenta,r);
@@ -280,6 +350,22 @@ void MatchboxPhasespace::Init() {
      "[debug] Cutoff below which a region is considered singular.",
      &MatchboxPhasespace::singularCutoff, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+
+
+  static Switch<MatchboxPhasespace,bool> interfaceUseMassGenerators
+    ("UseMassGenerators",
+     "Use mass generators instead of fixed masses.",
+     &MatchboxPhasespace::theUseMassGenerators, false, false, false);
+  static SwitchOption interfaceUseMassGeneratorsYes
+    (interfaceUseMassGenerators,
+     "Yes",
+     "Use mass generators.",
+     true);
+  static SwitchOption interfaceUseMassGeneratorsNo
+    (interfaceUseMassGenerators,
+     "No",
+     "Do not use mass generators.",
+     false);
 
 }
 

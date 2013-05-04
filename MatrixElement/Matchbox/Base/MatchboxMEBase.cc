@@ -266,6 +266,16 @@ int MatchboxMEBase::nDimBorn() const {
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     int n = phasespace()->nDim(nout);
+    if ( phasespace()->useMassGenerators() ) {
+      for ( cPDVector::const_iterator pd = 
+	      diagrams().front()->partons().begin();
+	    pd != diagrams().front()->partons().end(); ++pd ) {
+	if ( processData()->massGenerator(*pd) ||
+	     (**pd).width() != ZERO ) {
+	  ++n;
+	}
+      }
+    }
     return n;
   }
 
