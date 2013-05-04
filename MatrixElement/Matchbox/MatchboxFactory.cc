@@ -177,6 +177,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
   map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > > ampProcs;
   set<PDVector> processes = makeSubProcesses(proc);
+  set<PDVector> unsortedProcesses = makeUnsortedSubProcesses(proc);
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
@@ -203,7 +204,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
     }
   }
 
-  size_t combinations = processes.size()*matchAmplitudes.size();
+  size_t combinations =  processes.size()*matchAmplitudes.size()
+    + unsortedProcesses.size()*matchAmplitudes.size();
   size_t procCount = 0;
 
   boost::progress_display * progressBar = 
@@ -218,7 +220,16 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
 	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p) )
+	  if ( !(**amp).canHandle(*p) || !(**amp).sortOutgoing() )
+	    continue;
+	  QNKey key = makeIndex(*p);
+	  ++procCount;
+	  ampProcs[*amp][key].push_back(*p);
+	}
+	for ( set<PDVector>::const_iterator p = unsortedProcesses.begin();
+	      p != unsortedProcesses.end(); ++p ) {
+	  ++(*progressBar);
+	  if ( !(**amp).canHandle(*p) || (**amp).sortOutgoing() )
 	    continue;
 	  QNKey key = makeIndex(*p);
 	  ++procCount;
@@ -848,7 +859,7 @@ struct SortPID {
 };
 
 set<PDVector> MatchboxFactory::
-makeSubProcesses(const vector<string>& proc) const {
+makeSubProcesses(const vector<string>& proc, bool sorted) const {
 
   if ( proc.empty() )
     throw InitException() << "No process specified.";
@@ -893,7 +904,8 @@ makeSubProcesses(const vector<string>& proc) const {
     if ( charge != 0 )
       continue;
     PDVector pr = *p;
-    sort(pr.begin()+2,pr.end(),SortPID());
+    if ( sorted )
+      sort(pr.begin()+2,pr.end(),SortPID());
     allCheckedProcs.insert(pr);
   }
 
