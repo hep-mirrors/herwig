@@ -115,6 +115,11 @@ public:
   virtual bool subProcessGroups() const;
 
   /**
+   * Switch on subprocess groups
+   */
+  void setSubProcessGroups() { theSubProcessGroups = true; }
+
+  /**
    * Return true, if one of the dependent subprocesses should be
    * constructed in place of the one driven by the head matrix element
    * or a full subprocess group.
@@ -209,6 +214,12 @@ public:
    * Return the underlying born matrix elements.
    */
   const vector<Ptr<MatchboxMEBase>::ptr>& borns() const;
+
+  /**
+   * Access the underlying born matrix elements,
+   * overriding the ones contained in the factory object.
+   */
+  vector<Ptr<MatchboxMEBase>::ptr>& borns() { return theBorns; }
 
   /**
    * Build up dipoles needed.
@@ -429,6 +440,12 @@ private:
   Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
+   * The underlying born matrix elements, overriding the ones
+   * contained in the factory object.
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theBorns;
+
+  /**
    * Pointer to the head real emission ME casted to a MatchboxMEBase
    * object.
    */
@@ -463,6 +480,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * Switch on subprocess groups
+   */
+  bool theSubProcessGroups;
 
 private:
 
