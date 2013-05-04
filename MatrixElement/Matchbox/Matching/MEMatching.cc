@@ -105,7 +105,7 @@ CrossSection MEMatching::dSigHatDR() const {
 
 double MEMatching::me2() const {
 
-  double bme2 = bornXComb()->me2();
+  double bme2 = bornXComb()->matrixElement()->me2();
   bme2 /=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
 	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
