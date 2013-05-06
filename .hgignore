@@ -48,7 +48,7 @@ src/herwigopts.h
 src/herwigopts.c
 src/defaults/Analysis.in
 src/herwig-config
-src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg|hepmc)
+src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg|hepmc|dvi)
 lib/done-all-links
 src/Herwig\+\+
 src/defaults/PDF.in
