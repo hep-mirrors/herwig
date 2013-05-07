@@ -205,13 +205,13 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	  << Exception::runerror;
       }
       tcPDPtr p = getBSMParticleData(t);
-      charge += p->iCharge();
       if( !p ) {
   	throw SetupException()
   	  << "BSMModel::readDecay() - An unknown PDG code has been encounterd "
   	  << "while reading a decay mode. ID: " << t
   	  << Exception::runerror;
       }
+      charge += p->iCharge();
       ++npr;
       tag += p->name() + ",";
       Energy mass =  p->mass();
