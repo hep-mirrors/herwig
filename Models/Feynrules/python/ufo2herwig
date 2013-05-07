@@ -33,8 +33,8 @@ if modelpath:
 
 FR = __import__(module)
 
-
 ##################################################
+all_vertices = collapse_vertices(FR.all_vertices)
 ##################################################
 ##################################################
 
@@ -217,7 +217,7 @@ if args.verbose:
     pprint.pprint(labels)
 
 
-for vertex in FR.all_vertices:
+for vertex in all_vertices:
 
     #print vertex.name
     #print map(str,vertex.particles)
@@ -231,14 +231,15 @@ for vertex in FR.all_vertices:
         unique( lorentztag )
     
     ### Particle ids #### sort order? ####
-    plistarray = [','.join([ str(p.pdg_code) for p in vertex.particles ])]
+    plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
+                   for pl in vertex.particles_list ]
     
     ### Colour structure
     if vertex.color == '1': qcdord = '0'
     else:              qcdord = ''
 
     ### classname
-    classname = 'V_%03d' % int(vertex.name[2:])
+    classname = 'V_%s' % vertex.name
 
     ### parse couplings
     unique_qcd = CheckUnique()
@@ -248,7 +249,7 @@ for vertex in FR.all_vertices:
     coup_right = []
     coup_norm = []
  
-    for (colour_idx,lorentz_idx),C in vertex.couplings.iteritems():
+    for (colour_idx,lorentz_idx),C in vertex.couplings:
         qed = C.order.get('QED',0)
         qcd = C.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
@@ -326,7 +327,7 @@ for vertex in FR.all_vertices:
              'setCouplings' : '',
              'qedorder'   : qed,
              'qcdorder' : qcd,
-             'couplingptrs' : ',tcPDPtr'*len(vertex.particles),
+             'couplingptrs' : ',tcPDPtr'*len(lorentztag),
              'spindirectory' : spindirectory(lorentztag),
              'ModelName' : modelname,
              }             # ok
@@ -365,14 +366,14 @@ insert ${ModelName}:ExtraVertices 0 $name
 
 def get_vertices():
     vlist = ['library %s\n' % libname]
-    for v in FR.all_vertices:
+    for v in all_vertices:
         for l in v.lorentz:
             lorentztag = get_lorentztag(l.spins)
             #print lorentztag
         if 'U' not in lorentztag: # and v.include == 1:
             vlist.append( vertexline.substitute(
-                { 'classname' : 'Herwig::%sV_%03d' % (modelname, int(v.name[2:])),
-                  'name' : '/Herwig/%s/%s' % (modelname,v.name), 
+                { 'classname' : 'Herwig::%sV_%s' % (modelname, v.name),
+                  'name' : '/Herwig/%s/V_%s' % (modelname,v.name), 
                   'ModelName' : modelname } ) )
     return ''.join(vlist)
 

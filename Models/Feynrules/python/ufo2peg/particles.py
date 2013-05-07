@@ -67,6 +67,7 @@ class ParticleConverter:
             self.mass = self.mass.real
         except:
             pass
+        self.mass = abs(self.mass)
         hbarc = 197.3269631e-15 # GeV mm (I hope ;-) )
         self.ctau = (hbarc / self.width) if self.width != 0 else 0
         self.wcut = 10 * self.width

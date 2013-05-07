@@ -78,8 +78,7 @@ namespace Herwig {
   
   void ${ModelName}${classname}::Init() {
     static ClassDocumentation<${ModelName}${classname}> 
-    documentation("The ${ModelName}${classname} class is the implementation of"
-		  "the coupling(s) ${addToPlist}");
+    documentation("The ${ModelName}${classname} class implements a vertex.");
   }
 
   void ${ModelName}${classname}::setCoupling(Energy2 ${couplingptrs}) {

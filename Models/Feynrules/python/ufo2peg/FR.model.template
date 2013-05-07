@@ -65,6 +65,8 @@ ${vlist}
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes Yes
+set WeakDecayConstructor:CreateDecayModes Yes
 
 ###################################################
 # Set up the model framework
