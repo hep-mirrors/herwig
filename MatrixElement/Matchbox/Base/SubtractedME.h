@@ -225,7 +225,7 @@ public:
    * Access the underlying born matrix elements,
    * overriding the ones contained in the factory object.
    */
-  vector<Ptr<MatchboxMEBase>::ptr>& borns() { return theBorns; }
+  void setBorns(vector<Ptr<MatchboxMEBase>::ptr>& newBorns) { theBorns = newBorns; }
 
   /**
    * Build up dipoles needed.
