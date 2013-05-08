@@ -78,6 +78,10 @@ double MPISampler::sumWeights() const {
   return theSampler.n();
 }
 
+double MPISampler::sumWeights2() const {
+  return theSampler.n();
+}
+
 void MPISampler::dofinish() {
   if ( theSampler.n() <= 0 &&
        theProcessHandler && theProcessHandler->statLevel() > 1 ) {
