@@ -275,6 +275,20 @@ void GeneralFourBodyDecayer::colourConnections(const Particle & parent,
 	outgoing[triplet[1]]->antiColourNeighbour(outgoing[antitriplet[0]]);
       }
     }
+    // 3 triplets
+    else if(triplet.size()==3&&singlet.size()==1&&antitriplet.size()==0) {
+      tColinePtr col[3] = {ColourLine::create(outgoing[triplet[0]]),
+			   ColourLine::create(outgoing[triplet[1]]),
+			   ColourLine::create(outgoing[triplet[2]])};
+      col[0]->setSourceNeighbours(col[1],col[2]);
+    }
+    // 3 antitriplets
+    else if(triplet.size()==0&&singlet.size()==1&&antitriplet.size()==3) {
+      tColinePtr col[3] = {ColourLine::create(outgoing[antitriplet[0]],true),
+			   ColourLine::create(outgoing[antitriplet[1]],true),
+			   ColourLine::create(outgoing[antitriplet[2]],true)};
+      col[0]->setSinkNeighbours(col[1],col[2]);
+    }
     else {
       string mode = parent.PDGName() + " -> " + out[0]->PDGName() + " "
 	+ out[1]->PDGName() + " " + out[2]->PDGName()+ " " + out[3]->PDGName();
@@ -448,6 +462,99 @@ bool GeneralFourBodyDecayer::setColourFactors(double symfac) {
 	}
 	else 
 	  assert(false);
+      }
+    }
+    else if ( trip.size() == 3 || atrip.size() == 3 ) {
+      _nflow = 1;
+      _colour         = vector<DVector>(1,DVector(1,6.));
+      _colourLargeNC  = vector<DVector>(1,DVector(1,6.));
+      vector<int> coloured = trip.size()==3 ? trip : atrip;
+      for(vector<NBDiagram>::iterator it = _diagrams.begin();
+	  it!=_diagrams.end();++it) {
+	vector<int> coloured = trip.size()==3 ? trip : atrip;
+	// get the ordering of the triplets
+	int iloc[4];
+	for(unsigned int ix=0;ix<4;++ix) iloc[ix] = it->channelType[ix]-1;
+	double sign(1.);
+	if(iloc[coloured[0]]>iloc[coloured[2]]) {
+	  swap(coloured[0],coloured[2]);
+	  sign *= -1.;
+	}
+	if(iloc[coloured[0]]>iloc[coloured[1]]) {
+	  swap(coloured[0],coloured[1]);
+	  sign *= -1.;
+	}
+	if(iloc[coloured[1]]>iloc[coloured[2]]) {
+	  swap(coloured[1],coloured[2]);
+	  sign *= -1.;
+	}
+	// extract the vertices
+	// get the other vertices
+	const NBVertex & second = (*it).vertices.begin()->second.incoming ?
+	  (*it).vertices.begin()->second : (++(*it).vertices.begin())->second;
+	// get the other vertices
+	const NBVertex & third = (*it).vertices.begin()->second.incoming ?
+	  (++(*it).vertices.begin())->second : (++second.vertices.begin())->second;
+	// find the BV vertex
+	VertexBasePtr vertex;
+	tcPDPtr part[3];
+	// first topologyw
+	if(it->vertices.begin()->second.incoming) {
+	  if(_outgoing[iloc[0]]->coloured()&&
+	     _outgoing[iloc[1]]->coloured()) {
+	    part[0] = _outgoing[iloc[0]];
+	    part[1] = _outgoing[iloc[1]];
+	    part[2] = second.incoming->CC() ? second.incoming->CC() : second.incoming;
+	    vertex = second.vertex;
+	  }
+	  else {
+	    part[0] = third .incoming->CC() ? third .incoming->CC() : third .incoming;
+	    part[1] = _outgoing[iloc[2]];
+	    part[2] = _outgoing[iloc[3]];
+	    vertex = third.vertex;
+	  }
+	}
+	else {
+	  if(_outgoing[iloc[2]]->coloured()&&
+	     _outgoing[iloc[3]]->coloured()) {
+	    part[0] = third .incoming->CC() ? third .incoming->CC() : third .incoming;
+	    part[1] = _outgoing[iloc[2]];
+	    part[2] = _outgoing[iloc[3]];
+	    vertex = third.vertex;
+	  }
+	  else {
+	    part[0] = second.incoming->CC() ? second.incoming->CC() : second.incoming;
+	    part[1] = _outgoing[iloc[1]];
+	    part[2] = third .incoming->CC() ? third .incoming->CC() : third .incoming;
+	    vertex = second.vertex;
+	  }
+	}
+      	unsigned int io[2]={1,2};
+      	for(unsigned int iy=0;iy<3;++iy) {
+      	  if     (iy==1) io[0]=0;
+      	  else if(iy==2) io[1]=1;
+	  tPDVector decaylist = vertex->search(iy,part[0]);
+      	  if(decaylist.empty()) continue;
+      	  bool found=false;
+       	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
+      	    if(decaylist[iz+io[0]]==part[1]&&
+      	       decaylist[iz+io[1]]==part[2]) {
+      	      sign *= 1.;
+      	      found = true;
+      	    }
+      	    else if(decaylist[iz+io[0]]==part[2] &&
+      		    decaylist[iz+io[1]]==part[1] ) {
+      	      sign *= -1.;
+      	      found = true;
+      	    }
+      	  }
+      	  if(found) {
+      	    if(iy==1) sign *=-1.;
+      	    break;
+      	  }
+	}
+	it->       colourFlow = vector<CFPair>(1,make_pair(1,sign));
+	it->largeNcColourFlow = vector<CFPair>(1,make_pair(1,sign));
       }
     }
     else {
