@@ -35,7 +35,8 @@ using namespace Herwig;
 
 SubtractedME::SubtractedME() 
   : MEGroup(), 
-    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false) {}
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
+    theSubProcessGroups(false), theInclusive(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -46,14 +47,16 @@ void SubtractedME::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
 bool SubtractedME::subProcessGroups() const { 
   return 
     (factory()->subProcessGroups() && !(showerApproximation() || inclusive())) ||
-    factory()->subtractionData() != "";
+    factory()->subtractionData() != "" || theSubProcessGroups;
 }
 
-bool SubtractedME::inclusive() const { return factory()->inclusive(); }
+bool SubtractedME::inclusive() const { return factory()->inclusive() || theInclusive; }
 
 Ptr<ShowerApproximation>::tptr SubtractedME::showerApproximation() const { return factory()->showerApproximation(); }
 
-const vector<Ptr<MatchboxMEBase>::ptr>& SubtractedME::borns() const { return factory()->bornMEs(); }
+const vector<Ptr<MatchboxMEBase>::ptr>& SubtractedME::borns() const { 
+  return theBorns.empty() ? factory()->bornMEs() : theBorns;
+}
 
 bool SubtractedME::verbose() const { return factory()->verbose(); }
 
@@ -693,15 +696,17 @@ void SubtractedME::lastEventSubtraction() {
 }
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theFactory << theReal 
+  os << theLastXComb << theFactory << theBorns << theReal 
      << collinearHistograms << softHistograms 
-     << theRealShowerSubtraction << theVirtualShowerSubtraction;
+     << theRealShowerSubtraction << theVirtualShowerSubtraction
+     << theSubProcessGroups << theInclusive;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theFactory >> theReal 
+  is >> theLastXComb >> theFactory >> theBorns >> theReal 
      >> collinearHistograms >> softHistograms 
-     >> theRealShowerSubtraction >> theVirtualShowerSubtraction;
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction
+     >> theSubProcessGroups >> theInclusive;
   lastMatchboxXComb(theLastXComb);
 }
 

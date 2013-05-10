@@ -115,6 +115,11 @@ public:
   virtual bool subProcessGroups() const;
 
   /**
+   * Switch on subprocess groups
+   */
+  void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+
+  /**
    * Return true, if one of the dependent subprocesses should be
    * constructed in place of the one driven by the head matrix element
    * or a full subprocess group.
@@ -126,6 +131,12 @@ public:
    * calculated.
    */
   bool inclusive() const;
+
+  /**
+   * Switch on calculating the integral over the unresolved emission should be
+   * calculated.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
 
   /**
    * Fill the projectors object of xcombs to choose subprocesses
@@ -209,6 +220,12 @@ public:
    * Return the underlying born matrix elements.
    */
   const vector<Ptr<MatchboxMEBase>::ptr>& borns() const;
+
+  /**
+   * Access the underlying born matrix elements,
+   * overriding the ones contained in the factory object.
+   */
+  void setBorns(const vector<Ptr<MatchboxMEBase>::ptr>& newBorns) { theBorns = newBorns; }
 
   /**
    * Build up dipoles needed.
@@ -429,6 +446,12 @@ private:
   Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
+   * The underlying born matrix elements, overriding the ones
+   * contained in the factory object.
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theBorns;
+
+  /**
    * Pointer to the head real emission ME casted to a MatchboxMEBase
    * object.
    */
@@ -463,6 +486,17 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * Switch on subprocess groups
+   */
+  bool theSubProcessGroups;
+
+  /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
 
 private:
 
