@@ -134,6 +134,11 @@ private:
    */
   unsigned int widthOpt_;
 
+  /**
+   *  Particles to override the default list
+   */
+  vector<PDPtr> particles_;
+
 };
 
 }

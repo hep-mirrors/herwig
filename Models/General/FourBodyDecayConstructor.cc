@@ -35,11 +35,11 @@ IBPtr FourBodyDecayConstructor::fullclone() const {
 }
 
 void FourBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << interOpt_ << widthOpt_;
+  os << interOpt_ << widthOpt_ << particles_;
 }
 
 void FourBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> interOpt_ >> widthOpt_;
+  is >> interOpt_ >> widthOpt_ >> particles_;
 }
 
 DescribeClass<FourBodyDecayConstructor,NBodyDecayConstructorBase>
@@ -91,11 +91,22 @@ void FourBodyDecayConstructor::Init() {
      "Only if there are on-shell diagrams",
      0);
 
+  static RefVector<FourBodyDecayConstructor,ParticleData> interfaceParticles
+    ("Particles",
+     "Particles to override the choice in the DecayConstructor for 4-body decays,"
+     " if empty the defaults from the DecayConstructor are used.",
+     &FourBodyDecayConstructor::particles_, -1, false, false, true, true, false);
+
 }
 
 void FourBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
-  NBodyDecayConstructorBase::DecayList(particles);
+  if(particles_.empty())
+    NBodyDecayConstructorBase::DecayList(particles);
+  else {
+    set<PDPtr> new_particles(particles_.begin(),particles_.end());
+    NBodyDecayConstructorBase::DecayList(new_particles);
+  }
 }
 
 void FourBodyDecayConstructor::
