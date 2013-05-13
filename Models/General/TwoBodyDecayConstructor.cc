@@ -68,6 +68,8 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
       Repository::cout() << "Constructing 2-body decays for " 
 			 << parent->PDGName() << '\n';
     for(unsigned int iv = 0; iv < nv; ++iv) {
+      if(excluded(model->vertex(iv)) || 
+	 model->vertex(iv)->getNpoint()>3) continue;
       for(unsigned int il = 0; il < 3; ++il) { 
 	set<TwoBodyDecay> decays = 
 	  createModes(parent, model->vertex(iv), il);
@@ -81,7 +83,7 @@ set<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list) {
   int id = inpart->id();
-  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
+  if( !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return set<TwoBodyDecay>();
   Energy m1(inpart->mass());
   tPDVector decaylist = vertex->search(list, inpart);

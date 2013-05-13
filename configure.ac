@@ -109,6 +109,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
+		Models/Susy/RPV/Makefile
 		Models/UED/Makefile
 		Models/LH/Makefile
 		Models/LHTP/Makefile

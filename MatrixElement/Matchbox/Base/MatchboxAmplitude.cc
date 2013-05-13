@@ -171,6 +171,13 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	    break;
 	}
       }
+      // default to just pick the next available anti-particle
+      if ( checkcc == processLegs.end() ) {
+	checkcc = processLegs.begin();
+	while ( checkcc->first->id() > 0 )
+	  if ( ++checkcc == processLegs.end() )
+	    break;
+      }
       assert(checkcc != processLegs.end());
       crossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
@@ -317,6 +324,8 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     lastLargeNAmplitudes() = clean;
   }
 
+  haveTreeAmplitudes();
+
 }
 
 void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
@@ -356,6 +365,8 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     }
     lastOneLoopAmplitudes() = clean;
   }
+
+  haveOneLoopAmplitudes();
 
 }
 

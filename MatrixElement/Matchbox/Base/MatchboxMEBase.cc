@@ -63,6 +63,8 @@ bool MatchboxMEBase::checkPoles() const { return factory()->checkPoles(); }
 
 bool MatchboxMEBase::verbose() const { return factory()->verbose(); }
 
+bool MatchboxMEBase::initVerbose() const { return factory()->initVerbose(); }
+
 void MatchboxMEBase::getDiagrams() const {
 
   if ( diagramGenerator() && processData() ) {
@@ -266,6 +268,16 @@ int MatchboxMEBase::nDimBorn() const {
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     int n = phasespace()->nDim(nout);
+    if ( phasespace()->useMassGenerators() ) {
+      for ( cPDVector::const_iterator pd = 
+	      diagrams().front()->partons().begin();
+	    pd != diagrams().front()->partons().end(); ++pd ) {
+	if ( processData()->massGenerator(*pd) ||
+	     (**pd).width() != ZERO ) {
+	  ++n;
+	}
+      }
+    }
     return n;
   }
 
@@ -1084,7 +1096,7 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
   xc.nLight(getNLight());
 
-  if ( verbose() ) {
+  if ( initVerbose() ) {
     string fname = name() + ".diagrams";
     ifstream test(fname.c_str());
     if ( !test ) {

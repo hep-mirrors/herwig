@@ -14,6 +14,7 @@
 #include "SMFFWVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -24,7 +25,7 @@ using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : 
   _diagonal(false), _ckm(3,vector<Complex>(3,0.0)), 
-  _couplast(0.), _q2last(0.*sqr(MeV)) {
+  _couplast(0.), _q2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
 }
@@ -92,9 +93,9 @@ void SMFFWVertex::doinit() {
   }
 }
 
-ClassDescription<SMFFWVertex>SMFFWVertex::initSMFFWVertex;
-  
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SMFFWVertex,FFVVertex>
+describeHerwigSMFFWVertex("Herwig::SMFFWVertex", "Herwig.so");
   
 void SMFFWVertex::Init() {
   static ClassDocumentation<SMFFWVertex> documentation

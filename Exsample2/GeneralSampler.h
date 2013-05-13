@@ -112,6 +112,14 @@ public:
   virtual double sumWeights() const {
     return theSumWeights;
   }
+
+  /**
+   * Return the sum of the weights squaredreturned by generate() so far (of
+   * the events that were not rejeted).
+   */
+  virtual double sumWeights2() const {
+    return theSumWeights2;
+  }
   //@}
 
 protected:
@@ -279,6 +287,11 @@ private:
    * The sum of weights
    */
   double theSumWeights;
+
+  /**
+   * The sum of weights squared
+   */
+  double theSumWeights2;
 
   /**
    * The sum of absolute cross section.

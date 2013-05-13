@@ -432,7 +432,7 @@ public:
   /**
    * Setup everything
    */
-  void setup();
+  virtual void setup();
 
   //@}
 
@@ -758,7 +758,14 @@ private:
   /**
    * Generate subprocesses.
    */
-  set<PDVector> makeSubProcesses(const vector<string>&) const;
+  set<PDVector> makeSubProcesses(const vector<string>&, bool sorted = true) const;
+
+  /**
+   * Generate subprocesses with all permutations of outgoing partons.
+   */
+  set<PDVector> makeUnsortedSubProcesses(const vector<string>& data) const {
+    return makeSubProcesses(data, false);
+  }
 
   /**
    * Generate matrix element objects for the given process.

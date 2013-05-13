@@ -113,6 +113,16 @@ private:
 private:
 
   /**
+   * Switch to turn off squark trilinear couplings via A terms for testing
+   */
+  bool theIncludeTriLinear;
+
+  /**
+   *  Treat the pseudoscalar as scalar for comparison with ISAJET
+   */
+  bool thePseudoScalarTreatment;
+
+  /**
    * A pointer to the MSSM object
    */
   tMSSMPtr theMSSM;

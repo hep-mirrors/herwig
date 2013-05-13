@@ -26,7 +26,10 @@ Sextet.model \
 TTBA.model \
 Zprime.model \
 LH.model \
-LHTP.model
+LHTP.model \
+RPV-LLE.slha \
+RPV-LQD.slha \
+RPV-UDD.slha
 
 INPUTFILES = \
 DIS.in \

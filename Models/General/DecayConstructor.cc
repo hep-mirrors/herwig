@@ -130,6 +130,14 @@ void DecayConstructor::createDecayers(const PDVector & particles,
   if ( particles.empty() || NBodyDecayConstructors_.empty() ) return;
   // turn the vector into a set to avoid duplicates
   set<PDPtr> particleSet(particles.begin(),particles.end());
+  // remove any antiparticles
+  for(set<PDPtr>::iterator it=particleSet.begin();it!=particleSet.end();++it) {
+    PDPtr cc = (**it).CC();
+    if(!cc) continue;
+    set<PDPtr>::iterator ic = particleSet.find(cc);
+    if(ic!=particleSet.end()) particleSet.erase(ic);
+  }
+  // set the decay list in the NBodyDecayConstructors
   typedef vector<NBodyDecayConstructorBasePtr>::iterator NBDecayIterator;
   NBDecayIterator it =  NBodyDecayConstructors_.begin();
   NBDecayIterator iend = NBodyDecayConstructors_.end();

@@ -13,13 +13,13 @@
 using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
-  os << theHiggsAMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
+  os << _lambda << _kappa << ounit(_theAlambda,GeV) 
      << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV)
      << ounit(_MQ3, GeV) << ounit(_MU2, GeV);
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
-  is >> theHiggsAMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
+  is >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
      >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV)
      >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
 }
@@ -109,10 +109,6 @@ void NMSSM::extractParameters(bool checkmodel) {
 		      << "in the extracted parameters list. The model cannot "
 		      << "be used without these." << Exception::runerror;
   }
-
-
-
-
   pit=parameters().find("msoft");
   if( pit != parameters().end() ) {
     ParamMap::const_iterator it;
@@ -133,7 +129,9 @@ void NMSSM::createMixingMatrices() {
     string name=it->first;
     // pseudo-scalar higgs mixing
     if (name == "nmamix") {
-      createMixingMatrix(theHiggsAMix,name,it->second.second,it->second.first);
+      MixingMatrixPtr temp;
+      createMixingMatrix(temp,name,it->second.second,it->second.first);
+      CPoddHiggsMix(temp);
     }
   }
   // base class for neutralinos and charginos

@@ -9,7 +9,7 @@
 # The second section contains the user settings.
 ###################################################
 
-read MSSM.model
+read RPV.model
 cd /Herwig/NewPhysics
 
 ##################################################
@@ -43,8 +43,8 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # If a decay table is in a separate file
 # then add another 'setup' line with that
 # file as the argument. The provided
-# spectrum file is an example using ISAJET
-setup MSSM/Model RPV3.1.slha
+# spectrum file is an example using SOFTSUSY
+setup RPV/Model RPV-UDD.slha
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.
