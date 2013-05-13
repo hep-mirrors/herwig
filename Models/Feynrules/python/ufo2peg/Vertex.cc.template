@@ -7,9 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 
 #include "${ModelName}.h"
-#include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
+${vertexheaders}
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -24,98 +22,5 @@ namespace Herwig
   using namespace ThePEG::Helicity;
   using ThePEG::Constants::pi;
 
-  class ${ModelName}${classname}: public ${lorentztag}Vertex {
-  public:
-    ${ModelName}${classname}();
-    virtual void setCoupling(Energy2${couplingptrs});
-    
-    /** @name Functions used by the persistent I/O system. */
-    //@{
-    /**
-     * Function used to write out object persistently.
-     * @param os the persistent output stream written to.
-     */
-    void persistentOutput(PersistentOStream & os) const;
-    
-    /**
-     * Function used to read in object persistently.
-     * @param is the persistent input stream read from.
-     * @param version the version number of the object when written.
-     */
-    void persistentInput(PersistentIStream & is, int version);
-    //@}
-  
-  public:
-    static void Init();
-
-  protected:
-    virtual IBPtr clone() const { return new_ptr(*this); }
-    virtual IBPtr fullclone() const { return new_ptr(*this); }
-    virtual void doinit();
-    //    virtual void getParams(Energy2);
-
-  
-  private:
-    ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
-
-    //    Complex leftval, rightval, normval;
-
-    /**
-     * Pointer to the model object.
-     */
-    tcHw${ModelName}Ptr model_;
-  };
-}
-
-namespace Herwig {
-  using namespace ThePEG;
-
-  // Static variable needed for the type description system in ThePEG.
-  DescribeClass<${ModelName}${classname},Helicity::${lorentztag}Vertex>
-  describeHerwig${ModelName}${classname}("Herwig::${ModelName}${classname}",
-					 "${ModelName}.so");
-  
-  
-  void ${ModelName}${classname}::Init() {
-    static ClassDocumentation<${ModelName}${classname}> 
-    documentation("The ${ModelName}${classname} class implements a vertex.");
-  }
-
-  void ${ModelName}${classname}::setCoupling(Energy2 ${couplingptrs}) {
-    ${symbolrefs}
-    //    getParams(q2);
-    ${norm}
-    ${left}
-    ${right}
-  }
-
-  ${ModelName}${classname}::${ModelName}${classname}() {
-    ${addToPlist}
-  }
-
-  void ${ModelName}${classname}::persistentOutput(PersistentOStream & os) const {
-    os << model_;
-  }
-
-  void ${ModelName}${classname}::persistentInput(PersistentIStream & is, int) {
-    is >> model_;
-  }
-
-  void ${ModelName}${classname}::doinit() {
-    model_ = dynamic_ptr_cast<tcHw${ModelName}Ptr>(generator()->standardModel());
-    assert(model_);
-   
-    //    getParams(q2);
-
-    ${parameters}
-    ${setCouplings}
-    orderInGem(${qedorder});
-    orderInGs(${qcdorder});
-    ${lorentztag}Vertex::doinit();
-  }
-
-  // void ${ModelName}${classname}::getParams(Energy2 ) {
-  // }
-
-
+  ${vertexclasses}
 }
