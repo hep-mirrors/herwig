@@ -46,7 +46,6 @@ particleT = Template(
 """
 create ThePEG::ParticleData $name
 setup $name $pdg_code $name $mass $width $wcut $ctau $charge $color $spin 0
-insert /Herwig/NewPhysics/NewModel:DecayParticles 0 $name
 """
 )
 
@@ -104,6 +103,7 @@ rm /Herwig/Widths/HiggsWidth
                 plist += 'makeanti %s %s\n' % (antis[-pdg], name)
                 
             else:
+                plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
                 antis[pdg] = name
                 selfconjugate = 1
     return plist
