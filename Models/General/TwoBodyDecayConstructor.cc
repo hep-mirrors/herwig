@@ -86,7 +86,8 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
   if( !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return set<TwoBodyDecay>();
   Energy m1(inpart->mass());
-  tPDVector decaylist = vertex->search(list, inpart);
+  tPDPtr ccpart = inpart->CC() ? inpart->CC() : inpart;
+  tPDVector decaylist = vertex->search(list, ccpart);
   set<TwoBodyDecay> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -96,8 +97,6 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
     //allowed on-shell decay?
     if( m1 <= pb->mass() + pc->mass() ) continue;
     //vertices are defined with all particles incoming
-    if( pb->CC() ) pb = pb->CC();
-    if( pc->CC() ) pc = pc->CC();
     decays.insert( TwoBodyDecay(inpart,pb, pc, vertex) );
   }
   return decays;
