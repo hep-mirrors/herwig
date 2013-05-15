@@ -10,10 +10,8 @@ class ${ModelName}${classname}: public ${lorentztag}Vertex {
     ${left}
     ${right}
   }
-  void persistentOutput(PersistentOStream & os) const
-  { os << model_; }
-  void persistentInput(PersistentIStream & is, int)
-  { is >> model_; }
+  void persistentOutput(PersistentOStream & os) const { os << model_; }
+  void persistentInput(PersistentIStream & is, int) { is >> model_; }
   //  static void Init();
  protected:
   IBPtr clone() const { return new_ptr(*this); }

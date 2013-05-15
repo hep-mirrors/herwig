@@ -34,8 +34,6 @@ if modelpath:
 FR = __import__(module)
 
 ##################################################
-all_vertices = collapse_vertices(FR.all_vertices)
-##################################################
 ##################################################
 
 # get the Model name from the arguments
@@ -195,7 +193,7 @@ MODEL_CC = getTemplate('Model.cc')
 MODEL_HWIN = getTemplate('LHC-FR.in')
 writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
 writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
-writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
+# writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
 
 
 ##################################################
@@ -220,11 +218,12 @@ if args.verbose:
     labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
     pprint.pprint(labels)
 
+all_vertices = collapse_vertices(FR.all_vertices)
 vertexclasses = []
 vertexheaders = set()
 for vertexnumber,vertex in enumerate(all_vertices,1):
 
-    #print vertex.name
+    #print vertex.__dict__
     #print map(str,vertex.particles)
     #print '---------------'
 #    vertex.include = 1
@@ -235,7 +234,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         lorentztag = get_lorentztag(l.spins)
         unique( lorentztag )
     
-    ### Particle ids #### sort order? ####
+    ### Particle ids
     plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
                    for pl in vertex.particles_list ]
     
@@ -281,9 +280,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         #print '---------------'
 
 
-    leftcontent = ' + '.join(coup_left) if coup_left else '0'
+    leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
     rightcontent = ' + '.join(coup_right) if coup_right else '0'
-    normcontent = ' + '.join(coup_norm) if coup_norm else '1'
+    normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
 
 #    #print 'Left:',leftcontent
 #    #print 'Right:',rightcontent
