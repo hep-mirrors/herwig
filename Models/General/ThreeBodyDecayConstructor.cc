@@ -292,6 +292,9 @@ createDecayMode(vector<NBDiagram> & mode,
 			      make_pair(pa,pa->mass()) , 
 			      make_pair(pb,pb->mass()) , 
 			      make_pair(pc,pc->mass()));
+      if ( Debug::level > 1 )
+	generator()->log() << "Partial width is: " << width / GeV << " GeV\n";
+
       setBranchingRatio(ndm, width);
       if(ndm->brat()<decayConstructor()->minimumBR()) {
 	generator()->preinitInterface(decayer->fullName(),
