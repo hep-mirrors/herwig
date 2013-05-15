@@ -472,9 +472,9 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 					      Energy lower,Energy upper) {
   InvEnergy2 wgt = ZERO;
   if(lower>upper) {
-    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
+    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed " 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
-				 << moff/GeV << Exception::eventerror;
+				 << moff/GeV << " " << lower/GeV << " " << upper/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
   if ( _jactype[ires] == 0 ) {

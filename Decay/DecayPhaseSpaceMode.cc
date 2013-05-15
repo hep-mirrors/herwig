@@ -59,7 +59,8 @@ void DecayPhaseSpaceMode::Init() {
 
 // flat phase space generation and weight
 Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
-					   ParticleVector & outpart) const {
+					   ParticleVector & outpart,
+					   bool onShell) const {
   double wgt(1.);
   if(outpart.empty()) {
     outpart.reserve(_extpart.size()-1);
@@ -74,7 +75,7 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
   }
   // masses of the particles
   Energy inmass(inpart.mass());
-  vector<Energy> mass = externalMasses(inmass,wgt);
+  vector<Energy> mass = externalMasses(inmass,wgt,onShell);
   // momenta of the particles
   vector<Lorentz5Momentum> part(outpart.size());
   // two body decay
@@ -93,7 +94,7 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
 }
 
 // initialise the phase space
-Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
+Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init, bool onShell) {
   Energy output(ZERO);
   // ensure that the weights add up to one
   if(!_channels.empty()) {
@@ -118,7 +119,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
     }
     for(int ix=0;ix<_npoint;++ix) {
       // set the mass of the decaying particle
-      m0 = (inpart->dataPtr())->generateMass();
+      m0 = !onShell ? inpart->dataPtr()->generateMass() : inpart->dataPtr()->mass();
       double wgt=0.;
       if(m0>mmin) {
 	inpart->set5Momentum(Lorentz5Momentum(m0));
@@ -130,7 +131,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	// generate the weight for this point
 	try {
 	  int dummy;
-	  wgt = pre*weight(false,dummy,*inpart,particles,true);
+	  wgt = pre*weight(false,dummy,*inpart,particles,true,onShell);
 	}
 	catch (Veto) {
 	  wgt=0.;
@@ -181,7 +182,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	mmin+=_extpart[ix]->massMin();
       }
       for(int ix=0;ix<_npoint;++ix) {
-	m0 = (inpart->dataPtr())->generateMass();
+	m0 = !onShell ? inpart->dataPtr()->generateMass() : inpart->dataPtr()->mass();
 	double wgt=0.; 
 	int ichan(-1);
 	if(m0>mmin) {
@@ -193,7 +194,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	  pre = prewid>ZERO ? 1./prewid : 1./MeV;
 	  // generate the weight for this point
 	  try {
-	    wgt = pre*weight(false,ichan,*inpart,particles,true);
+	    wgt = pre*weight(false,ichan,*inpart,particles,true,onShell);
 	  }
 	  catch (Veto) {
 	    wgt=0.;
@@ -279,7 +280,8 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 // generate a phase-space point using multichannel phase space
 Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
 					      int & ichan, const Particle & inpart,
-					      ParticleVector & outpart) const {
+					      ParticleVector & outpart,
+					      bool onShell) const {
   // select the channel
   vector<Lorentz5Momentum> momenta;
   double wgt(UseRandom::rnd());
@@ -295,7 +297,7 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
   }
   // generate the masses of the external particles
   double masswgt(1.);
-  vector<Energy> mass(externalMasses(inpart.mass(),masswgt));
+  vector<Energy> mass(externalMasses(inpart.mass(),masswgt,onShell));
   momenta=_channels[ichan]->generateMomenta(inpart.momentum(),mass);
   // compute the denominator of the weight
   wgt=0.;
@@ -466,7 +468,8 @@ void DecayPhaseSpaceMode::doinitrun() {
 }
 
 // generate the masses of the external particles
-vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) const {
+vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
+						   bool onShell) const {
   vector<Energy> mass(1,inmass);
   mass.reserve(_extpart.size());
   vector<int> notdone;
@@ -474,7 +477,10 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
   // set masses of stable particles and limits 
   for(unsigned int ix=1;ix<_extpart.size();++ix) {
     // get the mass of the particle if can't use weight
-    if(!_massgen[ix] || _extpart[ix]->stable()) {
+    if(onShell) {
+      mass.push_back(_extpart[ix]->mass());
+    }
+    else if(!_massgen[ix] || _extpart[ix]->stable()) {
       mass.push_back(_extpart[ix]->generateMass());
       mlow+=mass[ix];
     }
@@ -505,8 +511,8 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
     mlow-=low;
     mass[notdone[iloc]]=
       _massgen[notdone[iloc]]->mass(wgttemp,*_extpart[notdone[iloc]],low,inmass-mlow);
-    wgt*=wgttemp;
-    mlow+=mass[notdone[iloc]];
+    wgt   *= wgttemp;
+    mlow  += mass[notdone[iloc]];
     notdone.erase(notdone.begin()+iloc);
   }
   return mass;

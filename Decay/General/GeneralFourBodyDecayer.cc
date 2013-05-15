@@ -141,7 +141,7 @@ Energy GeneralFourBodyDecayer::partialWidth(tPDPtr inpart,
   bool cc=false;
   int imode = modeNumber(cc,inpart,temp);
   if(imode<0) return ZERO;
-  else return initializePhaseSpaceMode(0,true);  
+  else return initializePhaseSpaceMode(0,true,true);  
 }
 
 namespace {
