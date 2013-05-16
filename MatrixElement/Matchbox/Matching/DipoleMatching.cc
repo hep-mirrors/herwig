@@ -45,7 +45,7 @@ CrossSection DipoleMatching::dSigHatDR() const {
 
   double xme2 = 0.;
 
-  if ( theShowerKernels ) {
+  if ( !theShowerKernels ) {
     xme2 = dipole()->me2();
   } else {
     pair<int,int> ij(dipole()->bornEmitter(),
