@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import os, sys, pprint, argparse, re
-from string import Template, strip
+from string import strip
 
 from ufo2peg import *
 
@@ -103,15 +103,13 @@ if args.verbose:
 
 
 
-interfacedecl_T = Template(
-"""
-static Parameter<${modelname}, ${type}> interface${pname}
-  ("${pname}",
-   "The interface for parameter ${pname}",
-   &${modelname}::${pname}_, ${value}, 0, 0,
+interfacedecl_T = """\
+static Parameter<{modelname}, {type}> interface{pname}
+  ("{pname}",
+   "The interface for parameter {pname}",
+   &{modelname}::{pname}_, {value}, 0, 0,
    false, false, Interface::nolimits);
 """
-)
 
 interfaceDecls = []
 
@@ -120,10 +118,10 @@ for p in FR.all_parameters:
 
     if p.nature == 'external':
         interfaceDecls.append( 
-            interfacedecl_T.substitute(modelname=modelname,
-                                       pname=p.name,
-                                       value=value,
-                                       type=typemap(p.type)) 
+            interfacedecl_T.format(modelname=modelname,
+                                   pname=p.name,
+                                   value=value,
+                                   type=typemap(p.type)) 
         )
 
     if p.type == 'real':
@@ -151,12 +149,6 @@ for p in FR.all_parameters:
         expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
         parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
-
-#    print 'NAME  |',p.name
-#    print 'VALUE |',p.value
-#    print 'TEXT  |','%s = %s;' % (p.name,expression)
-#    print 'SYMS  |',symbols
-#    print '-'*60
 
 ### special treatment
 #    if p.name == 'aS':
@@ -204,9 +196,9 @@ writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
 # get vertex template
 VERTEX = getTemplate('Vertex.cc')
 VERTEXCLASS = getTemplate('Vertex_class')
-VERTEXHEADER = Template("""\
-#include "ThePEG/Helicity/Vertex/${spindirectory}/${lorentztag}Vertex.h"
-""")
+VERTEXHEADER = """\
+#include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
+"""
 
 def produce_vertex_file(subs):
     newname = '%s_Vertices_%03d.cc' % (subs['ModelName'],subs['vertexnumber'])
@@ -218,30 +210,18 @@ if args.verbose:
     labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
     pprint.pprint(labels)
 
+vertexclasses, vertexheaders = [], set()
 all_vertices = collapse_vertices(FR.all_vertices)
-vertexclasses = []
-vertexheaders = set()
 for vertexnumber,vertex in enumerate(all_vertices,1):
 
-    #print vertex.__dict__
-    #print map(str,vertex.particles)
-    #print '---------------'
-#    vertex.include = 1
+    lorentztag = unique_lorentztag(vertex)
 
-    ### Spin structure
-    unique = CheckUnique()
-    for l in vertex.lorentz:
-        lorentztag = get_lorentztag(l.spins)
-        unique( lorentztag )
-    
     ### Particle ids
     plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
                    for pl in vertex.particles_list ]
     
-    ### Colour structure
-    if vertex.color == '1': qcdord = '0'
-    else:              qcdord = ''
-
+    colortag = color_ok(vertex)
+    
     ### classname
     classname = 'V_%s' % vertex.name
 
@@ -253,9 +233,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     coup_right = []
     coup_norm = []
  
-    for (colour_idx,lorentz_idx),C in vertex.couplings:
-        qed = C.order.get('QED',0)
-        qcd = C.order.get('QCD',0)
+    for (color_idx,lorentz_idx),coupling in vertex.couplings:
+        qed = coupling.order.get('QED',0)
+        qcd = coupling.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
         # Is there a better way to treat this?
         if qed == 0 and qcd == 0:
@@ -263,18 +243,20 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         unique_qcd( qcd )
         unique_qed( qed )
         L = vertex.lorentz[lorentz_idx]
+        C = vertex.color[color_idx]
+        print '-->',C
 
         if lorentztag in ['FFS','FFV']:
             left,right = parse_lorentz(L.structure)
             if left:
-                coup_left.append('%s * %s' % (left,C.value))
+                coup_left.append('%s * %s' % (left,coupling.value))
             if right:
-                coup_right.append('%s * %s' % (right,C.value))
+                coup_right.append('%s * %s' % (right,coupling.value))
         else:
-            coup_norm.append(C.value)
+            coup_norm.append(coupling.value)
                 
             
-        #print 'Colour  :',vertex.color[colour_idx]
+        #print 'Colour  :',vertex.color[color_idx]
         #print 'Lorentz %s:'%L.name, L.spins, L.structure
         #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
         #print '---------------'
@@ -341,7 +323,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
         
     vertexclasses.append(VERTEXCLASS.substitute(subs))
-    vertexheaders.add(VERTEXHEADER.substitute(subs))
+    vertexheaders.add(VERTEXHEADER.format(**subs))
 
     WRAP = 25
     if vertexnumber % WRAP == 0:
@@ -359,42 +341,23 @@ if vertexclasses:
                          'vertexclasses' : '\n'.join(vertexclasses),
                          'vertexheaders' : ''.join(vertexheaders),
                          'ModelName' : modelname})
-#    if  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and plistarray[0] not in allplist and plistarray[1] not in allplist:
-#        produce_vertex_file(subs)
-#        allplist += plistarray[0]
-#        allplist += plistarray[1]
-#    elif  L.spins[0] != -1 and L.spins[1] != -1 and L.spins[2] != -1 and selfconjugate:
-#        produce_vertex_file(subs)
-#        allplist += plistarray[0]
-#    else:
-#        #print 'VERTEX ALREADY INCLUDED'
-#        vertex.include = 0
         
-        #print '============================================================'
-
 print '='*60
 
 ##################################################
 ##################################################
 ##################################################
 
-vertexline = Template("""\
-create $classname $name
-insert ${ModelName}:ExtraVertices 0 $name
-""")
-
+vertexline = """\
+create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
+insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
+"""
 
 def get_vertices():
     vlist = ['library %s\n' % libname]
     for v in all_vertices:
-        for l in v.lorentz:
-            lorentztag = get_lorentztag(l.spins)
-            #print lorentztag
-        if 'U' not in lorentztag: # and v.include == 1:
-            vlist.append( vertexline.substitute(
-                { 'classname' : 'Herwig::%sV_%s' % (modelname, v.name),
-                  'name' : '/Herwig/%s/V_%s' % (modelname,v.name), 
-                  'ModelName' : modelname } ) )
+        if 'U' in unique_lorentztag(v): continue
+        vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
     return ''.join(vlist)
 
 
@@ -404,7 +367,6 @@ modelfilesubs = { 'plist' : thepeg_particles(FR,parmsubs),
                   'ModelName': modelname
                   }
 
-#print thepeg_particles()
 
 MODELINFILE = getTemplate('FR.model')
 

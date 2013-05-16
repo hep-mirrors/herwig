@@ -75,6 +75,15 @@ def get_lorentztag(spin):
     result = sorted(result, cmp=spinsort)
     return ''.join(result)
 
+def unique_lorentztag(vertex):
+    """Check and return the Lorentz tag of the vertex."""
+    unique = CheckUnique()
+    for l in vertex.lorentz:
+        lorentztag = get_lorentztag(l.spins)
+        unique( lorentztag )
+        assert( lorentztag == l.name[:len(lorentztag)] )
+    return lorentztag
+
 
 def spindirectory(lt):
     """Return the spin directory name for a given Lorentz tag."""
@@ -87,6 +96,58 @@ def spindirectory(lt):
     else:
         raise Exception("Unknown Lorentz tag {}.".format(lt))
     return spin_directory
+
+
+
+
+def colorpositions(struct):
+    positions = { 
+        1 : [],
+        3 : [],
+        -3 : [],
+        8 : [],
+    }
+    for i,s in enumerate(struct,1):
+        positions[s].append(i)
+    return positions
+        
+def unique_colortag(vertex):
+    unique = CheckUnique()
+    for pl in vertex.particles_list:
+        struct = [ p.color for p in pl ]
+        unique(struct)
+
+    pos = colorpositions(struct)
+
+    label = None
+    L = len(struct)
+    l = lambda c: len(pos[c])
+    if l(1) == L:
+        label = ('1',)
+    elif l(3) == l(-3) == 1 and l(1) == L-2:
+        nums = [pos[3][0], pos[-3][0]]
+        label = ('Identity({},{})'.format(*sorted(nums)),)
+    elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
+        label = ('T({},{},{})'.format(pos[8][0],pos[3][0],pos[-3][0]),)
+    elif l(8) == L == 3:
+        label = ('f(3,2,1)',) ###### check if sign as expected
+    elif l(8) == 2 and l(3) == l(-3) == 1:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[3][0],
+            'qb' : pos[-3][0] 
+        }
+        label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                 'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+    return struct, label
+
+def color_ok(vertex):
+    colortag = unique_colortag(vertex)
+    print
+    print colortag, vertex.color
+    assert( vertex.color == colortag[1] or colortag[1] is None )
+    return colortag[1]
 
 
 def def_from_model(FR,s):
