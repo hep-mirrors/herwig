@@ -210,17 +210,59 @@ if args.verbose:
     labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
     pprint.pprint(labels)
 
+### initial pass to find global sign
+def global_sign():
+    for v in FR.all_vertices:
+        pids = sorted([ p.pdg_code for p in v.particles ])
+        if pids != [-11,11,22]: continue
+        coup = v.couplings
+        assert( len(coup) == 1 )
+        val = coup.values()[0].value
+        val = evaluate(val)
+        assert( val.real == 0 )
+        return 1 if val.imag > 0 else -1
+
 vertexclasses, vertexheaders = [], set()
-all_vertices = collapse_vertices(FR.all_vertices)
+
+ONE_EACH = True
+if ONE_EACH:
+    all_vertices = FR.all_vertices
+else:
+    all_vertices = collapse_vertices(FR.all_vertices)
+
+globalsign = global_sign()
 for vertexnumber,vertex in enumerate(all_vertices,1):
 
     lorentztag = unique_lorentztag(vertex)
 
+    lfactors = { 
+        'FFV'  : '-complex(0,1)',  # ok
+        'VVV'  : '-complex(0,1)',   
+        'VVVV' : 'complex(0,1)',
+        'VVS'  : '-complex(0,1)',
+        'VSS'  : 'complex(0,1)',
+        'SSS'  : '-complex(0,1)',  # ok
+        'VVSS' : '-complex(0,1)',  # ok
+        'VVT'  : 'complex(0,1)',
+        'VVVT' : '-complex(0,1)',
+        'SSSS' : '-complex(0,1)',  # ok
+        'FFS'  : '-complex(0,1)',  # ok
+        'SST'  : 'complex(0,1)',
+        'FFT'  : 'complex(0,1)',
+        'FFVT' : '-complex(0,1)',
+    }
+
+    lf = lfactors[lorentztag]
+
     ### Particle ids
-    plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
-                   for pl in vertex.particles_list ]
-    
-    colortag = color_ok(vertex)
+    if ONE_EACH:
+        plistarray = [ ','.join([ str(p.pdg_code) for p in vertex.particles ]) ]
+    else:
+        plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
+                       for pl in vertex.particles_list ]
+
+    cf = colorfactor(vertex)
+#    print 'Factor:',cf
     
     ### classname
     classname = 'V_%s' % vertex.name
@@ -232,28 +274,35 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     coup_left  = []
     coup_right = []
     coup_norm = []
- 
-    for (color_idx,lorentz_idx),coupling in vertex.couplings:
+    
+    if ONE_EACH:
+        items = vertex.couplings.iteritems()
+    else:
+        items = vertex.couplings
+    for (color_idx,lorentz_idx),coupling in items:
         qed = coupling.order.get('QED',0)
         qcd = coupling.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
         # Is there a better way to treat this?
-        if qed == 0 and qcd == 0:
-            qed = 1
+        if qed == qcd == 0: qed = 1
         unique_qcd( qcd )
         unique_qed( qed )
         L = vertex.lorentz[lorentz_idx]
-        C = vertex.color[color_idx]
-        print '-->',C
+        prefactors = '%s * %s * %s' % (globalsign**(len(lorentztag)-2),lf,cf[color_idx])
 
+        ordering = ''
         if lorentztag in ['FFS','FFV']:
             left,right = parse_lorentz(L.structure)
             if left:
-                coup_left.append('%s * %s' % (left,coupling.value))
+                coup_left.append('%s * %s * %s' % (prefactors,left,coupling.value))
             if right:
-                coup_right.append('%s * %s' % (right,coupling.value))
+                coup_right.append('%s * %s * %s' % (prefactors,right,coupling.value))
         else:
-            coup_norm.append(coupling.value)
+            if lorentztag == 'VSS':
+                if L.structure == 'P(1,3) - P(1,2)':
+                    prefactors += ' * -1'
+                ordering = 'if(p2->id()!=%s){norm(-norm());}'%vertex.particles[1].pdg_code
+            coup_norm.append('%s * %s' % (prefactors,coupling.value))
                 
             
         #print 'Colour  :',vertex.color[color_idx]
@@ -298,6 +347,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     # define unkown symbols from the model
     symboldefs = [ def_from_model(FR,s) for s in symbols ]
         
+    couplingptrs = [',tcPDPtr']*len(lorentztag)
+    if lorentztag == 'VSS':
+        couplingptrs[1] += ' p2'
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lorentztag,                   # ok
              'classname'  : classname,            # ok
@@ -313,9 +365,10 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
              'setCouplings' : '',
              'qedorder'   : qed,
              'qcdorder' : qcd,
-             'couplingptrs' : ',tcPDPtr'*len(lorentztag),
+             'couplingptrs' : ''.join(couplingptrs),
              'spindirectory' : spindirectory(lorentztag),
              'ModelName' : modelname,
+             'ordering' : ordering,
              }             # ok
 
     if args.verbose:

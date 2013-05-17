@@ -1,5 +1,6 @@
 from string import Template
 from os import path
+#import re
 
 """
 Helper functions for the Herwig++ Feynrules converter
@@ -111,26 +112,50 @@ def colorpositions(struct):
         positions[s].append(i)
     return positions
         
-def unique_colortag(vertex):
-    unique = CheckUnique()
-    for pl in vertex.particles_list:
-        struct = [ p.color for p in pl ]
-        unique(struct)
-
+def colorfactor(vertex):
+    try:
+        unique = CheckUnique()
+        for pl in vertex.particles_list:
+            struct = [ p.color for p in pl ]
+            unique(struct)
+    except:
+        struct = [ p.color for p in vertex.particles ]
     pos = colorpositions(struct)
+
+    def match(patterns):
+        result = [ p == t
+                   for p,t in zip(patterns,vertex.color) ]
+        return all(result)
 
     label = None
     L = len(struct)
     l = lambda c: len(pos[c])
     if l(1) == L:
         label = ('1',)
+        if match(label): return ('1',)
+
     elif l(3) == l(-3) == 1 and l(1) == L-2:
         nums = [pos[3][0], pos[-3][0]]
         label = ('Identity({},{})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
         label = ('T({},{},{})'.format(pos[8][0],pos[3][0],pos[-3][0]),)
+        if match(label): return ('1',)
+
     elif l(8) == L == 3:
-        label = ('f(3,2,1)',) ###### check if sign as expected
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)',)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)',)
+
+    elif l(8) == L == 4:
+        label = ('f(-1,1,2)*f(3,4,-1)',
+                 'f(-1,1,3)*f(2,4,-1)',
+                 'f(-1,1,4)*f(2,3,-1)',
+             )
+        if match(label): return ('1','1','1')
+
     elif l(8) == 2 and l(3) == l(-3) == 1:
         subs = {
             'g1' : pos[8][0],
@@ -140,14 +165,9 @@ def unique_colortag(vertex):
         }
         label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
                  'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-    return struct, label
+        if match(label): return ('0.5','0.5')
 
-def color_ok(vertex):
-    colortag = unique_colortag(vertex)
-    print
-    print colortag, vertex.color
-    assert( vertex.color == colortag[1] or colortag[1] is None )
-    return colortag[1]
+    raise Exception("Unknown colour tag {}.".format(vertex.color))
 
 
 def def_from_model(FR,s):

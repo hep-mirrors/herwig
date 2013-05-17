@@ -9,6 +9,7 @@ class ${ModelName}${classname}: public ${lorentztag}Vertex {
     ${norm}
     ${left}
     ${right}
+    ${ordering}
   }
   void persistentOutput(PersistentOStream & os) const { os << model_; }
   void persistentInput(PersistentIStream & is, int) { is >> model_; }
