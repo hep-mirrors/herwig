@@ -508,7 +508,12 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids.resize(7);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035;
-    ids[4] = 12; ids[5] = 14; ids[6] = 16; 
+    if(!majoranaNeutrinos()) {
+      ids[4] = 12; ids[5] = 14; ids[6] = 16;
+    }
+    else { 
+      ids[4] = 17; ids[5] = 18; ids[6] = 19;
+    }
   }
   else if(name == "rpvmix") {
     ids.resize(5);
@@ -657,11 +662,11 @@ void SusyBase::adjustMixingMatrix(long id) {
   case 1000025 :
   case 1000035 : 
   case 1000045 :
-  case 12 :
-  case 14 :
-  case 16 : 
+  case 12 : case 17 : 
+  case 14 : case 18 : 
+  case 16 : case 19 :
     if(NMix_) {
-      if(id>16||(id<=16&&NMix_->size().first>4))
+      if(id>20||(id<=16&&NMix_->size().first>4))
 	 NMix_->adjustPhase(id);
     }
     else 
