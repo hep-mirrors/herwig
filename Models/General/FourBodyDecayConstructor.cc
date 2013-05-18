@@ -20,7 +20,6 @@
 #include "Herwig++/Decay/General/GeneralFourBodyDecayer.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "DecayConstructor.h"
-#include <queue>
 
 using namespace Herwig;
 
@@ -97,16 +96,33 @@ void FourBodyDecayConstructor::Init() {
      " if empty the defaults from the DecayConstructor are used.",
      &FourBodyDecayConstructor::particles_, -1, false, false, true, true, false);
 
+  static Switch<FourBodyDecayConstructor,bool> interfaceParticleType
+    ("ParticleType",
+     "Which types of particles to calculate four body decay modes for",
+     &FourBodyDecayConstructor::particleType_, false, false, false);
+  static SwitchOption interfaceParticleTypeStable
+    (interfaceParticleType,
+     "Stable",
+     "Only calculate four-body decays in no 2/3 body modes",
+     false);
+  static SwitchOption interfaceParticleTypeAll
+    (interfaceParticleType,
+     "All",
+     "Calculate 4-body modes for all particles",
+     true);
+
 }
 
 void FourBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
   if( particles.empty() ) return;
-  if(particles_.empty())
-    NBodyDecayConstructorBase::DecayList(particles);
-  else {
-    set<PDPtr> new_particles(particles_.begin(),particles_.end());
-    NBodyDecayConstructorBase::DecayList(new_particles);
+  set<PDPtr> new_particles;
+  for(set<PDPtr>::const_iterator it=particles.begin();it!=particles.end();++it) {
+    if(!particles_.empty() && find(particles_.begin(),particles_.end(),*it)==particles_.end()) continue;
+    if(!(**it).stable()&&!particleType_) continue;
+    new_particles.insert(*it);
   }
+  if(!new_particles.empty())
+    NBodyDecayConstructorBase::DecayList(new_particles);
 }
 
 void FourBodyDecayConstructor::
