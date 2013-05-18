@@ -394,7 +394,7 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
       Repository::cout() << "Constructing N-body decays for " 
 			 << parent->PDGName() << '\n';
     // first create prototype 1->2 decays
-    std::queue<PrototypeVertexPtr> prototypes;
+    std::stack<PrototypeVertexPtr> prototypes;
     for(unsigned int iv = 0; iv < nv; ++iv) {
       VertexBasePtr vertex = model->vertex(iv);
       if(excluded(vertex)) continue;
@@ -403,8 +403,8 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
     // now expand them into potential decay modes
     list<vector<PrototypeVertexPtr> > modes;
     while(!prototypes.empty()) {
-      // get the first prototype from the queue
-      PrototypeVertexPtr proto = prototypes.front();
+      // get the first prototype from the stack
+      PrototypeVertexPtr proto = prototypes.top();
       prototypes.pop();
       // multiplcity too low
       if(proto->npart<numBodies()) {
