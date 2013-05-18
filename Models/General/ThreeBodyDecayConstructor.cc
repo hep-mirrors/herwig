@@ -217,12 +217,14 @@ createDecayMode(vector<NBDiagram> & mode,
   vector<TBDiagram> diagrams;
   for(unsigned int iy=0;iy<mode.size();++iy) {
     diagrams.push_back(TBDiagram(mode[iy]));
+    // determine the type
+    diagrams.back().channelType = TBDiagram::Channel(mode[iy].channelType[0]-1);
     // remove weak processes simulated using the weak current
     if(weakMassCut_>ZERO && diagrams.back().intermediate &&
        abs(diagrams.back().intermediate->id())==ParticleID::Wplus) {
       Energy deltaM = 
-	getParticleData(diagrams.back().incoming)->mass() - 
-	getParticleData(diagrams.back().outgoing)->mass();
+    	getParticleData(diagrams.back().incoming)->mass() - 
+    	getParticleData(diagrams.back().outgoing)->mass();
       if(deltaM<weakMassCut_) diagrams.pop_back();
     }
   }
@@ -239,14 +241,12 @@ createDecayMode(vector<NBDiagram> & mode,
   // sort out ordering and labeling of diagrams
   vector<PDPtr> outVector(outgoing.begin(),outgoing.end());
   for(unsigned int ix=0;ix<diagrams.size();++ix) {
-    // should all be UNDEFINED at this point but check anyway
-    if(diagrams[ix].channelType != TBDiagram::UNDEFINED) continue;
-    // determine the type
-    unsigned int iy=mode[ix].channelType[0]-1;
-    diagrams[ix].channelType = TBDiagram::Channel(iy);
-    if( ( iy == 0 && outVector[1]->id() != diagrams[ix].outgoingPair.first)||
-	( iy == 1 && outVector[0]->id() != diagrams[ix].outgoingPair.first)|| 
-	( iy == 2 && outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
+    if( ( diagrams[ix].channelType == TBDiagram::channel23 && 
+	  outVector[1]->id() != diagrams[ix].outgoingPair.first) ||
+	( diagrams[ix].channelType == TBDiagram::channel13 && 
+	  outVector[0]->id() != diagrams[ix].outgoingPair.first) || 
+	( diagrams[ix].channelType == TBDiagram::channel12 && 
+	  outVector[0]->id() != diagrams[ix].outgoingPair.first) ) 
       swap(diagrams[ix].outgoingPair.first, diagrams[ix].outgoingPair.second);
   }
   // construct the tag for the decay mode
